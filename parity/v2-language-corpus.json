@@ -1433,16 +1433,6 @@
       "steps": [
         {
           "op": "inspect",
-          "className": "margin:$(spacing-md)",
-          "expectedValid": false
-        },
-        {
-          "op": "inspect",
-          "className": "width:calc(-2px+$(spacing-md))",
-          "expectedValid": false
-        },
-        {
-          "op": "inspect",
           "className": "max(1rem)",
           "expectedValid": false
         }

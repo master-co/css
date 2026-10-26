@@ -75,12 +75,16 @@ fn selectors_replace_only_nesting_tokens_through_mixin_composition() {
 }
 
 #[test]
-fn custom_property_token_streams_keep_native_dollars() {
+fn token_streams_keep_native_dollars() {
     let engine = EngineSession::create(MANIFEST).unwrap();
-    for class in ["--money:$100", "--identifier:$name", "content:'$100'"] {
+    for class in [
+        "--money:$100",
+        "--identifier:$name",
+        "content:'$100'",
+        "width:$size",
+    ] {
         let result = engine.inspect(class).unwrap();
         assert_eq!(result.rules.len(), 1, "{class}");
         assert!(result.rules[0].text.contains('$'));
     }
-    assert!(engine.inspect("width:$size").unwrap().rules.is_empty());
 }

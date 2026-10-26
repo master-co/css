@@ -153,7 +153,7 @@
         {
           "name": "resolves mapped enum pattern values from manifest valueMap",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns"
           ]
         },
         {
@@ -227,7 +227,7 @@
         {
           "name": "drops colliding shorthand token aliases",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns"
           ]
         },
         {
@@ -504,7 +504,7 @@
         {
           "name": "executes semantic enum pattern utilities after exact semantic utilities",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns"
           ]
         },
         {
@@ -516,7 +516,7 @@
         {
           "name": "falls back to pattern scanning when pattern names cannot be safely indexed",
           "coverage": [
-            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+            "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns"
           ]
         },
         {

@@ -265,7 +265,7 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 }
 
 #[test]
-fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
+fn prefers_exact_utilities_over_patterns() {
     let manifest = r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"name":"--text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}],"utilities":[{"kind":"static","name":"text-left","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"kind":"static","name":"text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]},{"kind":"static","name":"text-center","body":[{"type":"declaration","property":"text-align","value":[{"type":"text","value":"start"}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
@@ -273,31 +273,6 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
-    assert!(
-        engine.inspect("margin:$(spacing-x1)").unwrap().match_status
-            != mastercss_schema::MatchStatus::Matched
-    );
-    assert!(
-        engine
-            .inspect("width:calc(-2px+$(spacing-x1))")
-            .unwrap()
-            .match_status
-            != mastercss_schema::MatchStatus::Matched
-    );
-    // `$` before any CSS name code point, non-ASCII symbols included, is a legacy
-    // reference.
-    for class_name in ["content:$é", "content:$☃"] {
-        assert!(
-            engine.inspect(class_name).unwrap().match_status
-                != mastercss_schema::MatchStatus::Matched,
-            "{class_name}"
-        );
-    }
-    assert_eq!(
-        engine.inspect("content:'$'").unwrap().match_status,
-        mastercss_schema::MatchStatus::Matched
-    );
 }
 
 #[test]
@@ -395,3 +370,4 @@ fn mixin_numbers_are_checked_on_their_digits() {
         );
     }
 }
+

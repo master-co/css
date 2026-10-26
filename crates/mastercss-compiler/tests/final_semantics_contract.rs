@@ -190,7 +190,7 @@ fn native_pruning_requires_an_explicit_policy_and_preserve_wins() {
 }
 
 #[test]
-fn quoted_legacy_markers_remain_native_literals() {
+fn quoted_markers_remain_native_literals() {
     let e = engine("").unwrap();
     for class in [
         r#"content:'$(value)'"#,
@@ -210,9 +210,6 @@ fn quoted_legacy_markers_remain_native_literals() {
             "{}",
             result.rules[0].text
         );
-    }
-    for class in ["color:$name", "color:$(name)"] {
-        assert!(e.inspect(class).unwrap().rules.is_empty(), "{class}");
     }
 }
 

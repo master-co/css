@@ -175,11 +175,6 @@ impl EngineSession {
         let (colon, _) = native_declaration_head(class_name)?;
         let (_, state) = split_dynamic_value_state(&class_name[colon + 1..]);
         let value = candidate.ir.value;
-        if !candidate.ir.property.starts_with("--")
-            && super::utility::contains_legacy_variable_reference(&value)
-        {
-            return None;
-        }
         mastercss_lexer::decode_native_content(&value)?;
         let utility = UtilityDefinition {
             id: concat_text!("native:", candidate.ir.property),

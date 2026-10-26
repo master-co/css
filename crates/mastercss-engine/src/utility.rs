@@ -251,7 +251,7 @@ pub(crate) fn match_utility_filtered(
                         continue;
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if !value.is_empty() && !contains_legacy_variable_reference(&value) {
+                    if !value.is_empty() {
                         let (value, variable_names) =
                             resolve_value_components(&value, Some(utility), manifest);
                         return Some(UtilityMatch {
@@ -314,17 +314,6 @@ pub(crate) fn match_utility_filtered(
         }
     }
     None
-}
-
-pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
-    value.contains('$')
-        && mastercss_lexer::tokenize_css_syntax(value)
-            .iter()
-            .any(|token| {
-                matches!(token.kind, mastercss_lexer::CssSyntaxKind::Delim('$'))
-                    && value[token.bytes.end..]
-                        .starts_with(|c: char| mastercss_lexer::is_name_code_point(c) || c == '(')
-            })
 }
 
 /// An opacity modifier from 0 to 1 as a percentage, computed on its decimal digits so
