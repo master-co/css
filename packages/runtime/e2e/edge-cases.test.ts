@@ -1,5 +1,4 @@
 import { test, expect, type Page } from '@playwright/test'
-import { createEngineSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
@@ -11,26 +10,6 @@ import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import init, { getRuntimeLoaderURL } from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-
-function renderHydration(...classNames: string[]) {
-  const engine = createEngineSync({ manifest: defaultManifest })
-  try {
-    engine.ensureClassRules(classNames)
-    const snapshot = engine.snapshot()
-    return {
-      text: snapshot.text,
-      hydrationManifest: {
-        version: 1 as const,
-        rules: snapshot.rules,
-        resourceOrder: [
-          ...snapshot.resources.variables.map(({ name }) => name)
-        ]
-      }
-    }
-  } finally {
-    engine.dispose()
-  }
-}
 
 async function startCSSRuntimeAsync(
   page: Page,
