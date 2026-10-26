@@ -118,7 +118,7 @@ pub(crate) fn push_utility_value_completion_candidates(
             _ => None,
         })
         .collect::<Vec<_>>();
-    for (value_key, variable_name) in &utility.variable_entries {
+    for (value_key, variable_name) in &super::utility::utility_variable_entries(utility, manifest) {
         let Some(variable) = manifest.compiled_variables.get(variable_name) else {
             continue;
         };
@@ -419,7 +419,8 @@ pub(crate) fn resolve_color_variable_value(
     if matched.matcher_type != super::UtilityMatcherType::Token {
         return None;
     }
-    let variable_name = manifest.utilities[*index].variables.get(token)?;
+    let variable_name =
+        super::utility::utility_variable(&manifest.utilities[*index], token, manifest)?;
     resolved_color_variable(variable_name, manifest)
 }
 

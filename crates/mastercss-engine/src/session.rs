@@ -856,14 +856,16 @@ impl EngineSession {
                         indexes.iter().any(|index| {
                             let utility = &self.compiled.utilities[*index];
                             utility.variable_alias_refs == [concat_text!("~", family.namespace)]
-                                && utility.variable_entries.iter().any(|(key, _)| {
-                                    super::named::matching_utilities(
-                                        &concat_text!(family.prefix, "-", key),
-                                        &self.compiled,
-                                    )
+                                && super::utility::utility_variable_entries(utility, &self.compiled)
                                     .iter()
-                                    .any(|(matched, _)| matched == index)
-                                })
+                                    .any(|(key, _)| {
+                                        super::named::matching_utilities(
+                                            &concat_text!(family.prefix, "-", key),
+                                            &self.compiled,
+                                        )
+                                        .iter()
+                                        .any(|(matched, _)| matched == index)
+                                    })
                         })
                     })
             })
@@ -960,9 +962,10 @@ impl EngineSession {
                     continue;
                 }
                 generated = true;
-                for (key, name) in &utility.variable_entries {
+                for (key, name) in super::utility::utility_variable_entries(utility, &self.compiled)
+                {
                     if seen_aliases.insert(key.clone()) {
-                        variable_aliases.push((key.clone(), name.clone()));
+                        variable_aliases.push((key, name));
                     }
                 }
             }

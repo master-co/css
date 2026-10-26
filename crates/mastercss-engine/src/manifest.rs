@@ -1,6 +1,6 @@
 use super::{
     CompiledVariable, EngineVariableIr, Program, UtilityLayerName, UtilityMatcher,
-    append_builtin_native_declaration_utilities, compile_utility_variables, split_top_level,
+    append_builtin_native_declaration_utilities, split_top_level,
 };
 #[cfg(feature = "manifest")]
 use super::{EngineError, HashMap, Map, MasterCssManifest, Value};
@@ -125,11 +125,6 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
         if utility.order.is_none() {
             utility.order = Some(count - index as i32 - 1);
         }
-        compile_utility_variables(
-            utility,
-            &program.compiled_variables,
-            &program.compiled_variable_order,
-        );
     }
     // A stable partition by `static_last`, without the standard sort's code.
     let (mut utilities, rest): (Vec<_>, Vec<_>) = std::mem::take(&mut program.utilities)
@@ -253,8 +248,14 @@ pub(crate) fn compile_variables(
                     }),
                     variable_type,
                     dependencies,
+                    order: 0,
                 },
             );
+        }
+    }
+    for (index, name) in order.iter().enumerate() {
+        if let Some(variable) = variables.get_mut(name) {
+            variable.order = index;
         }
     }
     Ok((variables, order))

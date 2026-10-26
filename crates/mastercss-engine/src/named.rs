@@ -105,7 +105,9 @@ fn token_owners(source: &str, prefix: &str, manifest: &Program) -> Vec<usize> {
     indexes
         .iter()
         .copied()
-        .filter(|index| manifest.utilities[*index].variables.contains_key(key))
+        .filter(|index| {
+            super::utility::utility_variable(&manifest.utilities[*index], key, manifest).is_some()
+        })
         .collect()
 }
 
@@ -339,7 +341,7 @@ fn ambiguous_token_message(
     let mut alternatives = Vec::new();
     for index in candidates {
         let utility = &manifest.utilities[index];
-        let token = &utility.variables[key];
+        let token = super::utility::utility_variable(utility, key, manifest).unwrap_or_default();
         let definition = manifest
             .utility_definitions
             .iter()

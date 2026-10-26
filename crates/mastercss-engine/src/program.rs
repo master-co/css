@@ -16,9 +16,11 @@ use mastercss_schema::{
     SourceRange, ThemeNode, UtilityKind,
 };
 
+#[cfg(feature = "manifest")]
+use super::HashMap;
 use super::{
-    CompiledVariable, HashMap, Program, TokenFamily, TokenFamilyArgument, UtilityDefinition,
-    UtilityEmit, UtilityLayerName, UtilityMatcher, VariableNumeric, finish_program,
+    CompiledVariable, Program, TokenFamily, TokenFamilyArgument, UtilityDefinition, UtilityEmit,
+    UtilityLayerName, UtilityMatcher, VariableNumeric, finish_program,
 };
 
 const MAGIC: &[u8; 4] = b"MCSP";
@@ -57,7 +59,8 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
     let compiled_variables: Vec<CompiledVariable> = Decode::decode(&mut reader)?;
     program.utilities = Decode::decode(&mut reader)?;
     reader.end()?;
-    for variable in compiled_variables {
+    for (order, mut variable) in compiled_variables.into_iter().enumerate() {
+        variable.order = order;
         program.compiled_variable_order.push(variable.name.clone());
         program
             .compiled_variables
@@ -439,6 +442,7 @@ impl Decode for CompiledVariable {
             numeric: Decode::decode(reader)?,
             variable_type: Decode::decode(reader)?,
             dependencies: Decode::decode(reader)?,
+            order: 0,
         })
     }
 }
@@ -465,8 +469,6 @@ impl Decode for UtilityDefinition {
             alias_groups: Decode::decode(reader)?,
             variable_aliases: Decode::decode(reader)?,
             variable_alias_refs: Decode::decode(reader)?,
-            variables: HashMap::default(),
-            variable_entries: Vec::new(),
             native_fallback: Decode::decode(reader)?,
             emit: Decode::decode(reader)?,
             matchers: Decode::decode(reader)?,

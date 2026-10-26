@@ -1,7 +1,7 @@
 use super::{
-    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, Ordering, Program, StoredRule,
-    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
-    UtilityMatcherType, collect_css_variable_names, normalize_css_math_functions,
+    ConditionFeature, GeneratedRuleIr, HashSet, Ordering, Program, StoredRule, UtilityDefinition,
+    UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher, UtilityMatcherType,
+    collect_css_variable_names, normalize_css_math_functions,
 };
 use mastercss_lexer::concat_text;
 
@@ -25,8 +25,6 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
-            variables: HashMap::default(),
-            variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {
                 property: property.into(),
@@ -38,33 +36,95 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
     }
 }
 
-pub(crate) fn compile_utility_variables(
-    utility: &mut UtilityDefinition,
-    variables: &HashMap<String, CompiledVariable>,
-    variable_order: &[String],
-) {
+/// The variable a utility's token `key` names: an explicit alias first, then the
+/// first `~namespace` reference with a variable whose namespace key is `key`, the
+/// earliest in variable order. Resolving on demand spares session creation from
+/// mapping every token of every utility.
+pub(crate) fn utility_variable<'a>(
+    utility: &'a UtilityDefinition,
+    key: &str,
+    manifest: &'a Program,
+) -> Option<&'a str> {
+    let variables = &manifest.compiled_variables;
+    if let Some((_, name)) = utility
+        .variable_aliases
+        .iter()
+        .find(|(alias, name)| alias == key && variables.contains_key(name))
+    {
+        return Some(name);
+    }
+    if excludes_key(utility, key) {
+        return None;
+    }
+    for reference in &utility.variable_alias_refs {
+        let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
+        let found = namespace_variable_names(namespace, key)
+            .iter()
+            .filter_map(|name| variables.get_key_value(name))
+            .filter(|(name, _)| {
+                get_variable_key_by_namespace(name, namespace).as_deref() == Some(key)
+            })
+            .min_by_key(|(_, variable)| variable.order);
+        if let Some((name, _)) = found {
+            return Some(name);
+        }
+    }
+    None
+}
+
+/// Every token key of a utility with the variable it names, in the order and with
+/// the precedence of `utility_variable`.
+pub(crate) fn utility_variable_entries(
+    utility: &UtilityDefinition,
+    manifest: &Program,
+) -> Vec<(String, String)> {
+    let mut entries = Vec::new();
+    let mut seen = HashSet::default();
     for (key, name) in &utility.variable_aliases {
-        if variables.contains_key(name) && !utility.variables.contains_key(key) {
-            utility.variables.insert(key.clone(), name.clone());
-            utility.variable_entries.push((key.clone(), name.clone()));
+        if manifest.compiled_variables.contains_key(name) && seen.insert(key.clone()) {
+            entries.push((key.clone(), name.clone()));
         }
     }
     for reference in &utility.variable_alias_refs {
         let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
-        for variable_name in variable_order {
-            let Some(variable) = variables.get(variable_name) else {
-                continue;
-            };
-            if let Some(key) = get_variable_key_by_namespace(&variable.name, namespace)
-                && !utility.variables.contains_key(&key)
-                && !(matches!(utility.emit, UtilityEmit::Recipe { key: true, .. })
-                    && key.contains("--"))
+        for name in &manifest.compiled_variable_order {
+            if let Some(key) = get_variable_key_by_namespace(name, namespace)
+                && !excludes_key(utility, &key)
+                && seen.insert(key.clone())
             {
-                utility.variables.insert(key.clone(), variable.name.clone());
-                utility.variable_entries.push((key, variable.name.clone()));
+                entries.push((key, name.clone()));
             }
         }
     }
+    entries
+}
+
+/// Recipe keys that are CSS strings never take a custom property as their key.
+fn excludes_key(utility: &UtilityDefinition, key: &str) -> bool {
+    matches!(utility.emit, UtilityEmit::Recipe { key: true, .. }) && key.contains("--")
+}
+
+/// The variable names whose key in `namespace` can be `key`, the inverse of
+/// `get_variable_key_by_namespace`: `namespace-key`, or `namespace` and
+/// `namespace-` for an empty key, and the negative `-namespace…` forms of a key
+/// starting with `-`.
+fn namespace_variable_names(namespace: &str, key: &str) -> Vec<String> {
+    let mut names = Vec::with_capacity(2);
+    if key.is_empty() {
+        names.push(namespace.to_owned());
+        names.push(concat_text!(namespace, "-"));
+    } else {
+        names.push(concat_text!(namespace, "-", key));
+    }
+    if let Some(positive) = key.strip_prefix('-') {
+        if positive.is_empty() {
+            names.push(concat_text!("-", namespace));
+            names.push(concat_text!("-", namespace, "-"));
+        } else {
+            names.push(concat_text!("-", namespace, "-", positive));
+        }
+    }
+    names
 }
 
 pub(crate) fn get_variable_key_by_namespace(
@@ -74,13 +134,12 @@ pub(crate) fn get_variable_key_by_namespace(
     let (negative, positive_name) = variable_name
         .strip_prefix('-')
         .map_or((false, variable_name), |name| (true, name));
-    if positive_name != namespace && !positive_name.starts_with(&concat_text!(namespace, "-")) {
-        return None;
-    }
-    let key = positive_name
-        .strip_prefix(namespace)
-        .and_then(|name| name.strip_prefix('-'))
-        .unwrap_or_default();
+    let rest = positive_name.strip_prefix(namespace)?;
+    let key = match rest.strip_prefix('-') {
+        Some(key) => key,
+        None if rest.is_empty() => "",
+        None => return None,
+    };
     Some(if negative {
         concat_text!("-", key)
     } else {
@@ -292,7 +351,7 @@ pub(crate) fn match_utility_filtered(
                     value
                 };
                 let resolved = if matches!(utility.emit, UtilityEmit::Recipe { .. }) {
-                    super::utility_matching::named_arguments(&token, utility)
+                    super::utility_matching::named_arguments(&token, utility, manifest)
                         .map(|(arguments, variable_names)| (None, arguments, variable_names))
                 } else {
                     resolve_utility_alias_value(&token, utility, manifest)
@@ -347,7 +406,7 @@ pub(crate) fn resolve_utility_value(
     manifest: &Program,
 ) -> Option<(String, Vec<String>)> {
     if let Some((key, alpha)) = value.split_once('/') {
-        let variable_name = utility.variables.get(key)?;
+        let variable_name = utility_variable(utility, key, manifest)?;
         let variable = manifest.compiled_variables.get(variable_name)?;
         if !variable.namespace.starts_with("color") {
             return None;
@@ -372,7 +431,7 @@ pub(crate) fn resolve_utility_value(
     let (negative, key) = value
         .strip_prefix('-')
         .map_or((false, value), |key| (true, key));
-    let variable_name = utility.variables.get(key)?;
+    let variable_name = utility_variable(utility, key, manifest)?;
     let variable = manifest.compiled_variables.get(variable_name)?;
     if negative && variable.variable_type != "number" {
         return None;
@@ -399,7 +458,7 @@ pub(crate) fn resolve_utility_alias_value(
 ) -> Option<(String, Vec<String>)> {
     let key = value.split_once('/').map_or(value, |(key, _)| key);
     let key = key.strip_prefix('-').unwrap_or(key);
-    utility.variables.contains_key(key).then_some(())?;
+    utility_variable(utility, key, manifest)?;
     resolve_utility_value(value, utility, manifest)
 }
 

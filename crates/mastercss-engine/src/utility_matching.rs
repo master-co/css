@@ -44,8 +44,6 @@ pub(crate) fn register(manifest: &mut Program) {
             } else {
                 Vec::new()
             },
-            variables: Default::default(),
-            variable_entries: Vec::new(),
             native_fallback: false,
             emit: UtilityEmit::Recipe {
                 definition: index,
@@ -187,20 +185,21 @@ pub(crate) fn emit(
 pub(crate) fn named_arguments(
     key: &str,
     utility: &UtilityDefinition,
+    manifest: &Program,
 ) -> Option<(Vec<String>, Vec<String>)> {
     let key_argument = matches!(utility.emit, UtilityEmit::Recipe { key: true, .. });
     if key_argument && key.contains("--") {
         return None;
     }
-    let variable = utility.variables.get(key)?;
+    let variable = super::utility::utility_variable(utility, key, manifest)?;
     // CSS strings, not JSON escape sequences: token names may contain Unicode
     // and escaped punctuation. ASCII controls cannot occur in a class name.
     if !key_argument {
         return Some((
             vec![concat_text!("var(--", variable, ")")],
-            vec![variable.clone()],
+            vec![variable.to_owned()],
         ));
     }
     let quoted = concat_text!("\"", key.replace('\\', "\\\\").replace('"', "\\\""), "\"");
-    Some((vec![quoted], vec![variable.clone()]))
+    Some((vec![quoted], vec![variable.to_owned()]))
 }

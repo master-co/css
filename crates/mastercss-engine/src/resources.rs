@@ -1,5 +1,5 @@
 use super::{
-    EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashMap, HashSet,
+    EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashSet,
     NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
     UtilityLayerName, native_declaration_head, resolve_value_components, single_native_declaration,
     split_dynamic_value_state,
@@ -186,8 +186,6 @@ impl EngineSession {
             alias_groups: Vec::new(),
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
-            variables: HashMap::default(),
-            variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {
                 property: candidate.ir.property,

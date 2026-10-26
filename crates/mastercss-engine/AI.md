@@ -34,6 +34,8 @@ parity are behavioral contracts. Do not add host filesystem, DOM, or editor poli
 
 Token utility identity is (form, decoded prefix, namespace); same-branch replacement is complete. Select the longest prefix, then a unique namespace by key before checking sign or opacity. Ambiguous keys emit no CSS. Retain requested classes without rules so refresh can restore them after ambiguity or missing-token changes. Metadata consumers use the resolved branch, never prefix alone.
 
+A token key resolves to its variable on demand through `utility::utility_variable`: explicit aliases first, then each `~namespace` reference in order, where the earliest declared variable whose namespace key is the key wins (`namespace_variable_names` inverts `get_variable_key_by_namespace`, and every candidate is checked forward). `finish_program` builds no per-utility token maps: mapping every variable of every token utility was nearly all of session creation. Tooling lists a utility's tokens with `utility_variable_entries`, which must keep the same precedence.
+
 `selector_class_names_without_rules()` lists classes that theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks) reference without generating rules themselves. Render appends them to hydration manifest `classNames` so client-toggled mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear there.
 
 ## Runtime Wasm Features

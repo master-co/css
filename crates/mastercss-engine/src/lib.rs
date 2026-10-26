@@ -152,8 +152,6 @@ struct UtilityDefinition {
     alias_groups: Vec<String>,
     variable_aliases: Vec<(String, String)>,
     variable_alias_refs: Vec<String>,
-    variables: HashMap<String, String>,
-    variable_entries: Vec<(String, String)>,
     native_fallback: bool,
     emit: UtilityEmit,
     matchers: Vec<UtilityMatcher>,
@@ -245,6 +243,8 @@ struct CompiledVariable {
     dependencies: Vec<String>,
     inline_value: Option<String>,
     is_static: bool,
+    /// The position in `Program::compiled_variable_order`.
+    order: usize,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -438,8 +438,8 @@ pub(crate) use render::{
 pub(crate) use state::{resolve_state_branches, resolve_style_selector_aliases, split_top_level};
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
-    append_builtin_native_declaration_utilities, compare_stored_rules, compile_utility_variables,
-    layer_index, resolve_value_components, split_dynamic_value_state,
+    append_builtin_native_declaration_utilities, compare_stored_rules, layer_index,
+    resolve_value_components, split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
     find_matching_parenthesis, native_declaration_head, normalize_css_math_functions,
