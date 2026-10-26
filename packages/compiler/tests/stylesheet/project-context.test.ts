@@ -96,6 +96,19 @@ test('standalone transformation remains opt-in and keeps unrelated CSS byte-for-
   expect(used.code).not.toContain('--color-brand:red')
 })
 
+test('native styles animating their own keyframes anchor them and receive the tokens those frames read', async () => {
+  const f = fixture()
+  const own = await transformStylesheet(f.file, '.card{animation:spin 1s}@keyframes spin{to{opacity:.5}}', f.options)
+  expect(own.transformed).toBe(true)
+  expect(own.code).toMatch(/@media only all,\(master-css-keyframe-[^)]+\)\{:not\(\*\)\{--master-css-slot:0\}@keyframes spin\{/)
+  const themed = await transformStylesheet(f.file, '.card{animation:spin 1s}@keyframes spin{to{color:var(--color-action)}}', f.options)
+  expect(themed.transformed).toBe(true)
+  expect(themed.code).toContain('--color-brand:red')
+  expect(themed.code).toContain('--color-action:var(--color-brand)')
+  const unused = '.card{color:red}@keyframes spin{to{color:var(--color-action)}}'
+  expect((await transformStylesheet(f.file, unused, f.options)).code).toBe(unused)
+})
+
 test('separate globals emit token defaults without referenced native selectors and external emission remains an explicit host assertion', async () => {
   const f = fixture()
   const source = '.card { color: var(--color-action); }'
