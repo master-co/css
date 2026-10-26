@@ -426,7 +426,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 26. Hydration, engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 26. Hydration manifests use v5; engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
