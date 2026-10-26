@@ -707,6 +707,36 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect([...(plugin as any).manifestJSONAssets.values()]).toEqual([])
   })
 
+  test('omits source provenance only from production manifests', async () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-manifest-source-'))
+    const entryPath = path.join(root, 'app.css')
+    try {
+      writeFileSync(entryPath, '@import "@master/css";\n@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
+      const load = async (mode: 'development' | 'production', request: string) => {
+        const plugin = makePlugin({}, root)
+        const { compiler } = makeFakeCompiler({ context: root, mode })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+        const normalModuleFactory = makeNormalModuleFactory(entryPath)
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        await resolveBefore(normalModuleFactory, { request, context: root, contextInfo: {}, fileDependencies: new Set<string>() })
+        return mode === 'development'
+          ? (compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2] as string
+          : [...(plugin as any).manifestJSONAssets.values()].at(-1) as string
+      }
+      for (const request of [VIRTUAL_MANIFEST_ID, './app.css' + MASTER_CSS_MANIFEST_QUERY]) {
+        const development = await load('development', request)
+        expect(development).toMatch(/^export default \{"version":6/)
+        expect(development).toMatch(/"source":\{"file":"[^"]*app\.css"/)
+        const production = await load('production', request)
+        expect(production).toContain('"name":"card"')
+        expect(production).not.toContain('"source"')
+      }
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('keeps ?master-css-manifest file dependencies after invalid CSS', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
     const manifestPath = path.join(root, 'theme.css')

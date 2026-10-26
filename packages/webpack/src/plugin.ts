@@ -4,7 +4,7 @@ import {
 } from '@master/css-tooling/scanner/node'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { toManifestJSON } from '@master/css-internal/manifest-module'
+import { toManifestJSON, toProductionManifestJSON } from '@master/css-internal/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
@@ -250,9 +250,9 @@ export class MasterCSSWebpackPlugin {
       manifest: result.manifest
     }
     this.defaultManifestDependencies = [...result.dependencies]
-    const json = toManifestJSON(result.manifest)
-    if (this.development) return toInlineManifestModule(json)
+    if (this.development) return toInlineManifestModule(toManifestJSON(result.manifest))
 
+    const json = toProductionManifestJSON(result.manifest)
     const assetFileName = toHashedManifestAssetFileName(json)
     this.manifestJSONAssets.set(assetFileName, json)
     return toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)

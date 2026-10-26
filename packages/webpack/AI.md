@@ -38,6 +38,7 @@
 - Runtime HTML mutation only covers compilation HTML assets; do not claim devServer static file mutation.
 - Script/preload tags must match Webpack output type: `modulepreload` for module output and `preload as="script"` for classic output.
 - Tests are sparse, so behavior changes need coverage.
+- Manifests emitted as assets (any `mode` but `development`) omit `source` provenance through `toProductionManifestJSON`; development inline modules keep it.
 - Virtual module id behavior must stay compatible with configured scanner options.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Next, Nuxt, and Astro so integration behavior does not drift.
 

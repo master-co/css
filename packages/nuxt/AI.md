@@ -31,6 +31,7 @@
 ## Risk Areas
 
 - SSR and Nitro virtual manifest aliases.
+- Nitro and the client runtime read one manifest file; outside `nuxt.options.dev` it omits `source` provenance (`toProductionManifestJSON`).
 - Nuxt inline styles behavior in static mode.
 - Client/server mode differences.
 - The progressive client runtime plugin (`css-runtime-progressive.ts`) passes the project manifest as a dynamic import loader; only runtime mode preloads the manifest.

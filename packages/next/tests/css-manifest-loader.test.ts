@@ -14,6 +14,7 @@ function createFixtureDir() {
 function runManifestLoader(context: {
   resourcePath: string
   rootContext?: string
+  mode?: string
   getOptions?: () => any
   addDependency?: (dependency: string) => void
 }) {
@@ -120,6 +121,26 @@ describe('css manifest loader', () => {
       } else {
         env.NODE_ENV = originalNodeEnv
       }
+    }
+  })
+
+  it('omits source provenance only from production manifest modules', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, '@import url("@master/css");\n@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
+    const requests = [
+      { resourcePath: `${entryPath}?master-css-manifest`, options: { module: true } },
+      { resourcePath: join(projectDir, 'node_modules/.master-css/master-css-manifest.js'), options: { virtual: true, module: true } }
+    ]
+
+    for (const { resourcePath, options } of requests) {
+      const load = (mode: string) => runManifestLoader({ resourcePath, rootContext: projectDir, mode, getOptions: () => options })
+      expect(await load('development')).toMatch(/"source":\{"file":"[^"]*globals\.css"/)
+      const production = await load('production')
+      expect(production).toMatch(/^export default \{"version":6/)
+      expect(production).toContain('"name":"card"')
+      expect(production).not.toContain('"source"')
     }
   })
 

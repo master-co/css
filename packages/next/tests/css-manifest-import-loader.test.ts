@@ -21,11 +21,13 @@ function runManifestImportLoader(context: {
   source: string
   resourcePath: string
   projectDir: string
+  mode?: string
   addDependency?: (dependency: string) => void
 }) {
   return new Promise<string>((resolve, reject) => {
     masterCSSManifestImportLoader.call({
       resourcePath: context.resourcePath,
+      mode: context.mode,
       getOptions: () => ({
         projectDir: context.projectDir
       }),
@@ -107,6 +109,27 @@ describe('css manifest import loader', () => {
     expect(readVirtualManifestModule(projectDir)).toContain('#456')
     expect(readVirtualManifestModule(projectDir)).toContain('package')
     expect(readVirtualManifestModule(projectDir)).toContain('#456')
+  })
+
+  it('writes production manifest modules without source provenance beside development ones', async () => {
+    const projectDir = createFixtureDir()
+    const manifestPath = join(projectDir, 'theme.css')
+    const resourcePath = join(projectDir, 'entry.ts')
+    writeFileSync(manifestPath, '@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
+    const load = (mode: string) => runManifestImportLoader({
+      projectDir, resourcePath, mode,
+      source: 'export { default } from "./theme.css?master-css-manifest"'
+    })
+    const readModule = (source: string) => readFileSync(join(projectDir, source.match(/"\.\/([^"]+)"/)![1]), 'utf-8')
+
+    const development = await load('development')
+    const production = await load('production')
+
+    expect(production).toContain('.production.manifest.js"')
+    expect(development).not.toBe(production)
+    expect(readModule(development)).toMatch(/"source":\{"file":"[^"]*theme\.css"/)
+    expect(readModule(production)).toContain('"name":"card"')
+    expect(readModule(production)).not.toContain('"source"')
   })
 
   it('leaves non-import strings and unrelated imports unchanged', async () => {

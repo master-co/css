@@ -49,6 +49,7 @@
 - Accidentally processing non-HTML assets.
 - Duplicate writes for fallback HTML listed through multiple output groups.
 - Turbopack CSS loader watch ownership and direct generated CSS imports.
+- Manifest loaders omit `source` provenance only when the loader `mode` is `production`, which Webpack and Turbopack report to every server and client loader. The import loader writes those modules to `*.production.manifest.js` so a concurrent `next dev` keeps its own file.
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.

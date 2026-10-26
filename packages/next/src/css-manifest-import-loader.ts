@@ -4,7 +4,8 @@ import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
 import {
   isMasterCSSManifestRequest,
-  stripMasterCSSManifestQuery
+  stripMasterCSSManifestQuery,
+  toProductionManifestJSON
 } from '@master/css-internal/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
@@ -23,6 +24,7 @@ const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\
 interface LoaderContext {
   resourcePath: string
   rootContext?: string
+  mode?: string
   addDependency?: (file: string) => void
   cacheable?: (cacheable: boolean) => void
   async?: () => (error: Error | null, content?: string) => void
@@ -74,7 +76,13 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
   }
 
   const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
-  const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
+  const production = context.mode === 'production'
+  const developmentManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
+  // `next dev` and `next build` may run at once; production modules omit
+  // source provenance, so each mode owns its generated file.
+  const virtualManifestPath = production
+    ? developmentManifestPath.replace(/\.manifest\.js$/, '.production.manifest.js')
+    : developmentManifestPath
   const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, { projectDir }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
@@ -86,7 +94,9 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
   })
   ensureVirtualModulePackageJSONPath(projectDir)
   mkdirSync(dirname(virtualManifestPath), { recursive: true })
-  const moduleSource = toInlineManifestModule(serializeMasterCSSManifest(result.manifest))
+  const moduleSource = toInlineManifestModule(production
+    ? toProductionManifestJSON(result.manifest)
+    : serializeMasterCSSManifest(result.manifest))
   if (!existsSync(virtualManifestPath) || readFileSync(virtualManifestPath, 'utf8') !== moduleSource) {
     writeFileSync(virtualManifestPath, moduleSource)
   }

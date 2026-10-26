@@ -1,6 +1,7 @@
 import {
   MASTER_CSS_MANIFEST_QUERY,
-  stripMasterCSSManifestQuery
+  stripMasterCSSManifestQuery,
+  toProductionManifestJSON
 } from '@master/css-internal/manifest-module'
 import {
   toBrowserManifestFacadeModule,
@@ -69,11 +70,11 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                   addFileDependency(resolveData.fileDependencies, dependency)
                 }
                 const virtualModuleId = toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
-                const json = serializeMasterCSSManifest(result.manifest)
                 let moduleContent: string
                 if (compiler.options.mode === 'development') {
-                  moduleContent = toInlineManifestModule(json)
+                  moduleContent = toInlineManifestModule(serializeMasterCSSManifest(result.manifest))
                 } else {
+                  const json = toProductionManifestJSON(result.manifest)
                   const assetFileName = toHashedManifestAssetFileName(json)
                   context.setManifestJSONAsset(assetFileName, json)
                   moduleContent = toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)

@@ -8,18 +8,22 @@ import {
   defaultBuildManifest,
   isManifestStylesheetRequest
 } from '@master/css-internal/project'
-import { stripMasterCSSManifestQuery } from '@master/css-internal/manifest-module'
+import {
+  stripMasterCSSManifestQuery,
+  toProductionManifestJSON
+} from '@master/css-internal/manifest-module'
 import {
   toInlineManifestModule
 } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
-import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
 import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 
 interface LoaderContext {
   resourcePath: string
   rootContext?: string
+  mode?: string
   addDependency?: (file: string) => void
   async?: () => (error: Error | null, result?: string) => void
   getOptions?: () => MasterCSSManifestLoaderOptions
@@ -41,6 +45,14 @@ const manifestHost = {
   }
 }
 
+// Webpack and Turbopack report one mode to every server and client loader of a
+// build, so all delivered copies of a manifest serialize identically.
+function toManifestJSON(context: LoaderContext, manifest: MasterCSSManifest) {
+  return context.mode === 'production'
+    ? toProductionManifestJSON(manifest)
+    : serializeMasterCSSManifest(manifest)
+}
+
 function toLoaderResult(json: string, options: MasterCSSManifestLoaderOptions) {
   return options.module ? toInlineManifestModule(json) : json
 }
@@ -54,7 +66,7 @@ async function loadVirtualManifestJSON(context: LoaderContext) {
       context.addDependency?.(dependency)
     }
   })
-  return serializeMasterCSSManifest(result.manifest)
+  return toManifestJSON(context, result.manifest)
 }
 
 async function loadVirtualEmittedGlobalsModule(context: LoaderContext) {
@@ -98,7 +110,7 @@ function loadCSSManifestJSON(context: LoaderContext) {
     if (dependencies.has(dependency)) continue
     context.addDependency?.(dependency)
   }
-  return serializeMasterCSSManifest(result.manifest)
+  return toManifestJSON(context, result.manifest)
 }
 
 export default function masterCSSManifestLoader(this: LoaderContext) {

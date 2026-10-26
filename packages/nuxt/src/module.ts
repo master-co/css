@@ -7,7 +7,8 @@ import { name } from '../package.json'
 import { createMasterCSSVitePlugin } from '@master/css-vite'
 import {
   RESOLVED_VIRTUAL_MANIFEST_ID,
-  VIRTUAL_MANIFEST_ID
+  VIRTUAL_MANIFEST_ID,
+  toProductionManifestJSON
 } from '@master/css-internal/manifest-module'
 import {
   toEmittedGlobalsModule,
@@ -224,7 +225,10 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
       ...emittedGlobalsResult.dependencies
     ])]
     const emittedGlobalsModule = toEmittedGlobalsModule(emittedGlobalsResult.emittedGlobals)
-    const manifestJSON = serializeMasterCSSManifest(manifestResult.manifest)
+    // Nitro and the client runtime read this one file, so their copies match.
+    const manifestJSON = nuxt.options.dev
+      ? serializeMasterCSSManifest(manifestResult.manifest)
+      : toProductionManifestJSON(manifestResult.manifest)
     const manifestFileName = toHashedManifestAssetFileName(manifestJSON)
     const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules', '.master-css', 'manifest')
     const manifestAssetPath = resolvePath(manifestDir, manifestFileName)
