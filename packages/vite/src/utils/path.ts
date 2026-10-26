@@ -1,5 +1,13 @@
 import { realpathSync } from 'node:fs'
-import { basename, dirname, join, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
+
+/** Identify a module by its root-relative ID, so the identity survives moving the project. */
+export function toRootRelativeModuleId(root: string | undefined, id: string) {
+  const prefix = id.startsWith('\0') ? '\0' : ''
+  const path = id.slice(prefix.length)
+  if (!root || !isAbsolute(path)) return id
+  return prefix + relative(root, path).replace(/\\/g, '/')
+}
 
 export function normalizeFilePath(file: string) {
   let ancestor = resolve(file)

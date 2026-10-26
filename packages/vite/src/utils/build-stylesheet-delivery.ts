@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { extname } from 'node:path'
 import type { MasterCSSStylesheetComposition, MasterCSSStylesheetDeliveryOptions } from '@master/css-compiler/stylesheet'
-import type { MasterCSSCompiler } from '@master/css-compiler'
+import type { MasterCSSCompiler, MasterCSSStylesheetBundle } from '@master/css-compiler'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { LocalStylesheet } from './local-stylesheet'
 
@@ -36,12 +36,24 @@ export function prepareBuildStylesheet(
   }
   const bundle = compiler.prepareStylesheetBundle({ source, from: 'master-css-bundle', slotCSSRule, managed })
   if (!bundle.slots) return
-  const hash = digest(JSON.stringify(bundle))
-  // All fragments stay beside Vite's original CSS asset. This preserves its
-  // already rewritten relative URLs for any base and asset filename directory.
-  const urls = Object.fromEntries(bundle.graph.stylesheets.map((node, index) => [node.id, `./master-css-${hash}-${index}.css`]))
-  const assets = compiler.renderStylesheetBundle({ bundle, urls, preserveResourceBase: true })
-  return { source: `@import "${urls[bundle.graph.entry]}";`, assets, resources: extracted.resources }
+  return { ...renderBuildStylesheetBundle(compiler, bundle), resources: extracted.resources }
+}
+
+/**
+ * Name fragments after their rendered bytes. Graph node IDs and temporary
+ * delivery URLs derive from host file paths, so hashing the prepared bundle
+ * would vary with the checkout location.
+ */
+function renderBuildStylesheetBundle(compiler: MasterCSSCompiler, bundle: MasterCSSStylesheetBundle) {
+  const render = (url: (index: number) => string) => {
+    // All fragments stay beside Vite's original CSS asset. This preserves its
+    // already rewritten relative URLs for any base and asset filename directory.
+    const urls = Object.fromEntries(bundle.graph.stylesheets.map((node, index) => [node.id, url(index)]))
+    return { urls, assets: compiler.renderStylesheetBundle({ bundle, urls, preserveResourceBase: true }) }
+  }
+  const hash = digest(JSON.stringify(render(index => `./master-css-${index}.css`).assets.map(asset => asset.css)))
+  const { urls, assets } = render(index => `./master-css-${hash}-${index}.css`)
+  return { source: `@import "${urls[bundle.graph.entry]}";`, assets }
 }
 
 /** Compose each local entry at its own position before final content-based naming. */
@@ -72,8 +84,5 @@ function prepareLocalBuildStylesheets(compiler: MasterCSSCompiler, source: strin
   if (!replaced) return
   const slot = '#master-css-complete-local-graph{--slot:0}'
   const bundle = compiler.prepareStylesheetBundle({ source: slot, from: 'master-css-output', slotCSSRule: slot, managed: { entry, stylesheets: [...graph.values()] } })
-  const hash = digest(JSON.stringify(bundle))
-  const urls = Object.fromEntries(bundle.graph.stylesheets.map((node, index) => [node.id, `./master-css-${hash}-${index}.css`]))
-  const assets = compiler.renderStylesheetBundle({ bundle, urls, preserveResourceBase: true })
-  return { source: `@import "${urls[bundle.graph.entry]}";`, assets, resources: [...resources.values()] }
+  return { ...renderBuildStylesheetBundle(compiler, bundle), resources: [...resources.values()] }
 }

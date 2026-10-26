@@ -1,7 +1,9 @@
 import {
   RESOLVED_VIRTUAL_MANIFEST_ID,
   VIRTUAL_MANIFEST_ID,
-  toManifestJSON
+  toManifestJSON,
+  toProductionManifestJSON,
+  type MasterCSSManifest
 } from './manifest-module'
 import {
   MANIFEST_ASSET_FILE,
@@ -88,12 +90,14 @@ function isServerBuild(
 function createManifestModule(
   context: MasterCSSManifestVirtualModuleContext,
   pluginContext: MasterCSSVirtualModulePluginContext,
-  json: string,
+  manifest: MasterCSSManifest,
   serverReferences: Set<string>
 ) {
   context.defaultManifestAssetReferenceId = undefined
   context.defaultManifestAssetSource = undefined
-  if (!isProductionBuild(context) || !pluginContext.emitFile) return toInlineManifestModule(json)
+  if (!isProductionBuild(context)) return toInlineManifestModule(toManifestJSON(manifest))
+  const json = toProductionManifestJSON(manifest)
+  if (!pluginContext.emitFile) return toInlineManifestModule(json)
   const referenceId = pluginContext.emitFile({
     type: 'asset',
     name: MANIFEST_ASSET_FILE,
@@ -151,7 +155,7 @@ export function createMasterCSSManifestVirtualModulePlugin(
     async load(this: MasterCSSVirtualModulePluginContext, id: string) {
       if (id === RESOLVED_VIRTUAL_MANIFEST_ID) {
         const result = await loadDefaultManifest(this)
-        return createManifestModule(context, this, toManifestJSON(result.manifest), serverManifestReferences)
+        return createManifestModule(context, this, result.manifest, serverManifestReferences)
       }
     },
     resolveFileUrl({ referenceId, relativePath, format }: { referenceId: string, relativePath: string, format: string }) {

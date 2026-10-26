@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { MasterCSSStylesheetTransformResult } from '@master/css-compiler/stylesheet'
 import type { MasterCSSVitePluginContext } from '../core'
+import { toRootRelativeModuleId } from './path'
 
 export interface LocalStylesheet {
   slot: string
@@ -14,7 +15,8 @@ export function localStylesheets(context: MasterCSSVitePluginContext) {
 }
 export function clearLocalStylesheets(context: MasterCSSVitePluginContext) { states.delete(context) }
 export function registerLocalStylesheet(context: MasterCSSVitePluginContext, id: string, result: MasterCSSStylesheetTransformResult) {
-  const hash = createHash('sha256').update(id).digest('hex').slice(0, 20)
+  // Build graphs compose locals in slot order; keep it independent of the checkout path.
+  const hash = createHash('sha256').update(toRootRelativeModuleId(context.config?.root, id)).digest('hex').slice(0, 20)
   // Distinct identifiers prevent merging and numeric-token normalization.
   const slot = `#master-css-local-${hash}{--slot:local-${hash}}`
   localStylesheets(context).set(id, { slot, result })

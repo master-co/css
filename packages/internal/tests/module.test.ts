@@ -20,6 +20,7 @@ import {
   toUniversalManifestFacadeModule
 } from '../src/module'
 import { mergeEmittedGlobals } from '../src/emitted-globals-module'
+import { toProductionManifestJSON, type MasterCSSManifest } from '../src/manifest-module'
 
 let generatedModuleIndex = 0
 
@@ -51,6 +52,32 @@ describe('@master/css-internal module helpers', () => {
 })).toBe('{"version":6,"languageVersion":16}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{},"keyframeSlots":[],"suppressedKeyframes":[]};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
+  })
+
+  it('omits source provenance from production manifests', () => {
+    const source = (start: number) => ({ file: '/home/build/project/styles/app.css', range: { start, end: start + 1 }, loc: { start: { line: 1, column: start }, end: { line: 1, column: start + 1 } } })
+    const body = [
+      { type: 'declaration' as const, property: 'color', value: [{ type: 'text' as const, value: 'red' }], source: source(1) },
+      { type: 'rule' as const, selector: '&:hover', body: [{ type: 'declaration' as const, property: 'color', value: [{ type: 'text' as const, value: 'blue' }], source: source(2) }] },
+      { type: 'condition' as const, condition: '@media print', body: [{ type: 'apply' as const, name: '--ring', arguments: [], contents: [{ type: 'declaration' as const, property: 'outline', value: [{ type: 'text' as const, value: '0' }], source: source(3) }], source: source(4) }] },
+      { type: 'contents' as const, fallback: [{ type: 'declaration' as const, property: 'margin', value: [{ type: 'text' as const, value: '0' }], source: source(5) }] }
+    ]
+    const manifest = {
+      version: 6 as const,
+      languageVersion: 16 as const,
+      theme: [{ type: 'declaration', name: '--color-primary', value: '#123' }],
+      keyframes: [{ id: 'k1-o0', ownerId: 'k1', slotId: 'k1', occurrence: 0, name: 'fade', text: '@keyframes fade{}', source: source(6) }],
+      mixins: [{ name: '--card', parameters: [{ name: '--tone', source: source(7) }], body, source: source(8) }],
+      utilities: [{ name: 'card', kind: 'static' as const, body, source: source(9) }]
+    } as unknown as MasterCSSManifest
+    const json = toProductionManifestJSON(manifest)
+    expect(json).not.toContain('"source"')
+    expect(json).not.toContain('/home/build/project')
+    const strip = (value: unknown): unknown => Array.isArray(value) ? value.map(strip)
+      : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'source').map(([key, entry]) => [key, strip(entry)]))
+        : value
+    expect(JSON.parse(json)).toEqual(strip(JSON.parse(toManifestJSON(manifest))))
+    expect(toProductionManifestJSON({ version: 6, languageVersion: 16 })).toBe(EMPTY_MANIFEST_JSON)
   })
 
   it('counts emittedGlobals of separate stylesheet hosts', () => {

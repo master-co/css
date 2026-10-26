@@ -98,6 +98,25 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(context.defaultManifestAssetSource).toContain('"version":6')
   })
 
+  it('omits source provenance only from production manifests', async () => {
+    const root = path.join(FIXTURE_DIR, 'css-only')
+    const { context } = createContext(root)
+    const plugin = ManifestVirtualModulePlugin(context)
+    const development = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_MANIFEST_ID)
+    expect(development).toContain(`"source":{"file":${JSON.stringify(path.join(root, 'app.css'))}`)
+
+    context.config.command = 'build'
+    const emitFile = vi.fn((_asset: { source: string }) => 'master_css_manifest_ref')
+    await (plugin.load as any).call({ emitFile }, RESOLVED_VIRTUAL_MANIFEST_ID)
+    expect(context.defaultManifestAssetSource).toBe(emitFile.mock.calls[0][0].source)
+    // Astro server environments load the same production manifest inline.
+    const inline = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_MANIFEST_ID)
+    for (const json of [emitFile.mock.calls[0][0].source, inline]) {
+      expect(json).toContain('"name":"--btn"')
+      expect(json).not.toContain('"source"')
+    }
+  })
+
   it('does not eagerly load the default manifest during production buildStart', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context, viteConfig } = createContext(root)

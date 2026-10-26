@@ -10,10 +10,10 @@ test('local entry survives CSS optimization when its hash begins with an exponen
   const root = realpathSync(mkdtempSync(join(parent, 'local-exponent-slot-')))
   try {
     let filename = ''
-    // Choose a real file whose identity exercises numeric-token normalization.
+    // Choose a real file whose root-relative identity exercises numeric-token normalization.
     for (let i = 0; i < 10000; i++) {
       const candidate = `entry-${i}.css`
-      if (/^\d+e\d{3}/.test(createHash('sha256').update(join(root, candidate)).digest('hex'))) { filename = candidate; break }
+      if (/^\d+e\d{3}/.test(createHash('sha256').update(candidate).digest('hex'))) { filename = candidate; break }
     }
     expect(filename).not.toBe('')
     writeFileSync(join(root, filename), ".exponent{@media all {display:inline-flex;}}")

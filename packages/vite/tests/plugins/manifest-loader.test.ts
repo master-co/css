@@ -137,6 +137,24 @@ describe('ManifestLoaderPlugin', () => {
     expect(code).not.toContain('#456')
   })
 
+  it('omits source provenance only from production per-file CSS manifests', async () => {
+    const context = await createContext()
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call({ resolve }, './theme.css' + MASTER_CSS_MANIFEST_QUERY, path.join(FIXTURE_DIR, 'entry.ts'))
+    const development = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    expect(development).toContain(`"source":{"file":${JSON.stringify(path.join(FIXTURE_DIR, 'styles/theme-components.css'))}`)
+
+    context.config.command = 'build'
+    const emitFile = vi.fn((_asset: { source: string }) => 'master_css_query_manifest_ref')
+    await (plugin.load as any).call({ addWatchFile: vi.fn(), emitFile }, resolvedId)
+    const inline = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    for (const json of [emitFile.mock.calls[0][0].source, inline]) {
+      expect(json).toContain('"name":"--badge"')
+      expect(json).not.toContain('"source"')
+    }
+  })
+
   it('emits per-file CSS manifests through a universal facade in SSR production build', async () => {
     const context = await createContext()
     context.config.command = 'build'

@@ -7,13 +7,14 @@ import {
 import { compileProjectManifest } from '@master/css-compiler/project'
 import {
   isMasterCSSManifestRequest,
-  stripMasterCSSManifestQuery
+  stripMasterCSSManifestQuery,
+  toProductionManifestJSON
 } from '@master/css-internal/manifest-module'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
 } from '@master/css-internal/project'
-import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
@@ -48,10 +49,12 @@ function isServerBuild(context: MasterCSSVitePluginContext, pluginContext: Manif
 function createManifestModule(
   context: MasterCSSVitePluginContext,
   pluginContext: ManifestPluginContext,
-  json: string,
+  manifest: MasterCSSManifest,
   serverReferences: Set<string>
 ) {
-  if (!isProductionBuild(context) || !pluginContext.emitFile) return toInlineManifestModule(json)
+  if (!isProductionBuild(context)) return toInlineManifestModule(serializeMasterCSSManifest(manifest))
+  const json = toProductionManifestJSON(manifest)
+  if (!pluginContext.emitFile) return toInlineManifestModule(json)
   const referenceId = pluginContext.emitFile({
     type: 'asset',
     name: MANIFEST_ASSET_FILE,
@@ -112,7 +115,7 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      return createManifestModule(context, this, serializeMasterCSSManifest(result.manifest), serverManifestReferences)
+      return createManifestModule(context, this, result.manifest, serverManifestReferences)
     },
     resolveFileUrl({ referenceId, relativePath, format }) {
       if (serverManifestReferences.has(referenceId)) return toServerManifestFileURL(relativePath, format)

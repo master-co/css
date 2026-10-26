@@ -60,6 +60,8 @@ declarations.
   `import('virtual:master-css-manifest')` loader so a fully pre-rendered page never
   requests it; runtime mode imports it statically for its preload.
 - Dependency/watch registration remaining stable when manifest compilation fails.
+- Production manifest JSON (`toProductionManifestJSON`) omits `source` provenance, which only
+  serves tooling and names build-host paths; development modules keep it.
 - Accidentally exposing the package as a published dependency or third-party SPI.
 - Turning the package into a generic home for unrelated repository helpers.
 

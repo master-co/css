@@ -44,6 +44,47 @@ export function toManifestJSON(manifest: MasterCSSManifest) {
   return serializeMasterCSSManifest(manifest)
 }
 
+type MixinDefinition = NonNullable<MasterCSSManifest['mixins']>[number]
+type MixinNode = MixinDefinition['body'][number]
+
+function withoutSource<T extends { source?: unknown }>({ source: _source, ...value }: T) {
+  return value
+}
+
+function withoutNodeSources(nodes: readonly MixinNode[]): MixinNode[] {
+  return nodes.map(node => {
+    switch (node.type) {
+      case 'declaration': return withoutSource(node)
+      case 'apply': return { ...withoutSource(node), ...(node.contents ? { contents: withoutNodeSources(node.contents) } : {}) }
+      case 'rule':
+      case 'condition': return { ...node, body: withoutNodeSources(node.body) }
+      case 'contents': return { ...node, fallback: withoutNodeSources(node.fallback) }
+    }
+  })
+}
+
+function withoutDefinitionSources<T extends MixinDefinition>(definition: T): Omit<T, 'source'> {
+  return {
+    ...withoutSource(definition),
+    ...(definition.parameters ? { parameters: definition.parameters.map(withoutSource) } : {}),
+    body: withoutNodeSources(definition.body)
+  }
+}
+
+/**
+ * Production builds deliver manifests only to execute classes. Source
+ * provenance locates definitions for tooling and names build-host paths,
+ * which would leak them and make the asset vary with the checkout location.
+ */
+export function toProductionManifestJSON(manifest: MasterCSSManifest) {
+  return toManifestJSON({
+    ...manifest,
+    ...(manifest.keyframes ? { keyframes: manifest.keyframes.map(withoutSource) } : {}),
+    ...(manifest.mixins ? { mixins: manifest.mixins.map(withoutDefinitionSources) } : {}),
+    ...(manifest.utilities ? { utilities: manifest.utilities.map(withoutDefinitionSources) } : {})
+  })
+}
+
 export function toManifestJSONResult<T extends CSSManifestLoadResult>(result: T): T & { json: string } {
   return {
     ...result,
