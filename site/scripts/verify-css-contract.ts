@@ -42,6 +42,7 @@ type SiteCSSContractSnapshot = {
 }
 
 const siteDir = path.resolve(fileURLToPath(import.meta.url), '..', '..')
+const repositoryDir = path.dirname(siteDir)
 const outDir = path.join(siteDir, 'out')
 const snapshotFile = path.join(siteDir, 'tests', 'css-contract.snapshot.json')
 const args = process.argv.slice(2)
@@ -101,22 +102,24 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     const files = await listFiles(outDir)
     // Static delivery does not ship a runtime manifest asset. Use the same
     // project compiler to capture the authored theme tree, and inspect delivered CSS below.
-    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 6, languageVersion: 16 } }).manifest as unknown as JSONValue
+    const projectManifest = repositorySourceFiles(loadProjectManifestSync({ root: siteDir, baseManifest: { version: 6, languageVersion: 16 } }).manifest as unknown as JSONValue)
     const projectManifestText = JSON.stringify(projectManifest)
     const legacyManifestAssets = files.filter(file => /[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file))
     if (legacyManifestAssets.length) throw new Error('Site still contains legacy runtime manifest media assets; rebuild the output.')
     const stylesheetCache = new Map<string, string>()
     // Delivered CSS includes local @import graphs, expanded at their import positions.
+    const importedText = async (css: string, reference: string, seen: Set<string>): Promise<string> => {
+        for (const [statement, specifier] of css.matchAll(/@import\s+"((?:\.|\/(?!\/))[^"]+)";/g)) {
+            css = css.replace(statement, await stylesheetText(new URL(specifier, new URL(reference, 'https://css-contract.invalid')).pathname, seen))
+        }
+        return css
+    }
     const stylesheetText = async (reference: string, seen = new Set<string>()): Promise<string> => {
         const file = publicOutputPath(reference)
         if (seen.has(file)) return ''
         seen.add(file)
         if (!stylesheetCache.has(file)) stylesheetCache.set(file, await readFile(file, 'utf8'))
-        let css = stylesheetCache.get(file)!
-        for (const [statement, specifier] of css.matchAll(/@import\s+"(\.[^"]+)";/g)) {
-            css = css.replace(statement, await stylesheetText(new URL(specifier, new URL(reference, 'https://css-contract.invalid')).pathname, seen))
-        }
-        return css
+        return importedText(stylesheetCache.get(file)!, reference, seen)
     }
     const cssSegments: Record<string, string> = {}
     const contracts: Record<string, CSSContract> = {}
@@ -129,11 +132,12 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         const deliveredCSS: string[] = []
         for (const match of html.matchAll(/<link\b([^>]*)>|<style\b([^>]*)>([\s\S]*?)<\/style>/gi)) {
             if (match[1] !== undefined) {
-                if (attributeValue(match[1], 'rel') !== 'stylesheet') continue
+                // Progressive delivery inlines a linked stylesheet before its link and disables the link.
+                if (attributeValue(match[1], 'rel') !== 'stylesheet' || /(?:^|\s)disabled(?=[\s=/]|$)/i.test(match[1])) continue
                 const href = attributeValue(match[1], 'href')
                 if (href && !/^(?:https?:)?\/\//.test(href)) deliveredCSS.push(await stylesheetText(href))
             } else {
-                deliveredCSS.push(match[3])
+                deliveredCSS.push(await importedText(match[3], route, new Set()))
             }
         }
         const css = deliveredCSS.join('\n')
@@ -184,6 +188,19 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         contracts: sortRecord(contracts),
         routes: sortRecord(routes)
     }
+}
+
+// Manifest source locations are absolute; record them from the repository root
+// so the snapshot does not depend on where the checkout lives.
+function repositorySourceFiles(value: JSONValue): JSONValue {
+    if (Array.isArray(value)) return value.map(repositorySourceFiles)
+    if (value === null || typeof value !== 'object') return value
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [
+        key,
+        key === 'file' && typeof item === 'string' && path.isAbsolute(item)
+            ? path.relative(repositoryDir, item).split(path.sep).join('/')
+            : repositorySourceFiles(item)
+    ]))
 }
 
 function assertRouteStylesheetBoundary(route: string, css: string) {
