@@ -23,6 +23,8 @@ parity are behavioral contracts. Do not add host filesystem, DOM, or editor poli
 
 Token utility identity is (form, decoded prefix, namespace); same-branch replacement is complete. Select the longest prefix, then a unique namespace by key before checking sign or opacity. Ambiguous keys emit no CSS. Retain requested classes without rules so refresh can restore them after ambiguity or missing-token changes. Metadata consumers use the resolved branch, never prefix alone.
 
+`selector_class_names_without_rules()` lists classes that theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks) reference without generating rules themselves. Render appends them to hydration manifest `classNames` so client-toggled mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear there.
+
 ## Validation
 
 ```sh

@@ -30,7 +30,7 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
-Manifest envelopes are v6; hydration, transition and engine snapshot envelopes are v4. Executable data must carry
+Manifest envelopes are v6; hydration manifests are v5; transition and engine snapshot envelopes are v4. Executable data must carry
 `languageVersion: 16` (binding ABI 26). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
@@ -114,11 +114,11 @@ document or shadow root
   -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest, engine })
   -> resolve hydration data; defer the engine when style#master-css has a non-empty hydration manifest
   -> runtime.observe()
-  -> deferred: track class counts against rule class names and classNamesWithoutRules; leave the CSSOM untouched
+  -> deferred: track class counts against the hydration manifest's classNames (rendered classes plus rule-free selector classes); leave the CSSOM untouched
   -> first uncovered class, ready(), rule API, refresh() or idle startup: import the engine and the project manifest
   -> register emitted variable and managed keyframe counts; replace the complete external snapshot on HMR
   -> find or create style#master-css
-  -> hydrate pre-rendered rules or connect current classes; reconcile classes counted while deferred
+  -> replay classNames in order, verify engine CSS against the pre-rendered CSSOM, or connect current classes; reconcile classes counted while deferred
   -> MutationObserver detects class and subtree changes
   -> class reference counts change
   -> runtime-Wasm engine transition
