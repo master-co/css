@@ -1,7 +1,7 @@
 use super::{
-    CompiledVariable, EngineError, EngineVariableIr, HashMap, ManifestProjection, Map,
-    MasterCssManifest, UtilityLayerName, UtilityMatcher, Value,
-    append_builtin_native_declaration_utilities, compile_utility_variables, split_top_level,
+    CompiledVariable, EngineError, EngineVariableIr, HashMap, Map, MasterCssManifest, Program,
+    UtilityLayerName, UtilityMatcher, Value, append_builtin_native_declaration_utilities,
+    compile_utility_variables, split_top_level,
 };
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
@@ -13,85 +13,125 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     }
 }
 
-pub(crate) fn compile_manifest(
-    manifest: &MasterCssManifest,
-) -> Result<ManifestProjection, EngineError> {
-    let mut projection: ManifestProjection = serde_json::from_value(manifest.as_value().clone())
+/// The engine fields of a Manifest v6 document.
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ManifestInput {
+    #[serde(default)]
+    theme: Vec<mastercss_schema::ThemeNode>,
+    #[serde(default)]
+    keyframes: Vec<mastercss_schema::KeyframeDefinition>,
+    #[serde(default)]
+    animation_variables: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
+    version: u32,
+    #[serde(default)]
+    mixins: Vec<mastercss_schema::MixinDefinition>,
+    #[serde(default, rename = "utilities")]
+    utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
+    #[serde(default)]
+    variables: Map<String, Value>,
+}
+
+/// Validates a manifest and compiles it into the encoded part of a program; decoding
+/// derives the rest with [`finish_program`].
+pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, EngineError> {
+    let mut input: ManifestInput = serde_json::from_value(manifest.as_value().clone())
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
     let mut seen = std::collections::HashSet::new();
-    projection.keyframes.reverse();
-    projection
+    input.keyframes.reverse();
+    input
         .keyframes
         .retain(|definition| seen.insert(definition.id.clone()));
-    projection.keyframes.reverse();
+    input.keyframes.reverse();
     seen.clear();
-    projection.mixins.reverse();
-    projection
+    input.mixins.reverse();
+    input
         .mixins
         .retain(|definition| seen.insert(definition.name.clone()));
-    projection.mixins.reverse();
-    super::validate_mixins(&projection.mixins).map_err(EngineError::InvalidManifest)?;
+    input.mixins.reverse();
+    super::validate_mixins(&input.mixins).map_err(EngineError::InvalidManifest)?;
     seen.clear();
-    projection.utility_definitions.reverse();
-    projection
+    input.utility_definitions.reverse();
+    input
         .utility_definitions
         .retain(|definition| seen.insert(super::utility_matching::identity(definition)));
-    projection.utility_definitions.reverse();
-    super::validate_utilities(&projection.mixins, &projection.utility_definitions)
+    input.utility_definitions.reverse();
+    super::validate_utilities(&input.mixins, &input.utility_definitions)
         .map_err(EngineError::InvalidManifest)?;
-    if projection.version != mastercss_schema::MANIFEST_VERSION {
+    if input.version != mastercss_schema::MANIFEST_VERSION {
         return Err(EngineError::InvalidManifest(
             "unsupported projection version".into(),
         ));
     }
-    let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
-    projection.has_inline_tokens = compiled_variables
-        .values()
-        .any(|variable| variable.inline_value.is_some());
-    projection.compiled_variables = compiled_variables;
-    projection.compiled_variable_order = compiled_variable_order;
-    for (name, query) in &projection.custom_media {
+    let (compiled_variables, compiled_variable_order) = compile_variables(&input.variables)?;
+    for name in input.custom_media.keys() {
         if !name.starts_with("--") || name.len() == 2 || name == "--starting-style" {
             return Err(EngineError::InvalidManifest(format!(
                 "Invalid or reserved custom media name {name}"
             )));
         }
-        let paths = crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
-        projection.custom_media_paths.insert(name.clone(), paths);
     }
-    super::utility_matching::register(&mut projection);
-    append_builtin_native_declaration_utilities(&mut projection.utilities);
-    let count = projection.utilities.len() as i32;
-    projection.utilities = projection
-        .utilities
-        .into_iter()
-        .enumerate()
-        .map(|(index, mut utility)| {
-            if utility.name.is_none() {
-                utility.name = Some(utility.id.clone());
-            }
-            if utility.order.is_none() {
-                utility.order = Some(count - index as i32 - 1);
-            }
-            compile_utility_variables(
-                &mut utility,
-                &projection.compiled_variables,
-                &projection.compiled_variable_order,
-            );
-            utility
-        })
-        .collect();
-    projection.utilities.sort_by_key(|utility| {
-        (!utility
-            .matchers
-            .iter()
-            .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))) as u8
-    });
-    for (index, utility) in projection.utilities.iter().enumerate() {
+    let mut program = Program {
+        theme: input.theme,
+        keyframes: input.keyframes,
+        animation_variables: input.animation_variables,
+        custom_media: input.custom_media,
+        mixins: input.mixins,
+        utility_definitions: input.utility_definitions,
+        compiled_variables,
+        compiled_variable_order,
+        ..Program::default()
+    };
+    super::utility_matching::register(&mut program);
+    for query in program.custom_media.values() {
+        crate::custom_media_branches(query).map_err(EngineError::InvalidManifest)?;
+    }
+    Ok(program)
+}
+
+/// Static utilities match before the others; the sort is stable.
+pub(crate) fn static_last(utility: &super::UtilityDefinition) -> u8 {
+    (!utility
+        .matchers
+        .iter()
+        .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))) as u8
+}
+
+/// Derives the lookup state of a program from its registered utilities, compiled
+/// variables and custom media. Compiling and decoding share it, so neither stores
+/// what this computes.
+pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
+    program.has_inline_tokens = program
+        .compiled_variables
+        .values()
+        .any(|variable| variable.inline_value.is_some());
+    for (name, query) in &program.custom_media {
+        let paths = crate::custom_media_branches(query)?;
+        program.custom_media_paths.insert(name.clone(), paths);
+    }
+    append_builtin_native_declaration_utilities(&mut program.utilities);
+    let count = program.utilities.len() as i32;
+    for (index, utility) in program.utilities.iter_mut().enumerate() {
+        if utility.name.is_none() {
+            utility.name = Some(utility.id.clone());
+        }
+        if utility.order.is_none() {
+            utility.order = Some(count - index as i32 - 1);
+        }
+        compile_utility_variables(
+            utility,
+            &program.compiled_variables,
+            &program.compiled_variable_order,
+        );
+    }
+    program.utilities.sort_by_key(static_last);
+    for (index, utility) in program.utilities.iter().enumerate() {
         for matcher in &utility.matchers {
             match matcher {
                 UtilityMatcher::Token { prefix } => {
-                    projection
+                    program
                         .token_utilities
                         .entry(prefix.clone())
                         .or_default()
@@ -99,7 +139,7 @@ pub(crate) fn compile_manifest(
                 }
                 UtilityMatcher::Key { keys } => {
                     for key in keys {
-                        projection
+                        program
                             .raw_utilities
                             .entry(key.clone())
                             .or_default()
@@ -107,10 +147,10 @@ pub(crate) fn compile_manifest(
                     }
                 }
                 UtilityMatcher::Function { name } => {
-                    projection.function_utilities.insert(name.clone(), index);
+                    program.function_utilities.insert(name.clone(), index);
                 }
                 UtilityMatcher::Static { name } => {
-                    projection
+                    program
                         .static_utilities
                         .entry(name.clone())
                         .or_default()
@@ -119,18 +159,7 @@ pub(crate) fn compile_manifest(
             }
         }
     }
-    for name in projection.static_utilities.keys() {
-        if projection.raw_utilities.get(name).is_some_and(|indexes| {
-            indexes
-                .iter()
-                .any(|index| !projection.utilities[*index].native_fallback)
-        }) {
-            return Err(EngineError::InvalidManifest(format!(
-                "Utility entry {name} is both a fixed name and a raw key; use distinct names to distinguish :value from :pseudo-class"
-            )));
-        }
-    }
-    Ok(projection)
+    Ok(())
 }
 
 pub(crate) fn compile_variables(
@@ -162,15 +191,7 @@ pub(crate) fn compile_variables(
                 .get("name")
                 .and_then(Value::as_str)
                 .map(str::to_owned)
-                .unwrap_or_else(|| {
-                    if namespace.is_empty() {
-                        key.clone()
-                    } else if key.is_empty() {
-                        namespace.clone()
-                    } else {
-                        format!("{namespace}-{key}")
-                    }
-                });
+                .unwrap_or_else(|| default_variable_name(namespace, &key));
             if name.is_empty() {
                 continue;
             }
@@ -205,7 +226,16 @@ pub(crate) fn compile_variables(
                     inline_value: super::inline_theme::selected_value(&values),
                     is_static: values.iter().any(|value| value.is_static),
                     values,
-                    numeric: object.get("numeric").cloned(),
+                    numeric: object.get("numeric").and_then(|numeric| {
+                        Some(super::VariableNumeric {
+                            value: numeric.get("value")?.as_f64()?,
+                            unit: numeric
+                                .get("unit")
+                                .and_then(Value::as_str)
+                                .unwrap_or_default()
+                                .to_owned(),
+                        })
+                    }),
                     variable_type,
                     dependencies,
                 },
@@ -213,6 +243,17 @@ pub(crate) fn compile_variables(
         }
     }
     Ok((variables, order))
+}
+
+/// The name of a variable that does not declare one.
+pub(crate) fn default_variable_name(namespace: &str, key: &str) -> String {
+    if namespace.is_empty() {
+        key.to_owned()
+    } else if key.is_empty() {
+        namespace.to_owned()
+    } else {
+        format!("{namespace}-{key}")
+    }
 }
 
 pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableIr {

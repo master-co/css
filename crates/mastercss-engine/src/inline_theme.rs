@@ -1,5 +1,5 @@
 //! One-pass substitution of explicitly inline theme tokens in generated values.
-use super::ManifestProjection;
+use super::Program;
 use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
 use mastercss_schema::ScopedThemeValue;
 
@@ -31,7 +31,7 @@ pub(crate) fn selected_value(values: &[ScopedThemeValue]) -> Option<String> {
     selected.and_then(|(inline, value)| inline.then(|| value.to_owned()))
 }
 
-pub(crate) fn substitute(source: &str, manifest: &ManifestProjection) -> String {
+pub(crate) fn substitute(source: &str, manifest: &Program) -> String {
     if !manifest.has_inline_tokens || !source.contains('(') {
         return source.into();
     }

@@ -1,7 +1,7 @@
 use super::{
     CompiledVariable, EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken,
-    EngineError, EngineSession, HashSet, ManifestProjection, UtilityDefinition, UtilityLayerName,
-    UtilityMatcher, Value, add_unique_string, find_matching_parenthesis, split_dynamic_value_state,
+    EngineError, EngineSession, HashSet, Program, UtilityDefinition, UtilityLayerName,
+    UtilityMatcher, add_unique_string, find_matching_parenthesis, split_dynamic_value_state,
     utf16_len,
 };
 
@@ -76,9 +76,7 @@ pub(crate) fn push_value_completion_candidate(
 }
 
 pub(crate) fn completion_numeric_value(variable: &CompiledVariable) -> Option<f64> {
-    let numeric = variable.numeric.as_ref()?.as_object()?;
-    let value = numeric.get("value")?.as_f64()?;
-    Some(value)
+    variable.numeric.as_ref().map(|numeric| numeric.value)
 }
 
 pub(crate) fn variable_completion_sort_text(variable: &CompiledVariable, label: &str) -> String {
@@ -100,9 +98,7 @@ pub(crate) fn variable_completion_sort_text(variable: &CompiledVariable, label: 
             variable
                 .numeric
                 .as_ref()
-                .and_then(|v| v.get("unit"))
-                .and_then(Value::as_str)
-                .unwrap_or("")
+                .map_or("", |numeric| numeric.unit.as_str())
         );
     }
     format!("aaaa{label}")
@@ -111,7 +107,7 @@ pub(crate) fn variable_completion_sort_text(variable: &CompiledVariable, label: 
 pub(crate) fn push_utility_value_completion_candidates(
     candidates: &mut Vec<EngineClassCompletionCandidate>,
     labels: &mut HashSet<String>,
-    manifest: &ManifestProjection,
+    manifest: &Program,
     utility: &UtilityDefinition,
 ) {
     let prefixes = utility
@@ -171,7 +167,7 @@ pub(crate) fn push_utility_value_completion_candidates(
 }
 
 pub(crate) fn collect_class_completion_candidates(
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Vec<EngineClassCompletionCandidate> {
     let mut candidates = Vec::new();
     let mut labels = HashSet::new();
@@ -350,7 +346,7 @@ pub(crate) fn collect_class_completion_candidates(
 pub(crate) fn resolve_color_token_value(
     color_token: &str,
     class_name: Option<&str>,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Option<String> {
     if class_name.is_none()
         && let Some(prefix) = super::named::token_prefix(color_token, manifest)
@@ -408,7 +404,7 @@ pub(crate) fn is_color_identifier_character(character: char) -> bool {
 pub(crate) fn resolve_color_variable_value(
     token: &str,
     class_name: &str,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Option<String> {
     if let Some(name) = token
         .strip_prefix("var(--")
@@ -427,7 +423,7 @@ pub(crate) fn resolve_color_variable_value(
     resolved_color_variable(variable_name, manifest)
 }
 
-fn resolved_color_variable(name: &str, manifest: &ManifestProjection) -> Option<String> {
+fn resolved_color_variable(name: &str, manifest: &Program) -> Option<String> {
     let mut variable = manifest.compiled_variables.get(name)?;
     if !variable.namespace.starts_with("color") {
         return None;
@@ -452,7 +448,7 @@ pub(crate) fn scan_color_value(
     value: &str,
     value_offset: usize,
     class_name: &str,
-    manifest: &ManifestProjection,
+    manifest: &Program,
     tokens: &mut Vec<EngineColorToken>,
 ) {
     let mut cursor = 0;
@@ -567,7 +563,7 @@ pub(crate) fn scan_color_value(
 
 pub(crate) fn collect_engine_color_tokens(
     class_name: &str,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Vec<EngineColorToken> {
     let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
     if let Some(prefix) = super::named::token_prefix(semantic_class_name, manifest) {

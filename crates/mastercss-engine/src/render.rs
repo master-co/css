@@ -1,5 +1,5 @@
 use super::{
-    ManifestProjection, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
+    Program, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
     is_css_identifier_character, split_top_level,
 };
 
@@ -7,7 +7,7 @@ pub(crate) fn create_selector_text(
     class_name: &str,
     declaration_selector: Option<&str>,
     branch: &StateBranch,
-    _manifest: &ManifestProjection,
+    _manifest: &Program,
 ) -> String {
     let body = format!(".{}", css_escape(class_name));
     let mut selector = branch
@@ -25,7 +25,7 @@ pub(crate) fn create_selector_text(
     selector
 }
 
-pub(crate) fn composition_selector(branch: &StateBranch, _manifest: &ManifestProjection) -> String {
+pub(crate) fn composition_selector(branch: &StateBranch, _manifest: &Program) -> String {
     let anchor = "&".to_owned();
     branch
         .selector_template
@@ -177,11 +177,11 @@ pub(crate) fn emit_declarations(
     utility: &UtilityDefinition,
     matched: &super::UtilityMatch,
     important: bool,
-    manifest: &super::ManifestProjection,
+    manifest: &super::Program,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
     match &utility.emit {
-        UtilityEmit::Recipe { name, .. } => {
-            super::utility_matching::emit(manifest, name, matched, important)
+        UtilityEmit::Recipe { definition, .. } => {
+            super::utility_matching::emit(manifest, *definition, matched, important)
         }
         UtilityEmit::Property { property } => matched
             .value

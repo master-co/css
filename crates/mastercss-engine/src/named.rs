@@ -1,15 +1,11 @@
 use super::utility::match_utility_filtered;
 use super::{
-    ManifestProjection, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher,
-    emit_declarations,
+    Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher, emit_declarations,
 };
 
 /// Select a family before looking up a token. Missing qualified tokens never
 /// fall through to a shorter prefix, and exact named utilities reserve names.
-pub(crate) fn matching_utilities(
-    source: &str,
-    manifest: &ManifestProjection,
-) -> Vec<(usize, UtilityMatch)> {
+pub(crate) fn matching_utilities(source: &str, manifest: &Program) -> Vec<(usize, UtilityMatch)> {
     if let Some(found) = super::utility_matching::matching(source, manifest) {
         return found;
     }
@@ -71,7 +67,7 @@ pub(crate) fn matching_utilities(
 pub(crate) fn token_candidates(
     source: &str,
     prefix: &str,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Vec<(usize, UtilityMatch)> {
     let candidates = token_owners(source, prefix, manifest);
     let [index] = candidates.as_slice() else {
@@ -86,7 +82,7 @@ pub(crate) fn token_candidates(
 
 /// Select namespace ownership before applying any sign or opacity capability.
 /// Values, body shape and registration order cannot disambiguate a token key.
-fn token_owners(source: &str, prefix: &str, manifest: &ManifestProjection) -> Vec<usize> {
+fn token_owners(source: &str, prefix: &str, manifest: &Program) -> Vec<usize> {
     let Some(indexes) = manifest.token_utilities.get(prefix) else {
         return Vec::new();
     };
@@ -112,7 +108,7 @@ fn token_owners(source: &str, prefix: &str, manifest: &ManifestProjection) -> Ve
         .collect()
 }
 
-pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<super::Diagnostic> {
+pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagnostic> {
     let diagnostic_source = source;
     let source = source.strip_suffix('!').unwrap_or(source);
     let error = |code, message: String| super::Diagnostic {
@@ -320,7 +316,7 @@ fn ambiguous_token_message(
     source: &str,
     prefix: &str,
     candidates: Vec<usize>,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> (String, Vec<String>) {
     let raw = source
         .strip_prefix(prefix)
@@ -383,7 +379,7 @@ fn ambiguous_token_message(
 
 /// Retirement metadata never participates in matching. A valid canonical class
 /// or project mixin always wins, including token keys resembling an old prefix.
-pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection) -> Option<String> {
+pub(crate) fn retired_token_message(source: &str, manifest: &Program) -> Option<String> {
     if is_native_declaration(source) || !matching_utilities(source, manifest).is_empty() {
         return None;
     }
@@ -429,7 +425,7 @@ pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection)
     None
 }
 
-pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -> Option<&'a str> {
+pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a Program) -> Option<&'a str> {
     // A registered declaration key owns its colon, even if a shorter named
     // family exists (font-family:mono must never mean font-family:hover).
     if let Some((key, _)) = source.split_once(':')
@@ -461,7 +457,7 @@ fn is_native_declaration(source: &str) -> bool {
 pub(crate) fn sort_key(
     utility: &UtilityDefinition,
     matched: &UtilityMatch,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> String {
     if utility.utility_type == -2 && matched.matcher_type != super::UtilityMatcherType::Token {
         return String::new(); // Static/enum identities retain their existing semantic order.

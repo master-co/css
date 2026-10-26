@@ -32,6 +32,7 @@ include!("tests/lifecycle.rs");
 include!("tests/syntax.rs");
 
 include!("tests/native_boundaries.rs");
+include!("tests/program.rs");
 
 #[test]
 fn opacity_modifiers_compute_percentages_on_decimal_digits() {

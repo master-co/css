@@ -1,6 +1,6 @@
 //! Conservative animation-name analysis over CSS token streams. This is shared
 //! by class execution and compiler-delivered styles, without a stylesheet parser.
-use super::{HashMap, HashSet, ManifestProjection};
+use super::{HashMap, HashSet, Program};
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -32,7 +32,7 @@ pub fn stylesheet_declarations(source: &str) -> Vec<(String, String)> {
 
 pub(crate) fn analyze(
     declarations: &[(String, String)],
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> AnimationReferences {
     if manifest.keyframes.is_empty() {
         return AnimationReferences::default();
@@ -81,7 +81,7 @@ pub(crate) fn analyze(
 
 fn resolve(
     value: &str,
-    manifest: &ManifestProjection,
+    manifest: &Program,
     variables: &HashMap<String, Vec<String>>,
     stack: &mut HashSet<String>,
     budget: &mut usize,

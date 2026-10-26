@@ -1,9 +1,6 @@
-use super::{ConditionFeature, ManifestProjection, UtilityLayerName, natural_compare};
+use super::{ConditionFeature, Program, UtilityLayerName, natural_compare};
 
-pub(crate) fn resolve_layer_condition(
-    token: &str,
-    manifest: &ManifestProjection,
-) -> Option<UtilityLayerName> {
+pub(crate) fn resolve_layer_condition(token: &str, manifest: &Program) -> Option<UtilityLayerName> {
     let _ = manifest;
     match token.strip_prefix("layer(")?.strip_suffix(')')? {
         "base" => Some(UtilityLayerName::Base),
@@ -14,10 +11,7 @@ pub(crate) fn resolve_layer_condition(
     }
 }
 
-pub(crate) fn render_condition_token(
-    token: &str,
-    _manifest: &ManifestProjection,
-) -> Option<(String, String)> {
+pub(crate) fn render_condition_token(token: &str, _manifest: &Program) -> Option<(String, String)> {
     if token == "starting-style" {
         return Some(("starting-style".into(), "@starting-style".into()));
     }

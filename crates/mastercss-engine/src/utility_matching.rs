@@ -1,7 +1,6 @@
 //! Class registration from explicit utility definitions.
 use super::{
-    ManifestProjection, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher,
-    UtilityMatcherType,
+    Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher, UtilityMatcherType,
 };
 use mastercss_schema::{MixinParameterSyntax, UtilityKind};
 
@@ -9,10 +8,10 @@ pub(crate) fn identity(definition: &mastercss_schema::UtilityDefinition) -> Stri
     definition.identity()
 }
 
-pub(crate) fn register(manifest: &mut ManifestProjection) {
+pub(crate) fn register(manifest: &mut Program) {
     manifest.token_families =
         super::token_family::infer(&manifest.utility_definitions, &manifest.mixins);
-    for definition in &manifest.utility_definitions {
+    for (index, definition) in manifest.utility_definitions.iter().enumerate() {
         let recipe = &definition.recipe;
         let name = &recipe.name;
         let token = definition.kind == UtilityKind::Token;
@@ -46,7 +45,7 @@ pub(crate) fn register(manifest: &mut ManifestProjection) {
             variable_entries: Vec::new(),
             native_fallback: false,
             emit: UtilityEmit::Recipe {
-                name: identity(definition),
+                definition: index,
                 key,
             },
             matchers: vec![matcher],
@@ -62,21 +61,24 @@ pub(crate) fn register(manifest: &mut ManifestProjection) {
 }
 
 fn expand(
-    manifest: &ManifestProjection,
-    identity: &str,
+    manifest: &Program,
+    definition: usize,
     arguments: &[String],
 ) -> Result<Vec<super::ExpandedMixinRule>, String> {
-    let definition = manifest
-        .utility_definitions
-        .iter()
-        .find(|definition| self::identity(definition) == identity)
-        .ok_or_else(|| {
-            format!(
-                "Unknown utility {}",
-                identity.split_once(':').map_or(identity, |(_, name)| name)
-            )
-        })?;
-    super::expand_utility(&manifest.mixins, definition, arguments)
+    super::expand_utility(
+        &manifest.mixins,
+        &manifest.utility_definitions[definition],
+        arguments,
+    )
+}
+
+/// The recipe a registered function utility expands.
+fn function_definition(manifest: &Program, name: &str) -> Option<(usize, usize)> {
+    let index = manifest.function_utilities.get(name).copied()?;
+    match manifest.utilities[index].emit {
+        UtilityEmit::Recipe { definition, .. } => Some((index, definition)),
+        UtilityEmit::Property { .. } => None,
+    }
 }
 
 type Invocation = (String, Vec<String>, String);
@@ -96,18 +98,15 @@ fn invocation(source: &str) -> Option<Result<Invocation, String>> {
     })
 }
 
-pub(crate) fn matching(
-    source: &str,
-    manifest: &ManifestProjection,
-) -> Option<Vec<(usize, UtilityMatch)>> {
+pub(crate) fn matching(source: &str, manifest: &Program) -> Option<Vec<(usize, UtilityMatch)>> {
     let (name, arguments, state_token) = match invocation(source)? {
         Ok(call) => call,
         Err(_) => return Some(Vec::new()),
     };
-    let Some(index) = manifest.function_utilities.get(&name).copied() else {
+    let Some((index, definition)) = function_definition(manifest, &name) else {
         return Some(Vec::new());
     };
-    let Ok(expansion) = expand(manifest, &format!("Function:{name}"), &arguments) else {
+    let Ok(expansion) = expand(manifest, definition, &arguments) else {
         return Some(Vec::new());
     };
     Some(vec![(
@@ -123,19 +122,20 @@ pub(crate) fn matching(
     )])
 }
 
-pub(crate) fn diagnostic(source: &str, manifest: &ManifestProjection) -> Option<String> {
+pub(crate) fn diagnostic(source: &str, manifest: &Program) -> Option<String> {
     if let Some(invocation) = invocation(source) {
         return match invocation {
             Err(message) => Some(message),
-            Ok((name, arguments, _)) => {
-                expand(manifest, &format!("Function:{name}"), &arguments).err()
-            }
+            Ok((name, arguments, _)) => match function_definition(manifest, &name) {
+                Some((_, definition)) => expand(manifest, definition, &arguments).err(),
+                None => Some(crate::message(|| format!("Unknown utility {name}"))),
+            },
         };
     }
     let matches = super::named::matching_utilities(source, manifest);
     for (index, matched) in matches {
-        if let UtilityEmit::Recipe { name, .. } = &manifest.utilities[index].emit
-            && let Err(message) = expand(manifest, name, &matched.arguments)
+        if let UtilityEmit::Recipe { definition, .. } = manifest.utilities[index].emit
+            && let Err(message) = expand(manifest, definition, &matched.arguments)
         {
             return Some(message);
         }
@@ -144,14 +144,14 @@ pub(crate) fn diagnostic(source: &str, manifest: &ManifestProjection) -> Option<
 }
 
 pub(crate) fn emit(
-    manifest: &ManifestProjection,
-    name: &str,
+    manifest: &Program,
+    definition: usize,
     matched: &UtilityMatch,
     important: bool,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
     let Some(rules) = matched
         .expansion
-        .get_or_init(|| expand(manifest, name, &matched.arguments).ok())
+        .get_or_init(|| expand(manifest, definition, &matched.arguments).ok())
     else {
         return Vec::new();
     };

@@ -12,7 +12,6 @@ use mastercss_schema::{
     GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
     RulePriorityIr, RuleTarget, UtilityLayerName,
 };
-use serde::Deserialize;
 use serde::Serialize;
 use serde_json::{Map, Value};
 use thiserror::Error;
@@ -41,6 +40,10 @@ pub enum EngineError {
     InvalidManifest(String),
     #[error("Invalid Master CSS emitted globals JSON: {0}")]
     InvalidEmittedGlobals(String),
+    #[error("Invalid Master CSS runtime program: {0}")]
+    InvalidProgram(String),
+    #[error("Unsupported Master CSS runtime program version. Recompile it with matching packages.")]
+    UnsupportedProgramVersion,
     #[error("Master CSS engine session has been disposed.")]
     SessionDisposed,
 }
@@ -50,7 +53,9 @@ impl EngineError {
         let code = match self {
             Self::Schema(error) => error.code(),
             Self::InvalidManifest(_) => ErrorCode::InvalidManifest,
-            Self::InvalidEmittedGlobals(_) => ErrorCode::InvalidInput,
+            Self::InvalidEmittedGlobals(_)
+            | Self::InvalidProgram(_)
+            | Self::UnsupportedProgramVersion => ErrorCode::InvalidInput,
             Self::SessionDisposed => ErrorCode::SessionDisposed,
         };
         Diagnostic {
@@ -65,80 +70,52 @@ impl EngineError {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ManifestProjection {
-    #[serde(default)]
+/// The executable form of a project manifest. Compiling a manifest produces it, and
+/// every session executes one decoded from its encoding (`program.rs`), so hosts
+/// that start from a manifest and browsers that receive the encoding run the same
+/// data.
+#[derive(Debug, Clone, Default)]
+struct Program {
     theme: Vec<mastercss_schema::ThemeNode>,
-    #[serde(default)]
+    /// Deduplicated by id; the last definition wins.
     keyframes: Vec<mastercss_schema::KeyframeDefinition>,
-    #[serde(default)]
     animation_variables: HashMap<String, Vec<String>>,
-    #[serde(default)]
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
     /// The `custom_media_branches` paths of each named custom media query.
-    #[serde(skip)]
     custom_media_paths: HashMap<String, Vec<Vec<String>>>,
-    version: u32,
-    #[serde(skip)]
+    /// Registered utilities in priority order, followed by the built-in native ones.
     utilities: Vec<UtilityDefinition>,
-    #[serde(default)]
     mixins: Vec<mastercss_schema::MixinDefinition>,
-    #[serde(default, rename = "utilities")]
     utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
-    #[serde(skip)]
     token_families: Vec<TokenFamily>,
-    #[serde(skip)]
     function_utilities: HashMap<String, usize>,
-    #[serde(default)]
-    variables: Map<String, Value>,
-    #[serde(skip)]
     compiled_variables: HashMap<String, CompiledVariable>,
-    #[serde(skip)]
     has_inline_tokens: bool,
-    #[serde(skip)]
     compiled_variable_order: Vec<String>,
-    #[serde(skip)]
     token_utilities: HashMap<String, Vec<usize>>,
-    #[serde(skip)]
     static_utilities: HashMap<String, Vec<usize>>,
-    #[serde(skip)]
     raw_utilities: HashMap<String, Vec<usize>>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 struct UtilityDefinition {
     id: String,
-    #[serde(default)]
     name: Option<String>,
-    #[serde(rename = "type")]
     utility_type: i32,
-    #[serde(default)]
     order: Option<i32>,
-    #[serde(default)]
     layer: UtilityLayerName,
-    #[serde(default)]
     keys: Vec<String>,
-    #[serde(default, rename = "aliasGroups")]
     alias_groups: Vec<String>,
-    #[serde(default, rename = "variableAliases")]
     variable_aliases: Vec<(String, String)>,
-    #[serde(default, rename = "variableAliasRefs")]
     variable_alias_refs: Vec<String>,
-    #[serde(skip)]
     variables: HashMap<String, String>,
-    #[serde(skip)]
     variable_entries: Vec<(String, String)>,
-    #[serde(skip)]
     native_fallback: bool,
     emit: UtilityEmit,
-    #[serde(default)]
     matchers: Vec<UtilityMatcher>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[derive(Debug, Clone)]
 enum UtilityMatcher {
     Static { name: String },
     Key { keys: Vec<String> },
@@ -146,11 +123,16 @@ enum UtilityMatcher {
     Function { name: String },
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[derive(Debug, Clone)]
 enum UtilityEmit {
-    Recipe { name: String, key: bool },
-    Property { property: String },
+    /// Expands `Program::utility_definitions[definition]`.
+    Recipe {
+        definition: usize,
+        key: bool,
+    },
+    Property {
+        property: String,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -201,13 +183,20 @@ pub struct ClassSemanticInspection {
     pub important: bool,
 }
 
+/// The numeric value and unit a variable declares, used to sort completions.
+#[derive(Debug, Clone, PartialEq)]
+struct VariableNumeric {
+    value: f64,
+    unit: String,
+}
+
 #[derive(Debug, Clone)]
 struct CompiledVariable {
     name: String,
     key: String,
     namespace: String,
     values: Vec<mastercss_schema::ScopedThemeValue>,
-    numeric: Option<Value>,
+    numeric: Option<VariableNumeric>,
     variable_type: String,
     dependencies: Vec<String>,
     inline_value: Option<String>,
@@ -311,8 +300,10 @@ pub struct EngineCompositionRuleIr {
 
 #[derive(Debug)]
 pub struct EngineSession {
-    manifest: MasterCssManifest,
-    compiled: ManifestProjection,
+    /// The manifest a session was created from; sessions created from an encoded
+    /// program have none.
+    manifest: Option<MasterCssManifest>,
+    compiled: Program,
     layers: [Vec<StoredRule>; LAYER_COUNT],
     class_rules: HashMap<String, Vec<(UtilityLayerName, String)>>,
     class_order: Vec<String>,
@@ -370,10 +361,12 @@ mod token_family;
 mod utility_matching;
 pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
+mod program;
 mod removed_syntax;
 mod render;
 mod resources;
 mod session;
+pub use session::compile_program;
 mod state;
 mod stylesheet_resources;
 mod theme_batch;
@@ -386,7 +379,8 @@ pub(crate) use condition::{
     render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::{
-    add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
+    add_unique_string, compile_manifest, engine_variable_ir, finish_program, layer_name,
+    single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,

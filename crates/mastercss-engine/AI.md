@@ -5,6 +5,12 @@
 Canonical Manifest v6 execution: class matching, values, selectors, conditions,
 priority, resources, rule generation, snapshots, and transitions.
 
+Sessions execute a `Program`. `compile_program` validates a manifest and encodes the
+compiled program (`program.rs`); `EngineSession::create` compiles, encodes and decodes
+it, and `EngineSession::from_program` decodes a received encoding. Both paths run
+`finish_program` for derived lookup state, so a host that starts from a manifest
+executes exactly what a browser receiving the program executes.
+
 ## Module Routing
 
 - `session.rs`, `state.rs`: lifecycle, batch execution, snapshots, transition state.
@@ -12,7 +18,8 @@ priority, resources, rule generation, snapshots, and transitions.
 - `condition.rs`: custom media, variants, selectors, and conditional wrappers.
 - `generation.rs`, `render.rs`: generated rule assembly and render IR.
 - `resources.rs`, `stylesheet_resources.rs`: scoped variables and references.
-- `manifest.rs`: manifest indexes and normalization.
+- `manifest.rs`: manifest validation, compilation into a `Program`, and `finish_program`.
+- `program.rs`: the versioned binary `Program` encoding; decoding checks every bound.
 - `completion.rs`: completion-facing engine data.
 - `tests/`: lifecycle and syntax behavior; `tests.rs` owns broader unit coverage.
 

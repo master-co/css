@@ -1,12 +1,11 @@
 use super::{
-    ManifestProjection, StateBranch, add_condition_wrapper, render_condition_token,
-    resolve_layer_condition,
+    Program, StateBranch, add_condition_wrapper, render_condition_token, resolve_layer_condition,
 };
 
 pub(crate) fn resolve_state_branches(
     state_token: &str,
     inherited_important: bool,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Vec<StateBranch> {
     let mut state_token = state_token;
     let mut important = inherited_important;
@@ -167,7 +166,7 @@ pub(crate) fn compose_selector_templates(
 
 pub(crate) fn selector_token_to_template(
     selector_token: &str,
-    _manifest: &ManifestProjection,
+    _manifest: &Program,
 ) -> Option<String> {
     if selector_token.is_empty() || !valid_class_selector(selector_token) {
         return None;
@@ -222,10 +221,7 @@ pub(crate) fn removed_selector(selector: &str) -> Option<(&'static str, &'static
     None
 }
 
-pub(crate) fn resolve_style_selector_aliases(
-    selector: &str,
-    _manifest: &ManifestProjection,
-) -> String {
+pub(crate) fn resolve_style_selector_aliases(selector: &str, _manifest: &Program) -> String {
     selector.to_owned()
 }
 

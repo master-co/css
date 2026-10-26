@@ -1,6 +1,6 @@
 use super::{
-    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering,
-    StoredRule, UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
+    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, Ordering, Program, StoredRule,
+    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
     UtilityMatcherType, collect_css_variable_names, normalize_css_math_functions,
 };
 
@@ -222,7 +222,7 @@ pub fn natural_compare(left: &str, right: &str) -> Ordering {
 pub(crate) fn match_utility_filtered(
     class_name: &str,
     utility: &UtilityDefinition,
-    manifest: &ManifestProjection,
+    manifest: &Program,
     accepts: impl Fn(&UtilityMatcher) -> bool,
 ) -> Option<UtilityMatch> {
     for matcher in utility.matchers.iter().filter(|matcher| accepts(matcher)) {
@@ -386,7 +386,7 @@ pub(crate) fn alpha_percentage(alpha: &str) -> Option<String> {
 pub(crate) fn resolve_utility_value(
     value: &str,
     utility: &UtilityDefinition,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Option<(String, Vec<String>)> {
     if let Some((key, alpha)) = value.split_once('/') {
         let variable_name = utility.variables.get(key)?;
@@ -429,7 +429,7 @@ pub(crate) fn resolve_utility_value(
 pub(crate) fn resolve_utility_alias_value(
     value: &str,
     utility: &UtilityDefinition,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> Option<(String, Vec<String>)> {
     let key = value.split_once('/').map_or(value, |(key, _)| key);
     let key = key.strip_prefix('-').unwrap_or(key);
@@ -440,7 +440,7 @@ pub(crate) fn resolve_utility_alias_value(
 pub(crate) fn resolve_value_components(
     value: &str,
     _utility: Option<&UtilityDefinition>,
-    manifest: &ManifestProjection,
+    manifest: &Program,
 ) -> (String, Vec<String>) {
     let output = mastercss_lexer::decode_native_content(value).unwrap_or_else(|| value.to_owned());
     let mut variable_names = Vec::new();
