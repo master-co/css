@@ -1,20 +1,23 @@
 use super::{
-    BUILTIN_NATIVE_DECLARATION_PROPERTIES, CompiledVariable, ConditionFeature, GeneratedRuleIr,
-    HashMap, ManifestProjection, Ordering, StoredRule, UtilityDefinition, UtilityEmit,
-    UtilityLayerName, UtilityMatch, UtilityMatcher, UtilityMatcherType, collect_css_variable_names,
-    format_standard_number, normalize_css_math_functions,
+    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering,
+    StoredRule, UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
+    UtilityMatcherType, collect_css_variable_names, format_standard_number,
+    normalize_css_math_functions,
 };
 
 pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    let properties = BUILTIN_NATIVE_DECLARATION_PROPERTIES.iter();
-    for property in properties {
+    let mut ids = utilities
+        .iter()
+        .map(|utility| utility.id.clone())
+        .collect::<std::collections::HashSet<_>>();
+    for property in mastercss_schema::native_css_properties() {
         let id = format!("native:{property}");
-        if utilities.iter().any(|utility| utility.id == id) {
+        if !ids.insert(id.clone()) {
             continue;
         }
         utilities.push(UtilityDefinition {
             id,
-            name: Some((*property).into()),
+            name: Some(property.into()),
             utility_type: 0,
             order: Some(0),
             layer: UtilityLayerName::Utilities,
@@ -26,10 +29,10 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             variable_entries: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property {
-                property: (*property).into(),
+                property: property.into(),
             },
             matchers: vec![UtilityMatcher::Key {
-                keys: vec![(*property).into()],
+                keys: vec![property.into()],
             }],
         });
     }

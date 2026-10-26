@@ -98,7 +98,6 @@ pub(crate) fn compile_manifest(
                         .push(index);
                 }
                 UtilityMatcher::Key { keys } => {
-                    projection.declaration_keys.extend(keys.iter().cloned());
                     for key in keys {
                         projection
                             .raw_utilities
@@ -244,8 +243,6 @@ pub(crate) fn single_native_declaration(declarations: &str) -> Option<(String, S
         .unwrap_or(value);
     Some((property.to_owned(), value.to_owned()))
 }
-
-pub(crate) use mastercss_schema::NATIVE_CSS_PROPERTIES as BUILTIN_NATIVE_DECLARATION_PROPERTIES;
 
 pub(crate) fn add_unique_string(target: &mut Vec<String>, value: &str) {
     if !target.iter().any(|existing| existing == value) {

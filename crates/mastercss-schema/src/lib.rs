@@ -2,10 +2,36 @@
 
 #[path = "native-properties.rs"]
 mod native_properties;
-pub use native_properties::NATIVE_CSS_PROPERTIES;
+use native_properties::{NATIVE_CSS_PROPERTY_ENDS, NATIVE_CSS_PROPERTY_NAMES};
+
+fn native_css_property(index: usize) -> &'static str {
+    let start = index
+        .checked_sub(1)
+        .map_or(0, |previous| NATIVE_CSS_PROPERTY_ENDS[previous] as usize);
+    &NATIVE_CSS_PROPERTY_NAMES[start..NATIVE_CSS_PROPERTY_ENDS[index] as usize]
+}
+
+/// The native CSS property registry in byte order, including the `--*` entry.
+pub fn native_css_properties() -> impl ExactSizeIterator<Item = &'static str> + Clone {
+    (0..NATIVE_CSS_PROPERTY_ENDS.len()).map(native_css_property)
+}
+
+/// Whether `property` is an entry of the native CSS property registry.
+pub fn is_listed_native_css_property(property: &str) -> bool {
+    let (mut low, mut high) = (0, NATIVE_CSS_PROPERTY_ENDS.len());
+    while low < high {
+        let middle = (low + high) / 2;
+        match native_css_property(middle).cmp(property) {
+            std::cmp::Ordering::Less => low = middle + 1,
+            std::cmp::Ordering::Greater => high = middle,
+            std::cmp::Ordering::Equal => return true,
+        }
+    }
+    false
+}
 
 pub fn is_native_css_property(property: &str) -> bool {
-    property.starts_with("--") || NATIVE_CSS_PROPERTIES.binary_search(&property).is_ok()
+    property.starts_with("--") || is_listed_native_css_property(property)
 }
 
 use std::collections::BTreeMap;

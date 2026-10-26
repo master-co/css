@@ -104,8 +104,6 @@ struct ManifestProjection {
     static_utilities: HashMap<String, Vec<usize>>,
     #[serde(skip)]
     raw_utilities: HashMap<String, Vec<usize>>,
-    #[serde(skip)]
-    declaration_keys: HashSet<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -388,8 +386,7 @@ pub(crate) use condition::{
     parse_raw_condition_wrapper, render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::{
-    BUILTIN_NATIVE_DECLARATION_PROPERTIES, add_unique_string, compile_manifest, engine_variable_ir,
-    layer_name, single_native_declaration,
+    add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,

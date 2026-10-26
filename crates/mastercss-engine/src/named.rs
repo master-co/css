@@ -13,7 +13,7 @@ pub(crate) fn matching_utilities(
     if let Some(found) = super::utility_matching::matching(source, manifest) {
         return found;
     }
-    let native = is_native_declaration(source, manifest);
+    let native = is_native_declaration(source);
     if !native {
         for entries in [&manifest.static_utilities] {
             for end in std::iter::once(source.len())
@@ -384,7 +384,7 @@ fn ambiguous_token_message(
 /// Retirement metadata never participates in matching. A valid canonical class
 /// or project mixin always wins, including token keys resembling an old prefix.
 pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection) -> Option<String> {
-    if is_native_declaration(source, manifest) || !matching_utilities(source, manifest).is_empty() {
+    if is_native_declaration(source) || !matching_utilities(source, manifest).is_empty() {
         return None;
     }
     let mut replacements = Vec::new();
@@ -433,7 +433,7 @@ pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -
     // A registered declaration key owns its colon, even if a shorter named
     // family exists (font-family:mono must never mean font-family:hover).
     if let Some((key, _)) = source.split_once(':')
-        && (is_native_declaration(source, manifest) || manifest.declaration_keys.contains(key))
+        && (is_native_declaration(source) || mastercss_schema::is_listed_native_css_property(key))
     {
         return None;
     }
@@ -450,18 +450,12 @@ pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a ManifestProjection) -
         .max_by_key(|prefix| prefix.len())
 }
 
-fn is_native_declaration(source: &str, manifest: &ManifestProjection) -> bool {
+fn is_native_declaration(source: &str) -> bool {
     let Some((_, key)) = super::native_declaration_head(source) else {
         return false;
     };
+    // Built-in native utilities exist exactly for registered properties.
     mastercss_schema::is_native_css_property(&key)
-        || manifest.utilities.iter().any(|utility| {
-            utility.native_fallback
-                && utility
-                    .id
-                    .strip_prefix("native:")
-                    .is_some_and(|id| id.split('\0').next() == Some(key.as_ref()))
-        })
 }
 
 pub(crate) fn sort_key(

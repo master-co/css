@@ -178,7 +178,7 @@ pub(crate) fn collect_class_completion_candidates(
     let mut ambiguous_keys = Vec::new();
 
     // Native declarations are independent of the preset and token namespaces.
-    for property in mastercss_schema::NATIVE_CSS_PROPERTIES {
+    for property in mastercss_schema::native_css_properties() {
         push_property_completion_candidate(&mut candidates, &mut labels, property, None);
     }
 
