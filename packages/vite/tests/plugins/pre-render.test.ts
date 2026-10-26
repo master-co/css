@@ -83,7 +83,10 @@ describe('PreRenderPlugin', () => {
     )
     expect(next).not.toHaveBeenCalled()
     expect(headers.get('Content-Type')).toContain('application/json')
-    expect(JSON.parse(body).rules.map((rule: { className: string }) => rule.className)).toEqual(['card', "padding:0.125rem"])
+    const hydrationManifest = JSON.parse(body)
+    expect(hydrationManifest.version).toBe(5)
+    expect(hydrationManifest.classNames).toEqual(['card', "padding:0.125rem"])
+    expect(hydrationManifest.rules).toBeUndefined()
   })
 
   it.each([
