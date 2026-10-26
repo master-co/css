@@ -25,6 +25,10 @@ Token utility identity is (form, decoded prefix, namespace); same-branch replace
 
 `selector_class_names_without_rules()` lists classes that theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks) reference without generating rules themselves. Render appends them to hydration manifest `classNames` so client-toggled mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear there.
 
+## Runtime Wasm Features
+
+`diagnostic-messages` and `stylesheet-resources` are default features that the browser runtime Wasm disables. Without `diagnostic-messages`, every verdict, code and control flow is unchanged but message and note text is empty: build new diagnostic or error text inside `message(|| ...)`. `stylesheet-resources` compiles keyframe slots, native stylesheet replay and rendered stylesheets, which only compiler and render hosts feed; gate code that only they reach. Check both builds with `cargo clippy -p mastercss-engine --no-default-features` and `pnpm run report:runtime-wasm-size`.
+
 ## Validation
 
 ```sh

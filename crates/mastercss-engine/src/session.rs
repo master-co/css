@@ -215,6 +215,7 @@ impl EngineSession {
             .collect())
     }
 
+    #[cfg(feature = "stylesheet-resources")]
     pub fn ensure_stylesheet_resources(
         &mut self,
         native_css: &str,
@@ -249,6 +250,7 @@ impl EngineSession {
         }
     }
 
+    #[cfg(feature = "stylesheet-resources")]
     fn register_stylesheet_resources(
         &mut self,
         native_css: &str,
@@ -388,6 +390,7 @@ impl EngineSession {
             session.stylesheet_keyframe_slots.clear();
             session.theme_variable_names.clear();
             session.compiled = compiled;
+            #[cfg(feature = "stylesheet-resources")]
             for source in &session.stylesheet_sources {
                 for (name, value) in
                     crate::stylesheet_declarations(&session.keyframe_template(source))
@@ -410,8 +413,8 @@ impl EngineSession {
             session.class_order.clear();
             session.rule_counts.clear();
             session.initialize_variable_resources();
-            let native_sources = session.stylesheet_sources.clone();
-            for source in native_sources {
+            #[cfg(feature = "stylesheet-resources")]
+            for source in session.stylesheet_sources.clone() {
                 session.register_stylesheet_resources(&source)?;
             }
             mutations.extend(session.ensure_class_rules(connected_classes)?.mutations);
@@ -431,12 +434,21 @@ impl EngineSession {
             rules,
             resources: self.resource_snapshot(),
             text: self.css_text(),
-            stylesheets: self
-                .stylesheet_sources
-                .iter()
-                .map(|source| self.render_stylesheet_resources(source))
-                .collect(),
+            stylesheets: self.rendered_stylesheets(),
         })
+    }
+
+    #[cfg(feature = "stylesheet-resources")]
+    fn rendered_stylesheets(&self) -> Vec<String> {
+        self.stylesheet_sources
+            .iter()
+            .map(|source| self.render_stylesheet_resources(source))
+            .collect()
+    }
+
+    #[cfg(not(feature = "stylesheet-resources"))]
+    fn rendered_stylesheets(&self) -> Vec<String> {
+        Vec::new()
     }
 
     pub fn snapshot_for_classes<I, S>(
@@ -471,6 +483,7 @@ impl EngineSession {
         }
 
         let mut subset = self.fork_empty_with_emitted_globals(self.emitted_globals.clone());
+        #[cfg(feature = "stylesheet-resources")]
         for source in &self.stylesheet_sources {
             subset.ensure_stylesheet_resources(source)?;
         }

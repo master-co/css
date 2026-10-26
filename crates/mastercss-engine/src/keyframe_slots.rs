@@ -1,8 +1,10 @@
 //! Compiler-issued native resource anchors. This module owns their interpretation
 //! in every host; TypeScript only installs the resulting CSS and CSSOM mutations.
 use super::*;
+#[cfg(feature = "stylesheet-resources")]
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
 
+#[cfg(feature = "stylesheet-resources")]
 struct Slot {
     id: String,
     range: std::ops::Range<usize>,
@@ -10,6 +12,7 @@ struct Slot {
     resources_only: bool,
 }
 
+#[cfg(feature = "stylesheet-resources")]
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct KeyframeOutputEdit {
@@ -20,6 +23,7 @@ pub struct KeyframeOutputEdit {
 }
 
 /// Slot IDs that anchor keyframes in `css`, excluding resource-only slots.
+#[cfg(feature = "stylesheet-resources")]
 pub(crate) fn active_slot_ids(css: &str) -> HashSet<String> {
     slots(css)
         .into_iter()
@@ -28,6 +32,7 @@ pub(crate) fn active_slot_ids(css: &str) -> HashSet<String> {
         .collect()
 }
 
+#[cfg(feature = "stylesheet-resources")]
 fn slots(css: &str) -> Vec<Slot> {
     if !css.contains("master-css-keyframe-") {
         return Vec::new();
@@ -87,6 +92,7 @@ fn slots(css: &str) -> Vec<Slot> {
 }
 
 impl EngineSession {
+    #[cfg(feature = "stylesheet-resources")]
     pub(crate) fn keyframe_template(&self, css: &str) -> String {
         let known = self
             .compiled
@@ -115,6 +121,7 @@ impl EngineSession {
             || self.stylesheet_keyframe_slots.contains(id)
     }
 
+    #[cfg(feature = "stylesheet-resources")]
     pub(crate) fn register_keyframe_slots(&mut self, css: &str) {
         let active = active_slot_ids(css);
         for definition in &self.compiled.keyframes {
@@ -126,6 +133,7 @@ impl EngineSession {
 
     /// Materialize each leaf in its original native container. The always-true
     /// media wrapper is an addressable CSSOM slot, including while it is empty.
+    #[cfg(feature = "stylesheet-resources")]
     pub fn render_stylesheet_resources(&self, css: &str) -> String {
         let mut output = String::new();
         let mut previous = 0;
@@ -149,6 +157,7 @@ impl EngineSession {
         output
     }
 
+    #[cfg(feature = "stylesheet-resources")]
     pub fn keyframe_output_edits(&self, css: &str) -> Vec<KeyframeOutputEdit> {
         let mut definitions = HashMap::new();
         for definition in &self.compiled.keyframes {
@@ -219,6 +228,21 @@ impl EngineSession {
         edits
     }
 
+    /// Values a stylesheet's resource-only slot assigns to keyframe `id`.
+    #[cfg(feature = "stylesheet-resources")]
+    fn stylesheet_slot_values(&self, id: &str) -> Option<HashMap<String, String>> {
+        self.stylesheet_sources
+            .iter()
+            .flat_map(|source| slots(source))
+            .find(|slot| slot.resources_only && slot.id == id)
+            .map(|slot| slot.values)
+    }
+
+    #[cfg(not(feature = "stylesheet-resources"))]
+    fn stylesheet_slot_values(&self, _id: &str) -> Option<HashMap<String, String>> {
+        None
+    }
+
     pub(crate) fn resolved_keyframe_text(
         &self,
         definition: &mastercss_schema::KeyframeDefinition,
@@ -227,13 +251,7 @@ impl EngineSession {
             return definition.text.clone();
         }
         let id = definition.slot_id.as_ref().unwrap_or(&definition.id);
-        let values = self
-            .stylesheet_sources
-            .iter()
-            .flat_map(|source| slots(source))
-            .find(|slot| slot.resources_only && &slot.id == id)
-            .map(|slot| slot.values);
-        let Some(values) = values else {
+        let Some(values) = self.stylesheet_slot_values(id) else {
             return definition.text.clone();
         };
         let mut text = String::new();

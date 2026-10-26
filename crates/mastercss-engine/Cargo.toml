@@ -7,6 +7,16 @@ license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
+[features]
+default = ["diagnostic-messages", "stylesheet-resources"]
+# Diagnostic message and note text. Verdicts are always computed; the browser
+# runtime only needs those, so its Wasm omits the text.
+diagnostic-messages = []
+# Compiler-issued native stylesheet resources: keyframe slots, stylesheet replay and
+# rendered stylesheet output. Browser runtimes never receive stylesheets, so the
+# runtime engine Wasm omits it.
+stylesheet-resources = []
+
 [dependencies]
 mastercss-lexer = { path = "../mastercss-lexer" }
 mastercss-schema = { path = "../mastercss-schema" }

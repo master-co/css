@@ -24,7 +24,9 @@ pub fn parse_custom_media_query(
         if token.close.is_some() {
             depth += 1;
             if depth > 128 {
-                return Err("Custom media nesting exceeds 128 levels".into());
+                return Err(crate::message(|| {
+                    "Custom media nesting exceeds 128 levels".into()
+                }));
             }
         }
         if matches!(token.kind, Kind::Delim(')' | ']' | '}')) {
@@ -94,7 +96,7 @@ impl MediaParser<'_> {
         resolve: &mut impl FnMut(&str) -> Result<Expr, String>,
     ) -> Result<Expr, String> {
         if start >= end {
-            return Err("Empty media query".into());
+            return Err(crate::message(|| "Empty media query".into()));
         }
         let top = self.top(start, end)?;
         let qualifier = self.ident(start, "not") || self.ident(start, "only");
@@ -105,7 +107,9 @@ impl MediaParser<'_> {
                 "not" | "only" | "and" | "or"
             ) || name.starts_with("--")
             {
-                return Err("Invalid media type; custom aliases require (--name)".into());
+                return Err(crate::message(|| {
+                    "Invalid media type; custom aliases require (--name)".into()
+                }));
             }
             let mut query = if name.eq_ignore_ascii_case("all") {
                 Expr::True
@@ -116,7 +120,9 @@ impl MediaParser<'_> {
             };
             if type_index + 1 < end {
                 if !self.ident(type_index + 1, "and") {
-                    return Err("Media types require and before a condition".into());
+                    return Err(crate::message(|| {
+                        "Media types require and before a condition".into()
+                    }));
                 }
                 let condition = self.condition(type_index + 2, end, resolve)?;
                 if self
@@ -124,7 +130,9 @@ impl MediaParser<'_> {
                     .iter()
                     .any(|index| self.ident(*index, "or"))
                 {
-                    return Err("A media type requires parentheses around an or condition".into());
+                    return Err(crate::message(|| {
+                        "A media type requires parentheses around an or condition".into()
+                    }));
                 }
                 query = Expr::And {
                     queries: vec![query, condition],
@@ -139,10 +147,10 @@ impl MediaParser<'_> {
             });
         }
         if qualifier && self.ident(start, "only") {
-            return Err("only requires a media type".into());
+            return Err(crate::message(|| "only requires a media type".into()));
         }
         if top.is_empty() {
-            return Err("Empty media query".into());
+            return Err(crate::message(|| "Empty media query".into()));
         }
         self.condition(start, end, resolve)
     }
@@ -154,11 +162,13 @@ impl MediaParser<'_> {
     ) -> Result<Expr, String> {
         let top = self.top(start, end)?;
         if top.is_empty() {
-            return Err("Empty media condition".into());
+            return Err(crate::message(|| "Empty media condition".into()));
         }
         if self.ident(start, "not") {
             if top.len() != 2 {
-                return Err("not requires one parenthesized condition".into());
+                return Err(crate::message(|| {
+                    "not requires one parenthesized condition".into()
+                }));
             }
             return Ok(Expr::Not {
                 query: Box::new(self.atom(top[1], end, resolve)?),
@@ -179,16 +189,20 @@ impl MediaParser<'_> {
                 } else if self.ident(index, "or") {
                     true
                 } else {
-                    return Err("Expected and/or in media condition".into());
+                    return Err(crate::message(|| {
+                        "Expected and/or in media condition".into()
+                    }));
                 };
                 if operator.is_some_and(|previous| previous != next) {
-                    return Err("Mixed and/or media conditions require parentheses".into());
+                    return Err(crate::message(|| {
+                        "Mixed and/or media conditions require parentheses".into()
+                    }));
                 }
                 operator = Some(next);
             }
         }
         if top.len() % 2 == 0 {
-            return Err("Missing media condition operand".into());
+            return Err(crate::message(|| "Missing media condition operand".into()));
         }
         Ok(match operator {
             None => queries.remove(0),
@@ -224,13 +238,13 @@ impl MediaParser<'_> {
                 return self.condition(start + 1, close, resolve);
             }
             if inner.iter().any(|index| matches!(&self.tokens[*index].kind, Kind::Ident(name) if name.starts_with("--"))) {
-                return Err("Custom media references must be boolean (--name), not a range or value".into());
+                return Err(crate::message(|| "Custom media references must be boolean (--name), not a range or value".into()));
             }
             if inner.is_empty() {
-                return Err("Empty media feature".into());
+                return Err(crate::message(|| "Empty media feature".into()));
             }
         } else if !matches!(token.kind, Kind::Function(_)) {
-            return Err("Invalid media feature".into());
+            return Err(crate::message(|| "Invalid media feature".into()));
         }
         Ok(Expr::Feature {
             value: self.source[token.bytes.start..self.tokens[close].bytes.end].to_owned(),
@@ -248,11 +262,15 @@ pub fn custom_media_branches(query: &Expr) -> Result<Vec<Vec<String>>, String> {
         remaining: &mut usize,
     ) -> Result<Vec<Vec<String>>, String> {
         if *remaining == 0 {
-            return Err("Custom media expansion exceeds 32768 expression nodes".into());
+            return Err(crate::message(|| {
+                "Custom media expansion exceeds 32768 expression nodes".into()
+            }));
         }
         *remaining -= 1;
         if depth > 128 {
-            return Err("Custom media nesting exceeds 128 levels".into());
+            return Err(crate::message(|| {
+                "Custom media nesting exceeds 128 levels".into()
+            }));
         }
         Ok(match query {
             Expr::True => {
@@ -290,7 +308,9 @@ pub fn custom_media_branches(query: &Expr) -> Result<Vec<Vec<String>>, String> {
                         result.len().saturating_add(next.len())
                     };
                     if count > 4096 {
-                        return Err("Custom media expansion exceeds 4096 branches".into());
+                        return Err(crate::message(|| {
+                            "Custom media expansion exceeds 4096 branches".into()
+                        }));
                     }
                     if and {
                         result = result

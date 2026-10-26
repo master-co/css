@@ -18,6 +18,19 @@ use serde_json::{Map, Value};
 use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
+
+/// Hosts that report diagnostics (tooling, compilers, inspection) build their text.
+/// The browser runtime only needs each verdict, so its Wasm omits every message.
+pub(crate) const DIAGNOSTIC_MESSAGES: bool = cfg!(feature = "diagnostic-messages");
+
+/// Builds a diagnostic message only when this build reports diagnostics.
+pub(crate) fn message(build: impl FnOnce() -> String) -> String {
+    if DIAGNOSTIC_MESSAGES {
+        build()
+    } else {
+        String::new()
+    }
+}
 type ConditionFeature = mastercss_schema::ConditionRangeIr;
 
 #[derive(Debug, Error)]
@@ -333,12 +346,14 @@ mod completion;
 mod condition;
 mod custom_media;
 mod keyframe_slots;
+#[cfg(feature = "stylesheet-resources")]
 pub use keyframe_slots::KeyframeOutputEdit;
 mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;
 mod execution_state;
 mod generation;
+#[cfg(feature = "stylesheet-resources")]
 mod hosted_stylesheet;
 mod manifest;
 mod mixin;

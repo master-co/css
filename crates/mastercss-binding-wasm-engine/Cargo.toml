@@ -14,10 +14,14 @@ crate-type = ["cdylib", "rlib"]
 default = ["full"]
 # Render sessions and engine inspection. The browser runtime artifact is built
 # without it.
-full = ["dep:mastercss-render"]
+full = [
+  "dep:mastercss-render",
+  "mastercss-engine/diagnostic-messages",
+  "mastercss-engine/stylesheet-resources",
+]
 
 [dependencies]
-mastercss-engine = { path = "../mastercss-engine" }
+mastercss-engine = { path = "../mastercss-engine", default-features = false }
 mastercss-render = { path = "../mastercss-render", optional = true }
 mastercss-schema = { path = "../mastercss-schema" }
 serde.workspace = true

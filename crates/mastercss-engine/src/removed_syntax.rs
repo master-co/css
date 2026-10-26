@@ -106,12 +106,16 @@ pub(crate) fn removed_raw_alias(property: &str) -> Option<&'static str> {
 /// Retired preset parameter heads must not silently become unknown CSS properties.
 pub(crate) fn removed_recipe(property: &str) -> Option<String> {
     match property {
-        "grid-cols" | "grid-rows" | "grid-col-span" | "grid-row-span" | "clamp-lines" => Some(
-            format!("{property}:value was removed; use {property}(value) with a positive integer"),
-        ),
-        "text" => {
-            Some("text:value was removed; use font-size:value or a named text-token recipe".into())
+        "grid-cols" | "grid-rows" | "grid-col-span" | "grid-row-span" | "clamp-lines" => {
+            Some(crate::message(|| {
+                format!(
+                    "{property}:value was removed; use {property}(value) with a positive integer"
+                )
+            }))
         }
+        "text" => Some(crate::message(|| {
+            "text:value was removed; use font-size:value or a named text-token recipe".into()
+        })),
         _ => None,
     }
 }

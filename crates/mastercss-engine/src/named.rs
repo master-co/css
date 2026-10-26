@@ -137,9 +137,11 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
-            format!(
-                "Raw property alias {property}: was removed; use {target}: (named tokens use their canonical prefixes)"
-            ),
+            super::message(|| {
+                format!(
+                    "Raw property alias {property}: was removed; use {target}: (named tokens use their canonical prefixes)"
+                )
+            }),
         )];
     }
     if let Some(message) = super::utility_matching::diagnostic(source, manifest) {
@@ -148,7 +150,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     if mastercss_lexer::decode_native_content(source).is_none() {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
-            format!("Unbalanced or invalid Master class structure: {source}"),
+            super::message(|| format!("Unbalanced or invalid Master class structure: {source}")),
         )];
     }
     let native_state = super::native_declaration_head(source)
@@ -162,7 +164,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         if let Some((old, replacement)) = super::state::removed_selector(&selector) {
             return vec![error(
                 super::ErrorCode::ClassSyntaxError,
-                format!(":{old} was removed; use {replacement}"),
+                super::message(|| format!(":{old} was removed; use {replacement}")),
             )];
         }
         if !selector.is_empty()
@@ -171,7 +173,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         {
             return vec![error(
                 super::ErrorCode::ClassSyntaxError,
-                format!("Invalid selector structure: {selector}"),
+                super::message(|| format!("Invalid selector structure: {selector}")),
             )];
         }
     }
@@ -193,13 +195,15 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             if let Some(replacement) = replacement {
                 return vec![error(
                     super::ErrorCode::UnknownCondition,
-                    format!("@{token} was removed; use {replacement}"),
+                    super::message(|| format!("@{token} was removed; use {replacement}")),
                 )];
             }
             if token == "speech" {
                 return vec![error(
                     super::ErrorCode::UnknownCondition,
-                    "@speech was removed; speech is an obsolete CSS media type".into(),
+                    super::message(|| {
+                        "@speech was removed; speech is an obsolete CSS media type".into()
+                    }),
                 )];
             }
         }
@@ -216,7 +220,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
             if explicit_layer.is_some_and(|current| current != layer) {
                 return vec![error(
                     super::ErrorCode::ClassSyntaxError,
-                    "A class cannot select multiple layers".into(),
+                    super::message(|| "A class cannot select multiple layers".into()),
                 )];
             }
             explicit_layer = Some(layer);
@@ -224,22 +228,26 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         }
         if mastercss_lexer::query_requires_css(&token) {
             let (kind, body) = token.split_once('(').expect("recognized query");
-            let prelude =
-                mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
-                    .unwrap_or_default();
             let mut diagnostic = error(
                 super::ErrorCode::MasterQueryRequiresCss,
-                format!(
-                    "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
-                ),
+                super::message(|| {
+                    format!(
+                        "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
+                    )
+                }),
             );
-            diagnostic.notes.push(format!(
-                "@mixin --query-name {{ @{kind} {prelude} {{ @contents; }} }}"
-            ));
-            diagnostic.notes.push(
-                "Use @apply(--query-name). Verify literal pipes in the CSS query before copying."
-                    .into(),
-            );
+            if super::DIAGNOSTIC_MESSAGES {
+                let prelude =
+                    mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
+                        .unwrap_or_default();
+                diagnostic.notes.push(format!(
+                    "@mixin --query-name {{ @{kind} {prelude} {{ @contents; }} }}"
+                ));
+                diagnostic.notes.push(
+                    "Use @apply(--query-name). Verify literal pipes in the CSS query before copying."
+                        .into(),
+                );
+            }
             return vec![diagnostic];
         }
         if let Some(query) = mastercss_lexer::parse_native_query(&token)
@@ -261,9 +269,11 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         {
             return vec![error(
                 super::ErrorCode::UnknownCondition,
-                format!(
-                    "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
-                ),
+                super::message(|| {
+                    format!(
+                        "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
+                    )
+                }),
             )];
         }
     }
@@ -274,67 +284,13 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     if let Some(prefix) = prefix {
         let candidates = token_owners(source, prefix, manifest);
         if candidates.len() > 1 {
-            let raw = source
-                .strip_prefix(prefix)
-                .or_else(|| {
-                    source
-                        .strip_prefix('-')
-                        .and_then(|source| source.strip_prefix(prefix))
-                })
-                .unwrap_or_default();
-            let (value, _) = super::split_dynamic_value_state(raw);
-            let key = value.split_once('/').map_or(value.as_str(), |(key, _)| key);
-            let mut definitions = Vec::new();
-            let mut alternatives = Vec::new();
-            for index in candidates {
-                let utility = &manifest.utilities[index];
-                let token = &utility.variables[key];
-                let definition = manifest
-                    .utility_definitions
-                    .iter()
-                    .find(|definition| definition.identity() == utility.id);
-                let location = definition
-                    .and_then(|definition| definition.recipe.source.as_ref())
-                    .map(|source| {
-                        let file = source.file.as_deref().unwrap_or("stylesheet");
-                        if let Some(loc) = &source.loc {
-                            format!(" at {file}:{}:{}", loc.start.line, loc.start.column)
-                        } else {
-                            format!(" at {file}:{}..{}", source.range.start, source.range.end)
-                        }
-                    })
-                    .unwrap_or_default();
-                definitions.push(format!(
-                    "--{token} ({prefix}(--{}){location})",
-                    &utility.variable_alias_refs[0][1..]
-                ));
-                // Suggest the branch's actual declarations, including recipes,
-                // without inventing a second class prefix or choosing a branch.
-                if let Some(matched) = match_utility_filtered(
-                    &format!("{prefix}{key}"),
-                    utility,
-                    manifest,
-                    |matcher| matches!(matcher, UtilityMatcher::Token { .. }),
-                ) {
-                    for (_, declarations, _, _) in
-                        emit_declarations(utility, matched.value.as_deref(), false, manifest)
-                    {
-                        for declaration in super::split_top_level(&declarations, ';') {
-                            if !declaration.is_empty() && !alternatives.contains(&declaration) {
-                                alternatives.push(declaration);
-                            }
-                        }
-                    }
-                }
+            let mut diagnostic = error(super::ErrorCode::AmbiguousToken, String::new());
+            if super::DIAGNOSTIC_MESSAGES {
+                let (message, notes) =
+                    ambiguous_token_message(source, prefix, candidates, manifest);
+                diagnostic.message = message;
+                diagnostic.notes = notes;
             }
-            let mut diagnostic = error(
-                super::ErrorCode::AmbiguousToken,
-                format!(
-                    "Ambiguous named token {source}; conflicting definitions: {}. Use explicit native declarations or distinct token keys",
-                    definitions.join(", ")
-                ),
-            );
-            diagnostic.notes = alternatives;
             return vec![diagnostic];
         }
     }
@@ -351,10 +307,80 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         .unwrap_or_default();
     vec![error(
         super::ErrorCode::UnknownToken,
-        format!(
-            "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
-        ),
+        super::message(|| {
+            format!(
+                "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
+            )
+        }),
     )]
+}
+
+/// The conflicting definitions and each branch's declarations for an ambiguous key.
+fn ambiguous_token_message(
+    source: &str,
+    prefix: &str,
+    candidates: Vec<usize>,
+    manifest: &ManifestProjection,
+) -> (String, Vec<String>) {
+    let raw = source
+        .strip_prefix(prefix)
+        .or_else(|| {
+            source
+                .strip_prefix('-')
+                .and_then(|source| source.strip_prefix(prefix))
+        })
+        .unwrap_or_default();
+    let (value, _) = super::split_dynamic_value_state(raw);
+    let key = value.split_once('/').map_or(value.as_str(), |(key, _)| key);
+    let mut definitions = Vec::new();
+    let mut alternatives = Vec::new();
+    for index in candidates {
+        let utility = &manifest.utilities[index];
+        let token = &utility.variables[key];
+        let definition = manifest
+            .utility_definitions
+            .iter()
+            .find(|definition| definition.identity() == utility.id);
+        let location = definition
+            .and_then(|definition| definition.recipe.source.as_ref())
+            .map(|source| {
+                let file = source.file.as_deref().unwrap_or("stylesheet");
+                if let Some(loc) = &source.loc {
+                    format!(" at {file}:{}:{}", loc.start.line, loc.start.column)
+                } else {
+                    format!(" at {file}:{}..{}", source.range.start, source.range.end)
+                }
+            })
+            .unwrap_or_default();
+        definitions.push(format!(
+            "--{token} ({prefix}(--{}){location})",
+            &utility.variable_alias_refs[0][1..]
+        ));
+        // Suggest the branch's actual declarations, including recipes,
+        // without inventing a second class prefix or choosing a branch.
+        if let Some(matched) =
+            match_utility_filtered(&format!("{prefix}{key}"), utility, manifest, |matcher| {
+                matches!(matcher, UtilityMatcher::Token { .. })
+            })
+        {
+            for (_, declarations, _, _) in
+                emit_declarations(utility, matched.value.as_deref(), false, manifest)
+            {
+                for declaration in super::split_top_level(&declarations, ';') {
+                    if !declaration.is_empty() && !alternatives.contains(&declaration) {
+                        alternatives.push(declaration);
+                    }
+                }
+            }
+        }
+    }
+    (
+        format!(
+            "Ambiguous named token {source}; conflicting definitions: {}. Use explicit native declarations or distinct token keys",
+            definitions.join(", ")
+        ),
+        alternatives,
+    )
 }
 
 /// Retirement metadata never participates in matching. A valid canonical class
@@ -395,10 +421,12 @@ pub(crate) fn retired_token_message(source: &str, manifest: &ManifestProjection)
         }
     }
     if !replacements.is_empty() {
-        return Some(format!(
-            "Token spelling {source} was removed; use the canonical family: {}",
-            replacements.join(", ")
-        ));
+        return Some(super::message(|| {
+            format!(
+                "Token spelling {source} was removed; use the canonical family: {}",
+                replacements.join(", ")
+            )
+        }));
     }
     None
 }

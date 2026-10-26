@@ -59,7 +59,7 @@ impl EngineSession {
         }
         let originals = self.generate_composition_rules_raw(base);
         if originals.is_empty() {
-            return Err(format!("Unknown class body {base}"));
+            return Err(crate::message(|| format!("Unknown class body {base}")));
         }
         let mut layer = None;
         let mut body = Vec::new();
@@ -115,7 +115,7 @@ impl EngineSession {
                         .custom_media
                         .contains_key(&format!("--{suffix}"))
                 {
-                    return Err(format!("Unknown condition @{suffix}"));
+                    return Err(crate::message(|| format!("Unknown condition @{suffix}")));
                 }
                 let mut expanded = Vec::new();
                 for branch in branches {
@@ -291,7 +291,9 @@ impl EngineSession {
 
 fn set_layer(current: &mut Option<UtilityLayerName>, next: UtilityLayerName) -> Result<(), String> {
     if current.is_some_and(|current| current != next) {
-        return Err("A class cannot select multiple layers".into());
+        return Err(crate::message(|| {
+            "A class cannot select multiple layers".into()
+        }));
     }
     *current = Some(next);
     Ok(())
