@@ -87,7 +87,7 @@ impl RenderSession {
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
         let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
-        let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes);
+        let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes)?;
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -115,7 +115,7 @@ impl RenderSession {
             }
         }
         let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
-        let hydration_manifest = self.hydration_manifest(&snapshot, &classes);
+        let hydration_manifest = self.hydration_manifest(&snapshot, &classes)?;
         Ok(ServerRenderIr {
             stylesheet_edits: self
                 .stylesheets
@@ -133,24 +133,36 @@ impl RenderSession {
         &self,
         snapshot: &EngineSnapshotIr,
         classes: &[String],
-    ) -> HydrationManifest {
+    ) -> Result<HydrationManifest, EngineError> {
         // The runtime ships its own emitted globals, which may describe other stylesheets
         // than this page links. It reproduces the snapshot from the server's instead.
         let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
         hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
-        // Rendered classes without rules follow the rule classes. Selector classes such
-        // as mode classes come last, so client scripts adding them keep the engine deferred.
+        // Rendered classes without rules follow the rule classes. Classes that selectors
+        // reference without rules come last: state classes in this page's rules, such as
+        // `active`, then manifest classes such as mode classes. Client scripts toggling
+        // them keep the engine deferred.
+        let state_classes = self.engine.class_names_without_rules_in(
+            snapshot
+                .rules
+                .iter()
+                .filter_map(|rule| rule.selector_text.as_deref()),
+        )?;
         let mut covered = hydration_manifest
             .class_names
             .iter()
             .cloned()
             .collect::<HashSet<_>>();
-        for class_name in classes.iter().chain(&self.selector_classes) {
+        for class_name in classes
+            .iter()
+            .chain(&state_classes)
+            .chain(&self.selector_classes)
+        {
             if covered.insert(class_name.clone()) {
                 hydration_manifest.class_names.push(class_name.clone());
             }
         }
-        hydration_manifest
+        Ok(hydration_manifest)
     }
 
     fn hydratable_snapshot(
@@ -235,11 +247,12 @@ mod tests {
             ]
         })
         .to_string();
-        let rendered = render_classes(&manifest, ["muted", "card"]).unwrap();
-        // Page scripts may add `dark`; `red` generates rules, so it still needs the engine.
+        let rendered = render_classes(&manifest, ["muted", "card", "red.active!"]).unwrap();
+        // Page scripts may toggle the `active` state and `dark` mode; `red` generates
+        // rules, so it still needs the engine.
         assert_eq!(
             rendered.hydration_manifest.class_names,
-            ["muted", "card", "dark"]
+            ["muted", "red.active!", "card", "active", "dark"]
         );
     }
 

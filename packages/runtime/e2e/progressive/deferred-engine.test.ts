@@ -121,6 +121,19 @@ test('keeps the engine deferred when a page script adds a mode class from manife
   expect(engineRequests(requests)).toEqual([])
 })
 
+test('keeps the engine deferred when a page script toggles a state class from rendered rules', async ({ page }) => {
+  const { loaderURL, requests } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60.active"></p>', ['fg-red-60.active'])
+  await startDeferredRuntime(page, loaderURL)
+  const before = await page.evaluate(() => getComputedStyle(document.getElementById('target')!).color)
+  await page.evaluate(() => document.getElementById('target')!.classList.add('active'))
+  await waitForFrames(page)
+  expect(await page.evaluate(() => ({
+    engine: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().engine,
+    styled: getComputedStyle(document.getElementById('target')!).color
+  }))).toEqual({ engine: 'deferred', styled: expect.not.stringMatching(new RegExp(`^${before.replace(/[()]/g, '\\$&')}$`)) })
+  expect(engineRequests(requests)).toEqual([])
+})
+
 test('starts the engine once for the first class pre-rendered CSS lacks', async ({ page }) => {
   const { loaderURL, requests } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60"></p>', ['fg-red-60'])
   await startDeferredRuntime(page, loaderURL)

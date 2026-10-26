@@ -532,6 +532,16 @@ impl EngineSession {
         for utility in &self.compiled.utility_definitions {
             collect_mixin_selectors(&utility.recipe.body, &mut selectors);
         }
+        self.class_names_without_rules_in(selectors)
+    }
+
+    /// Classes the selectors reference without generating rules of their own, such
+    /// as `active` in a generated `.fg-accent\.active\!.active` rule.
+    pub fn class_names_without_rules_in<'a>(
+        &self,
+        selectors: impl IntoIterator<Item = &'a str>,
+    ) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
         let mut seen = HashSet::new();
         Ok(selectors
             .into_iter()
