@@ -77,10 +77,20 @@ opt-level = "s"
 [profile.release.package.mastercss-binding-wasm-tooling]
 opt-level = "s"
 
-# The runtime engine Wasm is downloaded by every browser page. Optimize every
-# crate in it for size; `release` keeps opt-level 3 for native code. "z" is
-# another 12% smaller under brotli but made runtime rule generation, startup,
-# and hydration about 18% slower in `pnpm --filter @master/css-runtime bench`.
+# The runtime engine Wasm is downloaded by browser pages. Optimize every crate in
+# it for size; `release` keeps opt-level 3 for native code. The engine, lexer and
+# schema crates hold most of its code: "z" for them is about 11% smaller under
+# brotli and at most 16% slower in `pnpm --filter @master/css-runtime bench`,
+# while "z" for every crate saves only 1% more and slowed DOM scans by 24%.
 [profile.release-wasm]
 inherits = "release"
 opt-level = "s"
+
+[profile.release-wasm.package.mastercss-engine]
+opt-level = "z"
+
+[profile.release-wasm.package.mastercss-lexer]
+opt-level = "z"
+
+[profile.release-wasm.package.mastercss-schema]
+opt-level = "z"
