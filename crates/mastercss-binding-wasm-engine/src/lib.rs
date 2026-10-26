@@ -1,27 +1,21 @@
 #![forbid(unsafe_code)]
 
+mod json;
+
+use json::WriteJson;
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
-use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
+// Results cross the boundary as JSON text that the JavaScript provider parses.
+
 fn js_error(error: EngineError) -> JsValue {
-    JsValue::from_str(
-        &serde_json::to_string(&error.diagnostic()).unwrap_or_else(|_| error.to_string()),
-    )
+    JsValue::from_str(&error.diagnostic().to_json())
 }
 
-fn serialization_error(error: impl ToString) -> JsValue {
-    JsValue::from_str(&error.to_string())
-}
-
-fn render_value<T: Serialize>(value: &T) -> Result<JsValue, JsValue> {
-    value
-        .serialize(
-            &serde_wasm_bindgen::Serializer::new()
-                .serialize_maps_as_objects(true)
-                .serialize_missing_as_null(true),
-        )
-        .map_err(serialization_error)
+/// Results of `full`-only APIs, which the browser runtime never calls.
+#[cfg(feature = "full")]
+fn render_value<T: serde::Serialize>(value: &T) -> Result<String, JsValue> {
+    serde_json::to_string(value).map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
 #[wasm_bindgen(js_name = EngineSession)]
@@ -52,45 +46,45 @@ impl WasmEngineSession {
     }
 
     #[wasm_bindgen(js_name = ensureClassRules)]
-    pub fn ensure_class_rules(&mut self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+    pub fn ensure_class_rules(&mut self, class_names: Vec<String>) -> Result<String, JsValue> {
         let transition = self
             .inner
             .ensure_class_rules(class_names)
             .map_err(js_error)?;
-        render_value(&transition)
+        Ok(transition.to_json())
     }
 
     #[wasm_bindgen(js_name = deleteClassRules)]
-    pub fn delete_class_rules(&mut self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+    pub fn delete_class_rules(&mut self, class_names: Vec<String>) -> Result<String, JsValue> {
         let transition = self
             .inner
             .delete_class_rules(class_names)
             .map_err(js_error)?;
-        render_value(&transition)
+        Ok(transition.to_json())
     }
 
     #[wasm_bindgen(js_name = registerEmittedGlobals)]
     pub fn register_emitted_globals(
         &mut self,
         emitted_globals_json: &str,
-    ) -> Result<JsValue, JsValue> {
+    ) -> Result<String, JsValue> {
         let transition = self
             .inner
             .register_emitted_globals(emitted_globals_json)
             .map_err(js_error)?;
-        render_value(&transition)
+        Ok(transition.to_json())
     }
 
     #[wasm_bindgen(js_name = replaceEmittedGlobals)]
     pub fn replace_emitted_globals(
         &mut self,
         emitted_globals_json: &str,
-    ) -> Result<JsValue, JsValue> {
+    ) -> Result<String, JsValue> {
         let transition = self
             .inner
             .replace_emitted_globals(emitted_globals_json)
             .map_err(js_error)?;
-        render_value(&transition)
+        Ok(transition.to_json())
     }
 
     #[cfg(feature = "full")]
@@ -98,7 +92,7 @@ impl WasmEngineSession {
     pub fn native_declaration_candidates(
         &self,
         class_names: Vec<String>,
-    ) -> Result<JsValue, JsValue> {
+    ) -> Result<String, JsValue> {
         let candidates = self
             .inner
             .native_declaration_candidates(class_names)
@@ -110,27 +104,27 @@ impl WasmEngineSession {
         &mut self,
         manifest_json: &str,
         emitted_globals_json: Option<String>,
-    ) -> Result<JsValue, JsValue> {
+    ) -> Result<String, JsValue> {
         let transition = self
             .inner
             .refresh_with_emitted_globals(manifest_json, emitted_globals_json.as_deref())
             .map_err(js_error)?;
-        render_value(&transition)
+        Ok(transition.to_json())
     }
 
     #[wasm_bindgen(js_name = executionState)]
-    pub fn execution_state(&self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+    pub fn execution_state(&self, class_names: Vec<String>) -> Result<String, JsValue> {
         let state = self.inner.execution_state(class_names).map_err(js_error)?;
-        render_value(&state)
+        Ok(state.to_json())
     }
 
-    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+    pub fn snapshot(&self) -> Result<String, JsValue> {
         let snapshot = self.inner.snapshot().map_err(js_error)?;
-        render_value(&snapshot)
+        Ok(snapshot.to_json())
     }
 
     #[cfg(feature = "full")]
-    pub fn inspect(&self, class_name: &str) -> Result<JsValue, JsValue> {
+    pub fn inspect(&self, class_name: &str) -> Result<String, JsValue> {
         let inspection = self.inner.inspect(class_name).map_err(js_error)?;
         render_value(&inspection)
     }
@@ -167,7 +161,7 @@ impl WasmRenderSession {
     pub fn native_declaration_candidates(
         &self,
         class_names: Vec<String>,
-    ) -> Result<JsValue, JsValue> {
+    ) -> Result<String, JsValue> {
         render_value(
             &self
                 .inner
@@ -189,16 +183,16 @@ impl WasmRenderSession {
     }
 
     #[wasm_bindgen(js_name = emittedGlobals)]
-    pub fn emitted_globals(&self) -> Result<JsValue, JsValue> {
+    pub fn emitted_globals(&self) -> Result<String, JsValue> {
         render_value(&self.inner.emitted_globals().map_err(js_error)?)
     }
 
-    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+    pub fn snapshot(&self) -> Result<String, JsValue> {
         render_value(&self.inner.snapshot().map_err(js_error)?)
     }
 
     #[wasm_bindgen(js_name = snapshotForClasses)]
-    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+    pub fn snapshot_for_classes(&self, class_names: Vec<String>) -> Result<String, JsValue> {
         render_value(
             &self
                 .inner
@@ -213,8 +207,8 @@ impl WasmRenderSession {
 }
 
 #[wasm_bindgen(js_name = bindingInfo)]
-pub fn binding_info() -> JsValue {
-    let value = mastercss_schema::BindingInfo::new(
+pub fn binding_info() -> String {
+    mastercss_schema::BindingInfo::new(
         env!("CARGO_PKG_VERSION"),
         "wasm32-unknown-unknown",
         "runtime",
@@ -223,6 +217,6 @@ pub fn binding_info() -> JsValue {
         } else {
             &["engine"]
         },
-    );
-    serde_wasm_bindgen::to_value(&value).expect("binding info is serializable")
+    )
+    .to_json()
 }

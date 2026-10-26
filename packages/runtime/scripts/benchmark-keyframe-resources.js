@@ -21,11 +21,14 @@ const sizes = bytes => ({
   brotli: brotliCompressSync(bytes, { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } }).length
 })
 
+// Engine sessions return JSON text since binding ABI 27; older checkouts return objects.
+const result = value => typeof value === 'string' ? JSON.parse(value) : value
+
 function traceResources(module, manifest) {
   const trace = []
   const engine = new module.EngineSession(JSON.stringify(manifest))
   const capture = stage => {
-    const { resources } = engine.snapshot()
+    const { resources } = result(engine.snapshot())
     trace.push({ stage,
       frames: resources.keyframes.map(frame => ({ name: frame.name, id: frame.id, count: frame.refCount })),
       tokens: resources.variables.length
@@ -46,7 +49,7 @@ function traceResources(module, manifest) {
   try {
     retained.ensureClassRules(['animate-fade'])
     retained.deleteClassRules(['animate-fade'])
-    trace.push({ stage: 'preserve floor', frames: retained.snapshot().resources.keyframes
+    trace.push({ stage: 'preserve floor', frames: result(retained.snapshot()).resources.keyframes
       .map(frame => ({ name: frame.name, count: frame.refCount })) })
   } finally { retained.free() }
   return trace

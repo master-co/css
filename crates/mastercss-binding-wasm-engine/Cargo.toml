@@ -16,6 +16,8 @@ default = ["full"]
 # without it.
 full = [
   "dep:mastercss-render",
+  "dep:serde",
+  "dep:serde_json",
   "mastercss-engine/diagnostic-messages",
   "mastercss-engine/stylesheet-resources",
 ]
@@ -24,7 +26,9 @@ full = [
 mastercss-engine = { path = "../mastercss-engine", default-features = false }
 mastercss-render = { path = "../mastercss-render", optional = true }
 mastercss-schema = { path = "../mastercss-schema" }
-serde.workspace = true
-serde_json.workspace = true
-serde-wasm-bindgen.workspace = true
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 wasm-bindgen.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

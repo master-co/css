@@ -10,28 +10,29 @@ export type MasterCSSWasmInput =
   | WebAssembly.Module
 
 // The browser runtime artifact is built without the binding's `full` feature,
-// so render sessions and inspection exports are absent from its module.
+// so render sessions and inspection exports are absent from its module. Results
+// cross the boundary as JSON text.
 interface GeneratedEngineSession {
   manifestJSON?(): string
-  ensureClassRules(classNames: string[]): MasterCSSWasmEngineTransition
-  deleteClassRules(classNames: string[]): MasterCSSWasmEngineTransition
-  registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
-  replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
-  nativeDeclarationCandidates?(classNames: string[]): unknown
-  refresh(manifestJSON: string, emittedGlobalsJSON?: string): MasterCSSWasmEngineTransition
-  snapshot(): MasterCSSWasmEngineSnapshot
-  executionState(classNames: string[]): MasterCSSWasmEngineExecutionState
-  inspect?(className: string): MasterCSSWasmEngineInspection
+  ensureClassRules(classNames: string[]): string
+  deleteClassRules(classNames: string[]): string
+  registerEmittedGlobals(emittedGlobalsJSON: string): string
+  replaceEmittedGlobals(emittedGlobalsJSON: string): string
+  nativeDeclarationCandidates?(classNames: string[]): string
+  refresh(manifestJSON: string, emittedGlobalsJSON?: string): string
+  snapshot(): string
+  executionState(classNames: string[]): string
+  inspect?(className: string): string
   dispose(): void
 }
 
 interface GeneratedRenderSession {
-  nativeDeclarationCandidates(classNames: string[]): unknown
+  nativeDeclarationCandidates(classNames: string[]): string
   ensureClasses(classNames: string[], supported?: readonly boolean[]): void
   ensureStylesheetResources(nativeCSS: string): void
-  emittedGlobals(): unknown
-  snapshot(): unknown
-  snapshotForClasses(classNames: string[]): unknown
+  emittedGlobals(): string
+  snapshot(): string
+  snapshotForClasses(classNames: string[]): string
   dispose(): void
 }
 
@@ -39,7 +40,7 @@ interface GeneratedWasmModule {
   default(input: { module_or_path: MasterCSSWasmInput }): Promise<WebAssembly.Exports>
   EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedEngineSession
   RenderSession?: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedRenderSession
-  bindingInfo(): unknown
+  bindingInfo(): string
 }
 
 export interface MasterCSSWasmEngineLoadOptions {
@@ -222,44 +223,44 @@ function engineSession(
     },
     ensureClassRules(classNames: string[]) {
       assertActive()
-      return session.ensureClassRules(classNames)
+      return JSON.parse(session.ensureClassRules(classNames)) as MasterCSSWasmEngineTransition
     },
     deleteClassRules(classNames: string[]) {
       assertActive()
-      return session.deleteClassRules(classNames)
+      return JSON.parse(session.deleteClassRules(classNames)) as MasterCSSWasmEngineTransition
     },
     registerEmittedGlobals(emittedGlobals: unknown) {
       assertActive()
-      return session.registerEmittedGlobals(
+      return JSON.parse(session.registerEmittedGlobals(
         typeof emittedGlobals === 'string'
           ? emittedGlobals
           : JSON.stringify(emittedGlobals)
-      )
+      )) as MasterCSSWasmEngineTransition
     },
     replaceEmittedGlobals(emittedGlobals: unknown) {
       assertActive()
-      return session.replaceEmittedGlobals(
+      return JSON.parse(session.replaceEmittedGlobals(
         typeof emittedGlobals === 'string'
           ? emittedGlobals
           : JSON.stringify(emittedGlobals)
-      )
+      )) as MasterCSSWasmEngineTransition
     },
     refresh(nextManifestJSON: string, emittedGlobalsJSON?: string) {
       assertActive()
-      return session.refresh(nextManifestJSON, emittedGlobalsJSON)
+      return JSON.parse(session.refresh(nextManifestJSON, emittedGlobalsJSON)) as MasterCSSWasmEngineTransition
     },
     snapshot() {
       assertActive()
-      return session.snapshot()
+      return JSON.parse(session.snapshot()) as MasterCSSWasmEngineSnapshot
     },
     executionState(classNames: string[]) {
       assertActive()
-      return session.executionState(classNames)
+      return JSON.parse(session.executionState(classNames)) as MasterCSSWasmEngineExecutionState
     },
     inspect(className: string) {
       assertActive()
       assertExport(session.inspect, 'inspect()')
-      return session.inspect(className)
+      return JSON.parse(session.inspect(className)) as MasterCSSWasmEngineInspection
     },
     dispose() {
       if (disposed) return
@@ -289,7 +290,7 @@ function renderSession(
   return Object.freeze({
     nativeDeclarationCandidates(classNames: readonly string[]) {
       assertActive()
-      return session.nativeDeclarationCandidates([...classNames]) as readonly MasterCSSWasmNativeDeclarationCandidate[]
+      return JSON.parse(session.nativeDeclarationCandidates([...classNames])) as readonly MasterCSSWasmNativeDeclarationCandidate[]
     },
     ensureClassRules(classNames: readonly string[]) {
       assertActive()
@@ -301,15 +302,15 @@ function renderSession(
     },
     emittedGlobals() {
       assertActive()
-      return session.emittedGlobals()
+      return JSON.parse(session.emittedGlobals()) as unknown
     },
     snapshot() {
       assertActive()
-      return session.snapshot()
+      return JSON.parse(session.snapshot()) as unknown
     },
     snapshotForClassNames(classNames: readonly string[]) {
       assertActive()
-      return session.snapshotForClasses([...classNames])
+      return JSON.parse(session.snapshotForClasses([...classNames])) as unknown
     },
     dispose() {
       if (disposed) return

@@ -68,9 +68,9 @@ export async function createWasmEngineProvider(
   loader: MasterCSSWasmEngineLoader,
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ): Promise<object> {
-  const module = await loader.loadWasmEngine(loadOptions) as { bindingInfo(): unknown }
+  const module = await loader.loadWasmEngine(loadOptions) as { bindingInfo(): string }
   const provider: MasterCSSEngineWasmProvider = Object.freeze({
-    info: module.bindingInfo(),
+    info: JSON.parse(module.bindingInfo()) as unknown,
     createEngineSession: (manifestJSON, emittedGlobalsJSON) =>
       loader.createWasmEngineSession(
         manifestJSON,
