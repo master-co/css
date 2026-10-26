@@ -6,7 +6,9 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { defaultBuildManifest } from '@master/css-internal/project'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
 import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal/manifest-module'
-import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-internal/node'
+import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId, toResolvedMasterCSSProgramId } from '@master/css-internal/node'
+import { MASTER_CSS_PROGRAM_QUERY } from '@master/css-internal/program-module'
+import { createEngineSync } from '@master/css/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
 
@@ -64,6 +66,22 @@ describe('ManifestLoaderPlugin', () => {
     expect(code).toContain('accent')
     expect(code).toContain('#456')
     expect(code).toContain('badge')
+  })
+
+  it('compiles per-file CSS manifests into runtime programs with ?master-css-program', async () => {
+    const context = await createContext()
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call(
+      { resolve },
+      './theme.css' + MASTER_CSS_PROGRAM_QUERY,
+      path.join(FIXTURE_DIR, 'entry.ts')
+    )
+    expect(resolvedId).toBe(toResolvedMasterCSSProgramId(path.join(FIXTURE_DIR, 'theme.css')))
+    const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    const { default: program } = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(code)}`) as { default: Uint8Array }
+    using engine = createEngineSync({ program })
+    expect(engine.ensureClassRules(['badge']).mutations.length).toBeGreaterThan(0)
   })
 
   it('keeps per-file manifest dependencies registered after invalid CSS and recovers on the next run', async () => {

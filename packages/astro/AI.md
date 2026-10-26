@@ -19,7 +19,7 @@
 
 ## Astro Build Contracts
 
-- Server environments load inline manifests: Astro renders server asset URLs as public paths and moves server assets into the client output before prerendering (`inlineServerManifests`). Client environments keep the emitted manifest asset.
+- Server environments load inline manifests: Astro renders server asset URLs as public paths and moves server assets into the client output before prerendering (`inlineServerManifests`). Client environments import the emitted runtime program asset, which runtime-mode static builds preload after the build (`runtime-preload.ts`).
 - During a build, `astro:build:start` lends prerendering middleware the final client stylesheets (`prerender-stylesheets.ts`) so the hydration manifest accounts for linked CSS; rendered native imports publish under `_master-css/native/`. Deployed server routes render without stylesheet descriptions.
 - `astro:build:done` writes runtime stylesheet sidecars for runtime and progressive modes after prerendering.
 - Page CSS is processed only by the server environments, which Astro builds before the client. In runtime mode the client bundle's emitted globals also count the server environments' final emitted globals (`deliverServerEmittedGlobals`). Progressive pages carry their own emitted globals in their hydration manifests, so the client bundle keeps only its own there.

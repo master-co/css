@@ -140,15 +140,21 @@ describe('Webpack runtime mode', () => {
       server = served.server
       browser = await chromium.launch()
       const page = await browser.newPage()
+      const requests: string[] = []
+      page.on('request', request => requests.push(new URL(request.url()).pathname))
       await page.goto(served.url)
       await page.waitForSelector('#probe')
       await page.waitForFunction(() => getComputedStyle(document.getElementById('probe')!).display === 'block')
       expect(await page.locator('script[defer][src="./master-css-runtime.js"]').count()).toBe(1)
       expect(await page.locator('link[rel="preload"][as="script"][href="./master-css-runtime.js"]').count()).toBe(1)
 
-      const manifestPreload = page.locator('link[rel="modulepreload"][as="json"][href^="./master-css-manifest."]')
-      expect(await manifestPreload.count()).toBe(1)
-      expect(await manifestPreload.getAttribute('crossorigin')).toBe('')
+      const programPreload = page.locator('link[rel="preload"][as="fetch"][href^="./master-css-program."]')
+      expect(await programPreload.count()).toBe(1)
+      expect(await programPreload.getAttribute('crossorigin')).toBe('')
+      // The runtime's fetch reuses the preloaded response, and no manifest ships to the browser.
+      const programPath = new URL(await programPreload.getAttribute('href') ?? '', served.url).pathname
+      expect(requests.filter(pathname => pathname.includes('master-css-program'))).toEqual([programPath])
+      expect(requests.filter(pathname => pathname.includes('master-css-manifest'))).toEqual([])
 
       const state = await page.evaluate(() => {
         const globalCSS = document.head.querySelector('link[rel="stylesheet"]')
@@ -158,7 +164,7 @@ describe('Webpack runtime mode', () => {
         return {
           display: getComputedStyle(document.getElementById('probe')!).display,
           hasRuntimePreload: Boolean(document.head.querySelector('link[rel="preload"][as="script"][href$="master-css-runtime.js"]')),
-          hasManifestPreload: Boolean(document.head.querySelector('link[rel="modulepreload"][as="json"][href*="master-css-manifest."]')),
+          hasManifestPreload: Boolean(document.head.querySelector('link[href*="master-css-manifest."]')),
           runtimeStyleAfterGlobalCSS: Boolean(globalCSS && runtimeStyle && headChildren.indexOf(globalCSS) < headChildren.indexOf(runtimeStyle)),
           runtimeScriptIsLastBodyElement: document.body.lastElementChild === runtimeScript
         }
@@ -167,10 +173,65 @@ describe('Webpack runtime mode', () => {
       expect(state).toEqual({
         display: 'block',
         hasRuntimePreload: true,
-        hasManifestPreload: true,
+        hasManifestPreload: false,
         runtimeStyleAfterGlobalCSS: true,
         runtimeScriptIsLastBodyElement: true
       })
+    } finally {
+      await browser?.close()
+      await new Promise<void>((resolve) => server?.close(() => resolve()) ?? resolve())
+      rmSync(root, { recursive: true, force: true })
+    }
+  }, 180000)
+})
+
+describe('Webpack progressive mode', () => {
+  it('loads the runtime program only once a class lacks pre-rendered CSS', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'master-css-webpack-progressive-'))
+    const dist = join(root, 'dist')
+    let browser: Browser | undefined
+    let server: Server | undefined
+    try {
+      writeFileSync(join(root, 'entry.js'), 'console.log("webpack progressive fixture")\n')
+      writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@utility probe-grid { display: grid; }\n')
+      const hydrationManifest = { version: 5, languageVersion: 16, classNames: ['display:block'], resourceOrder: { variables: [], keyframes: [] } }
+      const html = [
+        '<!doctype html><html><head>',
+        '<style id="master-css">@layer utilities{.display\\:block{display:block}}</style>',
+        `<script id="master-css-hydration-manifest" type="application/json">${JSON.stringify(hydrationManifest)}</script>`,
+        '</head><body><main id="probe" class="display:block">Probe</main></body></html>'
+      ].join('')
+      await runWebpack({
+        mode: 'production',
+        context: root,
+        entry: './entry.js',
+        output: { path: dist, filename: '[name].js', chunkFilename: '[name].[contenthash:8].js', publicPath: './' },
+        plugins: [
+          new MasterCSSWebpackPlugin({ mode: 'progressive' }, root),
+          new EmitFixtureAssetsPlugin(html, '')
+        ]
+      })
+
+      const served = await serveDirectory(dist)
+      server = served.server
+      browser = await chromium.launch()
+      const page = await browser.newPage()
+      const requests: string[] = []
+      const errors: string[] = []
+      page.on('request', request => requests.push(new URL(request.url()).pathname))
+      page.on('pageerror', error => errors.push(error.message))
+      await page.goto(served.url)
+      await page.waitForFunction(() => (globalThis as any).masterCSSRuntime?.snapshot().observing)
+      expect(await page.evaluate(() => (globalThis as any).masterCSSRuntime.snapshot().engine)).toBe('deferred')
+      expect(await page.locator('link[href*="master-css-program"]').count()).toBe(0)
+      // Every class is pre-rendered, so neither the program nor the engine Wasm loads.
+      expect(requests.filter(pathname => /\.wasm$|master-css-program/.test(pathname))).toEqual([])
+
+      await page.locator('#probe').evaluate(element => element.setAttribute('class', 'probe-grid'))
+      await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).display), { timeout: 10000 }).toBe('grid')
+      expect(await page.evaluate(() => (globalThis as any).masterCSSRuntime.snapshot().engine)).toBe('ready')
+      expect(requests.filter(pathname => /^\/master-css-program\.[a-f0-9]{8}\.bin$/.test(pathname))).toHaveLength(1)
+      expect(errors).toEqual([])
     } finally {
       await browser?.close()
       await new Promise<void>((resolve) => server?.close(() => resolve()) ?? resolve())

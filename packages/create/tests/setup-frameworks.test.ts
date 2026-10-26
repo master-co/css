@@ -566,7 +566,6 @@ bootstrapApplication(AppComponent)
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
       '@master/css',
       '@master/css-runtime',
-      '@master/css-preset',
       '@master/eslint-config-css',
       'eslint',
       '@master/css-mcp'
@@ -575,7 +574,7 @@ bootstrapApplication(AppComponent)
     applySetup({ root, install: false, mode: 'runtime' })
 
     expect(readProjectFile(root, 'src/main.ts')).toContain("import { MasterCSSRuntime } from '@master/css-runtime'")
-    expect(readProjectFile(root, 'src/main.ts')).toContain('MasterCSSRuntime.start({ manifest: defaultManifest })')
+    expect(readProjectFile(root, 'src/main.ts')).toContain("MasterCSSRuntime.start({ program: () => import('@master/css-runtime/default-program').then((module) => module.defaultProgram) })")
     expect(readProjectFile(root, 'src/main.ts')).toContain('.then((cssRuntime) => cssRuntime.observe())')
     expect(readProjectFile(root, 'src/styles.css')).toBe("@import '@master/css';\n")
   })

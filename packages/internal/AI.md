@@ -8,10 +8,11 @@ published consumers. It is not a general-purpose shared utility package.
 
 ## Owns
 
-- Virtual module ids and `?master-css-manifest` request helpers.
-- Generated manifest, emittedGlobals, and runtime-bootstrap module source helpers.
+- Virtual module ids and `?master-css-manifest` / `?master-css-program` request helpers.
+- Generated manifest, runtime program, emittedGlobals, and runtime-bootstrap module source helpers.
 - Merging emittedGlobals of separate stylesheet hosts.
-- Shared default project-manifest loading and the narrow manifest virtual-module plugin.
+- Shared default project-manifest loading and the narrow manifest virtual-module plugin,
+  which also serves `virtual:master-css-program` when its host passes a program compiler.
 - Default build manifest and manifest-entry request helpers.
 - Explicit Node virtual-path/hash helpers.
 - Official-host workspace package and directory discovery.
@@ -28,7 +29,8 @@ published consumers. It is not a general-purpose shared utility package.
 ## Internal Surface
 
 - Browser-safe: `.`, `./module`, `./manifest-module`, `./manifest-facade`,
-  `./style-module`, `./emitted-globals-module`, `./runtime-bootstrap`, `./project`.
+  `./program-module`, `./style-module`, `./emitted-globals-module`, `./runtime-bootstrap`,
+  `./project`.
 - Node-only: `./node`, `./manifest-loader`, `./manifest-virtual-module`,
   `./workspace`, `./workspace-directories`.
 
@@ -42,6 +44,7 @@ declarations.
 - `src/module.ts`
 - `src/manifest-module.ts`
 - `src/manifest-facade.ts`
+- `src/program-module.ts`
 - `src/style-module.ts`
 - `src/emitted-globals-module.ts`
 - `src/runtime-bootstrap.ts`
@@ -56,12 +59,17 @@ declarations.
 - Virtual id and generated import specifier compatibility.
 - Keeping the package dependency-light and adapter-neutral.
 - Shared protocol changes affecting multiple integrations.
-- Runtime bootstrap modes: progressive pages pass the project manifest as a dynamic
-  `import('virtual:master-css-manifest')` loader so a fully pre-rendered page never
+- Browsers receive runtime programs, never manifests: `virtual:master-css-program` is
+  inline in development and server builds, and browser builds emit a
+  `master-css-program.bin` asset that a fetch facade loads. Server rendering keeps
+  `virtual:master-css-manifest`.
+- Runtime bootstrap modes: progressive pages pass the program as a dynamic
+  `import('virtual:master-css-program')` loader so a fully pre-rendered page never
   requests it; runtime mode imports it statically for its preload.
 - Dependency/watch registration remaining stable when manifest compilation fails.
 - Production manifest JSON (`toProductionManifestJSON`) omits `source` provenance, which only
-  serves tooling and names build-host paths; development modules keep it.
+  serves tooling and names build-host paths; production programs compile from it, and
+  development modules keep it.
 - Accidentally exposing the package as a published dependency or third-party SPI.
 - Turning the package into a generic home for unrelated repository helpers.
 

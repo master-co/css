@@ -16,7 +16,7 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
         })
       })
       context.on('reset', () => {
-        context.writeDefaultManifestModule().catch((error: unknown) => {
+        context.writeDefaultManifestModules().catch((error: unknown) => {
           console.error('[master-css.webpack] manifest module update failed:', error)
         })
         void context.queueResetReplay()

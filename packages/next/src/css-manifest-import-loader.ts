@@ -9,15 +9,21 @@ import {
 } from '@master/css-internal/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
-  toVirtualCSSManifestModulePath
+  toVirtualCSSManifestModulePath,
+  toVirtualCSSProgramModulePath
 } from '@master/css-internal/node'
 import { toInlineManifestModule } from '@master/css-internal/manifest-facade'
+import {
+  isMasterCSSProgramRequest,
+  stripMasterCSSProgramQuery
+} from '@master/css-internal/program-module'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
 } from '@master/css-internal/project'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { toRuntimeProgramModule } from './runtime-program'
 
 const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -70,19 +76,22 @@ function resolveRequest(context: LoaderContext, request: string) {
   })
 }
 
-function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
+/** Writes the manifest, or with `program` the runtime program, of a CSS entry as a tracked ESM input. */
+async function writeCSSManifestModule(context: LoaderContext, manifestPath: string, program: boolean) {
   if (!isManifestStylesheetRequest(manifestPath)) {
-    throw new TypeError('Master CSS manifest queries only support CSS entry files.')
+    throw new TypeError(`Master CSS ${program ? 'program' : 'manifest'} queries only support CSS entry files.`)
   }
 
   const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
   const production = context.mode === 'production'
-  const developmentManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
+  const developmentModulePath = program
+    ? toVirtualCSSProgramModulePath(projectDir, manifestPath)
+    : toVirtualCSSManifestModulePath(projectDir, manifestPath)
   // `next dev` and `next build` may run at once; production modules omit
   // source provenance, so each mode owns its generated file.
-  const virtualManifestPath = production
-    ? developmentManifestPath.replace(/\.manifest\.js$/, '.production.manifest.js')
-    : developmentManifestPath
+  const virtualModulePath = production
+    ? developmentModulePath.replace(/\.(manifest|program)\.js$/, '.production.$1.js')
+    : developmentModulePath
   const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, { projectDir }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
@@ -93,19 +102,21 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
     baseManifest: defaultBuildManifest
   })
   ensureVirtualModulePackageJSONPath(projectDir)
-  mkdirSync(dirname(virtualManifestPath), { recursive: true })
-  const moduleSource = toInlineManifestModule(production
-    ? toProductionManifestJSON(result.manifest)
-    : serializeMasterCSSManifest(result.manifest))
-  if (!existsSync(virtualManifestPath) || readFileSync(virtualManifestPath, 'utf8') !== moduleSource) {
-    writeFileSync(virtualManifestPath, moduleSource)
+  mkdirSync(dirname(virtualModulePath), { recursive: true })
+  const moduleSource = program
+    ? await toRuntimeProgramModule(result.manifest, production)
+    : toInlineManifestModule(production
+      ? toProductionManifestJSON(result.manifest)
+      : serializeMasterCSSManifest(result.manifest))
+  if (!existsSync(virtualModulePath) || readFileSync(virtualModulePath, 'utf8') !== moduleSource) {
+    writeFileSync(virtualModulePath, moduleSource)
   }
-  context.addDependency?.(virtualManifestPath)
+  context.addDependency?.(virtualModulePath)
   for (const dependency of result.dependencies) {
     if (dependencies.has(dependency)) continue
     context.addDependency?.(dependency)
   }
-  return virtualManifestPath
+  return virtualModulePath
 }
 
 async function transformManifestImports(context: LoaderContext, source: string) {
@@ -115,14 +126,17 @@ async function transformManifestImports(context: LoaderContext, source: string) 
 
   for (const match of source.matchAll(MASTER_CSS_MANIFEST_IMPORT_PATTERN)) {
     const [fullMatch, prefix, quote, request] = match
-    if (!isMasterCSSManifestRequest(request)) continue
+    const program = isMasterCSSProgramRequest(request)
+    if (!program && !isMasterCSSManifestRequest(request)) continue
     if (match.index === undefined) continue
 
     matched = true
-    const manifestPath = await resolveRequest(context, stripMasterCSSManifestQuery(request))
-    const virtualManifestPath = writeCSSManifestModule(context, manifestPath)
+    const manifestPath = await resolveRequest(context, program
+      ? stripMasterCSSProgramQuery(request)
+      : stripMasterCSSManifestQuery(request))
+    const virtualModulePath = await writeCSSManifestModule(context, manifestPath, program)
     result += source.slice(lastIndex, match.index)
-    result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualManifestPath)}${quote}`
+    result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualModulePath)}${quote}`
     lastIndex = match.index + fullMatch.length
   }
 

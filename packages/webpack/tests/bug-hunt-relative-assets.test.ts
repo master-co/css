@@ -42,6 +42,9 @@ it('resolves relative runtime assets from each emitted HTML directory', async ()
             const href = html.match(/<script[^>]+src=["']?([^\s"'>]*master-css-runtime\.js)/)?.[1]
             expect(href, html).toBeTruthy()
             expect(existsSync(resolve(dist, dirname(name), href!)), `${name}: ${href}`).toBe(true)
+            const programHref = html.match(/<link[^>]+href=["']?([^\s"'>]*master-css-program\.[a-f0-9]{8}\.bin)/)?.[1]
+            expect(programHref, html).toBeTruthy()
+            expect(existsSync(resolve(dist, dirname(name), programHref!)), `${name}: ${programHref}`).toBe(true)
         }
     } finally {
         rmSync(root, { recursive: true, force: true })

@@ -9,13 +9,13 @@ function loadBootstrap(progressive: boolean) {
 }
 
 describe('runtime bootstrap', () => {
-  it('imports the project manifest up front in runtime mode', () => {
-    expect(loadBootstrap(false)).toContain(`import masterCSSManifest from 'virtual:master-css-manifest'`)
+  it('imports the runtime program up front in runtime mode', () => {
+    expect(loadBootstrap(false)).toContain(`import masterCSSProgram from 'virtual:master-css-program'`)
   })
 
-  it('loads the project manifest only when a progressive engine starts', () => {
+  it('loads the runtime program only when a progressive engine starts', () => {
     const source = loadBootstrap(true)
-    expect(source).not.toMatch(/^import .* from 'virtual:master-css-manifest'/m)
-    expect(source).toContain(`import('virtual:master-css-manifest')`)
+    expect(source).not.toMatch(/^import .* from 'virtual:master-css-program'/m)
+    expect(source).toContain(`import('virtual:master-css-program')`)
   })
 })

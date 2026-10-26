@@ -334,20 +334,20 @@ export function addGeneratedStylesheetImport(content: string) {
 export function addLitShadowRuntime(content: string) {
   if (
     content.includes('@master/css-runtime')
-    && content.includes('virtual:master-css-manifest')
-    && content.includes('@withMasterCSSRuntime({ manifest, emittedGlobals })')
+    && content.includes('virtual:master-css-program')
+    && content.includes('@withMasterCSSRuntime({ program, emittedGlobals })')
     && content.includes('masterCSSRuntime?: MasterCSSRuntime')
   ) return content
   let next = addImport(content, "import { withMasterCSSRuntime } from '@master/css-runtime'")
   next = addImport(next, "import type { MasterCSSRuntime } from '@master/css-runtime'")
-  next = addImport(next, "import manifest from 'virtual:master-css-manifest'")
+  next = addImport(next, "import program from 'virtual:master-css-program'")
   next = addImport(next, "import emittedGlobals from 'virtual:master-css-emitted-globals'")
 
-  if (!next.includes('@withMasterCSSRuntime({ manifest, emittedGlobals })')) {
+  if (!next.includes('@withMasterCSSRuntime({ program, emittedGlobals })')) {
     if (/@customElement\([^\n]+\)\nexport\s+class\s/.test(next)) {
-      next = next.replace(/(@customElement\([^\n]+\)\n)(export\s+class\s)/, '$1@withMasterCSSRuntime({ manifest, emittedGlobals })\n$2')
+      next = next.replace(/(@customElement\([^\n]+\)\n)(export\s+class\s)/, '$1@withMasterCSSRuntime({ program, emittedGlobals })\n$2')
     } else {
-      next = next.replace(/export\s+class\s/, '@withMasterCSSRuntime({ manifest, emittedGlobals })\nexport class ')
+      next = next.replace(/export\s+class\s/, '@withMasterCSSRuntime({ program, emittedGlobals })\nexport class ')
     }
   }
 
@@ -360,12 +360,9 @@ export function addLitShadowRuntime(content: string) {
 
 export function addAngularRuntimeSetup(content: string) {
   if (content.includes('@master/css-runtime')) return content
-  let next = addImport(content, "import defaultManifestJSON from '@master/css-preset/default-manifest.json'")
-  next = addImport(next, "import { MasterCSSRuntime } from '@master/css-runtime'")
-  next = addImport(next, "import type { MasterCSSManifest } from '@master/css-schema/manifest'")
-  const setup = `const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-
-void MasterCSSRuntime.start({ manifest: defaultManifest })
+  const next = addImport(content, "import { MasterCSSRuntime } from '@master/css-runtime'")
+  // The default preset's program loads as its own chunk.
+  const setup = `void MasterCSSRuntime.start({ program: () => import('@master/css-runtime/default-program').then((module) => module.defaultProgram) })
   .then((cssRuntime) => cssRuntime.observe())
   .catch((error) => console.error(error))
 

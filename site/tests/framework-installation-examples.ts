@@ -77,9 +77,9 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     const css = assets.filter(file => file.endsWith('.css')).map(file => readFileSync(join(root, 'dist/assets', file), 'utf8')).join('\n')
     if (staticMode) {
       assert.match(css, /font-style:italic/)
-      assert.ok(!assets.some(file => /\.wasm$|master-css-manifest/.test(file)), 'Static builds must not ship runtime assets')
+      assert.ok(!assets.some(file => /\.wasm$|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     } else {
-      assert.ok(assets.some(file => /master-css-manifest/.test(file)), 'Runtime manifest is emitted')
+      assert.ok(assets.some(file => /master-css-program/.test(file)), 'Runtime program is emitted')
       assert.ok(assets.some(file => file.endsWith('.wasm')), 'Runtime Wasm is emitted')
     }
     return { root: join(root, 'dist'), dispose }

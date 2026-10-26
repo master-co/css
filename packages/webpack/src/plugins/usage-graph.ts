@@ -64,7 +64,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
             // before its filesystem event reaches watchRun. Refresh manifest
             // ownership from the sources this compilation actually rebuilt.
             if (entries.some(([file]) => context.getDefaultManifestDependencyPaths().includes(file))) {
-              await context.writeDefaultManifestModule()
+              await context.writeDefaultManifestModules()
             }
             await context.processModuleContents(entries, context.isGeneratedCSSModulePath)
             await context.writeGeneratedCSSModule()

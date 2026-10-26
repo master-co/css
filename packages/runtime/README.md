@@ -78,6 +78,17 @@ cssRuntime.observe()
 
 The runtime program is the project manifest compiled for the browser engine. Integrations compile it at build time; other Node build steps can call `compileRuntimeProgram(manifest)` from `@master/css/node`. Browsers cannot compile manifests.
 
+Apps that only use the default preset and have no Master CSS bundler integration can import its program from the runtime package:
+
+```js
+import { MasterCSSRuntime } from '@master/css-runtime'
+
+const cssRuntime = await MasterCSSRuntime.start({
+  program: () => import('@master/css-runtime/default-program').then(module => module.defaultProgram)
+})
+cssRuntime.observe()
+```
+
 ## CDN IIFE
 
 Use the CDN runtime when a page only needs the default preset and zero configuration:

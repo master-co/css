@@ -8,15 +8,21 @@ import {
   MASTER_CSS_MANIFEST_QUERY,
   VIRTUAL_MANIFEST_ID
 } from '@master/css-internal/manifest-module'
+import {
+  MASTER_CSS_PROGRAM_QUERY,
+  VIRTUAL_PROGRAM_ID
+} from '@master/css-internal/program-module'
 import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
 import {
   createVirtualDefaultManifestModulePathPattern,
+  createVirtualDefaultProgramModulePathPattern,
   createVirtualEmittedGlobalsModulePathPattern,
   ensureVirtualManifestModulePath,
   ensureVirtualEmittedGlobalsModulePath,
   ensureVirtualModuleFile,
-  ensureVirtualModulePackageJSONPath
+  ensureVirtualModulePackageJSONPath,
+  toVirtualDefaultProgramModulePath
 } from '@master/css-internal/node'
 import {
   prepareNextStatic,
@@ -34,8 +40,12 @@ type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.slice(1))
-const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
+const MASTER_CSS_PROGRAM_RESOURCE_QUERY = new RegExp(MASTER_CSS_PROGRAM_QUERY.slice(1))
+// Manifest and program requests of a CSS entry produce JavaScript, never CSS.
+const MASTER_CSS_MODULE_RESOURCE_QUERY = new RegExp(`${MASTER_CSS_MANIFEST_RESOURCE_QUERY.source}|${MASTER_CSS_PROGRAM_RESOURCE_QUERY.source}`)
+const MASTER_CSS_MODULE_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}|\\${MASTER_CSS_PROGRAM_QUERY}`)
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
+const MASTER_CSS_VIRTUAL_PROGRAM_PATH_PATTERN = createVirtualDefaultProgramModulePathPattern()
 const MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN = createVirtualEmittedGlobalsModulePathPattern()
 const MASTER_CSS_STATIC_OUTPUT_PATTERN = /[/\\]\.master[/\\]next\.css$/
 const MASTER_CSS_STATIC_STYLESHEET_PATTERN = /[/\\]\.master[/\\]next-style-[^/\\]+\.css$/
@@ -76,11 +86,11 @@ function createInstrumentationClientSource(stylesheetBase: string, progressive: 
   return [
     `import 'private-next-master-css-user-instrumentation-client'`,
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
-    ...(progressive ? [] : [`import masterCSSManifest from 'virtual:master-css-manifest'`]),
+    ...(progressive ? [] : [`import masterCSSProgram from 'virtual:master-css-program'`]),
     `import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`,
     ``,
-    // Progressive pages defer the engine, so the project manifest loads only if it starts.
-    ...(progressive ? [`const masterCSSManifest = () => import('virtual:master-css-manifest').then(resolveModuleDefault)`] : []),
+    // Progressive pages defer the engine, so the runtime program loads only if it starts.
+    ...(progressive ? [`const masterCSSProgram = () => import('virtual:master-css-program').then(resolveModuleDefault)`] : []),
     `const state = (globalThis.__MASTER_CSS_NEXT_RUNTIME__ ??= {})`,
     ``,
     `async function resolveModuleDefault(module) {`,
@@ -99,18 +109,18 @@ function createInstrumentationClientSource(stylesheetBase: string, progressive: 
     `    destroyRuntime()`,
     `}`,
     ``,
-    `async function startRuntime(manifestModule = masterCSSManifest, emittedGlobalsModule = masterCSSEmittedGlobals) {`,
+    `async function startRuntime(programModule = masterCSSProgram, emittedGlobalsModule = masterCSSEmittedGlobals) {`,
     `    if (typeof document === 'undefined') return`,
     `    const startToken = {}`,
     `    state.startToken = startToken`,
     `    destroyRuntime()`,
-    `    const manifest = typeof manifestModule === 'function' ? manifestModule : await resolveModuleDefault(manifestModule)`,
+    `    const program = typeof programModule === 'function' ? programModule : await resolveModuleDefault(programModule)`,
     `    const emittedGlobals = await resolveModuleDefault(emittedGlobalsModule)`,
     `    if (state.startToken !== startToken) return`,
     `    const startup = (state.pendingStart ?? Promise.resolve()).catch(() => {}).then(async () => {`,
     `        if (state.startToken !== startToken) return`,
     `        const nextRuntime = await MasterCSSRuntime.start({`,
-    `            manifest,`,
+    `            program,`,
     `            emittedGlobals,`,
     `            stylesheetDelivery: { base: ${JSON.stringify(stylesheetBase)}, development: process.env.NODE_ENV === 'development' },`,
     `            onDiagnostic: diagnostic => console.error(diagnostic)`,
@@ -134,13 +144,13 @@ function createInstrumentationClientSource(stylesheetBase: string, progressive: 
     `        state.hotRegistered = true`,
     `        hot.accept(() => {})`,
     `        hot.accept([`,
-    `            'virtual:master-css-manifest',`,
+    `            'virtual:master-css-program',`,
     `            'virtual:master-css-emitted-globals'`,
     `        ], () => {`,
-    `            const nextManifestModule = import('virtual:master-css-manifest')`,
+    `            const nextProgramModule = import('virtual:master-css-program')`,
     `            const nextEmittedGlobalsModule = import('virtual:master-css-emitted-globals')`,
     `            void startRuntime(`,
-    `                nextManifestModule,`,
+    `                nextProgramModule,`,
     `                nextEmittedGlobalsModule`,
     `            ).catch(() => {})`,
     `        })`,
@@ -230,8 +240,24 @@ function ensureComposedAdapterPath(projectDir: string, masterAdapterPath: string
   return composedAdapterPath
 }
 
+/** Files that serve the Master CSS virtual module IDs, as each bundler addresses them. */
+interface VirtualModulePaths {
+  css: string
+  manifest: string
+  program: string
+  emittedGlobals: string
+}
+
 function ensureVirtualManifestPath(projectDir = process.cwd()) {
   return ensureVirtualManifestModulePath(projectDir)
+}
+
+function ensureVirtualProgramPath(projectDir = process.cwd()) {
+  // The program loader replaces this source, so it never runs.
+  return ensureVirtualModuleFile(
+    toVirtualDefaultProgramModulePath(projectDir),
+    `throw new Error('[@master/css-next] ${VIRTUAL_PROGRAM_ID} requires the Master CSS program loader.')\n`
+  )
 }
 
 function ensureVirtualEmittedGlobalsPath(projectDir = process.cwd()) {
@@ -247,19 +273,26 @@ function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
   return Array.isArray(rule) ? rule : rule ? [rule] : []
 }
 
+function toVirtualModuleAliases(paths: VirtualModulePaths) {
+  return {
+    [VIRTUAL_CSS_ID]: paths.css,
+    [VIRTUAL_MANIFEST_ID]: paths.manifest,
+    [VIRTUAL_PROGRAM_ID]: paths.program,
+    [VIRTUAL_EMITTED_GLOBALS_ID]: paths.emittedGlobals
+  }
+}
+
 function applyMasterCSSWebpackConfig(
   config: WebpackConfig,
   cssManifestLoaderPath: string,
   stylesheetLoaderPath: string,
-  virtualCSSPath: string,
-  virtualManifestPath: string,
-  virtualEmittedGlobalsPath: string,
+  virtualPaths: VirtualModulePaths,
   runtimeInstrumentationPath: string | undefined,
   projectDir: string,
   staticStatePath?: string
 ) {
   config.module ??= {}
-  config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY, staticStatePath ? { staticStatePath } : {})
+  config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MODULE_RESOURCE_QUERY, staticStatePath ? { staticStatePath } : {})
   if (staticStatePath) {
     config.watchOptions = { ...config.watchOptions, ignored: staticWatchIgnores(config.watchOptions?.ignored) }
     // Webpack can publish during the first changed module's rebuild, avoiding
@@ -279,6 +312,18 @@ function applyMasterCSSWebpackConfig(
         options: {
           virtual: true,
           module: true
+        }
+      }
+    ]
+  })
+  config.module.rules.push({
+    test: MASTER_CSS_VIRTUAL_PROGRAM_PATH_PATTERN,
+    use: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          virtual: true,
+          program: true
         }
       }
     ]
@@ -305,12 +350,19 @@ function applyMasterCSSWebpackConfig(
       }
     ]
   })
+  config.module.rules.push({
+    resourceQuery: MASTER_CSS_PROGRAM_RESOURCE_QUERY,
+    use: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          program: true
+        }
+      }
+    ]
+  })
   config.resolve ??= {}
-  const virtualModules = {
-    [VIRTUAL_CSS_ID]: virtualCSSPath,
-    [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
-    [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath
-  }
+  const virtualModules = toVirtualModuleAliases(virtualPaths)
   config.plugins ??= []
   config.plugins.push(createWebpackVirtualModulesPlugin(virtualModules))
   const aliases = config.resolve.alias || {}
@@ -336,9 +388,7 @@ function applyMasterCSSTurbopackConfig(
   cssManifestLoaderPath: string,
   cssManifestImportLoaderPath: string,
   stylesheetLoaderPath: string,
-  virtualCSSPath: string,
-  virtualManifestPath: string,
-  virtualEmittedGlobalsPath: string,
+  virtualPaths: VirtualModulePaths,
   projectDir: string,
   runtimeInstrumentationPath?: string,
   includeStyleRule = true
@@ -363,6 +413,21 @@ function applyMasterCSSTurbopackConfig(
         options: {
           virtual: true,
           module: true
+        }
+      }
+    ],
+    type: 'ecmascript' as const
+  }
+  const masterCSSVirtualProgramRule = {
+    condition: {
+      path: MASTER_CSS_VIRTUAL_PROGRAM_PATH_PATTERN
+    },
+    loaders: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          virtual: true,
+          program: true
         }
       }
     ],
@@ -399,10 +464,27 @@ function applyMasterCSSTurbopackConfig(
     ],
     type: 'ecmascript' as const
   }
+  const masterCSSProgramRule = {
+    condition: {
+      all: [
+        { path: /\.css$/ },
+        { query: MASTER_CSS_PROGRAM_RESOURCE_QUERY }
+      ]
+    },
+    loaders: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          program: true
+        }
+      }
+    ],
+    type: 'ecmascript' as const
+  }
   const publishedStylesheetMapRule = {
     condition: { all: [
       { path: NEXT_STYLESHEET_ASSET_PATTERN },
-      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+      { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
     ] },
     loaders: [fileURLToPath(new URL('./stylesheet-map-loader.js', import.meta.url))],
     type: 'css' as const
@@ -413,7 +495,7 @@ function applyMasterCSSTurbopackConfig(
         { path: /\.(css|scss|sass)$/ },
         { not: { path: /\.module\.(css|scss|sass)$/ } },
         { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
-        { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+        { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
       ]
     },
     loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
@@ -427,16 +509,14 @@ function applyMasterCSSTurbopackConfig(
     condition: { all: [
       { path: /\.module\.(css|scss|sass)$/ },
       { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
-      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+      { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
     ] }
   }
   return {
     ...nextConfig.turbopack,
     resolveAlias: {
       ...resolveAlias,
-      [VIRTUAL_CSS_ID]: virtualCSSPath,
-      [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
-      [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath,
+      ...toVirtualModuleAliases(virtualPaths),
       ...(turbopackRuntimeInstrumentationPath
         ? {
           [MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID]: userInstrumentationAlias,
@@ -456,8 +536,10 @@ function applyMasterCSSTurbopackConfig(
       ])),
       '*': [
         masterCSSVirtualManifestRule,
+        masterCSSVirtualProgramRule,
         masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
+        masterCSSProgramRule,
         publishedStylesheetMapRule,
         ...(includeStyleRule ? [masterCSSStyleRule, cssModuleRule] : []),
         ...toRuleArray(configRules)
@@ -482,7 +564,7 @@ function createCSSManifestImportSourceRules(cssManifestImportLoaderPath: string,
     condition: {
       all: [
         { not: 'foreign' as const },
-        { content: MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN }
+        { content: MASTER_CSS_MODULE_IMPORT_CONTENT_PATTERN }
       ]
     },
     type,
@@ -496,13 +578,11 @@ function applyMasterCSSStaticTurbopackConfig(
   cssManifestImportLoaderPath: string,
   stylesheetLoaderPath: string,
   staticCSSLoaderPath: string,
-  virtualCSSPath: string,
-  virtualManifestPath: string,
-  virtualEmittedGlobalsPath: string,
+  virtualPaths: VirtualModulePaths,
   projectDir: string,
   statePath: string
 ) {
-  const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, virtualCSSPath, virtualManifestPath, virtualEmittedGlobalsPath, projectDir, undefined, false)
+  const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, virtualPaths, projectDir, undefined, false)
   const rules = turbopackConfig.rules || {}
   const starRules = toRuleArray(rules['*'])
   const cssImportRule = {
@@ -511,7 +591,7 @@ function applyMasterCSSStaticTurbopackConfig(
         { not: 'foreign' as const },
         { path: /\.(css|scss|sass)$/ },
         { content: createManifestEntryPattern() },
-        { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+        { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
       ]
     },
     loaders: [
@@ -542,7 +622,7 @@ function applyMasterCSSStaticTurbopackConfig(
         { not: { path: MASTER_CSS_STATIC_OUTPUT_PATTERN } },
         { not: { path: MASTER_CSS_STATIC_STYLESHEET_PATTERN } },
         { not: { path: NEXT_STYLESHEET_ASSET_PATTERN } },
-        { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+        { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
       ]
     },
     loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
@@ -554,7 +634,7 @@ function applyMasterCSSStaticTurbopackConfig(
     condition: { all: [
       { path: /\.module\.(css|scss|sass)$/ },
       { not: { content: createManifestEntryPattern() } },
-      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+      { not: { query: MASTER_CSS_MODULE_RESOURCE_QUERY } }
     ] }
   }
   return {
@@ -577,11 +657,8 @@ function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
   cssManifestLoaderPath: string,
   cssManifestImportLoaderPath: string,
   stylesheetLoaderPath: string,
-  virtualCSSPath: string,
-  webpackVirtualManifestPath: string,
-  turbopackVirtualManifestPath: string,
-  webpackVirtualEmittedGlobalsPath: string,
-  turbopackVirtualEmittedGlobalsPath: string,
+  webpackVirtualPaths: VirtualModulePaths,
+  turbopackVirtualPaths: VirtualModulePaths,
   projectDir: string,
   runtimeInstrumentationPath?: string,
   staticStatePath?: string
@@ -589,10 +666,10 @@ function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
   const userWebpack = nextConfig.webpack
   return {
     ...nextConfig,
-    turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, virtualCSSPath, turbopackVirtualManifestPath, turbopackVirtualEmittedGlobalsPath, projectDir, runtimeInstrumentationPath),
+    turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, turbopackVirtualPaths, projectDir, runtimeInstrumentationPath),
     webpack(config: WebpackConfig, context: WebpackContext) {
       const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-      return applyMasterCSSWebpackConfig(resolvedConfig, cssManifestLoaderPath, stylesheetLoaderPath, virtualCSSPath, webpackVirtualManifestPath, webpackVirtualEmittedGlobalsPath, runtimeInstrumentationPath, projectDir, staticStatePath)
+      return applyMasterCSSWebpackConfig(resolvedConfig, cssManifestLoaderPath, stylesheetLoaderPath, webpackVirtualPaths, runtimeInstrumentationPath, projectDir, staticStatePath)
     }
   } as T
 }
@@ -613,9 +690,15 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
   const cssManifestImportLoaderPath = resolveCSSManifestImportLoaderPath()
   const stylesheetLoaderPath = resolveStylesheetLoaderPath()
   const virtualManifestPath = ensureVirtualManifestPath(projectDir)
+  const virtualProgramPath = ensureVirtualProgramPath(projectDir)
   const virtualEmittedGlobalsPath = ensureVirtualEmittedGlobalsPath(projectDir)
-  const turbopackVirtualManifestPath = toTurbopackProjectPath(virtualManifestPath, projectDir)
-  const turbopackVirtualEmittedGlobalsPath = toTurbopackProjectPath(virtualEmittedGlobalsPath, projectDir)
+  const toVirtualPaths = (css: string, toPath: (file: string) => string = file => file): VirtualModulePaths => ({
+    css,
+    manifest: toPath(virtualManifestPath),
+    program: toPath(virtualProgramPath),
+    emittedGlobals: toPath(virtualEmittedGlobalsPath)
+  })
+  const toProjectPath = (file: string) => toTurbopackProjectPath(file, projectDir)
   const runtimeInstrumentationPath = resolvedOptions.injectRuntime && (resolvedOptions.mode === 'runtime' || resolvedOptions.mode === 'progressive')
     ? ensureInstrumentationClientPath(projectDir, `${(nextConfig.assetPrefix || nextConfig.basePath || '').replace(/\/$/, '')}/_next/`, resolvedOptions.mode === 'progressive')
     : undefined
@@ -630,11 +713,10 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
       if (!setup) return nextConfig
       const outputPath = resolveStaticOutputPath(setup.projectDir)
       const statePath = resolveStaticStatePath(outputPath)
-      const turbopackVirtualCSSPath = toTurbopackProjectPath(outputPath, setup.projectDir)
+      const turbopackVirtualPaths = toVirtualPaths(toTurbopackProjectPath(outputPath, setup.projectDir), toProjectPath)
       const configured = createNextConfigWithCSSManifestLoader(
         nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath,
-        outputPath, virtualManifestPath, turbopackVirtualManifestPath,
-        virtualEmittedGlobalsPath, turbopackVirtualEmittedGlobalsPath, setup.projectDir,
+        toVirtualPaths(outputPath), turbopackVirtualPaths, setup.projectDir,
         undefined, statePath
       )
       return {
@@ -645,9 +727,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
           cssManifestImportLoaderPath,
           stylesheetLoaderPath,
           resolveStaticCSSLoaderPath(),
-          turbopackVirtualCSSPath,
-          turbopackVirtualManifestPath,
-          turbopackVirtualEmittedGlobalsPath,
+          turbopackVirtualPaths,
           setup.projectDir,
           statePath
         )
@@ -660,11 +740,8 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     cssManifestLoaderPath,
     cssManifestImportLoaderPath,
     stylesheetLoaderPath,
-    resolveEmptyCSSPath(),
-    virtualManifestPath,
-    turbopackVirtualManifestPath,
-    virtualEmittedGlobalsPath,
-    turbopackVirtualEmittedGlobalsPath,
+    toVirtualPaths(resolveEmptyCSSPath()),
+    toVirtualPaths(resolveEmptyCSSPath(), toProjectPath),
     projectDir,
     runtimeInstrumentationPath
   )

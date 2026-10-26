@@ -34,16 +34,18 @@ for (const sass of [false, true]) for (const lightning of [false, true]) test(`B
   }
   const delegated = chain.filter((_: unknown, index: number) => index !== master).map((item: unknown) => item === dispatcher ? dispatcher.options : item === postcss ? postcss.options : item)
   expect(delegated).toEqual(use.map(item => item === cssLoader ? { ...item, options: { ...cssLoader.options, importLoaders: cssLoader.options.importLoaders + 1 } } : item))
-  expect(group.resourceQuery).toEqual({ not: [/master-css-manifest/] })
+  expect(group.resourceQuery).toEqual({ not: [/master-css-manifest|master-css-program/] })
   expect(cssLoader.options.importLoaders).toBe(sass ? 3 : 1)
   expect(use).toHaveLength((lightning ? 2 : 3) + (sass ? 2 : 0))
 })
 
-test('BH-0051 preserves user rules, nested host conditions and manifest JavaScript route', async () => {
+test('BH-0051 preserves user rules, nested host conditions and manifest and program JavaScript routes', async () => {
   const custom = { test: /\.custom$/, use: ['user-loader'] }
   const originalQuery = /inline/
   const config = (withMasterCSS({}, { mode: 'runtime' }) as NextConfig).webpack!({ module: { rules: [custom, { resourceQuery: originalQuery, rules: [{ oneOf: [{ use: [{ loader: nextLoader('postcss-loader') }] }] }] }] } }, {} as never)
   expect(config.module.rules[0]).toBe(custom)
-  expect(config.module.rules[1].resourceQuery).toEqual({ and: [originalQuery, { not: [/master-css-manifest/] }] })
-  expect(config.module.rules.find((rule: { resourceQuery?: unknown }) => rule.resourceQuery instanceof RegExp && rule.resourceQuery.source === 'master-css-manifest')?.use[0].options).toEqual({ module: true })
+  expect(config.module.rules[1].resourceQuery).toEqual({ and: [originalQuery, { not: [/master-css-manifest|master-css-program/] }] })
+  const queryRule = (source: string) => config.module.rules.find((rule: { resourceQuery?: unknown }) => rule.resourceQuery instanceof RegExp && rule.resourceQuery.source === source)
+  expect(queryRule('master-css-manifest')?.use[0].options).toEqual({ module: true })
+  expect(queryRule('master-css-program')?.use[0].options).toEqual({ program: true })
 })

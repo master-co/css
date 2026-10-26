@@ -71,7 +71,7 @@ export function themeInstallationFixture(route: typeof themeInstallationRoutes[n
     const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(output, name), 'utf8')).join('\n')
     if (!runtime) {
       assert.match(css, /font-style:italic/, route)
-      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
+      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
     } else assert.ok(assets.some(name => name.endsWith('.wasm')))
     let html: string
     if (laravel) {

@@ -59,7 +59,7 @@ await build({ ...config, configFile: false })
     if (mode === 'app-static') {
       const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(output, 'assets', name), 'utf8')).join('\n')
       assert.match(css, /font-style:italic/)
-      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
+      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
     } else assert.ok(assets.some(name => name.endsWith('.wasm')))
     return { root: output, dispose }
   } catch (error) { dispose(); throw error }

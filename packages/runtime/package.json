@@ -43,6 +43,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./default-program": {
+      "types": "./dist/default-program.d.ts",
+      "default": "./dist/default-program.js"
     }
   },
   "files": [

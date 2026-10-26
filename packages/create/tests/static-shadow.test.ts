@@ -14,5 +14,5 @@ for (const ownStyles of ['', 'static styles = ["existing"]', 'static get styles(
 }
 
 test('explicit runtime setup retains the shadow runtime decorator', () => {
-  expect(addLitShadowRuntime('export class Element extends LitElement {}')).toContain('@withMasterCSSRuntime({ manifest, emittedGlobals })')
+  expect(addLitShadowRuntime('export class Element extends LitElement {}')).toContain('@withMasterCSSRuntime({ program, emittedGlobals })')
 })

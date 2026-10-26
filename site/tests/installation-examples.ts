@@ -54,9 +54,9 @@ export function verifyInstallationExamples() {
       const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, 'dist/assets', name), 'utf8')).join('\n')
       if (mode !== 'runtime') {
         assert.match(css, /font-style:italic/)
-        assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
+        assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
       } else {
-        assert.ok(assets.some(name => /master-css-manifest/.test(name)), assets.join(', '))
+        assert.ok(assets.some(name => /master-css-program/.test(name)), assets.join(', '))
         assert.ok(assets.some(name => name.endsWith('.wasm')), assets.join(', '))
       }
 
@@ -91,6 +91,6 @@ export function verifyInstallationExamples() {
   assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
   const cdn = deliveryFences(installationSource('/cdn')).find(f => f.name === 'index.html')!.text
   assert.match(cdn, /<script src="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/global\.min\.js"><\/script>/)
-  assert.match(cdn, /<link rel="modulepreload" as="json" crossorigin href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/default-manifest\.json">/)
+  assert.match(cdn, /<link rel="preload" as="fetch" crossorigin href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/default-program\.bin">/)
   assert.match(cdn, /<link rel="stylesheet" href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-preset@rc\/src\/base\.css">/)
 }

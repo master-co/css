@@ -7,11 +7,11 @@ export interface PackageEditorial {
 
 export const packageEditorial: Record<string, PackageEditorial> = {
   '@master/css': {
-    introduction: 'Execute a compiled manifest, generate rules for class names and inspect engine state. CSS entrypoints provide the preset stylesheet layers.',
-    usage: 'Pass an explicit manifest to engine and render APIs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages/css-compiler); for DOM observation, use [the runtime](/reference/packages/css-runtime).',
+    introduction: 'Execute a compiled manifest or runtime program, generate rules for class names and inspect engine state. CSS entrypoints provide the preset stylesheet layers.',
+    usage: 'Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages/css-compiler); for DOM observation, use [the runtime](/reference/packages/css-runtime).',
     entries: {
       '.': 'Asynchronous engine creation and one-shot class rendering.',
-      './node': 'Synchronous native engine and reusable render sessions in Node.js.',
+      './node': 'Synchronous native engine, runtime program compilation and reusable render sessions in Node.js.',
       './client': 'Ambient TypeScript declarations for generated virtual modules.',
       './index.css': 'Complete preset stylesheet entry.',
       './base.css': 'Base styles and the stable cascade-layer order.',
@@ -98,9 +98,12 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     }
   },
   '@master/css-runtime': {
-    introduction: 'Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a compiled manifest and returns an owned session.',
+    introduction: 'Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a runtime program, the project manifest compiled for the browser engine, and returns an owned session.',
     usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering Modes](/guide/rendering-modes) for the browser workflow.',
-    entries: { '.': 'Runtime startup, observation, snapshots and custom-element integration.' }
+    entries: {
+      '.': 'Runtime startup, observation, snapshots and custom-element integration.',
+      './default-program': 'The default preset compiled into a runtime program, for apps without a Master CSS build integration.'
+    }
   },
   '@master/css-schema': {
     introduction: 'Shared types and codecs describe manifests, diagnostics, hydration and integration options. These contracts let hosts exchange structured Master CSS data.',

@@ -26,7 +26,7 @@ const toneClasses = {
   document: 'bg-neutral fg-white',
   stylesheet: 'bg-blue fg-white',
   runtime: 'bg-orange fg-black',
-  manifest: 'bg-green fg-black'
+  program: 'bg-green fg-black'
 } as const
 
 const ticks = [0, 25, 50, 75, 100]
@@ -34,7 +34,7 @@ const ticks = [0, 25, 50, 75, 100]
 const scenarios: WaterfallScenario[] = [
   {
     title: 'Without preload',
-    summary: 'The runtime script starts late, then imports the manifest.',
+    summary: 'The runtime script starts late, then fetches the default program.',
     metric: { label: 'FCP', position: 98 },
     rows: [
       {
@@ -50,14 +50,14 @@ const scenarios: WaterfallScenario[] = [
         bars: [{ label: 'Download', start: 58, end: 82, tone: 'runtime' }]
       },
       {
-        resource: 'Default manifest JSON',
-        bars: [{ label: 'Late', start: 82, end: 98, tone: 'manifest' }]
+        resource: 'Default program',
+        bars: [{ label: 'Late', start: 82, end: 98, tone: 'program' }]
       }
     ]
   },
   {
     title: 'With preload',
-    summary: 'The runtime script and manifest module start early, so first paint can move earlier.',
+    summary: 'The runtime script and default program start early, so first paint can move earlier.',
     metric: { label: 'FCP', position: 60 },
     rows: [
       {
@@ -73,8 +73,8 @@ const scenarios: WaterfallScenario[] = [
         bars: [{ label: 'Preload early', start: 12, end: 48, tone: 'runtime' }]
       },
       {
-        resource: 'Default manifest JSON',
-        bars: [{ label: 'Preload early', start: 16, end: 52, tone: 'manifest' }]
+        resource: 'Default program',
+        bars: [{ label: 'Preload early', start: 16, end: 52, tone: 'program' }]
       }
     ]
   }
@@ -87,7 +87,7 @@ export default function ResourceWaterfall() {
         <div
           className="overflow-x:auto width:100%"
           role="img"
-          aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests, with FCP markers"
+          aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default program requests, with FCP markers"
         >
           <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
             <div className="grid-cols(1) gap-md">
@@ -120,7 +120,7 @@ export default function ResourceWaterfall() {
         </div>
       </Demo>
       <figcaption className="sr-only">
-        Conceptual request timing for critical runtime resources. The FCP marker is illustrative and shows when first paint can happen after the stylesheet, runtime script, and manifest are ready.
+        Conceptual request timing for critical runtime resources. The FCP marker is illustrative and shows when first paint can happen after the stylesheet, runtime script, and program are ready.
       </figcaption>
     </figure>
   )

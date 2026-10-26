@@ -4,8 +4,10 @@ import { normalizePath } from 'vite'
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import ManifestVirtualModulePlugin from '../../src/plugins/manifest-virtual-module'
+import { createEngineSync } from '@master/css/node'
 import {
-  RESOLVED_VIRTUAL_MANIFEST_ID
+  RESOLVED_VIRTUAL_MANIFEST_ID,
+  RESOLVED_VIRTUAL_PROGRAM_ID
 } from '../../src/common'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
@@ -33,7 +35,30 @@ function createContext(root = path.join(FIXTURE_DIR, 'css-only')) {
   return { context, viteConfig }
 }
 
+async function importProgram(code: string) {
+  const module = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(code)}`) as { default: Uint8Array }
+  return module.default
+}
+
 describe('ManifestVirtualModulePlugin', () => {
+  it('serves the runtime program compiled from the default manifest', async () => {
+    const { context } = createContext()
+    const plugin = ManifestVirtualModulePlugin(context)
+    expect(plugin.resolveId && (plugin.resolveId as any)('virtual:master-css-program')).toBe(RESOLVED_VIRTUAL_PROGRAM_ID)
+    const program = await importProgram(await (plugin.load as any).call({}, RESOLVED_VIRTUAL_PROGRAM_ID))
+    using engine = createEngineSync({ program })
+    expect(engine.ensureClassRules(['btn']).mutations.length).toBeGreaterThan(0)
+
+    context.config.command = 'build'
+    const emitFile = vi.fn((_asset: { source: Uint8Array }) => 'master_css_program_ref')
+    const code = await (plugin.load as any).call({ emitFile, environment: { config: { consumer: 'client' } } }, RESOLVED_VIRTUAL_PROGRAM_ID)
+    expect(emitFile).toHaveBeenCalledWith({ type: 'asset', name: 'master-css-program.bin', source: expect.any(Uint8Array) })
+    expect(code).toContain('const masterCSSProgramURL = import.meta.ROLLUP_FILE_URL_master_css_program_ref;')
+    expect(context.defaultProgramAssetSource).toBe(emitFile.mock.calls[0][0].source)
+    // Production programs carry no build-host paths.
+    expect(Buffer.from(emitFile.mock.calls[0][0].source).includes(FIXTURE_DIR)).toBe(false)
+  })
+
   it('loads the default virtual manifest from the managed CSS entry', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context, viteConfig } = createContext(root)

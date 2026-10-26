@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import type { NextConfig } from 'next'
 import withMasterCSS from '../src'
 
-const ids = ['virtual:master-css-manifest', 'virtual:master-css-emitted-globals', 'virtual:master-utilities.css']
+const ids = ['virtual:master-css-manifest', 'virtual:master-css-program', 'virtual:master-css-emitted-globals', 'virtual:master-utilities.css']
 
 async function configuredResolver() {
   const userPlugin = { apply() {} }
@@ -25,7 +25,7 @@ for (const id of ids) test(`Next resolves ${id} before Webpack URI dispatch`, as
   expect(resolver.resolve(id)).toBe(resolver.aliases[id])
 })
 
-for (const id of ['virtual:another-package', 'virtual:master-css-manifest-extra', './native.css?master-css-manifest', 'custom', undefined]) test(`Next virtual handling preserves unrelated request ${id}`, async () => {
+for (const id of ['virtual:another-package', 'virtual:master-css-manifest-extra', 'virtual:master-css-program-extra', './native.css?master-css-manifest', './native.css?master-css-program', 'custom', undefined]) test(`Next virtual handling preserves unrelated request ${id}`, async () => {
   expect((await configuredResolver()).resolve(id)).toBe(id)
 })
 

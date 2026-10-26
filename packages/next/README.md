@@ -82,10 +82,11 @@ The integration exposes canonical project-level runtime input modules:
 
 ```ts
 import manifest from 'virtual:master-css-manifest'
+import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 ```
 
-Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state discovered from the project CSS entry.
+Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state discovered from the project CSS entry. Browser code passes `program`, the manifest compiled for the browser engine, to `MasterCSSRuntime.start()`; browsers cannot execute manifests. A CSS entry import with `?master-css-manifest` or `?master-css-program` returns that entry's manifest or program.
 
 ## Options
 

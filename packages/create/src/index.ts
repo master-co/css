@@ -374,7 +374,6 @@ function dependenciesForFramework(framework: MasterCSSSetupFramework, version: s
   if (framework === 'webpack' || framework === 'rspack' || framework === 'rsbuild') dependencies.push({ name: MASTER_CSS_PACKAGES.webpack, version, dev: false })
   if ((framework === 'none' || framework === 'lit' || framework === 'angular') && (mode === 'runtime' || mode === 'progressive')) dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
   if ((framework === 'none' || framework === 'angular') && (!mode || mode === 'static')) dependencies.push({ name: MASTER_CSS_PACKAGES.cli, version, dev: true })
-  if (framework === 'angular' && mode === 'runtime') dependencies.push({ name: MASTER_CSS_PACKAGES.preset, version, dev: false })
   return dependencies
 }
 

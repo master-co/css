@@ -3,64 +3,64 @@ import ResourceWaterfall from './components/ResourceWaterfall'
 ---
 
 ## Preload runtime engine
-Without preload hints, the CDN runtime script and its default manifest can be discovered too late.
+Without preload hints, the CDN runtime script and its default program can be discovered too late.
 Runtime rendering may experience delays in downloading and initializing until the first contentful paint if [runtime-critical resources](/guide/rendering-modes#runtime-rendering) are discovered late.
 
-Conceptual request waterfall for the CDN runtime script and default manifest. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
+Conceptual request waterfall for the CDN runtime script and default program. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
 <ResourceWaterfall />
 
-Preload the CDN runtime with `as="script"`. The CDN runtime imports its split default manifest as a JSON module before starting; preload that JSON module with `modulepreload`, `as="json"`, and `crossorigin` so the runtime can reuse the module.
+Preload the CDN runtime with `as="script"`. When its engine starts, the CDN runtime fetches `default-program.bin`, the default preset compiled for the engine; preload it with `as="fetch"` and `crossorigin` so the runtime's fetch reuses the response.
 
-(o) Use `html <link rel="preload">` and `html <link rel="modulepreload">` to preload the critical resources.
+(o) Use `html <link rel="preload">` to preload the critical resources.
 ```html
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
   <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
   <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"> <!-- [!code highlight] -->
-  <link rel="modulepreload" as="json" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-manifest.json"> <!-- [!code highlight] -->
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin"> <!-- [!code highlight] -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
   <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 </head>
 </html>
 ```
-With these preload hints in place, the runtime script and default manifest requests start during document parsing and download in parallel with the stylesheet. The parser and runtime later reuse the preloaded script and JSON module instead of waiting on new requests.
+With these preload hints in place, the runtime script and default program requests start during document parsing and download in parallel with the stylesheet. The parser and runtime later reuse the preloaded responses instead of waiting on new requests.
 
 You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
 
 ---
 
-## Preload runtime project manifests
-Official runtime integrations can split the project manifest into a hashed JSON asset in production. The runtime must load that manifest before it can interpret project tokens, utility definitions, mixins, named conditions, and keyframes from your CSS entry graph.
+## Preload runtime project programs
+Official runtime integrations compile the project manifest into a runtime program, which production builds emit as a hashed binary asset. The runtime must load that program before it can execute project tokens, utility definitions, mixins, named conditions, and keyframes from your CSS entry graph.
 
-(o) Let runtime-only integrations preload the project manifest JSON.
+(o) Let runtime-only integrations preload the project program.
 ```html
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-  <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json"> <!-- [!code highlight] -->
+  <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code highlight] -->
   <script type="module" src="/assets/main.<hash>.js"></script>
 </head>
 </html>
 ```
 
-The modulepreload starts the JSON module request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-manifest`, whose facade imports the same JSON module. Matching `as="json"` and `crossorigin` lets the browser reuse the preloaded module instead of issuing a second request.
+The preload starts the program request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-program`, whose facade fetches the same program. Matching `as="fetch"` and `crossorigin` lets the browser reuse the preloaded response instead of issuing a second request.
 
-(i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, and its runtime requests the project manifest only when the engine starts, so do not preload either manifest on progressive pages.
+(i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, and its runtime requests the project program only when the engine starts, so do not preload either program on progressive pages.
 
-### Choose the right manifest JSON
-Master CSS uses different JSON files for different handoff points:
+### Choose the right runtime asset
+Master CSS hands off different files at different points:
 
-| JSON file | Used by | Preload? |
+| File | Used by | Preload? |
 | --- | --- | --- |
-| CDN default manifest | CDN runtime-only pages that use the packaged default preset manifest. | Yes, when using the CDN runtime. |
-| Project manifest asset | Official runtime integrations that emit `master-css-manifest.<hash>.json` for `virtual:master-css-manifest`. | Yes, in pure runtime mode when the integration injects the runtime. No on progressive pages. |
+| CDN default program | CDN runtime-only pages that use the packaged default preset. | Yes, when using the CDN runtime. |
+| Project program asset | Official runtime integrations that emit `master-css-program.<hash>.bin` for `virtual:master-css-program`. | Yes, in pure runtime mode when the integration injects the runtime. No on progressive pages. |
 | Page hydration manifest | Progressive pages that hand `style#master-css` rules to a browser runtime. | No. The browser can paint without it. |
 
 ---
 
 ## Defer runtime engine
-On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module, the Wasm and the project manifest are requested only when a class that the page hydration manifest does not cover appears.
+On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module, the Wasm and the project program are requested only when a class that the page hydration manifest does not cover appears.
 
 (o) Load the runtime as an ordinary deferred module script.
 ```html
@@ -73,14 +73,14 @@ On a progressive page, the critical CSS is already in `style#master-css`. The ru
 </html>
 ```
 
-(x) Do not preload the runtime, its engine Wasm or the project manifest in progressive rendering mode. A preload downloads them even when the page never needs the engine.
+(x) Do not preload the runtime, its engine Wasm or the project program in progressive rendering mode. A preload downloads them even when the page never needs the engine.
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
   <link rel="preload" as="fetch" type="application/wasm" crossorigin href="/assets/mastercss_binding_wasm_engine_bg.<hash>.wasm"> <!-- [!code --] -->
-  <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json"> <!-- [!code --] -->
+  <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code --] -->
 </head>
 </html>
 ```
@@ -100,7 +100,7 @@ Progressive rendering can externalize the page hydration manifest:
 
 The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let `MasterCSSRuntime.start()` import it. If a referenced manifest cannot be imported or validated, startup rejects with `INVALID_HYDRATION_MANIFEST`; if the engine later finds that the manifest does not match the style block, the runtime warns and rebuilds from connected DOM classes.
 
-This is different from runtime project manifests. A runtime-only page needs its project manifest before it can interpret classes. A progressive page already has the first-response rules in `style#master-css`, so its page hydration manifest only describes CSS that was already rendered into that one HTML response.
+This is different from runtime project programs. A runtime-only page needs its project program before it can interpret classes. A progressive page already has the first-response rules in `style#master-css`, so its page hydration manifest only describes CSS that was already rendered into that one HTML response.
 
 ---
 

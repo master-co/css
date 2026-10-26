@@ -27,6 +27,21 @@ export {
   toUniversalManifestFacadeModule,
   type ManifestPreloadLinkAttrs
 } from './manifest-facade'
+export {
+  MASTER_CSS_PROGRAM_PRELOAD_AS,
+  MASTER_CSS_PROGRAM_PRELOAD_REL,
+  MASTER_CSS_PROGRAM_QUERY,
+  PROGRAM_ASSET_FILE,
+  RESOLVED_VIRTUAL_PROGRAM_ID,
+  VIRTUAL_PROGRAM_ID,
+  isMasterCSSProgramRequest,
+  stripMasterCSSProgramQuery,
+  toBrowserProgramFacadeModule,
+  toInlineProgramModule,
+  toProgramPreloadLinkAttrs,
+  toProgramPreloadLinkTag,
+  type ProgramPreloadLinkAttrs
+} from './program-module'
 export { VIRTUAL_CSS_ID } from './style-module'
 export {
   EMPTY_EMITTED_GLOBALS_MODULE,

@@ -14,13 +14,18 @@ test.each([
   for (const module of [false, true]) {
     const assets: Record<string, { source: () => string }> = {
       'pages/deep/index.html': { source: () => '<html><head></head><body></body></html>' },
-      'binary/mastercss_binding_wasm_engine_bg.wasm': { source: () => 'wasm' }
+      'binary/mastercss_binding_wasm_engine_bg.wasm': { source: () => 'wasm' },
+      'master-css-program.12345678.bin': { source: () => 'program' }
     }
     const handlers: ((values: typeof assets) => void)[] = []
     const compilation = {
       assets,
       outputOptions: { publicPath, module },
       entrypoints: new Map([['runtime', { getFiles: () => ['js/runtime.js'] }]]),
+      modules: new Set([{
+        resource: '/project/node_modules/.master-css/master-css-program.js',
+        originalSource: () => ({ source: () => 'fetch(__webpack_public_path__ + "master-css-program.12345678.bin")' })
+      }]),
       hooks: { processAssets: { tap: (_options: unknown, handler: typeof handlers[number]) => handlers.push(handler) } },
       updateAsset: (name: string, value: typeof assets[string]) => { assets[name] = value }
     }
@@ -31,10 +36,10 @@ test.each([
       },
       hooks: { thisCompilation: { tap: (_name: string, callback: (value: typeof compilation) => void) => callback(compilation) } }
     }
-    RuntimeHTMLAssetsPlugin({ name: 'test', runtimeEntryName: 'runtime', shouldPreloadRuntime: () => true, getManifestJSONAssets: () => [['data/manifest.json', '{}']] } as never).apply(compiler as never)
+    RuntimeHTMLAssetsPlugin({ name: 'test', runtimeEntryName: 'runtime', shouldPreloadRuntime: () => true } as never).apply(compiler as never)
     for (const handler of handlers) handler(assets)
     const html = assets['pages/deep/index.html'].source()
-    for (const [attribute, file] of [['src', 'js/runtime.js'], ['href', 'js/runtime.js'], ['href', 'data/manifest.json'], ['href', 'binary/mastercss_binding_wasm_engine_bg.wasm']]) {
+    for (const [attribute, file] of [['src', 'js/runtime.js'], ['href', 'js/runtime.js'], ['href', 'master-css-program.12345678.bin'], ['href', 'binary/mastercss_binding_wasm_engine_bg.wasm']]) {
       expect(html.split(`${attribute}="${prefix}${file}"`)).toHaveLength(2)
     }
     expect(html).toContain(module ? 'rel="modulepreload"' : 'rel="preload" as="script"')

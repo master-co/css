@@ -22,7 +22,7 @@ function expandedSassOptions(options: Record<string, unknown> = {}) {
 
 // Keep Next's own CSS rules, conditions and loaders. Appending a separate CSS
 // rule makes Next disable its CSS support, and cannot preserve Sass ordering.
-export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: string, manifestQuery: RegExp, stylesheetOptions: Record<string, unknown> = {}) {
+export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: string, moduleQuery: RegExp, stylesheetOptions: Record<string, unknown> = {}) {
   function compose(value: unknown): { rule: unknown; changed: boolean } {
     if (!value || typeof value !== 'object') return { rule: value, changed: false }
     const original = value as Rule
@@ -68,8 +68,8 @@ export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: st
   return rules.map(value => {
     const result = compose(value)
     if (!result.changed) return value
-    const rule = result.rule as Rule, exclusion = { not: [manifestQuery] }
-    // Manifest requests produce JavaScript and must bypass the host CSS branch,
+    const rule = result.rule as Rule, exclusion = { not: [moduleQuery] }
+    // Manifest and program requests produce JavaScript and must bypass the host CSS branch,
     // including its error/ignore/flight rules, while preserving existing queries.
     rule.resourceQuery = rule.resourceQuery === undefined ? exclusion : { and: [rule.resourceQuery, exclusion] }
     return rule

@@ -38,6 +38,8 @@ export interface MasterCSSVitePluginContext {
   onEmittedGlobalsChange?: () => void
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
+  defaultProgramAssetReferenceId?: string
+  defaultProgramAssetSource?: Uint8Array
 }
 
 export function createMasterCSSVitePlugin(
@@ -81,7 +83,7 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGloba
       if (options.injectRuntime) {
         plugins.push(...InjectRuntimePlugins(options))
         plugins.push(RuntimePreloadPlugin(context))
-        plugins.push(ManifestPreloadPlugin(context))
+        plugins.push(ProgramPreloadPlugin(context))
       }
       if (options.avoidFOUC) {
         plugins.push(AvoidFOUCPlugin(options, context))
@@ -147,13 +149,13 @@ function InjectRuntimePlugins(options: ResolvedMasterCSSVitePluginOptions): Plug
   ]
 }
 
-function ManifestPreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
+function ProgramPreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
-      name: 'master-css:manifest-preload',
+      name: 'master-css:program-preload',
       apply: 'build'
     },
-    async () => (await import('./plugins/manifest-preload')).default(context),
+    async () => (await import('./plugins/program-preload')).default(context),
     [{ name: 'transformIndexHtml', order: 'post' }]
   )
 }

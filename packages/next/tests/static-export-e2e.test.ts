@@ -7,6 +7,7 @@ import { chromium } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
+import { createEngineSync } from '@master/css/node'
 import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -48,13 +49,28 @@ function collectHTMLFiles(dir: string): string[] {
   return files
 }
 
+function collectFiles(dir: string, extension: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const filePath = join(dir, entry.name)
+    if (entry.isDirectory()) return collectFiles(filePath, extension)
+    return entry.isFile() && entry.name.endsWith(extension) ? [filePath] : []
+  })
+}
+
+/** Inline runtime programs are base64 literals whose bytes start with the `MCSP` magic. */
+function collectInlinePrograms(chunkFile: string) {
+  return [...readFileSync(chunkFile, 'utf-8').matchAll(/atob\("([A-Za-z0-9+/=]+)"\)/g)]
+    .map(match => Buffer.from(match[1], 'base64'))
+    .filter(bytes => bytes.subarray(0, 4).toString('latin1') === 'MCSP')
+}
+
 function collectHydrationManifestSources(html: string) {
   return [...html.matchAll(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`, 'g'))]
     .map((match) => match[1])
 }
 
 describe('static export e2e', () => {
-  it('exports hydration assets and adopts them in the browser before dynamic updates', async () => {
+  it('exports hydration assets and a deferred runtime program, and adopts them in the browser before dynamic updates', async () => {
     buildFixture()
 
     const htmlFiles = collectHTMLFiles(outDir)
@@ -68,12 +84,26 @@ describe('static export e2e', () => {
     ]))
     expect(manifestSources.length).toBeGreaterThan(0)
     expect(existsSync(join(fixtureDir, '.next/static/master-css/hydration'))).toBe(false)
-    // Progressive pages defer the engine, so neither its Wasm nor the project manifest is preloaded.
+    // Progressive pages defer the engine, so neither its Wasm nor its runtime program is preloaded.
     for (const htmlFile of htmlFiles) {
       const html = readFileSync(htmlFile, 'utf-8')
       expect(html).not.toContain('application/wasm')
       expect(html).not.toMatch(/<link\b[^>]*master-css-manifest/)
+      expect(html).not.toMatch(/<link\b[^>]*master-css-program/)
     }
+    // Browsers receive the compiled runtime program, never the project manifest.
+    const chunkFiles = collectFiles(join(outDir, '_next/static'), '.js')
+    expect(chunkFiles.filter(file => /\bversion:6,languageVersion:16\b/.test(readFileSync(file, 'utf-8')))).toEqual([])
+    const programChunks = chunkFiles.filter(file => collectInlinePrograms(file).length > 0)
+    expect(programChunks).toHaveLength(1)
+    const [program] = collectInlinePrograms(programChunks[0])
+    // Production programs compile from the provenance-free manifest.
+    expect(program.includes(fixtureDir)).toBe(false)
+    {
+      using engine = createEngineSync({ program })
+      expect(engine.ensureClassRules(['padding:17px']).mutations.length).toBeGreaterThan(0)
+    }
+    const programChunkPath = `/${relative(outDir, programChunks[0]).replaceAll('\\', '/')}`
 
     for (const source of manifestSources) {
       const pathname = new URL(source, 'http://localhost').pathname
@@ -110,9 +140,12 @@ describe('static export e2e', () => {
       // Every rendered class is covered, so the engine waits for the first one that is not.
       expect(await page.evaluate(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__.runtime.snapshot().engine)).toBe('deferred')
       expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(false)
+      // The deferred engine also defers loading its program.
+      expect(requests.some(request => request.path === programChunkPath)).toBe(false)
       await page.locator('main').evaluate(element => element.classList.add('padding:17px'))
       await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).padding)).toBe('17px')
       expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(true)
+      expect(requests.some(request => request.path === programChunkPath)).toBe(true)
       expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
       if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({
         languageVersion: 16, delivery: 'bundler-esm', requests,

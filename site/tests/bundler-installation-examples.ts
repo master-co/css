@@ -75,7 +75,7 @@ finally { await new Promise((resolve, reject) => compiler.close(error => error ?
     assert.match(html, /<link[^>]+\.css/)
     if (staticMode) {
       assert.match(css, /font-style:\s?italic/)
-      assert.ok(!assets.some(file => /\.wasm$|master-css-runtime|master-css-manifest/.test(file)), 'Static builds must not ship runtime assets')
+      assert.ok(!assets.some(file => /\.wasm$|master-css-runtime|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     } else {
       assert.match(html, /<script[^>]+master-css-runtime/)
       assert.ok(assets.some(file => file.endsWith('.wasm')), 'Runtime Wasm is emitted')

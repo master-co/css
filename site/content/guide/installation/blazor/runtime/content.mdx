@@ -66,11 +66,11 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
     <StepR>
       ```ts name=src/main.ts
       import { MasterCSSRuntime } from '@master/css-runtime'
-      import manifest from 'virtual:master-css-manifest'
+      import program from 'virtual:master-css-program'
       import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
 
-      const runtime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+      const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
       runtime.observe()
       ```
 

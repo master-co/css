@@ -52,7 +52,7 @@ test.each(["static", 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 
         expect(html).not.toContain(['#abcdef', '#123456'][index])
         expect(assets.some(item => item.fileName.includes('master-css-hydration.'))).toBe(mode === 'progressive')
       }
-      if (mode === 'runtime') expect(html).toContain('as="json"')
+      if (mode === 'runtime') expect(html).toMatch(new RegExp(`<link rel="preload" as="fetch" crossorigin="" href="/root-${index}/assets/master-css-program-[^"]+\\.bin">`))
     }
   }, process.env.BH_QUALIFIED === '1')
 })

@@ -1,9 +1,8 @@
-import {
-  toManifestPreloadLinkTag
-} from '@master/css-internal/manifest-facade'
+import { toProgramPreloadLinkTag } from '@master/css-internal/program-module'
 import type { Compilation, Compiler } from 'webpack'
 import { posix } from 'node:path'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
+import { collectProgramAssetReferences } from '../utils/program-module'
 
 const JS_FILE_PATTERN = /\.m?js(?:[?#].*)?$/
 
@@ -94,7 +93,8 @@ function transformHTML(
   context: MasterCSSWebpackContext,
   compilation: Compilation,
   assets: Compilation['assets'],
-  htmlFileName: string
+  htmlFileName: string,
+  programFileName: string | undefined
 ) {
   const moduleScript = usesModuleScript(compilation)
   let nextHTML = html
@@ -107,10 +107,12 @@ function transformHTML(
       }
     }
 
-    for (const [assetFileName] of context.getManifestJSONAssets()) {
-      const href = toPublicHref(compilation, assetFileName, htmlFileName)
+    // The runtime entry fetches this program as soon as it runs; progressive
+    // pages load it only when their engine starts, so only runtime pages preload it.
+    if (programFileName && assets[programFileName]) {
+      const href = toPublicHref(compilation, programFileName, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
-        nextHTML = injectBeforeHeadClose(nextHTML, toManifestPreloadLinkTag(href))
+        nextHTML = injectBeforeHeadClose(nextHTML, toProgramPreloadLinkTag(href))
       }
     }
 
@@ -149,10 +151,13 @@ export default function RuntimeHTMLAssetsPlugin(context: MasterCSSWebpackContext
             stage
           }, (assets) => {
             const RawSource = compiler.webpack.sources.RawSource
+            const programFileName = context.shouldPreloadRuntime()
+              ? collectProgramAssetReferences(compilation.modules).defaultFileName
+              : undefined
             for (const [fileName, asset] of Object.entries(assets)) {
               if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
               const source = asset.source().toString()
-              const nextSource = transformHTML(source, context, compilation, assets, fileName)
+              const nextSource = transformHTML(source, context, compilation, assets, fileName, programFileName)
               if (nextSource === source) continue
               compilation.updateAsset(fileName, new RawSource(nextSource))
             }

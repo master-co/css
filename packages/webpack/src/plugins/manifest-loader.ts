@@ -8,8 +8,13 @@ import {
   toInlineManifestModule
 } from '@master/css-internal/manifest-facade'
 import {
+  isMasterCSSProgramRequest,
+  stripMasterCSSProgramQuery
+} from '@master/css-internal/program-module'
+import {
   toHashedManifestAssetFileName,
-  toVirtualCSSManifestModulePath
+  toVirtualCSSManifestModulePath,
+  toVirtualCSSProgramModulePath
 } from '@master/css-internal/node'
 import { compileProjectManifest } from '@master/css-compiler/project'
 import type { Compiler } from 'webpack'
@@ -28,13 +33,14 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
       compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {
         normalModuleFactory.hooks.beforeResolve.tapAsync(context.name, (resolveData, callback) => {
           const request = resolveData.request
-          const isPlanRequest = request.endsWith(MASTER_CSS_MANIFEST_QUERY)
-          if (!isPlanRequest) {
+          // `?master-css-program` compiles the entry's manifest for browsers.
+          const program = isMasterCSSProgramRequest(request)
+          if (!program && !request.endsWith(MASTER_CSS_MANIFEST_QUERY)) {
             callback()
             return
           }
 
-          const sourceRequest = stripMasterCSSManifestQuery(request)
+          const sourceRequest = program ? stripMasterCSSProgramQuery(request) : stripMasterCSSManifestQuery(request)
           const resolver = normalModuleFactory.getResolver('normal')
           resolver.resolve(
             resolveData.contextInfo,
@@ -52,7 +58,7 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
               }
               try {
                 if (!isManifestStylesheetRequest(resolvedPath)) {
-                  callback(new TypeError('Master CSS manifest queries only support CSS entry files.'))
+                  callback(new TypeError(`Master CSS ${program ? 'program' : 'manifest'} queries only support CSS entry files.`))
                   return
                 }
                 const dependencies = new Set(collectStylesheetDependenciesSync(resolvedPath, undefined, {
@@ -69,9 +75,13 @@ export default function ManifestLoaderPlugin(context: MasterCSSWebpackContext): 
                 for (const dependency of result.dependencies) {
                   addFileDependency(resolveData.fileDependencies, dependency)
                 }
-                const virtualModuleId = toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
+                const virtualModuleId = program
+                  ? toVirtualCSSProgramModulePath(context.compilerContext, resolvedPath)
+                  : toVirtualCSSManifestModulePath(context.compilerContext, resolvedPath)
                 let moduleContent: string
-                if (compiler.options.mode === 'development') {
+                if (program) {
+                  moduleContent = await context.createProgramModule(result.manifest)
+                } else if (compiler.options.mode === 'development') {
                   moduleContent = toInlineManifestModule(serializeMasterCSSManifest(result.manifest))
                 } else {
                   const json = toProductionManifestJSON(result.manifest)

@@ -65,11 +65,11 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
     <StepR>
       ```ts name=resources/main.ts
       import { MasterCSSRuntime } from '@master/css-runtime'
-      import manifest from 'virtual:master-css-manifest'
+      import program from 'virtual:master-css-program'
       import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
 
-      const runtime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+      const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
       runtime.observe()
       ```
 

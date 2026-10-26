@@ -86,7 +86,7 @@ export async function serverInstallationFixture(route: typeof serverInstallation
     const css = readCSS('app.css')
     if (isStatic) {
       assert.match(css, /font-style:italic/, route)
-      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
+      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
     } else assert.ok(assets.some(name => name.endsWith('.wasm')), 'Runtime Wasm is emitted')
     let url: string | undefined
     if (host === 'rails') {

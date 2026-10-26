@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url'
 import { nuxtCtx } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { afterEach, expect, it } from 'vitest'
-import { RESOLVED_VIRTUAL_MANIFEST_ID, VIRTUAL_MANIFEST_ID } from '@master/css-internal/manifest-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal/manifest-module'
+import { RESOLVED_VIRTUAL_PROGRAM_ID } from '@master/css-internal/program-module'
+import { createEngineSync } from '@master/css/node'
 import masterCSSNuxtModule from '../src/module'
 
 let projectDir: string | undefined
@@ -15,9 +17,9 @@ afterEach(() => {
   projectDir = undefined
 })
 
-// Runs module setup without building Nuxt and returns the manifest copies it
-// wires for Nitro and the client runtime.
-async function setupRuntimeManifest(dev: boolean) {
+// Runs module setup without building Nuxt and returns the manifest it wires for
+// Nitro and the program it wires for the client runtime.
+async function setupRuntimeInputs(dev: boolean) {
   projectDir ??= mkdtempSync(join(tmpdir(), 'master-css-nuxt-manifest-source-'))
   writeFileSync(join(projectDir, 'app.css'), '@import "@master/css";\n@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
   const hooks: Record<string, ((...args: any[]) => unknown)[]> = {}
@@ -42,27 +44,35 @@ async function setupRuntimeManifest(dev: boolean) {
   const publicAsset = nitro.publicAssets!.find(asset => href === `${asset.baseURL}${basename(href)}`)!
   const vite = { plugins: [] as any[] }
   for (const hook of hooks['vite:extendConfig'] ?? []) await hook(vite)
-  const plugin = vite.plugins.find(plugin => plugin.name === 'master-css:nuxt-runtime-manifest')
+  const plugin = vite.plugins.find(plugin => plugin.name === 'master-css:nuxt-runtime-inputs')
   plugin.configResolved({ command: dev ? 'serve' : 'build' })
   return {
     serverFile,
     clientFile: join(publicAsset.dir, basename(href)),
-    clientModule: await plugin.load.call({ addWatchFile() {} }, RESOLVED_VIRTUAL_MANIFEST_ID) as string
+    clientHref: href,
+    clientModule: await plugin.load.call({ addWatchFile() {} }, RESOLVED_VIRTUAL_PROGRAM_ID) as string
   }
 }
 
-it('omits source provenance only from production manifests shared by Nitro and the client', async () => {
-  const development = await setupRuntimeManifest(true)
-  expect(development.clientModule).toMatch(/^export default \{"version":6/)
-  for (const manifest of [readFileSync(development.serverFile, 'utf8'), development.clientModule]) {
-    expect(manifest).toMatch(/"source":\{"file":"[^"]*app\.css"/)
-  }
+async function importProgram(code: string) {
+  return (await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(code)}`) as { default: Uint8Array }).default
+}
 
-  const production = await setupRuntimeManifest(false)
-  expect(production.clientFile).toBe(production.serverFile)
+it('omits source provenance only from production inputs shared by Nitro and the client', async () => {
+  const development = await setupRuntimeInputs(true)
+  expect(readFileSync(development.serverFile, 'utf8')).toMatch(/"source":\{"file":"[^"]*app\.css"/)
+  const developmentProgram = await importProgram(development.clientModule)
+  expect(Buffer.from(developmentProgram).includes('app.css')).toBe(true)
+
+  const production = await setupRuntimeInputs(false)
   expect(dirname(production.serverFile)).toBe(dirname(development.serverFile))
   const json = readFileSync(production.serverFile, 'utf8')
   expect(json).toContain('"name":"card"')
   expect(json).not.toContain('"source"')
-  expect(production.clientModule).toContain(JSON.stringify(`/_master-css/manifest/${basename(production.serverFile)}`))
+  expect(production.clientHref).toMatch(/^\/_master-css\/program\/master-css-program\.[0-9a-f]{8}\.bin$/)
+  expect(production.clientModule).toContain(JSON.stringify(production.clientHref))
+  const program = new Uint8Array(readFileSync(production.clientFile))
+  expect(Buffer.from(program).includes(projectDir!)).toBe(false)
+  using engine = createEngineSync({ program })
+  expect(engine.ensureClassRules(['card']).mutations.length).toBeGreaterThan(0)
 })

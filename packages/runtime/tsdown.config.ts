@@ -68,18 +68,25 @@ const globalEngineLoader = {
   }
 }
 
-// The CDN bundle fetches the default preset's runtime program beside its script.
-// It is compiled from the preset manifest on every build, so it always matches the
-// engine that executes it.
+// The CDN bundle fetches the default preset's runtime program beside its script,
+// and bundler apps without a Master CSS plugin import it inline from
+// `@master/css-runtime/default-program`. It is compiled from the preset manifest on
+// every build, so it always matches the engine that executes it.
 const defaultProgram = {
   name: 'default-program',
-  async generateBundle(this: { emitFile(file: { type: 'asset', fileName: string, source: Uint8Array }): string }) {
+  async generateBundle(this: { emitFile(file: { type: 'asset', fileName: string, source: Uint8Array | string }): string }) {
     const { compileRuntimeProgram } = await import('@master/css/node')
     const manifest = JSON.parse(readFileSync(new URL('../preset/src/default-manifest.json', import.meta.url), 'utf8'))
+    const program = await compileRuntimeProgram(manifest)
+    this.emitFile({ type: 'asset', fileName: 'default-program.bin', source: program })
     this.emitFile({
       type: 'asset',
-      fileName: 'default-program.bin',
-      source: await compileRuntimeProgram(manifest)
+      fileName: 'default-program.js',
+      source: [
+        `const program = atob(${JSON.stringify(Buffer.from(program).toString('base64'))})`,
+        'export const defaultProgram = Uint8Array.from(program, character => character.charCodeAt(0))',
+        ''
+      ].join('\n')
     })
   }
 }

@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, w
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import webpack from 'webpack'
+import { createEngineSync } from '@master/css/node'
 import Plugin from '../dist/index.js'
 import type { MasterCSSWebpackContext } from '../src/plugin'
 
@@ -149,6 +150,21 @@ test.each(Array.from({ length: Number(process.env.BH_TRACE_REPEAT || 1) }, (_, i
     expect(Object.values(one.assets).join('\n')).toContain('.b{')
     const none = await step('none', [])
     expect([...none.stats.compilation.fileDependencies]).not.toContain(image)
+  })
+}, 120000)
+
+for (const cache of [false, true]) test(`detached program query stops emitting its program and restores on reattachment: cache=${cache}`, async () => {
+  await watchScenario(cache, async ({ styles, step }) => {
+    writeFileSync(join(styles, 'program.css'), '@import "@master/css";@utility probe { display: grid; }')
+    const programImport = '../styles/program.css?master-css-program'
+    const programs = (result: Result) => Object.keys(result.assets).filter(file => /^master-css-program\.[a-f0-9]{8}\.bin$/.test(file))
+    const attached = await step('program-attached', [programImport])
+    expect(programs(attached)).toHaveLength(1)
+    using engine = createEngineSync({ program: new Uint8Array(readFileSync(join(dirname(styles), 'app', 'out', programs(attached)[0]))) })
+    expect(engine.ensureClassRules(['probe']).mutations.map(mutation => mutation.op === 'insert' ? mutation.text : '')).toEqual(['.probe{display:grid}'])
+    // Output cleaning removes a program that no compiled module fetches.
+    expect(programs(await step('program-detached', []))).toEqual([])
+    expect(programs(await step('program-reattached', [programImport]))).toEqual(programs(attached))
   })
 }, 120000)
 

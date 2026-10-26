@@ -4,7 +4,7 @@ export const RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID = `\0${MASTER_CSS_RUNTIME_
 export interface MasterCSSRuntimeBootstrapOptions {
   /** Expression for the runtime `stylesheetDelivery` option. */
   readonly stylesheetDelivery?: string
-  /** Progressive pages defer the engine, so the project manifest loads only if it starts. */
+  /** Progressive pages defer the engine, so the runtime program loads only if it starts. */
   readonly progressive?: boolean
 }
 
@@ -13,13 +13,13 @@ export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, prog
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
     ...(progressive
       ? []
-      : [`import masterCSSManifest from 'virtual:master-css-manifest'`]),
+      : [`import masterCSSProgram from 'virtual:master-css-program'`]),
     `import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'`,
     ``,
     `let masterCSSRuntime`,
     progressive
-      ? `let currentManifest = () => import('virtual:master-css-manifest').then(module => module.default)`
-      : `let currentManifest = masterCSSManifest`,
+      ? `let currentProgram = () => import('virtual:master-css-program').then(module => module.default)`
+      : `let currentProgram = masterCSSProgram`,
     `let currentEmittedGlobals = masterCSSEmittedGlobals`,
     `let startGeneration = 0`,
     `let pendingStart = import.meta.hot?.data.pendingRuntimeStart ?? Promise.resolve()`,
@@ -30,11 +30,11 @@ export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, prog
     `  masterCSSRuntime = undefined`,
     `}`,
     ``,
-    `async function startRuntime(manifest = currentManifest, emittedGlobals = currentEmittedGlobals) {`,
+    `async function startRuntime(program = currentProgram, emittedGlobals = currentEmittedGlobals) {`,
     `  if (typeof document === 'undefined') return`,
     `  if (masterCSSRuntime) {`,
-    `    // A manifest loader means only emitted globals changed.`,
-    `    masterCSSRuntime.refresh(typeof manifest === 'function' ? undefined : manifest, emittedGlobals)`,
+    `    // A program loader means only emitted globals changed.`,
+    `    masterCSSRuntime.refresh(typeof program === 'function' ? undefined : program, emittedGlobals)`,
     `    return`,
     `  }`,
     `  disposeRuntime()`,
@@ -42,7 +42,7 @@ export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, prog
     `  const startup = pendingStart.catch(() => {}).then(async () => {`,
     `    if (generation !== startGeneration) return`,
     `    const nextRuntime = await MasterCSSRuntime.start({`,
-    `      manifest,`,
+    `      program,`,
     `      emittedGlobals,`,
     ...(stylesheetDelivery ? [`      stylesheetDelivery: ${stylesheetDelivery},`] : []),
     `      onDiagnostic: diagnostic => console.error(diagnostic)`,
@@ -64,10 +64,10 @@ export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, prog
     `if (import.meta.hot) {`,
     `  import.meta.hot.accept(() => {})`,
     `  import.meta.hot.accept([`,
-    `    'virtual:master-css-manifest',`,
+    `    'virtual:master-css-program',`,
     `    'virtual:master-css-emitted-globals'`,
-    `  ], ([manifestModule, emittedGlobalsModule]) => {`,
-    `    currentManifest = manifestModule?.default ?? currentManifest`,
+    `  ], ([programModule, emittedGlobalsModule]) => {`,
+    `    currentProgram = programModule?.default ?? currentProgram`,
     `    currentEmittedGlobals = emittedGlobalsModule?.default ?? currentEmittedGlobals`,
     `    void startRuntime().catch(error => console.error(error, error?.cause))`,
     `  })`,

@@ -122,6 +122,14 @@ function makeFakeCompiler(options: {
   return { compiler, compilation, assets, entryPluginCalls }
 }
 
+// A compiled production `virtual:master-css-program` facade that fetches `fileName`.
+function makeProgramModule(fileName: string) {
+  return {
+    resource: path.join(process.cwd(), 'node_modules', '.master-css', 'master-css-program.js'),
+    originalSource: () => ({ source: () => `const masterCSSProgramURL = __webpack_public_path__ + ${JSON.stringify(fileName)};` })
+  }
+}
+
 function makeNormalModuleFactory(resolvedPath?: string) {
   return {
     hooks: {
@@ -695,7 +703,17 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
     expect(runtimeCompiler.entryPluginCalls[0]).toEqual(expect.arrayContaining([
       expect.any(String),
-      expect.stringContaining('runtime.js'),
+      expect.stringMatching(/[/\\]runtime\.js$/),
+      { name: 'master-css-runtime' }
+    ]))
+
+    // Progressive pages may never start the engine, so their entry imports the program lazily.
+    const progressivePlugin = makePlugin({ mode: 'progressive' })
+    const progressiveCompiler = makeFakeCompiler()
+    progressivePlugin.apply(progressiveCompiler.compiler as any)
+
+    expect(progressiveCompiler.entryPluginCalls[0]).toEqual(expect.arrayContaining([
+      expect.stringMatching(/[/\\]progressive-runtime\.js$/),
       { name: 'master-css-runtime' }
     ]))
 
@@ -708,8 +726,10 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
   test('injects classic runtime script and pure-runtime preloads into emitted HTML assets', () => {
     const plugin = makePlugin({ mode: 'runtime' })
+    // A manifest that server code imports is not what the browser runtime executes.
     ;(plugin as any).manifestJSONAssets.set('assets/master-css-manifest.12345678.json', '{}')
-    const assets = {
+    ;(plugin as any).programAssets.set('master-css-program.12345678.bin', new Uint8Array([1, 2, 3]))
+    const assets: Record<string, { source: () => string }> = {
       'index.html': {
         source: () => "<html><head></head><body><main class=\"box display:block\"></main></body></html>"
       },
@@ -722,6 +742,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       entryFiles: ['assets/master-css-runtime.js'],
       publicPath: '/static/'
     })
+    ;(compilation as any).modules = new Set([makeProgramModule('master-css-program.12345678.bin')])
 
     plugin.apply(compiler as any)
     compiler.hooks.thisCompilation.call(compilation as any)
@@ -729,7 +750,10 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
     const html = assets['index.html'].source()
     expect(html).toContain('<link rel="preload" as="script" href="/static/assets/master-css-runtime.js">')
-    expect(html).toContain('<link rel="modulepreload" as="json" crossorigin href="/static/assets/master-css-manifest.12345678.json">')
+    expect(html).toContain('<link rel="preload" as="fetch" crossorigin href="/static/master-css-program.12345678.bin">')
+    expect(html).not.toContain('master-css-manifest')
+    expect(compilation.emitAsset).toHaveBeenCalledWith('master-css-program.12345678.bin', expect.anything(), { immutable: true })
+    expect(Object.keys(assets).filter(file => file.includes('master-css-manifest'))).toEqual(['assets/master-css-manifest.12345678.json'])
     expect(html).toContain('<link rel="preload" as="fetch" type="application/wasm" crossorigin href="/static/assets/mastercss_binding_wasm_engine_bg.12345678.wasm">')
     expect(html).toContain('<script defer src="/static/assets/master-css-runtime.js"></script></body>')
   })
@@ -756,13 +780,44 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect(html).toContain('<script type="module" src="runtime.mjs"></script></body>')
   })
 
+  test('emits but never preloads the program on progressive pages', () => {
+    const plugin = makePlugin({ mode: 'progressive' })
+    ;(plugin as any).programAssets.set('master-css-program.12345678.bin', new Uint8Array([1, 2, 3]))
+    const assets: Record<string, { source: () => string }> = {
+      'index.html': { source: () => '<html><head></head><body></body></html>' }
+    }
+    const { compiler, compilation } = makeFakeCompiler({ assets, entryFiles: ['runtime.js'] })
+    ;(compilation as any).modules = new Set([makeProgramModule('master-css-program.12345678.bin')])
+
+    plugin.apply(compiler as any)
+    compiler.hooks.thisCompilation.call(compilation as any)
+    compilation.hooks.processAssets.call(assets)
+
+    expect(assets['master-css-program.12345678.bin']).toBeDefined()
+    expect(assets['index.html'].source()).toBe('<html><head></head><body><script defer src="runtime.js"></script></body></html>')
+  })
+
+  test('reports a compiled program module whose program this plugin did not compile', () => {
+    const plugin = makePlugin({ mode: 'runtime' })
+    const assets: Record<string, { source: () => string }> = {}
+    const { compiler, compilation } = makeFakeCompiler({ assets })
+    ;(compilation as any).modules = new Set([makeProgramModule('master-css-program.87654321.bin')])
+
+    plugin.apply(compiler as any)
+    compiler.hooks.thisCompilation.call(compilation as any)
+    compilation.hooks.processAssets.call(assets)
+
+    expect(assets).toEqual({})
+    expect(compilation.errors.map(error => error.message)).toEqual([expect.stringContaining('master-css-program.87654321.bin')])
+  })
+
   test.each(['"', "'", ''])('does not duplicate runtime script or preload tags with %j quotes', (quote) => {
     const plugin = makePlugin({ mode: 'runtime' })
-    ;(plugin as any).manifestJSONAssets.set('master-css-manifest.12345678.json', '{}')
+    ;(plugin as any).programAssets.set('master-css-program.12345678.bin', new Uint8Array([1, 2, 3]))
     const source = [
       '<html><head>',
       `<link rel="preload" as="script" href=${quote}runtime.js${quote}>`,
-      `<link rel="modulepreload" as="json" crossorigin href=${quote}master-css-manifest.12345678.json${quote}>`,
+      `<link rel="preload" as="fetch" crossorigin href=${quote}master-css-program.12345678.bin${quote}>`,
       '</head><body>',
       `<script defer src=${quote}runtime.js${quote}></script>`,
       '</body></html>'
@@ -776,6 +831,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       assets,
       entryFiles: ['runtime.js']
     })
+    ;(compilation as any).modules = new Set([makeProgramModule('master-css-program.12345678.bin')])
 
     plugin.apply(compiler as any)
     compiler.hooks.thisCompilation.call(compilation as any)

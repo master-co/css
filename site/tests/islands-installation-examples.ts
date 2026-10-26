@@ -107,7 +107,7 @@ export async function islandsInstallationFixture(route: typeof islandsInstallati
       const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, 'dist', name), 'utf8')).join('\n')
       assert.match(html + css, /font-style:\s?italic/, route)
     }
-    if (mode === 'static') assert.ok(!assets.some(file => /\.wasm$|master-css-runtime|master-css-manifest/.test(file)), 'Static builds must not ship runtime assets')
+    if (mode === 'static') assert.ok(!assets.some(file => /\.wasm$|master-css-runtime|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     else assert.ok(assets.some(file => file.endsWith('.wasm')), 'Runtime Wasm is emitted')
     return { root: join(root, 'dist'), dispose }
   } catch (error) { dispose(); throw error }

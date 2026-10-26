@@ -2,8 +2,16 @@ import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
 import {
   fromResolvedMasterCSSManifestId,
-  toResolvedMasterCSSManifestId
+  fromResolvedMasterCSSProgramId,
+  toResolvedMasterCSSManifestId,
+  toResolvedMasterCSSProgramId
 } from '@master/css-internal/node'
+import { createMasterCSSProgramModule } from '@master/css-internal/manifest-virtual-module'
+import {
+  isMasterCSSProgramRequest,
+  stripMasterCSSProgramQuery
+} from '@master/css-internal/program-module'
+import { compileRuntimeProgram } from '@master/css/node'
 import { compileProjectManifest } from '@master/css-compiler/project'
 import {
   isMasterCSSManifestRequest,
@@ -33,7 +41,7 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDe
 
 interface ManifestPluginContext {
   environment?: { config: { consumer?: string } }
-  emitFile?: (asset: { type: 'asset', name: string, source: string }) => string
+  emitFile?: (asset: { type: 'asset', name: string, source: string | Uint8Array }) => string
 }
 
 function isProductionBuild(context: MasterCSSVitePluginContext) {
@@ -86,16 +94,20 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
     name: 'master-css:manifest-loader',
     enforce: 'pre',
     async resolveId(id, importer) {
-      if (!isMasterCSSManifestRequest(id)) return
-      const sourceId = stripMasterCSSManifestQuery(id)
+      // `?master-css-program` compiles the entry's manifest for browsers.
+      const program = isMasterCSSProgramRequest(id)
+      if (!program && !isMasterCSSManifestRequest(id)) return
+      const sourceId = program ? stripMasterCSSProgramQuery(id) : stripMasterCSSManifestQuery(id)
       const resolved = await this.resolve(sourceId, importer, { skipSelf: true })
-      if (resolved) return toResolvedMasterCSSManifestId(resolved.id)
+      if (!resolved) return
+      return program ? toResolvedMasterCSSProgramId(resolved.id) : toResolvedMasterCSSManifestId(resolved.id)
     },
     async load(id) {
-      const manifestPath = fromResolvedMasterCSSManifestId(id)
+      const programPath = fromResolvedMasterCSSProgramId(id)
+      const manifestPath = programPath ?? fromResolvedMasterCSSManifestId(id)
       if (!manifestPath) return
       if (!isManifestStylesheetRequest(manifestPath)) {
-        throw new TypeError('Master CSS manifest queries only support CSS entry files.')
+        throw new TypeError(`Master CSS ${programPath ? 'program' : 'manifest'} queries only support CSS entry files.`)
       }
       const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, {
         projectDir: context.config?.root
@@ -115,6 +127,9 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
+      if (programPath) {
+        return (await createMasterCSSProgramModule(context, this, result.manifest, compileRuntimeProgram)).code
+      }
       return createManifestModule(context, this, result.manifest, serverManifestReferences)
     },
     resolveFileUrl({ referenceId, relativePath, format }) {
@@ -128,10 +143,12 @@ export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext
         if (includesFile(dependencies, file)) queryManifestPaths.add(manifestPath)
       }
       for (const manifestPath of queryManifestPaths) {
-        const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSManifestId(manifestPath))
-        if (!queryModule) continue
-        handled = true
-        modules.push(...invalidateManifestModule(queryModule, server))
+        for (const queryId of [toResolvedMasterCSSManifestId(manifestPath), toResolvedMasterCSSProgramId(manifestPath)]) {
+          const queryModule = server.moduleGraph.getModuleById(queryId)
+          if (!queryModule) continue
+          handled = true
+          modules.push(...invalidateManifestModule(queryModule, server))
+        }
       }
       if (handled) return modules
     }

@@ -52,6 +52,7 @@
     "provenance": true
   },
   "dependencies": {
+    "@master/css": "workspace:*",
     "@master/css-compiler": "workspace:*",
     "@master/css-runtime": "workspace:*",
     "@master/css-server": "workspace:*",

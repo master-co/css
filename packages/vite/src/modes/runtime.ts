@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
 import InjectRuntimePlugin, { InjectRuntimeServePlugin } from '../plugins/inject-runtime'
-import ManifestPreloadPlugin from '../plugins/manifest-preload'
+import ProgramPreloadPlugin from '../plugins/program-preload'
 import RuntimePreloadPlugin from '../plugins/runtime-preload'
 import AvoidFOUCPlugin from '../plugins/avoid-fouc'
 import { MasterCSSVitePluginContext } from '../core'
@@ -12,7 +12,7 @@ export default function RuntimeMode(options: ResolvedMasterCSSVitePluginOptions,
     plugins.push(InjectRuntimePlugin(options))
     plugins.push(InjectRuntimeServePlugin(options))
     plugins.push(RuntimePreloadPlugin(context))
-    plugins.push(ManifestPreloadPlugin(context))
+    plugins.push(ProgramPreloadPlugin(context))
   }
   if (options.avoidFOUC) {
     plugins.push(AvoidFOUCPlugin(options, context))

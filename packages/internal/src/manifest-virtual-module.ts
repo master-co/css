@@ -13,6 +13,13 @@ import {
   toUniversalManifestFacadeModule
 } from './manifest-facade'
 import type { MasterCSSVirtualManifestLoadResult } from './manifest-loader'
+import {
+  PROGRAM_ASSET_FILE,
+  RESOLVED_VIRTUAL_PROGRAM_ID,
+  VIRTUAL_PROGRAM_ID,
+  toBrowserProgramFacadeModule,
+  toInlineProgramModule
+} from './program-module'
 
 interface MasterCSSManifestVirtualModuleConfig {
   readonly root?: string
@@ -31,7 +38,12 @@ export interface MasterCSSManifestVirtualModuleContext {
   config?: MasterCSSManifestVirtualModuleConfig
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
+  defaultProgramAssetReferenceId?: string
+  defaultProgramAssetSource?: Uint8Array
 }
+
+/** Compiles a manifest into the runtime program browsers execute, with `@master/css/node`. */
+export type MasterCSSRuntimeProgramCompiler = (manifest: MasterCSSManifest) => Promise<Uint8Array>
 
 export type MasterCSSManifestVirtualModuleLoader = (
   options: {
@@ -54,7 +66,7 @@ interface MasterCSSVirtualModulePluginContext {
   readonly emitFile?: (asset: {
     readonly type: 'asset'
     readonly name: string
-    readonly source: string
+    readonly source: string | Uint8Array
   }) => string
 }
 
@@ -74,12 +86,12 @@ function invalidateManifestModule(
   return [module]
 }
 
-function isProductionBuild(context: MasterCSSManifestVirtualModuleContext) {
+function isProductionBuild(context: Pick<MasterCSSManifestVirtualModuleContext, 'config'>) {
   return context.config?.command === 'build'
 }
 
 function isServerBuild(
-  context: MasterCSSManifestVirtualModuleContext,
+  context: Pick<MasterCSSManifestVirtualModuleContext, 'config'>,
   pluginContext: MasterCSSVirtualModulePluginContext
 ) {
   // An environment build shares one config across client and server output.
@@ -115,9 +127,47 @@ function createManifestModule(
     : toBrowserManifestFacadeModule(urlExpression)
 }
 
+export interface MasterCSSProgramModule {
+  readonly code: string
+  /** The emitted program of a browser build, which pages can preload. */
+  readonly asset?: {
+    readonly referenceId: string
+    readonly source: Uint8Array
+  }
+}
+
+/**
+ * Development and server builds inline the program; browser builds emit it with
+ * production manifest provenance removed and fetch it.
+ */
+export async function createMasterCSSProgramModule(
+  context: Pick<MasterCSSManifestVirtualModuleContext, 'config'>,
+  pluginContext: MasterCSSVirtualModulePluginContext,
+  manifest: MasterCSSManifest,
+  compileProgram: MasterCSSRuntimeProgramCompiler
+): Promise<MasterCSSProgramModule> {
+  if (!isProductionBuild(context)) return { code: toInlineProgramModule(await compileProgram(manifest)) }
+  const program = await compileProgram(JSON.parse(toProductionManifestJSON(manifest)) as MasterCSSManifest)
+  if (!pluginContext.emitFile || isServerBuild(context, pluginContext)) return { code: toInlineProgramModule(program) }
+  const referenceId = pluginContext.emitFile({
+    type: 'asset',
+    name: PROGRAM_ASSET_FILE,
+    source: program
+  })
+  return {
+    code: toBrowserProgramFacadeModule(`import.meta.ROLLUP_FILE_URL_${referenceId}`),
+    asset: { referenceId, source: program }
+  }
+}
+
+/**
+ * Serves `virtual:master-css-manifest` and, given a compiler, the
+ * `virtual:master-css-program` that browsers execute.
+ */
 export function createMasterCSSManifestVirtualModulePlugin(
   loadManifest: MasterCSSManifestVirtualModuleLoader,
-  context: MasterCSSManifestVirtualModuleContext = {}
+  context: MasterCSSManifestVirtualModuleContext = {},
+  compileProgram?: MasterCSSRuntimeProgramCompiler
 ) {
   let cssManifestDependencies: readonly string[] = []
   const serverManifestReferences = new Set<string>()
@@ -151,11 +201,19 @@ export function createMasterCSSManifestVirtualModulePlugin(
     },
     resolveId(id: string) {
       if (id === VIRTUAL_MANIFEST_ID) return RESOLVED_VIRTUAL_MANIFEST_ID
+      if (id === VIRTUAL_PROGRAM_ID && compileProgram) return RESOLVED_VIRTUAL_PROGRAM_ID
     },
     async load(this: MasterCSSVirtualModulePluginContext, id: string) {
       if (id === RESOLVED_VIRTUAL_MANIFEST_ID) {
         const result = await loadDefaultManifest(this)
         return createManifestModule(context, this, result.manifest, serverManifestReferences)
+      }
+      if (id === RESOLVED_VIRTUAL_PROGRAM_ID && compileProgram) {
+        const result = await loadDefaultManifest(this)
+        const module = await createMasterCSSProgramModule(context, this, result.manifest, compileProgram)
+        context.defaultProgramAssetReferenceId = module.asset?.referenceId
+        context.defaultProgramAssetSource = module.asset?.source
+        return module.code
       }
     },
     resolveFileUrl({ referenceId, relativePath, format }: { referenceId: string, relativePath: string, format: string }) {
@@ -173,10 +231,11 @@ export function createMasterCSSManifestVirtualModulePlugin(
       if (!cssManifestDependencies.includes(file)) return
       // A manifest dependency may also be an ordinary stylesheet or a queried
       // source module. Adding the virtual manifest must not consume their HMR.
-      return [...new Set([...modules, ...invalidateManifestModule(
-        server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID),
-        server
-      )])]
+      return [...new Set([
+        ...modules,
+        ...invalidateManifestModule(server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID), server),
+        ...invalidateManifestModule(server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_PROGRAM_ID), server)
+      ])]
     }
   }
 }

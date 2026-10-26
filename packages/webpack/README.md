@@ -73,9 +73,11 @@ export default {
 Static mode is the default and does not inject the browser runtime. Select
 `mode: 'runtime'` or `mode: 'progressive'` explicitly when class names first
 appear in the browser. The webpack integration does not write page hydration
-manifests itself. In `progressive` mode, the runtime defers its engine when the
-server that renders the HTML injects one; the runtime entry still bundles the
-project manifest.
+manifests itself. The browser runtime executes the project's runtime program, the
+manifest compiled at build time: development inlines it, and production builds emit
+it as a hashed `master-css-program.<hash>.bin` asset that runtime-mode HTML
+preloads. In `progressive` mode, the runtime defers its engine when the server that
+renders the HTML injects one, and loads the program only when the engine starts.
 
 In those modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
 the injected runtime entry uses its own content-hashed file under `_master-css/`.
@@ -84,7 +86,7 @@ such as `[name].js` or `[contenthash].js` also apply to the runtime entry.
 
 ## Client types
 
-Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, or `?master-css-manifest` modules:
+Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-program`, `virtual:master-css-emitted-globals`, `?master-css-manifest`, or `?master-css-program` modules:
 
 ```ts
 /// <reference types="@master/css/client" />

@@ -2,8 +2,9 @@ import { fileURLToPath } from 'node:url'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
-function resolveRuntimePath() {
-  return fileURLToPath(new URL('../runtime.js', import.meta.url))
+/** Progressive pages may never start the engine, so their entry loads the program lazily. */
+function resolveRuntimePath(mode: MasterCSSWebpackContext['mode']) {
+  return fileURLToPath(new URL(mode === 'progressive' ? '../progressive-runtime.js' : '../runtime.js', import.meta.url))
 }
 
 export default function RuntimeEntryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
@@ -21,7 +22,7 @@ export default function RuntimeEntryPlugin(context: MasterCSSWebpackContext): We
       // this additional entry. Keep chunk-specific templates when provided.
       const needsRuntimeFilename = typeof filename === 'function'
         || (typeof filename === 'string' && !/\[(?:name|id|chunkhash|contenthash)(?::\d+)?\]/.test(filename))
-      new EntryPlugin(compiler.context || context.compilerContext, resolveRuntimePath(), {
+      new EntryPlugin(compiler.context || context.compilerContext, resolveRuntimePath(context.mode), {
         name: context.runtimeEntryName,
         ...(needsRuntimeFilename ? {
           filename: `_master-css/${context.runtimeEntryName}.[contenthash:8].${compiler.options.output.module ? 'mjs' : 'js'}`

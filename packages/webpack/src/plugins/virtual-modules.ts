@@ -1,6 +1,7 @@
 import { EMPTY_MANIFEST_JSON } from '@master/css-internal/manifest-module'
 import { toInlineManifestModule } from '@master/css-internal/manifest-facade'
 import { EMPTY_EMITTED_GLOBALS_MODULE } from '@master/css-internal/emitted-globals-module'
+import { toInlineProgramModule } from '@master/css-internal/program-module'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
@@ -15,6 +16,8 @@ export default function VirtualModuleRegistryPlugin(context: MasterCSSWebpackCon
       const initialModules = {
         [context.virtualCSSImportModuleId]: '',
         [context.virtualManifestModuleId]: toInlineManifestModule(EMPTY_MANIFEST_JSON),
+        // A placeholder: resolving `virtual:master-css-program` writes the compiled program.
+        [context.virtualProgramModuleId]: toInlineProgramModule(new Uint8Array()),
         [context.virtualEmittedGlobalsModuleId]: EMPTY_EMITTED_GLOBALS_MODULE
       }
       context.virtualModule = new VirtualModulesPlugin(initialModules)

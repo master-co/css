@@ -5,6 +5,12 @@ declare module '*?master-css-manifest' {
   export default manifest
 }
 
+declare module '*?master-css-program' {
+  /** The CSS entry's manifest compiled into the runtime program browsers execute. */
+  const program: Uint8Array
+  export default program
+}
+
 declare module 'virtual:master-utilities.css' {
 }
 
@@ -16,6 +22,12 @@ declare module 'virtual:master-css-manifest' {
 
   const manifest: MasterCSSManifest
   export default manifest
+}
+
+declare module 'virtual:master-css-program' {
+  /** The project manifest compiled into the runtime program browsers execute. */
+  const program: Uint8Array
+  export default program
 }
 
 declare module 'virtual:master-css-emitted-globals' {

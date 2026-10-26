@@ -10,9 +10,16 @@ import {
   toInlineManifestModule
 } from '@master/css-internal/manifest-facade'
 import {
+  toBrowserProgramFacadeModule,
+  toInlineProgramModule
+} from '@master/css-internal/program-module'
+import { compileRuntimeProgram } from '@master/css/node'
+import {
   toHashedManifestAssetFileName,
+  toHashedProgramAssetFileName,
   toVirtualCSSModulePath,
   toVirtualDefaultManifestModulePath,
+  toVirtualDefaultProgramModulePath,
   toVirtualEmittedGlobalsModulePath
 } from '@master/css-internal/node'
 import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
@@ -45,6 +52,7 @@ import ScannerLifecyclePlugin from './plugins/scanner-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
 import ManifestJSONAssetsPlugin from './plugins/manifest-json-assets'
+import ProgramAssetsPlugin from './plugins/program-assets'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
@@ -86,6 +94,7 @@ export interface MasterCSSWebpackContext {
   compilerContext: string
   virtualCSSImportModuleId: string
   virtualManifestModuleId: string
+  virtualProgramModuleId: string
   virtualEmittedGlobalsModuleId: string
   runtimeEntryName: string
   slotCSSRule: string
@@ -108,7 +117,12 @@ export interface MasterCSSWebpackContext {
   writeVirtualModule(modulePath: string, moduleContent: string): void
   setManifestJSONAsset(assetFileName: string, json: string): void
   getManifestJSONAssets(): [string, string][]
+  /** A compiled program that a production program module fetches, by its asset name. */
+  getProgramAsset(assetFileName: string): Uint8Array | undefined
   createDefaultManifestModule(): Promise<string>
+  createDefaultProgramModule(): Promise<string>
+  /** Inlines the program in development; otherwise records its asset and returns a fetching facade. */
+  createProgramModule(manifest: MasterCSSManifest): Promise<string>
   createEmittedGlobalsModule(): Promise<string>
   createGeneratedCSSModule(): Promise<string>
   createGeneratedCSSResult(): Promise<MasterCSSStylesheetComposition>
@@ -118,7 +132,8 @@ export interface MasterCSSWebpackContext {
     isGeneratedCSSModulePath: (modulePath: string) => boolean
   ): Promise<void>
   writeGeneratedCSSModule(): Promise<void>
-  writeDefaultManifestModule(): Promise<void>
+  /** Rewrites the default manifest and, once a build imports it, the default program. */
+  writeDefaultManifestModules(): Promise<void>
   writeEmittedGlobalsModule(): Promise<void>
   replayModuleContents(): Promise<void>
   queueResetReplay(): Promise<unknown>
@@ -133,6 +148,9 @@ export class MasterCSSWebpackPlugin {
   pluginInitialized = false
   moduleContentByPath: Record<string, unknown> = {}
   manifestJSONAssets = new Map<string, string>()
+  programAssets = new Map<string, Uint8Array>()
+  /** Only builds that import `virtual:master-css-program` compile the default program. */
+  private defaultProgramRequested = false
   defaultManifestDependencies: string[] = []
   emittedGlobals: MasterCSSEmittedGlobals = {}
   resetReplayChain: Promise<unknown> = Promise.resolve()
@@ -235,7 +253,7 @@ export class MasterCSSWebpackPlugin {
     return this.scanner.scanModule(source, content)
   }
 
-  private async createDefaultManifestModule() {
+  private async loadDefaultManifest() {
     const dependencies = new Set<string>()
     const result = await loadMasterCSSVirtualManifest({
       host: manifestHost,
@@ -250,12 +268,35 @@ export class MasterCSSWebpackPlugin {
       manifest: result.manifest
     }
     this.defaultManifestDependencies = [...result.dependencies]
-    if (this.development) return toInlineManifestModule(toManifestJSON(result.manifest))
+    return result.manifest
+  }
 
-    const json = toProductionManifestJSON(result.manifest)
+  private toManifestModule(manifest: MasterCSSManifest) {
+    if (this.development) return toInlineManifestModule(toManifestJSON(manifest))
+
+    const json = toProductionManifestJSON(manifest)
     const assetFileName = toHashedManifestAssetFileName(json)
     this.manifestJSONAssets.set(assetFileName, json)
     return toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+  }
+
+  private async createDefaultManifestModule() {
+    return this.toManifestModule(await this.loadDefaultManifest())
+  }
+
+  private async createProgramModule(manifest: MasterCSSManifest) {
+    if (this.development) return toInlineProgramModule(await compileRuntimeProgram(manifest))
+
+    // Emitted programs must not carry build-host source paths.
+    const program = await compileRuntimeProgram(JSON.parse(toProductionManifestJSON(manifest)) as MasterCSSManifest)
+    const assetFileName = toHashedProgramAssetFileName(program)
+    this.programAssets.set(assetFileName, program)
+    return toBrowserProgramFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+  }
+
+  private async createDefaultProgramModule() {
+    this.defaultProgramRequested = true
+    return this.createProgramModule(await this.loadDefaultManifest())
   }
 
   private getDefaultManifestDependencyPaths() {
@@ -423,6 +464,7 @@ export class MasterCSSWebpackPlugin {
       compilerContext,
       virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
       virtualManifestModuleId: toVirtualDefaultManifestModulePath(compilerContext),
+      virtualProgramModuleId: toVirtualDefaultProgramModulePath(compilerContext),
       virtualEmittedGlobalsModuleId: toVirtualEmittedGlobalsModulePath(compilerContext),
       runtimeEntryName: RUNTIME_ENTRY_NAME,
       slotCSSRule: this.scanner.slotCSSRule,
@@ -466,7 +508,10 @@ export class MasterCSSWebpackPlugin {
         this.manifestJSONAssets.set(assetFileName, json)
       },
       getManifestJSONAssets: () => [...this.manifestJSONAssets],
+      getProgramAsset: assetFileName => this.programAssets.get(assetFileName),
       createDefaultManifestModule: () => this.createDefaultManifestModule(),
+      createDefaultProgramModule: () => this.createDefaultProgramModule(),
+      createProgramModule: manifest => this.createProgramModule(manifest),
       createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
       createGeneratedCSSResult: () => this.createExtractedCSSResult(),
       createStylesheetCSSResults: async delivery => {
@@ -491,9 +536,13 @@ export class MasterCSSWebpackPlugin {
         )
         await context.writeEmittedGlobalsModule()
       },
-      writeDefaultManifestModule: async () => {
+      writeDefaultManifestModules: async () => {
         if (!context.virtualModule || !context.virtualManifestModuleId) return
-        context.writeVirtualModule(context.virtualManifestModuleId, await this.createDefaultManifestModule())
+        const manifest = await this.loadDefaultManifest()
+        context.writeVirtualModule(context.virtualManifestModuleId, this.toManifestModule(manifest))
+        if (!this.defaultProgramRequested) return
+        // The program is compiled from the same manifest, so HMR refreshes the runtime with it.
+        context.writeVirtualModule(context.virtualProgramModuleId, await this.createProgramModule(manifest))
       },
       writeEmittedGlobalsModule: async () => {
         if (!context.virtualModule || !context.virtualEmittedGlobalsModuleId) return
@@ -537,6 +586,7 @@ export class MasterCSSWebpackPlugin {
       VirtualModuleRegistryPlugin(context),
       ManifestVirtualModulePlugin(context),
       ManifestJSONAssetsPlugin(context),
+      ProgramAssetsPlugin(context),
       VirtualCSSImportPlugin(context),
       ManifestLoaderPlugin(context),
       StyleEntryPlugin(context),

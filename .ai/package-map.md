@@ -42,7 +42,7 @@ than loading every crate:
 
 | Package | Entry points | Responsibility |
 |---|---|---|
-| `@master/css-runtime` | `.` | Browser DOM observation, CSSOM updates, hydration, and runtime lifecycle |
+| `@master/css-runtime` | `.`, `./default-program` | Browser DOM observation, CSSOM updates, hydration, and runtime lifecycle; the default preset compiled into a runtime program |
 | `@master/css-server` | `.` | Server HTML rendering and CSS injection |
 | `@master/css-language-service` | `.`, `./shiki`, TextMate grammar | Editor-document mapping plus presentation/highlighting assets |
 | `@master/css-language-server` | `.`, `./server` | LSP transport and workspace lifecycle |

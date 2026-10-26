@@ -64,6 +64,11 @@
       "import": "./dist/manifest-virtual-module.js",
       "default": "./dist/manifest-virtual-module.js"
     },
+    "./program-module": {
+      "types": "./dist/program-module.d.ts",
+      "import": "./dist/program-module.js",
+      "default": "./dist/program-module.js"
+    },
     "./style-module": {
       "types": "./dist/style-module.d.ts",
       "import": "./dist/style-module.js",

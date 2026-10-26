@@ -9,12 +9,12 @@ function load() {
   const runtime = {
     dispose() {},
     observe() { return runtime },
-    refresh(manifest: unknown, emittedGlobals: unknown) {
-      refreshes.push([manifest, emittedGlobals])
+    refresh(program: unknown, emittedGlobals: unknown) {
+      refreshes.push([program, emittedGlobals])
       return runtime
     }
   }
-  const start = vi.fn(async (_options: { manifest: unknown }) => runtime)
+  const start = vi.fn(async (_options: { program: unknown }) => runtime)
   const hot = {
     data: {},
     accept(dependencies: unknown, callback?: typeof update) { if (Array.isArray(dependencies)) update = callback! },
@@ -28,12 +28,12 @@ function load() {
   return { source, start, refreshes, update: (modules: Module[]) => update(modules) }
 }
 
-test('progressive bootstrap starts the runtime with a lazy project manifest', async () => {
+test('progressive bootstrap starts the runtime with a lazy runtime program', async () => {
   const bootstrap = load()
-  expect(bootstrap.source).not.toMatch(/^import .* from 'virtual:master-css-manifest'/m)
-  expect(bootstrap.source).toContain(`import('virtual:master-css-manifest')`)
+  expect(bootstrap.source).not.toMatch(/^import .* from 'virtual:master-css-program'/m)
+  expect(bootstrap.source).toContain(`import('virtual:master-css-program')`)
   await vi.waitFor(() => expect(bootstrap.start).toHaveBeenCalledOnce())
-  expect(bootstrap.start.mock.calls[0][0].manifest).toBeTypeOf('function')
+  expect(bootstrap.start.mock.calls[0][0].program).toBeTypeOf('function')
 })
 
 test('progressive HMR refreshes with updated inputs and never passes the loader', async () => {
@@ -42,8 +42,8 @@ test('progressive HMR refreshes with updated inputs and never passes the loader'
   const globals = { variables: { '--color-primary': 1 } }
   bootstrap.update([undefined, { default: globals }])
   await vi.waitFor(() => expect(bootstrap.refreshes).toHaveLength(1))
-  const manifest = { version: 6 }
-  bootstrap.update([{ default: manifest }, undefined])
+  const program = new Uint8Array([6])
+  bootstrap.update([{ default: program }, undefined])
   await vi.waitFor(() => expect(bootstrap.refreshes).toHaveLength(2))
-  expect(bootstrap.refreshes).toEqual([[undefined, globals], [manifest, globals]])
+  expect(bootstrap.refreshes).toEqual([[undefined, globals], [program, globals]])
 })

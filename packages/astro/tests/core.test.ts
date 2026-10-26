@@ -104,16 +104,16 @@ describe('@master/css-astro integration', () => {
     expect(result.buildConfig?.inlineStylesheets).toBe('never')
   })
 
-  it('preloads the runtime manifest JSON in runtime static builds', async () => {
+  it('preloads the runtime program in runtime static builds', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-runtime-'))
     const assetsDir = join(dir, '_astro')
     const htmlFile = join(dir, 'index.html')
     try {
       mkdirSync(assetsDir, { recursive: true })
-      writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
+      writeFileSync(join(assetsDir, 'master-css-program.CzuVhIZV.bin'), 'MCSP')
       writeFileSync(join(assetsDir, 'mastercss_binding_wasm_engine_bg.D4cafe.wasm'), 'wasm')
       writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), [
-        'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;',
+        'const masterCSSProgramURL = new URL("master-css-program.CzuVhIZV.bin", import.meta.url).href;',
         'const wasmURL = new URL("mastercss_binding_wasm_engine_bg.D4cafe.wasm", import.meta.url);'
       ].join('\n'))
       writeFileSync(htmlFile, '<html><head></head><body></body></html>')
@@ -129,7 +129,7 @@ describe('@master/css-astro integration', () => {
         '<link rel="modulepreload" crossorigin href="/docs/_astro/page.C2zmEykZ.js">'
       )
       expect(readFileSync(htmlFile, 'utf-8')).toContain(
-        '<link rel="modulepreload" as="json" crossorigin href="/docs/_astro/master-css-manifest.CzuVhIZV.json">'
+        '<link rel="preload" as="fetch" crossorigin href="/docs/_astro/master-css-program.CzuVhIZV.bin">'
       )
       expect(readFileSync(htmlFile, 'utf-8')).toContain(
         '<link rel="preload" as="fetch" type="application/wasm" crossorigin href="/docs/_astro/mastercss_binding_wasm_engine_bg.D4cafe.wasm">'
@@ -139,7 +139,7 @@ describe('@master/css-astro integration', () => {
     }
   })
 
-  it('does not preload the runtime manifest outside runtime injection static builds', async () => {
+  it('does not preload the runtime program outside runtime injection static builds', async () => {
     for (const scenario of [
       { integrationOptions: { mode: 'static' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
@@ -151,8 +151,8 @@ describe('@master/css-astro integration', () => {
       const htmlFile = join(dir, 'index.html')
       try {
         mkdirSync(assetsDir, { recursive: true })
-        writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
-        writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+        writeFileSync(join(assetsDir, 'master-css-program.CzuVhIZV.bin'), 'MCSP')
+        writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const masterCSSProgramURL = new URL("master-css-program.CzuVhIZV.bin", import.meta.url).href;')
         writeFileSync(htmlFile, '<html><head></head><body></body></html>')
         const integration = masterCSS(scenario.integrationOptions)
 
@@ -162,7 +162,7 @@ describe('@master/css-astro integration', () => {
         } as never)
         await integration.hooks['astro:build:done']?.({ dir } as never)
 
-        expect(readFileSync(htmlFile, 'utf-8')).not.toContain('rel="modulepreload"')
+        expect(readFileSync(htmlFile, 'utf-8')).not.toContain('<link')
       } finally {
         rmSync(dir, { recursive: true, force: true })
       }

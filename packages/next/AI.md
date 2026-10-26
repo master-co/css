@@ -40,6 +40,7 @@
 - `src/static-loader.ts`
 - `src/css-manifest-loader.ts`
 - `src/css-manifest-import-loader.ts`
+- `src/runtime-program.ts`
 - `src/options.ts`
 - Generated `node_modules/.master-css/master-css-next-instrumentation-client.js` source from `src/index.ts`
 
@@ -49,11 +50,12 @@
 - Accidentally processing non-HTML assets.
 - Duplicate writes for fallback HTML listed through multiple output groups.
 - Turbopack CSS loader watch ownership and direct generated CSS imports.
-- Manifest loaders omit `source` provenance only when the loader `mode` is `production`, which Webpack and Turbopack report to every server and client loader. The import loader writes those modules to `*.production.manifest.js` so a concurrent `next dev` keeps its own file.
+- Manifest loaders omit `source` provenance only when the loader `mode` is `production`, which Webpack and Turbopack report to every server and client loader; runtime programs compile from that production manifest. The import loader writes those modules to `*.production.manifest.js` and `*.production.program.js` so a concurrent `next dev` keeps its own files.
+- Browser code receives `virtual:master-css-program` (and `?master-css-program`), inlined by the manifest loader's `program` option in every mode; server code keeps the manifest. The program placeholder module throws if a bundler ever skips the loader.
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
-- Progressive instrumentation-client output passes the project manifest as a dynamic import loader and adds no engine or manifest preloads, so a fully pre-rendered page does not request the runtime engine.
+- Progressive instrumentation-client output passes the runtime program as a dynamic import loader and adds no engine or program preloads, so a fully pre-rendered page does not request the runtime engine.
 
 ## Static Publication Invariants
 
@@ -76,7 +78,7 @@
 ## Safe Changes
 
 - Focused adapter, static loader, or manifest loader fixes with tests.
-- Turbopack loader fixes that preserve guarded `content: /master-css-manifest/` rules.
+- Turbopack loader fixes that preserve guarded `content` rules for `?master-css-manifest` and `?master-css-program`.
 - Playground validation for integration behavior.
 
 ## Dangerous Changes

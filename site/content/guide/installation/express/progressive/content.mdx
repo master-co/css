@@ -69,7 +69,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       import './app.css'
 
       const runtime = await MasterCSSRuntime.start({
-        manifest: () => import('virtual:master-css-manifest').then(module => module.default),
+        program: () => import('virtual:master-css-program').then(module => module.default),
         emittedGlobals
       })
       runtime.observe()

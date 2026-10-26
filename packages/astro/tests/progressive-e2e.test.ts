@@ -5,6 +5,7 @@ import { chromium } from '@playwright/test'
 import { beforeAll, expect, it } from 'vitest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_STYLESHEET_ASSET_SUFFIX } from '@master/css-schema/runtime-style'
+import { createEngineSync } from '@master/css/node'
 import { buildAstroFixture, serveStaticOutput } from './static-output-helper'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -27,9 +28,9 @@ it('pre-renders progressive CSS through the middleware of a static Astro build',
   const manifest = style?.[0].match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
   expect(manifest).toBeTruthy()
   expect(existsSync(join(outDir, manifest!))).toBe(true)
-  // Progressive pages defer the engine, so neither its Wasm nor the project manifest is preloaded.
+  // Progressive pages defer the engine, so neither its Wasm nor the runtime program is preloaded.
   expect(html).not.toContain('application/wasm')
-  expect(html).not.toMatch(/<link\b[^>]*master-css-manifest/)
+  expect(html).not.toMatch(/<link\b[^>]*master-css-program/)
   // The runtime adopts linked stylesheets through their sidecars.
   const stylesheets = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(([, href]) => href)
   expect(stylesheets.length).toBeGreaterThan(0)
@@ -40,11 +41,13 @@ it('pre-renders progressive CSS through the middleware of a static Astro build',
   // The entry re-imports the preset that the default build manifest already supplies.
   const assetsDir = join(outDir, '_astro')
   const assets = readdirSync(assetsDir)
-  const projectManifest = assets.find(file => /^master-css-manifest\..+\.json$/.test(file))
-  expect(projectManifest).toBeTruthy()
-  const theme: unknown[] = JSON.parse(readFileSync(join(assetsDir, projectManifest!), 'utf8')).theme
-  expect(theme.length).toBeGreaterThan(0)
-  expect(new Set(theme.map(node => JSON.stringify(node))).size).toBe(theme.length)
+  const program = assets.find(file => /^master-css-program\..+\.bin$/.test(file))
+  expect(program).toBeTruthy()
+  using engine = createEngineSync({ program: new Uint8Array(readFileSync(join(assetsDir, program!))) })
+  engine.ensureClassRules(['fg-text-body'])
+  const declarations = engine.snapshot().resources.themeText?.match(/--[\w-]+:/g) ?? []
+  expect(declarations.length).toBeGreaterThan(0)
+  expect(new Set(declarations).size).toBe(declarations.length)
   const themeRules = assets.filter(file => file.endsWith('.css'))
     .flatMap(file => readFileSync(join(assetsDir, file), 'utf8').match(/:root,:host\{[^}]*\}/g) ?? [])
   expect(themeRules.length).toBeGreaterThan(0)
@@ -67,8 +70,8 @@ it('hydrates the pre-rendered CSS in a browser', async () => {
       const { engine, hydration } = (globalThis as RuntimeGlobal).masterCSSRuntime!.snapshot()
       return { engine, hydration }
     })).toEqual({ engine: 'deferred', hydration: { state: 'progressive', manifestLoaded: true } })
-    // Every class is pre-rendered, so the engine, its Wasm and the project manifest stay unloaded.
-    expect(requests.filter(url => /\.wasm$|master-css-manifest/.test(url))).toEqual([])
+    // Every class is pre-rendered, so the engine, its Wasm and the runtime program stay unloaded.
+    expect(requests.filter(url => /\.wasm$|master-css-program/.test(url))).toEqual([])
     expect(warnings).toEqual([])
   } finally {
     await browser.close()

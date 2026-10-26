@@ -1403,6 +1403,9 @@ importers:
 
   packages/nuxt:
     dependencies:
+      '@master/css':
+        specifier: workspace:*
+        version: link:../css
       '@master/css-compiler':
         specifier: workspace:*
         version: link:../compiler

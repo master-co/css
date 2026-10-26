@@ -58,7 +58,7 @@ export function dotnetInstallationFixture(route: typeof dotnetInstallationRoutes
     const css = readCSS('app.css')
     if (isStatic) {
       for (const declaration of ['font-style:italic', 'font-size:var(--font-size-3xl)', 'margin:var(--spacing-md)']) assert.ok(css.includes(declaration), `${route}: ${declaration}`)
-      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest/.test(name)))
+      assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
     } else assert.ok(assets.some(name => name.endsWith('.wasm')))
     const viewSource = file(view)
     assert.match(viewSource, blazor ? /^@page "\/"/ : /^@page\s/)
