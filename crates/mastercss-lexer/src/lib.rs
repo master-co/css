@@ -17,7 +17,8 @@ pub use query::{
 };
 pub use selector::{
     replace_class_selector, replace_nesting_selector, replace_rule_class_selector,
-    split_selector_list, valid_mode_name, valid_mode_selector, valid_selector_structure,
+    selector_class_names, split_selector_list, valid_mode_name, valid_mode_selector,
+    valid_selector_structure,
 };
 
 use mastercss_schema::{LEXER_BATCH_VERSION, SourceRange};

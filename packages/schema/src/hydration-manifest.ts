@@ -49,8 +49,9 @@ export interface MasterCSSHydrationManifest {
   readonly languageVersion: 16
   /**
    * Every rendered class: those with rules in rule order, then those without, such as
-   * authored component classes. The runtime treats them as covered by the pre-rendered
-   * CSS and replays them to verify it when the engine starts.
+   * authored component classes, then classes manifest selectors reference without rules
+   * of their own, such as mode classes. The runtime treats them as covered by the
+   * pre-rendered CSS and replays them to verify it when the engine starts.
    */
   readonly classNames: readonly string[]
   readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }

@@ -23,11 +23,12 @@ async function openPrerenderedPage(
   page: Page,
   body: string,
   classNames: string[],
-  transformCSS: (cssText: string) => string = cssText => cssText
+  transformCSS: (cssText: string) => string = cssText => cssText,
+  manifest: MasterCSSManifest = defaultManifest
 ): Promise<PrerenderedPage> {
   const loaderURL = await getRuntimeLoaderURL()
   const pageURL = new URL('/__master-css-deferred-engine.html', loaderURL).href
-  const { cssText, hydrationManifest } = renderClassNamesSync(classNames, { manifest: defaultManifest })
+  const { cssText, hydrationManifest } = renderClassNamesSync(classNames, { manifest })
   await page.route(pageURL, route => route.fulfill({
     contentType: 'text/html',
     body: [
@@ -101,6 +102,22 @@ test('keeps a fully pre-rendered page off the engine, its Wasm and the project m
     color: expect.not.stringMatching(/^rgb\(0, 0, 0\)$/),
     display: 'block'
   })
+  expect(engineRequests(requests)).toEqual([])
+})
+
+test('keeps the engine deferred when a page script adds a mode class from manifest selectors', async ({ page }) => {
+  const manifest: MasterCSSManifest = {
+    ...defaultManifest,
+    mixins: [...(defaultManifest.mixins || []), {
+      name: '--dark',
+      body: [{ type: 'rule', selector: '&:where(.dark, .dark *)', body: [{ type: 'contents', fallback: [] }] }]
+    }]
+  }
+  const { loaderURL, requests } = await openPrerenderedPage(page, '<p class="fg-red-60"></p>', ['fg-red-60'], undefined, manifest)
+  await startDeferredRuntime(page, loaderURL, { manifest })
+  await page.evaluate(() => document.documentElement.classList.add('dark'))
+  await waitForFrames(page)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().engine)).toBe('deferred')
   expect(engineRequests(requests)).toEqual([])
 })
 

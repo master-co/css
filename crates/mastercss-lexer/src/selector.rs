@@ -149,6 +149,30 @@ mod tests {
     }
 }
 
+/// Decoded class names an actual selector references, skipping attribute contents
+/// and CSS strings, in source order.
+pub fn selector_class_names(source: &str) -> Vec<String> {
+    use crate::CssSyntaxKind;
+    let tokens = crate::tokenize_css_syntax(source);
+    let mut names = Vec::new();
+    let mut index = 0;
+    while let Some(token) = tokens.get(index) {
+        if token.kind == CssSyntaxKind::Delim('[') {
+            index = token.close.map_or(index + 1, |close| close + 1);
+            continue;
+        }
+        if token.kind == CssSyntaxKind::Delim('.')
+            && let Some(next) = tokens.get(index + 1)
+            && next.bytes.start == token.bytes.end
+            && let CssSyntaxKind::Ident(name) = &next.kind
+        {
+            names.push(name.to_string());
+        }
+        index += 1;
+    }
+    names
+}
+
 /// Rename one actual class selector, without touching attributes or CSS strings.
 pub fn replace_class_selector(source: &str, from: &str, to: &str) -> String {
     use crate::CssSyntaxKind;
@@ -216,6 +240,18 @@ mod rule_tests {
         assert_eq!(
             replace_rule_class_selector(css, ".old", ".longer-name"),
             r#"@media print{.longer-name{content:'.old'}}.longer-name[data-x='.old']{color:red}@supports(display:grid){.longer-name{display:grid}}"#
+        );
+    }
+
+    #[test]
+    fn selector_class_names_skip_attributes_and_decode_escapes() {
+        assert_eq!(
+            selector_class_names("&:where(.light, .light *)"),
+            ["light", "light"]
+        );
+        assert_eq!(
+            selector_class_names(r#".group[data-label=".peer"] > .a\:b :is(. c)"#),
+            ["group", "a:b"]
         );
     }
 }

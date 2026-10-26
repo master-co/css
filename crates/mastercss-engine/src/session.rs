@@ -519,6 +519,28 @@ impl EngineSession {
         Ok(resolve_style_selector_aliases(selector, &self.compiled))
     }
 
+    /// Classes that manifest selectors reference without generating rules themselves,
+    /// such as the mode class in a mixin's `&:where(.dark, .dark *)`. Page scripts
+    /// often add them on the client, where they never need new CSS.
+    pub fn selector_class_names_without_rules(&self) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut selectors = Vec::new();
+        collect_theme_selectors(&self.compiled.theme, &mut selectors);
+        for mixin in &self.compiled.mixins {
+            collect_mixin_selectors(&mixin.body, &mut selectors);
+        }
+        for utility in &self.compiled.utility_definitions {
+            collect_mixin_selectors(&utility.recipe.body, &mut selectors);
+        }
+        let mut seen = HashSet::new();
+        Ok(selectors
+            .into_iter()
+            .flat_map(mastercss_lexer::selector_class_names)
+            .filter(|class_name| seen.insert(class_name.clone()))
+            .filter(|class_name| self.generate_class_rules(class_name).is_empty())
+            .collect())
+    }
+
     pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
         self.ensure_active()?;
         let rules = self
@@ -1010,5 +1032,39 @@ impl EngineSession {
 
     pub(crate) fn fork_empty(&self) -> Self {
         self.fork_empty_with_emitted_globals(EmittedGlobals::default())
+    }
+}
+
+fn collect_theme_selectors<'a>(
+    nodes: &'a [mastercss_schema::ThemeNode],
+    selectors: &mut Vec<&'a str>,
+) {
+    for node in nodes {
+        if let mastercss_schema::ThemeNode::Rule { prelude, children } = node {
+            selectors.push(prelude);
+            collect_theme_selectors(children, selectors);
+        }
+    }
+}
+
+fn collect_mixin_selectors<'a>(
+    nodes: &'a [mastercss_schema::MixinNode],
+    selectors: &mut Vec<&'a str>,
+) {
+    use mastercss_schema::MixinNode;
+    for node in nodes {
+        match node {
+            MixinNode::Rule { selector, body } => {
+                selectors.push(selector);
+                collect_mixin_selectors(body, selectors);
+            }
+            MixinNode::Condition { body, .. } => collect_mixin_selectors(body, selectors),
+            MixinNode::Apply {
+                contents: Some(contents),
+                ..
+            } => collect_mixin_selectors(contents, selectors),
+            MixinNode::Contents { fallback } => collect_mixin_selectors(fallback, selectors),
+            MixinNode::Declaration { .. } | MixinNode::Apply { contents: None, .. } => {}
+        }
     }
 }

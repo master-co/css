@@ -74,8 +74,9 @@ pub struct HydrationManifest {
     pub version: u32,
     pub language_version: u32,
     /// Every rendered class: those with rules in rule order, then those without,
-    /// such as authored component classes. A deferred runtime treats them as
-    /// covered, then replays them to verify the pre-rendered CSS.
+    /// such as authored component classes, then classes manifest selectors reference
+    /// without rules of their own, such as mode classes. A deferred runtime treats
+    /// them as covered, then replays them to verify the pre-rendered CSS.
     pub class_names: Vec<String>,
     pub resource_order: HydrationResourceOrder,
     /// Resource counts the server render treated as already emitted by the page's

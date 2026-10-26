@@ -24,6 +24,7 @@ pub struct RenderSession {
     classes: Vec<String>,
     class_index: HashSet<String>,
     stylesheets: Vec<String>,
+    selector_classes: Vec<String>,
 }
 
 impl RenderSession {
@@ -31,11 +32,11 @@ impl RenderSession {
         manifest_json: &str,
         emitted_globals_json: Option<&str>,
     ) -> Result<Self, EngineError> {
+        let engine =
+            EngineSession::create_with_emitted_globals(manifest_json, emitted_globals_json)?;
         Ok(Self {
-            engine: EngineSession::create_with_emitted_globals(
-                manifest_json,
-                emitted_globals_json,
-            )?,
+            selector_classes: engine.selector_class_names_without_rules()?,
+            engine,
             classes: Vec::new(),
             class_index: HashSet::new(),
             stylesheets: Vec::new(),
@@ -137,13 +138,14 @@ impl RenderSession {
         // than this page links. It reproduces the snapshot from the server's instead.
         let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
         hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
-        // Rendered classes without rules follow the rule classes.
+        // Rendered classes without rules follow the rule classes. Selector classes such
+        // as mode classes come last, so client scripts adding them keep the engine deferred.
         let mut covered = hydration_manifest
             .class_names
             .iter()
             .cloned()
             .collect::<HashSet<_>>();
-        for class_name in classes {
+        for class_name in classes.iter().chain(&self.selector_classes) {
             if covered.insert(class_name.clone()) {
                 hydration_manifest.class_names.push(class_name.clone());
             }
@@ -219,6 +221,25 @@ mod tests {
                 .resource_order
                 .variables
                 .is_empty()
+        );
+    }
+
+    #[test]
+    fn covers_selector_classes_without_rules_of_their_own() {
+        let manifest = serde_json::json!({
+            "version":6,"languageVersion":16,
+            "mixins":[{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark, .dark *)","body":[{"type":"contents","fallback":[]}]}]}],
+            "utilities":[
+                {"kind":"static","name":"red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]},
+                {"kind":"static","name":"muted","body":[{"type":"rule","selector":".red &, [data-x=\".ignored\"] &","body":[{"type":"declaration","property":"opacity","value":[{"type":"text","value":".5"}]}]}]}
+            ]
+        })
+        .to_string();
+        let rendered = render_classes(&manifest, ["muted", "card"]).unwrap();
+        // Page scripts may add `dark`; `red` generates rules, so it still needs the engine.
+        assert_eq!(
+            rendered.hydration_manifest.class_names,
+            ["muted", "card", "dark"]
         );
     }
 
