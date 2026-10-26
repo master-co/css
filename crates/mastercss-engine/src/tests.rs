@@ -32,3 +32,41 @@ include!("tests/lifecycle.rs");
 include!("tests/syntax.rs");
 
 include!("tests/native_boundaries.rs");
+
+#[test]
+fn opacity_modifiers_compute_percentages_on_decimal_digits() {
+    use crate::utility::alpha_percentage;
+    for (alpha, expected) in [
+        (".07", Some("7")),
+        (".14", Some("14")),
+        ("0.29", Some("29")),
+        (".5", Some("50")),
+        (".123", Some("12.3")),
+        ("0.0001", Some("0.01")),
+        ("1", Some("100")),
+        ("1.000", Some("100")),
+        ("+.5", Some("50")),
+        ("5e-1", Some("50")),
+        ("0", Some("0")),
+        ("-0", Some("0")),
+        ("1.5", None),
+        ("-.5", None),
+        ("1e1", None),
+        ("inf", None),
+        ("NaN", None),
+        (".", None),
+        ("", None),
+        ("5%", None),
+    ] {
+        assert_eq!(alpha_percentage(alpha).as_deref(), expected, "{alpha}");
+    }
+    let mut session = EngineSession::create(MANIFEST).unwrap();
+    session.ensure_class_rules(["fg-red-60/.07"]).unwrap();
+    assert!(
+        session
+            .css_text()
+            .contains("color:color-mix(in oklab,var(--color-red-60) 7%,transparent)"),
+        "{}",
+        session.css_text()
+    );
+}

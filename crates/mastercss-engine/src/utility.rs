@@ -1,8 +1,7 @@
 use super::{
     CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering,
     StoredRule, UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
-    UtilityMatcherType, collect_css_variable_names, format_standard_number,
-    normalize_css_math_functions,
+    UtilityMatcherType, collect_css_variable_names, normalize_css_math_functions,
 };
 
 pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
@@ -323,6 +322,67 @@ pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
             })
 }
 
+/// An opacity modifier from 0 to 1 as a percentage, computed on its decimal digits so
+/// `.07` becomes `7` rather than the binary float product `7.000000000000001`. It
+/// accepts the decimal forms `f64::from_str` accepts, including an exponent.
+pub(crate) fn alpha_percentage(alpha: &str) -> Option<String> {
+    let (negative, unsigned) = match alpha.as_bytes().first() {
+        Some(b'+') => (false, &alpha[1..]),
+        Some(b'-') => (true, &alpha[1..]),
+        _ => (false, alpha),
+    };
+    let (mantissa, exponent) = match unsigned.find(['e', 'E']) {
+        Some(index) => {
+            let exponent = &unsigned[index + 1..];
+            let digits = exponent.strip_prefix(['+', '-']).unwrap_or(exponent);
+            if digits.is_empty() || !digits.bytes().all(|byte| byte.is_ascii_digit()) {
+                return None;
+            }
+            // Beyond this the value is zero or out of range either way.
+            let magnitude = digits.parse::<i64>().unwrap_or(i64::MAX).min(1 << 20);
+            let exponent = if exponent.starts_with('-') {
+                -magnitude
+            } else {
+                magnitude
+            };
+            (&unsigned[..index], exponent)
+        }
+        None => (unsigned, 0),
+    };
+    let (integer, fraction) = mantissa.split_once('.').unwrap_or((mantissa, ""));
+    if integer.is_empty() && fraction.is_empty()
+        || !integer
+            .bytes()
+            .chain(fraction.bytes())
+            .all(|byte| byte.is_ascii_digit())
+    {
+        return None;
+    }
+    // The value is 0.<digits> × 10^point with no leading or trailing zero digits.
+    let digits = format!("{integer}{fraction}");
+    let leading = digits.bytes().take_while(|byte| *byte == b'0').count();
+    let digits = digits[leading..].trim_end_matches('0');
+    if digits.is_empty() {
+        return Some("0".into());
+    }
+    let point = integer.len() as i64 - leading as i64 + exponent;
+    if negative || point > 1 || point == 1 && digits != "1" {
+        return None;
+    }
+    let point = point + 2;
+    Some(if point <= 0 {
+        format!("0.{}{digits}", "0".repeat((-point) as usize))
+    } else if point as usize >= digits.len() {
+        format!("{digits}{}", "0".repeat(point as usize - digits.len()))
+    } else {
+        format!(
+            "{}.{}",
+            &digits[..point as usize],
+            &digits[point as usize..]
+        )
+    })
+}
+
 pub(crate) fn resolve_utility_value(
     value: &str,
     utility: &UtilityDefinition,
@@ -334,19 +394,13 @@ pub(crate) fn resolve_utility_value(
         if !variable.namespace.starts_with("color") {
             return None;
         }
-        let alpha = alpha.parse::<f64>().ok()?;
-        if !(0.0..=1.0).contains(&alpha) {
-            return None;
-        }
+        let percentage = alpha_percentage(alpha)?;
         let color = format!(
             "var({})",
             mastercss_lexer::css_escape(&format!("--{}", variable.name))
         );
         return Some((
-            format!(
-                "color-mix(in oklab,{color} {}%,transparent)",
-                format_standard_number(alpha * 100.0)
-            ),
+            format!("color-mix(in oklab,{color} {percentage}%,transparent)"),
             vec![variable.name.clone()],
         ));
     }

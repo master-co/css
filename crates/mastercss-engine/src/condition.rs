@@ -276,14 +276,6 @@ pub(crate) fn normalize_dynamic_value(value: &str) -> String {
     value.to_owned()
 }
 
-pub(crate) fn format_standard_number(value: f64) -> String {
-    if value == 0.0 {
-        "0".into()
-    } else {
-        value.to_string()
-    }
-}
-
 pub(crate) fn parse_raw_condition_wrapper(raw: &str) -> Option<(String, String)> {
     let raw = raw.trim();
     let id = raw.strip_prefix('@')?.split_whitespace().next()?.to_owned();

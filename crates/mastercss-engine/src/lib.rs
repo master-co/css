@@ -382,8 +382,8 @@ mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
-    add_condition_wrapper, format_standard_number, normalize_dynamic_value,
-    parse_raw_condition_wrapper, render_condition_token, resolve_layer_condition,
+    add_condition_wrapper, normalize_dynamic_value, parse_raw_condition_wrapper,
+    render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::{
     add_unique_string, compile_manifest, engine_variable_ir, layer_name, single_native_declaration,
