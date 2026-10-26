@@ -190,9 +190,9 @@ export function renderHTMLWithSnapshot(
     } else nodes.unshift(styleElement)
   }
 
-  if (hydrationOption === 'inject' && hydrationManifest?.rules.length) {
+  if (hydrationOption === 'inject' && hydrationManifest && snapshot.rules.length) {
     injectHydrationScript(nodes, htmlElement, headElement, styleElement, hydrationManifest)
-  } else if (external && hydrationManifest?.rules.length) {
+  } else if (external && hydrationManifest && snapshot.rules.length) {
     removeHydrationScripts(nodes)
     styleElement.attribs[MASTER_CSS_HYDRATION_MANIFEST_ATTR] = externalSource(
       external,

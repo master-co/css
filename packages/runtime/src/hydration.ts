@@ -23,22 +23,18 @@ export function getRootHost(root: Document | ShadowRoot) {
 
 /** Classes the server rendered, so the progressive stylesheet already holds their CSS, if any. */
 export function getRenderedClassNames(hydrationManifest: MasterCSSHydrationManifest | undefined) {
-  return new Set([
-    ...hydrationManifest?.rules.map(rule => rule.className) || [],
-    ...hydrationManifest?.classNamesWithoutRules || []
-  ])
+  return new Set(hydrationManifest?.classNames)
 }
 
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
-  return (hydrationManifest as MasterCSSHydrationManifest | undefined)?.version === 4
-    && (hydrationManifest as MasterCSSHydrationManifest | undefined)?.languageVersion === 16
-    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.rules)
-    && (hydrationManifest as MasterCSSHydrationManifest).rules.every(rule => rule && Array.isArray(rule.priority?.features))
-    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.variables)
-    && Array.isArray((hydrationManifest as MasterCSSHydrationManifest | undefined)?.resourceOrder?.keyframes)
-    && ((hydrationManifest as MasterCSSHydrationManifest).classNamesWithoutRules === undefined
-      || Array.isArray((hydrationManifest as MasterCSSHydrationManifest).classNamesWithoutRules))
-    ? hydrationManifest as MasterCSSHydrationManifest
+  const candidate = hydrationManifest as MasterCSSHydrationManifest | undefined
+  return candidate?.version === 5
+    && candidate.languageVersion === 16
+    && Array.isArray(candidate.classNames)
+    && candidate.classNames.every(className => typeof className === 'string')
+    && Array.isArray(candidate.resourceOrder?.variables)
+    && Array.isArray(candidate.resourceOrder?.keyframes)
+    ? candidate
     : undefined
 }
 
@@ -57,7 +53,7 @@ function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
   } catch (cause) {
     throw invalidHydrationManifest('Cannot parse the Master CSS hydration manifest.', cause)
   }
-  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 4, languageVersion 16 and current rule priorities. Recompile with matching packages.')
+  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 16. Recompile with matching packages.')
 }
 
 function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
@@ -97,7 +93,7 @@ export async function resolveHydrationManifest(
   if (explicit !== undefined) {
     const hydrationManifest = validateHydrationManifest(explicit)
     if (!hydrationManifest) {
-      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 4, languageVersion 16 and current rule priorities. Recompile with matching packages.')
+      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 16. Recompile with matching packages.')
     }
     return hydrationManifest
   }

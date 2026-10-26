@@ -119,9 +119,9 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
     document.body.innerHTML = "<p class=\"display:block\"></p>"
   })
   await init(page, "@layer utilities{.display\\:block{display:block}}", undefined, {
-  "version": 4 as const,
+  "version": 5 as const,
   "languageVersion": 16 as const,
-  "rules": [],
+  "classNames": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
 
@@ -131,7 +131,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
     text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
 
-  expect(consoleWarnings.some((message) => message.includes('Hydration manifest has no generated rules'))).toBe(true)
+  expect(consoleWarnings.some((message) => message.includes('Hydration manifest has no rendered classes'))).toBe(true)
   expect(result).toEqual({
     progressive: false,
     utilityRules: ["display:block"],

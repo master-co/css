@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { createServerRenderer } from '@master/css-server'
+import { renderClassNamesSync } from '@master/css/node'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
@@ -58,7 +59,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
   test(`hydration validates utility CSSOM positions: ${change}`, async ({ page }) => {
     using renderer = createServerRenderer({ manifest: preset })
     const rendered = renderer.renderHTML("<html><head></head><body><div id=\"target\" class=\"display:block display:none\"></div></body></html>", { hydrationManifest: 'inject' })
-    const rules = rendered.hydrationManifest!.rules.map(rule => rule.text)
+    const rules = renderClassNamesSync(['display:block', 'display:none'], { manifest: preset }).rules.map(rule => rule.text)
     const css = change === 'none' ? rendered.cssText
       : change === 'reverse' ? `@layer utilities{${[...rules].reverse().join('')}}`
         : change === 'extra' ? `@layer utilities{.foreign{color:red}${rules.join('')}}`
@@ -154,7 +155,8 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
     }
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML('<html><head></head><body><div id="target" data-active class="base@layer(base) defaults@layer(defaults) components@layer(components) utilities@layer(utilities)"></div></body></html>', { hydrationManifest: 'inject' })
-    expect(rendered.hydrationManifest!.rules.every(rule => rule.nodes.length === 2)).toBe(true)
+    expect(renderClassNamesSync(['base@layer(base)', 'defaults@layer(defaults)', 'components@layer(components)', 'utilities@layer(utilities)'], { manifest }).rules
+      .every(rule => rule.nodes?.length === 2)).toBe(true)
     await page.setContent(rendered.html)
     await page.evaluate((change) => {
       const sheet = document.querySelector<HTMLStyleElement>('#master-css')!.sheet!
@@ -187,7 +189,7 @@ test('hydration rejects CSSOM nodes dropped by the browser', async ({ page }) =>
   }
   using renderer = createServerRenderer({ manifest })
   const rendered = renderer.renderHTML("<html><head></head><body><div id=\"target\" class=\"dropped display:none\"></div></body></html>", { hydrationManifest: 'inject' })
-  expect(rendered.hydrationManifest!.rules).toHaveLength(2)
+  expect(renderClassNamesSync(['dropped', 'display:none'], { manifest }).rules).toHaveLength(2)
   await startRendered(page, rendered.html, manifest)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('runtime')
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['dropped']))

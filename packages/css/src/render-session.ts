@@ -26,10 +26,7 @@ export interface MasterCSSRenderSnapshot {
   readonly classRules: Readonly<Record<string, readonly MasterCSSHydrationRule[]>>
   readonly engine: MasterCSSEngineSnapshot
   readonly emittedGlobals: MasterCSSEmittedGlobals
-  readonly hydrationManifest: Readonly<Omit<MasterCSSHydrationManifest, 'rules' | 'resourceOrder'>> & {
-    readonly rules: readonly MasterCSSHydrationRule[]
-    readonly resourceOrder: MasterCSSHydrationManifest['resourceOrder']
-  }
+  readonly hydrationManifest: MasterCSSHydrationManifest
 }
 
 interface BindingRenderResult {
@@ -76,10 +73,7 @@ function toSnapshot(
     emittedGlobals: Object.freeze({ ...emittedGlobals }),
     hydrationManifest: Object.freeze({
       ...rendered.hydrationManifest,
-      ...(rendered.hydrationManifest.classNamesWithoutRules
-        ? { classNamesWithoutRules: freezeArray(rendered.hydrationManifest.classNamesWithoutRules) }
-        : {}),
-      rules: freezeArray(rendered.hydrationManifest.rules),
+      classNames: freezeArray(rendered.hydrationManifest.classNames),
       resourceOrder: Object.freeze({
         variables: freezeArray(rendered.hydrationManifest.resourceOrder.variables),
         keyframes: freezeArray(rendered.hydrationManifest.resourceOrder.keyframes)

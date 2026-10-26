@@ -240,7 +240,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
         [loaded, hydrationManifest] = await timeout.race(Promise.all([enginePromise, hydrationPromise]))
       } else {
         hydrationManifest = await timeout.race(hydrationPromise)
-        if (!hydrationManifest?.rules.length) loaded = await timeout.race(startEngine())
+        if (!hydrationManifest?.classNames.length) loaded = await timeout.race(startEngine())
       }
       timeout.clear()
       startupRuntime = new MasterCSSRuntime(root, options, hydrationManifest, loaded)
@@ -480,18 +480,17 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
     this.hydrationFailureReason = undefined
     const manifest = this.hydrationManifest
-    if (manifest?.version !== 4 || !Array.isArray(manifest.rules)) {
+    if (manifest?.version !== 5 || !Array.isArray(manifest.classNames)) {
       return this.failHydration('Missing or invalid hydration manifest.')
     }
-    if (!manifest.rules.length) {
-      return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
+    if (!manifest.classNames.length) {
+      return this.failHydration(`Hydration manifest has no rendered classes for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
     }
-    const classNames = [...new Set(manifest.rules.map(rule => rule.className))]
+    // Replaying the server's class order reproduces its resource order; the resource
+    // and CSSOM comparisons below then prove the engine renders the same stylesheet.
+    const classNames = [...manifest.classNames]
     this.engine.ensureClassRules(classNames)
     let snapshot = this.engine.snapshot()
-    if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
-      return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
-    }
     // The server knows which stylesheets this page links; this bundle's emitted
     // globals may describe others. Resources follow the server's.
     if (this.registerMissingEmittedGlobals(manifest.emittedGlobals)) snapshot = this.engine.snapshot()
@@ -904,23 +903,15 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return this
   }
 
+  /** Rules come from the engine; until it starts, classes report usage only. */
   private getClassRuleSnapshots() {
     const ruleSnapshots = new Map<string, MasterCSSRuntimeRuleSnapshot[]>()
-    if (this.engineState === 'ready') {
-      for (const [className, rules] of this.classUtilities) {
-        ruleSnapshots.set(className, rules.map((rule) => Object.freeze({
-          key: rule.key,
-          layer: rule.layer.name as MasterCSSManifestUtilityLayerName,
-          text: rule.text
-        })))
-      }
-      return ruleSnapshots
-    }
-    // Until the engine starts, the hydration manifest describes the pre-rendered rules.
-    for (const { className, key, layer, text } of this.hydrationManifest?.rules || []) {
-      const rules = ruleSnapshots.get(className) || []
-      rules.push(Object.freeze({ key, layer, text }))
-      ruleSnapshots.set(className, rules)
+    for (const [className, rules] of this.classUtilities) {
+      ruleSnapshots.set(className, rules.map((rule) => Object.freeze({
+        key: rule.key,
+        layer: rule.layer.name as MasterCSSManifestUtilityLayerName,
+        text: rule.text
+      })))
     }
     return ruleSnapshots
   }

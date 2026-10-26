@@ -13,7 +13,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       <div id="composed" class="composed"></div><div id="same" class="same-list"></div><div id="reversed" class="reversed-list"></div>
       <div id="order" class="z-first a-last"></div><div id="override" class="override height:48px"></div><div id="later"></div></body></html>`
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
-    expect(rendered.hydrationManifest.rules.find(rule => rule.className === 'fallback')!.text).toContain('display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px')
+    expect(rendered.rules.find(rule => rule.className === 'fallback')!.text).toContain('display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px')
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {

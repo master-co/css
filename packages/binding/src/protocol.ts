@@ -3,7 +3,7 @@
 export const MASTER_CSS_BINDING_ABI_VERSION = 26 as const
 export const MASTER_CSS_LANGUAGE_VERSION = 16 as const
 export const MASTER_CSS_MANIFEST_VERSION = 6 as const
-export const MASTER_CSS_HYDRATION_MANIFEST_VERSION = 4 as const
+export const MASTER_CSS_HYDRATION_MANIFEST_VERSION = 5 as const
 export const MASTER_CSS_ENGINE_TRANSITION_VERSION = 4 as const
 export const MASTER_CSS_VALIDATOR_BATCH_VERSION = 4 as const
 export const MASTER_CSS_DIAGNOSTICS_REPORT_VERSION = 5 as const

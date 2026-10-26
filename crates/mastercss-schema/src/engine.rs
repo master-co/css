@@ -73,51 +73,53 @@ pub struct GeneratedRuleIr {
 pub struct HydrationManifest {
     pub version: u32,
     pub language_version: u32,
-    pub rules: Vec<GeneratedRuleIr>,
+    /// Every rendered class: those with rules in rule order, then those without,
+    /// such as authored component classes. A deferred runtime treats them as
+    /// covered, then replays them to verify the pre-rendered CSS.
+    pub class_names: Vec<String>,
     pub resource_order: HydrationResourceOrder,
     /// Resource counts the server render treated as already emitted by the page's
     /// stylesheets. The runtime cannot reproduce `resource_order` without them.
     #[serde(default, skip_serializing_if = "EmittedGlobals::is_empty")]
     pub emitted_globals: EmittedGlobals,
-    /// Rendered classes that generate no rules, such as authored component classes.
-    /// With the rule classes, they tell a deferred runtime which connected classes
-    /// the pre-rendered CSS already accounts for.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub class_names_without_rules: Vec<String>,
 }
 
 impl HydrationManifest {
-    pub fn new(rules: Vec<GeneratedRuleIr>, resource_order: Vec<String>) -> Self {
+    pub fn new(class_names: Vec<String>, resource_order: Vec<String>) -> Self {
         Self {
             version: HYDRATION_MANIFEST_VERSION,
             language_version: LANGUAGE_VERSION,
-            rules,
+            class_names,
             resource_order: HydrationResourceOrder {
                 variables: resource_order,
                 keyframes: Vec::new(),
             },
             emitted_globals: EmittedGlobals::default(),
-            class_names_without_rules: Vec::new(),
         }
     }
 
+    /// Replaying classes in sorted rule order reproduces the snapshot's resource order.
     pub fn from_snapshot(snapshot: &EngineSnapshotIr) -> Self {
+        let mut class_names: Vec<String> = Vec::new();
+        for rule in &snapshot.rules {
+            if !class_names.contains(&rule.class_name) {
+                class_names.push(rule.class_name.clone());
+            }
+        }
         let resource_order = snapshot
             .resources
             .variables
             .iter()
             .map(|resource| resource.name.clone())
             .collect();
-        {
-            let mut manifest = Self::new(snapshot.rules.clone(), resource_order);
-            manifest.resource_order.keyframes = snapshot
-                .resources
-                .keyframes
-                .iter()
-                .map(|r| r.id.clone())
-                .collect();
-            manifest
-        }
+        let mut manifest = Self::new(class_names, resource_order);
+        manifest.resource_order.keyframes = snapshot
+            .resources
+            .keyframes
+            .iter()
+            .map(|r| r.id.clone())
+            .collect();
+        manifest
     }
 
     pub fn to_script_json(&self) -> Result<String, serde_json::Error> {

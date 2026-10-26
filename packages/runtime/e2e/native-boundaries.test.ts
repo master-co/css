@@ -60,10 +60,9 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   })
 }
 
-test('old hydration priorities are rejected before hydration', async ({ page }) => {
+test('hydration manifests from older packages are rejected before hydration', async ({ page }) => {
   const rendered = renderClassNamesSync(["padding:8px@media((width>=1px))"], { manifest })
-  const old = structuredClone(rendered.hydrationManifest)
-  delete (old.rules[0].priority as Partial<typeof old.rules[0]['priority']>).features
+  const old = { ...rendered.hydrationManifest, version: 4, rules: rendered.rules }
   await page.setContent("<div class=\"padding:8px@media((width>=1px))\"></div>")
   const error = await page.evaluate(async ({ loader, manifest, old }) => {
     const { startCSSRuntime } = await import(loader)

@@ -52,13 +52,8 @@ it('returns a hydration manifest without changing rendered HTML', () => {
   const result = render("<html><head></head><body><div class=\"text-align:center\"></div></body></html>")
 
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
-  expect(result.hydrationManifest?.rules).toEqual([
-    expect.objectContaining({
-      className: "text-align:center",
-      text: ".text-align\\:center{text-align:center}",
-      layer: 'utilities'
-    })
-  ])
+  expect(result.hydrationManifest?.classNames).toEqual(['text-align:center'])
+  expect(result.cssText).toContain(".text-align\\:center{text-align:center}")
 })
 
 it('injects the hydration manifest into an existing head when requested', () => {
@@ -69,7 +64,7 @@ it('injects the hydration manifest into an existing head when requested', () => 
 
   expect(result.html).toContain('<head><style id="master-css">')
   expect(result.html).toContain(`<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">`)
-  expect(result.html).toContain('"className":"text-align:center"')
+  expect(result.html).toContain('"classNames":["text-align:center"]')
   expect(countHydrationManifestScripts(result.html)).toBe(1)
 })
 
@@ -84,9 +79,7 @@ it('attaches an external hydration manifest source to style#master-css when requ
     `<style id="master-css" ${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="${source}"`
   )
   expect(result.html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-  expect(result.hydrationManifest?.rules).toEqual([
-    expect.objectContaining({ className: "text-align:center" })
-  ])
+  expect(result.hydrationManifest?.classNames).toEqual(['text-align:center'])
 })
 
 it('removes stale inline hydration scripts in external hydration manifest mode', () => {
@@ -116,7 +109,7 @@ it('emits no external hydration manifest pointer for empty generated CSS', () =>
 
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
-  expect(result.hydrationManifest?.rules).toEqual([])
+  expect(result.hydrationManifest?.classNames).toEqual(['unknown-native'])
 })
 
 it('creates a head for the injected hydration manifest when missing', () => {
@@ -127,7 +120,7 @@ it('creates a head for the injected hydration manifest when missing', () => {
 
   expect(result.html).toContain('<head><style id="master-css">')
   expect(result.html).toContain(`<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">`)
-  expect(result.html).toContain('"className":"text-align:center"')
+  expect(result.html).toContain('"classNames":["text-align:center"]')
   expect(countHydrationManifestScripts(result.html)).toBe(1)
 })
 
@@ -140,7 +133,7 @@ it('replaces an existing hydration manifest script when requested', () => {
 
   expect(result.html).not.toContain('{"version":1,"rules":[]}')
   expect(result.html).toContain(`<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">`)
-  expect(result.html).toContain('"className":"text-align:center"')
+  expect(result.html).toContain('"classNames":["text-align:center"]')
   expect(countHydrationManifestScripts(result.html)).toBe(1)
 })
 
@@ -161,6 +154,6 @@ it('removes an empty master style when hydration manifest injection is requested
   )
 
   expect(result.html).toBe('<html><head></head><body><div class="unknown-native"></div></body></html>')
-  expect(result.hydrationManifest?.rules).toEqual([])
+  expect(result.hydrationManifest?.classNames).toEqual(['unknown-native'])
   expect(result.html).not.toContain('style id="master-css"')
 })

@@ -82,7 +82,7 @@ test('keeps a fully pre-rendered page off the engine, its Wasm and the project m
       observing: snapshot.observing,
       hydration: snapshot.hydration.state,
       usageCounts: snapshot.usageCounts,
-      ruleKeys: Object.fromEntries(Object.entries(snapshot.classRules).map(([className, { rules }]) => [className, rules.map(rule => rule.key)])),
+      ruleCounts: Object.fromEntries(Object.entries(snapshot.classRules).map(([className, { rules }]) => [className, rules.length])),
       prerendered: snapshot.cssText.includes('.fg-red-60'),
       manifestLoads: globalThis.__MASTER_CSS_RUNTIME_MANIFEST_LOADS__,
       color: getComputedStyle(document.getElementById('target')!).color,
@@ -94,7 +94,8 @@ test('keeps a fully pre-rendered page off the engine, its Wasm and the project m
     observing: true,
     hydration: 'progressive',
     usageCounts: { 'display:block': 1, 'fg-red-60': 1 },
-    ruleKeys: { 'display:block': ['display:block'], 'fg-red-60': ['fg-red-60'] },
+    // Rules come from the engine, so a deferred runtime reports usage only.
+    ruleCounts: { 'display:block': 0, 'fg-red-60': 0 },
     prerendered: true,
     manifestLoads: 0,
     color: expect.not.stringMatching(/^rgb\(0, 0, 0\)$/),

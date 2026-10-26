@@ -235,7 +235,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
           return pathname
         }
       })
-      if (options.mode === 'progressive' && rendered.hydrationManifest?.rules.length) {
+      if (options.mode === 'progressive' && rendered.hydrationManifest && rendered.cssText) {
         const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
         const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
         hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)

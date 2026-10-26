@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { resolve } from 'node:path'
 import {
   assertMasterCSSBindingInfo,
-  MASTER_CSS_BINDING_ABI_VERSION
+  MASTER_CSS_BINDING_ABI_VERSION,
+  MASTER_CSS_HYDRATION_MANIFEST_VERSION
 } from '../src'
 import {
   assertNativeCLIInfo,
@@ -59,7 +60,7 @@ describe('native target resolution', () => {
       bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION,
       packageVersion: '0.0.0',
       manifestVersion: 6,
-      hydrationManifestVersion: 4
+      hydrationManifestVersion: MASTER_CSS_HYDRATION_MANIFEST_VERSION
     })
   })
 

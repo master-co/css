@@ -49,7 +49,7 @@ test.each([
       const asset = url.pathname.slice('/app/'.length)
       expect(asset).toMatch(new RegExp(`^${assetsDir ? assetsDir + '/' : ''}_master-css/hydration/master-css-hydration\\.[a-f0-9]{8}\\.json$`))
       const manifest = JSON.parse(readFileSync(join(root, 'dist', asset), 'utf8'))
-      expect(manifest.rules.map((rule: { className: string }) => rule.className)).toContain("display:block")
+      expect(manifest.classNames).toContain("display:block")
       assets.add(asset)
     }
     // Same classes share JSON bytes, but each page gets its own relative URL.

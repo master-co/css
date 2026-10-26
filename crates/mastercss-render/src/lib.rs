@@ -137,16 +137,17 @@ impl RenderSession {
         // than this page links. It reproduces the snapshot from the server's instead.
         let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
         hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
-        let rule_classes = snapshot
-            .rules
+        // Rendered classes without rules follow the rule classes.
+        let mut covered = hydration_manifest
+            .class_names
             .iter()
-            .map(|rule| rule.class_name.as_str())
-            .collect::<HashSet<_>>();
-        hydration_manifest.class_names_without_rules = classes
-            .iter()
-            .filter(|class_name| !rule_classes.contains(class_name.as_str()))
             .cloned()
-            .collect();
+            .collect::<HashSet<_>>();
+        for class_name in classes {
+            if covered.insert(class_name.clone()) {
+                hydration_manifest.class_names.push(class_name.clone());
+            }
+        }
         hydration_manifest
     }
 
@@ -207,11 +208,10 @@ mod tests {
             rendered.snapshot.text,
             "@layer utilities{.block{display:block}.red{color:red}}"
         );
-        assert_eq!(rendered.hydration_manifest.version, 4);
-        assert_eq!(rendered.hydration_manifest.rules, rendered.snapshot.rules);
+        assert_eq!(rendered.hydration_manifest.version, 5);
         assert_eq!(
-            rendered.hydration_manifest.class_names_without_rules,
-            ["unknown"]
+            rendered.hydration_manifest.class_names,
+            ["block", "red", "unknown"]
         );
         assert!(
             rendered

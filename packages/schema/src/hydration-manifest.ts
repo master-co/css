@@ -45,14 +45,17 @@ export interface MasterCSSHydrationRule {
 }
 
 export interface MasterCSSHydrationManifest {
-  readonly version: 4
+  readonly version: 5
   readonly languageVersion: 16
-  readonly rules: readonly MasterCSSHydrationRule[]
+  /**
+   * Every rendered class: those with rules in rule order, then those without, such as
+   * authored component classes. The runtime treats them as covered by the pre-rendered
+   * CSS and replays them to verify it when the engine starts.
+   */
+  readonly classNames: readonly string[]
   readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }
   /** Resource counts the server render treated as emitted by the page's stylesheets. */
   readonly emittedGlobals?: MasterCSSEmittedGlobals
-  /** Rendered classes that generate no rules, such as authored component classes. */
-  readonly classNamesWithoutRules?: readonly string[]
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

@@ -40,13 +40,9 @@ fn render(manifest: &str, stylesheets: &[&str], classes: &[&str]) -> ServerRende
 /// What a runtime without the page's stylesheets reproduces from the manifest.
 fn hydrate(manifest: &str, rendered: &ServerRenderIr) -> EngineSnapshotIr {
     let mut runtime = EngineSession::create(manifest).unwrap();
-    let mut classes = Vec::new();
-    for rule in &rendered.hydration_manifest.rules {
-        if !classes.contains(&rule.class_name) {
-            classes.push(rule.class_name.clone());
-        }
-    }
-    runtime.ensure_class_rules(&classes).unwrap();
+    runtime
+        .ensure_class_rules(&rendered.hydration_manifest.class_names)
+        .unwrap();
     runtime
         .register_emitted_globals(
             &serde_json::to_string(&rendered.hydration_manifest.emitted_globals).unwrap(),

@@ -34,13 +34,7 @@ fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
         ] {
             let mut engine = EngineSession::create(&manifest).unwrap();
             engine
-                .ensure_class_rules(
-                    rendered
-                        .hydration_manifest
-                        .rules
-                        .iter()
-                        .map(|rule| &rule.class_name),
-                )
+                .ensure_class_rules(&rendered.hydration_manifest.class_names)
                 .unwrap();
             assert_eq!(engine.snapshot().unwrap(), rendered.snapshot);
             if let Some(expected) = &expected {
@@ -72,13 +66,7 @@ fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
         let rendered = renderer.snapshot_for_classes(classes).unwrap();
         let mut engine = EngineSession::create_with_emitted_globals(manifest, emitted).unwrap();
         engine
-            .ensure_class_rules(
-                rendered
-                    .hydration_manifest
-                    .rules
-                    .iter()
-                    .map(|rule| &rule.class_name),
-            )
+            .ensure_class_rules(&rendered.hydration_manifest.class_names)
             .unwrap();
         assert_eq!(engine.snapshot().unwrap(), rendered.snapshot);
         assert!(!rendered.snapshot.text.contains("color-green-60"));
@@ -98,13 +86,7 @@ fn document_native_stylesheets_keep_hydration_resource_discovery_canonical() {
     let rendered = renderer.snapshot().unwrap();
     let mut browser = EngineSession::create(manifest).unwrap();
     browser
-        .ensure_class_rules(
-            rendered
-                .hydration_manifest
-                .rules
-                .iter()
-                .map(|rule| &rule.class_name),
-        )
+        .ensure_class_rules(&rendered.hydration_manifest.class_names)
         .unwrap();
     let snapshot = browser.snapshot().unwrap();
     assert_eq!(snapshot.resources, rendered.snapshot.resources);

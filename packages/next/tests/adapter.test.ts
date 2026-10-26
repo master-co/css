@@ -204,8 +204,10 @@ describe('renderNextBuildOutputs', () => {
     expect(existsSync(join(distDir, 'master-css-build-report.json'))).toBe(true)
     expect(existsSync(hydrationManifestFile)).toBe(true)
     const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
-    expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font-size:40px', 'fg-red']))
-    expect(hydrationManifest.rules).toHaveLength(2)
+    expect(hydrationManifest.version).toBe(5)
+    expect(hydrationManifest.classNames).toEqual(expect.arrayContaining(['font-size:40px', 'fg-red']))
+    // Rule metadata stays with the engine; the manifest only names rendered classes.
+    expect(hydrationManifest.rules).toBeUndefined()
   })
 
   it('pre-renders CSS without publishing hydration resources', async () => {

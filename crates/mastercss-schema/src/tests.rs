@@ -41,23 +41,7 @@ fn rejects_legacy_manifest_shapes() {
 
 #[test]
 fn hydration_json_is_script_safe() {
-    let manifest = HydrationManifest::new(
-        vec![GeneratedRuleIr {
-            class_name: "content:<".into(),
-            key: "content:<".into(),
-            layer: UtilityLayerName::Utilities,
-            utility_type: 0,
-            sort_tier: 0,
-            priority: RulePriorityIr::default(),
-            text: ".content\\:\\<{content:\"<\"}".into(),
-            nodes: Vec::new(),
-            selector_text: None,
-            variable_names: Vec::new(),
-            keyframe_names: Vec::new(),
-            retain_all_keyframes: false,
-        }],
-        Vec::new(),
-    );
+    let manifest = HydrationManifest::new(vec!["content:<".into()], Vec::new());
     let json = manifest.to_script_json().unwrap();
     assert!(!json.contains('<'));
     assert!(json.contains("\\u003c"));

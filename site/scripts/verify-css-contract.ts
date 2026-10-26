@@ -6,23 +6,10 @@ import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
 
 type JSONValue = null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue }
 
-type HydrationRule = {
-    className: string
-    key: string
-    layer: string
-    type: number
-    sortTier: number
-    priority: JSONValue
-    text: string
-    nodes?: { text: string }[]
-    selectorText?: string
-    variableNames?: string[]
-}
-
 type HydrationManifest = {
     version: number
     languageVersion: number
-    rules: HydrationRule[]
+    classNames: string[]
     resourceOrder: { variables: string[], keyframes: string[] }
 }
 
@@ -33,13 +20,12 @@ type CSSContract = {
     hydrationBytes: number
     hydrationSha256: string
     hydrationVersion: number
-    rules: string[]
     resourceOrder: { variables: string[], keyframes: string[] }
     classNames: string[]
 }
 
 type SiteCSSContractSnapshot = {
-    version: 2
+    version: 3
     semanticBaseline: 'language-v16'
     publicBaseline: 'v2-theme-token-modes'
     approval?: {
@@ -51,7 +37,6 @@ type SiteCSSContractSnapshot = {
         value: JSONValue
     }
     cssSegments: Record<string, string>
-    rules: Record<string, HydrationRule>
     contracts: Record<string, CSSContract>
     routes: Record<string, string | null>
 }
@@ -134,7 +119,6 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         return css
     }
     const cssSegments: Record<string, string> = {}
-    const rules: Record<string, HydrationRule> = {}
     const contracts: Record<string, CSSContract> = {}
     const routes: Record<string, string | null> = {}
 
@@ -157,8 +141,8 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         assertRouteStylesheetBoundary(route, css)
         const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
         const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
-        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 4, languageVersion: 16, rules: [], resourceOrder: { variables: [], keyframes: [] } }
-        if (hydration.version !== 4 || hydration.languageVersion !== 16 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder.variables) || !Array.isArray(hydration.resourceOrder.keyframes)) {
+        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 5, languageVersion: 16, classNames: [], resourceOrder: { variables: [], keyframes: [] } }
+        if (hydration.version !== 5 || hydration.languageVersion !== 16 || !Array.isArray(hydration.classNames) || !Array.isArray(hydration.resourceOrder.variables) || !Array.isArray(hydration.resourceOrder.keyframes)) {
             throw new Error(`${route} references an invalid Master CSS hydration manifest.`)
         }
         let segments: string[]
@@ -172,7 +156,6 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         if (reconstructedCSS !== css) {
             throw new Error(`${route} CSS segment catalog did not preserve exact bytes.`)
         }
-        const ruleIds = hydration.rules.map((rule) => addCatalogValue(rules, rule))
         const contract: CSSContract = {
             cssBytes: Buffer.byteLength(css),
             cssSha256: sha256(css),
@@ -180,16 +163,16 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
             hydrationBytes: Buffer.byteLength(hydrationText),
             hydrationSha256: sha256(hydrationText),
             hydrationVersion: hydration.version,
-            rules: ruleIds,
             resourceOrder: hydration.resourceOrder,
-            classNames: [...new Set(hydration.rules.map((rule) => rule.className))].sort()
+            // Replay order reproduces resource order, so it is part of the contract.
+            classNames: hydration.classNames
         }
         const contractId = addCatalogValue(contracts, contract)
         routes[route] = contractId
     }
 
     return {
-        version: 2,
+        version: 3,
         semanticBaseline: 'language-v16',
         publicBaseline: 'v2-theme-token-modes',
         projectManifest: {
@@ -198,7 +181,6 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
             value: projectManifest
         },
         cssSegments: sortRecord(cssSegments),
-        rules: sortRecord(rules),
         contracts: sortRecord(contracts),
         routes: sortRecord(routes)
     }
@@ -454,23 +436,13 @@ function contractDifference(
         return `Delivered CSS bytes changed: ${expected.cssSha256} → ${actual.cssSha256}.`
     }
     if (expected.hydrationSha256 !== actual.hydrationSha256) {
-        const length = Math.max(expected.rules.length, actual.rules.length)
-        for (let index = 0; index < length; index++) {
-            const expectedId = expected.rules[index]
-            const actualId = actual.rules[index]
-            if (expectedId === actualId) continue
-            const expectedRule = expectedSnapshot.rules[expectedId]
-            const actualRule = actualSnapshot.rules[actualId]
-            return [
-                `Hydration bytes changed: ${expected.hydrationSha256} → ${actual.hydrationSha256}.`,
-                `First changed hydration rule: ${index} (${expectedId || '<missing>'} → ${actualId || '<missing>'}).`,
-                firstJSONDifference(expectedRule as unknown as JSONValue, actualRule as unknown as JSONValue, 'rule')
-                || 'Only rule serialization changed.'
-            ].join('\n')
-        }
         return [
             `Hydration bytes changed: ${expected.hydrationSha256} → ${actual.hydrationSha256}.`,
             firstJSONDifference(
+                expected.classNames as unknown as JSONValue,
+                actual.classNames as unknown as JSONValue,
+                'classNames'
+            ) || firstJSONDifference(
                 expected.resourceOrder as unknown as JSONValue,
                 actual.resourceOrder as unknown as JSONValue,
                 'resourceOrder'
@@ -569,7 +541,6 @@ function summary(label: string, snapshot: SiteCSSContractSnapshot) {
         `${label}:`,
         `  ${Object.keys(snapshot.routes).length} static HTML routes`,
         `  ${Object.keys(snapshot.contracts).length} deduplicated CSS delivery contracts`,
-        `  ${Object.keys(snapshot.rules).length} deduplicated generated rules`,
         `  ${Object.keys(snapshot.cssSegments).length} deduplicated exact CSS segments`
     ].join('\n')
 }

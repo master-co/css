@@ -54,13 +54,8 @@ it('returns hydration state without mutating HTML by default', () => {
   )
 
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
-  expect(result.hydrationManifest?.rules).toEqual([
-    expect.objectContaining({
-      className: "text-align:center",
-      text: ".text-align\\:center{text-align:center}",
-      layer: 'utilities'
-    })
-  ])
+  expect(result.hydrationManifest?.classNames).toEqual(['text-align:center'])
+  expect(result.cssText).toContain(".text-align\\:center{text-align:center}")
 })
 
 it('injects exactly one hydration manifest and replaces stale copies', () => {
@@ -75,7 +70,7 @@ it('injects exactly one hydration manifest and replaces stale copies', () => {
   expect(result.html).toContain(
     `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">`
   )
-  expect(result.html).toContain('"className":"text-align:center"')
+  expect(result.html).toContain('"classNames":["text-align:center"]')
   expect(countHydrationManifestScripts(result.html)).toBe(1)
 })
 
@@ -107,9 +102,7 @@ it('attaches an external hydration source and removes stale inline state', () =>
     `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="${source}"`
   )
   expect(result.html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-  expect(result.hydrationManifest?.rules).toEqual([
-    expect.objectContaining({ className: "text-align:center" })
-  ])
+  expect(result.hydrationManifest?.classNames).toEqual(['text-align:center'])
 })
 
 it('supports an external hydration manifest writer callback', () => {
@@ -125,7 +118,7 @@ it('supports an external hydration manifest writer callback', () => {
     }
   )
 
-  expect(written).toContain('"className":"text-align:center"')
+  expect(written).toContain('"classNames":["text-align:center"]')
   expect(result.html).toContain(
     `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/hydration.json"`
   )
@@ -144,7 +137,7 @@ it('removes stale style and hydration state when no CSS is generated', () => {
 
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
   expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
-  expect(result.hydrationManifest?.rules).toEqual([])
+  expect(result.hydrationManifest?.classNames).toEqual(['unknown-native'])
 })
 
 it('can suppress hydration state entirely', () => {

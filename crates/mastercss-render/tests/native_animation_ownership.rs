@@ -18,7 +18,7 @@ fn native_animation_values_never_register_or_synthesize_keyframes() {
         session.ensure_stylesheet_resources(css).unwrap();
         let rendered = session.snapshot().unwrap();
         assert!(rendered.snapshot.text.is_empty(), "{css}");
-        assert!(rendered.hydration_manifest.rules.is_empty());
+        assert!(rendered.hydration_manifest.class_names.is_empty());
         assert!(
             serde_json::to_value(session.emitted_globals().unwrap())
                 .unwrap()
@@ -39,14 +39,12 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     assert!(rendered.snapshot.text.contains("@keyframes fade"));
     assert!(rendered.snapshot.text.contains("@keyframes rotate"));
     let hydration = serde_json::to_value(rendered.hydration_manifest).unwrap();
-    assert_eq!(hydration["version"], 4);
-    assert!(
-        hydration["rules"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .all(|rule| rule.get("animationNames").is_none())
-    );
+    assert_eq!(hydration["version"], 5);
+    // Keyframe metadata stays in the runtime engine; the manifest only names classes.
+    assert!(hydration.get("rules").is_none());
+    let class_names = hydration["classNames"].as_array().unwrap();
+    assert!(class_names.contains(&json!("animation:fade|1s")));
+    assert!(class_names.contains(&json!("animation-name:rotate")));
     assert_eq!(
         hydration["resourceOrder"]["keyframes"],
         json!(
