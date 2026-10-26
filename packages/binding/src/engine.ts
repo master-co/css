@@ -1,19 +1,24 @@
 import { MasterCSSError } from '@master/css-schema'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSNativeEngineSession,
   MasterCSSNativeEngineSessionOptions,
   MasterCSSNativeModuleOptions,
-  MasterCSSNativeRenderSession
+  MasterCSSNativeRenderSession,
+  MasterCSSNativeRenderSessionOptions
 } from './engine-contract'
 import { NativeBindingError } from './errors'
 import { loadNativeBinding } from './native-loader'
 
 export type {
+  MasterCSSEngineSource,
   MasterCSSNativeEngineSession,
   MasterCSSNativeEngineSessionOptions,
   MasterCSSNativeModuleOptions,
-  MasterCSSNativeRenderSession
+  MasterCSSNativeRenderSession,
+  MasterCSSNativeRenderSessionOptions
 } from './engine-contract'
 export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
@@ -35,6 +40,10 @@ function parse<T>(value: string): T {
   return JSON.parse(value) as T
 }
 
+function globalsJSON(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
+  return emittedGlobals ? JSON.stringify(emittedGlobals) : undefined
+}
+
 function bindingError(cause: unknown): MasterCSSError {
   if (cause instanceof MasterCSSError) return cause
   if (!(cause instanceof NativeBindingError)) throw cause
@@ -52,10 +61,13 @@ export function createNativeEngineSession(
   try {
     const loaded = loadNativeBinding(moduleOptions)
     if (!loaded) return
-    const session = new loaded.binding.EngineSession(
-      serializeMasterCSSManifest(options.manifest),
-      options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
-    )
+    const { EngineSession } = loaded.binding
+    const session = options.program
+      ? EngineSession.fromProgram(options.program, globalsJSON(options.emittedGlobals))
+      : new EngineSession(
+        serializeMasterCSSManifest(options.manifest),
+        globalsJSON(options.emittedGlobals)
+      )
     let disposed = false
     const dispose = () => {
       if (disposed) return
@@ -69,7 +81,10 @@ export function createNativeEngineSession(
         parse(session.registerEmittedGlobals(JSON.stringify(emittedGlobals))),
       replaceEmittedGlobals: (emittedGlobals) =>
         parse(session.replaceEmittedGlobals(JSON.stringify(emittedGlobals))),
-      refresh: (manifest, emittedGlobals) => parse(session.refresh(serializeMasterCSSManifest(manifest), emittedGlobals ? JSON.stringify(emittedGlobals) : undefined)),
+      refresh: (source, emittedGlobals) => parse(ArrayBuffer.isView(source)
+        ? session.refreshProgram(source, globalsJSON(emittedGlobals))
+        : session.refresh(serializeMasterCSSManifest(source), globalsJSON(emittedGlobals))),
+      keyframeDefinitions: () => parse(session.keyframeDefinitions()),
       executionState: (classNames) => parse(session.executionState([...classNames])),
       inspect: (className) => parse(session.inspect(className)),
       snapshot: () => parse(session.snapshot()),
@@ -82,7 +97,7 @@ export function createNativeEngineSession(
 }
 
 export function createNativeRenderSession(
-  options: MasterCSSNativeEngineSessionOptions,
+  options: MasterCSSNativeRenderSessionOptions,
   moduleOptions: MasterCSSNativeModuleOptions = {}
 ): MasterCSSNativeRenderSession | undefined {
   try {
@@ -90,7 +105,7 @@ export function createNativeRenderSession(
     if (!loaded) return
     const session = new loaded.binding.RenderSession(
       serializeMasterCSSManifest(options.manifest),
-      options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
+      globalsJSON(options.emittedGlobals)
     )
     let disposed = false
     const dispose = () => {
@@ -110,6 +125,20 @@ export function createNativeRenderSession(
       dispose,
       [Symbol.dispose]: dispose
     }
+  } catch (cause) {
+    throw bindingError(cause)
+  }
+}
+
+/** Compiles a manifest into the runtime program that browsers execute. */
+export function compileNativeRuntimeProgram(
+  manifest: MasterCSSManifest,
+  moduleOptions: MasterCSSNativeModuleOptions = {}
+): Uint8Array | undefined {
+  try {
+    const loaded = loadNativeBinding(moduleOptions)
+    if (!loaded) return
+    return new Uint8Array(loaded.binding.compileRuntimeProgram(serializeMasterCSSManifest(manifest)))
   } catch (cause) {
     throw bindingError(cause)
   }

@@ -112,6 +112,8 @@ pub enum CssDirectiveStyleDefinition {
 pub enum ErrorCode {
     InvalidManifest,
     UnsupportedManifestVersion,
+    InvalidProgram,
+    UnsupportedProgramVersion,
     InvalidHydrationManifest,
     NativeUnavailable,
     NativeLoadFailed,
@@ -142,9 +144,11 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 27] = [
+    pub const ALL: [Self; 29] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
+        Self::InvalidProgram,
+        Self::UnsupportedProgramVersion,
         Self::InvalidHydrationManifest,
         Self::NativeUnavailable,
         Self::NativeLoadFailed,
@@ -176,6 +180,8 @@ impl ErrorCode {
         match self {
             Self::InvalidManifest => "INVALID_MANIFEST",
             Self::UnsupportedManifestVersion => "UNSUPPORTED_MANIFEST_VERSION",
+            Self::InvalidProgram => "INVALID_PROGRAM",
+            Self::UnsupportedProgramVersion => "UNSUPPORTED_PROGRAM_VERSION",
             Self::InvalidHydrationManifest => "INVALID_HYDRATION_MANIFEST",
             Self::NativeUnavailable => "NATIVE_UNAVAILABLE",
             Self::NativeLoadFailed => "NATIVE_LOAD_FAILED",

@@ -1,4 +1,6 @@
-import type { MasterCSSWasmEngineLoader } from './index'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSKeyframeDefinition } from '@master/css-schema/manifest'
+import type { MasterCSSWasmEngineLoader, MasterCSSWasmEngineSource } from './index'
 import type { MasterCSSWasmEngineLoadOptions } from './provider'
 
 interface MasterCSSWasmEngineProviderSession {
@@ -11,18 +13,19 @@ interface MasterCSSWasmEngineProviderSession {
     readonly version: number
     readonly mutations: readonly unknown[]
   }
-  registerEmittedGlobals(emittedGlobalsJSON: string): {
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): {
     readonly version: number
     readonly mutations: readonly unknown[]
   }
-  replaceEmittedGlobals(emittedGlobalsJSON: string): {
+  replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): {
     readonly version: number
     readonly mutations: readonly unknown[]
   }
-  refresh(manifestJSON: string, emittedGlobalsJSON?: string): {
+  refresh(source: MasterCSSWasmEngineSource, emittedGlobals?: MasterCSSEmittedGlobals): {
     readonly version: number
     readonly mutations: readonly unknown[]
   }
+  keyframeDefinitions(): readonly MasterCSSKeyframeDefinition[]
   snapshot(): {
     readonly version: number
     readonly rules: readonly unknown[]
@@ -54,14 +57,17 @@ interface MasterCSSWasmRenderProviderSession {
 
 interface MasterCSSEngineWasmProvider {
   readonly info: unknown
+  /** `source` is a compiled runtime program, or manifest JSON for the `full` artifact. */
   createEngineSession(
-    manifestJSON: string,
-    emittedGlobalsJSON?: string
+    source: MasterCSSWasmEngineSource,
+    emittedGlobals?: MasterCSSEmittedGlobals
   ): Promise<MasterCSSWasmEngineProviderSession>
   createRenderSession(
     manifestJSON: string,
     emittedGlobalsJSON?: string
   ): Promise<MasterCSSWasmRenderProviderSession>
+  /** Available from the `full` artifact only. */
+  compileRuntimeProgram(manifestJSON: string): Promise<Uint8Array>
 }
 
 export async function createWasmEngineProvider(
@@ -71,14 +77,8 @@ export async function createWasmEngineProvider(
   const module = await loader.loadWasmEngine(loadOptions) as { bindingInfo(): string }
   const provider: MasterCSSEngineWasmProvider = Object.freeze({
     info: JSON.parse(module.bindingInfo()) as unknown,
-    createEngineSession: (manifestJSON, emittedGlobalsJSON) =>
-      loader.createWasmEngineSession(
-        manifestJSON,
-        emittedGlobalsJSON === undefined ? {} : {
-          emittedGlobals: JSON.parse(emittedGlobalsJSON)
-        },
-        loadOptions
-      ),
+    createEngineSession: (source, emittedGlobals) =>
+      loader.createWasmEngineSession(source, { emittedGlobals }, loadOptions),
     createRenderSession: (manifestJSON, emittedGlobalsJSON) =>
       loader.createWasmRenderSession(
         manifestJSON,
@@ -86,7 +86,9 @@ export async function createWasmEngineProvider(
           emittedGlobals: JSON.parse(emittedGlobalsJSON)
         },
         loadOptions
-      )
+      ),
+    compileRuntimeProgram: (manifestJSON) =>
+      loader.compileRuntimeProgram(manifestJSON, loadOptions)
   })
   return provider
 }

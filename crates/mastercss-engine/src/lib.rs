@@ -6,14 +6,18 @@ use std::collections::{HashMap, HashSet};
 use mastercss_lexer::{
     collect_css_variable_references as collect_css_variable_names, css_escape, utf16_len,
 };
+#[cfg(feature = "manifest")]
+use mastercss_schema::MasterCssManifest;
 use mastercss_schema::{
     CssDeclaration, Diagnostic, EmittedGlobals, EngineInspectionIr, EngineResourcesIr,
     EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
-    GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
-    RulePriorityIr, RuleTarget, UtilityLayerName,
+    GeneratedRuleNodeIr, NativeDeclarationCandidateIr, RuleMutationIr, RulePriorityIr, RuleTarget,
+    UtilityLayerName,
 };
 use serde::Serialize;
-use serde_json::{Map, Value};
+#[cfg(feature = "manifest")]
+use serde_json::Map;
+use serde_json::Value;
 use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
@@ -34,6 +38,7 @@ type ConditionFeature = mastercss_schema::ConditionRangeIr;
 
 #[derive(Debug, Error)]
 pub enum EngineError {
+    #[cfg(feature = "manifest")]
     #[error(transparent)]
     Schema(#[from] mastercss_schema::SchemaError),
     #[error("Invalid MasterCSSManifest engine field: {0}")]
@@ -51,11 +56,12 @@ pub enum EngineError {
 impl EngineError {
     pub fn diagnostic(&self) -> Diagnostic {
         let code = match self {
+            #[cfg(feature = "manifest")]
             Self::Schema(error) => error.code(),
             Self::InvalidManifest(_) => ErrorCode::InvalidManifest,
-            Self::InvalidEmittedGlobals(_)
-            | Self::InvalidProgram(_)
-            | Self::UnsupportedProgramVersion => ErrorCode::InvalidInput,
+            Self::InvalidEmittedGlobals(_) => ErrorCode::InvalidInput,
+            Self::InvalidProgram(_) => ErrorCode::InvalidProgram,
+            Self::UnsupportedProgramVersion => ErrorCode::UnsupportedProgramVersion,
             Self::SessionDisposed => ErrorCode::SessionDisposed,
         };
         Diagnostic {
@@ -302,6 +308,7 @@ pub struct EngineCompositionRuleIr {
 pub struct EngineSession {
     /// The manifest a session was created from; sessions created from an encoded
     /// program have none.
+    #[cfg(feature = "manifest")]
     manifest: Option<MasterCssManifest>,
     compiled: Program,
     layers: [Vec<StoredRule>; LAYER_COUNT],
@@ -366,7 +373,8 @@ mod removed_syntax;
 mod render;
 mod resources;
 mod session;
-pub use session::compile_program;
+#[cfg(feature = "manifest")]
+pub use session::{compile_program, parse_emitted_globals};
 mod state;
 mod stylesheet_resources;
 mod theme_batch;
@@ -378,9 +386,10 @@ pub(crate) use condition::{
     add_condition_wrapper, normalize_dynamic_value, parse_raw_condition_wrapper,
     render_condition_token, resolve_layer_condition,
 };
+#[cfg(feature = "manifest")]
+pub(crate) use manifest::compile_manifest;
 pub(crate) use manifest::{
-    add_unique_string, compile_manifest, engine_variable_ir, finish_program, layer_name,
-    single_native_declaration,
+    add_unique_string, engine_variable_ir, finish_program, layer_name, single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,

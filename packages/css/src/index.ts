@@ -12,6 +12,7 @@ export type {
   MasterCSSEngineOptions,
   MasterCSSEngineResources,
   MasterCSSEngineSnapshot,
+  MasterCSSEngineSource,
   MasterCSSEngineTransition,
   MasterCSSEngineVariableResource,
   MasterCSSRuleTarget

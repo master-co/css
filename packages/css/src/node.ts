@@ -1,7 +1,11 @@
+import { compileRuntimeProgram as compileBindingRuntimeProgram } from '@master/css-binding/engine'
 import {
+  compileRuntimeProgramSync as compileBindingRuntimeProgramSync,
   createEngineBindingSessionSync,
   createRenderBindingSessionSync
 } from '@master/css-binding/engine/node'
+import type { MasterCSSBinding } from '@master/css-binding'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { MasterCSSError } from '@master/css-schema'
 import {
   MasterCSSRenderSession,
@@ -10,6 +14,7 @@ import {
 } from './render-session'
 import BoundEngine from './engine/bound-engine'
 import {
+  engineSource,
   normalizeEngineError,
   type MasterCSSEngine,
   type MasterCSSEngineBinding,
@@ -21,7 +26,8 @@ export type {
   MasterCSSEngine,
   MasterCSSEngineBinding,
   MasterCSSEngineBindingOptions,
-  MasterCSSEngineOptions
+  MasterCSSEngineOptions,
+  MasterCSSEngineSource
 } from './engine/binding'
 
 function createNativeEngine(options: MasterCSSEngineBindingOptions): MasterCSSEngine {
@@ -50,10 +56,7 @@ export function createEngineSync(options: MasterCSSEngineOptions): MasterCSSEngi
         message: 'The injected Master CSS binding does not support synchronous engine creation.'
       })
     }
-    return options.binding.createEngineSync({
-      manifest: options.manifest,
-      emittedGlobals: options.emittedGlobals
-    })
+    return options.binding.createEngineSync(engineSource(options))
   }
   if (options.binding === 'wasm') {
     throw new MasterCSSError({
@@ -72,6 +75,34 @@ export function createEngineSync(options: MasterCSSEngineOptions): MasterCSSEngi
         message: cause.message
       }, { cause })
     }
+    throw normalizeEngineError(cause)
+  }
+}
+
+export interface MasterCSSCompileRuntimeProgramOptions {
+  readonly binding?: MasterCSSBinding
+}
+
+/**
+ * Compiles a manifest into the runtime program that browser engines execute, with
+ * the native binding or, when it is unavailable, the Wasm one.
+ */
+export async function compileRuntimeProgram(
+  manifest: MasterCSSManifest,
+  options: MasterCSSCompileRuntimeProgramOptions = {}
+): Promise<Uint8Array> {
+  try {
+    return await compileBindingRuntimeProgram(manifest, { binding: options.binding })
+  } catch (cause) {
+    throw normalizeEngineError(cause)
+  }
+}
+
+/** Compiles a runtime program with the native binding. */
+export function compileRuntimeProgramSync(manifest: MasterCSSManifest): Uint8Array {
+  try {
+    return compileBindingRuntimeProgramSync(manifest)
+  } catch (cause) {
     throw normalizeEngineError(cause)
   }
 }

@@ -5,7 +5,11 @@ import type { MasterCSSBinding, MasterCSSResolvedBinding } from '@master/css-bin
 import type { MasterCSSEngineBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
-import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
+import type {
+  MasterCSSKeyframeDefinition,
+  MasterCSSManifest,
+  MasterCSSManifestUtilityLayerName
+} from '@master/css-schema/manifest'
 
 type BindingEngineInspection = ReturnType<MasterCSSEngineBindingSession['inspect']>
 
@@ -84,8 +88,15 @@ export interface MasterCSSEngineInspection {
   readonly diagnostics?: Readonly<BindingEngineInspection['diagnostics']>
 }
 
-export interface MasterCSSEngineBindingOptions {
-  readonly manifest: MasterCSSManifest
+/**
+ * What an engine executes: a runtime program that `compileRuntimeProgram()` from
+ * `@master/css/node` compiled, or a manifest, which only Node hosts compile.
+ */
+export type MasterCSSEngineSource =
+  | { readonly program: Uint8Array, readonly manifest?: never }
+  | { readonly manifest: MasterCSSManifest, readonly program?: never }
+
+export type MasterCSSEngineBindingOptions = MasterCSSEngineSource & {
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 
@@ -95,7 +106,7 @@ export interface MasterCSSEngineBinding {
   createEngineSync?(options: MasterCSSEngineBindingOptions): MasterCSSEngine
 }
 
-export interface MasterCSSEngineOptions extends MasterCSSEngineBindingOptions {
+export type MasterCSSEngineOptions = MasterCSSEngineBindingOptions & {
   readonly binding?: MasterCSSBinding | MasterCSSEngineBinding
 }
 
@@ -109,7 +120,10 @@ export interface MasterCSSEngine extends Disposable {
    */
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
-  refresh(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  /** Executes another program or, in Node, manifest; the source kind may change. */
+  refresh(source: Uint8Array | MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  /** The keyframe definitions of the executed program, in program order. */
+  keyframeDefinitions(): readonly MasterCSSKeyframeDefinition[]
   executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
@@ -121,7 +135,8 @@ export interface BindingEngineSession {
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
-  refresh(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  refresh(source: Uint8Array | MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  keyframeDefinitions(): readonly MasterCSSKeyframeDefinition[]
   executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
@@ -139,4 +154,11 @@ export function normalizeEngineError(
     domain: 'engine',
     message: cause instanceof Error ? cause.message : fallbackMessage
   }, { cause })
+}
+
+/** The binding options of engine options, without the binding choice. */
+export function engineSource(options: MasterCSSEngineOptions): MasterCSSEngineBindingOptions {
+  return options.program
+    ? { program: options.program, emittedGlobals: options.emittedGlobals }
+    : { manifest: options.manifest, emittedGlobals: options.emittedGlobals }
 }

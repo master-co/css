@@ -33,32 +33,10 @@ pub(crate) enum ProgramError {
 
 type Result<T> = std::result::Result<T, ProgramError>;
 
-pub(crate) fn encode(program: &Program) -> Vec<u8> {
-    let mut writer = Writer::default();
-    program.theme.encode(&mut writer);
-    program.keyframes.encode(&mut writer);
-    sorted(&program.animation_variables).encode(&mut writer);
-    sorted(&program.custom_media).encode(&mut writer);
-    program.mixins.encode(&mut writer);
-    program.utility_definitions.encode(&mut writer);
-    program.token_families.encode(&mut writer);
-    program
-        .compiled_variable_order
-        .iter()
-        .map(|name| &program.compiled_variables[name])
-        .collect::<Vec<_>>()
-        .encode(&mut writer);
-    // Registered utilities in match order; `finish_program` appends the built-in
-    // native ones again.
-    let mut utilities = program
-        .utilities
-        .iter()
-        .filter(|utility| !utility.native_fallback)
-        .collect::<Vec<_>>();
-    utilities.sort_by_key(|utility| super::manifest::static_last(utility));
-    utilities.encode(&mut writer);
-    writer.finish()
-}
+#[cfg(feature = "manifest")]
+pub(crate) use encoding::encode;
+#[cfg(feature = "manifest")]
+use encoding::{Encode, Writer};
 
 pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
     let mut reader = Reader::new(bytes)?;
@@ -97,63 +75,6 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
     }
     finish_program(&mut program).map_err(|_| ProgramError::Invalid("invalid custom media"))?;
     Ok(program)
-}
-
-fn sorted<V>(map: &HashMap<String, V>) -> Vec<(&String, &V)> {
-    let mut entries = map.iter().collect::<Vec<_>>();
-    entries.sort_by(|left, right| left.0.cmp(right.0));
-    entries
-}
-
-#[derive(Default)]
-struct Writer {
-    body: Vec<u8>,
-    indexes: HashMap<String, u64>,
-    strings: Vec<String>,
-}
-
-impl Writer {
-    fn uint(&mut self, mut value: u64) {
-        loop {
-            let byte = (value & 0x7f) as u8;
-            value >>= 7;
-            if value == 0 {
-                self.body.push(byte);
-                return;
-            }
-            self.body.push(byte | 0x80);
-        }
-    }
-
-    fn int(&mut self, value: i64) {
-        self.uint(((value << 1) ^ (value >> 63)) as u64);
-    }
-
-    fn string(&mut self, value: &str) {
-        match self.indexes.get(value) {
-            Some(index) => self.uint(index + 1),
-            None => {
-                self.indexes
-                    .insert(value.to_owned(), self.strings.len() as u64);
-                self.strings.push(value.to_owned());
-                self.uint(0);
-            }
-        }
-    }
-
-    fn finish(self) -> Vec<u8> {
-        let mut header = Writer::default();
-        header.body.extend_from_slice(MAGIC);
-        header.uint(PROGRAM_VERSION.into());
-        header.uint(mastercss_schema::LANGUAGE_VERSION.into());
-        header.uint(self.strings.len() as u64);
-        for string in &self.strings {
-            header.uint(string.len() as u64);
-            header.body.extend_from_slice(string.as_bytes());
-        }
-        header.body.extend_from_slice(&self.body);
-        header.body
-    }
 }
 
 struct Reader<'a> {
@@ -279,41 +200,13 @@ impl<'a> Reader<'a> {
     }
 }
 
-trait Encode {
-    fn encode(&self, writer: &mut Writer);
-}
-
 trait Decode: Sized {
     fn decode(reader: &mut Reader<'_>) -> Result<Self>;
-}
-
-impl<T: Encode + ?Sized> Encode for &T {
-    fn encode(&self, writer: &mut Writer) {
-        (*self).encode(writer);
-    }
-}
-
-impl Encode for str {
-    fn encode(&self, writer: &mut Writer) {
-        writer.string(self);
-    }
-}
-
-impl Encode for String {
-    fn encode(&self, writer: &mut Writer) {
-        writer.string(self);
-    }
 }
 
 impl Decode for String {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         reader.string()
-    }
-}
-
-impl Encode for bool {
-    fn encode(&self, writer: &mut Writer) {
-        writer.uint(u64::from(*self));
     }
 }
 
@@ -323,21 +216,9 @@ impl Decode for bool {
     }
 }
 
-impl Encode for u32 {
-    fn encode(&self, writer: &mut Writer) {
-        writer.uint((*self).into());
-    }
-}
-
 impl Decode for u32 {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Self::try_from(reader.uint()?).map_err(|_| ProgramError::Invalid("integer overflow"))
-    }
-}
-
-impl Encode for i32 {
-    fn encode(&self, writer: &mut Writer) {
-        writer.int((*self).into());
     }
 }
 
@@ -347,21 +228,9 @@ impl Decode for i32 {
     }
 }
 
-impl Encode for usize {
-    fn encode(&self, writer: &mut Writer) {
-        writer.uint(*self as u64);
-    }
-}
-
 impl Decode for usize {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Self::try_from(reader.uint()?).map_err(|_| ProgramError::Invalid("integer overflow"))
-    }
-}
-
-impl Encode for f64 {
-    fn encode(&self, writer: &mut Writer) {
-        writer.body.extend_from_slice(&self.to_le_bytes());
     }
 }
 
@@ -376,18 +245,6 @@ impl Decode for f64 {
     }
 }
 
-impl<T: Encode> Encode for Option<T> {
-    fn encode(&self, writer: &mut Writer) {
-        match self {
-            Some(value) => {
-                writer.uint(1);
-                value.encode(writer);
-            }
-            None => writer.uint(0),
-        }
-    }
-}
-
 impl<T: Decode> Decode for Option<T> {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Ok(if reader.tag(2)? == 1 {
@@ -395,21 +252,6 @@ impl<T: Decode> Decode for Option<T> {
         } else {
             None
         })
-    }
-}
-
-impl<T: Encode> Encode for [T] {
-    fn encode(&self, writer: &mut Writer) {
-        writer.uint(self.len() as u64);
-        for item in self {
-            item.encode(writer);
-        }
-    }
-}
-
-impl<T: Encode> Encode for Vec<T> {
-    fn encode(&self, writer: &mut Writer) {
-        self.as_slice().encode(writer);
     }
 }
 
@@ -424,13 +266,6 @@ impl<T: Decode> Decode for Vec<T> {
     }
 }
 
-impl<A: Encode, B: Encode> Encode for (A, B) {
-    fn encode(&self, writer: &mut Writer) {
-        self.0.encode(writer);
-        self.1.encode(writer);
-    }
-}
-
 impl<A: Decode, B: Decode> Decode for (A, B) {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Ok((A::decode(reader)?, B::decode(reader)?))
@@ -440,6 +275,7 @@ impl<A: Decode, B: Decode> Decode for (A, B) {
 /// Field-by-field encoding for plain structs.
 macro_rules! record {
     ($type:ident { $($field:ident),* $(,)? }) => {
+        #[cfg(feature = "manifest")]
         impl Encode for $type {
             fn encode(&self, writer: &mut Writer) {
                 $(self.$field.encode(writer);)*
@@ -457,6 +293,7 @@ macro_rules! record {
 /// Tag-and-fields encoding for enums whose variants have named or no fields.
 macro_rules! variants {
     ($type:ident { $($variant:ident $({ $($field:ident),* })?),* $(,)? }) => {
+        #[cfg(feature = "manifest")]
         impl Encode for $type {
             #[allow(unused_assignments)]
             fn encode(&self, writer: &mut Writer) {
@@ -493,6 +330,7 @@ macro_rules! variants {
 /// Boxed fields encode as their contents.
 macro_rules! boxed {
     ($type:ty) => {
+        #[cfg(feature = "manifest")]
         impl Encode for Box<$type> {
             fn encode(&self, writer: &mut Writer) {
                 self.as_ref().encode(writer);
@@ -581,22 +419,9 @@ record!(TokenFamily {
     properties,
 });
 record!(VariableNumeric { value, unit });
-/// `inline_value` and `is_static` follow from `values`, as when compiling, and a
-/// name is stored only when it differs from the default.
-impl Encode for CompiledVariable {
-    fn encode(&self, writer: &mut Writer) {
-        self.key.encode(writer);
-        self.namespace.encode(writer);
-        (self.name != super::manifest::default_variable_name(&self.namespace, &self.key))
-            .then_some(&self.name)
-            .encode(writer);
-        self.values.encode(writer);
-        self.numeric.encode(writer);
-        self.variable_type.encode(writer);
-        self.dependencies.encode(writer);
-    }
-}
 
+/// `inline_value` and `is_static` follow from `values`, as when compiling, and a
+/// missing name is the default one.
 impl Decode for CompiledVariable {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         let key: String = Decode::decode(reader)?;
@@ -618,13 +443,6 @@ impl Decode for CompiledVariable {
     }
 }
 
-impl Encode for mastercss_schema::UtilityDefinition {
-    fn encode(&self, writer: &mut Writer) {
-        self.kind.encode(writer);
-        self.recipe.encode(writer);
-    }
-}
-
 impl Decode for mastercss_schema::UtilityDefinition {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Ok(Self {
@@ -635,23 +453,6 @@ impl Decode for mastercss_schema::UtilityDefinition {
 }
 
 /// Registered utilities; `finish_program` derives their variables.
-impl Encode for UtilityDefinition {
-    fn encode(&self, writer: &mut Writer) {
-        self.id.encode(writer);
-        self.name.encode(writer);
-        self.utility_type.encode(writer);
-        self.order.encode(writer);
-        self.layer.encode(writer);
-        self.keys.encode(writer);
-        self.alias_groups.encode(writer);
-        self.variable_aliases.encode(writer);
-        self.variable_alias_refs.encode(writer);
-        self.native_fallback.encode(writer);
-        self.emit.encode(writer);
-        self.matchers.encode(writer);
-    }
-}
-
 impl Decode for UtilityDefinition {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         Ok(Self {
@@ -675,30 +476,6 @@ impl Decode for UtilityDefinition {
 
 boxed!(MediaQueryExpr);
 
-impl Encode for ThemeNode {
-    fn encode(&self, writer: &mut Writer) {
-        match self {
-            Self::Rule { prelude, children } => {
-                writer.uint(0);
-                prelude.encode(writer);
-                children.encode(writer);
-            }
-            Self::Declaration {
-                name,
-                value,
-                inline,
-                is_static,
-            } => {
-                writer.uint(1);
-                name.encode(writer);
-                value.encode(writer);
-                inline.encode(writer);
-                is_static.encode(writer);
-            }
-        }
-    }
-}
-
 impl Decode for ThemeNode {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         reader.nested(|reader| {
@@ -715,35 +492,6 @@ impl Decode for ThemeNode {
                 },
             })
         })
-    }
-}
-
-impl Encode for MediaQueryExpr {
-    fn encode(&self, writer: &mut Writer) {
-        match self {
-            Self::True => writer.uint(0),
-            Self::False => writer.uint(1),
-            Self::Feature { value } => {
-                writer.uint(2);
-                value.encode(writer);
-            }
-            Self::MediaType { name } => {
-                writer.uint(3);
-                name.encode(writer);
-            }
-            Self::Not { query } => {
-                writer.uint(4);
-                query.encode(writer);
-            }
-            Self::And { queries } => {
-                writer.uint(5);
-                queries.encode(writer);
-            }
-            Self::Or { queries } => {
-                writer.uint(6);
-                queries.encode(writer);
-            }
-        }
     }
 }
 
@@ -773,22 +521,6 @@ impl Decode for MediaQueryExpr {
     }
 }
 
-impl Encode for MixinValuePart {
-    fn encode(&self, writer: &mut Writer) {
-        match self {
-            Self::Text { value } => {
-                writer.uint(0);
-                value.encode(writer);
-            }
-            Self::Function { name, value } => {
-                writer.uint(1);
-                name.encode(writer);
-                value.encode(writer);
-            }
-        }
-    }
-}
-
 impl Decode for MixinValuePart {
     fn decode(reader: &mut Reader<'_>) -> Result<Self> {
         reader.nested(|reader| {
@@ -802,49 +534,6 @@ impl Decode for MixinValuePart {
                 },
             })
         })
-    }
-}
-
-impl Encode for MixinNode {
-    fn encode(&self, writer: &mut Writer) {
-        match self {
-            Self::Declaration {
-                property,
-                value,
-                source,
-            } => {
-                writer.uint(0);
-                property.encode(writer);
-                value.encode(writer);
-                source.encode(writer);
-            }
-            Self::Rule { selector, body } => {
-                writer.uint(1);
-                selector.encode(writer);
-                body.encode(writer);
-            }
-            Self::Condition { condition, body } => {
-                writer.uint(2);
-                condition.encode(writer);
-                body.encode(writer);
-            }
-            Self::Apply {
-                name,
-                arguments,
-                contents,
-                source,
-            } => {
-                writer.uint(3);
-                name.encode(writer);
-                arguments.encode(writer);
-                contents.encode(writer);
-                source.encode(writer);
-            }
-            Self::Contents { fallback } => {
-                writer.uint(4);
-                fallback.encode(writer);
-            }
-        }
     }
 }
 
@@ -876,5 +565,331 @@ impl Decode for MixinNode {
                 },
             })
         })
+    }
+}
+
+/// Encoding, which only hosts that compile manifests need.
+#[cfg(feature = "manifest")]
+mod encoding {
+    use super::*;
+
+    pub(crate) fn encode(program: &Program) -> Vec<u8> {
+        let mut writer = Writer::default();
+        program.theme.encode(&mut writer);
+        program.keyframes.encode(&mut writer);
+        sorted(&program.animation_variables).encode(&mut writer);
+        sorted(&program.custom_media).encode(&mut writer);
+        program.mixins.encode(&mut writer);
+        program.utility_definitions.encode(&mut writer);
+        program.token_families.encode(&mut writer);
+        program
+            .compiled_variable_order
+            .iter()
+            .map(|name| &program.compiled_variables[name])
+            .collect::<Vec<_>>()
+            .encode(&mut writer);
+        // Registered utilities in match order; `finish_program` appends the built-in
+        // native ones again.
+        let mut utilities = program
+            .utilities
+            .iter()
+            .filter(|utility| !utility.native_fallback)
+            .collect::<Vec<_>>();
+        utilities.sort_by_key(|utility| crate::manifest::static_last(utility));
+        utilities.encode(&mut writer);
+        writer.finish()
+    }
+
+    fn sorted<V>(map: &HashMap<String, V>) -> Vec<(&String, &V)> {
+        let mut entries = map.iter().collect::<Vec<_>>();
+        entries.sort_by(|left, right| left.0.cmp(right.0));
+        entries
+    }
+
+    #[derive(Default)]
+    pub(super) struct Writer {
+        body: Vec<u8>,
+        indexes: HashMap<String, u64>,
+        strings: Vec<String>,
+    }
+
+    impl Writer {
+        pub(super) fn uint(&mut self, mut value: u64) {
+            loop {
+                let byte = (value & 0x7f) as u8;
+                value >>= 7;
+                if value == 0 {
+                    self.body.push(byte);
+                    return;
+                }
+                self.body.push(byte | 0x80);
+            }
+        }
+
+        fn int(&mut self, value: i64) {
+            self.uint(((value << 1) ^ (value >> 63)) as u64);
+        }
+
+        fn string(&mut self, value: &str) {
+            match self.indexes.get(value) {
+                Some(index) => self.uint(index + 1),
+                None => {
+                    self.indexes
+                        .insert(value.to_owned(), self.strings.len() as u64);
+                    self.strings.push(value.to_owned());
+                    self.uint(0);
+                }
+            }
+        }
+
+        fn finish(self) -> Vec<u8> {
+            let mut header = Writer::default();
+            header.body.extend_from_slice(MAGIC);
+            header.uint(PROGRAM_VERSION.into());
+            header.uint(mastercss_schema::LANGUAGE_VERSION.into());
+            header.uint(self.strings.len() as u64);
+            for string in &self.strings {
+                header.uint(string.len() as u64);
+                header.body.extend_from_slice(string.as_bytes());
+            }
+            header.body.extend_from_slice(&self.body);
+            header.body
+        }
+    }
+
+    pub(super) trait Encode {
+        fn encode(&self, writer: &mut Writer);
+    }
+
+    impl<T: Encode + ?Sized> Encode for &T {
+        fn encode(&self, writer: &mut Writer) {
+            (*self).encode(writer);
+        }
+    }
+
+    impl Encode for str {
+        fn encode(&self, writer: &mut Writer) {
+            writer.string(self);
+        }
+    }
+
+    impl Encode for String {
+        fn encode(&self, writer: &mut Writer) {
+            writer.string(self);
+        }
+    }
+
+    impl Encode for bool {
+        fn encode(&self, writer: &mut Writer) {
+            writer.uint(u64::from(*self));
+        }
+    }
+
+    impl Encode for u32 {
+        fn encode(&self, writer: &mut Writer) {
+            writer.uint((*self).into());
+        }
+    }
+
+    impl Encode for i32 {
+        fn encode(&self, writer: &mut Writer) {
+            writer.int((*self).into());
+        }
+    }
+
+    impl Encode for usize {
+        fn encode(&self, writer: &mut Writer) {
+            writer.uint(*self as u64);
+        }
+    }
+
+    impl Encode for f64 {
+        fn encode(&self, writer: &mut Writer) {
+            writer.body.extend_from_slice(&self.to_le_bytes());
+        }
+    }
+
+    impl<T: Encode> Encode for Option<T> {
+        fn encode(&self, writer: &mut Writer) {
+            match self {
+                Some(value) => {
+                    writer.uint(1);
+                    value.encode(writer);
+                }
+                None => writer.uint(0),
+            }
+        }
+    }
+
+    impl<T: Encode> Encode for [T] {
+        fn encode(&self, writer: &mut Writer) {
+            writer.uint(self.len() as u64);
+            for item in self {
+                item.encode(writer);
+            }
+        }
+    }
+
+    impl<T: Encode> Encode for Vec<T> {
+        fn encode(&self, writer: &mut Writer) {
+            self.as_slice().encode(writer);
+        }
+    }
+
+    impl<A: Encode, B: Encode> Encode for (A, B) {
+        fn encode(&self, writer: &mut Writer) {
+            self.0.encode(writer);
+            self.1.encode(writer);
+        }
+    }
+
+    impl Encode for CompiledVariable {
+        fn encode(&self, writer: &mut Writer) {
+            self.key.encode(writer);
+            self.namespace.encode(writer);
+            (self.name != crate::manifest::default_variable_name(&self.namespace, &self.key))
+                .then_some(&self.name)
+                .encode(writer);
+            self.values.encode(writer);
+            self.numeric.encode(writer);
+            self.variable_type.encode(writer);
+            self.dependencies.encode(writer);
+        }
+    }
+
+    impl Encode for mastercss_schema::UtilityDefinition {
+        fn encode(&self, writer: &mut Writer) {
+            self.kind.encode(writer);
+            self.recipe.encode(writer);
+        }
+    }
+
+    impl Encode for UtilityDefinition {
+        fn encode(&self, writer: &mut Writer) {
+            self.id.encode(writer);
+            self.name.encode(writer);
+            self.utility_type.encode(writer);
+            self.order.encode(writer);
+            self.layer.encode(writer);
+            self.keys.encode(writer);
+            self.alias_groups.encode(writer);
+            self.variable_aliases.encode(writer);
+            self.variable_alias_refs.encode(writer);
+            self.native_fallback.encode(writer);
+            self.emit.encode(writer);
+            self.matchers.encode(writer);
+        }
+    }
+
+    impl Encode for ThemeNode {
+        fn encode(&self, writer: &mut Writer) {
+            match self {
+                Self::Rule { prelude, children } => {
+                    writer.uint(0);
+                    prelude.encode(writer);
+                    children.encode(writer);
+                }
+                Self::Declaration {
+                    name,
+                    value,
+                    inline,
+                    is_static,
+                } => {
+                    writer.uint(1);
+                    name.encode(writer);
+                    value.encode(writer);
+                    inline.encode(writer);
+                    is_static.encode(writer);
+                }
+            }
+        }
+    }
+
+    impl Encode for MediaQueryExpr {
+        fn encode(&self, writer: &mut Writer) {
+            match self {
+                Self::True => writer.uint(0),
+                Self::False => writer.uint(1),
+                Self::Feature { value } => {
+                    writer.uint(2);
+                    value.encode(writer);
+                }
+                Self::MediaType { name } => {
+                    writer.uint(3);
+                    name.encode(writer);
+                }
+                Self::Not { query } => {
+                    writer.uint(4);
+                    query.encode(writer);
+                }
+                Self::And { queries } => {
+                    writer.uint(5);
+                    queries.encode(writer);
+                }
+                Self::Or { queries } => {
+                    writer.uint(6);
+                    queries.encode(writer);
+                }
+            }
+        }
+    }
+
+    impl Encode for MixinValuePart {
+        fn encode(&self, writer: &mut Writer) {
+            match self {
+                Self::Text { value } => {
+                    writer.uint(0);
+                    value.encode(writer);
+                }
+                Self::Function { name, value } => {
+                    writer.uint(1);
+                    name.encode(writer);
+                    value.encode(writer);
+                }
+            }
+        }
+    }
+
+    impl Encode for MixinNode {
+        fn encode(&self, writer: &mut Writer) {
+            match self {
+                Self::Declaration {
+                    property,
+                    value,
+                    source,
+                } => {
+                    writer.uint(0);
+                    property.encode(writer);
+                    value.encode(writer);
+                    source.encode(writer);
+                }
+                Self::Rule { selector, body } => {
+                    writer.uint(1);
+                    selector.encode(writer);
+                    body.encode(writer);
+                }
+                Self::Condition { condition, body } => {
+                    writer.uint(2);
+                    condition.encode(writer);
+                    body.encode(writer);
+                }
+                Self::Apply {
+                    name,
+                    arguments,
+                    contents,
+                    source,
+                } => {
+                    writer.uint(3);
+                    name.encode(writer);
+                    arguments.encode(writer);
+                    contents.encode(writer);
+                    source.encode(writer);
+                }
+                Self::Contents { fallback } => {
+                    writer.uint(4);
+                    fallback.encode(writer);
+                }
+            }
+        }
     }
 }

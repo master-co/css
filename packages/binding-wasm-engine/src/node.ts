@@ -2,12 +2,14 @@ import { readFile } from 'node:fs/promises'
 import {
   createWasmEngineLoader,
   type MasterCSSWasmEngineLoadOptions,
-  type MasterCSSWasmEngineSessionOptions
+  type MasterCSSWasmEngineSessionOptions,
+  type MasterCSSWasmEngineSource
 } from './index'
 
 export type {
   MasterCSSWasmEngineLoadOptions,
-  MasterCSSWasmEngineSessionOptions
+  MasterCSSWasmEngineSessionOptions,
+  MasterCSSWasmEngineSource
 } from './index'
 
 // Node hosts also render on the server, so they load the module with every feature.
@@ -40,13 +42,23 @@ export async function loadWasmEngine(options: MasterCSSWasmEngineLoadOptions = {
 }
 
 export async function createWasmEngineSession(
-  manifestJSON: string,
+  source: MasterCSSWasmEngineSource,
   sessionOptions: MasterCSSWasmEngineSessionOptions = {},
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ) {
   return await fullWasmEngine.createWasmEngineSession(
-    manifestJSON,
+    source,
     sessionOptions,
+    await withNodeWasmInput(loadOptions)
+  )
+}
+
+export async function compileRuntimeProgram(
+  manifestJSON: string,
+  loadOptions: MasterCSSWasmEngineLoadOptions = {}
+) {
+  return await fullWasmEngine.compileRuntimeProgram(
+    manifestJSON,
     await withNodeWasmInput(loadOptions)
   )
 }

@@ -36,7 +36,8 @@ export function bindEngineBindingSession(
       invoke(() => session.registerEmittedGlobals(emittedGlobals)),
     replaceEmittedGlobals: (emittedGlobals) =>
       invoke(() => session.replaceEmittedGlobals(emittedGlobals)),
-    refresh: (manifest, emittedGlobals) => invoke(() => session.refresh(manifest, emittedGlobals)),
+    refresh: (source, emittedGlobals) => invoke(() => session.refresh(source, emittedGlobals)),
+    keyframeDefinitions: () => invoke(() => session.keyframeDefinitions()),
     executionState: (classNames) => invoke(() => session.executionState(classNames)),
     inspect: (className) => invoke(() => session.inspect(className)),
     snapshot: () => invoke(() => session.snapshot()),

@@ -385,7 +385,7 @@ mod tests {
             rendered.hydration_manifest.resource_order
         );
         runtime
-            .register_emitted_globals(&serde_json::to_string(emitted_globals).unwrap())
+            .register_emitted_globals(emitted_globals.clone())
             .unwrap();
         let snapshot = runtime.snapshot().unwrap();
         assert_eq!(

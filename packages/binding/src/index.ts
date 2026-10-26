@@ -7,6 +7,7 @@ export {
   MASTER_CSS_BINDING_ABI_VERSION,
   MASTER_CSS_HYDRATION_MANIFEST_VERSION,
   MASTER_CSS_MANIFEST_VERSION,
+  MASTER_CSS_PROGRAM_VERSION,
   type MasterCSSBinding,
   type MasterCSSBindingFeature,
   type MasterCSSBindingInfo,

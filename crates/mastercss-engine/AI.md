@@ -6,10 +6,12 @@ Canonical Manifest v6 execution: class matching, values, selectors, conditions,
 priority, resources, rule generation, snapshots, and transitions.
 
 Sessions execute a `Program`. `compile_program` validates a manifest and encodes the
-compiled program (`program.rs`); `EngineSession::create` compiles, encodes and decodes
-it, and `EngineSession::from_program` decodes a received encoding. Both paths run
-`finish_program` for derived lookup state, so a host that starts from a manifest
-executes exactly what a browser receiving the program executes.
+compiled program (`program.rs`); `EngineSession::create`/`from_manifest` compile,
+encode and decode it, and `EngineSession::from_program` decodes a received encoding.
+Both paths run `finish_program` for derived lookup state, so a host that starts from a
+manifest executes exactly what a browser receiving the program executes. Sessions take
+emitted globals as `EmittedGlobals` values; hosts that receive JSON use
+`parse_emitted_globals`.
 
 ## Module Routing
 
@@ -34,7 +36,7 @@ Token utility identity is (form, decoded prefix, namespace); same-branch replace
 
 ## Runtime Wasm Features
 
-`diagnostic-messages` and `stylesheet-resources` are default features that the browser runtime Wasm disables. Without `diagnostic-messages`, every verdict, code and control flow is unchanged but message and note text is empty: build new diagnostic or error text inside `message(|| ...)`. `stylesheet-resources` compiles keyframe slots, native stylesheet replay and rendered stylesheets, which only compiler and render hosts feed; gate code that only they reach. Check both builds with `cargo clippy -p mastercss-engine --no-default-features` and `pnpm run report:runtime-wasm-size`.
+`diagnostic-messages`, `manifest` and `stylesheet-resources` are default features that the browser runtime Wasm disables. `manifest` compiles manifests into programs and parses JSON inputs; without it a session starts only from an encoded program and the program encoder is absent, so keep manifest parsing, validation and `serde_json` input on that side of the gate. Without `diagnostic-messages`, every verdict, code and control flow is unchanged but message and note text is empty: build new diagnostic or error text inside `message(|| ...)`. `stylesheet-resources` compiles keyframe slots, native stylesheet replay and rendered stylesheets, which only compiler and render hosts feed; gate code that only they reach. Check both builds with `cargo clippy -p mastercss-engine --no-default-features` and `pnpm run report:runtime-wasm-size`.
 
 ## Validation
 

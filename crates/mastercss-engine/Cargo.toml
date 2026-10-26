@@ -8,10 +8,14 @@ repository.workspace = true
 publish.workspace = true
 
 [features]
-default = ["diagnostic-messages", "stylesheet-resources"]
+default = ["diagnostic-messages", "manifest", "stylesheet-resources"]
 # Diagnostic message and note text. Verdicts are always computed; the browser
 # runtime only needs those, so its Wasm omits the text.
 diagnostic-messages = []
+# Manifest v6 and JSON inputs: compiling manifests into programs and parsing emitted
+# globals JSON. Browser runtimes execute encoded programs and receive emitted globals
+# as values, so the runtime engine Wasm omits it.
+manifest = []
 # Compiler-issued native stylesheet resources: keyframe slots, stylesheet replay and
 # rendered stylesheet output. Browser runtimes never receive stylesheets, so the
 # runtime engine Wasm omits it.

@@ -4,7 +4,8 @@
 
 `@master/css` is the public Manifest v6 execution surface. It binds the canonical Rust
 engine through native or runtime-Wasm bindings and exposes the stable preset CSS
-entrypoints.
+entrypoints. Engines execute either a manifest, which only Node hosts compile, or a
+runtime program compiled from one; browsers accept only programs.
 
 ## Owns
 
@@ -27,8 +28,11 @@ entrypoints.
 
 ## Public Surface
 
-- `createEngine()` from `.` for universal async loading.
+- `createEngine({ program })` from `.` for universal async loading; `{ manifest }`
+  works only in Node.
 - `createEngineSync()` from `./node` for native-only Node loading.
+- `compileRuntimeProgram()` (native, else Wasm) and `compileRuntimeProgramSync()`
+  (native) from `./node`, which compile the programs browsers execute.
 - Manifest v6, generated rule, engine state, and emitted-global types.
 - Virtual manifest, emitted-global, and generated CSS declarations from `./client`.
 - Stable CSS subpaths listed above.

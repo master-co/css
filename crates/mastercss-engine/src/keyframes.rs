@@ -255,14 +255,12 @@ impl EngineSession {
     /// another permanent reference each time a stylesheet changes.
     pub fn replace_emitted_globals(
         &mut self,
-        json: &str,
+        globals: EmittedGlobals,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let globals = EmittedGlobals::parse(json)
-            .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))?;
         if globals == self.emitted_globals {
             return Ok(EngineTransitionIr::empty());
         }
-        self.rebuild(self.manifest.clone(), self.compiled.clone(), globals)
+        self.rebuild(globals)
     }
 }

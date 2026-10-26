@@ -1,8 +1,9 @@
 use super::{
-    CompiledVariable, EngineError, EngineVariableIr, HashMap, Map, MasterCssManifest, Program,
-    UtilityLayerName, UtilityMatcher, Value, append_builtin_native_declaration_utilities,
-    compile_utility_variables, split_top_level,
+    CompiledVariable, EngineVariableIr, Program, UtilityLayerName, UtilityMatcher,
+    append_builtin_native_declaration_utilities, compile_utility_variables, split_top_level,
 };
+#[cfg(feature = "manifest")]
+use super::{EngineError, HashMap, Map, MasterCssManifest, Value};
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     match layer {
@@ -14,6 +15,7 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
 }
 
 /// The engine fields of a Manifest v6 document.
+#[cfg(feature = "manifest")]
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct ManifestInput {
@@ -36,6 +38,7 @@ struct ManifestInput {
 
 /// Validates a manifest and compiles it into the encoded part of a program; decoding
 /// derives the rest with [`finish_program`].
+#[cfg(feature = "manifest")]
 pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, EngineError> {
     let mut input: ManifestInput = serde_json::from_value(manifest.as_value().clone())
         .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
@@ -162,6 +165,7 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(feature = "manifest")]
 pub(crate) fn compile_variables(
     groups: &Map<String, Value>,
 ) -> Result<(HashMap<String, CompiledVariable>, Vec<String>), EngineError> {

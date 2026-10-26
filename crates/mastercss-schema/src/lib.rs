@@ -43,7 +43,7 @@ use thiserror::Error;
 pub const MANIFEST_VERSION: u32 = 6;
 pub const LANGUAGE_VERSION: u32 = 16;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 5;
-pub const BINDING_ABI_VERSION: u32 = 26;
+pub const BINDING_ABI_VERSION: u32 = 27;
 pub const ENGINE_TRANSITION_VERSION: u32 = 4;
 pub const VALIDATOR_BATCH_VERSION: u32 = 4;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
@@ -61,6 +61,7 @@ pub struct BindingInfo<'a> {
     pub binding_abi_version: u32,
     pub package_version: &'a str,
     pub manifest_version: u32,
+    pub program_version: u32,
     pub language_version: u32,
     pub hydration_manifest_version: u32,
     pub engine_transition_version: u32,
@@ -86,6 +87,7 @@ impl<'a> BindingInfo<'a> {
             binding_abi_version: BINDING_ABI_VERSION,
             package_version,
             manifest_version: MANIFEST_VERSION,
+            program_version: PROGRAM_VERSION,
             language_version: LANGUAGE_VERSION,
             hydration_manifest_version: HYDRATION_MANIFEST_VERSION,
             engine_transition_version: ENGINE_TRANSITION_VERSION,

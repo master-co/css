@@ -125,7 +125,7 @@ fn stylesheet_roots_and_emitted_globals_pin_without_duplicates() {
         .delete_class_rules(["animation:var(--animate-fade)"])
         .unwrap();
     assert!(!runtime.css_text().contains("@keyframes"));
-    runtime.replace_emitted_globals("{}").unwrap();
+    runtime.replace_emitted_globals(Default::default()).unwrap();
     runtime.ensure_class_rules(["animation-name:fade"]).unwrap();
     assert!(runtime.css_text().contains("@keyframes fade"));
 }
@@ -254,14 +254,16 @@ fn externally_delivered_keyframes_still_own_unprovided_body_tokens() {
     let mut engine = engine(SOURCE);
     let id = frame_id(&engine, "fade");
     engine
-        .replace_emitted_globals(&serde_json::json!({"keyframes":{id:1}}).to_string())
+        .replace_emitted_globals(
+            serde_json::from_value(serde_json::json!({"keyframes":{id:1}})).unwrap(),
+        )
         .unwrap();
     assert!(engine.css_text().contains("--color-brand:red"));
     assert!(!engine.css_text().contains("@keyframes"));
     engine.ensure_class_rules(["animation-name:fade"]).unwrap();
     engine.delete_class_rules(["animation-name:fade"]).unwrap();
     assert!(engine.css_text().contains("--color-brand:red"));
-    engine.replace_emitted_globals("{}").unwrap();
+    engine.replace_emitted_globals(Default::default()).unwrap();
     assert!(engine.css_text().is_empty());
 }
 

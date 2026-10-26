@@ -48,11 +48,16 @@ export default class BoundEngine implements MasterCSSEngine {
     ))
   }
 
-  refresh(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) {
+  refresh(source: Uint8Array | MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals) {
     this.assertActive()
     return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
-      this.session.refresh(manifest, emittedGlobals)
+      this.session.refresh(source, emittedGlobals)
     ))
+  }
+
+  keyframeDefinitions() {
+    this.assertActive()
+    return this.invoke(() => freezeResult(this.session.keyframeDefinitions()))
   }
 
   executionState(classNames: readonly string[]) {

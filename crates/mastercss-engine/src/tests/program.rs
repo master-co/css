@@ -52,13 +52,13 @@ fn decoded_programs_execute_like_compiled_manifests() {
         let parsed = mastercss_schema::MasterCssManifest::parse(&manifest).unwrap();
         let mut program = crate::compile_manifest(&parsed).unwrap();
         crate::finish_program(&mut program).unwrap();
-        let mut compiled = EngineSession::with_program(
-            None,
-            program,
-            mastercss_schema::EmittedGlobals::default(),
-        );
-        let mut decoded =
-            EngineSession::from_program(&crate::compile_program(&manifest).unwrap(), None).unwrap();
+        let mut compiled =
+            EngineSession::with_program(program, mastercss_schema::EmittedGlobals::default());
+        let mut decoded = EngineSession::from_program(
+            &crate::compile_program(&manifest).unwrap(),
+            Default::default(),
+        )
+        .unwrap();
         assert_eq!(
             decoded.ensure_class_rules(&classes).unwrap(),
             compiled.ensure_class_rules(&classes).unwrap()
@@ -99,11 +99,11 @@ fn programs_from_other_versions_are_rejected() {
     .unwrap();
     program[4] = (mastercss_schema::PROGRAM_VERSION + 1) as u8;
     assert!(matches!(
-        EngineSession::from_program(&program, None),
+        EngineSession::from_program(&program, Default::default()),
         Err(EngineError::UnsupportedProgramVersion)
     ));
     assert!(matches!(
-        EngineSession::from_program(b"{\"version\":6}", None),
+        EngineSession::from_program(b"{\"version\":6}", Default::default()),
         Err(EngineError::InvalidProgram(_))
     ));
 }

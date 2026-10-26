@@ -1,4 +1,6 @@
 use super::*;
+use mastercss_engine::{compile_program, parse_emitted_globals};
+use napi::bindgen_prelude::{Buffer, Uint8Array};
 
 #[napi(js_name = "EngineSession")]
 pub struct NodeEngineSession {
@@ -15,6 +17,20 @@ impl NodeEngineSession {
                 emitted_globals_json.as_deref(),
             )
             .map_err(to_napi_error)?,
+        })
+    }
+
+    /// Executes a program that `compileRuntimeProgram` encoded.
+    #[napi(factory)]
+    pub fn from_program(program: Uint8Array, emitted_globals_json: Option<String>) -> Result<Self> {
+        let globals = emitted_globals_json
+            .as_deref()
+            .map(parse_emitted_globals)
+            .transpose()
+            .map_err(to_napi_error)?
+            .unwrap_or_default();
+        Ok(Self {
+            inner: RustEngineSession::from_program(&program, globals).map_err(to_napi_error)?,
         })
     }
 
@@ -48,7 +64,9 @@ impl NodeEngineSession {
         to_json(
             &self
                 .inner
-                .register_emitted_globals(&emitted_globals_json)
+                .register_emitted_globals(
+                    parse_emitted_globals(&emitted_globals_json).map_err(to_napi_error)?,
+                )
                 .map_err(to_napi_error)?,
         )
     }
@@ -58,7 +76,9 @@ impl NodeEngineSession {
         to_json(
             &self
                 .inner
-                .replace_emitted_globals(&emitted_globals_json)
+                .replace_emitted_globals(
+                    parse_emitted_globals(&emitted_globals_json).map_err(to_napi_error)?,
+                )
                 .map_err(to_napi_error)?,
         )
     }
@@ -88,6 +108,31 @@ impl NodeEngineSession {
     }
 
     #[napi]
+    pub fn refresh_program(
+        &mut self,
+        program: Uint8Array,
+        emitted_globals_json: Option<String>,
+    ) -> Result<String> {
+        let globals = emitted_globals_json
+            .as_deref()
+            .map(parse_emitted_globals)
+            .transpose()
+            .map_err(to_napi_error)?;
+        to_json(
+            &self
+                .inner
+                .refresh_program(&program, globals)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    /// The program's keyframe definitions in program order.
+    #[napi]
+    pub fn keyframe_definitions(&self) -> Result<String> {
+        to_json(&self.inner.keyframe_definitions().map_err(to_napi_error)?)
+    }
+
+    #[napi]
     pub fn execution_state(&self, class_names: Vec<String>) -> Result<String> {
         to_json(
             &self
@@ -111,4 +156,12 @@ impl NodeEngineSession {
     pub fn dispose(&mut self) {
         self.inner.dispose();
     }
+}
+
+/// Compiles a manifest into the program that engine sessions execute.
+#[napi]
+pub fn compile_runtime_program(manifest_json: String) -> Result<Buffer> {
+    Ok(compile_program(&manifest_json)
+        .map_err(to_napi_error)?
+        .into())
 }

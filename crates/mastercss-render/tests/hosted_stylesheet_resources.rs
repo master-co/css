@@ -44,9 +44,7 @@ fn hydrate(manifest: &str, rendered: &ServerRenderIr) -> EngineSnapshotIr {
         .ensure_class_rules(&rendered.hydration_manifest.class_names)
         .unwrap();
     runtime
-        .register_emitted_globals(
-            &serde_json::to_string(&rendered.hydration_manifest.emitted_globals).unwrap(),
-        )
+        .register_emitted_globals(rendered.hydration_manifest.emitted_globals.clone())
         .unwrap();
     runtime.snapshot().unwrap()
 }

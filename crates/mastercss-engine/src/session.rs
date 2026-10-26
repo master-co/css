@@ -2,12 +2,13 @@ use super::{
     ClassSemanticInspection, ClassSemanticKind, EmittedGlobals, EngineClassCompletionCandidate,
     EngineClassVariableIr, EngineColorToken, EngineCompositionRuleIr, EngineError,
     EngineInspectionIr, EngineSession, EngineSnapshotIr, EngineTransitionIr, HashMap, HashSet,
-    MasterCssManifest, NativeDeclarationCandidateIr, Program, RuleMutationIr, RuleTarget,
-    StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
-    collect_class_completion_candidates, collect_engine_color_tokens, compare_stored_rules,
-    compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
-    resolve_state_branches, resolve_style_selector_aliases,
+    NativeDeclarationCandidateIr, Program, RuleMutationIr, RuleTarget, StoredRule, UTILITY_LAYERS,
+    UtilityLayerName, UtilityMatcherType, collect_class_completion_candidates,
+    collect_engine_color_tokens, compare_stored_rules, emit_declarations, engine_variable_ir,
+    layer_index, layer_name, resolve_state_branches, resolve_style_selector_aliases,
 };
+#[cfg(feature = "manifest")]
+use super::{MasterCssManifest, compile_manifest};
 
 impl EngineSession {
     /// Shared compiler/native-CSS expansion; does not register a class or resources.
@@ -33,44 +34,54 @@ impl EngineSession {
         Ok(rules)
     }
 
+    #[cfg(feature = "manifest")]
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
-        Self::create_with_emitted_globals(manifest_json, None)
+        Self::from_manifest(manifest_json, EmittedGlobals::default())
     }
 
-    /// Compiles the manifest into a program and executes its encoding, exactly as a
-    /// browser executes the program it receives.
+    #[cfg(feature = "manifest")]
     pub fn create_with_emitted_globals(
         manifest_json: &str,
         emitted_globals_json: Option<&str>,
     ) -> Result<Self, EngineError> {
+        Self::from_manifest(
+            manifest_json,
+            emitted_globals_json
+                .map(parse_emitted_globals)
+                .transpose()?
+                .unwrap_or_default(),
+        )
+    }
+
+    /// Compiles the manifest into a program and executes its encoding, exactly as a
+    /// browser executes the program it receives.
+    #[cfg(feature = "manifest")]
+    pub fn from_manifest(
+        manifest_json: &str,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<Self, EngineError> {
         let manifest = MasterCssManifest::parse(manifest_json)?;
         let program = super::program::encode(&compile_manifest(&manifest)?);
-        Ok(Self::with_program(
-            Some(manifest),
-            decode_program(&program)?,
-            parse_emitted_globals(emitted_globals_json)?,
-        ))
+        let mut session = Self::with_program(decode_program(&program)?, emitted_globals);
+        session.manifest = Some(manifest);
+        Ok(session)
     }
 
     /// Executes a program that [`compile_program`](crate::compile_program) encoded.
     pub fn from_program(
         program: &[u8],
-        emitted_globals_json: Option<&str>,
+        emitted_globals: EmittedGlobals,
     ) -> Result<Self, EngineError> {
         Ok(Self::with_program(
-            None,
             decode_program(program)?,
-            parse_emitted_globals(emitted_globals_json)?,
+            emitted_globals,
         ))
     }
 
-    pub(crate) fn with_program(
-        manifest: Option<MasterCssManifest>,
-        compiled: Program,
-        emitted_globals: EmittedGlobals,
-    ) -> Self {
+    pub(crate) fn with_program(compiled: Program, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
-            manifest,
+            #[cfg(feature = "manifest")]
+            manifest: None,
             compiled,
             layers: std::array::from_fn(|_| Vec::new()),
             class_rules: HashMap::new(),
@@ -96,6 +107,7 @@ impl EngineSession {
         session
     }
 
+    #[cfg(feature = "manifest")]
     pub fn manifest_json(&self) -> Result<String, EngineError> {
         self.ensure_active()?;
         let manifest = self.manifest.as_ref().ok_or_else(|| {
@@ -264,11 +276,7 @@ impl EngineSession {
                 });
         self.stylesheet_sources.push(native_css.into());
         if changes_variables {
-            self.rebuild(
-                self.manifest.clone(),
-                self.compiled.clone(),
-                self.emitted_globals.clone(),
-            )
+            self.rebuild(self.emitted_globals.clone())
         } else {
             self.register_stylesheet_resources(native_css)
         }
@@ -321,13 +329,13 @@ impl EngineSession {
         Ok(emitted_globals)
     }
 
+    /// Adds resource counts the host emitted outside this session to the ones it
+    /// reported before.
     pub fn register_emitted_globals(
         &mut self,
-        emitted_globals_json: &str,
+        emitted_globals: EmittedGlobals,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let emitted_globals = EmittedGlobals::parse(emitted_globals_json)
-            .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))?;
         let mut merged = self.emitted_globals.clone();
         let mut changed = false;
         for id in &emitted_globals.suppressed_keyframes {
@@ -365,13 +373,15 @@ impl EngineSession {
         if !changed {
             return Ok(EngineTransitionIr::new(Vec::new()));
         }
-        self.rebuild(self.manifest.clone(), self.compiled.clone(), merged)
+        self.rebuild(merged)
     }
 
+    #[cfg(feature = "manifest")]
     pub fn refresh(&mut self, manifest_json: &str) -> Result<EngineTransitionIr, EngineError> {
         self.refresh_with_emitted_globals(manifest_json, None)
     }
 
+    #[cfg(feature = "manifest")]
     pub fn refresh_with_emitted_globals(
         &mut self,
         manifest_json: &str,
@@ -381,34 +391,37 @@ impl EngineSession {
         let manifest = MasterCssManifest::parse(manifest_json)?;
         let program = decode_program(&super::program::encode(&compile_manifest(&manifest)?))?;
         let emitted = match globals {
-            Some(_) => parse_emitted_globals(globals)?,
+            Some(globals) => parse_emitted_globals(globals)?,
             None => self.emitted_globals.clone(),
         };
-        self.rebuild(Some(manifest), program, emitted)
+        self.manifest = Some(manifest);
+        self.compiled = program;
+        self.rebuild(emitted)
     }
 
     /// Replaces the executed program, as [`refresh_with_emitted_globals`] does with a
-    /// manifest.
+    /// manifest. Without `emitted_globals` the session keeps the ones it has.
     ///
     /// [`refresh_with_emitted_globals`]: Self::refresh_with_emitted_globals
     pub fn refresh_program(
         &mut self,
         program: &[u8],
-        globals: Option<&str>,
+        emitted_globals: Option<EmittedGlobals>,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
         let program = decode_program(program)?;
-        let emitted = match globals {
-            Some(_) => parse_emitted_globals(globals)?,
-            None => self.emitted_globals.clone(),
-        };
-        self.rebuild(None, program, emitted)
+        let emitted = emitted_globals.unwrap_or_else(|| self.emitted_globals.clone());
+        #[cfg(feature = "manifest")]
+        {
+            self.manifest = None;
+        }
+        self.compiled = program;
+        self.rebuild(emitted)
     }
 
+    /// Re-executes the session's classes against its program and `emitted_globals`.
     pub(crate) fn rebuild(
         &mut self,
-        manifest: Option<MasterCssManifest>,
-        compiled: Program,
         emitted_globals: EmittedGlobals,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.with_theme_batch(|session| {
@@ -430,7 +443,6 @@ impl EngineSession {
             session.keyframe_counts.clear();
             session.stylesheet_keyframe_slots.clear();
             session.theme_variable_names.clear();
-            session.compiled = compiled;
             #[cfg(feature = "stylesheet-resources")]
             for source in &session.stylesheet_sources {
                 for (name, value) in
@@ -448,7 +460,6 @@ impl EngineSession {
                     }
                 }
             }
-            session.manifest = manifest;
             session.emitted_globals = emitted_globals;
             session.class_rules.clear();
             session.class_order.clear();
@@ -1056,6 +1067,7 @@ impl EngineSession {
 
     pub(crate) fn fork_empty_with_emitted_globals(&self, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
+            #[cfg(feature = "manifest")]
             manifest: self.manifest.clone(),
             compiled: self.compiled.clone(),
             layers: std::array::from_fn(|_| Vec::new()),
@@ -1088,6 +1100,7 @@ impl EngineSession {
 }
 
 /// Validates a manifest and encodes the program that sessions execute.
+#[cfg(feature = "manifest")]
 pub fn compile_program(manifest_json: &str) -> Result<Vec<u8>, EngineError> {
     let manifest = MasterCssManifest::parse(manifest_json)?;
     Ok(super::program::encode(&compile_manifest(&manifest)?))
@@ -1100,12 +1113,11 @@ fn decode_program(program: &[u8]) -> Result<Program, EngineError> {
     })
 }
 
-fn parse_emitted_globals(json: Option<&str>) -> Result<EmittedGlobals, EngineError> {
-    Ok(json
-        .map(EmittedGlobals::parse)
-        .transpose()
-        .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))?
-        .unwrap_or_default())
+/// Parses emitted globals JSON for hosts that receive them as text.
+#[cfg(feature = "manifest")]
+pub fn parse_emitted_globals(json: &str) -> Result<EmittedGlobals, EngineError> {
+    EmittedGlobals::parse(json)
+        .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))
 }
 
 fn collect_theme_selectors<'a>(

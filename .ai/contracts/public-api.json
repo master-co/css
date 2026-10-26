@@ -37,6 +37,7 @@
           "MASTER_CSS_BINDING_ABI_VERSION",
           "MASTER_CSS_HYDRATION_MANIFEST_VERSION",
           "MASTER_CSS_MANIFEST_VERSION",
+          "MASTER_CSS_PROGRAM_VERSION",
           "MasterCSSBinding",
           "MasterCSSBindingContractError",
           "MasterCSSBindingFeature",
@@ -53,17 +54,23 @@
           "MasterCSSBindingLoadOptions",
           "MasterCSSEngineBindingSession",
           "MasterCSSEngineBindingSessionOptions",
+          "MasterCSSEngineSource",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSRenderBindingSession",
+          "MasterCSSRenderBindingSessionOptions",
           "MasterCSSWasmBindingLoadOptions",
+          "compileRuntimeProgram",
           "createEngineBindingSession",
           "createRenderBindingSession"
         ],
         "./engine/node": [
           "MasterCSSEngineBindingSession",
           "MasterCSSEngineBindingSessionOptions",
+          "MasterCSSEngineSource",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSRenderBindingSession",
+          "MasterCSSRenderBindingSessionOptions",
+          "compileRuntimeProgramSync",
           "createEngineBindingSessionSync",
           "createRenderBindingSessionSync"
         ],
@@ -203,7 +210,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "a9428341120cd94f"
+      "surface": "e379671a0eba536e"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -540,6 +547,7 @@
           "MasterCSSEngineOptions",
           "MasterCSSEngineResources",
           "MasterCSSEngineSnapshot",
+          "MasterCSSEngineSource",
           "MasterCSSEngineTransition",
           "MasterCSSEngineVariableResource",
           "MasterCSSNativeDeclaration",
@@ -550,14 +558,18 @@
           "renderClassNames"
         ],
         "./node": [
+          "MasterCSSCompileRuntimeProgramOptions",
           "MasterCSSEngine",
           "MasterCSSEngineBinding",
           "MasterCSSEngineBindingOptions",
           "MasterCSSEngineOptions",
+          "MasterCSSEngineSource",
           "MasterCSSNativeDeclaration",
           "MasterCSSRenderSession",
           "MasterCSSRenderSessionOptions",
           "MasterCSSRenderSnapshot",
+          "compileRuntimeProgram",
+          "compileRuntimeProgramSync",
           "createEngineSync",
           "createNativeEngineBinding",
           "createRenderSessionSync",
@@ -565,7 +577,7 @@
         ],
         "./client": []
       },
-      "surface": "c83b9b161883951a"
+      "surface": "fb256c9660e7ed70"
     },
     "@master/css-svelte-addon": {
       "directory": "css-sv",

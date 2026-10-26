@@ -1,11 +1,12 @@
 //! JSON for the engine session results the browser runtime reads, written without
 //! serde so the runtime Wasm ships no serializer. Field names, order and omissions
-//! match the schema types' serde derives; tests compare both encodings.
+//! match the schema types' serde derives; tests compare both encodings. Keyframe
+//! definitions leave out their authoring `source`, which browsers never map.
 use mastercss_schema::{
     BindingInfo, ConditionBoundIr, ConditionRangeIr, Diagnostic, DiagnosticPhase,
     DiagnosticSeverity, EngineExecutionStateIr, EngineKeyframeResourceIr, EngineResourcesIr,
-    EngineSnapshotIr, EngineTransitionIr, GeneratedRuleIr, RuleMutationIr, RulePriorityIr,
-    RuleTarget, UtilityLayerName,
+    EngineSnapshotIr, EngineTransitionIr, GeneratedRuleIr, KeyframeContainer, KeyframeDefinition,
+    KeyframeResource, RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 
 pub(crate) trait WriteJson {
@@ -331,24 +332,61 @@ impl WriteJson for EngineKeyframeResourceIr {
             .field("name", &self.name)
             .field("text", &self.text);
         if !self.containers.is_empty() {
-            let key = object.key("containers");
-            key.push('[');
-            for (index, container) in self.containers.iter().enumerate() {
-                if index > 0 {
-                    key.push(',');
-                }
-                let mut container_object = Object::new(key);
-                container_object
-                    .field("id", &container.id)
-                    .field("prelude", &container.prelude);
-                container_object.end();
-            }
-            key.push(']');
+            object.field("containers", &self.containers);
         }
         object
             .field("anchored", &self.anchored)
             .field("refCount", &self.ref_count)
             .field("dependencies", &self.dependencies);
+        object.end();
+    }
+}
+
+impl WriteJson for KeyframeContainer {
+    fn write_json(&self, out: &mut String) {
+        let mut object = Object::new(out);
+        object.field("id", &self.id).field("prelude", &self.prelude);
+        object.end();
+    }
+}
+
+impl WriteJson for KeyframeResource {
+    fn write_json(&self, out: &mut String) {
+        let mut object = Object::new(out);
+        object
+            .field("start", &self.start)
+            .field("end", &self.end)
+            .field("value", &self.value);
+        object.end();
+    }
+}
+
+impl WriteJson for KeyframeDefinition {
+    fn write_json(&self, out: &mut String) {
+        let mut object = Object::new(out);
+        object.field("id", &self.id);
+        if let Some(owner_id) = &self.owner_id {
+            object.field("ownerId", owner_id);
+        }
+        if let Some(slot_id) = &self.slot_id {
+            object.field("slotId", slot_id);
+        }
+        if let Some(occurrence) = &self.occurrence {
+            object.field("occurrence", occurrence);
+        }
+        object.field("name", &self.name).field("text", &self.text);
+        if !self.resources.is_empty() {
+            object.field("resources", &self.resources);
+        }
+        if !self.containers.is_empty() {
+            object.field("containers", &self.containers);
+        }
+        if self.retained {
+            object.field("retained", &true);
+        }
+        if !self.dependencies.is_empty() {
+            object.field("dependencies", &self.dependencies);
+        }
         object.end();
     }
 }
@@ -476,6 +514,7 @@ impl WriteJson for BindingInfo<'_> {
             .field("bindingAbiVersion", &self.binding_abi_version)
             .field("packageVersion", self.package_version)
             .field("manifestVersion", &self.manifest_version)
+            .field("programVersion", &self.program_version)
             .field("languageVersion", &self.language_version)
             .field("hydrationManifestVersion", &self.hydration_manifest_version)
             .field("engineTransitionVersion", &self.engine_transition_version)
@@ -534,6 +573,42 @@ mod tests {
         assert_same_json(&snapshot);
         assert_same_json(&session.delete_class_rules(["block"]).unwrap());
         assert_same_json(&session.refresh(DEFAULT_MANIFEST).unwrap());
+    }
+
+    #[test]
+    fn keyframe_definitions_match_their_serde_encoding_without_sources() {
+        let session = EngineSession::create(
+            &serde_json::json!({
+                "version": 6,
+                "languageVersion": mastercss_schema::LANGUAGE_VERSION,
+                "keyframes": [
+                    {
+                        "id": "fade-1",
+                        "ownerId": "owner",
+                        "slotId": "slot",
+                        "occurrence": 2,
+                        "name": "fade",
+                        "text": "@keyframes fade{from{background:url(a.png)}}",
+                        "resources": [{ "start": 30, "end": 35, "value": "b.png" }],
+                        "containers": [{ "id": "media", "prelude": "@media print" }],
+                        "retained": true,
+                        "dependencies": ["color-red-60"],
+                        "source": { "file": "a.css", "range": { "start": 0, "end": 4 } }
+                    },
+                    { "id": "spin", "name": "spin", "text": "@keyframes spin{to{rotate:1turn}}" }
+                ]
+            })
+            .to_string(),
+        )
+        .unwrap();
+        let definitions = session.keyframe_definitions().unwrap();
+        let mut expected = serde_json::to_value(definitions).unwrap();
+        for definition in expected.as_array_mut().unwrap() {
+            definition.as_object_mut().unwrap().remove("source");
+        }
+        let written: serde_json::Value = serde_json::from_str(&definitions.to_json()).unwrap();
+        assert_eq!(written, expected);
+        assert_eq!(written[0]["ownerId"], "owner");
     }
 
     #[test]

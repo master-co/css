@@ -1,13 +1,15 @@
 //! Class registration from explicit utility definitions.
-use super::{
-    Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcher, UtilityMatcherType,
-};
+#[cfg(feature = "manifest")]
+use super::UtilityMatcher;
+use super::{Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcherType};
+#[cfg(feature = "manifest")]
 use mastercss_schema::{MixinParameterSyntax, UtilityKind};
 
 pub(crate) fn identity(definition: &mastercss_schema::UtilityDefinition) -> String {
     definition.identity()
 }
 
+#[cfg(feature = "manifest")]
 pub(crate) fn register(manifest: &mut Program) {
     manifest.token_families =
         super::token_family::infer(&manifest.utility_definitions, &manifest.mixins);

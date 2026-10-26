@@ -228,14 +228,13 @@ fn registers_host_globals_transactionally_after_classes_are_ensured() {
     let before = engine.css_text();
     assert!(before.contains("--color-red-60:#d00"));
 
-    let error = engine
-        .register_emitted_globals(r#"{"variables":{"color-red-60":-1}}"#)
-        .unwrap_err();
+    let error = crate::parse_emitted_globals(r#"{"variables":{"color-red-60":-1}}"#).unwrap_err();
     assert!(matches!(error, EngineError::InvalidEmittedGlobals(_)));
-    assert_eq!(engine.css_text(), before);
 
     let transition = engine
-        .register_emitted_globals(r#"{"variables":{"color-red-60":1}}"#)
+        .register_emitted_globals(
+            crate::parse_emitted_globals(r#"{"variables":{"color-red-60":1}}"#).unwrap(),
+        )
         .unwrap();
     assert!(transition.mutations.iter().any(|mutation| matches!(
         mutation,
@@ -255,7 +254,9 @@ fn registers_host_globals_transactionally_after_classes_are_ensured() {
     assert_eq!(globals.variable_count("color-red-60"), 1);
     assert!(
         engine
-            .register_emitted_globals(r#"{"variables":{"color-red-60":0}}"#)
+            .register_emitted_globals(
+                crate::parse_emitted_globals(r#"{"variables":{"color-red-60":0}}"#).unwrap()
+            )
             .unwrap()
             .mutations
             .is_empty()
@@ -265,29 +266,32 @@ fn registers_host_globals_transactionally_after_classes_are_ensured() {
 #[test]
 fn validates_and_saturates_host_globals_before_classes_are_ensured() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    let before = engine.snapshot().unwrap();
     for invalid in [
         r#"{"variables":{"color-red-60":0.5}}"#,
         r#"{"variables":{"color-red-60":-1}}"#,
         r#"{"variables":}"#,
     ] {
         assert!(matches!(
-            engine.register_emitted_globals(invalid),
+            crate::parse_emitted_globals(invalid),
             Err(EngineError::InvalidEmittedGlobals(_))
         ));
-        assert_eq!(engine.snapshot().unwrap(), before);
     }
 
     assert!(
         engine
-            .register_emitted_globals(r#"{"variables":{"color-red-60":4294967295}}"#)
+            .register_emitted_globals(
+                crate::parse_emitted_globals(r#"{"variables":{"color-red-60":4294967295}}"#)
+                    .unwrap()
+            )
             .unwrap()
             .mutations
             .is_empty()
     );
     assert!(
         engine
-            .register_emitted_globals(r#"{"variables":{"color-red-60":1}}"#)
+            .register_emitted_globals(
+                crate::parse_emitted_globals(r#"{"variables":{"color-red-60":1}}"#).unwrap()
+            )
             .unwrap()
             .mutations
             .is_empty()
@@ -323,13 +327,7 @@ fn rejects_removed_animation_resource_registration_atomically() {
     ))
     .unwrap();
     engine.ensure_class_rules(["animation:fade|1s"]).unwrap();
-    let before = engine.snapshot().unwrap();
-    assert!(
-        engine
-            .register_emitted_globals(r#"{"animations":{"fade":1}}"#)
-            .is_err()
-    );
-    assert_eq!(engine.snapshot().unwrap(), before);
+    assert!(crate::parse_emitted_globals(r#"{"animations":{"fade":1}}"#).is_err());
 }
 
 #[test]

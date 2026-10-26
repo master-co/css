@@ -1,5 +1,6 @@
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSKeyframeDefinition, MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEngineSource } from './engine-contract'
 import type {
   MasterCSSEngineExecutionState,
   MasterCSSEngineInspection,
@@ -17,6 +18,7 @@ import type {
 } from './binding-options'
 import { shouldLoadMasterCSSNativeBinding } from './binding-options'
 import {
+  compileWasmRuntimeProgram,
   createWasmEngineBindingSession,
   createWasmRenderBindingSession
 } from './engine-binding-wasm'
@@ -40,7 +42,13 @@ export type {
   MasterCSSWasmBindingLoadOptions
 } from './binding-options'
 
-export interface MasterCSSEngineBindingSessionOptions {
+export type { MasterCSSEngineSource } from './engine-contract'
+
+export type MasterCSSEngineBindingSessionOptions = MasterCSSEngineSource & {
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
+}
+
+export interface MasterCSSRenderBindingSessionOptions {
   readonly manifest: MasterCSSManifest
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
@@ -51,7 +59,8 @@ export interface MasterCSSEngineBindingSession extends Disposable {
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
-  refresh(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  refresh(source: MasterCSSManifest | Uint8Array, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+  keyframeDefinitions(): readonly MasterCSSKeyframeDefinition[]
   executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
@@ -94,7 +103,7 @@ export async function createEngineBindingSession(
 }
 
 export async function createRenderBindingSession(
-  options: MasterCSSEngineBindingSessionOptions,
+  options: MasterCSSRenderBindingSessionOptions,
   loadOptions: MasterCSSBindingLoadOptions = {}
 ): Promise<MasterCSSRenderBindingSession> {
   try {
@@ -112,5 +121,25 @@ export async function createRenderBindingSession(
     )
   } catch (cause) {
     throw normalizeBindingError(cause, 'server')
+  }
+}
+
+/** Compiles a manifest into the runtime program that browsers execute. */
+export async function compileRuntimeProgram(
+  manifest: MasterCSSManifest,
+  loadOptions: MasterCSSBindingLoadOptions = {}
+): Promise<Uint8Array> {
+  try {
+    if (shouldLoadMasterCSSNativeBinding(loadOptions.binding)) {
+      const { compileNativeRuntimeProgram } = await loadNativeEngineFactories()
+      const program = compileNativeRuntimeProgram(manifest, {
+        ...loadOptions.native,
+        required: loadOptions.binding === 'native'
+      })
+      if (program) return program
+    }
+    return await compileWasmRuntimeProgram(manifest, loadOptions.wasm)
+  } catch (cause) {
+    throw normalizeBindingError(cause, 'engine')
   }
 }

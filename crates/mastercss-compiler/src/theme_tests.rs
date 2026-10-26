@@ -146,12 +146,14 @@ fn static_animation_retains_only_referenced_keyframes_and_dependencies() {
     assert_eq!(e.css_text(), initial);
     let id = e.snapshot().unwrap().resources.keyframes[0].id.clone();
     e.replace_emitted_globals(
-        &serde_json::json!({"variables":{"animate-reveal":1,"color-brand":1},"keyframes":{id:1}})
-            .to_string(),
+        serde_json::from_value(
+            serde_json::json!({"variables":{"animate-reveal":1,"color-brand":1},"keyframes":{id:1}}),
+        )
+        .unwrap(),
     )
     .unwrap();
     assert!(e.css_text().is_empty());
-    e.replace_emitted_globals("{}").unwrap();
+    e.replace_emitted_globals(Default::default()).unwrap();
     assert_eq!(e.css_text(), initial);
 }
 

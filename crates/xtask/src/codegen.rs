@@ -27,6 +27,10 @@ pub(crate) fn generated_contract() -> String {
             &mastercss_schema::MANIFEST_VERSION.to_string(),
         )
         .replace(
+            "{{MASTER_CSS_PROGRAM_VERSION}}",
+            &mastercss_schema::PROGRAM_VERSION.to_string(),
+        )
+        .replace(
             "{{MASTER_CSS_HYDRATION_MANIFEST_VERSION}}",
             &mastercss_schema::HYDRATION_MANIFEST_VERSION.to_string(),
         )

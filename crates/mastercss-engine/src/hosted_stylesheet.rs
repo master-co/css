@@ -170,11 +170,7 @@ impl EngineSession {
         emitted_globals.keyframes.extend(hosted.keyframes);
         emitted_globals.keyframe_slots.extend(hosted.keyframe_slots);
         self.stylesheet_sources.push(native_css.into());
-        self.rebuild(
-            self.manifest.clone(),
-            self.compiled.clone(),
-            emitted_globals,
-        )
+        self.rebuild(emitted_globals)
     }
 }
 

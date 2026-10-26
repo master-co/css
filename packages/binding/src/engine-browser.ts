@@ -1,16 +1,20 @@
 import { MasterCSSError } from '@master/css-schema'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSNativeEngineSession,
   MasterCSSNativeEngineSessionOptions,
   MasterCSSNativeModuleOptions,
-  MasterCSSNativeRenderSession
+  MasterCSSNativeRenderSession,
+  MasterCSSNativeRenderSessionOptions
 } from './engine-contract'
 
 export type {
+  MasterCSSEngineSource,
   MasterCSSNativeEngineSession,
   MasterCSSNativeEngineSessionOptions,
   MasterCSSNativeModuleOptions,
-  MasterCSSNativeRenderSession
+  MasterCSSNativeRenderSession,
+  MasterCSSNativeRenderSessionOptions
 } from './engine-contract'
 export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
@@ -45,9 +49,17 @@ export function createNativeEngineSession(
 }
 
 export function createNativeRenderSession(
-  _options: MasterCSSNativeEngineSessionOptions,
+  _options: MasterCSSNativeRenderSessionOptions,
   moduleOptions: MasterCSSNativeModuleOptions = {}
 ): MasterCSSNativeRenderSession | undefined {
+  unavailable(moduleOptions.required)
+  return undefined
+}
+
+export function compileNativeRuntimeProgram(
+  _manifest: MasterCSSManifest,
+  moduleOptions: MasterCSSNativeModuleOptions = {}
+): Uint8Array | undefined {
   unavailable(moduleOptions.required)
   return undefined
 }

@@ -43,6 +43,8 @@ export interface NativeEngineSession {
   replaceEmittedGlobals(emittedGlobalsJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   refresh(manifestJSON: string, emittedGlobalsJSON?: string): string
+  refreshProgram(program: Uint8Array, emittedGlobalsJSON?: string): string
+  keyframeDefinitions(): string
   snapshot(): string
   executionState(classNames: string[]): string
   inspect(className: string): string
@@ -159,6 +161,7 @@ export interface NativeBinding {
   migrateRcJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
+  compileRuntimeProgram(manifestJSON: string): Uint8Array
   LanguageSession: new (manifestJSON: string) => NativeLanguageSession
   LexerSession: new () => NativeLexerSession
   SourceSession: new () => NativeSourceSession
@@ -166,7 +169,10 @@ export interface NativeBinding {
   RenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeRenderSession
   ValidatorSession: new (manifestJSON: string) => NativeValidatorSession
   LintSession: new (manifestJSON: string) => NativeLintSession
-  EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => NativeEngineSession
+  EngineSession: {
+    new (manifestJSON: string, emittedGlobalsJSON?: string): NativeEngineSession
+    fromProgram(program: Uint8Array, emittedGlobalsJSON?: string): NativeEngineSession
+  }
 }
 
 export type NativeLibc = 'glibc' | 'musl'

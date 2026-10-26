@@ -1,6 +1,8 @@
 import {
   MasterCSSError
 } from '@master/css-schema'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSKeyframeDefinition } from '@master/css-schema/manifest'
 
 export type MasterCSSWasmInput =
   | RequestInfo
@@ -9,17 +11,27 @@ export type MasterCSSWasmInput =
   | BufferSource
   | WebAssembly.Module
 
+/**
+ * Emitted globals as the engine Wasm takes them: the variable, keyframe, keyframe
+ * slot and suppressed keyframe names in that order, then the variable, keyframe and
+ * slot totals followed by each variable's and each keyframe's count.
+ */
+type GeneratedEmittedGlobals = [names: string[], counts: Uint32Array]
+
 // The browser runtime artifact is built without the binding's `full` feature,
-// so render sessions and inspection exports are absent from its module. Results
-// cross the boundary as JSON text.
+// so manifest compilation, render sessions and inspection exports are absent
+// from its module. Sessions execute compiled runtime programs, and results cross
+// the boundary as JSON text.
 interface GeneratedEngineSession {
   manifestJSON?(): string
   ensureClassRules(classNames: string[]): string
   deleteClassRules(classNames: string[]): string
-  registerEmittedGlobals(emittedGlobalsJSON: string): string
-  replaceEmittedGlobals(emittedGlobalsJSON: string): string
+  registerEmittedGlobals(...emittedGlobals: GeneratedEmittedGlobals): string
+  replaceEmittedGlobals(...emittedGlobals: GeneratedEmittedGlobals): string
   nativeDeclarationCandidates?(classNames: string[]): string
-  refresh(manifestJSON: string, emittedGlobalsJSON?: string): string
+  refresh(program: Uint8Array, ...emittedGlobals: GeneratedEmittedGlobals | []): string
+  refreshManifest?(manifestJSON: string, emittedGlobalsJSON?: string): string
+  keyframeDefinitions(): string
   snapshot(): string
   executionState(classNames: string[]): string
   inspect?(className: string): string
@@ -38,8 +50,12 @@ interface GeneratedRenderSession {
 
 interface GeneratedWasmModule {
   default(input: { module_or_path: MasterCSSWasmInput }): Promise<WebAssembly.Exports>
-  EngineSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedEngineSession
+  EngineSession: {
+    new (program: Uint8Array, ...emittedGlobals: GeneratedEmittedGlobals): GeneratedEngineSession
+    fromManifest?(manifestJSON: string, emittedGlobalsJSON?: string): GeneratedEngineSession
+  }
   RenderSession?: new (manifestJSON: string, emittedGlobalsJSON?: string) => GeneratedRenderSession
+  compileRuntimeProgram?(manifestJSON: string): Uint8Array
   bindingInfo(): string
 }
 
@@ -53,8 +69,14 @@ export interface MasterCSSWasmEngineLoadOptions {
 }
 
 export interface MasterCSSWasmEngineSessionOptions {
-  emittedGlobals?: unknown
+  emittedGlobals?: MasterCSSEmittedGlobals
 }
+
+/**
+ * What an engine session executes: a compiled runtime program, or manifest JSON,
+ * which only the `full` artifact compiles.
+ */
+export type MasterCSSWasmEngineSource = Uint8Array | string
 
 export interface MasterCSSWasmEngineTransition {
   readonly version: number
@@ -158,15 +180,23 @@ export function createWasmEngineLoader(artifact: MasterCSSWasmEngineArtifact) {
     url: artifact.url,
     loadWasmEngine,
     async createWasmEngineSession(
-      manifestJSON: string,
+      source: MasterCSSWasmEngineSource,
       sessionOptions: MasterCSSWasmEngineSessionOptions = {},
       loadOptions: MasterCSSWasmEngineLoadOptions = {}
     ) {
       return engineSession(
         await loadWasmEngine(loadOptions) as GeneratedWasmModule,
-        manifestJSON,
+        source,
         sessionOptions
       )
+    },
+    async compileRuntimeProgram(
+      manifestJSON: string,
+      loadOptions: MasterCSSWasmEngineLoadOptions = {}
+    ) {
+      const module = await loadWasmEngine(loadOptions) as GeneratedWasmModule
+      assertExport(module.compileRuntimeProgram, 'compileRuntimeProgram()')
+      return module.compileRuntimeProgram(manifestJSON)
     },
     async createWasmRenderSession(
       manifestJSON: string,
@@ -199,12 +229,59 @@ function emittedGlobalsJSON(options: MasterCSSWasmEngineSessionOptions) {
     : JSON.stringify(options.emittedGlobals)
 }
 
-function engineSession(
+const EMITTED_GLOBALS_FIELDS = new Set(['variables', 'keyframes', 'keyframeSlots', 'suppressedKeyframes'])
+
+function invalidEmittedGlobals(message: string): never {
+  throw new MasterCSSError({
+    code: 'INVALID_INPUT',
+    domain: 'binding',
+    message: `Invalid Master CSS emitted globals: ${message}`
+  })
+}
+
+function counted(field: string, record: Record<string, number> | undefined) {
+  const entries = Object.entries(record ?? {})
+  for (const [name, count] of entries) {
+    if (!Number.isInteger(count) || count < 0 || count > 0xffffffff) {
+      invalidEmittedGlobals(`${field}.${name} must be a count.`)
+    }
+  }
+  return entries
+}
+
+/** Validates what the engine's emitted globals schema accepts, then flattens it. */
+function generatedEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals = {}): GeneratedEmittedGlobals {
+  for (const field of Object.keys(emittedGlobals)) {
+    if (!EMITTED_GLOBALS_FIELDS.has(field)) invalidEmittedGlobals(`unknown field ${field}.`)
+  }
+  const variables = counted('variables', emittedGlobals.variables)
+  const keyframes = counted('keyframes', emittedGlobals.keyframes)
+  const slots = emittedGlobals.keyframeSlots ?? []
+  const entries = [...variables, ...keyframes]
+  return [
+    entries.map(([name]) => name).concat(slots, emittedGlobals.suppressedKeyframes ?? []),
+    Uint32Array.from([variables.length, keyframes.length, slots.length, ...entries.map(([, count]) => count)])
+  ]
+}
+
+function createGeneratedEngineSession(
   module: GeneratedWasmModule,
-  manifestJSON: string,
+  source: MasterCSSWasmEngineSource,
   sessionOptions: MasterCSSWasmEngineSessionOptions
 ) {
-  const session = new module.EngineSession(manifestJSON, emittedGlobalsJSON(sessionOptions))
+  if (typeof source !== 'string') {
+    return new module.EngineSession(source, ...generatedEmittedGlobals(sessionOptions.emittedGlobals))
+  }
+  assertExport(module.EngineSession.fromManifest, 'manifest compilation')
+  return module.EngineSession.fromManifest(source, emittedGlobalsJSON(sessionOptions))
+}
+
+function engineSession(
+  module: GeneratedWasmModule,
+  source: MasterCSSWasmEngineSource,
+  sessionOptions: MasterCSSWasmEngineSessionOptions
+) {
+  const session = createGeneratedEngineSession(module, source, sessionOptions)
   let disposed = false
   const assertActive = () => {
     if (disposed) {
@@ -229,25 +306,35 @@ function engineSession(
       assertActive()
       return JSON.parse(session.deleteClassRules(classNames)) as MasterCSSWasmEngineTransition
     },
-    registerEmittedGlobals(emittedGlobals: unknown) {
+    registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
       assertActive()
       return JSON.parse(session.registerEmittedGlobals(
-        typeof emittedGlobals === 'string'
-          ? emittedGlobals
-          : JSON.stringify(emittedGlobals)
+        ...generatedEmittedGlobals(emittedGlobals)
       )) as MasterCSSWasmEngineTransition
     },
-    replaceEmittedGlobals(emittedGlobals: unknown) {
+    replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
       assertActive()
       return JSON.parse(session.replaceEmittedGlobals(
-        typeof emittedGlobals === 'string'
-          ? emittedGlobals
-          : JSON.stringify(emittedGlobals)
+        ...generatedEmittedGlobals(emittedGlobals)
       )) as MasterCSSWasmEngineTransition
     },
-    refresh(nextManifestJSON: string, emittedGlobalsJSON?: string) {
+    refresh(next: MasterCSSWasmEngineSource, emittedGlobals?: MasterCSSEmittedGlobals) {
       assertActive()
-      return JSON.parse(session.refresh(nextManifestJSON, emittedGlobalsJSON)) as MasterCSSWasmEngineTransition
+      if (typeof next === 'string') {
+        assertExport(session.refreshManifest, 'manifest compilation')
+        return JSON.parse(session.refreshManifest(
+          next,
+          emittedGlobals === undefined ? undefined : JSON.stringify(emittedGlobals)
+        )) as MasterCSSWasmEngineTransition
+      }
+      return JSON.parse(session.refresh(
+        next,
+        ...emittedGlobals === undefined ? [] as [] : generatedEmittedGlobals(emittedGlobals)
+      )) as MasterCSSWasmEngineTransition
+    },
+    keyframeDefinitions() {
+      assertActive()
+      return JSON.parse(session.keyframeDefinitions()) as readonly MasterCSSKeyframeDefinition[]
     },
     snapshot() {
       assertActive()

@@ -2,13 +2,14 @@ import { readFile } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
-import { createEngineBindingSession } from '@master/css-binding/engine'
+import { compileRuntimeProgram, createEngineBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import defaultManifest from '@master/css-preset/default-manifest.json'
 
 // Browsers load the engine Wasm built without the binding's `full` feature, while Node
-// tests otherwise exercise the full build. Run the corpus through that runtime build.
+// tests otherwise exercise the full build. Run the corpus through that runtime build,
+// executing the program compiled from each manifest against native manifest sessions.
 type EngineParityStep =
   | { op: 'ensure', classes: string[] }
   | { op: 'delete', classes: string[] }
@@ -48,8 +49,9 @@ afterEach(() => {
 
 describe('runtime engine Wasm artifact', () => {
   it('runs without the full feature', async () => {
+    const manifest = defaultManifest as unknown as MasterCSSManifest
     const runtime = await createEngineBindingSession({
-      manifest: defaultManifest as unknown as MasterCSSManifest
+      program: await compileRuntimeProgram(manifest, { binding: 'native' })
     }, { binding: 'wasm', wasm: runtimeWasm })
     try {
       expect(() => runtime.inspect('block')).toThrowError(expect.objectContaining({
@@ -58,6 +60,8 @@ describe('runtime engine Wasm artifact', () => {
     } finally {
       runtime.dispose()
     }
+    await expect(createEngineBindingSession({ manifest }, { binding: 'wasm', wasm: runtimeWasm }))
+      .rejects.toMatchObject({ code: 'WASM_FEATURE_UNAVAILABLE' })
   })
 
   for (const parityCase of corpus.engineCases) {
@@ -66,14 +70,15 @@ describe('runtime engine Wasm artifact', () => {
         configurable: true,
         value: { supports: () => true }
       })
-      const options = {
-        manifest: parityCase.manifest === 'default'
-          ? defaultManifest as unknown as MasterCSSManifest
-          : parityCase.manifest,
-        emittedGlobals: parityCase.emittedGlobals
-      }
-      const native = await createEngineBindingSession(options, { binding: 'native' })
-      const runtime = await createEngineBindingSession(options, { binding: 'wasm', wasm: runtimeWasm })
+      const manifest = parityCase.manifest === 'default'
+        ? defaultManifest as unknown as MasterCSSManifest
+        : parityCase.manifest
+      const { emittedGlobals } = parityCase
+      const native = await createEngineBindingSession({ manifest, emittedGlobals }, { binding: 'native' })
+      const runtime = await createEngineBindingSession({
+        program: await compileRuntimeProgram(manifest, { binding: 'native' }),
+        emittedGlobals
+      }, { binding: 'wasm', wasm: runtimeWasm })
       try {
         expect(runtime.snapshot(), `${parityCase.id}: initial snapshot`).toEqual(native.snapshot())
         for (const step of parityCase.steps) {

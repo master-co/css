@@ -1,4 +1,6 @@
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
+  compileNativeRuntimeProgram,
   createNativeEngineSession,
   createNativeRenderSession
 } from './engine'
@@ -6,7 +8,8 @@ import type {
   MasterCSSNativeBindingLoadOptions,
   MasterCSSEngineBindingSession,
   MasterCSSEngineBindingSessionOptions,
-  MasterCSSRenderBindingSession
+  MasterCSSRenderBindingSession,
+  MasterCSSRenderBindingSessionOptions
 } from './engine-binding'
 import { normalizeBindingError } from './normalize-error'
 import {
@@ -15,10 +18,12 @@ import {
 } from './engine-binding-adapter'
 
 export type {
+  MasterCSSEngineSource,
   MasterCSSNativeBindingLoadOptions,
   MasterCSSEngineBindingSession,
   MasterCSSEngineBindingSessionOptions,
-  MasterCSSRenderBindingSession
+  MasterCSSRenderBindingSession,
+  MasterCSSRenderBindingSessionOptions
 } from './engine-binding'
 
 export function createEngineBindingSessionSync(
@@ -37,7 +42,7 @@ export function createEngineBindingSessionSync(
 }
 
 export function createRenderBindingSessionSync(
-  options: MasterCSSEngineBindingSessionOptions,
+  options: MasterCSSRenderBindingSessionOptions,
   loadOptions: MasterCSSNativeBindingLoadOptions = {}
 ): MasterCSSRenderBindingSession {
   try {
@@ -48,5 +53,20 @@ export function createRenderBindingSessionSync(
     return bindRenderBindingSession('native', session)
   } catch (cause) {
     throw normalizeBindingError(cause, 'server')
+  }
+}
+
+/** Compiles a manifest into the runtime program that browsers execute. */
+export function compileRuntimeProgramSync(
+  manifest: MasterCSSManifest,
+  loadOptions: MasterCSSNativeBindingLoadOptions = {}
+): Uint8Array {
+  try {
+    return compileNativeRuntimeProgram(manifest, {
+      ...loadOptions,
+      required: true
+    })!
+  } catch (cause) {
+    throw normalizeBindingError(cause, 'engine')
   }
 }

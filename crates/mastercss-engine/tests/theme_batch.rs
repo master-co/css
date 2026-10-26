@@ -119,7 +119,9 @@ fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals()
     assert_eq!(inserted, engine.snapshot().unwrap());
     assert_replay(&inserted, &refresh, &engine.snapshot().unwrap());
     let globals = engine
-        .register_emitted_globals(r#"{"variables":{"v0":1,"v1":2}}"#)
+        .register_emitted_globals(
+            mastercss_engine::parse_emitted_globals(r#"{"variables":{"v0":1,"v1":2}}"#).unwrap(),
+        )
         .unwrap();
     let after_globals = engine.snapshot().unwrap();
     assert_replay(&inserted, &globals, &after_globals);

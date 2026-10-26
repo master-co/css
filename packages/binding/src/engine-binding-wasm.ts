@@ -1,5 +1,6 @@
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSKeyframeDefinition, MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSBindingInfo,
   MasterCSSEngineExecutionState,
@@ -13,20 +14,23 @@ import type {
   MasterCSSEngineBindingSession,
   MasterCSSEngineBindingSessionOptions,
   MasterCSSRenderBindingSession,
+  MasterCSSRenderBindingSessionOptions,
   MasterCSSWasmBindingLoadOptions
 } from './engine-binding'
 
 export interface MasterCSSEngineWasmProviderContract {
   readonly info: MasterCSSBindingInfo
+  /** `source` is a compiled runtime program, or manifest JSON for the `full` artifact. */
   createEngineSession(
-    manifestJSON: string,
-    emittedGlobalsJSON?: string
+    source: Uint8Array | string,
+    emittedGlobals?: MasterCSSEmittedGlobals
   ): Promise<Readonly<{
     ensureClassRules(classNames: string[]): MasterCSSEngineTransition
     deleteClassRules(classNames: string[]): MasterCSSEngineTransition
-    registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSEngineTransition
-    replaceEmittedGlobals(emittedGlobalsJSON: string): MasterCSSEngineTransition
-    refresh(manifestJSON: string, emittedGlobalsJSON?: string): MasterCSSEngineTransition
+    registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+    replaceEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+    refresh(source: Uint8Array | string, emittedGlobals?: MasterCSSEmittedGlobals): MasterCSSEngineTransition
+    keyframeDefinitions(): readonly MasterCSSKeyframeDefinition[]
     executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
     inspect(className: string): MasterCSSEngineInspection
     snapshot(): MasterCSSEngineSnapshot
@@ -45,6 +49,8 @@ export interface MasterCSSEngineWasmProviderContract {
     snapshotForClassNames(classNames: readonly string[]): MasterCSSServerRender
     dispose(): void
   }>>
+  /** Available from the `full` artifact only. */
+  compileRuntimeProgram(manifestJSON: string): Promise<Uint8Array>
 }
 
 export type MasterCSSEngineWasmProviderFactory = (
@@ -80,6 +86,10 @@ function lifecycle(session: { dispose(): void }) {
   return { binding: 'wasm' as const, dispose, [Symbol.dispose]: dispose }
 }
 
+function wasmSource(source: MasterCSSManifest | Uint8Array) {
+  return ArrayBuffer.isView(source) ? source : serializeMasterCSSManifest(source)
+}
+
 export async function createWasmEngineBindingSession(
   options: MasterCSSEngineBindingSessionOptions,
   loadOptions: MasterCSSWasmBindingLoadOptions | undefined,
@@ -87,18 +97,20 @@ export async function createWasmEngineBindingSession(
 ): Promise<MasterCSSEngineBindingSession> {
   const provider = await createWasmProvider('engine', loadOptions, providerFactory)
   const session = await provider.createEngineSession(
-    serializeMasterCSSManifest(options.manifest),
-    options.emittedGlobals ? JSON.stringify(options.emittedGlobals) : undefined
+    wasmSource(options.program ?? options.manifest),
+    options.emittedGlobals
   )
   const bound: MasterCSSEngineBindingSession = {
     ...lifecycle(session),
     ensureClassRules: (classNames) => session.ensureClassRules([...classNames]) as MasterCSSEngineTransition,
     deleteClassRules: (classNames) => session.deleteClassRules([...classNames]) as MasterCSSEngineTransition,
     registerEmittedGlobals: (emittedGlobals) =>
-      session.registerEmittedGlobals(JSON.stringify(emittedGlobals)) as MasterCSSEngineTransition,
+      session.registerEmittedGlobals(emittedGlobals) as MasterCSSEngineTransition,
     replaceEmittedGlobals: (emittedGlobals) =>
-      session.replaceEmittedGlobals(JSON.stringify(emittedGlobals)) as MasterCSSEngineTransition,
-    refresh: (manifest, emittedGlobals) => session.refresh(serializeMasterCSSManifest(manifest), emittedGlobals ? JSON.stringify(emittedGlobals) : undefined) as MasterCSSEngineTransition,
+      session.replaceEmittedGlobals(emittedGlobals) as MasterCSSEngineTransition,
+    refresh: (source, emittedGlobals) =>
+      session.refresh(wasmSource(source), emittedGlobals) as MasterCSSEngineTransition,
+    keyframeDefinitions: () => session.keyframeDefinitions(),
     executionState: (classNames) => session.executionState([...classNames]) as MasterCSSEngineExecutionState,
     inspect: (className) => session.inspect(className) as MasterCSSEngineInspection,
     snapshot: () => session.snapshot() as MasterCSSEngineSnapshot
@@ -107,7 +119,7 @@ export async function createWasmEngineBindingSession(
 }
 
 export async function createWasmRenderBindingSession(
-  options: MasterCSSEngineBindingSessionOptions,
+  options: MasterCSSRenderBindingSessionOptions,
   loadOptions: MasterCSSWasmBindingLoadOptions | undefined,
   providerFactory?: MasterCSSEngineWasmProviderFactory
 ): Promise<MasterCSSRenderBindingSession> {
@@ -129,4 +141,13 @@ export async function createWasmRenderBindingSession(
       session.snapshotForClassNames(classNames) as MasterCSSServerRender
   }
   return Object.freeze(bound)
+}
+
+export async function compileWasmRuntimeProgram(
+  manifest: MasterCSSManifest,
+  loadOptions: MasterCSSWasmBindingLoadOptions | undefined,
+  providerFactory?: MasterCSSEngineWasmProviderFactory
+): Promise<Uint8Array> {
+  const provider = await createWasmProvider('engine', loadOptions, providerFactory)
+  return await provider.compileRuntimeProgram(serializeMasterCSSManifest(manifest))
 }
