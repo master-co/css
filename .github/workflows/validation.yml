@@ -69,9 +69,13 @@ jobs:
           fi
 
           if [ "$range_valid" = true ] && [ "$full" != true ]; then
+            # `--affected` maps changed files to packages by location, so Rust
+            # sources would select no package although the bindings and every
+            # dependent test the artifacts built from them. Turbo's cache still
+            # replays tasks that never read those artifacts.
             while IFS= read -r file; do
               case "$file" in
-                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*)
+                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*|crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml)
                   full=true
                   break
                   ;;
