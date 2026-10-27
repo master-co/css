@@ -1,0 +1,36 @@
+{
+  "name": "@master/css-engine-js",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^24"
+  },
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "test": "pnpm run differential",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "differential": "node --import tsx scripts/differential.mts",
+    "check:size": "node scripts/check-size.mjs",
+    "bench:baseline": "node scripts/bench-baseline.mjs",
+    "verify:program": "node --import tsx scripts/verify-program.mts",
+    "generate:native-properties": "node scripts/generate-native-properties.mjs"
+  },
+  "license": "MIT",
+  "description": "Internal JS engine that executes compiled Master CSS runtime programs in browsers.",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@master/css-binding-wasm-compiler": "workspace:*",
+    "@master/css-binding-wasm-engine": "workspace:*"
+  }
+}

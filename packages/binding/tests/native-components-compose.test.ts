@@ -1,0 +1,20 @@
+import { expect, test } from 'vitest'
+import { createCompilerBindingSession } from '../src/compiler-binding'
+
+test('native and Wasm retain ordered native output and resource references', async () => {
+  using native = await createCompilerBindingSession({ binding: 'native' })
+  using wasm = await createCompilerBindingSession({ binding: 'wasm' })
+  const entry = '/entry.css'
+  const definitions = '/utilities.css'
+  const files = {
+    [entry]: "@import \"./utilities.css\";@layer components{.button{@apply --always {color:var(--color-accent);animation:1s spin;display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;color:red;color:blue;}}}",
+    [definitions]: `@mixin --always { @media all { @contents; } } @utility always { @media all { @contents; } }@theme {--color-accent:red; }
+@keyframes spin{to{opacity:1}}
+@mixin --paint-red {color:var(--color-accent);animation:spin 1s} @utility paint-red {color:var(--color-accent);animation:spin 1s}@mixin --paint-blue {color:var(--color-accent);animation:spin 1s} @utility paint-blue {color:var(--color-accent);animation:spin 1s}@mixin --paint-small {font-size:small} @utility paint-small {font-size:small}@mixin --paint-large {font-size:large} @utility paint-large {font-size:large}`
+  }
+  const request = { graph: { entry, files, edges: [{ from: entry, specifier: './utilities.css', resolved: definitions }] }, urls: { [entry]: entry, [definitions]: definitions } }
+  const result = native.compileCSSStylesheetGraph(request)
+  expect(wasm.compileCSSStylesheetGraph(request)).toEqual(result)
+  const css = result.stylesheets.find(sheet => sheet.id === entry)!.css
+  expect(css).toContain('display:block;display:made-up-value;padding-left:20px;padding:10px;padding-left:30px;color:red;color:blue')
+})

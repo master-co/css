@@ -1,54 +1,89 @@
-import type CSSScanner from '@master/css-scanner'
-import type { MasterCSSEmittedGlobals } from '@master/css'
-import type { StyleCSSSources } from '@master/css-stylesheet'
+import type { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
-import EmittedGlobalsVirtualModulePlugin from './plugins/emitted-globals-virtual-module'
+import EmittedGlobalsVirtualModulePlugin, { type EmittedGlobalsPluginAPI } from './plugins/emitted-globals-virtual-module'
 import ContextPlugin from './plugins/context'
 import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
-import LocalComposePlugin from './plugins/local-compose'
+import LocalStylesPlugin from './plugins/local-styles'
+import StylesheetRecoveryPlugin from './plugins/stylesheet-recovery'
+import BuildStylesheetRecoveryPlugin from './plugins/build-stylesheet-recovery'
+import SassSourcePlugin from './plugins/sass-source'
+import InlineStylesheetPlugin from './plugins/inline-stylesheet'
 import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
-import defaultPluginOptions, { type PluginOptions } from './options'
+import RuntimeBootstrapPlugin from './plugins/runtime-bootstrap'
+import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
+import DevStylesheetPlugin from './plugins/dev-stylesheet'
+import { scopePlugins } from './utils/scoped-plugins'
+import {
+  resolveMasterCSSVitePluginOptions,
+  type MasterCSSVitePluginOptions,
+  type ResolvedMasterCSSVitePluginOptions
+} from './options'
 
-export interface PluginContext {
+export interface MasterCSSVitePluginContext {
   config?: ResolvedConfig
-  scanner?: CSSScanner
+  scanner?: MasterCSSScanner
   virtualCSSImporters?: Set<string>
   virtualCSSPlaceholderEmitted?: boolean
-  styleCSSSources?: StyleCSSSources
+  stylesheets?: MasterCSSStylesheetCollection
+  pruneNativeCSS?: boolean
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
+  onEmittedGlobalsChange?: () => void
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
+  defaultProgramAssetReferenceId?: string
+  defaultProgramAssetSource?: Uint8Array
 }
 
-export default function masterCSS(options?: PluginOptions): Plugin[] {
-  options = { ...defaultPluginOptions, ...options }
+export function createMasterCSSVitePlugin(
+  specifiedOptions: MasterCSSVitePluginOptions = {}
+): Plugin[] {
+  const options = resolveMasterCSSVitePluginOptions(specifiedOptions)
+  if (!options.enabled) return []
+  // Adapters reach every environment's emitted globals through one API, even
+  // when the environments of a build resolve separate configurations.
+  const emittedGlobalsAPI: EmittedGlobalsPluginAPI = {}
+  return scopePlugins(() => createPlugins(options, emittedGlobalsAPI))
+}
+
+function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGlobalsAPI: EmittedGlobalsPluginAPI): Plugin[] {
+  const runtimeBootstrap = RuntimeBootstrapPlugin(options.mode === 'progressive')
   const context = {
+    pruneNativeCSS: options.pruneNativeCSS,
     includeGeneratedCSS: options.mode === 'static'
-  } as PluginContext
+  } as MasterCSSVitePluginContext
   const plugins: Plugin[] = [
+    runtimeBootstrap,
     ContextPlugin(options, context),
-    ManifestVirtualModulePlugin(options, context),
-    EmittedGlobalsVirtualModulePlugin(context),
+    ManifestVirtualModulePlugin(context),
+    EmittedGlobalsVirtualModulePlugin(context, emittedGlobalsAPI),
     ManifestLoaderPlugin(context),
     ScannerPlugin(options, context),
     UsageGraphPlugin(options, context),
-    LocalComposePlugin(options, context),
+    StylesheetRecoveryPlugin(context),
+    BuildStylesheetRecoveryPlugin(context),
+    SassSourcePlugin(context),
+    LocalStylesPlugin(options, context),
     StyleEntryPlugin(options, context),
     StyleEntryHMRPlugin(options, context),
-    StyleEntryBuildPlugin(options, context)
+    InlineStylesheetPlugin(context),
+    DevStylesheetPlugin(context),
+    StyleEntryBuildPlugin(options, context),
+    RuntimeStylesheetsPlugin(options)
   ]
   switch (options.mode) {
     case 'runtime':
       if (options.injectRuntime) {
         plugins.push(...InjectRuntimePlugins(options))
         plugins.push(RuntimePreloadPlugin(context))
-        plugins.push(ManifestPreloadPlugin(context))
+        plugins.push(ProgramPreloadPlugin(context))
       }
       if (options.avoidFOUC) {
         plugins.push(AvoidFOUCPlugin(options, context))
@@ -70,16 +105,21 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
   return plugins
 }
 
+export default createMasterCSSVitePlugin
+
 type LazyPluginHook =
   | 'configResolved'
   | 'buildStart'
+  | 'buildEnd'
+  | 'closeBundle'
+  | 'closeWatcher'
   | 'handleHotUpdate'
   | 'configureServer'
   | 'transform'
   | 'generateBundle'
   | 'transformIndexHtml'
   | {
-    name: 'transformIndexHtml'
+    name: 'transformIndexHtml' | 'generateBundle'
     order: 'pre' | 'post'
   }
 
@@ -87,7 +127,7 @@ type HookObject = {
   handler?: (...args: unknown[]) => unknown
 }
 
-function InjectRuntimePlugins(options: PluginOptions): Plugin[] {
+function InjectRuntimePlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
   return [
     createLazyPlugin(
       {
@@ -109,18 +149,18 @@ function InjectRuntimePlugins(options: PluginOptions): Plugin[] {
   ]
 }
 
-function ManifestPreloadPlugin(context: PluginContext): Plugin {
+function ProgramPreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
-      name: 'master-css:manifest-preload',
+      name: 'master-css:program-preload',
       apply: 'build'
     },
-    async () => (await import('./plugins/manifest-preload')).default(context),
+    async () => (await import('./plugins/program-preload')).default(context),
     [{ name: 'transformIndexHtml', order: 'post' }]
   )
 }
 
-function RuntimePreloadPlugin(context: PluginContext): Plugin {
+function RuntimePreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:runtime-preload'
@@ -130,7 +170,7 @@ function RuntimePreloadPlugin(context: PluginContext): Plugin {
   )
 }
 
-function AvoidFOUCPlugin(options: PluginOptions, context: PluginContext): Plugin {
+function AvoidFOUCPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:avoid-fouc',
@@ -141,7 +181,7 @@ function AvoidFOUCPlugin(options: PluginOptions, context: PluginContext): Plugin
   )
 }
 
-function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
+function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:pre-render',
@@ -151,11 +191,14 @@ function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin
     [
       'configResolved',
       'buildStart',
+      'buildEnd',
+      'closeBundle',
+      'closeWatcher',
       'handleHotUpdate',
       'configureServer',
       'transformIndexHtml',
       'transform',
-      'generateBundle'
+      { name: 'generateBundle', order: 'post' }
     ]
   )
 }

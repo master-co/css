@@ -2,6 +2,8 @@
 
 .parcel-cache
 .pnpm-store
+# Retired bug-hunt audit records; kept locally, history preserved in git.
+/.ai/audits/
 .wrangler/
 /internal
 .env.local
@@ -10,23 +12,31 @@
 /dist
 /tmp
 /out-tsc
+/target
+
+# Rust binding artifacts copied into npm packages by xtask
+/packages/binding/artifacts
+/packages/binding-wasm-*/artifacts
 
 # monorepo
 **/*.vscode-test
 **/*.output
-**/*dist
-**/*dist-test
-**/*node_modules
-**/*.turbo
+**/dist/
+**/dist-test/
+**/node_modules/
+**/.turbo/
 **/.tsbuild/
-**/*out
-**/*tmp
+**/out/
+**/tmp/
+**/.tmp/
 **/*test.html
 **/*.test.html
 **/*tsconfig.tsbuildinfo
 **/*.virtual
-**/*coverage
+**/coverage/
 **/*.next
+**/*.next-query
+**/*.master
 
 # Only exists if Bazel was run
 /bazel-out
@@ -66,6 +76,10 @@ yarn-error.log
 testem.log
 /typings
 
+# Agent worktrees. Project-level .claude settings stay trackable; only the
+# tool's scratch worktrees are ignored.
+/.claude/worktrees/
+
 # System Files
 .DS_Store
 Thumbs.db
@@ -81,6 +95,7 @@ packages/nuxt/playground/.output
 **/blob-report/
 **/playwright/.cache/
 **/.svelte-kit
+**/.astro
 
 # generated llms.txt indexes (regenerated at build time)
 site/public/llms.txt

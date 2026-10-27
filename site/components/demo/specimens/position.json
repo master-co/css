@@ -1,0 +1,29 @@
+[
+  {
+    "page": "position",
+    "id": "positioning-elements-as-sticky",
+    "title": "Positioning elements as sticky",
+    "html": [
+      "<div class=\"overflow:auto height:15rem\" tabindex=\"0\" aria-label=\"Scrollable asset list\">\n  <div class=\"height:4rem\">Scroll down</div>\n  \n  <div class=\"position:sticky top:0 z-index:1\">Pinned collection</div>\n  <div class=\"height:35rem\">Scrollable collection</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow:auto",
+      "height:15rem",
+      "height:4rem",
+      "position:sticky",
+      "top:0",
+      "z-index:1",
+      "height:35rem"
+    ],
+    "classLists": [
+      "overflow:auto height:15rem",
+      "height:4rem",
+      "position:sticky top:0 z-index:1",
+      "height:35rem"
+    ],
+    "highlighted": [
+      "position:sticky"
+    ]
+  }
+]

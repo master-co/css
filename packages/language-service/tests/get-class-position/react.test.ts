@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { CSSLanguageService } from '../../src'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc from '../../src/utils/create-doc'
 import { expectClassPosition } from './test'
 
@@ -60,12 +60,12 @@ test.concurrent('template literal and newlines', () => {
 })
 
 test.concurrent('template literal expressions use quasi ranges', () => {
-  const doc = createDoc('tsx', 'export default () => <div className={`class-a ${active ? "class-b" : "hidden"} class-c`}></div>')
+  const doc = createDoc('tsx', 'export default () => <div className={`class-a ${active ? "class-b" : "display:none"} class-c`}></div>')
   const languageService = new CSSLanguageService()
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
     'class-a',
     'class-b',
-    'hidden',
+    "display:none",
     'class-c'
   ])
 })
@@ -79,9 +79,10 @@ test.concurrent('parse failure falls back to regex positions', () => {
 })
 
 test.concurrent('regex fallback ignores class attributes inside JS comments', () => {
-  const doc = createDoc('tsx', 'const broken = <\n// <div className="fg:red"></div>\n<div className="fg:blue"></div>')
+  const doc = createDoc('tsx', 'const broken = <\n// <div className="fg-red"></div>\n<div className="fg-blue"></div>')
   const languageService = new CSSLanguageService()
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
-    'fg:blue'
+    'fg-blue'
   ])
 })
+

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "space",
+    "css": ".x{color:var( --color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "tab",
+    "css": ".x{color:var(\t--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "newline",
+    "css": ".x{color:var(\n--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "crlf",
+    "css": ".x{color:var(\r\n--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "formfeed",
+    "css": ".x{color:var(\f--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "comment",
+    "css": ".x{color:var(/**/--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "mixed",
+    "css": ".x{color:var( \t/**/\n--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "uppercase_function",
+    "css": ".x{color:VAR(--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "escaped_function",
+    "css": ".x{color:v\\61 r(--color-brand)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "escaped_name",
+    "css": ".x{color:var(--color-br\\61 nd)}",
+    "variables": [
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "unicode_name",
+    "css": ".x{color:var(--color-品牌)}",
+    "variables": [
+      "color-品牌"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "unicode_suffix",
+    "css": ".x{color:var(--color-brand中)}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "prefixed_function",
+    "css": ".x{color:xvar(--color-brand)}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "quoted_function",
+    "css": ".x{content:\"var(--color-brand)\"}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "comment_function",
+    "css": "/* var(--color-brand) */.x{display:block}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "url_string",
+    "css": ".x{background:url(\"var(--color-brand)\")}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "url_unquoted",
+    "css": ".x{background:url(var(--color-brand))}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none",
+    "compilerError": "CSS_PARSE_ERROR"
+  },
+  {
+    "id": "split_name",
+    "css": ".x{color:var(--color-brand/**/suffix)}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none",
+    "compilerError": "CSS_PARSE_ERROR"
+  },
+  {
+    "id": "extra_argument",
+    "css": ".x{color:var(--color-brand junk)}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none",
+    "compilerError": "CSS_PARSE_ERROR"
+  },
+  {
+    "id": "vertical_tab",
+    "css": ".x{color:var(\u000b--color-brand)}",
+    "variables": [],
+    "color": "rgb(0, 0, 0)",
+    "animation": "none",
+    "compilerError": "CSS_PARSE_ERROR"
+  },
+  {
+    "id": "nested_fallback",
+    "css": ".x{color:var(--missing,var(/**/--color-accent))}",
+    "variables": [
+      "color-accent"
+    ],
+    "color": "rgb(0, 0, 255)",
+    "animation": "none"
+  },
+  {
+    "id": "fallback_reference",
+    "css": ".x{color:var(--color-brand,var(\t--color-accent))}",
+    "variables": [
+      "color-accent",
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "animation": "none"
+  },
+  {
+    "id": "animation_tab",
+    "css": ".x{animation:var(\t--animation-entrance)}",
+    "variables": [
+      "animation-entrance"
+    ],
+    "color": "rgb(0, 0, 0)",
+    "animation": "fade"
+  },
+  {
+    "id": "animation_comment",
+    "css": ".x{animation:var(/**/--animation-entrance)}",
+    "variables": [
+      "animation-entrance"
+    ],
+    "color": "rgb(0, 0, 0)",
+    "animation": "fade"
+  },
+  {
+    "id": "case_sensitive_name",
+    "css": ".x{color:var(--color-BRAND,green)}",
+    "variables": [],
+    "color": "rgb(0, 128, 0)",
+    "animation": "none"
+  }
+]

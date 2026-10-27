@@ -1,15 +1,6 @@
 import { defineNuxtPlugin } from '#imports'
-import CSSRuntime from '@master/css-runtime'
 // @ts-expect-error virtual module
-import manifest from 'virtual:master-css-manifest'
-// @ts-expect-error virtual module
-import emittedGlobals from 'virtual:master-css-emitted-globals'
+import program from 'virtual:master-css-program'
+import { startMasterCSSRuntime } from './start-css-runtime'
 
-export default defineNuxtPlugin(() => {
-  const cssRuntime = CSSRuntime.create({ manifest, emittedGlobals })
-  if (cssRuntime.needsHydrationManifest()) {
-    void cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
-  } else {
-    cssRuntime.observe()
-  }
-})
+export default defineNuxtPlugin(() => startMasterCSSRuntime(program))

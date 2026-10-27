@@ -1,0 +1,58 @@
+import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Next.js project
+      If you don't have a Next.js project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx create-next-app@latest my-app --ts --app --no-tailwind
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer with `--mode progressive` from the project root. Pre-rendered pages receive first-response CSS and a runtime handoff for later class names.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework nextjs --mode progressive --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run the development server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first page using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:3000" />
+</StepSection>
+
+Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages. The runtime then adopts those rules and can generate CSS for class names added later in the browser; it downloads its engine only when such a class appears. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output.
+
+```tsx name=app/page.tsx
+export default function Home() {
+  return (
+    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+  )
+}
+```
+
+Local CSS and CSS Modules automatically receive project definitions in both Turbopack and Webpack. Use native declarations with project tokens directly, and native selectors for shared behavior. Their required theme resources are emitted globally, while local selectors retain the framework’s normal scope. Use `@reference` for additional definition files outside the project context.

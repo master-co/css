@@ -1,0 +1,93 @@
+import Class2CSS from '~/site/components/Class2CSS'
+import { FoundationContainerGrid } from '~/site/components/demo/FoundationExamples'
+
+## Overview [sr-only]
+A reusable card should adapt to the space its parent gives it. Create an ancestor query container, then change the card's layout when its content has room for a second column. Use [Breakpoints](/guide/breakpoints) for viewport-wide decisions.
+
+Container queries use explicit native thresholds. Changing `--container-md` does not change `(width>=28rem)`; container tokens only supply sizing declarations. See [Sizing](/guide/sizing#use-container-tokens) for width caps and [conditions](/reference/rules/conditions#containersize) for the complete query contract.
+
+<a id="define-container-variables"></a>
+<a id="namespace-for-container-values"></a>
+<a id="use-container-values-in-sizing-utilities"></a>
+For size names, values and consumers, use the [container token reference](/reference/tokens/container).
+
+## Create a query container
+Add `container-type:inline-size` to an ancestor whose inline size comes from the surrounding layout. Then apply full `@container((width>=28rem))` queries to its descendants. A size query cannot select the element itself as its query container.
+
+```html
+<section class="container-type:inline-size">
+  <!-- @MARK grid-cols(2)@container((width>=28rem)) -->
+  <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
+    ...
+  </article>
+</section>
+```
+
+<Class2CSS>
+  {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
+</Class2CSS>
+
+<FoundationContainerGrid />
+
+Container queries make components portable. The same card can be stacked in a sidebar and split into columns in a wide content region without knowing the viewport width.
+
+---
+
+## Choose a component threshold \{#container-query-scale\}
+Resize the component in both a sidebar and a wide content region. Add a second column only when the image and text each have enough space. The `28rem` example is a local design decision, not a lookup of `--container-md`.
+
+---
+
+## Query container ranges
+Use native CSS range and logical operators when a component needs a bounded range.
+
+```html
+<!-- @MARK display:none@container((24rem<=width<=28rem)) -->
+<div class="display:none@container((24rem<=width<=28rem))">...</div>
+```
+
+<Class2CSS>
+  {['display:none@container((24rem<=width<=28rem))']}
+</Class2CSS>
+
+For repeated conditions, define `@mixin --card-wide { @container (width>=28rem) { @contents; } }` and use `@apply(--card-wide)`. Container names are explicit inside the full query; an unknown `@name` never becomes a container query.
+
+---
+
+## Use named containers
+Use named containers when a descendant should query a specific ancestor instead of the nearest container.
+
+```html
+<!-- @MARK container-name:card container-type:inline-size -->
+<section class="container-name:card container-type:inline-size">
+  <!-- @MARK @container(card|(width>=16rem)) -->
+  <article class="grid-cols(2)@container(card|(width>=16rem))">...</article>
+</section>
+```
+
+<Class2CSS>
+  {['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
+</Class2CSS>
+
+Named containers are useful in nested layouts, but do not add names everywhere. The default nearest-container behavior is simpler and easier to move between compositions.
+
+---
+
+## Choose caps or queries
+Use [Sizing](/guide/sizing#use-container-tokens) to limit a wrapper's width. Use a query to change its descendants when that wrapper grows or shrinks.
+
+(x) A reusable card depends on the viewport, so it changes at the wrong time inside narrow parents.
+
+```html
+<article class="grid-cols(2)@md">...</article>
+```
+
+(o) The card depends on the space it receives.
+
+```html
+<section class="container-type:inline-size">
+  <article class="grid-cols(2)@container((width>=28rem))">...</article>
+</section>
+```
+
+(i) If a layout rule describes the whole page, use [breakpoints](/guide/breakpoints). If it describes a reusable component use container queries.

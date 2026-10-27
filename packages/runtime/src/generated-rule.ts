@@ -1,13 +1,5 @@
-import type RuntimeUtilityLayer from './utility-layer'
-import type { MasterCSSGeneratedRuleIR } from '@master/css-schema/hydration-manifest'
-
-function collectVariableNames(text: string) {
-  const variableNames = new Set<string>()
-  for (const match of text.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
-    variableNames.add(match[1])
-  }
-  return variableNames
-}
+import type RuntimeLayer from './layer'
+import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 
 export class HydratedGeneratedRuleNode {
   native?: CSSRule
@@ -19,24 +11,26 @@ export class HydratedGeneratedRuleNode {
 
 export default class HydratedGeneratedRule {
   native?: CSSRule
+  nativeNodeCount?: number
   readonly name: string
   readonly key: string
-  readonly layerName: MasterCSSGeneratedRuleIR['layer']
-  readonly type: MasterCSSGeneratedRuleIR['type']
-  readonly sortTier: MasterCSSGeneratedRuleIR['sortTier']
-  readonly priority: MasterCSSGeneratedRuleIR['priority']
+  readonly layerName: MasterCSSHydrationRule['layer']
+  readonly type: MasterCSSHydrationRule['type']
+  readonly sortTier: MasterCSSHydrationRule['sortTier']
+  readonly priority: MasterCSSHydrationRule['priority']
   readonly text: string
   readonly valid = true
   readonly fixedClass?: string
+  readonly nodeCount: number
   readonly nodes?: HydratedGeneratedRuleNode[]
   readonly variableNames?: Set<string>
-  readonly animationNames?: Set<string>
   readonly selectorText?: string
 
   constructor(
-    public readonly ir: MasterCSSGeneratedRuleIR,
-    public readonly layer: RuntimeUtilityLayer
+    public readonly ir: MasterCSSHydrationRule,
+    public readonly layer: RuntimeLayer
   ) {
+    this.nodeCount = ir.nodes?.length || 1
     this.name = ir.className
     this.key = ir.key
     this.layerName = ir.layer
@@ -48,16 +42,6 @@ export default class HydratedGeneratedRule {
     if (ir.nodes?.length) {
       this.nodes = ir.nodes.map((node) => new HydratedGeneratedRuleNode(node.text))
     }
-    const variableNames = collectVariableNames(ir.text)
-    ir.nodes?.forEach((node) => {
-      collectVariableNames(node.text).forEach((variableName) => variableNames.add(variableName))
-    })
-    ir.variableNames?.forEach((variableName) => variableNames.add(variableName))
-    if (variableNames.size) {
-      this.variableNames = variableNames
-    }
-    if (ir.animationNames?.length) {
-      this.animationNames = new Set(ir.animationNames)
-    }
+    if (ir.variableNames?.length) this.variableNames = new Set(ir.variableNames)
   }
 }

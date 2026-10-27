@@ -1,41 +1,40 @@
-import CSSRuntime from './core'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { MasterCSSRuntime } from './core'
 
-function resolveDefaultManifestURL(scriptURL: string) {
-  const defaultManifestURL = new URL(scriptURL)
-  defaultManifestURL.search = ''
-  defaultManifestURL.hash = ''
-  if (defaultManifestURL.pathname.endsWith('/')) {
-    defaultManifestURL.pathname += 'default-manifest.json'
-  } else if (defaultManifestURL.pathname.endsWith('.js')) {
-    defaultManifestURL.pathname = defaultManifestURL.pathname.replace(/\/[^/]*$/, '/default-manifest.json')
+function resolveDefaultProgramURL(scriptURL: string) {
+  const defaultProgramURL = new URL(scriptURL)
+  defaultProgramURL.search = ''
+  defaultProgramURL.hash = ''
+  if (defaultProgramURL.pathname.endsWith('/')) {
+    defaultProgramURL.pathname += 'default-program.bin'
+  } else if (defaultProgramURL.pathname.endsWith('.js')) {
+    defaultProgramURL.pathname = defaultProgramURL.pathname.replace(/\/[^/]*$/, '/default-program.bin')
   } else {
-    defaultManifestURL.pathname += '/default-manifest.json'
+    defaultProgramURL.pathname += '/default-program.bin'
   }
-  return defaultManifestURL
+  return defaultProgramURL
 }
 
-async function loadDefaultManifest(scriptURL: string): Promise<MasterCSSManifest> {
-  const defaultManifestURL = resolveDefaultManifestURL(scriptURL)
+async function loadDefaultProgram(defaultProgramURL: URL): Promise<ArrayBuffer> {
   try {
-    const defaultManifestModule = await import(defaultManifestURL.href, { with: { type: 'json' } }) as { default: MasterCSSManifest }
-    return defaultManifestModule.default
+    const response = await fetch(defaultProgramURL)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return await response.arrayBuffer()
   } catch (error) {
-    throw new Error(`Cannot load Master CSS default manifest from ${defaultManifestURL.href}.`, { cause: error })
+    throw new Error(`Cannot load the Master CSS default program from ${defaultProgramURL.href}.`, { cause: error })
   }
 }
 
 const currentScript = document.currentScript as HTMLScriptElement | null
 
 if (currentScript?.src) {
-  void loadDefaultManifest(currentScript.src)
-    .then((manifest) => {
-      const cssRuntime = CSSRuntime.create({ manifest })
-      if (cssRuntime.needsHydrationManifest()) {
-        return cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
-      }
-      cssRuntime.observe()
-    })
+  const defaultProgramURL = resolveDefaultProgramURL(currentScript.src)
+  // The runtime fetches the program when its engine starts, which progressive
+  // pages defer.
+  void MasterCSSRuntime.start({
+    program: () => loadDefaultProgram(defaultProgramURL),
+    onDiagnostic: diagnostic => console.error(diagnostic)
+  })
+    .then((runtime) => runtime.observe())
     .catch((error) => console.error(error))
 } else {
   console.error('Cannot resolve the Master CSS runtime script URL.')

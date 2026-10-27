@@ -1,17 +1,26 @@
-import CSSScanner from '@master/css-scanner'
+import { ensureScanner, disposeScanner, trackScannerEnvironments, releaseScannerEnvironment } from '../utils/scanner-context'
 import type { Plugin } from 'vite'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function ScannerPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function ScannerPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:scanner',
     enforce: 'pre',
     async configResolved(config) {
-      const scanner = new CSSScanner(options.scanner, config.root)
-      context.scanner = scanner
-      await scanner.init()
-      scanner.options.verbose = 0
+      context.config = config
+      await ensureScanner(options, context)
     },
+    async buildStart() {
+      await ensureScanner(options, context)
+    },
+    configureServer(server) {
+      const config = server.config
+      trackScannerEnvironments(context, config, () => server.config === config ? Object.values(server.environments) : [])
+    },
+    async closeBundle() {
+      const config = this.environment?.getTopLevelConfig() ?? context.config
+      if (releaseScannerEnvironment(context, config, this.environment)) await disposeScanner(context, config)
+    }
   }
 }

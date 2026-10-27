@@ -1,12 +1,11 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import {
-  createUnapprovedRawValueClassesReport,
-  type RawValuePolicyOptions
-} from '@master/css-lint'
+import type { RawValuePolicyOptions } from '@master/css-tooling/lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'no-unapproved-raw-values',
@@ -28,6 +27,11 @@ export default createRule({
           items: { type: 'string' },
           uniqueItems: true
         },
+        requireProperties: {
+          type: 'array',
+          items: { type: 'string' },
+          uniqueItems: true
+        },
         allowedPatterns: {
           type: 'array',
           items: { type: 'string' },
@@ -43,27 +47,29 @@ export default createRule({
     allowedPatterns: []
   }],
   create(context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     const options = (context.options[0] || {}) as RawValuePolicyOptions
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
-        css,
+        tooling,
         ruleId: 'no-unapproved-raw-values',
         ruleOptions: options
-      })
+      }), release)
     }
 
-    return defineVisitors({ context, settings }, (node, resolved) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
+      const diagnostics = createMasterCSSLintDiagnostics(
+        tooling.analyzeLintClassList(resolved.analysisText ?? resolved.raw, resolved.classValues, {
+          rawValuePolicy: options
+        }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
+      )
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        createUnapprovedRawValueClassesReport(resolved.raw, css, {
-          ...options,
-          unescape: resolved.unescape
-        }).diagnostics
+        diagnostics
       )
-    })
+    }), release)
   }
 })

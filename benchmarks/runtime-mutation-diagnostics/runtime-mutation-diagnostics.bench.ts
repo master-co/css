@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkRoot, runCommand } from '../shared/runner'
 
 const benchOptions = {
@@ -38,7 +38,9 @@ async function writeRuntimeMutationDiagnosticsReportOnce() {
 }
 
 describe('runtime mutation diagnostics', () => {
-  bench('write runtime mutation diagnostics report', async () => {
-    await writeRuntimeMutationDiagnosticsReportOnce()
-  }, benchOptions)
+  test('write runtime mutation diagnostics report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write runtime mutation diagnostics report', async () => {
+      await writeRuntimeMutationDiagnosticsReportOnce()
+    }).run(benchOptions)
+  })
 })

@@ -1,0 +1,33 @@
+export type MasterCSSSourceKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro' | 'markdown' | 'mdx'
+
+/** Decoded HTML attribute text and indivisible UTF-16 source spans. */
+export interface MasterCSSDecodedHTMLAttribute {
+  readonly value: string
+  readonly spans: readonly {
+    readonly range: { readonly start: number, readonly end: number }
+    readonly sourceRange: { readonly start: number, readonly end: number }
+  }[]
+}
+
+export interface MasterCSSSourceExtractionInput {
+  readonly source: string
+  readonly content: string
+  readonly owner?: string
+  readonly kind?: MasterCSSSourceKind
+}
+
+export interface MasterCSSSourceExtractionRequest {
+  readonly files: readonly MasterCSSSourceExtractionInput[]
+}
+
+export interface MasterCSSExtractedSource {
+  readonly source: string
+  readonly candidates: readonly string[]
+  readonly occurrences: readonly import('@master/css-binding/tooling').MasterCSSSourceOccurrence[]
+  readonly diagnostics: readonly import('@master/css-binding/tooling').MasterCSSDiagnostic[]
+}
+
+export interface MasterCSSSourceExtraction {
+  readonly version: 2
+  readonly files: readonly MasterCSSExtractedSource[]
+}

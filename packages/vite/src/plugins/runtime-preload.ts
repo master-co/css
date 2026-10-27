@@ -3,7 +3,8 @@ import {
   DEV_RUNTIME_ENTRY_ID,
   RUNTIME_ENTRY_ID
 } from '../common'
-import type { PluginContext } from '../core'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
+import type { MasterCSSVitePluginContext } from '../core'
 import { hasModulePreloadLink, toAssetHref } from '../utils/html'
 
 interface OutputChunkLike {
@@ -15,9 +16,7 @@ interface OutputChunkLike {
 function isRuntimeModuleId(id: string) {
   const normalized = id.replace(/\\/g, '/')
   return normalized === RUNTIME_ENTRY_ID
-    || normalized.endsWith('/@master/css.vite/dist/runtime.js')
-    || normalized.endsWith('/packages/vite/dist/runtime.js')
-    || normalized.endsWith('/packages/vite/src/runtime.ts')
+    || normalized === RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
 }
 
 function findRuntimeChunkFileName(bundle: Record<string, OutputChunkLike>) {
@@ -32,32 +31,33 @@ function findRuntimeChunkFileName(bundle: Record<string, OutputChunkLike>) {
   }
 }
 
-export default function RuntimePreloadPlugin(context: PluginContext): Plugin {
+export default function RuntimePreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:runtime-preload',
     transformIndexHtml: {
       order: 'post',
       handler(html, htmlContext) {
-        const fileName = htmlContext.bundle
-          ? findRuntimeChunkFileName(htmlContext.bundle as Record<string, OutputChunkLike>)
+        const bundle = htmlContext.bundle as Record<string, OutputChunkLike> | undefined
+        const fileName = bundle
+          ? findRuntimeChunkFileName(bundle)
           : undefined
         const href = fileName
           ? toAssetHref(fileName, context.config?.base, htmlContext.path)
-          : htmlContext.server ? DEV_RUNTIME_ENTRY_ID : undefined
+          : htmlContext.server
+            ? toAssetHref(DEV_RUNTIME_ENTRY_ID, htmlContext.server.config?.base ?? context.config?.base, htmlContext.path)
+            : undefined
         if (!href || hasModulePreloadLink(html, href)) return
         return {
           html,
-          tags: [
-            {
-              tag: 'link',
-              attrs: {
-                rel: 'modulepreload',
-                crossorigin: '',
-                href
-              },
-              injectTo: 'head-prepend'
-            }
-          ]
+          tags: [{
+            tag: 'link',
+            attrs: {
+              rel: 'modulepreload',
+              crossorigin: '',
+              href
+            },
+            injectTo: 'head-prepend' as const
+          }]
         }
       }
     }

@@ -18,82 +18,36 @@ export const TARGETS = [
   'win32-arm64',
   'linux-x64',
   'linux-arm64',
-  'linux-armhf',
   'alpine-x64',
   'alpine-arm64',
   'darwin-x64',
   'darwin-arm64'
 ]
 
-const TARGET_NATIVE_PACKAGES = {
-  'win32-x64': {
-    lightningcss: 'lightningcss-win32-x64-msvc',
-    oxcParser: '@oxc-parser/binding-win32-x64-msvc'
-  },
-  'win32-arm64': {
-    lightningcss: 'lightningcss-win32-arm64-msvc',
-    oxcParser: '@oxc-parser/binding-win32-arm64-msvc'
-  },
-  'linux-x64': {
-    lightningcss: 'lightningcss-linux-x64-gnu',
-    oxcParser: '@oxc-parser/binding-linux-x64-gnu'
-  },
-  'linux-arm64': {
-    lightningcss: 'lightningcss-linux-arm64-gnu',
-    oxcParser: '@oxc-parser/binding-linux-arm64-gnu'
-  },
-  'linux-armhf': {
-    lightningcss: 'lightningcss-linux-arm-gnueabihf',
-    oxcParser: '@oxc-parser/binding-linux-arm-gnueabihf'
-  },
-  'alpine-x64': {
-    lightningcss: 'lightningcss-linux-x64-musl',
-    oxcParser: '@oxc-parser/binding-linux-x64-musl'
-  },
-  'alpine-arm64': {
-    lightningcss: 'lightningcss-linux-arm64-musl',
-    oxcParser: '@oxc-parser/binding-linux-arm64-musl'
-  },
-  'darwin-x64': {
-    lightningcss: 'lightningcss-darwin-x64',
-    oxcParser: '@oxc-parser/binding-darwin-x64'
-  },
-  'darwin-arm64': {
-    lightningcss: 'lightningcss-darwin-arm64',
-    oxcParser: '@oxc-parser/binding-darwin-arm64'
-  }
+const TARGET_BINDING_PACKAGES = {
+  'win32-x64': '@master/css-binding-win32-x64-msvc',
+  'win32-arm64': '@master/css-binding-win32-arm64-msvc',
+  'linux-x64': '@master/css-binding-linux-x64-gnu',
+  'linux-arm64': '@master/css-binding-linux-arm64-gnu',
+  'alpine-x64': '@master/css-binding-linux-x64-musl',
+  'alpine-arm64': '@master/css-binding-linux-arm64-musl',
+  'darwin-x64': '@master/css-binding-darwin-x64',
+  'darwin-arm64': '@master/css-binding-darwin-arm64'
 }
 
 const STATIC_EXTENSION_PATHS = [
   'dist',
-  'data',
   'LICENSE',
   'README.md',
   'icon.png'
 ]
-const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
-const BASE_RUNTIME_PACKAGES = [
-  'lightningcss',
-  'detect-libc',
-  'oxc-parser',
-  '@oxc-project/types',
-  '@master/css-preset',
-  'mdn-data'
-]
 const RUNTIME_PACKAGE_OWNERS = [
   {
-    owner: '@master/css-language',
-    matches: (packageName) => packageName === 'mdn-data' || packageName === '@master/css-preset'
-  },
-  {
-    owner: 'oxc-parser',
-    matches: (packageName) => packageName === '@oxc-project/types' || packageName.startsWith('@oxc-parser/')
-  },
-  {
-    owner: 'lightningcss',
-    matches: (packageName) => packageName === 'detect-libc' || packageName.startsWith('lightningcss-')
+    owner: '@master/css-binding',
+    matches: (packageName) => packageName.startsWith('@master/css-binding-')
   }
 ]
 const packageResolverCache = new Map()
@@ -123,10 +77,19 @@ function findPackageDir(entry) {
   throw new Error(`Unable to find package.json for ${entry}`)
 }
 
+function findPackageDirInSearchPaths(packageName, resolver) {
+  for (const nodeModulesDir of resolver.resolve.paths(packageName) ?? []) {
+    const candidate = join(nodeModulesDir, toPackagePath(packageName))
+    if (existsSync(join(candidate, 'package.json'))) return candidate
+  }
+}
+
 function resolvePackageDir(packageName, resolver, resolverName = 'master-css-vscode') {
   try {
     return dirname(resolver.resolve(`${packageName}/package.json`))
   } catch (manifestError) {
+    const searchPathPackageDir = findPackageDirInSearchPaths(packageName, resolver)
+    if (searchPathPackageDir) return searchPathPackageDir
     try {
       return findPackageDir(resolver.resolve(packageName))
     } catch (entryError) {
@@ -155,38 +118,27 @@ function getRuntimePackageOwner(packageName) {
 }
 
 function getRuntimePackageResolver(packageName) {
-  if (packageName === 'lightningcss') return packageRequire
-  if (packageName === 'oxc-parser') return packageRequire
   const owner = getRuntimePackageOwner(packageName)
   if (owner) return createPackageResolver(owner)
   return packageRequire
 }
 
-function getTargetNativePackages(target) {
-  const nativePackages = TARGET_NATIVE_PACKAGES[target]
-  if (!nativePackages) {
+function getTargetBindingPackage(target) {
+  const bindingPackage = TARGET_BINDING_PACKAGES[target]
+  if (!bindingPackage) {
     throw new Error(`Unsupported VS Code target "${target}". Expected one of: ${TARGETS.join(', ')}`)
   }
-  return nativePackages
+  return bindingPackage
 }
 
 export function getRuntimePackagesForTarget(target) {
-  const nativePackages = getTargetNativePackages(target)
-  return [
-    ...BASE_RUNTIME_PACKAGES,
-    nativePackages.lightningcss,
-    nativePackages.oxcParser
-  ]
+  return [getTargetBindingPackage(target)]
 }
 
 function isCurrentLinuxMusl() {
   if (process.platform !== 'linux') return false
-  try {
-    const { MUSL, familySync } = createPackageResolver('lightningcss')('detect-libc')
-    return familySync() === MUSL
-  } catch {
-    return false
-  }
+  const report = process.report?.getReport()
+  return !report?.header?.glibcVersionRuntime
 }
 
 export function getCurrentTarget(options = {}) {
@@ -199,7 +151,6 @@ export function getCurrentTarget(options = {}) {
   if (platform === 'linux') {
     if (arch === 'x64') return isMusl ? 'alpine-x64' : 'linux-x64'
     if (arch === 'arm64') return isMusl ? 'alpine-arm64' : 'linux-arm64'
-    if (arch === 'arm') return 'linux-armhf'
   }
 
   throw new Error(`Unsupported current platform ${platform}/${arch}`)
@@ -218,16 +169,32 @@ async function copyPath(source, destination) {
   })
 }
 
-async function copyRuntimePackage(stagingDir, packageName) {
+async function copyDevelopmentNativeArtifacts(destinationDir, packageName, target) {
+  if (target !== getCurrentTarget() || packageName !== getTargetBindingPackage(target)) return
+  const nativePackageDir = resolvePackageDir('@master/css-binding', packageRequire)
+  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
+  for (const file of ['mastercss.node', executableName]) {
+    const destination = join(destinationDir, file)
+    if (existsSync(destination)) continue
+    const source = join(nativePackageDir, 'artifacts', file)
+    if (!existsSync(source)) {
+      throw new Error(`Missing local native artifact ${source}. Run cargo xtask build-native.`)
+    }
+    await cp(source, destination, { force: true })
+  }
+}
+
+async function copyRuntimePackage(stagingDir, packageName, target) {
   const resolver = getRuntimePackageResolver(packageName)
   const sourceDir = resolvePackageDir(packageName, resolver, getRuntimePackageOwner(packageName) ?? 'master-css-vscode')
   const destinationDir = join(stagingDir, 'dist', 'node_modules', toPackagePath(packageName))
   await copyPath(sourceDir, destinationDir)
+  await copyDevelopmentNativeArtifacts(destinationDir, packageName, target)
   return toNodeModulesPath(packageName)
 }
 
 async function copyTextMateGrammar(stagingDir) {
-  const sourcePath = packageRequire.resolve('@master/css-language/syntaxes/master-css.tmLanguage.json')
+  const sourcePath = packageRequire.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
   const destinationPath = join(stagingDir, MASTER_CSS_STAGED_GRAMMAR_PATH)
   await mkdir(dirname(destinationPath), { recursive: true })
   await cp(sourcePath, destinationPath, { force: true })
@@ -235,7 +202,7 @@ async function copyTextMateGrammar(stagingDir) {
 }
 
 export async function createStagedExtension(target = getCurrentTarget(), options = {}) {
-  getTargetNativePackages(target)
+  getTargetBindingPackage(target)
 
   const stagingRoot = options.stagingRoot ?? await mkdtemp(join(tmpdir(), 'master-css-vscode-'))
   const stagingDir = options.stagingDir ?? join(stagingRoot, target)
@@ -252,7 +219,7 @@ export async function createStagedExtension(target = getCurrentTarget(), options
   const runtimeFiles = []
   const textMateGrammarFile = await copyTextMateGrammar(stagingDir)
   for (const runtimePackage of runtimePackages) {
-    await copyRuntimePackage(stagingDir, runtimePackage)
+    await copyRuntimePackage(stagingDir, runtimePackage, target)
     runtimeFiles.push(toPackageFilesPattern(runtimePackage))
   }
 
@@ -266,9 +233,12 @@ export async function createStagedExtension(target = getCurrentTarget(), options
     manifest.publisher = options.publisher
   }
 
+  // npm uses the scoped package identity while VS Code Marketplace keeps its
+  // established unscoped extension identifier.
+  manifest.name = 'master-css-vscode'
+
   manifest.files = [
     'dist',
-    'data',
     'LICENSE',
     'icon.png',
     textMateGrammarFile,

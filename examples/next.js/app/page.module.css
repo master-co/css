@@ -132,7 +132,7 @@
 
 /* Conic Gradient Animation */
 .thirteen::before {
-  animation: 6s rotate linear infinite;
+  animation: 6s logo-rotate linear infinite;
   width: 200%;
   height: 200%;
   background: var(--tile-border);
@@ -268,7 +268,7 @@
   }
 }
 
-@keyframes rotate {
+@keyframes logo-rotate {
   from {
     transform: rotate(360deg);
   }

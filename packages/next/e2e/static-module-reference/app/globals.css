@@ -1,0 +1,12 @@
+@import '@master/css';
+@theme {
+  --color-probe: #123456; --animate-project-pulse: project-pulse 1s linear infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root, :host { --color-probe: #abcdef; }
+  }
+
+
+[data-theme="ocean"] { --color-probe: #082f49; }
+@keyframes project-pulse { from { opacity: .5; } to { opacity: .5; } }

@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -10,7 +10,7 @@ import { createMasterCSSMCPServer } from '../src/server'
 const tempDirs: string[] = []
 
 function createTempDir(prefix: string) {
-  const dir = mkdtempSync(join(tmpdir(), prefix))
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)))
   tempDirs.push(dir)
   return dir
 }
@@ -23,7 +23,8 @@ function createContributorFixture() {
   const root = createTempDir('master-css-mcp-contributor-')
   mkdirSync(join(root, '.ai/context'), { recursive: true })
   mkdirSync(join(root, '.github/prompts'), { recursive: true })
-  mkdirSync(join(root, 'packages/engine'), { recursive: true })
+  mkdirSync(join(root, 'crates/mastercss-engine/src'), { recursive: true })
+  mkdirSync(join(root, 'packages/css'), { recursive: true })
   mkdirSync(join(root, 'packages/runtime'), { recursive: true })
   mkdirSync(join(root, 'packages/mcp'), { recursive: true })
   mkdirSync(join(root, 'packages/create'), { recursive: true })
@@ -32,17 +33,18 @@ function createContributorFixture() {
   writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
   writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
   writeFileSync(join(root, '.ai/context/package-routing.md'), '# Package Routing Pack')
+  writeFileSync(join(root, '.ai/context/rust-routing.md'), '# Rust Routing Pack')
   writeFileSync(join(root, '.ai/context/docs.md'), '# Docs Pack')
   writeFileSync(join(root, '.github/prompts/fix-bug.prompt.md'), '# Fix Bug')
   writeJSON(join(root, 'package.json'), {
     name: 'master-css-repo',
     private: true,
     scripts: {
-      'test:docs-consistency': 'node --test .ai/scripts/validate-doc-consistency.test.js'
+      'check:ai-context': 'node scripts/check-ai-context.mjs'
     }
   })
-  writeJSON(join(root, 'packages/engine/package.json'), {
-    name: '@master/css-engine',
+  writeJSON(join(root, 'packages/css/package.json'), {
+    name: '@master/css',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
@@ -50,7 +52,11 @@ function createContributorFixture() {
       'type-check': 'tsc -b tsconfig.typecheck.json'
     }
   })
-  writeFileSync(join(root, 'packages/engine/AI.md'), '# AI Notes For `@master/css-engine`')
+  writeFileSync(join(root, 'packages/css/AI.md'), '# AI Notes For `@master/css`')
+  writeFileSync(join(root, 'Cargo.toml'), '[workspace]\nmembers = ["crates/mastercss-engine"]\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/Cargo.toml'), '[package]\nname = "mastercss-engine"\nversion = "0.0.0"\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/AI.md'), '# AI Notes For `mastercss-engine`')
+  writeFileSync(join(root, 'crates/mastercss-engine/src/session.rs'), 'pub struct EngineSession;\n')
   writeJSON(join(root, 'packages/runtime/package.json'), {
     name: '@master/css-runtime',
     scripts: {
@@ -59,7 +65,7 @@ function createContributorFixture() {
       test: 'vitest'
     },
     dependencies: {
-      '@master/css-engine': 'workspace:^'
+      '@master/css': 'workspace:^'
     }
   })
   writeFileSync(join(root, 'packages/runtime/AI.md'), '# AI Notes For `@master/css-runtime`')
@@ -83,14 +89,14 @@ function createContributorFixture() {
   })
   writeFileSync(join(root, 'packages/create/AI.md'), '# AI Notes For `@master/create-css`')
   writeJSON(join(root, 'packages/css-sv/package.json'), {
-    name: '@master/css-sv',
+    name: '@master/css-svelte-addon',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
       test: 'vitest'
     }
   })
-  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-sv`')
+  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-svelte-addon`')
   writeJSON(join(root, 'site/package.json'), {
     name: 'site',
     private: true,
@@ -107,7 +113,7 @@ async function connect(root: string) {
   const client = new Client({ name: 'master-css-mcp-test', version: '0.0.0' }, { capabilities: {} })
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
   await Promise.all([
-    instance.server.connect(serverTransport),
+    instance.connect(serverTransport),
     client.connect(clientTransport)
   ])
   return {
@@ -115,7 +121,7 @@ async function connect(root: string) {
     instance,
     async close() {
       await client.close()
-      await instance.server.close()
+      await instance.dispose()
     }
   }
 }
@@ -125,7 +131,10 @@ function parseToolJSON(result: Awaited<ReturnType<Client['callTool']>>) {
   const content = (result as { content: { type: string, text?: string }[] }).content[0]
   if (!content || content.type !== 'text') throw new Error('Expected text content.')
   try {
-    return JSON.parse(content.text || '') as any
+    const envelope = JSON.parse(content.text || '')
+    expect(envelope.version).toBe(3)
+    expect(envelope.result.status).toBe('success')
+    return envelope.result.data as any
   } catch (error) {
     throw new Error(`Expected JSON tool result, received: ${content.text}`)
   }
@@ -173,9 +182,15 @@ describe('@master/css-mcp', () => {
       const migrationText = migrationPrompt.messages.map((message) => {
         return message.content.type === 'text' ? message.content.text : ''
       }).join('\n')
-      expect(migrationText).toContain('plan an incremental migration')
+      expect(migrationText).toContain('plan a migration')
       expect(migrationText).toContain('recommended rendering mode')
       expect(migrationText).toContain('Preserve CSS output')
+      for (const source of ['CSS Modules', 'Sass', 'Tailwind CSS', 'CSS-in-JS', 'component-library styling']) {
+        expect(migrationText).toContain(source)
+      }
+      expect(migrationText).toContain('external styling systems only')
+      expect(migrationText).toContain('Do not propose Master CSS version upgrades')
+      expect(migrationText).not.toMatch(/Master CSS v1|Master CSS v2 RC|master-css migrate|base-unit|root-size|saved.*manifest/i)
 
       const resource = await connection.client.readResource({ uri: 'mastercss://workspace/manifest' })
       expect(resource.contents[0]).toEqual(expect.objectContaining({
@@ -185,11 +200,44 @@ describe('@master/css-mcp', () => {
       const rendered = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_render_css',
         arguments: {
-          classList: 'block'
+          context: 'preset',
+          classList: 'display:block'
         }
       }))
-      expect(rendered.classes).toEqual(['block'])
+      expect(rendered.classes).toEqual(["display:block"])
       expect(rendered.css.text).toContain('display:block')
+
+      const renderedNative = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_render_css',
+        arguments: {
+          context: 'preset',
+          classList: 'display:block field-sizing:content display:16px display:banana'
+        }
+      }))
+      expect(renderedNative.invalid).toEqual([])
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:banana')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'unknown' })
+      expect(renderedNative.css.text).toContain(".display\\:block{display:block}")
+      expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
+      expect(renderedNative.css.text).toContain('.display\\:16px{display:16px}')
+      expect(renderedNative.css.text).toContain('.display\\:banana{display:banana}')
+      expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
+
+      const suggestions = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_suggest_syntax',
+        arguments: {
+          context: 'preset',
+          content: '<div class="display:block"></div>',
+          filePath: 'index.html',
+          position: { line: 0, character: 21 },
+          limit: 200
+        }
+      }))
+      expect(suggestions.total).toBeGreaterThan(0)
+      expect(suggestions.completions).toEqual(expect.arrayContaining([
+        expect.objectContaining({ label: 'block' })
+      ]))
+      expect(suggestions.hover.contents.value).toContain('display: block')
     } finally {
       await connection.close()
     }
@@ -203,22 +251,19 @@ describe('@master/css-mcp', () => {
         '@master/css': 'workspace:^',
         '@master/css-cli': 'workspace:^',
         '@master/create-css': 'workspace:^',
-        '@master/css-sv': 'workspace:^',
+        '@master/css-svelte-addon': 'workspace:^',
         '@master/eslint-config-css': 'workspace:^'
       },
       scripts: {
         build: 'master-css src/index.html -o master.css'
       }
     })
-    writeFileSync(join(root, 'master.css'), [
-      '@master entry;',
-      '@settings {',
-      '  mode-trigger: class;',
-      '}',
-      '@theme {',
-      '  --color-brand: #123456;',
-      '}'
-    ].join('\n'))
+    writeFileSync(join(root, 'master.css'), `@import "@master/css";
+@mixin --ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } } @utility ocean { &:where([data-theme=ocean], [data-theme=ocean] *) { @contents; } }
+@theme {
+  --color-brand: #123456;
+ }
+`)
 
     const connection = await connect(root)
     try {
@@ -233,12 +278,12 @@ describe('@master/css-mcp', () => {
       }))
       expect(audit.packages.declared).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' }),
+        expect.objectContaining({ name: '@master/css-svelte-addon' }),
         expect.objectContaining({ name: '@master/eslint-config-css' })
       ]))
       expect(audit.packages.setup).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' })
+        expect.objectContaining({ name: '@master/css-svelte-addon' })
       ]))
       expect(audit.summary.setupPackages).toBe(2)
       expect(audit.integrations).toEqual(expect.arrayContaining([
@@ -253,7 +298,7 @@ describe('@master/css-mcp', () => {
         .filter((integration: { type: string }) => integration.type === 'package')
         .map((integration: { name: string }) => integration.name)
       expect(integrationPackageNames).not.toContain('@master/create-css')
-      expect(integrationPackageNames).not.toContain('@master/css-sv')
+      expect(integrationPackageNames).not.toContain('@master/css-svelte-addon')
 
       const directives = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_inspect_directives',
@@ -261,11 +306,11 @@ describe('@master/css-mcp', () => {
           entryPath: 'master.css'
         }
       }))
-      expect(directives.version).toBe(1)
+      expect(directives.version).toBe(2)
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
-        expect.objectContaining({ name: 'settings' })
+        expect.objectContaining({ name: 'mixin' })
       ]))
       expect(directives.manifest.counts.variables).toBeGreaterThan(0)
     } finally {
@@ -275,14 +320,15 @@ describe('@master/css-mcp', () => {
 
   it('traces, extracts, queries, and compares Master CSS classes through MCP', async () => {
     const root = createTempDir('master-css-mcp-class-tools-')
-    writeFileSync(join(root, 'index.html'), '<div class="block fg:red"></div>')
+    writeFileSync(join(root, 'index.html'), "<div class=\"display:block fg-red\"></div>")
 
     const connection = await connect(root)
     try {
       const trace = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_trace_class',
         arguments: {
-          className: 'block',
+          context: 'preset',
+          className: "display:block",
           patterns: ['index.html']
         }
       }))
@@ -290,12 +336,31 @@ describe('@master/css-mcp', () => {
       expect(trace.status).toBe('present')
       expect(trace.reason).toBe('generated')
       expect(trace.detected).toBe(true)
-      expect(trace.inspection.valid).toBe(true)
+      expect(trace.inspection.matchStatus).toBe('matched')
+
+      const inspected = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_inspect_class',
+        arguments: {
+          context: 'preset',
+          className: "display:block@dark"
+        }
+      }))
+      expect(inspected).toMatchObject({
+        className: "display:block@dark",
+        matchStatus: 'matched',
+        base: 'display:block',
+        suffix: '@dark',
+        matcherTypes: ['key']
+      })
+      expect(inspected.rules).toHaveLength(1)
+      expect(inspected.rules[0].text).toMatch(/@media \(prefers-color-scheme:\s*dark\)/)
+      expect(inspected.css).toBe(inspected.rules.map((rule: { text: string }) => rule.text).join(''))
 
       const extracted = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_extract_classes',
         arguments: {
-          content: '<div className="block fg:red"></div>',
+          context: 'preset',
+          content: '<div className="display:block fg-red"></div>',
           filePath: 'src/App.tsx'
         }
       }))
@@ -303,33 +368,53 @@ describe('@master/css-mcp', () => {
       expect(extracted.files[0].languageId).toBe('typescriptreact')
       expect(extracted.files[0].classes).toEqual(expect.arrayContaining([
         expect.objectContaining({
-          token: 'block',
-          valid: true
+          token: "display:block",
+          matchStatus: 'matched'
         })
       ]))
 
       const manifest = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_manifest_query',
         arguments: {
+          context: 'preset',
           query: 'spacing',
           kind: 'token',
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(1)
+      expect(manifest.version).toBe(6)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_css_compare',
         arguments: {
-          beforeClassList: 'block',
-          afterClassList: 'block inline'
+          context: 'preset',
+          beforeClassList: 'display:block',
+          afterClassList: 'display:block display:inline'
         }
       }))
-      expect(compare.version).toBe(1)
+      expect(compare.version).toBe(2)
       expect(compare.summary.changed).toBe(true)
-      expect(compare.classes.added).toEqual(['inline'])
+      expect(compare.classes.added).toEqual(["display:inline"])
       expect(compare.rules.added.length).toBeGreaterThan(0)
+
+      const nativeCompare = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_css_compare',
+        arguments: {
+          context: 'preset',
+          beforeClassList: 'display:block display:16px display:banana',
+          afterClassList: 'display:block field-sizing:content'
+        }
+      }))
+      expect(nativeCompare.invalid).toEqual({
+        before: [],
+        after: [],
+        added: [],
+        removed: []
+      })
+      expect(nativeCompare.css.after.text).toContain('field-sizing:content')
+      expect(nativeCompare.css.before.text).toContain('.display\\:16px{display:16px}')
+      expect(nativeCompare.css.before.text).toContain('.display\\:banana{display:banana}')
     } finally {
       await connection.close()
     }
@@ -338,30 +423,32 @@ describe('@master/css-mcp', () => {
   it('previews directive formatting without writing until the preview is applied', async () => {
     const root = createTempDir('master-css-mcp-format-')
     const file = join(root, 'style.css')
-    writeFileSync(file, '@compose block   inline;')
+    writeFileSync(file, '@safelist "display:block   display:inline";')
 
     const connection = await connect(root)
     try {
       const contentFormat = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
         arguments: {
-          content: '@compose block   inline;',
+          context: 'preset',
+          content: '@safelist "display:block   display:inline";',
           filePath: 'style.css'
         }
       }))
       expect(contentFormat.mode).toBe('content')
-      expect(contentFormat.formatted).toBe('@compose block inline;')
+      expect(contentFormat.formatted).toBe('@safelist "display:block display:inline";')
 
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
         arguments: {
+          context: 'preset',
           patterns: ['style.css']
         }
       }))
       expect(preview.mode).toBe('files')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe('@compose block   inline;')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "display:block   display:inline";')
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -370,7 +457,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).toBe('@compose block inline;')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "display:block display:inline";')
     } finally {
       await connection.close()
     }
@@ -385,8 +472,8 @@ describe('@master/css-mcp', () => {
         arguments: {
           task: 'fix generated css output regression',
           paths: [
-            'packages/engine/src/core.ts',
-            'packages/engine/tests/core.test.ts'
+            'packages/css/src/engine/bound-engine.ts',
+            'packages/css/tests/engine/rust-engine.test.ts'
           ]
         }
       }))
@@ -395,9 +482,9 @@ describe('@master/css-mcp', () => {
       expect(report.audience).toBe('master-css-repository-contributors')
       expect(report.status).toBe('loaded')
       expect(report.affectedPackages).toContainEqual(expect.objectContaining({
-        name: '@master/css-engine',
-        path: 'packages/engine',
-        aiNotes: 'packages/engine/AI.md'
+        name: '@master/css',
+        path: 'packages/css',
+        aiNotes: 'packages/css/AI.md'
       }))
       expect(report.context.files).toEqual(expect.arrayContaining([
         'AGENTS.md',
@@ -406,18 +493,18 @@ describe('@master/css-mcp', () => {
         '.ai/context/css-output.md',
         '.ai/context/testing.md',
         '.ai/context/accuracy-guardrails.md',
-        'packages/engine/package.json',
-        'packages/engine/AI.md'
+        'packages/css/package.json',
+        'packages/css/AI.md'
       ]))
       expect(report.risks).toContainEqual(expect.objectContaining({
         id: 'css-output',
         severity: 'high'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine test'
+        command: 'pnpm --filter @master/css test'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine lint'
+        command: 'pnpm --filter @master/css lint'
       }))
     } finally {
       await connection.close()
@@ -459,15 +546,69 @@ describe('@master/css-mcp', () => {
       const graph = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_package_graph',
         arguments: {
-          packageName: '@master/css-engine'
+          packageName: '@master/css'
         }
       }))
       expect(graph.packages).toEqual([
         expect.objectContaining({
-          name: '@master/css-engine',
+          name: '@master/css',
           dependents: ['@master/css-runtime']
         })
       ])
+    } finally {
+      await connection.close()
+    }
+  })
+
+  it('routes Rust crates to Cargo context, risk packs, and scoped validation', async () => {
+    const root = createContributorFixture()
+    const connection = await connect(root)
+    try {
+      const report = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_repo_context',
+        arguments: {
+          task: 'refactor Rust engine session lifecycle',
+          paths: ['crates/mastercss-engine/src/session.rs']
+        }
+      }))
+
+      expect(report.status).toBe('loaded')
+      expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        path: 'crates/mastercss-engine',
+        kind: 'crate',
+        cargoManifest: 'crates/mastercss-engine/Cargo.toml',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(report.context.files).toEqual(expect.arrayContaining([
+        '.ai/context/rust-routing.md',
+        '.ai/context/testing.md',
+        '.ai/context/css-output.md',
+        '.ai/context/accuracy-guardrails.md',
+        'Cargo.toml',
+        'crates/mastercss-engine/Cargo.toml',
+        'crates/mastercss-engine/AI.md'
+      ]))
+      expect(report.risks).toContainEqual(expect.objectContaining({
+        id: 'css-output',
+        severity: 'high'
+      }))
+      expect(report.validation.commands).toEqual(expect.arrayContaining([
+        expect.objectContaining({ command: 'cargo test -p mastercss-engine' }),
+        expect.objectContaining({ command: 'cargo clippy -p mastercss-engine --all-targets --all-features -- -D warnings' }),
+        expect.objectContaining({ command: 'cargo xtask parity' })
+      ]))
+
+      const graph = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_package_graph',
+        arguments: { packageName: 'mastercss-engine' }
+      }))
+      expect(graph.packages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        kind: 'crate',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(graph.summary.crates).toBe(1)
     } finally {
       await connection.close()
     }
@@ -495,7 +636,7 @@ describe('@master/css-mcp', () => {
           aiNotes: 'packages/create/AI.md'
         }),
         expect.objectContaining({
-          name: '@master/css-sv',
+          name: '@master/css-svelte-addon',
           path: 'packages/css-sv',
           aiNotes: 'packages/css-sv/AI.md'
         })
@@ -516,10 +657,10 @@ describe('@master/css-mcp', () => {
           command: 'pnpm --filter @master/create-css lint'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv test'
+          command: 'pnpm --filter @master/css-svelte-addon test'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv lint'
+          command: 'pnpm --filter @master/css-svelte-addon lint'
         })
       ]))
     } finally {
@@ -600,7 +741,7 @@ describe('@master/css-mcp', () => {
         severity: 'info'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm run test:docs-consistency'
+        command: 'pnpm run check:ai-context'
       }))
     } finally {
       await connection.close()
@@ -615,7 +756,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_repo_context',
         arguments: {
           paths: [
-            'site/app/[locale]/guide/mcp-server/content.mdx',
+            'site/content/guide/mcp-server/content.mdx',
             'site/package.json'
           ]
         }
@@ -652,13 +793,14 @@ describe('@master/css-mcp', () => {
   it('previews and applies lint fixes only with a confirmation token', async () => {
     const root = createTempDir('master-css-mcp-fix-')
     const file = join(root, 'index.html')
-    writeFileSync(file, '<div class="fg:white m:2x"></div>')
+    writeFileSync(file, "<div class=\"fg-white margin:0.5rem\"></div>")
 
     const connection = await connect(root)
     try {
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_fixes',
         arguments: {
+          context: 'preset',
           patterns: ['index.html']
         }
       }))
@@ -666,7 +808,7 @@ describe('@master/css-mcp', () => {
       expect(preview.mode).toBe('lint-fixes')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe('<div class="fg:white m:2x"></div>')
+      expect(readFileSync(file, 'utf8')).toBe("<div class=\"fg-white margin:0.5rem\"></div>")
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -675,7 +817,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).not.toBe('<div class="fg:white m:2x"></div>')
+      expect(readFileSync(file, 'utf8')).not.toBe("<div class=\"fg-white margin:0.5rem\"></div>")
     } finally {
       await connection.close()
     }
@@ -683,13 +825,14 @@ describe('@master/css-mcp', () => {
 
   it('lints cjs files with the shared script language mapping', async () => {
     const root = createTempDir('master-css-mcp-cjs-')
-    writeFileSync(join(root, 'component.cjs'), 'const view = <div className="fg:white m:2x" />')
+    writeFileSync(join(root, 'component.cjs'), "const view = <div className=\"fg-white margin:0.5rem\" />")
 
     const connection = await connect(root)
     try {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_lint_project',
         arguments: {
+          context: 'preset',
           patterns: ['component.cjs']
         }
       }))
@@ -706,24 +849,25 @@ describe('@master/css-mcp', () => {
 
   it('scans project sources with missing CSS classification', async () => {
     const root = createTempDir('master-css-mcp-scan-')
-    writeFileSync(join(root, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+    writeFileSync(join(root, 'index.html'), "<div class=\"display:block p-missing\"></div>")
 
     const connection = await connect(root)
     try {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_scan_project',
         arguments: {
+          context: 'preset',
           patterns: ['index.html'],
-          classes: ['block', 'never-generated-class']
+          classes: ["display:block", 'never-generated-class']
         }
       }))
 
-      expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
-      expect(report.files[0].discovered.valid).toContain('block')
-      expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+      expect(report.version).toBe(5)
+      expect(report.root).toBe(root)
+      expect(report.files[0].discovered.valid).toContain("display:block")
+      expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
-        className: 'block',
+        className: "display:block",
         reason: 'generated'
       }))
       expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
@@ -743,15 +887,16 @@ describe('@master/css-mcp', () => {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_lint_content',
         arguments: {
+          context: 'preset',
           filePath: 'src/Component.tsx',
-          content: 'export function Component() { return <div className="fg:white m:2x" /> }'
+          content: "export function Component() { return <div className=\"fg-white margin:0.5rem\" /> }"
         }
       }))
 
-      expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
+      expect(report.version).toBe(4)
+      expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].filePath).toBe(resolve(connection.instance.context.root, 'src/Component.tsx'))
+      expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))
       expect(report.files[0].languageId).toBe('typescriptreact')
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
         code: 'invalid-class-order'
@@ -764,7 +909,7 @@ describe('@master/css-mcp', () => {
   it('rejects root escape patterns and stale preview writes', async () => {
     const root = createTempDir('master-css-mcp-safety-')
     const file = join(root, 'index.html')
-    writeFileSync(file, '<div class="block"></div>')
+    writeFileSync(file, "<div class=\"display:block\"></div>")
     const context = new MasterCSSMCPContext({ root })
 
     expect(() => context.validateGlobPatterns(['../outside.html'])).toThrow('escape')
@@ -772,13 +917,13 @@ describe('@master/css-mcp', () => {
     const preview = await context.createPreview([
       {
         filePath: resolve(root, 'index.html'),
-        afterText: '<div class="inline"></div>'
+        afterText: '<div class="display:inline"></div>'
       }
     ])
     expect(preview.confirmToken).toEqual(expect.any(String))
-    writeFileSync(file, '<div class="flex"></div>')
+    writeFileSync(file, "<div class=\"display:flex\"></div>")
     await expect(context.applyPreview(preview.confirmToken!)).rejects.toThrow('changed')
-    expect(readFileSync(file, 'utf8')).toBe('<div class="flex"></div>')
+    expect(readFileSync(file, 'utf8')).toBe("<div class=\"display:flex\"></div>")
   })
 
   it('accepts writable files addressed through the configured root path alias', async () => {
@@ -789,13 +934,13 @@ describe('@master/css-mcp', () => {
     const preview = await context.createPreview([
       {
         filePath: file,
-        afterText: '.block{display:block}'
+        afterText: '.display\\:block{display:block}'
       }
     ])
 
     expect(preview.confirmToken).toEqual(expect.any(String))
     const applied = await context.applyPreview(preview.confirmToken!)
     expect(applied.applied).toBe(true)
-    expect(readFileSync(file, 'utf8')).toBe('.block{display:block}')
+    expect(readFileSync(file, 'utf8')).toBe(".display\\:block{display:block}")
   })
 })

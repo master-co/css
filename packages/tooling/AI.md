@@ -1,0 +1,73 @@
+# AI Notes For `@master/css-tooling`
+
+## Responsibility
+
+`@master/css-tooling` is the consolidated Rust-backed developer-tooling surface for
+lexing, source extraction, scanning, validation, lint, editor-neutral language
+analysis, and the dependency-light diagnostics bridge.
+
+## Owns
+
+- Universal, native-only Node, and tooling-Wasm session loading.
+- Feature subpaths under `lexer`, `source`, `scanner`, `validator`, `lint`, and
+  `language`.
+- CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
+- Read-only token-family metadata inferred by Rust from the active manifest for documentation and tooling.
+- Private first-party Vue and Svelte extraction adapters used by the scanner.
+
+## Does Not Own
+
+- Any TypeScript semantic fallback.
+- CSS directive compilation, project discovery, stylesheet composition, or complete
+  project inspection; use `@master/css-compiler`.
+- Shiki transformation or TextMate grammar assets; use
+  `@master/css-language-service`.
+- ESLint AST traversal, LSP transport, or framework/build lifecycle behavior.
+- A third-party source-adapter registration API.
+
+## Public Surface
+
+- Universal root semantic session.
+- `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
+  `./node` entries for native sync execution.
+- Node filesystem scanner under `./scanner/node`.
+- Language and composite tooling `tokenFamilies()` for versioned readonly metadata inferred by Rust from effective utility patterns, including namespaces without tokens and multiple namespace branches per prefix.
+
+Subpaths are responsibility boundaries inside one package, not independent packages.
+Avoid adding convenience re-export files unless they define a deliberate documented
+entrypoint.
+
+## Key Directories
+
+- `src/lexer`
+- `src/source`
+- `src/scanner`
+- `src/validator`
+- `src/lint`
+- `src/language`
+- `src/diagnostics`
+
+For Rust implementation routing, use `.ai/context/rust-routing.md`; lexer, lint, and
+language crates now expose domain modules instead of monolithic `lib.rs` files.
+
+## Risk Areas
+
+- UTF-16 and source range correctness.
+- Extraction false positives/negatives.
+- Independent match/syntax/value/browser statuses and truthful executed-check metadata.
+- Owner-scoped replacement/removal, exact snapshot membership and failed-update atomicity.
+- Markdown/MDX display isolation and original UTF-16 occurrence provenance.
+- Lint edit plans and scanner state parity.
+- Browser bundles accidentally importing Node code or native bindings.
+
+## Validation
+
+```sh
+pnpm --filter @master/css-tooling test
+pnpm --filter @master/css-tooling lint
+pnpm --filter @master/css-tooling type-check
+pnpm --filter @master/css-tooling build
+```
+
+Run downstream language-service, ESLint, compiler, and integration checks when the
+corresponding subpath changes.

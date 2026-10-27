@@ -1,16 +1,15 @@
-import type { FooterLink, FooterNavGroup, FooterProps } from 'internal/components/Footer'
-import type { AppNavItem } from 'internal/contexts/app'
-import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconCompass, IconFileText, IconMessages, IconSourceCode, IconWriting } from '@tabler/icons-react'
+import type { FooterLink, FooterNavGroup, FooterProps } from '~/site/docs-shell/components/Footer'
+import type { AppNavItem } from '~/site/docs-shell/contexts/app'
+import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconCompass, IconFileText, IconMessages, IconWriting } from '@tabler/icons-react'
 
-const repoSlug = process.env.NEXT_PUBLIC_REPO_SLUG || 'css'
+const repoSlug = import.meta.env?.PUBLIC_REPO_SLUG || 'css'
 const repositoryURL = `https://github.com/master-co/${repoSlug}`
 const discussionsURL = `${repositoryURL}/discussions`
 
 export const primaryNavs = [
   { name: 'Guide', href: '/guide', Icon: IconCompass },
-  { name: 'Reference', fullName: 'API Reference', href: '/reference', Icon: IconFileText },
+  { name: 'Reference', fullName: 'Reference', href: '/reference', Icon: IconFileText },
   { name: 'Blog', href: '/blog', Icon: IconWriting },
-  { name: 'Play', href: '/play', Icon: IconSourceCode },
 ] satisfies AppNavItem[]
 
 export const communityNavs = [
@@ -32,15 +31,13 @@ export const footerNavGroups = [
       { name: 'Guide', href: '/guide' },
       { name: 'Getting Started', href: '/guide/introduction' },
       { name: 'Installation', href: '/guide/installation' },
-      { name: 'API Reference', href: '/reference' },
+      { name: 'Reference', href: '/reference' },
     ]
   },
   {
     name: 'Resources',
     links: [
-      { name: 'Play', href: '/play' },
       { name: 'Blog', href: '/blog' },
-      { name: 'Console Messages', href: '/messages' },
       { name: 'Design System', href: '/design-system' },
     ]
   },

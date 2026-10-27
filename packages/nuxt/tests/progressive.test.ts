@@ -6,7 +6,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
-import { setupNuxtTest } from './setup-test'
+import { fetchDeliveredStylesheet, setupNuxtTest } from './setup-test'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -23,9 +23,12 @@ it('matches generated CSS snapshot', async () => {
   if (!href) throw new Error('Expected Nuxt progressive stylesheet link to include an href.')
   expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
-  expect(html).not.toMatch(/<link\b(?=[^>]*\brel="modulepreload")(?=[^>]*\bas="json")(?=[^>]*master-css-manifest)/i)
-  const css = await $fetch(href) as string
+  expect(html).not.toMatch(/<link\b[^>]*master-css-program/i)
+  expect(html).toContain('.fg-host')
+  expect(html).not.toContain('--color-host:')
+  const css = await fetchDeliveredStylesheet(href)
   expect(css).toContain('.box')
   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+  expect(css).toMatch(/--color-host:\s*#123456/)
 })

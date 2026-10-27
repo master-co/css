@@ -1,0 +1,95 @@
+use mastercss_engine::EngineSession;
+use mastercss_render::RenderSession;
+use serde_json::json;
+
+#[test]
+fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
+    let manifest = json!({
+        "version":6,"languageVersion":16,
+        "variables": { "": [
+            { "name": "x", "key": "x", "values":[{"path":[":root,:host"],"value":"red"}] },
+            { "name": "y", "key": "y", "values":[{"path":[":root,:host"],"value":"blue"}] },
+            { "name": "a", "key": "a", "values":[{"path":[":root,:host"],"value":"linear-gradient(var(--x),var(--y))"}], "dependencies": ["x", "y"] },
+            { "name": "z", "key": "z", "values":[{"path":[":root,:host"],"value":"green"}] }
+        ]},
+        "theme": [{"type":"rule","prelude":":root,:host","children":([("x","red"),("y","blue"),("a","linear-gradient(var(--x),var(--y))"),("z","green")].map(|(name,value)|json!({"type":"declaration","name":name,"value":value})))}],
+        "mixins": ([
+            ("a", json!({"background-image":"var(--a)"})),
+            ("b", json!({"color":"var(--x)", "border-color":"var(--z)"})),
+            ("c", json!({"color":"var(--x)"}))
+        ].map(|(name, declarations)| json!({
+            "name":format!("--{name}"),
+            "body":declarations.as_object().unwrap().iter().map(|(property,value)|json!({"type":"declaration","property":property,"value":[{"type":"text","value":value}]})).collect::<Vec<_>>()
+        })))
+    }).to_string();
+    let mut expected = None;
+    for order in [["c", "a", "b"], ["b", "c", "a"], ["a", "b", "c"]] {
+        let mut renderer = RenderSession::create(&manifest, None).unwrap();
+        for class_name in order {
+            renderer.ensure_classes([class_name]).unwrap();
+        }
+        for rendered in [
+            renderer.snapshot().unwrap(),
+            renderer.snapshot_for_classes(order).unwrap(),
+        ] {
+            let mut engine = EngineSession::create(&manifest).unwrap();
+            engine
+                .ensure_class_rules(&rendered.hydration_manifest.class_names)
+                .unwrap();
+            assert_eq!(engine.snapshot().unwrap(), rendered.snapshot);
+            if let Some(expected) = &expected {
+                assert_eq!(&rendered.snapshot, expected);
+            } else {
+                expected = Some(rendered.snapshot);
+            }
+        }
+    }
+}
+
+#[test]
+fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
+    let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
+    let classes = [
+        "animation:rotate|1s",
+        "background:blue-60",
+        "animation:fade|1s",
+        "color:red-60",
+    ];
+    for emitted in [None, Some(r#"{"variables":{"color-red-60":1}}"#)] {
+        let mut renderer = RenderSession::create(manifest, emitted).unwrap();
+        renderer
+            .ensure_classes(["color:green-60", "hidden"])
+            .unwrap();
+        for class_name in classes.iter().rev() {
+            renderer.ensure_classes([class_name]).unwrap();
+        }
+        let rendered = renderer.snapshot_for_classes(classes).unwrap();
+        let mut engine = EngineSession::create_with_emitted_globals(manifest, emitted).unwrap();
+        engine
+            .ensure_class_rules(&rendered.hydration_manifest.class_names)
+            .unwrap();
+        assert_eq!(engine.snapshot().unwrap(), rendered.snapshot);
+        assert!(!rendered.snapshot.text.contains("color-green-60"));
+        assert!(!rendered.snapshot.text.contains(".hidden"));
+    }
+}
+
+#[test]
+fn document_native_stylesheets_keep_hydration_resource_discovery_canonical() {
+    let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
+    let classes = ["p-md", "font-mono", "fg-red", "bg-red"];
+    let mut renderer = RenderSession::create(manifest, None).unwrap();
+    renderer
+        .ensure_stylesheet_resources("html{font-size:16px}")
+        .unwrap();
+    renderer.ensure_classes(classes).unwrap();
+    let rendered = renderer.snapshot().unwrap();
+    let mut browser = EngineSession::create(manifest).unwrap();
+    browser
+        .ensure_class_rules(&rendered.hydration_manifest.class_names)
+        .unwrap();
+    let snapshot = browser.snapshot().unwrap();
+    assert_eq!(snapshot.resources, rendered.snapshot.resources);
+    assert_eq!(snapshot.text, rendered.snapshot.text);
+    assert_eq!(rendered.snapshot.stylesheets, ["html{font-size:16px}"]);
+}

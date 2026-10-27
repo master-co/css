@@ -48,3 +48,12 @@ export function hasModulePreloadLink(html: string, href: string, options?: { as?
     'i'
   ).test(html)
 }
+
+/** A `<link rel="preload" as="fetch">` without a type, as runtime programs use. */
+export function hasFetchPreloadLink(html: string, href: string) {
+  const quotedHref = escapeRegExp(href)
+  return new RegExp(
+    String.raw`<link\b(?=[^>]*\brel=(?:"preload"|'preload'))(?=[^>]*\bas=(?:"fetch"|'fetch'))(?=[^>]*\bhref=(?:"${quotedHref}"|'${quotedHref}'))[^>]*>`,
+    'i'
+  ).test(html)
+}

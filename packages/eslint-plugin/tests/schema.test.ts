@@ -55,34 +55,22 @@ test('accepts no-invalid-classes rule options explicitly', async () => {
 test('rejects unknown no-invalid-classes rule options', async () => {
   await expect(createESLint({
     '@master/css/no-invalid-classes': ['error', { classAttributes: ['className'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 })
 
 test('rejects rule options for rules configured through settings only', async () => {
   await expect(createESLint({
     '@master/css/sort-classes': ['error', { classAttributes: ['className'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 
   await expect(createESLint({
     '@master/css/no-conflicting-classes': ['error', { classFunctions: ['ctl'] }]
-  }).lintText(`<div className="block" />`, { filePath: 'index.jsx' }))
+  }).lintText("<div className=\"display:block\" />", { filePath: 'index.jsx' }))
     .rejects.toThrow()
 })
 
-test('provides an opt-in stylesheet config', async () => {
-  const [diagnosticResult] = await new ESLint({
-    overrideConfigFile: true,
-    overrideConfig: [plugin.configs.stylesheet]
-  }).lintText(`.btn { @compose contain:content; }`, { filePath: 'index.css' })
-  const [fixResult] = await new ESLint({
-    fix: true,
-    overrideConfigFile: true,
-    overrideConfig: [plugin.configs.stylesheet]
-  }).lintText(`.btn { @compose contain:content; }`, { filePath: 'index.css' })
-
-  expect(diagnosticResult.messages).toHaveLength(1)
-  expect(diagnosticResult.messages[0].ruleId).toBe('@master/css/prefer-canonical-classes')
-  expect(fixResult.output).toBe('.btn { contain: content; }')
+test('recommends the source config', () => {
+  expect(plugin.configs.recommended).toEqual([plugin.configs.source])
 })

@@ -1,39 +1,35 @@
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
-import type { ScanOptions } from './scan'
+import type { GenerateOptions } from './generate'
 import type { LintOptions } from './lint'
 import type { InspectOptions } from './inspect'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf8'))
-const removedCommands = new Set(['extract', 'render', 'scan'])
-
-function errorRemovedCommand(program: Command, command: string) {
-  program.error(`The "${command}" command was removed. Use "${pkg.name}" directly, for example "${pkg.name} -w".`)
-}
-
 export default async function runProgram(argv: string[] = process.argv) {
   const program = new Command()
   program
-    .name(pkg.name)
+    .name('master-css')
     .description(pkg.description)
     .version(pkg.version || '0.0.0')
+  program
+    .command('generate')
+    .description('Generate CSS from project source files.')
     .argument('[source paths...]', 'The glob pattern paths to scan sources')
     .option('-w, --watch', 'Watch file changes and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your CSS file output path', DEFAULT_SCAN_OUTPUT)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
+    .addOption(new Option('--binding <binding>', 'Execution binding: auto, native, or wasm.').choices(['auto', 'native', 'wasm']).default('auto'))
     .option('--no-export', 'Print only CSS results.')
-    .action(async (sourcePaths: string[], options: ScanOptions) => {
-      const removedCommand = sourcePaths[0]
-      if (removedCommand && removedCommands.has(removedCommand)) {
-        errorRemovedCommand(program, removedCommand)
-      }
-      const { default: runScan } = await import('./scan')
-      return runScan(sourcePaths, options)
+    .option('--strict', 'Fail CSS syntax or value validation before publishing any generated assets.')
+    .option('--prune-native-css', 'Prune unused native CSS only in project-owned source files.')
+    .action(async (sourcePaths: string[], options: GenerateOptions) => {
+      const { default: runGenerate } = await import('./generate')
+      return runGenerate(sourcePaths, options)
     })
   program
     .command('lint')
@@ -43,7 +39,6 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('--stdin-filepath <path>', 'File path used to infer the stdin source language.')
     .option('--fix', 'Apply safe class-list fixes to files.')
     .option('--fix-dry-run', 'Return fix proposals without writing files.')
-    .option('--fix-directives', 'Allow structural directive fixes when --fix writes files.')
     .option('--format <format>', 'Diagnostic output format: json or stylish.', 'json')
     .option('--rules <rules>', 'Comma-separated lint rules, "recommended", or "all".')
     .option('--exit-code <mode>', 'Exit code behavior: diagnostics or never.', 'diagnostics')
@@ -58,6 +53,8 @@ export default async function runProgram(argv: string[] = process.argv) {
     .argument('[source paths...]', 'The glob pattern paths to inspect')
     .option('--classes <classes>', 'Whitespace-separated class names to verify in generated CSS.')
     .option('--include-css', 'Include generated CSS text in the JSON report.')
+    .option('--snapshot', 'Capture a resolved project snapshot as JSON.')
+    .option('--compare <snapshot>', 'Compare a saved JSON snapshot with the current project.')
     .option('--format <format>', 'Diagnostic output format: json or stylish.', 'json')
     .option('--exit-code <mode>', 'Exit code behavior: diagnostics or never.', 'diagnostics')
     .option('--max-warnings <number>', 'Exit with a non-zero status if warnings exceed this count.')
@@ -65,10 +62,6 @@ export default async function runProgram(argv: string[] = process.argv) {
       const { default: runInspect } = await import('./inspect')
       await runInspect(sourcePaths, options)
     })
-  const firstArgument = argv[2]
-  if (firstArgument && removedCommands.has(firstArgument)) {
-    errorRemovedCommand(program, firstArgument)
-  }
   await program.parseAsync(argv)
   return program
 }

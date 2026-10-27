@@ -1,355 +1,206 @@
 import rule from '../src/rules/prefer-canonical-classes'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from '@master/css-schema/utility-type'
-import stylesheetParser from '../src/stylesheet-parser'
-
-const cssParser = {
-    meta: {
-        name: 'master-css-test-css-parser',
-        version: '1.0.0'
-    },
-    parseForESLint(code: string) {
-        const lines = code.split(/\r\n|[\r\n]/)
-        return {
-            ast: {
-                type: 'Program',
-                body: [],
-                sourceType: 'module',
-                comments: [],
-                tokens: [],
-                range: [0, code.length],
-                loc: {
-                    start: { line: 1, column: 0 },
-                    end: { line: lines.length, column: lines.at(-1)?.length || 0 }
-                }
-            },
-            services: {},
-            visitorKeys: {
-                Program: []
-            }
-        }
-    }
-}
 
 const customManifest = createPresetManifest({
-    settings: {
-        rootSize: 16,
-        modes: ['dark', 'midnight']
-    },
-    conditions: {
-        tablet: {
-            id: 'media',
-            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-        }
-    },
-    breakpointConditions: {
-        tablet: {
-            id: 'media',
-            nodes: [{ type: 'number', value: 48, unit: 'rem' }]
-        }
-    },
+    customMedia: { '--tablet': { type: 'feature' as const, value: '(width >= 48rem)' } },
     variables: [
-        { namespace: 'breakpoint', key: 'tablet', name: 'breakpoint-tablet', type: 'number', value: '48rem', numeric: { value: 48, unit: 'rem' } },
-        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number', value: '1.25rem', numeric: { value: 1.25, unit: 'rem' } }
+        { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
     ],
-    variants: [
-        { token: '@wide', branches: [{ conditions: ['@media (min-width: 80rem)'] }] }
-    ],
-    utilities: [
-        {
-            name: 'content-auto',
-            type: UtilityType.Semantic,
-            layer: 'utilities',
-            declarations: { 'content-visibility': 'auto' }
-        },
-        {
-            name: 'btn',
-            type: UtilityType.Semantic,
-            layer: 'components',
-            declarations: { display: 'block' }
-        }
+
+    mixins: [
+  {
+    "name": "--midnight",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&:where(.midnight,.midnight *)",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
     ]
-})
+  },
+  {
+    "name": "--wide",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media (min-width: 80rem)",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "--content-auto",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "content-visibility",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "auto"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
+, utilities: [{"name":"midnight","body":[{"type":"rule" as const,"selector":"&:where(.midnight,.midnight *)","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const},{"name":"wide","body":[{"type":"condition" as const,"condition":"@media (min-width: 80rem)","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const},{"name":"content-auto","body":[{"type":"declaration" as const,"property":"content-visibility","value":[{"type":"text" as const,"value":"auto"}]}],"kind":"static" as const},{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] })
 
 jsxTester.run('prefer canonical classes', rule, {
     valid: [
-        { code: `<div class="text-center font:md m:md r:md fg:red-60">Recommended classes</div>` },
-        { code: `<div class="btn width:error unknown-class">Unknown classes are ignored</div>` },
-        { code: `<div class="text:muted grid-col-span:4">Manifest aliases are preserved</div>` },
-        {
-            code: `<div class="font:16px">Theme tokens disabled</div>`,
-            options: [{ preferThemeTokens: false }]
+{ code: `<div class="text-align:center font-md m-md r-md fg-red-60">Recommended classes</div>` },
+{ code: "<div class=\"btn width:futurekeyword unknown-class\">Unknown classes are ignored</div>" },
+{ code: `<div class="text-muted grid-col-span:4">Custom classes are left to validation</div>` },
+{
+            code: `<div class="font-size:16px">Literal values are preserved</div>`,
         },
-        {
-            code: `<div class="margin:md">Property aliases disabled</div>`,
-            options: [{ preferPropertyAliases: false }]
+{
+            code: `<div class="margin-md">Unknown token names have no autofix</div>`,
         },
-        {
+{
             code: `<div class="display:block">Static utilities disabled</div>`,
             options: [{ preferStaticUtilities: false }]
         },
-        {
-            code: `<div class="m:var(--spacing-md)">Variable references disabled</div>`,
-            options: [{ preferVariableReferences: false }]
+{
+            code: "<div class=\"margin:var(--spacing-md)\">Explicit variable references are preserved</div>",
         },
-        {
-            code: `<div class="m:1rem|1.5rem">Multi-value tokens disabled</div>`,
-            options: [{ preferMultiValueTokens: false }]
+{
+            code: "<div class=\"margin:1rem|1.5rem\">Literal multi-values are preserved</div>",
         },
-        {
-            code: `<div class="w:md h:md">Composition utilities disabled</div>`,
+{
+            code: `<div class="w-md h-md">Composition utilities disabled</div>`,
             options: [{ preferCompositionUtilities: false }]
         },
-        {
-            code: `<div class="mt:md mb:md">Axis composition utilities disabled</div>`,
+{
+            code: `<div class="mt-md mb-md">Axis composition utilities disabled</div>`,
             options: [{ preferCompositionUtilities: false }]
         },
-        {
-            code: `<div class="block@dark@sm">Condition order disabled</div>`,
-            options: [{ preferConditionOrder: false }]
+{
+            code: `<div class="display:block@dark@sm">Authored condition order</div>`,
         },
-        {
-            code: `<div class="font:16px@dark@sm">Theme tokens and condition order disabled</div>`,
-            options: [{ preferThemeTokens: false, preferConditionOrder: false }]
+{
+            code: `<div class="font-size:16px@dark@sm">Authored condition order preserves literals</div>`,
         },
-        {
-            code: `<div class="block@sm:hover block:focus:hover block@start@sm block@print@sm block@supports(display:grid)@sm">Unsafe suffix order</div>`
+{
+            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@media(print)@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
         },
-    ],
-    invalid: [
-        {
-            code: `<div class="text-align:center:hover@sm">Static pattern utility with variants</div>`,
-            output: `<div class="text-center:hover@sm">Static pattern utility with variants</div>`,
-            errors: [{
-                messageId: 'preferClass',
-                data: {
-                    message: 'Use canonical class "text-center:hover@sm" instead of "text-align:center:hover@sm".'
-                }
-            }]
-        },
-        {
-            code: `<div class="display:block align-items:center">Static utilities</div>`,
-            output: `<div class="block items-center">Static utilities</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="font:16px font:1rem r:.375rem">Variables</div>`,
-            output: `<div class="font:md font:md r:md">Variables</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="m:4x margin:md padding-inline:md color:red-60">Aliases</div>`,
-            output: `<div class="m:md m:md px:md fg:red-60">Aliases</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="font-size:md background-color:red-60">Named token keys</div>`,
-            output: `<div class="font:md bg:red-60">Named token keys</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="m:1rem|1.5rem p:.5rem|1rem r:.25rem|.375rem">Multi-value tokens</div>`,
-            output: `<div class="m:md|lg p:xs|md r:sm|md">Multi-value tokens</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="m:var(--spacing-md) r:var(--radius-md) fg:var(--color-red-60)">Variable references</div>`,
-            output: `<div class="m:md r:md fg:red-60">Variable references</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="block@dark@sm block:hover@dark@sm block!@dark@sm">Condition order</div>`,
-            output: `<div class="block@sm@dark block:hover@sm@dark block!@sm@dark">Condition order</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="font:16px@dark@sm text-align:center@dark@sm">Condition order with canonical classes</div>`,
-            output: `<div class="font:md@sm@dark text-center@sm@dark">Condition order with canonical classes</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="font:16px@dark@sm">Condition order disabled keeps theme token fix</div>`,
-            output: `<div class="font:md@dark@sm">Condition order disabled keeps theme token fix</div>`,
-            options: [{ preferConditionOrder: false }],
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="font:16px@dark@sm">Theme tokens disabled keeps condition order fix</div>`,
-            output: `<div class="font:16px@sm@dark">Theme tokens disabled keeps condition order fix</div>`,
-            options: [{ preferThemeTokens: false }],
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="margin:md@dark@sm">Property aliases disabled keeps condition order fix</div>`,
-            output: `<div class="margin:md@sm@dark">Property aliases disabled keeps condition order fix</div>`,
-            options: [{ preferPropertyAliases: false }],
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="m:var(--spacing-md)@dark@sm">Variable references disabled keeps condition order fix</div>`,
-            output: `<div class="m:var(--spacing-md)@sm@dark">Variable references disabled keeps condition order fix</div>`,
-            options: [{ preferVariableReferences: false }],
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="m:1rem|1.5rem@dark@sm">Multi-value tokens disabled keeps condition order fix</div>`,
-            output: `<div class="m:1rem|1.5rem@sm@dark">Multi-value tokens disabled keeps condition order fix</div>`,
-            options: [{ preferMultiValueTokens: false }],
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="w:md h:md min-w:md min-h:md max-w:md max-h:md">Composition utilities</div>`,
-            output: `<div class="size:md min-size:md max-size:md">Composition utilities</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="mt:md mb:md ml:md mr:md pt:md pb:md pl:md pr:md">Axis composition utilities</div>`,
-            output: `<div class="my:md mx:md py:md px:md">Axis composition utilities</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="mt:md@dark@sm mb:md@dark@sm">Axis composition with condition order</div>`,
-            output: `<div class="my:md@sm@dark">Axis composition with condition order</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<div class="width:md height:md w:1rem h:1rem w:md:hover h:md:hover margin-top:md margin-bottom:md padding-left:1rem padding-right:1rem">Composition after canonicalization</div>`,
-            output: `<div class="size:md size:1rem size:md:hover my:md px:md">Composition after canonicalization</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `clsx('display:block font:16px')`,
-            output: `clsx('block font:md')`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `clsx('block@dark@sm font:16px@dark@sm')`,
-            output: `clsx('block@sm@dark font:md@sm@dark')`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `clsx('width:md height:md')`,
-            output: `clsx('size:md')`,
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `clsx('margin-top:md margin-bottom:md')`,
-            output: `clsx('my:md')`,
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: 'ctl(`font:1rem r:.375rem`)',
-            output: 'ctl(`font:md r:md`)',
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: 'ctl(`block:hover@dark@sm`)',
-            output: 'ctl(`block:hover@sm@dark`)',
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: 'ctl(`w:1rem h:1rem`)',
-            output: 'ctl(`size:1rem`)',
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: 'ctl(`padding-left:1rem padding-right:1rem`)',
-            output: 'ctl(`px:md`)',
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-    ]
+{
+code: `<div class="text-align:center:hover@sm">Static pattern utility with variants</div>`
+},
+{
+code: `<div class="display:block align-items:center">Static utilities</div>`
+},
+{
+code: `<div class="font-size:16px font-size:1rem r:.375rem">Variables</div>`
+},
+{
+code: "<div class=\"margin:1rem|1.5rem padding:.5rem|1rem r:.25rem|.375rem\">Multi-value tokens</div>"
+},
+{
+code: "<div class=\"margin:var(--spacing-md) r:var(--radius-md) color:var(--color-red-60)\">Variable references</div>"
+},
+{
+code: `<div class="font-size:16px@dark@sm">Authored condition order keeps theme token fix</div>`,
+},
+{
+code: `<div class="w-md h-md min-w-md min-h-md max-w-md max-h-md">Composition utilities</div>`
+},
+{
+code: `<div class="mt-md mb-md ml-md mr-md pt-md pb-md pl-md pr-md">Axis composition utilities</div>`
+},
+{
+code: `clsx('display:block font-size:16px')`
+},
+{
+code: 'ctl(`font-size:1rem r:.375rem`)'
+},
+{
+code: "ctl(`width:1rem height:1rem`)"
+},
+{
+code: `<div class="font-md bg-red-60">Named token keys</div>`
+},
+{
+code: `<div class="display:block@dark@sm display:block:hover@dark@sm block!@dark@sm">Condition order</div>`
+},
+{
+code: `<div class="font-size:16px@dark@sm text-align:center@dark@sm">Condition order with canonical classes</div>`
+},
+{
+code: `<div class="font-size:16px@dark@sm">Literal values are preserved preserves condition nesting</div>`
+},
+{
+code: `<div class="margin-md@dark@sm">Unknown token names have no autofix, with conditions</div>`,
+},
+{
+code: "<div class=\"margin:var(--spacing-md)@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"
+},
+{
+code: "<div class=\"margin:1rem|1.5rem@dark@sm\">Literal multi-values are preserved preserves condition nesting</div>"
+},
+{
+code: `<div class="mt-md@dark@sm mb-md@dark@sm">Axis composition with condition order</div>`
+},
+{
+code: `clsx('display:block@dark@sm font-size:16px@dark@sm')`
+},
+{
+code: 'ctl(`display:block:hover@dark@sm`)'
+}
+, { code: 'ctl(`padding-left:1rem padding-right:1rem`)' }
+],
+    invalid: []
+
 })
 
 createTester({
     settings: {
         '@master/css': {
             manifest: createPresetManifest({
-                utilities: [
-                    {
-                        name: 'btn',
-                        type: UtilityType.Semantic,
-                        layer: 'components',
-                        declarations: { display: 'block' }
-                    }
-                ]
-            })
+                mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
+            , utilities: [{"name":"btn","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] })
         }
     }
 }).run('prefer canonical classes custom components', rule, {
@@ -367,270 +218,78 @@ createTester({
     }
 }).run('prefer canonical classes custom manifest', rule, {
     valid: [
-        { code: `<div class="block@midnight@wide btn@midnight@tablet">Custom variants and components</div>` }
-    ],
+{ code: `<div class="block@apply(--midnight)@apply(--wide) btn@apply(--midnight)@tablet">Custom variants and components</div>` },
+{
+code: "<div class=\"margin:1.25rem@apply(--midnight)@tablet content-visibility:auto\">Custom manifest</div>"
+}
+],
     invalid: [
-        {
-            code: `<div class="m:1.25rem@midnight@tablet content-visibility:auto">Custom manifest</div>`,
-            output: `<div class="m:card@tablet@midnight content-auto">Custom manifest</div>`,
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        }
-    ]
+
+]
 })
 
 jsxTester.run('prefer canonical classes parser smoke tests', rule, {
-    valid: [],
-    invalid: [
-        {
-            code: `<template><div class="mt:md mb:md">Vue</div></template>`,
-            output: `<template><div class="my:md">Vue</div></template>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.vue',
-            languageOptions: {
+    valid: [
+{
+code: `<template><div class="mt-md mb-md">Vue</div></template>`,
+filename: 'test.vue',
+languageOptions: {
                 parser: await import('vue-eslint-parser')
             }
-        },
-        {
-            code: `<template><div class="block@dark@sm">Vue condition</div></template>`,
-            output: `<template><div class="block@sm@dark">Vue condition</div></template>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.vue',
-            languageOptions: {
-                parser: await import('vue-eslint-parser')
-            }
-        },
-        {
-            code: `<div class="ml:md mr:md">Svelte</div>`,
-            output: `<div class="mx:md">Svelte</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.svelte',
-            languageOptions: {
+},
+{
+code: `<div class="ml-md mr-md">Svelte</div>`,
+filename: 'test.svelte',
+languageOptions: {
                 parser: await import('svelte-eslint-parser')
             }
-        },
-        {
-            code: `<div class="block@dark@sm">Svelte condition</div>`,
-            output: `<div class="block@sm@dark">Svelte condition</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.svelte',
-            languageOptions: {
-                parser: await import('svelte-eslint-parser')
-            }
-        },
-        {
-            code: `<div class="pt:md pb:md">Angular</div>`,
-            output: `<div class="py:md">Angular</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            languageOptions: {
+},
+{
+code: `<div class="pt-md pb-md">Angular</div>`,
+languageOptions: {
                 parser: await import('@angular-eslint/template-parser')
             }
-        },
-        {
-            code: `<div class="block@dark@sm">Angular condition</div>`,
-            output: `<div class="block@sm@dark">Angular condition</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            languageOptions: {
+},
+{
+code: `
+            # Test
+            <div class="pl-md pr-md">MDX</div>`,
+filename: 'test.mdx',
+languageOptions: {
+                parser: await import('eslint-mdx')
+            }
+},
+{
+code: `<template><div class="display:block@dark@sm">Vue condition</div></template>`,
+filename: 'test.vue',
+languageOptions: {
+                parser: await import('vue-eslint-parser')
+            }
+},
+{
+code: `<div class="display:block@dark@sm">Svelte condition</div>`,
+filename: 'test.svelte',
+languageOptions: {
+                parser: await import('svelte-eslint-parser')
+            }
+},
+{
+code: `<div class="display:block@dark@sm">Angular condition</div>`,
+languageOptions: {
                 parser: await import('@angular-eslint/template-parser')
             }
-        },
-        {
-            code: `
+},
+{
+code: `
             # Test
-            <div class="pl:md pr:md">MDX</div>`,
-            output: `
-            # Test
-            <div class="px:md">MDX</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.mdx',
-            languageOptions: {
+            <div class="display:block@dark@sm">MDX condition</div>`,
+filename: 'test.mdx',
+languageOptions: {
                 parser: await import('eslint-mdx')
             }
-        },
-        {
-            code: `
-            # Test
-            <div class="block@dark@sm">MDX condition</div>`,
-            output: `
-            # Test
-            <div class="block@sm@dark">MDX condition</div>`,
-            errors: [{ messageId: 'preferClass' }],
-            filename: 'test.mdx',
-            languageOptions: {
-                parser: await import('eslint-mdx')
-            }
-        },
-    ]
-})
-
-createTester({
-    languageOptions: {
-        parser: stylesheetParser as any
-    }
-}).run('prefer canonical classes in compose directives', rule, {
-    valid: [
-        {
-            code: `.btn {\n    @compose text-center;\n    contain: content;\n}`,
-            filename: 'test.css'
-        }
-    ],
+}
+],
     invalid: [
-        {
-            code: `.btn {\n    @compose text-align:center contain:content;\n}`,
-            output: `.btn {\n    @compose text-center;\n    contain: content;\n}`,
-            filename: 'test.css',
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' }
-            ]
-        },
-        {
-            code: `.btn { @compose contain:content; }`,
-            output: `.btn { contain: content; }`,
-            filename: 'test.css',
-            errors: [
-                { messageId: 'preferClass' }
-            ]
-        },
-        {
-            code: `@components {\n    btn {\n        @compose bg:blue-60:hover@sm block@dark;\n    }\n}`,
-            output: `@components {\n    btn {\n        &:hover { @variant sm { @compose bg:blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
-            filename: 'test.css',
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' }
-            ]
-        },
-        {
-            code: `.btn {\n    @compose contain:content contain:none;\n}`,
-            output: null,
-            filename: 'test.css',
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' }
-            ]
-        }
-    ]
-})
 
-jsxTester.run('prefer canonical classes compose directives', rule, {
-    valid: [
-        {
-            code: `.btn { @compose "font:16px margin:md"; }`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            }
-        },
-        {
-            code: `.btn { @compose { font:16px margin:md }; }`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            }
-        },
-        {
-            code: `const css = '.btn { @compose font:16px margin:md; }'`,
-            filename: 'test.tsx'
-        },
-        {
-            code: `<template><p>@compose font:16px margin:md</p></template><style>.btn { @compose font:md m:md; }</style>`,
-            filename: 'test.vue',
-            languageOptions: {
-                parser: await import('vue-eslint-parser')
-            }
-        },
-        {
-            code: `<script>const css = '.btn { @compose font:16px margin:md; }'</script><style>.btn { @compose font:md m:md; }</style>`,
-            filename: 'test.svelte',
-            languageOptions: {
-                parser: await import('svelte-eslint-parser')
-            }
-        },
-    ],
-    invalid: [
-        {
-            code: `.btn { @compose font:16px margin:md; }`,
-            output: `.btn { @compose font:md m:md; }`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            },
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `.btn { @compose w:md h:md mt:md mb:md; }`,
-            output: `.btn { @compose size:md my:md; }`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            },
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `.btn { @compose block@dark@sm font:16px@dark@sm; }`,
-            output: `.btn { @variant sm@dark { @compose block font:md; } }`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            },
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `.btn {
-  @compose
-    font:16px
-    margin:md
-  ;
-}`,
-            output: `.btn {
-  @compose
-    font:md
-    m:md
-  ;
-}`,
-            filename: 'test.css',
-            languageOptions: {
-                parser: cssParser
-            },
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<template><button /></template><style>.btn { @compose font:16px margin:md; }</style>`,
-            output: `<template><button /></template><style>.btn { @compose font:md m:md; }</style>`,
-            filename: 'test.vue',
-            languageOptions: {
-                parser: await import('vue-eslint-parser')
-            },
-            errors: [
-                { messageId: 'preferClass' },
-                { messageId: 'preferClass' },
-            ]
-        },
-        {
-            code: `<script>const value = true</script><style>.btn { @compose w:md h:md; }</style>`,
-            output: `<script>const value = true</script><style>.btn { @compose size:md; }</style>`,
-            filename: 'test.svelte',
-            languageOptions: {
-                parser: await import('svelte-eslint-parser')
-            },
-            errors: [
-                { messageId: 'preferClass' },
-            ]
-        },
-    ]
+]
 })

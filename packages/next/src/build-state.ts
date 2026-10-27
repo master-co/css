@@ -1,16 +1,31 @@
-import CSSScanner from '@master/css-scanner'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
 import {
-  createExtractedCSS,
-  registerStyleCSSSource,
-  type StyleCSSSources
-} from '@master/css-stylesheet'
-import type { MasterCSSManifest } from '@master/css'
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import {
+  collectStylesheetEmittedGlobals,
+  createStylesheetCollection
+} from '@master/css-compiler/stylesheet'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import { readFile } from 'node:fs/promises'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+
+const manifestHost = {
+  discoverManifestEntries,
+  loadProjectManifest,
+  collectStylesheetDependencies(entry: string, options: { root?: string }) {
+    return collectStylesheetDependenciesSync(entry, undefined, {
+      projectDir: options.root
+    })
+  }
+}
 
 export interface MasterCSSBuildState {
   manifest: MasterCSSManifest
+  emittedGlobals: MasterCSSEmittedGlobals
   nativeCSS: string
   dependencies: string[]
   styleSources: string[]
@@ -18,53 +33,82 @@ export interface MasterCSSBuildState {
 
 export interface MasterCSSBuildStateResolver {
   resolve: (classes?: string[]) => Promise<MasterCSSBuildState>
+  dispose: () => Promise<void>
 }
 
-export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
-  const result = await loadProjectManifest(projectDir)
-  const scanner = new CSSScanner({
+export async function createMasterCSSBuildStateResolver(projectDir: string, options: { pruneNativeCSS?: boolean } = {}): Promise<MasterCSSBuildStateResolver> {
+  const result = await loadMasterCSSVirtualManifest({
+    host: manifestHost,
+    root: projectDir
+  })
+  const scanner = new MasterCSSScanner({
     manifest: result.manifest
   }, projectDir)
-  const styleCSSSources: StyleCSSSources = new Map()
-  await scanner.init()
-  for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-    await registerStyleCSSSource(scanner, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+  const stylesheets = createStylesheetCollection()
+  let emittedGlobals: MasterCSSEmittedGlobals = {}
+  let emittedGlobalsDependencies: readonly string[] = []
+  try {
+    await scanner.init()
+    for (const entry of result.entries) {
+      await stylesheets.register(scanner, entry, await readFile(entry, 'utf8'), {
+        baseManifest: result.manifest,
+        projectDir,
+        pruneNativeCSS: options.pruneNativeCSS
+      })
+    }
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...result.entries], {
       baseManifest: result.manifest,
       projectDir
     })
+    emittedGlobals = emittedGlobalsResult.emittedGlobals
+    emittedGlobalsDependencies = emittedGlobalsResult.dependencies
+  } catch (error) {
+    await scanner.dispose()
+    stylesheets.dispose()
+    throw error
   }
 
   return {
     async resolve(classes?: string[]) {
-      const nativeCSS = classes?.length
-        ? await createExtractedCSS({
+      const nativeCSS = (await stylesheets.compose({
           scanner,
-          styleCSSSources,
           baseManifest: result.manifest,
           manifest: result.manifest,
           projectDir,
+          pruneNativeCSS: options.pruneNativeCSS,
           classes,
           includeGeneratedCSS: false
-        })
-        : ''
+        })).css
 
+      const stylesheetSnapshot = stylesheets.snapshot()
       return {
         manifest: result.manifest,
+        emittedGlobals,
         nativeCSS,
         dependencies: [...new Set([
           ...result.dependencies,
-          ...Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+          ...emittedGlobalsDependencies,
+          ...stylesheetSnapshot.dependencies
         ])],
-        styleSources: Array.from(styleCSSSources.keys())
+        styleSources: [...stylesheetSnapshot.sourceIds]
       }
+    },
+    async dispose() {
+      await scanner.dispose()
+      stylesheets.dispose()
     }
   }
 }
 
 export async function resolveMasterCSSBuildState(
   projectDir: string,
-  classes?: string[]
+  classes?: string[],
+  options: { pruneNativeCSS?: boolean } = {}
 ): Promise<MasterCSSBuildState> {
-  const resolver = await createMasterCSSBuildStateResolver(projectDir)
-  return resolver.resolve(classes)
+  const resolver = await createMasterCSSBuildStateResolver(projectDir, options)
+  try {
+    return await resolver.resolve(classes)
+  } finally {
+    await resolver.dispose()
+  }
 }

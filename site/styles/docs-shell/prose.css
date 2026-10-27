@@ -1,0 +1,327 @@
+@layer defaults {
+  .prose {
+    h2:has(+:is(h3, section)) {
+      color: var(--color-text-body);
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--tracking-wide);
+    }
+
+    @apply --site-light {
+      :is(p, li, table) code {
+        background-color: var(--color-neutral-0);
+      }
+    }
+
+    @apply --site-dark {
+      :is(blockquote) p {
+        color: inherit;
+      }
+    }
+
+    :is(p) {
+      font-size: var(--font-size-md);
+    }
+
+    :is(li) {
+      font-size: var(--font-size-sm);
+    }
+
+    :is(p, li) {
+      line-height: var(--leading-xl);
+    }
+
+    summary {
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    }
+
+    :is(p, li) {
+      max-width: 52.125rem;
+    }
+
+    :is(h2)+*>h3:first-child {
+      margin-top: 1em;
+    }
+
+    :is(h2, h3) {
+      position: relative;
+    }
+
+    .doc-heading-icon {
+      visibility: hidden;
+    }
+
+    :is(h2, h3):is(:hover, :target)>.doc-heading-icon {
+      visibility: visible;
+    }
+
+    :is(h2, h3) {
+      width: fit-content;
+    }
+
+    :is(a, mark, u) {
+      text-underline-offset: var(--spacing-3xs);
+    }
+
+    :is(p, li, figcaption, summary, td, th) :is(a, u) {
+      -webkit-text-decoration: from-font underline color-mix(in oklab,var(--color-accent) 50%,transparent) dotted;
+      text-decoration: from-font underline color-mix(in oklab,var(--color-accent) 50%,transparent) dotted;
+    }
+
+    :is(p, li, figcaption, td, th) :is(a):hover {
+      text-decoration-style: solid;
+      color: var(--color-accent);
+    }
+
+    :is(del) {
+      -webkit-text-decoration: from-font line-through var(--color-crimson-60);
+      text-decoration: from-font line-through var(--color-crimson-60);
+    }
+
+    :is(mark) {
+      background-color: transparent;
+    }
+
+    :is(h2, h3) a {
+      display: contents;
+      font-weight: inherit;
+    }
+
+    :is(h2) {
+      font-size: var(--font-size-2xl);
+      line-height: max(1.8em - max(0rem, var(--font-size-2xl) - 1rem) * 1.12, var(--font-size-2xl));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-2xl) - 1rem) * -.048), 0em);
+    }
+
+    :is(h3) {
+      font-size: var(--font-size-xl);
+      line-height: max(1.8em - max(0rem, var(--font-size-xl) - 1rem) * 1.12, var(--font-size-xl));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-xl) - 1rem) * -.048), 0em);
+    }
+
+    :is(h4) {
+      font-size: var(--font-size-md);
+      line-height: max(1.8em - max(0rem, var(--font-size-md) - 1rem) * 1.12, var(--font-size-md));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-md) - 1rem) * -.048), 0em);
+    }
+
+    :is(h5) {
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    }
+
+    :is(h6) {
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    }
+
+    :is(h2, h3):not(.sr-only)+ :is(h2, h3) {
+      margin-top: .75em;
+    }
+
+    :is(h2, h3, h4, h5, h6) code::before {
+      content: none !important;
+    }
+
+    :is(h2, h3, h4, h5, h6) code::after {
+      content: none !important;
+    }
+
+    :is(h2, h3, h4, h5, h6) {
+      font-weight: 460;
+    }
+
+    :is(code, th, strong, b) {
+      font-weight: 460;
+    }
+
+    :is(h2, h3, h4, h5, h6, td, th) :is(a, code):not(.code-block) {
+      font-weight: inherit;
+    }
+
+    :is(p, li, table) code:not(.code-block) {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-line-subtle);
+      padding: var(--spacing-4xs) var(--spacing-3xs);
+      font-size: small;
+    }
+
+    :is(th) {
+      color: var(--color-text-strong);
+    }
+
+    :is(pre) {
+      padding: 20px 25px;
+    }
+
+    :is(ul, ol, blockquote) {
+      padding-left: 1.25em;
+    }
+
+    :is(li) {
+      padding-left: .375em;
+    }
+
+    .task-list-item {
+      text-indent: -1.75em;
+    }
+
+    .task-list-item input {
+      width: 1em;
+      height: 1em;
+      margin-right: var(--spacing-xs);
+      vertical-align: middle;
+    }
+
+    :is(.code, p, blockquote, ul, ol, details) {
+      margin-block: 1.125em;
+    }
+
+    :is(figure) {
+      margin-block: 2em;
+    }
+
+    :is(li) {
+      margin-block: .5625em;
+    }
+
+    :is(li) :is(ul, ol, p) {
+      margin-block: .5625em;
+    }
+
+    :is(figcaption, figure img) {
+      margin-inline: auto;
+    }
+
+    :is(h1, h2, h3, h4, h5, h6) {
+      margin-top: var(--spacing-lg);
+      scroll-margin-top: 60px;
+    }
+
+    @media (--sm) {
+      :is(h1, h2, h3, h4, h5, h6) {
+        margin-top: var(--spacing-2xl);
+        scroll-margin-top: 100px;
+      }
+    }
+
+    :is(ul) {
+      list-style: circle;
+    }
+
+    .contains-task-list {
+      list-style: none;
+    }
+
+    :is(strong, b, code, a, mark, h2, h3, h4, summary) {
+      color: var(--color-text-strong);
+    }
+
+    ::marker {
+      color: var(--color-text-muted);
+    }
+
+    :is(summary) {
+      text-indent: -.875em;
+    }
+
+    :is(summary) {
+      margin-left: 1em;
+    }
+
+    :is(blockquote) {
+      border-left: 5px solid var(--color-line-subtle);
+    }
+
+    :is(img) {
+      height: auto;
+    }
+
+    :is(figcaption) {
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+      padding: 15px 20px 0;
+      color: var(--color-text-muted);
+      width: fit-content;
+    }
+
+    :is(table) {
+      width: 100%;
+    }
+
+    :is(table) {
+      border-spacing: 0;
+    }
+
+    :is(td, th) {
+      border-bottom: 1px solid var(--color-line-subtle);
+    }
+
+    :is(tbody) :is(tr:last-child)> :is(td, th) {
+      border-bottom-width: 0px;
+    }
+
+    :is(thead) th {
+      border-bottom: 1px solid var(--color-line-subtle);
+    }
+
+    :is(hr) {
+      margin-block: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-line-subtle);
+    }
+
+    @media (--sm) {
+      :is(hr) {
+        margin-block: var(--spacing-2xl);
+      }
+    }
+
+    hr+* {
+      margin-top: 0;
+    }
+
+    :is(th) {
+      text-align: left;
+    }
+
+    :is(td, th):first-child {
+      padding-left: 0;
+    }
+
+    :is(td, th):last-child {
+      padding-right: 0;
+    }
+
+    :is(th):first-child {
+      white-space: pre;
+    }
+
+    :is(td, th) {
+      padding: .455625em 1.25em;
+    }
+
+    :is(table) code {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-regular);
+      line-height: 1;
+    }
+
+    :is(p) code {
+      line-height: normal;
+    }
+
+    :is(th, td) {
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    }
+
+    :is(th, td) {
+      vertical-align: baseline;
+    }
+  }
+}

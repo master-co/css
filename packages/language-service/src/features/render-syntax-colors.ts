@@ -1,93 +1,65 @@
-import type { ColorInformation } from 'vscode-languageserver-protocol'
-import { instancePattern } from '../utils/regex'
-import CSSLanguageService from '../core'
-import type { TextDocument } from 'vscode-languageserver-textdocument'
 import Color from 'colorjs.io'
-import { type ValueComponent, type Variable } from '@master/css-language'
+import type { ColorInformation } from 'vscode-languageserver-protocol'
+import type { TextDocument } from 'vscode-languageserver-textdocument'
+import type { MasterCSSLanguageColorExpression } from '@master/css-tooling/language'
+import type { MasterCSSLanguageService } from '../core'
 
-function resolveVariableColorValue(variable: Variable | undefined, variables: Map<string, Variable>): string | undefined {
-  let current = variable
-  for (let i = 0; i < 8; i++) {
-    const value = current?.value
-    if (value === undefined) return
-    const text = String(value)
-    const alias = /^\$([a-zA-Z0-9-]+)(?: ?\/ ?.+?)?$|^var\(--([_a-zA-Z0-9-]+)\)$/.exec(text)
-    const aliasName = alias?.[1] ?? alias?.[2]
-    if (!aliasName) return text
-    current = variables.get(aliasName)
-  }
+const colorJsSpaces: Readonly<Record<string, string>> = {
+  'display-p3': 'p3',
+  'a98-rgb': 'a98rgb',
+  'prophoto-rgb': 'prophoto',
+  'xyz': 'xyz-d65'
 }
 
-export default async function renderSyntaxColors(this: CSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
-  const text = document.getText() ?? ''
-  const colorInformations: ColorInformation[] = []
-  try {
-    for (const instanceMatch of text.matchAll(instancePattern)) {
-      if (instanceMatch.index === undefined) break
-      const instanceStartIndex = instanceMatch.index
-      const syntax = instanceMatch[0]
-      const rule = this.css.generate(syntax)[0]
-      if (rule && rule.type !== this.runtime.UtilityType.Semantic) {
-        const keyTokenLength = rule.keyToken?.length ?? 0
-        let currentLength = 0
-        const resolveValueComponent = (valueComponent: ValueComponent) => {
-          if (valueComponent.text === undefined) return  // text is always existing, just for type
-          const startOffset = instanceStartIndex + keyTokenLength + currentLength
-          // TODO: check number mt:1.875rem
-          const valueComponentTokenLength = valueComponent.token.length
-          let color: Color | undefined
-          switch (valueComponent.type) {
-            case 'function':
-              if (['rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color'].includes(valueComponent.name)) {
-                color = new Color(valueComponent.text)
-              } else if (valueComponent.children.length) {
-                currentLength += valueComponent.name.length + 1 // function name + '('
-                valueComponent.children.forEach(resolveValueComponent)
-              }
-              break
-            case 'variable':
-              if (valueComponent.variable?.namespace?.startsWith('color') && valueComponent.variable.value !== undefined) {
-                color = new Color(resolveVariableColorValue(valueComponent.variable, this.css.variables) || String(valueComponent.variable.value))
-                if (valueComponent.alpha !== undefined) {
-                  color.alpha *= valueComponent.alpha
-                }
-              }
-              break
-            case 'string':
-              if (valueComponent.text !== '#' && valueComponent.text?.startsWith('#')) {
-                color = new Color(valueComponent.text)
-              }
-              break
-          }
-          // check if rgba is valid
-          if (color) {
-            const rgbaColor = color.to('srgb')
-            colorInformations.push({
-              range: {
-                start: document.positionAt(startOffset),
-                end: document.positionAt(startOffset + valueComponentTokenLength)
-              },
-              color: {
-                red: rgbaColor.r ?? 0,
-                green: rgbaColor.g ?? 0,
-                blue: rgbaColor.b ?? 0,
-                alpha: Number(rgbaColor.alpha)
-              }
-            })
-          }
-          currentLength += valueComponentTokenLength || 0
+function evaluateColorExpression(expression: MasterCSSLanguageColorExpression): Color {
+  if (expression.kind === 'literal') {
+    const color = new Color(expression.value)
+    if (expression.alpha !== undefined) color.alpha *= expression.alpha
+    return color
+  }
+  const color = Color.mix(
+    evaluateColorExpression(expression.left),
+    evaluateColorExpression(expression.right),
+    expression.progress,
+    {
+      space: colorJsSpaces[expression.space] || expression.space,
+      premultiplied: true,
+      hue: expression.hue as 'shorter' | 'longer' | 'increasing' | 'decreasing' | undefined
+    }
+  )
+  color.alpha *= expression.alphaMultiplier
+  return color
+}
+
+export default async function renderSyntaxColors(
+  this: MasterCSSLanguageService,
+  document: TextDocument
+): Promise<ColorInformation[]> {
+  const candidates = this.getClassPositions(document).map(({ token, range }) => ({
+    className: token,
+    start: range.start
+  }))
+  const colors: ColorInformation[] = []
+  for (const token of this.session.colorTokens(candidates).tokens) {
+    try {
+      const color = evaluateColorExpression(token.expression)
+      const srgb = color.to('srgb')
+      const clamp = (value: number) => Number.isFinite(value)
+        ? Math.min(1, Math.max(0, value))
+        : 0
+      colors.push({
+        range: {
+          start: document.positionAt(token.range.start),
+          end: document.positionAt(token.range.end)
+        },
+        color: {
+          red: clamp(srgb.r ?? 0),
+          green: clamp(srgb.g ?? 0),
+          blue: clamp(srgb.b ?? 0),
+          alpha: clamp(Number(srgb.alpha))
         }
-        rule.valueComponents.forEach(resolveValueComponent)
-      }
-    }
-  } catch (e) { }
-  const colorIndexSet = new Set()
-  return colorInformations.filter(item => {
-    if (colorIndexSet.has(item.range.start)) {
-      return false
-    } else {
-      colorIndexSet.add(item.range.start)
-      return true
-    }
-  })
+      })
+    } catch { }
+  }
+  return colors
 }

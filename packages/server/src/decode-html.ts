@@ -1,25 +1,13 @@
-/*
- * The framework will encode attribute values ​​when rendering HTML to prevent XSS,
- * so we must decode it for correct CSS selectors.
- * https://github.com/facebook/react/issues/27836
- */
+import { Parser } from 'htmlparser2'
+
+/** Decode as an HTML attribute while preserving the document's original markup. */
 export default function decodeHTML(html: string) {
-  return html.replace(/&(amp|apos|#39|#x27|quot|lt|gt);/g, (match, entity) => {
-    switch (entity) {
-      case 'amp':
-        return '&'
-      case 'apos':
-      case '#39':
-      case '#x27':
-        return '\''
-      case 'quot':
-        return '"'
-      case 'lt':
-        return '<'
-      case 'gt':
-        return '>'
-      default:
-        return match // 如果不是已知的實體，保留原樣
+  if (!html.includes('&')) return html
+  let decoded = html
+  new Parser({
+    onattribute(name, value) {
+      if (name === 'class') decoded = value
     }
-  })
+  }, { decodeEntities: true }).end(`<span class="${html.replaceAll('"', '&quot;')}">`)
+  return decoded
 }

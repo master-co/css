@@ -1,27 +1,24 @@
-@theme light {
+@theme {
   --color-yellow: var(--color-yellow-40);
   --color-yellow-hover: var(--color-yellow-50);
   --color-on-yellow: var(--color-yellow-95);
-  --color-yellow-line: --alpha(var(--color-black) / 10%);
+  --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
 }
 
-@theme dark {
-  --color-yellow: var(--color-yellow-50);
-  --color-yellow-hover: var(--color-yellow-40);
-  --color-on-yellow: var(--color-yellow-95);
-  --color-yellow-line: --alpha(var(--color-white) / 30%);
-}
-
-@components {
-  yellow {
-    outline: 0.0625rem var(--color-yellow-line) solid;
-    background-color: var(--color-yellow);
-    color: var(--color-on-yellow);
+@layer defaults {
+  .light {
+    --color-yellow: var(--color-yellow-40);
+    --color-yellow-hover: var(--color-yellow-50);
+    --color-on-yellow: var(--color-yellow-95);
+    --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
   }
+}
 
-  touch-yellow {
-    &:hover {
-      background-color: var(--color-yellow-hover);
-    }
+@layer defaults {
+  .dark {
+    --color-yellow: var(--color-yellow-50);
+    --color-yellow-hover: var(--color-yellow-40);
+    --color-on-yellow: var(--color-yellow-95);
+    --color-yellow-line: color-mix(in oklab, var(--color-white) 30%, transparent);
   }
 }

@@ -1,54 +1,40 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
 
-test.concurrent('breakpoint', () => expect(hint('hidden@')?.map(({ label }) => label)).toContain('@sm'))
-test.concurrent('&', () => expect(hint('hidden@sm&')?.map(({ label }) => label)).toContain('&sm'))
-test.concurrent('&>', () => expect(hint('hidden@sm&>')?.map(({ label }) => label)).toContain('>sm'))
-test.concurrent('&>=', () => expect(hint('hidden@sm&>=')?.map(({ label }) => label)).toContain('>=sm'))
-test.concurrent('&<', () => expect(hint('hidden@sm&<')?.map(({ label }) => label)).toContain('<sm'))
-test.concurrent('&<=', () => expect(hint('hidden@sm&<=')?.map(({ label }) => label)).toContain('<=sm'))
+test.concurrent('breakpoint', () => expect(hint("display:none@")?.map(({ label }) => label)).toContain('@sm'))
+test.concurrent('registered mode', () => expect(hint("display:none@")?.map(({ label }) => label)).toContain('@dark'))
 
 describe.concurrent('sorting', () => {
-  test.concurrent('@', () => expect(hint('hidden@')?.map(({ label }) => label)).toEqual([
-    '@4xs',
-    '@3xs',
-    '@2xs',
-    '@xs',
-    '@sm',
-    '@md',
-    '@lg',
-    '@xl',
+  test.concurrent('@', () => expect(hint("display:none@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply('))).toEqual([
     '@2xl',
+    '@2xs',
     '@3xl',
+    '@3xs',
     '@4xl',
-    '@all',
-    '@base',
-    '@component',
-    '@default',
+    '@4xs',
+    '@dark',
     '@landscape',
-    '@motion',
+    '@layer(base)',
+    '@layer(components)',
+    '@layer(defaults)',
+    '@layer(utilities)',
+    '@lg',
+    '@light',
+    '@md',
+    '@motion-reduce',
+    '@motion-safe',
     '@portrait',
-    '@print',
-    '@reduce-motion',
-    '@screen',
-    '@speech',
-    '@start',
-    '@utility',
+    '@sm',
+    '@starting-style',
+    '@xl',
+    '@xs',
     '@container()',
     '@media()',
     '@supports()',
   ]))
-  test.concurrent('@>', () => expect(hint('hidden@>')?.map(({ label }) => label)).toEqual([
-    '>4xs',
-    '>3xs',
-    '>2xs',
-    '>xs',
-    '>sm',
-    '>md',
-    '>lg',
-    '>xl',
-    '>2xl',
-    '>3xl',
-    '>4xl'
-  ]))
+})
+
+test('preset utilities do not become native apply completions', () => {
+  const labels = hint("display:none@")?.map(({ label }) => label).filter(label => label.startsWith('@apply(')) ?? []
+  expect(labels).toEqual([])
 })

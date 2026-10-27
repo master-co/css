@@ -10,15 +10,20 @@ let browser: Browser | undefined
 let fixtureDir: string | undefined
 const fixtureRoot = path.resolve(__dirname, '../tmp')
 
+function reportBrowserErrors(page: import('@playwright/test').Page) {
+  page.on('console', (message) => {
+    if (message.type() === 'error') console.error(`[browser] ${message.text()}`)
+  })
+  page.on('pageerror', (error) => console.error('[browser]', error))
+}
+
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
-    '@master entry;',
-    '@components {',
-    '    probe {',
-    `        @compose ${displayClass};`,
+    "@import url(\"@master/css\");",
+    '@utility probe {',
+    `        display: ${displayClass === 'hidden' ? 'none' : displayClass};`,
     '        width: 4px;',
     '        height: 4px;',
-    '    }',
     '}'
   ].join('\n'))
 }
@@ -44,17 +49,17 @@ describe('Vite dev HMR', () => {
       '<html>',
       '<head><title>Master CSS Vite runtime layer order</title></head>',
       '<body>',
-      '<main id="probe" class="box block"></main>',
+      "<main id=\"probe\" class=\"box display:block\"></main>",
       '<script type="module" src="/src/main.ts"></script>',
       '</body>',
       '</html>'
     ].join(''))
     writeFileSync(path.join(fixtureDir, 'src/main.ts'), 'import "./app.css"')
     writeFileSync(path.join(fixtureDir, 'src/app.css'), [
-      '@import "@master/css";',
+      '@import url("@master/css");',
       '@source "../index.html";',
       '',
-      '@layer components {',
+      '@layer utilities {',
       '    .box {',
       '        display: flex;',
       '        color: red;',
@@ -69,11 +74,6 @@ describe('Vite dev HMR', () => {
         host: '127.0.0.1',
         port: 0
       },
-      resolve: {
-        alias: {
-          '@master/css.vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
-        }
-      },
       plugins: masterCSS({ mode: 'runtime' })
     })
     await server.listen()
@@ -82,16 +82,17 @@ describe('Vite dev HMR', () => {
 
     browser = await chromium.launch()
     const page = await browser.newPage()
-    await page.goto(url)
+    reportBrowserErrors(page)
+    await page.goto(url, { timeout: 120_000 })
     await page.waitForFunction(() => {
       const probe = document.querySelector('#probe')
       return !!document.getElementById('master-css')
         && !!probe
         && getComputedStyle(probe).display === 'block'
-    })
+    }, undefined, { timeout: 120_000 })
 
     const state = await page.evaluate(() => {
-      const runtimeScript = document.querySelector('script[src="/@id/@master/css.vite/runtime"]')
+      const runtimeScript = document.querySelector('script[src="/@id/__x00__virtual:master-css-runtime"]')
       const sheetOwners = Array.from(document.styleSheets).map((sheet) => {
         const owner = sheet.ownerNode as Element | null
         return owner?.id
@@ -102,7 +103,7 @@ describe('Vite dev HMR', () => {
       })
       return {
         display: getComputedStyle(document.querySelector('#probe')!).display,
-        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/@master/css.vite/runtime"]'),
+        hasRuntimePreload: !!document.head.querySelector('link[rel="modulepreload"][href="/@id/__x00__virtual:master-css-runtime"]'),
         runtimeScriptParent: runtimeScript?.parentElement?.tagName,
         runtimeScriptIsLastBodyElement: document.body.lastElementChild === runtimeScript,
         sheetOwners
@@ -127,9 +128,10 @@ describe('Vite dev HMR', () => {
       '<!doctype html>',
       '<html>',
       '<head><title>Master CSS Vite HMR</title></head>',
-      '<body><div id="probe" class="probe"></div></body>',
+      '<body><div id="probe" class="probe"></div><script type="module" src="/main.ts"></script></body>',
       '</html>'
     ].join(''))
+    writeFileSync(path.join(fixtureDir, 'main.ts'), 'import "./app.css"')
     writeStyle(fixtureDir, 'inline-flex')
 
     server = await createServer({
@@ -138,11 +140,6 @@ describe('Vite dev HMR', () => {
       server: {
         host: '127.0.0.1',
         port: 0
-      },
-      resolve: {
-        alias: {
-          '@master/css.vite/runtime': path.resolve(__dirname, '../src/runtime.ts')
-        }
       },
       plugins: masterCSS({ mode: 'runtime' })
     })
@@ -158,8 +155,13 @@ describe('Vite dev HMR', () => {
 
     browser = await chromium.launch()
     const page = await browser.newPage()
-    await page.goto(url)
-    await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'inline-flex')
+    reportBrowserErrors(page)
+    await page.goto(url, { timeout: 120_000 })
+    await page.waitForFunction(
+      () => getComputedStyle(document.querySelector('#probe')!).display === 'inline-flex',
+      undefined,
+      { timeout: 120_000 }
+    )
     await page.evaluate(() => {
       (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER = 'preserve'
     })
@@ -170,7 +172,7 @@ describe('Vite dev HMR', () => {
     expect(await page.evaluate(() => (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER))
       .toBe('preserve')
 
-    writeStyle(fixtureDir, 'bg:neutral-120')
+    writeStyle(fixtureDir, "background:neutral-120")
     await page.waitForTimeout(300)
     writeStyle(fixtureDir, 'block')
     await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'block')

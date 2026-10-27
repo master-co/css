@@ -1,0 +1,77 @@
+---
+import clsx from 'clsx'
+import fontCSS from '~/site/public/fonts/index.css?raw'
+import { codeTabsBootstrap } from '~/site/docs-shell/scripts/code-tabs-bootstrap'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
+import { resolveHead } from '~/site/docs-shell/utils/head'
+import { siteContextOf } from '~/site/astro/site-context'
+import { localizePathname } from '~/site/routes'
+import { siteContextElementId } from '~/site/docs-shell/layouts/root'
+import type { Metadata } from '~/site/docs-shell/types/Metadata'
+import type { PageAssets } from '~/site/astro/propagated-assets'
+
+interface Props {
+  metadata: Partial<Metadata>
+  /** Stylesheets in cascade order: site, section, layouts, then the page. */
+  assets: PageAssets
+  bodyClass?: string
+  /** Standalone pages, such as iframe examples, omit the documentation shell. */
+  bare?: boolean
+  /** Locales the page is published in. */
+  locales: readonly string[]
+}
+
+const { metadata, assets, bodyClass, bare, locales } = Astro.props
+const site = siteContextOf(Astro.url)
+const hreflangOf = (locale: string) => (i18n.hreflangOfLocale as Record<string, string>)[locale] ?? locale
+const basePathname = site.locale === i18n.defaultLocale ? site.pathname : site.pathname.slice(site.locale.length + 1) || '/'
+const languages = locales.length > 1
+  ? { ...Object.fromEntries(locales.map((locale) => [hreflangOf(locale), localizePathname(basePathname, locale)])), 'x-default': basePathname }
+  : undefined
+const head = resolveHead(metadata, { project: import.meta.env.PUBLIC_PROJECT, siteURL: import.meta.env.PUBLIC_URL, pathname: site.pathname, languages })
+const siteContextJSON = JSON.stringify(site).replace(/</g, '\\u003c')
+// Island modules carry React Refresh registration in development and need its runtime first,
+// as @vitejs/plugin-react's preamble provides for Astro's own islands.
+const refreshPreamble = import.meta.env.DEV ? `import { injectIntoGlobalHook } from "${import.meta.env.BASE_URL}@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;` : undefined
+const themeScript = `
+const preference = localStorage.getItem('theme-preference') || 'system';
+const value = preference === 'system'
+  ? matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'
+  : preference;
+document.documentElement.classList.add(value);
+if (['dark', 'light'].includes(value)) document.documentElement.style.colorScheme = value;`
+---
+
+<!doctype html>
+<html lang={hreflangOf(site.locale)}>
+  <head>
+    <meta charset="utf-8" />
+    {refreshPreamble && <script type="module" is:inline set:html={refreshPreamble}></script>}
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
+    <script is:inline blocking="render" set:html={themeScript}></script>
+    <link blocking="render" rel="preload" as="font" href="/fonts/GeistVariable.woff2" crossorigin="anonymous" />
+    <link blocking="render" rel="preload" as="font" href="/fonts/IBMPlexMono-Regular.woff2" crossorigin="anonymous" />
+    {site.locale === 'tw' && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />}
+    <style is:inline blocking="render" set:html={fontCSS}></style>
+    <style is:inline>site-island,site-slot{display:contents}</style>
+    {assets.links.map((href) => <link rel="stylesheet" href={href} />)}
+    {assets.styles.map((css) => <style is:inline set:html={css}></style>)}
+    <title>{head.title}</title>
+    {head.tags.map(({ tag: Tag, attributes }) => <Tag {...attributes} />)}
+  </head>
+  <body class={clsx(bodyClass, 'bg-slate-50/.2_:is(::selection)', 'fg-text-body')}>
+    <slot />
+    {/* After the content, so persisted code tabs apply in the first pass, before paint. */}
+    {!bare && <script is:inline set:html={`(${codeTabsBootstrap.toString()})();`}></script>}
+    <script is:inline type="application/json" id={siteContextElementId} set:html={siteContextJSON}></script>
+    <script>
+      import '~/site/islands/client'
+      import '~/site/docs-shell/scripts/document'
+      import '~/site/docs-shell/scripts/code'
+    </script>
+  </body>
+</html>

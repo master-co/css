@@ -4,9 +4,8 @@ export default [
   ...common,
   {
     ignores: [
-      '.nuxt/**',
+      '**/.nuxt/**',
       'dist/**',
-      'playground/.nuxt/**',
       'playground/.output/**'
     ]
   }

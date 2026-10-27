@@ -68,12 +68,14 @@ npm install @master/css-language-service
 ## Usage
 
 ```js
-import CSSLanguageService from '@master/css-language-service'
+import { MasterCSSLanguageService } from '@master/css-language-service'
+import { createToolingSession } from '@master/css-tooling'
 
-const languageService = new CSSLanguageService(customSettings)
+const session = await createToolingSession({ manifest })
+const languageService = new MasterCSSLanguageService(customSettings, { session })
 ```
 
-`CSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around the editor-neutral primitives in `@master/css-language`.
+`MasterCSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around one manifest-scoped tooling session. Dispose the service when the editor workspace closes.
 
 ### Semantic tokens
 
@@ -81,7 +83,7 @@ const languageService = new CSSLanguageService(customSettings)
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
-Semantic tokens are generated with the project manifest, so custom variables, components, utilities, modes, and other manifest-dependent tokens can be classified after the caller loads the manifest.
+Semantic tokens are generated with the project manifest, so project tokens, utility definitions, and other manifest-dependent syntax can be classified after the caller loads the manifest.
 
 Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context at the current editor position.
 
@@ -89,7 +91,7 @@ Use `renderSemanticTokensAtPosition()` when a client wants active-only highlight
 const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocument, position)
 ```
 
-CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as bare `@compose` preludes and quoted `@safelist` strings.
+CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as quoted `@safelist` strings.
 
 ### Directive formatting
 
@@ -97,7 +99,7 @@ CSS directive syntax in CSS-family documents is highlighted by the shared TextMa
 const edits = languageService.formatDirectives(textDocument)
 ```
 
-Directive formatting returns LSP text edits for Master CSS directive source. It supports CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents. The formatter repairs directive class-list important markers such as `bg:transparent !` to `bg:transparent!` and does not change compiler semantics or generated CSS.
+Directive formatting returns LSP text edits for Master CSS directive source. It supports CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents. The formatter repairs directive class-list important markers such as `background-color:transparent !` to `background-color:transparent!` and does not change compiler semantics or generated CSS.
 
 Pass an LSP range as the second argument for range formatting:
 
@@ -108,7 +110,7 @@ const edits = languageService.formatDirectives(textDocument, range)
 ## Settings
 
 ```js
-import { settings } from '@master/css-language-service'
+import { defaultLanguageServiceSettings } from '@master/css-language-service'
 ```
 
 | Setting | Type | Default | Description |
@@ -126,4 +128,4 @@ import { settings } from '@master/css-language-service'
 | `formatDirectives` | `boolean` | `true` | Enables Master CSS directive formatting. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Controls embedded semantic token highlighting. |
 
-Use `@master/css-language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.
+Use `@master/css-tooling/language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.

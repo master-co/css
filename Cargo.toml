@@ -1,0 +1,97 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/mastercss-schema",
+  "crates/mastercss-lexer",
+  "crates/mastercss-lint",
+  "crates/mastercss-language",
+  "crates/mastercss-cli",
+  "crates/mastercss-engine",
+  "crates/mastercss-compiler",
+  "crates/mastercss-project",
+  "crates/mastercss-diagnostics",
+  "crates/mastercss-source",
+  "crates/mastercss-scanner",
+  "crates/mastercss-render",
+  "crates/mastercss-validator",
+  "crates/mastercss-binding-native",
+  "crates/mastercss-binding-wasm-engine",
+  "crates/mastercss-binding-wasm-compiler",
+  "crates/mastercss-binding-wasm-tooling",
+  "crates/xtask",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.97"
+license = "MIT"
+repository = "https://github.com/master-co/css"
+publish = false
+
+[workspace.dependencies]
+cssparser = "0.37.0"
+napi = { version = "3.12.2", default-features = false, features = ["napi8", "serde-json"] }
+napi-build = "2.4.1"
+napi-derive = "3.6.3"
+htmlparser = "0.2.1"
+# Must match lightningcss so the compiler Wasm binding enables its wasm_js backend.
+getrandom = "0.3.4"
+lightningcss = { version = "1.0.0-alpha.72", default-features = false, features = ["visitor"] }
+oxc_allocator = "0.148.0"
+oxc_ast = "0.148.0"
+oxc_ast_visit = "0.148.0"
+oxc_parser = { version = "0.148.0", default-features = false }
+oxc_span = "0.148.0"
+oxc_syntax = "0.148.0"
+regex = "1.13.1"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.151", features = ["preserve_order"] }
+sha2 = "0.11.0"
+serde-wasm-bindgen = "0.6.5"
+thiserror = "2.0.20"
+wasm-bindgen = "0.2.128"
+wasm-bindgen-cli-support = "0.2.128"
+
+[profile.dev]
+# Keep file and line numbers in panic backtraces, but drop the type and variable
+# DWARF that accounts for roughly three quarters of every dependency object file.
+debug = "line-tables-only"
+
+# "*" matches dependencies only, never workspace members.
+[profile.dev.package."*"]
+debug = false
+
+# Build scripts and proc macros inherit the profile's debug level unless set here.
+[profile.dev.build-override]
+debug = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
+[profile.release.package.mastercss-binding-wasm-compiler]
+opt-level = "s"
+
+[profile.release.package.mastercss-binding-wasm-tooling]
+opt-level = "s"
+
+# The engine Wasm serves Node without a native binding and non-browser hosts such
+# as edge workers, where its package and deploy size count. Optimize every crate in
+# it for size; `release` keeps opt-level 3 for native code. Measured on the former
+# browser runtime Wasm, "z" for the engine, lexer and schema crates, which hold
+# most of its code, was about 11% smaller under brotli and at most 16% slower,
+# while "z" for every crate saved only 1% more and slowed DOM scans by 24%.
+[profile.release-wasm]
+inherits = "release"
+opt-level = "s"
+
+[profile.release-wasm.package.mastercss-engine]
+opt-level = "z"
+
+[profile.release-wasm.package.mastercss-lexer]
+opt-level = "z"
+
+[profile.release-wasm.package.mastercss-schema]
+opt-level = "z"

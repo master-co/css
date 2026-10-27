@@ -1,18 +1,8 @@
 # Context Pack Index
 
-Use this index after reading `AGENTS.md`. Load the smallest pack that matches the task, then follow any "Escalate When" guidance in that pack. Context packs are compact routing aids; deeper `.ai/*.md` files remain the source of detailed architecture and testing policy.
+Choose the matching route when you need task guidance or ownership context. Read only what applies; do not reopen `AGENTS.md`, this index, or other instructions already in context. Pure wording/formatting edits can stay with the affected document and its local guidance.
 
-## Default Read Order
-
-1. `AGENTS.md`
-2. This file
-3. `.ai/context/package-routing.md` when paths, packages, or a diff are known
-4. Affected package `package.json`
-5. Affected package-local `AI.md`, if present
-6. One task pack below
-7. Existing source and nearby tests
-
-Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrails.md` whenever the task touches CSS output, package boundaries, public APIs, runtime, extraction, language tooling, ESLint, compiler, parser, or performance-sensitive paths.
+For package code, read the affected manifest and local `AI.md`. For high-risk behavior changes, use [accuracy-guardrails.md](accuracy-guardrails.md) and its relevant deep references before editing. Route by the behavior being changed, not merely by a package name appearing in the task.
 
 ## Task Routing
 
@@ -27,12 +17,13 @@ Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrai
 | Public docs or examples | `.ai/context/docs.md` |
 | Package ownership, dependency direction, exports, cycles | `.ai/context/package-boundaries.md` |
 | File path, package, or diff routing | `.ai/context/package-routing.md` |
+| Rust crate, binding, codegen, or parity routing | `.ai/context/rust-routing.md` |
 
 ## Deep References
 
 - Project overview: `.ai/overview.md`
 - Package ownership and dependency direction: `.ai/architecture.md`, `.ai/package-map.md`
-- Path-based package context: `.ai/context/package-routing.md`
+- Enforced source/context budgets: `.ai/context/source-budget.json`
 - Class, compiler, scanner, runtime, and language flows: `.ai/data-flows.md`
 - Boundaries and risk areas: `.ai/boundaries.md`
 - Validation matrix and benchmark policy: `.ai/testing-policy.md`

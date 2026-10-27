@@ -1,0 +1,19 @@
+Each preset token family has one canonical prefix, defined by an explicit utility pattern. Common families use short names; there is no second, full-property token spelling.
+
+```html
+<div class="p-md fg-text-body bg-surface-base b-line-control r-sm"></div>
+```
+
+Load the full `@master/css` preset, or import `@master/css/utilities.css` alongside your own theme. These classes read named theme tokens. `p-md` sets padding from `--spacing-md`; `fg-text-body` sets color from `--color-text-body`.
+
+Direct values always use complete native CSS property names:
+
+```html
+<div class="padding:1rem color:red border-width:1px border-style:solid"></div>
+```
+
+Use `font-sm`, `font-mono`, or `font-bold` for typography tokens. `text-*` is a named typography recipe with companion tokens, not an alternative spelling for font size.
+
+Logical token prefixes keep CSS writing-mode semantics: `mx`/`px` refer to the inline axis and `my`/`py` to the block axis. `gap-x` is column gap; `gap-y` is row gap. Families without an existing short name retain their full name as their only prefix.
+
+Different properties can share a token namespace: `fg-red` and `bg-red` both read `--color-red` but set different properties. See the token reference for the canonical prefix and namespace of each family.

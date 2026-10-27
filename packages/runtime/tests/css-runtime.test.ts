@@ -1,25 +1,26 @@
-import { cssRuntime } from '../src'
-import type CSSRuntime from '../src'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { withMasterCSSRuntime, type MasterCSSRuntime } from '../src'
 
-const manifest = { version: 1 } satisfies MasterCSSManifest
+const program = new Uint8Array()
 
 class RuntimeElement extends HTMLElement {
-  cssRuntime?: CSSRuntime
+  masterCSSRuntime?: MasterCSSRuntime
 
   connectedCallback() {
-    const runtime: CSSRuntime | undefined = this.cssRuntime
-    runtime?.refresh(manifest)
+    const runtime = this.masterCSSRuntime
+    runtime?.refresh(program)
   }
 }
 
-cssRuntime({ manifest })(RuntimeElement)
-cssRuntime({
-  manifest,
+withMasterCSSRuntime({ program })(RuntimeElement)
+withMasterCSSRuntime({
+  program: async () => (await fetch('/master-css-program.bin')).arrayBuffer(),
   root: (host) => host.shadowRoot,
   emittedGlobals: {
     variables: {
       primary: 1
     }
   }
+})(RuntimeElement)
+withMasterCSSRuntime({
+  program: (host) => host.dataset.program === 'empty' ? new ArrayBuffer(0) : program
 })(RuntimeElement)

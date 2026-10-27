@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css.astro'
+import masterCSS from '@master/css-astro'
 import sitemap from '@astrojs/sitemap'
 
 // https://astro.build/config
@@ -8,6 +8,6 @@ export default defineConfig({
   trailingSlash: 'never',
   integrations: [
     sitemap(),
-    masterCSS() // progressive rendering by default
+    masterCSS({ mode: 'progressive' })
   ]
 })

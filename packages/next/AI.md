@@ -1,15 +1,16 @@
-# AI Notes For `@master/css.next`
+# AI Notes For `@master/css-next`
 
 ## Responsibility
 
-`@master/css.next` integrates Master CSS with Next.js.
+`@master/css-next` integrates Master CSS with Next.js.
 
 ## Owns
 
 - `pre-render` mode through the Next.js Adapter API.
 - `runtime` mode through the Next client instrumentation hook.
+- Runtime and progressive Adapter API output also publishes final CSS ownership sidecars.
 - `progressive` mode as runtime plus pre-render behavior.
-- `static` mode through generated CSS and Turbopack scanner loaders.
+- Default `static` mode through generated CSS; Turbopack CSS loaders own source watches, while Webpack keeps an early source loader.
 - Next-specific manifest import/loaders and static CSS loaders.
 - Build output rendering helpers.
 
@@ -17,7 +18,7 @@
 
 - Dynamic SSR response transformation.
 - App Router request-time class collection.
-- Static extraction semantics; `CSSScanner` remains the source of static behavior.
+- Static extraction semantics; `MasterCSSScanner` remains the source of static behavior.
 - Webpack-specific extraction internals.
 - React component registry/provider APIs.
 
@@ -34,10 +35,12 @@
 - `src/index.ts`
 - `src/adapter.ts`
 - `src/static.ts`
+- `src/static-snapshot.ts`, `src/static-cache.ts`, `src/static-queue.ts`
 - `src/static-css-loader.ts`
 - `src/static-loader.ts`
 - `src/css-manifest-loader.ts`
 - `src/css-manifest-import-loader.ts`
+- `src/runtime-program.ts`
 - `src/options.ts`
 - Generated `node_modules/.master-css/master-css-next-instrumentation-client.js` source from `src/index.ts`
 
@@ -46,31 +49,53 @@
 - Next Adapter API type changes across Next major versions.
 - Accidentally processing non-HTML assets.
 - Duplicate writes for fallback HTML listed through multiple output groups.
-- Turbopack loader behavior as an incremental scanner.
+- Turbopack CSS loader watch ownership and direct generated CSS imports.
+- Manifest loaders omit `source` provenance only when the loader `mode` is `production`, which Webpack and Turbopack report to every server and client loader; runtime programs compile from that production manifest. The import loader writes those modules to `*.production.manifest.js` and `*.production.program.js` so a concurrent `next dev` keeps its own files.
+- Browser code receives `virtual:master-css-program` (and `?master-css-program`), inlined by the manifest loader's `program` option in every mode; server code keeps the manifest. The program placeholder module throws if a bundler ever skips the loader.
 - Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
 - Runtime injection must preserve user `instrumentation-client` via the secondary alias before overriding Next's `private-next-instrumentation-client`.
 - Runtime, preload, mode default, and cascade-layer changes must be audited against Vite, Webpack, Nuxt, and Astro so integration behavior does not drift.
+- Progressive instrumentation-client output passes the runtime program as a dynamic import loader and adds no engine or program preloads, so a fully pre-rendered page does not request the runtime engine.
+
+## Static Publication Invariants
+
+- Each snapshot hashes the same raw bytes supplied to extraction. Later verification
+  captures fresh bytes; a file timestamp is never publication-cache evidence.
+- Publication receipts are disposable, versioned internal files. Under the project
+  lock, verify the full current inventory, configuration/tool identity and every
+  output digest before reuse. Cache hits must still expose complete host dependencies.
+- Stylesheet collections may be retained only while entries, order, processed inputs
+  and dependencies are unchanged. Explicit `@source` includes and `@reference` context conservatively rebuild
+  because their discovery/lowering is not fully represented by the import inventory.
+- Webpack module notifications share work only before snapshot capture; explicit
+  stylesheet inputs remain ordered. Turbopack does not publish from JS module
+  loaders: source and directory watches belong to CSS entries and imported
+  `.master/next.css`. Publish assets before the entry and the receipt after it.
+- Webpack root-context watching excludes publication locks, receipts, processed-input
+  storage, scan logs and atomic temporary files. Generated CSS/assets and configuration
+  state remain observable; do not ignore the entire `.master` directory.
 
 ## Safe Changes
 
 - Focused adapter, static loader, or manifest loader fixes with tests.
-- Turbopack loader fixes that preserve guarded `content: /master-css-manifest/` rules.
+- Turbopack loader fixes that preserve guarded `content` rules for `?master-css-manifest` and `?master-css-program`.
 - Playground validation for integration behavior.
 
 ## Dangerous Changes
 
 - Hiding request-time limitations behind build-time behavior.
-- Making static mode rely on `nextConfig.webpack` or `@master/css.webpack`.
-- Broadening JS loader rules beyond manifest-import handling.
+- Making Turbopack static mode depend on Webpack or `@master/css-webpack`.
+- Broadening JS loader rules beyond project-owned static scanning and manifest-import handling.
+- Writing manifest data into `.next` directly. Manifest imports are tracked ESM inputs; the bundler owns their delivery URLs and chunks.
 - Reintroducing React tree wrappers for automatic runtime injection.
 
 ## Validation
 
 ```sh
-pnpm --filter @master/css.next test
-pnpm --filter @master/css.next lint
-pnpm --filter @master/css.next type-check
-pnpm --filter @master/css.next build
+pnpm --filter @master/css-next test
+pnpm --filter @master/css-next lint
+pnpm --filter @master/css-next type-check
+pnpm --filter @master/css-next build
 ```
 
-Run `pnpm --filter @master/css.next e2e` and build `packages/next/playground` when integration behavior changes.
+Run `pnpm --filter @master/css-next e2e` and build `packages/next/playground` when integration behavior changes.

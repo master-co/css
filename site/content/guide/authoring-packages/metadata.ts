@@ -1,0 +1,11 @@
+import define from '~/site/docs-shell/utils/metadata'
+
+const metadata = define({
+  title: 'Authoring Packages',
+  description: 'Create a simple CSS-only package that shares Master CSS tokens, utilities, mixins, custom media, and component vocabulary.',
+  category: 'Authoring',
+  order: 4,
+  fileURL: import.meta.url
+})
+
+export default metadata

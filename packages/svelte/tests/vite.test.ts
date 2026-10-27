@@ -1,7 +1,22 @@
 import { describe, expect, test } from 'vitest'
-import masterCSS, { SVELTEKIT_SSR_EXTERNAL } from '../src/lib/vite.js'
+import masterCSS, { createMasterCSSVitePlugin } from '../src/lib/vite.js'
 
 describe('Svelte Vite integration', () => {
+  test('exports the same integration as default and named factories', () => {
+    expect(masterCSS).toBe(createMasterCSSVitePlugin)
+  })
+
+  test('defaults to static and keeps runtime explicit', () => {
+    expect(masterCSS().map(plugin => plugin.name)).not.toContain('master-css:inject-runtime')
+    expect(masterCSS({ mode: 'runtime' }).map(plugin => plugin.name)).toContain('master-css:inject-runtime')
+  })
+
+  test('omits index HTML hooks, which SvelteKit never calls', () => {
+    for (const mode of ['static', 'runtime', 'progressive', 'pre-render'] as const) {
+      expect(masterCSS({ mode }).filter(plugin => plugin.transformIndexHtml).map(plugin => plugin.name)).toEqual([])
+    }
+  })
+
   test('includes the emittedGlobals virtual module from the wrapped Vite plugin', () => {
     expect(masterCSS().map((plugin) => plugin.name)).toContain('master-css:virtual-module:emitted-globals')
   })
@@ -14,11 +29,11 @@ describe('Svelte Vite integration', () => {
 
     expect(config).toEqual({
       ssr: {
-        external: SVELTEKIT_SSR_EXTERNAL
+        external: ['@master/css-server']
       },
       build: {
         rollupOptions: {
-          external: SVELTEKIT_SSR_EXTERNAL
+          external: ['@master/css-server']
         }
       }
     })

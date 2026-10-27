@@ -1,0 +1,98 @@
+import Class2CSS from '~/site/components/Class2CSS'
+import { FoundationDialog, FoundationMotion, FoundationTransition } from '~/site/components/demo/FoundationTypeMotion'
+import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
+
+## Overview [sr-only]
+Use motion to explain a state change or show progress. Choose a short duration for feedback and reserve continuous motion for status indicators.
+
+<FoundationMotion />
+
+## Choose motion tokens
+### Animation tokens
+Each `--animate-*` token contains a complete native `animation` shorthand. The matching `animate-*` class emits one declaration, such as `animation: var(--animate-fade)`.
+
+Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progress. See [all animation values and their contract](/reference/tokens/animate).
+
+### Duration scale
+Share duration tokens across animation and transition properties.
+
+<FoundationTokens namespace="duration" keys={["fast", "normal"]} />
+
+See the complete [values and consumers](/reference/tokens/duration) in Reference.
+
+### Easing scale
+Choose easing tokens for repeated motion decisions, or use explicit CSS curves such as `linear`, `steps()` and `cubic-bezier()`.
+
+<FoundationTokens namespace="easing" keys={["smooth"]} />
+
+See the complete [values and consumers](/reference/tokens/easing) in Reference.
+
+## Namespaces for motion
+Both `animation-` and `transition-` register the `duration` and `easing` namespaces. `animation-fast` sets `animation-duration`; `animation-smooth` sets `animation-timing-function`. `transition-fast` and `transition-smooth` set the corresponding transition properties. Keys must be unique across the two namespaces. Delays use `animation-delay-fast` or `transition-delay-fast` because they read the same duration tokens. See [all consumers](/reference/tokens/families).
+
+Set an animation name and its timing independently:
+
+```html
+<div class="animation-name:fade animation-fast animation-smooth animation-fill-mode:both">Ready</div>
+```
+
+<Class2CSS>{['animation-name:fade', 'animation-fast', 'animation-smooth', 'animation-fill-mode:both']}</Class2CSS>
+
+## Use motion tokens
+Use a named animation token and override individual settings with full-property declarations when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.
+
+```html
+<div class="animate-fade animation-duration:var(--duration-fast) animation-iteration-count:1">Ready</div>
+<svg class="animate-rotate@motion-safe animation-duration:var(--duration-slowest)@motion-safe">...</svg>
+```
+
+<Class2CSS>{['animate-fade', 'animation-duration:var(--duration-fast)', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration:var(--duration-slowest)@motion-safe']}</Class2CSS>
+
+Token classes follow the general declaration order. At the same layer and conditions, `animation-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `animation-duration:var(--duration-fast)` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
+
+## Transition properties
+
+<FoundationTransition />
+Select the property, duration and timing function independently. A transition runs when the selected property's value changes.
+
+```html
+<button class="opacity:.7 opacity:1:hover transition-property:opacity transition-fast transition-smooth">Save</button>
+```
+
+<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'transition-property:opacity', 'transition-fast', 'transition-smooth']}</Class2CSS>
+
+## Respect motion preference
+Use `@motion-safe` so nonessential motion only runs when the user has not requested reduced motion. Keep status text visible in either state.
+
+```html
+<span class="animate-pulse@motion-safe">Loading…</span>
+```
+
+<Class2CSS>{'animate-pulse@motion-safe'}</Class2CSS>
+
+## Customize motion tokens
+
+<FoundationDialog />
+Store the keyframe name and playback settings together in one shorthand token. Duration and easing tokens can be referenced with `var()`. Omitted fields use native CSS defaults; this entrance runs once and keeps both fill states.
+
+```css name=index.css
+@prune native;
+@theme {
+  --duration-enter: 180ms;
+  --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
+  --animate-dialog-in: dialog-in var(--duration-enter) var(--easing-emphasized) both;
+}
+@keyframes dialog-in {
+  from { translate: 0 0.5rem; opacity: 0; }
+  to { translate: 0; opacity: 1; }
+}
+```
+
+```html
+<dialog class="animate-dialog-in@motion-safe">...</dialog>
+```
+
+With `@prune native`, animation declarations retain their referenced keyframes. Static names, token references, native overrides and fallbacks are tracked; unresolved dynamic names retain all candidates. Without pruning, keyframes stay in their stylesheet. Use `@safelist keyframes "dialog-in";` for names introduced only by JavaScript. See the [keyframe contract](/reference/directives/theme#native-keyframes).
+
+## Avoid motion noise
+Keep persistent controls still until feedback is needed. Reuse duration and easing tokens so related interactions share a rhythm.

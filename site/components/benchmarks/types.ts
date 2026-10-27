@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 export type BenchmarkTone = 'neutral' | 'good' | 'warn' | 'bad'
-export type BenchmarkColor = 'yellow' | 'green' | 'cyan' | 'blue' | 'red'
+export type BenchmarkColor = 'yellow' | 'green' | 'cyan' | 'blue' | 'red' | 'violet' | 'neutral'
 
 export interface BenchmarkBarItem {
   id: string

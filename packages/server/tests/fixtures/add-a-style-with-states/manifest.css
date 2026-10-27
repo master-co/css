@@ -1,26 +1,39 @@
-@settings {
-  mode-trigger: media;
-  modes: light dark;
-}
 
 @theme {
   --color-black: oklch(0% 0 none);
 }
 
+
 @theme {
   --color-white: oklch(100% 0 none);
 }
 
-@theme light {
+
+@theme {
   --color-focus: var(--color-black);
 }
 
-@theme dark {
+.light {
+  --color-focus: var(--color-black);
+}
+
+
+
+
+.dark {
   --color-focus: var(--color-white);
 }
 
-@components {
-  btn {
+
+
+  @mixin --btn {
+    &:focus {
+    outline: 0.125rem var(--color-focus) solid;
+    }
+    &:focus {
+    outline-offset: 0.125rem;
+    }
+  } @utility btn {
     &:focus {
     outline: 0.125rem var(--color-focus) solid;
     }
@@ -28,4 +41,3 @@
     outline-offset: 0.125rem;
     }
   }
-}

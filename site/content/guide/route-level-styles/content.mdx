@@ -1,0 +1,215 @@
+## Overview [sr-only]
+Route-level styles are ordinary CSS files loaded by one route, page, view, or component. They can use Master CSS as compile-time context without becoming a global entry.
+
+The Vite, Next.js, and Webpack integrations automatically supply definitions from discovered project entries to stylesheets loaded by the framework:
+
+```txt
+app/
+  globals.css
+  home/
+    page.tsx
+    home.css
+```
+
+Then write native CSS selectors and declarations. Share design values with CSS custom properties and shared behavior with native classes or component interfaces.
+
+```css name=app/home/home.css
+.home-section {
+  padding-block: var(--spacing-5xl);
+}
+```
+
+Load the route stylesheet from the route, page module, or component entry that owns it:
+
+```ts name=app/home/page.tsx
+import "./home.css"
+```
+
+Load the global stylesheet for its reset, layer order, native rules, and generated utilities. Project definitions are shared at compile time; they do not cause the global stylesheet to be loaded by a route.
+
+---
+
+## Use project definitions
+A route stylesheet can use project tokens, mixins, and custom media directly. It remains a separate CSS output owned by its route.
+
+```css name=app/home/home.css
+.pricing-hero {
+  display: grid;
+  gap: var(--spacing-lg);
+  padding-block: var(--spacing-5xl);
+}
+
+.pricing-card {
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-line-divider);
+  background-color: var(--color-surface-raised);
+}
+```
+
+Here `--color-surface-raised` is a shared token; the card's geometry stays in native CSS. The route output contains its native rules and the theme variables or managed keyframes those rules need. Discovering a project entry does not prove it is loaded, so the integration retains these resources even when another entry uses them.
+
+This keeps route CSS chunks self-contained without copying global native rules or generated utility classes. Unrelated CSS passes through unchanged.
+
+Use `@reference` for definitions outside the project context, such as a package used only by this route:
+
+```css
+@reference "@acme/theme/tokens.css";
+
+.route-card { background-color: var(--color-surface-raised); }
+```
+
+An independent compiler call has no automatic project context. Supply `referenceFiles` with absolute definition filenames and enable `transformNativeStylesheets`, or write an explicit `@reference`.
+
+---
+
+## Write native selectors
+Route styles do not need on-demand generation. Treat route classes like traditional CSS that belongs to that route.
+
+```css name=app/home/home.css
+@layer components {
+  .home-bento {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-bento-card {
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line-divider);
+    background-color: var(--color-surface-raised);
+  }
+}
+```
+
+Use classes when the selector is part of the page structure. Use native selectors when they are clearer:
+
+```css name=app/home/home.css
+.home-bento-card > h2 {
+  font-size: var(--font-size-lg);
+  line-height: max(1.8em - max(0rem, var(--font-size-lg) - 1rem) * 1.12, var(--font-size-lg));
+  letter-spacing: clamp(-.072em, calc((var(--font-size-lg) - 1rem) * -.048), 0em);
+  font-weight: var(--font-weight-medium);
+  margin-block: 0 0.5rem;
+}
+
+.home-bento-card > p {
+  color: var(--color-text-muted);
+  line-height: var(--leading-lg);
+  margin: 0;
+}
+```
+
+Because these are native rules, they are emitted with the stylesheet that imports them. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
+
+---
+
+## Use variants locally
+Use a rule-local variant for a named mode, and a native media query for a route breakpoint without moving the selector into global vocabulary.
+
+```css name=app/home/home.css
+.home-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-lg);
+  background-color: var(--color-blue);
+  color: oklch(100% 0 none);
+  height: 3rem;
+
+  @media (--dark) {
+    background-color: var(--color-blue-60);
+  }
+
+  @media (width < 52.125rem) {
+    width: 100%;
+  }
+}
+```
+
+Use native declarations for route-only motion and interaction:
+
+```css name=app/home/home.css
+.home-cta {
+  transition: transform var(--duration-normal) var(--easing-standard);
+  transform: translateY(0);
+}
+
+.home-cta:hover {
+  transform: translateY(-0.125rem);
+}
+```
+
+---
+
+## Use native keyframes
+Use native top-level `@keyframes` for route-only motion. Keep the animation in the route stylesheet unless it becomes a shared motion token.
+
+```css name=app/home/home.css
+@keyframes home-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-hero {
+  animation: home-reveal 420ms ease both;
+}
+```
+
+Use native media queries for accessibility and route-specific fallbacks:
+
+```css name=app/home/home.css
+@media (prefers-reduced-motion: reduce) {
+  .home-hero {
+    animation: none;
+  }
+}
+```
+
+---
+
+## Use container queries
+Container queries are often route-specific because they describe how one section responds to the space it receives.
+
+```css name=app/home/home.css
+.home-feature-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  container: home-feature-grid / inline-size;
+}
+
+.home-feature-list {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+@container home-feature-grid (width >= 42rem) {
+  .home-feature-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+```
+
+Use viewport breakpoints when the layout depends on the page viewport. Use container queries when the section can appear inside different shells, sidebars, or slots.
+
+---
+
+## Promote shared patterns
+Keep route CSS local while the structure belongs to one route. Promote only the stable part:
+
+- Move repeated values into [Theme Tokens](/guide/theme).
+- Move repeated UI roles into [Global styles](/guide/global-styles#component-classes).
+- Move repeated low-level styling capabilities into [Global styles](/guide/global-styles#custom-utilities).
+- Keep unique layout, content structure, and route-only animation in the route stylesheet.
+
+This keeps global CSS small, route CSS explicit, and shared vocabulary intentional.

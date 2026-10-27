@@ -1,0 +1,36 @@
+[
+  {
+    "page": "justify-content",
+    "id": "use-explicit-css-values",
+    "title": "Keep overflowing content reachable",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex overflow:auto justify-content:safe|center width:15rem max-width:100%\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered overflow\">\n  <div id=\"target\" class=\"display:flex flex:none justify-content:space-between height:4rem width:17.5rem p-xs\"><span>Start</span><span>End</span></div>\n</div>",
+      "<div id=\"layout\" class=\"display:flex overflow:auto justify-content:unsafe|center width:15rem max-width:100%\" tabindex=\"0\" role=\"region\" aria-label=\"Unsafe centered overflow\">\n  <div id=\"target\" class=\"display:flex flex:none justify-content:space-between height:4rem width:17.5rem p-xs\"><span>Start</span><span>End</span></div>\n</div>",
+      "<div id=\"layout\" class=\"display:flex overflow:auto justify-content:safe|center width:15rem max-width:100%\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered fitting content\">\n  <div id=\"target\" class=\"display:flex flex:none justify-content:space-between height:4rem width:12rem p-xs\"><span>Start</span><span>End</span></div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "overflow:auto",
+      "justify-content:safe|center",
+      "width:15rem",
+      "max-width:100%",
+      "flex:none",
+      "justify-content:space-between",
+      "height:4rem",
+      "width:17.5rem",
+      "p-xs",
+      "justify-content:unsafe|center",
+      "width:12rem"
+    ],
+    "classLists": [
+      "display:flex overflow:auto justify-content:safe|center width:15rem max-width:100%",
+      "display:flex flex:none justify-content:space-between height:4rem width:17.5rem p-xs",
+      "display:flex overflow:auto justify-content:unsafe|center width:15rem max-width:100%",
+      "display:flex flex:none justify-content:space-between height:4rem width:17.5rem p-xs",
+      "display:flex overflow:auto justify-content:safe|center width:15rem max-width:100%",
+      "display:flex flex:none justify-content:space-between height:4rem width:12rem p-xs"
+    ],
+    "highlighted": []
+  }
+]

@@ -1,0 +1,268 @@
+import { strict as assert } from 'node:assert'
+import { test } from 'node:test'
+import type { Element, Root, RootContent } from 'hast'
+import highlightCode from './highlight-code'
+import highlightedCodeText from './highlighted-code-text'
+
+test('highlightCode renders Master CSS semantic spans only for CSS directive class lists', async () => {
+  const hast = await highlightCode([
+    "@theme {",
+    '    :root { --color-primary: var(--color-blue-60); }',
+    '}',
+    '@safelist "display:inline-flex fg-text-red:hover@md";',
+    '@layer components {',
+    '    .btn { display:inline-flex; }',
+    '}'
+  ].join('\n'), { lang: 'css' })
+
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-keyword-directive'), false)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-theme-variable'), false)
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-selector-pseudoClass-name'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
+})
+
+test('highlightCode keeps directive and query colors aligned with native CSS in both themes', async () => {
+  const source = [
+    '@import "base.css";',
+    `@theme {
+  --color-brand: red;
+}`,
+    '@safelist "fg-red@md"; @layer components { .btn { @media (width < 40rem) { color: red; } } }',
+    '@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } } @utility motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'css' })
+  const styleOf = (text: string, semantic = false) => {
+    let style: string | undefined
+    visitElements(hast.children, (element) => {
+      if (element.tagName === 'span' && getTextContent(element) === text
+        && (!semantic || hasClassName(element, 'mcss-semantic-keyword-query'))) {
+        style = element.properties?.style as string | undefined
+      }
+    })
+    assert.ok(style, text)
+    return style
+  }
+
+  assert.equal(highlightedCodeText(hast), source)
+  for (const keyword of ["@theme", '@layer', '@safelist', '@mixin', '@media', '@contents']) {
+    assert.equal(styleOf(keyword), styleOf('@import'), keyword)
+  }
+  assert.equal(styleOf('@md', true), styleOf('@import'))
+  assert.notEqual(styleOf('red'), styleOf('@import'))
+})
+
+test('highlightCode leaves guide theme native values to TextMate without marking comments', async () => {
+  const hast = await highlightCode([
+    "@theme light {",
+    '    /* Font families */',
+    '    --tracking-tightest: -0.072em;',
+    '}'
+  ].join('\n'), { lang: 'css' })
+
+  assert.equal(collectSemanticElements(hast).length, 0)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-directive-parameter'), false)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-theme-variable'), false)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-value-operator'), false)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-value-number'), false)
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-value-unit'), false)
+  assert.equal(collectSemanticElements(hast).some((element) => getTextContent(element).includes('Font families')), false)
+})
+
+test('highlightCode renders Master CSS semantic spans in HTML class attributes', async () => {
+  const hast = await highlightCode("<div class=\"fg-text-red:hover@md display:block\"></div>", { lang: 'html' })
+  const hostWrapper = collectElementsByClass(hast, 'mcss-host-role-class-attribute-value')[0]
+
+  assert.ok(hostWrapper)
+  assert.equal(getTextContent(hostWrapper), 'fg-text-red:hover@md display:block')
+  assert.equal(hostWrapper.properties?.['data-master-css-host-role'], 'class-attribute-value')
+  assert.ok(hasClassName(hostWrapper, 'mcss-host-active-on-hover'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-selector-pseudoClass-name'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+})
+
+test('highlightCode marks every class value in the introduction example for hover', async () => {
+  const source = [
+    '<article class="overflow:hidden r-lg bg-surface-raised shadow-lg">',
+    '  <img class="aspect-ratio:16/9 object-fit:cover" ...>',
+    '  <div class="p-lg">',
+    '    <p class="text-2xs font-semibold text-transform:uppercase fg-text-blue">Launch panel</p>',
+    '    <h2 class="text-md font-medium fg-text-strong">Build the first screen in markup</h2>',
+    '    <a class="bg-blue-60 fg-white bg-blue-70:hover">Start building</a>',
+    '  </div>',
+    '</article>'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'html' })
+
+  assert.equal(highlightedCodeText(hast), source)
+  assert.deepEqual(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent), [
+    'overflow:hidden r-lg bg-surface-raised shadow-lg',
+    'aspect-ratio:16/9 object-fit:cover',
+    'p-lg',
+    'text-2xs font-semibold text-transform:uppercase fg-text-blue',
+    'text-md font-medium fg-text-strong',
+    'bg-blue-60 fg-white bg-blue-70:hover'
+  ])
+})
+
+test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
+  const source = [
+    "<main class=\"bg-surface-base fg-text-body\">",
+    "  <section class=\"border:1px|solid|var(--color-line-divider) bg-surface-raised\">",
+    "    <h2 class=\"fg-text-strong\">Project updates</h2>",
+    "    <p class=\"fg-text-muted\">Three milestones changed this week.</p>",
+    "    <a class=\"fg-text-link\" href=\"#\">Continue</a>",
+    '  </section>',
+    '</main>'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'html' })
+  const utilityElements = collectElementsByClass(hast, 'mcss-semantic-role-utility-semantic')
+  const namedClasses = ['bg-surface-base', 'fg-text-body', 'bg-surface-raised', 'fg-text-strong', 'fg-text-muted', 'fg-text-link']
+
+  assert.equal(highlightedCodeText(hast), source)
+  for (const name of namedClasses) {
+    assert.equal(utilityElements.filter((element) => getTextContent(element) === name).length, 1, name)
+  }
+  assert.equal(collectElementsByClass(hast, 'mcss-semantic-role-declaration-separator').filter((element) => getTextContent(element) === '-').length, 0)
+  assert.equal(collectElementsByClass(hast, 'mcss-semantic-role-declaration-property').filter((element) => getTextContent(element) === 'border').length, 1)
+})
+
+test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
+  const hast = await highlightCode("const helper = clsx('fg-white'); const view = <div className=\"fg-text-red:hover@md display:block\" />", { lang: 'tsx' })
+
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
+  assert.equal(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent).join(''), 'fg-text-red:hover@md display:block')
+})
+
+test('highlightCode treats mcss snippets as plaintext with class-list semantic overlay', async () => {
+  const hast = await highlightCode('fg-text-red:hover@md bg-blue fg-white', {
+    lang: 'mcss',
+    inline: true
+  })
+
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
+  assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-block-brace'), false)
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
+})
+
+test('highlightCode does not render Master CSS semantic spans for native-only CSS', async () => {
+  const hast = await highlightCode([
+    '@keyframes fade {',
+    '    from { opacity: 0; }',
+    '    to { opacity: 1; }',
+    '}',
+    '.card:hover::before {',
+    '    --distance: calc(100% - 1rem);',
+    '    color: oklch(99% 0.0033 72);',
+    '}'
+  ].join('\n'), { lang: 'css' })
+
+  assert.equal(collectSemanticElements(hast).length, 0)
+})
+
+test('highlightCode preserves authored block indentation for code block dedent', async () => {
+  const hast = await highlightCode([
+    'app/',
+    '  globals.css',
+    '  home/',
+    '    page.tsx',
+    '    home.css'
+  ].join('\n'), { lang: 'txt', dedent: 'block' })
+
+  assert.deepEqual(collectLineTexts(hast), [
+    'app/',
+    '  globals.css',
+    '  home/',
+    '    page.tsx',
+    '    home.css'
+  ])
+})
+
+test('highlightCode removes incidental outer indentation for indented code blocks', async () => {
+  const hast = await highlightCode([
+    '            import "./home.css"',
+    '            export default function Page() {}'
+  ].join('\n'), { lang: 'ts', dedent: 'block' })
+
+  assert.deepEqual(collectLineTexts(hast), [
+    'import "./home.css"',
+    'export default function Page() {}'
+  ])
+})
+
+test('copy text follows rendered indentation, formatting, and removed mark directives', async () => {
+  const indented = await highlightCode('    <div>\n      <span>Text</span>\n    </div>', { lang: 'html', dedent: 'block' })
+  assert.equal(highlightedCodeText(indented), '<div>\n  <span>Text</span>\n</div>')
+
+  const formatted = await highlightCode('a{color:red}', { lang: 'css', beautify: true })
+  assert.equal(highlightedCodeText(formatted), 'a {\n  color: red\n}')
+
+  const marked = await highlightCode("<!-- @MARK text-red -->\n<div class=\"fg-text-red\">Text</div>", { lang: 'html' })
+  assert.equal(highlightedCodeText(marked), "<div class=\"fg-text-red\">Text</div>")
+
+  const diff = await highlightCode('color: red; /* [!code ++] */', { lang: 'css' })
+  assert.equal(highlightedCodeText(diff), 'color: red;')
+})
+
+function hasSemanticClass(root: Root, className: string): boolean {
+  return collectSemanticElements(root).some((element) => hasClassName(element, className))
+}
+
+function collectLineTexts(root: Root): string[] {
+  const lines: string[] = []
+  visitElements(root.children, (element) => {
+    if (hasClassName(element, 'line')) {
+      lines.push(getTextContent(element))
+    }
+  })
+  return lines
+}
+
+function collectSemanticElements(root: Root): Element[] {
+  const elements: Element[] = []
+  visitElements(root.children, (element) => {
+    if (getClassNames(element).some((className) => className.startsWith('mcss-semantic'))) {
+      elements.push(element)
+    }
+  })
+  return elements
+}
+
+function collectElementsByClass(root: Root, className: string): Element[] {
+  const elements: Element[] = []
+  visitElements(root.children, (element) => {
+    if (hasClassName(element, className)) {
+      elements.push(element)
+    }
+  })
+  return elements
+}
+
+function visitElements(children: RootContent[], callback: (element: Element) => void) {
+  for (const child of children) {
+    if (child.type !== 'element') continue
+    callback(child)
+    visitElements(child.children as RootContent[], callback)
+  }
+}
+
+function hasClassName(element: Element, className: string): boolean {
+  return getClassNames(element).includes(className)
+}
+
+function getClassNames(element: Element): string[] {
+  const classes = element.properties?.class
+  if (Array.isArray(classes)) return classes.flatMap((value) => typeof value === 'string' ? value.split(/\s+/) : [])
+  if (typeof classes === 'string') return classes.split(/\s+/)
+  return []
+}
+
+function getTextContent(node: RootContent): string {
+  if (node.type === 'text') return node.value
+  if (node.type !== 'element') return ''
+  return (node.children as RootContent[]).map(getTextContent).join('')
+}

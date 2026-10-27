@@ -1,0 +1,25 @@
+[
+  {
+    "page": "background-image",
+    "id": "add-a-background-image",
+    "title": "Add a background image",
+    "html": [
+      "<!-- Local SVG · centered cover -->\n<div id=\"target\" role=\"img\" aria-label=\"Geometric landscape\"\n  class=\"height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat\n         bg-surface-inset background-image:url(/demo/landscape.svg)\"\n></div>"
+    ],
+    "css": "",
+    "classes": [
+      "height:160px",
+      "w-xs",
+      "max-width:100%",
+      "background-position:center",
+      "background-size:cover",
+      "background-repeat:no-repeat",
+      "bg-surface-inset",
+      "background-image:url(/demo/landscape.svg)"
+    ],
+    "classLists": [
+      "height:160px w-xs max-width:100% background-position:center background-size:cover background-repeat:no-repeat bg-surface-inset background-image:url(/demo/landscape.svg)"
+    ],
+    "highlighted": []
+  }
+]

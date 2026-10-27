@@ -3,24 +3,25 @@
 .categories
 .pages.json
 .generated
+.master
+/.cache/eslint/
 
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
-/public/monaco-editor
-/public/images
-/public/icons
-/public/fonts
-/public/play-compiler
 /public/search
+/public/reference
+/public/tw/reference
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
+/blob-report/
 
-# next.js
-/.next/
-/.open-next/
+# astro
+/.astro/
 /out/
 
 # production
@@ -46,4 +47,3 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts

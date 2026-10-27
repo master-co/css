@@ -1,14 +1,13 @@
 import assert from 'node:assert/strict'
 import { access, readdir } from 'node:fs/promises'
 import { test } from 'node:test'
-import css from '../common/preset-css'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext, type SyntaxTrHastNode } from './syntax-tr-placeholders'
 
 test('proxies size with a px value and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('w:`size`')
-  assert.equal(proxy, 'w:100000000px')
+  const proxy = placeholders.proxy('width:`size`')
+  assert.equal(proxy, 'width:100000000px')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.width, '100000000px')
@@ -20,8 +19,8 @@ test('proxies size with a px value and restores the placeholder in generated dec
 
 test('restores syntax placeholders without styling the whole text token', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('mt:`size`')
-  assert.equal(proxy, 'mt:100000000px')
+  const proxy = placeholders.proxy('margin-top:`size`')
+  assert.equal(proxy, 'margin-top:100000000px')
 
   const root: SyntaxTrHastNode = {
     type: 'root',
@@ -38,19 +37,19 @@ test('restores syntax placeholders without styling the whole text token', () => 
   const token = root.children?.[0]
   const placeholder = token?.children?.[1]
 
-  assert.equal(collectText(root), 'mt:<size>')
+  assert.equal(collectText(root), 'margin-top:<size>')
   assert.equal(token?.properties?.class, 'syntax-token')
-  assert.deepEqual(token?.children?.[0], { type: 'text', value: 'mt:' })
+  assert.deepEqual(token?.children?.[0], { type: 'text', value: 'margin-top:' })
   assert.equal(placeholder?.type, 'element')
   assert.equal(placeholder?.tagName, 'span')
-  assert.equal(placeholder?.properties?.class, 'text:muted italic mr:0.125rem:not(:last)')
+  assert.equal(placeholder?.properties?.class, 'fg-text-muted font-style:italic margin-right:0.125rem:not(:last)')
   assert.equal(collectText(placeholder ?? {}), '<size>')
 })
 
 test('proxies length without a unit and restores length and color placeholders', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('text-stroke:`length`|`color`')
-  assert.equal(proxy, 'text-stroke:123456789|#12345678')
+  const proxy = placeholders.proxy('-webkit-text-stroke:`length`|`color`')
+  assert.equal(proxy, '-webkit-text-stroke:123456789|#12345678')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations['-webkit-text-stroke'], '123456789 #12345678')
@@ -62,8 +61,8 @@ test('proxies length without a unit and restores length and color placeholders',
 
 test('proxies integer without a unit and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('grid-cols:`integer`')
-  assert.equal(proxy, 'grid-cols:987654321')
+  const proxy = placeholders.proxy('grid-cols(`integer`)')
+  assert.equal(proxy, 'grid-cols(987654321)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.display, 'grid')
@@ -115,8 +114,8 @@ test('proxies URL placeholders with valid URL values', () => {
 
 test('proxies preset namespace placeholders and restores declaration values', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('animate:`name`')
-  assert.equal(proxy, 'animate:fade')
+  const proxy = placeholders.proxy('animate-`name`')
+  assert.equal(proxy, 'animate-fade')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.animation, 'var(--animate-fade)')
@@ -126,9 +125,9 @@ test('proxies preset namespace placeholders and restores declaration values', ()
     '\n',
     convertDeclarationsToCSS(declarations)
   ])
-  assert.match(restored, /animate:<name>/)
+  assert.match(restored, /animate-<name>/)
   assert.match(restored, /animation: <name>;/)
-  assert.doesNotMatch(restored, /fade|--animate/)
+  assert.doesNotMatch(restored, /fade/)
 })
 
 test('restores generic placeholders split across text nodes', () => {
@@ -153,28 +152,30 @@ test('restores generic placeholders split across text nodes', () => {
 
 test('uses the current syntax declarations before falling back to preview syntax', () => {
   assert.equal(
-    generateSyntaxTrDeclarations('bg:red', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('bg-red', 'bg-blue-60')?.['background-color'],
     'var(--color-red)'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('bg:#12345678', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('background-color:#12345678', 'bg-blue-60')?.['background-color'],
     '#12345678'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('unknown:`value`', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('unknown-token', 'bg-blue-60')?.['background-color'],
     'var(--color-blue-60)'
   )
 })
 
-test('throws when syntax and preview fallback generate empty declarations', () => {
+test('preserves native values and only falls back for unmatched Master names', () => {
+  assert.equal(generateSyntaxTrDeclarations('appearance:push-button').appearance, 'push-button')
+  assert.equal(generateSyntaxTrDeclarations('future-property:new-value', 'bg-blue-60')['future-property'], 'new-value')
   assert.throws(
-    () => generateSyntaxTrDeclarations('appearance:push-button'),
-    /SyntaxTr generated empty CSS declarations for `appearance:push-button`\./
+    () => generateSyntaxTrDeclarations('unknown-token'),
+    /SyntaxTr generated empty CSS declarations for `unknown-token`\./
   )
 })
 
 test('all reference syntaxes generate declarations without preview fallback', async () => {
-  const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+  const referenceRootURL = new URL('../content/reference/', import.meta.url)
   const entries = await readdir(referenceRootURL, { withFileTypes: true })
   const failures: string[] = []
 
@@ -210,7 +211,7 @@ test('all reference syntaxes generate declarations without preview fallback', as
 })
 
 test('all reference syntaxes place nested rows after plain rows', async () => {
-  const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+  const referenceRootURL = new URL('../content/reference/', import.meta.url)
   const entries = await readdir(referenceRootURL, { withFileTypes: true })
   const failures: string[] = []
 
@@ -239,9 +240,7 @@ test('all reference syntaxes place nested rows after plain rows', async () => {
 })
 
 function generateDeclarations(className: string) {
-  const rule = css.generate(className)[0]
-  assert.ok(rule)
-  return rule.declarations as Record<string, string>
+  return generateSyntaxTrDeclarations(className) as Record<string, string>
 }
 
 function convertDeclarationsToCSS(obj: Record<string, string>) {

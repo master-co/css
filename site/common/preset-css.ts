@@ -1,12 +1,15 @@
-import { createCSSWithNativeDeclarations } from '@master/css-validator'
-import type { MasterCSSManifest } from '@master/css'
+import { createEngineSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const presetCSS = createCSSWithNativeDeclarations(defaultManifest)
+const presetTooling = createToolingSessionSync({ manifest: defaultManifest })
 
-export const createPresetCSS = () => {
-  return createCSSWithNativeDeclarations(defaultManifest)
+export const createPresetEngine = () => {
+  return createEngineSync({ manifest: defaultManifest })
 }
 
-export default presetCSS
+export const generatePresetClasses = (classNames: readonly string[]) => {
+  return presetTooling.validateClassNames(classNames)
+}

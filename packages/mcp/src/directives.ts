@@ -1,19 +1,20 @@
 import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
-import { collectCSSDirectiveRanges } from '@master/css-lexer'
 import {
-  compileCSSManifest,
-  compileCSSManifestFile,
-  type CompileCSSManifestResult
-} from '@master/css-compiler'
+  compileManifestFileSync,
+  compileManifestSync,
+  inspectCSSSync,
+  type MasterCSSCompileManifestResult
+} from '@master/css-compiler/node'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
 import { summarizeManifest } from './manifest-summary'
-import { getErrorMessage } from './result'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, manifestFingerprint, type SemanticContext } from './project'
 
-const DIRECTIVE_INSPECTION_VERSION = 1
+const DIRECTIVE_INSPECTION_VERSION = 2
 
 export interface InspectDirectivesOptions {
+  context?: SemanticContext
   content?: string
   filePath?: string
   entryPath?: string
@@ -22,74 +23,57 @@ export interface InspectDirectivesOptions {
 
 function createDirectiveEntries(content: string, filePath: string) {
   const document = createMCPTextDocument(filePath, content)
-  return collectCSSDirectiveRanges(content).map((directive) => ({
+  return inspectCSSSync(content).directives.map((directive) => ({
     name: directive.name,
-    range: {
-      start: directive.start,
-      end: directive.end
-    },
+    range: directive.range,
     loc: {
-      start: document.positionAt(directive.start),
-      end: document.positionAt(directive.end)
+      start: document.positionAt(directive.range.start),
+      end: document.positionAt(directive.range.end)
     },
     prelude: content.slice(directive.preludeRange.start, directive.preludeRange.end).trim(),
-    hasBlock: Boolean(directive.blockRange),
-    quotedStrings: directive.quotedStringRanges.length
+    hasBlock: directive.hasBlock,
+    quotedStrings: directive.quotedStrings
   }))
 }
 
-function countObjectKeys(value: unknown) {
-  return value && typeof value === 'object' ? Object.keys(value).length : 0
-}
-
-function summarizeManifestInput(input: unknown) {
-  const manifestInput = input && typeof input === 'object' ? input as Record<string, unknown> : {}
-  return {
-    keys: Object.keys(manifestInput),
-    counts: {
-      settings: countObjectKeys(manifestInput.settings),
-      variables: countObjectKeys(manifestInput.variables),
-      utilities: Array.isArray(manifestInput.utilities) ? manifestInput.utilities.length : countObjectKeys(manifestInput.utilities),
-      variants: Array.isArray(manifestInput.variants) ? manifestInput.variants.length : countObjectKeys(manifestInput.variants),
-      conditions: countObjectKeys(manifestInput.conditions),
-      selectors: countObjectKeys(manifestInput.selectors),
-      animations: countObjectKeys(manifestInput.animations)
-    }
-  }
-}
-
-function summarizeCompileResult(result: CompileCSSManifestResult) {
-  const styleDefinitions = (result.directives as { styleDefinitions?: unknown[] }).styleDefinitions ?? []
+function summarizeCompileResult(result: MasterCSSCompileManifestResult) {
+  const warnings = result.diagnostics
+    .filter((diagnostic) => diagnostic.severity === 'warning')
+    .map((diagnostic) => diagnostic.message)
   return {
     manifest: summarizeManifest(result.manifest),
     directives: {
-      manifestInput: summarizeManifestInput(result.directives.manifestInput),
+      manifestInput: result.directiveSummary.manifestInput,
       classNames: result.classNames,
       nativeClassNames: result.nativeClassNames,
-      styleDefinitions: styleDefinitions.length,
-      extractionPolicy: result.extractionPolicy
+      styleDefinitions: result.directiveSummary.styleDefinitions,
+      extractionPolicy: result.directiveSummary.extractionPolicy
     },
     css: {
-      bytes: result.css.length,
-      nativeBytes: result.nativeCSS.length,
-      generatedBytes: result.generatedCSS.length
+      bytes: Buffer.byteLength(result.css, 'utf8'),
+      nativeBytes: Buffer.byteLength(result.nativeCSS, 'utf8'),
+      generatedBytes: Buffer.byteLength(result.generatedCSS, 'utf8')
     },
     dependencies: result.dependencies,
-    warnings: result.warnings
+    warnings,
+    diagnostics: result.diagnostics
   }
 }
 
 async function compileDirectives(context: MasterCSSMCPContext, options: InspectDirectivesOptions) {
+  const manifest = await loadWorkspaceManifest(context, options.context, options.entryPath ? [await context.resolveExistingFile(options.entryPath)] : undefined)
+  const baseManifest = requireWorkspaceManifest(manifest)
   if (options.entryPath) {
     const filePath = await context.resolveExistingFile(options.entryPath)
     const [content, result] = await Promise.all([
       readFile(filePath, 'utf8'),
-      Promise.resolve(compileCSSManifestFile(filePath, {
+      Promise.resolve(compileManifestFileSync(filePath, {
         root: context.root,
+        baseManifest,
         preserveNativeCSS: options.preserveNativeCSS
       }))
     ])
-    return { filePath, content, result }
+    return { filePath, content, result, context: manifestMetadata(manifest) }
   }
 
   if (options.content === undefined) {
@@ -97,26 +81,27 @@ async function compileDirectives(context: MasterCSSMCPContext, options: InspectD
   }
 
   const filePath = context.resolveVirtualPath(options.filePath || 'master.css')
-  const result = compileCSSManifest(options.content, {
-    root: context.root,
+  const result = compileManifestSync(options.content, {
+    baseManifest,
     from: filePath,
     preserveNativeCSS: options.preserveNativeCSS
   })
   return {
     filePath,
     content: options.content,
+    context: manifestMetadata(manifest),
     result
   }
 }
 
 export async function inspectDirectives(context: MasterCSSMCPContext, options: InspectDirectivesOptions) {
-  try {
     const compiled = await compileDirectives(context, options)
     const inspection = summarizeCompileResult(compiled.result)
     const directiveEntries = createDirectiveEntries(compiled.content, compiled.filePath)
     return {
       version: DIRECTIVE_INSPECTION_VERSION,
       root: context.root,
+      context: compiled.context,
       status: inspection.warnings.length ? 'warning' : 'ok',
       input: {
         filePath: compiled.filePath,
@@ -125,14 +110,8 @@ export async function inspectDirectives(context: MasterCSSMCPContext, options: I
       },
       directiveEntries,
       ...inspection,
-      diagnostics: inspection.warnings.map((warning) => ({
-        code: 'compiler-warning',
-        severity: 'warning' as const,
-        message: warning,
-        source: 'Master CSS',
-        sourceKind: 'directive',
-        filePath: compiled.filePath
-      })),
+      manifest: { ...inspection.manifest, fingerprint: manifestFingerprint(compiled.result.manifest), languageVersion: compiled.result.manifest.languageVersion },
+      diagnostics: inspection.diagnostics,
       summary: {
         status: inspection.warnings.length ? 'warning' : 'ok',
         directives: directiveEntries.length,
@@ -143,37 +122,4 @@ export async function inspectDirectives(context: MasterCSSMCPContext, options: I
         cssBytes: inspection.css.bytes
       }
     }
-  } catch (error) {
-    const filePath = options.entryPath || options.filePath || 'master.css'
-    return {
-      version: DIRECTIVE_INSPECTION_VERSION,
-      root: context.root,
-      status: 'error',
-      input: {
-        filePath,
-        mode: options.entryPath ? 'entry' : 'content'
-      },
-      directiveEntries: options.content ? createDirectiveEntries(options.content, context.resolveVirtualPath(options.filePath || 'master.css')) : [],
-      diagnostics: [
-        {
-          code: 'directive-inspection-error',
-          severity: 'error' as const,
-          message: getErrorMessage(error),
-          source: 'Master CSS',
-          sourceKind: 'directive',
-          filePath
-        }
-      ],
-      summary: {
-        status: 'error',
-        directives: 0,
-        classNames: 0,
-        nativeClassNames: 0,
-        dependencies: 0,
-        warnings: 0,
-        errors: 1,
-        cssBytes: 0
-      }
-    }
-  }
 }

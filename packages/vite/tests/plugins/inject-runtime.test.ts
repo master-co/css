@@ -1,5 +1,5 @@
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { build } from 'vite'
 import { describe, expect, it } from 'vitest'
 import masterCSS from '../../src/core'
@@ -63,7 +63,7 @@ describe('InjectRuntimePlugin', () => {
         '<html>',
         '<head></head>',
         '<body>',
-        '<main class="block"></main>',
+        "<main class=\"display:block\"></main>",
         '<script type="module" src="/src/main.ts"></script>',
         '</body>',
         '</html>'
@@ -73,11 +73,6 @@ describe('InjectRuntimePlugin', () => {
       await build({
         root,
         logLevel: 'silent',
-        resolve: {
-          alias: {
-            [RUNTIME_ENTRY_ID]: resolve(process.cwd(), 'src/runtime.ts')
-          }
-        },
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
@@ -90,10 +85,14 @@ describe('InjectRuntimePlugin', () => {
       const html = readFileSync(join(root, 'dist/index.html'), 'utf8')
       const assetsDir = join(root, 'dist/assets')
       const jsFiles = readdirSync(assetsDir).filter((file) => file.endsWith('.js'))
+      const wasmFiles = readdirSync(assetsDir).filter((file) => file.endsWith('.wasm'))
       const jsSources = jsFiles.map((file) => readFileSync(join(assetsDir, file), 'utf8')).join('\n')
 
       expect(html).toMatch(/<script\b[^>]*\bsrc="\/assets\/[^"]+\.js"/)
       expect(html).toMatch(/<link\b(?=[^>]*\brel="modulepreload")(?=[^>]*\bcrossorigin)(?![^>]*\bas="json")(?=[^>]*\bhref="\/assets\/[^"]+\.js")[^>]*>/)
+      // Browsers execute the program with the JavaScript engine; no Wasm is emitted.
+      expect(html).not.toContain('application/wasm')
+      expect(wasmFiles).toEqual([])
       expect(html).not.toContain('@master/css-runtime')
       expect(html).not.toContain(RUNTIME_ENTRY_ID)
       expect(jsSources).not.toContain(`from '@master/css-runtime'`)

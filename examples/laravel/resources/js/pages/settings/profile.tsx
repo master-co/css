@@ -49,12 +49,12 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
           <HeadingSmall title="Profile information" description="Update your name and email address" />
 
           <form onSubmit={submit} className="space-y-6">
-            <div className="grid gap-2">
+            <div className="display:grid gap-2">
               <Label htmlFor="name">Name</Label>
 
               <Input
                 id="name"
-                className="block mt-1 w-full"
+                className="display:block mt-1 w-full"
                 value={data.name}
                 onChange={(e) => setData('name', e.target.value)}
                 required
@@ -65,13 +65,13 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
               <InputError className="mt-2" message={errors.name} />
             </div>
 
-            <div className="grid gap-2">
+            <div className="display:grid gap-2">
               <Label htmlFor="email">Email address</Label>
 
               <Input
                 id="email"
                 type="email"
-                className="block mt-1 w-full"
+                className="display:block mt-1 w-full"
                 value={data.email}
                 onChange={(e) => setData('email', e.target.value)}
                 required
@@ -90,7 +90,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                     href={route('verification.send')}
                     method="post"
                     as="button"
-                    className="underline dark:decoration-neutral-500 decoration-neutral-300 duration-300 ease-out hover:decoration-current! text-foreground transition-colors underline-offset-4"
+                    className="text-decoration:underline dark:decoration-neutral-500 decoration-neutral-300 duration-300 ease-out hover:decoration-current! text-foreground transition-colors underline-offset-4"
                   >
                     Click here to resend the verification email.
                   </Link>
@@ -104,7 +104,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
               </div>
             )}
 
-            <div className="flex items-center gap-4">
+            <div className="display:flex align-items:center gap-4">
               <Button disabled={processing}>Save</Button>
 
               <Transition

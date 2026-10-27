@@ -55,10 +55,11 @@
 ## Installation
 
 ```bash
-npm install -D @master/eslint-plugin-css
+npm install -D @master/eslint-config-css
 ```
 
-The recommended config is also available through `@master/eslint-config-css`.
+The config package installs the matching plugin implementation and exposes the
+complete recommended flat config.
 
 In Visual Studio Code, install the VS Code ESLint extension to surface these diagnostics and run sort-on-save. The Master CSS extension provides completion, hover, colors, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; it does not duplicate class policy warnings by default.
 
@@ -68,7 +69,7 @@ Use ESLint flat configuration:
 
 ```js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
@@ -85,7 +86,7 @@ export default defineConfig([
       parser: tsParser
     }
   },
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-invalid-classes': ['error', {
@@ -148,7 +149,7 @@ export default defineConfig([
 
 ### `@master/css/prefer-canonical-classes`
 
-Prefers canonical Master CSS class forms, including semantic utilities, theme tokens, property aliases, composition utilities, and condition suffix order.
+Prefers canonical Master CSS class forms, including named token utilities and valid utility recipes. Direct declaration classes retain full native property names and authored condition order.
 
 ```js
 import { defineConfig } from 'eslint/config'
@@ -162,22 +163,20 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, `w:md h:md` to `size:md`, `mt:md mb:md` to `my:md`, and `block@dark@sm` to `block@sm@dark`.
+For example, condition sorting changes `display:block@dark@sm` to `display:block@sm@dark`. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`w-sm h-sm`).
 
-The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
+Canonicalization applies to class lists in markup and class builders; stylesheet declarations use native CSS.
 
 Standalone CSS files are included by default when using `@master/eslint-config-css`:
 
 ```js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 ```
-
-Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
 
 You can disable specific canonicalization families:
 
@@ -189,14 +188,8 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferThemeTokens: true,
-        preferPropertyAliases: true,
-        preferVariableReferences: true,
-        preferMultiValueTokens: true,
         preferCompositionUtilities: true,
-        preferConditionOrder: true,
-        preferNativeDeclarationsInCompose: true,
-        preferVariantBlocksInCompose: true
+        preferConditionOrder: true
       }]
     }
   }
@@ -219,7 +212,7 @@ export default defineConfig([
 ])
 ```
 
-When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
+When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx-md ml-lg` to `mr-md ml-lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
 
 ### `@master/css/no-unapproved-raw-values`
 
@@ -240,7 +233,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule reports `font:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
+For example, this rule reports `font-size:15px`, `margin:17px`, and `color:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
 
 ## Settings
 

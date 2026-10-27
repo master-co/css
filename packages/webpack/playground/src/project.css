@@ -1,25 +1,19 @@
-@settings {
-  root-size: 16;
-  base-unit: 4;
-  default-mode: light;
-  mode-trigger: media;
-}
-
 @theme {
   --color-primary: #0061ff;
-  --color-surface-base: #f6f8fb;
-  --color-surface-raised: #ffffff;
-  --color-ink: #172033;
-  --color-muted: #637083;
-  --color-panel: #f6f8fb;
-  --color-ring: #d9e2ef;
-  --radius-card: 18;
-  --radius-pill: 999;
-  --spacing-card: 24;
-  --breakpoint-md: 48;
+    --color-surface-base: #f6f8fb;
+    --color-surface-raised: #ffffff;
+    --color-ink: #172033;
+    --color-muted: #637083;
+    --color-panel: #f6f8fb;
+    --color-ring: #d9e2ef;
+    --radius-card: 18px;
+    --radius-pill: 999px;
+    --spacing-card: 24px;
 }
 
-@theme dark {
+
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #8fb5ff;
   --color-surface-base: #182233;
   --color-surface-raised: #111827;
@@ -29,35 +23,37 @@
   --color-ring: #31415a;
 }
 
-@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+}
 
-@utilities {
-  content-auto {
+@mixin --motion-safe { @media (prefers-reduced-motion: no-preference) { @contents; } }
+
+
+  @utility content-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 28rem;
   }
-}
+
 
 /* Components */
-@components {
-  page {
-    @compose grid items-center justify-center min-h:100vh p:1.25rem bg:panel fg:ink;
+@layer components {
+  .page {
+    display:grid;align-items:center;justify-content:center;padding:1.25rem;background-color:var(--color-panel);color:var(--color-ink);min-height:100vh;
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   }
 
-  card {
-    @compose grid gap:1rem p:card surface:raised r:card max-w:42rem content-auto;
-    @variant motion-safe {
-      @compose animation:demo-fade-in|.55s;
+  .card {
+    content-visibility:auto;contain-intrinsic-size:auto 28rem;display:grid;border-radius:var(--radius-card);padding:var(--spacing-card);gap:1rem;background-color:var(--color-surface-raised);max-width:42rem;
+    @apply --motion-safe {
+      @media (prefers-reduced-motion:no-preference){animation:demo-fade-in .55s;}
     }
     border: 1px solid var(--color-ring);
     box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
   }
 
-  live-label {
-    @compose inline-flex items-center justify-center h:6x px:.75rem bg:primary r:pill font:.75rem font:semibold;
-    @variant motion-safe {
-      @compose animation:demo-pulse|1.4s|infinite;
+  .live-label {
+    display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-pill);padding-inline:.75rem;background-color:var(--color-primary);font-weight:var(--font-weight-semibold);font-size:.75rem;height:1.5rem;
+    @apply --motion-safe {
+      @media (prefers-reduced-motion:no-preference){animation:demo-pulse 1.4s infinite;}
     }
     color: white;
     justify-self: start;
@@ -65,20 +61,20 @@
     text-transform: uppercase;
   }
 
-  title {
-    @compose m:0 font:2.5rem leading:1 fg:ink;
-    @variant md {
-      @compose font:3.5rem;
+  .title {
+    margin:0;color:var(--color-ink);font-size:2.5rem;line-height:1;
+    @media (--md) {
+      @media (width>=3rem){font-size:3.5rem;}
     }
     max-width: 12ch;
   }
 
-  desc {
-    @compose m:0 font:1.125rem leading:1.7 fg:muted max-w:34rem;
+  .desc {
+    margin:0;color:var(--color-muted);font-size:1.125rem;line-height:1.7;max-width:34rem;
   }
 
-  btn {
-    @compose inline-flex items-center justify-center h:11x px:1rem bg:primary r:pill font:semibold;
+  .btn {
+    display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-pill);padding-inline:1rem;background-color:var(--color-primary);font-weight:var(--font-weight-semibold);height:2.75rem;
     border: 0;
     box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
     color: white;
@@ -109,3 +105,5 @@
     opacity: .62;
   }
 }
+
+@custom-media --md (width >= 3rem);

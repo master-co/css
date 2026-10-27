@@ -18,17 +18,7 @@ on:
         description: Whether to build every package before validation and warm the release cache.
         type: boolean
         default: false
-      trusted:
-        description: Whether the caller may access the private internal submodule.
-        type: boolean
-        default: false
-    secrets:
-      GH_TOKEN:
-        required: false
     outputs:
-      trusted:
-        description: Whether validation was allowed to access the private submodule.
-        value: ${{ jobs.preflight.outputs.trusted }}
       site_affected:
         description: Whether the site build is affected by this change.
         value: ${{ jobs.quality_linux.outputs.site_affected }}
@@ -44,28 +34,16 @@ jobs:
     name: preflight
     runs-on: ubuntu-latest
     outputs:
-      trusted: ${{ steps.trust.outputs.trusted }}
       base_sha: ${{ steps.range.outputs.base_sha }}
       head_sha: ${{ steps.range.outputs.head_sha }}
       full: ${{ steps.range.outputs.full }}
       range_valid: ${{ steps.range.outputs.range_valid }}
     steps:
-      - name: Resolve validation trust
-        id: trust
-        env:
-          TRUSTED: ${{ inputs.trusted }}
-        run: |
-          echo "trusted=$TRUSTED" >> "$GITHUB_OUTPUT"
-          if [ "$TRUSTED" != true ]; then
-            echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-          fi
-      - if: ${{ inputs.trusted }}
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Resolve affected range
-        if: ${{ inputs.trusted }}
         id: range
         shell: bash
         env:
@@ -91,9 +69,13 @@ jobs:
           fi
 
           if [ "$range_valid" = true ] && [ "$full" != true ]; then
+            # `--affected` maps changed files to packages by location, so Rust
+            # sources would select no package although the bindings and every
+            # dependent test the artifacts built from them. Turbo's cache still
+            # replays tasks that never read those artifacts.
             while IFS= read -r file; do
               case "$file" in
-                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*)
+                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*|crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml)
                   full=true
                   break
                   ;;
@@ -111,7 +93,6 @@ jobs:
   quality_linux:
     name: quality-linux
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       site_affected: ${{ steps.consumers.outputs.site_affected }}
@@ -125,8 +106,14 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
+      - name: Validate AI context budgets
+        run: pnpm run check:ai-context
+      - name: Validate package contracts
+        run: |
+          pnpm run check:mdn-registry
+          pnpm run check:boundaries
+          pnpm run check:packages
       - name: Detect affected release consumers
         id: consumers
         shell: bash
@@ -152,9 +139,6 @@ jobs:
               vscode_affected=true
             fi
 
-            if ! git diff --quiet "$TURBO_SCM_BASE...$TURBO_SCM_HEAD" -- internal; then
-              vscode_affected=true
-            fi
           fi
 
           {
@@ -168,17 +152,46 @@ jobs:
       - name: Build release packages
         if: ${{ inputs.release_build }}
         run: pnpm run build
+      - name: Build Rust Wasm artifacts
+        if: ${{ !inputs.release_build }}
+        run: pnpm run build:rust:wasm
       - name: Validate packages
         shell: bash
         env:
           FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
         run: |
           set -euo pipefail
-          args=(run test lint type-check '--filter=./packages/*')
+          # Each Vitest suite can use half the runner's CPU. Share that budget
+          # with lint, type-check and cold package builds instead of oversubscribing.
+          args=(run test lint type-check '--filter=./packages/*' --concurrency=2)
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # `--affected` selects packages by their own files, so Rust, site and example
+      # changes never select the browser engine. Its task inputs cover them instead,
+      # and the Turbo cache skips the differential when nothing it reads changed.
+      - name: Compare the browser engine with Rust
+        id: differential
+        run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo run test --filter=@master/css-engine-js
+      - name: Summarize browser engine differences
+        if: ${{ failure() && steps.differential.outcome == 'failure' && hashFiles('packages/engine-js/.reports/differential.md') != '' }}
+        run: cat packages/engine-js/.reports/differential.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Build and verify site
+        if: ${{ steps.consumers.outputs.site_affected == 'true' }}
+        shell: bash
+        env:
+          RELEASE_BUILD: ${{ inputs.release_build }}
+        run: |
+          set -euo pipefail
+          if [ "$RELEASE_BUILD" != true ]; then
+            pnpm run build
+          fi
+          pnpm --filter site build
+          pnpm --filter site test:css-contract
+          pnpm --filter site test:lint-cache
+          pnpm --filter site lint:full
+          pnpm --filter site type-check
       - name: Build examples
         shell: bash
         env:
@@ -190,11 +203,140 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-build-${{ github.ref_name }}-${{ github.run_id }}
+
+  rust_quality:
+    name: rust-quality
+    needs: preflight
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: rust-quality
+          cache-on-failure: true
+          save-if: ${{ github.event_name != 'pull_request' }}
+      - name: Validate Rust workspace
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_TERM_COLOR: always
+        run: |
+          cargo fmt --check
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
+          cargo test --workspace
+          cargo xtask codegen --check
+          cargo xtask parity
+
+  native_tier1:
+    name: native-${{ matrix.package }}
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: binding-darwin-arm64
+            runner: macos-15
+          - package: binding-darwin-x64
+            runner: macos-15-intel
+          - package: binding-linux-arm64-gnu
+            runner: ubuntu-24.04-arm
+          - package: binding-linux-x64-gnu
+            runner: ubuntu-24.04
+          - package: binding-win32-arm64-msvc
+            runner: windows-11-arm
+          - package: binding-win32-x64-msvc
+            runner: windows-2025
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          install: "false"
+          turbo-cache: "false"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: native-${{ matrix.package }}
+          cache-on-failure: true
+          save-if: ${{ github.event_name != 'pull_request' }}
+      - name: Build and stage native artifacts
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo xtask stage-native-target ${{ matrix.package }} --release
+      - name: Pack, install, load addon, and execute CLI smoke
+        run: node scripts/binding-package-smoke.mjs packages/${{ matrix.package }}
+      - name: Upload release-binding artifacts
+        if: ${{ inputs.release_build }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: mastercss-${{ matrix.package }}
+          path: |
+            packages/${{ matrix.package }}/package.json
+            packages/${{ matrix.package }}/mastercss.node
+            packages/${{ matrix.package }}/mcss*
+          if-no-files-found: error
+          retention-days: 1
+
+  native_musl:
+    name: native-${{ matrix.package }}
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: binding-linux-arm64-musl
+            runner: ubuntu-24.04-arm
+          - package: binding-linux-x64-musl
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Build, pack, install, load, and execute CLI smoke in musl
+        shell: bash
+        env:
+          TARGET_PACKAGE: ${{ matrix.package }}
+        run: |
+          docker run --rm \
+            -e TARGET_PACKAGE \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            rust:1.98.1-alpine \
+            sh -ec '
+              apk add --no-cache build-base nodejs npm
+              RUSTFLAGS="-C target-feature=-crt-static" \
+                cargo xtask stage-native-target "$TARGET_PACKAGE" --release
+              node scripts/binding-package-smoke.mjs "packages/$TARGET_PACKAGE"
+            '
+      - name: Upload release-binding artifacts
+        if: ${{ inputs.release_build }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: mastercss-${{ matrix.package }}
+          path: |
+            packages/${{ matrix.package }}/package.json
+            packages/${{ matrix.package }}/mastercss.node
+            packages/${{ matrix.package }}/mcss*
+          if-no-files-found: error
+          retention-days: 1
 
   e2e_linux:
     name: e2e-linux
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: ubuntu-latest
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
@@ -205,10 +347,11 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: e2e
       - name: Install E2E browsers
-        run: pnpm exec playwright install --with-deps --only-shell chromium firefox
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Build Rust Wasm artifacts
+        run: pnpm run build:rust:wasm
       - name: Run E2E tests
         shell: bash
         env:
@@ -220,11 +363,21 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-e2e-${{ github.ref_name }}-${{ github.run_id }}
 
   compat_windows:
     name: compat-windows
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: windows-latest
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
@@ -235,17 +388,20 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
         run: pnpm exec playwright install --only-shell chromium
+      - name: Build Rust Wasm artifacts
+        run: pnpm run build:rust:wasm
       - name: Test packages
         shell: bash
         env:
           FULL_VALIDATION: ${{ needs.preflight.outputs.full }}
         run: |
           set -euo pipefail
-          args=(run test '--filter=./packages/*' --concurrency=4)
+          # Each Vitest suite can use half the runner's CPU. Keep two task
+          # slots so concurrent cold builds do not starve bounded watch tests.
+          args=(run test '--filter=./packages/*' --concurrency=2 --continue=dependencies-successful)
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
@@ -261,3 +417,14 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}

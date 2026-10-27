@@ -1,0 +1,29 @@
+Named tokens use a hyphen: `p-md`, `font-mono`, and `fg-red`. Direct values use a colon: `padding:1rem`, `font-family:mono`, and `color:red`.
+
+These forms have different identities. `color:red` uses CSS red, while `fg-red` selects the configured color token. `font-family:mono` names the native font family `mono`; it does not look up a token. Direct declarations do not resolve token names inside functions or compound values either.
+
+Define project tokens in CSS:
+
+```css name=index.css
+@theme {
+  --spacing-card: 0.625rem;
+  --color-primary: #000000;
+ }
+
+```
+
+Then use their names:
+
+```html
+<div class="m-card bg-primary">...</div>
+```
+
+Use `var(--name)` to combine tokens in a direct value:
+
+```html
+<div class="margin-top:var(--spacing-sm) margin-right:var(--spacing-md) margin-bottom:var(--spacing-sm) margin-left:var(--spacing-md)">...</div>
+```
+
+There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, and important syntax apply to both forms.
+
+Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md padding:8px` and `padding:8px p-md` therefore use `8px`. Importance still applies; HTML class order does not decide the winner. Use independent edge settings when different values are needed.

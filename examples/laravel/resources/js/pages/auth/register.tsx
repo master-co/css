@@ -34,9 +34,9 @@ export default function Register() {
   return (
     <AuthLayout title="Create an account" description="Enter your details below to create your account">
       <Head title="Register" />
-      <form className="flex flex-col gap-6" onSubmit={submit}>
-        <div className="grid gap-6">
-          <div className="grid gap-2">
+      <form className="display:flex flex-direction:column gap-6" onSubmit={submit}>
+        <div className="display:grid gap-6">
+          <div className="display:grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
@@ -53,7 +53,7 @@ export default function Register() {
             <InputError message={errors.name} className="mt-2" />
           </div>
 
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
@@ -69,7 +69,7 @@ export default function Register() {
             <InputError message={errors.email} />
           </div>
 
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -85,7 +85,7 @@ export default function Register() {
             <InputError message={errors.password} />
           </div>
 
-          <div className="grid gap-2">
+          <div className="display:grid gap-2">
             <Label htmlFor="password_confirmation">Confirm password</Label>
             <Input
               id="password_confirmation"
@@ -107,7 +107,7 @@ export default function Register() {
           </Button>
         </div>
 
-        <div className="text-center text-muted-foreground text-sm">
+        <div className="text-align:center text-muted-foreground text-sm">
           Already have an account?{' '}
           <TextLink href={route('login')} tabIndex={6}>
             Log in

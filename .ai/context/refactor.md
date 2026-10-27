@@ -1,32 +1,17 @@
 # Refactor Pack
 
-Use this for refactors, rewrites, cleanups, migrations, and re-architecture.
+Use for requested refactors, rewrites, cleanups, migrations, or re-architecture. Apply the refactor compatibility policy in `AGENTS.md`: prefer the new intended design and retain compatibility only when required by the user or issue.
 
-## Read
+## Design Evidence
 
-- `AGENTS.md`
-- `.ai/context/index.md`
-- Affected package `package.json`
-- Affected package-local `AI.md`, if present
-- Existing tests that lock current behavior
+Inspect public APIs, private lower-package capabilities, consumers, and tests that lock current behavior. Reuse existing capabilities; extract a deliberate shared API at the lower owner when needed before implementing the feature above it. Remove obsolete compatibility paths within the requested scope.
 
-## Policy
+## Relevant Context
 
-Master CSS refactors prefer a clean, correct design over backward compatibility. Do not preserve old APIs, config shapes, aliases, adapters, fixtures, or compatibility branches solely for compatibility unless the user or issue explicitly requires it.
+- For ownership changes, use [package-boundaries.md](package-boundaries.md), `.ai/architecture.md`, and `.ai/package-map.md`.
+- For semantic, API, or other high-risk changes, follow [accuracy-guardrails.md](accuracy-guardrails.md).
+- If a behavior-preserving refactor changes CSS, investigate with [css-output.md](css-output.md). Restore the intended behavior or explain and test a justified change within scope; do not silently treat it as equivalent.
 
-Breaking changes are allowed in requested refactor work, but they must be intentional and visible. List changed or removed public APIs, config shapes, class syntax, CSS output, runtime behavior, extraction behavior, language tooling behavior, and ESLint behavior.
+## Completion
 
-## Workflow
-
-- Confirm the refactor goal and affected ownership boundary.
-- Inventory existing capability before proposing new code: current public APIs, package-local helpers, private/internal implementations that should become shared lower APIs, downstream consumers, and tests.
-- If a feature needs behavior that already exists privately in a lower package, extract the shared lower API first, update consumers to use it, then return to the feature-specific implementation.
-- Remove obsolete compatibility paths when they obscure the new model.
-- Keep unrelated formatting and package churn out of scope.
-- Update tests and fixtures to prove the new intended behavior.
-
-## Escalate When
-
-- Behavior should remain unchanged but CSS output differs: read `.ai/context/css-output.md` and stop to explain why it is not a pure refactor.
-- Package boundaries shift: read `.ai/context/package-boundaries.md`, `.ai/architecture.md`, and `.ai/package-map.md`.
-- Parser/compiler/runtime/extraction/language/ESLint behavior changes: read `.ai/context/accuracy-guardrails.md`.
+Update tests for the intended contract and use [testing.md](testing.md) for validation. Report changed/removed APIs, config, class syntax, CSS output, runtime, extraction, language, or ESLint behavior, plus removed compatibility paths and validation results.

@@ -1,21 +1,22 @@
+import { createMCPToolingSession } from './tooling-session'
 import {
   flattenMasterCSSManifestVariables,
-  type MasterCSSManifestUtility
-} from '@master/css-engine'
+  type MasterCSSMixinDefinition
+} from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import {
-  compactConditions,
-  compactUtility,
+  compactMixin,
   compactVariable,
   summarizeManifest
 } from './manifest-summary'
 
-const MANIFEST_QUERY_VERSION = 1
+const MANIFEST_QUERY_VERSION = 6
 
-export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'mode' | 'condition' | 'alias'
+export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'mixin' | 'custom-media' | 'family'
 
 export interface ManifestQueryOptions {
+  context?: SemanticContext
   query?: string
   kind?: ManifestQueryKind
   namespace?: string
@@ -36,144 +37,59 @@ function limitResults<T>(items: T[], limit: number) {
   return items.slice(0, limit)
 }
 
-function utilitySearchValues(utility: MasterCSSManifestUtility) {
-  return [
-    utility.id,
-    utility.name,
-    utility.key,
-    utility.subkey,
-    ...(utility.keys || []),
-    ...(utility.namespaces || []),
-    ...(utility.aliasGroups || []),
-    ...(utility.variableAliasRefs || []),
-    ...utility.matchers.flatMap((matcher) => Object.values(matcher))
-  ]
+function mixinSearchValues(mixin: MasterCSSMixinDefinition) {
+  return [mixin.name, ...(mixin.parameters ?? []).map(parameter => parameter.name)]
 }
 
 export async function queryManifest(context: MasterCSSMCPContext, options: ManifestQueryOptions = {}) {
-  const manifest = await loadWorkspaceManifest(context)
+  const manifest = await loadWorkspaceManifest(context, options.context)
   const query = (options.query || '').toLowerCase()
   const kind = options.kind || 'all'
   const namespace = options.namespace
   const limit = options.limit ?? 50
 
-  if (manifest.status === 'error') {
-    return {
-      version: MANIFEST_QUERY_VERSION,
-      root: context.root,
-      manifest: {
-        status: manifest.status,
-        entries: manifest.entries,
-        error: manifest.error
-      },
-      inputs: {
-        query: options.query,
-        kind,
-        namespace,
-        limit
-      },
-      results: {
-        tokens: [],
-        utilities: [],
-        variants: [],
-        modes: [],
-        conditions: [],
-        aliases: []
-      },
-      diagnostics: [
-        {
-          code: 'manifest-load-error',
-          severity: 'error' as const,
-          message: manifest.error,
-          source: 'Master CSS',
-          sourceKind: 'manifest'
-        }
-      ],
-      summary: {
-        total: 0,
-        returned: 0,
-        status: 'error'
-      }
-    }
-  }
-
-  const activeManifest = manifest.manifest
+  const activeManifest = requireWorkspaceManifest(manifest)
   const variables = flattenMasterCSSManifestVariables(activeManifest.variables)
     .filter((variable) => !namespace || variable.namespace === namespace)
     .filter((variable) => matchesAny([
       variable.name,
       variable.key,
       variable.namespace,
-      variable.value
+      ...variable.values.flatMap(({ path, value }) => [...path, value])
     ], query))
     .map(compactVariable)
 
+  const mixins = (activeManifest.mixins || [])
+    .filter((mixin) => !namespace || mixin.name === `--${namespace}`)
+    .filter((mixin) => matchesAny(mixinSearchValues(mixin), query))
+    .map(compactMixin)
+
   const utilities = (activeManifest.utilities || [])
-    .filter((utility) => !namespace || utility.namespaces?.includes(namespace))
-    .filter((utility) => matchesAny(utilitySearchValues(utility), query))
-    .map(compactUtility)
+    .filter(utility => !namespace || utility.parameters?.some(parameter => parameter.name === `--${namespace}`))
+    .filter(utility => matchesAny(mixinSearchValues(utility), query))
+    .map(utility => ({ ...utility, parameters: utility.parameters ?? [] }))
 
-  const variants = (activeManifest.variants || [])
-    .filter((variant) => includesQuery(variant.token, query))
-    .map((variant) => ({
-      token: variant.token,
-      branches: variant.branches.length,
-      layers: [...new Set(variant.branches.map((branch) => branch.layer).filter(Boolean))]
-    }))
+  const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
 
-  const modes = [
-    ...(activeManifest.settings?.defaultMode ? [activeManifest.settings.defaultMode] : []),
-    ...(activeManifest.settings?.modes || [])
-  ].filter((mode, index, list) => list.indexOf(mode) === index)
-    .filter((mode) => includesQuery(mode, query))
-    .map((mode) => ({
-      name: mode,
-      default: mode === activeManifest.settings?.defaultMode,
-      trigger: activeManifest.settings?.modeTrigger
-    }))
-
-  const conditions = [
-    ...compactConditions(activeManifest.conditions),
-    ...compactConditions(activeManifest.breakpointConditions),
-    ...compactConditions(activeManifest.containerConditions)
-  ].filter((rule) => matchesAny([rule.name, rule.id], query))
-
-  const aliases = (activeManifest.utilities || [])
-    .flatMap((utility) => [
-      ...(utility.variableAliases || []).map(([key, name]) => ({
-        utility: utility.id,
-        key,
-        name,
-        type: 'variable-alias' as const
-      })),
-      ...(utility.variableAliasRefs || []).map((ref) => ({
-        utility: utility.id,
-        ref,
-        type: 'variable-alias-ref' as const
-      })),
-      ...(utility.aliasGroups || []).map((group) => ({
-        utility: utility.id,
-        group,
-        type: 'alias-group' as const
-      }))
-    ])
-    .filter((alias) => matchesAny(Object.values(alias), query))
+  using tooling = createMCPToolingSession(activeManifest)
+  const families = tooling.tokenFamilies().families
+    .map(family => ({ type: 'token-family' as const, ...family }))
+    .filter(family => !namespace || family.namespace === namespace)
+    .filter((family) => matchesAny(Object.values(family), query))
 
   const allResults = {
     tokens: kind === 'all' || kind === 'token' ? variables : [],
     utilities: kind === 'all' || kind === 'utility' ? utilities : [],
-    variants: kind === 'all' || kind === 'variant' ? variants : [],
-    modes: kind === 'all' || kind === 'mode' ? modes : [],
-    conditions: kind === 'all' || kind === 'condition' ? conditions : [],
-    aliases: kind === 'all' || kind === 'alias' ? aliases : []
+    mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
+    customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
+    families: kind === 'all' || kind === 'family' ? families : []
   }
   const limitedResults = {
     tokens: limitResults(allResults.tokens, limit),
     utilities: limitResults(allResults.utilities, limit),
-    variants: limitResults(allResults.variants, limit),
-    modes: limitResults(allResults.modes, limit),
-    conditions: limitResults(allResults.conditions, limit),
-    aliases: limitResults(allResults.aliases, limit)
+    mixins: limitResults(allResults.mixins, limit),
+    customMedia: limitResults(allResults.customMedia, limit),
+    families: limitResults(allResults.families, limit)
   }
   const total = Object.values(allResults).reduce((count, items) => count + items.length, 0)
   const returned = Object.values(limitedResults).reduce((count, items) => count + items.length, 0)
@@ -182,6 +98,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     version: MANIFEST_QUERY_VERSION,
     root: context.root,
     manifest: {
+      ...manifestMetadata(manifest),
       status: manifest.status,
       entries: manifest.entries,
       summary: summarizeManifest(activeManifest)
@@ -197,11 +114,10 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       total,
       returned,
       tokens: variables.length,
+      mixins: mixins.length,
       utilities: utilities.length,
-      variants: variants.length,
-      modes: modes.length,
-      conditions: conditions.length,
-      aliases: aliases.length,
+      customMedia: customMedia.length,
+      families: families.length,
       status: 'ok'
     }
   }

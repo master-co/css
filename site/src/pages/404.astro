@@ -1,0 +1,13 @@
+---
+import { createElement as h } from 'react'
+import Document from '../layouts/Document.astro'
+import RenderNode from '~/site/docs-shell/components/RenderNode'
+import NotFound from '~/site/docs-shell/components/NotFound'
+import { withSection } from '~/site/routes'
+
+const route = await withSection('brand', { robots: 'noindex' }, h(NotFound))
+---
+
+<Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} locales={route.locales}>
+  <RenderNode node={route.element} />
+</Document>

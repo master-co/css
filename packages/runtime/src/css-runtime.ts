@@ -1,75 +1,82 @@
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
-import CSSRuntime from './core'
+import { MasterCSSRuntime } from './core'
+import type { MasterCSSRuntimeProgram, MasterCSSRuntimeProgramLoader } from './types'
 
-type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
-type CSSRuntimeManifest = MasterCSSManifest | ((host: HTMLElement) => MasterCSSManifest)
-type CSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
-type CSSRuntimeEmittedGlobals = MasterCSSEmittedGlobals | ((host: HTMLElement) => MasterCSSEmittedGlobals | undefined)
-type CSSHydrationManifest = MasterCSSHydrationManifest | ((host: HTMLElement) => MasterCSSHydrationManifest | undefined)
+type MasterCSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
+type MasterCSSRuntimeHostProgram =
+  | MasterCSSRuntimeProgram
+  | ((host: HTMLElement) => MasterCSSRuntimeProgram | Promise<MasterCSSRuntimeProgram>)
+type MasterCSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
+type MasterCSSRuntimeEmittedGlobals = MasterCSSEmittedGlobals | ((host: HTMLElement) => MasterCSSEmittedGlobals | undefined)
+type MasterCSSRuntimeHydrationManifest = MasterCSSHydrationManifest | ((host: HTMLElement) => MasterCSSHydrationManifest | undefined)
 
-export interface CSSRuntimeOptions {
-  manifest: CSSRuntimeManifest
-  root?: CSSRuntimeRoot
-  emittedGlobals?: CSSRuntimeEmittedGlobals
-  hydrationManifest?: CSSHydrationManifest
+export interface WithMasterCSSRuntimeOptions {
+  /** The runtime program, or a function of the host element that loads it when the engine starts. */
+  readonly program: MasterCSSRuntimeHostProgram
+  readonly root?: MasterCSSRuntimeRoot
+  readonly emittedGlobals?: MasterCSSRuntimeEmittedGlobals
+  readonly hydrationManifest?: MasterCSSRuntimeHydrationManifest
 }
 
-export type CSSRuntimeDecoratorOptions = CSSRuntimeOptions
-
-function resolveManifest(host: HTMLElement, manifest: CSSRuntimeManifest): MasterCSSManifest {
-  return typeof manifest === 'function' ? manifest(host) : manifest
+function resolveProgram(
+  host: HTMLElement,
+  program: MasterCSSRuntimeHostProgram
+): MasterCSSRuntimeProgram | MasterCSSRuntimeProgramLoader {
+  return typeof program === 'function' ? async () => await program(host) : program
 }
 
-function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): ShadowRoot | null | undefined {
+function resolveRoot(host: HTMLElement, root: MasterCSSRuntimeRoot | undefined): ShadowRoot | null | undefined {
   return typeof root === 'function'
     ? root(host)
     : root || host.shadowRoot
 }
 
-function resolveEmittedGlobals(host: HTMLElement, emittedGlobals: CSSRuntimeEmittedGlobals | undefined): MasterCSSEmittedGlobals | undefined {
+function resolveEmittedGlobals(host: HTMLElement, emittedGlobals: MasterCSSRuntimeEmittedGlobals | undefined): MasterCSSEmittedGlobals | undefined {
   return typeof emittedGlobals === 'function' ? emittedGlobals(host) : emittedGlobals
 }
 
-function resolveHydrationManifest(host: HTMLElement, hydrationManifest: CSSHydrationManifest | undefined): MasterCSSHydrationManifest | undefined {
+function resolveHydrationManifest(host: HTMLElement, hydrationManifest: MasterCSSRuntimeHydrationManifest | undefined): MasterCSSHydrationManifest | undefined {
   return typeof hydrationManifest === 'function' ? hydrationManifest(host) : hydrationManifest
 }
 
-export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRuntimeHostConstructor>(target: T) => T {
-  return function <T extends CSSRuntimeHostConstructor>(target: T): T {
+export function withMasterCSSRuntime(
+  options: WithMasterCSSRuntimeOptions
+): <T extends MasterCSSRuntimeHostConstructor>(target: T) => T {
+  return function <T extends MasterCSSRuntimeHostConstructor>(target: T): T {
     const connectedCallback = target.prototype.connectedCallback as (() => void) | undefined
     const disconnectedCallback = target.prototype.disconnectedCallback as (() => void) | undefined
 
     return class extends target {
-      cssRuntime?: CSSRuntime
+      masterCSSRuntime?: MasterCSSRuntime
 
       connectedCallback() {
         connectedCallback?.call(this)
         const root = resolveRoot(this, options.root)
         if (!root) {
-          throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
+          throw new Error('withMasterCSSRuntime() requires a shadow root. Provide options.root or create a shadow root before connectedCallback() finishes.')
         }
-        const cssRuntime = CSSRuntime.create({
-          manifest: resolveManifest(this, options.manifest),
+        const pendingRuntime = MasterCSSRuntime.start({
+          program: resolveProgram(this, options.program),
           root,
           emittedGlobals: resolveEmittedGlobals(this, options.emittedGlobals),
-          hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest)
+          hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest),
+          onDiagnostic: diagnostic => console.error(diagnostic)
         })
-        this.cssRuntime = cssRuntime
-        if (cssRuntime.needsHydrationManifest()) {
-          void cssRuntime.loadHydrationManifest().then(() => {
-            if (this.cssRuntime === cssRuntime) cssRuntime.observe()
-          })
-        } else {
-          cssRuntime.observe()
-        }
+        void pendingRuntime.then((runtime) => {
+          if (!this.isConnected) {
+            runtime.dispose()
+            return
+          }
+          this.masterCSSRuntime = runtime
+          runtime.observe()
+        }).catch(() => {})
       }
 
       disconnectedCallback() {
         disconnectedCallback?.call(this)
-        this.cssRuntime?.destroy()
-        this.cssRuntime = undefined
+        this.masterCSSRuntime?.dispose()
+        this.masterCSSRuntime = undefined
       }
     }
   }

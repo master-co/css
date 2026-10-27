@@ -1,0 +1,28 @@
+[
+  {
+    "page": "order",
+    "id": "keep-source-order-meaningful",
+    "title": "Keep source order meaningful",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex gap-sm\">\n  <button id=\"target\" type=\"button\" tabindex=\"0\" class=\"flex:none order:2 height:4rem width:5rem p-xs\">Source 1</button>\n  <button id=\"peer\" type=\"button\" tabindex=\"0\" class=\"flex:none order:1 height:4rem width:5rem p-xs\">Source 2</button>\n  <button id=\"item-3\" type=\"button\" tabindex=\"0\" class=\"flex:none height:4rem width:5rem p-xs\">Source 3</button>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "gap-sm",
+      "flex:none",
+      "order:2",
+      "height:4rem",
+      "width:5rem",
+      "p-xs",
+      "order:1"
+    ],
+    "classLists": [
+      "display:flex gap-sm",
+      "flex:none order:2 height:4rem width:5rem p-xs",
+      "flex:none order:1 height:4rem width:5rem p-xs",
+      "flex:none height:4rem width:5rem p-xs"
+    ],
+    "highlighted": []
+  }
+]

@@ -1,0 +1,576 @@
+import assert from 'node:assert/strict'
+import { test, before } from 'node:test'
+import { readFile, readdir, mkdtemp, writeFile, rm, mkdir } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { createDocumentationSearch } from '~/site/docs-shell/utils/documentation-search'
+import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
+import { generateReference, renderDocumentMarkdown } from './build'
+import { searchTasks } from './search-tasks'
+import type { ReferenceCatalog } from './types'
+import { generatePresetCSS } from '../common/generate-preset-css'
+import SyntaxTr from '../components/SyntaxTr'
+import { resolveSyntaxRow } from './syntax'
+import resolveHeading from '~/site/docs-shell/utils/resolve-heading'
+import { extractReferenceMdx } from './markdown'
+import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses } from './configured-example'
+import legacyAnchors from './legacy-anchors.json' with { type: 'json' }
+import { collectCSSVariableReferences } from '../scripts/css-variable-references'
+import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
+import preset from '../utils/preset-manifest'
+import { compileManifestSync } from '@master/css-compiler/node'
+import { syntaxTutorialContent } from '../utils/syntax-tutorial'
+import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
+import { tokenValueEntry } from './value-entry'
+import { documentHeadings } from './headings'
+import { documentationHygieneIssues } from '../tests/document-hygiene'
+import { createReferenceRenderDocument, referenceRenderVersion } from './render-document'
+import { referenceCodeProps, isStylesheetExample } from './code-block'
+import highlightCode from '../docs-shell/utils/highlight-code-core'
+import { prepareCode } from '../docs-shell/utils/prepared-code'
+import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
+
+const root = fileURLToPath(new URL('../', import.meta.url))
+let catalog: ReferenceCatalog
+before(async () => {
+  const pages = JSON.parse(await readFile(path.join(root, '.pages.json'), 'utf8'))
+  catalog = await generateReference(root, undefined, [...pages, { pathname: '/reference/tools/cli/migrate' }])
+})
+
+test('Reference and shared search styles use defined site theme variables', async () => {
+  const theme = await readFile(path.join(root, 'styles/docs-shell/theme.css'), 'utf8')
+  const { manifest } = compileManifestSync(theme, { baseManifest: preset })
+  const names = new Set(flattenMasterCSSManifestVariables(manifest.variables).map(variable => variable.name))
+  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/documentation-values.css', 'styles/docs-shell/documentation-search.css']) {
+    const css = await readFile(path.join(root, file), 'utf8')
+    for (const name of collectCSSVariableReferences(css)) assert.ok(names.has(name), `${file}: --${name}`)
+  }
+})
+
+test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
+  const { foundationFamilies } = await import('../common/foundation-data/tokens')
+  const { recipes } = await import('./recipes')
+  assert.equal(catalog.documents.length, 84)
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
+  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
+  const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
+  assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
+  for (const namespace of ['font-family', 'font-size', 'font-weight']) assert.ok(families.markdown.includes(`[${namespace}](/reference/tokens/${namespace})`))
+  for (const family of foundationFamilies) {
+    assert.ok(families.markdown.includes(`Property: \`${family.property}\``), family.prefix)
+    assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
+    assert.ok(families.headings.some(heading => heading.id === `family-${family.prefix}`))
+  }
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
+  for (const doc of catalog.documents) {
+    assert.deepEqual(doc.extractionNotes, [], doc.id)
+    for (const id of doc.related) assert.ok(catalog.documents.some(doc => doc.id === id), `${doc.id} → ${id}`)
+    for (const [identifier, anchor] of Object.entries(doc.identifierAnchors ?? {})) assert.ok(doc.headings.some(heading => heading.id === anchor), `${doc.id}: ${identifier} → ${anchor}`)
+  }
+})
+
+test('animation lookup owns the shorthand family and all ten preset values', () => {
+  const animation = catalog.documents.find(doc => doc.id === 'tokens/animate')!
+  assert.match(animation.markdown, /animation: var\(--animate-<name>\)/)
+  assert.match(animation.markdown, /family-animate/)
+  assert.match(animation.markdown, /animation-duration:var\(--duration-fast\)/)
+  assert.doesNotMatch(animation.markdown, /companion|reference\/animate|@apply --animate/)
+  for (const name of ['fade', 'flash', 'float', 'heart', 'jump', 'pulse', 'ping', 'rotate', 'shake', 'zoom']) {
+    assert.ok(animation.identifierAnchors?.[`--animate-${name}`], name)
+  }
+})
+
+test('30 acceptance queries find the intended document in the first three results', async () => {
+  for (const locale of ['en', 'tw']) {
+    const pages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+    const search = createDocumentationSearch(pages)
+    const failures = searchTasks.filter(([query, id]) => !search(query, 3).some(result => result.page.url.endsWith(`/reference/${id}`)))
+    assert.ok(failures.length <= 3, `${locale}: ${JSON.stringify(failures)}`)
+    for (const query of ['padding', 'p', 'px', 'padding-inline']) {
+      const result = search(query, 1)[0]
+      assert.equal(result.page.title, 'Token families', query)
+      assert.match(result.href, /#family-/, query)
+    }
+    assert.match(search('@master/css#createEngine', 1)[0].href, /\/reference\/packages\/css#api-/)
+    for (const page of pages.filter((page: any) => page.identifiers)) {
+      for (const identifier of page.identifiers) assert.ok(search(identifier.text, 1).length, `${identifier.text} has no results`)
+    }
+  }
+})
+
+test('current Reference excludes upgrade workflows and obsolete syntax identifiers', async () => {
+  assert.ok(!catalog.documents.some(doc => doc.id === 'tools/cli/migrate'))
+  const pages = JSON.parse(await readFile(path.join(root, '.pages.json'), 'utf8')) as { pathname: string }[]
+  assert.ok(!pages.some(page => page.pathname === '/reference/tools/cli/migrate'))
+  for (const doc of catalog.documents) {
+    assert.deepEqual(documentationHygieneIssues(doc.markdown), [], doc.id)
+  }
+})
+
+test('namespace consumer tables cover the registry including color role groups', async () => {
+  const { namespaceFamilies, foundationFamilies } = await import('../common/foundation-data/tokens')
+  for (const namespace of [...new Set(foundationFamilies.flatMap(family => family.namespaces)), 'color-line', 'color-surface', 'color-text']) {
+    const doc = catalog.documents.find(doc => doc.id === `tokens/${namespace}`)!
+    for (const family of namespaceFamilies(namespace)) {
+      assert.ok(doc.markdown.includes(`/reference/tokens/families#family-${family.prefix}`))
+      assert.ok(doc.markdown.includes(`\`${family.property}\``))
+    }
+  }
+  const container = catalog.documents.find(doc => doc.id === 'tokens/container')!
+  assert.match(container.markdown, /Changing `--container-md` does not change/)
+  const breakpoints = catalog.documents.find(doc => doc.id === 'tokens/breakpoints')!
+  for (const name of Object.keys(preset.customMedia!)) assert.ok(breakpoints.aliases.includes(`@${name.slice(2)}`))
+})
+
+test('all generated token and recipe examples reproduce complete CSS', () => {
+  for (const doc of catalog.documents.filter(doc => ['utility', 'tokens'].includes(doc.kind))) {
+    for (const example of doc.examples) {
+      assert.equal(example.css, example.configuration ? configuredExampleCSS(example.configuration, example.classes) : generatePresetCSS(example.classes), `${doc.id}: ${example.title}`)
+      assert.ok(example.css.length > 0)
+      assert.ok(doc.markdown.includes(example.css))
+    }
+  }
+  const conditions = catalog.documents.find(doc => doc.id === 'rules/conditions')!
+  assert.match(conditions.examples[0].css, /@layer utilities/)
+})
+
+test('explicit anchors survive renamed headings and are exported as portable Markdown anchors', () => {
+  assert.equal(resolveHeading('New heading {#old-heading}', 'new-heading').id, 'old-heading')
+  assert.equal(resolveHeading('Overview [sr-only] {#overview}', 'unused').className, 'sr-only')
+  for (const doc of catalog.documents.filter(doc => doc.kind === 'utility')) {
+    const markdown = renderDocumentMarkdown(doc, catalog)
+    assert.doesNotMatch(markdown, /^#{2,3} .*\{#[\w-]+\}$/m)
+    assert.equal(new Set(doc.headings.map(heading => heading.id)).size, doc.headings.length, doc.id)
+  }
+})
+
+test('mode and layer contracts retain complete configured CSS, consumers and unique stable anchors', () => {
+  for (const id of ['rules/modes', 'rules/layers']) {
+    const doc = catalog.documents.find(doc => doc.id === id)!
+    assert.equal(new Set(doc.headings.map(heading => heading.id)).size, doc.headings.length, id)
+    const configured = doc.examples.filter(example => example.configuration !== undefined)
+    assert.equal(configured.length, id === 'rules/layers' ? 6 : 1, id)
+    for (const example of configured) {
+      assert.equal(example.css, configuredExampleCSS(example.configuration!, example.classes))
+      assert.ok(doc.markdown.includes(example.css))
+      assert.match(example.css, /@layer (?:base|defaults|utilities|components)/)
+    }
+  }
+  const modes = catalog.documents.find(doc => doc.id === 'rules/modes')!
+  assert.ok(modes.markdown.includes('/reference/tokens/families'))
+  // A registry-backed consumer may have no value in the preset: order was missing
+  // when this index was incorrectly derived from the defined variable inventory.
+  assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order-'])
+  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-pxe-'))
+  assert.ok(!variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.some(key => key.startsWith('@')))
+  const layers = catalog.documents.find(doc => doc.id === 'rules/layers')!
+  assert.ok(layers.headings.some(heading => heading.id === 'summary' && heading.title === 'Defaults stay below local decisions'))
+  assert.ok(layers.headings.some(heading => heading.id === 'layer-checklist'))
+  assert.match(layers.markdown, /!important` reverses the order between layers/)
+  const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@layer(base)'))!
+  assert.match(base.css, /@layer base\{.*list-style:none/)
+  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@layer(defaults)'))!
+  assert.match(fonts.css, /--font-family-mono:/)
+  assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
+  assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])
+  assert.throws(() => configuredExampleCSS('', ['list-style:10px']), /Invalid configured documentation class/)
+})
+
+test('compact token lists preserve every native value, heading and identifier in the normalized body', () => {
+  const variables = flattenMasterCSSManifestVariables(preset.variables)
+  for (const doc of catalog.documents.filter(doc => doc.kind === 'tokens')) {
+    const nodes = markdownTree(doc.markdown).children
+    const rows = nodes.flatMap((node: any, index) => {
+      const entry = tokenValueEntry(nodes, index)
+      return entry ? [{ ...entry.row, title: node.children[0].value }] : []
+    })
+    const entries = variables.filter(variable => `tokens/${variable.namespace}` === doc.id)
+    assert.equal(rows.length, entries.length, doc.id)
+    if (!entries.length) continue // Named-condition documents retain complete CSS code blocks.
+    assert.deepEqual(rows.map(row => row.title), doc.headings.filter(heading => heading.depth === 3).map(heading => heading.title), doc.id)
+    for (const [index, variable] of entries.entries()) {
+      const row = rows[index]
+      assert.equal(row.title, variable.key)
+      assert.equal(row.identifier, `--${variable.name}`)
+      assert.equal(doc.identifierAnchors?.[row.identifier], doc.headings.find(heading => heading.title === row.title && heading.depth === 3)?.id)
+      assert.deepEqual(row.values, variable.values.map(({ path, value }) => ({ label: path.join(' → '), value })))
+      for (const value of row.values) assert.ok(renderDocumentMarkdown(doc, catalog).includes(`Scope: ${value.label}\nValue: ${value.value}`))
+    }
+  }
+})
+
+test('language contracts export portable examples, complete CSS and stable section anchors', () => {
+  for (const id of ['rules/declarations', 'rules/selectors', 'rules/conditions', 'rules/extraction']) {
+    const doc = catalog.documents.find(doc => doc.id === id)!
+    const markdown = renderDocumentMarkdown(doc, catalog)
+    const anchors = new Set([...documentHeadings(markdown).map(heading => heading.id), ...[...markdown.matchAll(/<a id="([^"]+)"><\/a>/g)].map(match => match[1])])
+    for (const heading of doc.headings) assert.ok(anchors.has(heading.id), `${id}#${heading.id}`)
+    assert.doesNotMatch(markdown, /className=|MCSS_EXPRESSION|<(?:Demo|Class2CSS|ConfiguredExample)\b/)
+    for (const example of doc.examples) {
+      const css = example.configuration === undefined
+        ? generatePresetCSS(example.classes)
+        : configuredExampleCSS(example.configuration, example.classes)
+      assert.equal(example.css, css, `${id}: ${example.title}`)
+      assert.ok(markdown.includes(css))
+    }
+  }
+  const extraction = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/extraction')!, catalog)
+  assert.match(extraction, /font-size:var\(--headline-size\)/)
+  assert.match(extraction, /width:var\(--progress\)/)
+  assert.match(extraction, /setAttribute\('aria-valuenow'/)
+  assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
+  const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
+  assert.match(conditions, /container-name:card container-type:inline-size/)
+  assert.match(conditions, /@supports\(\(display:grid\)\)/)
+  assert.doesNotMatch(conditions, /`css @/)
+})
+
+test('continuing recipe and Guide anchors remain available', async () => {
+  const missing: string[] = []
+  for (const page of legacyAnchors.pages) {
+    const retired = page.source.match(/\/reference\/([^/]+)\/content.mdx$/)?.[1]
+    if (retired && !catalog.documents.some(doc => doc.id === retired)) continue
+    const generated = catalog.documents.find(doc => page.source === `site/content/reference/${doc.id}/content.mdx`)
+    if (generated) {
+      for (const id of page.anchors) if (!generated.markdown.includes(`id="${id}"`) && !generated.headings.some(h => h.id === id)) missing.push(`${page.source}#${id}`)
+      continue
+    }
+    const source = await readFile(path.join(root, '..', page.source), 'utf8')
+    const ids = new Set(extractSearchNodesFromMdx(source).filter(node => node.id).map(node => node.id))
+    for (const match of source.matchAll(/<a id="([^"]+)"/g)) ids.add(match[1])
+    for (const id of page.anchors) if (!ids.has(id)) missing.push(`${page.source}#${id}`)
+  }
+  assert.deepEqual(missing, [])
+})
+
+test('Reference links and preserved Guide anchors resolve to real documents and sections', async () => {
+  const guideRoutes = new Set((await readdir(path.join(root, 'content/guide'), { recursive: true }))
+    .filter(file => file.endsWith('page.tsx'))
+    .map(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.tsx$/, '')))
+  for (const doc of catalog.documents) {
+    for (const match of doc.markdown.matchAll(/\]\((\/guide\/[^)#]+)(?:#[^)]+)?\)/g)) {
+      assert.ok(guideRoutes.has(match[1]), `${doc.id}: ${match[1]}`)
+    }
+    for (const match of doc.markdown.matchAll(/\]\((\/reference\/[^\s)]+)\)/g)) {
+      const [url, anchor] = match[1].split('#')
+      const target = catalog.documents.find(doc => doc.url === url.replace(/\.md$/, ''))
+      assert.ok(target, `${doc.id}: ${match[1]}`)
+      if (anchor) assert.ok(target.headings.some(heading => heading.id === anchor) || target.rows.some(row => row.id === anchor), `${doc.id}: ${match[1]}`)
+    }
+  }
+  for (const doc of catalog.documents.filter(doc => doc.kind === 'rule')) {
+    const [guideURL, guideAnchor] = doc.guide!.split('#')
+    const guide = await readFile(path.join(root, `content${guideURL}/content.mdx`), 'utf8')
+    if (guideAnchor) {
+      assert.ok(extractSearchNodesFromMdx(guide).some(node => node.id === guideAnchor), doc.guide)
+      continue
+    }
+    const source = await readFile(path.join(root, '..', doc.source), 'utf8')
+    for (const heading of extractSearchNodesFromMdx(source).filter(node => node.id)) assert.ok(guide.includes(`id="${heading.id}"`), `${doc.guide}#${heading.id}`)
+  }
+})
+
+test('Syntax Tutorial exports every working example, stable anchor and searchable output', async () => {
+  const tutorial = await syntaxTutorialContent(root)
+  assert.deepEqual(tutorial.notes, [])
+  assert.deepEqual(documentationHygieneIssues(tutorial.markdown), [])
+  assert.doesNotMatch(tutorial.markdown, /<ButtonPreview|MCSS_EXPRESSION|\{#|\/guide\/migration/)
+  for (const anchor of ['declarations', 'composition', 'values', 'token-families', 'states', 'conditions', 'project-settings', 'mixins', 'contents', 'cascade', 'delivery', 'complete-button']) {
+    assert.ok(tutorial.markdown.includes(`id="${anchor}"`), anchor)
+  }
+  for (const example of tutorial.examples) {
+    assert.equal(example.css, configuredExampleCSS(example.configuration ?? '', example.classes), example.title)
+    assert.ok(tutorial.markdown.includes(example.css), example.title)
+  }
+  const { foundationFamilies } = await import('../common/foundation-data/tokens')
+  for (const prefix of ['p', 'gap', 'fg', 'font']) {
+    const family = foundationFamilies.find(family => family.prefix === prefix)!
+    assert.ok(tutorial.markdown.includes(`| \`${family.property}\` | \`${family.namespaces[0]}\` |`), prefix)
+  }
+  for (const match of tutorial.markdown.matchAll(/\]\((\/reference\/[^)#]+)(?:#([^)]*))?\)/g)) {
+    const doc = catalog.documents.find(doc => doc.url === match[1])
+    assert.ok(doc, match[1])
+    if (match[2]) assert.ok(doc.headings.some(heading => heading.id === match[2]), match[0])
+  }
+  const nodes = markdownTree(tutorial.markdown).children
+  const generated = nodes.filter(node => node.type === 'code').filter(node => node.meta?.includes('disclosure=generated-css'))
+  // Every class/configuration output and both native stylesheet expansions survive extraction.
+  assert.equal(generated.length, tutorial.examples.length + 2)
+  const used = (className: string) => tutorial.examples.find(example => example.classes.includes(className))!
+  assert.match(used('p-action').css, /:root,:host\{--color-brand:.*--spacing-action:1rem/)
+  assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--workspace-accent:\s*rebeccapurple/)
+  assert.doesNotMatch(used('fg-accent').css, /--color-accent:/)
+  assert.match(used('fg-accent').css, /color:var\(--workspace-accent\)/)
+  const animation = used('animate-reveal@motion-safe').css
+  assert.match(animation, /animation:var\(--animate-reveal\)/)
+  assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
+  assert.match(animation, /@keyframes note-reveal/)
+  assert.match(used('display:grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
+  const priority = used('inset').css
+  assert.ok(priority.indexOf('padding:2rem') < priority.indexOf('padding:var(--spacing-md)'))
+  assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:12px'))
+  assert.equal(priority, configuredExampleCSS(used('inset').configuration!, [...used('inset').classes].reverse()))
+  const native = generated.filter(node => node.type === 'code' && node.meta?.includes('stylesheet=result'))
+  assert.match(native[0].value!, /opacity: 0\.8/)
+  assert.match(native[0].value!, /color: rebeccapurple/)
+  assert.doesNotMatch(native[0].value!, /\.empty/)
+  assert.match(native[1].value!, /@media \(width\s*>=\s*48rem\)/)
+  assert.doesNotMatch(native[1].value!, /@contents|@apply|@mixin/)
+  for (const locale of ['en', 'tw']) {
+    const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+    const canonical = (url: string) => url.replace(/^\/(en|tw)(?=\/)/, '')
+    const page = searchPages.find((page: any) => canonical(page.url) === '/guide/syntax-tutorial')
+    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.searchMarkdown))
+    for (const id of ['declarations', 'composition', 'states', 'conditions', 'project-settings', 'complete-button']) {
+      assert.ok(page.nodes.some((node: { id?: string }) => node.id === id), `${locale}: ${id}`)
+    }
+  }
+})
+
+test('generated output metadata preserves source/result pairing and prepared highlights', async () => {
+  for (const doc of catalog.documents) {
+    const nodes = markdownTree(doc.markdown).children
+    for (const example of doc.examples) {
+      // Directive documents inherit examples outside their extracted section.
+      if (!doc.markdown.includes(example.css)) continue
+      assert.ok(nodes.some(node => node.type === 'code' && node.value === example.css && node.meta?.includes('disclosure=generated-css')), `${doc.id}: ${example.title}`)
+    }
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index]
+      if (node.type !== 'code' || !node.meta?.includes('stylesheet=result')) continue
+      assert.ok(isStylesheetExample(nodes[index - 2], nodes[index - 1], node), doc.id)
+      assert.ok(node.meta.includes('disclosure=generated-css'), doc.id)
+    }
+  }
+  const tutorial = await syntaxTutorialContent(root)
+  const document = { ...catalog.documents[0], kind: 'rule' as const, markdown: tutorial.markdown }
+  const payload = await createReferenceRenderDocument(document, 'generated-css-test')
+  for (let index = 0; index < payload.tree.children.length; index++) {
+    const node = payload.tree.children[index]
+    if (node.type !== 'code' || !node.meta?.includes('disclosure=generated-css')) continue
+    const paired = isStylesheetExample(payload.tree.children[index - 2], payload.tree.children[index - 1], node)
+    const props = referenceCodeProps(node, paired)
+    assert.deepEqual((node.data as any).prepared, await prepareCode(await highlightCode(node.value, { lang: props.lang, beautify: !!props.beautify, dedent: props.dedent })))
+  }
+})
+
+test('machine index and localized Markdown identify the same content and source revision', async () => {
+  const index = JSON.parse(await readFile(path.join(root, 'public/reference/index.json'), 'utf8'))
+  assert.equal(index.revision, catalog.revision)
+  for (const id of ['tokens/families', 'tokens/spacing', 'rules/conditions']) {
+    const en = await readFile(path.join(root, `public/reference/${id}.md`), 'utf8')
+    const tw = await readFile(path.join(root, `public/tw/reference/${id}.md`), 'utf8')
+    assert.ok(en.includes(catalog.version) && tw.includes(catalog.version))
+    assert.match(tw, /English fallback/)
+    assert.equal(en.match(/Content digest: (.+)/)?.[1], tw.match(/Content digest: (.+)/)?.[1])
+  }
+})
+
+test('route payloads preserve Reference content and its parsed render tree', async () => {
+  const routeIndex = JSON.parse(await readFile(path.join(root, '.generated/reference-route-index.json'), 'utf8'))
+  assert.deepEqual(routeIndex, catalog.documents.map(({ id, kind, title, description, category, url }) => ({ id, kind, title, description, category, url })))
+  for (const doc of catalog.documents) {
+    const { tree, renderDigest, ...document } = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(doc.id)}.json`), 'utf8'))
+    assert.deepEqual(document, JSON.parse(JSON.stringify(doc)))
+    assert.match(renderDigest, /^[a-f0-9]{64}$/)
+    function withoutHighlights(node: any): any {
+      if (node.type === 'code') {
+        assert.ok(node.data.prepared.properties.className.includes('code-wrapper'), `${doc.id}: ${node.lang}`)
+        const { data: _data, ...source } = node
+        return source
+      }
+      return node.children ? { ...node, children: node.children.map(withoutHighlights) } : node
+    }
+    assert.deepEqual(withoutHighlights(tree), markdownTree(doc.markdown), doc.id)
+    assert.deepEqual(document.headings, documentHeadings(doc.markdown), doc.id)
+  }
+  const publicCatalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
+  assert.deepEqual(publicCatalog, JSON.parse(JSON.stringify(catalog)))
+})
+
+test('prepared Reference highlights match live code, declarations and source/result pairs', async () => {
+  for (const id of ['rules/modes', 'tokens/color', 'packages/css-tooling', 'directives/theme', 'tools/mcp/mastercss_inspect_class']) {
+    const doc = catalog.documents.find(doc => doc.id === id)!
+    const payload = JSON.parse(await readFile(path.join(root, '.generated/reference-documents', `${encodeURIComponent(id)}.json`), 'utf8'))
+    async function verify(nodes: any[], compact = false) {
+      for (let index = 0; index < nodes.length; index++) {
+        const node = nodes[index]
+        if (!compact && isStylesheetExample(node, nodes[index + 1], nodes[index + 2])) {
+          await verifyCode(nodes[++index], true)
+          await verifyCode(nodes[++index], true)
+        } else if (node.type === 'code') await verifyCode(node)
+        else if (node.children) await verify(node.children)
+      }
+    }
+    async function verifyCode(node: any, example = false) {
+      const props = referenceCodeProps(node, example)
+      assert.deepEqual(node.data.prepared, await prepareCode(await highlightCode(node.value, {
+        lang: props.lang, beautify: !!props.beautify, dedent: props.dedent
+      })), `${id}: ${node.lang} ${node.meta ?? ''}`)
+    }
+    await verify(payload.tree.children, doc.kind === 'tokens')
+  }
+})
+
+test('prepared trees reuse stable highlights and invalidate Markdown or renderer inputs', async () => {
+  const doc = catalog.documents.find(doc => doc.id === 'rules/modes')!
+  const first = await createReferenceRenderDocument(doc, 'version-one')
+  const reused = await createReferenceRenderDocument({ ...doc, title: 'Updated title' }, 'version-one', first)
+  assert.equal(reused.tree, first.tree)
+  assert.equal(reused.title, 'Updated title')
+  const changedMarkdown = await createReferenceRenderDocument({ ...doc, markdown: `${doc.markdown}\n\nAdditional prose.` }, 'version-one', first)
+  assert.notEqual(changedMarkdown.renderDigest, first.renderDigest)
+  assert.notEqual(changedMarkdown.tree, first.tree)
+  const changedPipeline = await createReferenceRenderDocument(doc, 'version-two', first)
+  assert.notEqual(changedPipeline.renderDigest, first.renderDigest)
+  assert.notEqual(changedPipeline.tree, first.tree)
+  assert.deepEqual(changedPipeline.tree, first.tree)
+})
+
+test('render fingerprint tracks grammar, native artifact and module resolution inputs', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'reference-render-'))
+  const siteRoot = path.join(directory, 'site')
+  const grammar = path.join(directory, 'packages/language-service/syntaxes/master-css.tmLanguage.json')
+  const native = path.join(directory, 'packages/binding/native/tooling.node')
+  try {
+    for (const file of [path.join(siteRoot, 'tsconfig.json'), grammar, native]) {
+      await mkdir(path.dirname(file), { recursive: true })
+      await writeFile(file, '{}')
+    }
+    let previous = await referenceRenderVersion(siteRoot)
+    assert.equal(await referenceRenderVersion(siteRoot), previous)
+    for (const file of [grammar, native, path.join(siteRoot, 'tsconfig.json')]) {
+      await writeFile(file, 'updated input')
+      const next = await referenceRenderVersion(siteRoot)
+      assert.notEqual(next, previous, file)
+      previous = next
+    }
+  } finally { await rm(directory, { recursive: true, force: true }) }
+})
+
+test('changing a configured token updates class output, extracted Markdown and search together', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'reference-example-'))
+  try {
+    for (const value of ['1.5rem', '2rem']) {
+      const source = `@theme { --spacing-card: ${value};  }`
+      const file = path.join(directory, 'content.mdx')
+      await writeFile(file, `<ConfiguredExample source={${JSON.stringify(source)}} classes={['p-card']} />`)
+      const extracted = await extractReferenceMdx(file)
+      const pageCSS = configuredExampleCSS(source, ['p-card'])
+      assert.match(pageCSS, new RegExp(`--spacing-card:${value.replace('.', '\\.')}`))
+      assert.ok(extracted.markdown.includes(pageCSS))
+      assert.ok(extractSearchNodesFromMdx(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
+    }
+  } finally { await rm(directory, { recursive: true, force: true }) }
+  assert.throws(() => configuredExampleCSS('@theme { --spacing-card: 1.5rem;  }', ['p:missing-reference-token']), /Invalid configured documentation class/)
+})
+
+test('tool references preserve every public input, complete raw contracts and stable headings', async () => {
+  const { listMCPTools } = await import('./tool-contracts')
+  const { mcpEditorial } = await import('./mcp-editorial')
+  const { cliEditorial } = await import('./cli-editorial')
+  const { schemaParameters, cliParameters, parametersMarkdown } = await import('./tool-parameters')
+  const { execFileSync } = await import('node:child_process')
+  const previous = JSON.parse(await readFile(path.join(root, 'tests/tool-contract-heading-ids.json'), 'utf8'))
+  const tools = await listMCPTools(path.join(root, '../packages/mcp/dist/bin/index.js'))
+  assert.deepEqual(tools.map(tool => tool.name).sort(), Object.keys(mcpEditorial).sort())
+  for (const tool of tools) {
+    const doc = catalog.documents.find(doc => doc.id === `tools/mcp/${tool.name}`)!
+    const editorial = mcpEditorial[tool.name]
+    const schema = markdownTree(doc.markdown).children.find((node: any) => node.type === 'code' && node.meta === 'disclosure=input-schema') as any
+    assert.deepEqual(JSON.parse(schema.value), tool.inputSchema, tool.name)
+    assert.ok(doc.markdown.includes(parametersMarkdown(schemaParameters(tool.inputSchema, editorial.fields))))
+    const example = markdownTree(doc.markdown).children.find((node: any) => node.type === 'code' && node.meta === 'name=Arguments') as any
+    assert.deepEqual(JSON.parse(example.value), editorial.example)
+    for (const text of [editorial.purpose, editorial.output, editorial.lifecycle, editorial.exampleNote]) assert.ok(doc.markdown.includes(text))
+    for (const heading of previous[doc.id]) assert.ok(doc.headings.some(item => item.id === heading.id), `${doc.id}#${heading.id}`)
+  }
+  for (const command of Object.keys(cliEditorial)) {
+    const doc = catalog.documents.find(doc => doc.id === `tools/cli/${command}`)!
+    const help = execFileSync(process.execPath, [path.join(root, '../packages/cli/dist/bin/index.js'), command, '--help'], { encoding: 'utf8' }).trim()
+    const raw = markdownTree(doc.markdown).children.find((node: any) => node.type === 'code' && node.meta === 'disclosure=command-help') as any
+    assert.equal(raw.value, help)
+    const rows = cliParameters(help)
+    assert.ok(doc.markdown.includes(parametersMarkdown(rows)))
+    assert.equal(rows.length, help.split('\n').filter(line => /^ {2}(?:source paths|paths|(?:-\w, )?--)/.test(line)).length)
+    for (const example of cliEditorial[command].examples) assert.ok(doc.markdown.includes(example.command))
+    for (const heading of previous[doc.id]) assert.ok(doc.headings.some(item => item.id === heading.id), `${doc.id}#${heading.id}`)
+  }
+})
+
+test('nested parameter presentation retains requirements, bounds and descriptions without inventing inputs', async () => {
+  const { schemaParameters } = await import('./tool-parameters')
+  const schema = { type: 'object', properties: { range: { type: 'object', properties: { line: { type: 'integer', minimum: 0, maximum: 12 } }, required: ['line'] }, mode: { type: 'string', enum: ['auto', 'native'] } }, required: ['mode'] }
+  const descriptions = { range: 'Selected range.', 'range.line': 'Zero-based line.', mode: 'Execution binding.' }
+  assert.deepEqual(schemaParameters(schema, descriptions), [
+    { name: 'range', type: 'object', requirement: 'Optional', description: 'Selected range.' },
+    { name: 'range.line', type: 'integer', requirement: 'Required when parent is provided', description: 'Zero-based line. Minimum: 0. Maximum: 12.' },
+    { name: 'mode', type: 'string', requirement: 'Required', description: 'Execution binding. Values: `auto`, `native`.' }
+  ])
+  assert.throws(() => schemaParameters(schema, {}), /Missing parameter description/)
+  assert.throws(() => schemaParameters(schema, { ...descriptions, typo: 'No such field.' }), /Stale parameter description/)
+})
+
+
+test('directive contracts preserve stable entrances and complete compiled stylesheet examples', async () => {
+  const previous = JSON.parse(await readFile(path.join(root, 'tests/directive-heading-ids.json'), 'utf8'))
+  const { directiveExamples } = await import('../tests/directive-examples')
+  const { stylesheetExampleMarkdown } = await import('./stylesheet-example')
+  const docs = catalog.documents.filter(doc => doc.kind === 'directive')
+  assert.equal(docs.length, 8)
+  for (const doc of docs) {
+    const exported = renderDocumentMarkdown(doc, catalog)
+    for (const heading of previous[doc.id]) assert.ok(doc.headings.some(item => item.id === heading.id) || exported.includes(`id="${heading.id}"`), `${doc.id}#${heading.id}`)
+    assert.notEqual(doc.description, 'Stylesheet directives, their scope and effects.')
+    assert.doesNotMatch(doc.markdown, /## Related contracts/)
+  }
+  for (const example of directiveExamples) {
+    const matching = docs.filter(doc => doc.markdown.includes(`**${example.title}**`))
+    assert.equal(matching.length, 1, example.title)
+    assert.ok(matching[0].markdown.includes(await stylesheetExampleMarkdown(example.title, example.source)))
+  }
+})
+
+
+test('package declarations preserve every export and anchor without exposing implementation', async () => {
+  const { ts } = await import('./package-declarations')
+  const { verifyDeclarationPresentation } = await import('../tests/package-declarations')
+  await verifyDeclarationPresentation()
+  const previous = JSON.parse(await readFile(path.join(root, 'tests/package-heading-ids.json'), 'utf8'))
+  const packages = catalog.documents.filter(doc => doc.kind === 'package')
+  assert.equal(packages.length, 20)
+  for (const doc of packages) {
+    assert.deepEqual(doc.headings, previous[doc.id], doc.id)
+    assert.match(doc.markdown, /\| Import path \| Purpose \|/, doc.id)
+    const tree = markdownTree(doc.markdown)
+    for (const node of tree.children) if (node.type === 'code' && node.lang === 'typescript') {
+      const source = ts.createSourceFile('contract.d.ts', node.value, ts.ScriptTarget.Latest, true)
+      assert.deepEqual(source.parseDiagnostics, [], doc.id)
+      assert.doesNotMatch(node.value, /declare const default\b|static\s*\{|\basync\s+\w+\(/, doc.id)
+      function inspect(child: any) {
+        if (ts.isMethodDeclaration(child) || ts.isFunctionDeclaration(child) || ts.isConstructorDeclaration(child)) {
+          assert.equal(child.body, undefined, doc.id)
+          for (const parameter of child.parameters) assert.equal(parameter.initializer, undefined, doc.id)
+        }
+        if (ts.isClassDeclaration(child)) for (const member of child.members) {
+          if (ts.isConstructorDeclaration(member)) continue
+          assert.ok(!ts.isPrivateIdentifier(member.name ?? {}), doc.id)
+          assert.ok(!member.modifiers?.some((modifier: any) => modifier.kind === ts.SyntaxKind.PrivateKeyword), doc.id)
+        }
+        ts.forEachChild(child, inspect)
+      }
+      inspect(source)
+    }
+    for (const match of doc.markdown.matchAll(/\]\((\/guide\/[^)#]+)(?:#[^)]+)?\)/g)) {
+      const candidates = (await readdir(path.join(root, 'content/guide'), { recursive: true })).filter(file => file.endsWith('page.tsx'))
+      assert.ok(candidates.some(file => '/guide/' + file.replace(/\([^/]+\)\//g, '').replace(/\/page.tsx$/, '') === match[1]), `${doc.id}: ${match[1]}`)
+    }
+  }
+  const next = packages.find(doc => doc.id === 'packages/css-next')!
+  const section = next.markdown.split('### withMasterCSS')[1].split('## @master/css-next/adapter')[0]
+  assert.equal((section.match(/function withMasterCSS/g) ?? []).length, 5)
+  assert.match(packages.find(doc => doc.id === 'packages/css-language-server')!.markdown, /Executable server startup entry/)
+  assert.doesNotMatch(packages.find(doc => doc.id === 'packages/css-svelte-addon')!.markdown, /sv\.file|defineAddon\(/)
+})

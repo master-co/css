@@ -4,8 +4,8 @@ import {
   type MasterCSSLintContentRuleOptions,
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic
-} from '@master/css-lint'
-import type { MasterCSS } from '@master/css-engine'
+} from '@master/css-tooling/lint'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
 import type { RuleContext, RuleFixer, RuleListener } from '@typescript-eslint/utils/ts-eslint'
 import { messageIdByCode, stringifyLintDiagnosticMessageData } from './report-lint-diagnostics'
 
@@ -14,9 +14,9 @@ type SourceRuleOptions = MasterCSSLintContentRuleOptions[keyof MasterCSSLintCont
 
 interface DefineSourceVisitorsOptions {
   context: RuleContext<any, any[]>
-  css: MasterCSS
   ruleId: MasterCSSLintRuleId
   ruleOptions?: SourceRuleOptions
+  tooling: MasterCSSToolingSession
 }
 
 const SOURCE_LINT_FILE_RE = /\.mdx$/i
@@ -77,18 +77,18 @@ function reportSourceDiagnostic(
 
 export default function defineSourceVisitors({
   context,
-  css,
   ruleId,
-  ruleOptions
+  ruleOptions,
+  tooling
 }: DefineSourceVisitorsOptions): RuleListener {
   return {
     Program(node) {
       const result = lintMasterCSSContent({
         content: context.sourceCode.getText(),
         filePath: getFilename(context),
-        css,
         rules: createSingleRuleSet(ruleId),
-        ruleOptions: createRuleOptions(ruleId, ruleOptions)
+        ruleOptions: createRuleOptions(ruleId, ruleOptions),
+        lintSession: tooling
       })
       for (const diagnostic of result.diagnostics) {
         if (diagnostic.ruleId !== ruleId) continue

@@ -1,5 +1,15 @@
 @import '@master/css';
 @source './app.vue';
+@theme {
+  --color-probe: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host { --color-probe: #123456; } }
+
+
+
+@media (prefers-color-scheme: dark) { :root, :host { --color-probe: #abcdef; } }
+
 
 @layer components {
   .box {

@@ -23,11 +23,11 @@ interface Finding {
 const siteRoot = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const repoRoot = resolve(siteRoot, '..')
 const roots = [
-  resolve(siteRoot, 'app'),
+  resolve(siteRoot, 'content'),
   resolve(siteRoot, 'components'),
-  resolve(repoRoot, 'internal/components'),
-  resolve(repoRoot, 'internal/layouts'),
-  resolve(repoRoot, 'internal/contexts')
+  resolve(siteRoot, 'docs-shell/components'),
+  resolve(siteRoot, 'docs-shell/layouts'),
+  resolve(siteRoot, 'docs-shell/contexts')
 ]
 
 const translatableAttributes = new Set(['alt', 'aria-label', 'title', 'placeholder'])
@@ -152,5 +152,5 @@ function walk(root: string, filter: (file: string) => boolean): string[] {
 }
 
 function isAuditableSourceFile(file: string) {
-  return !/(\.test\.tsx?$|\/api\/|\/\.next\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(file.split(sep).join('/'))
+  return !/(\.test\.tsx?$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(file.split(sep).join('/'))
 }

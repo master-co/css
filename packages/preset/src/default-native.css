@@ -1,27 +1,17 @@
 @layer theme;
 
 @layer base {
-  * {
-    text-rendering: geometricprecision;
-  }
-
   body {
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     line-height: 1.2;
   }
 
   a, button {
     touch-action: manipulation;
-  }
-
-  [role="button"], summary, button, [type="button"] {
-    -webkit-user-select: none;
-    user-select: none;
   }
 
   *, :before, :after {
@@ -36,10 +26,6 @@
   img, svg, video, canvas, audio, iframe, embed, object {
     max-width: 100%;
     display: block;
-  }
-
-  html, body {
-    height: -moz-available;
   }
 
   abbr[title] {
@@ -177,3 +163,38 @@
 }
 
 @layer defaults, components, utilities;
+
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  [data-theme="light"], :host([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"], :host([data-theme="dark"]) {
+    color-scheme: dark;
+  }
+}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001620){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-0000166c){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-000016c8){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001751){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001827){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-0000190b){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001959){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-000019d9){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001a3c){:not(*){--master-css-slot:0}}
+
+@media only all,(master-css-keyframe-kf2ceab7b2150df9b-00001b8b){:not(*){--master-css-slot:0}}

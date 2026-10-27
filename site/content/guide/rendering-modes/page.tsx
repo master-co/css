@@ -1,0 +1,17 @@
+import createPage from '~/site/docs-shell/factories/create-page'
+import Layout from '~/site/layouts/doc'
+import metadata from './metadata'
+import dictionaries from '~/site/dictionaries'
+import categories from '~/site/.categories/guide.json'
+import * as content from './content.mdx'
+
+export const { Page, generateMetadata } = createPage({
+  metadata,
+  dictionaries,
+  categories,
+  subtitle: 'It can be runtime, zero-runtime, or even hydration.',
+  content,
+  Layout,
+})
+
+export default Page

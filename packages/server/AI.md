@@ -7,9 +7,11 @@
 ## Owns
 
 - HTML parsing for server rendering.
-- Class extraction from HTML strings.
-- Server-side `MasterCSS` rendering orchestration.
+- HTML class collection inputs for Rust render sessions.
+- Rust render-session orchestration and hydration/resource IR mapping.
 - Injection or update of `<style id="master-css">`.
+- Materialization of compiled native slots in inline styles and adapter-supplied stylesheet assets.
+- Original link positions and same-origin child import publication through the host callback; Rust still owns resource selection.
 
 ## Does Not Own
 
@@ -20,17 +22,20 @@
 
 ## Public Surface
 
-- `render`
-- `renderCSS`
-- `parseHTML`
+- `renderHTML`
+- `createServerRenderer` / `MasterCSSServerRenderer`
+- `createHTMLRenderSession` / `MasterCSSHTMLRenderSession`
+
+Results are immutable snapshots. The HTML parser, DOM representation, native render
+session, and live CSS state are internal.
 
 ## Key Files
 
 - `src/render.ts`
-- `src/render-css.ts`
-- `src/parse-html.ts`
-- `src/decode-html.ts`
-- `src/create-server-css.ts`
+- `src/render-html.ts`
+- `src/html-render-session.ts`
+- `src/create-server-renderer.ts`
+- `src/parse-html.ts` (internal)
 
 ## Risk Areas
 
@@ -39,22 +44,19 @@
 - Injecting into documents without `<head>` or `<html>`.
 - Serialization preserving source expectations.
 - Fixture `generated.css` output changes.
+- Hydration manifest v5 `classNames`: rendered rule-producing classes in rule order, rendered classes without rules, rule-free classes referenced by the page's generated rule `selectorText` (`EngineSession::class_names_without_rules_in()`), then rule-free classes referenced by project selectors (`selector_class_names_without_rules()`, computed once per render session). A missing class makes a progressive page start its runtime engine; a reordered one changes resource discovery. Whether to inject or externalize the manifest follows the snapshot's rules.
 
-## Safe Changes
+## Constraints
 
-- HTML parsing fixes.
-- Entity decoding fixes.
-- Style injection fixes with fixtures.
-
-## Dangerous Changes
-
-- Changing engine CSS generation behavior here.
-- Emitting unsorted CSS.
-- Injecting duplicate `style#master-css` tags.
-- Replacing parser/serializer without a clear reason.
-- Treating `className` as HTML class without a requirement.
+- Keep CSS generation semantics in the engine.
+- Preserve sorted CSS output.
+- Update existing `style#master-css` instead of injecting duplicates.
+- Replace the parser/serializer only for a demonstrated need.
+- Treat `className` as HTML class only when required.
 
 ## Validation
+
+For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
 pnpm --filter @master/css-server test

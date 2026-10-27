@@ -1,0 +1,443 @@
+#![forbid(unsafe_code)]
+
+use mastercss_engine::{
+    ClassSemanticInspection, ClassSemanticKind, EngineClassCompletionKind, EngineClassVariableIr,
+    EngineError, EngineSession, UtilityMatcherType,
+};
+use mastercss_lexer::{
+    CssDirectiveRange, collect_class_list_token_ranges, find_css_directive_ranges, utf16_len,
+    utf16_to_byte_offset,
+};
+use mastercss_schema::{
+    GeneratedRuleIr, LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
+};
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
+use std::sync::OnceLock;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClassListContextIr {
+    pub start: u32,
+    pub end: u32,
+    #[serde(default)]
+    pub unescape: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClassPositionIr {
+    pub range: SourceRange,
+    pub context_range: SourceRange,
+    pub raw: String,
+    pub token: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SemanticTokenInputIr {
+    pub start: u32,
+    pub end: u32,
+    #[serde(rename = "type")]
+    pub token_type: String,
+    #[serde(default)]
+    pub modifiers: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AnalyzeDocumentRequestIr {
+    pub source: String,
+    pub language_id: String,
+    #[serde(default)]
+    pub host_ranges: Vec<ClassListContextIr>,
+    #[serde(default)]
+    pub settings: LanguageDocumentSettingsIr,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageDocumentSettingsIr {
+    #[serde(default)]
+    pub class_attributes: Vec<String>,
+    #[serde(default)]
+    pub class_functions: Vec<String>,
+    #[serde(default)]
+    pub class_declarations: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageDocumentIr {
+    pub version: u32,
+    pub class_positions: Vec<ClassPositionIr>,
+    pub keyframe_positions: Vec<ClassPositionIr>,
+    pub diagnostics: Vec<mastercss_schema::Diagnostic>,
+    pub semantic_tokens: Vec<SemanticTokenInputIr>,
+    pub semantic_token_data: Vec<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FormatDirectivesRequestIr {
+    pub source: String,
+    #[serde(default)]
+    pub range: Option<SourceRange>,
+    #[serde(default)]
+    pub style_ranges: Vec<SourceRange>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageFormatEditIr {
+    pub range: SourceRange,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageFormatEditsIr {
+    pub version: u32,
+    pub edits: Vec<LanguageFormatEditIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageClassificationsIr {
+    pub version: u32,
+    pub variable_names: Vec<String>,
+    pub classes: Vec<ClassSemanticInspection>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageInspectionIr {
+    pub version: u32,
+    pub class_name: String,
+    pub match_status: mastercss_schema::MatchStatus,
+    pub css_syntax_status: mastercss_schema::CssSyntaxStatus,
+    pub css_value_status: mastercss_schema::CssValueStatus,
+    pub browser_support: mastercss_schema::BrowserSupport,
+    pub kind: ClassSemanticKind,
+    pub base: String,
+    pub suffix: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_token: Option<String>,
+    pub important: bool,
+    pub matcher_types: Vec<UtilityMatcherType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub definition_source: Option<mastercss_schema::CssDirectiveSourceReference>,
+    pub variables: Vec<EngineClassVariableIr>,
+    pub rules: Vec<GeneratedRuleIr>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<mastercss_schema::Diagnostic>,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum LanguageCompletionKind {
+    Property,
+    Value,
+    Function,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageCompletionEntryIr {
+    pub label: String,
+    pub kind: LanguageCompletionKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub documentation_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub insert_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sort_text: Option<String>,
+    pub trigger_suggest: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageCompletionIndexIr {
+    pub version: u32,
+    pub class_entries: Vec<LanguageCompletionEntryIr>,
+    pub keyframes: Vec<KeyframeCompletionIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageTokenFamiliesIr {
+    pub version: u32,
+    pub families: Vec<mastercss_engine::TokenFamily>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MdnCompletionRegistry {
+    pseudos: Vec<String>,
+    properties: HashMap<String, Vec<MdnCompletionValue>>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct MdnCompletionValue {
+    label: String,
+    kind: LanguageCompletionKind,
+}
+
+fn mdn_completion_registry() -> &'static MdnCompletionRegistry {
+    static REGISTRY: OnceLock<MdnCompletionRegistry> = OnceLock::new();
+    REGISTRY.get_or_init(|| {
+        serde_json::from_str(include_str!("mdn-completion-registry.json"))
+            .expect("generated MDN completion registry must be valid JSON")
+    })
+}
+
+fn pseudo_completion_sort_text(label: &str) -> String {
+    if label.starts_with("::") {
+        let mut sort_text = if let Some(name) = label.strip_prefix("::-") {
+            format!("zzzz{name}")
+        } else {
+            format!("zz{}", label.strip_prefix("::").unwrap_or(label))
+        };
+        if sort_text.ends_with("()") {
+            sort_text.insert(0, 'z');
+        }
+        return sort_text;
+    }
+    let mut sort_text = if let Some(name) = label.strip_prefix(":-") {
+        format!("yyyy{name}")
+    } else {
+        format!("yy{}", label.strip_prefix(':').unwrap_or(label))
+    };
+    if sort_text.ends_with("()") {
+        sort_text.insert(0, 'y');
+    }
+    sort_text
+}
+
+fn canonical_mdn_property(name: &str) -> &str {
+    for prefix in ["-webkit-", "-moz-", "-ms-"] {
+        if let Some(unprefixed) = name.strip_prefix(prefix) {
+            return unprefixed;
+        }
+    }
+    name
+}
+
+fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
+    for name in ["container", "media", "supports"] {
+        entries.push(LanguageCompletionEntryIr {
+            label: format!("@{name}()"),
+            kind: LanguageCompletionKind::Function,
+            detail: Some("Complete native CSS query; retain the query's own parentheses".into()),
+            documentation_text: None,
+            insert_text: None,
+            sort_text: Some(format!("2000-{name}")),
+            trigger_suggest: false,
+        });
+    }
+    let registry = mdn_completion_registry();
+    let pseudo_labels = registry.pseudos.iter().collect::<HashSet<_>>();
+    for entry in entries
+        .iter_mut()
+        .filter(|entry| entry.label.starts_with(':'))
+    {
+        let functional_label = format!("{}()", entry.label);
+        if pseudo_labels.contains(&functional_label) {
+            entry.label = functional_label;
+        }
+        entry.sort_text = Some(pseudo_completion_sort_text(&entry.label));
+    }
+    let mut by_label = entries
+        .iter()
+        .enumerate()
+        .map(|(index, entry)| (entry.label.clone(), index))
+        .collect::<HashMap<_, _>>();
+
+    for label in &registry.pseudos {
+        let sort_text = pseudo_completion_sort_text(label);
+        if let Some(index) = by_label.get(label).copied() {
+            entries[index].sort_text = Some(sort_text);
+        } else {
+            by_label.insert(label.clone(), entries.len());
+            entries.push(LanguageCompletionEntryIr {
+                label: label.clone(),
+                kind: LanguageCompletionKind::Value,
+                detail: None,
+                documentation_text: None,
+                insert_text: None,
+                sort_text: Some(sort_text),
+                trigger_suggest: false,
+            });
+        }
+    }
+
+    let mut properties = entries
+        .iter()
+        .filter(|entry| entry.kind == LanguageCompletionKind::Property)
+        .filter_map(|entry| {
+            let key = entry.label.strip_suffix(':')?;
+            let property = entry
+                .detail
+                .as_deref()
+                .filter(|detail| *detail != "ambiguous key")
+                .unwrap_or(key);
+            Some((key.to_owned(), property.to_owned()))
+        })
+        .collect::<Vec<_>>();
+    properties.extend([
+        ("display".into(), "display".into()),
+        ("font-style".into(), "font-style".into()),
+        ("line-clamp".into(), "line-clamp".into()),
+        ("text-align".into(), "text-align".into()),
+        ("user-select".into(), "user-select".into()),
+        ("-webkit-text-size-adjust".into(), "text-size-adjust".into()),
+        ("-moz-text-size-adjust".into(), "text-size-adjust".into()),
+        ("-ms-text-size-adjust".into(), "text-size-adjust".into()),
+    ]);
+
+    for (key, property) in properties {
+        let property_values = registry
+            .properties
+            .get(&property)
+            .or_else(|| registry.properties.get(canonical_mdn_property(&property)));
+        let Some(property_values) = property_values else {
+            continue;
+        };
+        for value in property_values {
+            let label = format!("{key}:{}", value.label);
+            let detail = format!("{property}: {}", value.label);
+            let sort_text = format!("ccccc{}", value.label);
+            if let Some(index) = by_label.get(&label).copied() {
+                entries[index].detail.get_or_insert(detail);
+                entries[index].sort_text = Some(sort_text);
+                if value.kind == LanguageCompletionKind::Function {
+                    entries[index].kind = LanguageCompletionKind::Function;
+                }
+            } else {
+                by_label.insert(label.clone(), entries.len());
+                entries.push(LanguageCompletionEntryIr {
+                    label,
+                    kind: value.kind,
+                    detail: Some(detail),
+                    documentation_text: None,
+                    insert_text: None,
+                    sort_text: Some(sort_text),
+                    trigger_suggest: false,
+                });
+            }
+        }
+    }
+
+    entries.retain(|entry| !matches!(entry.label.as_str(), "text:capitalize" | "text:center"));
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorPresentationIr {
+    pub version: u32,
+    pub editable: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replacement_prefix: Option<String>,
+    pub color_token: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_format: Option<LanguageColorFormatIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorFormatIr {
+    pub syntax: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub space: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "camelCase")]
+pub enum LanguageColorExpressionIr {
+    Literal {
+        value: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        alpha: Option<f64>,
+    },
+    Mix {
+        space: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        hue: Option<String>,
+        left: Box<LanguageColorExpressionIr>,
+        right: Box<LanguageColorExpressionIr>,
+        progress: f64,
+        #[serde(rename = "alphaMultiplier")]
+        alpha_multiplier: f64,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorCandidateInputIr {
+    pub class_name: String,
+    pub start: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorTokenIr {
+    pub range: SourceRange,
+    pub expression: LanguageColorExpressionIr,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorTokensIr {
+    pub version: u32,
+    pub tokens: Vec<LanguageColorTokenIr>,
+}
+
+#[derive(Debug)]
+pub struct LanguageSession {
+    engine: EngineSession,
+    manifest_json: String,
+    prepared_document: Option<analysis::PreparedDocument>,
+    next_document_id: u32,
+}
+
+mod analysis;
+mod color;
+mod document_index;
+pub use analysis::PreparedDocumentIr;
+use document_index::DocumentIndex;
+mod document;
+mod formatting;
+mod positions;
+mod semantic_tokens;
+mod session;
+
+pub(crate) use document::*;
+pub(crate) use formatting::*;
+pub use positions::{LanguageError, collect_class_positions, encode_semantic_tokens};
+pub(crate) use semantic_tokens::*;
+
+#[cfg(test)]
+#[path = "tests.rs"]
+mod tests;
+
+mod keyframes;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct KeyframeCompletionIr {
+    pub name: String,
+    pub insert_text: String,
+    pub text: String,
+    pub sources: Vec<mastercss_schema::CssDirectiveSourceReference>,
+}

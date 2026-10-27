@@ -1,12 +1,14 @@
 import js from '@eslint/js'
+import '../../scripts/typescript-tooling-compat.mjs'
 import { includeIgnoreFile } from '@eslint/compat'
 import svelte from 'eslint-plugin-svelte'
 import globals from 'globals'
 import { fileURLToPath } from 'node:url'
-import ts from 'typescript-eslint'
 import playwright from 'eslint-plugin-playwright'
 
 const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url))
+// Dynamic so the compat hook above is registered before typescript-eslint loads.
+const { default: ts } = await import('typescript-eslint')
 
 export default ts.config(
   includeIgnoreFile(gitignorePath),

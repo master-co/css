@@ -1,9 +1,13 @@
-@components {
-  a {
+
+  @mixin --a {
+    color: oklch(0% 0 none);
+  } @utility a {
     color: oklch(0% 0 none);
   }
-  b {
+  @mixin --b {
+    text-decoration-line: underline;
+    color: oklch(0% 0 none);
+  } @utility b {
     text-decoration-line: underline;
     color: oklch(0% 0 none);
   }
-}

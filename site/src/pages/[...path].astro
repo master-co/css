@@ -1,0 +1,13 @@
+---
+import Document from '../layouts/Document.astro'
+import RenderNode from '~/site/docs-shell/components/RenderNode'
+import { getStaticPaths as getRoutePaths, loadRoute, type RouteProps } from '~/site/routes'
+
+export const getStaticPaths = getRoutePaths
+
+const route = await loadRoute(Astro.props as RouteProps)
+---
+
+<Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} locales={route.locales} bare={route.bare}>
+  <RenderNode node={route.element} />
+</Document>

@@ -1,0 +1,32 @@
+## Keep complete classes in source
+
+Static scanning reads source text; it does not run your application. When a component selects a status color, put each complete class in the source:
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+Avoid assembling the utility from separate `bg-` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.
+
+## Find why a style is missing
+
+1. Inspect the complete class against the active project manifest with the [class inspection tool](/reference/tools/mcp/mastercss_inspect_class).
+2. Confirm the source file is part of the scan. Ordinary app files use integration or CLI defaults; add `@source` only for an explicit exception.
+3. Check candidate policy when an otherwise valid class is absent. `@source not` can exclude a file, and `@blocklist` can remove a class. Use `@safelist` for a bounded set of known external classes.
+4. For a changing value, keep the class static and pass a CSS variable. For class names created only at runtime, review [rendering modes](/guide/rendering-modes#comparisons).
+
+See [Extraction](/reference/rules/extraction) for source boundaries and validation, and [runtime values](/reference/rules/extraction#runtime-values) for a complete example.
+
+## Look up a rule
+
+- <a id="overview"></a> [Overview](/reference/rules/extraction#overview)
+- <a id="source-boundaries"></a> [Source boundaries](/reference/rules/extraction#source-boundaries)
+- <a id="candidate-scanning"></a> [Candidate scanning](/reference/rules/extraction#candidate-scanning)
+- <a id="validation"></a> [Validation](/reference/rules/extraction#validation)
+- <a id="complete-classes"></a> [Complete classes](/reference/rules/extraction#complete-classes)
+- <a id="runtime-values"></a> [Runtime values](/reference/rules/extraction#runtime-values)
+- <a id="included-and-excluded-classes"></a> [Included and excluded classes](/reference/rules/extraction#included-and-excluded-classes)
+- <a id="checklist"></a> [Checklist](/reference/rules/extraction#checklist)
+
+- <a id="markdown-and-mdx"></a> [Markdown and MDX display boundaries](/reference/rules/extraction#markdown-and-mdx)
+- <a id="scanner-hosts"></a> [Scanner source lifecycle](/reference/rules/extraction#scanner-hosts)

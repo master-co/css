@@ -1,0 +1,46 @@
+@layer components {
+  .doc-card {
+    padding: var(--spacing-xl);
+    background-color: var(--color-surface-raised);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+  }
+
+  .doc-table {
+    border-bottom: 1px solid var(--color-line-subtle);
+    overflow-x: auto;
+
+    :is(tbody tr:last-child th, tbody tr:last-child td) {
+      border-bottom-width: 0px!important;
+    }
+
+    :is(thead th) {
+      white-space: nowrap;
+    }
+
+    :is(td, th) p {
+      margin: 0;
+    }
+
+    td p code {
+      font-size: 85%;
+    }
+
+    :is(tr, th, td, tbody, thead) {
+      contain: size;
+    }
+
+    :is(code) {
+      vertical-align: middle;
+    }
+  }
+
+  .doc-pure-list {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      padding-left: 0;
+    }
+  }
+}

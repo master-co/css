@@ -1,4 +1,6 @@
 ---
+import '../styles/global.css';
+
 export interface Props {
   title: string;
 }
@@ -20,8 +22,6 @@ const { title } = Astro.props;
   </body>
 </html>
 <style is:global>
-  @import '@master/css';
-
   html {
     font-family: system-ui, sans-serif;
     background-color: #f8fafc;

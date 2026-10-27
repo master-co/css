@@ -7,7 +7,7 @@ import masterCSS, {
   ASTRO_RUNTIME_INJECTION,
   ASTRO_SSR_EXTERNAL
 } from '../src/core'
-import defaultOptions from '../src/options'
+import { resolveMasterCSSAstroIntegrationOptions } from '../src/options'
 import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
@@ -27,6 +27,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
   } as never)
 
   const config = updateConfig.mock.calls[0]?.[0] as {
+    build?: { inlineStylesheets?: string },
     vite?: {
       plugins?: unknown[],
       ssr?: { external?: string[] },
@@ -38,18 +39,20 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
   return {
     addMiddleware,
     injectScript,
+    plugins,
     pluginNames: plugins.map(({ name }) => name),
+    buildConfig: config?.build,
     viteConfig: config?.vite
   }
 }
 
-describe('@master/css.astro integration', () => {
-  it('defaults to progressive mode', () => {
-    expect(defaultOptions.mode).toBe('progressive')
+describe('@master/css-astro integration', () => {
+  it('defaults to static mode', () => {
+    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe("static")
   })
 
   it('adds Astro middleware and runtime script in progressive mode', async () => {
-    const result = await setup()
+    const result = await setup({ mode: 'progressive' })
 
     expect(result.addMiddleware).toHaveBeenCalledWith({
       order: 'pre',
@@ -58,6 +61,10 @@ describe('@master/css.astro integration', () => {
     expect(result.injectScript).toHaveBeenCalledWith('page', ASTRO_RUNTIME_INJECTION)
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
+    expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
+    expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
+    expect(result.pluginNames).toContain('master-css:scanner')
+    expect(result.pluginNames).toContain('master-css:style-entry')
     expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
     expect(result.viteConfig?.build?.rollupOptions?.external).toEqual(ASTRO_SSR_EXTERNAL)
   })
@@ -71,6 +78,8 @@ describe('@master/css.astro integration', () => {
     })
     expect(result.injectScript).not.toHaveBeenCalled()
     expect(result.pluginNames).not.toContain('master-css:pre-render')
+    expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
+    expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
   })
 
   it('injects runtime script without Astro middleware in runtime mode', async () => {
@@ -82,21 +91,30 @@ describe('@master/css.astro integration', () => {
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
   })
 
-  it('honors injectRuntime=false in progressive mode', async () => {
-    const result = await setup({ mode: 'progressive', injectRuntime: false })
-
-    expect(result.addMiddleware).toHaveBeenCalled()
-    expect(result.injectScript).not.toHaveBeenCalled()
+  it('rejects an explicit runtime option that contradicts its mode', async () => {
+    await expect(setup({ mode: 'progressive', runtime: false })).rejects.toThrow('requires runtime.enabled=true')
+    await expect(setup({ mode: 'static', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
+    await expect(setup({ mode: 'pre-render', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
   })
 
-  it('preloads the runtime manifest JSON in runtime static builds', async () => {
+  it('does not inject client runtime or middleware by default', async () => {
+    const result = await setup()
+    expect(result.addMiddleware).not.toHaveBeenCalled()
+    expect(result.injectScript).not.toHaveBeenCalled()
+    expect(result.buildConfig?.inlineStylesheets).toBe('never')
+  })
+
+  it('preloads the runtime program in runtime static builds', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-runtime-'))
     const assetsDir = join(dir, '_astro')
     const htmlFile = join(dir, 'index.html')
     try {
       mkdirSync(assetsDir, { recursive: true })
-      writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
-      writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+      writeFileSync(join(assetsDir, 'master-css-program.CzuVhIZV.bin'), 'MCSP')
+      writeFileSync(
+        join(assetsDir, 'page.C2zmEykZ.js'),
+        'const masterCSSProgramURL = new URL("master-css-program.CzuVhIZV.bin", import.meta.url).href;'
+      )
       writeFileSync(htmlFile, '<html><head></head><body></body></html>')
       const integration = masterCSS({ mode: 'runtime' })
 
@@ -110,16 +128,16 @@ describe('@master/css.astro integration', () => {
         '<link rel="modulepreload" crossorigin href="/docs/_astro/page.C2zmEykZ.js">'
       )
       expect(readFileSync(htmlFile, 'utf-8')).toContain(
-        '<link rel="modulepreload" as="json" crossorigin href="/docs/_astro/master-css-manifest.CzuVhIZV.json">'
+        '<link rel="preload" as="fetch" crossorigin href="/docs/_astro/master-css-program.CzuVhIZV.bin">'
       )
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
   })
 
-  it('does not preload the runtime manifest outside runtime injection static builds', async () => {
+  it('does not preload the runtime program outside runtime injection static builds', async () => {
     for (const scenario of [
-      { integrationOptions: { mode: 'runtime', injectRuntime: false }, buildOutput: 'static' },
+      { integrationOptions: { mode: 'static' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'pre-render' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'runtime' }, buildOutput: 'server' }
@@ -129,8 +147,8 @@ describe('@master/css.astro integration', () => {
       const htmlFile = join(dir, 'index.html')
       try {
         mkdirSync(assetsDir, { recursive: true })
-        writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
-        writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+        writeFileSync(join(assetsDir, 'master-css-program.CzuVhIZV.bin'), 'MCSP')
+        writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const masterCSSProgramURL = new URL("master-css-program.CzuVhIZV.bin", import.meta.url).href;')
         writeFileSync(htmlFile, '<html><head></head><body></body></html>')
         const integration = masterCSS(scenario.integrationOptions)
 
@@ -140,7 +158,7 @@ describe('@master/css.astro integration', () => {
         } as never)
         await integration.hooks['astro:build:done']?.({ dir } as never)
 
-        expect(readFileSync(htmlFile, 'utf-8')).not.toContain('rel="modulepreload"')
+        expect(readFileSync(htmlFile, 'utf-8')).not.toContain('<link')
       } finally {
         rmSync(dir, { recursive: true, force: true })
       }
@@ -153,9 +171,9 @@ describe('@master/css.astro integration', () => {
     try {
       writeFileSync(htmlFile, [
         '<html><head>',
-        '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
-        '</head><body><div class="block"></div></body></html>'
+        "</head><body><div class=\"display:block\"></div></body></html>"
       ].join(''))
 
       const files = await externalizeAstroHydrationManifests(dir)
@@ -171,6 +189,32 @@ describe('@master/css.astro integration', () => {
       expect(readFileSync(files[0], 'utf-8')).toContain('"className":"block"')
       expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/`)
       expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('prefixes static hydration manifests with the configured Astro base', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-base-'))
+    const htmlFile = join(dir, 'index.html')
+    try {
+      writeFileSync(htmlFile, [
+        '<html><head>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
+        `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
+        "</head><body><div class=\"display:block\"></div></body></html>"
+      ].join(''))
+      const integration = masterCSS({ mode: 'progressive' })
+
+      await integration.hooks['astro:config:done']?.({
+        config: { base: '/docs' },
+        buildOutput: 'static'
+      } as never)
+      await integration.hooks['astro:build:done']?.({ dir } as never)
+
+      expect(readFileSync(htmlFile, 'utf-8')).toContain(
+        `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/docs/_master-css/hydration/`
+      )
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

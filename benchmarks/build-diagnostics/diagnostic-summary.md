@@ -91,18 +91,18 @@ Environment:
 
 The startup diagnostic now includes cold import probes for the CLI bin/core/scan entries, Vite package entry/core/options/common modules, Vite mode/plugin modules, and key lower package imports. The browser runtime entry was intentionally excluded from Node cold import probes because it depends on Vite virtual modules.
 
-The accepted product change keeps `@master/css.vite` mode-specific plugins as lazy shells. Static mode no longer eagerly imports runtime/progressive/pre-render mode modules, while public plugin names, `masterCSS(options): Plugin[]`, virtual module IDs, and generated CSS behavior stay unchanged.
+The accepted product change keeps `@master/css-vite` mode-specific plugins as lazy shells. Static mode no longer eagerly imports runtime/progressive/pre-render mode modules, while public plugin names, `masterCSS(options): Plugin[]`, virtual module IDs, and generated CSS behavior stay unchanged.
 
 One-round same-machine diagnostic comparison for static Vite fixtures:
 
 | Metric | Before avg | After avg | Delta |
 | --- | ---: | ---: | ---: |
 | Master Vite command overhead | `147.24ms` | `143.38ms` | `-3.86ms` |
-| `@master/css.vite` import | `77.13ms` | `69.97ms` | `-7.16ms` |
-| `@master/css.vite` core module import | `102.32ms` | `97.81ms` | `-4.52ms` |
+| `@master/css-vite` import | `77.13ms` | `69.97ms` | `-7.16ms` |
+| `@master/css-vite` core module import | `102.32ms` | `97.81ms` | `-4.52ms` |
 | Vite build with Master plugin | `106.55ms` | `107.72ms` | `+1.17ms` |
 
-This is a small cold-start improvement, not a public claim. The full command timing is still dominated by Vite process/module startup and required scanner/stylesheet work. Shared plugin lazy-loading was explored but not kept: it did not produce a clearer full-command improvement and risked duplicating stylesheet request/local directive predicates outside `@master/css-stylesheet`.
+This is a small cold-start improvement, not a public claim. The full command timing is still dominated by Vite process/module startup and required scanner/stylesheet work. Shared plugin lazy-loading was explored but not kept: it did not produce a clearer full-command improvement and risked duplicating stylesheet request/local directive predicates outside `@master/css-compiler/stylesheet`.
 
 Current follow-up:
 

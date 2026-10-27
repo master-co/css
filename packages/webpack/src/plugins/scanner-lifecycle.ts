@@ -16,13 +16,11 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
         })
       })
       context.on('reset', () => {
-        context.writeDefaultManifestModule().catch((error: unknown) => {
+        context.writeDefaultManifestModules().catch((error: unknown) => {
           console.error('[master-css.webpack] manifest module update failed:', error)
         })
         void context.queueResetReplay()
       })
-      void context.init()
-
       compiler.hooks.beforeRun.tapPromise(context.name, async () => {
         await context.init()
         await context.writeGeneratedCSSModule()
@@ -30,14 +28,22 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
       })
 
       compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {
-        await context.init()
-        const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-        const resetDependencies = context.getResetDependencyPaths()
-        if (resetDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
-          await context.reset(context.getOptions())
-          await context.waitForResetReplay()
+        try {
+          await context.init()
+          const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
+          const resetDependencies = context.getResetDependencyPaths()
+          if (resetDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
+            await context.reset(context.getOptions())
+            await context.waitForResetReplay()
+          }
+        } catch (error) {
+          // A fatal watchRun error bypasses Webpack's watcher re-registration.
+          // Report it on the next compilation so filesystem recovery stays live.
+          context.recordCompilationError(error)
         }
       })
+
+      compiler.hooks.shutdown.tapPromise(context.name, () => context.dispose())
 
       context.setPluginInitialized(true)
     }

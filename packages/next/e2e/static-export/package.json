@@ -1,5 +1,5 @@
 {
-  "name": "@master/css.next-e2e-static-export",
+  "name": "@master/css-next-e2e-static-export",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,9 +7,9 @@
     "build": "pnpm --dir ../.. build && next build --turbo"
   },
   "dependencies": {
-    "@master/css-integration": "workspace:^",
-    "next": "^16.2.10",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "@master/css-internal": "workspace:^",
+    "next": "^16.3.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   }
 }

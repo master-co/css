@@ -1,5 +1,6 @@
-import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
-import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-internal/manifest-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
+import { VIRTUAL_PROGRAM_ID } from '@master/css-internal/program-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { addFileDependency } from '../utils/file-dependencies'
@@ -20,20 +21,28 @@ export default function ManifestVirtualModulePlugin(context: MasterCSSWebpackCon
             return
           }
 
-          if (resolveData.request === VIRTUAL_MANIFEST_ID) {
-            context.createDefaultManifestModule()
+          // Browsers import the program and server code the manifest; both
+          // compile the same project manifest and share its dependencies.
+          const virtualModule = resolveData.request === VIRTUAL_MANIFEST_ID
+            ? { id: context.virtualManifestModuleId, create: () => context.createDefaultManifestModule() }
+            : resolveData.request === VIRTUAL_PROGRAM_ID
+              ? { id: context.virtualProgramModuleId, create: () => context.createDefaultProgramModule() }
+              : undefined
+          if (virtualModule) {
+            const addDependencies = () => {
+              for (const dependency of context.getDefaultManifestDependencyPaths()) {
+                addFileDependency(resolveData.fileDependencies, dependency)
+              }
+            }
+            virtualModule.create()
               .then((moduleContent) => {
-                context.writeVirtualModule(context.virtualManifestModuleId, moduleContent)
-                for (const dependency of context.getDefaultManifestDependencyPaths()) {
-                  addFileDependency(resolveData.fileDependencies, dependency)
-                }
-                resolveData.request = context.virtualManifestModuleId
+                context.writeVirtualModule(virtualModule.id, moduleContent)
+                addDependencies()
+                resolveData.request = virtualModule.id
                 callback()
               })
               .catch((error: Error) => {
-                for (const dependency of context.getDefaultManifestDependencyPaths()) {
-                  addFileDependency(resolveData.fileDependencies, dependency)
-                }
+                addDependencies()
                 callback(error)
               })
             return

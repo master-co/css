@@ -1,41 +1,9 @@
 # Add Test
 
-## Goal
+Add focused coverage for an existing behavior or known regression. Identify the input and observable result the test must prove; use nearby source, tests, and fixture conventions.
 
-Add focused test coverage for an existing behavior or known regression.
+Use [the testing context pack](../../.ai/context/testing.md) for task-specific guidance; repository policy remains in `AGENTS.md`. Do not reread guidance already in context.
 
-## Read Before Starting
+## Completion
 
-- `AGENTS.md`
-- `.ai/context/index.md`
-- `.ai/context/testing.md`
-- The affected package `package.json`
-- The affected package `AI.md`, if present
-
-## Inspect First
-
-- Existing tests in the affected package
-- Fixture and snapshot conventions
-- The source behavior being tested
-
-## Editing Rules
-
-- Prefer the smallest test that proves the behavior.
-- Match existing test style.
-- Do not change implementation unless explicitly requested.
-- Do not update unrelated fixtures or snapshots.
-- Follow `.ai/context/accuracy-guardrails.md` when tests cover CSS output, parser/compiler/runtime/extraction/language, or ESLint behavior.
-
-## Validation
-
-- Run the affected package test command.
-- Run affected package lint if a workspace package changed and it defines `lint`.
-- If the test documents CSS output, confirm the output is intentional.
-
-## Completion Output
-
-Report:
-
-- Test location
-- Behavior covered
-- Commands run
+Do not change implementation unless requested. Report the test location, behavior covered, and validation results.

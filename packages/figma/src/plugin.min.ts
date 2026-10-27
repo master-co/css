@@ -21,7 +21,11 @@ const features = {
 figma.ui.onmessage = async ({ type, data }) => {
   if (type in features) {
     const feature = features[type as keyof typeof features]
-    figma.ui.postMessage({ type, data: await feature(data) }, { origin: '*' })
+    try {
+      figma.ui.postMessage({ type, data: await feature(data) }, { origin: '*' })
+    } catch (error) {
+      figma.ui.postMessage({ type, error: error instanceof Error ? error.message : String(error) }, { origin: '*' })
+    }
   } else {
     switch (type) {
       case 'notify':

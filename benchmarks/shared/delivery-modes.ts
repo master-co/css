@@ -4,12 +4,14 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import type { Browser, Page } from '@playwright/test'
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { benchmarkAdapters } from '../fixtures/manifest'
 import { getStaticFixtureSource, staticFixtureIds } from '../fixtures/static'
-import { summarizeBytes } from './bytes'
-import { analyzeCSSStructure } from './css-structure'
+import { addRuntimeHarness, addStaticHarness, addStyleProbe } from './delivery-mode-harness'
+import { masterDeliveryModeMetrics } from './delivery-mode-metrics'
+import { createBrowserSamples, createDeliveredCSSStructureSamples, createPayloadSamples, createProgressiveHydrationDiagnosticSamples } from './delivery-mode-samples'
+export { masterDeliveryModeMetrics } from './delivery-mode-metrics'
 import {
   benchmarkRoot,
   measureRelativeArtifact,
@@ -23,7 +25,6 @@ import type {
   BenchmarkAdapter,
   BenchmarkArtifact,
   BenchmarkFixtureId,
-  BenchmarkMetric,
   BenchmarkSample,
   BenchmarkVariant
 } from './types'
@@ -129,219 +130,6 @@ export const deliveryModeDescriptors = [
     label: 'Tailwind CSS static'
   }
 ] satisfies DeliveryModeDescriptor[]
-
-export const masterDeliveryModeMetrics = [
-  {
-    id: 'html-raw-bytes',
-    label: 'HTML raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for the benchmark page HTML.'
-  },
-  {
-    id: 'html-gzip-bytes',
-    label: 'HTML gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for the benchmark page HTML.'
-  },
-  {
-    id: 'html-brotli-bytes',
-    label: 'HTML brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for the benchmark page HTML.'
-  },
-  {
-    id: 'external-css-raw-bytes',
-    label: 'External CSS raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for externally linked CSS delivered before runtime work.'
-  },
-  {
-    id: 'external-css-gzip-bytes',
-    label: 'External CSS gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for externally linked CSS delivered before runtime work.'
-  },
-  {
-    id: 'external-css-brotli-bytes',
-    label: 'External CSS brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for externally linked CSS delivered before runtime work.'
-  },
-  {
-    id: 'inline-css-raw-bytes',
-    label: 'Inline CSS raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for inline style#master-css delivered in the HTML.'
-  },
-  {
-    id: 'inline-css-gzip-bytes',
-    label: 'Inline CSS gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for inline style#master-css delivered in the HTML.'
-  },
-  {
-    id: 'inline-css-brotli-bytes',
-    label: 'Inline CSS brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for inline style#master-css delivered in the HTML.'
-  },
-  {
-    id: 'runtime-js-raw-bytes',
-    label: 'Runtime JS raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for the Master CSS browser runtime bundle.'
-  },
-  {
-    id: 'runtime-js-gzip-bytes',
-    label: 'Runtime JS gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for the Master CSS browser runtime bundle.'
-  },
-  {
-    id: 'runtime-js-brotli-bytes',
-    label: 'Runtime JS brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for the Master CSS browser runtime bundle.'
-  },
-  {
-    id: 'manifest-json-raw-bytes',
-    label: 'Manifest JSON raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for the runtime default manifest JSON payload.'
-  },
-  {
-    id: 'manifest-json-gzip-bytes',
-    label: 'Manifest JSON gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for the runtime default manifest JSON payload.'
-  },
-  {
-    id: 'manifest-json-brotli-bytes',
-    label: 'Manifest JSON brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for the runtime default manifest JSON payload.'
-  },
-  {
-    id: 'hydration-manifest-raw-bytes',
-    label: 'Hydration manifest raw bytes',
-    unit: 'B',
-    description: 'Raw bytes for inline progressive hydration manifest JSON.'
-  },
-  {
-    id: 'hydration-manifest-gzip-bytes',
-    label: 'Hydration manifest gzip bytes',
-    unit: 'B',
-    description: 'Gzip bytes for inline progressive hydration manifest JSON.'
-  },
-  {
-    id: 'hydration-manifest-brotli-bytes',
-    label: 'Hydration manifest brotli bytes',
-    unit: 'B',
-    description: 'Brotli bytes for inline progressive hydration manifest JSON.'
-  },
-  {
-    id: 'delivered-style-rule-count',
-    label: 'Delivered style rules',
-    unit: 'count',
-    description: 'Style rule count for CSS delivered before runtime-generated rules.'
-  },
-  {
-    id: 'delivered-selector-count',
-    label: 'Delivered selectors',
-    unit: 'count',
-    description: 'Selector count for CSS delivered before runtime-generated rules.'
-  },
-  {
-    id: 'delivered-declaration-count',
-    label: 'Delivered declarations',
-    unit: 'count',
-    description: 'Declaration count for CSS delivered before runtime-generated rules.'
-  },
-  {
-    id: 'navigation-ready-ms',
-    label: 'Navigation to ready',
-    unit: 'ms',
-    description: 'Elapsed wall time from navigation start until the page loaded, passed correctness checks, and the runtime observed the DOM when applicable.'
-  },
-  {
-    id: 'stylesheet-parse-ms',
-    label: 'Stylesheet parse/attach',
-    unit: 'ms',
-    description: 'Trace-derived stylesheet parsing and attachment duration where Chromium exposes stable timeline events.'
-  },
-  {
-    id: 'style-recalculation-ms',
-    label: 'Style recalculation',
-    unit: 'ms',
-    description: 'Trace-derived style recalculation duration from Chromium timeline events.'
-  },
-  {
-    id: 'layout-ms',
-    label: 'Layout',
-    unit: 'ms',
-    description: 'Trace-derived layout duration from Chromium timeline events.'
-  },
-  {
-    id: 'paint-ms',
-    label: 'Paint',
-    unit: 'ms',
-    description: 'Trace-derived paint and pre-paint duration from Chromium timeline events.'
-  },
-  {
-    id: 'long-task-count',
-    label: 'Long tasks',
-    unit: 'count',
-    description: 'Count of trace task events at or above 50 ms.'
-  },
-  {
-    id: 'request-count',
-    label: 'Request count',
-    unit: 'count',
-    description: 'Initial HTML request plus same-origin resource requests observed by the page.'
-  },
-  {
-    id: 'runtime-ready-ms',
-    label: 'Runtime ready',
-    unit: 'ms',
-    description: 'Browser performance timestamp when Master CSS runtime finished observe/hydration.'
-  },
-  {
-    id: 'runtime-bootstrap-ms',
-    label: 'Runtime bootstrap',
-    unit: 'ms',
-    description: 'Time from browser runtime script execution to runtime observe/hydration completion.'
-  },
-  {
-    id: 'manifest-load-ms',
-    label: 'Manifest load',
-    unit: 'ms',
-    description: 'Resource timing duration for the default manifest JSON fetch.'
-  },
-  {
-    id: 'runtime-observe-ms',
-    label: 'Runtime observe/hydrate',
-    unit: 'ms',
-    description: 'Synchronous duration of CSSRuntime.observe(), including progressive hydration when applicable.'
-  },
-  {
-    id: 'progressive-adopted',
-    label: 'Progressive adopted',
-    unit: 'count',
-    description: '1 when runtime successfully adopted the pre-rendered style#master-css, otherwise 0.'
-  },
-  {
-    id: 'runtime-generated-rule-count',
-    label: 'Runtime generated rules',
-    unit: 'count',
-    description: 'CSSOM rule count in style#master-css after runtime observe/hydration.'
-  },
-  {
-    id: 'runtime-style-raw-bytes',
-    label: 'Runtime style raw bytes',
-    unit: 'B',
-    description: 'Raw bytes of style#master-css after runtime observe/hydration.'
-  }
-] satisfies BenchmarkMetric[]
 
 export function getMasterDeliveryModeAdapters(): BenchmarkAdapter[] {
   const ids = new Set<string>(deliveryModeDescriptors.map((mode) => mode.adapterId))
@@ -559,13 +347,14 @@ async function createProgressiveDeliveryModePage(options: {
   const fixture = getStaticFixtureSource(options.fixtureId)
   const sourceHtml = addStyleProbe(fixture.masterHtml)
   const manifest = await readDefaultManifest()
-  const result = render(sourceHtml, manifest, {
+  const result = renderHTML(sourceHtml, {
+    manifest,
     hydrationManifest: 'inject'
   })
   const hydrationManifestJSON = result.hydrationManifest
     ? JSON.stringify(result.hydrationManifest)
     : ''
-  const inlineCSS = result.css?.text || ''
+  const inlineCSS = result.cssText
   const html = addRuntimeHarness(result.html, {
     hideUntilRuntime: false,
     hasStyleProbe: true
@@ -598,14 +387,14 @@ async function writeDeliveryModePage(options: {
   const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'master-delivery-modes', 'pages', options.variantId)
   await resetDirectory(root)
 
-  const files: Record<string, string> = {
+  const files: Record<string, string | Buffer> = {
     'index.html': options.html
   }
 
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
-  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS.toString('utf8')
+  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
   if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
 
   await writeWorkspaceFiles(root, files)
@@ -632,236 +421,6 @@ async function writeDeliveryModePage(options: {
   }
 }
 
-function createPayloadSamples(variantId: string, payload: {
-  html: Buffer
-  externalCSS: Buffer
-  inlineCSS: Buffer
-  runtimeJS: Buffer
-  manifestJSON: Buffer
-  hydrationManifestJSON: Buffer
-}): BenchmarkSample[] {
-  return [
-    ...createByteSamples(variantId, 'html', payload.html),
-    ...createByteSamples(variantId, 'external-css', payload.externalCSS),
-    ...createByteSamples(variantId, 'inline-css', payload.inlineCSS),
-    ...createByteSamples(variantId, 'runtime-js', payload.runtimeJS),
-    ...createByteSamples(variantId, 'manifest-json', payload.manifestJSON),
-    ...createByteSamples(variantId, 'hydration-manifest', payload.hydrationManifestJSON)
-  ]
-}
-
-function createByteSamples(variantId: string, prefix: string, buffer: Buffer): BenchmarkSample[] {
-  const bytes = summarizeBytes(buffer)
-  return [
-    {
-      metricId: `${prefix}-raw-bytes`,
-      variantId,
-      round: 0,
-      value: bytes.rawBytes
-    },
-    {
-      metricId: `${prefix}-gzip-bytes`,
-      variantId,
-      round: 0,
-      value: bytes.gzipBytes
-    },
-    {
-      metricId: `${prefix}-brotli-bytes`,
-      variantId,
-      round: 0,
-      value: bytes.brotliBytes
-    }
-  ]
-}
-
-function createDeliveredCSSStructureSamples(variantId: string, css: string): BenchmarkSample[] {
-  const structure = css.trim()
-    ? analyzeCSSStructure(css)
-    : {
-      styleRuleCount: 0,
-      selectorCount: 0,
-      declarationCount: 0
-    }
-
-  return [
-    {
-      metricId: 'delivered-style-rule-count',
-      variantId,
-      round: 0,
-      value: structure.styleRuleCount
-    },
-    {
-      metricId: 'delivered-selector-count',
-      variantId,
-      round: 0,
-      value: structure.selectorCount
-    },
-    {
-      metricId: 'delivered-declaration-count',
-      variantId,
-      round: 0,
-      value: structure.declarationCount
-    }
-  ]
-}
-
-function createBrowserSamples(variantId: string, round: number, metrics: {
-  navigationReadyMs: number
-  stylesheetParseMs: number
-  styleRecalculationMs: number
-  layoutMs: number
-  paintMs: number
-  longTaskCount: number
-  requestCount: number
-  runtimeReadyMs: number
-  runtimeBootstrapMs: number
-  manifestLoadMs: number
-  runtimeObserveMs: number
-  progressiveAdopted: number
-  runtimeGeneratedRuleCount: number
-  runtimeStyleRawBytes: number
-}): BenchmarkSample[] {
-  return [
-    {
-      metricId: 'navigation-ready-ms',
-      variantId,
-      round,
-      value: metrics.navigationReadyMs
-    },
-    {
-      metricId: 'stylesheet-parse-ms',
-      variantId,
-      round,
-      value: metrics.stylesheetParseMs
-    },
-    {
-      metricId: 'style-recalculation-ms',
-      variantId,
-      round,
-      value: metrics.styleRecalculationMs
-    },
-    {
-      metricId: 'layout-ms',
-      variantId,
-      round,
-      value: metrics.layoutMs
-    },
-    {
-      metricId: 'paint-ms',
-      variantId,
-      round,
-      value: metrics.paintMs
-    },
-    {
-      metricId: 'long-task-count',
-      variantId,
-      round,
-      value: metrics.longTaskCount
-    },
-    {
-      metricId: 'request-count',
-      variantId,
-      round,
-      value: metrics.requestCount
-    },
-    {
-      metricId: 'runtime-ready-ms',
-      variantId,
-      round,
-      value: metrics.runtimeReadyMs
-    },
-    {
-      metricId: 'runtime-bootstrap-ms',
-      variantId,
-      round,
-      value: metrics.runtimeBootstrapMs
-    },
-    {
-      metricId: 'manifest-load-ms',
-      variantId,
-      round,
-      value: metrics.manifestLoadMs
-    },
-    {
-      metricId: 'runtime-observe-ms',
-      variantId,
-      round,
-      value: metrics.runtimeObserveMs
-    },
-    {
-      metricId: 'progressive-adopted',
-      variantId,
-      round,
-      value: metrics.progressiveAdopted
-    },
-    {
-      metricId: 'runtime-generated-rule-count',
-      variantId,
-      round,
-      value: metrics.runtimeGeneratedRuleCount
-    },
-    {
-      metricId: 'runtime-style-raw-bytes',
-      variantId,
-      round,
-      value: metrics.runtimeStyleRawBytes
-    }
-  ]
-}
-
-function createProgressiveHydrationDiagnosticSamples(variantId: string, round: number, metrics: DeliveryModeDiagnostics): BenchmarkSample[] {
-  return [
-    {
-      metricId: 'progressive-adopted',
-      variantId,
-      round,
-      value: metrics.progressive ? 1 : 0
-    },
-    {
-      metricId: 'hydration-manifest-rule-count',
-      variantId,
-      round,
-      value: metrics.hydrationManifestRuleCount
-    },
-    {
-      metricId: 'cssom-top-level-rule-count',
-      variantId,
-      round,
-      value: metrics.cssomTopLevelRuleCount
-    },
-    {
-      metricId: 'cssom-layer-rule-count',
-      variantId,
-      round,
-      value: metrics.cssomLayerRuleCount
-    },
-    {
-      metricId: 'runtime-generated-rule-count',
-      variantId,
-      round,
-      value: metrics.runtimeGeneratedRuleCount
-    },
-    {
-      metricId: 'runtime-style-raw-bytes',
-      variantId,
-      round,
-      value: metrics.runtimeStyleRawBytes
-    },
-    {
-      metricId: 'connected-class-count',
-      variantId,
-      round,
-      value: metrics.connectedClassCount
-    },
-    {
-      metricId: 'missing-hydrated-class-count',
-      variantId,
-      round,
-      value: metrics.missingHydratedClassCount
-    }
-  ]
-}
-
 function collectConsoleWarnings(page: Page) {
   const warnings: string[] = []
   page.on('console', (message) => {
@@ -872,13 +431,8 @@ function collectConsoleWarnings(page: Page) {
 
 async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): Promise<DeliveryModeDiagnostics> {
   const diagnostics = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as unknown as {
-      progressive?: boolean
-      hydrationFailureReason?: string
-      style?: HTMLStyleElement | null
-      text?: string
-      classUtilities?: Map<string, unknown>
-    } | undefined
+    const runtime = globalThis.masterCSSRuntime
+    const runtimeState = globalThis.__readBenchmarkRuntimeSnapshot()
     const styleElement = document.querySelector<HTMLStyleElement>('style#master-css')
     const styleRules = styleElement?.sheet?.cssRules
     const hydrationManifestScript = document.getElementById('master-css-hydration-manifest')
@@ -886,12 +440,12 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
     const hydrationManifestRules = Array.isArray(hydrationManifest?.rules) ? hydrationManifest.rules : []
     const hydrationManifestLayerRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules)
     const hydrationManifestLayerExpandedRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules, true)
-    const runtimeStyleText = runtime?.style?.textContent || runtime?.text || ''
-    const runtimeClassUtilityNames = [...(runtime?.classUtilities?.keys?.() || [])].map(String).sort()
+    const runtimeStyleText = runtimeState.runtimeStyleText
+    const runtimeClassUtilityNames = runtimeState.classUtilityNames
     const connectedClassNames = collectConnectedClassNames()
     const runtimeClassUtilityNameSet = new Set(runtimeClassUtilityNames)
     const missingHydratedClassNames = connectedClassNames.filter((className) => !runtimeClassUtilityNameSet.has(className))
-    const cssom = summarizeCSSOM(styleRules)
+    const cssom = globalThis.__benchmarkCSSOM.summarize(styleRules)
     const layerRuleCountMismatches = findLayerRuleCountMismatches(
       hydrationManifestLayerRuleCounts,
       hydrationManifestLayerExpandedRuleCounts,
@@ -906,8 +460,8 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       ready: document.documentElement.dataset.benchmarkReady,
       textAlign: getComputedStyle(document.getElementById('benchmark-style-probe')!).textAlign,
       runtimeAvailable: Boolean(runtime),
-      progressive: Boolean(runtime?.progressive),
-      hydrationFailureReason: runtime?.hydrationFailureReason || '',
+      progressive: runtimeState.progressiveAdopted === 1,
+      hydrationFailureReason: runtimeState.hydrationFailureReason,
       htmlHidden: document.documentElement.hasAttribute('hidden'),
       hydrationManifestRuleCount: hydrationManifestRules.length,
       hydrationManifestLayerRuleCounts,
@@ -920,7 +474,7 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       hydrationManifestSelectorsMissingFromCSSOM,
       runtimeClassUtilityCount: runtimeClassUtilityNames.length,
       runtimeClassUtilityNames,
-      runtimeGeneratedRuleCount: cssom.totalRuleCount,
+      runtimeGeneratedRuleCount: runtimeState.runtimeGeneratedRuleCount,
       runtimeStyleRawBytes: new TextEncoder().encode(runtimeStyleText).length,
       runtimeStyleText,
       connectedClassCount: connectedClassNames.length,
@@ -1016,58 +570,6 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       return [...names].sort()
     }
 
-    function summarizeCSSOM(rules?: CSSRuleList) {
-      const layerRuleCounts: Record<string, number> = {}
-      const layerSelectorTexts: Record<string, string[]> = {}
-      let layerRuleCount = 0
-      let totalRuleCount = 0
-
-      if (rules) {
-        for (const rule of rules) {
-          const childRules = 'cssRules' in rule ? (rule as CSSGroupingRule).cssRules : undefined
-          if (childRules) {
-            const name = 'name' in rule ? String((rule as CSSGroupingRule & { name?: string }).name || 'anonymous') : rule.constructor.name
-            layerRuleCounts[name] = childRules.length
-            layerSelectorTexts[name] = collectSelectorTexts(childRules)
-            layerRuleCount += childRules.length
-            totalRuleCount += countCSSRules(childRules)
-          } else {
-            totalRuleCount++
-          }
-        }
-      }
-
-      return {
-        layerRuleCount,
-        layerRuleCounts,
-        layerSelectorTexts,
-        totalRuleCount
-      }
-    }
-
-    function collectSelectorTexts(rules?: CSSRuleList) {
-      if (!rules) return []
-      const selectors: string[] = []
-      for (const rule of rules) {
-        if ('selectorText' in rule) {
-          selectors.push(String((rule as CSSStyleRule).selectorText))
-        } else if ('cssRules' in rule) {
-          selectors.push(...collectSelectorTexts((rule as CSSGroupingRule).cssRules))
-        }
-      }
-      return selectors
-    }
-
-    function countCSSRules(rules?: CSSRuleList): number {
-      if (!rules) return 0
-      let total = 0
-      for (const rule of rules) {
-        total += 'cssRules' in rule
-          ? countCSSRules((rule as CSSGroupingRule).cssRules)
-          : 1
-      }
-      return total
-    }
   })
 
   return {
@@ -1101,115 +603,6 @@ function assertNoMissingHydrationSelectors(variantId: string, diagnostics: Deliv
     `Missing selectors: ${missingSelectors}`,
     'Use browser-CSSOM-valid fixture class syntax before publishing benchmark results.'
   ].join('\n'))
-}
-
-function addStaticHarness(html: string) {
-  return addReadyHarness(
-    addStyleProbe(
-      insertBeforeHeadEnd(html, '    <link rel="stylesheet" href="/style.css">')
-    )
-  )
-}
-
-function addRuntimeHarness(html: string, options: {
-  hideUntilRuntime: boolean
-  hasStyleProbe?: boolean
-}) {
-  const withProbe = options.hasStyleProbe ? html : addStyleProbe(html)
-  const withVisibility = options.hideUntilRuntime ? addHiddenAttribute(withProbe) : withProbe
-
-  return insertBeforeHeadEnd(withVisibility, [
-    '    <script>',
-    '        window.__benchmarkReady = false;',
-    '        window.__deliveryMetrics = {',
-    '            runtimeScriptLoadedMs: 0,',
-    '            runtimeReadyMs: 0,',
-    '            runtimeBootstrapMs: 0,',
-    '            runtimeObserveMs: 0,',
-    '            progressiveAdopted: 0,',
-    '            runtimeGeneratedRuleCount: 0,',
-    '            runtimeStyleRawBytes: 0',
-    '        };',
-    '    </script>',
-    '    <script src="/global.min.js"></script>',
-    '    <script>',
-    '        (() => {',
-    '            const metrics = window.__deliveryMetrics;',
-    '            metrics.runtimeScriptLoadedMs = performance.now();',
-    '            const Runtime = window.MasterCSSRuntime;',
-    '            if (!Runtime) { metrics.error = "missing-runtime"; return; }',
-    '            const originalObserve = Runtime.prototype.observe;',
-    '            Runtime.prototype.observe = function(...args) {',
-    '                const startedAt = performance.now();',
-    '                const result = originalObserve.apply(this, args);',
-    '                const finishedAt = performance.now();',
-    '                metrics.runtimeObserveMs = finishedAt - startedAt;',
-    '                metrics.runtimeReadyMs = finishedAt;',
-    '                metrics.runtimeBootstrapMs = finishedAt - metrics.runtimeScriptLoadedMs;',
-    '                metrics.progressiveAdopted = this.progressive ? 1 : 0;',
-    '                metrics.runtimeGeneratedRuleCount = countCSSRules(this.style?.sheet?.cssRules);',
-    '                metrics.runtimeStyleRawBytes = new TextEncoder().encode(this.style?.textContent || this.text || "").length;',
-    '                requestAnimationFrame(() => requestAnimationFrame(() => {',
-    '                    const marker = document.getElementById("benchmark-loaded");',
-    '                    marker.dataset.ready = "true";',
-    '                    document.documentElement.dataset.benchmarkReady = "true";',
-    '                    window.__benchmarkReady = true;',
-    '                }));',
-    '                return result;',
-    '            };',
-    '            function countCSSRules(rules) {',
-    '                if (!rules) return 0;',
-    '                let total = 0;',
-    '                for (const rule of rules) {',
-    '                    if ("cssRules" in rule) {',
-    '                        total += countCSSRules(rule.cssRules);',
-    '                    } else {',
-    '                        total++;',
-    '                    }',
-    '                }',
-    '                return total;',
-    '            }',
-    '        })();',
-    '    </script>'
-  ].join('\n'))
-}
-
-function addReadyHarness(html: string) {
-  return insertBeforeBodyEnd(html, [
-    '    <script>',
-    '        window.__benchmarkReady = false;',
-    '        requestAnimationFrame(() => requestAnimationFrame(() => {',
-    '            const marker = document.getElementById("benchmark-loaded");',
-    '            marker.dataset.ready = "true";',
-    '            document.documentElement.dataset.benchmarkReady = "true";',
-    '            window.__benchmarkReady = true;',
-    '        }));',
-    '    </script>'
-  ].join('\n'))
-}
-
-function addStyleProbe(html: string) {
-  const probe = [
-    '    <span id="benchmark-style-probe" class="text-center" hidden>style probe</span>',
-    '    <div id="benchmark-loaded" hidden>loaded</div>'
-  ].join('\n')
-  return html.replace(/<body([^>]*)>/i, (match) => `${match}\n${probe}`)
-}
-
-function addHiddenAttribute(html: string) {
-  return html.replace(/<html([^>]*)>/i, (match, attrs: string) => (
-    /\shidden(?:[\s=>]|$)/i.test(attrs)
-      ? match
-      : `<html${attrs} hidden>`
-  ))
-}
-
-function insertBeforeHeadEnd(html: string, content: string) {
-  return html.replace('</head>', `${content}\n</head>`)
-}
-
-function insertBeforeBodyEnd(html: string, content: string) {
-  return html.replace('</body>', `${content}\n</body>`)
 }
 
 async function traceNavigation(page: Page, url: string, modeId: DeliveryModeId) {
@@ -1261,7 +654,7 @@ async function assertDeliveryModeCorrect(page: Page, modeId: DeliveryModeId) {
     ready: document.documentElement.dataset.benchmarkReady,
     textAlign: getComputedStyle(document.getElementById('benchmark-style-probe')!).textAlign,
     runtimeAvailable: Boolean(globalThis.masterCSSRuntime),
-    progressive: Boolean(globalThis.masterCSSRuntime?.progressive),
+    progressive: globalThis.masterCSSRuntime?.snapshot().hydration.state === 'progressive',
     htmlHidden: document.documentElement.hasAttribute('hidden')
   }))
 
@@ -1408,6 +801,8 @@ function getContentType(file: string) {
       return 'text/javascript; charset=utf-8'
     case '.json':
       return 'application/json; charset=utf-8'
+    case '.wasm':
+      return 'application/wasm'
     case '.png':
       return 'image/png'
     default:
@@ -1438,14 +833,6 @@ function assertExistingFile(file: string, message: string) {
 }
 
 declare global {
-  var MasterCSSRuntime: {
-    prototype: {
-      observe: (...args: unknown[]) => unknown
-    }
-  }
-  var masterCSSRuntime: {
-    progressive?: boolean
-  }
   var __deliveryMetrics: {
     error?: string
     runtimeScriptLoadedMs?: number

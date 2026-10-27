@@ -1,0 +1,30 @@
+import Class2CSS from '~/site/components/Class2CSS'
+
+Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token">value</span></span></span></span></span></code>
+
+Supported native CSS declarations can be written directly as `property:value`, even when they are not listed as built-in utilities. Use this form first for platform properties that already have valid CSS grammar.
+```html
+<!-- @MARK float:left --><!-- @MARK field-sizing:content -->
+<div class="float:left field-sizing:content">
+```
+Generated CSS:
+```css
+.float\:left {
+  float: left;
+}
+
+.field-sizing\:content {
+  field-sizing: content;
+}
+```
+
+Use a named token when you want the project vocabulary. A colon always retains the property’s native value semantics, using the complete native property name.
+
+Use separate classes for one-off combinations. Each class follows the same named-token or direct-value contract:
+
+```html
+<!-- @MARK block-size:5rem inline-size:5rem -->
+<div class="block-size:5rem inline-size:5rem">
+```
+Generated CSS:
+<Class2CSS>{['block-size:5rem', 'inline-size:5rem']}</Class2CSS>

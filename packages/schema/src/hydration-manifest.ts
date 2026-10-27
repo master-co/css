@@ -1,3 +1,4 @@
+import type { MasterCSSEmittedGlobals } from './emitted-globals.js'
 import type { MasterCSSManifestUtilityLayerName } from './manifest.js'
 import type { UtilityType } from './utility-type.js'
 
@@ -6,32 +7,56 @@ export const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-man
 export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
 export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
-export interface MasterCSSRulePriorityIR {
-  features?: [string, number, number][]
-  selector: number
+export interface MasterCSSConditionRange {
+  readonly domain: string
+  readonly feature: string
+  readonly unit: string
+  readonly lower: { readonly value: number, readonly inclusive: boolean } | null
+  readonly upper: { readonly value: number, readonly inclusive: boolean } | null
 }
 
-export interface MasterCSSGeneratedRuleNodeIR {
-  text: string
+export interface MasterCSSRulePriority {
+  /** Token values sort before raw values within the same cascade tier. */
+  readonly valuePriority?: -1 | 0
+  /** Parsed declaration identity, independent of public aliases. */
+  readonly sortKey?: string
+  readonly features: readonly MasterCSSConditionRange[]
+  readonly conditions?: readonly string[]
+  readonly selector: number
 }
 
-export interface MasterCSSGeneratedRuleIR {
-  className: string
-  key: string
-  layer: MasterCSSManifestUtilityLayerName
-  type: UtilityType
-  sortTier: number
-  priority: MasterCSSRulePriorityIR
-  text: string
-  nodes?: MasterCSSGeneratedRuleNodeIR[]
-  selectorText?: string
-  variableNames?: string[]
-  animationNames?: string[]
+export interface MasterCSSHydrationRuleNode {
+  readonly text: string
+}
+
+export interface MasterCSSHydrationRule {
+  readonly className: string
+  readonly key: string
+  readonly layer: MasterCSSManifestUtilityLayerName
+  readonly type: UtilityType
+  readonly sortTier: number
+  readonly priority: MasterCSSRulePriority
+  readonly text: string
+  readonly nodes?: readonly MasterCSSHydrationRuleNode[]
+  readonly selectorText?: string
+  readonly variableNames?: readonly string[]
+  readonly keyframeNames?: readonly string[]
+  readonly retainAllKeyframes?: boolean
 }
 
 export interface MasterCSSHydrationManifest {
-  version: 1
-  rules: MasterCSSGeneratedRuleIR[]
+  readonly version: 5
+  readonly languageVersion: 16
+  /**
+   * Every rendered class: those with rules in rule order, then those without, such as
+   * authored component classes, then classes manifest selectors reference without rules
+   * of their own, such as mode classes. The runtime treats them as covered by the
+   * pre-rendered CSS and replays them to verify it when the engine starts.
+   */
+  readonly classNames: readonly string[]
+  readonly resourceOrder: { readonly variables: readonly string[], readonly keyframes: readonly string[] }
+  /** Resource counts the server render treated as emitted by the page's stylesheets. */
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 
 export function serializeMasterCSSHydrationManifest(hydrationManifest: MasterCSSHydrationManifest) {

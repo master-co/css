@@ -1,0 +1,309 @@
+use mastercss_compiler::{CssImportProvider, resolve_css_import_graph};
+
+struct Files(String);
+impl CssImportProvider for Files {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        match id {
+            "entry" => Ok(self.0.clone()),
+            "child" => Ok(".example{color:red}".into()),
+            _ => Err("missing".into()),
+        }
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok((specifier == "./child.css").then(|| "child".into()))
+    }
+}
+
+#[test]
+fn bh_0004_import_media_is_preserved_when_expanding() {
+    let result =
+        resolve_css_import_graph("entry", &Files("@import './child.css' print;".into())).unwrap();
+    assert!(result.source.contains("@media print"), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_import_layer_is_preserved_when_expanding() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &Files("@import './child.css' layer(theme);".into()),
+    )
+    .unwrap();
+    assert!(result.source.contains("@layer theme"), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_import_supports_is_preserved_when_expanding() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &Files("@import './child.css' supports(display:grid);".into()),
+    )
+    .unwrap();
+    assert!(result.source.contains("@supports"), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_combined_conditions_wrap_layer_instead_of_declaring_it_unconditionally() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &Files("@import url('./child.css') layer(theme) supports(display:grid) print;".into()),
+    )
+    .unwrap();
+    assert_eq!(
+        result.source,
+        "@supports (display: grid){@media print{@layer theme{.example{color:red}}}}"
+    );
+}
+
+#[test]
+fn bh_0004_anonymous_layers_remain_distinct_and_unqualified_css_stays_bare() {
+    for (qualifier, expected) in [
+        ("", ".example{color:red}"),
+        (" layer", "@layer {.example{color:red}}"),
+        (" layer(a.b)", "@layer a.b{.example{color:red}}"),
+        (
+            " screen, print",
+            "@media screen, print{.example{color:red}}",
+        ),
+        (
+            " supports((display:grid) and (color:red))",
+            "@supports (display: grid) and (color: red){.example{color:red}}",
+        ),
+    ] {
+        let source = format!("@import './child.css'{qualifier};@import './child.css'{qualifier};");
+        let result = resolve_css_import_graph("entry", &Files(source)).unwrap();
+        assert_eq!(result.source, expected.repeat(2));
+        assert_eq!(result.dependencies, ["entry", "child"]);
+    }
+}
+
+struct NestedFiles(&'static str);
+impl CssImportProvider for NestedFiles {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        Ok(match id {
+            "entry" => "@import 'child' layer(outer) supports(display:grid) screen;".into(),
+            "child" => self.0.into(),
+            "grandchild" => ".example{color:red}".into(),
+            _ => return Err("missing".into()),
+        })
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok(matches!(specifier, "child" | "grandchild").then(|| specifier.into()))
+    }
+}
+
+#[test]
+fn bh_0004_nested_local_imports_preserve_each_condition_and_layer_scope() {
+    let result = resolve_css_import_graph("entry", &NestedFiles(
+        "@import 'grandchild' layer(inner) supports(color:red) (min-width:500px);.child{display:block}"
+    )).unwrap();
+    assert_eq!(
+        result.source,
+        "@supports (display: grid){@media screen{@layer outer{@supports (color: red){@media (width >= 500px){@layer inner{.example{color:red}}}}.child{display:block}}}}"
+    );
+    assert_eq!(result.dependencies, ["entry", "child", "grandchild"]);
+}
+
+#[test]
+fn bh_0004_external_import_keeps_its_authored_qualifiers() {
+    let source =
+        "@import 'https://example.test/style.css' layer(remote) supports(display:grid) print;";
+    let result = resolve_css_import_graph("entry", &Files(source.into())).unwrap();
+    assert_eq!(result.source, source);
+}
+
+#[test]
+fn bh_0004_unresolved_nested_import_is_an_explicit_limit_not_invalid_nested_css() {
+    let error = resolve_css_import_graph(
+        "entry",
+        &NestedFiles("@import 'https://example.test/style.css';.child{display:block}"),
+    )
+    .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("resolve its nested imports first")
+    );
+}
+
+/// An import qualifier wraps the imported rules, but the imported stylesheet's
+/// definitions are global declarations. Keeping them inside the wrapper both
+/// misrepresents them and leaves a directive the lowering cannot handle.
+struct DefiningChild(&'static str);
+impl CssImportProvider for DefiningChild {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        match id {
+            "entry" => Ok("@import './child.css' layer(cards) supports(display:grid) screen;\n.after{margin:1px}".into()),
+            "child" => Ok(self.0.into()),
+            _ => Err("missing".into()),
+        }
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok((specifier == "./child.css").then(|| "child".into()))
+    }
+}
+
+#[test]
+fn qualified_imports_reject_global_master_definitions() {
+    for source in [
+        "@custom-media --wide (width > 40rem);",
+        "@theme { --color-card: red; }",
+        "@mixin --print { @media print { @contents; } } @utility print { @media print { @contents; } }",
+        " @mixin --card { padding: 1rem; } @utility card { padding: 1rem; } ",
+        " @mixin --card { padding: 1rem; } @utility card { padding: 1rem; } ",
+        " @mixin --card { padding: 1rem; } @utility card { padding: 1rem; } ",
+    ] {
+        let error = resolve_css_import_graph("entry", &DefiningChild(source)).unwrap_err();
+        let message = error.to_string();
+        assert!(message.contains("Qualified import"), "{message}");
+        assert!(message.contains("./child.css"), "{message}");
+        assert!(
+            message.contains("without media/supports/layer"),
+            "{message}"
+        );
+    }
+}
+
+#[test]
+fn bh_0004_unqualified_import_leaves_definitions_where_they_were() {
+    struct Plain;
+    impl CssImportProvider for Plain {
+        type Error = String;
+        fn load(&self, id: &str) -> Result<String, String> {
+            match id {
+                "entry" => Ok("@import './child.css';\n.after{margin:1px}".into()),
+                "child" => Ok("@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n.card{padding:3rem}".into()),
+                _ => Err("missing".into()),
+            }
+        }
+        fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+            Ok((specifier == "./child.css").then(|| "child".into()))
+        }
+    }
+    let result = resolve_css_import_graph("entry", &Plain).unwrap();
+    assert_eq!(
+        result.source,
+        "@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n.card{padding:3rem}\n.after{margin:1px}"
+    );
+}
+
+/// An unresolved import is hoisted to the top, which also hoists the first
+/// appearance of the layer it names. Pin the authored order so the hoist cannot
+/// reorder the cascade, and leave stylesheets it cannot reorder untouched.
+struct ExternalAfterLocal(&'static str);
+impl CssImportProvider for ExternalAfterLocal {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        match id {
+            "entry" => Ok(self.0.into()),
+            "child" => Ok(".example{color:red}".into()),
+            _ => Err("missing".into()),
+        }
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok((specifier == "./local.css").then(|| "child".into()))
+    }
+}
+
+#[test]
+fn bh_0004_hoisted_external_import_pins_the_authored_layer_order() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        result.source.starts_with("@layer a, b;\n"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_a_single_named_layer_cannot_be_reordered_so_output_is_unchanged() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@import './local.css' layer(shared);@import 'https://example.test/style.css' layer(shared);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        !result.source.contains("@layer shared;"),
+        "{}",
+        result.source
+    );
+    assert!(result.source.starts_with("@import "), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_unlayered_imports_get_no_layer_statement() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal("@import './local.css';@import 'https://example.test/style.css';"),
+    )
+    .unwrap();
+    assert!(!result.source.contains("@layer"), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_an_authored_layer_order_is_never_restated() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@layer a,b;@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert_eq!(
+        result.source.matches("@layer a").count(),
+        2,
+        "{}",
+        result.source
+    );
+    assert!(
+        result.source.starts_with("@layer a,b;"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_layer_blocks_take_part_in_the_authored_order() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@layer base{.base{display:block}}@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        result.source.starts_with("@layer base, a, b;\n"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_a_fully_resolved_graph_keeps_its_bytes() {
+    struct AllLocal;
+    impl CssImportProvider for AllLocal {
+        type Error = String;
+        fn load(&self, id: &str) -> Result<String, String> {
+            match id {
+                "entry" => Ok("@import './local.css' layer(a);@layer b{.b{display:block}}".into()),
+                "child" => Ok(".example{color:red}".into()),
+                _ => Err("missing".into()),
+            }
+        }
+        fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+            Ok((specifier == "./local.css").then(|| "child".into()))
+        }
+    }
+    let result = resolve_css_import_graph("entry", &AllLocal).unwrap();
+    assert!(!result.source.contains("@layer a, b;"), "{}", result.source);
+}

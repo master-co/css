@@ -45,7 +45,7 @@ interface OpenAIConfig {
 const siteRoot = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const repoRoot = resolve(siteRoot, '..')
 const rootEnvFile = resolve(repoRoot, '.env.local')
-const appLocaleRoot = resolve(siteRoot, 'app/[locale]')
+const appLocaleRoot = resolve(siteRoot, 'content')
 const translationsRoot = resolve(siteRoot, '.translations')
 const defaultLocale = 'en'
 let astHost: ReturnType<typeof createTypeScriptASTHost> | undefined
@@ -54,11 +54,12 @@ const defaultModel = process.env.TRANSLATE_MODEL || 'gpt-5.5'
 let rootEnvValues: Record<string, string> | undefined
 
 const uiRoots = [
-    resolve(siteRoot, 'app'),
+    resolve(siteRoot, 'content'),
+    resolve(siteRoot, 'sections'),
     resolve(siteRoot, 'components'),
-    resolve(siteRoot, '../internal/components'),
-    resolve(siteRoot, '../internal/layouts'),
-    resolve(siteRoot, '../internal/contexts')
+    resolve(siteRoot, 'docs-shell/components'),
+    resolve(siteRoot, 'docs-shell/layouts'),
+    resolve(siteRoot, 'docs-shell/contexts')
 ]
 
 const translatableAttributes = new Set(['alt', 'aria-label', 'title', 'placeholder'])
@@ -539,7 +540,7 @@ function walk(root: string, filter: (file: string) => boolean): string[] {
 }
 
 function isAuditableSourceFile(file: string) {
-    return !/(\.test\.tsx?$|\/api\/|\/\.next\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(toPosix(file))
+    return !/(\.test\.tsx?$|\/api\/|\/\.astro\/|\/\.wrangler\/|\/public\/|\/svgs\/|\/node_modules\/)/.test(toPosix(file))
 }
 
 function hash(value: string) {

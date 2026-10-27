@@ -1,14 +1,12 @@
 import { defineAddon } from 'sv'
 import {
-  addMasterCSSServerHook,
   addMasterCSSStylesheetImport,
   addMasterCSSVitePlugin,
   addStylesheetImportToLayout,
   MASTER_CSS_PACKAGE,
   MASTER_CSS_SVELTE_PACKAGE,
   MASTER_CSS_SVELTE_VERSION,
-  MASTER_CSS_VERSION,
-  resolveHooksServerPath
+  MASTER_CSS_VERSION
 } from './transforms'
 
 export default defineAddon({
@@ -20,7 +18,7 @@ export default defineAddon({
   setup({ isKit, unsupported }) {
     if (!isKit) unsupported('Requires SvelteKit')
   },
-  run({ sv, cwd, directory, file, language, dependencyVersion, cancel }) {
+  run({ sv, directory, file, language, dependencyVersion, cancel }) {
     const svelteVersion = dependencyVersion('svelte')
     if (!svelteVersion) {
       return cancel('Requires a Svelte dependency in package.json')
@@ -42,10 +40,5 @@ export default defineAddon({
       stylesheetRelativePath,
       svelteVersion
     ))
-
-    sv.file(
-      resolveHooksServerPath(cwd, directory.src, language),
-      (content) => addMasterCSSServerHook(content, language)
-    )
   }
 })

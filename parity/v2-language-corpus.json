@@ -1,0 +1,3595 @@
+{
+  "version": 3,
+  "semanticBaseline": "language-16-shared-prefixes",
+  "publicBaseline": "Master CSS v2",
+  "parserCases": [
+    {
+      "id": "selector-7672156d45b19824",
+      "kind": "selector",
+      "input": ".class",
+      "expectedCanonical": "&.class"
+    },
+    {
+      "id": "selector-b60dd80a8d04ba94",
+      "kind": "selector",
+      "input": ":hover",
+      "expectedCanonical": "&:hover"
+    },
+    {
+      "id": "selector-522d69740a4af27e",
+      "kind": "selector",
+      "input": ":nth-child(2)",
+      "expectedCanonical": "&:nth-child(2)"
+    },
+    {
+      "id": "selector-f10371238c9efe81",
+      "kind": "selector",
+      "input": ":nth(2)",
+      "expectedCanonical": "&:nth(2)"
+    },
+    {
+      "id": "selector-c38bc18f349f1945",
+      "kind": "selector",
+      "input": ":nth-last(2)",
+      "expectedCanonical": "&:nth-last(2)"
+    },
+    {
+      "id": "selector-49b911c28bcb9bd8",
+      "kind": "selector",
+      "input": "::scrollbar-thumb",
+      "expectedCanonical": "&::scrollbar-thumb"
+    },
+    {
+      "id": "selector-00adc47b4fde6037",
+      "kind": "selector",
+      "input": "::scrollbar-corner",
+      "expectedCanonical": "&::scrollbar-corner"
+    },
+    {
+      "id": "selector-139cfa16f8dd5610",
+      "kind": "selector",
+      "input": "::view-transition-new(root)",
+      "expectedCanonical": "&::view-transition-new(root)"
+    },
+    {
+      "id": "selector-1b996087ea8109f5",
+      "kind": "selector",
+      "input": "::vt-new(root)",
+      "expectedCanonical": "&::vt-new(root)"
+    },
+    {
+      "id": "selector-bd5d33a12de469be",
+      "kind": "selector",
+      "input": "[open]",
+      "expectedCanonical": "&[open]"
+    },
+    {
+      "id": "selector-ec79a41cf8a0524c",
+      "kind": "selector",
+      "input": ":has(.active)",
+      "expectedCanonical": "&:has(.active)"
+    },
+    {
+      "id": "selector-4b5ab83b1729ab93",
+      "kind": "selector",
+      "input": ":before",
+      "expectedCanonical": "&:before"
+    },
+    {
+      "id": "selector-dbf9b9b2b8a7031b",
+      "kind": "selector",
+      "input": "::first-letter",
+      "expectedCanonical": "&::first-letter"
+    },
+    {
+      "id": "selector-e28dbc847daa1817",
+      "kind": "selector",
+      "input": ">.title",
+      "expectedCanonical": "&>.title"
+    },
+    {
+      "id": "selector-8cb307639b25de69",
+      "kind": "selector",
+      "input": "*",
+      "expectedCanonical": "&*"
+    },
+    {
+      "id": "selector-57a76e2ef2de6ae4",
+      "kind": "selector",
+      "input": "_hr+*",
+      "expectedCanonical": "& hr+*"
+    },
+    {
+      "id": "selector-ab231dfc9b4427f6",
+      "kind": "selector",
+      "input": ":hover+div:has(:active)",
+      "expectedCanonical": "&:hover+div:has(:active)"
+    },
+    {
+      "id": "selector-37cd5d624475d02e",
+      "kind": "selector",
+      "input": ">li::before,>li::after",
+      "expectedCanonical": "&>li::before,&>li::after"
+    },
+    {
+      "id": "selector-a9439c2e913bf21b",
+      "kind": "selector",
+      "input": "_.feature__tab-title",
+      "expectedCanonical": "& .feature__tab-title"
+    },
+    {
+      "id": "lexer-f388e6c161004b97",
+      "kind": "lexer",
+      "input": "  block\tfg:red\nm:1x ",
+      "expectedCanonical": "ASCII whitespace and class ranges are preserved",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-6d5d386f580d29af",
+      "kind": "lexer",
+      "input": "block　fg:red",
+      "expectedCanonical": "full-width whitespace remains inside one class token",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-56bd470c266dafff",
+      "kind": "lexer",
+      "input": "a  b ",
+      "expectedCanonical": "empty cursor positions are preserved at ASCII whitespace boundaries",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-167ae2709f22cd6d",
+      "kind": "lexer",
+      "input": "content:\\'\\' block|content:\\`\\`",
+      "expectedCanonical": "configured quote characters are unescaped without changing raw ranges",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-9548ae64df5ed481",
+      "kind": "lexer",
+      "input": " block  fg:red　m:1x ",
+      "expectedCanonical": "shared class range collection uses UTF-16 offsets",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-51f771f5b7ef1697",
+      "kind": "lexer",
+      "input": "12px/$space url(\"/a;b.png\")!",
+      "expectedCanonical": "value numbers units variables functions strings separators and priority are tokenized",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-1e55f6831835ae55",
+      "kind": "lexer",
+      "input": "--value() calc(--value() * -1)",
+      "expectedCanonical": "managed placeholders are CSS function tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-3b3607e8b4b583a3",
+      "kind": "lexer",
+      "input": "@sm>=640:hover>.item",
+      "expectedCanonical": "query and selector state token ranges remain exact",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-58dfe44e344938aa",
+      "kind": "lexer",
+      "input": "@media(pointer:coarse),screen_:is(.active,#target,button)",
+      "expectedCanonical": "native query and selector punctuation roles remain exact",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-116f378a8315c994",
+      "kind": "lexer",
+      "input": "@sm&<=md",
+      "expectedCanonical": "named query range endpoints remain separate value tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-377b579d44d48303",
+      "kind": "lexer",
+      "input": "{fg:red;bg:blue}",
+      "expectedCanonical": "group braces and declaration terminators wrap semantic class tokens",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-26f2db55b217f0d5",
+      "kind": "lexer",
+      "input": "{fg:red;block}>li:hover@sm",
+      "expectedCanonical": "group suffix selector and query state remain tokenized",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-bcbede53a81f0bc5",
+      "kind": "lexer",
+      "input": "{block}@sm",
+      "expectedCanonical": "group query suffix remains a query keyword",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-eb118a232c54e6de",
+      "kind": "lexer",
+      "input": "{fg:red;bg:blue",
+      "expectedCanonical": "unclosed group recovery preserves parsed declarations",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-af4d2924300d54db",
+      "kind": "lexer",
+      "input": "fg:red;bg:blue",
+      "expectedCanonical": "brace-less grouped declarations preserve their terminator",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-7de028667721a877",
+      "kind": "lexer",
+      "input": "@import url(\"@master/css\") layer(theme);\n.x { content: \"@import url(\\\"ignored\\\");\" }\n@import \"./a;b.css\";",
+      "expectedCanonical": "@master/css|./a;b.css",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-80cea11f6437844e",
+      "kind": "lexer",
+      "input": "@master entry;|@import \"@master/css\";|@master;|@master global;",
+      "expectedCanonical": "true|true|false|false",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-c338962e34e07c1c",
+      "kind": "lexer",
+      "input": "@master entry;\n@source \"./x.css\";\n.a{}",
+      "expectedCanonical": "\n@source \"./x.css\";\n.a{}",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-85fe07eee3ea650e",
+      "kind": "lexer",
+      "input": "@master;\n@master global;\n@master shake;\n@master no-shake;\n.a{}",
+      "expectedCanonical": "no entry directives",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-a99556d32ad12a9b",
+      "kind": "lexer",
+      "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }\n.fallback { color: var(--color-brand, var(--color-green-60)); }",
+      "expectedCanonical": "color-green-60|color-brand",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-4d294d715eb82c2d",
+      "kind": "lexer",
+      "input": "--alpha(var(--color-brand, \"a)b\") / calc(100% - 20% /* ) */))",
+      "expectedCanonical": "balanced function ends at UTF-16 offset 61",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-9ccb1609c26acb3a",
+      "kind": "lexer",
+      "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }",
+      "expectedCanonical": "only active variable references are replaced",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-c853daf53b370443",
+      "kind": "lexer",
+      "input": "@source \"a;b.css\";\n@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } }",
+      "expectedCanonical": "source|theme with exact statement block and quoted ranges",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-9e23b9ca5eba0b7f",
+      "kind": "lexer",
+      "input": "@reference \"./a;b.css\";\n@layer components { .btn { @reference \"./nested.css\"; } }",
+      "expectedCanonical": "top-level and nested reference ranges retain depth and quotes",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-cd1d137ee89e9efb",
+      "kind": "lexer",
+      "input": "@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }",
+      "expectedCanonical": "",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-0ecc38899002a5db",
+      "kind": "lexer",
+      "input": ".card { @dark { @compose fg:white; } @light { color: black; } }",
+      "expectedCanonical": "",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-bf007c1edf054a11",
+      "kind": "lexer",
+      "input": "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }",
+      "expectedCanonical": "",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-8b8911fa6dc3e148",
+      "kind": "lexer",
+      "input": "@components { btn { @compose block; } }",
+      "expectedCanonical": "components",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-2f3cc1f8149e5aac",
+      "kind": "lexer",
+      "input": "@utility text-<left|center|right> { text-align: --value(); }",
+      "expectedCanonical": "no Master CSS directives",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-0200c9f8cb24fb9e",
+      "kind": "lexer",
+      "input": "@theme { --content: \"a;b\"; --root-size: 16 }",
+      "expectedCanonical": "--content=\"a;b\"|--root-size=16",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-9e290a26e4a4bcd2",
+      "kind": "lexer",
+      "input": "@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } --duration-fast: 150ms }",
+      "expectedCanonical": "--color-primary|--duration-fast",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-8825de071b213b2d",
+      "kind": "lexer",
+      "input": "@theme dark",
+      "expectedCanonical": "eof at UTF-16 source length",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-a16dfb59baf769b1",
+      "kind": "lexer",
+      "input": "font:48px|1col|-1col|-|a b",
+      "expectedCanonical": "font\\:48px|\\31 col|-\\31 col|\\-|a\\ b",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    },
+    {
+      "id": "lexer-e84fc87f66b88072",
+      "kind": "lexer",
+      "input": "a.b[c]",
+      "expectedCanonical": "a\\.b\\[c\\]",
+      "targetPackage": "tooling",
+      "runner": "cargo-test"
+    }
+  ],
+  "engineCases": [
+    {
+      "id": "engine-basic-order",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "display:block",
+            "width:10px",
+            "background-origin:border-box"
+          ],
+          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-basic-order-reversed",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "width:10px",
+            "display:block",
+            "background-origin:border-box"
+          ],
+          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-grouped-declarations",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "{color-black!;border-bottom:2px|solid}",
+            "{padding-top:calc(2.5em+3.75rem);margin-top:-3.75rem}_:where(h1,h2,h3,h4,h5,h6)"
+          ],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-condition-layer",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "display:block:hover",
+            "display:block_button@layer(base)",
+            "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
+            "display:block@starting-style"
+          ],
+          "expectedCss": "@layer base{.display\\:block_button\\@layer\\(base\\) button{display:block}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-condition-metadata",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
+          "expectedValid": false,
+          "expectedRuleTexts": [],
+          "expectedSelectorTexts": [],
+          "expectedLayers": []
+        }
+      ]
+    },
+    {
+      "id": "engine-variable-lifecycle",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "fg-red-60",
+            "bg-red-60",
+            "m-md"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}.m-md{margin:var(--spacing-md)}}"
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "fg-red-60"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--spacing-md:1rem}}@layer utilities{.bg-red-60{background-color:var(--color-red-60)}.m-md{margin:var(--spacing-md)}}"
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "bg-red-60"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}}"
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "m-md"
+          ],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-inline-theme-variable-dependencies",
+      "manifest": {
+        "version": 6,
+        "variables": {
+          "color": [
+            {
+              "name": "color-white",
+              "key": "white",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "oklch(100% 0 none)"
+                }
+              ]
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "dependencies": [
+                "color-white"
+              ],
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "var(--color-white)"
+                }
+              ]
+            },
+            {
+              "name": "color-gray-90",
+              "key": "gray-90",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "oklch(23.5% 0 none)"
+                }
+              ]
+            }
+          ],
+          "color-surface": [
+            {
+              "name": "color-surface-raised",
+              "key": "raised",
+              "dependencies": [
+                "color-brand",
+                "color-gray-90"
+              ],
+              "values": [
+                {
+                  "path": [
+                    ".light"
+                  ],
+                  "value": "var(--color-brand)"
+                },
+                {
+                  "path": [
+                    ".dark"
+                  ],
+                  "value": "var(--color-gray-90)"
+                }
+              ]
+            }
+          ]
+        },
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-white",
+                "value": "oklch(100% 0 none)"
+              },
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "var(--color-white)"
+              },
+              {
+                "type": "declaration",
+                "name": "color-gray-90",
+                "value": "oklch(23.5% 0 none)"
+              }
+            ]
+          },
+          {
+            "type": "rule",
+            "prelude": ".light",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-surface-raised",
+                "value": "var(--color-brand)"
+              }
+            ]
+          },
+          {
+            "type": "rule",
+            "prelude": ".dark",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-surface-raised",
+                "value": "var(--color-gray-90)"
+              }
+            ]
+          }
+        ],
+        "customMedia": {},
+        "mixins": [
+          {
+            "name": "--bg",
+            "parameters": [
+              {
+                "name": "--color"
+              }
+            ],
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background-color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "utilities": [
+          {
+            "kind": "function",
+            "name": "bg",
+            "parameters": [
+              {
+                "name": "--color"
+              }
+            ],
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background-color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "token",
+            "name": "bg",
+            "parameters": [
+              {
+                "name": "--color"
+              }
+            ],
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background-color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "bg-surface-raised"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-white:oklch(100% 0 none);--color-brand:var(--color-white);--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:var(--color-brand)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.bg-surface-raised{background-color:var(--color-surface-raised)}}"
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "bg-surface-raised"
+          ],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-emitted-global-variable",
+      "manifest": "default",
+      "emittedGlobals": {
+        "variables": {
+          "color-red-60": 1
+        }
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "fg-red-60"
+          ],
+          "expectedCss": "@layer utilities{.fg-red-60{color:var(--color-red-60)}}"
+        },
+        {
+          "op": "delete",
+          "classes": [
+            "fg-red-60"
+          ],
+          "expectedCss": ""
+        }
+      ]
+    },
+    {
+      "id": "engine-mode-conditions",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "fg-blue-60@dark",
+            "bg-white@light"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}:root,:host{--color-white:oklch(100% 0 none)}}@layer utilities{@media (prefers-color-scheme: dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}@media (prefers-color-scheme: light){.bg-white\\@light{background-color:var(--color-white)}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-functions-and-negative-values",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "width:calc(100%-2rem)",
+            "background-color:oklch(60%|.2|240/.5)",
+            "-m-md"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.width\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-negative-base-unit-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "margin:0.25rem",
+            "margin:-0.25rem",
+            "margin:.25rem",
+            "margin:-.25rem"
+          ],
+          "expectedCss": "@layer utilities{.margin\\:-\\.25rem{margin:-.25rem}.margin\\:-0\\.25rem{margin:-0.25rem}.margin\\:\\.25rem{margin:.25rem}.margin\\:0\\.25rem{margin:0.25rem}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-negative-variable-identifier-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "-m-3xs",
+            "-ml-3xs"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--spacing-3xs:.25rem}}@layer utilities{.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-single-colon-pseudo-element-bytes",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "display:block:before",
+            "display:block::before",
+            "display:block:after",
+            "display:block::after",
+            "display:block:first-letter",
+            "display:block::first-letter",
+            "display:block:first-line",
+            "display:block::first-line"
+          ],
+          "expectedCss": "@layer utilities{.display\\:block\\:\\:after::after{display:block}.display\\:block\\:\\:before::before{display:block}.display\\:block\\:\\:first-letter::first-letter{display:block}.display\\:block\\:\\:first-line::first-line{display:block}.display\\:block\\:after:after{display:block}.display\\:block\\:before:before{display:block}.display\\:block\\:first-letter:first-letter{display:block}.display\\:block\\:first-line:first-line{display:block}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-selector-priority-metadata",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "display:block.active",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "features": [],
+              "selector": 3,
+              "sortKey": "display:block"
+            }
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "display:block:hover:not(.disabled)",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "features": [],
+              "selector": 5,
+              "sortKey": "display:block"
+            }
+          ]
+        },
+        {
+          "op": "inspect",
+          "className": "display:block[disabled]",
+          "expectedValid": true,
+          "expectedPriorities": [
+            {
+              "features": [],
+              "selector": 4,
+              "sortKey": "display:block"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-animation-resource-metadata",
+      "manifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--float-left",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "float",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "left"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "--rotate-180",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "rotate",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "180deg"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "--animated",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "animation",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "float 1s"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "customMedia": {},
+        "utilities": [
+          {
+            "kind": "static",
+            "name": "float-left",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "float",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "left"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "static",
+            "name": "rotate-180",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "rotate",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "180deg"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "static",
+            "name": "animated",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "animation",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "float 1s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "float-left",
+          "expectedValid": true
+        },
+        {
+          "op": "inspect",
+          "className": "rotate-180",
+          "expectedValid": true
+        },
+        {
+          "op": "inspect",
+          "className": "animated",
+          "expectedValid": true
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "float-left",
+            "rotate-180"
+          ],
+          "expectedCss": "@layer utilities{.float-left{float:left}.rotate-180{rotate:180deg}}"
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "animated"
+          ],
+          "expectedCss": "@layer utilities{.animated{animation:float 1s}.float-left{float:left}.rotate-180{rotate:180deg}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-border-radius-aliases",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "border:2px|solid|var(--color-red-60)",
+            "border-top:1px|solid|var(--color-blue-60)",
+            "r-md",
+            "rtl-lg"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.rtl-lg{border-top-left-radius:var(--radius-lg)}.border-top\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.border\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-pseudo-and-responsive-selectors",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "display:block:nth-child(2n+1)",
+            "bg-red-60:hover@sm"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.display\\:block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-complex-utility-values",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "grid-col-span(2)",
+            "max-width:max-content",
+            "min-height:min-content",
+            "transition:opacity|300ms|ease|100ms",
+            "font-feature-settings:\"kern\""
+          ],
+          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-width\\:max-content{max-width:max-content}.min-height\\:min-content{min-height:min-content}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-responsive-priority",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "margin-top:0",
+            "margin-top:2",
+            "margin-top:1@sm",
+            "margin-top:3@lg"
+          ],
+          "expectedCss": "@layer utilities{.margin-top\\:0{margin-top:0}.margin-top\\:2{margin-top:2}@media (width >= 52.125rem){.margin-top\\:1\\@sm{margin-top:1}}@media (width >= 80rem){.margin-top\\:3\\@lg{margin-top:3}}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-rejects-retired-syntax",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "max(1rem)",
+          "expectedValid": false
+        }
+      ]
+    },
+    {
+      "id": "engine-semantic-manifest-layer",
+      "manifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--card",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "grid"
+                  }
+                ]
+              },
+              {
+                "type": "rule",
+                "selector": "&:hover",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "color",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "red"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "customMedia": {},
+        "utilities": [
+          {
+            "kind": "static",
+            "name": "card",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "grid"
+                  }
+                ]
+              },
+              {
+                "type": "rule",
+                "selector": "&:hover",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "color",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "red"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "inspect",
+          "className": "card@layer(components)",
+          "expectedValid": true,
+          "expectedRuleTexts": [
+            ".card\\@layer\\(components\\){display:grid}.card\\@layer\\(components\\):hover{color:red}"
+          ],
+          "expectedSelectorTexts": [
+            ".card\\@layer\\(components\\)"
+          ],
+          "expectedLayers": [
+            "components"
+          ]
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "card@layer(components)"
+          ],
+          "expectedCss": "@layer components{.card\\@layer\\(components\\){display:grid}.card\\@layer\\(components\\):hover{color:red}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-same-class-across-layers",
+      "manifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--demo-default",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "var(--stripe)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "--demo",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "flex"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "customMedia": {},
+        "utilities": [
+          {
+            "kind": "static",
+            "name": "demo-default",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "background",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "var(--stripe)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "static",
+            "name": "demo",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "flex"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "demo-default@layer(defaults)",
+            "demo@layer(components)"
+          ],
+          "expectedCss": "@layer defaults{.demo-default\\@layer\\(defaults\\){background:var(--stripe)}}@layer components{.demo\\@layer\\(components\\){display:flex}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-native-alias-global-variable",
+      "manifest": {
+        "version": 6,
+        "variables": {
+          "": [
+            {
+              "name": "stripe",
+              "key": "stripe",
+              "type": "string",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+                }
+              ]
+            }
+          ]
+        },
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "stripe",
+                "value": "0 / 7.5px 7.5px linear-gradient(red,blue) transparent"
+              }
+            ]
+          }
+        ],
+        "customMedia": {}
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "background:var(--stripe)"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+        }
+      ]
+    },
+    {
+      "id": "engine-native-alias-warm-session",
+      "manifest": {
+        "version": 6,
+        "variables": {
+          "": [
+            {
+              "name": "stripe",
+              "key": "stripe",
+              "type": "string",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "linear-gradient(red,blue)"
+                }
+              ]
+            }
+          ]
+        },
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "stripe",
+                "value": "linear-gradient(red,blue)"
+              }
+            ]
+          }
+        ],
+        "customMedia": {}
+      },
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "background:var(--stripe)"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+        },
+        {
+          "op": "ensure",
+          "classes": [
+            "background:var(--stripe)"
+          ],
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+        }
+      ]
+    },
+    {
+      "id": "rule-b34b6305ef89bb24",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "accent-color:transparent",
+          "expectedRuleContains": "accent-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rule-7a36e09838ade737",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "width:100%",
+          "expectedRuleContains": "width:100%"
+        },
+        {
+          "op": "inspectContains",
+          "className": "height:100%",
+          "expectedRuleContains": "height:100%"
+        }
+      ]
+    },
+    {
+      "id": "rule-c04505259861369b",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rule-3f25eb2d165c2792",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "background-color:light-dark(#000,#fff)",
+          "expectedRuleContains": "background-color:light-dark(#000,#fff)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "background-color:#fff",
+          "expectedRuleContains": "background-color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "background-color:transparent",
+          "expectedRuleContains": "background-color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bg-blue",
+          "expectedRuleContains": "background-color:var(--color-blue)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "background-clip:border-box",
+          "expectedRuleContains": "background-clip:border-box"
+        },
+        {
+          "op": "inspectContains",
+          "className": "background-image:url('#test')",
+          "expectedRuleContains": "background-image:url('#test')"
+        },
+        {
+          "op": "inspectContains",
+          "className": "background-image:linear-gradient(45deg,#f3ec78,#af4261)",
+          "expectedRuleContains": "background-image:linear-gradient(45deg,#f3ec78,#af4261)"
+        }
+      ]
+    },
+    {
+      "id": "rule-6d53dce3a8f4a608",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "b-blue-50",
+          "expectedRuleContains": "border-color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-color:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-color:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-bottom-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-color:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-top-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bl-blue-50",
+          "expectedRuleContains": "border-left-color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-color:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-left-color:rgb(0,0,0,0.75)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-color:rgb(0,0,0,0.75)",
+          "expectedRuleContains": "border-right-color:rgb(0,0,0,0.75)"
+        }
+      ]
+    },
+    {
+      "id": "rule-59505396e17bdf8e",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border-radius:1rem",
+          "expectedRuleContains": "border-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-radius:1rem",
+          "expectedRuleContains": "border-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-left-radius:1rem",
+          "expectedRuleContains": "border-top-left-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-right-radius:1rem",
+          "expectedRuleContains": "border-top-right-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-left-radius:1rem",
+          "expectedRuleContains": "border-bottom-left-radius:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-right-radius:1rem",
+          "expectedRuleContains": "border-bottom-right-radius:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-5230468339100f6c",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border-style:solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-style:solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-style:solid",
+          "expectedRuleContains": "border-bottom-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-style:solid",
+          "expectedRuleContains": "border-bottom-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-style:solid",
+          "expectedRuleContains": "border-top-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-style:solid",
+          "expectedRuleContains": "border-top-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-style:solid",
+          "expectedRuleContains": "border-left-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-style:solid",
+          "expectedRuleContains": "border-left-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-style:solid",
+          "expectedRuleContains": "border-right-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-style:solid",
+          "expectedRuleContains": "border-right-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:solid|1px",
+          "expectedRuleContains": "border:solid 1px"
+        }
+      ]
+    },
+    {
+      "id": "rule-f491aa129b9a3a74",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border-width:1px",
+          "expectedRuleContains": "border-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom-width:1px",
+          "expectedRuleContains": "border-bottom-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-width:1px",
+          "expectedRuleContains": "border-top-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left-width:1px",
+          "expectedRuleContains": "border-left-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right-width:1px",
+          "expectedRuleContains": "border-right-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:2px|solid",
+          "expectedRuleContains": "border:2px solid"
+        }
+      ]
+    },
+    {
+      "id": "rule-d289666fcc196b64",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "border:transparent",
+          "expectedRuleContains": "border:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-style:solid",
+          "expectedRuleContains": "border-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1rem|solid",
+          "expectedRuleContains": "border:1rem solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-style:none",
+          "expectedRuleContains": "border-style:none"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:unset",
+          "expectedRuleContains": "border:unset"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:inherit",
+          "expectedRuleContains": "border:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:initial",
+          "expectedRuleContains": "border:initial"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:revert",
+          "expectedRuleContains": "border:revert"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:revert-layer",
+          "expectedRuleContains": "border:revert-layer"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:calc(100%-1.25rem)|solid",
+          "expectedRuleContains": "border:calc(100% - 1.25rem) solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-width:1px",
+          "expectedRuleContains": "border-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top-width:1px",
+          "expectedRuleContains": "border-top-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-inline-width:1px",
+          "expectedRuleContains": "border-inline-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-block-width:1px",
+          "expectedRuleContains": "border-block-width:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "b-gray-20",
+          "expectedRuleContains": "border-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "bx-gray-20",
+          "expectedRuleContains": "border-inline-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "by-gray-20",
+          "expectedRuleContains": "border-block-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border:1px|solid",
+          "expectedRuleContains": "border:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top:1px|solid",
+          "expectedRuleContains": "border-top:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-top:1px|solid",
+          "expectedRuleContains": "border-top:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom:1px|solid",
+          "expectedRuleContains": "border-bottom:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-bottom:1px|solid",
+          "expectedRuleContains": "border-bottom:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left:1px|solid",
+          "expectedRuleContains": "border-left:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-left:1px|solid",
+          "expectedRuleContains": "border-left:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right:1px|solid",
+          "expectedRuleContains": "border-right:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "border-right:1px|solid",
+          "expectedRuleContains": "border-right:1px solid"
+        }
+      ]
+    },
+    {
+      "id": "rule-8d2ee1e868c38dd6",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "box-shadow:8px|8px|10px|#00b0de",
+          "expectedRuleContains": "box-shadow:8px 8px 10px #00b0de"
+        },
+        {
+          "op": "inspectContains",
+          "className": "box-shadow:8px|8px|10px|var(--my-shadow,#00b0de)",
+          "expectedRuleContains": "box-shadow:8px 8px 10px var(--my-shadow,#00b0de)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "shadow-2xl",
+          "expectedRuleContains": "box-shadow:var(--shadow-2xl)"
+        }
+      ]
+    },
+    {
+      "id": "rule-fb85c91f2d14846a",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "box-sizing:content-box",
+          "expectedRuleContains": "box-sizing:content-box"
+        }
+      ]
+    },
+    {
+      "id": "rule-afba0d33467fc574",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "caret-color:transparent",
+          "expectedRuleContains": "caret-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rule-4d6d766d11fd57af",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "color:rgb(255,255,255)",
+          "expectedRuleContains": "color:rgb(255,255,255)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "color:#fff",
+          "expectedRuleContains": "color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "fg-blue-50",
+          "expectedRuleContains": "color:var(--color-blue-50)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "color:transparent",
+          "expectedRuleContains": "color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "color:inherit",
+          "expectedRuleContains": "color:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "color:light-dark(#000,#fff)",
+          "expectedRuleContains": "color:light-dark(#000,#fff)"
+        }
+      ]
+    },
+    {
+      "id": "rule-743a5f3fb61f7d88",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rule-5e304b15af0d12dd",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "rule-22b7c994c8342eaa",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "font-size:1rem",
+          "expectedRuleContains": "font-size:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "font-size:.5rem",
+          "expectedRuleContains": "font-size:.5rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "font-size:min(.625rem,calc(1.5625rem-.625rem))",
+          "expectedRuleContains": "font-size:min(.625rem, calc(1.5625rem - .625rem))"
+        }
+      ]
+    },
+    {
+      "id": "rule-3054317e5047ac84",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "gap:1rem",
+          "expectedRuleContains": "gap:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-afbc5c93d6ab3dc2",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "margin-block-start:1rem",
+          "expectedRuleContains": "margin-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-block-end:1rem",
+          "expectedRuleContains": "margin-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-block:1rem",
+          "expectedRuleContains": "margin-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-block-start:1rem",
+          "expectedRuleContains": "padding-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-block-end:1rem",
+          "expectedRuleContains": "padding-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-block:1rem",
+          "expectedRuleContains": "padding-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-inline-start:1rem",
+          "expectedRuleContains": "inset-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-inline-end:1rem",
+          "expectedRuleContains": "inset-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-inline:1rem",
+          "expectedRuleContains": "inset-inline:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-block-start:1rem",
+          "expectedRuleContains": "inset-block-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-block-end:1rem",
+          "expectedRuleContains": "inset-block-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "inset-block:1rem",
+          "expectedRuleContains": "inset-block:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "contain-intrinsic-inline-size:1rem",
+          "expectedRuleContains": "contain-intrinsic-inline-size:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "contain-intrinsic-block-size:1rem",
+          "expectedRuleContains": "contain-intrinsic-block-size:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-9c9ee122cd4a3bd3",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "margin-left:1rem",
+          "expectedRuleContains": "margin-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-right:1rem",
+          "expectedRuleContains": "margin-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-top:1rem",
+          "expectedRuleContains": "margin-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-bottom:1rem",
+          "expectedRuleContains": "margin-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin:1rem",
+          "expectedRuleContains": "margin:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin:1px",
+          "expectedRuleContains": "margin:1px"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-inline-start:1rem",
+          "expectedRuleContains": "margin-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-inline-end:1rem",
+          "expectedRuleContains": "margin-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "margin-inline:1rem",
+          "expectedRuleContains": "margin-inline:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-8a293bcf0d290eb7",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "outline-color:transparent",
+          "expectedRuleContains": "outline-color:transparent"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-gray-20",
+          "expectedRuleContains": "outline-color:var(--color-gray-20)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:1px|solid",
+          "expectedRuleContains": "outline:1px solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-style:solid",
+          "expectedRuleContains": "outline-style:solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-width:medium",
+          "expectedRuleContains": "outline-width:medium"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-width:thick",
+          "expectedRuleContains": "outline-width:thick"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-width:thin",
+          "expectedRuleContains": "outline-width:thin"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:1rem|solid",
+          "expectedRuleContains": "outline:1rem solid"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-style:none",
+          "expectedRuleContains": "outline-style:none"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline-style:auto",
+          "expectedRuleContains": "outline-style:auto"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:medium",
+          "expectedRuleContains": "outline:medium"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:unset",
+          "expectedRuleContains": "outline:unset"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:inherit",
+          "expectedRuleContains": "outline:inherit"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:initial",
+          "expectedRuleContains": "outline:initial"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:revert",
+          "expectedRuleContains": "outline:revert"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:revert-layer",
+          "expectedRuleContains": "outline:revert-layer"
+        },
+        {
+          "op": "inspectContains",
+          "className": "outline:auto|1px",
+          "expectedRuleContains": "outline:auto 1px"
+        }
+      ]
+    },
+    {
+      "id": "rule-acdce9660356cb28",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "overflow:visible",
+          "expectedRuleContains": "overflow:visible"
+        },
+        {
+          "op": "inspectContains",
+          "className": "overflow:hidden",
+          "expectedRuleContains": "overflow:hidden"
+        },
+        {
+          "op": "inspectContains",
+          "className": "overflow:overlay",
+          "expectedRuleContains": "overflow:overlay"
+        }
+      ]
+    },
+    {
+      "id": "rule-9895f7ecdc656497",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "padding-left:1rem",
+          "expectedRuleContains": "padding-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-right:1rem",
+          "expectedRuleContains": "padding-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-top:1rem",
+          "expectedRuleContains": "padding-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-bottom:1rem",
+          "expectedRuleContains": "padding-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding:1rem",
+          "expectedRuleContains": "padding:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-inline-start:1rem",
+          "expectedRuleContains": "padding-inline-start:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-inline-end:1rem",
+          "expectedRuleContains": "padding-inline-end:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "padding-inline:1rem",
+          "expectedRuleContains": "padding-inline:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-4a94dd75caf59534",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "scroll-margin-left:1rem",
+          "expectedRuleContains": "scroll-margin-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-margin-right:1rem",
+          "expectedRuleContains": "scroll-margin-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-margin-top:1rem",
+          "expectedRuleContains": "scroll-margin-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-margin-bottom:1rem",
+          "expectedRuleContains": "scroll-margin-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-margin:1rem",
+          "expectedRuleContains": "scroll-margin:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-2f0ff0b730818d53",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "scroll-padding-left:1rem",
+          "expectedRuleContains": "scroll-padding-left:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-padding-right:1rem",
+          "expectedRuleContains": "scroll-padding-right:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-padding-top:1rem",
+          "expectedRuleContains": "scroll-padding-top:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-padding-bottom:1rem",
+          "expectedRuleContains": "scroll-padding-bottom:1rem"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-padding:1rem",
+          "expectedRuleContains": "scroll-padding:1rem"
+        }
+      ]
+    },
+    {
+      "id": "rule-2f7b1c97993db611",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "scroll-snap-type:x",
+          "expectedRuleContains": "scroll-snap-type:x"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-snap-type:x",
+          "expectedRuleContains": "scroll-snap-type:x"
+        },
+        {
+          "op": "inspectContains",
+          "className": "scroll-snap-type:x|mandatory",
+          "expectedRuleContains": "scroll-snap-type:x mandatory"
+        }
+      ]
+    },
+    {
+      "id": "rule-5169d112e4169271",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "stroke-width:.75!",
+          "expectedRuleContains": "stroke-width:.75!important"
+        }
+      ]
+    },
+    {
+      "id": "rule-ff4cac57b6cc0943",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:clip",
+          "expectedRuleContains": "text-overflow:clip"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:clip",
+          "expectedRuleContains": "text-overflow:clip"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:ellipsis",
+          "expectedRuleContains": "text-overflow:ellipsis"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-overflow:ellipsis",
+          "expectedRuleContains": "text-overflow:ellipsis"
+        }
+      ]
+    },
+    {
+      "id": "rule-bc7c658b17e46149",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "-webkit-text-stroke-width:thin",
+          "expectedRuleContains": "-webkit-text-stroke-width:thin"
+        }
+      ]
+    },
+    {
+      "id": "rule-081769c168f88151",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "text-wrap:wrap",
+          "expectedRuleContains": "text-wrap:wrap"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-wrap:nowrap",
+          "expectedRuleContains": "text-wrap:nowrap"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-wrap:balance",
+          "expectedRuleContains": "text-wrap:balance"
+        },
+        {
+          "op": "inspectContains",
+          "className": "text-wrap:pretty",
+          "expectedRuleContains": "text-wrap:pretty"
+        }
+      ]
+    },
+    {
+      "id": "rule-cb69eb9c0c7aad3d",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "fg-text-blue",
+          "expectedRuleContains": "color:var(--color-text-blue)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "-webkit-text-stroke-color:#fff",
+          "expectedRuleContains": "-webkit-text-stroke-color:#fff"
+        },
+        {
+          "op": "inspectContains",
+          "className": "-webkit-text-stroke-color:transparent",
+          "expectedRuleContains": "-webkit-text-stroke-color:transparent"
+        }
+      ]
+    },
+    {
+      "id": "rule-9e6b271a6d859a81",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "transform-box:content-box",
+          "expectedRuleContains": "transform-box:content-box"
+        }
+      ]
+    },
+    {
+      "id": "rule-067aa7686b1c6ef6",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "w-sm",
+          "expectedRuleContains": "width:var(--container-sm)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "width:25%",
+          "expectedRuleContains": "width:25%"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-3xs",
+          "expectedRuleContains": "width:var(--container-3xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-2xs",
+          "expectedRuleContains": "width:var(--container-2xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-xs",
+          "expectedRuleContains": "width:var(--container-xs)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-sm",
+          "expectedRuleContains": "width:var(--container-sm)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-md",
+          "expectedRuleContains": "width:var(--container-md)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-lg",
+          "expectedRuleContains": "width:var(--container-lg)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-xl",
+          "expectedRuleContains": "width:var(--container-xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-2xl",
+          "expectedRuleContains": "width:var(--container-2xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-3xl",
+          "expectedRuleContains": "width:var(--container-3xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-4xl",
+          "expectedRuleContains": "width:var(--container-4xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-5xl",
+          "expectedRuleContains": "width:var(--container-5xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-6xl",
+          "expectedRuleContains": "width:var(--container-6xl)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "w-7xl",
+          "expectedRuleContains": "width:var(--container-7xl)"
+        }
+      ]
+    },
+    {
+      "id": "rule-81dae146767af74c",
+      "manifest": "default",
+      "steps": []
+    },
+    {
+      "id": "canonical-families-literals-unicode",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "padding-md",
+            "font-size-sm"
+          ],
+          "expectedCss": ""
+        },
+        {
+          "op": "inspectContains",
+          "className": "--色:red",
+          "expectedRuleContains": "--色:red"
+        },
+        {
+          "op": "inspectContains",
+          "className": "--a\\:b:red",
+          "expectedRuleContains": "--a\\:b:red"
+        },
+        {
+          "op": "inspectContains",
+          "className": "c\\00006flor:red",
+          "expectedRuleContains": "c\\00006flor:red"
+        },
+        {
+          "op": "inspectContains",
+          "className": "width:calc(1px-2e-3px)",
+          "expectedRuleContains": "width:calc(1px - 2e-3px)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "width:clamp(1px,2px+3px,4px)",
+          "expectedRuleContains": "width:clamp(1px, 2px + 3px, 4px)"
+        },
+        {
+          "op": "inspectContains",
+          "className": "content:'calc(1+2)'",
+          "expectedRuleContains": "content:'calc(1+2)'"
+        },
+        {
+          "op": "inspectContains",
+          "className": "display:block[data-id='a_b']",
+          "expectedRuleContains": "[data-id='a_b']"
+        },
+        {
+          "op": "inspectContains",
+          "className": "display:block:before",
+          "expectedRuleContains": ":before{display:block}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "display:block.foo_",
+          "expectedRuleContains": ".foo_{display:block}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "display:block:is(_foo)",
+          "expectedRuleContains": ":is(_foo){display:block}"
+        }
+      ]
+    }
+  ],
+  "compilerCases": [
+    {
+      "id": "compiler-prose-base-responsive-order",
+      "source": "@mixin --prose { @media (--sm) { :is(h1,h2) { margin-top:var(--spacing-2xl);scroll-margin-top:100px; } } :is(h1,h2) { margin-top:var(--spacing-lg);scroll-margin-top:60px; } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "",
+      "expectedMixins": [
+        {
+          "name": "--prose",
+          "body": [
+            {
+              "type": "condition",
+              "condition": "@media (width >= 52.125rem)",
+              "body": [
+                {
+                  "type": "rule",
+                  "selector": ":is(h1,h2)",
+                  "body": [
+                    {
+                      "type": "declaration",
+                      "property": "margin-top",
+                      "value": [
+                        {
+                          "type": "function",
+                          "name": "var",
+                          "value": [
+                            {
+                              "type": "text",
+                              "value": "--spacing-2xl"
+                            }
+                          ]
+                        }
+                      ],
+                      "source": {
+                        "file": "parity/compiler-prose-base-responsive-order.css",
+                        "range": {
+                          "start": 46,
+                          "end": 75
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 47
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 76
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "declaration",
+                      "property": "scroll-margin-top",
+                      "value": [
+                        {
+                          "type": "text",
+                          "value": "100px"
+                        }
+                      ],
+                      "source": {
+                        "file": "parity/compiler-prose-base-responsive-order.css",
+                        "range": {
+                          "start": 76,
+                          "end": 99
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 77
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 100
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rule",
+              "selector": ":is(h1,h2)",
+              "body": [
+                {
+                  "type": "declaration",
+                  "property": "margin-top",
+                  "value": [
+                    {
+                      "type": "function",
+                      "name": "var",
+                      "value": [
+                        {
+                          "type": "text",
+                          "value": "--spacing-lg"
+                        }
+                      ]
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-prose-base-responsive-order.css",
+                    "range": {
+                      "start": 118,
+                      "end": 146
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 119
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 147
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "declaration",
+                  "property": "scroll-margin-top",
+                  "value": [
+                    {
+                      "type": "text",
+                      "value": "60px"
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-prose-base-responsive-order.css",
+                    "range": {
+                      "start": 147,
+                      "end": 169
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 148
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 170
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "source": {
+            "file": "parity/compiler-prose-base-responsive-order.css",
+            "range": {
+              "start": 0,
+              "end": 174
+            },
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 175
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "compiler-native-condition-order",
+      "source": "@mixin --always { @contents; } .card { @media (width>=40rem) { @apply --always {display:grid;} } @apply --always {display:block;} @container panel (inline-size>30rem) { @apply --always {display:flex;} } @starting-style { @apply --always {display:none;} } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "@media (width>=40rem){.card{display:grid}}.card{display:block}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
+    },
+    {
+      "id": "compiler-managed-compose-order",
+      "source": "@mixin --btn { @media (--sm) { display:grid; } display:block; }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "",
+      "expectedMixins": [
+        {
+          "name": "--btn",
+          "body": [
+            {
+              "type": "condition",
+              "condition": "@media (width >= 52.125rem)",
+              "body": [
+                {
+                  "type": "declaration",
+                  "property": "display",
+                  "value": [
+                    {
+                      "type": "text",
+                      "value": "grid"
+                    }
+                  ],
+                  "source": {
+                    "file": "parity/compiler-managed-compose-order.css",
+                    "range": {
+                      "start": 31,
+                      "end": 43
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 32
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 44
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "declaration",
+              "property": "display",
+              "value": [
+                {
+                  "type": "text",
+                  "value": "block"
+                }
+              ],
+              "source": {
+                "file": "parity/compiler-managed-compose-order.css",
+                "range": {
+                  "start": 47,
+                  "end": 60
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 48
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 61
+                  }
+                }
+              }
+            }
+          ],
+          "source": {
+            "file": "parity/compiler-managed-compose-order.css",
+            "range": {
+              "start": 0,
+              "end": 63
+            },
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 64
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "compiler-root-size-condition-order",
+      "source": "@mixin --always { @contents; } .card { @media (width>=42rem) { @apply --always {display:grid;} } @media (width>=800px) { @apply --always {display:flex;} } }",
+      "baseManifest": "default",
+      "expectedGeneratedCss": "@media (width>=42rem){.card{display:grid}}@media (width>=800px){.card{display:flex}}"
+    },
+    {
+      "id": "compiler-variables-modes-dependencies",
+      "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "spacing-card",
+                "value": "12"
+              },
+              {
+                "type": "declaration",
+                "name": "color-blue-50",
+                "value": "#369"
+              },
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "var(--color-blue-50)"
+              }
+            ]
+          }
+        ],
+        "animationVariables": {
+          "color-brand": [
+            "#123"
+          ]
+        },
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "12"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 12,
+                "unit": ""
+              }
+            }
+          ],
+          "color": [
+            {
+              "name": "color-blue-50",
+              "key": "blue-50",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "#369"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "var(--color-blue-50)"
+                }
+              ],
+              "dependencies": [
+                "color-blue-50"
+              ],
+              "type": "string"
+            }
+          ]
+        },
+        "mixins": [
+          {
+            "name": "--light",
+            "body": [
+              {
+                "type": "rule",
+                "selector": "&:where(.light, .light *)",
+                "body": [
+                  {
+                    "type": "contents",
+                    "fallback": []
+                  }
+                ]
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-variables-modes-dependencies.css",
+              "range": {
+                "start": 0,
+                "end": 59
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 60
+                }
+              }
+            }
+          },
+          {
+            "name": "--dark",
+            "body": [
+              {
+                "type": "rule",
+                "selector": "&:where(.dark, .dark *)",
+                "body": [
+                  {
+                    "type": "contents",
+                    "fallback": []
+                  }
+                ]
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-variables-modes-dependencies.css",
+              "range": {
+                "start": 60,
+                "end": 116
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 61
+                },
+                "end": {
+                  "line": 1,
+                  "column": 117
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "compiler-reject-token-alias",
+      "source": "@theme { --color-brand: $color-blue-50;  }\n",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "color-brand",
+                "value": "$color-blue-50"
+              }
+            ]
+          }
+        ],
+        "variables": {
+          "color": [
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "$color-blue-50"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "compiler-static-animation",
+      "source": "@keyframes fade { to { opacity: 1; } }",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "keyframes": [
+          {
+            "id": "k96349710441b4a62-00000000",
+            "ownerId": "k80f5f797de67c9c7",
+            "name": "fade",
+            "text": "@keyframes fade { to { opacity: 1; } }",
+            "retained": true,
+            "source": {
+              "file": "parity/compiler-static-animation.css",
+              "range": {
+                "start": 0,
+                "end": 38
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 39
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "compiler-breakpoint-container-conditions",
+      "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "breakpoint-card",
+                "value": "777px"
+              },
+              {
+                "type": "declaration",
+                "name": "container-panel",
+                "value": "333px"
+              }
+            ]
+          }
+        ],
+        "variables": {
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "777px"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 777,
+                "unit": "px"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "333px"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 333,
+                "unit": "px"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "compiler-unitful-numeric-tokens",
+      "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "theme": [
+          {
+            "type": "rule",
+            "prelude": ":root,:host",
+            "children": [
+              {
+                "type": "declaration",
+                "name": "spacing-card",
+                "value": "1.5rem"
+              },
+              {
+                "type": "declaration",
+                "name": "radius-card",
+                "value": "8px"
+              },
+              {
+                "type": "declaration",
+                "name": "breakpoint-card",
+                "value": "48rem"
+              },
+              {
+                "type": "declaration",
+                "name": "container-panel",
+                "value": "512px"
+              },
+              {
+                "type": "declaration",
+                "name": "shadow-card",
+                "value": "1rem"
+              }
+            ]
+          }
+        ],
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "1.5rem"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 1.5,
+                "unit": "rem"
+              }
+            }
+          ],
+          "radius": [
+            {
+              "name": "radius-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "8px"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 8,
+                "unit": "px"
+              }
+            }
+          ],
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "48rem"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 48,
+                "unit": "rem"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "512px"
+                }
+              ],
+              "dependencies": [],
+              "type": "number",
+              "numeric": {
+                "value": 512,
+                "unit": "px"
+              }
+            }
+          ],
+          "shadow": [
+            {
+              "name": "shadow-card",
+              "key": "card",
+              "values": [
+                {
+                  "path": [
+                    ":root,:host"
+                  ],
+                  "value": "1rem"
+                }
+              ],
+              "dependencies": [],
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "compiler-variant-branches",
+      "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--motion-safe",
+            "body": [
+              {
+                "type": "condition",
+                "condition": "@media (prefers-reduced-motion:no-preference)",
+                "body": [
+                  {
+                    "type": "contents",
+                    "fallback": []
+                  }
+                ]
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-variant-branches.css",
+              "range": {
+                "start": 0,
+                "end": 85
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 86
+                }
+              }
+            }
+          },
+          {
+            "name": "--hocus",
+            "body": [
+              {
+                "type": "rule",
+                "selector": "&:is(:hover,:focus)",
+                "body": [
+                  {
+                    "type": "declaration",
+                    "property": "display",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "block"
+                      }
+                    ],
+                    "source": {
+                      "file": "parity/compiler-variant-branches.css",
+                      "range": {
+                        "start": 125,
+                        "end": 139
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 126
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 140
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "apply",
+                "name": "--motion-safe",
+                "arguments": [],
+                "contents": [
+                  {
+                    "type": "declaration",
+                    "property": "display",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "grid"
+                      }
+                    ],
+                    "source": {
+                      "file": "parity/compiler-variant-branches.css",
+                      "range": {
+                        "start": 166,
+                        "end": 179
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 167
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 180
+                        }
+                      }
+                    }
+                  }
+                ],
+                "source": {
+                  "file": "parity/compiler-variant-branches.css",
+                  "range": {
+                    "start": 143,
+                    "end": 163
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 144
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 164
+                    }
+                  }
+                }
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-variant-branches.css",
+              "range": {
+                "start": 86,
+                "end": 184
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 87
+                },
+                "end": {
+                  "line": 1,
+                  "column": 185
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "compiler-semantic-utility",
+      "source": "@mixin --card { display: grid; color: var(--color-primary); }",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--card",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "grid"
+                  }
+                ],
+                "source": {
+                  "file": "parity/compiler-semantic-utility.css",
+                  "range": {
+                    "start": 16,
+                    "end": 29
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 30
+                    }
+                  }
+                }
+              },
+              {
+                "type": "declaration",
+                "property": "color",
+                "value": [
+                  {
+                    "type": "function",
+                    "name": "var",
+                    "value": [
+                      {
+                        "type": "text",
+                        "value": "--color-primary"
+                      }
+                    ]
+                  }
+                ],
+                "source": {
+                  "file": "parity/compiler-semantic-utility.css",
+                  "range": {
+                    "start": 31,
+                    "end": 58
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 59
+                    }
+                  }
+                }
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-semantic-utility.css",
+              "range": {
+                "start": 0,
+                "end": 61
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 62
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "compiler-browser-manifest",
+      "source": "@mixin --btn { display: flex; color: red; }",
+      "baseManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "customMedia": {}
+      },
+      "expectedManifest": {
+        "version": 6,
+        "languageVersion": 16,
+        "mixins": [
+          {
+            "name": "--btn",
+            "body": [
+              {
+                "type": "declaration",
+                "property": "display",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "flex"
+                  }
+                ],
+                "source": {
+                  "file": "parity/compiler-browser-manifest.css",
+                  "range": {
+                    "start": 15,
+                    "end": 28
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 16
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 29
+                    }
+                  }
+                }
+              },
+              {
+                "type": "declaration",
+                "property": "color",
+                "value": [
+                  {
+                    "type": "text",
+                    "value": "red"
+                  }
+                ],
+                "source": {
+                  "file": "parity/compiler-browser-manifest.css",
+                  "range": {
+                    "start": 30,
+                    "end": 40
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 31
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 41
+                    }
+                  }
+                }
+              }
+            ],
+            "source": {
+              "file": "parity/compiler-browser-manifest.css",
+              "range": {
+                "start": 0,
+                "end": 43
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 44
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contract": "Master CSS 2.0 final semantic contract: named tokens, preserved native declarations, explicit queries and modes; fixed raw intent and whole-definition utility replacement",
+  "intentionalDifferences": [
+    "Named-token selectors use hyphens and explicit token priority metadata.",
+    "RC value-dependent shorthand routing migrates to its explicit longhand; native aliases preserve native properties.",
+    "Master length x converts using saved RC settings; ordinary decimal spelling is preserved.",
+    "Explicit var() replaces implicit references inside raw values.",
+    "Groups emit independently ordered rules for each value source, selector, layer and importance.",
+    "Existing static and enum names retain semantic ordering; declaration ordering uses emitted properties and values.",
+    "Require languageVersion: 3 on manifests and hydration.",
+    "Replace global mode settings with explicit ordered mode branches; do not infer default values or color-scheme.",
+    "Scope base variables to Document and ShadowRoot using :root,:host.",
+    "Preserve breakpoint and container units; reject historical inferred condition syntax.",
+    "Utility kinds and value matchers are removed. Existing token-only fixtures keep their declarations and discard their unused RC kind field.",
+    "Directive redesign: Manifest 2 and language 4 replace managed modes, inline/static values and keyframes with scoped theme trees and native CSS. Custom media queries replace inferred breakpoint conditions. Theme output preserves authored declaration order and all scopes; current compiler fixtures use explicit selectors and singular @utility. Historical source snapshots remain unchanged.",
+    "Preset refinement: Manifest 4 / language 6 remove fit/full/center/middle/round and implicit color role aliases; explicit property lists preserve their declarations. Theme keyframes are managed on demand; native keyframes remain delivered.",
+    "Language 7 removes executable variant definitions and their manifest indexes. Current cases use native custom media, explicit layer suffixes and ordered mixin contents; the frozen RC oracle remains unchanged."
+  ],
+  "languageVersion": 13
+}

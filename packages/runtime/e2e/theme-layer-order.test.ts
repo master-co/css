@@ -3,14 +3,11 @@ import init from './init'
 
 test('keeps default variable buckets before mode buckets when CSSOM buckets are inserted later', async ({ page }) => {
   await init(page, '', {
-    defaultMode: 'light',
-    modeTrigger: 'class',
-    modes: ['light', 'dark'],
     variables: [
-      { namespace: 'color', key: 'blue', value: '#66f', mode: 'light' },
-      { namespace: 'color', key: 'blue', value: '#44f', mode: 'dark' },
-      { namespace: 'color', key: 'accent', value: 'var(--color-blue)', dependencies: ['color-blue'] },
-      { namespace: 'color', key: 'accent', value: '#fed', mode: 'dark' }
+      { namespace: 'color', key: 'blue', values: [{ path: [".light"], value: '#66f' }] },
+      { namespace: 'color', key: 'blue', values: [{ path: [".dark"], value: '#44f' }] },
+      { namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: 'var(--color-blue)' }], dependencies: ['color-blue'] },
+      { namespace: 'color', key: 'accent', values: [{ path: [".dark"], value: '#fed' }] }
     ]
   })
 
@@ -22,11 +19,11 @@ test('keeps default variable buckets before mode buckets when CSSOM buckets are 
     })
     document.documentElement.classList.add('dark')
     const dependency = document.createElement('p')
-    dependency.className = 'fg:blue'
+    dependency.className = 'fg-blue'
     document.body.append(dependency)
     await waitForRuntimeRuleFlush()
     const target = document.createElement('p')
-    target.className = 'fg:accent'
+    target.className = 'fg-accent'
     document.body.append(target)
     await waitForRuntimeRuleFlush()
     const sheet = document.querySelector<HTMLStyleElement>('style#master-css')?.sheet

@@ -1,0 +1,59 @@
+import Overview from './components/Overview.mdx'
+
+## Overview [sr-only]
+<Overview />
+Master CSS lets teams compose CSS and project design rules in markup, trace the impact of changes, and check generated styles. It is built for interfaces that will be edited and maintained over time.
+
+---
+
+## What is Master CSS?
+Master CSS lets you write styling decisions in markup using CSS-like class strings, then generates the CSS those classes need.
+
+Use it when you want the style to stay close to the element while still keeping access to real CSS features such as tokens, selectors, media queries, cascade layers, and generated stylesheets.
+
+Each class is a small styling instruction:
+
+- `bg-surface-raised` gives the example panel a shared surface treatment.
+- `p-lg` applies padding from the spacing scale.
+- `fg-text-blue` uses a theme color.
+- `bg-blue-70:hover` changes the button background on hover.
+
+
+---
+
+## Write your first class
+Start with local styling in markup. This is enough for a first screen, prototype, or component draft:
+
+```html
+<section class="display:grid gap-md p-lg r-lg bg-blue-60 fg-white">
+  <h2 class="margin:0 font-2xl font-semibold">Dashboard</h2>
+  <p class="margin:0 fg-white/.8">A compact panel styled from its class list.</p>
+</section>
+```
+
+Master CSS reads those class names, validates them against the active project vocabulary, and emits CSS for the classes that are actually used.
+
+When a value or pattern becomes shared across the product, promote it later. Values that should change together belong in [theme tokens](/guide/theme); equal values can still represent different product decisions. Stable product roles can become [component classes](/guide/global-styles#component-classes).
+
+---
+
+After [Installation](/guide/installation), follow the [Syntax Tutorial](/guide/syntax-tutorial) to build one button with declarations, interaction states, responsive conditions and a project token.
+
+---
+
+## Choose how CSS is delivered
+Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or engine.
+
+Changing state does not require compiling CSS in the browser. Toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime when a playground, visual editor or deployed content introduces previously unknown class names. Server pre-rendering and progressive delivery remain available for those specific needs; see [Rendering Modes](/guide/rendering-modes).
+
+Generated CSS, syntax diagnostics and dependency reports provide different kinds of evidence. They do not establish the final appearance, interaction behavior or accessibility of a page.
+---
+
+## Keep going
+If you are new to Master CSS, read these next:
+
+1. [Installation](/guide/installation) to add Master CSS to a project.
+2. [Syntax Tutorial](/guide/syntax-tutorial) to build and verify your first interactive, responsive component.
+3. [Theme Tokens](/guide/theme) when you need shared values, [Variables and Modes](/guide/variables-and-modes) when those values need modes, and [Global Styles](/guide/global-styles) when repeated roles become components or utilities.
+4. [Rendering Modes](/guide/rendering-modes) when CSS delivery matters.
+5. [Language Service](/guide/language-service), [Code Linting](/guide/code-linting), and [AI Coding](/guide/ai-coding) when you want editor help, team checks, or AI-assisted styling.

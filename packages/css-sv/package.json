@@ -1,11 +1,14 @@
 {
-  "name": "@master/css-sv",
+  "name": "@master/css-svelte-addon",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Svelte CLI add-on for Master CSS",
@@ -32,6 +35,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },
@@ -43,11 +47,11 @@
     "provenance": true
   },
   "peerDependencies": {
-    "sv": "^0.16.1"
+    "sv": "^1.1.1"
   },
   "devDependencies": {
-    "@sveltejs/sv-utils": "0.3.0",
-    "sv": "^0.16.1",
-    "svelte": "^5.56.3"
+    "@sveltejs/sv-utils": "1.0.2",
+    "sv": "^1.1.1",
+    "svelte": "^5.57.2"
   }
 }

@@ -1,22 +1,36 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import type { PluginContext } from '../core'
+import type { MasterCSSVitePluginContext } from '../core'
 import {
   fromResolvedMasterCSSManifestId,
-  toResolvedMasterCSSManifestId
-} from '@master/css-integration/node'
-import { loadManifestJSON } from '@master/css-project/manifest'
-import { isCSSManifestRequest } from '@master/css-project/entries'
+  fromResolvedMasterCSSProgramId,
+  toResolvedMasterCSSManifestId,
+  toResolvedMasterCSSProgramId
+} from '@master/css-internal/node'
+import { createMasterCSSProgramModule } from '@master/css-internal/manifest-virtual-module'
+import {
+  isMasterCSSProgramRequest,
+  stripMasterCSSProgramQuery
+} from '@master/css-internal/program-module'
+import { compileRuntimeProgram } from '@master/css/node'
+import { compileProjectManifest } from '@master/css-compiler/project'
 import {
   isMasterCSSManifestRequest,
-  stripMasterCSSManifestQuery
-} from '@master/css-integration/manifest-module'
+  stripMasterCSSManifestQuery,
+  toProductionManifestJSON
+} from '@master/css-internal/manifest-module'
+import {
+  defaultBuildManifest,
+  isManifestStylesheetRequest
+} from '@master/css-internal/project'
+import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MANIFEST_ASSET_FILE,
   toBrowserManifestFacadeModule,
   toInlineManifestModule,
+  toServerManifestFileURL,
   toUniversalManifestFacadeModule
-} from '@master/css-integration/manifest-facade'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+} from '@master/css-internal/manifest-facade'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { includesFile } from '../utils/path'
 
 function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDevServer): ModuleNode[] {
@@ -25,33 +39,46 @@ function invalidateManifestModule(module: ModuleNode | undefined, server: ViteDe
   return [module]
 }
 
-function isProductionBuild(context: PluginContext) {
+interface ManifestPluginContext {
+  environment?: { config: { consumer?: string } }
+  emitFile?: (asset: { type: 'asset', name: string, source: string | Uint8Array }) => string
+}
+
+function isProductionBuild(context: MasterCSSVitePluginContext) {
   return context.config?.command === 'build'
 }
 
-function isServerBuild(context: PluginContext) {
+function isServerBuild(context: MasterCSSVitePluginContext, pluginContext: ManifestPluginContext) {
+  // An environment build shares one config across client and server output.
+  if (pluginContext.environment) return pluginContext.environment.config.consumer === 'server'
   return Boolean(context.config?.build.ssr)
 }
 
 function createManifestModule(
-  context: PluginContext,
-  pluginContext: { emitFile?: (asset: { type: 'asset', name: string, source: string }) => string },
-  json: string
+  context: MasterCSSVitePluginContext,
+  pluginContext: ManifestPluginContext,
+  manifest: MasterCSSManifest,
+  serverReferences: Set<string>
 ) {
-  if (!isProductionBuild(context) || !pluginContext.emitFile) return toInlineManifestModule(json)
+  if (!isProductionBuild(context)) return toInlineManifestModule(serializeMasterCSSManifest(manifest))
+  const json = toProductionManifestJSON(manifest)
+  if (!pluginContext.emitFile) return toInlineManifestModule(json)
   const referenceId = pluginContext.emitFile({
     type: 'asset',
     name: MANIFEST_ASSET_FILE,
     source: json
   })
   const urlExpression = `import.meta.ROLLUP_FILE_URL_${referenceId}`
-  return isServerBuild(context)
+  const server = isServerBuild(context, pluginContext)
+  if (server) serverReferences.add(referenceId)
+  return server
     ? toUniversalManifestFacadeModule(urlExpression)
     : toBrowserManifestFacadeModule(urlExpression)
 }
 
-export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
+export default function ManifestLoaderPlugin(context: MasterCSSVitePluginContext): Plugin {
   const cssManifestDependencies = new Map<string, string[]>()
+  const serverManifestReferences = new Set<string>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
     if (!allow) return
@@ -67,30 +94,46 @@ export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
     name: 'master-css:manifest-loader',
     enforce: 'pre',
     async resolveId(id, importer) {
-      if (!isMasterCSSManifestRequest(id)) return
-      const sourceId = stripMasterCSSManifestQuery(id)
+      // `?master-css-program` compiles the entry's manifest for browsers.
+      const program = isMasterCSSProgramRequest(id)
+      if (!program && !isMasterCSSManifestRequest(id)) return
+      const sourceId = program ? stripMasterCSSProgramQuery(id) : stripMasterCSSManifestQuery(id)
       const resolved = await this.resolve(sourceId, importer, { skipSelf: true })
-      if (resolved) return toResolvedMasterCSSManifestId(resolved.id)
+      if (!resolved) return
+      return program ? toResolvedMasterCSSProgramId(resolved.id) : toResolvedMasterCSSManifestId(resolved.id)
     },
     async load(id) {
-      const manifestPath = fromResolvedMasterCSSManifestId(id)
+      const programPath = fromResolvedMasterCSSProgramId(id)
+      const manifestPath = programPath ?? fromResolvedMasterCSSManifestId(id)
       if (!manifestPath) return
-      if (!isCSSManifestRequest(manifestPath)) {
-        throw new TypeError('Master CSS manifest queries only support CSS entry files.')
+      if (!isManifestStylesheetRequest(manifestPath)) {
+        throw new TypeError(`Master CSS ${programPath ? 'program' : 'manifest'} queries only support CSS entry files.`)
       }
-      const dependencies = new Set(collectStyleCSSDependencies(manifestPath, undefined, context.config?.root))
+      const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, {
+        projectDir: context.config?.root
+      }))
       for (const dependency of dependencies) {
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      const result = await loadManifestJSON(manifestPath)
+      const result = await compileProjectManifest({
+        root: context.config?.root,
+        entries: [manifestPath],
+        baseManifest: defaultBuildManifest
+      })
       for (const dependency of result.dependencies) {
         if (dependencies.has(dependency)) continue
         dependencies.add(dependency)
         this.addWatchFile(dependency)
       }
       watchManifestDependencies(manifestPath, [...dependencies])
-      return createManifestModule(context, this, result.json)
+      if (programPath) {
+        return (await createMasterCSSProgramModule(context, this, result.manifest, compileRuntimeProgram)).code
+      }
+      return createManifestModule(context, this, result.manifest, serverManifestReferences)
+    },
+    resolveFileUrl({ referenceId, relativePath, format }) {
+      if (serverManifestReferences.has(referenceId)) return toServerManifestFileURL(relativePath, format)
     },
     async handleHotUpdate({ file, server }) {
       let handled = false
@@ -100,10 +143,12 @@ export default function ManifestLoaderPlugin(context: PluginContext): Plugin {
         if (includesFile(dependencies, file)) queryManifestPaths.add(manifestPath)
       }
       for (const manifestPath of queryManifestPaths) {
-        const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSManifestId(manifestPath))
-        if (!queryModule) continue
-        handled = true
-        modules.push(...invalidateManifestModule(queryModule, server))
+        for (const queryId of [toResolvedMasterCSSManifestId(manifestPath), toResolvedMasterCSSProgramId(manifestPath)]) {
+          const queryModule = server.moduleGraph.getModuleById(queryId)
+          if (!queryModule) continue
+          handled = true
+          modules.push(...invalidateManifestModule(queryModule, server))
+        }
       }
       if (handled) return modules
     }

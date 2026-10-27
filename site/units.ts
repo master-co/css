@@ -6,7 +6,6 @@ const units = {
       'Integrations',
       'Agentic Workflows',
       'Authoring',
-      'Syntax Tutorial',
       'Fundamentals',
       'Design Foundations',
       'Customization',
@@ -32,12 +31,6 @@ const units = {
       'Accessibility'
     ]
   },
-  messages: {
-    categories: [
-      'Errors',
-      'Warnings',
-    ]
-  },
   blog: {
     categories: [
       'Major',
@@ -45,7 +38,6 @@ const units = {
     ]
   },
   examples: {},
-  play: {},
   roadmap: {},
   sponsor: {},
   brand: {},

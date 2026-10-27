@@ -1,0 +1,51 @@
+import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus luctus felis eget tellus tempus, in tempor nisl pretium. Sed ac dapibus lectus. Proin sed mauris sed risus mollis bibendum. Ut efficitur mi ut turpis efficitur, et tempor lorem volutpat. Quisque fringilla, turpis eu suscipit rhoncus, tortor enim malesuada risus, id pulvinar lorem felis et nunc. Nullam finibus augue at ipsum luctus iaculis. Aenean et ullamcorper lorem.
+
+<ArticleTOC data={toc}/>
+
+```bash action=install
+@master/css@latest
+```
+
+---
+
+## Framework Integration
+Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at dignissim mauris. Cras ac feugiat quam, eget rutrum mauris. Sed consequat placerat neque in dictum. Nullam maximus est ut quam ultrices fringilla. Sed vehicula neque non bibendum ullamcorper. Maecenas mattis scelerisque tortor, ac ullamcorper tellus eleifend a. Suspendisse bibendum nibh at metus tempus, ac dignissim sem viverra. Morbi a tortor tincidunt, aliquam lectus nec, convallis mauris. Fusce non lorem vitae mauris ultrices aliquam. Donec id risus id massa lacinia semper. Curabitur laoreet magna a fringilla congue.
+
+---
+
+## New Configuration API
+
+### Native keyframes
+Store complete [animation tokens](/reference/tokens/animate) and their native keyframes in the project CSS entry:
+```css name=index.css
+@prune native;
+@theme {
+  --animate-reveal: reveal .5s ease;
+}
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+```
+Apply the token with its matching class:
+```html
+<!-- @MARK animate-reveal -->
+<div class="animate-reveal"></div>
+```
+The class emits `animation: var(--animate-reveal)`. With pruning enabled, the token and keyframes
+are generated when used. This shorthand runs once because it omits a repetition
+count; preset animation tokens include `infinite` explicitly.
+
+---
+
+## Explicit Motion Declarations
+
+```html
+<div class="animation-play-state:paused">
+<div class="animation-fill-mode:forwards">
+<div class="animation-iteration-count:infinite">
+<div class="animation-direction:alternate">
+```
+To learn more, check out the [animation](/reference/tokens/animate) documentation.

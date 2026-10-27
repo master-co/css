@@ -1,4 +1,3 @@
-import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import {
   fixMasterCSSContent,
   lintMasterCSSContent,
@@ -8,20 +7,25 @@ import {
   type MasterCSSLintRuleId,
   type MasterCSSLintSourceDiagnostic,
   type MasterCSSLintSummary
-} from '@master/css-lint'
-import { loadProjectManifest } from '@master/css-project/manifest'
+} from '@master/css-tooling/lint'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
+import { loadProjectManifest } from '@master/css-compiler/project'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const REPORT_VERSION = 1
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
+const REPORT_VERSION = 4
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
 export interface LintOptions {
   fix?: boolean
   fixDryRun?: boolean
-  fixDirectives?: boolean
   format?: 'stylish' | 'json'
   maxWarnings?: string | number
   cwd?: string
@@ -48,8 +52,6 @@ interface SourceInput {
   content: string
   stdin?: boolean
 }
-
-type CSSWithNativeDeclarations = ReturnType<typeof createCSSWithNativeDeclarations>
 
 function normalizeSourcePatterns(specifiedSourcePaths?: string[]) {
   return specifiedSourcePaths?.length ? specifiedSourcePaths : DEFAULT_SOURCE_PATTERNS
@@ -127,9 +129,9 @@ function formatStylish(report: CLILintReport) {
 function outputReport(report: CLILintReport, format: 'stylish' | 'json') {
   if (format === 'stylish') {
     const output = formatStylish(report)
-    if (output) process.stdout.write(output)
+    if (output) process.stderr.write(output)
   } else {
-    console.log(JSON.stringify(report, null, 2))
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
   }
 }
 
@@ -143,7 +145,9 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
     }]
   }
   const sourcePatterns = normalizeSourcePatterns(specifiedSourcePaths)
-  return resolveSourcePaths(cwd, sourcePatterns, specifiedSourcePaths.length ? [] : DEFAULT_IGNORE_PATTERNS).map((source) => {
+  const explicit = specifiedSourcePaths.length > 0
+  const policy = new SourcePolicy(cwd)
+  return resolveSourcePaths(cwd, sourcePatterns, explicit ? [] : DEFAULT_IGNORE_PATTERNS).filter(source => policy.accepts(source, explicit)).map((source) => {
     const filePath = path.resolve(cwd, source)
     return {
       filePath,
@@ -154,31 +158,29 @@ function resolveSourceInputs(cwd: string, specifiedSourcePaths: string[], option
 
 function lintInputs(
   inputs: SourceInput[],
-  css: CSSWithNativeDeclarations,
-  rules: Record<MasterCSSLintRuleId, boolean>
+  rules: Record<MasterCSSLintRuleId, boolean>,
+  lintSession: MasterCSSToolingSession
 ) {
   return inputs.map((input) => lintMasterCSSContent({
     content: input.content,
     filePath: input.filePath,
-    css,
-    rules
+    rules,
+    lintSession
   })).filter((result) => result.diagnostics.length)
 }
 
 function applyFileFixes(
   inputs: SourceInput[],
-  css: CSSWithNativeDeclarations,
   rules: Record<MasterCSSLintRuleId, boolean>,
-  includeDirectiveFixes: boolean
+  lintSession: MasterCSSToolingSession
 ) {
   for (const input of inputs) {
     if (input.stdin) continue
     const fixed = fixMasterCSSContent({
       content: input.content,
       filePath: input.filePath,
-      css,
       rules,
-      includeDirectiveFixes
+      lintSession
     })
     if (fixed !== input.content) {
       fs.writeFileSync(input.filePath, fixed)
@@ -193,32 +195,45 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
   const exitCode = options.exitCode || 'diagnostics'
   const rules = resolveMasterCSSLintRules(options.rules)
   const inputs = resolveSourceInputs(cwd, specifiedSourcePaths, options)
-  let manifest: CLILintReport['manifest']
-  let files: MasterCSSLintFileResult[]
+  let manifestResult: Awaited<ReturnType<typeof loadProjectManifest>>
 
   try {
-    const manifestResult = await loadProjectManifest(cwd)
-    const css = createCSSWithNativeDeclarations(manifestResult.manifest)
-    manifest = {
-      status: 'loaded',
-      entries: manifestResult.entries,
-      diagnostics: []
-    }
-    files = lintInputs(inputs, css, rules)
-    if (options.fix && !options.fixDryRun) {
-      applyFileFixes(inputs, css, rules, Boolean(options.fixDirectives))
-      files = lintInputs(inputs, css, rules)
-    }
+    manifestResult = await loadProjectManifest({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
   } catch (error) {
     const diagnostic = createManifestDiagnostic(cwd, error)
-    manifest = {
+    const manifest: CLILintReport['manifest'] = {
       status: 'error',
       entries: [],
       diagnostics: [diagnostic]
     }
-    files = [createManifestFileResult(cwd, [diagnostic])]
+    const report = createReport(cwd, manifest, [createManifestFileResult(cwd, [diagnostic])])
+    outputReport(report, format)
+    if (exitCode !== 'never') process.exitCode = 1
+    return report
   }
 
+  const lintSession = createToolingSessionSync({
+    manifest: manifestResult.manifest
+  })
+  let files: MasterCSSLintFileResult[]
+  try {
+    files = lintInputs(inputs, rules, lintSession)
+    if (options.fix && !options.fixDryRun) {
+      applyFileFixes(inputs, rules, lintSession)
+      files = lintInputs(inputs, rules, lintSession)
+    }
+  } finally {
+    lintSession.dispose()
+  }
+
+  const manifest: CLILintReport['manifest'] = {
+    status: 'loaded',
+    entries: [...manifestResult.entries],
+    diagnostics: []
+  }
   const report = createReport(cwd, manifest, files)
   outputReport(report, format)
 

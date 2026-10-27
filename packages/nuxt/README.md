@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.nuxt">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-nuxt">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-nuxt?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,7 +55,7 @@
 ## Installation
 
 ```bash
-npm install @master/css.nuxt
+npm install @master/css-nuxt
 ```
 
 ## Usage
@@ -63,7 +63,7 @@ npm install @master/css.nuxt
 ```ts
 export default defineNuxtConfig({
   modules: [
-    '@master/css.nuxt'
+    '@master/css-nuxt'
   ]
 })
 ```
@@ -76,18 +76,18 @@ Import the default stylesheet from a global Vue style block:
 </style>
 ```
 
-The default `progressive` mode integrates Nuxt SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configuration.
+The default `static` mode generates CSS from source files without injecting the browser runtime. Choose `progressive` to combine Nitro server rendering with browser runtime hydration across Nuxt SSR, SSG, ISR, and Hybrid rendering strategies. The runtime downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered.
 
-In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
+In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
 
 ## Options
 
-The module options extend `@master/css.vite` options.
+The module options extend `@master/css-vite` options.
 
 ```ts
 export default defineNuxtConfig({
   modules: [
-    ['@master/css.nuxt', {
+    ['@master/css-nuxt', {
       mode: 'progressive'
     }]
   ]
@@ -98,9 +98,9 @@ Default options:
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `mode` | `'progressive'` | Nuxt defaults to progressive rendering. |
-| `scanner` | `undefined` | Scanner options passed through to the shared Vite pipeline. |
-| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
-| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+| `enabled` | `true` | Enables the module. |
+| `mode` | `'static'` | Selects static, pre-render, runtime, or progressive rendering. |
+| `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
+| `runtime` | `{ enabled: false }` | Enabled by runtime/progressive modes; optional FOUC protection. Explicit enabled values must agree with the mode. |
 
 See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs) for a full project setup.

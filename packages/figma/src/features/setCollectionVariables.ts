@@ -1,6 +1,6 @@
 import parseColorValue from '../utils/parse-color-value'
 import getVariableCollections from './getVariableCollections'
-import notify from '../utils/notify'
+import variableImportData from '../utils/variable-import-data'
 import type { VariableData } from '../types/variable-data'
 
 export interface SetCollectionVariablesOptions {
@@ -9,103 +9,134 @@ export interface SetCollectionVariablesOptions {
   variableData: VariableData
 }
 
-function isColorValue(value: string) {
+function literalType(value: string | number | boolean): VariableResolvedDataType {
+  if (typeof value === 'number') return 'FLOAT'
+  if (typeof value === 'boolean') return 'BOOLEAN'
   try {
     parseColorValue(value)
-    return true
+    return 'COLOR'
   } catch {
-    return false
+    return 'STRING'
   }
 }
 
-export default async function setCollectionVariables(options: SetCollectionVariablesOptions) {
-  if (!options.variableData.variables && !options.variableData.modes) {
-    figma.notify('No variables or modes found in variable data', { error: true })
-    return
-  }
-  let collection: VariableCollection | null | undefined
-  if (options.varCollId) {
-    collection = await figma.variables.getVariableCollectionByIdAsync(options.varCollId)
-  } else {
-    const collections = await figma.variables.getLocalVariableCollectionsAsync()
-    collection = collections.find(c => c.name === options.newVarCollName)
-    if (!collection) {
-      collection = figma.variables.createVariableCollection(options.newVarCollName)
-      figma.ui.postMessage({ type: 'getVariableCollections', data: await getVariableCollections() }, { origin: '*' })
-    }
-  }
-  if (!collection) {
-    figma.notify('Failed to create variable collection')
-    return
-  }
-  const modeIdByName = collection.modes.reduce((acc, mode) => {
-    acc[mode.name.toLowerCase()] = mode.modeId
-    return acc
-  }, {} as Record<string, string>)
-  const existingVariables = await figma.variables.getLocalVariablesAsync()
-  // const crossCollNameVarMap = new Map(existingVariables
-  //     .map(v => [v.name, v]))
-  const currentNameVarMap = new Map(existingVariables
-    .filter(v => v.variableCollectionId === collection.id)
-    .map(v => [v.name, v]))
+function cssName(name: string) {
+  return name.toLocaleLowerCase().replace(/ /g, '-').replace(/\//g, '-')
+}
 
-  const allModes = { default: options.variableData.variables, ...options.variableData.modes }
-  for (const [modeName, variables] of Object.entries(allModes)) {
-    let modeId = modeName === 'default' ? collection.defaultModeId : modeIdByName[modeName.toLowerCase()]
-    if (!modeId) {
-      modeId = collection.addMode(modeName)
-    }
-    const addSection = (key: string, sectionOrValue: any, currentName = '') => {
-      const fullName = [currentName, key].filter(Boolean).join('/')
-      if (typeof sectionOrValue === 'object') {
-        for (const [sectionKey, section] of Object.entries(sectionOrValue)) {
-          addSection(sectionKey, section, fullName)
-        }
-      } else {
-        const value = sectionOrValue
-        let valueType: VariableResolvedDataType = 'STRING'
-        if (typeof value === 'number') {
-          valueType = 'FLOAT'
-        } else if (typeof value === 'string') {
-          if (isColorValue(value)) {
-            valueType = 'COLOR'
-          }
-        }
-        let variable = currentNameVarMap.get(fullName)
-        if (!variable) {
-          variable = figma.variables.createVariable(
-            fullName,
-            collection,
-            valueType
-          )
-        }
-        currentNameVarMap.set(fullName, variable)
-        if (typeof value === 'string' && value.startsWith('$')) {
-          console.warn(`Variable alias "${value}" is not supported yet`)
-          notify(`⚠️ Variable alias "${value}" is not set. Not yet supported.`)
-          // const alias = currentNameVarMap.get(fullName) || existingVariables.find(v => v.name === fullName)
-          // if (alias) {
-          //     variable.setValueForMode(modeId, {
-          //         type: 'VARIABLE_ALIAS',
-          //         id: alias.id,
-          //     })
-          // } else {
-          //     console.warn(`Alias target "${fullName}" not found`)
-          // }
-        } else if (valueType === 'COLOR') {
-          const rgba = parseColorValue(value)
-          try {
-            variable.setValueForMode(modeId, rgba)
-          } catch (e) {
-            figma.notify(`Failed to set color value for variable "${fullName}": ${e}`, { error: true })
-          }
-        } else {
-          variable.setValueForMode(modeId, value)
-        }
+export default async function setCollectionVariables(options: SetCollectionVariablesOptions) {
+  const plan = variableImportData(options.variableData)
+  if (!plan.entries.length && !plan.modes.length) throw new Error('No variables or modes found in variable data')
+  let collection = options.varCollId
+    ? await figma.variables.getVariableCollectionByIdAsync(options.varCollId)
+    : (await figma.variables.getLocalVariableCollectionsAsync()).find(c => c.name === options.newVarCollName)
+  if (options.varCollId && !collection) throw new Error('Variable collection not found')
+  const existingVariables = await figma.variables.getLocalVariablesAsync()
+  const variables = new Map(existingVariables
+    .filter(v => v.variableCollectionId === collection?.id)
+    .map(v => [v.name, v]))
+  const entriesByName = new Map<string, typeof plan.entries>()
+  for (const entry of plan.entries) {
+    const entries = entriesByName.get(entry.name) ?? []
+    entries.push(entry)
+    entriesByName.set(entry.name, entries)
+  }
+  const names = new Set([...variables.keys(), ...entriesByName.keys()])
+  const aliasTarget = (value: string | number | boolean) => {
+    if (typeof value !== 'string') return
+    const match = /^var\(--([^()]+)\)$/.exec(value.trim())
+    if (!match) {
+      if (value.startsWith('$') || value.trim().startsWith('var(')) {
+        throw new Error(`Unsupported Figma variable alias: ${value}`)
       }
+      return
     }
-    for (const [sectionKey, section] of Object.entries(variables ?? {})) {
-      addSection(sectionKey, section)
+    const targets = [...names].filter(name => cssName(name) === match[1])
+    if (targets.length !== 1) throw new Error(`Missing or ambiguous Figma variable alias: ${value}`)
+    return targets[0]
+  }
+  const types = new Map<string, VariableResolvedDataType>()
+  // Literal values anchor the type even when aliases point in opposite
+  // directions in different modes (which is not a per-mode alias cycle).
+  for (const name of names) {
+    let type = variables.get(name)?.resolvedType
+    for (const { value } of entriesByName.get(name) ?? []) {
+      if (aliasTarget(value)) continue
+      const next = literalType(value)
+      if (type && type !== next) throw new Error(`Variable type mismatch for "${name}": ${type} and ${next}`)
+      type = next
     }
+    if (type) types.set(name, type)
+  }
+  const visiting = new Set<string>()
+  const typeFor = (name: string): VariableResolvedDataType => {
+    const cached = types.get(name)
+    if (cached) return cached
+    if (visiting.has(name)) throw new Error(`Circular Figma variable alias: ${name}`)
+    visiting.add(name)
+    const existing = variables.get(name)?.resolvedType
+    let type = existing
+    for (const { value } of entriesByName.get(name) ?? []) {
+      const target = aliasTarget(value)
+      const next = target ? typeFor(target) : literalType(value)
+      if (type && type !== next) throw new Error(`Variable type mismatch for "${name}": ${type} and ${next}`)
+      type = next
+    }
+    visiting.delete(name)
+    if (!type) throw new Error(`Cannot determine variable type: ${name}`)
+    types.set(name, type)
+    return type
+  }
+  // Validate every mode, type and alias before creating or changing Figma data.
+  for (const [name, entries] of entriesByName) {
+    for (const { value } of entries) {
+      const target = aliasTarget(value)
+      if (target && typeFor(target) !== typeFor(name)) throw new Error(`Variable type mismatch for "${name}"`)
+    }
+    typeFor(name)
+  }
+  for (const mode of plan.modes) {
+    const visited = new Set<string>()
+    const active = new Set<string>()
+    const check = (name: string) => {
+      if (active.has(name)) throw new Error(`Circular Figma variable alias: ${name} in ${mode}`)
+      if (visited.has(name)) return
+      active.add(name)
+      const entries = entriesByName.get(name) ?? []
+      const modeEntry = [...entries].reverse().find(entry => entry.mode.toLowerCase() === mode.toLowerCase())
+      const defaultEntry = [...entries].reverse().find(entry => entry.mode.toLowerCase() === 'default')
+      const modeId = collection?.modes.find(item => item.name.toLowerCase() === mode.toLowerCase())?.modeId
+      const values = variables.get(name)?.valuesByMode
+      const value = modeEntry?.value ?? (modeId ? values?.[modeId] : undefined)
+        ?? defaultEntry?.value ?? (collection ? values?.[collection.defaultModeId] : undefined)
+      const target = typeof value === 'object' && value && 'type' in value && value.type === 'VARIABLE_ALIAS'
+        ? existingVariables.find(variable => variable.id === value.id)?.name
+        : typeof value === 'string' ? aliasTarget(value) : undefined
+      if (target) check(target)
+      active.delete(name)
+      visited.add(name)
+    }
+    for (const name of entriesByName.keys()) check(name)
+  }
+  const createdCollection = !collection
+  collection ??= figma.variables.createVariableCollection(options.newVarCollName)
+  const modeIds = new Map(collection.modes.map(mode => [mode.name.toLowerCase(), mode.modeId]))
+  modeIds.set('default', collection.defaultModeId)
+  for (const mode of plan.modes) {
+    if (!modeIds.has(mode.toLowerCase())) modeIds.set(mode.toLowerCase(), collection.addMode(mode))
+  }
+  for (const name of entriesByName.keys()) {
+    if (!variables.has(name)) variables.set(name, figma.variables.createVariable(name, collection, typeFor(name)))
+  }
+  for (const { name, mode, value } of plan.entries) {
+    const variable = variables.get(name)!
+    const target = aliasTarget(value)
+    const figmaValue = target
+      ? { type: 'VARIABLE_ALIAS' as const, id: variables.get(target)!.id }
+      : typeFor(name) === 'COLOR' ? parseColorValue(value as string) : value
+    variable.setValueForMode(modeIds.get(mode.toLowerCase())!, figmaValue)
+  }
+  if (createdCollection) {
+    figma.ui.postMessage({ type: 'getVariableCollections', data: await getVariableCollections() }, { origin: '*' })
   }
 }

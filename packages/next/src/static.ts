@@ -1,47 +1,67 @@
-import CSSScanner, { type ScannerOptions } from '@master/css-scanner'
-import defaultScannerOptions from '@master/css-scanner/options'
+import { captureStaticSnapshot, type StaticSnapshot } from './static-snapshot'
+import { createStaticQueue } from './static-queue'
+import { readStaticPublication, staticOutputsMatch, staticProducerFingerprint, writeStaticPublication } from './static-cache'
+import { captureStaticStyleInput, loadStaticStyleInputs, type StaticStyleInput } from './static-inputs'
+import { serializeStaticOptions, deserializeStaticOptions, staticFingerprint } from './static-state'
+import { withStaticPublicationLock } from './static-lock'
+import { publishStaticStylesheets, publishFile } from './static-publication'
 import {
-  createStyleCSSHostSource,
-  createExtractedCSS as createStylesheetStaticCSS,
-  isMasterCSSPackageStyleFile,
-  isStyleCSSRequest,
-  removeMasterStyleDirectives,
-  resolveMasterStyleSource,
-  registerStyleCSSSource,
-  type StyleCSSSources
-} from '@master/css-stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+  defaultScannerOptions,
+  MasterCSSScanner,
+  type MasterCSSScannerOptions,
+  type MasterCSSScannerConfiguration
+} from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-internal/project'
+import {
+  createStylesheetCollection,
+  type MasterCSSStylesheetCollection
+} from '@master/css-compiler/stylesheet'
+import {
+  composeStylesheetHostSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, relative, resolve } from 'node:path'
-import { resolveOptions, type Options, type ResolvedOptions } from './options'
+import { basename, dirname, relative, resolve } from 'node:path'
+import { resolveOptions, type MasterCSSNextOptions, type ResolvedMasterCSSNextOptions } from './options'
 
-const STATE_VERSION = 2
+const STATE_VERSION = 3
 const DEFAULT_STATIC_OUTPUT = '.master/next.css'
 const DEFAULT_STATE_FILE = 'next-static-state.json'
 const DEFAULT_SCAN_LOG_FILE = 'next-static-scanned-sources.log'
 
 export interface StaticState {
-  version: 2
+  version: 3
+  fingerprint: string
   projectDir: string
   outputPath: string
   scanLogPath: string
   options: {
-    scannerOptions: ScannerOptions
+    scanner: MasterCSSScannerConfiguration
     debug: boolean
+    pruneNativeCSS: boolean
   }
 }
 
 interface StaticSession {
-  scanner: CSSScanner
-  styleCSSSources: StyleCSSSources
-  ready: Promise<CSSScanner>
-  write: () => Promise<void>
+  pruneNativeCSS: boolean
+  scanner: MasterCSSScanner
+  stylesheets: MasterCSSStylesheetCollection
+  ready: Promise<MasterCSSScanner>
+  write: (input?: StaticStyleInput) => Promise<void>
+  publicationDependencies: readonly string[]
+  outputFiles: readonly string[]
+  sourceDependencies: readonly string[]
+  preprocessorDependencies: readonly string[]
+  stylesheetFingerprint?: string
+  policyFingerprint?: string
+  requiresRediscovery?: boolean
 }
 
 interface PrepareNextStaticOptions {
   projectDir?: string
   watch?: boolean
+  distDir?: string
 }
 
 declare global {
@@ -52,16 +72,11 @@ function getSessions() {
   return globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ ??= new Map()
 }
 
-function resolveScannerOptions(options: ResolvedOptions): ScannerOptions {
-  const exclude = [
-    ...(defaultScannerOptions.exclude || []),
-    '**/node_modules/**',
-    ...(options.scannerOptions.exclude || [])
-  ]
+function resolveScannerOptions(options: ResolvedMasterCSSNextOptions): MasterCSSScannerOptions {
   return {
-    ...options.scannerOptions,
-    exclude: [...new Set(exclude)],
-    verbose: options.scannerOptions.verbose ?? (options.debug ? 1 : 0)
+    manifest: defaultBuildManifest,
+    ...options.scanner,
+    verbose: options.scanner.verbose ?? (options.debug ? 1 : 0)
   }
 }
 
@@ -73,99 +88,172 @@ function toCSSImportPath(fromFile: string, toFile: string) {
   return importPath
 }
 
-export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string) {
+export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string, dependencies: readonly string[] = []) {
   const state = readStaticState(statePath)
-  if (!isStyleCSSRequest(resourcePath)) return source
-  if (!resolveMasterStyleSource(resourcePath, source, state.projectDir)) return source
-  if (isMasterCSSPackageStyleFile(resourcePath, state.projectDir)) {
-    return removeMasterStyleDirectives(source).code
+  const resolution = resolveStylesheetSync(resourcePath, source, {
+    projectDir: state.projectDir,
+    // Classify on the import graph. Flattening refuses shapes this loader then
+    // compiles happily through the delivery path, and misses local directives
+    // an imported file declares.
+    preserveImports: true
+  })
+  if (!resolution || (resolution.kind !== 'entry' && resolution.kind !== 'master-package-entry')) return source
+  if (resolution.kind === 'master-package-entry') {
+    return resolution.outputSource
   }
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
+    pruneNativeCSS: state.options.pruneNativeCSS,
     debug: state.options.debug
   })
+  const input = await captureStaticStyleInput(resourcePath, source, dependencies)
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
-  await registerStyleCSSSource(session.scanner, session.styleCSSSources, resourcePath, source, {
-    projectDir: state.projectDir
-  })
-  syncScannerResetDependencies(session)
-  await session.write()
-  return createStyleCSSHostSource(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
+  await session.write(input)
+  return composeStylesheetHostSync(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
 
-async function createStaticCSS(projectDir: string, session: StaticSession) {
-  return createStylesheetStaticCSS({
+async function publishStaticCSS(projectDir: string, outputPath: string, session: StaticSession, verifySnapshot: (dependencies: readonly string[]) => Promise<void>, repair?: ReadonlyMap<string, string>) {
+  const result = await publishStaticStylesheets(outputPath, delivery => session.stylesheets.compose({
     scanner: session.scanner,
-    styleCSSSources: session.styleCSSSources,
-    projectDir
+    baseManifest: session.scanner.css.manifest,
+    projectDir,
+    pruneNativeCSS: session.pruneNativeCSS,
+    delivery
+  }), verifySnapshot, repair)
+  session.publicationDependencies = result.dependencies
+  session.outputFiles = result.outputFiles
+  syncScannerResetDependencies(session)
+  return result
+}
+
+function stylesheetFingerprint(snapshot: StaticSnapshot, session: StaticSession, inputs: Record<string, StaticStyleInput>) {
+  return staticFingerprint({
+    entries: snapshot.entries, resolutions: snapshot.resolutions, inputs,
+    manifest: session.scanner.css.manifest,
+    files: [...new Set([...snapshot.entries, ...snapshot.resolutions.flatMap(item => item.dependencies), ...Object.keys(inputs), ...session.stylesheets.snapshot().dependencies, ...session.preprocessorDependencies])].sort()
+      .map(file => [file, snapshot.hashes.get(file) ?? null])
   })
 }
 
-async function registerStyleCSSEntries(projectDir: string, session: StaticSession) {
-  session.styleCSSSources.clear()
-  for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-    await registerStyleCSSSource(session.scanner, session.styleCSSSources, entry, await readFile(entry, 'utf8'), {
-      projectDir
+async function registerStylesheetEntries(projectDir: string, session: StaticSession, inputs: Record<string, StaticStyleInput>, snapshot: StaticSnapshot) {
+  const fingerprint = stylesheetFingerprint(snapshot, session, inputs)
+  if (session.stylesheetFingerprint === fingerprint) return
+  session.stylesheetFingerprint = undefined
+  session.stylesheets.clear()
+  session.requiresRediscovery = snapshot.resolutions.some(resolution => resolution.hasReferences)
+  for (const entry of new Set([...snapshot.entries, ...Object.keys(inputs)])) {
+    const source = inputs[entry]?.source ?? snapshot.contents.get(entry)?.toString('utf8')
+    if (source === undefined) throw new SnapshotChangedError()
+    const result = await session.stylesheets.register(session.scanner, entry, source, {
+      baseManifest: session.scanner.css.manifest, projectDir, pruneNativeCSS: session.pruneNativeCSS
     })
+    // Explicit source globs can introduce inputs outside the automatic inventory.
+    // Until their discovery is shared by the compiler, never reuse that publication.
+    session.requiresRediscovery ||= result.directiveSummary.extractionPolicy.include.length > 0
   }
   syncScannerResetDependencies(session)
 }
 
 function getStyleDependencyPaths(session: StaticSession) {
-  return Array.from(session.styleCSSSources.values()).flatMap((source) => source.dependencies)
+  return [...session.stylesheets.snapshot().dependencies, ...session.publicationDependencies, ...session.preprocessorDependencies]
 }
 
 function syncScannerResetDependencies(session: StaticSession) {
   session.scanner.resetDependencies = [...new Set(getStyleDependencyPaths(session))]
 }
 
-async function writeStaticCSS(outputPath: string, cssText: string) {
-  await mkdir(dirname(outputPath), { recursive: true })
-  try {
-    if (await readFile(outputPath, 'utf-8') === cssText) {
-      return false
-    }
-  } catch {
-    // File does not exist yet.
-  }
-  await writeFile(outputPath, cssText)
-  return true
+function scanProjectSources(projectDir: string, session: StaticSession, inputs: Record<string, StaticStyleInput>) {
+  return captureStaticSnapshot(projectDir, session.scanner, getStyleDependencyPaths(session), inputs)
 }
 
-function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): StaticSession {
-  const scanner = new CSSScanner(resolveScannerOptions(options), projectDir)
-  const styleCSSSources: StyleCSSSources = new Map()
-  let writeChain = Promise.resolve()
+function createSession(projectDir: string, outputPath: string, options: ResolvedMasterCSSNextOptions): StaticSession {
+  const scanner = new MasterCSSScanner(resolveScannerOptions(options), projectDir)
+  const stylesheets = createStylesheetCollection()
+  const configuration = staticFingerprint(resolveScannerStateOptions(options))
+  const producer = staticProducerFingerprint()
   let session: StaticSession
-  const write = () => {
-    writeChain = writeChain
-      .then(async () => {
-        const cssText = await createStaticCSS(projectDir, session)
-        await writeStaticCSS(outputPath, cssText)
-      })
-      .catch((error: unknown) => {
-        console.error('[@master/css.next] failed to write static CSS:', error)
-      })
-    return writeChain
-  }
+  const write = createStaticQueue<StaticStyleInput>(async (input, captured) => {
+    await withStaticPublicationLock(resolve(dirname(outputPath), 'publish.lock'), async () => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const assertCurrentConfiguration = () => {
+            const statePath = resolveStaticStatePath(outputPath)
+            if (staticFingerprint(resolveScannerStateOptions(options)) !== configuration
+              || (existsSync(statePath) && readStaticState(statePath).fingerprint !== configuration)) throw new Error('Master CSS configuration changed during compilation. Retry with the current static state.')
+          }
+          assertCurrentConfiguration()
+          const inputs = await loadStaticStyleInputs(outputPath, configuration, input)
+          const record = await readStaticPublication(outputPath, producer)
+          session.preprocessorDependencies = [...new Set(Object.values(inputs).flatMap(input => [input.file, ...Object.keys(input.dependencies)]))]
+          if (record) session.publicationDependencies = [...new Set([...session.publicationDependencies, ...record.dependencies])]
+          // Close this notification batch before reading: later requests need a fresh round.
+          captured()
+          let before = await scanProjectSources(projectDir, session, inputs)
+          const policyFingerprint = staticFingerprint([...before.hashes].filter(([file]) => basename(file) === '.gitignore'))
+          if (session.policyFingerprint !== undefined && session.policyFingerprint !== policyFingerprint) {
+            // SourcePolicy's metadata cache must not hide same-mtime ignore edits.
+            await session.scanner.reset()
+            session.stylesheets.clear()
+            session.stylesheetFingerprint = undefined
+            before = await scanProjectSources(projectDir, session, inputs)
+          }
+          session.policyFingerprint = staticFingerprint([...before.hashes].filter(([file]) => basename(file) === '.gitignore'))
+          const identity = (snapshot: StaticSnapshot) => staticFingerprint({ producer, configuration, inputs, snapshot: snapshot.fingerprint })
+          if (record?.reusable && record.fingerprint === identity(before) && await staticOutputsMatch(record)) {
+            assertCurrentConfiguration()
+            const verified = await scanProjectSources(projectDir, session, inputs)
+            if (before.fingerprint !== verified.fingerprint) throw new SnapshotChangedError()
+            assertCurrentConfiguration()
+            session.sourceDependencies = verified.sources
+            session.outputFiles = record.outputs.map(([file]) => file)
+            syncScannerResetDependencies(session)
+            return
+          }
+          await registerStylesheetEntries(projectDir, session, inputs, before)
+          const snapshot = await scanProjectSources(projectDir, session, inputs)
+          if (before.fingerprint !== snapshot.fingerprint) throw new SnapshotChangedError()
+          session.stylesheetFingerprint = session.requiresRediscovery ? undefined : stylesheetFingerprint(snapshot, session, inputs)
+          await session.scanner.reconcileSources('project', snapshot.sources.map(source => ({ source, content: snapshot.contents.get(source)!.toString('utf8') })))
+          session.sourceDependencies = snapshot.sources
+          const result = await publishStaticCSS(projectDir, outputPath, session, async dependencies => {
+            // Delivery can discover resources not seen by stylesheet registration.
+            session.publicationDependencies = [...new Set([...session.publicationDependencies, ...dependencies])]
+            assertCurrentConfiguration()
+            if ((await scanProjectSources(projectDir, session, inputs)).fingerprint !== snapshot.fingerprint) throw new SnapshotChangedError()
+            assertCurrentConfiguration()
+          }, record && new Map(record.outputs))
+          const sourceSet = new Set(snapshot.sources)
+          await writeStaticPublication(outputPath, {
+            version: 1, producer, fingerprint: identity(snapshot), reusable: !session.requiresRediscovery,
+            dependencies: snapshot.dependencies.filter(file => !sourceSet.has(file)), outputs: result.outputs
+          })
+          return
+        } catch (error) {
+          session.stylesheetFingerprint = undefined
+          if (!(error instanceof SnapshotChangedError) && !['ENOENT', 'MASTER_SNAPSHOT_CHANGED'].includes((error as NodeJS.ErrnoException).code ?? '')) throw error
+          if (attempt === 2) throw new Error('Master CSS sources changed repeatedly during compilation. No new entry was published.', { cause: error })
+        }
+      }
+    })
+  })
   const ready = scanner
     .init()
     .then(async () => {
-      await registerStyleCSSEntries(projectDir, session)
       await write()
       return scanner
     })
 
-  scanner.on('change', () => {
-    void write()
-  })
-
   session = {
+    pruneNativeCSS: options.pruneNativeCSS,
     scanner,
-    styleCSSSources,
+    stylesheets,
     ready,
-    write
+    write,
+    publicationDependencies: [],
+    outputFiles: [],
+    sourceDependencies: [],
+    preprocessorDependencies: []
   }
 
   return session
@@ -183,48 +271,63 @@ export function resolveStaticScanLogPath(outputPath: string) {
   return resolve(dirname(outputPath), DEFAULT_SCAN_LOG_FILE)
 }
 
+class SnapshotChangedError extends Error {}
+function resolveScannerStateOptions(options: ResolvedMasterCSSNextOptions) {
+  return { scanner: resolveScannerOptions(options), pruneNativeCSS: options.pruneNativeCSS, debug: options.debug }
+}
+
 export async function writeStaticState(
   projectDir: string,
   outputPath: string,
   statePath: string,
   scanLogPath: string,
-  options: ResolvedOptions
+  options: ResolvedMasterCSSNextOptions
 ) {
   const state: StaticState = {
     version: STATE_VERSION,
     projectDir,
     outputPath,
     scanLogPath,
-    options: {
-      scannerOptions: resolveScannerOptions(options),
-      debug: options.debug
-    }
+    fingerprint: staticFingerprint(resolveScannerStateOptions(options)),
+    options: resolveScannerStateOptions(options)
   }
   await mkdir(dirname(statePath), { recursive: true })
-  await writeFile(statePath, JSON.stringify(state, null, 2))
+  await publishFile(statePath, Buffer.from(serializeStaticOptions(state)), false)
 }
 
 export function readStaticState(statePath: string): StaticState {
-  const state = JSON.parse(readFileSync(statePath, 'utf-8')) as StaticState
+  const state = deserializeStaticOptions<StaticState>(readFileSync(statePath, 'utf-8'))
   if (state.version !== STATE_VERSION) {
     throw new Error(`Unsupported Master CSS Next static state version: ${String(state.version)}`)
   }
   return state
 }
 
-export async function addStaticCSSDependencies(statePath: string, addDependency?: (file: string) => void) {
-  if (!addDependency) return
+export async function addStaticCSSDependencies(statePath: string, addDependency?: (file: string) => void,
+  addContextDependency?: (directory: string) => void, addMissingDependency?: (file: string) => void) {
+  if (!addDependency && !addContextDependency) return
   const state = readStaticState(statePath)
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
+    pruneNativeCSS: state.options.pruneNativeCSS,
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
-  addDependency(state.outputPath)
-  for (const styleSource of session.styleCSSSources.values()) {
+  addDependency?.(statePath)
+  const output = new Set(session.outputFiles)
+  for (const file of new Set([...session.publicationDependencies, ...session.preprocessorDependencies, ...session.sourceDependencies, ...session.scanner.sourcePolicyDependencies])) {
+    if (output.has(file)) continue
+    if (existsSync(file)) addDependency?.(file)
+    else addMissingDependency?.(file)
+  }
+  // Context dependencies detect additions, deletions and renames. Ignore/output
+  // policies keep generated files out of the scanner even when a host rebuilds.
+  const directories = new Set([state.projectDir, ...session.sourceDependencies.map(dirname)])
+  for (const directory of directories) addContextDependency?.(directory)
+  for (const styleSource of session.stylesheets.snapshot().sources) {
     for (const dependency of styleSource.dependencies) {
-      addDependency(dependency)
+      if (!output.has(dependency)) addDependency?.(dependency)
     }
   }
 }
@@ -232,20 +335,42 @@ export async function addStaticCSSDependencies(statePath: string, addDependency?
 export async function getOrCreateStaticSession(
   projectDir: string,
   outputPath: string,
-  options: ResolvedOptions
+  options: ResolvedMasterCSSNextOptions
 ) {
-  const key = `${projectDir}\0${outputPath}`
+  const key = `${projectDir}\0${outputPath}\0${staticFingerprint(resolveScannerStateOptions(options))}`
   const sessions = getSessions()
   let session = sessions.get(key)
   if (!session) {
     session = createSession(projectDir, outputPath, options)
     sessions.set(key, session)
   }
-  await session.ready
+  try { await session.ready }
+  catch (error) {
+    if (sessions.get(key) === session) {
+      sessions.delete(key)
+      await session.scanner.dispose()
+      session.stylesheets.dispose()
+    }
+    throw error
+  }
   return session
 }
 
-export async function prepareNextStatic(rawOptions: Options = {}, setupOptions: PrepareNextStaticOptions = {}) {
+/** Keep a directly imported generated CSS entry current when no source CSS entry is loaded. */
+export async function refreshStaticOutput(statePath: string) {
+  const state = readStaticState(statePath)
+  const options = resolveOptions({
+    mode: 'static',
+    scanner: state.options.scanner,
+    pruneNativeCSS: state.options.pruneNativeCSS,
+    debug: state.options.debug
+  })
+  const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
+  await session.write()
+  return readFileSync(state.outputPath, 'utf8')
+}
+
+export async function prepareNextStatic(rawOptions: MasterCSSNextOptions = {}, setupOptions: PrepareNextStaticOptions = {}) {
   const options = resolveOptions(rawOptions)
   if (options.mode !== 'static') return
 
@@ -253,9 +378,9 @@ export async function prepareNextStatic(rawOptions: Options = {}, setupOptions: 
   const outputPath = resolveStaticOutputPath(projectDir)
   const statePath = resolveStaticStatePath(outputPath)
   const scanLogPath = resolveStaticScanLogPath(outputPath)
-  const session = await getOrCreateStaticSession(projectDir, outputPath, options)
-
+  options.scanner.outputDirectories = [...(options.scanner.outputDirectories ?? []), resolve(projectDir, setupOptions.distDir ?? '.next')]
   await writeStaticState(projectDir, outputPath, statePath, scanLogPath, options)
+  await getOrCreateStaticSession(projectDir, outputPath, options)
 
   return {
     projectDir,
@@ -274,20 +399,19 @@ function appendScannedSource(scanLogPath: string, resourcePath: string) {
   return writeFile(scanLogPath, Array.from(existing).sort().join('\n') + '\n')
 }
 
-export async function scanStaticModule(statePath: string, resourcePath: string, source: string) {
+export async function scanStaticModule(statePath: string, resourcePath: string, _source: string) {
   const state = readStaticState(statePath)
+  const projectPath = relative(state.projectDir, resourcePath)
+  if (projectPath === '..' || projectPath.startsWith('../') || projectPath.startsWith('..\\')) return
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
+    pruneNativeCSS: state.options.pruneNativeCSS,
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
   await appendScannedSource(state.scanLogPath, resourcePath)
-  const changed = await session.scanner.scanModule(resourcePath, source)
-  if (changed) {
-    await session.write()
-  } else if (!existsSync(state.outputPath)) {
-    const cssText = await createStaticCSS(state.projectDir, session)
-    await writeStaticCSS(state.outputPath, cssText)
-  }
+  // Every worker publishes the same original source snapshot. Loader-transformed
+  // display strings must never become a second owner of MDX/Vue/Svelte content.
+  await session.write()
 }

@@ -1,0 +1,396 @@
+import Class2CSS from '~/site/components/Class2CSS'
+
+## Overview [sr-only] \{#overview\}
+
+```html
+<!-- @MARK :hover -->
+<button type="button" class="fg-blue-60:hover">Preview</button>
+<!-- @MARK :invalid -->
+<label>Email <input type="email" class="b-red:invalid" /></label>
+<!-- @MARK [open] -->
+<details class="bg-surface-raised[open]">
+  <summary>Release details</summary>
+  <p>Published today.</p>
+</details>
+```
+State selectors let one declaration apply only when a selector matches. Append the selector after the declaration value:
+
+```txt
+property:value<selector>
+```
+
+Common examples include interaction states such as `:hover`, validation states such as `:invalid`, and attributes such as `[disabled]` or `[open]`.
+
+```html
+<!-- @MARK :hover --><!-- @MARK :active -->
+<h2 class="font-lg font-2xl:hover font-3xl:active">Release notes</h2>
+```
+Selectors can be stacked when the CSS selector itself needs more detail.
+```html
+<!-- @MARK :hover:not(.active) -->
+<div class="bg-blue-20:hover:not(.active)">Preview</div>
+```
+If you also need a breakpoint, mode, or other condition, put the [conditional query](/reference/rules/conditions) after the selector.
+
+```html
+<!-- @MARK :hover@md -->
+<button type="button" class="bg-blue-60:hover@md">Save</button>
+```
+
+Use native pseudo-classes directly.
+```html
+<div class="mt-sm:first-child"></div>
+<div class="mt-sm:nth-child(odd)"></div>
+<div class="mt-sm:dir(rtl)"></div>
+```
+Write longer project-specific selectors directly.
+```html
+<div class="font-semibold_:is(h1,h2,h3,h4,h5,h6)"></div><!-- [!code highlight] -->
+```
+
+## Basic selectors \{#basic-selectors\}
+Master CSS accepts native selector syntax. The selector is relative to the element that owns the class unless a combinator points to another element.
+
+| Selector              | Description                                           |
+|-----------------------|-------------------------------------------------------|
+| `*`                   | Universal selector                                    |
+| `element`             | Type selector                                         |
+| `.class`              | Class selector                                        |
+| `#id`                 | ID selector                                           |
+| `[attribute]`         | Attribute selector                                    |
+| `:pseudo-class`       | Pseudo-class selector                                 |
+| `::pseudo-element`    | Pseudo-element selector                               |
+
+<Class2CSS>{['bg-blue-60.active', 'b-red:invalid', 'bg-surface-raised[open]']}</Class2CSS>
+
+### `*` — Universal \{#--universal\}
+Use `*` as a wildcard. In `>*`, every direct child matches.
+```html
+<!-- @MARK * -->
+<div class="bg-blue-60>*">
+  <div>hit</div>
+  <div>hit</div>
+</div>
+```
+
+### `element` \{#element\}
+Use a type selector to target elements by tag name.
+```html
+<!-- @MARK span -->
+<div class="bg-blue-60>span">
+  <span>hit</span>
+</div>
+```
+If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
+```html
+<!-- @MARK :is(span) -->
+<span class="bg-blue-60:is(span)"></span>
+```
+
+### `.class` \{#class\}
+Use an application class such as `.active`, `.selected`, or `.expanded` to represent state. The element must have both the utility class and the matching state class.
+```html
+<!-- @MARK .active -->
+<div class="bg-blue-60.active active">...</div>
+```
+
+### `#id` \{#id\}
+Use an ID selector when the state is tied to a unique element.
+```html
+<!-- @MARK #nav -->
+<nav id="nav" class="bg-blue-60#nav">...</nav>
+```
+
+### `[attribute]` \{#attribute\}
+Use attribute selectors for DOM state that already lives in markup, such as `[disabled]`, `[open]`, `aria-*`, and `data-*`.
+```html
+<!-- @MARK [disabled] -->
+<button type="button" class="bg-blue-60[disabled]" disabled>Submit</button>
+```
+
+### `:pseudo-class` \{#pseudo-class\}
+Use pseudo-classes for browser-managed states.
+```html
+<!-- @MARK :hover -->
+<button type="button" class="bg-blue-60:hover">Submit</button>
+```
+
+### `::pseudo-element` \{#pseudo-element\}
+Use pseudo-elements such as `::before` and `::after` when the style should target generated content.
+```html
+<!-- @MARK ::before -->
+<div class="content:'“'::before">quotes</div>
+```
+
+## Combinators \{#combinators\}
+Combinators target elements by their relationship to the element that owns the class. Use them when the declaration should style a child, sibling, or descendant instead of the element itself.
+
+| Selector          | Description               |
+|-------------------|---------------------------|
+| `A B`             | Descendant selector (`_`) |
+| `A > B`           | Child selector            |
+| `A + B`           | Adjacent sibling selector |
+| `A ~ B`           | General sibling selector  |
+
+### `_` — Descendant \{#_--descendant\}
+Use `_` as the descendant combinator. It stands in for the CSS space, because spaces split class names in HTML.
+```html
+<!-- @MARK _ -->
+<div class="bg-blue-60_div">
+  <div>hit</div>
+  <div>hit
+    <div>hit
+      <div>hit</div>
+    </div>
+  </div>
+</div>
+```
+
+### `>` — Child \{#--child\}
+Use `>` when only direct children should match.
+```html
+<!-- @MARK >div -->
+<div class="bg-blue-60>div">
+  <div>hit</div>
+</div>
+```
+
+### `+` — Adjacent sibling \{#--adjacent-sibling\}
+Use `+` to style the next sibling when it appears immediately after the current element.
+```html
+<!-- @MARK +div -->
+<div class="bg-blue-60+div"></div>
+<div>hit</div>
+```
+
+### `~` — General sibling \{#--general-sibling\}
+Use `~` to style later siblings that share the same parent.
+```html
+<!-- @MARK ~div -->
+<div class="bg-blue-60~div"></div>
+<div>hit</div>
+<div>hit</div>
+<div>hit</div>
+```
+
+## Selector groups \{#selector-groups\}
+Use `,` when the same declaration should apply to several selectors.
+```html
+<!-- @MARK , -->
+<div class="content:'“'::before,::after">quotes</div>
+```
+<Class2CSS>
+  {[`content:'“'::before,::after`]}
+</Class2CSS>
+Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
+```html
+<!-- @MARK , -->
+<div class="display:block>div,>span">
+  <div>First child</div>
+  <span>Second child</span>
+</div>
+```
+<Class2CSS>
+  {['display:block>div,>span']}
+</Class2CSS>
+
+## Pseudo-classes \{#pseudo-classes\}
+### `:hover`, `:active`, `:focus` \{#hover--active--focus\}
+Use interaction pseudo-classes to give controls feedback as people hover, press, focus, or navigate with a keyboard.
+
+Hover or press the button to match the corresponding state. Include an explicit keyboard focus treatment.
+```html
+<!-- @MARK :hover --><!-- @MARK :active --><!-- @MARK :focus-visible -->
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible bg-blue-80:active">Preview</button>
+```
+
+Use `:focus-visible` when the browser should decide whether to show a focus ring, including keyboard navigation. Keep focus visible instead of removing outlines without a replacement.
+```html
+<!-- @MARK :focus-visible -->
+<button type="button" class="outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible">Submit</button>
+```
+
+### `:first-child`, `:last-child`, `:nth-child()` \{#first--last--odd--even\}
+```html
+<ul>
+  <li class="bg-surface-inset:nth-child(even)">Draft</li>
+  <li class="bg-surface-inset:nth-child(even)">In review</li>
+  <li class="bg-surface-inset:nth-child(even)">Published</li>
+</ul>
+```
+
+Use `:nth-child(odd)` or `:nth-child(even)` for alternating rows. Positions count all element siblings, not only siblings that carry the same class.
+
+<Class2CSS>{['bg-surface-inset:nth-child(even)', 'mt-sm:nth-child(odd)']}</Class2CSS>
+
+### `:valid`, `:invalid`, `:required` \{#valid--invalid--required\}
+Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
+
+The required field is invalid while empty or while its value fails native email validation. The visible label supplies its accessible name.
+```html
+<!-- @MARK :valid --><!-- @MARK :invalid --><!-- @MARK :required -->
+<label for="contact-email">Email</label>
+<input id="contact-email" type="email" required
+  class="border-width:1px border-style:solid border-color:currentcolor b-green:valid b-red:invalid outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible" />
+```
+
+Use `:required` to select required controls regardless of whether their current value is valid. Avoid communicating validation through color alone; production forms should also explain the error in text.
+
+### `:disabled` \{#disabled\}
+Use `:disabled` for controls that cannot be interacted with.
+```html
+<!-- @MARK :disabled -->
+<button type="button" class="opacity:.5:disabled" disabled>Submit</button>
+```
+
+### `:checked`, `:indeterminate` \{#checked--indeterminate\}
+Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and custom controls backed by native inputs.
+```html
+<!-- @MARK :checked -->
+<label>
+  <input class="outline-width:2px:checked outline-style:solid:checked outline-blue:checked" type="checkbox" checked />
+  Include archived items
+</label>
+```
+
+`indeterminate` is a DOM property, not an HTML attribute. Set it from JavaScript when a checkbox represents a partially selected group; style that state with `:indeterminate`. It does not change the checkbox's submitted checked value.
+
+```html
+<label><input id="select-all" type="checkbox" class="outline-width:2px:indeterminate outline-style:solid:indeterminate outline-blue:indeterminate" /> Select all</label>
+```
+```js
+document.querySelector('#select-all').indeterminate = true
+```
+
+### `:rtl`, `:ltr` \{#rtl--ltr\}
+Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:dir(ltr)`.
+```html
+<!-- @MARK :rtl -->
+<div dir="rtl" class="mr-xs:dir(rtl)">مرحبا</div>
+```
+
+### `:has()` \{#has\}
+Use `:has()` when the current element should change because it contains a matching child or descendant.
+```html
+<!-- @MARK :has(.active) -->
+<div class="bg-blue-60:has(.active)">
+  <div>Item 1</div>
+  <div class="active">Item 2</div>
+  <div>Item 3</div>
+</div>
+```
+
+### `:not()` \{#not\}
+Use `:not()` to exclude a selector from the match.
+```html
+<!-- @MARK :not(.active) -->
+<div class="fg-green-60:not(.active) active">...</div>
+```
+
+<a id="of"></a>
+
+### External context \{#external-context\}
+Use native CSS when an element responds to an ancestor, parent, or preceding sibling. Give the target a class and express the relationship in the stylesheet:
+
+```css
+@layer components {
+  .active .contextual { display: none; }
+  .active > .child-contextual { display: none; }
+  .active + .adjacent-contextual { display: none; }
+  .active ~ .sibling-contextual { display: none; }
+}
+```
+
+Use a mixin with a native selector and `@contents` when the same relationship should wrap several utilities. See [mixin contents](/reference/directives/definitions#contents).
+
+## Pseudo-elements \{#pseudo-elements\}
+### `::before`, `::after` \{#before--after\}
+Use `::before` and `::after` to style generated content attached to the element.
+```html
+<!-- @MARK ::before --><!-- @MARK ::after -->
+<span class="content:close-quote::after content:open-quote::before">
+  Keep the interface clear.
+</span>
+```
+
+### `::-webkit-scrollbar` \{#scrollbar\}
+
+Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-scrollbar-thumb`. Their effect depends on browser support and the platform scrollbar settings; overlay scrollbars may remain hidden until scrolling.
+```html
+<!-- @MARK scrollbar --><!-- @MARK ::-webkit-scrollbar-thumb -->
+<div tabindex="0" role="region" aria-label="Scrollable schedule"
+  class="overflow-x:auto max-width:100% width:0.375rem::-webkit-scrollbar height:0.375rem::-webkit-scrollbar bg-neutral-50/.2::-webkit-scrollbar-thumb">
+  <p class="w-7xl">Monday · Tuesday · Wednesday · Thursday · Friday</p>
+</div>
+```
+
+## Attribute selectors \{#attribute-selectors\}
+### `[open]` \{#open\}
+Use `[open]` to style a `<details>` element while it is expanded. The browser updates the attribute when the user toggles its summary.
+```html
+<!-- @MARK [open] -->
+<details class="bg-surface-raised[open]" open>
+  <summary>Details</summary>
+  <p>Details content goes here.</p>
+</details>
+```
+
+### `[aria-<key>=<value>]` \{#aria-keyvalue\}
+Use [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes when accessible state is already present in the DOM.
+```html
+<!-- @MARK [aria-pressed=true] -->
+<button type="button" class="bg-blue-60[aria-pressed=true] fg-white[aria-pressed=true]" aria-pressed="true">Bold</button>
+```
+
+Choose an attribute that is valid for the control, and update it as part of the control behavior. A selector only reads state; it does not implement the interaction or make an arbitrary element accessible.
+
+### `[data-<key>=<value>]` \{#data-keyvalue\}
+Use `data-*` attributes for component state that is not covered by native attributes or ARIA.
+```html
+<!-- @MARK [data-active] -->
+<div class="bg-blue-60[data-active]" data-active>...</div>
+```
+
+### `[<attr>=<value>]` \{#attrvalue\}
+Match an exact attribute value. Attribute values remain literal: `[data-state=":first"]:first-child` keeps the attribute value `:first`. Escaped identifier characters also remain literal.
+```html
+<!-- @MARK [type=checkbox] -->
+<label><input class="accent-color-blue[type=checkbox]" type="checkbox" /> Enable alerts</label>
+```
+
+### `[<attr>^=<value>]` \{#attrvalue-1\}
+Match values that start with a specific string.
+
+This matches links whose attribute starts with `http`; it does not distinguish same-origin from external links.
+```html
+<!-- @MARK [href^=http] -->
+<a class="content:'↗'[href^=http]::after" href="https://example.com">External</a>
+```
+
+### `[<attr>$=<value>]` \{#attrvalue-2\}
+Match values that end with a specific string.
+```html
+<!-- @MARK [href$='.pdf'] -->
+<a class="content:'⬇'[href$='.pdf']::after" href="https://example.com/report.pdf">PDF</a>
+```
+
+### `[<attr>*=<value>]` \{#attrvalue-3\}
+Match values that contain a specific string.
+```html
+<!-- @MARK [title*=master] -->
+<div class="bg-blue-60[title*=master]" title="mastercss">...</div>
+```
+
+### `[<attr>|=<value>]` \{#attrvalue-4\}
+Match a value exactly or followed by a hyphen, which is common for language codes.
+```html
+<!-- @MARK [lang|=en] -->
+<div class="bg-blue-60[lang|=en]" lang="en-US">...</div>
+```
+
+### `[<attr>~=<value>]` \{#attrvalue-5\}
+Match one word inside a whitespace-separated attribute value.
+```html
+<!-- @MARK [title~=css] -->
+<div class="bg-blue-60[title~=css]" title="master css">...</div>
+```

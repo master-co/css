@@ -1,10 +1,10 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
-import { resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
+import { discoverManifestEntries } from '@master/css-compiler/project'
+import { resolveMasterCSSWorkspacePackages } from '@master/css-internal/workspace'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, manifestMetadata } from './project'
 import { getErrorMessage } from './result'
 
 const SETUP_AUDIT_VERSION = 1
@@ -23,32 +23,31 @@ const MASTER_CSS_PACKAGES = [
   '@master/create-css',
   '@master/css-runtime',
   '@master/css-language-server',
-  '@master/css.vite',
-  '@master/css.webpack',
-  '@master/css.next',
-  '@master/css.nuxt',
-  '@master/css.astro',
-  '@master/css.svelte',
-  '@master/css-sv',
+  '@master/css-vite',
+  '@master/css-webpack',
+  '@master/css-next',
+  '@master/css-nuxt',
+  '@master/css-astro',
+  '@master/css-svelte',
+  '@master/css-svelte-addon',
   '@master/eslint-config-css',
   '@master/eslint-plugin-css'
 ]
 
 const INTEGRATION_PACKAGES = [
   '@master/css-cli',
-  '@master/css.vite',
-  '@master/css.webpack',
-  '@master/css.next',
-  '@master/css.nuxt',
-  '@master/css.astro',
-  '@master/css.svelte',
-  '@master/eslint-config-css',
-  '@master/eslint-plugin-css'
+  '@master/css-vite',
+  '@master/css-webpack',
+  '@master/css-next',
+  '@master/css-nuxt',
+  '@master/css-astro',
+  '@master/css-svelte',
+  '@master/eslint-config-css'
 ]
 
 const SETUP_PACKAGES = [
   '@master/create-css',
-  '@master/css-sv'
+  '@master/css-svelte-addon'
 ]
 
 interface PackageJSON {
@@ -166,7 +165,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
   const [packageJSONResult, manifest, discoveredEntries] = await Promise.all([
     readPackageJSON(context),
     loadWorkspaceManifest(context),
-    findCSSManifestEntryFiles(context.root).catch(() => [])
+    discoverManifestEntries({ root: context.root }).catch(() => [])
   ])
   const packageJSON = packageJSONResult.value
   const packageManager = detectPackageManager(context, packageJSON)
@@ -233,6 +232,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
     },
     integrations,
     manifest: {
+      ...manifestMetadata(manifest),
       status: manifest.status,
       entries: manifest.entries.length ? manifest.entries : discoveredEntries,
       dependencies: manifest.dependencies,

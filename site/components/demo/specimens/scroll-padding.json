@@ -1,0 +1,29 @@
+[
+  {
+    "page": "scroll-padding",
+    "id": "reserve-space-for-fixed-headers",
+    "title": "Reserve space for fixed headers",
+    "html": [
+      "<div id=\"scrollport\" class=\"overflow-y:auto height:14rem scroll-pt-3xl\" tabindex=\"0\" aria-label=\"Scrollable collection\">\n  <header class=\"position:sticky top:0 z-index:1 height:3rem\">Collection navigation</header>\n  <section id=\"overview\" class=\"h-3xs\">\n    <strong>Overview</strong>\n    <p>Collect the decisions and shared assets for this project in one place.</p>\n  </section>\n  <section id=\"details\" class=\"h-3xs\">\n    <strong>Details</strong>\n    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>\n  </section>\n  <section id=\"resources\" class=\"h-3xs\">\n    <strong>Resources</strong>\n    <p>Keep source files and supporting notes beside the finished collection.</p>\n  </section>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow-y:auto",
+      "height:14rem",
+      "scroll-pt-3xl",
+      "position:sticky",
+      "top:0",
+      "z-index:1",
+      "height:3rem",
+      "h-3xs"
+    ],
+    "classLists": [
+      "overflow-y:auto height:14rem scroll-pt-3xl",
+      "position:sticky top:0 z-index:1 height:3rem",
+      "h-3xs",
+      "h-3xs",
+      "h-3xs"
+    ],
+    "highlighted": []
+  }
+]

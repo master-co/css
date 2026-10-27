@@ -13,7 +13,7 @@
   },
   "references": [
     {
-      "path": "../facade/tsconfig.typecheck.json"
+      "path": "../css/tsconfig.typecheck.json"
     }
   ]
 }

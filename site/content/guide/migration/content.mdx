@@ -1,0 +1,142 @@
+import IconButtons from '~/site/docs-shell/components/IconButtons'
+import brands from '~/site/docs-shell/data/brands'
+
+Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. Treat the work as a product styling change: inspect the existing styling systems, add Master CSS beside them, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
+
+If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. When your client supports MCP, connect the [Master CSS MCP server](/guide/mcp-server) and use the `migrate-to-mastercss` prompt for an external styling system so the agent can inspect the workspace before planning migration batches. This page keeps the migration-specific checklist and fallback prompt focused on converting an existing project.
+
+---
+
+## Frameworks
+Migration guides for source styling systems with enough differences to need their own migration path.
+
+<IconButtons url="/guide/migration" className="my-lg grid-cols(4)@sm">
+  {[
+    { ...brands['tailwindcss'], disabled: false },
+    { ...brands['css'], disabled: false, name: 'CSS Modules', path: 'css' },
+    { ...brands['styled-components'], disabled: false, name: 'CSS-in-JS', path: 'css-in-js' },
+    { ...brands['mui'], disabled: false, path: 'material-ui' },
+    { ...brands['bootstrap'], disabled: false, path: 'bootstrap' },
+    { ...brands['sass'], disabled: false },
+  ]}
+</IconButtons>
+
+---
+
+## Migration strategy
+CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
+
+Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
+
+For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
+
+### Plan an external-system conversion with MCP
+
+The `migrate-to-mastercss` prompt asks the agent to inspect the workspace first and return its framework, stylesheet entries, extraction coverage and existing vocabulary, followed by a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow; retain existing styles until each converted slice builds and matches the intended UI.
+
+```text name=prompt
+Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
+
+Inspect the external styling system, framework, CSS entries, tokens, source discovery and available checks. Do not edit yet.
+
+Return an incremental plan with the rendering mode, first conversion batch, CSS output risks, validation commands and visual checks.
+```
+
+---
+
+## Before you start
+- Start from a clean git working tree, or commit your current work first.
+- Identify the existing styling systems, such as global CSS, CSS Modules, Tailwind CSS, CSS-in-JS, Sass, framework style blocks, or component-library CSS.
+- Decide which [rendering mode](/guide/rendering-modes) fits the project: static rendering, runtime rendering, or progressive rendering.
+- Find the CSS file your app already loads. This is usually where `@import '@master/css';` should enter the project.
+- Keep the old styling system in place until the migrated screens build, run, and visually match the previous UI.
+
+---
+
+## Migration prompt
+Paste this into your local coding agent from the project root. For general AI workflow guidance, use [AI Coding with Master CSS](/guide/ai-coding).
+
+```text name=prompt
+You are migrating this project to Master CSS.
+
+Use the official Master CSS documentation as the source of truth:
+Documentation: https://rc.css.master.co
+
+Do not invent Master CSS classes, APIs, directives, or package names.
+
+First inspect the repository and identify:
+- the framework, build tool, package manager, and current styling systems
+- the app CSS entry point and component/template files that contain styles
+- any design tokens, theme variables, CSS modules, utility classes, styled components, preprocessors, or third-party stylesheets
+- the available formatter, lint, type-check, test, and build commands
+
+Then migrate incrementally:
+1. Install and configure the appropriate Master CSS package or integration.
+2. Import `@master/css` from the project CSS entry.
+3. Choose the rendering mode that matches this project: static rendering, runtime rendering, or progressive rendering.
+4. Convert repeated visual styles into Master CSS classes in markup where that improves clarity.
+5. Move shared design values into `@theme` tokens.
+6. Use native CSS in `@layer components` for reusable component classes when markup classes would become hard to maintain.
+7. Keep vendor CSS, generated CSS, complex animation CSS, and hard-to-read one-off CSS in regular CSS unless converting it improves maintainability.
+8. Remove the old styling dependency only after the migrated screens build and match the previous UI.
+
+Work in small migration batches. After each focused batch, show me the changed files, explain the conversion decisions, and run the project’s formatter, type check, tests, and build if available. Call out anything that needs manual review, especially visual differences, removed CSS, changed tokens, old styling dependencies, or unsupported syntax.
+```
+
+---
+
+## Review the result
+Review the migration as code and as UI.
+
+- Inspect the diff before accepting each batch.
+- Run the formatter, type check, tests, and production build available in the project.
+- Compare important screens in the browser, including responsive states and dark mode if the app supports them.
+- Keep regular CSS for vendor styles, generated output, hard-to-read one-off declarations, complex animations, and anything external code controls.
+- Remove old styling dependencies only after the converted paths no longer rely on them.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS to a project.
+- [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
+- [Style declarations](/reference/rules/declarations) for class syntax.
+- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
+- [Global styles](/guide/global-styles#shared-vocabulary) for deciding between utilities, theme tokens, and component classes.
+- [Code linting](/guide/code-linting) for validating Master CSS classes in source code.
+- [Language Service](/guide/language-service) for editor highlighting and completion.
+
+## Custom engine and binding migration
+
+The current binding ABI is **26**. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v6 / languageVersion 16 and hydration v4 data with the upgraded packages. Engine snapshots and transitions are v4.
+
+Only `@theme` registers utility tokens. Its direct custom-property declarations use `:root,:host`, with optional `static` retention and `inline` value substitution. Native CSS supplies scoped overrides and must be delivered separately from the manifest; `@reference` supplies resolution context only. See the [theme contract](/reference/directives/theme).
+
+`MasterCSSEngine` and its binding session also require `executionState(classNames)`.
+
+If your custom engine forwards operations to an official engine, forward the new method too. This complete wrapper illustrates the required surface:
+
+```ts
+import type { MasterCSSEngine } from '@master/css'
+
+function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
+  return {
+    binding: inner.binding,
+    ensureClassRules: names => inner.ensureClassRules(names),
+    deleteClassRules: names => inner.deleteClassRules(names),
+    registerEmittedGlobals: globals => inner.registerEmittedGlobals(globals),
+    replaceEmittedGlobals: globals => inner.replaceEmittedGlobals(globals),
+    refresh: manifest => inner.refresh(manifest),
+    executionState: names => inner.executionState(names),
+    inspect: name => inner.inspect(name),
+    snapshot: () => inner.snapshot(),
+    dispose: () => inner.dispose(),
+    [Symbol.dispose]: () => inner.dispose()
+  }
+}
+```
+
+An independent implementation must read its stored class-to-rule references and resource counts, return an immutable result, and return empty references for classes that have not been ensured. Reimplementing this method through repeated `inspect()` calls or a full `snapshot()` recreates the overhead this API removes. See [engine state for custom hosts](/guide/rendering-modes#engine-state-for-custom-hosts) for the result contract.
+
+Tooling binding implementers must also provide the session-scoped document prepare/finish/cancel flow and scanner content-cache query. Scanner validation uses the pending, blocklist-filtered candidates returned by its session; commit must consume native support in that same order. Reset the scanner after changing its manifest or extraction settings.
+
+Transition consumers should replay the returned operations without depending on intermediate theme updates: each outermost batch emits at most one theme delete and one theme insert, placed before utility and keyframe operations. Final CSS, cascade order and resource reference counts remain unchanged.

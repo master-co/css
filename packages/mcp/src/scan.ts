@@ -1,33 +1,33 @@
-import { createRequire } from 'node:module'
+import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
-import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
-import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
-import { parseHTML } from '@master/css-server'
+import { renderClassNamesSync } from '@master/css/node'
+import { createMasterCSSInspectionReport, captureMasterCSSProject } from '@master/css-compiler/diagnostics'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest } from './project'
-import type { MasterCSSManifest } from '@master/css-engine'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
+import { compactClassInspection, createMCPToolingSession } from './tooling-session'
 
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
 
 export interface ScanProjectOptions {
+  context?: SemanticContext
   patterns?: string[]
   classes?: string[]
   includeCss?: boolean
+  includeSnapshot?: boolean
 }
 
 export interface RenderCSSOptions {
+  context?: SemanticContext
   html?: string
   classList?: string
 }
 
 export interface InspectClassOptions {
+  context?: SemanticContext
   className: string
-  mode?: string
 }
 
 export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns = DEFAULT_SOURCE_PATTERNS, ignore = DEFAULT_IGNORE_PATTERNS) {
@@ -37,95 +37,94 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
     ignore,
     onlyFiles: true
   })
-  return Promise.all(sources.map((source) => context.resolveExistingFile(source)))
+  const policy = new SourcePolicy(context.root, { exclude: ignore })
+  return Promise.all(sources.filter(source => policy.accepts(source, patterns !== DEFAULT_SOURCE_PATTERNS)).map((source) => context.resolveExistingFile(source)))
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
-  const [report, manifest] = await Promise.all([
-    createMasterCSSInspectionReport({
-      cwd: context.root,
-      patterns: options.patterns,
-      classes: options.classes,
-      includeCss: options.includeCss,
-      resolveExistingFile: (filePath) => context.resolveExistingFile(filePath),
-      validatePatterns: (patterns) => context.validateGlobPatterns(patterns)
-    }),
-    loadWorkspaceManifest(context)
-  ])
-  return {
-    ...report,
-    root: context.root,
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      dependencies: manifest.dependencies,
-      warnings: manifest.warnings,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    }
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const inspectionOptions = {
+    manifest: requireWorkspaceManifest(manifest),
+    cwd: context.root,
+    patterns: options.patterns,
+    classes: options.classes,
+    includeCss: options.includeCss,
+    resolveExistingFile: (filePath: string) => context.resolveExistingFile(filePath),
+    validatePatterns: (patterns: readonly string[]) => context.validateGlobPatterns(patterns)
   }
+  if (options.includeSnapshot) {
+    const { report, snapshot } = await captureMasterCSSProject(inspectionOptions)
+    return { ...report, root: context.root, manifest: manifestMetadata(manifest), snapshot }
+  }
+  const report = await createMasterCSSInspectionReport(inspectionOptions)
+  return { ...report, root: context.root, manifest: manifestMetadata(manifest) }
 }
 
 export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSSOptions) {
-  const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
-  const classes = options.html
-    ? parseHTML(options.html).classes
-    : (options.classList ?? '').split(/\s+/).map((className) => className.trim()).filter(Boolean)
-  const invalid: string[] = []
-  for (const className of classes) {
-    const rules = css.generate(className)
-    if (rules.length) {
-      for (const rule of rules) rule.layer.insert(rule)
-    } else {
-      invalid.push(className)
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  let classes: string[]
+  if (options.html) {
+    const tooling = createToolingSessionSync({
+      manifest: requireWorkspaceManifest(manifest),
+      nativeClassNames: manifest.nativeClassNames
+    })
+    try {
+      classes = [...tooling.extractSource({
+        files: [{
+          source: 'index.html',
+          content: options.html,
+          kind: 'html'
+        }]
+      }).files[0]?.candidates ?? []]
+    } finally {
+      tooling.dispose()
     }
+  } else {
+    classes = (options.classList ?? '')
+      .split(/\s+/)
+      .map((className) => className.trim())
+      .filter(Boolean)
   }
+  const rendered = renderClassNamesSync(classes, {
+    manifest: requireWorkspaceManifest(manifest)
+  })
+  const tooling = createMCPToolingSession(requireWorkspaceManifest(manifest), manifest.nativeClassNames)
+  let inspections: ReturnType<typeof compactClassInspection>[]
+  try { inspections = classes.map(className => compactClassInspection(tooling, className, true)) }
+  finally { tooling.dispose() }
   return {
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
+    manifest: manifestMetadata(manifest),
     classes,
-    invalid,
+    inspections,
+    diagnostics: inspections.flatMap(inspection => inspection.diagnostics ?? []),
+    invalid: rendered.invalidClassNames,
     css: {
-      bytes: css.text.length,
-      text: css.text
+      bytes: Buffer.byteLength(rendered.cssText, 'utf8'),
+      text: rendered.cssText
     }
   }
 }
 
 export async function inspectClass(context: MasterCSSMCPContext, options: InspectClassOptions) {
-  const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
-  const inspection = inspectMasterCSSClass(css, options.className, options.mode)
-  const rules = inspection.rules.map((rule) => ({
-    className: rule.name,
-    layer: rule.layerName,
-    type: rule.type,
-    text: rule.text
-  }))
-  return {
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
-    className: options.className,
-    mode: options.mode,
-    valid: rules.length > 0,
-    base: inspection.base,
-    suffix: inspection.suffix,
-    key: inspection.key,
-    value: inspection.value,
-    keyToken: inspection.keyToken,
-    valueToken: inspection.valueToken,
-    stateToken: inspection.stateToken,
-    important: inspection.important,
-    matcherTypes: inspection.matcherTypes,
-    variables: inspection.variableEntries.map(({ key, variable }) => ({ key, variable })),
-    rules,
-    css: rules.map((rule) => rule.text).join('')
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const session = createMCPToolingSession(
+    requireWorkspaceManifest(manifest), manifest.nativeClassNames
+  )
+  try {
+    const inspection = session.inspectClassName(options.className)
+    const compact = compactClassInspection(
+      session,
+      options.className,
+      true,
+      inspection
+    )
+    return {
+      manifest: manifestMetadata(manifest),
+      ...compact,
+      css: inspection.rules.map((rule) => rule.text).join('')
+    }
+  } finally {
+    session.dispose?.()
   }
 }
 
@@ -136,7 +135,8 @@ export async function previewGeneratedCSS(
   const report = await scanProject(context, {
     patterns: options.patterns,
     classes: options.classes,
-    includeCss: true
+    includeCss: true,
+    context: options.context
   })
   const preview = await context.createPreview([
     {
@@ -145,6 +145,9 @@ export async function previewGeneratedCSS(
     }
   ], options.ttlMs)
   return {
+    manifest: report.manifest,
+    diagnostics: report.diagnostics,
+    inspections: report.inspections,
     mode: 'generated-css',
     outputPath: await context.resolveWritableFile(options.outputPath),
     preview,

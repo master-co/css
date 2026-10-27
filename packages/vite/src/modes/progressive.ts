@@ -1,10 +1,10 @@
 import type { Plugin } from 'vite'
 import InjectRuntimePlugin, { InjectRuntimeServePlugin } from '../plugins/inject-runtime'
-import { PluginContext } from '../core'
+import { MasterCSSVitePluginContext } from '../core'
 import PreRenderPlugin from '../plugins/pre-render'
-import { PluginOptions } from '../options'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function ProgressiveMode(options: PluginOptions, context: PluginContext): Plugin[] {
+export default function ProgressiveMode(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin[] {
   const plugins: Plugin[] = [
     PreRenderPlugin(options, context),
   ]

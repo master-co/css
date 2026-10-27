@@ -1,8 +1,13 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, extname, join, relative } from 'node:path'
+import { createServer } from 'node:http'
+import { once } from 'node:events'
+import { gzipSync, brotliCompressSync } from 'node:zlib'
+import { chromium } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
+import { createEngineSync } from '@master/css/node'
 import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -44,13 +49,28 @@ function collectHTMLFiles(dir: string): string[] {
   return files
 }
 
+function collectFiles(dir: string, extension: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const filePath = join(dir, entry.name)
+    if (entry.isDirectory()) return collectFiles(filePath, extension)
+    return entry.isFile() && entry.name.endsWith(extension) ? [filePath] : []
+  })
+}
+
+/** Inline runtime programs are base64 literals whose bytes start with the `MCSP` magic. */
+function collectInlinePrograms(chunkFile: string) {
+  return [...readFileSync(chunkFile, 'utf-8').matchAll(/atob\("([A-Za-z0-9+/=]+)"\)/g)]
+    .map(match => Buffer.from(match[1], 'base64'))
+    .filter(bytes => bytes.subarray(0, 4).toString('latin1') === 'MCSP')
+}
+
 function collectHydrationManifestSources(html: string) {
   return [...html.matchAll(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`, 'g'))]
     .map((match) => match[1])
 }
 
 describe('static export e2e', () => {
-  it('emits every referenced hydration manifest directly into the export output', () => {
+  it('exports hydration assets and a deferred runtime program, and adopts them in the browser before dynamic updates', async () => {
     buildFixture()
 
     const htmlFiles = collectHTMLFiles(outDir)
@@ -64,6 +84,26 @@ describe('static export e2e', () => {
     ]))
     expect(manifestSources.length).toBeGreaterThan(0)
     expect(existsSync(join(fixtureDir, '.next/static/master-css/hydration'))).toBe(false)
+    // Progressive pages defer the engine, so neither its Wasm nor its runtime program is preloaded.
+    for (const htmlFile of htmlFiles) {
+      const html = readFileSync(htmlFile, 'utf-8')
+      expect(html).not.toContain('application/wasm')
+      expect(html).not.toMatch(/<link\b[^>]*master-css-manifest/)
+      expect(html).not.toMatch(/<link\b[^>]*master-css-program/)
+    }
+    // Browsers receive the compiled runtime program, never the project manifest.
+    const chunkFiles = collectFiles(join(outDir, '_next/static'), '.js')
+    expect(chunkFiles.filter(file => /\bversion:6,languageVersion:16\b/.test(readFileSync(file, 'utf-8')))).toEqual([])
+    const programChunks = chunkFiles.filter(file => collectInlinePrograms(file).length > 0)
+    expect(programChunks).toHaveLength(1)
+    const [program] = collectInlinePrograms(programChunks[0])
+    // Production programs compile from the provenance-free manifest.
+    expect(program.includes(fixtureDir)).toBe(false)
+    {
+      using engine = createEngineSync({ program })
+      expect(engine.ensureClassRules(['padding:17px']).mutations.length).toBeGreaterThan(0)
+    }
+    const programChunkPath = `/${relative(outDir, programChunks[0]).replaceAll('\\', '/')}`
 
     for (const source of manifestSources) {
       const pathname = new URL(source, 'http://localhost').pathname
@@ -71,8 +111,56 @@ describe('static export e2e', () => {
       expect(pathname).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
       expect(existsSync(manifestFile), `${source} should exist in the static export`).toBe(true)
       const manifest = JSON.parse(readFileSync(manifestFile, 'utf-8'))
-      expect(manifest.version).toBe(1)
-      expect(manifest.rules.length).toBeGreaterThan(0)
+      expect(manifest.version).toBe(5)
+      expect(manifest.languageVersion).toBe(16)
+      expect(manifest.classNames.length).toBeGreaterThan(0)
+    }
+    const requests: { path: string; raw: number; gzip: number; brotli: number }[] = []
+    const server = createServer((request, response) => {
+      const pathname = new URL(request.url || '/', 'http://localhost').pathname
+      const file = join(outDir, pathname === '/' ? 'index.html' : pathname)
+      if (relative(outDir, file).startsWith('..') || !existsSync(file)) {
+        response.writeHead(404).end()
+        return
+      }
+      const content = readFileSync(file)
+      const type = ({ '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm' } as Record<string, string>)[extname(file)] || 'application/octet-stream'
+      requests.push({ path: pathname, raw: content.length, gzip: gzipSync(content, { level: 9 }).length, brotli: brotliCompressSync(content).length })
+      response.writeHead(200, { 'content-type': type }).end(content)
+    })
+    server.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    const browser = await chromium.launch()
+    try {
+      const page = await browser.newPage()
+      const address = server.address() as { port: number }
+      await page.goto(`http://127.0.0.1:${address.port}`)
+      await page.waitForFunction(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__?.runtime?.snapshot().hydration.state === 'progressive')
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
+      // Every rendered class is covered, so the engine waits for the first one that is not.
+      expect(await page.evaluate(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__.runtime.snapshot().engine)).toBe('deferred')
+      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(false)
+      // The deferred engine also defers loading its program.
+      expect(requests.some(request => request.path === programChunkPath)).toBe(false)
+      await page.locator('main').evaluate(element => element.classList.add('padding:17px'))
+      await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).padding)).toBe('17px')
+      // Browsers execute the program with the JavaScript engine.
+      expect(await page.evaluate(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__.runtime.snapshot().binding)).toBe('js')
+      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(false)
+      expect(requests.some(request => request.path === programChunkPath)).toBe(true)
+      expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
+      if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({
+        languageVersion: 16, delivery: 'bundler-esm', requests,
+        compression: 'Measured from fetched response bodies; local test server sends uncompressed responses.',
+        timing: await page.evaluate(() => performance.getEntriesByType('resource').map(entry => {
+          const resource = entry as PerformanceResourceTiming
+          return { name: resource.name, transferSize: resource.transferSize, encodedBodySize: resource.encodedBodySize, duration: resource.duration }
+        }))
+      }, null, 2))
+    } finally {
+      await browser.close()
+      server.closeAllConnections()
+      await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()))
     }
   })
 })

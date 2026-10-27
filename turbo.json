@@ -1,20 +1,51 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "cacheMaxAge": "7d",
+  "cacheMaxSize": "5GB",
+  "globalPassThroughEnv": [
+    "CARGO_HOME",
+    "RUSTUP_HOME"
+  ],
   "globalDependencies": [
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     "tsconfig.json"
   ],
   "tasks": {
-    "build": {
+    "build:artifacts": {
       "dependsOn": [
-        "^build"
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_ROOT$/crates/**",
+        "$TURBO_ROOT$/Cargo.toml",
+        "$TURBO_ROOT$/Cargo.lock",
+        "$TURBO_ROOT$/rust-toolchain.toml"
+      ],
+      "outputs": [
+        "artifacts/**"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "^build:artifacts"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!tests/**",
+        "!e2e/**",
+        "!**/*.md",
+        "$TURBO_ROOT$/shared/tsdown-package.config.ts"
+      ],
       "outputs": [
         "dist/**",
         "out/**",
         ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**",
         ".nuxt/**",
         ".output/**",
         ".svelte-kit/**",
@@ -26,17 +57,50 @@
     "test": {
       "dependsOn": [
         "build",
-        "^build"
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "$TURBO_ROOT$/shared/vitest.config.ts",
+        "$TURBO_ROOT$/shared/vitest-ci-config.ts"
+      ],
+      "outputs": []
+    },
+    "@master/css-engine-js#test": {
+      "dependsOn": [
+        "build",
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!*.md",
+        "$TURBO_ROOT$/crates/mastercss-engine/**",
+        "$TURBO_ROOT$/crates/mastercss-compiler/**",
+        "$TURBO_ROOT$/examples/**/*.{astro,html,jsx,md,mdx,php,svelte,ts,tsx,vue}",
+        "$TURBO_ROOT$/packages/preset/src/default-manifest.json",
+        "$TURBO_ROOT$/parity/v2-language-corpus.json",
+        "$TURBO_ROOT$/site/**/*.{astro,html,jsx,md,mdx,php,svelte,ts,tsx,vue}",
+        "!$TURBO_ROOT$/examples/**/node_modules/**",
+        "!$TURBO_ROOT$/site/**/node_modules/**"
+      ],
       "outputs": []
     },
     "lint": {
-      "dependsOn": [
-        "build",
-        "^build"
-      ],
+      "dependsOn": [],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "$TURBO_ROOT$/eslint.config.js",
+        "$TURBO_ROOT$/.gitignore"
+      ],
       "outputs": []
     },
     "type-check": {
@@ -44,6 +108,24 @@
         "^type-check"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md"
+      ],
+      "outputs": [
+        ".tsbuild/**"
+      ]
+    },
+    "@master/css-webpack#type-check": {
+      "dependsOn": [
+        "build",
+        "^type-check"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md"
+      ],
       "outputs": [
         ".tsbuild/**"
       ]
@@ -51,7 +133,9 @@
     "e2e": {
       "dependsOn": [
         "build",
-        "^build"
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
       "cache": false

@@ -29,6 +29,7 @@
             ],
             "scripts": [],
             "server": "src/main.server.ts",
+            "externalDependencies": ["@master/css-server"],
             "prerender": true,
             "ssr": {
               "entry": "server.ts"

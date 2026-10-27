@@ -17,12 +17,18 @@ pnpm type-check:refs
 pnpm type-check:affected
 pnpm type-check:clean
 pnpm commit-check
+pnpm check:ai-context
+pnpm test:ai-context
 pnpm submodules
 ```
 
 `pnpm check` runs commit check, build, and package test/lint/type-check scripts.
 
-Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Next's local cache needs to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
+`pnpm check:ai-context` enforces production, support-code, and AI-context line/byte
+budgets. Generated files need an explicit marker; exceptional static data needs a
+bounded entry in `.ai/context/source-budget.json`.
+
+Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Astro or Vite caches need to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
 
 `pnpm type-check` runs package-local type-check scripts through Turbo for all packages, including framework-specific checkers such as Vue's `vue-tsc`.
 
@@ -47,13 +53,27 @@ Use the real scripts in each package `package.json`. Some packages have `test`, 
 
 For package-local TypeScript checks, most packages use `tsc -b tsconfig.typecheck.json` and emit declaration-only cache output under `.tsbuild/typecheck`. Vue stays on `vue-tsc --noEmit`.
 
+Shared tsdown package builds use the existing TypeScript 6 compatibility API to
+emit declarations in memory before writing `dist`. Keep the explicit `tsc`
+generator: TS7's native emitter can write imported sources outside `rootDir` back
+beside their source files, escaping the temporary `outDir`. Do not emit duplicate
+`.d.ts` files beside `.ts` sources; preserve ambient and generated JSON
+declarations. Verify this boundary with `node --test scripts/tsdown-package.test.mjs`.
+
 For site-local checks, stay in the repository root and let pnpm set the workspace cwd:
 
 ```sh
 pnpm --filter site prepare-app
 pnpm --filter site lint
+pnpm --filter site lint:full
+pnpm --filter site test:lint-cache
 pnpm --filter site type-check
 ```
+
+Site `lint` uses ESLint's content cache, namespaced by CSS/project inputs, config,
+lockfile, built workspace packages, and native artifact bytes. Build changed
+packages before linting. `lint:full` bypasses the cache and is the CI check; both
+commands retain the full configured file scope and rules.
 
 ## High-Value Scoped Checks
 
@@ -61,43 +81,53 @@ pnpm --filter site type-check
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-scanner test
-pnpm --filter @master/css.vite test
-pnpm --filter @master/css-language test
+pnpm --filter @master/css-tooling test
+pnpm --filter @master/css-compiler test
+pnpm --filter @master/css-vite test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
 pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
 ## Benchmark Commands
 
 ```sh
-pnpm --filter @master/css-engine bench
+pnpm --filter @master/css bench
 pnpm --filter @master/css-runtime bench
+node scripts/benchmark-site-lint.mjs --output /tmp/lint-before.json
+node scripts/benchmark-site-lint.mjs --output /tmp/lint-after.json --baseline /tmp/lint-before.json
 ```
 
-Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and manifest compilation/cache work.
+The site lint benchmark records uncached per-rule timings and native artifact
+identity. Passing a baseline fixes the file list and asserts identical diagnostics
+and fixes. Compare the same build profile and use repeated runs for timing; keep
+reports outside source control.
 
-Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
+Use `pnpm --filter @master/css bench` for engine session startup and execution. Rust engine benchmarks remain authoritative for matching, parsing, priority, layer insertion, and resource behavior.
 
-The `Benchmark` GitHub Actions workflow runs on relevant benchmark, engine, preset, runtime, schema, lexer, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
+Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, engine startup, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
+
+`pnpm run check:runtime-size` compares raw/gzip/brotli sizes of the global runtime bundle, which inlines the JavaScript engine, the default runtime program it fetches, and the progressive critical path (the runtime ESM entry bundled without its lazily imported engine) against `.ai/contracts/runtime-bundle-size.json`. Build `@master/css-runtime` first. Use `pnpm run check:runtime-size:update` only for an intentional, reported size change.
+
+The browser engine has its own gates (`.ai/architecture.md#browser-engine`): `pnpm --filter @master/css-engine-js differential [--fuzz <n>] [--seed <n>]` compares it with the Rust engine Wasm and must report zero differences (its `test` task, which CI runs), `verify:program` checks the program decoder against Rust, and `check:size` checks the engine and CDN page brotli budgets. `bench:baseline [--rc87 <dist>] [--wasm <runtime package dir>]` compares browser runtime builds. Rebuild the Rust Wasm (`pnpm run build:rust:wasm`) before the differential after `crates/` changes.
+
+The `Benchmark` GitHub Actions workflow runs on relevant benchmark, Rust core, CSS execution, tooling, preset, runtime, schema, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 
 For bundle reports, build first and measure the changed artifacts on the same machine:
 
 ```sh
-pnpm --filter @master/css-engine build
+pnpm --filter @master/css build
 pnpm --filter @master/css-runtime build
-wc -c packages/engine/dist/core.js packages/runtime/dist/global.min.js
-wc -c packages/runtime/dist/default-manifest.json
-gzip -c packages/engine/dist/core.js | wc -c
-brotli -c packages/engine/dist/core.js | wc -c
+wc -c packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js
+wc -c packages/runtime/dist/default-program.bin
+gzip -c packages/css/dist/engine/bound-engine.js | wc -c
+brotli -c packages/css/dist/engine/bound-engine.js | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
-gzip -c packages/runtime/dist/default-manifest.json | wc -c
-brotli -c packages/runtime/dist/default-manifest.json | wc -c
-shasum -a 256 packages/engine/dist/core.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
+gzip -c packages/runtime/dist/default-program.bin | wc -c
+brotli -c packages/runtime/dist/default-program.bin | wc -c
+shasum -a 256 packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js packages/runtime/dist/default-program.bin
 ```
 
 ## CI Equivalents

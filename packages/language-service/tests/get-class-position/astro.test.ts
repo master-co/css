@@ -15,7 +15,7 @@ test.concurrent('mixed class assignment formats', () => {
     class:list={[
       "text-center",
       { hidden: true },
-      ["block fg:blue"],
+      ["block fg-blue"],
       {
         "text-center `, target, dedent`": false,
         },

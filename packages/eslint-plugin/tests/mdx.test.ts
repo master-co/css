@@ -10,33 +10,25 @@ const mdxLanguageOptions = {
 }
 
 jsxTester.run('mdx sort classes', OrderRule, {
-  valid: [{ code: `<div class="m:2x p:2x font:1.5rem bg:black fg:white">Simple, basic</div>` }],
+  valid: [{ code: "<div class=\"margin:0.5rem padding:0.5rem font-size:1.5rem bg-black fg-white\">Simple, basic</div>" }],
   invalid: [
     {
-      code: `
-      # Test
-      <div class="m:2x bg:black p:2x fg:white font:1.5rem">Simple</div>`,
-      output: `
-      # Test
-      <div class="m:2x p:2x font:1.5rem bg:black fg:white">Simple</div>`,
+      code: "\n      # Test\n      <div class=\"margin:0.5rem bg-black padding:0.5rem fg-white font-size:1.5rem\">Simple</div>",
+      output: "\n      # Test\n      <div class=\"margin:0.5rem padding:0.5rem font-size:1.5rem bg-black fg-white\">Simple</div>",
       errors: [{ messageId: 'invalidClassOrder' }],
       filename: 'test.mdx',
       languageOptions: mdxLanguageOptions
     },
     {
       code: [
-        '```html',
-        '<button class="inline-flex align-items:center gap:2x px:md py:xs r:md fg:white bg:blue-60">',
+        "<button class=\"display:inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60\">",
         '    Save',
         '</button>',
-        '```'
       ].join('\n'),
       output: [
-        '```html',
-        '<button class="inline-flex align-items:center gap:2x px:md py:xs r:md bg:blue-60 fg:white">',
+        "<button class=\"display:inline-flex align-items:center gap:0.5rem py-xs px-md r-md bg-blue-60 fg-white\">",
         '    Save',
         '</button>',
-        '```'
       ].join('\n'),
       errors: [{ messageId: 'invalidClassOrder' }],
       filename: 'test.mdx',
@@ -49,8 +41,8 @@ jsxTester.run('mdx no conflicting classes', CollisionRule, {
   valid: [],
   invalid: [
     {
-      code: `<div class="m:10px m:20px m:30px:hover m:40px@dark">Simple</div>`,
-      output: `<div class="m:20px m:30px:hover m:40px@dark">Simple</div>`,
+      code: "<div class=\"margin:10px margin:20px margin:30px:hover margin:40px@dark\">Simple</div>",
+      output: "<div class=\"margin:20px margin:30px:hover margin:40px@dark\">Simple</div>",
       errors: [
         { messageId: 'collisionClass' }
       ],
@@ -59,14 +51,10 @@ jsxTester.run('mdx no conflicting classes', CollisionRule, {
     },
     {
       code: [
-        '```html',
-        '<div class="m:10px m:20px">Simple</div>',
-        '```'
+        "<div class=\"margin:10px margin:20px\">Simple</div>",
       ].join('\n'),
       output: [
-        '```html',
-        '<div class="m:20px">Simple</div>',
-        '```'
+        "<div class=\"margin:20px\">Simple</div>",
       ].join('\n'),
       errors: [
         { messageId: 'collisionClass' }
@@ -82,9 +70,7 @@ jsxTester.run('mdx no invalid classes', InvalidRule, {
   invalid: [
     {
       code: [
-        '```html',
         '<div class="btn">Simple</div>',
-        '```'
       ].join('\n'),
       options: [{ disallowUnknownClass: true }],
       errors: [{ messageId: 'disallowUnknownClass' }],
@@ -96,41 +82,26 @@ jsxTester.run('mdx no invalid classes', InvalidRule, {
 
 jsxTester.run('mdx prefer canonical classes', PreferCanonicalRule, {
   valid: [
-    {
+{
       code: [
-        '```html',
-        '<div class="font:16px">Simple</div>',
-        '```'
+        '<div class="font-size:16px">Simple</div>',
       ].join('\n'),
-      options: [{ preferThemeTokens: false }],
       filename: 'test.mdx',
       languageOptions: mdxLanguageOptions
     },
-  ],
+{
+code: [
+        "<button class=\"display:inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60\">",
+        '    Save',
+        '</button>',
+      ].join('\n'),
+filename: 'test.mdx',
+languageOptions: mdxLanguageOptions
+}
+],
   invalid: [
-    {
-      code: [
-        '```html',
-        '<button class="inline-flex align-items:center gap:2x px:md py:xs r:md fg:white bg:blue-60">',
-        '    Save',
-        '</button>',
-        '```'
-      ].join('\n'),
-      output: [
-        '```html',
-        '<button class="inline-flex items-center gap:xs px:md py:xs r:md fg:white bg:blue-60">',
-        '    Save',
-        '</button>',
-        '```'
-      ].join('\n'),
-      errors: [
-        { messageId: 'preferClass' },
-        { messageId: 'preferClass' },
-      ],
-      filename: 'test.mdx',
-      languageOptions: mdxLanguageOptions
-    },
-  ],
+
+],
 })
 
 jsxTester.run('mdx no unapproved raw values', RawValueRule, {
@@ -138,9 +109,7 @@ jsxTester.run('mdx no unapproved raw values', RawValueRule, {
   invalid: [
     {
       code: [
-        '```html',
-        '<div class="font:15px w:17px">Simple</div>',
-        '```'
+        "<div class=\"font-size:15px width:17px\">Simple</div>",
       ].join('\n'),
       options: [{ allowProperties: ['width'] }],
       errors: [{ messageId: 'unapprovedRawValue' }],
@@ -148,4 +117,15 @@ jsxTester.run('mdx no unapproved raw values', RawValueRule, {
       languageOptions: mdxLanguageOptions
     },
   ],
+})
+
+for (const [name, rule] of [
+  ['order', OrderRule], ['conflict', CollisionRule], ['invalid', InvalidRule],
+  ['canonical', PreferCanonicalRule], ['raw', RawValueRule]
+] as const) jsxTester.run(`mdx preserves display content: ${name}`, rule, {
+  valid: [{
+    code: ['```html', "<div class=\"font:mono margin:10px margin:20px width:17px padding-md\">Old RC example</div>", '```',
+      '', '`<div class="padding:1px.<br"/>`', '', '<Card title="Not classes.<bad" source=".a { color:red }"/>'].join('\n'),
+    filename: 'display.mdx', languageOptions: mdxLanguageOptions
+  }], invalid: []
 })

@@ -1,10 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
+import { stylesheetDiagnosticMetrics, stylesheetDiagnosticLimits } from '../shared/stylesheet-diagnostic-metrics'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { staticFixtureIds } from '../fixtures/static'
 import {
-  compilerDiagnosticMetricIds,
   createCompilerDiagnosticVariants,
   type CompilerDiagnosticResult
 } from '../shared/compiler-diagnostics'
@@ -14,7 +14,7 @@ import { benchmarkRoot, runCommand } from '../shared/runner'
 import { writeBenchmarkReport } from '../shared/report'
 import { summarizeReportSamples } from '../shared/stats'
 import { getStaticBenchmarkFixtures, staticBenchmarkAdapters } from '../shared/static-build'
-import type { BenchmarkMetric, BenchmarkMetricUnit, BenchmarkReport, BenchmarkSample } from '../shared/types'
+import type { BenchmarkMetricUnit, BenchmarkReport, BenchmarkSample } from '../shared/types'
 
 const benchOptions = {
   iterations: 1,
@@ -26,10 +26,7 @@ const benchOptions = {
   warmupTime: 0
 }
 
-const metrics: BenchmarkMetric[] = compilerDiagnosticMetricIds.map((id) => ({
-  id,
-  ...createMetricMetadata(id)
-}))
+const metrics = stylesheetDiagnosticMetrics
 
 let reportPromise: Promise<number> | undefined
 
@@ -90,11 +87,11 @@ async function createCompilerDiagnosticsReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-compiler',
-      '@master/css-engine',
-      '@master/css-project',
-      '@master/css-scanner',
-      '@master/css-source',
-      '@master/css-stylesheet',
+      '@master/css',
+      '@master/css-compiler',
+      '@master/css-tooling/scanner/node',
+      '@master/css-tooling/source',
+      '@master/css-compiler/stylesheet',
       'fast-glob'
     ]),
     fixtures: getStaticBenchmarkFixtures(benchmarkFixtures),
@@ -104,10 +101,8 @@ async function createCompilerDiagnosticsReport(): Promise<BenchmarkReport> {
     samples,
     summary: summarizeReportSamples(samples, metricUnits),
     limits: [
-      'This suite is diagnostic and does not replace end-user production command timing from build-performance.',
-      'Compiler diagnostics instrument internal source modules without adding package exports or public APIs.',
-      'The diagnostic extraction path must produce the same final CSS SHA-256 as production createExtractedCSS before numbers are reported.',
-      'Do not use diagnostic numbers as permission to change directive semantics, generated CSS, cascade order, source detection, hydration, or public behavior.'
+      'This suite measures public API operation boundaries and does not replace end-user command timing.',
+      ...stylesheetDiagnosticLimits
     ],
     artifacts
   }
@@ -145,47 +140,10 @@ function getDiagnosticRounds() {
   return Math.floor(value)
 }
 
-function createMetricMetadata(id: string): Omit<BenchmarkMetric, 'id'> {
-  return {
-    label: toMetricLabel(id),
-    unit: getMetricUnit(id),
-    description: toMetricDescription(id)
-  }
-}
-
-function getMetricUnit(id: string): BenchmarkMetricUnit {
-  if (id.endsWith('-bytes')) return 'B'
-  if (id.endsWith('-count')) return 'count'
-  return 'ms'
-}
-
-function toMetricLabel(id: string) {
-  return id
-    .replace(/^master-internal-/, 'Master internal ')
-    .replace(/^outer-/, 'Outer ')
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ')
-}
-
-function toMetricDescription(id: string) {
-  if (id.startsWith('master-internal-')) {
-    return 'Compiler lowering metric collected while compiling the @master/css package source.'
-  }
-  if (id.startsWith('outer-')) {
-    return 'Compiler lowering metric collected while finalizing the extracted stylesheet manifest.'
-  }
-  if (id === 'production-create-extracted-css-ms') {
-    return 'Time spent in the production createExtractedCSS path after scanner setup.'
-  }
-  if (id === 'diagnostic-compiler-total-ms') {
-    return 'Total elapsed time for the benchmark-local compiler diagnostic extraction path.'
-  }
-  return 'Compiler diagnostic metric.'
-}
-
 describe('compiler diagnostics', () => {
-  bench('write compiler diagnostics report', async () => {
-    await writeCompilerDiagnosticsReportOnce()
-  }, benchOptions)
+  test('write compiler diagnostics report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write compiler diagnostics report', async () => {
+      await writeCompilerDiagnosticsReportOnce()
+    }).run(benchOptions)
+  })
 })

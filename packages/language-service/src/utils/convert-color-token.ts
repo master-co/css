@@ -1,46 +1,34 @@
-import type { MasterCSS } from '@master/css-language'
 import type { ColorPresentationParams } from 'vscode-languageserver-protocol'
+import type { MasterCSSLanguageColorFormat } from '@master/css-tooling/language'
 import Color from 'colorjs.io'
 
-export default function convertColorByToken(color: ColorPresentationParams['color'], colorToken: string, css: MasterCSS) {
-  const valueComponent = css.generate('color:' + colorToken)[0]?.valueComponents[0]
-  let outputSpace = 'srgb'
-  switch (valueComponent?.type) {
-    case 'function':
-      outputSpace = valueComponent.name
-      break
-    case 'variable':
-      outputSpace = String(valueComponent.variable?.value || '').match(/^([a-zA-Z][\w-]*)\(/)?.[1] || outputSpace
-      break
-    case 'string':
-      outputSpace = 'srgb'
-      break
-  }
-  outputSpace = normalizeCSSColorFunctionName(outputSpace)
-  if (!outputSpace) {
-    return
-  }
-  return new Color({ space: 'srgb', coords: [color.red, color.green, color.blue], alpha: color.alpha }).to(outputSpace).toString({ format: 'css', precision: 4, inGamut: false })
-    .replace(' / ', '/')
-    .replaceAll(' ', '|')
+const colorJsSpaces: Readonly<Record<string, string>> = {
+  'rgb': 'srgb',
+  'display-p3': 'p3',
+  'a98-rgb': 'a98rgb',
+  'prophoto-rgb': 'prophoto',
+  'xyz': 'xyz-d65'
 }
 
-export function normalizeCSSColorFunctionName(fn: string): string {
-  switch (fn) {
-    case 'rgb':
-    case 'rgba':
-      return 'srgb'
-    case 'hsla':
-      return 'hsl'
-    case 'display-p3':
-    case 'p3':
-      return 'p3'
-    case 'rec2020':
-    case 'rec.2020':
-      return 'rec2020'
-    case 'color':
-      return ''
-    default:
-      return fn
-  }
+export function convertColorInFormat(
+  color: ColorPresentationParams['color'],
+  format: MasterCSSLanguageColorFormat
+) {
+  const source = new Color({
+    space: 'srgb',
+    coords: [color.red, color.green, color.blue],
+    alpha: color.alpha
+  })
+  const token = format.syntax === 'hex'
+    ? `#${[color.red, color.green, color.blue, ...(color.alpha < 1 ? [color.alpha] : [])]
+        .map((channel) => Math.round(Math.min(1, Math.max(0, channel)) * 255)
+          .toString(16)
+          .padStart(2, '0'))
+        .join('')}`
+    : source
+        .to(colorJsSpaces[format.space || format.syntax] || format.space || format.syntax)
+        .toString({ format: 'css', precision: 4, inGamut: false })
+  return token
+    .replace(' / ', '/')
+    .replaceAll(' ', '|')
 }

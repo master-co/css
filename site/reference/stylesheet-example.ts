@@ -1,0 +1,25 @@
+import { compileManifestSync } from '@master/css-compiler/node'
+import { createRenderSessionSync } from '@master/css/node'
+import { beautifyCSS } from '~/site/docs-shell/utils/beautify-css'
+import preset from '../utils/preset-manifest'
+
+/** Compile trusted, standalone documentation CSS through the public rendering API. */
+export async function stylesheetExampleCSS(source: string) {
+  const result = compileManifestSync(source, {
+    baseManifest: preset,
+    preserveNativeCSS: true,
+  })
+  const errors = result.diagnostics.filter(diagnostic => diagnostic.severity === 'error')
+  if (errors.length) throw new Error(`Invalid documentation stylesheet: ${JSON.stringify(errors)}`)
+  const renderer = createRenderSessionSync({ manifest: result.manifest })
+  try {
+    renderer.ensureClassRules([...result.directiveSummary.extractionPolicy.safelist])
+    renderer.ensureStylesheetResources(result.css)
+    const snapshot = renderer.snapshot()
+    return beautifyCSS([...(snapshot.engine.stylesheets ?? []), snapshot.cssText].filter(Boolean).join('\n\n')).trim()
+  } finally { renderer.dispose() }
+}
+
+export async function stylesheetExampleMarkdown(title: string, source: string) {
+  return `**${title}**\n\n\`\`\`css name=Source stylesheet=source\n${source}\n\`\`\`\n\n\`\`\`css name=Result stylesheet=result disclosure=generated-css\n${await stylesheetExampleCSS(source)}\n\`\`\``
+}

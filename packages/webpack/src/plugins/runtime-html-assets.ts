@@ -1,8 +1,8 @@
-import {
-  toManifestPreloadLinkTag
-} from '@master/css-integration/manifest-facade'
+import { toProgramPreloadLinkTag } from '@master/css-internal/program-module'
 import type { Compilation, Compiler } from 'webpack'
+import { posix } from 'node:path'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
+import { collectProgramAssetReferences } from '../utils/program-module'
 
 const JS_FILE_PATTERN = /\.m?js(?:[?#].*)?$/
 
@@ -19,7 +19,7 @@ function escapeAttributeValue(value: string) {
 function hasTagWithHref(html: string, tagName: string, href: string) {
   const quotedHref = escapeRegExp(href)
   return new RegExp(
-    String.raw`<${tagName}\b(?=[^>]*\bhref=(?:"${quotedHref}"|'${quotedHref}'))[^>]*>`,
+    String.raw`<${tagName}\b(?=[^>]*\bhref\s*=\s*(?:"${quotedHref}"|'${quotedHref}'|${quotedHref}(?=[\s>])))[^>]*>`,
     'i'
   ).test(html)
 }
@@ -27,7 +27,7 @@ function hasTagWithHref(html: string, tagName: string, href: string) {
 function hasScriptWithSrc(html: string, src: string) {
   const quotedSrc = escapeRegExp(src)
   return new RegExp(
-    String.raw`<script\b(?=[^>]*\bsrc=(?:"${quotedSrc}"|'${quotedSrc}'))[^>]*>`,
+    String.raw`<script\b(?=[^>]*\bsrc\s*=\s*(?:"${quotedSrc}"|'${quotedSrc}'|${quotedSrc}(?=[\s>])))[^>]*>`,
     'i'
   ).test(html)
 }
@@ -46,11 +46,13 @@ function injectBeforeBodyClose(html: string, tag: string) {
     : `${html.slice(0, bodyCloseIndex)}${tag}${html.slice(bodyCloseIndex)}`
 }
 
-function toPublicHref(compilation: Compilation, fileName: string) {
+function toPublicHref(compilation: Compilation, fileName: string, htmlFileName: string) {
   const publicPath = compilation.outputOptions.publicPath
-  if (!publicPath || publicPath === 'auto') return fileName
-  if (typeof publicPath !== 'string') return fileName
-  return `${publicPath.replace(/\/?$/, '/')}${fileName.replace(/^\/+/, '')}`
+  const base = typeof publicPath === 'string' && publicPath !== 'auto' ? publicPath : ''
+  const href = base ? `${base.replace(/\/?$/, '/')}${fileName.replace(/^\/+/, '')}` : fileName
+  if (/^(?:[a-z][a-z\d+.-]*:|\/)/i.test(href)) return href
+  const directory = posix.dirname(htmlFileName)
+  return directory === '.' ? href : posix.relative(directory, href)
 }
 
 function usesModuleScript(compilation: Compilation) {
@@ -76,28 +78,37 @@ function getRuntimeFiles(compilation: Compilation, entryName: string) {
     : []
 }
 
-function transformHTML(html: string, context: MasterCSSWebpackContext, compilation: Compilation) {
+function transformHTML(
+  html: string,
+  context: MasterCSSWebpackContext,
+  compilation: Compilation,
+  assets: Compilation['assets'],
+  htmlFileName: string,
+  programFileName: string | undefined
+) {
   const moduleScript = usesModuleScript(compilation)
   let nextHTML = html
 
   if (context.shouldPreloadRuntime()) {
     for (const runtimeFile of getRuntimeFiles(compilation, context.runtimeEntryName)) {
-      const href = toPublicHref(compilation, runtimeFile)
+      const href = toPublicHref(compilation, runtimeFile, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, createRuntimePreloadTag(href, moduleScript))
       }
     }
 
-    for (const [assetFileName] of context.getManifestJSONAssets()) {
-      const href = toPublicHref(compilation, assetFileName)
+    // The runtime entry fetches this program as soon as it runs; progressive
+    // pages load it only when their engine starts, so only runtime pages preload it.
+    if (programFileName && assets[programFileName]) {
+      const href = toPublicHref(compilation, programFileName, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
-        nextHTML = injectBeforeHeadClose(nextHTML, toManifestPreloadLinkTag(href))
+        nextHTML = injectBeforeHeadClose(nextHTML, toProgramPreloadLinkTag(href))
       }
     }
   }
 
   for (const runtimeFile of getRuntimeFiles(compilation, context.runtimeEntryName)) {
-    const href = toPublicHref(compilation, runtimeFile)
+    const href = toPublicHref(compilation, runtimeFile, htmlFileName)
     if (!hasScriptWithSrc(nextHTML, href)) {
       nextHTML = injectBeforeBodyClose(nextHTML, createScriptTag(href, moduleScript))
     }
@@ -123,10 +134,13 @@ export default function RuntimeHTMLAssetsPlugin(context: MasterCSSWebpackContext
             stage
           }, (assets) => {
             const RawSource = compiler.webpack.sources.RawSource
+            const programFileName = context.shouldPreloadRuntime()
+              ? collectProgramAssetReferences(compilation.modules).defaultFileName
+              : undefined
             for (const [fileName, asset] of Object.entries(assets)) {
               if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
               const source = asset.source().toString()
-              const nextSource = transformHTML(source, context, compilation)
+              const nextSource = transformHTML(source, context, compilation, assets, fileName, programFileName)
               if (nextSource === source) continue
               compilation.updateAsset(fileName, new RawSource(nextSource))
             }

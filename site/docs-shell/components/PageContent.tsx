@@ -1,0 +1,120 @@
+'use client'
+
+import '~/site/styles/docs-shell/scrollbar.css'
+import ContentsSvg from '../../public/images/contents.svg'
+import { anchor } from '../utils/anchor'
+import Link from './Link'
+import { useLayoutEffect, useMemo, useRef } from 'react'
+import clsx from 'clsx'
+import { useTranslation } from '../contexts/i18n'
+import Image from './Image'
+import canIUseImg from '~/site/assets/images/references/caniuse.png'
+import mdnImg from '~/site/assets/images/references/mdn-web-docs.png'
+import { usePageContent } from './PageContentContext'
+
+const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
+
+export default function PageContent({ metadata }: any) {
+  const { activeTransitionsReady, currentId, currentParentId, items: pageContent } = usePageContent()
+  const ref = useRef<HTMLElement>(null)
+  const $ = useTranslation()
+
+  return (
+    <aside ref={ref} className="position:sticky top:0 overflow-y:auto flex-grow:0 flex-shrink:0 flex-basis:auto height:100dvh width:calc(252/16*1rem) pb-2xl padding-top:8.75rem b-line-subtle:not(.top) display:none@media(print) display:none@media((width<80rem)) border-left-width:1px@media((width<80rem)) border-left-style:solid@media((width<80rem)) border-left-color:transparent@media((width<80rem)) bg-surface-raised/.8@media((width<80rem)) backdrop-filter:blur(25px)@media((width<80rem)) scrollbar scrollbar-concealed">
+      <div className="display:flex align-items:center mb-md">
+        <ContentsSvg width="14" height="14" className="margin-block:-1px margin-left:-0.125rem" fill="currentColor" />
+        <span className=" ml-3xs font-xs">{$('On this page')}</span>
+      </div>
+      {(metadata.canIUseLink || metadata.mdnLink) &&
+        <div className='display:flex gap:0.625rem mb-md'>
+          {
+            metadata.canIUseLink &&
+            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="display:inline-flex overflow:hidden r-xs content:none::after">
+              <Image src={canIUseImg} loading='eager' width={24} height={24} alt={$('Can I use ?')} />
+            </Link>
+          }
+          {
+            metadata.mdnLink &&
+            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="display:inline-flex overflow:hidden r-xs content:none::after">
+              <Image src={mdnImg} loading='eager' width={24} height={24} alt={$('MDN Web Docs')} />
+            </Link>
+          }
+        </div>
+      }
+      <ul className='pl-md border-left-width:1px border-left-style:solid bl-line-subtle'>
+        {
+          pageContent.map((eachPageContentNav: any) => {
+            return <li key={eachPageContentNav.id}>
+              <PageContentNav {...eachPageContentNav} pageContent={pageContent} PageContentNav={eachPageContentNav} activeTransitionsReady={activeTransitionsReady} currentId={currentId} currentParentId={currentParentId} asideRef={ref}>
+                {$(eachPageContentNav.title)}
+              </PageContentNav>
+            </li>
+          })
+        }
+      </ul>
+      <ul className='mt-sm'>
+        {metadata.sourcePath && <li>
+          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
+            {$('Edit this page')}
+          </Link>
+        </li>}
+        <li>
+          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
+            {$('Issue on this page')}
+          </Link>
+        </li>
+      </ul>
+    </aside>
+  )
+}
+
+function PageContentNav({ children, id, level, activeTransitionsReady, currentId, currentParentId, asideRef }: any) {
+  const ref = useRef<HTMLAnchorElement>(null)
+  const active = useMemo(() => currentId === id, [currentId, id])
+  const $ = useTranslation()
+
+  useLayoutEffect(() => {
+    if (active && asideRef.current && ref.current) {
+      const behavior: ScrollBehavior = initializedPageContentScrollContainers.has(asideRef.current)
+        ? 'smooth'
+        : 'instant' as ScrollBehavior
+
+      asideRef.current.scrollTo({
+        top: asideRef.current.scrollTop + ref.current.getBoundingClientRect().top - 180,
+        behavior
+      })
+      initializedPageContentScrollContainers.add(asideRef.current)
+    }
+  }, [active, asideRef, currentId, currentParentId])
+
+  const Text = useMemo(() => {
+    if (typeof children === 'string') {
+      if (children?.startsWith('`')) {
+        return <code className='display:contents line-height:1'>{children.replace(/`/g, '')}</code>
+      } else {
+        return $(children)
+      }
+    } else {
+      return children
+    }
+  }, [$, children])
+
+  // Pre-render the transition and enable it with an attribute: a class added after
+  // hydration would start the Master CSS engine on every documentation page.
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('display:flex align-items:center fg-text-muted contain:content will-change:color transition-duration:.15s[data-transitions-ready] transition-property:color[data-transitions-ready] fg-accent.active! fill-accent.active_svg app-nav', {
+    'active': active || currentParentId === id,
+    'min-height:32px': level === 2,
+    'min-height:24px font-xs': level === 3,
+  })}
+    onClick={(event: any) => {
+      event.preventDefault()
+      anchor(id, { offset: 109 })
+    }}>
+    <div className={clsx({
+      'min-height:32px py-4xs': level === 2,
+      'margin-left:1em padding-block:1px padding-left:1em text-indent:-1em': level === 3
+    })}>
+      {Text}
+    </div>
+  </Link>
+}

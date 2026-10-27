@@ -2,28 +2,36 @@ import rule from '../src/rules/no-invalid-classes'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
 import { createPresetManifest } from './helpers/create-preset-manifest'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 
 jsxTester.run('invalid', rule, {
   valid: [
     {
-      code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>`,
+      code: "<div class=\"margin:0.5rem padding:0.5rem bg-black fg-white font-size:1.5rem\">Simple, basic</div>",
     },
     {
       code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
     },
-    {
-      code: `<div class="{content:'';block}::after@light"></div>`,
-    },
   ],
   invalid: [
     {
-      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      code: `<div class="{content:'';display:block}::after"></div>`,
+      errors: [{ message: /Unbalanced or invalid Master class structure/ }],
+      output: null
+    },
+    {
+      code: `<div class="bg-black text-decoration:1 rrr">Simple, basic</div>`,
       errors: [
         {
           messageId: 'invalidClass',
           data: {
-            message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration-color` property.'
+            message: 'Class "text-decoration:1" emits invalid CSS: Invalid CSS value: -webkit-text-decoration:1.'
+          }
+        },
+{
+          messageId: 'invalidClass',
+          data: {
+            message: 'Class "text-decoration:1" emits invalid CSS: Invalid CSS value: text-decoration:1.'
           }
         },
         {
@@ -40,19 +48,21 @@ jsxTester.run('invalid', rule, {
       ] as any
     },
     {
-      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      code: `<div class="bg-black text-decoration:1 rrr">Simple, basic</div>`,
       errors: [
         { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' },
       ]
     },
     {
-      code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {
@@ -61,9 +71,10 @@ jsxTester.run('invalid', rule, {
       ] as any
     },
     {
-      code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ]
     },
   ]
@@ -73,27 +84,41 @@ createTester({
   settings: {
     '@master/css': {
       manifest: createPresetManifest({
-        utilities: [
+        mixins: [
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
           {
-            name: 'btn',
-            type: UtilityType.Semantic,
-            layer: 'components',
-            rules: [
-              { selector: '&', declarations: { display: 'block' } }
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "block"
+              }
             ]
           }
         ]
-      })
+      }
+    ]
+  }
+]
+      , utilities: [{"name":"btn","body":[{"type":"rule" as const,"selector":"&","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}]}],"kind":"static" as const}] })
     }
   }
 }).run('invalid', rule, {
   valid: [],
   invalid: [
     {
-      code: `<div class="btn rrr bg:black text-decoration:bad()">Simple, basic</div>`,
+      code: `<div class="btn rrr bg-black text-decoration:1">Simple, basic</div>`,
       errors: [
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {
@@ -102,13 +127,14 @@ createTester({
       ] as any
     },
     {
-      code: `<div class="btn a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
+      code: "<div class=\"btn a c d hello-world text-decoration:1 margin-top:0 margin-top:0@sm\">Error class</div>",
       errors: [
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {

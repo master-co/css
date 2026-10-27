@@ -1,7 +1,8 @@
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, existsSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
+import { createEngineSync } from '@master/css/node'
 import masterCSSManifestLoader from '../src/css-manifest-loader'
 
 let fixtureDir: string | undefined
@@ -14,6 +15,7 @@ function createFixtureDir() {
 function runManifestLoader(context: {
   resourcePath: string
   rootContext?: string
+  mode?: string
   getOptions?: () => any
   addDependency?: (dependency: string) => void
 }) {
@@ -31,6 +33,12 @@ function runManifestLoader(context: {
   })
 }
 
+async function importProgram(source: string) {
+  const { default: program } = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(source)}`) as { default: unknown }
+  expect(program).toBeInstanceOf(Uint8Array)
+  return program as Uint8Array
+}
+
 afterEach(() => {
   if (fixtureDir) {
     rmSync(fixtureDir, { recursive: true, force: true })
@@ -44,7 +52,8 @@ describe('css manifest loader', () => {
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
@@ -52,8 +61,8 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":1')
-    expect(JSON.parse(source).version).toBe(1)
+    expect(source).toContain('"version":6')
+    expect(JSON.parse(source).version).toBe(6)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
@@ -62,43 +71,35 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       getOptions: () => ({ module: true })
     })
 
-    expect(source).toMatch(/^export default \{"version":1/)
+    expect(source).toMatch(/^export default \{"version":6/)
     expect(source).toContain('primary')
     expect(source).toContain('#123')
   })
 
-  it('wraps the manifest JSON as an external JSON facade when requested', async () => {
+  it('exports standard ESM data without writing bundler output assets', async () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
-    mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
-
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       rootContext: projectDir,
-      getOptions: () => ({ module: true, external: true })
+      getOptions: () => ({ module: true })
     })
-    const assetDir = join(projectDir, '.next/static/media')
-    const assetFile = readdirSync(assetDir).find((file) => file.endsWith('.json'))
-
-    expect(source).toContain('/_next/static/media/master-css-manifest.')
-    expect(source).toContain('loadMasterCSSManifestFromFetch')
-    expect(source).toContain('async function loadMasterCSSManifestFromFetch(url)')
-    expect(source).toContain('const response = await fetch(specifier);')
-    expect(source).toContain(': await loadMasterCSSManifestFromFetch(masterCSSManifestURL);')
-    expect(source).toContain(`with: { type: 'json' }`)
-    expect(source).toContain('fetch(')
-    expect(source).not.toContain('#123')
-    expect(assetFile).toBeTruthy()
-    expect(readFileSync(join(assetDir, assetFile || ''), 'utf8')).toContain('#123')
-    expect(readFileSync(join(projectDir, '.next/dev/static/media', assetFile || ''), 'utf8')).toContain('#123')
+    const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
+    expect(manifest.languageVersion).toBe(16)
+    expect(JSON.stringify(manifest)).toContain('#123')
+    expect(source).not.toContain('fetch(')
+    expect(source).not.toContain('/_next/')
+    expect(existsSync(join(projectDir, '.next'))).toBe(false)
   })
 
   it('inlines manifest modules in development for HMR', async () => {
@@ -107,17 +108,18 @@ describe('css manifest loader', () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
+    writeFileSync(manifestPath, `@theme { --color-primary: #123; }
+`)
 
     try {
       env.NODE_ENV = 'development'
       const source = await runManifestLoader({
         resourcePath: manifestPath,
         rootContext: projectDir,
-        getOptions: () => ({ module: true, external: true })
+        getOptions: () => ({ module: true })
       })
 
-      expect(source).toMatch(/^export default \{"version":1/)
+      expect(source).toMatch(/^export default \{"version":6/)
       expect(source).toContain('#123')
       expect(source).not.toContain('loadMasterCSSManifestFromImport')
     } finally {
@@ -129,21 +131,40 @@ describe('css manifest loader', () => {
     }
   })
 
+  it('omits source provenance only from production manifest modules', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, '@import url("@master/css");\n@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
+    const requests = [
+      { resourcePath: `${entryPath}?master-css-manifest`, options: { module: true } },
+      { resourcePath: join(projectDir, 'node_modules/.master-css/master-css-manifest.js'), options: { virtual: true, module: true } }
+    ]
+
+    for (const { resourcePath, options } of requests) {
+      const load = (mode: string) => runManifestLoader({ resourcePath, rootContext: projectDir, mode, getOptions: () => options })
+      expect(await load('development')).toMatch(/"source":\{"file":"[^"]*globals\.css"/)
+      const production = await load('production')
+      expect(production).toMatch(/^export default \{"version":6/)
+      expect(production).toContain('"name":"card"')
+      expect(production).not.toContain('"source"')
+    }
+  })
+
   it('loads CSS when the loader resource includes ?master-css-manifest', async () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
     const dependencies: string[] = []
     mkdirSync(projectDir, { recursive: true })
-    writeFileSync(manifestPath, [
-      '@theme {',
-      '    --color-primary: #123;',
-      '}',
-      '@components {',
-      '    btn {',
-      '        color: var(--color-primary);',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(manifestPath, `@theme {
+    --color-primary: #123;
+ }
+
+@mixin --btn {
+        color: var(--color-primary);
+    } @utility btn {
+        color: var(--color-primary);
+    }`)
 
     const source = await runManifestLoader({
       resourcePath: `${manifestPath}?master-css-manifest`,
@@ -151,11 +172,11 @@ describe('css manifest loader', () => {
     })
 
     expect(dependencies).toEqual([manifestPath])
-    expect(source).toContain('"version":1')
+    expect(source).toContain('"version":6')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
-    expect(source).toContain('"btn"')
-    expect(source).toContain('var(--color-primary)')
+    expect(source).toContain('"--btn"')
+    expect(JSON.parse(source).mixins.find((mixin: { name: string }) => mixin.name === '--btn').body).toContainEqual(expect.objectContaining({ property: 'color', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--color-primary' }] }] }))
   })
 
   it('loads the default virtual manifest from CSS entry files only', async () => {
@@ -164,21 +185,17 @@ describe('css manifest loader', () => {
     const entryPath = join(projectDir, 'app/globals.css')
     const preserveOnlyPath = join(projectDir, 'app/preserve.css')
     const dependencies: string[] = []
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@theme {',
-      '    --color-primary: #123;',
-      '}',
-      '@components {',
-      '    btn { color: var(--color-primary); }',
-      '}'
-    ].join('\n'))
-    writeFileSync(preserveOnlyPath, [
-      '@preserve native;',
-      '@theme {',
-      '    --color-ignored: #456;',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, `@import url("@master/css");
+@theme {
+    --color-primary: #123;
+ }
+
+@mixin --btn { color: var(--color-primary); } @utility btn { color: var(--color-primary); }`)
+    writeFileSync(preserveOnlyPath, `@preserve native;
+@theme {
+    --color-ignored: #456;
+ }
+`)
 
     const source = await runManifestLoader({
       resourcePath: join(projectDir, 'node_modules/.master-css/master-css-manifest.js'),
@@ -187,13 +204,40 @@ describe('css manifest loader', () => {
       addDependency: (dependency: string) => dependencies.push(dependency)
     })
 
-    expect(source).toContain('"version":1')
+    expect(source).toContain('"version":6')
     expect(source).toContain('primary')
     expect(source).toContain('#123')
-    expect(source).toContain('"btn"')
+    expect(source).toContain('"--btn"')
     expect(source).not.toContain('ignored')
     expect(dependencies).toContain(entryPath)
     expect(dependencies).not.toContain(preserveOnlyPath)
+  })
+
+  it('loads emitted globals from project CSS entry files', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    const dependencies: string[] = []
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, `@import url("@master/css");
+@theme { --color-primary: #123; }
+
+@prune native;@theme {  }@keyframes fade { to { opacity: 0; } }
+.host { color: var(--color-primary); animation: fade 1s; }`)
+
+    const source = await runManifestLoader({
+      resourcePath: join(projectDir, 'node_modules/.master-css/master-css-emitted-globals.js'),
+      rootContext: projectDir,
+      getOptions: () => ({ emittedGlobals: true }),
+      addDependency: (dependency: string) => dependencies.push(dependency)
+    })
+    const emittedGlobals = JSON.parse(source.replace(/^export default /, '').replace(/;$/, ''))
+
+    expect(emittedGlobals.variables['color-primary']).toBe(1)
+    expect(emittedGlobals).not.toHaveProperty('animations')
+    expect(Object.values(emittedGlobals.keyframes)).toEqual([1, 1])
+    expect(Object.keys(emittedGlobals.keyframes)).toEqual(expect.arrayContaining([expect.stringMatching(/^k.*-o\d+$/)]))
+    expect(emittedGlobals.keyframeSlots).toEqual(expect.arrayContaining(Object.keys(emittedGlobals.keyframes)))
+    expect(dependencies).toContain(entryPath)
   })
 
   it('keeps virtual manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
@@ -202,31 +246,17 @@ describe('css manifest loader', () => {
     const virtualManifestPath = join(projectDir, 'node_modules/.master-css/master-css-manifest.js')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@components {',
-      '    card {',
-      '        @compose bg:neutral-120;',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n.card { @contents; }")
 
     await expect(runManifestLoader({
       resourcePath: virtualManifestPath,
       rootContext: projectDir,
       getOptions: () => ({ virtual: true, module: true }),
       addDependency: (dependency: string) => dependencies.push(dependency)
-    })).rejects.toThrow('Invalid @compose class')
+    })).rejects.toThrow('@contents is only valid inside @mixin')
     expect(dependencies).toContain(entryPath)
 
-    writeFileSync(entryPath, [
-      '@import "@master/css";',
-      '@components {',
-      '    card {',
-      '        @compose block;',
-      '    }',
-      '}'
-    ].join('\n'))
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @media all{display:block;}\n    } @utility card {\n        @media all{display:block;}\n    }")
 
     const source = await runManifestLoader({
       resourcePath: virtualManifestPath,
@@ -234,8 +264,80 @@ describe('css manifest loader', () => {
       getOptions: () => ({ virtual: true, module: true })
     })
 
-    expect(source).toContain('"version":1')
-    expect(source).toContain('"card"')
+    expect(source).toContain('"version":6')
+    expect(source).toContain('"--card"')
     expect(source).toContain('display')
+  })
+
+  it('compiles the default virtual manifest into the runtime program browsers execute', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    const dependencies: string[] = []
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, '@import url("@master/css");\n@theme { --color-primary: #123; }\n@utility btn { color: var(--color-primary); }')
+
+    const source = await runManifestLoader({
+      resourcePath: join(projectDir, 'node_modules/.master-css/master-css-program.js'),
+      rootContext: projectDir,
+      getOptions: () => ({ virtual: true, program: true }),
+      addDependency: (dependency: string) => dependencies.push(dependency)
+    })
+
+    expect(source).not.toContain('"version":6')
+    expect(source).not.toContain('fetch(')
+    using engine = createEngineSync({ program: await importProgram(source) })
+    expect(engine.ensureClassRules(['btn']).mutations.length).toBeGreaterThan(0)
+    expect(dependencies).toContain(entryPath)
+    expect(existsSync(join(projectDir, '.next'))).toBe(false)
+  })
+
+  it('compiles a CSS entry into its runtime program for ?master-css-program', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'theme.css')
+    const dependencies: string[] = []
+    writeFileSync(entryPath, '@theme { --color-primary: #123; }\n@utility badge { color: var(--color-primary); }')
+
+    const source = await runManifestLoader({
+      resourcePath: `${entryPath}?master-css-program`,
+      rootContext: projectDir,
+      getOptions: () => ({ program: true }),
+      addDependency: (dependency: string) => dependencies.push(dependency)
+    })
+
+    using engine = createEngineSync({ program: await importProgram(source) })
+    expect(engine.ensureClassRules(['badge']).mutations.length).toBeGreaterThan(0)
+    expect(dependencies).toEqual([entryPath])
+  })
+
+  it('compiles production programs from manifests without source provenance', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, '@import url("@master/css");\n@utility card { display: block; }\n@keyframes fade { to { opacity: 0; } }')
+    const requests = [
+      { resourcePath: `${entryPath}?master-css-program`, options: { program: true } },
+      { resourcePath: join(projectDir, 'node_modules/.master-css/master-css-program.js'), options: { virtual: true, program: true } }
+    ]
+
+    for (const { resourcePath, options } of requests) {
+      const load = async (mode: string) => Buffer.from(await importProgram(await runManifestLoader({ resourcePath, rootContext: projectDir, mode, getOptions: () => options })))
+      expect((await load('development')).includes(entryPath)).toBe(true)
+      const production = await load('production')
+      expect(production.includes(projectDir)).toBe(false)
+      using engine = createEngineSync({ program: production })
+      expect(engine.ensureClassRules(['card']).mutations.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('rejects program queries on files other than CSS entries', async () => {
+    const projectDir = createFixtureDir()
+    const modulePath = join(projectDir, 'theme.js')
+    writeFileSync(modulePath, 'export default {}')
+
+    await expect(runManifestLoader({
+      resourcePath: `${modulePath}?master-css-program`,
+      rootContext: projectDir,
+      getOptions: () => ({ program: true })
+    })).rejects.toThrow('Master CSS program queries only support CSS entry files.')
   })
 })

@@ -1,0 +1,183 @@
+import {
+  createToolingBinding,
+  type MasterCSSLintBindingSession,
+  type MasterCSSLanguageBindingSession,
+  type MasterCSSValidatorBindingSession
+} from '@master/css-binding/tooling'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type {
+  MasterCSSLintCanonicalClassGroupSuggestions,
+  MasterCSSLintCanonicalClassSuggestions,
+  MasterCSSLintRawValueCandidates,
+  MasterCSSValidatorBatch
+} from '@master/css-binding/tooling'
+import { MASTER_CSS_LINT_BATCH_VERSION } from '@master/css-binding/tooling'
+import { validateRuleDeclarations } from '../value-validation'
+import type {
+  CanonicalClassNameOptions,
+  RawValuePolicyOptions
+} from './contracts'
+import type {
+  MasterCSSLintAnalysis,
+  MasterCSSLintCanonicalClassGroupSuggestion,
+  MasterCSSLintCanonicalClassSuggestion,
+  MasterCSSLintClassListAnalysis,
+  MasterCSSLintClassListOptions,
+  MasterCSSLintDocumentAnalysis,
+  MasterCSSLintRawValueCandidate,
+  MasterCSSLintToken
+} from './analysis'
+
+export interface LintSession {
+  tokenizeClassList(classList: string, unescape?: string | false): readonly MasterCSSLintToken[]
+  analyzeDocument(source: string, languageId: string): MasterCSSLintDocumentAnalysis
+  analyze(classNames: string[]): MasterCSSLintAnalysis
+  canonicalClassGroups(
+    classNames: string[],
+    options?: CanonicalClassNameOptions
+  ): readonly MasterCSSLintCanonicalClassGroupSuggestion[]
+  canonicalClassNames(
+    classNames: string[],
+    options?: CanonicalClassNameOptions
+  ): readonly MasterCSSLintCanonicalClassSuggestion[]
+  rawValueCandidates(classNames: string[]): readonly MasterCSSLintRawValueCandidate[]
+  analyzeClassList(
+    classList: string,
+    classNames: string[],
+    options?: MasterCSSLintClassListOptions
+  ): MasterCSSLintClassListAnalysis
+  dispose(): void
+}
+
+function resolveRawValuePolicy(
+  options: RawValuePolicyOptions | undefined
+) {
+  if (!options) return
+  if (options.allowRawValues) {
+    return {
+      allowRawValues: true,
+      allowProperties: options.allowProperties || [],
+    requireProperties: options.requireProperties || [],
+      allowedPatterns: []
+    }
+  }
+  return {
+    allowRawValues: false,
+    allowProperties: options.allowProperties || [],
+    requireProperties: options.requireProperties || [],
+    allowedPatterns: options.allowedPatterns || []
+  }
+}
+
+interface BindingLintValidation {
+  invalidGeneratedClasses: string[]
+  validationErrors: string[][]
+}
+
+function collectHostRuleErrors(batch: MasterCSSValidatorBatch): string[][][] {
+  return batch.classes.map((
+    { rules }: MasterCSSValidatorBatch['classes'][number]
+  ) => rules.map((
+    { text }: MasterCSSValidatorBatch['classes'][number]['rules'][number]
+  ) => validateRuleDeclarations(text).filter((declaration) => declaration.status === 'invalid').map((declaration) =>
+    `Invalid CSS value: ${declaration.property}:${declaration.value}`
+  )))
+}
+
+export function bindLintSession(
+  lint: MasterCSSLintBindingSession,
+  validator: MasterCSSValidatorBindingSession,
+  language: MasterCSSLanguageBindingSession
+): LintSession {
+  const resolveInputs = (classNames: string[]) => {
+    const validation = validator.generateClassRules(classNames) as MasterCSSValidatorBatch
+    const resolvedValidation = lint.resolveValidation(
+      validation,
+      collectHostRuleErrors(validation)
+    ) as BindingLintValidation
+    return {
+      nativeSupport: undefined,
+      ...resolvedValidation
+    }
+  }
+  return {
+    tokenizeClassList(classList, unescape) {
+      return (language.analyzeDocument({
+        source: classList,
+        languageId: 'class-list',
+        hostRanges: [{
+          start: 0,
+          end: classList.length,
+          unescape: unescape ? [unescape] : []
+        }]
+      }) as ReturnType<LintSession['analyzeDocument']>).classPositions
+    },
+    analyzeDocument(source, languageId) {
+      return language.analyzeDocument({ source, languageId }) as ReturnType<LintSession['analyzeDocument']>
+    },
+    analyze(classNames) {
+      const inputs = resolveInputs(classNames)
+      return lint.analyze(
+        classNames,
+        inputs.nativeSupport,
+        inputs.invalidGeneratedClasses
+      ) as MasterCSSLintAnalysis
+    },
+    canonicalClassNames(classNames, options) {
+      const inputs = resolveInputs(classNames)
+      return (lint.canonicalClassNames(
+        classNames,
+        inputs.nativeSupport,
+        options
+      ) as MasterCSSLintCanonicalClassSuggestions).suggestions
+    },
+    canonicalClassGroups(classNames, options) {
+      const inputs = resolveInputs(classNames)
+      return (lint.canonicalClassGroups(
+        classNames,
+        inputs.nativeSupport,
+        options
+      ) as MasterCSSLintCanonicalClassGroupSuggestions).suggestions
+    },
+    rawValueCandidates(classNames) {
+      const inputs = resolveInputs(classNames)
+      return (lint.rawValueCandidates(
+        classNames,
+        inputs.nativeSupport,
+        inputs.invalidGeneratedClasses
+      ) as MasterCSSLintRawValueCandidates).candidates
+    },
+    analyzeClassList(classList, classNames, options) {
+      const inputs = resolveInputs(classNames)
+      return lint.analyzeClassListPolicy({
+        version: MASTER_CSS_LINT_BATCH_VERSION,
+        classList,
+        classNames,
+        nativeSupport: inputs.nativeSupport,
+        invalidGeneratedClasses: inputs.invalidGeneratedClasses,
+        validationErrors: inputs.validationErrors,
+        disallowUnknownClass: options?.disallowUnknownClass,
+        canonicalOptions: options?.canonicalOptions,
+        rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy)
+      }) as MasterCSSLintClassListAnalysis
+    },
+    dispose() {
+      lint.dispose()
+      validator.dispose()
+      language.dispose()
+    }
+  }
+}
+
+export async function createLintSession(
+  manifest: MasterCSSManifest,
+  options: { readonly binding?: 'auto' | 'native' | 'wasm' } = {}
+): Promise<LintSession> {
+  const tooling = await createToolingBinding({ binding: options.binding })
+  const [lint, validator, language] = await Promise.all([
+    tooling.createLintSession(manifest),
+    tooling.createValidatorSession(manifest),
+    tooling.createLanguageSession(manifest)
+  ])
+  return bindLintSession(lint, validator, language)
+}

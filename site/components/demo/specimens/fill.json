@@ -1,0 +1,23 @@
+[
+  {
+    "page": "fill",
+    "id": "use-theme-colors",
+    "title": "Use theme colors",
+    "html": [
+      "<!-- Theme alias · follows the mode -->\n<svg id=\"target\" role=\"img\" aria-label=\"Triangle\"\n  width=\"96\" height=\"96\" viewBox=\"0 0 24 24\"\n  class=\"display:block fill-blue stroke:none\">\n  <path d=\"M12 4 20 20H4Z\" />\n</svg>",
+      "<!-- Palette step · fixed blue-60 -->\n<svg id=\"target\" role=\"img\" aria-label=\"Triangle\"\n  width=\"96\" height=\"96\" viewBox=\"0 0 24 24\"\n  class=\"display:block fill-blue-60 stroke:none\">\n  <path d=\"M12 4 20 20H4Z\" />\n</svg>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "fill-blue",
+      "stroke:none",
+      "fill-blue-60"
+    ],
+    "classLists": [
+      "display:block fill-blue stroke:none",
+      "display:block fill-blue-60 stroke:none"
+    ],
+    "highlighted": []
+  }
+]

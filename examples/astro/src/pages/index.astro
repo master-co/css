@@ -4,49 +4,49 @@ import Card from '../components/Card.astro';
 ---
 
 <Layout title="Master CSS Astro progressive rendering">
-  <main class="min-h:100vh p:10x bg:#f8fafc fg:#0f172a">
-    <section class="max-width:960px mx:auto py:12x">
-      <p class="inline-flex align-items:center h:32px px:3x r:999px bg:#eff6ff fg:royalblue font:14px font-weight:600">
+  <main class="min-height:100vh padding:2.5rem background-color:#f8fafc color:#0f172a">
+    <section class="max-width:960px margin-inline:auto padding-block:3rem">
+      <p class="display:inline-flex align-items:center height:32px padding-inline:0.75rem border-radius:999px background-color:#eff6ff color:royalblue font-size:14px font-weight:600">
         Astro integration
       </p>
-      <h1 class="m:0 mt:4x font:48px font-weight:800 tracking:-.015em">
-        Progressive rendering by default
+      <h1 class="margin:1rem|0|0 font-size:48px font-weight:800 letter-spacing:-.015em">
+        Explicit progressive rendering
       </h1>
-      <p class="max-width:640px fg:#475569 font:18px line-height:1.7">
+      <p class="max-width:640px color:#475569 font-size:18px line-height:1.7">
         The Astro integration pre-renders the CSS needed for the initial HTML and hydrates the Master CSS runtime for classes that appear later in the browser.
       </p>
-      <div class="mt:6x p:5x r:10px bg:white border:1px|solid|#e2e8f0">
-        <p class="m:0 fg:#475569 line-height:1.6">
+      <div class="margin-top:1.5rem padding:1.25rem border-radius:10px bg-white border:1px|solid|#e2e8f0">
+        <p class="margin:0 color:#475569 line-height:1.6">
           This button starts with pre-rendered classes. Click it to add a new runtime-only class after the page has loaded.
         </p>
         <button
           data-runtime-toggle
-          class="inline-flex align-items:center h:44px px:5x mt:4x bg:black fg:white r:6px text:14px font-weight:600 border:0 cursor:pointer"
+          class="display:inline-flex align-items:center height:44px padding-inline:1.25rem margin-top:1rem bg-black fg-white border-radius:6px font-size:14px font-weight:600 border:0 cursor:pointer"
         >
           Hydrate runtime class
         </button>
-      <p data-runtime-status class="m:0 mt:3x fg:#475569 font:14px">
+        <p data-runtime-status class="margin:0.75rem|0|0 color:#475569 font-size:14px">
           Waiting for interaction
         </p>
       </div>
     </section>
-    <section class="max-width:960px mx:auto pb:12x">
-      <ul role="list" class="grid grid-cols:3 gap:4x p:0 m:0">
-      <Card
-        href="https://css.master.co/guide/rendering-modes#progressive-rendering"
-        title="pre-rendered CSS"
-        body="Astro middleware injects style#master-css into HTML during static generation or server rendering."
-      />
-      <Card
-        href="https://css.master.co/reference/runtime"
-        title="Runtime hydration"
-        body="The browser runtime reuses the pre-rendered stylesheet and observes class changes after load."
-      />
-      <Card
-        href="https://css.master.co/guide/installation/astro"
-        title="Default setup"
-        body="Use masterCSS() in astro.config.js. Progressive mode is enabled unless you choose another mode."
-      />
+    <section class="max-width:960px margin-inline:auto padding-bottom:3rem">
+      <ul role="list" class="display:grid grid-cols(3) gap:1rem padding:0 margin:0">
+        <Card
+          href="https://css.master.co/guide/rendering-modes#progressive-rendering"
+          title="pre-rendered CSS"
+          body="Astro middleware injects style#master-css into HTML during static generation or server rendering."
+        />
+        <Card
+          href="https://css.master.co/reference/runtime"
+          title="Runtime hydration"
+          body="The browser runtime reuses the pre-rendered stylesheet and observes class changes after load."
+        />
+        <Card
+          href="https://css.master.co/guide/installation/astro"
+          title="Choose progressive mode"
+          body="Use masterCSS({ mode: 'progressive' }) in astro.config.js. The default mode is static."
+        />
       </ul>
     </section>
   </main>
@@ -59,13 +59,13 @@ import Card from '../components/Card.astro';
 
   button?.addEventListener('click', () => {
     active = !active;
-    button.classList.toggle('bg:black', !active);
-    button.classList.toggle('bg:royalblue', active);
-    status?.classList.toggle('fg:#475569', !active);
-    status?.classList.toggle('fg:mediumblue', active);
+    button.classList.toggle('bg-black', !active);
+    button.classList.toggle('background:royalblue', active);
+    status?.classList.toggle('color:#475569', !active);
+    status?.classList.toggle('color:mediumblue', active);
     if (status) {
       status.textContent = active
-        ? 'Runtime generated bg:royalblue and fg:mediumblue after hydration.'
+        ? 'Runtime generated background:royalblue and color:mediumblue after hydration.'
         : 'Waiting for interaction';
     }
   });
@@ -73,7 +73,7 @@ import Card from '../components/Card.astro';
 
 <style>
   @media (max-width: 760px) {
-    .grid-cols\:3 {
+    ul[role="list"] {
       grid-template-columns: 1fr;
     }
   }

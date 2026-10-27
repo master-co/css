@@ -1,4 +1,4 @@
-@master entry;
+@import "@master/css";
 @import './styles/card.css';
 
 @theme {
@@ -6,8 +6,8 @@
   --global: #ff00ff;
 }
 
-@components {
-  btn {
+@layer components {
+  .btn {
     display: inline-flex;
     text-align: center;
   }

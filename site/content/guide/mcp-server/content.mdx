@@ -1,0 +1,227 @@
+## Overview [sr-only]
+The Master CSS MCP server gives AI clients a project-aware interface for Master CSS. It runs locally over stdio, reads the workspace you point it at, and exposes tools for setup audits, manifest inspection, directive inspection, class diagnostics, generated CSS previews, syntax suggestions, CSS output comparison, and safe fix previews.
+
+Use it when an AI coding agent should reason from the same Master CSS setup as the project: the CSS entry manifest, theme tokens, component classes, scanner state, stylesheet entries, and lint policy. It is not a replacement for editor completions, ESLint, or CI commands. It is a tool surface for AI clients that speak the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+---
+
+## Install and start
+Install the package in the project or run it with `npx`. The server uses stdio, so it is usually started by an MCP client rather than by a long-running terminal session.
+
+```bash name=Terminal
+npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+Use an absolute `--root` path so the server can resolve the intended workspace. When `--root` is omitted, the current working directory becomes the workspace root.
+
+You can also set the preview confirmation token lifetime:
+
+```bash name=Terminal
+npx -y @master/css-mcp@rc --root /absolute/path/to/project --preview-ttl 300000
+```
+
+### Ask an agent to set it up
+You can ask a local AI coding agent to register the MCP server for you. The agent should identify the MCP client first, then use that client's native setup path instead of assuming every client reads the same project config file.
+
+```text name=prompt
+Set up the Master CSS MCP server for this project.
+
+Project root: /absolute/path/to/project
+Package: @master/css-mcp@rc
+
+First identify which MCP client is being configured. Use the client's native registration path:
+- Codex App: use `codex mcp add`
+- Claude Code: use `claude mcp add --transport stdio`
+- Clients that accept `mcpServers` JSON: add the command/args shape to that client's config
+
+Use this stdio command:
+npx -y @master/css-mcp@rc --root /absolute/path/to/project
+
+Do not assume a project `mcp.json` is read automatically by every client. Do not commit machine-specific absolute paths unless I explicitly ask for a project-scoped team config.
+
+After setup, verify the server is registered, restart or open a new client session if needed, then call `mastercss_workspace_info` to confirm the MCP server is connected to the intended project root.
+```
+
+---
+
+## Configure an MCP client
+MCP clients that accept `mcpServers` JSON can use the same command you would run from the terminal. Treat this as a copyable config shape, not a universal project file that every client automatically reads. For example, Claude Desktop uses this shape in `claude_desktop_config.json` and requires a restart after config changes.
+
+```json name=mcp-client-config.json
+{
+  "mcpServers": {
+    "master-css": {
+      "command": "npx",
+      "args": ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+### Use with Codex App
+Codex App can register stdio MCP servers through the Codex CLI:
+
+```bash name=Terminal
+codex mcp add master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+This writes an equivalent entry to `~/.codex/config.toml`:
+
+```toml name=~/.codex/config.toml
+[mcp_servers.master-css]
+command = "npx"
+args = ["-y", "@master/css-mcp@rc", "--root", "/absolute/path/to/project"]
+startup_timeout_sec = 120
+```
+
+Restart Codex App or open a new thread after changing MCP settings. Verify the server is registered with:
+
+```bash name=Terminal
+codex mcp list
+codex mcp get master-css
+```
+
+If `codex mcp` cannot read the configuration, fix the local Codex config parse error first, then run the add command again.
+
+### Use with Claude Code
+Claude Code can register the same local stdio server through its MCP CLI:
+
+```bash name=Terminal
+claude mcp add --transport stdio master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+For a team-maintained project config, use project scope:
+
+```bash name=Terminal
+claude mcp add --transport stdio --scope project master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
+```
+
+Review the generated `.mcp.json` before committing it because absolute `--root` paths are machine-specific.
+
+After connecting, ask the client to inspect the workspace before editing. Good first tasks include scanning the project, inspecting one class, linting changed files, and previewing fixes without applying them.
+
+```text name=prompt
+Use the Master CSS MCP server to inspect this workspace before editing.
+
+Check the project manifest, scan source files, lint the affected class strings, and inspect any classes whose generated CSS is unclear. If fixes are needed, create a preview first and explain the diff before applying it.
+```
+
+---
+
+## Available tools
+The server exposes focused tools instead of asking the agent to infer Master CSS behavior from files alone.
+
+### Project tools
+
+| Tool | Use |
+| --- | --- |
+| `mastercss_workspace_info` | Report workspace roots, resolved Master CSS package locations, and manifest status. |
+| `mastercss_setup_audit` | Audit package, entry stylesheet, manifest, integration, and package-resolution setup. |
+| `mastercss_inspect_class` | Inspect one class and return semantic parts, generated rules, variables, and CSS text. |
+| `mastercss_trace_class` | Trace one class through source extraction, scanner state, missing CSS classification, and generated rules. |
+| `mastercss_extract_classes` | Extract class positions and validation summaries from project files or an in-memory source buffer. |
+| `mastercss_inspect_directives` | Inspect CSS-first directives and report manifest, dependency, warning, and CSS effects. |
+| `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
+| `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_manifest_query` | Query active manifest tokens, utilities, mixins, custom media, and token families. |
+| `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
+| `mastercss_lint_project` | Run Master CSS class-list diagnostics for workspace files and return fix proposals without writing files. |
+| `mastercss_lint_content` | Run Master CSS class-list diagnostics on an in-memory source buffer without writing files. |
+| `mastercss_suggest_syntax` | Return language-service completions and hover context for a document position. |
+| `mastercss_preview_fixes` | Create a diff preview for lint fixes or generated CSS output and return a confirmation token. |
+| `mastercss_preview_directive_format` | Preview Master CSS directive formatting for files, or format in-memory content without writing. |
+| `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
+
+### Contributor tools
+
+These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They return repository-specific routing as compact JSON: affected packages, required context files, risk flags, and focused validation commands. In non-Master CSS workspaces they return limited package data instead of guessing.
+
+| Tool | Use |
+| --- | --- |
+| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
+| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
+| `mastercss_test_router` | Return focused validation commands for contributor changes. |
+| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
+
+The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations.
+
+---
+
+## Prompt templates
+Prompt templates guide common AI workflows without asking the client to infer the right tool sequence.
+
+| Prompt | Use |
+| --- | --- |
+| `debug-missing-css` | Inspect scanner coverage, manifest loading, syntax, native CSS pruning, and stylesheet entry configuration when classes do not produce CSS. |
+| `review-mastercss-classes` | Run class diagnostics and propose only safe, scoped write previews. |
+| `migrate-to-mastercss` | Plan a conversion from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS or component-library styling to current Master CSS. |
+
+---
+
+## Machine-readable results
+Every tool returns a version 3 object with `metadata`, `diagnostics` and a required `result`. Success has `result: { status: 'success', data }`; failure has `result: { status: 'error', error: { code, message } }`. Tool failures also set MCP `isError`. JSON text and `structuredContent` contain the same object. Use the tool's published `outputSchema` to validate both branches.
+
+`metadata` includes package/language/binding versions, the context actually used, manifest fingerprint, entries and dependencies. Unavailable manifest information is null or an empty array. Project context is the default: an absent entry or failed compilation returns an error, without switching to the preset. Request `context: 'preset'` explicitly for preset-only queries.
+
+Class inspection separates `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport`. Check records identify their name, version, phase and scope. A CSS grammar error is different from an unknown future capability; `var()` does not establish a computed value. Browser support stays `not-checked` unless a browser check was actually executed. Preserve diagnostics, dependency arrays and ambiguous-name alternatives when consuming reports.
+
+Known CSS math types are checked without computing lengths or converting units. Distinct token definitions remain ambiguous even when their current values are equal. Inspect project definitions and reported diagnostics before proposing changes to custom recipes.
+
+Markdown/MDX extraction distinguishes live markup and code from display text, and returns original UTF-16 occurrence ranges with inclusion/exclusion reasons. The CLI, editor and MCP share Rust extraction and matching. CLI report versions are independent of the MCP envelope; read each report's declared version.
+
+For CLI reports, `cwd` is the command root. For MCP payloads, `root` is the configured workspace root.
+
+---
+
+## Safe write previews
+Read-only tools never write files. Tools that can lead to writes use a two-step flow:
+
+1. A preview tool such as `mastercss_preview_fixes` or `mastercss_preview_directive_format` creates a diff preview and returns a confirmation token.
+2. The client shows or explains the preview.
+3. `mastercss_apply_preview` applies the preview only after validating the token, workspace containment, and the original file hash.
+
+This keeps AI-assisted edits reviewable. If a file changes after the preview is created, applying the preview fails instead of overwriting newer work.
+
+Class-list fixes replace class-list text in place. Directive formatting previews are separate from lint fixes and use the same preview/apply checks.
+
+---
+
+## Choose the right tool
+Use each Master CSS tool surface for the workflow it owns.
+
+| Surface | Best for |
+| --- | --- |
+| MCP server | AI client tool calls with project context, setup audits, scanner diagnostics, class tracing, manifest queries, CSS comparison, syntax suggestions, and safe fix previews. |
+| CLI JSON output | Terminal, CI, scripts, and native preflight checks that need machine-readable lint or scan reports. |
+| ESLint | Human development workflow, editor diagnostics through ESLint extensions, team policy, and JavaScript/framework CI linting. |
+| Language Service | Editor completion, hover previews, color tools, directive formatting, highlighting, and manifest diagnostics. |
+
+When an AI client supports MCP, prefer the MCP server because it can call specific tools and keep write previews explicit. When a client cannot use MCP, use CLI JSON output as the fallback:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json --exit-code never
+```
+
+For scanner state, stylesheet entry metadata, generated CSS size, or explicit missing CSS checks, use:
+
+```bash name=Terminal
+npx @master/css-cli inspect --format json --exit-code never
+```
+
+---
+
+## Next steps
+- Use [AI Coding](/guide/ai-coding) for prompts and review habits around AI-generated styling.
+- Use [Project agent rules](/guide/ai-coding#add-project-agent-rules) when you want a reusable rules block for local AI coding agents.
+- Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
+- Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
+- Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.
+
+
+## Compare a project before and after editing
+
+Call `mastercss_scan_project` with `includeSnapshot: true` before editing and save `result.data.snapshot`. Repeat after editing, then pass the two objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`. Both are required; snapshot inputs cannot be mixed with class/content, `filePath` or `context` inputs.
+
+The project result is `{ version: 3, mode: 'project', comparison }` inside the usual version 3 envelope. `comparison.version` is 1. It reports changed definitions, known class consumers and files, before/after generated rules, native references, output assets and delivery order. Read `coverage` even when there are no differences: dynamic sources, remote content, binary assets and final browser behavior are not exhaustively checked. Native consumers are conservative at stylesheet granularity.
+
+These tools use the installed compiler. Check workspace package versions, language/binding versions and manifest metadata before using documentation or examples; use the project-local, lockfile-pinned MCP package for reproducible sessions.

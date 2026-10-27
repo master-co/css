@@ -17,7 +17,7 @@ const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
 const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
 const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 
-function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) {
+function runCLI(args: string[], options: { cwd?: string, input?: string, env?: NodeJS.ProcessEnv } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
     encoding: 'utf8',
     input: options.input,
@@ -25,6 +25,7 @@ function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) 
     cwd: options.cwd,
     env: {
       ...process.env,
+      ...options.env,
       TSX_TSCONFIG_PATH: tsconfigPath
     }
   })
@@ -40,26 +41,57 @@ function runFailedCLI(args: string[], options: { cwd?: string, input?: string } 
 }
 
 describe('root command', () => {
-  it('shows scan options and the lint subcommand', () => {
+  it('captures a project and compares definitions without changing class strings', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-cli-impact-'))
+    try {
+      const file = resolve(cwd, 'app.css')
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-brand:red;--color-information:red}')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="bg-brand fg-information"></div>')
+      const before = runCLI(['inspect', '*.html', '--snapshot'], { cwd })
+      expect(JSON.parse(before).version).toBe(1)
+      fs.writeFileSync(resolve(cwd, 'before.json'), before)
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-brand:blue;--color-information:red}')
+      const report = JSON.parse(runCLI(['inspect', '*.html', '--compare', 'before.json'], { cwd }))
+      expect(report.classes.map((item: { className: string }) => item.className)).toEqual(['bg-brand'])
+      expect(report.coverage.browser).toBe('not-checked')
+      fs.writeFileSync(file, '@import "@master/css";@theme{--color-information:red}')
+      const removal = JSON.parse(runCLI(['inspect', '*.html', '--compare', 'before.json'], { cwd }))
+      expect(removal.classes[0]).toMatchObject({ className: 'bg-brand', afterMatchStatus: 'syntax-error', afterRules: [] })
+      expect(runFailedCLI(['inspect', '--snapshot', '--compare', 'before.json'], { cwd }).status).toBe(1)
+    } finally { fs.rmSync(cwd, { recursive: true, force: true }) }
+  })
+  it('generates CSS only through the explicit generate command', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
+    try {
+      fs.writeFileSync(resolve(cwd, 'index.css'), `@import "@master/css";
+@theme { --color-brand: red; }
+`)
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block fg-brand\"></div>")
+      const output = runCLI(['generate', '--no-export'], { cwd })
+      expect(output).toContain(".display\\:block{display:block}")
+      expect(output).toContain('.fg-brand{color:var(--color-brand)}')
+      expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
+  it('shows only the three explicit commands', () => {
     const output = runCLI(['--help'])
-    expect(output).toContain('Usage: @master/css-cli [options] [command] [source paths...]')
-    expect(output).toContain('-w, --watch')
-    expect(output).toContain('--no-export')
+    expect(output).toContain('Usage: master-css [options] [command]')
     expect(output).toContain('Commands:')
+    expect(output).toContain('generate')
     expect(output).toContain('lint')
     expect(output).toContain('inspect')
-    expect(output).not.toContain('extract [options]')
-    expect(output).not.toContain('render [options]')
+    const generateHelp = runCLI(['generate', '--help'])
+    expect(generateHelp).toContain('-w, --watch')
+    expect(generateHelp).toContain('--no-export')
   })
 
-  it.each(['extract', 'render', 'scan'])('rejects removed %s command', (command) => {
-    const error = runFailedCLI([command])
-    expect(error.status).toBe(1)
-    expect(String(error.stderr)).toContain(`The "${command}" command was removed.`)
-  })
-
-  it('publishes only the package-name binary', () => {
-    expect(pkg.bin).toBe('./dist/bin/index.js')
+  it('publishes only the master-css binary', () => {
+    expect(pkg.bin).toEqual({
+      'master-css': './dist/bin/index.js'
+    })
   })
 })
 
@@ -67,24 +99,24 @@ describe('inspect command', () => {
   it('prints scanner state and missing CSS diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block p-missing\"></div>")
       const error = runFailedCLI([
         'inspect',
         '--classes',
-        'block never-generated-class',
+        'display:block never-generated-class',
         'index.html'
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(5)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
-      expect(report.scanner.classes.valid).toContain('block')
-      expect(report.scanner.classes.invalid).toContain('text-decoration:bad()')
+      expect(report.scanner.classes.valid).toContain("display:block")
+      expect(report.scanner.classes.invalid).toContain('p-missing')
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].discovered.valid).toContain('block')
-      expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+      expect(report.files[0].discovered.valid).toContain("display:block")
+      expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
-        className: 'block',
+        className: "display:block",
         reason: 'generated'
       }))
       expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
@@ -92,7 +124,7 @@ describe('inspect command', () => {
         reason: 'not-detected'
       }))
       expect(report.diagnostics).toContainEqual(expect.objectContaining({
-        code: 'invalid-scanner-class',
+        code: 'UNKNOWN_TOKEN',
         sourceKind: 'scanner',
         filePath: expect.stringMatching(/index\.html$/)
       }))
@@ -100,8 +132,8 @@ describe('inspect command', () => {
         code: 'missing-css',
         sourceKind: 'missing-css'
       }))
-      expect(report.summary.errors).toBe(1)
-      expect(report.summary.warnings).toBe(1)
+      expect(report.summary.errors).toBe(2)
+      expect(report.summary.warnings).toBe(0)
       expect(report.css.bytes).toBeGreaterThan(0)
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
@@ -111,12 +143,12 @@ describe('inspect command', () => {
   it('can include generated CSS and stylesheet entry metadata without failing', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-css-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;')
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block\"></div>")
       const output = runCLI([
         'inspect',
         '--classes',
-        'block',
+        "display:block",
         '--include-css',
         '--exit-code',
         'never',
@@ -126,8 +158,8 @@ describe('inspect command', () => {
       expect(report.stylesheets.entries).toHaveLength(1)
       expect(report.stylesheets.entries[0]).toEqual(expect.objectContaining({
         filePath: fs.realpathSync(resolve(cwd, 'index.css')),
-        masterCSS: false,
-        pruneNativeCSS: true
+        masterCSS: true,
+        pruneNativeCSS: false
       }))
       expect(report.stylesheets.entries[0].dependencies).toContain(fs.realpathSync(resolve(cwd, 'index.css')))
       expect(report.css.included).toBe(true)
@@ -138,11 +170,11 @@ describe('inspect command', () => {
     }
   })
 
-  it('reports stylesheet entry errors without hiding scanner diagnostics', () => {
+  it('reports entry errors without inspecting against a fallback manifest', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-entry-error-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n@import \"./missing.css\";")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block\"></div>")
       const error = runFailedCLI(['inspect', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -152,7 +184,8 @@ describe('inspect command', () => {
         filePath: fs.realpathSync(resolve(cwd, 'index.css')),
         message: expect.stringContaining('CSS file not found')
       }))
-      expect(report.scanner.classes.valid).toContain('block')
+      expect(report.scanner.classes.valid).toEqual([])
+      expect(report.inspections).toEqual([])
       expect(report.diagnostics).toContainEqual(expect.objectContaining({
         code: 'stylesheet-error',
         severity: 'error',
@@ -166,14 +199,36 @@ describe('inspect command', () => {
 })
 
 describe('lint command', () => {
+  it('uses the scanner source policy for default files while honoring explicit paths', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-sources-'))
+    try {
+      fs.mkdirSync(resolve(cwd, 'dist'))
+      fs.writeFileSync(resolve(cwd, '.gitignore'), 'ignored.html\n')
+      for (const file of ['index.html', 'ignored.html', 'dist/output.html']) {
+        fs.writeFileSync(resolve(cwd, file), '<div class="scale(2)"></div>')
+      }
+      fs.writeFileSync(resolve(cwd, 'entry.mjs'), "document.body.classList.add('scale(2)')")
+      const defaults = JSON.parse(runCLI(['lint', '--exit-code', 'never'], { cwd }))
+      expect(defaults.files.map((file: { filePath: string }) => file.filePath).sort()).toEqual([
+        fs.realpathSync(resolve(cwd, 'entry.mjs')), fs.realpathSync(resolve(cwd, 'index.html'))
+      ])
+      const explicit = JSON.parse(runCLI(['lint', 'dist/output.html', 'ignored.html', '--exit-code', 'never'], { cwd }))
+      expect(explicit.files.map((file: { filePath: string }) => file.filePath).sort()).toEqual([
+        fs.realpathSync(resolve(cwd, 'dist/output.html')), fs.realpathSync(resolve(cwd, 'ignored.html'))
+      ])
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
   it('prints machine-readable diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="fg:white m:2x text-decoration:bad()"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"fg-white margin:0.5rem padding:red\"></div>")
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(4)
       expect(report.manifest.status).toBe('loaded')
       expect(report.files).toHaveLength(1)
       expect(report.files[0].diagnostics.map((diagnostic: TestDiagnostic) => diagnostic.code)).toEqual(expect.arrayContaining([
@@ -199,7 +254,7 @@ describe('lint command', () => {
         'never'
       ], {
         cwd,
-        input: '<div className="fg:white m:2x"></div>'
+        input: "<div className=\"fg-white margin:0.5rem\"></div>"
       })
       const report = JSON.parse(output)
       expect(report.files).toHaveLength(1)
@@ -210,32 +265,10 @@ describe('lint command', () => {
     }
   })
 
-  it('includes stylesheet compose diagnostics in the default source set', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-css-'))
-    try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '.btn { @compose text-align:center contain:content; }')
-      const output = runCLI(['lint', '--exit-code', 'never'], { cwd })
-      const report = JSON.parse(output)
-      expect(report.files).toHaveLength(1)
-      expect(report.files[0].sourceKind).toBe('stylesheet')
-      expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
-        code: 'prefer-canonical-class',
-        sourceKind: 'compose-directive'
-      }))
-      expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
-        code: 'prefer-native-declaration',
-        sourceKind: 'compose-directive',
-        fixes: [expect.objectContaining({ kind: 'directive', safety: 'structural' })]
-      }))
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
-
   it('reports manifest preflight diagnostics', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-manifest-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n\n.btn { @compose "block"; }')
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n\n.btn { @contents; }")
       const error = runFailedCLI(['lint'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -256,26 +289,12 @@ describe('lint command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-fix-'))
     try {
       const file = resolve(cwd, 'index.html')
-      fs.writeFileSync(file, '<div class="fg:white m:2x"></div>')
+      fs.writeFileSync(file, "<div class=\"fg-white margin:0.5rem\"></div>")
       runCLI(['lint', '--fix', 'index.html'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('<div class="m:xs fg:white"></div>')
+      expect(fs.readFileSync(file, 'utf8')).toBe("<div class=\"margin:0.5rem fg-white\"></div>")
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
     }
   })
 
-  it('does not write structural directive fixes unless explicitly allowed', () => {
-    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-directive-fix-'))
-    try {
-      const file = resolve(cwd, 'index.css')
-      fs.writeFileSync(file, '.btn { @compose contain:content; }')
-      runCLI(['lint', '--fix', 'index.css'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('.btn { @compose contain:content; }')
-
-      runCLI(['lint', '--fix', '--fix-directives', 'index.css'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('.btn { contain: content; }')
-    } finally {
-      fs.rmSync(cwd, { recursive: true, force: true })
-    }
-  })
 })

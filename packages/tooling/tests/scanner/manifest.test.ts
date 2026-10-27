@@ -1,0 +1,103 @@
+import { MasterCSSScanner } from './test-scanner'
+import { MasterCSSScanner as PublicMasterCSSScanner } from '../../src/scanner'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { test, expect } from 'vitest'
+import { createPresetManifest } from '../language/helpers/create-preset-manifest'
+
+test('uses default manifest settings without implicit manifest entry discovery', async () => {
+  const scanner = await new MasterCSSScanner({}, __dirname).init()
+  expect(scanner.manifest.version).toBe(6)
+})
+
+test('reject string scanner options', async () => {
+  await expect(new PublicMasterCSSScanner('options' as any, __dirname).init())
+    .rejects
+    .toThrow('MasterCSSScanner options must be an object.')
+})
+
+test('uses explicit compiled manifests', async () => {
+  const manifest = createPresetManifest({
+    mixins: [
+  {
+    "name": "--blue-btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "background-color",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "oklch(63.7% 0.237 25.331)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "--btn",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "background-color",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "oklch(55.1% 0.027 264.364)"
+          }
+        ]
+      }
+    ]
+  }
+]
+  , utilities: [{"name":"blue-btn","body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"text" as const,"value":"oklch(63.7% 0.237 25.331)"}]}],"kind":"static" as const},{"name":"btn","body":[{"type":"declaration" as const,"property":"background-color","value":[{"type":"text" as const,"value":"oklch(55.1% 0.027 264.364)"}]}],"kind":"static" as const}] })
+  const scanner = await new MasterCSSScanner({
+    manifest
+  }, __dirname).init()
+  await expect(
+    scanner.collectCandidates('test.tsx',
+      `
+      <>
+        <h1 className={'position:relative ' + styles.title} />
+        <h1 className={styles.title + ' ' + ' blue-btn'} />
+        <button className="test btn" />
+      </>
+    `)
+  ).resolves.toEqual(["position:relative", 'blue-btn', 'test', 'btn'])
+  await scanner.reset({ manifest })
+  await scanner.scan('button.html', '<button class="blue-btn"></button>')
+  expect(scanner.css.text).toContain('background-color:oklch')
+})
+
+test('ignores native CSS classes from unmanaged CSS files', async () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'master-css-scanner-'))
+  try {
+    writeFileSync(join(cwd, 'theme.css'), `
+      .native-card {
+        color: red;
+      }
+
+      @layer components {
+        .btn {
+          display: inline-flex;
+        }
+      }
+    `)
+
+    const scanner = await new MasterCSSScanner({}, cwd).init()
+    const changes: string[][] = []
+    scanner.on('change', () => {
+      changes.push([...scanner.usedNativeClasses])
+    })
+
+    await scanner.scan('src/index.html', '<div class="native-card btn"></div>')
+
+    expect([...scanner.nativeClassNames]).toEqual([])
+    expect([...scanner.usedNativeClasses]).toEqual([])
+    expect(scanner.validClasses.has('btn')).toBe(false)
+    expect(changes).toEqual([])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})

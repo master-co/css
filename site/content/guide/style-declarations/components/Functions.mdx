@@ -1,0 +1,22 @@
+import Code from '~/site/docs-shell/components/Code'
+
+export const code1 = `
+  <!-- @MARK calc(100%-1rem) --><!-- @MARK var(--size-sm) --><!-- @MARK rgba(0,0,0,.5) -->
+  <div class="height:var(--size-sm) width:calc(100%-1rem) background-color:rgba(0,0,0,.5)">
+`
+export const code2 = `
+  <!-- @MARK var(--spacing-sm) -->
+  <div class="width:calc(100%-var(--spacing-sm)) bg-black/.5">
+`
+
+Write native CSS functions directly when that is the clearest expression of the value.
+<Code lang="html">
+  {code1}
+</Code>
+
+Reference theme variables explicitly with `var(--name)`, including inside functions. A separate named color token can use an opacity modifier:
+<Code lang="html">
+  {code2}
+</Code>
+
+Colon values use native CSS value semantics. The `|` character encodes a space in class values; CSS functions, quoted strings, and explicit units keep their native meaning.

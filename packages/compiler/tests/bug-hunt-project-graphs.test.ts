@@ -1,0 +1,140 @@
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { expect, test } from 'vitest'
+import { createEngine } from '@master/css'
+import { compileProjectManifest, loadProjectManifest } from '../src/project/manifest'
+import { compileProjectManifestSync } from '../src/project/manifest-sync'
+import { loadBindingProjectManifest } from '../src/project/binding-project'
+import { collectStylesheetDependenciesSync } from '../src/stylesheet/public'
+
+for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) screen']) {
+  test(`BH-0004 project manifests retain definitions through ${condition} with external imports`, async () => {
+    const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-graphs-')))
+    try {
+      mkdirSync(join(cwd, 'styles/templates'), { recursive: true })
+      const entry = join(cwd, 'entry.css')
+      const child = join(cwd, 'styles/child.css')
+      const tokens = join(cwd, 'tokens.css')
+      const template = join(cwd, 'styles/templates/view.html')
+      writeFileSync(entry, `@import './styles/child.css' ${condition};@import "@master/css";@reference './tokens.css';@mixin --widget {@apply --all{color:red;}} @utility widget {@apply --all{color:red;}}@mixin --button {color:red;} @utility button {color:red;}`)
+      writeFileSync(child, `@import 'https://remote.test/external.css';@reference '../tokens.css';@source './templates/*.html';.native{color:blue}`)
+      writeFileSync(tokens, '@mixin --paint {color:red} @utility paint {color:red}.reference-native{color:green}')
+      writeFileSync(template, '<div class="widget button"></div>')
+      const baseManifest = {
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
+  "version": 6 as const,
+  "languageVersion": 16 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
+      const options = { root: cwd, entries: [entry], baseManifest }
+      const results = [await compileProjectManifest(options), await loadProjectManifest(options), compileProjectManifestSync(options)]
+      for (const result of results) {
+        expect(result.dependencies.filter(file => file.startsWith(cwd)).sort()).toEqual([entry, child, tokens].sort())
+        const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
+        try {
+          engine.ensureClassRules(['button', 'widget', 'paint'])
+          const css = engine.snapshot().text
+          expect(css).toContain('.button{color:red}')
+          expect(css).toContain('.widget{color:red}')
+          expect(css).not.toContain('.paint{')
+        } finally { engine.dispose() }
+      }
+      expect(results[1].manifest).toEqual(results[0].manifest)
+      expect(results[2].manifest).toEqual(results[0].manifest)
+      const internal = loadBindingProjectManifest(cwd, baseManifest, [entry])
+      expect(internal.sourcePlan.files).toEqual([template])
+      expect(internal.css).toBe('')
+      expect(internal.nativeCSS).toBe('')
+      expect(collectStylesheetDependenciesSync(entry, undefined, { projectDir: cwd })).toContain(child)
+    } finally { rmSync(cwd, { recursive: true, force: true }) }
+  })
+}
+
+
+test('BH-0004 project graph preserves explicit entry order', async () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-order-')))
+  try {
+    const a = join(root, 'a.css')
+    const b = join(root, 'b.css')
+    writeFileSync(a, "@import \"@master/css\";@mixin --choice {color:red} @utility choice {color:red}")
+    writeFileSync(b, "@import \"@master/css\";@mixin --choice {color:blue} @utility choice {color:blue}")
+    for (const [entries, expected] of [[[a, b], 'blue'], [[b, a], 'red']] as const) {
+      const result = await compileProjectManifest({ root, entries: [...entries], baseManifest: {
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
+  "version": 6 as const,
+  "languageVersion": 16 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
+      const engine = await createEngine({ manifest: result.manifest, binding: 'native' })
+      try {
+        engine.ensureClassRules(['choice'])
+        expect(engine.snapshot().text).toContain(`.choice{color:${expected}}`)
+        expect(result.entries).toEqual(entries)
+      } finally { engine.dispose() }
+    }
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
+test('BH-0004 project graph rejects missing and circular references', async () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-reference-')))
+  try {
+    const entry = join(root, 'entry.css')
+    const reference = join(root, 'tokens.css')
+    writeFileSync(entry, "@import \"@master/css\";@reference './tokens.css';")
+    const options = { root, entries: [entry], baseManifest: {
+  mixins: [
+  {
+    "name": "--all",
+    "body": [
+      {
+        "type": "condition" as const,
+        "condition": "@media all",
+        "body": [
+          {
+            "type": "contents" as const,
+            "fallback": []
+          }
+        ]
+      }
+    ]
+  }
+],
+  "version": 6 as const,
+  "languageVersion": 16 as const
+, utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } }
+    await expect(compileProjectManifest(options)).rejects.toThrow(/tokens\.css/)
+    writeFileSync(reference, "@reference './entry.css';")
+    await expect(compileProjectManifest(options)).rejects.toThrow(/Circular CSS reference/)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})

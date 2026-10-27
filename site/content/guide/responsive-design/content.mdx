@@ -1,0 +1,183 @@
+import Class2CSS from '~/site/components/Class2CSS'
+import Demo from '~/site/components/demo/Demo'
+import { DemoPageViewport } from '~/site/components/demo/DemoBrowser'
+import DemoContainer from '~/site/components/demo/DemoContainer'
+
+## Overview [sr-only]
+<DemoPageViewport src="/examples/responsive-gallery" title="Responsive asset gallery" height={420} />
+```html
+<!-- @MARK @xs @sm @md -->
+<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
+```
+Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [named custom media](/guide/breakpoints). [Container queries](/guide/containers) measure an eligible ancestor using an explicit threshold; they do not read container size tokens.
+
+---
+
+## Based on viewport breakpoints
+CSS Media Queries allow styles to be applied based on the *size of the viewport* rather than individual *elements*. This makes it possible to create responsive layouts that adapt to different viewport widths—such as mobile phones, tablets, and desktops—by defining breakpoints at specific widths.
+
+These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
+
+### Using responsive breakpoints
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [custom media name](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
+```html
+<!-- @MARK @xs @sm @md -->
+<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
+```
+
+### Querying viewport ranges
+Use a complete [native media query](/reference/rules/conditions#mediafeature) to create more complex viewport range queries.
+```html
+<!-- @MARK @media((52.125rem<=width<=64rem)) -->
+<div class="display:none@media((52.125rem<=width<=64rem))">…</div>
+```
+<Class2CSS>
+  {['display:none@media((52.125rem<=width<=64rem))']}
+</Class2CSS>
+
+### Creating responsive wrappers
+Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
+```html
+<!-- @MARK max-w-4xl@sm max-w-5xl@md max-w-7xl@lg -->
+<div class="max-w-4xl@sm max-w-5xl@md max-w-7xl@lg …">…</div>
+```
+
+---
+
+## Based on container sizes
+CSS [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) allow styles to be applied based on the *size of a container*, rather than the size of the *viewport*. This makes it easier to build responsive components that adapt to their parent containers.
+
+### Using container queries
+The `container-type:inline-size` declaration establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
+
+(resize) Try making the container smaller.
+<DemoContainer title="Responsive media object">
+  <Demo>
+    <div className="overflow:hidden container-type:inline-size width:100% r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
+      <div className="display:flex flex-direction:column@container((width<=18rem))">
+        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
+        <div className='padding-top:var(--spacing-lg) padding-right:var(--spacing-xl) padding-bottom:var(--spacing-lg) padding-left:var(--spacing-xl)'>
+          <div className='text-md font-medium fg-text-neutral'>Field notes</div>
+          <div className='mt-3xs text-sm'>A collection of textures, places and quiet details. This card shares the available space with its image, then stacks when its own container becomes narrow.</div>
+        </div>
+      </div>
+    </div>
+  </Demo>
+</DemoContainer>
+```html
+<div class="container-type:inline-size …">
+  <!-- @MARK @container((width<=18rem)) -->
+  <div class="display:flex flex-direction:column@container((width<=18rem))">…</div>
+</div>
+```
+<Class2CSS>
+  {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
+</Class2CSS>
+Choose component thresholds from the space the content needs. Changing a [container size token](/reference/tokens/container) does not update a literal query. Reuse a condition with a CSS mixin wrapper when needed; see [Container queries](/guide/containers).
+
+### Querying container ranges
+Use a complete [native container query](/reference/rules/conditions#containersize) for a bounded container range.
+```html
+<!-- @MARK @media((52.125rem<=width<=64rem)) -->
+<div class="display:none@container((24rem<=width<=28rem))">…</div>
+```
+<Class2CSS>
+  {['display:none@container((24rem<=width<=28rem))']}
+</Class2CSS>
+
+### Creating named containers
+Set `container-name` and `container-type` on the ancestor. Include its name and a size condition in the descendant’s query.
+```html
+<!-- @MARK container-name:card container-type:inline-size -->
+<div class="container-name:card container-type:inline-size">
+  <!-- @MARK @container(card|(width>=16rem)) -->
+  <div class="display:none@container(card|(width>=16rem))"></div>
+</div>
+```
+<Class2CSS>
+  {['container-name:card container-type:inline-size', 'display:none@container(card|(width>=16rem))']}
+</Class2CSS>
+
+---
+
+## Strategies
+When it comes to designing and developing responsive web pages, [mobile-first](#mobile-first) and [desktop-first](#desktop-first) are two common development strategies. The decision between these two strategies depends on your project requirements, target audience, and operational decisions.
+
+Also, we propose another flexible strategy － [Syntax-first](#syntax-first).
+
+### Mobile-first
+The mobile-first strategy is a design and development approach that initially focuses on designing and optimizing for smaller viewports, such as mobile phones and tablets, and then gradually expanding to larger viewports, including desktop computers.
+
+For example, your company is launching a game primarily targeting mobile users with potential future releases for desktop users based on market response; adopting a mobile-first strategy would be ideal at this stage.
+
+(i) In mobile-first, **styles not bound by viewports are considered to define the mobile UI.**
+```html
+<p class="font-2xl">
+```
+Gradually adjust the UI for larger viewports.
+
+(wand) Increase the font size to `32/16rem` when the viewport width is larger than `1024/16rem`.
+```html
+<!-- @MARK font-3xl@md -->
+<p class="font-2xl font-3xl@md …"> <!-- [!code focus] -->
+<!-- @MARK font-3xl@md -->
+<p class="font-2xl font-3xl@md …">
+```
+<Class2CSS>
+  {['font-2xl', 'font-3xl@md']}
+</Class2CSS>
+- Paragraph font size is `24/16rem` in viewport `<1024/16rem`
+- Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
+
+This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
+
+### Desktop-first
+On the other hand, the Desktop-first development strategy initially prioritizes designing and optimizing for larger viewports, such as desktop computers, and then gradually scaling down to smaller viewports, like mobile phones and tablets.
+
+For example, your company is launching a web drawing software primarily targeting designers with potential future releases for mobile users based on market response; adopting a desktop-first strategy would be ideal at this stage.
+
+(i) In desktop-first, **styles not bound by viewports are considered to define the desktop UI.**
+```html
+<p class="font-3xl">
+```
+Gradually adjust the UI for smaller viewports.
+
+(wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024/16rem`.
+```html
+<!-- @MARK font-2xl@media((width<64rem)) -->
+<p class="font-3xl font-2xl@media((width<64rem)) …">
+```
+<Class2CSS>
+  {['font-3xl', 'font-2xl@media((width<64rem))']}
+</Class2CSS>
+- Paragraph font size is `24/16rem` in viewport `<1024/16rem`
+- Paragraph font size is `32/16rem` in viewport `>=1024/16rem`
+
+This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
+
+### Syntax-first
+Thanks to the syntactic flexibility of Master CSS, free yourself from the constraints of mobile-first or desktop-first, which not only gives you a better development experience but also makes you have less markup and less CSS output.
+
+For example, set the background to white only on mobile.
+
+(!) With mobile-first, it's necessary to revert to the original background on larger viewports.
+```html
+<div class="bg-white background-color:transparent@md …">
+```
+(o) Add `mcss @media((width<64rem))` directly to restrict to small viewports.
+```html
+<div class="bg-white@media((width<64rem)) …">
+```
+
+For example, set the background to white only on the desktop.
+
+(!) With desktop-first, it's necessary to revert to the original background on smaller viewports.
+```html
+<div class="bg-white background-color:transparent@media((width<64rem)) …">
+```
+(o) Add `mcss @md` directly to restrict to large viewports.
+```html
+<div class="bg-white@md …">
+```
+
+You don't need to waste energy sticking to a specific development strategy; use the most direct way to solve the current responsive layout.

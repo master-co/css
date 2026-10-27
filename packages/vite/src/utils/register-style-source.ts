@@ -1,10 +1,17 @@
-import { registerStyleCSSSource as registerStylesheetCSSSource } from '@master/css-stylesheet'
-import type { PluginContext } from '../core'
+import { createStylesheetCollection, type MasterCSSStylesheetDeliveryOptions } from '@master/css-compiler/stylesheet'
+import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from './scanner-context'
+import { getSassSourceFile, getPreparedSassSourceMap } from './build-sass-source'
+import { getBuildStylesheetDelivery } from './build-stylesheet-delivery'
+import { getDevStylesheetDelivery } from './dev-stylesheet-delivery'
 
-export async function registerStyleCSSSource(context: PluginContext, id: string, source: string) {
-  context.styleCSSSources ??= new Map()
-  return registerStylesheetCSSSource(getScanner(context), context.styleCSSSources, id, source, {
-    projectDir: context.config?.root
+export async function registerStylesheetSource(context: MasterCSSVitePluginContext, id: string, source: string, host?: Pick<MasterCSSStylesheetDeliveryOptions, 'resolveImport' | 'onDependency'>) {
+  context.stylesheets ??= createStylesheetCollection()
+  const scanner = getScanner(context)
+  const delivery = getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
+  return context.stylesheets.register(scanner, id, source, {
+    baseManifest: scanner.css.manifest,
+    projectDir: context.config?.root, pruneNativeCSS: context.pruneNativeCSS,
+    delivery: delivery ? { ...delivery, ...host, baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id) } : undefined
   })
 }

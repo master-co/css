@@ -1,0 +1,253 @@
+import Class2CSS from '~/site/components/Class2CSS'
+
+## Overview [sr-only] \{#overview\}
+Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before validation establishes whether it is a utility, project-defined class, or native class from a pruned stylesheet.
+
+```txt
+source text
+  -> latent class candidates
+  -> validated classes
+  -> generated CSS
+```
+
+The scanner does not run your app. Source extractors collect complete static strings from the relevant language structure, and the Rust engine decides which candidates produce CSS. A match does not establish CSS value validity or browser support.
+
+```html name=src/index.html
+<!-- @MARK card p-md bg-white shadow-md -->
+<article class="p-md bg-white shadow-md card">
+  <h2 class="font-lg font-semibold">Release notes</h2>
+</article>
+```
+
+The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
+
+The generated result for `p-md` and `shadow-md` includes their theme dependencies:
+
+<Class2CSS>{['p-md', 'shadow-md']}</Class2CSS>
+
+The same scanning model is used by build integrations and by Node tools that create `MasterCSSScanner` from `@master/css-tooling/scanner/node`.
+
+## Source boundaries \{#source-boundaries\}
+Build integrations and CLI flows scan common source-like project files by default. Ordinary app files such as HTML, JavaScript, TypeScript, JSX, TSX, framework files, Markdown, MDX, and PHP should not need a broad `@source` directive or a matching test-file exclusion.
+
+Use `@source` and `@source not` only when a stylesheet needs an explicit exception, such as content outside the normal project scan, shared workspace source, or a scoped native CSS pruning root.
+
+```css name=index.css
+@import '@master/css';
+@source '../content/**/*.mdx';
+@source '../packages/ui/**/*.{ts,tsx}';
+@source not '../packages/ui/**/*.stories.tsx';
+```
+
+`@source` explicitly includes files that may contain classes, including files excluded by default discovery or `.gitignore`. `@source not` takes precedence. Automatic discovery respects project and ancestor workspace `.gitignore` files, without using global Git ignores. Dependencies, declarations, binary files, VCS data and generated output are excluded automatically; Master output and the current bundler output never become scan inputs. Next uses its configured `distDir`.
+
+See [source directives](/reference/directives/source) for path syntax and [candidate policy](/reference/directives/candidates) for safelists and blocklists.
+
+Integrations prefer original MDX, Vue and Svelte files rather than scanning their compiled display strings a second time. Updating, clearing or deleting a source replaces its contribution; a shared class remains until its last source or safelist reference disappears.
+
+## Candidate scanning \{#candidate-scanning\}
+JavaScript and TypeScript extraction includes static strings, object maps, conditional branches and complete portions of template literals. It does not execute code or infer dynamically concatenated class names. A static string in a component prop can be a candidate even if that component eventually displays it as text.
+
+```html name=src/index.html
+<button id="delete-button" type="button" class="px-md r-md">Delete</button>
+```
+
+```js name=src/button.js
+const toneClasses = {
+  neutral: 'bg-white fg-text-neutral',
+  destructive: 'bg-red-60 fg-white'
+}
+
+function setDestructive(destructive) {
+  const tone = destructive ? toneClasses.destructive : toneClasses.neutral
+  document.querySelector('#delete-button').className = `px-md r-md ${tone}`
+}
+```
+
+The scanner can see these complete class strings across the two files:
+
+```txt
+bg-white
+fg-text-neutral
+bg-red-60
+fg-white
+r-md
+px-md
+```
+
+### Markdown and MDX
+
+Markdown and MDX use their syntax tree. Actual HTML/JSX, ESM and expressions participate; prose, inline code, ordinary code fences and frontmatter do not. Documentation showing an old class cannot accidentally emit that class's CSS.
+
+Register an executable example through a virtual source with `parentSource`, or use an existing `@safelist`. A code fence is not an implicit live example. A malformed source reports `SOURCE_PARSE_ERROR`; development keeps the previous successful contribution and a production build fails. Explicit `kind: 'raw'` remains available for intentional plain-text inputs.
+
+Extraction returns candidate strings plus occurrences, including original UTF-16 ranges, extractor, content kind, owner and inclusion/exclusion reasons. Encoded attributes retain their original source ranges. Complete URL literals are excluded; ordinary unknown native declarations remain candidates.
+
+## Validation \{#validation\}
+After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
+
+- It is a built-in utility, such as `display:block`, `fg-red-60`, or `grid-cols(3)`.
+- It is defined by your project CSS entry and compiled into the manifest.
+- It matches a native class collected from a stylesheet; this retains usage when [native pruning](/guide/native-css-pruning) is explicitly enabled.
+
+```css name=index.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-md);
+    padding-inline: var(--spacing-md);
+    height: 40px;
+  }
+
+  .hero-title {
+    margin: 0;
+    color: var(--color-text-neutral);
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-heavy);
+  }
+}
+```
+
+```html name=src/index.html
+<section class="display:grid gap-xl">
+  <h1 class="hero-title">Master CSS</h1>
+  <a class="btn bg-blue-60 fg-white" href="/guide">Read docs</a>
+</section>
+```
+
+`hero-title` and `btn` are valid because the project CSS entry defines them. `display:grid`, `gap-xl`, `bg-blue-60`, and `fg-white` are validated through the utility engine.
+
+Native `.btn` rules inside `@layer components` are delivered by default. Scanning controls generated utility classes; native class removal applies only when native pruning is explicitly enabled.
+
+## Complete classes \{#complete-classes\}
+Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
+
+Avoid fragments:
+
+```js
+const className = 'bg-' + (error ? 'red-60' : 'green-60')
+```
+
+The complete strings `bg-red-60` and `bg-green-60` do not exist in source, so static rendering cannot reliably generate either rule.
+
+Keep each possible class complete:
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+For variants, map a dynamic input to a complete class list.
+
+An interpolated color fragment has the same problem:
+
+```js
+const className = `px-xs border-radius:100% fg-white bg-${tone}`
+```
+
+Keep the supported variants in a static map:
+
+```js
+const toneClasses = {
+  destructive: 'bg-red-60 fg-white',
+  confirmed: 'bg-green-60 fg-white',
+  neutral: 'bg-gray-10 fg-gray-90'
+}
+
+const className = `px-xs border-radius:100% ${toneClasses[tone] ?? toneClasses.neutral}`
+```
+
+This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
+
+## Runtime values \{#runtime-values\}
+When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
+
+```html
+<h1 id="headline" class="font-size:var(--headline-size) line-height:1.1" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+function setHeadlineSize(size) {
+  document.querySelector('#headline').style.setProperty('--headline-size', size)
+}
+
+setHeadlineSize('3rem')
+```
+
+The class `font-size:var(--headline-size)` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which follows native CSS custom property behavior.
+
+
+Use the same pattern for a data-driven progress value. Keep an accessible numeric value alongside the visual width:
+
+```html
+<div id="progress" role="progressbar" aria-label="Upload progress"
+  aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
+  class="overflow:hidden height:1rem border-radius:100% bg-gray-10">
+  <div id="progress-fill" class="height:100% width:var(--progress) bg-blue-60 transition-property:width@motion-safe transition-duration:var(--duration-fast)@motion-safe transition-timing-function:var(--easing-smooth)@motion-safe"
+    style="--progress: 25%"></div>
+</div>
+```
+
+```js
+function setProgress(value) {
+  const percent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0
+  document.querySelector('#progress').setAttribute('aria-valuenow', String(percent))
+  document.querySelector('#progress-fill').style.setProperty('--progress', `${percent}%`)
+}
+```
+
+Only the CSS variable and accessible value change. The width class remains static, and `@motion-safe` limits the transition to users without a reduced-motion preference.
+
+If the class name itself only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering). The browser runtime can observe the DOM and generate rules for classes that appear later.
+
+## Included and excluded classes \{#included-and-excluded-classes\}
+Use `@safelist` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
+
+```css name=index.css
+@import '@master/css';
+@safelist 'opacity:1 transform:translateY(-5px):hover bg-blue-60@dark';
+```
+
+`@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled manifest, or a known native class from a pruned stylesheet.
+
+Use `@blocklist` when broad scanning finds tokens that look like valid classes but should not generate CSS.
+
+```css name=index.css
+@import '@master/css';
+@blocklist 'debug-*';
+@blocklist 'example-token';
+```
+
+Keep both lists specific. The most reliable scanning path is still complete class strings in source.
+
+## Scanner hosts
+
+A scanner session owns current contributions, rather than accumulating every class it has ever seen:
+
+```ts
+await scanner.scanSource('page.mdx', content, { owner: 'pages' })
+await scanner.scanSource('page.mdx#live', html, {
+  owner: 'pages', parentSource: 'page.mdx', kind: 'html'
+})
+scanner.removeSource('page.mdx', { owner: 'pages' })
+await scanner.reconcileSources('pages', inputs)
+scanner.registerNativeClasses('styles/app.css', ['card'])
+scanner.removeOwner('pages')
+```
+
+`scanSource` replaces content, including an empty string. `removeSource` also removes its virtual descendants. `reconcileSources` supplies the complete next source set for one owner; explicitly retained virtual inputs remain in that set even when their parent is managed externally. `removeOwner` removes that owner's inputs and native registrations. Shared references across owners remain independent.
+
+`collectCandidates` is pure extraction. `changed` indicates that generated output or pruning inputs changed; `sourceChanged` also reports provenance-only updates. The `sources` view exposes the current successful source set, including empty inputs and virtual ownership. Parsing or reading failure is not an empty-source update.
+
+## Checklist \{#checklist\}
+- Put complete class names in scanned source.
+- Map variants to complete class strings.
+- Use CSS variables for runtime values.
+- Rely on integration or CLI defaults for ordinary app source files.
+- Add `@source` only for extra source roots or scoped pruning roots.
+- Use `@safelist` only for bounded classes the scanner cannot see.
+- Use `@blocklist` for real false positives.
+- Use runtime or progressive rendering for classes created after startup.
+- Enable [native pruning](/guide/native-css-pruning) explicitly for each intended source with `@prune native;`, or use the integration option for project-owned CSS.

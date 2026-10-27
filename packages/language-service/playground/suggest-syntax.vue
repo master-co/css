@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 :class="{ 'red': isRed, 'bold': isBold }">Hello, Vue!</h1>
-    <p :class="[colorClass, { 'italic': isItalic }]">This is a sample Vue template.</p>
+    <p :class="[colorClass, { 'font-style:italic': isItalic }]">This is a sample Vue template.</p>
   </div>
 </template>
 

@@ -1,14 +1,18 @@
+import type { MasterCSSKeyframeDefinition } from './keyframes.js'
+export type { MasterCSSKeyframeDefinition } from './keyframes.js'
 import type { PropertiesHyphen } from 'csstype'
-import type { UtilityType } from './utility-type.js'
+import type { MasterCSSMixinDefinition, MasterCSSUtilityDefinition } from './mixin.js'
+export type {
+  MasterCSSMixinDefinition,
+  MasterCSSUtilityDefinition,
+  MasterCSSMixinParameter,
+  MasterCSSMixinParameterSyntax,
+  MasterCSSMixinNode,
+  MasterCSSMixinValue
+} from './mixin.js'
 
 export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
-export type MasterCSSManifestDefaultMode = 'light' | 'dark' | 'none' | string
-export type MasterCSSManifestModeTrigger = 'class' | 'media' | 'host'
-export type MasterCSSManifestVariantToken = `:${string}` | `::${string}` | `@${string}`
-export type MasterCSSManifestUtilityKind = 'number' | 'color' | 'image'
-/** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
-export type MasterCSSManifestUtilityMatcherValueSegments = 'single' | 'multiple'
 
 export type MasterCSSManifestCSSDeclarationPrimitive = string | number | null
 export type MasterCSSManifestCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSManifestCSSDeclarationPrimitive | MasterCSSManifestCSSDeclarationPrimitive[]>
@@ -19,76 +23,14 @@ export interface MasterCSSManifestVariableNumericValue {
   unit?: string
 }
 
-export interface MasterCSSManifestConditionBooleanNode { raw?: string, name: string, type: 'boolean' }
-export interface MasterCSSManifestConditionNumberNode { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
-export interface MasterCSSManifestConditionStringNode { raw?: string, name?: string, type: 'string', value: string }
-export type MasterCSSManifestConditionValueNode = MasterCSSManifestConditionNumberNode | MasterCSSManifestConditionStringNode
-export interface MasterCSSManifestConditionComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
-export interface MasterCSSManifestConditionLogicalOperatorNode { type: 'logical', raw?: string, value: string }
-export type MasterCSSManifestConditionOperatorNode = MasterCSSManifestConditionComparisonOperatorNode | MasterCSSManifestConditionLogicalOperatorNode
-export interface MasterCSSManifestConditionGroupNode { type?: 'group', raw?: string, children: MasterCSSManifestConditionNode[] }
-export type MasterCSSManifestConditionNode =
-  | MasterCSSManifestConditionBooleanNode
-  | MasterCSSManifestConditionValueNode
-  | MasterCSSManifestConditionComparisonOperatorNode
-  | MasterCSSManifestConditionLogicalOperatorNode
-  | MasterCSSManifestConditionGroupNode
-
-export interface MasterCSSManifestCondition {
-  id: MasterCSSManifestConditionIdentifier
-  nodes: MasterCSSManifestConditionNode[]
-}
-
-export type MasterCSSManifestConditions = Record<string, MasterCSSManifestCondition>
-
-export interface MasterCSSManifestSelectorLiteralNode {
-  type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
-  raw?: string
-  value?: string
-  children?: MasterCSSManifestSelectorNode[]
-}
-
-export interface MasterCSSManifestSelectorSeparatorNode {
-  type: 'separator'
-  raw?: string
-  value: string
-}
-
-export interface MasterCSSManifestSelectorCombinatorNode {
-  type: 'combinator'
-  raw?: string
-  value: string
-}
-
-export type MasterCSSManifestSelectorNode =
-  | MasterCSSManifestSelectorLiteralNode
-  | MasterCSSManifestSelectorCombinatorNode
-  | MasterCSSManifestSelectorSeparatorNode
-
-export type MasterCSSManifestSelectors = Record<string, MasterCSSManifestSelectorNode[]>
-
-export interface MasterCSSManifestSettings {
-  rootSize?: number
-  baseUnit?: number
-  defaultMode?: MasterCSSManifestDefaultMode
-  scope?: string
-  important?: boolean
-  modeTrigger?: MasterCSSManifestModeTrigger
-  modes?: string[]
-}
-
 export interface MasterCSSManifestVariable {
   name?: string
   key: string
   namespace?: string
   type?: MasterCSSManifestVariableType
-  value?: MasterCSSManifestVariableValue
+  values: MasterCSSScopedThemeValue[]
   numeric?: MasterCSSManifestVariableNumericValue
-  modes?: Record<string, { type: MasterCSSManifestVariableType, value: number | string, numeric?: MasterCSSManifestVariableNumericValue }>
   dependencies?: string[]
-  mode?: string
-  inline?: boolean
-  static?: boolean
 }
 
 export type MasterCSSManifestVariables = Record<string, MasterCSSManifestVariable[]>
@@ -98,88 +40,35 @@ export type MasterCSSManifestVariableEntry = MasterCSSManifestVariable & {
   type: MasterCSSManifestVariableType
 }
 
-export type MasterCSSManifestKeyframes<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>
-export type MasterCSSManifestAnimations<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<string, MasterCSSManifestKeyframes<TDeclarations>>
-export type MasterCSSManifestAnimationOptions = Record<string, { static?: boolean }>
-
-export interface MasterCSSManifestVariantBranch {
-  selector?: string
-  selectorNodes?: MasterCSSManifestSelectorNode[]
-  conditions?: string[]
-  conditionNodes?: MasterCSSManifestCondition[]
-  layer?: MasterCSSManifestUtilityLayerName
+export interface MasterCSSScopedThemeValue {
+  path: string[]
+  value: string
+  inline?: boolean
+  static?: boolean
 }
 
-export interface MasterCSSManifestVariant {
-  token: MasterCSSManifestVariantToken
-  branches: MasterCSSManifestVariantBranch[]
-}
+export type MasterCSSThemeNode =
+  | { type: 'rule'; prelude: string; children: MasterCSSThemeNode[] }
+  | { type: 'declaration'; name: string; value: string; inline?: boolean; static?: boolean }
 
-export type MasterCSSManifestVariants = MasterCSSManifestVariant[]
-
-export type MasterCSSManifestUtilityMatcher =
-  | { type: 'static'; name: string }
-  | { type: 'pattern'; prefix: string; values: string[]; valueMap?: Record<string, string> }
-  | { type: 'key'; keys: string[] }
-  | { type: 'variable'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
-  | { type: 'value'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
-
-export type MasterCSSManifestVariableAlias = [key: string, name: string]
-export type MasterCSSManifestVariableAliasSet = MasterCSSManifestVariableAlias[]
-
-export type MasterCSSManifestUtilityEmit =
-  | { type: 'declarations'; declarations: string[] }
-  | { type: 'template'; declarations: MasterCSSManifestCSSDeclarations }
-  | { type: 'property'; property: string }
-  | { type: 'static'; rules: MasterCSSManifestUtilityRule[] }
-
-export interface MasterCSSManifestUtilityRule<TDeclarations = MasterCSSManifestCSSDeclarations> {
-  declarations: TDeclarations
-  conditions?: string[]
-  selector?: string
-}
-
-export interface MasterCSSManifestUtility {
-  id: string
-  name?: string
-  type: UtilityType
-  order?: number
-  layer?: MasterCSSManifestUtilityLayerName
-  key?: string
-  subkey?: string
-  keys?: string[]
-  aliasGroups?: string[]
-  kind?: MasterCSSManifestUtilityKind
-  namespaces?: string[]
-  implicitNamespace?: boolean
-  separators?: string[]
-  conditions?: string[]
-  variableAliases?: MasterCSSManifestVariableAliasSet
-  variableAliasRefs?: string[]
-  emit: MasterCSSManifestUtilityEmit
-  matchers: MasterCSSManifestUtilityMatcher[]
-  debug?: Record<string, unknown>
-}
-
-export type MasterCSSManifestUtilities = MasterCSSManifestUtility[]
+export type MasterCSSMediaQueryExpression =
+  | { type: 'true' | 'false' }
+  | { type: 'feature'; value: string }
+  | { type: 'media-type'; name: string }
+  | { type: 'not'; query: MasterCSSMediaQueryExpression }
+  | { type: 'and' | 'or'; queries: MasterCSSMediaQueryExpression[] }
 
 export interface MasterCSSManifest {
-  /**
-   * MasterCSSManifest IR schema/codec version.
-   * This is not a legacy Config compatibility marker; engines must reject
-   * unsupported manifest versions instead of migrating authoring APIs at runtime.
-   */
-  version: 1
-  settings?: MasterCSSManifestSettings
+  /** MasterCSSManifest IR schema/codec version; engines reject any other version. */
+  version: 6
+  languageVersion: 16
+  keyframes?: MasterCSSKeyframeDefinition[]
+  animationVariables?: Record<string, string[]>
+  theme?: MasterCSSThemeNode[]
+  customMedia?: Record<string, MasterCSSMediaQueryExpression>
   variables?: MasterCSSManifestVariables
-  animations?: MasterCSSManifestAnimations
-  animationOptions?: MasterCSSManifestAnimationOptions
-  variants?: MasterCSSManifestVariants
-  conditions?: MasterCSSManifestConditions
-  breakpointConditions?: MasterCSSManifestConditions
-  containerConditions?: MasterCSSManifestConditions
-  selectors?: MasterCSSManifestSelectors
-  utilities?: MasterCSSManifestUtilities
+  mixins?: MasterCSSMixinDefinition[]
+  utilities?: MasterCSSUtilityDefinition[]
   debug?: Record<string, unknown>
 }
 
@@ -193,7 +82,7 @@ export function flattenMasterCSSManifestVariables(
   const flattened: MasterCSSManifestVariableEntry[] = []
   for (const [namespace, definitions] of Object.entries(variables || {})) {
     for (const definition of definitions) {
-      const type = definition.type || (typeof definition.value === 'number' ? 'number' : 'string')
+      const type = definition.type || 'string'
       flattened.push({
         ...definition,
         name: getMasterCSSManifestVariableName(namespace, definition),
@@ -218,3 +107,8 @@ export function groupMasterCSSManifestVariables(
   }
   return Object.keys(grouped).length ? grouped : undefined
 }
+
+export {
+  normalizeMasterCSSManifest,
+  serializeMasterCSSManifest
+} from './manifest-json'

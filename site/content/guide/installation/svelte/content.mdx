@@ -1,0 +1,82 @@
+import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a project
+      If you don't have a Svelte project, create one first. It's recommended to refer to [SvelteKit](https://svelte.dev/docs/kit).
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx sv create my-app
+      cd my-app
+      npm install
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the Svelte CLI add-on from the SvelteKit project root. It installs static rendering and leaves existing server hooks unchanged.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx sv add @master/css-svelte-addon
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run `npm run dev -- --open` to start your Svelte development server
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm run dev -- --open
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first element using Master CSS syntax!
+  </Step>
+  <HelloWorld url="localhost:5173" />
+</StepSection>
+
+```svelte name=src/routes/%2Bpage.svelte
+<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+  Hello World
+</h1>
+```
+
+Component `<style>` blocks can reference theme tokens and managed animations
+from project CSS entries without `@reference`. Use shared utility classes in
+component markup. Import the entry where its global reset, native rules, or
+generated classes should load. A component
+style receives the theme resources it uses even when that entry is not loaded
+on the same route. Use `@reference` for definitions outside the project context.
+
+
+Static is the default. For browser generation, explicitly use `masterCSS({ mode:
+'runtime' })` in the Vite configuration and load the runtime bootstrap in the
+SvelteKit client hook:
+
+```ts name=src/hooks.client.ts
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+The module starts the runtime with the project manifest and emitted globals and
+handles Vite HMR. SvelteKit owns its HTML rendering, so the Vite mode option alone
+does not insert a runtime script into the page.
+
+For progressive rendering, select `mode: 'progressive'`, keep the client hook,
+and export the `handle` from `@master/css-svelte/hooks.server`;
+compose it first when using SvelteKit’s `sequence()`. In this mode the client
+hook passes the project manifest as a loader, so a page whose classes are all
+pre-rendered does not download the runtime engine. For pre-render only, select
+`mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+A static application needs neither Master CSS hook. A pre-render application
+uses only the server hook.

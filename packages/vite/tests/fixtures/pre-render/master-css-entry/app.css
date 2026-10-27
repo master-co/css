@@ -1,16 +1,23 @@
-@master entry;
+@import "@master/css";
+@custom-media --md (width >= 48rem);
 
 @theme {
   --color-brand: #123;
-  --breakpoint-md: 768;
+
 }
 
-@components {
-  card {
-    @compose bg:brand;
-    @variant md {
-      @compose font:1.125rem;
+
+
+  @mixin --card {
+    background-color:var(--color-brand);
+    @media (--md) {
+      font-size:1.125rem;
+    }
+    border-color: #456;
+  } @utility card {
+    background-color:var(--color-brand);
+    @media (--md) {
+      font-size:1.125rem;
     }
     border-color: #456;
   }
-}

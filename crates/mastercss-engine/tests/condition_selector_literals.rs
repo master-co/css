@@ -1,0 +1,115 @@
+use mastercss_engine::EngineSession;
+
+const MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
+
+#[test]
+fn decimal_conditions_keep_a_single_numeric_value() {
+    let engine = EngineSession::create(MANIFEST).unwrap();
+    for (class_name, condition) in [
+        (
+            "display:block@media((width>=600.5px))",
+            "@media (width>=600.5px)",
+        ),
+        (
+            "display:block@media((width>=.5rem))",
+            "@media (width>=.5rem)",
+        ),
+        (
+            "display:block@media((width>=-0.5px))",
+            "@media (width>=-0.5px)",
+        ),
+        (
+            "display:block@container((width>=600.5px))",
+            "@container (width>=600.5px)",
+        ),
+        (
+            "display:block@media((width>=37.5rem))",
+            "@media (width>=37.5rem)",
+        ),
+        (
+            "display:block@media((width:37.5rem))",
+            "@media (width:37.5rem)",
+        ),
+        (
+            "display:block@media((600.5px<=height<800.5px))",
+            "@media (600.5px<=height<800.5px)",
+        ),
+    ] {
+        let result = engine.inspect(class_name).unwrap();
+        assert!(
+            result.match_status == mastercss_schema::MatchStatus::Matched,
+            "{class_name}"
+        );
+        assert_eq!(
+            result.rules[0].text,
+            format!(
+                "{condition}{{.{}{{display:block}}}}",
+                mastercss_lexer::css_escape(class_name)
+            ),
+            "{class_name}"
+        );
+    }
+}
+
+#[test]
+fn native_selectors_preserve_attribute_literals_and_escaped_identifiers() {
+    let engine = EngineSession::create(MANIFEST).unwrap();
+    for (selector, expected) in [
+        (
+            r#"[data-state=":first"]:first-child"#,
+            r#"[data-state=":first"]:first-child"#,
+        ),
+        (
+            r#"[data-state=':before']:before"#,
+            r#"[data-state=':before']:before"#,
+        ),
+        (
+            r#":is(:first-child,[data-state=":last"]):after"#,
+            r#":is(:first-child,[data-state=":last"]):after"#,
+        ),
+        (
+            r".literal\:first:first-child",
+            r".literal\:first:first-child",
+        ),
+        (r".literal\:before:before", r".literal\:before:before"),
+        ("::before", "::before"),
+        ("::first", "::first"),
+        (":first-of-type", ":first-of-type"),
+    ] {
+        assert_eq!(engine.resolve_style_selector(selector).unwrap(), expected);
+        if !selector.starts_with('.') {
+            let result = engine.inspect(&format!("display:block{selector}")).unwrap();
+            assert!(
+                result.match_status == mastercss_schema::MatchStatus::Matched,
+                "{selector}"
+            );
+            assert!(
+                result.rules[0]
+                    .selector_text
+                    .as_ref()
+                    .unwrap()
+                    .ends_with(expected),
+                "{selector}: {:?}",
+                result.rules[0].selector_text
+            );
+        }
+    }
+}
+
+#[test]
+fn native_data_urls_preserve_semicolons_and_resolution_descriptors() {
+    let engine = EngineSession::create(MANIFEST).unwrap();
+    let result = engine
+        .inspect("background-image:image-set(url(data:image/gif;base64,AAAA)|1x)")
+        .unwrap();
+    assert_eq!(
+        result.match_status,
+        mastercss_schema::MatchStatus::Matched,
+        "{result:?}"
+    );
+    assert!(
+        result.rules[0]
+            .text
+            .contains("url(data:image/gif;base64,AAAA) 1x")
+    );
+}

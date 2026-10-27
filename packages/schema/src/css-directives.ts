@@ -1,9 +1,8 @@
+import type { MasterCSSKeyframeDefinition } from './keyframes.js'
+import type { MasterCSSMixinDefinition, MasterCSSUtilityDefinition, MasterCSSMixinValue, MasterCSSMixinNode } from './mixin.js'
 import type {
-  MasterCSSManifestDefaultMode,
-  MasterCSSManifestUtilityKind,
-  MasterCSSManifestModeTrigger,
-  MasterCSSManifestUtilityLayerName,
-  MasterCSSManifestVariant
+  MasterCSSThemeNode,
+  MasterCSSManifestUtilityLayerName
 } from './manifest.js'
 
 export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
@@ -12,11 +11,8 @@ export type CSSDirectiveDeclarations = Record<string, string>
 
 export type CSSDirectiveLayerName = MasterCSSManifestUtilityLayerName
 
-export type CSSDirectiveModeTrigger = MasterCSSManifestModeTrigger
 
-export type CSSDirectiveDefaultMode = MasterCSSManifestDefaultMode
 
-export type CSSDirectiveVariantDefinitions = Pick<MasterCSSManifestVariant, 'token' | 'branches'>[]
 
 export interface CSSDirectiveSourceRange {
   start: number
@@ -97,78 +93,33 @@ export function createCSSDirectiveSourceReference(
   }
 }
 
-export interface CSSDirectiveVariableDefinition {
-  name?: string
-  value: CSSDirectiveVariableValue
-  mode?: string
-  inline?: boolean
-  static?: boolean
-  namespace?: string
-  key?: string
+export interface CSSCustomMediaDefinition {
+  name: string
+  query: string
+  source?: CSSDirectiveSourceReference
 }
-
-export type CSSDirectiveAnimationDefinitions = Record<string, Record<string, CSSDirectiveDeclarations>>
-
-export type CSSDirectiveAnimationOptions = Record<string, { static?: boolean }>
 
 export type CSSDirectiveConditionPathEntry =
   | { type: 'condition'; value: string }
-  | { type: 'variant'; token: string }
-
-export interface CSSDirectiveUtilityRuleDefinition {
-  declarations: CSSDirectiveDeclarations
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  selector?: string
-}
-
-export interface CSSDirectiveUtilityPatternDefinition {
-  prefix: string
-  values: string[]
-  valueMap?: Record<string, string>
-}
-
-export interface CSSDirectiveUtilityDynamicDefinition {
-  key: string
-  variableAliasRefs?: string[]
-  kind?: MasterCSSManifestUtilityKind
-  values?: string[]
-  arbitrary?: boolean
-}
-
-export interface CSSDirectiveUtilityDefinition {
-  name: string
-  type?: 'static' | 'pattern' | 'dynamic'
-  layer?: CSSDirectiveLayerName
-  pattern?: CSSDirectiveUtilityPatternDefinition
-  dynamic?: CSSDirectiveUtilityDynamicDefinition
-  declarations?: CSSDirectiveDeclarations
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  rules?: CSSDirectiveUtilityRuleDefinition[]
-}
 
 export interface CSSDirectiveManifestInput {
-  variants?: CSSDirectiveVariantDefinitions
-  variables?: CSSDirectiveVariableDefinition[]
-  utilities?: CSSDirectiveUtilityDefinition[]
-  rootSize?: number
-  baseUnit?: number
-  defaultMode?: CSSDirectiveDefaultMode
-  scope?: string
-  important?: boolean
-  animations?: CSSDirectiveAnimationDefinitions
-  animationOptions?: CSSDirectiveAnimationOptions
-  modes?: string[]
-  modeTrigger?: CSSDirectiveModeTrigger
+  keyframes?: MasterCSSKeyframeDefinition[]
+  keyframeSafelist?: string[]
+  animationVariables?: Record<string, string[]>
+  theme?: MasterCSSThemeNode[]
+  customMedia?: CSSCustomMediaDefinition[]
+  mixins?: MasterCSSMixinDefinition[]
+  utilities?: MasterCSSUtilityDefinition[]
 }
 
 export interface CSSDirectiveExtractionPolicy {
   include: string[]
   exclude: string[]
   safelist: string[]
+  safelistKeyframes: string[]
   blocklist: (string | RegExp)[]
   preserveNative: boolean
+  pruneNative: boolean
 }
 
 export interface CSSDirectiveReference {
@@ -176,25 +127,17 @@ export interface CSSDirectiveReference {
   file?: string
 }
 
-export interface CSSDirectiveStyleComposeDefinition {
-  type: 'compose'
-  order: number
-  className: string
-  selector: string
+export interface CSSOrderedDeclaration {
+  property: string
+  value: string
   source?: CSSDirectiveSourceReference
-  directiveSource?: CSSDirectiveSourceReference
-  selectorSource?: CSSDirectiveSourceReference
-  conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  layer?: CSSDirectiveLayerName
-  name?: string
 }
 
 export interface CSSDirectiveStyleNativeDefinition {
   type: 'native'
   order: number
   selector: string
-  declarations: CSSDirectiveDeclarations
+  declarations: CSSOrderedDeclaration[]
   source?: CSSDirectiveSourceReference
   selectorSource?: CSSDirectiveSourceReference
   conditions?: string[]
@@ -203,11 +146,60 @@ export interface CSSDirectiveStyleNativeDefinition {
   name?: string
 }
 
+export interface CSSDirectiveStyleApplyDefinition {
+  type: 'apply'
+  order: number
+  selector: string
+  name: string
+  arguments: MasterCSSMixinValue[]
+  contents?: MasterCSSMixinNode[]
+  selectorSource?: CSSDirectiveSourceReference
+  source?: CSSDirectiveSourceReference
+  conditionPath?: CSSDirectiveConditionPathEntry[]
+}
+
 export type CSSDirectiveStyleDefinition =
-  | CSSDirectiveStyleComposeDefinition
+  | CSSDirectiveStyleApplyDefinition
   | CSSDirectiveStyleNativeDefinition
 
+/** Generated UTF-16 offset and its original authoring-source anchor. */
+export interface CSSOutputMapping {
+  generatedStart: number
+  generatedEnd?: number
+  source: CSSDirectiveSourceReference
+}
+
+/** Rust output plan; pass it unchanged from parsing to directive lowering. */
+export interface CSSNativeOutput {
+  css: string
+  mappings: CSSOutputMapping[]
+  slots: { start: number, end: number, marker: string, definitions: CSSDirectiveStyleDefinition[] }[]
+}
+
+export interface CSSDefinitionSource {
+  kind: 'utility' | 'mixin'
+  name: string
+  identity: string
+  replacedBy?: CSSDirectiveSourceReference
+  source: CSSDirectiveSourceReference
+}
+
+export interface CSSDirectiveNotice {
+  code: string
+  message: string
+  source?: CSSDirectiveSourceReference | null
+}
+
 export interface CSSDirectiveResult {
+  suppressedKeyframes?: string[]
+  notices?: CSSDirectiveNotice[]
+  definitionSources?: CSSDefinitionSource[]
+  nativeOutput?: CSSNativeOutput
+  outputMappings?: CSSOutputMapping[]
+  /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */
+  sourceMap?: string
+  nativeMappings?: CSSOutputMapping[]
+  generatedMappings?: CSSOutputMapping[]
   manifestInput: CSSDirectiveManifestInput
   extractionPolicy: CSSDirectiveExtractionPolicy
   classNames: string[]

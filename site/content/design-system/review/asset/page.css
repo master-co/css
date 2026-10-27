@@ -1,0 +1,24 @@
+.review-asset-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
+.review-asset-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
+.review-asset-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }
+.review-asset-intro { max-width: 67ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.65; }
+.review-asset-themeControl { display: inline-flex; align-items: center; gap: .75rem; margin: 0 0 2.5rem; color: var(--color-text-muted); font-size: .75rem; }
+.review-asset-themeSelect { position: relative; display: inline-flex; align-items: center; min-height: 2.25rem; padding: .4rem .75rem; border: 1px solid var(--color-line-divider); border-radius: var(--radius-sm); background: var(--color-surface-raised); color: var(--color-text-body); font-family: var(--font-family-mono); }
+.review-asset-themeSelect:focus-within { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
+.review-asset-review section + section { margin-top: 4rem; }
+.review-asset-review h2 { margin: 0 0 .5rem; font-size: 1.25rem; font-weight: 570; line-height: 1.3; letter-spacing: -.02em; }
+.review-asset-options { display: grid; gap: 1.5rem; }
+.review-asset-option { min-width: 0; }
+.review-asset-optionHeading { display: flex; align-items: baseline; gap: .75rem; padding: 0 .25rem .7rem; border-bottom: 1px solid var(--color-line-subtle); }
+.review-asset-optionHeading > span { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
+.review-asset-optionHeading h3 { margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
+.review-asset-optionHeading p { margin: .125rem 0 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.4; }
+.review-asset-optionPreview .site-demo { margin: .75rem 0 0; }
+.review-asset-optionNote { margin: .65rem .25rem 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
+.review-asset-surfaceGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--spacing-lg); }
+.review-asset-bodyLink, .review-asset-sectionHeading a { color: var(--color-blue-60); font-size: .8125rem; text-decoration: none; }
+.review-asset-bodyLink { display: inline-block; margin-top: .75rem; }
+.review-asset-bodyLink:hover, .review-asset-sectionHeading a:hover { text-decoration: underline; }
+.review-asset-bodyLink:focus-visible, .review-asset-sectionHeading a:focus-visible { outline: 2px solid var(--color-blue-60); outline-offset: 4px; border-radius: 2px; }
+.review-asset-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
+.review-asset-sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }

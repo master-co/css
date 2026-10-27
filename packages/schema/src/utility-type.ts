@@ -1,21 +1,14 @@
 export const UtilityType = {
   /**
    * semantic utility classes
-   * @example block, inline
+   * @example sr-only, text-sm
    */
   Semantic: -2,
   /**
-   * shorthand
-   * @example border, padding, margin
-   */
-  Shorthand: -1,
-  /**
    * normal
-   * @example grid-cols
+   * @example p-md, font-size:1rem
    */
   Normal: 0,
 } as const
 
 export type UtilityType = typeof UtilityType[keyof typeof UtilityType]
-
-export default UtilityType

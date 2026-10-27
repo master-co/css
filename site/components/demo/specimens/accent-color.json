@@ -1,0 +1,50 @@
+[
+  {
+    "page": "accent-color",
+    "id": "set-the-accent-color",
+    "title": "Set the accent color",
+    "html": [
+      "<!-- Platform accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"display:grid gap-md min-width:0 margin:0 padding:0 border-width:0\n           accent-color:auto\">\n    <legend class=\"sr-only\">Platform accent</legend>\n    <label class=\"display:flex align-items:center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"display:flex flex-wrap:wrap gap-md\">\n      <label class=\"display:flex align-items:center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"display:flex align-items:center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"display:grid gap-xs width:240px max-width:100%\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"width:100%\">\n    </label>\n  </fieldset>\n</form>",
+      "<!-- Blue accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"display:grid gap-md min-width:0 margin:0 padding:0 border-width:0\n           accent-color-blue\">\n    <legend class=\"sr-only\">Blue accent</legend>\n    <label class=\"display:flex align-items:center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"display:flex flex-wrap:wrap gap-md\">\n      <label class=\"display:flex align-items:center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"display:flex align-items:center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"display:grid gap-xs width:240px max-width:100%\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"width:100%\">\n    </label>\n  </fieldset>\n</form>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "gap-md",
+      "min-width:0",
+      "margin:0",
+      "padding:0",
+      "border-width:0",
+      "accent-color:auto",
+      "sr-only",
+      "display:flex",
+      "align-items:center",
+      "gap-sm",
+      "flex-wrap:wrap",
+      "gap-xs",
+      "width:240px",
+      "max-width:100%",
+      "width:100%",
+      "accent-color-blue"
+    ],
+    "classLists": [
+      "display:grid gap-md min-width:0 margin:0 padding:0 border-width:0 accent-color:auto",
+      "sr-only",
+      "display:flex align-items:center gap-sm",
+      "display:flex flex-wrap:wrap gap-md",
+      "display:flex align-items:center gap-sm",
+      "display:flex align-items:center gap-sm",
+      "display:grid gap-xs width:240px max-width:100%",
+      "width:100%",
+      "display:grid gap-md min-width:0 margin:0 padding:0 border-width:0 accent-color-blue",
+      "sr-only",
+      "display:flex align-items:center gap-sm",
+      "display:flex flex-wrap:wrap gap-md",
+      "display:flex align-items:center gap-sm",
+      "display:flex align-items:center gap-sm",
+      "display:grid gap-xs width:240px max-width:100%",
+      "width:100%"
+    ],
+    "highlighted": []
+  }
+]

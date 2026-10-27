@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.nuxt`
+# AI Notes For `@master/css-nuxt`
 
 ## Responsibility
 
-`@master/css.nuxt` wires Master CSS into Nuxt, Vite, Nitro, client runtime, and server pre-render workflows.
+`@master/css-nuxt` wires Master CSS into Nuxt, Vite, Nitro, client runtime, and server pre-render workflows.
 
 ## Owns
 
@@ -13,7 +13,7 @@
 ## Does Not Own
 
 - Vite mode semantics.
-- Vue SFC extraction; `@master/css-source` handles source parsing through scanner auto adapters.
+- Vue SFC extraction; `@master/css-tooling/source` handles source parsing through scanner auto adapters.
 - Core runtime, server, scanner, or CSS generation behavior.
 
 ## Public Surface
@@ -24,15 +24,17 @@
 
 - `src/module.ts`
 - `src/options.ts`
-- `src/runtime/css-runtime.ts`
+- `src/runtime/css-runtime.ts` (runtime mode), `src/runtime/css-runtime-progressive.ts` (progressive mode), `src/runtime/start-css-runtime.ts`
 - `src/runtime/css-server.ts`
 - `tests/fixtures/*`
 
 ## Risk Areas
 
 - SSR and Nitro virtual manifest aliases.
+- Nitro renders from one manifest file and the client runtime executes the program compiled from it, served under `/_master-css/program/`; outside `nuxt.options.dev` both omit `source` provenance (`toProductionManifestJSON`).
 - Nuxt inline styles behavior in static mode.
 - Client/server mode differences.
+- The progressive client runtime plugin (`css-runtime-progressive.ts`) passes the runtime program as a dynamic import loader; only runtime mode preloads the program.
 - Generated `.output` fixture content.
 
 ## Safe Changes
@@ -50,7 +52,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css.nuxt test
-pnpm --filter @master/css.nuxt lint
-pnpm --filter @master/css.nuxt build
+pnpm --filter @master/css-nuxt test
+pnpm --filter @master/css-nuxt lint
+pnpm --filter @master/css-nuxt build
 ```

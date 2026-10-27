@@ -1,0 +1,206 @@
+use mastercss_engine::EngineSession;
+use mastercss_schema::{LANGUAGE_VERSION, MatchStatus};
+use serde_json::json;
+use std::collections::HashSet;
+
+fn baseline() -> Vec<serde_json::Value> {
+    serde_json::from_str(include_str!("fixtures/token-family-baseline.json")).unwrap()
+}
+
+fn engine() -> EngineSession {
+    engine_namespace(None)
+}
+
+fn engine_namespace(namespace: Option<&str>) -> EngineSession {
+    let variables = baseline().into_iter().filter(|family| namespace.is_none_or(|namespace| family["namespace"] == namespace)).map(|family| (
+        family["namespace"].as_str().unwrap().to_owned(),
+        json!([{ "key":"proof", "type":"string", "values":[{"path":[":root"],"value":"1rem"}] }]),
+    )).collect::<serde_json::Map<_, _>>();
+    let preset: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
+    EngineSession::create(&json!({"version":6,"languageVersion":LANGUAGE_VERSION,"variables":variables,"utilities":preset["utilities"]}).to_string()).unwrap()
+}
+
+#[test]
+fn every_preset_value_family_keeps_its_builtin_contract() {
+    let engine = engine();
+    let mut prefixes = HashSet::new();
+    let mut properties = HashSet::new();
+    let labels = engine
+        .class_completion_candidates()
+        .unwrap()
+        .into_iter()
+        .map(|entry| entry.label)
+        .collect::<HashSet<_>>();
+    assert_eq!(baseline().len(), 119);
+    for family in baseline() {
+        let prefix = family["prefix"].as_str().unwrap();
+        let property = family["property"].as_str().unwrap();
+        let original_prefix = prefix;
+        let prefix = match prefix {
+            "font-family" | "font-size" | "font-weight" => "font",
+            "animation-duration" | "animation-timing-function" => "animation",
+            "transition-duration" | "transition-timing-function" => "transition",
+            prefix => prefix,
+        };
+        let engine = engine_namespace(family["namespace"].as_str());
+        let labels = engine
+            .class_completion_candidates()
+            .unwrap()
+            .into_iter()
+            .map(|entry| entry.label)
+            .collect::<HashSet<_>>();
+        assert!(
+            prefixes.insert((
+                prefix.to_owned(),
+                family["namespace"].as_str().unwrap().to_owned()
+            )),
+            "{prefix}"
+        );
+        assert!(properties.insert(property.to_owned()), "{property}");
+        let canonical = format!("{prefix}-proof");
+        let result = engine.inspect(&canonical).unwrap();
+        assert_eq!(
+            result.match_status,
+            MatchStatus::Matched,
+            "{canonical}: {:?}",
+            result.diagnostics
+        );
+        assert_eq!(
+            result.rules[0].text,
+            family["css"].as_str().unwrap().replacen(
+                &format!(".{original_prefix}-proof"),
+                &format!(".{prefix}-proof"),
+                1
+            )
+        );
+        let call = format!(
+            "{prefix}(var(--{}-proof))",
+            family["namespace"].as_str().unwrap()
+        );
+        let expanded = engine.inspect(&call).unwrap();
+        assert_ne!(
+            expanded.match_status,
+            MatchStatus::Matched,
+            "token patterns do not register function calls: {call}"
+        );
+        assert!(expanded.rules.is_empty(), "{call}");
+        assert!(labels.contains(&canonical), "{canonical}");
+        assert_eq!(
+            engine
+                .inspect(&format!("{property}:initial"))
+                .unwrap()
+                .match_status,
+            MatchStatus::Matched
+        );
+    }
+    assert_eq!(prefixes.len(), 119);
+    for class in [
+        "font-proof",
+        "filter-proof",
+        "backdrop-filter-proof",
+        "text-shadow-proof",
+    ] {
+        assert_ne!(
+            engine.inspect(class).unwrap().match_status,
+            MatchStatus::Matched,
+            "{class}"
+        );
+        assert!(!labels.contains(class));
+    }
+    assert!(!labels.contains(":of"));
+    assert!(!labels.contains(":first"));
+}
+
+#[test]
+fn literal_values_and_math_are_separate() {
+    let engine = engine();
+    for (input, output) in [
+        ("calc(1px+2px)", "calc(1px + 2px)"),
+        ("min(1px+2px,4px)", "min(1px + 2px, 4px)"),
+        ("max(100%-1rem,2px)", "max(100% - 1rem, 2px)"),
+        ("clamp(1px,2px+3px,4px)", "clamp(1px, 2px + 3px, 4px)"),
+        ("calc(1.5625rem-.625rem)", "calc(1.5625rem - .625rem)"),
+        ("calc(1px-2px)", "calc(1px - 2px)"),
+        ("calc(1px-2e-3px)", "calc(1px - 2e-3px)"),
+        ("calc(1e-3*2)", "calc(1e-3 * 2)"),
+        ("calc(-1px+-2px)", "calc(-1px + -2px)"),
+        (
+            "calc(var(--a-b)+env(safe-area-inset-top))",
+            "calc(var(--a-b) + env(safe-area-inset-top))",
+        ),
+        ("'calc(1+2)'", "'calc(1+2)'"),
+        ("url(calc(1+2))", "url(calc(1+2))"),
+        ("var(--x,calc(1px+2px))", "var(--x,calc(1px + 2px))"),
+        ("'clamp(1+2,3,4)'", "'clamp(1+2,3,4)'"),
+        ("calc(1px/*+*/+2px)", "calc(1px/*+*/ + 2px)"),
+    ] {
+        let class = format!("--example:{input}");
+        let rules = engine.composition_rules(&class).unwrap();
+        assert_eq!(rules[0].declarations[0].value, output, "{class}");
+        let normalized = format!("--example:{}", output.replace(' ', "|"));
+        if !output.starts_with('\'') {
+            assert_eq!(
+                engine.composition_rules(&normalized).unwrap()[0].declarations[0].value,
+                output,
+                "idempotence: {class}"
+            );
+        }
+    }
+}
+
+#[test]
+fn native_selectors_keep_literal_spelling() {
+    let engine = engine();
+    for (suffix, expected) in [
+        ("_span", " span"),
+        ("[data-id='a_b']", "[data-id='a_b']"),
+        (r".foo\_bar", r".foo\_bar"),
+        (":lang(en_US)", ":lang(en_US)"),
+        (":future(a_b)", ":future(a_b)"),
+        (".foo__bar", ".foo__bar"),
+        (".foo_", ".foo_"),
+        (":is(.foo_)", ":is(.foo_)"),
+        (":is(_foo)", ":is(_foo)"),
+        (":is(.foo_span)", ":is(.foo span)"),
+        (".foo/*a_b*/_span", ".foo/*a_b*/ span"),
+        (":before", ":before"),
+        ("::slider-thumb", "::slider-thumb"),
+        ("::-webkit-slider-thumb", "::-webkit-slider-thumb"),
+        (
+            ":is(:first-child,[data-id=':first'])",
+            ":is(:first-child,[data-id=':first'])",
+        ),
+    ] {
+        let result = engine.inspect(&format!("display:block{suffix}")).unwrap();
+        assert_eq!(result.match_status, MatchStatus::Matched, "{suffix}");
+        assert!(
+            result.rules[0]
+                .selector_text
+                .as_ref()
+                .unwrap()
+                .ends_with(expected)
+        );
+        assert_eq!(engine.resolve_style_selector(suffix).unwrap(), suffix);
+    }
+}
+
+#[test]
+fn native_properties_accept_unicode_and_escapes() {
+    let engine = engine();
+    for property in ["--色", r"--\008272", r"--a\:b", r"c\00006flor"] {
+        let rules = engine
+            .composition_rules(&format!("{property}:red:hover"))
+            .unwrap();
+        assert_eq!(rules.len(), 1, "{property}");
+        assert_eq!(rules[0].declarations[0].property, property);
+        assert_eq!(rules[0].declarations[0].value, "red");
+    }
+}
+
+#[test]
+fn language_nine_manifests_must_be_recompiled() {
+    assert!(EngineSession::create(r#"{"version":4,"languageVersion":9}"#).is_err());
+}

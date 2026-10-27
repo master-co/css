@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import cloudflareImageLoader, {
+import {
   createCloudflareImageUrl,
   shouldUseCloudflareImageLoader
 } from './cloudflare-image-loader.js'
@@ -8,12 +8,12 @@ import cloudflareImageLoader, {
 test('transforms local master.co bitmap paths through Cloudflare Images', () => {
   assert.equal(
     createCloudflareImageUrl({
-      src: '/_next/static/media/example.jpg',
+      src: '/_astro/example.jpg',
       width: 640,
       quality: 75,
       siteUrl: 'https://css.master.co'
     }),
-    'https://css.master.co/cdn-cgi/image/width=640,quality=75,format=auto/_next/static/media/example.jpg'
+    'https://css.master.co/cdn-cgi/image/width=640,quality=75,format=auto/_astro/example.jpg'
   )
 })
 
@@ -55,11 +55,11 @@ test('keeps local and non-master preview hosts unchanged', () => {
   ]) {
     assert.equal(
       createCloudflareImageUrl({
-        src: '/_next/static/media/example.jpg',
+        src: '/_astro/example.jpg',
         width: 640,
         siteUrl
       }),
-      '/_next/static/media/example.jpg'
+      '/_astro/example.jpg'
     )
   }
 })
@@ -75,28 +75,6 @@ test('keeps third-party remote URLs unchanged', () => {
     }),
     src
   )
-})
-
-test('uses NEXT_PUBLIC_URL when called as a Next image loader', () => {
-  const previousPublicUrl = process.env.NEXT_PUBLIC_URL
-  process.env.NEXT_PUBLIC_URL = 'https://css.master.co'
-
-  try {
-    assert.equal(
-      cloudflareImageLoader({
-        src: '/images/example.webp',
-        width: 828,
-        quality: undefined
-      }),
-      'https://css.master.co/cdn-cgi/image/width=828,quality=75,format=auto/images/example.webp'
-    )
-  } finally {
-    if (previousPublicUrl === undefined) {
-      delete process.env.NEXT_PUBLIC_URL
-    } else {
-      process.env.NEXT_PUBLIC_URL = previousPublicUrl
-    }
-  }
 })
 
 test('enables custom loader only for Cloudflare master.co builds by default', () => {

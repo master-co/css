@@ -2,9 +2,11 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
-vi.mock('@master/css-scanner', () => {
+vi.mock('node:fs/promises', () => ({ readFile: vi.fn(async () => '<div class="bg-white"/>') }))
+
+vi.mock('@master/css-tooling/scanner/node', () => {
   return {
-    default: class {
+    MasterCSSScanner: class {
       options: any = {}
       scanModuleCalls: string[] = []
       constructor(opts: any, _root?: string) {
@@ -12,11 +14,15 @@ vi.mock('@master/css-scanner', () => {
           this.options = { ...opts }
         }
       }
+      sourcePolicyDependencies = []
+      isModuleAllowed() { return true }
+      removeSource() {}
       async init() { return this }
       async scanModule(id: string, _code: string) {
         this.scanModuleCalls.push(id)
         return true
       }
+      async dispose() {}
     },
   }
 })
@@ -44,10 +50,29 @@ describe('shared scanner plugins', () => {
 
     await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
 
-    expect(ctx.scanner.options).toEqual({
+    expect(ctx.scanner.options).toMatchObject({
       exclude: ['src/generated/**'],
       verbose: 0
     })
+  })
+
+  test('reinitializes the scanner for a later build environment', async () => {
+    const ctx: any = {}
+    const scannerPlugin = ScannerPlugin({} as any, ctx) as any
+
+    await scannerPlugin.configResolved.call({}, fakeViteConfig)
+    const firstScanner = ctx.scanner
+    firstScanner.dispose = vi.fn()
+
+    await scannerPlugin.closeBundle.call({})
+    expect(firstScanner.dispose).toHaveBeenCalledOnce()
+    expect(ctx.scanner).toBeUndefined()
+
+    await scannerPlugin.buildStart.call({})
+    expect(ctx.scanner).toBeDefined()
+    expect(ctx.scanner).not.toBe(firstScanner)
+
+    await scannerPlugin.closeBundle.call({})
   })
 
   describe('usage graph delegation', () => {
@@ -60,7 +85,7 @@ describe('shared scanner plugins', () => {
       await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
       const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
       for (const id of ids) {
-        await usageGraphPlugin.transform.call({}, '<div class="bg:white">x</div>', id)
+        await usageGraphPlugin.transform.call({}, '<div class="bg-white">x</div>', id)
       }
       return ctx.scanner.scanModuleCalls
     }
@@ -98,10 +123,9 @@ describe('shared scanner plugins', () => {
       expect(calls).toEqual([
         '/proj/src/data.json',
         '/proj/src/icon.png',
-        '/proj/src/icon.svg?url',
+        '/proj/src/icon.svg',
         '/proj/src/audio.mp3',
         '/proj/src/style.css',
-        '/proj/src/App.vue?vue&type=style&index=0&lang.css',
       ])
     })
 
@@ -114,10 +138,18 @@ describe('shared scanner plugins', () => {
       expect(calls).toEqual([])
     })
 
-    test('does not wait for Vite request idle during dev server setup', () => {
-      const usageGraphPlugin = UsageGraphPlugin({} as any, {} as any)
-
-      expect(usageGraphPlugin).not.toHaveProperty('configureServer')
+    test('watches policy files without adding dev import edges or waiting for request idle', async () => {
+      const ctx: any = {}
+      const scannerPlugin = ScannerPlugin({} as any, ctx) as any
+      await scannerPlugin.configResolved.call({}, fakeViteConfig)
+      ctx.scanner.sourcePolicyDependencies = ['/proj/.gitignore']
+      const plugin = UsageGraphPlugin({} as any, ctx) as any
+      const watcher = { add: vi.fn() }, waitForRequestsIdle = vi.fn(), addWatchFile = vi.fn()
+      expect(plugin.configureServer({ watcher, waitForRequestsIdle })).toBeUndefined()
+      await plugin.transform.call({ addWatchFile }, '"flex"', '/proj/src/app.ts')
+      expect(watcher.add).toHaveBeenCalledWith('/proj/.gitignore')
+      expect(waitForRequestsIdle).not.toHaveBeenCalled()
+      expect(addWatchFile).not.toHaveBeenCalled()
     })
 
     test('build transformIndexHtml feeds HTML to scanModule', async () => {

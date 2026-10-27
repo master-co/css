@@ -1,0 +1,50 @@
+import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Vite project
+      If you don't have a Vite project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create vite@latest my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer from the Vite project root. Static is the default: it scans complete class strings and emits ordinary CSS.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework vite --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Start dev server
+      Run the command to start the Vite dev server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style your first element using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5173" />
+</StepSection>
+
+```html name=index.html
+<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+  Hello World
+</h1>
+```

@@ -1,773 +1,523 @@
-/* Static utilities for positioning, clipping, and content. */
-@utilities {
-  abs {
-    position: absolute;
-  }
-
-  bg-clip-border {
-    background-clip: border-box;
-  }
-
-  bg-clip-content {
-    background-clip: content-box;
-  }
-
-  bg-clip-padding {
-    background-clip: padding-box;
-  }
-
-  bg-clip-text {
-    background-clip: text;
-  }
-
-  bg-origin-<border=border-box|content=content-box|padding=padding-box> {
-    background-origin: --value();
-  }
-
-  block {
-    display: block;
-  }
-
-  bottom {
-    bottom: 0;
-  }
-
-  box-<border=border-box|content=content-box> {
-    box-sizing: --value();
-  }
-
-  break-spaces {
-    white-space: break-spaces;
-  }
-
-  break-word {
-    word-break: break-word;
-  }
-
-  capitalize {
-    text-transform: capitalize;
-  }
-
-  center {
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  clip-border {
-    clip-path: border-box;
-  }
-
-  clip-content {
-    clip-path: content-box;
-  }
-
-  clip-fill {
-    clip-path: fill-box;
-  }
-
-  clip-margin {
-    clip-path: margin-box;
-  }
-
-  clip-none {
-    clip-path: none;
-  }
-
-  clip-padding {
-    clip-path: padding-box;
-  }
-
-  clip-stroke {
-    clip-path: stroke-box;
-  }
-
-  clip-view {
-    clip-path: view-box;
-  }
-
-  container {
-    container-type: inline-size;
-  }
-
-  content-<around=space-around|between=space-between|evenly=space-evenly> {
-    align-content: --value();
-  }
-
-  content-<baseline|center|end|flex-end|flex-start|normal|start|stretch> {
-    align-content: --value();
-  }
-
-  contents {
-    display: contents;
-  }
+/* Explicit on-demand utility classes and token families. */
+@utility sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
-/* Static utilities for display, font rendering, and alignment. */
-@utilities {
-  decoration-from-font {
-    text-decoration-thickness: from-font;
-  }
-
-  diagonal-fractions {
-    font-variant-numeric: diagonal-fractions;
-  }
-
-  fit {
-    width: fit-content;
-    height: fit-content;
-  }
-
-  fixed {
-    position: fixed;
-  }
-
-  flex {
-    display: flex;
-  }
-
-  flex-col {
-    flex-direction: column;
-  }
-
-  flex-col-reverse {
-    flex-direction: column-reverse;
-  }
-
-  flex-row {
-    flex-direction: row;
-  }
-
-  flex-row-reverse {
-    flex-direction: row-reverse;
-  }
-
-  flow-root {
-    display: flow-root;
-  }
-
-  font-antialiased {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  font-subpixel-antialiased {
-    -webkit-font-smoothing: auto;
-    -moz-osx-font-smoothing: auto;
-  }
-
-  font-bolder {
-    font-weight: bolder;
-  }
-
-  full {
-    width: 100%;
-    height: 100%;
-  }
-
-  text-gradient {
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  grid {
-    display: grid;
-  }
-
-  hidden {
-    display: none;
-  }
-
-  inline {
-    display: inline;
-  }
-
-  inline-block {
-    display: inline-block;
-  }
-
-  inline-flex {
-    display: inline-flex;
-  }
-
-  inline-grid {
-    display: inline-grid;
-  }
-
-  inline-table {
-    display: inline-table;
-  }
-
-  invisible {
-    visibility: hidden;
-  }
-
-  isolate {
-    isolation: isolate;
-  }
-
-  italic {
-    font-style: italic;
-  }
-
-  items-<baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch> {
-    align-items: --value();
-  }
-
-  justify-<around=space-around|between=space-between|evenly=space-evenly> {
-    justify-content: --value();
-  }
-
-  justify-<center|end|flex-end|flex-start|left|normal|right|start|stretch> {
-    justify-content: --value();
-  }
+@utility grid-cols(--n <integer>) {
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
 }
 
-/* Static utilities for text variants, viewport bounds, and shapes. */
-@utilities {
-  left {
-    left: 0;
-  }
-
-  line-through {
-    text-decoration: line-through;
-  }
-
-  lining-nums {
-    font-variant-numeric: lining-nums;
-  }
-
-  list-item {
-    display: list-item;
-  }
-
-  lowercase {
-    text-transform: lowercase;
-  }
-
-  max-vh {
-    max-height: 100vh;
-  }
-
-  max-vw {
-    max-width: 100vw;
-  }
-
-  middle {
-    top: 0;
-    bottom: 0;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  min-vh {
-    min-height: 100vh;
-  }
-
-  min-vw {
-    min-width: 100vw;
-  }
-
-  oblique {
-    font-style: oblique;
-  }
-
-  oldstyle-nums {
-    font-variant-numeric: oldstyle-nums;
-  }
-
-  ordinal {
-    font-variant-numeric: ordinal;
-  }
-
-  overline {
-    text-decoration: overline;
-  }
-
-  overflow {
-    overflow: visible;
-  }
-
-  proportional-nums {
-    font-variant-numeric: proportional-nums;
-  }
-
-  rel {
-    position: relative;
-  }
-
-  right {
-    right: 0;
-  }
-
-  round {
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-  }
-
-  rounded {
-    border-radius: 1e9em;
-  }
-
-  self-<anchor-center|auto|baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch> {
-    align-self: --value();
-  }
-
-  shape-border {
-    shape-outside: border-box;
-  }
-
-  shape-content {
-    shape-outside: content-box;
-  }
-
-  shape-margin {
-    shape-outside: margin-box;
-  }
-
-  shape-none {
-    shape-outside: none;
-  }
-
-  shape-padding {
-    shape-outside: padding-box;
-  }
-
-  slashed-zero {
-    font-variant-numeric: slashed-zero;
-  }
-
-  stacked-fractions {
-    font-variant-numeric: stacked-fractions;
-  }
-
-  square {
-    aspect-ratio: 1/1;
-  }
-
-  sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
+@utility grid-rows(--n <integer>) {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--n), minmax(0, 1fr));
 }
 
-/* Static utilities for positioning, tables, transforms, and wrapping. */
-@utilities {
-  static {
-    position: static;
-  }
-
-  sticky {
-    position: sticky;
-  }
-
-  table {
-    display: table;
-  }
-
-  table-caption {
-    display: table-caption;
-  }
-
-  table-cell {
-    display: table-cell;
-  }
-
-  table-column {
-    display: table-column;
-  }
-
-  table-column-group {
-    display: table-column-group;
-  }
-
-  table-footer-group {
-    display: table-footer-group;
-  }
-
-  table-header-group {
-    display: table-header-group;
-  }
-
-  table-row {
-    display: table-row;
-  }
-
-  table-row-group {
-    display: table-row-group;
-  }
-
-  tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-
-  top {
-    top: 0;
-  }
-
-  transform-<border=border-box|content=content-box|fill=fill-box|stroke=stroke-box|view=view-box> {
-    transform-box: --value();
-  }
-
-  untouchable {
-    pointer-events: none;
-  }
-
-  underline {
-    text-decoration: underline;
-  }
-
-  uppercase {
-    text-transform: uppercase;
-  }
-
-  vh {
-    height: 100vh;
-  }
-
-  video {
-    aspect-ratio: 16/9;
-  }
-
-  visible {
-    visibility: visible;
-  }
-
-  vw {
-    width: 100vw;
-  }
-
-  wrap-<anywhere|break-word|normal> {
-    overflow-wrap: --value();
-  }
+@utility grid-col-span(--n <integer>) {
+  grid-column: span var(--n)/span var(--n);
 }
 
-/* Token and size shorthands. */
-@utilities {
-  animate:<~animate> {
-    animation: --value();
-  }
-
-  font:<~font-size|number> {
-    font-size: --value();
-  }
-
-  font:<~font-family> {
-    font-family: --value();
-  }
-
-  font:<~font-weight> {
-    font-weight: --value();
-  }
-
-  bg:<color> {
-    background-color: --value();
-  }
-
-  bg:<~color|image> {
-    background-image: --value();
-  }
-
-  surface:<~color-surface> {
-    background-color: --value();
-  }
-
-  size:<~container|number|*> {
-    width: --value();
-    height: --value();
-  }
-
-  min-size:<~container|number|*> {
-    min-width: --value();
-    min-height: --value();
-  }
-
-  max-size:<~container|number|*> {
-    max-width: --value();
-    max-height: --value();
-  }
+@utility grid-row-span(--n <integer>) {
+  grid-row: span var(--n)/span var(--n);
 }
 
-/* Border and outline shorthands. */
-@utilities {
-  b:<number> {
-    border-width: --value();
-  }
-
-  b:<~color-line|color> {
-    border-color: --value();
-  }
-
-  bt:<number> {
-    border-top-width: --value();
-  }
-
-  bt:<~color-line|color> {
-    border-top-color: --value();
-  }
-
-  br:<number> {
-    border-right-width: --value();
-  }
-
-  br:<~color-line|color> {
-    border-right-color: --value();
-  }
-
-  bb:<number> {
-    border-bottom-width: --value();
-  }
-
-  bb:<~color-line|color> {
-    border-bottom-color: --value();
-  }
-
-  bl:<number> {
-    border-left-width: --value();
-  }
-
-  bl:<~color-line|color> {
-    border-left-color: --value();
-  }
-
-  bx:<number> {
-    border-inline-width: --value();
-  }
-
-  bx:<~color-line|color> {
-    border-inline-color: --value();
-  }
-
-  by:<number> {
-    border-block-width: --value();
-  }
-
-  by:<~color-line|color> {
-    border-block-color: --value();
-  }
-
-  outline:<number> {
-    outline-width: --value();
-  }
-
-  outline:<~color-line|color> {
-    outline-color: --value();
-  }
-
-  outline-<medium|thick|thin> {
-    outline-width: --value();
-  }
-
-  outline-<auto|dashed|dotted|double|hidden|none|solid> {
-    outline-style: --value();
-  }
+@utility clamp-lines(--n <integer>) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--n);
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
 }
 
-/* Grid, stroke, and text shorthands. */
-@utilities {
-  grid-cols:<number|*> {
-    display: grid;
-    grid-template-columns: repeat(--value(), minmax(0, 1fr));
-  }
-
-  grid-rows:<number|*> {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(--value(), minmax(0, 1fr));
-  }
-
-  grid-col-span:<number|*> {
-    grid-column: span --value()/span --value();
-  }
-
-  grid-row-span:<number|*> {
-    grid-row: span --value()/span --value();
-  }
-
-  line-clamp:<number> {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: --value();
-    overflow: hidden;
-    overflow-wrap: break-word;
-    text-overflow: ellipsis;
-  }
-
-  stroke:<number> {
-    stroke-width: --value();
-  }
-
-  text:<~font-size|number> {
-    font-size: --value();
-    line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
-    letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
-  }
-
-  text:<~color-text> {
-    color: --value();
-  }
-
-  text-decoration:<number> {
-    text-decoration-thickness: --value();
-  }
-
-  text-decoration:<~color-text|color> {
-    text-decoration-color: --value();
-  }
-
-  text-decoration:<~color-text|~color|*> {
-    -webkit-text-decoration: --value();
-    text-decoration: --value();
-  }
-
-  text-decoration-thickness:<number|*> {
-    text-decoration-thickness: --value();
-  }
-
-  text-underline:<~spacing> {
-    text-underline-offset: --value();
-  }
-
-  text-stroke:<number> {
-    -webkit-text-stroke-width: --value();
-  }
-
-  text-stroke:<color> {
-    -webkit-text-stroke-color: --value();
-  }
-
-  text-stroke:<~color|*> {
-    -webkit-text-stroke: --value();
-  }
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
 }
 
-/* Vendor-prefixed shorthands. */
-@utilities {
-  backdrop-filter:<~color|*> {
-    -webkit-backdrop-filter: --value();
-    backdrop-filter: --value();
-  }
-
-  box-decoration-break:<clone|slice> {
-    -webkit-box-decoration-break: --value();
-    box-decoration-break: --value();
-  }
-
-  mask-image:<*> {
-    -webkit-mask-image: --value();
-    mask-image: --value();
-  }
-
-  user-drag:<auto|element|none> {
-    -webkit-user-drag: --value();
-    user-drag: --value();
-  }
-
-  user-select:<auto|none|text|all> {
-    -webkit-user-select: --value();
-    user-select: --value();
-  }
+/* Token patterns bind values from the declared namespace. */
+@utility bottom-(--spacing) {
+  bottom: var(--spacing);
 }
 
-/* Enum utility shortcuts. */
-@utilities {
-  bg-<auto|contain|cover> {
-    background-size: --value();
-  }
+@utility border-spacing-(--spacing) {
+  border-spacing: var(--spacing);
+}
 
-  bg-<bottom|center|left|right|top> {
-    background-position: --value();
-  }
+@utility gap-x-(--spacing) {
+  column-gap: var(--spacing);
+}
 
-  bg-<fixed|local|scroll> {
-    background-attachment: --value();
-  }
+@utility gap-(--spacing) {
+  gap: var(--spacing);
+}
 
-  bg-<repeat|no-repeat|repeat-x|repeat-y> {
-    background-repeat: --value();
-  }
+@utility inset-(--spacing) {
+  inset: var(--spacing);
+}
 
-  b-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-style: --value();
-  }
+@utility iy-(--spacing) {
+  inset-block: var(--spacing);
+}
 
-  bt-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-top-style: --value();
-  }
+@utility iye-(--spacing) {
+  inset-block-end: var(--spacing);
+}
 
-  br-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-right-style: --value();
-  }
+@utility iys-(--spacing) {
+  inset-block-start: var(--spacing);
+}
 
-  bb-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-bottom-style: --value();
-  }
+@utility ix-(--spacing) {
+  inset-inline: var(--spacing);
+}
 
-  bl-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-left-style: --value();
-  }
+@utility ixe-(--spacing) {
+  inset-inline-end: var(--spacing);
+}
 
-  bx-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-inline-style: --value();
-  }
+@utility ixs-(--spacing) {
+  inset-inline-start: var(--spacing);
+}
 
-  by-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
-    border-block-style: --value();
-  }
+@utility left-(--spacing) {
+  left: var(--spacing);
+}
 
-  decoration-<solid|double|dotted|dashed|wavy> {
-    text-decoration-style: --value();
-  }
+@utility m-(--spacing) {
+  margin: var(--spacing);
+}
 
-  flex-<wrap|nowrap|wrap-reverse> {
-    flex-wrap: --value();
-  }
+@utility my-(--spacing) {
+  margin-block: var(--spacing);
+}
 
-  list-<disc|decimal> {
-    list-style-type: --value();
-  }
+@utility mye-(--spacing) {
+  margin-block-end: var(--spacing);
+}
 
-  list-<inside|outside> {
-    list-style-position: --value();
-  }
+@utility mys-(--spacing) {
+  margin-block-start: var(--spacing);
+}
 
-  object-<cover|contain|fill|scale-down> {
-    object-fit: --value();
-  }
+@utility mb-(--spacing) {
+  margin-bottom: var(--spacing);
+}
 
-  object-<center|top|bottom|left|right> {
-    object-position: --value();
-  }
+@utility mx-(--spacing) {
+  margin-inline: var(--spacing);
+}
 
-  snap-<x|y|both|block|inline> {
-    scroll-snap-type: --value();
-  }
+@utility mxe-(--spacing) {
+  margin-inline-end: var(--spacing);
+}
 
-  snap-<start|end|center> {
-    scroll-snap-align: --value();
-  }
+@utility mxs-(--spacing) {
+  margin-inline-start: var(--spacing);
+}
 
-  snap-<normal|always> {
-    scroll-snap-stop: --value();
-  }
+@utility ml-(--spacing) {
+  margin-left: var(--spacing);
+}
 
-  text-<left|center|right|start|end|justify> {
-    text-align: --value();
-  }
+@utility mr-(--spacing) {
+  margin-right: var(--spacing);
+}
 
-  text-<wrap|nowrap|balance|pretty> {
-    text-wrap: --value();
-  }
+@utility mt-(--spacing) {
+  margin-top: var(--spacing);
+}
 
-  text-<ellipsis|clip> {
-    text-overflow: --value();
-  }
+@utility outline-offset-(--spacing) {
+  outline-offset: var(--spacing);
+}
+
+@utility p-(--spacing) {
+  padding: var(--spacing);
+}
+
+@utility py-(--spacing) {
+  padding-block: var(--spacing);
+}
+
+@utility pye-(--spacing) {
+  padding-block-end: var(--spacing);
+}
+
+@utility pys-(--spacing) {
+  padding-block-start: var(--spacing);
+}
+
+@utility pb-(--spacing) {
+  padding-bottom: var(--spacing);
+}
+
+@utility px-(--spacing) {
+  padding-inline: var(--spacing);
+}
+
+@utility pxe-(--spacing) {
+  padding-inline-end: var(--spacing);
+}
+
+@utility pxs-(--spacing) {
+  padding-inline-start: var(--spacing);
+}
+
+@utility pl-(--spacing) {
+  padding-left: var(--spacing);
+}
+
+@utility pr-(--spacing) {
+  padding-right: var(--spacing);
+}
+
+@utility pt-(--spacing) {
+  padding-top: var(--spacing);
+}
+
+@utility right-(--spacing) {
+  right: var(--spacing);
+}
+
+@utility gap-y-(--spacing) {
+  row-gap: var(--spacing);
+}
+
+@utility scroll-m-(--spacing) {
+  scroll-margin: var(--spacing);
+}
+
+@utility scroll-my-(--spacing) {
+  scroll-margin-block: var(--spacing);
+}
+
+@utility scroll-mye-(--spacing) {
+  scroll-margin-block-end: var(--spacing);
+}
+
+@utility scroll-mys-(--spacing) {
+  scroll-margin-block-start: var(--spacing);
+}
+
+@utility scroll-mb-(--spacing) {
+  scroll-margin-bottom: var(--spacing);
+}
+
+@utility scroll-mx-(--spacing) {
+  scroll-margin-inline: var(--spacing);
+}
+
+@utility scroll-mxe-(--spacing) {
+  scroll-margin-inline-end: var(--spacing);
+}
+
+@utility scroll-mxs-(--spacing) {
+  scroll-margin-inline-start: var(--spacing);
+}
+
+@utility scroll-ml-(--spacing) {
+  scroll-margin-left: var(--spacing);
+}
+
+@utility scroll-mr-(--spacing) {
+  scroll-margin-right: var(--spacing);
+}
+
+@utility scroll-mt-(--spacing) {
+  scroll-margin-top: var(--spacing);
+}
+
+@utility scroll-p-(--spacing) {
+  scroll-padding: var(--spacing);
+}
+
+@utility scroll-py-(--spacing) {
+  scroll-padding-block: var(--spacing);
+}
+
+@utility scroll-pye-(--spacing) {
+  scroll-padding-block-end: var(--spacing);
+}
+
+@utility scroll-pys-(--spacing) {
+  scroll-padding-block-start: var(--spacing);
+}
+
+@utility scroll-pb-(--spacing) {
+  scroll-padding-bottom: var(--spacing);
+}
+
+@utility scroll-px-(--spacing) {
+  scroll-padding-inline: var(--spacing);
+}
+
+@utility scroll-pxe-(--spacing) {
+  scroll-padding-inline-end: var(--spacing);
+}
+
+@utility scroll-pxs-(--spacing) {
+  scroll-padding-inline-start: var(--spacing);
+}
+
+@utility scroll-pl-(--spacing) {
+  scroll-padding-left: var(--spacing);
+}
+
+@utility scroll-pr-(--spacing) {
+  scroll-padding-right: var(--spacing);
+}
+
+@utility scroll-pt-(--spacing) {
+  scroll-padding-top: var(--spacing);
+}
+
+@utility shape-margin-(--spacing) {
+  shape-margin: var(--spacing);
+}
+
+@utility text-indent-(--spacing) {
+  text-indent: var(--spacing);
+}
+
+@utility top-(--spacing) {
+  top: var(--spacing);
+}
+
+@utility translate-(--spacing) {
+  translate: var(--spacing);
+}
+
+@utility word-spacing-(--spacing) {
+  word-spacing: var(--spacing);
+}
+
+@utility size-y-(--container) {
+  block-size: var(--container);
+}
+
+@utility flex-basis-(--container) {
+  flex-basis: var(--container);
+}
+
+@utility h-(--container) {
+  height: var(--container);
+}
+
+@utility size-x-(--container) {
+  inline-size: var(--container);
+}
+
+@utility max-size-y-(--container) {
+  max-block-size: var(--container);
+}
+
+@utility max-h-(--container) {
+  max-height: var(--container);
+}
+
+@utility max-size-x-(--container) {
+  max-inline-size: var(--container);
+}
+
+@utility max-w-(--container) {
+  max-width: var(--container);
+}
+
+@utility min-size-y-(--container) {
+  min-block-size: var(--container);
+}
+
+@utility min-h-(--container) {
+  min-height: var(--container);
+}
+
+@utility min-size-x-(--container) {
+  min-inline-size: var(--container);
+}
+
+@utility min-w-(--container) {
+  min-width: var(--container);
+}
+
+@utility w-(--container) {
+  width: var(--container);
+}
+
+@utility rbl-(--radius) {
+  border-bottom-left-radius: var(--radius);
+}
+
+@utility rbr-(--radius) {
+  border-bottom-right-radius: var(--radius);
+}
+
+@utility border-end-end-radius-(--radius) {
+  border-end-end-radius: var(--radius);
+}
+
+@utility border-end-start-radius-(--radius) {
+  border-end-start-radius: var(--radius);
+}
+
+@utility r-(--radius) {
+  border-radius: var(--radius);
+}
+
+@utility border-start-end-radius-(--radius) {
+  border-start-end-radius: var(--radius);
+}
+
+@utility border-start-start-radius-(--radius) {
+  border-start-start-radius: var(--radius);
+}
+
+@utility rtl-(--radius) {
+  border-top-left-radius: var(--radius);
+}
+
+@utility rtr-(--radius) {
+  border-top-right-radius: var(--radius);
+}
+
+@utility by-(--color) {
+  border-block-color: var(--color);
+}
+
+@utility border-block-end-color-(--color) {
+  border-block-end-color: var(--color);
+}
+
+@utility border-block-start-color-(--color) {
+  border-block-start-color: var(--color);
+}
+
+@utility bb-(--color) {
+  border-bottom-color: var(--color);
+}
+
+@utility b-(--color) {
+  border-color: var(--color);
+}
+
+@utility bx-(--color) {
+  border-inline-color: var(--color);
+}
+
+@utility border-inline-end-color-(--color) {
+  border-inline-end-color: var(--color);
+}
+
+@utility border-inline-start-color-(--color) {
+  border-inline-start-color: var(--color);
+}
+
+@utility bl-(--color) {
+  border-left-color: var(--color);
+}
+
+@utility br-(--color) {
+  border-right-color: var(--color);
+}
+
+@utility bt-(--color) {
+  border-top-color: var(--color);
+}
+
+@utility outline-(--color) {
+  outline-color: var(--color);
+}
+
+@utility accent-color-(--color) {
+  accent-color: var(--color);
+}
+
+@utility bg-(--color) {
+  background-color: var(--color);
+}
+
+@utility fill-(--color) {
+  fill: var(--color);
+}
+
+@utility caret-color-(--color) {
+  caret-color: var(--color);
+}
+
+@utility stroke-(--color) {
+  stroke: var(--color);
+}
+
+@utility fg-(--color) {
+  color: var(--color);
+}
+
+@utility text-fill-color-(--color) {
+  -webkit-text-fill-color: var(--color);
+}
+
+@utility shadow-(--shadow) {
+  box-shadow: var(--shadow);
+}
+
+@utility animate-(--animate) {
+  animation: var(--animate);
+}
+
+@utility animation-delay-(--duration) {
+  animation-delay: var(--duration);
+}
+
+@utility animation-(--duration) {
+  animation-duration: var(--duration);
+}
+
+@utility transition-delay-(--duration) {
+  transition-delay: var(--duration);
+}
+
+@utility transition-(--duration) {
+  transition-duration: var(--duration);
+}
+
+@utility animation-(--easing) {
+  animation-timing-function: var(--easing);
+}
+
+@utility transition-(--easing) {
+  transition-timing-function: var(--easing);
+}
+
+@utility font-(--font-family) {
+  font-family: var(--font-family);
+}
+
+@utility font-(--font-size) {
+  font-size: var(--font-size);
+}
+
+@utility font-(--font-weight) {
+  font-weight: var(--font-weight);
+}
+
+@utility tracking-(--tracking) {
+  letter-spacing: var(--tracking);
+}
+
+@utility leading-(--leading) {
+  line-height: var(--leading);
+}
+
+@utility order-(--order) {
+  order: var(--order);
 }

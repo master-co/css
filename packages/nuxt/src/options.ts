@@ -1,10 +1,27 @@
-import { options as defaultPluginOptions, type PluginOptions } from '@master/css.vite'
+import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import type { MasterCSSIntegrationRuntimeOptions } from '@master/css-schema/integration'
+import type { MasterCSSVitePluginOptions } from '@master/css-vite'
 
-const options: ModuleOptions = {
-  ...defaultPluginOptions,
-  mode: 'progressive'
+export type MasterCSSNuxtModuleOptions = MasterCSSVitePluginOptions
+
+export interface ResolvedMasterCSSNuxtModuleOptions
+extends Omit<MasterCSSNuxtModuleOptions, 'runtime'> {
+  enabled: boolean
+  mode: NonNullable<MasterCSSNuxtModuleOptions['mode']>
+  runtime: MasterCSSIntegrationRuntimeOptions
+  injectRuntime: boolean
 }
 
-export default options
-
-export declare type ModuleOptions = PluginOptions
+export function resolveMasterCSSNuxtModuleOptions(
+  options: MasterCSSNuxtModuleOptions = {}
+): ResolvedMasterCSSNuxtModuleOptions {
+  const mode = options.mode ?? 'static'
+  const runtime = resolveIntegrationRuntime(mode, options.runtime)
+  return {
+    ...options,
+    enabled: options.enabled ?? true,
+    mode,
+    runtime,
+    injectRuntime: runtime.enabled
+  }
+}

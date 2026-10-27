@@ -1,13 +1,12 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import defaultManifestJSON from '@master/css-preset/default-manifest.json';
-import CSSRuntime from '@master/css-runtime';
-import type { MasterCSSManifest } from '@master/css-runtime';
+import { MasterCSSRuntime } from '@master/css-runtime';
 
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
-
-CSSRuntime.create({ manifest: defaultManifest }).observe();
+// The default preset's program loads as its own chunk.
+void MasterCSSRuntime.start({ program: () => import('@master/css-runtime/default-program').then((module) => module.defaultProgram) })
+  .then((cssRuntime) => cssRuntime.observe())
+  .catch((error) => console.error(error));
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

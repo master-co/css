@@ -1,3 +1,1 @@
-@theme {
-  --breakpoint-desktop: 1280;
-}
+@custom-media --desktop (width >= 80rem);

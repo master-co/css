@@ -1,0 +1,203 @@
+#![forbid(unsafe_code)]
+
+#[path = "native-properties.rs"]
+mod native_properties;
+use native_properties::{NATIVE_CSS_PROPERTY_ENDS, NATIVE_CSS_PROPERTY_NAMES};
+
+fn native_css_property(index: usize) -> &'static str {
+    let start = index
+        .checked_sub(1)
+        .map_or(0, |previous| NATIVE_CSS_PROPERTY_ENDS[previous] as usize);
+    &NATIVE_CSS_PROPERTY_NAMES[start..NATIVE_CSS_PROPERTY_ENDS[index] as usize]
+}
+
+/// The native CSS property registry in byte order, including the `--*` entry.
+pub fn native_css_properties() -> impl ExactSizeIterator<Item = &'static str> + Clone {
+    (0..NATIVE_CSS_PROPERTY_ENDS.len()).map(native_css_property)
+}
+
+/// Whether `property` is an entry of the native CSS property registry.
+pub fn is_listed_native_css_property(property: &str) -> bool {
+    let (mut low, mut high) = (0, NATIVE_CSS_PROPERTY_ENDS.len());
+    while low < high {
+        let middle = (low + high) / 2;
+        match native_css_property(middle).cmp(property) {
+            std::cmp::Ordering::Less => low = middle + 1,
+            std::cmp::Ordering::Greater => high = middle,
+            std::cmp::Ordering::Equal => return true,
+        }
+    }
+    false
+}
+
+pub fn is_native_css_property(property: &str) -> bool {
+    property.starts_with("--") || is_listed_native_css_property(property)
+}
+
+use std::collections::BTreeMap;
+
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use thiserror::Error;
+
+pub const MANIFEST_VERSION: u32 = 6;
+pub const LANGUAGE_VERSION: u32 = 16;
+pub const HYDRATION_MANIFEST_VERSION: u32 = 5;
+pub const BINDING_ABI_VERSION: u32 = 28;
+pub const ENGINE_TRANSITION_VERSION: u32 = 4;
+pub const VALIDATOR_BATCH_VERSION: u32 = 4;
+pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
+pub const LINT_BATCH_VERSION: u32 = 4;
+pub const LANGUAGE_BATCH_VERSION: u32 = 7;
+pub const LEXER_BATCH_VERSION: u32 = 1;
+pub const SOURCE_BATCH_VERSION: u32 = 2;
+/// The encoding of compiled runtime programs, which browsers execute instead of
+/// Manifest v6 documents.
+pub const PROGRAM_VERSION: u32 = 1;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BindingInfo<'a> {
+    pub binding_abi_version: u32,
+    pub package_version: &'a str,
+    pub manifest_version: u32,
+    pub program_version: u32,
+    pub language_version: u32,
+    pub hydration_manifest_version: u32,
+    pub engine_transition_version: u32,
+    pub validator_batch_version: u32,
+    pub diagnostics_report_version: u32,
+    pub lint_batch_version: u32,
+    pub language_batch_version: u32,
+    pub lexer_batch_version: u32,
+    pub source_batch_version: u32,
+    pub target: &'a str,
+    pub surface: &'a str,
+    pub features: &'a [&'a str],
+}
+
+impl<'a> BindingInfo<'a> {
+    pub const fn new(
+        package_version: &'a str,
+        target: &'a str,
+        surface: &'a str,
+        features: &'a [&'a str],
+    ) -> Self {
+        Self {
+            binding_abi_version: BINDING_ABI_VERSION,
+            package_version,
+            manifest_version: MANIFEST_VERSION,
+            program_version: PROGRAM_VERSION,
+            language_version: LANGUAGE_VERSION,
+            hydration_manifest_version: HYDRATION_MANIFEST_VERSION,
+            engine_transition_version: ENGINE_TRANSITION_VERSION,
+            validator_batch_version: VALIDATOR_BATCH_VERSION,
+            diagnostics_report_version: DIAGNOSTICS_REPORT_VERSION,
+            lint_batch_version: LINT_BATCH_VERSION,
+            language_batch_version: LANGUAGE_BATCH_VERSION,
+            lexer_batch_version: LEXER_BATCH_VERSION,
+            source_batch_version: SOURCE_BATCH_VERSION,
+            target,
+            surface,
+            features,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct EmittedGlobals {
+    #[serde(default)]
+    pub variables: NameCounts,
+    #[serde(default)]
+    pub keyframes: NameCounts,
+    #[serde(default)]
+    pub keyframe_slots: Vec<String>,
+    #[serde(default)]
+    pub suppressed_keyframes: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatorClassIr {
+    pub class_name: String,
+    pub match_status: MatchStatus,
+    pub css_syntax_status: CssSyntaxStatus,
+    pub css_value_status: CssValueStatus,
+    pub browser_support: BrowserSupport,
+    pub rules: Vec<GeneratedRuleIr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatorBatchIr {
+    pub version: u32,
+    pub classes: Vec<ValidatorClassIr>,
+}
+
+impl EmittedGlobals {
+    pub fn parse(source: &str) -> Result<Self, serde_json::Error> {
+        serde_json::from_str(source)
+    }
+
+    pub fn variable_count(&self, name: &str) -> u32 {
+        self.variables.get(name).copied().unwrap_or_default()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.variables.is_empty()
+            && self.keyframes.is_empty()
+            && self.keyframe_slots.is_empty()
+            && self.suppressed_keyframes.is_empty()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum UtilityLayerName {
+    Base,
+    Defaults,
+    Components,
+    #[default]
+    Utilities,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum RuleTarget {
+    Theme,
+    Keyframes,
+    Base,
+    Defaults,
+    Components,
+    Utilities,
+}
+
+impl From<UtilityLayerName> for RuleTarget {
+    fn from(value: UtilityLayerName) -> Self {
+        match value {
+            UtilityLayerName::Base => Self::Base,
+            UtilityLayerName::Defaults => Self::Defaults,
+            UtilityLayerName::Components => Self::Components,
+            UtilityLayerName::Utilities => Self::Utilities,
+        }
+    }
+}
+
+mod directives;
+mod engine;
+mod manifest;
+mod mixin;
+mod name_counts;
+mod tagged;
+
+pub use directives::*;
+pub use engine::*;
+pub use manifest::*;
+pub use mixin::*;
+pub use name_counts::NameCounts;
+
+#[cfg(test)]
+mod tests;

@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import {
   collectDocsPageCSSSizeSnapshot,
   printSnapshotSummary,
@@ -36,7 +36,9 @@ async function collectAndWriteSnapshotOnce() {
 }
 
 describe('docs page CSS size', () => {
-  bench('collect docs page CSS size snapshot', async () => {
-    await collectAndWriteSnapshotOnce()
-  }, benchOptions)
+  test('collect docs page CSS size snapshot', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('collect docs page CSS size snapshot', async () => {
+      await collectAndWriteSnapshotOnce()
+    }).run(benchOptions)
+  })
 })

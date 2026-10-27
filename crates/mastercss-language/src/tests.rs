@@ -1,0 +1,620 @@
+use super::*;
+
+fn token_views(
+    source: &str,
+    tokens: &[SemanticTokenInputIr],
+) -> Vec<(String, String, Vec<String>)> {
+    tokens
+        .iter()
+        .map(|token| {
+            (
+                source_slice(
+                    source,
+                    &SourceRange {
+                        start: token.start,
+                        end: token.end,
+                    },
+                )
+                .unwrap()
+                .to_owned(),
+                token.token_type.clone(),
+                token.modifiers.clone(),
+            )
+        })
+        .collect()
+}
+
+#[test]
+fn keeps_class_positions_and_semantic_tokens_in_utf16() {
+    let source = "😀 <div class=\"color:red  margin:1x\">\r\nnext</div>";
+    let class_start = source[..source.find("color:").unwrap()]
+        .encode_utf16()
+        .count() as u32;
+    let class_end = class_start + "color:red  margin:1x".encode_utf16().count() as u32;
+    let class_positions = collect_class_positions(
+        source,
+        &[ClassListContextIr {
+            start: class_start,
+            end: class_end,
+            unescape: Vec::new(),
+        }],
+    )
+    .unwrap();
+    let semantic_token_data = encode_semantic_tokens(
+        source,
+        &[
+            SemanticTokenInputIr {
+                start: class_start,
+                end: class_start + 9,
+                token_type: "property".into(),
+                modifiers: vec!["declaration".into()],
+            },
+            SemanticTokenInputIr {
+                start: class_start + 11,
+                end: class_end,
+                token_type: "variable".into(),
+                modifiers: Vec::new(),
+            },
+        ],
+    );
+    assert_eq!(class_positions[0].token, "color:red");
+    assert_eq!(class_positions[1].token, "margin:1x");
+    assert_eq!(
+        semantic_token_data,
+        [0, class_start, 9, 2, 1, 0, 11, 9, 3, 0]
+    );
+}
+
+#[test]
+fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
+    let class_list = "fg-brand:hover@sm {background:blue;color:white}";
+    let contexts = collect_document_contexts(
+        class_list,
+        "plaintext",
+        &LanguageDocumentSettingsIr::default(),
+    );
+    assert_eq!(
+        collect_class_positions(class_list, &contexts)
+            .unwrap()
+            .iter()
+            .map(|position| position.token.as_str())
+            .collect::<Vec<_>>(),
+        ["fg-brand:hover@sm", "{background:blue;color:white}"]
+    );
+
+    let html = "<!-- <div class=\"color:red\"></div> --><div class=\"color:blue\"></div>";
+    let contexts = collect_document_contexts(html, "html", &LanguageDocumentSettingsIr::default());
+    assert_eq!(
+        collect_class_positions(html, &contexts)
+            .unwrap()
+            .iter()
+            .map(|position| position.token.as_str())
+            .collect::<Vec<_>>(),
+        ["color:blue"]
+    );
+}
+
+#[test]
+fn applies_document_context_settings_in_rust() {
+    let markup = r#"<div data-class="color:red"></div>"#;
+    let contexts = collect_document_contexts(
+        markup,
+        "html",
+        &LanguageDocumentSettingsIr {
+            class_attributes: vec!["data-class".into()],
+            ..LanguageDocumentSettingsIr::default()
+        },
+    );
+    assert_eq!(
+        collect_class_positions(markup, &contexts)
+            .unwrap()
+            .iter()
+            .map(|position| position.token.as_str())
+            .collect::<Vec<_>>(),
+        ["color:red"]
+    );
+
+    let script = r#"twMerge("color:blue"); const styles = "block";"#;
+    let contexts = collect_document_contexts(
+        script,
+        "typescript",
+        &LanguageDocumentSettingsIr {
+            class_functions: vec!["twMerge".into()],
+            class_declarations: vec!["const styles".into()],
+            ..LanguageDocumentSettingsIr::default()
+        },
+    );
+    assert_eq!(
+        collect_class_positions(script, &contexts)
+            .unwrap()
+            .iter()
+            .map(|position| position.token.as_str())
+            .collect::<Vec<_>>(),
+        ["color:blue", "block"]
+    );
+}
+
+#[test]
+fn tokenizes_selector_combinators_without_class_group_tokens() {
+    let session = LanguageSession::create(
+        r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+    )
+    .unwrap();
+    let source = "<div class=\"color:red>li:hover block>li:hover\"></div>";
+    let result = session
+        .analyze_document(&AnalyzeDocumentRequestIr {
+            source: source.into(),
+            language_id: "html".into(),
+            host_ranges: Vec::new(),
+            settings: LanguageDocumentSettingsIr::default(),
+        })
+        .unwrap();
+    assert!(!result.semantic_tokens.iter().any(|token| {
+        token
+            .modifiers
+            .iter()
+            .any(|modifier| modifier == "declarationTerminator")
+    }));
+    assert!(result.semantic_tokens.iter().any(|token| {
+        token
+            .modifiers
+            .iter()
+            .any(|modifier| modifier == "selectorCombinator")
+    }));
+    assert!(result.semantic_tokens.iter().any(|token| {
+        token.token_type == "property"
+            && token.modifiers.is_empty()
+            && source_slice(
+                source,
+                &SourceRange {
+                    start: token.start,
+                    end: token.end,
+                },
+            ) == Some("color")
+    }));
+}
+
+#[test]
+fn skips_overlapping_and_multiline_tokens() {
+    let source = "a\nb";
+    assert_eq!(
+        encode_semantic_tokens(
+            source,
+            &[
+                SemanticTokenInputIr {
+                    start: 0,
+                    end: 1,
+                    token_type: "class".into(),
+                    modifiers: Vec::new(),
+                },
+                SemanticTokenInputIr {
+                    start: 0,
+                    end: 2,
+                    token_type: "enumMember".into(),
+                    modifiers: Vec::new(),
+                },
+                SemanticTokenInputIr {
+                    start: 2,
+                    end: 3,
+                    token_type: "property".into(),
+                    modifiers: Vec::new(),
+                },
+            ]
+        ),
+        [0, 0, 1, 0, 0, 1, 0, 1, 2, 0]
+    );
+}
+
+#[test]
+fn batches_manifest_driven_class_semantics() {
+    let mut session = LanguageSession::create(
+            r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        )
+        .unwrap();
+    let batch = session
+        .classify_class_names(["card:hover", "width:10px", "p-md", "unknown"], None)
+        .unwrap();
+    assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
+    assert_eq!(
+        batch.classes[0].kind,
+        mastercss_engine::ClassSemanticKind::Semantic
+    );
+    assert_eq!(batch.classes[0].state_token.as_deref(), Some(":hover"));
+    assert_eq!(batch.classes[1].key_token.as_deref(), Some("width:"));
+    assert_eq!(batch.classes[1].value_token.as_deref(), Some("10px"));
+    assert_eq!(batch.variable_names, ["spacing-md"]);
+    assert_eq!(
+        batch.classes[2].kind,
+        mastercss_engine::ClassSemanticKind::Token
+    );
+    assert_eq!(
+        batch.classes[3].kind,
+        mastercss_engine::ClassSemanticKind::Unknown
+    );
+}
+
+#[test]
+fn owns_mdn_and_negative_completion_candidates_in_rust() {
+    let session = LanguageSession::create(
+            r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}]}"#,
+        )
+        .unwrap();
+    let entries = session.completion_index().unwrap().class_entries;
+
+    for label in [
+        "display:",
+        "position:",
+        "object-fit:",
+        "position:absolute",
+        "object-fit:cover",
+        "r:",
+    ] {
+        assert!(entries.iter().any(|entry| entry.label == label), "{label}");
+    }
+    for label in ["p:", "fg:", "bg:", "block", "hidden"] {
+        assert!(!entries.iter().any(|entry| entry.label == label), "{label}");
+    }
+
+    assert!(entries.iter().any(|entry| {
+        entry.label == ":has()" && entry.sort_text.as_deref() == Some("yyyhas()")
+    }));
+    assert!(entries.iter().any(|entry| {
+        entry.label == "display:block"
+            && entry.detail.as_deref() == Some("display: block")
+            && entry.sort_text.as_deref() == Some("cccccblock")
+    }));
+    assert!(entries.iter().any(|entry| entry.label == "-m-md"));
+    assert!(!entries.iter().any(|entry| entry.label == "-w-md"));
+}
+
+#[test]
+fn completion_owns_mixin_wrappers_and_native_query_templates() {
+    let session = LanguageSession::create(r#"{"version":6,"languageVersion":16,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
+    let entries = session.completion_index().unwrap().class_entries;
+    for label in [
+        "@apply(--ocean)",
+        "@apply(--quiet)",
+        "@media()",
+        "@supports()",
+        "@container()",
+    ] {
+        assert!(entries.iter().any(|entry| entry.label == label), "{label}");
+    }
+    assert!(
+        !entries
+            .iter()
+            .any(|entry| entry.label.starts_with("@>") || entry.label.starts_with("@@"))
+    );
+}
+
+#[test]
+fn classifies_native_structure_independently_of_host_support() {
+    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+    let class_names = ["display:block", "made-up:nope"];
+    let candidates = session.native_declaration_candidates(class_names).unwrap();
+    assert_eq!(candidates.len(), 2);
+    let batch = session
+        .classify_class_names(class_names, Some(&[true, false]))
+        .unwrap();
+    assert_eq!(
+        batch.classes[0].kind,
+        mastercss_engine::ClassSemanticKind::Declaration
+    );
+    assert_eq!(
+        batch.classes[1].kind,
+        mastercss_engine::ClassSemanticKind::Declaration
+    );
+    assert_eq!(
+        session
+            .inspect_class_name("display:block", None)
+            .unwrap()
+            .kind,
+        ClassSemanticKind::Declaration
+    );
+    assert_eq!(
+        session
+            .inspect_class_name("made-up:nope", None)
+            .unwrap()
+            .kind,
+        ClassSemanticKind::Declaration
+    );
+}
+
+#[test]
+fn renders_isolated_hover_inspection_css() {
+    let session = LanguageSession::create(
+        r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{},"utilities":[{"kind":"function","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}]}"#,
+    )
+    .unwrap();
+    let inspection = session.inspect_class_name("card:hover", None).unwrap();
+    assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
+    assert!(inspection.match_status == mastercss_schema::MatchStatus::Matched);
+    assert_eq!(inspection.kind, ClassSemanticKind::Semantic);
+    assert_eq!(inspection.base, "card");
+    assert_eq!(inspection.suffix, ":hover");
+    assert_eq!(inspection.state_token.as_deref(), Some(":hover"));
+    assert_eq!(inspection.rules.len(), 1);
+    assert_eq!(
+        inspection.text,
+        "@layer utilities{.card\\:hover:hover{display:block}}"
+    );
+    let named_variant = session
+        .inspect_class_name("card@apply(--dark)", None)
+        .unwrap();
+    assert_eq!(
+        named_variant.text,
+        "@layer utilities{.card\\@apply\\(--dark\\):where(.dark,.dark *){display:block}}"
+    );
+    let variable = session.inspect_class_name("fg-brand:hover", None).unwrap();
+    assert_eq!(variable.base, "fg-brand");
+    assert_eq!(variable.suffix, ":hover");
+    assert_eq!(variable.key.as_deref(), Some("fg"));
+    assert_eq!(variable.value.as_deref(), Some("brand"));
+    assert_eq!(variable.variables.len(), 1);
+    assert_eq!(variable.variables[0].key, "brand");
+    assert_eq!(variable.variables[0].variable.name, "color-brand");
+    assert_eq!(
+        variable.variables[0].variable.values[0].value,
+        "oklch(50% .1 20)"
+    );
+    let completion_index = session.completion_index().unwrap();
+    assert_eq!(completion_index.version, LANGUAGE_BATCH_VERSION);
+    assert!(completion_index.class_entries.iter().any(|entry| {
+        entry.label == "card"
+            && entry.kind == LanguageCompletionKind::Value
+            && entry.detail.as_deref() == Some("utility")
+            && entry.documentation_text.as_deref() == Some("@layer utilities{.card{display:block}}")
+    }));
+    assert!(completion_index.class_entries.iter().any(|entry| {
+        entry.label == "filter:blur()"
+            && entry.kind == LanguageCompletionKind::Function
+            && entry.detail.as_deref() == Some("filter: blur()")
+    }));
+    assert_eq!(
+        session
+            .color_presentation("rgb(0|0|0)")
+            .unwrap()
+            .source_format,
+        Some(LanguageColorFormatIr {
+            syntax: "rgb".into(),
+            space: None,
+        })
+    );
+    assert_eq!(
+        session
+            .color_presentation("fg-brand/.5")
+            .unwrap()
+            .source_format,
+        Some(LanguageColorFormatIr {
+            syntax: "oklch".into(),
+            space: None,
+        })
+    );
+    let named_presentation = session.color_presentation("fg-brand/.5").unwrap();
+    assert!(named_presentation.editable);
+    assert_eq!(
+        named_presentation.replacement_prefix.as_deref(),
+        Some("color:")
+    );
+    let color_tokens = session
+        .color_tokens(&[
+            LanguageColorCandidateInputIr {
+                class_name: "fg-brand/.5".into(),
+                start: 2,
+            },
+            LanguageColorCandidateInputIr {
+                class_name: "color:linear-gradient(#000,var(--color-brand))".into(),
+                start: 20,
+            },
+        ])
+        .unwrap();
+    assert_eq!(color_tokens.version, LANGUAGE_BATCH_VERSION);
+    assert_eq!(
+        color_tokens.tokens,
+        vec![
+            LanguageColorTokenIr {
+                range: SourceRange { start: 2, end: 13 },
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: Some(0.5),
+                },
+            },
+            LanguageColorTokenIr {
+                range: SourceRange { start: 42, end: 46 },
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "#000".into(),
+                    alpha: None,
+                },
+            },
+            LanguageColorTokenIr {
+                range: SourceRange { start: 47, end: 65 },
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: None,
+                },
+            },
+        ]
+    );
+    assert!(completion_index.class_entries.iter().any(|entry| {
+        entry.label == "color:"
+            && entry.kind == LanguageCompletionKind::Property
+            && entry.trigger_suggest
+    }));
+}
+
+#[test]
+fn raw_value_semantics_mark_only_explicit_variable_references() {
+    let value = "color-mix(in|srgb,var(--color-red)|50%,red) var(--external,blue) mono";
+    let mut tokens = Vec::new();
+    push_value_semantic_tokens(&mut tokens, value, 0);
+    let views = token_views(value, &tokens);
+    for name in ["--color-red", "--external"] {
+        assert!(
+            views
+                .iter()
+                .any(|(text, kind, _)| text == name && kind == "variable")
+        );
+    }
+    for name in ["red", "blue", "mono"] {
+        assert!(
+            views
+                .iter()
+                .any(|(text, kind, _)| text == name && kind == "enumMember")
+        );
+    }
+}
+
+#[test]
+fn named_tokens_keep_their_full_name_and_split_only_opacity() {
+    let session = LanguageSession::create(include_str!(
+        "../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
+    for (class_name, expected) in [
+        ("fg-red", vec![("fg-red", "enumMember")]),
+        ("-m-sm", vec![("-m-sm", "enumMember")]),
+        (
+            "fg-red/0.5",
+            vec![
+                ("fg-red", "enumMember"),
+                ("/", "operator"),
+                ("0.5", "number"),
+            ],
+        ),
+        (
+            "fg-red/.5",
+            vec![
+                ("fg-red", "enumMember"),
+                ("/", "operator"),
+                (".5", "number"),
+            ],
+        ),
+        (
+            "color:red",
+            vec![
+                ("color", "property"),
+                (":", "operator"),
+                ("red", "enumMember"),
+            ],
+        ),
+    ] {
+        let mut tokens = Vec::new();
+        session
+            .push_class_semantic_tokens(class_name, 0, &mut tokens)
+            .unwrap();
+        let views = token_views(class_name, &tokens);
+        let actual = views
+            .iter()
+            .map(|(text, kind, _)| (text.as_str(), kind.as_str()))
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "{class_name}");
+        if class_name == "fg-red/0.5" {
+            assert_eq!(tokens[1].modifiers, ["valueSeparator"]);
+        }
+    }
+}
+
+#[test]
+fn comparisons_inside_class_expressions_are_not_class_positions() {
+    let source = "const view = <div className={side === 'left' ? 'display:block' : clsx('right' !== side && 'display:none')} />;";
+    let contexts =
+        crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert!(
+        !values.contains(&"left") && !values.contains(&"right"),
+        "{values:?}"
+    );
+    assert!(
+        values.contains(&"display:block") && values.contains(&"display:none"),
+        "{values:?}"
+    );
+}
+
+#[test]
+fn closed_class_calls_do_not_claim_later_function_strings() {
+    let source = "document.documentElement.classList.toggle('dark(', active); const query = window.matchMedia('(prefers-color-scheme: dark)'); const classes = clsx('display:block', nested('ignored'));";
+    let contexts =
+        crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert_eq!(values, ["dark(", "display:block", "ignored"]);
+}
+
+#[test]
+fn comments_inside_class_calls_do_not_change_call_depth_or_add_strings() {
+    for (source, expected) in [
+        (
+            "const classes = clsx('display:block' /* ) 'not-a-class' */, 'grid');",
+            vec!["display:block", "grid"],
+        ),
+        (
+            "const classes = clsx('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+        (
+            "const classes = clsx('display:block' // ( 'not-a-class'\n); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+        (
+            "const component = styled.button('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["display:block"],
+        ),
+    ] {
+        let contexts = crate::document::collect_document_contexts(
+            source,
+            "typescriptreact",
+            &Default::default(),
+        );
+        let values = contexts
+            .iter()
+            .map(|context| &source[context.start as usize..context.end as usize])
+            .collect::<Vec<_>>();
+        assert_eq!(values, expected, "{source}");
+    }
+}
+
+#[test]
+fn javascript_line_comments_end_at_unicode_line_separators() {
+    for separator in ['\u{2028}', '\u{2029}'] {
+        let source = format!("const classes=clsx('display:block' // ({separator}, 'grid');");
+        let contexts =
+            crate::document::collect_document_contexts(&source, "typescript", &Default::default());
+        assert_eq!(contexts.len(), 2, "{source}");
+    }
+}
+
+#[test]
+fn unquoted_html_urls_do_not_hide_later_class_calls() {
+    let source =
+        "<a href=https://example.com/a//b></a><script>const classes=clsx('display:block')</script>";
+    let contexts = crate::document::collect_document_contexts(source, "html", &Default::default());
+    let values = contexts
+        .iter()
+        .map(|context| &source[context.start as usize..context.end as usize])
+        .collect::<Vec<_>>();
+    assert_eq!(values, ["display:block"]);
+}
+
+#[test]
+fn jsx_text_slashes_do_not_hide_later_class_calls() {
+    for source in [
+        "const view=<p>https://example.com</p>; const classes=clsx('display:block');",
+        "const view=<p>//</p>; const classes=clsx('display:block');",
+    ] {
+        let contexts = crate::document::collect_document_contexts(
+            source,
+            "typescriptreact",
+            &Default::default(),
+        );
+        let values = contexts
+            .iter()
+            .map(|context| &source[context.start as usize..context.end as usize])
+            .collect::<Vec<_>>();
+        assert_eq!(values, ["display:block"], "{source}");
+    }
+}

@@ -1,14 +1,20 @@
 @theme {
   --color-brand: #123;
-  --breakpoint-md: 768;
+  --breakpoint-md: 48rem;
 }
 
-@components {
-  card {
-    @compose bg:brand;
-    @variant md {
-      @compose font:1.125rem;
+
+
+  @mixin --card {
+    background-color:var(--color-brand);
+    @media (--md) {
+      font-size:1.125rem;
+    }
+    border-color: #456;
+  } @utility card {
+    background-color:var(--color-brand);
+    @media (--md) {
+      font-size:1.125rem;
     }
     border-color: #456;
   }
-}

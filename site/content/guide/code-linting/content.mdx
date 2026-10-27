@@ -1,0 +1,278 @@
+## Overview [sr-only]
+Code linting is the enforceable layer of a team's Master CSS authoring policy. It validates class strings where they are authored: markup attributes, framework templates, JavaScript utility calls, and configured class declarations. The ESLint integration resolves the active project manifest, then checks each class against Master CSS syntax, generated CSS declarations, and team policy.
+
+Use the [installation integrations](/guide/installation/integrations) to add the recommended config to a project. Use [Visual Studio Code setup](/guide/installation/vscode) when you want the VS Code ESLint extension to surface class policy diagnostics and apply sort-on-save.
+
+The Master CSS VS Code extension and the VS Code ESLint extension are complementary. Master CSS provides completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint provides `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, and opt-in raw-value policy diagnostics, so the Master CSS extension does not duplicate these warnings by default.
+
+For scripts, CI probes, and other tools that need machine-readable Master CSS diagnostics without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
+
+With no source paths, the CLI uses the scanner's source policy: it skips generated output directories and files excluded by project or workspace `.gitignore` rules. Pass a path or glob explicitly when you need to lint an ignored build artifact.
+
+When an AI client supports tool calls, the [Master CSS MCP server](/guide/mcp-server) can run the same lint policy through `mastercss_lint_project` and preview safe fixes. ESLint should still remain the default human development and CI lint workflow for JavaScript and framework projects.
+
+Use `npx @master/css-cli inspect --format json` when the tool needs scanner state, stylesheet entry metadata, generated CSS size, or explicit missing CSS checks. `inspect` is not a replacement for lint policy rules such as class sorting, canonical classes, conflicts, or raw-value policy.
+
+---
+
+## Install the recommended config
+The recommended config enables the canonical rule set:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS
+])
+```
+
+| Rule | Default | Fixable | Purpose |
+| --- | --- | --- | --- |
+| `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
+| `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
+| `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, matching utility recipes, and condition order. |
+
+---
+
+## Linting rules
+### Sort classes
+`@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
+
+```mcss
+bg-white font-md display:flex px-md position:relative width:100% shadow-lg r-md z-index:10 gap:0.5rem <!-- [!code --] -->
+position:relative z-index:10 display:flex gap:0.5rem width:100% px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+```
+
+Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
+
+```mcss
+bg-black:hover display:flex p-sm width:100% display:block@dark text-align:center <!-- [!code --] -->
+display:flex width:100% p-sm text-align:center bg-black:hover display:block@dark <!-- [!code ++] -->
+```
+
+Sorting also removes duplicate class values in the same class string.
+
+```mcss
+display:inline-flex px-md display:inline-flex <!-- [!code --] -->
+display:inline-flex px-md <!-- [!code ++] -->
+```
+
+Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
+
+### No invalid classes
+`@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
+
+```html
+<button class="font:">...</button>
+```
+
+(x) Invalid value for `font` property.
+
+By default, unmatched classes are ignored so teams can mix Master CSS with native global classes.
+
+Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    }
+  }
+])
+```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+Define project classes in the CSS entry when they are intentional:
+
+```css name=index.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    padding-inline: var(--spacing-md);
+  }
+}
+```
+
+### Prefer canonical classes
+`@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
+
+```mcss
+margin:16px display:block@dark@sm <!-- [!code --] -->
+margin:16px display:block@sm@dark <!-- [!code ++] -->
+```
+
+
+Canonical linting preserves token identity, value source and ordering. It does not substitute currently equal tokens for literals or convert units.
+
+
+### No conflicting classes
+`@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
+
+```mcss
+margin:0.625rem margin:1.25rem <!-- [!code --] -->
+margin:1.25rem <!-- [!code ++] -->
+```
+
+(!) `"margin:0.625rem" is overridden by "margin:1.25rem".`
+
+Variant scope matters. Classes with different selectors, modes, or conditions do not conflict with each other.
+
+```mcss
+margin:2.5rem@sm margin:3.125rem@md
+```
+
+When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
+
+
+```mcss
+mx-md ml-lg <!-- [!code --] -->
+mr-md ml-lg <!-- [!code ++] -->
+```
+
+```mcss
+border-style:solid border-top-style:dashed <!-- [!code --] -->
+border-right-style:solid border-bottom-style:solid border-left-style:solid border-top-style:dashed <!-- [!code ++] -->
+```
+
+---
+
+## Supported sources
+The default config checks class strings in common markup, JavaScript locations.
+
+| Setting | Default | Use |
+| --- | --- | --- |
+| `classAttributes` | `['class', 'className']` | Markup attributes that contain class strings. |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `classnames`, `styled`, `classList.*` | JavaScript callees whose arguments can contain class strings. |
+| `classDeclarations` | `[]` | Project-specific variables or object properties that should be treated as class declarations. |
+| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | Object keys ignored while traversing variant config objects. |
+
+Customize settings under the `@master/css` settings key:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    settings: {
+      '@master/css': {
+        classAttributes: ['class', 'className', 'containerClass'],
+        classFunctions: ['clsx', 'cva'],
+        classDeclarations: ['classes']
+      }
+    }
+  }
+])
+```
+
+---
+
+## Team policy
+Use the recommended config for most projects:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS
+])
+```
+
+Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-invalid-classes': ['error', {
+        disallowUnknownClass: true
+      }]
+    }
+  }
+])
+```
+
+Customize canonicalization when a team wants to keep one class family literal while still applying the other recommendations:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/prefer-canonical-classes': ['warn', {
+        preferStaticUtilities: true,
+      }]
+    }
+  }
+])
+```
+
+Enable raw value policy when the team wants token-backed utilities to use tokens unless a value is explicitly allowed:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/no-unapproved-raw-values': ['warn', {
+        allowProperties: ['width', 'height'],
+        allowedPatterns: ['^var\\(', '^calc\\(']
+      }]
+    }
+  }
+])
+```
+
+```mcss
+font-size:15px margin:17px color:#123456
+```
+
+(!) Unexpected raw value `"15px"` in `"font-size:15px"`. Use a token or allow it explicitly.
+
+To regulate selected native properties, set `requireProperties: ['color', 'background-color']`. Omit it or use an empty array to check every token-backed property. `allowProperties` and `allowedPatterns` remain explicit exceptions; `allowRawValues` disables this policy. Native custom-property references remain valid.
+
+The shared diagnostic identifies `no-unapproved-raw-values`, the applicable property scope and canonical token families in its `data`. The rule has no autofix: matching a token's current value cannot establish whether `brand`, `information` or another role is appropriate. This policy checks vocabulary use, not visual or design correctness.
+
+Use editor sort-on-save for low-friction cleanup:
+
+```json name=.vscode/settings.json
+{
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
+}
+```
+
+See [Visual Studio Code setup](/guide/installation/vscode) for the full editor flow.
+
+---
+
+## Setup links
+- [Installation integrations](/guide/installation/integrations) for framework setup.
+- [Visual Studio Code setup](/guide/installation/vscode) for editor diagnostics and sort-on-save.

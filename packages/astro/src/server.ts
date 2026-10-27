@@ -1,6 +1,8 @@
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { createServerRenderer, renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MiddlewareHandler } from 'astro'
+import { prerenderStylesheets } from './prerender-stylesheets'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])
 
@@ -22,11 +24,31 @@ export async function renderResponse(response: Response, manifest: MasterCSSMani
   if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
     return response
   }
-  return createResponse(response, render(await response.text(), manifest, { hydrationManifest: 'inject' }).html)
+  const rendered = renderHTML(await response.text(), {
+    manifest,
+    hydrationManifest: 'inject'
+  })
+  return createResponse(response, rendered.html)
 }
 
-export function createMasterCSSMiddleware(manifest: MasterCSSManifest): MiddlewareHandler {
-  return async (_context, next) => {
-    return await renderResponse(await next(), manifest)
+export function createMasterCSSMiddleware(
+  manifest: MasterCSSManifest,
+  emittedGlobals: MasterCSSEmittedGlobals = {},
+  hydrate = true
+): MiddlewareHandler {
+  const renderer = createServerRenderer({ manifest, emittedGlobals })
+  return async (context, next) => {
+    const response = await next()
+    if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
+      return response
+    }
+    // Linked final stylesheets let the hydration manifest account for their rules.
+    const prerender = context.isPrerendered ? prerenderStylesheets() : undefined
+    const rendered = renderer.renderHTML(await response.text(), {
+      hydrationManifest: hydrate ? 'inject' : false,
+      stylesheets: await prerender?.stylesheets(),
+      stylesheetImportSource: prerender?.publishImport
+    })
+    return createResponse(response, rendered.html)
   }
 }

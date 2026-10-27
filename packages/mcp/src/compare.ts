@@ -1,17 +1,16 @@
-import { createRequire } from 'node:module'
-import CSSLanguageService from '@master/css-language-service'
-import type { MasterCSSManifest } from '@master/css-engine'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
-import { parseHTML } from '@master/css-server'
+import { renderClassNamesSync } from '@master/css/node'
+import type { MasterCSSToolingSession } from '@master/css-tooling'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
+import { createMCPToolingSession, compactClassInspection } from './tooling-session'
+import { compareProjectSnapshots, type MasterCSSProjectSnapshot } from '@master/css-compiler/diagnostics'
 
-const CSS_COMPARE_VERSION = 1
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
+const CSS_COMPARE_VERSION = 2
 
 export interface CompareCSSOptions {
+  context?: SemanticContext
   beforeClassList?: string
   afterClassList?: string
   beforeHtml?: string
@@ -19,9 +18,11 @@ export interface CompareCSSOptions {
   beforeContent?: string
   afterContent?: string
   filePath?: string
+  beforeSnapshot?: MasterCSSProjectSnapshot
+  afterSnapshot?: MasterCSSProjectSnapshot
 }
 
-function unique(values: string[]) {
+function unique(values: readonly string[]) {
   return [...new Set(values)]
 }
 
@@ -29,37 +30,47 @@ function splitClassList(value: string | undefined) {
   return unique((value ?? '').split(/\s+/).map((className) => className.trim()).filter(Boolean))
 }
 
-function extractContentClasses(content: string | undefined, filePath: string) {
+function extractContentClasses(
+  content: string | undefined,
+  filePath: string,
+  session: MasterCSSToolingSession
+) {
   if (content === undefined) return []
-  const service = new CSSLanguageService()
   const document = createMCPTextDocument(filePath, content)
-  return unique(service.getClassPositions(document).map((position) => position.token))
+  return unique(
+    session.analyzeDocument({
+      source: content,
+      languageId: document.languageId
+    }).classPositions.map((position) => position.token)
+  )
 }
 
-function resolveClasses(options: CompareCSSOptions, side: 'before' | 'after', filePath: string) {
+function resolveClasses(
+  options: CompareCSSOptions,
+  side: 'before' | 'after',
+  filePath: string,
+  session: MasterCSSToolingSession
+) {
   const classList = side === 'before' ? options.beforeClassList : options.afterClassList
   const html = side === 'before' ? options.beforeHtml : options.afterHtml
   const content = side === 'before' ? options.beforeContent : options.afterContent
   if (classList !== undefined) return splitClassList(classList)
-  if (html !== undefined) return unique(parseHTML(html).classes)
-  return extractContentClasses(content, filePath)
+  if (html !== undefined) {
+    return unique(session.extractSource({
+      files: [{ source: filePath, content: html, kind: 'html' }]
+    }).files[0]?.candidates ?? [])
+  }
+  return extractContentClasses(content, filePath, session)
 }
 
 function renderClasses(manifest: MasterCSSManifest, classes: string[]) {
-  const css = createCSSWithNativeDeclarations(manifest)
-  const invalid: string[] = []
-  for (const className of classes) {
-    const rules = css.generate(className)
-    if (rules.length) {
-      for (const rule of rules) rule.layer.insert(rule)
-    } else {
-      invalid.push(className)
-    }
-  }
+  const rendered = renderClassNamesSync(classes, {
+    manifest
+  })
   return {
-    text: css.text,
-    bytes: css.text.length,
-    invalid
+    text: rendered.cssText,
+    bytes: Buffer.byteLength(rendered.cssText, 'utf8'),
+    invalid: [...rendered.invalidClassNames]
   }
 }
 
@@ -89,68 +100,82 @@ function createTextDiff(before: string, after: string) {
 }
 
 export async function compareCSS(context: MasterCSSMCPContext, options: CompareCSSOptions) {
-  const manifest = await loadWorkspaceManifest(context)
-  const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
-  const activeManifest = manifest.status === 'loaded' ? manifest.manifest : defaultManifest
-  const beforeClasses = resolveClasses(options, 'before', filePath)
-  const afterClasses = resolveClasses(options, 'after', filePath)
-  const before = renderClasses(activeManifest, beforeClasses)
-  const after = renderClasses(activeManifest, afterClasses)
-  const classDiff = diffValues(beforeClasses, afterClasses)
-  const beforeRules = splitRules(before.text)
-  const afterRules = splitRules(after.text)
-  const ruleDiff = diffValues(beforeRules, afterRules)
-  return {
-    version: CSS_COMPARE_VERSION,
-    root: context.root,
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
-    inputs: {
-      filePath,
-      before: {
-        classes: beforeClasses.length,
-        invalid: before.invalid.length
-      },
-      after: {
-        classes: afterClasses.length,
-        invalid: after.invalid.length
-      }
-    },
-    classes: classDiff,
-    invalid: {
-      before: before.invalid,
-      after: after.invalid,
-      added: after.invalid.filter((className) => !before.invalid.includes(className)),
-      removed: before.invalid.filter((className) => !after.invalid.includes(className))
-    },
-    css: {
-      changed: before.text !== after.text,
-      before: {
-        bytes: before.bytes,
-        text: before.text
-      },
-      after: {
-        bytes: after.bytes,
-        text: after.text
-      },
-      bytesDelta: after.bytes - before.bytes,
-      diff: createTextDiff(before.text, after.text)
-    },
-    rules: {
-      added: ruleDiff.added,
-      removed: ruleDiff.removed,
-      unchanged: ruleDiff.unchanged.length
-    },
-    summary: {
-      changed: before.text !== after.text,
-      addedClasses: classDiff.added.length,
-      removedClasses: classDiff.removed.length,
-      addedRules: ruleDiff.added.length,
-      removedRules: ruleDiff.removed.length,
-      bytesDelta: after.bytes - before.bytes
+  if (options.beforeSnapshot || options.afterSnapshot) {
+    if (!options.beforeSnapshot || !options.afterSnapshot) throw new Error('Project comparison requires both beforeSnapshot and afterSnapshot.')
+    if (Object.entries(options).some(([key, value]) => key !== 'beforeSnapshot' && key !== 'afterSnapshot' && value !== undefined)) {
+      throw new Error('Project snapshots cannot be combined with class, content, filePath or context inputs.')
     }
+    return { version: 3, mode: 'project' as const, comparison: await compareProjectSnapshots({ before: options.beforeSnapshot, after: options.afterSnapshot }) }
+  }
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
+  const activeManifest = requireWorkspaceManifest(manifest)
+  const session = createMCPToolingSession(activeManifest, manifest.nativeClassNames)
+  try {
+    const beforeClasses = resolveClasses(options, 'before', filePath, session)
+    const afterClasses = resolveClasses(options, 'after', filePath, session)
+    const before = renderClasses(activeManifest, beforeClasses)
+    const after = renderClasses(activeManifest, afterClasses)
+    const inspections = {
+      before: beforeClasses.map(name => compactClassInspection(session, name, true)),
+      after: afterClasses.map(name => compactClassInspection(session, name, true))
+    }
+    const classDiff = diffValues(beforeClasses, afterClasses)
+    const beforeRules = splitRules(before.text)
+    const afterRules = splitRules(after.text)
+    const ruleDiff = diffValues(beforeRules, afterRules)
+    return {
+      version: CSS_COMPARE_VERSION,
+      root: context.root,
+      manifest: manifestMetadata(manifest),
+      inspections,
+      diagnostics: [...inspections.before, ...inspections.after].flatMap(inspection => inspection.diagnostics ?? []),
+      inputs: {
+        filePath,
+        before: {
+          classes: beforeClasses.length,
+          invalid: before.invalid.length
+        },
+        after: {
+          classes: afterClasses.length,
+          invalid: after.invalid.length
+        }
+      },
+      classes: classDiff,
+      invalid: {
+        before: before.invalid,
+        after: after.invalid,
+        added: after.invalid.filter((className) => !before.invalid.includes(className)),
+        removed: before.invalid.filter((className) => !after.invalid.includes(className))
+      },
+      css: {
+        changed: before.text !== after.text,
+        before: {
+          bytes: before.bytes,
+          text: before.text
+        },
+        after: {
+          bytes: after.bytes,
+          text: after.text
+        },
+        bytesDelta: after.bytes - before.bytes,
+        diff: createTextDiff(before.text, after.text)
+      },
+      rules: {
+        added: ruleDiff.added,
+        removed: ruleDiff.removed,
+        unchanged: ruleDiff.unchanged.length
+      },
+      summary: {
+        changed: before.text !== after.text,
+        addedClasses: classDiff.added.length,
+        removedClasses: classDiff.removed.length,
+        addedRules: ruleDiff.added.length,
+        removedRules: ruleDiff.removed.length,
+        bytesDelta: after.bytes - before.bytes
+      }
+    }
+  } finally {
+    session.dispose?.()
   }
 }

@@ -1,0 +1,195 @@
+import Demo from '~/site/components/demo/Demo'
+
+type WaterfallBar = {
+  label: string
+  start: number
+  end: number
+  tone: keyof typeof toneClasses
+}
+
+type WaterfallRow = {
+  resource: string
+  bars: WaterfallBar[]
+}
+
+type WaterfallScenario = {
+  title: string
+  summary: string
+  metric: {
+    label: string
+    position: number
+  }
+  rows: WaterfallRow[]
+}
+
+const toneClasses = {
+  document: 'bg-neutral fg-white',
+  stylesheet: 'bg-blue fg-white',
+  runtime: 'bg-orange fg-black',
+  program: 'bg-green fg-black'
+} as const
+
+const ticks = [0, 25, 50, 75, 100]
+
+const scenarios: WaterfallScenario[] = [
+  {
+    title: 'Without preload',
+    summary: 'The runtime script starts late, then fetches the default program.',
+    metric: { label: 'FCP', position: 98 },
+    rows: [
+      {
+        resource: 'HTML',
+        bars: [{ label: 'Parse', start: 0, end: 28, tone: 'document' }]
+      },
+      {
+        resource: 'base.css',
+        bars: [{ label: 'Download', start: 18, end: 58, tone: 'stylesheet' }]
+      },
+      {
+        resource: 'Runtime script',
+        bars: [{ label: 'Download', start: 58, end: 82, tone: 'runtime' }]
+      },
+      {
+        resource: 'Default program',
+        bars: [{ label: 'Late', start: 82, end: 98, tone: 'program' }]
+      }
+    ]
+  },
+  {
+    title: 'With preload',
+    summary: 'The runtime script and default program start early, so first paint can move earlier.',
+    metric: { label: 'FCP', position: 60 },
+    rows: [
+      {
+        resource: 'HTML',
+        bars: [{ label: 'Parse', start: 0, end: 28, tone: 'document' }]
+      },
+      {
+        resource: 'base.css',
+        bars: [{ label: 'Download', start: 18, end: 58, tone: 'stylesheet' }]
+      },
+      {
+        resource: 'Runtime script',
+        bars: [{ label: 'Preload early', start: 12, end: 48, tone: 'runtime' }]
+      },
+      {
+        resource: 'Default program',
+        bars: [{ label: 'Preload early', start: 16, end: 52, tone: 'program' }]
+      }
+    ]
+  }
+]
+
+export default function ResourceWaterfall() {
+  return (
+    <figure>
+      <Demo padding="none">
+        <div
+          className="overflow-x:auto width:100%"
+          role="img"
+          aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default program requests, with FCP markers"
+        >
+          <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
+            <div className="grid-cols(1) gap-md">
+              {scenarios.map((scenario) => (
+                <section key={scenario.title} className="p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
+                  <header className="mb-sm">
+                    <h3 className="margin:0 font-sm font-semibold fg-text-neutral">{scenario.title}</h3>
+                    <p className="margin-inline:0 mt-3xs margin-bottom:0 font-2xs fg-text-gray">{scenario.summary}</p>
+                  </header>
+                  <div className="display:grid gap-2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
+                    <div />
+                    <div className="position:relative font-2xs fg-text-gray" style={{ height: '1.5rem' }} aria-hidden="true">
+                      <span className="position:absolute left:0 top:0">Earlier</span>
+                      <span className="position:absolute right:0 top:0">Later</span>
+                      <MetricLine metric={scenario.metric} />
+                      <span className="position:absolute bottom:0 left:0 right:0 height:1px bg-line-subtle" />
+                    </div>
+                    {scenario.rows.map((row) => (
+                      <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
+                    ))}
+                    <div />
+                    <div className="position:relative font-2xs" style={{ height: '1.25rem' }}>
+                      <MetricLabel metric={scenario.metric} />
+                    </div>
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Demo>
+      <figcaption className="sr-only">
+        Conceptual request timing for critical runtime resources. The FCP marker is illustrative and shows when first paint can happen after the stylesheet, runtime script, and program are ready.
+      </figcaption>
+    </figure>
+  )
+}
+
+function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
+  return (
+    <>
+      <div className="display:flex align-items:center min-width:0 font-2xs font-medium fg-text-neutral">{row.resource}</div>
+      <div className="position:relative overflow:hidden bg-surface-inset" style={{ height: '2rem' }}>
+        <TimelineTicks />
+        <MetricLine metric={metric} />
+        {row.bars.map((bar) => (
+          <div
+            key={bar.label}
+            className={`position:absolute top:50% px-2xs display:flex align-items:center font-2xs font-medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
+            style={{
+              height: '1.25rem',
+              left: `${bar.start}%`,
+              width: `${bar.end - bar.start}%`,
+              transform: 'translateY(-50%)'
+            }}
+          >
+            {bar.label}
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="position:absolute bottom:0 top:0 z-index:1 fg-text-orange"
+      style={{
+        borderLeft: '1px dashed currentColor',
+        left: `${metric.position}%`
+      }}
+    />
+  )
+}
+
+function MetricLabel({ metric }: { metric: WaterfallScenario['metric'] }) {
+  return (
+    <span
+      className="position:absolute font-2xs font-semibold fg-text-orange"
+      style={{
+        left: `${metric.position}%`,
+        transform: metric.position > 85 ? 'translateX(-100%)' : 'translateX(-50%)'
+      }}
+    >
+      {metric.label}
+    </span>
+  )
+}
+
+function TimelineTicks() {
+  return (
+    <>
+      {ticks.map((tick) => (
+        <span
+          key={tick}
+          aria-hidden="true"
+          className="position:absolute bottom:0 top:0 width:1px bg-line-subtle"
+          style={{ left: `${tick}%` }}
+        />
+      ))}
+    </>
+  )
+}

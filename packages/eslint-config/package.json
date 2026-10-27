@@ -1,11 +1,14 @@
 {
   "name": "@master/eslint-config-css",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest",
+    "test": "vitest run",
     "lint": "eslint src *.js"
   },
   "keywords": [
@@ -14,7 +17,7 @@
     "eslintconfig"
   ],
   "license": "MIT",
-  "description": "Master CSS ESLint Configuration",
+  "description": "Official Master CSS flat ESLint configuration",
   "author": "Aoyue Design LLC.",
   "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",
@@ -26,10 +29,6 @@
     "url": "https://github.com/master-co/css.git",
     "directory": "packages/eslint-config"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -38,18 +37,22 @@
       "default": "./dist/index.js"
     }
   },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
   "dependencies": {
-    "@master/eslint-plugin-css": "workspace:^"
+    "@master/eslint-plugin-css": "workspace:*"
   },
   "peerDependencies": {
     "eslint": ">=9.0.0"
   },
   "devDependencies": {
-    "@angular-eslint/template-parser": "^21.4.0",
-    "eslint": "^10.5.0"
+    "@angular-eslint/template-parser": "^22.6.0",
+    "eslint": "^10.13.0"
   }
 }

@@ -35,6 +35,11 @@ Benchmark results are evidence for investigation. They do not replace correctnes
 - `shared/static-build.ts`
 - `shared/delivery-modes.ts`
 - `shared/browser-cost.ts`
+- `shared/browser-lifecycle-{metrics,page,measurement,samples,server}.ts`
+- `shared/interaction-cost-{config,metrics,page,harness}.ts`
+- `shared/delivery-mode-{metrics,samples,harness}.ts`
+- `shared/runtime-mutation-diagnostic-{metrics,samples}.ts`
+- `shared/runtime-style-invalidation-{config,metrics,variants,samples}.ts`
 - `ci/write-benchmark-report.js`
 - `ci/compare-benchmark-history.js`
 

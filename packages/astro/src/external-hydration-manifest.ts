@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
@@ -52,6 +52,10 @@ function toHydrationManifestAssetURL(fileName: string, base = MASTER_CSS_HYDRATI
   return `${base.replace(/\/?$/, '/')}${fileName}`
 }
 
+function toPublicAssetBase(base = '/') {
+  return `${base.replace(/\/?$/, '/')}_master-css/hydration/`
+}
+
 async function collectHTMLFiles(dir: string, files: string[] = []) {
   const entries = await readdir(dir, { withFileTypes: true })
   for (const entry of entries) {
@@ -65,7 +69,7 @@ async function collectHTMLFiles(dir: string, files: string[] = []) {
   return files
 }
 
-export async function externalizeAstroHydrationManifests(dir: URL | string) {
+export async function externalizeAstroHydrationManifests(dir: URL | string, base?: string) {
   const root = typeof dir === 'string' ? dir : fileURLToPath(dir)
   const htmlFiles = await collectHTMLFiles(root)
   const writtenFiles: string[] = []
@@ -88,7 +92,7 @@ export async function externalizeAstroHydrationManifests(dir: URL | string) {
       htmlFile,
       externalizeMasterCSSHydrationManifest(
         html,
-        toHydrationManifestAssetURL(fileName)
+        toHydrationManifestAssetURL(fileName, toPublicAssetBase(base))
       )
     )
     writtenFiles.push(outputFile)

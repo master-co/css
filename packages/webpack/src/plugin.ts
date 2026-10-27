@@ -1,28 +1,48 @@
-import { CSSScanner, type ScannerOptions } from '@master/css-scanner'
-import type { MasterCSSEmittedGlobals } from '@master/css'
-import { toManifestJSON } from '@master/css-integration/manifest-module'
+import {
+  MasterCSSScanner,
+  type MasterCSSScannerConfiguration
+} from '@master/css-tooling/scanner/node'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { toManifestJSON, toProductionManifestJSON } from '@master/css-internal/manifest-module'
 import {
   toBrowserManifestFacadeModule,
   toInlineManifestModule
-} from '@master/css-integration/manifest-facade'
+} from '@master/css-internal/manifest-facade'
+import {
+  toBrowserProgramFacadeModule,
+  toInlineProgramModule
+} from '@master/css-internal/program-module'
+import { compileRuntimeProgram } from '@master/css/node'
 import {
   toHashedManifestAssetFileName,
+  toHashedProgramAssetFileName,
   toVirtualCSSModulePath,
   toVirtualDefaultManifestModulePath,
+  toVirtualDefaultProgramModulePath,
   toVirtualEmittedGlobalsModulePath
-} from '@master/css-integration/node'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+} from '@master/css-internal/node'
+import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
 import {
-  cleanStyleRequest,
-  collectStyleCSSDependencies,
-  createExtractedCSSResult,
-  isStyleCSSRequest,
-  registerStyleCSSSource as registerStylesheetCSSSource,
-  resolveMasterStyleSource,
-  type StyleCSSSources
-} from '@master/css-stylesheet'
-import { toEmittedGlobalsModule } from '@master/css-integration/emitted-globals-module'
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
+import {
+  createStylesheetCollection,
+  type MasterCSSStylesheetComposition,
+  type MasterCSSStylesheetCollection,
+  type MasterCSSStylesheetDeliveryOptions
+} from '@master/css-compiler/stylesheet'
+import {
+  collectStylesheetDependenciesSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
+import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
+import {
+  cleanStylesheetModuleRequest,
+  isStylesheetModuleRequest
+} from '@master/css-internal/style-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -32,6 +52,7 @@ import ScannerLifecyclePlugin from './plugins/scanner-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
 import ManifestJSONAssetsPlugin from './plugins/manifest-json-assets'
+import ProgramAssetsPlugin from './plugins/program-assets'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
@@ -39,17 +60,29 @@ import StyleEntryPlugin from './plugins/style-entry'
 import RuntimeEntryPlugin from './plugins/runtime-entry'
 import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
 import GeneratedCSSAssetsPlugin from './plugins/generated-css-assets'
+import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
+import RuntimeMetadataPlugin, { finalEmittedGlobalsModule } from './plugins/runtime-metadata'
+import { getBuildStylesheetDelivery } from './utils/build-stylesheet-delivery'
+import { stylesheetSlot } from './utils/stylesheet-slot'
 import {
-  resolvePluginOptions,
+  resolveMasterCSSWebpackPluginOptions,
   shouldInjectRuntime,
   shouldPreloadRuntime,
-  type Mode,
-  type PluginOptions,
-  type ResolvedPluginOptions
+  type MasterCSSWebpackPluginOptions,
+  type ResolvedMasterCSSWebpackPluginOptions
 } from './options'
 
-const NAME = 'MasterCSSPlugin'
+const NAME = 'MasterCSSWebpackPlugin'
 const RUNTIME_ENTRY_NAME = 'master-css-runtime'
+const manifestHost = {
+  discoverManifestEntries,
+  loadProjectManifest,
+  collectStylesheetDependencies(entry: string, options: { root?: string }) {
+    return collectStylesheetDependenciesSync(entry, undefined, {
+      projectDir: options.root
+    })
+  }
+}
 
 export interface WebpackSubPlugin {
   apply(compiler: Compiler): void
@@ -61,34 +94,46 @@ export interface MasterCSSWebpackContext {
   compilerContext: string
   virtualCSSImportModuleId: string
   virtualManifestModuleId: string
+  virtualProgramModuleId: string
   virtualEmittedGlobalsModuleId: string
   runtimeEntryName: string
   slotCSSRule: string
-  mode: Mode
+  mode: ResolvedMasterCSSWebpackPluginOptions['mode']
   virtualModule?: VirtualModulesPlugin
   shouldInjectRuntime(): boolean
   shouldPreloadRuntime(): boolean
-  on(...args: Parameters<CSSScanner['on']>): unknown
-  init(customOptions?: ScannerOptions): Promise<unknown>
-  reset(customOptions?: ScannerOptions): Promise<unknown>
-  getOptions(): ScannerOptions
+  on(...args: Parameters<MasterCSSScanner['on']>): unknown
+  init(customOptions?: MasterCSSScannerConfiguration): Promise<unknown>
+  reset(customOptions?: MasterCSSScannerConfiguration): Promise<unknown>
+  dispose(): Promise<void>
+  getOptions(): MasterCSSScannerConfiguration
   getPluginInitialized(): boolean
   setPluginInitialized(pluginInitialized: boolean): void
   getDefaultManifestDependencyPaths(): string[]
   getResetDependencyPaths(): string[]
-  setModuleContent(modulePath: string, moduleContent: unknown): void
+  recordCompilationError(error: unknown): void
+  takeCompilationErrors(): Error[]
+  reconcileModuleContents(entries: [string, string][], rebuiltPaths: ReadonlySet<string>): Promise<[string, string][] | undefined>
   writeVirtualModule(modulePath: string, moduleContent: string): void
   setManifestJSONAsset(assetFileName: string, json: string): void
   getManifestJSONAssets(): [string, string][]
+  /** A compiled program that a production program module fetches, by its asset name. */
+  getProgramAsset(assetFileName: string): Uint8Array | undefined
   createDefaultManifestModule(): Promise<string>
+  createDefaultProgramModule(): Promise<string>
+  /** Inlines the program in development; otherwise records its asset and returns a fetching facade. */
+  createProgramModule(manifest: MasterCSSManifest): Promise<string>
   createEmittedGlobalsModule(): Promise<string>
   createGeneratedCSSModule(): Promise<string>
+  createGeneratedCSSResult(): Promise<MasterCSSStylesheetComposition>
+  createStylesheetCSSResults(delivery?: MasterCSSStylesheetDeliveryOptions): Promise<{ slot: string, result: MasterCSSStylesheetComposition }[]>
   processModuleContents(
     entries: [string, string][],
     isGeneratedCSSModulePath: (modulePath: string) => boolean
   ): Promise<void>
   writeGeneratedCSSModule(): Promise<void>
-  writeDefaultManifestModule(): Promise<void>
+  /** Rewrites the default manifest and, once a build imports it, the default program. */
+  writeDefaultManifestModules(): Promise<void>
   writeEmittedGlobalsModule(): Promise<void>
   replayModuleContents(): Promise<void>
   queueResetReplay(): Promise<unknown>
@@ -96,46 +141,62 @@ export interface MasterCSSWebpackContext {
   isGeneratedCSSModulePath(modulePath: string): boolean
 }
 
-export class MasterCSSPlugin {
+export class MasterCSSWebpackPlugin {
 
-  readonly scanner: CSSScanner
-  readonly pluginOptions: ResolvedPluginOptions
+  readonly scanner: MasterCSSScanner
+  readonly pluginOptions: ResolvedMasterCSSWebpackPluginOptions
   pluginInitialized = false
   moduleContentByPath: Record<string, unknown> = {}
   manifestJSONAssets = new Map<string, string>()
+  programAssets = new Map<string, Uint8Array>()
+  /** Only builds that import `virtual:master-css-program` compile the default program. */
+  private defaultProgramRequested = false
   defaultManifestDependencies: string[] = []
   emittedGlobals: MasterCSSEmittedGlobals = {}
   resetReplayChain: Promise<unknown> = Promise.resolve()
-  styleCSSSources: StyleCSSSources = new Map()
-  styleCSSDependencyFallbacks = new Map<string, string[]>()
+  private resetReplayFailure: { error: unknown } | undefined
+  private compilationErrors: Error[] = []
+  stylesheets: MasterCSSStylesheetCollection = createStylesheetCollection()
+  stylesheetDependencyFallbacks = new Map<string, string[]>()
   development = false
+  private processingModuleContents = 0
+
+  private get usesStylesheetDelivery() {
+    return !this.development
+  }
 
   constructor(
-    customOptions: ScannerOptions | PluginOptions = {},
+    customOptions: MasterCSSWebpackPluginOptions = {},
     public cwd = process.cwd()
   ) {
-    this.pluginOptions = resolvePluginOptions(customOptions)
-    this.scanner = new CSSScanner(this.pluginOptions.scanner, cwd)
+    this.pluginOptions = resolveMasterCSSWebpackPluginOptions(customOptions)
+    this.scanner = new MasterCSSScanner({
+      manifest: defaultBuildManifest,
+      ...this.pluginOptions.scanner
+    }, cwd)
   }
 
   get customOptions() {
     return this.scanner.customOptions
   }
 
-  set customOptions(customOptions: ScannerOptions) {
+  set customOptions(customOptions: MasterCSSScannerConfiguration) {
     this.pluginOptions.scanner = customOptions
-    this.scanner.customOptions = customOptions
+    this.scanner.customOptions = {
+      manifest: this.scanner.manifest,
+      ...customOptions
+    }
   }
 
-  get options() {
+  get options(): MasterCSSScanner['options'] {
     return this.scanner.options
   }
 
-  get css() {
+  get css(): MasterCSSScanner['css'] {
     return this.scanner.css
   }
 
-  get manifest() {
+  get manifest(): MasterCSSManifest {
     return this.scanner.manifest
   }
 
@@ -143,42 +204,48 @@ export class MasterCSSPlugin {
     return this.scanner.slotCSSRule
   }
 
-  get latentClasses() {
+  get latentClasses(): MasterCSSScanner['latentClasses'] {
     return this.scanner.latentClasses
   }
 
-  get validClasses() {
+  get validClasses(): MasterCSSScanner['validClasses'] {
     return this.scanner.validClasses
   }
 
-  get invalidClasses() {
+  get invalidClasses(): MasterCSSScanner['invalidClasses'] {
     return this.scanner.invalidClasses
   }
 
-  get nativeClassNames() {
+  get nativeClassNames(): MasterCSSScanner['nativeClassNames'] {
     return this.scanner.nativeClassNames
   }
 
-  get usedNativeClasses() {
+  get usedNativeClasses(): MasterCSSScanner['usedNativeClasses'] {
     return this.scanner.usedNativeClasses
   }
 
-  on(...args: Parameters<CSSScanner['on']>) {
+  on(...args: Parameters<MasterCSSScanner['on']>) {
     this.scanner.on(...args)
     return this
   }
 
-  emit(...args: Parameters<CSSScanner['emit']>) {
+  emit(...args: Parameters<MasterCSSScanner['emit']>) {
     return this.scanner.emit(...args)
   }
 
-  async init(customOptions: ScannerOptions = this.customOptions) {
-    await this.scanner.init(customOptions)
+  async init(customOptions: MasterCSSScannerConfiguration = this.customOptions) {
+    await this.scanner.init({
+      manifest: this.scanner.manifest,
+      ...customOptions
+    })
     return this
   }
 
-  async reset(customOptions: ScannerOptions = this.customOptions) {
-    await this.scanner.reset(customOptions)
+  async reset(customOptions: MasterCSSScannerConfiguration = this.customOptions) {
+    await this.scanner.reset({
+      manifest: this.scanner.manifest,
+      ...customOptions
+    })
     return this
   }
 
@@ -186,31 +253,50 @@ export class MasterCSSPlugin {
     return this.scanner.scanModule(source, content)
   }
 
-  private async createDefaultManifestModule() {
-    const entries = await findCSSManifestEntryFiles(this.cwd)
+  private async loadDefaultManifest() {
     const dependencies = new Set<string>()
-    for (const entry of entries) {
-      for (const dependency of collectStyleCSSDependencies(entry, undefined, this.cwd)) {
+    const result = await loadMasterCSSVirtualManifest({
+      host: manifestHost,
+      root: this.cwd,
+      onDependency: (dependency) => {
         dependencies.add(dependency)
+        this.defaultManifestDependencies = [...dependencies]
       }
-    }
-    this.defaultManifestDependencies = [...dependencies]
-
-    const result = await loadProjectManifest(this.cwd, { entries })
+    })
     this.scanner.customOptions = {
       ...this.scanner.customOptions,
       manifest: result.manifest
     }
-    for (const dependency of result.dependencies) {
-      dependencies.add(dependency)
-    }
-    this.defaultManifestDependencies = [...dependencies]
-    const json = toManifestJSON(result.manifest)
-    if (this.development) return toInlineManifestModule(json)
+    this.defaultManifestDependencies = [...result.dependencies]
+    return result.manifest
+  }
 
+  private toManifestModule(manifest: MasterCSSManifest) {
+    if (this.development) return toInlineManifestModule(toManifestJSON(manifest))
+
+    const json = toProductionManifestJSON(manifest)
     const assetFileName = toHashedManifestAssetFileName(json)
     this.manifestJSONAssets.set(assetFileName, json)
     return toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+  }
+
+  private async createDefaultManifestModule() {
+    return this.toManifestModule(await this.loadDefaultManifest())
+  }
+
+  private async createProgramModule(manifest: MasterCSSManifest) {
+    if (this.development) return toInlineProgramModule(await compileRuntimeProgram(manifest))
+
+    // Emitted programs must not carry build-host source paths.
+    const program = await compileRuntimeProgram(JSON.parse(toProductionManifestJSON(manifest)) as MasterCSSManifest)
+    const assetFileName = toHashedProgramAssetFileName(program)
+    this.programAssets.set(assetFileName, program)
+    return toBrowserProgramFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+  }
+
+  private async createDefaultProgramModule() {
+    this.defaultProgramRequested = true
+    return this.createProgramModule(await this.loadDefaultManifest())
   }
 
   private getDefaultManifestDependencyPaths() {
@@ -220,8 +306,9 @@ export class MasterCSSPlugin {
   private getResetDependencyPaths() {
     return [...new Set([
       ...this.defaultManifestDependencies,
-      ...Array.from(this.styleCSSSources.values()).flatMap((source) => source.dependencies),
-      ...Array.from(this.styleCSSDependencyFallbacks.values()).flat(),
+      ...this.stylesheets.snapshot().dependencies,
+      ...Array.from(this.stylesheetDependencyFallbacks.values()).flat(),
+      ...this.scanner.sourcePolicyDependencies,
       ...this.scanner.resetDependencies
     ])]
   }
@@ -235,14 +322,18 @@ export class MasterCSSPlugin {
     ])]
   }
 
-  private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
-    const result = await createExtractedCSSResult({
+  private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean, sourceIds?: readonly string[], delivery?: MasterCSSStylesheetDeliveryOptions } = {}) {
+    const result = await this.stylesheets.compose({
       scanner: this.scanner,
-      styleCSSSources: this.styleCSSSources,
+      baseManifest: this.scanner.css.manifest,
       classes: this.getScannerClasses(),
       projectDir: this.cwd,
+      pruneNativeCSS: this.pluginOptions.pruneNativeCSS,
       includeNativeCSS: options.includeNativeCSS,
-      includeMasterBaseCSS: options.includeMasterBaseCSS
+      includeMasterBaseCSS: options.includeMasterBaseCSS,
+      includeGeneratedCSS: this.pluginOptions.mode !== 'runtime' && this.pluginOptions.mode !== 'progressive',
+      sourceIds: options.sourceIds,
+      delivery: this.usesStylesheetDelivery ? options.delivery ?? getBuildStylesheetDelivery() : undefined
     })
     this.emittedGlobals = result.emittedGlobals
     return result
@@ -253,63 +344,111 @@ export class MasterCSSPlugin {
       await this.init()
     }
     await this.createExtractedCSSResult()
-    return toEmittedGlobalsModule(this.emittedGlobals)
+    return this.development ? toEmittedGlobalsModule(this.emittedGlobals) : finalEmittedGlobalsModule
   }
 
   private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
     return (await this.createExtractedCSSResult(options)).css
   }
 
-  private async registerStyleCSSSource(modulePath: string, source: string) {
-    await registerStylesheetCSSSource(this.scanner, this.styleCSSSources, modulePath, source, {
-      projectDir: this.cwd
-    })
+  private async registerStylesheetSource(modulePath: string, source: string) {
+    const id = cleanStylesheetModuleRequest(modulePath)
+    const dependencies = new Set(this.stylesheetDependencyFallbacks.get(id))
+    try {
+      const result = await this.stylesheets.register(this.scanner, modulePath, source, {
+        baseManifest: this.scanner.css.manifest,
+        projectDir: this.cwd,
+      pruneNativeCSS: this.pluginOptions.pruneNativeCSS,
+        delivery: this.usesStylesheetDelivery ? {
+          ...getBuildStylesheetDelivery(),
+          onDependency: file => { dependencies.add(file) }
+        } : undefined
+      })
+      for (const file of result.dependencies) dependencies.add(file)
+    } finally {
+      this.stylesheetDependencyFallbacks.set(id, [...dependencies])
+    }
   }
 
   private readOriginalStyleSource(modulePath: string, fallback: string) {
-    if (!isStyleCSSRequest(modulePath)) return fallback
+    if (!isStylesheetModuleRequest(modulePath)) return fallback
     try {
-      return readFileSync(cleanStyleRequest(modulePath), 'utf-8')
+      return readFileSync(cleanStylesheetModuleRequest(modulePath), 'utf-8')
     } catch {
       return fallback
     }
   }
 
+  private async reconcileModuleContents(entries: [string, string][], rebuiltPaths: ReadonlySet<string>) {
+    const activePaths = new Set(entries.map(([file]) => file))
+    const removedPaths = Object.keys(this.moduleContentByPath).filter(file => !activePaths.has(file))
+    const changedEntries = entries.filter(([file]) => rebuiltPaths.has(file)
+      || !Object.prototype.hasOwnProperty.call(this.moduleContentByPath, file))
+    for (const file of removedPaths) {
+      this.scanner.removeSource(file)
+      delete this.moduleContentByPath[file]
+      this.stylesheets.delete(file)
+      this.stylesheetDependencyFallbacks.delete(cleanStylesheetModuleRequest(file))
+    }
+    for (const [file, content] of entries) this.moduleContentByPath[file] = content
+    if (!removedPaths.length) return changedEntries.length ? changedEntries : undefined
+
+    return changedEntries
+  }
+
   private async processModuleContents(entries: [string, string][], isGeneratedCSSModulePath: (modulePath: string) => boolean) {
+    this.processingModuleContents++
+    try {
+      await this.processModuleEntries(entries, isGeneratedCSSModulePath)
+    } finally {
+      this.processingModuleContents--
+    }
+  }
+
+  private async processModuleEntries(entries: [string, string][], isGeneratedCSSModulePath: (modulePath: string) => boolean) {
     const insertEntries: [string, string][] = []
     const styleEntries: [string, string][] = []
 
     for (const [modulePath, content] of entries) {
       if (isGeneratedCSSModulePath(modulePath)) continue
       const source = this.readOriginalStyleSource(modulePath, content)
-      if (isStyleCSSRequest(modulePath)) {
-        let resolvedStyleSource: ReturnType<typeof resolveMasterStyleSource>
+      if (isStylesheetModuleRequest(modulePath)) {
+        let resolution: ReturnType<typeof resolveStylesheetSync>
         try {
-          resolvedStyleSource = resolveMasterStyleSource(modulePath, source, this.cwd)
+          resolution = resolveStylesheetSync(modulePath, source, {
+            projectDir: this.cwd,
+            preserveImports: true
+          })
         } catch (error) {
-          this.styleCSSDependencyFallbacks.set(
-            cleanStyleRequest(modulePath),
-            collectStyleCSSDependencies(modulePath, source, this.cwd)
+          this.stylesheetDependencyFallbacks.set(
+            cleanStylesheetModuleRequest(modulePath),
+            [...collectStylesheetDependenciesSync(modulePath, source, {
+              projectDir: this.cwd
+            })]
           )
           throw error
         }
-        if (resolvedStyleSource) {
-          this.styleCSSDependencyFallbacks.set(
-            cleanStyleRequest(modulePath),
-            collectStyleCSSDependencies(modulePath, source, this.cwd)
+        if (resolution?.kind === 'entry' || resolution?.kind === 'master-package-entry') {
+          this.stylesheetDependencyFallbacks.set(
+            resolution.id,
+            [...resolution.dependencies]
           )
           styleEntries.push([modulePath, source])
         } else {
-          this.styleCSSSources.delete(cleanStyleRequest(modulePath))
-          this.styleCSSDependencyFallbacks.delete(cleanStyleRequest(modulePath))
+          this.stylesheets.delete(modulePath)
+          this.stylesheetDependencyFallbacks.delete(cleanStylesheetModuleRequest(modulePath))
         }
         continue
       }
-      insertEntries.push([modulePath, content])
+      const original = modulePath.split('?')[0]
+      if (/\.(?:mdx?|vue|svelte)$/.test(original)) {
+        if (original !== modulePath) continue
+        insertEntries.push([original, readFileSync(original, 'utf8')])
+      } else insertEntries.push([modulePath, content])
     }
 
     await Promise.all(styleEntries.map(([modulePath, content]) =>
-      this.registerStyleCSSSource(modulePath, content)
+      this.registerStylesheetSource(modulePath, content)
     ))
     await Promise.all(insertEntries.map(([modulePath, content]) =>
       this.scanModule(modulePath, content)
@@ -325,6 +464,7 @@ export class MasterCSSPlugin {
       compilerContext,
       virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
       virtualManifestModuleId: toVirtualDefaultManifestModulePath(compilerContext),
+      virtualProgramModuleId: toVirtualDefaultProgramModulePath(compilerContext),
       virtualEmittedGlobalsModuleId: toVirtualEmittedGlobalsModulePath(compilerContext),
       runtimeEntryName: RUNTIME_ENTRY_NAME,
       slotCSSRule: this.scanner.slotCSSRule,
@@ -334,6 +474,13 @@ export class MasterCSSPlugin {
       on: (...args) => this.on(...args),
       init: (customOptions = this.customOptions) => this.init(customOptions),
       reset: (customOptions = this.customOptions) => this.reset(customOptions),
+      dispose: async () => {
+        try {
+          await this.scanner.dispose()
+        } finally {
+          this.stylesheets.dispose()
+        }
+      },
       getOptions: () => this.options,
       getPluginInitialized: () => this.pluginInitialized,
       setPluginInitialized: (pluginInitialized) => {
@@ -341,9 +488,11 @@ export class MasterCSSPlugin {
       },
       getDefaultManifestDependencyPaths: () => this.getDefaultManifestDependencyPaths(),
       getResetDependencyPaths: () => this.getResetDependencyPaths(),
-      setModuleContent: (modulePath, moduleContent) => {
-        this.moduleContentByPath[modulePath] = moduleContent
+      recordCompilationError: error => {
+        this.compilationErrors.push(error instanceof Error ? error : new Error(String(error)))
       },
+      takeCompilationErrors: () => this.compilationErrors.splice(0),
+      reconcileModuleContents: (entries, rebuiltPaths) => this.reconcileModuleContents(entries, rebuiltPaths),
       writeVirtualModule: (modulePath, moduleContent) => {
         try {
           context.virtualModule?.writeModule(modulePath, moduleContent)
@@ -359,29 +508,45 @@ export class MasterCSSPlugin {
         this.manifestJSONAssets.set(assetFileName, json)
       },
       getManifestJSONAssets: () => [...this.manifestJSONAssets],
+      getProgramAsset: assetFileName => this.programAssets.get(assetFileName),
       createDefaultManifestModule: () => this.createDefaultManifestModule(),
+      createDefaultProgramModule: () => this.createDefaultProgramModule(),
+      createProgramModule: manifest => this.createProgramModule(manifest),
       createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
+      createGeneratedCSSResult: () => this.createExtractedCSSResult(),
+      createStylesheetCSSResults: async delivery => {
+        const results = [{ slot: this.slotCSSRule, result: await this.createExtractedCSSResult({ sourceIds: [], delivery }) }]
+        for (const id of this.stylesheets.snapshot().sourceIds) {
+          results.push({ slot: stylesheetSlot(id), result: await this.createExtractedCSSResult({ sourceIds: [id], delivery }) })
+        }
+        return results
+      },
       createGeneratedCSSModule: async () => {
         const result = await this.createExtractedCSSResult()
         return result.css
       },
       processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
       writeGeneratedCSSModule: async () => {
+        if (this.processingModuleContents) return
         if (!context.virtualModule || !context.virtualCSSImportModuleId) return
         const css = await context.createGeneratedCSSModule()
         context.writeVirtualModule(
           context.virtualCSSImportModuleId,
-          context.mode === 'static' && !this.development ? context.slotCSSRule : css
+          !this.development ? context.slotCSSRule : css
         )
         await context.writeEmittedGlobalsModule()
       },
-      writeDefaultManifestModule: async () => {
+      writeDefaultManifestModules: async () => {
         if (!context.virtualModule || !context.virtualManifestModuleId) return
-        context.writeVirtualModule(context.virtualManifestModuleId, await this.createDefaultManifestModule())
+        const manifest = await this.loadDefaultManifest()
+        context.writeVirtualModule(context.virtualManifestModuleId, this.toManifestModule(manifest))
+        if (!this.defaultProgramRequested) return
+        // The program is compiled from the same manifest, so HMR refreshes the runtime with it.
+        context.writeVirtualModule(context.virtualProgramModuleId, await this.createProgramModule(manifest))
       },
       writeEmittedGlobalsModule: async () => {
         if (!context.virtualModule || !context.virtualEmittedGlobalsModuleId) return
-        context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, toEmittedGlobalsModule(this.emittedGlobals))
+        context.writeVirtualModule(context.virtualEmittedGlobalsModuleId, this.development ? toEmittedGlobalsModule(this.emittedGlobals) : finalEmittedGlobalsModule)
       },
       replayModuleContents: async () => {
         const entries = Object.entries(this.moduleContentByPath)
@@ -393,11 +558,18 @@ export class MasterCSSPlugin {
           .then(context.replayModuleContents)
           .then(context.writeGeneratedCSSModule)
           .catch((error: unknown) => {
+            this.resetReplayFailure ??= { error }
             console.error('[master-css.webpack] reset replay failed:', error)
           })
         return this.resetReplayChain
       },
-      waitForResetReplay: () => this.resetReplayChain,
+      waitForResetReplay: async () => {
+        await this.resetReplayChain
+        const failure = this.resetReplayFailure
+        if (!failure) return
+        this.resetReplayFailure = undefined
+        throw failure.error
+      },
       isGeneratedCSSModulePath: (modulePath) => {
         const normalizedModulePath = normalizePath(modulePath)
         const normalizedGeneratedCSSImportModuleId = normalizePath(context.virtualCSSImportModuleId)
@@ -409,18 +581,19 @@ export class MasterCSSPlugin {
   }
 
   private createSubPlugins(context: MasterCSSWebpackContext): WebpackSubPlugin[] {
-    if (context.mode === null) return []
-
     return [
       ScannerLifecyclePlugin(context),
       VirtualModuleRegistryPlugin(context),
       ManifestVirtualModulePlugin(context),
       ManifestJSONAssetsPlugin(context),
+      ProgramAssetsPlugin(context),
       VirtualCSSImportPlugin(context),
       ManifestLoaderPlugin(context),
       StyleEntryPlugin(context),
       UsageGraphPlugin(context),
       GeneratedCSSAssetsPlugin(context),
+      RuntimeStylesheetsPlugin(context),
+      RuntimeMetadataPlugin(context),
       ...context.shouldInjectRuntime()
         ? [
           RuntimeEntryPlugin(context),
@@ -431,6 +604,11 @@ export class MasterCSSPlugin {
   }
 
   apply(compiler: Compiler) {
+    if (!this.pluginOptions.enabled) return
+    this.customOptions = {
+      ...this.customOptions,
+      outputDirectories: [...(this.customOptions.outputDirectories ?? []), ...(compiler.options.output.path ? [compiler.options.output.path] : [])]
+    }
     const context = this.createContext(compiler)
     for (const plugin of this.createSubPlugins(context)) {
       plugin.apply(compiler)

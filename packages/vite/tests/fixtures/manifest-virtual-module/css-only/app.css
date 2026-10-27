@@ -1,4 +1,4 @@
-@master entry;
+@import "@master/css";
 @import './styles/button.css';
 
 @theme {
@@ -6,9 +6,12 @@
   --breakpoint-md: 48;
 }
 
-@components {
-  btn {
-    @compose bg:primary;
+
+
+  @mixin --btn {
+    background-color:var(--color-primary);
+    display: inline-flex;
+  } @utility btn {
+    background-color:var(--color-primary);
     display: inline-flex;
   }
-}

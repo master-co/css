@@ -1,0 +1,15 @@
+diff --git a/lib/DirectoryWatcher.js b/lib/DirectoryWatcher.js
+index 11d79f28461695c6a10daf0d49f06350aba865af..47a8266c8a8af1fded77b65c220398a8ef70ef3f 100644
+--- a/lib/DirectoryWatcher.js
++++ b/lib/DirectoryWatcher.js
+@@ -855,7 +855,9 @@ class DirectoryWatcher extends EventEmitter {
+ 						const missingWatchers = new Map(this.watchers);
+ 						missingWatchers.delete(withoutCase(this.path));
+ 						for (const item of itemPaths) {
+-							missingWatchers.delete(withoutCase(item));
++							if (this.files.has(item) || this.directories.has(item)) {
++								missingWatchers.delete(withoutCase(item));
++							}
+ 						}
+ 						for (const watchers of missingWatchers.values()) {
+ 							for (const watcher of watchers) {

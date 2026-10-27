@@ -1,0 +1,23 @@
+[
+  {
+    "page": "filter",
+    "id": "use-drop-shadow-for-transparent-images",
+    "title": "Use drop shadow for transparent images",
+    "html": [
+      "<!-- Drop shadow · follows the shapes -->\n<svg id=\"target\" role=\"img\"\n  aria-label=\"Circle and diamond\"\n  width=\"160\" height=\"120\" viewBox=\"0 0 160 120\"\n  class=\"display:block m-md\n         filter:drop-shadow(0|4px|2px|#7c3aed)\">\n  <circle cx=\"48\" cy=\"60\" r=\"28\" fill=\"#2563eb\" />\n  <path d=\"M100 30 140 60 100 90 60 60Z\" fill=\"#7c3aed\" />\n</svg>",
+      "<!-- Box shadow · follows the viewport box -->\n<svg id=\"target\" role=\"img\"\n  aria-label=\"Circle and diamond\"\n  width=\"160\" height=\"120\" viewBox=\"0 0 160 120\"\n  class=\"display:block m-md box-shadow:0|4px|2px|#7c3aed\">\n  <circle cx=\"48\" cy=\"60\" r=\"28\" fill=\"#2563eb\" />\n  <path d=\"M100 30 140 60 100 90 60 60Z\" fill=\"#7c3aed\" />\n</svg>"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "m-md",
+      "filter:drop-shadow(0|4px|2px|#7c3aed)",
+      "box-shadow:0|4px|2px|#7c3aed"
+    ],
+    "classLists": [
+      "display:block m-md filter:drop-shadow(0|4px|2px|#7c3aed)",
+      "display:block m-md box-shadow:0|4px|2px|#7c3aed"
+    ],
+    "highlighted": []
+  }
+]

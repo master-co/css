@@ -9,9 +9,10 @@ on:
       - canary
     paths:
       - benchmarks/**
+      - crates/**
       - packages/schema/**
-      - packages/lexer/**
-      - packages/engine/**
+      - packages/tooling/**
+      - packages/css/**
       - packages/preset/**
       - packages/runtime/**
       - shared/**
@@ -40,14 +41,13 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: benchmark
       - run: pnpm exec playwright install --with-deps --only-shell chromium
       - name: Build benchmark packages
         run: |
           pnpm --filter @master/css-schema build
-          pnpm --filter @master/css-lexer build
-          pnpm --filter @master/css-engine build
+          pnpm --filter @master/css-tooling build
+          pnpm --filter @master/css build
           pnpm --filter @master/css-preset build
           pnpm --filter @master/css-runtime build
       - name: Prepare benchmark output
@@ -64,7 +64,7 @@ jobs:
             echo "RUNTIME_BENCHMARK_ARTIFACT=master-css-benchmark-$branch_slug-runtime-$GITHUB_SHA"
           } >> "$GITHUB_ENV"
       - name: Run engine benchmark
-        run: pnpm --filter @master/css-engine bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
+        run: pnpm --filter @master/css bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
       - name: Run runtime browser benchmark
         run: pnpm --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
       - name: Write benchmark reports

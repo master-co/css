@@ -1,9 +1,13 @@
-import baseVite, { type PluginOptions } from '@master/css.vite'
-import type { Plugin } from 'vite'
+import {
+  createMasterCSSVitePlugin as createBaseMasterCSSVitePlugin,
+  type MasterCSSVitePluginOptions
+} from '@master/css-vite'
 
-export const SVELTEKIT_SSR_EXTERNAL = ['@master/css-server']
+type BasePlugin = ReturnType<typeof createBaseMasterCSSVitePlugin>[number]
 
-function SvelteKitServerExternalPlugin(): Plugin {
+const SVELTEKIT_SSR_EXTERNAL = ['@master/css-server']
+
+function SvelteKitServerExternalPlugin(): BasePlugin {
   return {
     name: 'master-css:svelte-kit-server-external',
     config() {
@@ -21,12 +25,25 @@ function SvelteKitServerExternalPlugin(): Plugin {
   }
 }
 
-export default function masterCSS(options: PluginOptions = {}): Plugin[] {
+// SvelteKit renders pages through its server hooks and never calls
+// `transformIndexHtml`; SvelteKit 3 warns about every plugin that defines it.
+function withoutIndexHTMLTransform(plugin: BasePlugin): BasePlugin {
+  if (!plugin.transformIndexHtml) return plugin
+  const kitPlugin = { ...plugin }
+  delete kitPlugin.transformIndexHtml
+  return kitPlugin
+}
+
+export function createMasterCSSVitePlugin(
+  options: MasterCSSVitePluginOptions = {}
+): BasePlugin[] {
   return [
     SvelteKitServerExternalPlugin(),
-    ...baseVite({
-      mode: 'progressive',
+    ...createBaseMasterCSSVitePlugin({
+      mode: 'static',
       ...options
-    })
+    }).map(withoutIndexHTMLTransform)
   ]
 }
+
+export default createMasterCSSVitePlugin

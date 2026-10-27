@@ -11,7 +11,7 @@ describe('Astro server middleware', () => {
     const middleware = createMasterCSSMiddleware(defaultManifest)
     const response = await middleware({} as never, vi.fn(async () => {
       return new Response(
-        '<html><head></head><body><div class="block"></div></body></html>',
+        "<html><head></head><body><div class=\"display:block\"></div></body></html>",
         {
           headers: {
             'content-length': '999',
@@ -27,7 +27,43 @@ describe('Astro server middleware', () => {
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
-    expect(html).toContain('.block{display:block}')
+    expect(html).toContain(".display\\:block{display:block}")
+  })
+
+  it('keeps middleware page output isolated across responses', async () => {
+    const middleware = createMasterCSSMiddleware(defaultManifest)
+    const renderHTML = async (html: string) => {
+      const response = await middleware({} as never, vi.fn(async () => new Response(html, {
+        headers: { 'content-type': 'text/html' }
+      })) as never) as Response
+      return response.text()
+    }
+
+    const first = await renderHTML('<html><head></head><body><div class="fg-red"></div></body></html>')
+    const second = await renderHTML('<html><head></head><body><div class="fg-blue"></div></body></html>')
+
+    expect(first).toContain('.fg-red')
+    expect(first).not.toContain('.fg-blue')
+    expect(second).toContain('.fg-blue')
+    expect(second).not.toContain('.fg-red')
+  })
+
+  it('does not duplicate globals already emitted by Astro stylesheets', async () => {
+    const manifest = structuredClone(defaultManifest)
+    manifest.variables ||= {}
+    manifest.variables.color ||= []
+    manifest.variables.color.push({ key: 'host', values: [{ path: [':root,:host'], value: '#123456' }] })
+    const middleware = createMasterCSSMiddleware(manifest, {
+      variables: { 'color-host': 1 }
+    })
+    const response = await middleware({} as never, vi.fn(async () => new Response(
+      '<html><head></head><body><div class="fg-host"></div></body></html>',
+      { headers: { 'content-type': 'text/html' } }
+    )) as never) as Response
+    const html = await response.text()
+
+    expect(html).toContain('.fg-host')
+    expect(html).not.toContain('--color-host:')
   })
 
   it('does not consume non-HTML responses', async () => {

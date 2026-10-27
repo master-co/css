@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { add } from 'sv'
 import { createSetupTest } from 'sv/testing'
@@ -77,7 +77,7 @@ for (const addonTestCase of testCases) {
     assertMasterCSSSetup(projectDir, addonTestCase.variant)
 
     if (addonTestCase.kind.type === 'existing-hook') {
-      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(masterCSSHandle, originalHandle)')
+      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).not.toContain('masterCSSHandle')
     }
 
     if (addonTestCase.kind.type === 'existing-vite-config') {
@@ -85,12 +85,12 @@ for (const addonTestCase of testCases) {
     }
 
     if (addonTestCase.kind.type === 'existing-sequence') {
-      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(masterCSSHandle, first, second)')
+      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(first, second)')
     }
 
     if (addonTestCase.kind.type === 'existing-stylesheet') {
       expect(countMatches(readProjectFile(projectDir, 'src/routes/layout.css'), "@import '@master/css';")).toBe(1)
-      expect(countMatches(readProjectFile(projectDir, 'src/routes/+layout.svelte'), "import './layout.css';")).toBe(1)
+      expect(countMatches(readProjectFile(projectDir, 'src/routes/+layout.svelte'), "import './layout.css'")).toBe(1)
     }
 
     if (addonTestCase.kind.type === 'idempotent') {
@@ -107,11 +107,13 @@ for (const addonTestCase of testCases) {
 }
 
 test('marks non-SvelteKit projects unsupported', () => {
+  type SetupContext = Parameters<NonNullable<typeof addon.setup>>[0]
   const unsupported: string[] = []
-  addon.setup?.({
+  const context: Pick<SetupContext, 'isKit' | 'unsupported'> = {
     isKit: false,
-    unsupported: (reason) => unsupported.push(reason)
-  } as Parameters<NonNullable<typeof addon.setup>>[0])
+    unsupported: (reason) => { unsupported.push(reason) }
+  }
+  addon.setup?.(context as SetupContext)
 
   expect(unsupported).toEqual(['Requires SvelteKit'])
 })
@@ -119,28 +121,28 @@ test('marks non-SvelteKit projects unsupported', () => {
 function assertMasterCSSSetup(projectDir: string, variant: string) {
   const packageJSON = JSON.parse(readProjectFile(projectDir, 'package.json'))
   expect(packageJSON.dependencies['@master/css']).toBe('rc')
-  expect(packageJSON.dependencies['@master/css.svelte']).toBe('rc')
-  expect(packageJSON.dependencies['@master/css-sv']).toBeUndefined()
-  expect(packageJSON.devDependencies?.['@master/css-sv']).toBeUndefined()
+  expect(packageJSON.dependencies['@master/css-svelte']).toBe('rc')
+  expect(packageJSON.dependencies['@master/css-svelte-addon']).toBeUndefined()
+  expect(packageJSON.devDependencies?.['@master/css-svelte-addon']).toBeUndefined()
 
   const viteConfig = readProjectFile(projectDir, viteConfigPath(variant))
-  expect(viteConfig).toContain("from '@master/css.svelte/vite'")
+  expect(viteConfig).toContain("from '@master/css-svelte/vite'")
   expect(viteConfig).toContain('masterCSS()')
 
   expect(readProjectFile(projectDir, 'src/routes/layout.css')).toContain("@import '@master/css';")
-  expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css';")
+  expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css'")
 
-  const hooksServer = readProjectFile(projectDir, hookPath(variant))
-  expect(hooksServer).toContain("from '@master/css.svelte/hooks.server'")
-  expect(hooksServer).toContain('masterCSSHandle')
-  expect(hooksServer).toMatch(/export[\s\S]*const handle/)
+  if (existsSync(resolve(projectDir, hookPath(variant)))) {
+    expect(readProjectFile(projectDir, hookPath(variant))).not.toContain('@master/css-svelte/hooks.server')
+  }
+
 }
 
 function ensureLocalDependencyOverrides(cwd: string) {
   const workspaceRoot = dirname(cwd)
-  const packageJSONPath = resolve(workspaceRoot, 'package.json')
-  const packageJSON = JSON.parse(readFileSync(packageJSONPath, 'utf8'))
-  if (packageJSON.pnpm?.overrides?.['@master/css']) return
+  const workspaceConfigPath = resolve(workspaceRoot, 'pnpm-workspace.yaml')
+  const workspaceConfig = readFileSync(workspaceConfigPath, 'utf8')
+  if (workspaceConfig.includes("'@master/css-svelte':")) return
 
   writeStubPackage(
     workspaceRoot,
@@ -158,7 +160,7 @@ function ensureLocalDependencyOverrides(cwd: string) {
     workspaceRoot,
     'stubs/master-css-svelte',
     {
-      name: '@master/css.svelte',
+      name: '@master/css-svelte',
       version: '0.0.0-rc.0',
       exports: {
         './vite': './vite.js',
@@ -171,15 +173,11 @@ function ensureLocalDependencyOverrides(cwd: string) {
     }
   )
 
-  packageJSON.pnpm = {
-    ...packageJSON.pnpm,
-    overrides: {
-      ...packageJSON.pnpm?.overrides,
-      '@master/css': 'file:./stubs/master-css',
-      '@master/css.svelte': 'file:./stubs/master-css-svelte'
-    }
-  }
-  writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2), 'utf8')
+  writeFileSync(
+    workspaceConfigPath,
+    `${workspaceConfig.trimEnd()}\noverrides:\n  '@master/css': file:./stubs/master-css\n  '@master/css-svelte': file:./stubs/master-css-svelte\n`,
+    'utf8'
+  )
 }
 
 function writeStubPackage(
@@ -197,7 +195,7 @@ function writeStubPackage(
 }
 
 function existingHook(extension: string) {
-  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit'\n\n" : ''
+  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit/hooks'\n\n" : ''
   const typeAnnotation = extension === 'ts' ? ': Handle' : ''
   return `${typeImport}export const handle${typeAnnotation} = async ({ event, resolve }) => {
   return resolve(event, {
@@ -208,10 +206,10 @@ function existingHook(extension: string) {
 }
 
 function existingSequence(extension: string) {
-  const typeImport = extension === 'ts' ? "import type { Handle } from '@sveltejs/kit'\n" : ''
+  const typeImport = extension === 'ts' ? ', type Handle' : ''
   const typeAnnotation = extension === 'ts' ? ': Handle' : ''
-  return `import { sequence } from '@sveltejs/kit/hooks'
-${typeImport}
+  return `import { sequence${typeImport} } from '@sveltejs/kit/hooks'
+
 const first${typeAnnotation} = async ({ event, resolve }) => resolve(event)
 const second${typeAnnotation} = async ({ event, resolve }) => resolve(event)
 export const handle = sequence(first, second)
@@ -247,7 +245,7 @@ function snapshotProjectFiles(projectDir: string, variant: string) {
     vite: readProjectFile(projectDir, viteConfigPath(variant)),
     stylesheet: readProjectFile(projectDir, 'src/routes/layout.css'),
     layout: readProjectFile(projectDir, 'src/routes/+layout.svelte'),
-    hooks: readProjectFile(projectDir, hookPath(variant))
+    hooks: existsSync(resolve(projectDir, hookPath(variant))) ? readProjectFile(projectDir, hookPath(variant)) : undefined
   }
 }
 

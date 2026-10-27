@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { collectEnvironment, collectPackageVersions } from '../shared/environment'
 import { validateFixtures } from '../shared/fixtures'
@@ -102,7 +102,7 @@ async function createCSSOutputReport(): Promise<BenchmarkReport> {
     packages: await collectPackageVersions([
       '@master/css',
       '@master/css-cli',
-      '@master/css.vite',
+      '@master/css-vite',
       'tailwindcss',
       '@tailwindcss/cli',
       '@tailwindcss/vite',
@@ -124,7 +124,9 @@ async function createCSSOutputReport(): Promise<BenchmarkReport> {
 }
 
 describe('css output size', () => {
-  bench('write CSS output size report', async () => {
-    await writeCSSOutputReportOnce()
-  }, benchOptions)
+  test('write CSS output size report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write CSS output size report', async () => {
+      await writeCSSOutputReportOnce()
+    }).run(benchOptions)
+  })
 })

@@ -41,7 +41,7 @@
             "version": "workspace:^"
         },
         {
-            "name": "@master/css.vite",
+            "name": "@master/css-vite",
             "version": "workspace:^"
         },
         {

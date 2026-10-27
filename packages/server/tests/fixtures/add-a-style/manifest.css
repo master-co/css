@@ -1,6 +1,8 @@
-@components {
-  btn {
+
+  @mixin --btn {
+    display: inline-flex;
+    height: 2.5rem;
+  } @utility btn {
     display: inline-flex;
     height: 2.5rem;
   }
-}

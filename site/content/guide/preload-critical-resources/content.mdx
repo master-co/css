@@ -1,0 +1,113 @@
+import ResourceWaterfall from './components/ResourceWaterfall'
+
+---
+
+## Preload runtime engine
+Without preload hints, the CDN runtime script and its default program can be discovered too late.
+Runtime rendering may experience delays in downloading and initializing until the first contentful paint if [runtime-critical resources](/guide/rendering-modes#runtime-rendering) are discovered late.
+
+Conceptual request waterfall for the CDN runtime script and default program. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
+<ResourceWaterfall />
+
+Preload the CDN runtime with `as="script"`. When its engine starts, the CDN runtime fetches `default-program.bin`, the default preset compiled for the engine; preload it with `as="fetch"` and `crossorigin` so the runtime's fetch reuses the response.
+
+(o) Use `html <link rel="preload">` to preload the critical resources.
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"> <!-- [!code highlight] -->
+  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
+  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
+</head>
+</html>
+```
+With these preload hints in place, the runtime script and default program requests start during document parsing and download in parallel with the stylesheet. The parser and runtime later reuse the preloaded responses instead of waiting on new requests.
+
+You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
+
+---
+
+## Preload runtime project programs
+Official runtime integrations compile the project manifest into a runtime program, which production builds emit as a hashed binary asset. The runtime must load that program before it can execute project tokens, utility definitions, mixins, named conditions, and keyframes from your CSS entry graph.
+
+(o) Let runtime-only integrations preload the project program.
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code highlight] -->
+  <script type="module" src="/assets/main.<hash>.js"></script>
+</head>
+</html>
+```
+
+The preload starts the program request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-program`, whose facade fetches the same program. Matching `as="fetch"` and `crossorigin` lets the browser reuse the preloaded response instead of issuing a second request.
+
+(i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, and its runtime requests the project program only when the engine starts, so do not preload either program on progressive pages.
+
+### Choose the right runtime asset
+Master CSS hands off different files at different points:
+
+| File | Used by | Preload? |
+| --- | --- | --- |
+| CDN default program | CDN runtime-only pages that use the packaged default preset. | Yes, when using the CDN runtime. |
+| Project program asset | Official runtime integrations that emit `master-css-program.<hash>.bin` for `virtual:master-css-program`. | Yes, in pure runtime mode when the integration injects the runtime. No on progressive pages. |
+| Page hydration manifest | Progressive pages that hand `style#master-css` rules to a browser runtime. | No. The browser can paint without it. |
+
+---
+
+## Defer runtime engine
+On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module and the project program are requested only when a class that the page hydration manifest does not cover appears.
+
+(o) Load the runtime as an ordinary deferred module script.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- @MARK defer -->
+  <script type="module" src="/main.js"></script>
+</head>
+</html>
+```
+
+(x) Do not preload the runtime or the project program in progressive rendering mode. A preload downloads them even when the page never needs the engine.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
+  <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code --] -->
+</head>
+</html>
+```
+
+When new classes usually appear soon after load, start the runtime with `enginePrefetch: 'idle'`. The runtime then starts the engine during browser idle time, after first paint, so the first new class does not wait for the engine download.
+
+---
+
+## Do not preload page hydration manifests
+Progressive rendering can externalize the page hydration manifest:
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+(x) Do not add a preload hint for this JSON file.
+
+The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let `MasterCSSRuntime.start()` import it. If a referenced manifest cannot be imported or validated, startup rejects with `INVALID_HYDRATION_MANIFEST`; if the engine later finds that the manifest does not match the style block, the runtime warns and rebuilds from connected DOM classes.
+
+This is different from runtime project programs. A runtime-only page needs its project program before it can interpret classes. A progressive page already has the first-response rules in `style#master-css`, so its page hydration manifest only describes CSS that was already rendered into that one HTML response.
+
+---
+
+## Benefits
+Preloading critical assets can improve the following metrics:
+
+1. **First Contentful Paint (FCP)**: Preloading critical assets helps accelerate the loading of essential scripts, such as JavaScript, resulting in faster FCP. This means that the main content of the webpage can be displayed more quickly in the user's browser, enhancing their perception and experience.
+2. **First Meaningful Paint (FMP)**: By preloading critical scripts, the browser can start parsing and rendering the script earlier, leading to faster FMP. This allows users to see meaningful content more rapidly, improving the visual presentation of the page.
+3. **Time to Interactive (TTI)**: Preloading critical scripts reduces waiting time for users, resulting in a faster Time to Interactive. When the critical script has been downloaded and is ready, users can interact with the webpage more quickly, providing a better user experience.
+
+Preloading critical scripts enhances the download and execution speed of the scripts, thereby improving metrics such as First Contentful Paint, First Meaningful Paint, and Time to Interactive.

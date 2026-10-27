@@ -1,0 +1,137 @@
+import Abbreviations from './components/Abbreviations.mdx'
+import ArbitraryProperties from './components/ArbitraryProperties.mdx'
+import Decimal from './components/Decimal.mdx'
+import Functions from './components/Functions.mdx'
+import Important from './components/Important.mdx'
+import MultiplierUnits from './components/MultiplierUnits.mdx'
+import Negative from './components/Negative.mdx'
+import Tokens from './components/Tokens.mdx'
+import UnitConversion from './components/UnitConversion.mdx'
+import UnitSensing from './components/UnitSensing.mdx'
+import Units from './components/Units.mdx'
+import Utilities from './components/Utilities.mdx'
+import Variables from './components/Variables.mdx'
+import Class2CSS from '~/site/components/Class2CSS'
+
+## Overview [sr-only] \{#overview\}
+Master CSS classes select named styles or express CSS declarations directly in markup. Read each class from left to right: start with the style you want, then add optional [state selectors](/reference/rules/selectors) and optional [conditional queries](/reference/rules/conditions).
+
+```html
+<!-- @MARK fg-white --><!-- @MARK :hover --><!-- @MARK @md -->
+<button type="button" class="fg-white:hover@md">Save</button>
+```
+
+Use a hyphen for named styles (`font-mono`, `p-md`) and a colon for direct values (`font-size:16px`, `padding:1rem`). Direct declarations use full CSS property names; named token families may use shorter prefixes. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
+
+
+## Native properties
+Write full native property names for direct values. `display:block` generates `display: block`; the browser decides its layout behavior. Use [MDN’s CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) for native property semantics and [Layout System](/guide/layout-system) for composing a page.
+
+```html
+<div class="display:block opacity:.5 opacity:1:hover">Hover to reveal</div>
+```
+
+<Class2CSS>{['display:block', 'opacity:.5', 'opacity:1:hover']}</Class2CSS>
+
+Opacity changes paint, including descendants. It does not disable a control or remove it from keyboard navigation. Native CSS property coverage does not depend on whether a dedicated documentation page exists.
+
+## Basic syntax \{#basic-syntax\}
+### Utilities \{#utilities\}
+<Utilities />
+
+
+### Independent properties \{#independent-properties\}
+
+Each class expresses one styling decision. Use named color tokens and full CSS properties for explicit values:
+
+```html
+<div class="border-width:1px b-line-control border-style:solid">Content</div>
+```
+
+A single value may express one decision, as with `p-sm`, `gap-md`, `overflow:hidden`, and `animation:none@media(print)`. Give different edges or axes their own declarations. Native stylesheets and inline styles retain ordinary CSS syntax.
+
+### Motion properties \{#motion-properties\}
+
+Use `animation-name:*`, `animation-duration:*`, `transition-property:*` and `transition-duration:*` to express independent settings. Named `animate-*` tokens contain complete animation shorthands. To override one field, combine them with a full-property declaration such as `animation-duration:var(--duration-fast)`. See [animation tokens](/reference/tokens/animate) for ordering and defaults.
+
+### Property abbreviations \{#property-abbreviations\}
+<Abbreviations />
+
+### Native declaration fallback \{#native-declaration-fallback\}
+<ArbitraryProperties />
+
+### Variable properties \{#variable-properties\}
+<Variables />
+
+<a id="group"></a>
+
+### Combining declarations \{#combining-declarations\}
+Write each declaration as a separate class, repeating any shared selector or query suffix. For reusable combinations or ordered declarations, define an [`@mixin`](/reference/directives/definitions#utilities).
+
+```html
+<ul class="display:block>li:hover@md font-size:14px>li:hover@md text-align:center>li:hover@md">…</ul>
+```
+
+### Important \{#important\}
+<Important />
+
+
+## Values \{#values\}
+### Decimal \{#decimal\}
+<Decimal />
+
+### Negative \{#negative\}
+<Negative />
+
+### Hexadecimal color \{#hexadecimal-color\}
+Change the text color of an element using the hexadecimal color code.
+```html
+<!-- @MARK color:#175fe9 -->
+<p class="color:#175fe9">Aa</p>
+```
+
+### Canonical token families \{#variable-alias\}
+<Tokens />
+
+
+## Units \{#units\}
+<Units />
+
+### Native CSS units \{#unit-conversion\}
+<UnitConversion />
+
+### Unit sensing \{#unit-sensing\}
+<UnitSensing />
+
+### Native resolution \{#multiplier-units\}
+<MultiplierUnits />
+
+
+## Functions \{#functions\}
+<Functions />
+
+### rgb(), hsl(), oklch(), ... \{#rgb-hsl-oklch-\}
+Change the text color of an element using color functions like `rgb()`, `hsl()`, `oklch()`, and others.
+```html
+<!-- @MARK color:rgb(23,95,233) -->
+<p class="color:rgb(23,95,233)">Aa</p>
+```
+
+
+## Combine with states and queries \{#combine-with-states-and-queries\}
+After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
+
+```html
+<!-- @MARK bg-blue-60 --><!-- @MARK bg-blue-70:hover@md --><!-- @MARK transition-property:background-color transition-duration:0.2s -->
+<button type="button" class="bg-blue-60 transition-property:background-color transition-duration:0.2s bg-blue-70:hover@md">
+  Save
+</button>
+```
+
+This means:
+
+- `bg-blue-60` applies by default.
+- `bg-blue-70:hover@md` applies only when the button is hovered and the viewport matches `@md`.
+- `transition-property:background-color transition-duration:0.2s` adds a `background-color` transition.
+
+Continue with [selectors](/reference/rules/selectors) for element states and relationships, or [conditions](/reference/rules/conditions) for viewport, media, container, and layer suffixes. The [syntax tutorial](/guide/syntax-tutorial) introduces the authoring workflow.

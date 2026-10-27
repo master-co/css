@@ -1,12 +1,12 @@
-import { fileExists, transforms, Walker } from '@sveltejs/sv-utils'
+import { fileExists, transforms, Walker, type AstTypes, type TransformFn } from '@sveltejs/sv-utils'
 import type { Workspace } from 'sv'
 
 export const MASTER_CSS_PACKAGE = '@master/css'
 export const MASTER_CSS_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_PACKAGE = '@master/css.svelte'
+export const MASTER_CSS_SVELTE_PACKAGE = '@master/css-svelte'
 export const MASTER_CSS_SVELTE_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css.svelte/vite'
-export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css.svelte/hooks.server'
+export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css-svelte/vite'
+export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css-svelte/hooks.server'
 
 const MASTER_CSS_VITE_PLUGIN_NAME = 'masterCSS'
 const MASTER_CSS_IMPORTED_HANDLE_NAME = 'masterCSSSvelteHandle'
@@ -21,15 +21,6 @@ interface ImportDeclaration {
     type: string
     local?: { name?: string }
   }[]
-}
-
-interface CallExpression {
-  type: 'CallExpression'
-  callee?: {
-    type: string
-    name?: string
-  }
-  arguments?: unknown[]
 }
 
 interface Identifier {
@@ -48,18 +39,31 @@ function isIdentifier(value: unknown, name?: string): value is Identifier {
     && (name === undefined || (value as { name?: unknown }).name === name)
 }
 
+function findNamedImportName(ast: { body: unknown[] }, from: string, importedName: string) {
+  for (const node of ast.body) {
+    if (!isImportDeclaration(node) || node.source.value !== from) continue
+    const namedSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportSpecifier'
+      && (specifier as { imported?: { name?: string } }).imported?.name === importedName
+    ))
+    if (namedSpecifier?.local?.name) return namedSpecifier.local.name
+  }
+}
+
 function findDefaultImportName(ast: { body: unknown[] }, from: string) {
   for (const node of ast.body) {
     if (!isImportDeclaration(node) || node.source.value !== from) continue
-    const defaultSpecifier = node.specifiers?.find((specifier) => specifier.type === 'ImportDefaultSpecifier')
+    const defaultSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportDefaultSpecifier'
+    ))
     if (defaultSpecifier?.local?.name) return defaultSpecifier.local.name
   }
 }
 
-function moveSequenceHandleFirst(ast: unknown, handleName: string) {
-  Walker.walk(ast as { type: string }, null, {
-    CallExpression(node: CallExpression, { next }: { next: () => void }) {
-      if (node.callee?.type === 'Identifier' && node.callee.name === 'sequence' && node.arguments) {
+function moveSequenceHandleFirst(ast: AstTypes.Program, handleName: string) {
+  Walker.walk(ast as AstTypes.Node, null, {
+    CallExpression(node, { next }) {
+      if (node.callee.type === 'Identifier' && node.callee.name === 'sequence') {
         const currentIndex = node.arguments.findIndex((argument) => isIdentifier(argument, handleName))
         if (currentIndex > 0) {
           const [handle] = node.arguments.splice(currentIndex, 1)
@@ -71,25 +75,44 @@ function moveSequenceHandleFirst(ast: unknown, handleName: string) {
   })
 }
 
+// sv-utils 1.x types TransformFn as `string | false`; these callbacks never abort.
+function applyTransform(transform: TransformFn, content: string): string {
+  const output = transform(content)
+  return output === false ? content : output
+}
+
 export function addMasterCSSVitePlugin(content: string) {
-  return transforms.script(({ ast, js }) => {
-    const pluginName = findDefaultImportName(ast, MASTER_CSS_SVELTE_VITE_IMPORT) ?? MASTER_CSS_VITE_PLUGIN_NAME
-    js.imports.addDefault(ast, {
-      from: MASTER_CSS_SVELTE_VITE_IMPORT,
-      as: pluginName
-    })
+  return applyTransform(transforms.script(({ ast, js }) => {
+    const defaultPluginName = findDefaultImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT
+    )
+    const namedPluginName = findNamedImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT,
+      'createMasterCSSVitePlugin'
+    )
+    const pluginName = defaultPluginName
+      ?? namedPluginName
+      ?? MASTER_CSS_VITE_PLUGIN_NAME
+    if (!defaultPluginName && !namedPluginName) {
+      js.imports.addDefault(ast, {
+        from: MASTER_CSS_SVELTE_VITE_IMPORT,
+        as: pluginName
+      })
+    }
     js.vite.addPlugin(ast, {
       code: `${pluginName}()`
     })
-  })(content)
+  }), content)
 }
 
 export function addMasterCSSStylesheetImport(content: string) {
-  return transforms.css(({ ast, css }) => {
+  return applyTransform(transforms.css(({ ast, css }) => {
     css.addImports(ast, {
       imports: [`'${MASTER_CSS_PACKAGE}'`]
     })
-  })(content)
+  }), content)
 }
 
 export function addStylesheetImportToLayout(
@@ -98,7 +121,7 @@ export function addStylesheetImportToLayout(
   stylesheetRelativePath: string,
   svelteVersion: string
 ) {
-  return transforms.svelteScript({ language }, ({ ast, js, svelte }) => {
+  return applyTransform(transforms.svelteScript({ language }, ({ ast, js, svelte }) => {
     js.imports.addEmpty(ast.instance.content, {
       from: stylesheetRelativePath
     })
@@ -108,11 +131,11 @@ export function addStylesheetImportToLayout(
         language
       })
     }
-  })(content)
+  }), content)
 }
 
 export function addMasterCSSServerHook(content: string, language: Language) {
-  return transforms.script(({ ast, comments, js }) => {
+  return applyTransform(transforms.script(({ ast, comments, js }) => {
     js.kit.addHooksHandle(ast, {
       language,
       newHandleName: MASTER_CSS_HANDLE_NAME,
@@ -120,11 +143,13 @@ export function addMasterCSSServerHook(content: string, language: Language) {
       comments
     })
     moveSequenceHandleFirst(ast, MASTER_CSS_HANDLE_NAME)
-    js.imports.addDefault(ast, {
+    js.imports.addNamed(ast, {
       from: MASTER_CSS_SVELTE_HOOK_IMPORT,
-      as: MASTER_CSS_IMPORTED_HANDLE_NAME
+      imports: {
+        handle: MASTER_CSS_IMPORTED_HANDLE_NAME
+      }
     })
-  })(content)
+  }), content)
 }
 
 export function resolveHooksServerPath(cwd: string, srcDirectory: string, language: Language) {

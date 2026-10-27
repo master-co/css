@@ -1,0 +1,14 @@
+@import '@master/css';
+@theme {
+  --color-probe: #123456;
+}
+
+@media (prefers-color-scheme: light) { :root, :host { --color-probe: #123456; } }
+
+
+
+@media (prefers-color-scheme: dark) { :root, :host { --color-probe: #abcdef; } }
+
+@mixin --text(--name <string>) {
+  font-size: var(ident("--text-" var(--name)));
+}

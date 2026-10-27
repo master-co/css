@@ -2,6 +2,9 @@
   --color-accent: #456;
 }
 
-@theme dark {
+
+
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --color-accent: #789;
-}
+} }

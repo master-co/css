@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test'
-import { MasterCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
+import { compileRuntimeProgramSync, renderClassNamesSync } from '@master/css/node'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -11,10 +12,9 @@ import {
   groupMasterCSSManifestVariables,
   type MasterCSSManifestVariable
 } from '@master/css-schema/manifest'
-import UtilityType from '@master/css-schema/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { createServer, type ViteDevServer } from 'vite'
+import { createServer, type Plugin, type ViteDevServer } from 'vite'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -22,163 +22,73 @@ const packageRoot = resolve(__dirname, '..')
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 let runtimeServerPromise: Promise<ViteDevServer> | undefined
 
-type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
-  declarations?: Record<string, string | number>
-  rules?: { selector?: string, declarations: Record<string, string | number> }[]
+/** The path where the harness server compiles a posted manifest into a runtime program. */
+export const RUNTIME_PROGRAM_PATH = '/@master-css/runtime-program'
+
+/** Compiles a manifest into the runtime program a page executes, as integrations do at build time. */
+export function compileProgram(manifest: MasterCSSManifest = defaultManifest): Uint8Array {
+  return compileRuntimeProgramSync(manifest)
+}
+
+/** Lets page code that receives manifests, such as the runtime loader, compile them. */
+const runtimeProgramCompiler: Plugin = {
+  name: 'master-css-runtime-program',
+  configureServer(server) {
+    server.middlewares.use(RUNTIME_PROGRAM_PATH, (request, response) => {
+      let body = ''
+      request.setEncoding('utf8')
+      request.on('data', (chunk: string) => body += chunk)
+      request.on('end', () => {
+        try {
+          const program = compileProgram(JSON.parse(body) as MasterCSSManifest)
+          response.setHeader('content-type', 'application/octet-stream')
+          response.end(Buffer.from(program))
+        } catch (error) {
+          response.statusCode = 422
+          response.end(error instanceof Error ? error.message : String(error))
+        }
+      })
+    })
+  }
 }
 
 type RuntimeManifestVariableInput = MasterCSSManifestVariable
-type RuntimeManifestVariable = MasterCSSManifestVariable
 
-type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities'>> & {
-  rootSize?: number
-  baseUnit?: number
-  defaultMode?: string
-  modeTrigger?: NonNullable<MasterCSSManifest['settings']>['modeTrigger']
-  modes?: string[]
+type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'variables'>> & {
   variables?: RuntimeManifestVariableInput[]
-  utilities?: RuntimeProjectManifestUtilityInput[]
 }
 
-function getDefaultVariableName(key: string, namespace?: string) {
-  const negative = key.startsWith('-')
-  const positiveKey = negative ? key.slice(1) : key
-  const name = namespace
-    ? `${namespace}${positiveKey ? '-' + positiveKey : ''}`
-    : positiveKey
-  return negative ? '-' + name : name
-}
-
-function normalizeVariableValue(value: RuntimeManifestVariable['value'] | undefined) {
-  if (typeof value !== 'string') {
-    return { value, dependencies: undefined }
-  }
-  return {
-    value: value.replace(/\|/g, ' '),
-    dependencies: undefined
-  }
-}
-
-function inferVariableType(value: RuntimeManifestVariable['value'] | undefined, modes?: RuntimeManifestVariable['modes']) {
-  if (typeof value === 'number') return 'number'
-  const firstMode = modes && Object.values(modes)[0]
-  return firstMode?.type || 'string'
-}
-
-function normalizeVariable(variable: RuntimeManifestVariableInput): RuntimeManifestVariable {
-  const value = variable.value
-  const name = variable.name || getDefaultVariableName(variable.key, variable.namespace)
-  const normalizedValue = normalizeVariableValue(value)
-  return {
+export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput): MasterCSSManifest {
+  const custom = (manifest.variables || []).map(variable => ({
     ...variable,
-    name,
-    type: variable.type || inferVariableType(value, variable.modes),
-    ...(normalizedValue.value !== undefined ? { value: normalizedValue.value } : {}),
-    ...(normalizedValue.dependencies?.length ? {
-      dependencies: [...new Set([...(variable.dependencies || []), ...normalizedValue.dependencies])]
-    } : variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
+    name: variable.name || (variable.namespace ? `${variable.namespace}-${variable.key}` : variable.key)
+  }))
+  const merged = new Map<string, MasterCSSManifestVariable>(flattenMasterCSSManifestVariables(defaultManifest.variables).map(variable => [variable.name!, variable]))
+  for (const variable of custom) {
+    const previous = merged.get(variable.name)
+    merged.set(variable.name, { ...variable, values: [...(previous?.values || []), ...variable.values], dependencies: [...new Set([...(previous?.dependencies || []), ...(variable.dependencies || [])])] })
   }
-}
-
-function createRuntimeVariables(defaultVariables: RuntimeManifestVariable[], inputVariables: RuntimeManifestVariableInput[] | undefined) {
-  const variables = new Map<string, RuntimeManifestVariable>()
-  for (const variable of defaultVariables) {
-    if (!variable.name) continue
-    variables.set(variable.name, {
-      ...variable,
-      ...(variable.modes ? { modes: { ...variable.modes } } : {}),
-      ...(variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
-    })
-  }
-
-  for (const inputVariable of inputVariables || []) {
-    const normalized = normalizeVariable(inputVariable)
-    const current = variables.get(normalized.name!) || {
-      name: normalized.name,
-      key: normalized.key,
-      ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
-      type: normalized.type
-    }
-    if (normalized.mode) {
-      current.modes = {
-        ...(current.modes || {}),
-        [normalized.mode]: {
-          type: normalized.type!,
-          value: normalized.value as string | number
-        }
+  const nodes: import('@master/css-schema/manifest').MasterCSSThemeNode[] = []
+  for (const variable of custom) for (const value of variable.values) {
+    let children = nodes
+    for (const prelude of value.path) {
+      const previous = children.at(-1)
+      if (previous?.type === 'rule' && previous.prelude === prelude) children = previous.children
+      else {
+        const node: import('@master/css-schema/manifest').MasterCSSThemeNode = { type: 'rule' as const, prelude, children: [] }
+        children.push(node)
+        children = node.children
       }
-    } else {
-      Object.assign(current, {
-        key: normalized.key,
-        ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
-        type: normalized.type,
-        ...(normalized.value !== undefined ? { value: normalized.value } : {}),
-        ...(normalized.dependencies?.length ? { dependencies: normalized.dependencies } : {}),
-        ...(normalized.inline ? { inline: true } : {}),
-        ...(normalized.static ? { static: true } : {})
-      })
     }
-    variables.set(normalized.name!, current)
+    children.push({ type: 'declaration' as const, name: variable.name, value: value.value })
   }
-
-  return groupMasterCSSManifestVariables([...variables.values()])
-}
-
-function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
-  if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSManifest['utilities']>[number]
-  const name = utility.name || utility.id || ''
-  const isSemantic = utility.type === UtilityType.Semantic || utility.type === undefined
   return {
-    id: utility.id || (isSemantic ? `.${name}` : name),
-    name,
-    type: utility.type ?? UtilityType.Semantic,
-    order: utility.order ?? order,
-    layer: utility.layer,
-    emit: {
-      type: 'static',
-      rules: utility.rules || [
-        {
-          selector: '&',
-          declarations: utility.declarations || {}
-        }
-      ]
-    },
-    matchers: [{ type: 'static', name }]
+    ...defaultManifest, ...manifest,
+    theme: [...(defaultManifest.theme || []), ...(manifest.theme || []), ...nodes],
+    variables: groupMasterCSSManifestVariables([...merged.values()]),
+    mixins: [...(defaultManifest.mixins || []), ...(manifest.mixins || [])],
+    utilities: [...(defaultManifest.utilities || []), ...(manifest.utilities || [])]
   }
-}
-
-function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
-  const defaultUtilities = defaultManifest.utilities || []
-  const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = manifest
-  const variables = createRuntimeVariables(flattenMasterCSSManifestVariables(defaultManifest.variables), rest.variables)
-  const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
-  return {
-    ...defaultManifest,
-    ...rest,
-    version: 1,
-    settings: {
-      ...defaultManifest.settings,
-      ...rest.settings,
-      ...(rootSize !== undefined ? { rootSize } : {}),
-      ...(baseUnit !== undefined ? { baseUnit } : {}),
-      ...(defaultMode !== undefined ? { defaultMode } : {}),
-      ...(modeTrigger !== undefined ? { modeTrigger } : {}),
-      ...(modes !== undefined ? { modes } : {})
-    },
-    variables,
-    animations: {
-      ...(defaultManifest.animations || {}),
-      ...(rest.animations || {})
-    },
-    variants: [
-      ...(defaultManifest.variants || []),
-      ...(rest.variants || [])
-    ],
-    utilities: [
-      ...defaultUtilities,
-      ...customUtilities
-    ]
-  } satisfies MasterCSSManifest
 }
 
 async function createHydrationManifestForPage(page: Page, manifest: MasterCSSManifest) {
@@ -189,9 +99,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     }
     return [...classNames]
   })
-  const css = MasterCSS.create({ manifest })
-  css.ensureClassRules(...classNames)
-  return createHydrationManifest(css)
+  return renderClassNamesSync(classNames, { manifest }).hydrationManifest
 }
 
 export async function getRuntimeLoaderURL() {
@@ -203,6 +111,7 @@ export async function getRuntimeLoaderURL() {
         'process.env.NODE_ENV': JSON.stringify('production')
       },
       logLevel: 'error',
+      plugins: [runtimeProgramCompiler],
       root: packageRoot,
       server: {
         cors: true,
@@ -251,7 +160,7 @@ export default async function init(
   })
   await page.evaluate(async ({ loaderURL, manifest }) => {
     const { startCSSRuntime } = await import(loaderURL)
-    startCSSRuntime({ manifest })
+    await startCSSRuntime({ manifest })
   }, { loaderURL: await getRuntimeLoaderURL(), manifest })
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
+  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__)
 }

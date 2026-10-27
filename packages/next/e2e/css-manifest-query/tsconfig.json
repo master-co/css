@@ -29,7 +29,9 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next-query/types/**/*.ts",
+    ".next-query/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

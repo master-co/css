@@ -1,0 +1,889 @@
+import StylesheetExample from '~/site/components/StylesheetExample'
+
+## Overview [sr-only] \{#overview\}
+Master CSS directives describe token definitions, reusable utility names, named conditions, and source discovery. The compiler consumes them before delivering CSS to the browser. Write declarations, selectors, cascade layers, media queries, and keyframes using native CSS.
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-brand: #4f46e5;
+}
+[data-theme="ocean"] { --color-brand: #0369a1; }
+
+@custom-media --wide (width >= 60rem);
+@utility card-layout { display: grid; gap: var(--spacing-md); }
+
+.card {
+  color: var(--color-brand);
+  @media (--wide) { grid-template-columns: 1fr 1fr; }
+}
+```
+
+## Entry markers \{#entry-markers\}
+### `@import "@master/css"` \{#import-mastercss\}
+The package import is the only project entry marker. It loads the preset's native CSS, including its stable layer order and base styles, and identifies the stylesheet that receives generated utility CSS.
+
+```css
+@import "@master/css";
+```
+
+Explicit standalone compiler and manifest APIs remain available. A manifest alone does not load native CSS; applications using runtime or server rendering must also deliver the relevant native stylesheet.
+
+### Local file URLs
+
+Node file compilation reads CSS import names using CSS escaping and case rules.
+Relative `@import` and `@reference` URLs resolve their pathname against the source
+file: percent escapes identify filename characters, while query strings and
+fragments are excluded from the filesystem path. For example,
+`"./tokens%20%23.css?v=1#theme"` reads a sibling file named `tokens #.css`.
+Existing bare relative CSS paths such as `"tokens.css"` are also expanded. Bare
+package imports without a matching local file remain available to the host
+resolver. Reference files remain compile-time context and do not emit their native CSS.
+For a prepared virtual stylesheet, the host's explicit filesystem source owner
+also supplies the base for relative CSS references. Resources in a referenced
+theme token remain relative to the reference file when used elsewhere.
+
+### Stylesheet boundaries and resource URLs
+
+CSS import conditions and layers apply to the imported stylesheet. Moving or
+combining files must preserve those boundaries and the URLs of their images and
+fonts. A resource used by an imported managed definition retains that definition's
+source location when the compiled stylesheet uses it.
+
+Native CLI project scanning reads global definitions from unqualified imports before lowering native mixin applications. A qualified import may contain native CSS, including native rules with `@apply`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
+Relative `@source` patterns are resolved from the file that declares them, and
+`@reference` supplies definition context without adding its scanning sources or
+exporting its managed classes. Reading this metadata does not publish stylesheet
+or resource files. CLI file export is a separate delivery step and does publish the required assets.
+
+The prepared-files compiler method `compileStylesheets()` returns separate CSS
+assets and accepts a `resourceURLs` map for parsed `url()` and `image-set()` values.
+The map is keyed by source file ID, then by the decoded resource URL; replacements
+must be root-relative or absolute. Use absolute replacements when output files
+can be served from different origins. All returned stylesheets must be delivered.
+Fragment-only references such as `url(#filter)` remain local references.
+
+This prepared-files method requires the host to supply import resolution, resource
+mappings and reference context. CLI file export and Vite production builds publish
+the required stylesheet and resource assets. Node file and rendered-stylesheet APIs
+opt in through their `delivery` options; their caller must publish every returned
+asset. `--no-export` and calls without delivery options retain their separate
+single-output limitations. Without resource mappings, the host must preserve
+original URL bases. See [native CSS entries](/guide/rendering-modes#native-css-entries) for the delivery boundaries.
+
+
+### Preparing native CSS for another transformer
+
+Compiler hosts can opt into `preserveNativeSource: true` when another transformer
+needs the untouched native portions of a stylesheet. Master definitions are still
+consumed and native `@apply` rules are still lowered, while unrelated comments,
+empty rules, value spelling, and rule boundaries are retained. The option defaults
+to `false`, preserving the compiler's normal native CSS normalization.
+
+Source preservation cannot be combined with enabled native pruning. Passing a class list alone does not enable pruning. `preserveNativeCSS: false` still suppresses native output. The option
+does not prevent subsequent host transforms from optimizing the result or rewriting
+its source map, and it does not discover new Master definitions or generated-global
+references introduced by a later transform.
+
+
+### Continuing resource rendering after host transforms
+
+`compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional
+`emittedGlobals` resource-count snapshot when another output already supplies
+generated theme variables or keyframe definitions. Positive counts suppress duplicate emission;
+zero counts do not. New references still emit their transitive resource closure.
+The returned snapshot includes the external context and resources required by this
+render, without changing the input snapshot. Omitting the option preserves normal
+standalone rendering.
+
+This context prevents a later render from replacing an already processed variable
+with its original manifest value. It does not run host plugins on newly generated
+CSS. Hosts remain responsible for processing that new CSS and publishing its
+resources while preserving plugin ordering and source ownership.
+
+---
+
+## Reference context \{#reference-context\}
+### `@reference` \{#reference\}
+Use a reference when compilation needs definitions from another stylesheet without importing its native rules.
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+  padding: var(--spacing-md);
+  @apply --manual-dark { color: white; }
+}
+```
+
+A reference supplies tokens, utilities, mixins, custom media and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
+
+References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
+
+Vite, Next.js, and Webpack supply project definition context to local stylesheets, CSS Modules, and SFC styles. An explicit reference is useful for dependencies outside that context or standalone compilation. Local stylesheets do not become scanning or pruning roots. CSS Modules and scoped hosts must deliver generated theme selectors globally.
+
+The standalone API accepts absolute `referenceFiles` and `transformNativeStylesheets: true`. Definition files precede authored references; local definitions follow both. Referenced resources retain their defining file as owner. `emittedGlobals` explicitly identifies theme variables already delivered alongside an output; project discovery alone does not establish that ownership. The snapshot contains separate `variables` and definition-ID-keyed `keyframes` counts, plus native resource slot and output-suppression metadata.
+
+## Theme and conditions \{#theme-and-variants\}
+### `@theme` \{#theme\}
+Declare utility tokens as custom properties. A theme block must be top-level and accepts only custom-property token declarations. Declare keyframes in native CSS outside the block.
+
+```css
+@theme {
+  --color-brand: #4f46e5;
+  --spacing-card: 1.5rem;
+}
+```
+
+Unknown or repeated modifiers are errors. The `static` and `inline` modifiers can appear in either order.
+
+| Declaration | Token delivery | Generated value |
+| --- | --- | --- |
+| `@theme` | On demand | `var(--token)` |
+| `@theme static` | Always | `var(--token)` |
+| `@theme inline` | On demand when directly referenced | Declared value |
+| `@theme static inline` | Always | Declared value |
+
+Tokens emit in `@layer theme` under `:root, :host`. The compiler preserves declaration order and repeated values. Used tokens retain their transitive variable dependencies. Selectors and conditional rules belong in native CSS outside the block.
+
+Only `@theme` registers named tokens for utility patterns. A native declaration such as `:root { --app-brand: red; }` remains ordinary CSS; use it directly with `color:var(--app-brand)` or bridge it through an inline theme token.
+
+### Native theme overrides \{#theme-mode\}
+Register the default value in `@theme`, then override the variable using native selectors or queries:
+
+```css
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
+@media (prefers-color-scheme: dark) {
+  :root { --color-panel: #111827; }
+}
+```
+
+Native overrides retain their authored scope, layer, and stylesheet delivery. The browser resolves the cascade and inheritance. Unlayered normal overrides outrank normal theme-layer declarations on the same element. A later layer such as `defaults` also gives overrides priority while allowing component and utility layers to take precedence. Import the native stylesheet wherever its overrides are needed; `@reference` supplies definitions without delivering those rules.
+
+The preset uses native `light-dark()` for adaptive colors and shadows. Both variable branches remain dependencies. Its native base CSS sets the root to `color-scheme: light dark`, with light/dark `data-theme` selectors for elements and shadow hosts. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
+
+### Theme activation and selector wrappers \{#mode\}
+Native selectors and queries activate theme overrides. A mixin can provide a matching class condition:
+
+```css
+@mixin --ocean {
+  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
+}
+```
+
+Use `color:white@apply(--ocean)`. Add explicit `:host(...)` selectors when targeting a shadow host.
+
+### `@theme inline` \{#theme-inline\}
+Use `inline` to substitute a token's declared value into Master-generated declarations:
+
+```css
+@theme inline { --color-brand: var(--app-brand); }
+:root { --app-brand: #4f46e5; }
+[data-theme="ocean"] { --app-brand: #0369a1; }
+```
+
+`bg-brand` emits `background-color:var(--app-brand)`, resolving the native variable on the element using the class. The same substitution applies to direct declaration classes, utility classes, and native `@apply` expansion. Handwritten native declarations retain their authored `var()` references.
+
+Substitution runs once. Variables, functions, and fallbacks inside the replacement value keep native CSS semantics. Dependencies are collected from the resulting declarations; using an inline utility alone does not force its replaced token to emit. A direct native reference to the token can still retain its declaration.
+
+For repeated theme definitions, importance and then source order select the inline value and mode. Custom-property `!important` does not make the generated utility important. Ordinary aliases resolve in their declaring scope; use inline when a bridge must read another variable at its use site.
+
+### `@theme static` \{#theme-static\}
+Use `static` when tokens must be emitted even without a class or native reference:
+
+```css
+@theme static { --color-integration: #4f46e5; }
+@theme static inline { --color-brand: var(--app-brand); }
+```
+
+`static` controls token delivery; `inline` controls generated values. They can be combined in either order. A token with any static declaration stays retained, together with its dependencies, until its definition is removed. Referenced stylesheets do not become output roots merely because their tokens are static.
+
+### Native keyframes \{#native-keyframes\}
+Declare keyframes in native CSS, and opt into usage-based output in their owning file:
+
+```css
+@prune native;
+@theme { --animate-reveal: reveal .2s ease-out both; }
+@keyframes reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@safelist keyframes "external-enter" "external-exit";
+@keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes external-exit { from { opacity: 1; } to { opacity: 0; } }
+```
+
+Keyframes follow the same file policy as native class rules. By default they remain in the output. `@prune native;` removes unused definitions; `@preserve native;` wins when both appear. The policy applies only to the declaring file and does not propagate through imports. The `pruneNativeCSS` option retains its project-owned file scope. Package CSS stays preserved unless it explicitly opts into pruning. `preserveNativeCSS: false` suppresses that native delivery even for safelisted names; the compiler still collects definitions as metadata.
+
+Under pruning, animation utilities, retained native animation declarations, static animation tokens and keyframe safelists retain their matching definitions. Analysis follows shorthand values, animation-name lists, nested variables, fallbacks, scoped overrides and transitive token dependencies. Retained keyframes also retain tokens referenced in their bodies. Unresolved dynamic names conservatively retain all candidate definitions in the compilation graph and produce an information diagnostic.
+
+Definitions keep their native position, conditions, layer and import occurrence. Same-name definitions remain separate; the browser determines which definition wins. Names are decoded and case-sensitive. A keyframe inside an anonymous layer stays in that same layer as resources are added or released. Output may contain empty compiler-owned media slots so runtime can populate the original position without recreating its containers. Slot and definition IDs derive from the declaring file's nearest named `package.json` and its package-relative path, so the same project emits identical CSS from any checkout or installation directory. Renaming that package changes the IDs; files outside any named package fall back to their absolute path.
+
+Frames contain native declarations; nested directives and `@apply` inside frames are unsupported. Unused utilities and mixins, pruned native rules and undelivered reference styles do not create usage roots. `@reference` makes definitions available without importing their preservation policy or safelists. For animation names introduced only by JavaScript, use `@safelist keyframes "reveal";`.
+
+The runtime tracks definition IDs separately from names. DOM removal releases a definition only when no native usage, static token, preservation policy or safelist still retains it. HMR replaces definitions and delivery ownership together; SSR hydration uses the same IDs and resource order.
+
+Official runtime adapters deliver compiler-owned writable stylesheets and preserve their original positions. Runtime and progressive CSS assets have `.master-css.json` companions that must be deployed with them. Resource slot metadata keeps animation URLs available to the host's asset pipeline before an animation is activated. The runtime does not need access to arbitrary external stylesheet CSSOM. Pre-render and progressive adapters materialize native slots at the original link positions and publish retained child imports at same-origin URLs. Hydration adopts those existing positions and containers. Custom server hosts publishing imported assets provide `stylesheetImportSource(css, source)` and return the delivered same-origin URL.
+
+### `@custom-media` \{#custom-media\}
+Define named media queries using the [CSS Media Queries specification](https://drafts.csswg.org/mediaqueries-5/#custom-mq):
+
+```css
+@custom-media --wide (width >= 60rem);
+@custom-media --reading (--wide), print;
+@custom-media --outside not (--reading);
+@custom-media --enabled true;
+@custom-media --disabled false;
+
+@media (--reading) { .article { max-width: 70ch; } }
+```
+
+Names begin with `--`. CSS references use `(--name)`; markup uses `@name`, and a local named block uses `@media (--name)`. The same registry is used in native CSS, utility and mixin definitions, and markup queries.
+
+Definitions support query lists, forward references, `true`, `false`, nested boolean expressions, negation, and media types. Expansion is logical: a list retains its disjunction, and negation applies to the complete referenced expression. The compiler emits ordinary media queries, using nested blocks where a single query cannot express mixed media types. No browser custom-media API or JavaScript runtime registration is required.
+
+Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. Media and mixin names are independent: `@name` selects media, while `@apply(--name)` invokes a mixin. `--starting-style` is reserved because `@starting-style` is built in. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
+
+### Mixin wrappers \{#mixin-wrappers\}
+Use `@custom-media` for named media queries. Use a mixin with `@contents` for selector, supports, container, or combined wrappers.
+
+```css
+@mixin --hocus() {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+.button {
+  @apply --hocus { color: red; }
+}
+```
+
+
+## Utilities and native styles \{#managed-definitions\}
+### Native defaults \{#defaults\}
+Write native defaults in `@layer defaults`.
+
+### Native components \{#components\}
+Write native component selectors in `@layer components`.
+
+```css
+@layer components {
+  .button {
+    display: inline-flex;
+    padding: var(--spacing-md);
+    &:focus-visible { outline: 2px solid currentColor; }
+  }
+}
+```
+
+Native rules are delivered according to the stylesheet import graph. Utility definitions register class names; mixin definitions provide CSS reuse through `@apply`. Both are consumed during compilation and emit CSS only when used.
+
+### `@utility` \{#utilities\}
+Declare the class form explicitly at the top level:
+
+```css
+@utility card-layout {
+  display: grid;
+  gap: var(--spacing-md);
+  &:hover { outline: 1px solid currentColor; }
+}
+
+@utility gap-x-(--spacing) {
+  column-gap: var(--spacing);
+}
+
+@utility grid-cols(--cols <integer>) {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+```
+
+Use `card-layout`, `gap-x-sm`, and `grid-cols(3)@sm` in markup. The header determines whether a definition registers a fixed class, a token pattern, or a function. Each form registers only that form. A token pattern does not also create a function call. Adding declarations or supported nested rules does not change the registration.
+
+### Direct declarations and recipes \{#named-and-enumerated-classes\}
+Use full native property names for direct values: `display:block`, `padding:1rem`, `color:red`, `background:#fff`. Genuine native names such as SVG `r` retain their native meaning.
+
+Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 119 direct-value families and 7 recipes; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces.
+
+### Token patterns \{#named-token-patterns\}
+A pattern has one trailing placeholder. Its parameter names the token namespace; the fixed part names the class prefix. An untyped placeholder binds the token value:
+
+```css
+@utility p-(--spacing) { padding: var(--spacing); }
+@utility m-(--spacing) { margin: var(--spacing); }
+@utility fg-(--color) { color: var(--color); }
+@utility size-(--spacing) {
+  width: var(--spacing);
+  height: var(--spacing);
+}
+```
+
+`p-md` binds `var(--spacing-md)`; `size-md` uses that reference in both declarations. Ordinary tokens retain browser-evaluated references, while inline tokens substitute their declared value once. Unknown tokens do not create classes. Value patterns accept numeric and Unicode keys, including keys containing `--`.
+
+A `<string>` placeholder binds the token key, allowing explicit companion references:
+
+```css
+@theme {
+  --text-hero: var(--font-size-5xl);
+  --text-hero--line-height: 1.15;
+  --text-hero--letter-spacing: -.03em;
+}
+@utility text-(--text <string>) {
+  font-size: var(ident("--text-" var(--text)));
+  line-height: var(ident("--text-" var(--text) "--line-height"), normal);
+  letter-spacing: var(ident("--text-" var(--text) "--letter-spacing"), normal);
+}
+```
+
+`text-hero` binds the string `"hero"`. A matching primary token is required. Companion keys containing `--` do not create classes, and missing companions use the authored fallback. `ident()` folds statically into an ordinary CSS identifier. The namespace comes from the parameter, so `@utility type-(--text <string>)` uses the same tokens with a different class prefix. Token placeholders accept no defaults or other types.
+
+A shared prefix can expose several namespaces explicitly:
+
+```css
+@utility font-(--font-family) { font-family: var(--font-family); }
+@utility font-(--font-size) { font-size: var(--font-size); }
+@utility font-(--font-weight) { font-weight: var(--font-weight); }
+```
+
+`font-sans`, `font-sm` and `font-bold` each select the one namespace containing that key. A key present in multiple branches reports `AMBIGUOUS_TOKEN` when used and produces no CSS. Use distinct keys or a native declaration such as `font-size:var(--font-size-brand)`. This rule also applies to string-key recipes and bodies with multiple declarations. Negation and opacity are checked only after a unique branch is selected.
+
+Fixed classes take priority over patterns. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Token patterns sharing a prefix coexist when their parameter namespaces differ. A later pattern replaces the entire definition with the same decoded prefix and namespace, including its parameter mode, body, source and dependencies. Static and function registrations replace the same form and name independently.
+
+Negative values and opacity apply to the direct-value subset: one untyped placeholder and one native declaration whose entire value is `var(--parameter)`. `-m-md` negates a numeric spacing token; `-p-md` is invalid because padding does not support negative values. `fg-red/.5` applies opacity to a color token, with opacity between zero and one. These capabilities do not extend to general multi-declaration or string-key recipes.
+
+### Static arguments \{#dynamic-values\}
+Function utilities and mixins accept positional parameters: untyped, `<integer>`, `<number>`, `<string>`, or `<custom-ident>`. Static defaults use a colon, such as `--cols <integer>: 2`. Numbers must be numeric literals; grid counts and spans must be positive integers. String arguments require quotes.
+
+```css
+@utility pair(--size) {
+  width: var(--size);
+  height: var(--size);
+}
+```
+
+Use `pair(2rem)`. General function arguments must be statically known. A function or mixin with exactly one untyped, default-free parameter and one native declaration whose complete value is `var(--parameter)` also accepts symbolic `var()` expressions. Its caller's reference remains intact for browser evaluation. Other functions reject external `var()`, `attr()`, and browser-dependent arguments. A known outer parameter may be forwarded through `var(--parameter)`.
+
+### Native property precedence \{#literal-and-raw-values\}
+`property:value` always retains its native meaning. Within the same layer and conditions, direct property classes sort after recipes so one declaration can override part of a recipe independently of markup order. Selectors, conditions and `!` modifiers apply to utilities and direct declarations.
+
+### `@mixin` and `@apply` \{#reusing-a-matched-value\}
+Master compiles a static subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule). Definitions have dashed names and must be unconditional stylesheet-level rules. A mixin supplies CSS reuse; it does not register a Master class.
+
+```css
+@mixin --caption {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+.caption {
+  color: currentColor;
+  @apply --caption;
+  font-weight: 600;
+}
+@utility caption {
+  @apply --caption;
+}
+```
+
+`@apply` accepts one mixin call inside a native rule, utility, or another mixin. It does not accept utility names or class lists. Expansion occurs at the authored declaration position, preserving duplicates, importance, selectors, conditions and URL ownership.
+
+Parameters can be used on the applying element, including `&:hover` and condition wrappers. Cross-element parameter use, reassignment, selector or condition interpolation, recursive definitions, overloads, `@private`, and unsupported types report compilation errors. The static subset does not implement browser-dependent parameter evaluation, private properties or general-purpose functions.
+
+### Contents and class wrappers \{#contents\}
+Master compiles a static subset of the [CSS mixin draft](https://drafts.csswg.org/css-mixins-1/); it does not implement the complete browser proposal.
+
+```css
+@mixin --card-wide() {
+  @container card (width >= 40rem) { @contents { display: grid; } }
+}
+.card { @apply --card-wide { gap: 1rem; } }
+```
+
+`@contents;` inserts supplied content. `@contents { … }` supplies fallback content only when the call omits its block. An explicit empty `@apply --card-wide {}` suppresses fallback. Each contents position inserts the block once, preserving declarations, duplicates and nested rules. A mixin without `@contents` ignores the supplied block.
+
+Supplied content retains the caller's parameter bindings, including when forwarded through nested applications. Fallback uses the defining mixin's bindings. Ordinary custom properties retain native CSS cascade behavior. Finite nested calls are allowed; recursive definitions and expansion depth/node limit violations are errors.
+
+```css
+@utility emphasis { color: red; display: block; }
+```
+
+```html
+<button class="color:red@apply(--hocus)">Save</button>
+<div class="grid-cols(3)@apply(--card-wide)"></div>
+<div class="emphasis@apply(--hocus)!"></div>
+```
+
+`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `color:red@apply(--a)@apply(--b)` puts `--a` outside `--b`. A utility supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
+
+Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
+
+### Whole-definition replacement \{#whole-definition-replacement\}
+The last definition with the same decoded name replaces the entire previous mixin, including parameters, body, dependencies and cached expansion. An empty definition remains registered. Forward nested calls resolve against the final registry. There is no parameter overloading.
+
+### Definition scope and imports \{#definition-scope-and-imports\}
+`@theme`, `@utility`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
+
+Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused utility or mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
+
+Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
+
+Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 26. Hydration manifests use v5; engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+
+<StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
+
+<StylesheetExample title="Native keyframes" source={"@keyframes fade-in { to { opacity: 1; } }"} />
+
+<StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
+
+<StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
+
+### Sass interoperability
+
+Place CSS mixin definitions in a `.css` file when using Sass. Current Dart Sass reserves `@mixin --name` for future CSS support and rejects it as a Sass mixin; see [Sass's compatibility notice](https://sass-lang.com/documentation/breaking-changes/css-function-mixin/). An SCSS file may emit the native at-rule through interpolation before Master CSS compiles it:
+
+```scss
+@#{'mixin'} --card {
+  padding: 1rem;
+}
+
+.card { @apply --card; }
+```
+
+This is Sass interpolation, not additional Master CSS syntax. Sass `@include` and CSS `@apply` remain separate constructs.
+
+---
+
+## Source boundaries \{#source-boundaries\}
+### `@source` \{#source\}
+Ordinary application sources use the integrations' and CLI's default discovery. Add explicit exceptions when needed:
+
+```css
+@source "../content/**/*.mdx";
+```
+
+### `@source not` \{#source-not\}
+Exclude matching files from the source set:
+
+```css
+@source not "../content/drafts/**";
+```
+
+Includes are combined as a union, then all excludes are subtracted. Every relative pattern resolves from the stylesheet that declares it, including bare `src/**`, `./src/**`, imported files, and `@source not`. A reference does not contribute scanning sources.
+
+File-resolving APIs require a declaring file or explicit base file. Source-only directive inspection can return unresolved metadata; it must not invent a filesystem base. The scanner's programmatic `cwd` option retains its existing meaning for scanner options supplied directly through that API.
+
+## Candidate policy \{#candidate-policy\}
+### `@safelist` \{#safelist\}
+Add complete class candidates that cannot appear literally in scanned source:
+
+```css
+@safelist "opacity:1";
+@safelist "bg-blue-60@dark";
+```
+
+Candidates use the same matching and diagnostic policy as discovered classes. Keep dynamic alternatives bounded and explicit.
+
+To retain named animation definitions without generating a class or animation declaration, use the explicit keyframe target:
+
+```css
+@safelist keyframes "fade" "pop";
+```
+
+Each quoted string is one complete CSS animation name. Names are case-sensitive and support CSS escapes; a space inside a string is part of its name. There is no wildcard expansion or class splitting. Missing names, unquoted names, commas and nested safelist directives are errors. A name absent from the complete import/reference graph produces a warning. Safelists merge within each entry's graph and are withdrawn when their source or directive is removed. `@reference` does not import safelist roots. There is no keyframe blocklist or separate keyframe prune/preserve target.
+
+### `@blocklist` \{#blocklist\}
+Remove unwanted complete candidates with exact strings or `*` and `?` wildcard patterns:
+
+```css
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+The stylesheet grammar does not interpret slash-delimited patterns as regular expressions. Wildcard policy belongs in the blocklist; a safelist supplies complete classes.
+
+## Conditional blocks \{#conditional-blocks\}
+### Native conditions and mixin wrappers \{#variant\}
+Use native conditions directly, and name reusable wrappers with mixins:
+
+```css
+@custom-media --wide (width >= 60rem);
+@mixin --manual-dark {
+  &:where(.dark, .dark *) { @contents; }
+}
+
+.notice {
+  @apply --manual-dark { color: white; }
+  @media (--wide) { padding: 2rem; }
+  @supports (display: grid) { display: grid; }
+  &:hover { opacity: .8; }
+}
+```
+
+Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
+
+## CLI stylesheet assets \{#cli-stylesheet-assets\}
+
+When using `master-css generate --output dist/output.css`, deploy the generated
+sibling CSS and resource files together with `output.css`. The entry imports
+those CSS files, preserving local import conditions and external CSS imports.
+Relative images and fonts are resolved from their original source stylesheet
+and copied beside the output. Referenced definitions can use resources from the
+reference file without emitting that file's native CSS.
+
+In file-export watch mode, missing imported stylesheets or resources are reported
+while the last successful export stays available. Restoring the files triggers a
+rebuild that also includes source edits made while dependency preparation failed.
+
+Custom stylesheet collection hosts can independently select project native CSS,
+Master base CSS, and generated utility rules with `includeNativeCSS`,
+`includeMasterBaseCSS`, and `includeGeneratedCSS`. Excluding native output keeps
+authored definitions available to used utilities. Local imports still connect
+selected output; imports to empty excluded branches are omitted so they do not
+establish cascade layers. External imports from excluded stylesheets are omitted.
+The compiler option `preserveNativeCSS: false` removes raw native CSS and external
+imports while keeping compiled native `@apply` in included stylesheets.
+
+When resource URLs are rewritten for delivery, ranged compiler diagnostics still
+refer to the original stylesheet and source position, including imported files.
+
+This applies to CLI file export. `--no-export` and existing file/build CSS delivery
+paths still have separate import-graph limitations.
+
+Node project manifest loading (`compileProjectManifest`, `loadProjectManifest`,
+and their synchronous variants) preserves each imported stylesheet while
+compiling shared definitions. Pure native qualified imports may retain external imports without fetching them. Global definitions must be loaded through unqualified imports or references.
+`@reference` supplies definitions for resource resolution and contributes dependencies;
+its native rules, standalone utility classes, and source policies are not imported.
+Every relative `@source` and `@source not` pattern resolves from the declaring file, including bare patterns and imported files. Explicit project entries merge in the supplied order.
+These APIs return a manifest and metadata; they do not publish native CSS assets.
+
+
+
+`compileManifestFileSync(file, { baseManifest, delivery, preserveNativeCSS: true })`
+can prepare a file and its imports for publication as separate stylesheets. The
+Node host resolves local imports, package entries and references; the existing
+Rust graph compiler retains external import order, conditions and native
+native variant positions. `delivery` uses the same URL callbacks as standalone
+stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
+Each stylesheet must have a distinct final URL.
+
+The returned `stylesheets` include the entry and every required imported CSS
+asset; copy each returned `resources` file to its `href` and publish each
+stylesheet at its `href` before loading the entry. Compilation performs reads
+and returns assets without writing output files. `css`, `nativeCSS` and
+`generatedCSS` describe the entry only, so publishing only `css` is insufficient.
+Relative resource URLs are rewritten for their original source owner and retain
+query strings and fragments. Reference-only stylesheets are not published.
+Omitting `preserveNativeCSS` preserves native CSS across compiler APIs. Explicit `false` suppresses the native portion; it does not enable pruning.
+Omitting `delivery` continues to use the single-string file path, whose
+external-import limitations remain; other build and `--no-export` consumers
+still require their own asset publishing integration.
+
+---
+
+## Vite production stylesheet delivery \{#vite-stylesheet-delivery\}
+
+Vite production builds preserve managed CSS imports as separate stylesheet assets.
+Local imports containing external CSS keep their media, supports and layer scopes,
+and external imports retain their position relative to local CSS. Ordinary bundle
+rules before or after the managed entry keep that order.
+
+Deploy the complete build output, including generated `master-css-*` stylesheets
+and resource files. The CSS entry alone does not contain all rules. Managed and
+Node-resolved package resources keep their source ownership, query strings and
+fragments. Node-resolved package CSS retains native rules even when project CSS is
+pruned. Production CSS imports use Vite's string or regular expression aliases,
+package import conditions, and custom plugins that resolve imports to CSS files on
+disk. Entry markers and definitions can come from these aliased files or from
+null-prefixed virtual `.css` modules supplied by plugin loaders. Virtual imports
+retain their original CSS, conditions and layers, including nested imports. Query
+suffixes remain part of virtual module identities.
+Virtual resource ownership, preprocessors, alias resolution for `@reference` or
+resource URLs, watch/HMR delivery, and other bundlers still need further integration.
+
+Vite production builds preprocess Sass entries and imports using the configured
+Sass options, aliases and partial dependencies. String or function `additionalData`
+runs once per source in each build. CSS imports left by Sass retain their conditions
+and source order in the compiler graph. Relative partial resources keep their
+original owner, and changing a partial triggers a rebuild. CSS Modules retain Vite's
+scoped class names and exports; raw text requests bypass stylesheet compilation.
+In Sass, write the entry as `@import url("@master/css");` so Sass preserves it
+as a native CSS import for Master CSS to resolve.
+Managed `?inline` imports return compiled CSS without injecting a stylesheet:
+
+```js
+import css from './style.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+Each inline request has its own stylesheet output, including when another file is
+loaded automatically. Safe local imports are expanded; imports that protect CSS
+scope or external loading remain linked assets. Import-free strings can also be
+used with `CSSStyleSheet.replaceSync()`. Asset URLs retain the emitted asset base
+when the string is inserted into another document location. Inline CSS content
+participates in hashed JavaScript filenames.
+
+During an SSR build, inline CSS uses the configured public `base` for asset URLs.
+With Vite’s default `ssrEmitAssets: false`, deploy the matching client build’s
+assets. Enable `ssrEmitAssets` when the server build should also publish them.
+
+Inline asset URLs also use Vite’s `experimental.renderBuiltUrl` callback. The
+callback receives `hostType: "js"` for inline strings and `hostType: "css"` for
+retained stylesheet files. JavaScript URLs can use runtime expressions; stylesheet
+files use static URLs or relative-path decisions. URL mapping changes participate
+in retained stylesheet filenames as well as the importing JavaScript hash.
+
+Production Sass compiler diagnostics use Vite's preprocessing maps to identify
+the original file or partial, including inline requests and Sass imported by CSS.
+Unchanged tokens retain their original ranges. Sass expansion can provide only
+the originating segment; diagnostics explain when an exact token range is
+unavailable. Injected content or an `additionalData` callback without a usable map
+can retain a clearly identified preprocessed location. Internal diagnostic maps
+do not enable published source maps.
+
+Production CSS Modules, including Sass modules, retain Vite's scoped names,
+named/default exports, cross-file `composes`, global selectors and
+`localsConvention`. Exported scoped names participate in native CSS usage. Native
+CSS is preserved by default; when pruning is enabled, that usage keeps their rules.
+
+Production build-watch tracks resolved CSS Modules `composes` dependencies,
+including nested compositions. Editing a composed file rebuilds its consumers;
+correcting an invalid Master CSS directive in that file recovers the build.
+When Vite provides no original location for composed CSS, diagnostics explicitly
+identify the preprocessed location.
+
+Development CSS and Sass modules retain their scoped exports and native rules.
+Editing the module or a resolved `composes` dependency updates both its CSS and
+exports through HMR, including modules that use local `@apply`.
+
+During development, editing a CSS project entry updates ordinary stylesheet
+imports and its `?inline` and `?raw` consumers. Inline requests export processed
+CSS without injecting a stylesheet; raw requests retain the original source.
+Sass stylesheets attached through a `?url` value update in place during development,
+including paths under a configured base, aliases, and allowed files outside the project root.
+For CSS and Sass Modules, `?inline` exports the scoped CSS without injecting it,
+while `?raw` retains the authored source. Vite 8.2.2 rejects `?url` for
+`.module.css` and `.module.scss` paths, even with `css.modules: false`.
+
+Ordinary Sass `@use` and nested `@forward` partials update their stylesheet
+consumers during development, including `?inline` and attached `?url` values.
+Deleting a partial reports the Sass error; restoring it recovers the stylesheet
+without reloading the page. Relative resources keep the partial’s directory as
+their source location.
+Server-side `?inline` consumers also receive updated Sass output. After restarting
+the Vite dev server, connected pages reload and reconnect; stylesheet requests
+and subsequent edits use the new server state. This also works in middleware
+mode when Vite’s WebSocket connection is attached to the host HTTP server.
+Closing one configured development environment leaves stylesheet loading and
+updates available in the remaining environments. An initialized replacement can
+stay idle while the other environments close, then load styles when needed.
+With per-environment start/end hooks enabled, existing Sass partials continue
+updating as other environments start.
+The plugin array can also be reused across concurrent Vite roots. Each resolved
+configuration keeps its own stylesheet, manifest, and rendering state; restarting
+or closing one development server leaves the others available. Client and SSR
+builds retain their own configured asset bases.
+
+Pre-render and progressive builds and development CSS entries support qualified
+local imports whose descendants retain external imports. The browser applies the
+original layer, supports, and media conditions to the delivered child stylesheets.
+Development entries serve retained child CSS and resources under the configured
+base. Loading an entry normally and through SSR `?inline` shares its source identity.
+In pre-render mode, changing the project manifest reloads the page to refresh
+server-rendered rules; progressive mode applies the update through its runtime.
+Native-only CSS edits do not require a manifest reload.
+Editing a retained development CSS child or an image resource updates connected
+pages without reloading them. Resource filenames can include percent-encoded
+spaces, Unicode, `#`, `?`, and `%`, while separate query strings and fragments
+retain their meaning. Resources respect the original file's `server.fs.deny`.
+Previously published CSS and resource URLs retain their contents until their
+server context closes, including URLs held by SSR inline CSS consumers. Closing
+another root that uses the same plugin array, or closing the SSR environment,
+leaves the remaining client's resource delivery available. Retained versions use
+server memory and temporary files until that context closes.
+Each development resource version uses the same captured bytes for its URL and
+published contents, even when the source is replaced or deleted before the CSS
+is delivered. Deleting a referenced resource reports a development compilation
+error while previously published versions remain readable. Restoring the resource
+updates connected pages and dismisses the error overlay without reloading them.
+An initialized replacement environment can remain idle while the old environment,
+client, and SSR environments close, then load new retained graphs and receive
+child stylesheet updates. This works with either value of
+`server.perEnvironmentStartEndDuringDev`.
+Restarting a standalone or middleware development server releases the previous
+context's resource copies. Connected pages reload and reconnect to new asset URLs;
+subsequent child CSS and image edits update without another page reload.
+Local stylesheets compile imported local rules and retain qualified child imports
+and resources in development and production builds. This also applies when the
+root and intermediate stylesheets contain only native CSS, and `@apply` appears
+only in an imported descendant. These graphs remain local stylesheets rather than
+becoming project entries or native CSS pruning roots.
+CSS Modules keep the root module's scoped exports; SSR inline requests return
+compiled CSS, and raw requests retain the authored source. Child CSS and resource
+edits update connected development pages; CSS Module consumers need the HMR
+handling described below to retain page state. Production inline
+strings publish their retained assets as well. Local entries keep their positions
+within the built stylesheet, and content-based asset names are independent of
+asynchronous entry registration order.
+Local CSS and Sass imported through `?url` deliver their compiled stylesheet
+and retained child assets. When that URL is attached as a stylesheet link,
+editing a retained CSS child or its image updates the styles without reloading
+the page, including when only an imported descendant contains `@apply`.
+CSS Modules that import local CSS files expose the imported classes through the
+root module's exports, with the same scope as its own classes. Imports retain their
+conditions and layers, and relative resources keep their original file's directory.
+Shared inputs retain each importing root's scope; identical CSS files in different
+directories retain their own resource paths. This applies in development and builds.
+Imported SCSS and indented Sass files also keep the root module's scope when
+different source files compile to identical CSS. Each file retains its own resource
+directory, and processing the import graph does not repeat its `additionalData`
+callback. String values and callbacks that return source maps are supported.
+Consumers must accept CSS Module updates, directly or through their framework's
+HMR handling, to apply changed exported names without reloading the page.
+Relative CSS `@reference` directives emitted from Sass partials resolve from the
+mapped partial's directory, including through CSS Modules. Referenced definitions
+retain their own image and font bases. A supplied map that cannot identify an
+original filesystem source produces an error.
+
+Diagnostics for imported CSS and Sass use their original files and source maps,
+including Sass partials and mapped `additionalData`. Imported Sass is preprocessed
+once per prepared Module graph; temporary map data is removed before CSS delivery.
+Interpolation can identify an originating segment without an exact token range.
+When a callback changes source without supplying a map, diagnostics explicitly
+identify a preprocessed location instead of inventing an original Sass position.
+Root-relative public CSS URLs that already include Vite's `base` can fail during
+Vite Modules preprocessing. Virtual sources and retained-graph Sass edge cases
+still require further validation.
+
+Missing CSS Modules composition recovery, other development request modes, other preprocessors
+and user PostCSS transformations still require integration and validation.
+
+For production graph delivery, an alias or custom resolver pointing to project
+CSS follows the project's native CSS pruning policy. A bare-looking import name
+alone does not make the file package CSS: the resolved file must belong to the
+named package. Package export conditions may select another CSS file within that
+package while retaining its native rules. `@preserve native;` explicitly keeps
+project-native rules regardless of class usage.
+
+## Native CSS preservation \{#native-css-preservation\}
+Native CSS is preserved by default, even when a class list is supplied. Set
+`pruneNativeCSS: true` in an integration or stylesheet API to prune project-owned
+sources. Package CSS stays preserved unless its own source explicitly opts in.
+
+### `@prune native` \{#prune-native\}
+
+```css
+@prune native;
+.used { color: red; }
+.unused { color: blue; }
+```
+
+This directive opts only its declaring file into pruning. It does not propagate
+to imported stylesheets. `@preserve native;` takes precedence in the same file,
+including when the integration enables project-wide pruning. The native-output
+switch `preserveNativeCSS: false` is separate and suppresses native output
+regardless of either directive.
+
+### `@preserve native` \{#preserve-native\}
+Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS pruning.
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+The stylesheet is still processed by Master CSS. Native class rules are retained even when no scanned source uses their classes; ordinary compiler normalization still applies. This policy does not force unused managed classes into the generated output and does not mean that the original CSS bytes are preserved.
+
+For the full native CSS pruning model, see [Native CSS pruning](/guide/native-css-pruning).
+
+## Native queries and validation \{#native-queries-and-validation\}
+
+A condition suffix accepts a registered name or a complete native query. The
+outer parentheses belong to Master; parentheses inside them belong to CSS:
+
+```text name="Language v2 queries"
+width:10px@sm
+width:20px@media((width>=800px))
+width:30px@media((aspect-ratio>=1.5))
+width:40px@media((width>=50rem))
+display:grid@supports((display:grid))
+display:grid@supports((display:grid))
+width:50px@container(card|(width>=40rem))
+width:60px@container(style(--density:compact))
+```
+
+Query units remain authored: `800px` is not rewritten to `50rem`. Pipes decode
+to spaces outside quoted strings and escapes. Repeated wrappers retain their
+nesting and order. Comparable ranges with identical units use range priority;
+other queries use stable normalized syntax without assuming a browser root size.
+Undefined named media or mixin references are diagnosed.
+
+The engine emits structurally valid native declarations independently of host
+support databases and `CSS.supports()`. Tooling checks every expanded declaration,
+including managed utilities. Known-invalid values remain in normal output with
+`CSS_VALUE_INVALID` diagnostics. Unknown properties, functions, units, and values
+that depend on `var()` are not represented as verified computed values.
+
+Inspection separates `matchStatus` (`matched`, `unmatched`, `ambiguous`,
+`syntax-error`), `cssValueStatus` (`valid`, `invalid`, `unknown`, `not-checked`),
+and `browserSupport` (`supported`, `unsupported`, `unknown`, `not-checked`).
+Checks report their validator version. Browser support remains `not-checked`
+unless a target browser was actually queried.
+
+Compiler APIs accept `validation: 'error'` to reject known-invalid values in
+the complete result before returning any assets; the default `'report'` preserves
+CSS and diagnostics. CLI builds opt in with `master-css generate --strict`.
+Unknown capabilities do not fail this policy. Syntax and name-resolution errors
+remain distinct from native value validity.
+
+## Native value boundaries
+
+Stylesheet declarations and `@theme` values use native CSS token streams. Master CSS preserves `$`, `|`, strings, escapes and custom functions. Untyped custom properties such as `--pipe: a|b` and `--money: $100` have an unknown value grammar; that does not prevent generation.
+
+Use lexical `var(--parameter)` references in a mixin body. `--value()` is always an ordinary native function. `--alpha()` has no compiler meaning. Use native `color-mix()` for opacity expressions:
+
+```css
+@theme {
+  --color-muted: color-mix(in oklab, var(--color-primary) 50%, transparent);
+ }
+```
+
+For queries outside the [simple class query subset](/reference/rules/conditions), define a `@custom-media` or a mixin wrapper in CSS. Authored CSS queries retain native syntax and do not decode class whitespace.
+
+Compiler and stylesheet APIs use `validation: 'report' | 'error'`, with `report` as the default. Report mode preserves declarations and returns diagnostics. Error mode rejects the entire result for definite syntax or value errors; unknown capabilities alone do not fail the build.
+
+
+### Source ownership and document extraction
+
+`scanSource(source, content, { owner, kind, parentSource })` replaces that source's contribution, including an empty string. `removeSource` also removes its virtual children. `reconcileSources(owner, inputs)` replaces the owner's complete source snapshot; `removeOwner` revokes its sources and native-class registrations. `registerNativeClasses(owner, names)` replaces a stylesheet's native names. Shared classes and their theme tokens remain until their last owner releases them.
+
+`changed` reports data affecting generation or pruning. `sourceChanged` separately reports source/provenance changes. Candidate collection is pure. A parse or read error is not an empty source: development retains the last successful output and production fails.
+
+Markdown and MDX prose, inline code, fences and frontmatter are excluded from automatic generation. Actual HTML/JSX, ESM and expressions are parsed; their ordinary static strings may still be candidates. Register executable examples as virtual sources with their parent source ID, or use `@safelist`. Use explicit `kind: 'raw'` only for deliberate text sources. Parse failures report `SOURCE_PARSE_ERROR`.
+
+Automatic discovery respects project/workspace `.gitignore` files and excludes generated/dependency/output directories. Explicit `@source` may include normally ignored source files; explicit exclusions and Master/bundler outputs remain excluded.
+
+
+## Definition ownership
+
+A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
+
+An exact static utility wins over token patterns. Otherwise the longest family prefix wins. Token patterns are identified by their decoded prefix and namespace; a later definition replaces only that branch. Static and function registrations use their form and name independently. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
+
+The preset registers `font-(--font-family)`, `font-(--font-size)` and `font-(--font-weight)`. Use `font-sans`, `font-sm` and `font-bold` to set the respective native properties. If both `--font-family-brand` and `--font-size-brand` exist, `font-brand` reports `AMBIGUOUS_TOKEN` and emits no CSS. Diagnostics identify the conflicting tokens and effective definition sources. Write `font-size:var(--font-size-brand)` to select a property explicitly. Sign, opacity, token value and definition order do not resolve ambiguity; static exact matches still take priority.
+
+Use explicit width and height declarations for paired dimensions, or author a function utility such as `box(--size)`. Native `@page { size: A4; }`, SVG `r`, logical dimensions, and other CSS properties retain their native meaning.
+
+### Animation recipes
+
+The preset’s direct-value `animate-*` family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/animate).
+
+## Token family names
+
+Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 16 and binding ABI 26.

@@ -1,0 +1,106 @@
+import {
+  MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+  MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+  type MasterCSSHydrationManifest
+} from '@master/css-schema/hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
+import { MasterCSSError } from '@master/css-schema'
+
+export function isDocumentRoot(root: Document | ShadowRoot): root is Document {
+  const rootConstructorName = root?.constructor.name
+  return rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document'
+}
+
+export function findElementById(root: Document | ShadowRoot, id: string) {
+  return isDocumentRoot(root)
+    ? root.getElementById(id)
+    : root.querySelector(`#${id}`)
+}
+
+export function getRootHost(root: Document | ShadowRoot) {
+  return isDocumentRoot(root) ? root.documentElement : root.host
+}
+
+/** Classes the server rendered, so the progressive stylesheet already holds their CSS, if any. */
+export function getRenderedClassNames(hydrationManifest: MasterCSSHydrationManifest | undefined) {
+  return new Set(hydrationManifest?.classNames)
+}
+
+function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
+  const candidate = hydrationManifest as MasterCSSHydrationManifest | undefined
+  return candidate?.version === 5
+    && candidate.languageVersion === 16
+    && Array.isArray(candidate.classNames)
+    && candidate.classNames.every(className => typeof className === 'string')
+    && Array.isArray(candidate.resourceOrder?.variables)
+    && Array.isArray(candidate.resourceOrder?.keyframes)
+    ? candidate
+    : undefined
+}
+
+function invalidHydrationManifest(message: string, cause?: unknown) {
+  return new MasterCSSError({
+    code: 'INVALID_HYDRATION_MANIFEST',
+    domain: 'runtime',
+    message
+  }, { cause })
+}
+
+function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
+  try {
+    const hydrationManifest = validateHydrationManifest(JSON.parse(source))
+    if (hydrationManifest) return hydrationManifest
+  } catch (cause) {
+    throw invalidHydrationManifest('Cannot parse the Master CSS hydration manifest.', cause)
+  }
+  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 16. Recompile with matching packages.')
+}
+
+function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
+  const source = findElementById(root, MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)?.textContent?.trim()
+  return source ? parseHydrationManifest(source) : undefined
+}
+
+function readExternalHydrationManifestSource(root: Document | ShadowRoot) {
+  const styleElement = findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID)
+  return styleElement?.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR) || undefined
+}
+
+function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source: string) {
+  const ownerDocument = isDocumentRoot(root) ? root : root.ownerDocument
+  return new URL(source, ownerDocument.baseURI).href
+}
+
+async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest> {
+  try {
+    // The manifest URL is only known at runtime, and the JSON module import is deliberate:
+    // it stays within script-src so strict CSP without connect-src still hydrates. The ignore
+    // comments keep bundlers from trying to resolve the specifier at build time.
+    const value: unknown = (await import(/* @vite-ignore */ /* webpackIgnore: true */ url, { with: { type: 'json' } })).default
+    const hydrationManifest = validateHydrationManifest(value)
+    if (hydrationManifest) return hydrationManifest
+    throw invalidHydrationManifest(`Invalid Master CSS hydration manifest loaded from ${url}.`)
+  } catch (cause) {
+    if (cause instanceof MasterCSSError) throw cause
+    throw invalidHydrationManifest(`Cannot load the Master CSS hydration manifest from ${url}.`, cause)
+  }
+}
+
+export async function resolveHydrationManifest(
+  root: Document | ShadowRoot,
+  explicit: MasterCSSHydrationManifest | undefined
+) {
+  if (explicit !== undefined) {
+    const hydrationManifest = validateHydrationManifest(explicit)
+    if (!hydrationManifest) {
+      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 16. Recompile with matching packages.')
+    }
+    return hydrationManifest
+  }
+  const inline = readInlineHydrationManifest(root)
+  if (inline) return inline
+  const source = readExternalHydrationManifestSource(root)
+  return source
+    ? await importHydrationManifest(resolveExternalHydrationManifestURL(root, source))
+    : undefined
+}

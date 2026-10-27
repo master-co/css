@@ -43,7 +43,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
           : undefined
       } else if (variable.resolvedType === 'COLOR') {
         newValue = toColorValue(value, options.outputColorSpace)
-      } else if (variable.resolvedType === 'STRING' || variable.resolvedType === 'FLOAT') {
+      } else if (variable.resolvedType === 'STRING' || variable.resolvedType === 'FLOAT' || variable.resolvedType === 'BOOLEAN') {
         newValue = value
       }
       if (modeVariables === undefined) {

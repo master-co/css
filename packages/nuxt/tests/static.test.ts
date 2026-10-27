@@ -1,8 +1,9 @@
 import { it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch } from '@nuxt/test-utils'
+import { createPage } from '@nuxt/test-utils/e2e'
 import { dirname, resolve } from 'node:path'
-import { setupNuxtTest } from './setup-test'
+import { fetchDeliveredStylesheet, setupNuxtTest } from './setup-test'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,9 +19,26 @@ it('should contain stylesheet link and CSS with specific class', async () => {
   const href = match[1]
   if (!href) throw new Error('Expected Nuxt static stylesheet link to include an href.')
   expect(href).toMatch(/\/_nuxt\/.*\.css/)
-  const css = await $fetch(href) as string
+  const css = await fetchDeliveredStylesheet(href)
   expect(typeof css).toBe('string')
   expect(css).toContain('.box')
   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+  expect(css).toMatch(/\.probe\[data-v-[^\]]+\]\s*\{/)
+  expect(css).toMatch(/--color-probe:\s*#123456/)
+  expect(css).toMatch(/--color-probe:\s*#abcdef/)
+  expect(css).not.toContain('@reference')
+  expect(css).not.toContain('master-css-local-')
+})
+
+it('delivers referenced native variables through a scoped Vue style', async () => {
+  const page = await createPage('/')
+  try {
+    for (const [colorScheme, expected] of [['light', 'rgb(18, 52, 86)'], ['dark', 'rgb(171, 205, 239)']] as const) {
+      await page.emulateMedia({ colorScheme })
+      expect(await page.locator('.probe').evaluate(element => getComputedStyle(element).color)).toBe(expected)
+    }
+  } finally {
+    await page.close()
+  }
 })

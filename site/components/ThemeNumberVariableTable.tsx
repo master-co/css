@@ -1,9 +1,12 @@
-import InlineCode from '~/internal/components/InlineCode'
-import Translate from '~/internal/components/Translate'
+import '~/site/styles/documentation-values.css'
+import { useId } from 'react'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
+import Translate from '~/site/docs-shell/components/Translate'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 
 interface ThemeNumberVariableTableProps {
   namespace: string
+  keys?: string[]
   variablePrefix?: string
   descriptions?: Record<string, string>
   representation?: 'spacing'
@@ -13,30 +16,33 @@ const formatRem = (value: number) => `${Number(value.toFixed(4))}rem`
 const formatPx = (value: number) => `${Number(value.toFixed(4))}px`
 
 export default function ThemeNumberVariableTable(props: ThemeNumberVariableTableProps) {
+  const captionId = useId()
   const { namespace, variablePrefix = namespace, descriptions, representation } = props
-  const entries = getThemeNumericVariableEntries(namespace)
+  const entries = getThemeNumericVariableEntries(namespace).filter(entry => !props.keys || props.keys.includes(entry.key))
   const hasDescriptions = descriptions && entries.some(({ key }) => descriptions[key])
   const hasSpacingRepresentation = representation === 'spacing'
   const referenceUnit = entries.every(({ unit }) => unit === 'rem') ? 'px' : 'rem'
 
   return (
     <figure>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Numeric tables scroll within the document column and need native keyboard access. */}
+      <div className="doc-number-variable-table doc-table" data-representation={hasSpacingRepresentation ? 'spacing' : undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
+          <caption id={captionId} className="sr-only"><Translate>Numeric theme variables</Translate></caption>
           <thead>
             <tr>
-              <th><Translate>Token</Translate></th>
-              <th><Translate>Value</Translate></th>
-              <th>{referenceUnit.toUpperCase()}</th>
-              {hasSpacingRepresentation && <th><Translate>Representation</Translate></th>}
-              {hasDescriptions && <th><Translate>Description</Translate></th>}
+              <th scope="col"><Translate>Token</Translate></th>
+              <th scope="col"><Translate>Value</Translate></th>
+              <th scope="col">{referenceUnit.toUpperCase()}</th>
+              {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
+              {hasDescriptions && <th scope="col" className="min-width:12rem"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
             {
               entries.map((entry, index) => (
                 <tr key={entry.key}>
-                  <th><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
+                  <th scope="row"><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
                   <td><InlineCode>{entry.value}</InlineCode></td>
                   <td>{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>
                   {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value, index, entries.length)}</td>}
@@ -53,8 +59,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
   return (
-    <div className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px bg:stripe-pink v:middle" style={{ gap: value }}>
-      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em surface:raised"></div>)}
+    <div aria-hidden="true" className="display:inline-flex width:fit-content outline-width:1px outline-style:solid outline-line-subtle outline-offset:-1px background:var(--stripe-pink) vertical-align:middle" style={{ gap: value }}>
+      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="display:inline-block height:1.5em width:1.5em bg-surface-raised"></div>)}
     </div>
   )
 }

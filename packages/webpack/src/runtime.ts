@@ -1,56 +1,23 @@
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
+/// <reference types="webpack/module" />
 
-import CSSRuntime from '@master/css-runtime'
-import masterCSSManifest from 'virtual:master-css-manifest'
+import masterCSSProgram from 'virtual:master-css-program'
 import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'
+import { destroyRuntime, startRuntime } from './runtime-start'
 
-interface HotModule {
-  hot?: {
-    accept: (dependencies?: string[] | (() => void), callback?: () => void) => void
-    dispose: (callback: () => void) => void
-  }
-}
-
-declare const module: HotModule | undefined
-
-type RuntimeState = {
-  runtime?: CSSRuntime
-}
-
-const state = ((globalThis as typeof globalThis & { __MASTER_CSS_WEBPACK_RUNTIME__?: RuntimeState }).__MASTER_CSS_WEBPACK_RUNTIME__ ??= {})
-
-function destroyRuntime() {
-  state.runtime?.destroy()
-  state.runtime = undefined
-}
-
-async function startRuntime(
-  manifest = masterCSSManifest,
-  emittedGlobals = masterCSSEmittedGlobals
-) {
-  if (typeof document === 'undefined') return
-  destroyRuntime()
-  const nextRuntime = CSSRuntime.create({
-    manifest,
-    emittedGlobals
-  })
-  if (nextRuntime.needsHydrationManifest()) {
-    await nextRuntime.loadHydrationManifest()
-  }
-  state.runtime = nextRuntime.observe()
-}
-
+// Runtime pages render every class in the browser, so the program loads with the entry.
 if (typeof document !== 'undefined') {
-  void startRuntime()
+  void startRuntime(masterCSSProgram, masterCSSEmittedGlobals).catch(() => {})
 }
 
-if (typeof module !== 'undefined' && module.hot) {
-  module.hot.accept(() => {})
-  module.hot.accept([
-    'virtual:master-css-manifest',
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.accept(() => {})
+  // Webpack rebinds both imports before this callback runs.
+  import.meta.webpackHot.accept([
+    'virtual:master-css-program',
     'virtual:master-css-emitted-globals'
   ], () => {
-    void startRuntime()
+    void startRuntime(masterCSSProgram, masterCSSEmittedGlobals).catch(() => {})
   })
-  module.hot.dispose(destroyRuntime)
+  import.meta.webpackHot.dispose(destroyRuntime)
 }

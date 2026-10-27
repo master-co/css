@@ -1,0 +1,296 @@
+use super::{ConditionFeature, Program, UtilityLayerName, natural_compare};
+use mastercss_lexer::concat_text;
+use mastercss_lexer::text::decimal;
+
+pub(crate) fn resolve_layer_condition(token: &str, manifest: &Program) -> Option<UtilityLayerName> {
+    let _ = manifest;
+    match token.strip_prefix("layer(")?.strip_suffix(')')? {
+        "base" => Some(UtilityLayerName::Base),
+        "defaults" => Some(UtilityLayerName::Defaults),
+        "components" => Some(UtilityLayerName::Components),
+        "utilities" => Some(UtilityLayerName::Utilities),
+        _ => None,
+    }
+}
+
+pub(crate) fn render_condition_token(token: &str, _manifest: &Program) -> Option<(String, String)> {
+    if token == "starting-style" {
+        return Some(("starting-style".into(), "@starting-style".into()));
+    }
+    let query = mastercss_lexer::parse_native_query(token)?;
+    let wrapper = concat_text!("@", query.kind, " ", query.prelude);
+    Some((query.kind, wrapper))
+}
+
+/// Only simple ranges with identical units are compared numerically. The unit is
+/// part of the feature identity; rem/em/px never share an assumed root size.
+pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
+    let mut features = Vec::new();
+    let (domain, body) = if let Some(body) = query.strip_prefix("@media ") {
+        ("media".to_owned(), body.trim())
+    } else if let Some(body) = query.strip_prefix("@container ") {
+        let body = body.trim();
+        if body.starts_with('(') {
+            ("container:".to_owned(), body)
+        } else {
+            let Some((name, body)) = body.split_once(char::is_whitespace) else {
+                return features;
+            };
+            if !name.chars().all(mastercss_lexer::is_name_code_point) {
+                return features;
+            }
+            (concat_text!("container:", name), body.trim())
+        }
+    } else {
+        return features;
+    };
+    // Numeric ordering is only justified for a conjunction of simple ranges.
+    // Negation, disjunction, functions and nested expressions use stable syntax.
+    for part in body.split(" and ") {
+        let Some(body) = part
+            .trim()
+            .strip_prefix('(')
+            .and_then(|s| s.strip_suffix(')'))
+        else {
+            return Vec::new();
+        };
+        if body.contains(['(', ')', '\'', '"']) {
+            return Vec::new();
+        }
+        if !add_native_range_features(&mut features, body.trim()) {
+            return Vec::new();
+        }
+    }
+    for feature in &mut features {
+        feature.domain = domain.clone();
+    }
+    sort_features(&mut features);
+    features
+}
+
+/// Orders features by domain, feature and unit. A stable insertion sort: the lists
+/// are short, and the standard sort would add its merge code to the engine Wasm.
+fn sort_features(features: &mut [ConditionFeature]) {
+    let after = |left: &ConditionFeature, right: &ConditionFeature| {
+        natural_compare(&left.domain, &right.domain)
+            .then_with(|| natural_compare(&left.feature, &right.feature))
+            .then_with(|| natural_compare(&left.unit, &right.unit))
+            .is_gt()
+    };
+    for index in 1..features.len() {
+        let mut position = index;
+        while position > 0 && after(&features[position - 1], &features[position]) {
+            features.swap(position - 1, position);
+            position -= 1;
+        }
+    }
+}
+
+fn range_dimension(value: &str) -> Option<(f64, String)> {
+    let number_end = value
+        .find(|c: char| !(c.is_ascii_digit() || matches!(c, '.' | '-' | '+')))
+        .unwrap_or(value.len());
+    let number = crate::decimal::Decimal::parse(&value[..number_end])?;
+    let unit = &value[number_end..];
+    (number.is_finite_f64() && unit.chars().all(|c| c.is_ascii_alphabetic() || c == '%'))
+        .then(|| (number.to_f64(), unit.to_ascii_lowercase()))
+}
+
+fn range_feature(value: &str) -> bool {
+    matches!(value, "width" | "height" | "resolution" | "aspect-ratio")
+}
+
+fn add_native_range_features(features: &mut Vec<ConditionFeature>, body: &str) -> bool {
+    if let Some((name, dimension)) = body.split_once(':') {
+        let name = name.trim();
+        let (name, operator) = if let Some(name) = name.strip_prefix("min-") {
+            (name, ">=")
+        } else if let Some(name) = name.strip_prefix("max-") {
+            (name, "<=")
+        } else {
+            (name, "=")
+        };
+        let Some((number, unit)) = range_dimension(dimension.trim()) else {
+            return false;
+        };
+        if !range_feature(name) {
+            return false;
+        }
+        add_condition_feature(features, &concat_text!(name, ":", unit), operator, number);
+        return true;
+    }
+    let mut operands = Vec::new();
+    let mut operators = Vec::new();
+    let mut remaining = body;
+    while let Some(index) = remaining.find(['>', '<', '=']) {
+        operands.push(remaining[..index].trim());
+        remaining = &remaining[index..];
+        let end = remaining
+            .find(|c: char| !matches!(c, '>' | '<' | '='))
+            .unwrap_or(remaining.len());
+        operators.push(&remaining[..end]);
+        remaining = &remaining[end..];
+    }
+    operands.push(remaining.trim());
+    if operators.is_empty() || operators.len() > 2 {
+        return false;
+    }
+    if operators.len() == 2
+        && (!range_feature(operands[1])
+            || operators[0].starts_with('=')
+            || operators[0].chars().next() != operators[1].chars().next())
+    {
+        return false;
+    }
+    for (index, operator) in operators.iter().enumerate() {
+        let (left, right) = (operands[index], operands[index + 1]);
+        let (name, dimension, operator) = if range_feature(left) {
+            (left, right, *operator)
+        } else if range_feature(right) {
+            let reversed = match *operator {
+                ">" => "<",
+                ">=" => "<=",
+                "<" => ">",
+                "<=" => ">=",
+                "=" => "=",
+                _ => return false,
+            };
+            (right, left, reversed)
+        } else {
+            return false;
+        };
+        if !matches!(operator, ">" | ">=" | "<" | "<=" | "=") {
+            return false;
+        }
+        let Some((number, unit)) = range_dimension(dimension) else {
+            return false;
+        };
+        add_condition_feature(features, &concat_text!(name, ":", unit), operator, number);
+    }
+    true
+}
+
+pub(crate) fn add_condition_feature(
+    features: &mut Vec<ConditionFeature>,
+    name: &str,
+    operator: &str,
+    value: f64,
+) {
+    use mastercss_schema::{ConditionBoundIr, ConditionRangeIr};
+    let (name, unit) = name.split_once(':').unwrap_or((name, ""));
+    let mut source = ConditionRangeIr {
+        domain: String::new(),
+        feature: name.into(),
+        unit: unit.into(),
+        lower: None,
+        upper: None,
+    };
+    let bound = ConditionBoundIr {
+        value,
+        inclusive: operator.contains('='),
+    };
+    match operator {
+        ">" | ">=" => source.lower = Some(bound),
+        "<" | "<=" => source.upper = Some(bound),
+        "=" => {
+            source.lower = Some(bound.clone());
+            source.upper = Some(bound);
+        }
+        _ => return,
+    }
+    if let Some(target) = features
+        .iter_mut()
+        .find(|feature| feature.feature == name && feature.unit == unit)
+    {
+        intersect_range(target, &source);
+    } else {
+        features.push(source);
+    }
+}
+
+fn intersect_range(target: &mut ConditionFeature, source: &ConditionFeature) {
+    if let Some(bound) = &source.lower {
+        match &mut target.lower {
+            Some(current) if current.value == bound.value => current.inclusive &= bound.inclusive,
+            Some(current) if current.value > bound.value => {}
+            _ => target.lower = Some(bound.clone()),
+        }
+    }
+    if let Some(bound) = &source.upper {
+        match &mut target.upper {
+            Some(current) if current.value == bound.value => current.inclusive &= bound.inclusive,
+            Some(current) if current.value < bound.value => {}
+            _ => target.upper = Some(bound.clone()),
+        }
+    }
+}
+
+pub(crate) fn merge_condition_features(
+    target: &mut Vec<ConditionFeature>,
+    source: &[ConditionFeature],
+) {
+    for source in source {
+        if let Some(target) = target.iter_mut().find(|target| {
+            target.domain == "media"
+                && target.domain == source.domain
+                && target.feature == source.feature
+                && target.unit == source.unit
+        }) {
+            intersect_range(target, source);
+        } else {
+            target.push(source.clone());
+        }
+    }
+    sort_features(target);
+}
+
+/// Ordering evidence is independent of emission. Only a wholly numeric media
+/// conjunction can be intersected across wrappers; container ancestry stays ordered.
+pub fn condition_priority(wrappers: &[(String, String)]) -> (Vec<ConditionFeature>, Vec<String>) {
+    let parsed = wrappers
+        .iter()
+        .map(|(_, wrapper)| native_query_features(wrapper))
+        .collect::<Vec<_>>();
+    let media_conjunction = wrappers
+        .iter()
+        .zip(&parsed)
+        .all(|((kind, _), features)| kind == "media" && !features.is_empty());
+    let mut features = Vec::new();
+    let mut conditions = Vec::new();
+    for (index, ((_, wrapper), ranges)) in wrappers.iter().zip(parsed).enumerate() {
+        if ranges.is_empty() {
+            conditions.push(concat_text!(
+                decimal(index),
+                ":",
+                mastercss_lexer::canonical_native_content(wrapper)
+            ));
+        } else if media_conjunction {
+            merge_condition_features(&mut features, &ranges);
+        } else {
+            for mut range in ranges {
+                range.domain = concat_text!(decimal(index), ":", range.domain);
+                features.push(range);
+            }
+        }
+    }
+    (features, conditions)
+}
+
+pub(crate) fn normalize_dynamic_value(value: &str) -> String {
+    // CSS owns dimensions, including the native resolution unit `x`.
+    value.to_owned()
+}
+
+pub(crate) fn parse_raw_condition_wrapper(raw: &str) -> Option<(String, String)> {
+    let raw = raw.trim();
+    let id = raw.strip_prefix('@')?.split_whitespace().next()?.to_owned();
+    Some((id, raw.to_owned()))
+}
+
+pub(crate) fn add_condition_wrapper(
+    wrappers: &mut Vec<(String, String)>,
+    id: &str,
+    wrapper: String,
+) {
+    wrappers.push((id.to_owned(), wrapper));
+}

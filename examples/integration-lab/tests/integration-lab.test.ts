@@ -1,15 +1,15 @@
 import { spawn, type ChildProcess } from 'node:child_process'
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
+import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, test } from 'vitest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
-const tmpDir = join(packageDir, 'tmp')
 const expectedStaticCSS = [
-  '.block{display:block}',
-  '.fg\\:primary{color:var(--color-primary)}'
+  '.display\\:block{display:block}',
+  '.fg-primary{color:var(--color-primary)}'
 ]
 
 const runningProcesses = new Set<ChildProcess>()
@@ -22,9 +22,8 @@ afterEach(() => {
 })
 
 function createFixture(prefix: string) {
-  mkdirSync(tmpDir, { recursive: true })
-  const root = join(tmpDir, `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`)
-  mkdirSync(root, { recursive: true })
+  const root = mkdtempSync(join(tmpdir(), `master-css-integration-lab-${prefix}-`))
+  symlinkSync(join(packageDir, 'node_modules'), join(root, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir')
   return root
 }
 
@@ -90,7 +89,7 @@ function commonStyle() {
 
 function createRspackFixture(mode: 'runtime' | 'static') {
   const root = createFixture(`rspack-${mode}`)
-  const modeOption = mode === 'static' ? "mode: 'static'," : ''
+  const modeOption = `mode: '${mode}',`
   writeProjectFiles(root, {
     'package.json': commonPackageJSON(),
     'src/index.html': [
@@ -98,7 +97,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
       '<html>',
       '<head><title>Rspack fixture</title></head>',
       '<body>',
-      '    <main id="root" class="block fg:primary">Rspack fixture</main>',
+      "    <main id=\"root\" class=\"display:block fg-primary\">Rspack fixture</main>",
       '</body>',
       '</html>',
       ''
@@ -106,7 +105,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
     'src/main.js': [
       "import './app.css'",
       '',
-      'document.getElementById("root").className = "block fg:primary"',
+      'document.getElementById("root").className = "display:block fg-primary"',
       "document.getElementById('root').dataset.ready = 'true'",
       ''
     ].join('\n'),
@@ -115,7 +114,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
       "import { dirname, join } from 'node:path'",
       "import { fileURLToPath } from 'node:url'",
       "import { rspack } from '@rspack/core'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -148,7 +147,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
 
 function createRsbuildFixture(mode: 'runtime' | 'static') {
   const root = createFixture(`rsbuild-${mode}`)
-  const modeOption = mode === 'static' ? "mode: 'static'," : ''
+  const modeOption = `mode: '${mode}',`
   writeProjectFiles(root, {
     'package.json': commonPackageJSON(),
     'src/index.html': [
@@ -165,7 +164,7 @@ function createRsbuildFixture(mode: 'runtime' | 'static') {
       "import './app.css'",
       '',
       'createRoot(document.getElementById("root")).render(',
-      '    <main className="block fg:primary">Rsbuild fixture</main>',
+      "    <main className=\"display:block fg-primary\">Rsbuild fixture</main>",
       ')',
       ''
     ].join('\n'),
@@ -175,7 +174,7 @@ function createRsbuildFixture(mode: 'runtime' | 'static') {
       "import { fileURLToPath } from 'node:url'",
       "import { defineConfig } from '@rsbuild/core'",
       "import { pluginReact } from '@rsbuild/plugin-react'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -221,7 +220,7 @@ function createTanStackStartFixture() {
       "import { defineConfig } from 'vite'",
       "import { tanstackStart } from '@tanstack/react-start/plugin/vite'",
       "import react from '@vitejs/plugin-react'",
-      "import masterCSS from '@master/css.vite'",
+      "import masterCSS from '@master/css-vite'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -293,7 +292,7 @@ function createTanStackStartFixture() {
       '})',
       '',
       'function Home() {',
-      '    return <main className="block fg:primary">TanStack Start fixture</main>',
+      "    return <main className=\"display:block fg-primary\">TanStack Start fixture</main>",
       '}',
       ''
     ].join('\n'),
@@ -310,7 +309,7 @@ function createTanStackStartRsbuildFixture() {
       "import { fileURLToPath } from 'node:url'",
       "import { defineConfig } from '@rsbuild/core'",
       "import { tanstackStart } from '@tanstack/react-start/plugin/rsbuild'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -450,7 +449,7 @@ describe('integration lab package', () => {
   })
 })
 
-describe('@master/css.webpack with Rspack', () => {
+describe('@master/css-webpack with Rspack', () => {
   test.each(['static', 'runtime'] as const)('builds a raw Rspack app in %s mode', async (mode) => {
     const root = createRspackFixture(mode)
     try {
@@ -473,7 +472,7 @@ describe('@master/css.webpack with Rspack', () => {
   })
 })
 
-describe('@master/css.webpack with Rsbuild', () => {
+describe('@master/css-webpack with Rsbuild', () => {
   test.each(['static', 'runtime'] as const)('builds an Rsbuild React app in %s mode', async (mode) => {
     const root = createRsbuildFixture(mode)
     try {
@@ -496,7 +495,7 @@ describe('@master/css.webpack with Rsbuild', () => {
   })
 })
 
-describe('TanStack Start with @master/css.vite', () => {
+describe('TanStack Start with @master/css-vite', () => {
   test('builds the Vite variant with managed CSS and SSR output', async () => {
     const root = createTanStackStartFixture()
     try {
@@ -528,7 +527,7 @@ describe('TanStack Start with @master/css.vite', () => {
       const ssrHTML = await readTanStackSSRHTML(root)
       if (ssrHTML) {
         expect(ssrHTML).toContain('TanStack Start fixture')
-        expect(ssrHTML).toContain('block fg:primary')
+        expect(ssrHTML).toContain('display:block fg-primary')
         expectNoDuplicateRuntimeHTML(ssrHTML)
       }
     } finally {
@@ -537,7 +536,7 @@ describe('TanStack Start with @master/css.vite', () => {
   }, 30000)
 })
 
-describe('TanStack Start with Rsbuild and @master/css.webpack', () => {
+describe('TanStack Start with Rsbuild and @master/css-webpack', () => {
   test('builds the Rsbuild variant with managed CSS and SSR output', async () => {
     const root = createTanStackStartRsbuildFixture()
     try {

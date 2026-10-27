@@ -3,8 +3,9 @@ import { dirname, join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { Command, InvalidArgumentError } from 'commander'
-import { applySetupPlan, createSetupPlan } from '.'
-import { formatRenderingModes, isRenderingMode, type RenderingMode } from './modes'
+import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '.'
+import type { MasterCSSRenderingMode } from '@master/css-schema/integration'
+import { formatRenderingModes, isRenderingMode } from './modes'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -31,7 +32,7 @@ export interface CommandOptions {
   dryRun?: boolean
   json?: boolean
   yes?: boolean
-  mode?: RenderingMode
+  mode?: MasterCSSRenderingMode
 }
 
 export type InstallResolution = CommandPackageManager | false | 'detected' | undefined
@@ -61,7 +62,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('--ai', 'Add Master CSS guidance to AGENTS.md.')
     .option('--no-ai', 'Skip Master CSS guidance for coding agents.')
     .option('--minimal', 'Only add core Master CSS framework setup.')
-    .option('--mode <mode>', `Rendering mode: ${formatRenderingModes()}.`, parseRenderingModeOption)
+    .option('--mode <mode>', `Rendering mode: ${formatRenderingModes()}. Defaults to static.`, parseRenderingModeOption)
     .option('--install <package-manager>', 'Run dependency installation with npm, pnpm, yarn, or bun after edits.')
     .option('--no-install', 'Do not run dependency installation.')
     .option('--dry-run', 'Print the setup plan without writing files.')
@@ -115,7 +116,7 @@ async function runAdd(options: CommandOptions) {
     return
   }
 
-  applySetupPlan(plan, {
+  applyMasterCSSSetupPlan(plan, {
     install: resolvedOptions.install === 'detected' ? plan.packageManager : resolvedOptions.install
   })
 
@@ -124,9 +125,9 @@ async function runAdd(options: CommandOptions) {
   }
 }
 
-function createCommandSetupPlan(options: Parameters<typeof createSetupPlan>[0]): ReturnType<typeof createSetupPlan> | undefined {
+function createCommandSetupPlan(options: Parameters<typeof planMasterCSSSetup>[0]): ReturnType<typeof planMasterCSSSetup> | undefined {
   try {
-    return createSetupPlan(options)
+    return planMasterCSSSetup(options)
   } catch (error) {
     if (error instanceof Error) {
       process.stderr.write(`${error.message}\n`)
@@ -174,7 +175,7 @@ function shouldPrompt(options: CommandOptions) {
   return !options.yes && !options.json && !options.dryRun && Boolean(process.stdin.isTTY) && Boolean(process.stdout.isTTY)
 }
 
-function parseRenderingModeOption(value: string): RenderingMode {
+function parseRenderingModeOption(value: string): MasterCSSRenderingMode {
   if (isRenderingMode(value)) return value
   throw new InvalidArgumentError(`Invalid rendering mode "${value}". Supported modes: ${formatRenderingModes()}.`)
 }
@@ -200,7 +201,7 @@ function formatNewProjectCommands() {
   return newProjectCommands.map((command) => `  ${command}`).join('\n')
 }
 
-function printSummary(plan: ReturnType<typeof createSetupPlan>) {
+function printSummary(plan: ReturnType<typeof planMasterCSSSetup>) {
   process.stdout.write(`Master CSS setup complete for ${plan.framework}.\n`)
   process.stdout.write(`Dependencies planned: ${plan.summary.dependencies}\n`)
   process.stdout.write(`Files created: ${plan.summary.filesToCreate}\n`)
@@ -209,6 +210,6 @@ function printSummary(plan: ReturnType<typeof createSetupPlan>) {
     process.stdout.write(`Warning: ${warning}\n`)
   }
   for (const command of plan.commands) {
-    process.stdout.write(`Next: ${command.command}\n`)
+    process.stdout.write(`Next: ${[command.executable, ...command.args].join(' ')}\n`)
   }
 }

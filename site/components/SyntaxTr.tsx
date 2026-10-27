@@ -1,10 +1,12 @@
-import highlightCode from '~/internal/utils/highlight-code'
+import highlightCode from '~/site/docs-shell/utils/highlight-code'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'
+import React from 'react'
 import type { ShikiTransformer } from 'shiki/core'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext } from './syntax-tr-placeholders'
+import { syntaxAnchor } from '../reference/syntax'
 
 export default async function SyntaxTr({ value, children, previewSyntax }: any) {
   value = (Array.isArray(value) ? value[0] : value) as string
@@ -22,7 +24,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
   const hast = await highlightCode(text, {
     lang: 'css',
     inline: true,
-    className: 'text:body white-space:pre b:0 p:0 r:0 bg:transparent',
+    className: 'fg-text-body white-space:pre-wrap white-space:pre@sm border-width:0 padding:0 border-radius:0 background-color:transparent',
     transformers: [transformerRestore]
   })
   const codeElement = (hast.children[0] as any)
@@ -36,8 +38,8 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
     transformers: [transformerRestore]
   })
   return (
-    <tr key={value}>
-      <td className='white-space:nowrap'>
+    <tr key={value} id={syntaxAnchor(value)} className="reference-syntax-row">
+      <td className='white-space:normal white-space:nowrap@sm'>
         {children}
         {toJsxRuntime(keyHast as any, { Fragment, jsxs, jsx })}
       </td>

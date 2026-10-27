@@ -1,0 +1,21 @@
+/** Reading context only; token values and consumers still come from the preset. */
+export const tokenEditorial: Record<string, { context: string, guide: string, label: string }> = {
+  animate: { context: 'Each animation token contains a complete native animation shorthand. The animate-* family sets the animation property. Preset values repeat indefinitely; customize the token or use a full-property iteration-count declaration for a single entrance.', guide: '/guide/motion', label: 'Motion' },
+  breakpoint: { context: 'These lengths define the shared viewport thresholds. The named media conditions are listed separately in [Breakpoints](/reference/tokens/breakpoints).', guide: '/guide/breakpoints', label: 'Breakpoints' },
+  color: { context: 'Numbered palette steps have fixed values. Hue aliases such as blue reference a fixed palette step. Text and surface roles may use light-dark(); current resolves to the element’s currentColor.', guide: '/guide/colors', label: 'Colors' },
+  'color-line': { context: 'Line roles give borders, outlines and strokes a consistent emphasis in each theme.', guide: '/guide/colors#line-roles', label: 'Colors' },
+  'color-surface': { context: 'Surface roles identify page, subdued, raised, floating and inverse backgrounds. Their stored references resolve through the palette.', guide: '/guide/colors', label: 'Colors' },
+  'color-text': { context: 'Text roles provide foreground hierarchy and interaction colors. Choose them against the actual surface; a role name alone does not guarantee sufficient contrast.', guide: '/guide/colors', label: 'Colors' },
+  container: { context: 'Shared lengths cap reusable regions. Literal container-query thresholds are independent of these values.', guide: '/guide/sizing', label: 'Sizing' },
+  duration: { context: 'Share these durations across animation and transition lengths or delays. A duration alone does not create an animation.', guide: '/guide/motion', label: 'Motion' },
+  easing: { context: 'Timing curves describe how an animation or transition progresses between its states.', guide: '/guide/motion', label: 'Motion' },
+  'font-family': { context: 'Each value is an ordered fallback stack. Available font files determine which face the browser uses.', guide: '/guide/typography#font-families', label: 'Typography' },
+  'font-size': { context: 'Use font-* for a size-only change. The text-* utility combines size with the preset’s corresponding line height and letter spacing.', guide: '/guide/typography', label: 'Typography' },
+  'font-weight': { context: 'Named weights map to numeric font weights. Their appearance depends on the available faces and supported weight range.', guide: '/guide/typography#font-weights', label: 'Typography' },
+  leading: { context: 'These unitless line heights scale with the element’s font size.', guide: '/guide/typography#line-height', label: 'Typography' },
+  order: { context: 'Order changes the visual arrangement of flex and grid items. It does not change document order or keyboard navigation order.', guide: '/guide/layout-system', label: 'Order' },
+  radius: { context: 'Corner radii shape an element’s border. They do not, by themselves, clip its descendants.', guide: '/guide/corner-radius', label: 'Corner radius' },
+  shadow: { context: 'Each shadow combines several layers. The current light and dark variants keep the same geometry and change their colors and opacity.', guide: '/guide/elevation', label: 'Elevation' },
+  spacing: { context: 'A shared spacing scale supports padding, margin, gaps and other length-valued properties.', guide: '/guide/spacing', label: 'Spacing' },
+  tracking: { context: 'Nonzero tracking values use em units, so letter spacing scales with the element’s font size.', guide: '/guide/typography#letter-spacing', label: 'Typography' }
+}

@@ -1,245 +1,103 @@
 import { test, it, expect, describe } from 'vitest'
-import dedent from 'ts-dedent'
 import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
-import CSSLanguageService from '../../src/core'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc from '../../src/utils/create-doc'
 
-test.todo('convert any color spaces to RGB and hint correctly')
-
-function cssComposeHint(target: string, settings: ConstructorParameters<typeof CSSLanguageService>[0] = {}) {
-  const contents = ['.btn { @compose ', target, '; }']
-  const doc = createDoc('css', contents.join(''))
-  const languageService = new CSSLanguageService(settings)
-  return languageService.suggestSyntax(doc, doc.positionAt(contents[0].length + target.length), {
-    triggerKind: 2,
-    triggerCharacter: target.charAt(target.length - 1)
-  })
+function labels(target: string, settings?: ConstructorParameters<typeof CSSLanguageService>[0]) {
+  return hint(target, settings)?.map(({ label }) => label) ?? []
 }
 
-it.concurrent('should ignore values containing blanks', () => expect(hint('font-family:')?.map(({ label }) => label)).not.toContain('Arial, Helvetica, sans-serif'))
-it.concurrent('types | delimiter', () => expect(hint('b:1px|')?.map(({ label }) => label)).toContain('solid'))
-it.concurrent('types , separator', () => expect(hint('shadow:1px|1px|2px|black,')?.map(({ label }) => label)).toContain('inset'))
-it.concurrent('ends with @ and not to hint values', () => expect(hint('text-center@')?.map(({ label }) => label)).not.toContain('center'))
-it.concurrent('ends with : and not to hint values', () => expect(hint('text-center:')?.map(({ label }) => label)).not.toContain('center'))
+it('does not insert unencoded whitespace into values', () => expect(labels('font-family:')).not.toContain('Arial, Helvetica, sans-serif'))
+it('continues native border values after a space delimiter', () => expect(labels("border:1px|")).toContain('solid'))
+it('continues native shadow values after a comma', () => expect(labels('box-shadow:1px|1px|2px|black,')).toContain('inset'))
+it('offers conditions after a named style', () => expect(labels("text-align:center@")).not.toContain('sr-only'))
+it('offers states after a named style', () => expect(labels("text-align:center:")).not.toContain('sr-only'))
 
-describe.concurrent('ambiguous', () => {
-  test.concurrent('removed fixed text aliases', () => {
-    const labels = hint('text:')?.map(({ label }) => label)
-
-    expect(labels).not.toContain('capitalize')
-    expect(labels).not.toContain('center')
+describe('named token completion', () => {
+  test('describes the token identity and actual CSS', () => {
+    const item = hint('font-')?.find(({ label }) => label === 'font-sans')
+    expect(item).toMatchObject({
+      label: 'font-sans', kind: CompletionItemKind.Value,
+      detail: expect.stringContaining('(token --font-family-sans)'),
+      documentation: { kind: 'markdown', value: expect.stringContaining('font-family: var(--font-family-sans)') }
+    })
+  })
+  test('keeps native font values separate from font tokens', () => {
+    expect(labels('font:')).not.toContain('sans')
+    expect(labels('font-family:')).not.toContain('mono')
+    expect(labels('font-')).toEqual(expect.arrayContaining(['font-mono', 'font-bold', 'font-sm']))
+  })
+  test('offers only canonical token prefixes', () => {
+    expect(labels('rtr-')).toContain('rtr-md')
+    expect(labels('w-')).toContain('w-sm')
+    expect(labels('width-')).not.toContain('width-sm')
+    expect(labels('font-')).toContain('font-mono')
+  })
+  test('does not suggest negative sizes or nonnumeric tokens', () => {
+    expect(labels('-w-')).not.toContain('-w-md')
+    expect(labels('-font-')).not.toContain('-font-bold')
+    expect(labels('-m-')).toEqual(expect.arrayContaining(['-m-sm', '-m-md']))
+  })
+  test('keeps custom colors out of native value completion', () => {
+    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
+    expect(labels('bg-', settings)).toEqual(expect.arrayContaining(['bg-accent', 'bg-blue']))
+    expect(labels("background:", settings)).not.toContain('accent')
+    expect(labels("background:", settings)).toContain('cover')
+  })
+  test('offers named colors inside safelist', () => {
+    const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
+    const prefix = '@safelist "bg-'
+    const doc = createDoc('css', prefix + '";')
+    const service = new CSSLanguageService(settings)
+    const items = service.suggestSyntax(doc, doc.positionAt(prefix.length), { triggerKind: 1 })
+    expect(items?.map(({ label }) => label)).toContain('bg-accent')
   })
 })
 
-describe.concurrent('detail and documentation', () => {
-  test.concurrent('font:', () => expect(hint('font:')?.find(({ label }) => label === 'sans')).toEqual({
-    detail: '(scope) var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
-    kind: CompletionItemKind.Value,
-    label: 'sans',
-    sortText: 'aaaasans',
-    documentation: {
-      kind: 'markdown',
-      value: dedent`
-          \`\`\`css
-          @layer theme {
-            :root {
-              --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
-            }
-          }
-          @layer utilities {
-            .font\\:sans {
-              font-family: var(--font-family-sans)
-            }
-          }
-          \`\`\`
-        `
-    }
-  }))
-  test.concurrent('font-style:', () => expect(hint('font-style:')?.find(({ label }) => label === 'italic')).toEqual({
-    detail: 'font-style: italic',
-    kind: 12,
-    label: 'italic',
-    sortText: 'cccccitalic',
-    documentation: {
-      kind: 'markdown',
-      value: dedent`
-          \`\`\`css
-          @layer utilities {
-            .font-style\\:italic {
-              font-style: italic
-            }
-          }
-          \`\`\`
-        `
-    }
-  }))
-})
-
-describe.concurrent('retype on no hints', () => {
-  it.concurrent('"text:c"', () => expect(hint('text:c')?.length).toBeGreaterThan(0))
-  it.concurrent('"display:b"', () => expect(hint('display:b')?.find(({ label }) => label === 'block')).toMatchObject({
-    label: 'block',
-    kind: 12,
-    sortText: 'cccccblock',
-    detail: 'display: block'
-  }))
-})
-
-describe.concurrent('negative values', () => {
-  it.concurrent('should hint negative values', () => expect(hint('font:')?.map(({ label }) => label)).not.toContain('-bold'))
-  test.todo('types - to hint number values')
-})
-
-describe.concurrent('key aliases', () => {
-  test.concurrent('radius alias values use canonical radius utility', () => {
-    expect(hint('rtr:')?.map(({ label }) => label)).toContain('md')
+describe('native declaration completion', () => {
+  test('documents the native property without shorthand inference', () => {
+    expect(hint('font-style:')?.find(({ label }) => label === 'italic')).toMatchObject({
+      detail: 'font-style: italic', label: 'italic',
+      documentation: { kind: 'markdown', value: expect.stringContaining('font-style: italic') }
+    })
   })
-
-  test.concurrent('native value namespace alias values use canonical property namespace', () => {
-    expect(hint('w:')?.map(({ label }) => label)).toContain('sm')
-    expect(hint('width:')?.map(({ label }) => label)).toContain('sm')
+  test('continues typing a native keyword', () => {
+    expect(hint('display:b')?.find(({ label }) => label === 'block')).toMatchObject({ label: 'block', detail: 'display: block' })
   })
-
-  test.concurrent('background alias values include raw utility color scopes and native values', () => {
-    const settings = {
-      manifest: createPresetManifest({
-        variables: [
-          { namespace: 'color', key: 'accent', value: '#123456' }
-        ]
-      })
-    }
-    const labels = hint('bg:', settings)?.map(({ label }) => label) || []
-
-    expect(labels).toEqual(expect.arrayContaining(['accent', 'blue', 'cover']))
-    expect(labels.filter((label) => label === 'blue')).toHaveLength(1)
-  })
-
-  test.concurrent('CSS @compose background alias values include raw utility color scopes', () => {
-    const settings = {
-      manifest: createPresetManifest({
-        variables: [
-          { namespace: 'color', key: 'accent', value: '#123456' }
-        ]
-      })
-    }
-    const labels = cssComposeHint('bg:', settings)?.map(({ label }) => label) || []
-
-    expect(labels).toEqual(expect.arrayContaining(['accent', 'blue', 'cover']))
-    expect(labels.filter((label) => label === 'blue')).toHaveLength(1)
-  })
-
-  test.concurrent('vendor-prefixed text-size-adjust values use unprefixed syntax data', () => {
+  test('uses native syntax data for vendor-prefixed properties', () => {
     for (const property of ['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust']) {
-      expect(hint(property + ':')?.map(({ label }) => label)).toEqual(expect.arrayContaining(['auto', 'none']))
+      expect(labels(property + ':')).toEqual(expect.arrayContaining(['auto', 'none']))
     }
   })
 })
 
-describe.concurrent('sorting', () => {
-  test.concurrent('colors', () => {
-    expect(
-      hint('fg:')
-        ?.filter(({ label }) => label.startsWith('yellow'))
-        ?.map(({ label }) => label)
-    ).toEqual([
-      'yellow-0',
-      'yellow-5',
-      'yellow-10',
-      'yellow-20',
-      'yellow-30',
-      'yellow-40',
-      'yellow-50',
-      'yellow-60',
-      'yellow-70',
-      'yellow-80',
-      'yellow-90',
-      'yellow-95',
-      'yellow-100',
-      'yellow'
+describe('token ordering', () => {
+  test('sorts color shades numerically and keeps their base hue', () => {
+    expect(labels('fg-').filter(label => label.startsWith('fg-yellow'))).toEqual([
+      'fg-yellow-0', 'fg-yellow-5', 'fg-yellow-10', 'fg-yellow-20', 'fg-yellow-30', 'fg-yellow-40',
+      'fg-yellow-50', 'fg-yellow-60', 'fg-yellow-70', 'fg-yellow-80', 'fg-yellow-90', 'fg-yellow-95', 'fg-yellow-100', 'fg-yellow'
     ])
   })
-
-  test.concurrent('base hue and text color aliases', () => {
-    const labels = hint('fg:')?.map(({ label }) => label)
-
-    expect(labels).toEqual(expect.arrayContaining([
-      'blue',
-      'link',
-      'muted',
-      'pink',
-      'strong',
-      'text-blue',
-      'text-link',
-      'text-muted',
-      'text-pink'
-    ]))
-    expect(labels).not.toContain('accent')
-    expect(labels).not.toContain('danger')
-    expect(labels).not.toContain('text')
-    expect(labels).not.toContain('on-blue')
-    expect(labels).not.toContain('line-blue')
-    expect(labels).not.toContain('blue-surface')
+  test('offers complete color role names without implicit namespace aliases', () => {
+    const values = labels('fg-')
+    expect(values).toEqual(expect.arrayContaining(['fg-blue', 'fg-text-muted', 'fg-text-strong', 'fg-text-blue', 'fg-text-link']))
+    expect(values).not.toContain('fg-accent')
+    for (const name of ['fg-muted', 'fg-strong', 'fg-link']) expect(values).not.toContain(name)
+    expect(values).toContain('fg-line-divider')
   })
-
-  test.concurrent('surface aliases', () => {
-    const labels = hint('surface:')?.map(({ label }) => label)
-
-    expect(labels).toEqual(expect.arrayContaining([
-      'base',
-      'muted',
-      'raised',
-      'overlay',
-      'inverse'
-    ]))
-    expect(labels).not.toContain('blue')
-    expect(labels).not.toContain('canvas')
+  test('limits surface tokens to the registered namespace', () => {
+    const values = labels('bg-surface-')
+    expect(values).toEqual(expect.arrayContaining(['bg-surface-base', 'bg-surface-inset', 'bg-surface-raised', 'bg-surface-floating', 'bg-surface-inverse']))
+    expect(values).not.toContain('bg-surface-blue')
   })
-
-  test.concurrent('unitful numeric variables', () => {
-    const labels = new Set(['test-tiny', 'test-small', 'test-medium'])
-    expect(
-      hint('w:', {
-        manifest: createPresetManifest({
-          variables: [
-            {
-              name: 'container-test-medium',
-              namespace: 'container',
-              key: 'test-medium',
-              type: 'number',
-              value: '2rem',
-              numeric: { value: 2, unit: 'rem' }
-            },
-            {
-              name: 'container-test-tiny',
-              namespace: 'container',
-              key: 'test-tiny',
-              type: 'number',
-              value: '8px',
-              numeric: { value: 8, unit: 'px' }
-            },
-            {
-              name: 'container-test-small',
-              namespace: 'container',
-              key: 'test-small',
-              type: 'number',
-              value: '1rem',
-              numeric: { value: 1, unit: 'rem' }
-            }
-          ]
-        })
-      })
-        ?.filter(({ label }) => labels.has(label))
-        ?.map(({ label }) => label)
-    ).toEqual([
-      'test-tiny',
-      'test-small',
-      'test-medium'
-    ])
+  test('compares unitful values for suggestions without rewriting declarations', () => {
+    const settings = { manifest: createPresetManifest({ variables: [
+      { namespace: 'container', key: 'test-medium', type: 'number', values: [{ path: [':root,:host'], value: '2rem' }], numeric: { value: 2, unit: 'rem' } },
+      { namespace: 'container', key: 'test-tiny', type: 'number', values: [{ path: [':root,:host'], value: '8px' }], numeric: { value: 8, unit: 'px' } },
+      { namespace: 'container', key: 'test-small', type: 'number', values: [{ path: [':root,:host'], value: '1rem' }], numeric: { value: 1, unit: 'rem' } }
+    ] }) }
+    expect(labels('w-', settings).filter(label => label.startsWith('w-test-'))).toEqual(['w-test-tiny', 'w-test-small', 'w-test-medium'])
   })
-})
-
-describe.concurrent('functions', () => {
-  test.todo('fucntions')
 })

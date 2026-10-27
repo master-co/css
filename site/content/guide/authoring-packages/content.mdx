@@ -1,0 +1,166 @@
+## Overview [sr-only]
+An authoring package is the smallest way to share a Master CSS styling vocabulary across projects. It is just a package with a CSS source entry, so another project can import its tokens, utilities, mixins, custom media, and native component classes from the app's normal CSS entry.
+
+Use an authoring package for shared design-system vocabulary. Do not ship compiled generated CSS or a generated manifest unless your package has a separate runtime integration reason. Let each consuming project compile the source with its own Master CSS entry graph.
+
+---
+
+## Create a package
+Start with a package name chosen by your project or organization. The internal stylesheet can be named `master.css`; users import the package name, not the internal file path.
+
+```txt
+my-master-theme/
+  package.json
+  master.css
+  README.md
+```
+
+Point the package root to `master.css`:
+
+```json name=package.json
+{
+  "name": "<package-name>",
+  "version": "0.1.0",
+  "style": "./master.css",
+  "exports": {
+    ".": {
+      "style": "./master.css",
+      "default": "./master.css"
+    }
+  },
+  "sideEffects": ["./master.css"]
+}
+```
+
+No bundler, TypeScript build, manifest generation, or compiled CSS output is required for this package shape. The package publishes source CSS that Master CSS-aware projects can compile as part of their own stylesheet graph.
+
+---
+
+## Write master.css
+Use `master.css` for shared vocabulary that should be available to consuming projects.
+
+```css name=master.css
+@theme {
+  --color-brand: #4f46e5;
+  --color-text-action: var(--color-brand);
+  --spacing-action-x: 1rem;
+  --radius-action: 0.5rem;
+}
+
+@custom-media --motion-safe (prefers-reduced-motion: no-preference);
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-action-x);
+    border-radius: var(--radius-action);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    background-color: var(--color-brand);
+    color: var(--color-white);
+
+    &:is(:hover, :focus-visible) {
+      background-color: color-mix(in oklab, var(--color-brand) 85%, transparent);
+    }
+  }
+}
+```
+
+Good package vocabulary is stable and reusable:
+
+- Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, breakpoint, and container tokens.
+- Use `@custom-media` for media names and `@mixin` with `@contents` for other reusable wrappers.
+- Use `@mixin` for low-level primitives that are useful across apps.
+- Use native `@layer components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
+
+For token namespace behavior, see [Variables and Modes](/guide/variables-and-modes). For creating tokens, see [Theme Tokens](/guide/theme). For directive syntax, see [CSS directives](/reference#directives). For abstraction decisions, see [Global Styles](/guide/global-styles#shared-vocabulary).
+
+---
+
+## Use the package
+Install the package in the consuming project, then import the package from the app CSS entry:
+
+```css name=app.css
+@import '@master/css';
+@import '<package-name>';
+```
+
+The imported source becomes part of the project CSS entry graph. Project markup can use the shared vocabulary as utility and native CSS classes:
+
+```html
+<button class="btn">Save changes</button>
+<section class="p-lg content-auto">...</section>
+```
+
+Packages imported by a project entry are already available to local stylesheets. To add a package only to one stylesheet's compile-time context, use `@reference`:
+
+```css name=components/Button.module.css
+@reference '<package-name>';
+
+.button {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+```
+
+`@reference` makes package tokens, utilities, mixins, and custom media available while compiling the local stylesheet. Required theme resources are included, but referenced native rules and generated utility classes are not. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
+
+---
+
+## Keep app policy in the app
+A reusable authoring package should not decide how one application scans, filters, or ships its source files.
+
+Keep these in the consuming app:
+
+- App-specific `@source` and `@source not` rules.
+- App-specific `@safelist` and `@blocklist` policy.
+- Route, page, or component one-off classes.
+- Generated manifest JSON and compiled generated CSS output.
+
+Use the package for shared vocabulary. Use the app CSS entry for local source boundaries, delivery choices, and application-specific policy.
+
+---
+
+## Version vocabulary
+Treat exported tokens, utilities and native class names like public API. Native component CSS ships by default; its same-layer conflicts follow source order. Native classes do not derive Master suffixes.
+
+Removing or renaming a token, utility, mixin, custom media name, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, utilities, mixins, custom media names, or component classes is usually a minor change when it does not alter existing output.
+
+Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `fg-text-action`, `content-auto`, or `btn` without reading the package source.
+
+---
+
+## Validate with an example
+Before publishing, test the package through a small consuming project or fixture:
+
+```css name=app.css
+@import '@master/css';
+@import '<package-name>';
+```
+
+```html
+<button class="btn">Save</button>
+<article class="p-lg r-lg bg-surface-raised content-auto">
+  ...
+</article>
+```
+
+Run the same checks the app uses for Master CSS, such as ESLint or the CLI lint and inspect commands:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json --exit-code never
+```
+
+```bash name=Terminal
+npx @master/css-cli inspect --classes "btn content-auto bg-brand" --format json --exit-code never
+```
+
+The goal is to confirm that the package can be imported by name, its vocabulary is visible to the project manifest, and the generated CSS matches the contract you intend to publish.

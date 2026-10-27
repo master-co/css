@@ -1,0 +1,120 @@
+import { assertValidationOptions } from './value-validation'
+import {
+  createCompilerBindingSession as createBindingSession,
+  type MasterCSSBindingLoadOptions,
+  type MasterCSSCompileDefaultPresetRequest,
+  type MasterCSSCompileManifestOptions,
+  type MasterCSSCompilerBindingSession,
+  type MasterCSSDirectiveCompileOptions,
+  type MasterCSSDirectiveExtractionPolicy,
+  type MasterCSSDirectiveManifestInput,
+  type MasterCSSImportGraphRequest,
+  type MasterCSSLowerDirectivesOptions,
+  type MasterCSSLowerDirectivesRequest
+} from '@master/css-binding/compiler'
+import {
+  type MasterCSSManifest
+} from '@master/css-schema/manifest'
+import type { CompileCSSOptions, CompileCSSResult } from './contracts'
+
+export interface BindingCompilerSession {
+  readonly binding: MasterCSSCompilerBindingSession['binding']
+  compareProjectSnapshots: MasterCSSCompilerBindingSession['compareProjectSnapshots']
+  inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
+  compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
+  analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
+  analyzeStandaloneDirectives: MasterCSSCompilerBindingSession['analyzeStandaloneDirectives']
+  mergeCSSExtractionPolicies: MasterCSSCompilerBindingSession['mergeCSSExtractionPolicies']
+  filterCSSExtractionCandidates: MasterCSSCompilerBindingSession['filterCSSExtractionCandidates']
+  compileManifestInput: MasterCSSCompilerBindingSession['compileManifestInput']
+  lowerCSSDirectives: MasterCSSCompilerBindingSession['lowerCSSDirectives']
+  normalizeManifest: MasterCSSCompilerBindingSession['normalizeManifest']
+  normalizeDefaultManifest: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
+  compileDefaultPresetManifest: MasterCSSCompilerBindingSession['compileDefaultPresetManifest']
+  prepareCSSStylesheetBundle: MasterCSSCompilerBindingSession['prepareCSSStylesheetBundle']
+  renderCSSStylesheetBundle: MasterCSSCompilerBindingSession['renderCSSStylesheetBundle']
+  resolveCSSImportGraph: MasterCSSCompilerBindingSession['resolveCSSImportGraph']
+  compileCSSStylesheetGraph(
+    request: Parameters<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>[0]
+  ): Omit<ReturnType<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>, 'directives'> & {
+    directives: CompileCSSResult
+  }
+  dispose(): void
+}
+
+function reviveCompileResult(result: CompileCSSResult) {
+  result.extractionPolicy.blocklist = result.extractionPolicy.blocklist.map((entry) => {
+    if (entry && typeof entry === 'object' && 'source' in entry && typeof entry.source === 'string') {
+      return new RegExp(entry.source, 'flags' in entry && typeof entry.flags === 'string' ? entry.flags : '')
+    }
+    return entry
+  })
+  return result
+}
+
+function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingCompilerSession {
+  return {
+    binding: session.binding,
+    compareProjectSnapshots: (request) => session.compareProjectSnapshots(request),
+    inspectCSS: (source: string) => session.inspectCSS(source),
+    compileCSS(source, options = {}) {
+      assertValidationOptions(options)
+      return reviveCompileResult(session.compileCSSDirectives(source, {
+        from: options.from || 'master.css',
+        preserveNativeCSS: options.preserveNativeCSS !== false,
+        pruneNativeCSS: options.pruneNativeCSS === true,
+        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
+        ...(options.classes ? { classes: options.classes } : {})
+      }) as CompileCSSResult)
+    },
+    analyzeCSSDependencies: (source: string) => session.analyzeCSSDependencies(source),
+    analyzeStandaloneDirectives: (source: string) => session.analyzeStandaloneDirectives(source),
+    mergeCSSExtractionPolicies: (
+      policies: readonly Partial<MasterCSSDirectiveExtractionPolicy>[]
+    ) => session.mergeCSSExtractionPolicies(policies),
+    filterCSSExtractionCandidates: (
+      candidates: readonly string[],
+      blocklist: Parameters<
+        MasterCSSCompilerBindingSession['filterCSSExtractionCandidates']
+      >[1]
+    ) =>
+      session.filterCSSExtractionCandidates(candidates, blocklist),
+    compileManifestInput: (
+      input: MasterCSSDirectiveManifestInput,
+      options?: MasterCSSCompileManifestOptions
+    ) => session.compileManifestInput(input, options),
+    lowerCSSDirectives: (
+      request: MasterCSSLowerDirectivesRequest,
+      options?: MasterCSSLowerDirectivesOptions,
+      sourceText?: string
+    ) =>
+      session.lowerCSSDirectives(request, options, sourceText),
+    normalizeManifest: (manifest: MasterCSSManifest) => session.normalizeManifest(manifest),
+    normalizeDefaultManifest: (manifest: MasterCSSManifest) =>
+      session.normalizeDefaultManifest(manifest),
+    compileDefaultPresetManifest: (request: MasterCSSCompileDefaultPresetRequest) =>
+      session.compileDefaultPresetManifest(request),
+    prepareCSSStylesheetBundle: (request) => session.prepareCSSStylesheetBundle(request),
+    renderCSSStylesheetBundle: (request) => session.renderCSSStylesheetBundle(request),
+    resolveCSSImportGraph: (request: MasterCSSImportGraphRequest) =>
+      session.resolveCSSImportGraph(request),
+    compileCSSStylesheetGraph(request) {
+      const result = session.compileCSSStylesheetGraph(request)
+      return { ...result, directives: reviveCompileResult(result.directives as CompileCSSResult) }
+    },
+    dispose: () => session.dispose()
+  }
+}
+
+export async function createCompilerBindingSession(
+  options: MasterCSSBindingLoadOptions = {}
+): Promise<BindingCompilerSession> {
+  return bindCompilerSession(await createBindingSession(options))
+}
+
+/** @internal */
+export function bindCompilerBindingSessionInternal(
+  session: MasterCSSCompilerBindingSession
+): BindingCompilerSession {
+  return bindCompilerSession(session)
+}

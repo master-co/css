@@ -1,0 +1,430 @@
+#![forbid(unsafe_code)]
+
+use std::cmp::Ordering;
+
+use hash::{HashMap, HashSet};
+
+use mastercss_lexer::concat_text;
+use mastercss_lexer::{
+    collect_css_variable_references as collect_css_variable_names, css_escape, utf16_len,
+};
+use mastercss_schema::MasterCssManifest;
+use mastercss_schema::{
+    CssDeclaration, Diagnostic, EmittedGlobals, EngineInspectionIr, EngineResourcesIr,
+    EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
+    GeneratedRuleNodeIr, NativeDeclarationCandidateIr, RuleMutationIr, RulePriorityIr, RuleTarget,
+    UtilityLayerName,
+};
+use serde::Serialize;
+use serde_json::Map;
+use serde_json::Value;
+
+const LAYER_COUNT: usize = 4;
+
+type ConditionFeature = mastercss_schema::ConditionRangeIr;
+
+#[derive(Debug)]
+pub enum EngineError {
+    Schema(mastercss_schema::SchemaError),
+    InvalidManifest(String),
+    InvalidEmittedGlobals(String),
+    InvalidProgram(String),
+    UnsupportedProgramVersion,
+    SessionDisposed,
+}
+
+impl From<mastercss_schema::SchemaError> for EngineError {
+    fn from(error: mastercss_schema::SchemaError) -> Self {
+        Self::Schema(error)
+    }
+}
+
+impl std::fmt::Display for EngineError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(&self.message())
+    }
+}
+
+impl std::error::Error for EngineError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Schema(error) => std::error::Error::source(error),
+            _ => None,
+        }
+    }
+}
+
+impl EngineError {
+    /// The message, built without `core::fmt`;
+    /// `Display` writes the same text.
+    pub fn message(&self) -> String {
+        match self {
+            Self::Schema(error) => error.to_string(),
+            Self::InvalidManifest(detail) => {
+                concat_text!("Invalid MasterCSSManifest engine field: ", detail)
+            }
+            Self::InvalidEmittedGlobals(detail) => {
+                concat_text!("Invalid Master CSS emitted globals JSON: ", detail)
+            }
+            Self::InvalidProgram(detail) => {
+                concat_text!("Invalid Master CSS runtime program: ", detail)
+            }
+            Self::UnsupportedProgramVersion => "Unsupported Master CSS runtime program version. Recompile it with matching packages.".into(),
+            Self::SessionDisposed => "Master CSS engine session has been disposed.".into(),
+        }
+    }
+
+    pub fn diagnostic(&self) -> Diagnostic {
+        let code = match self {
+            Self::Schema(error) => error.code(),
+            Self::InvalidManifest(_) => ErrorCode::InvalidManifest,
+            Self::InvalidEmittedGlobals(_) => ErrorCode::InvalidInput,
+            Self::InvalidProgram(_) => ErrorCode::InvalidProgram,
+            Self::UnsupportedProgramVersion => ErrorCode::UnsupportedProgramVersion,
+            Self::SessionDisposed => ErrorCode::SessionDisposed,
+        };
+        Diagnostic {
+            phase: mastercss_schema::DiagnosticPhase::Match,
+            severity: mastercss_schema::DiagnosticSeverity::Error,
+            code,
+            message: self.message(),
+            source: None,
+            range: None,
+            notes: Vec::new(),
+        }
+    }
+}
+
+/// The executable form of a project manifest. Compiling a manifest produces it, and
+/// every session executes one decoded from its encoding (`program.rs`), so hosts
+/// that start from a manifest and browsers that receive the encoding run the same
+/// data.
+#[derive(Debug, Clone, Default)]
+struct Program {
+    theme: Vec<mastercss_schema::ThemeNode>,
+    /// Deduplicated by id; the last definition wins.
+    keyframes: Vec<mastercss_schema::KeyframeDefinition>,
+    animation_variables: HashMap<String, Vec<String>>,
+    custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
+    /// The `custom_media_branches` paths of each named custom media query.
+    custom_media_paths: HashMap<String, Vec<Vec<String>>>,
+    /// Registered utilities in priority order, followed by the built-in native ones.
+    utilities: Vec<UtilityDefinition>,
+    mixins: Vec<mastercss_schema::MixinDefinition>,
+    utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
+    token_families: Vec<TokenFamily>,
+    function_utilities: HashMap<String, usize>,
+    compiled_variables: HashMap<String, CompiledVariable>,
+    has_inline_tokens: bool,
+    compiled_variable_order: Vec<String>,
+    token_utilities: HashMap<String, Vec<usize>>,
+    static_utilities: HashMap<String, Vec<usize>>,
+    raw_utilities: HashMap<String, Vec<usize>>,
+}
+
+#[derive(Debug, Clone)]
+struct UtilityDefinition {
+    id: String,
+    name: Option<String>,
+    utility_type: i32,
+    order: Option<i32>,
+    layer: UtilityLayerName,
+    keys: Vec<String>,
+    alias_groups: Vec<String>,
+    variable_aliases: Vec<(String, String)>,
+    variable_alias_refs: Vec<String>,
+    native_fallback: bool,
+    emit: UtilityEmit,
+    matchers: Vec<UtilityMatcher>,
+}
+
+#[derive(Debug, Clone)]
+enum UtilityMatcher {
+    Static { name: String },
+    Key { keys: Vec<String> },
+    Token { prefix: String },
+    Function { name: String },
+}
+
+#[derive(Debug, Clone)]
+enum UtilityEmit {
+    /// Expands `Program::utility_definitions[definition]`.
+    Recipe {
+        definition: usize,
+        key: bool,
+    },
+    Property {
+        property: String,
+    },
+}
+
+#[derive(Debug, Clone)]
+struct UtilityMatch {
+    /// The declaration value of a property utility.
+    value: Option<String>,
+    /// The arguments of a recipe utility.
+    arguments: Vec<String>,
+    /// The recipe expansion, computed once per match and shared by every state branch.
+    expansion: std::cell::OnceCell<Option<Vec<ExpandedMixinRule>>>,
+    state_token: String,
+    variable_names: Vec<String>,
+    matcher_type: UtilityMatcherType,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ClassSemanticKind {
+    Unknown,
+    Utility,
+    Component,
+    Semantic,
+    Token,
+    Declaration,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum UtilityMatcherType {
+    Function,
+    Static,
+    Key,
+    Token,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClassSemanticInspection {
+    pub class_name: String,
+    pub kind: ClassSemanticKind,
+    pub matcher_types: Vec<UtilityMatcherType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value_token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_token: Option<String>,
+    pub important: bool,
+}
+
+/// The numeric value and unit a variable declares, used to sort completions.
+#[derive(Debug, Clone, PartialEq)]
+struct VariableNumeric {
+    value: f64,
+    unit: String,
+}
+
+#[derive(Debug, Clone)]
+struct CompiledVariable {
+    name: String,
+    key: String,
+    namespace: String,
+    values: Vec<mastercss_schema::ScopedThemeValue>,
+    numeric: Option<VariableNumeric>,
+    variable_type: String,
+    dependencies: Vec<String>,
+    inline_value: Option<String>,
+    is_static: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+struct StateBranch {
+    key: String,
+    selector_template: Option<String>,
+    condition_wrappers: Vec<(String, String)>,
+    layer: Option<UtilityLayerName>,
+    important: bool,
+}
+
+#[derive(Debug, Clone)]
+struct StoredRule {
+    ir: GeneratedRuleIr,
+    manifest_order: i32,
+    declarations: String,
+    native_fallback: bool,
+    matcher_type: Option<UtilityMatcherType>,
+    state_token: String,
+}
+
+struct NativeDeclarationCandidate {
+    ir: NativeDeclarationCandidateIr,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EngineClassCompletionKind {
+    Function,
+    Property,
+    Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EngineClassCompletionCandidate {
+    pub label: String,
+    pub kind: EngineClassCompletionKind,
+    pub detail: Option<String>,
+    pub documentation_class_name: Option<String>,
+    pub sort_text: Option<String>,
+    pub trigger_suggest: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EngineColorToken {
+    pub start: u32,
+    pub end: u32,
+    pub value: String,
+    pub alpha: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineVariableIr {
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub namespace: String,
+    pub name: String,
+    pub key: String,
+    #[serde(rename = "type")]
+    pub variable_type: String,
+    pub values: Vec<mastercss_schema::ScopedThemeValue>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependencies: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineClassVariableIr {
+    pub key: String,
+    pub variable: EngineVariableIr,
+}
+
+/// Compiler-facing projection of a generated class rule.
+///
+/// This deliberately exposes composition semantics without exposing the engine's
+/// mutable object model. Compiler and tooling surfaces consume the projection in
+/// batches; runtime surfaces never need to instantiate it.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineCompositionRuleIr {
+    pub class_name: String,
+    /// Exact matched definition, retained only for compiler provenance.
+    #[serde(skip)]
+    pub utility_name: Option<String>,
+    pub key: String,
+    pub layer: UtilityLayerName,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub explicit_layer: Option<UtilityLayerName>,
+    #[serde(rename = "type")]
+    pub utility_type: i32,
+    pub sort_tier: i32,
+    pub priority: RulePriorityIr,
+    pub selector: String,
+    pub declarations: Vec<CssDeclaration>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conditions: Vec<String>,
+}
+
+#[derive(Debug)]
+pub struct EngineSession {
+    /// The manifest a session was created from; sessions created from an encoded
+    /// program have none.
+    manifest: Option<MasterCssManifest>,
+    compiled: Program,
+    layers: [Vec<StoredRule>; LAYER_COUNT],
+    class_rules: HashMap<String, Vec<(UtilityLayerName, String)>>,
+    class_order: Vec<String>,
+    rule_counts: HashMap<(UtilityLayerName, String), u32>,
+    emitted_globals: EmittedGlobals,
+    variable_counts: HashMap<String, u32>,
+    keyframe_counts: HashMap<String, u32>,
+    stylesheet_keyframe_slots: HashSet<String>,
+    variable_floors: HashMap<String, u32>,
+    keyframe_floors: HashMap<String, u32>,
+    keyframe_texts: Vec<(
+        String,
+        String,
+        bool,
+        Vec<mastercss_schema::KeyframeContainer>,
+    )>,
+    stylesheet_sources: Vec<String>,
+    theme_variable_names: Vec<String>,
+    theme_text: Option<String>,
+    theme_dirty: bool,
+    theme_batch_depth: usize,
+    disposed: bool,
+}
+
+const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
+    UtilityLayerName::Base,
+    UtilityLayerName::Defaults,
+    UtilityLayerName::Components,
+    UtilityLayerName::Utilities,
+];
+
+mod animation;
+mod hash;
+mod inline_theme;
+pub use animation::{AnimationReferences, stylesheet_declarations};
+mod completion;
+mod condition;
+mod custom_media;
+mod decimal;
+mod keyframe_slots;
+pub use keyframe_slots::KeyframeOutputEdit;
+mod keyframes;
+pub use custom_media::{custom_media_branches, parse_custom_media_query};
+mod class_apply;
+mod execution_state;
+mod generation;
+mod hosted_stylesheet;
+mod manifest;
+mod mixin;
+pub use mixin::{
+    ExpandedMixinRule, evaluate_mixin_value, expand_mixin, expand_mixin_with_contents,
+    expand_utility, validate_mixin_argument, validate_mixins, validate_utilities,
+};
+mod token_family;
+mod utility_matching;
+pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
+mod named;
+mod program;
+mod render;
+mod resources;
+mod session;
+pub use session::{compile_program, parse_emitted_globals};
+mod state;
+mod stylesheet_resources;
+mod theme_batch;
+mod utility;
+mod value_syntax;
+
+pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
+pub(crate) use condition::{
+    add_condition_wrapper, normalize_dynamic_value, parse_raw_condition_wrapper,
+    render_condition_token, resolve_layer_condition,
+};
+pub(crate) use manifest::compile_manifest;
+pub(crate) use manifest::{
+    add_unique_string, engine_variable_ir, finish_program, layer_name, single_native_declaration,
+};
+pub(crate) use render::{
+    composition_conditions, composition_selector, create_selector_text, emit_declarations,
+    parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
+};
+pub(crate) use state::{resolve_state_branches, split_top_level};
+pub(crate) use stylesheet_resources::is_css_identifier_character;
+pub(crate) use utility::{
+    append_builtin_native_declaration_utilities, compare_stored_rules, layer_index,
+    resolve_value_components, split_dynamic_value_state,
+};
+pub(crate) use value_syntax::{
+    find_matching_parenthesis, native_declaration_head, normalize_css_math_functions,
+};
+
+pub use condition::{condition_priority, native_query_features};
+pub use utility::compare_condition_features;
+pub use utility::{compare_rule_priority, natural_compare};
+
+#[cfg(test)]
+mod tests;
+
+#[cfg(test)]
+use state::selector_token_to_template;
+mod definition_references;

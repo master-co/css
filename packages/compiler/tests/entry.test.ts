@@ -4,36 +4,16 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import {
-  compileCSS,
   compileProjectManifest,
-  findStandaloneMasterDirectiveStatements,
   inspectCSS,
   resolveMasterCSSPackageEntryFile
-} from '../src'
+} from '../src/node-compiler'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '../../..')
 
-test.concurrent('recognizes @master entry as the only Master entry directive', () => {
-  expect(findStandaloneMasterDirectiveStatements('@master entry;').map((statement) => statement.name)).toEqual(['entry'])
-  expect(findStandaloneMasterDirectiveStatements('@master;')).toEqual([])
-  expect(findStandaloneMasterDirectiveStatements('@master global;')).toEqual([])
-
-  expect(inspectCSS('@master entry;')).toMatchObject({
-    hasMasterEntryDirective: true,
-    hasMasterCSSImport: false,
-    hasMasterEntry: true
-  })
-  expect(inspectCSS('@master;').hasMasterEntry).toBe(false)
-  expect(inspectCSS('@master global;').hasMasterEntry).toBe(false)
-  expect(inspectCSS('@import "@master/css";').hasMasterEntry).toBe(true)
-})
-
-test.concurrent('strips @master entry before CSS transform', () => {
-  const result = compileCSS('@master entry;\n.card { color: red; }')
-
-  expect(result.css).not.toContain('@master entry')
-  expect(result.nativeCSS).toContain('.card')
+test.concurrent('recognizes only the preset import as a project entry', () => {
+  expect(inspectCSS('@import "@master/css";')).toMatchObject({ hasMasterCSSImport: true, hasMasterEntry: true })
 })
 
 test('resolves CSS-only preset package root to stylesheet entry', () => {
@@ -76,7 +56,9 @@ test('resolves package stylesheet entry before requiring the package JavaScript 
         }
       }
     }))
-    writeFileSync(join(packageRoot, 'src/index.css'), '@theme { --color-primary: #123456; }')
+    writeFileSync(join(packageRoot, 'src/index.css'), `@theme { --color-primary: #123456; }
+
+`)
     writeFileSync(entryFile, '@import "@master/css";')
 
     const packageStyleEntry = join(realpathSync(packageRoot), 'src/index.css')

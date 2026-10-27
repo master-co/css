@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.astro">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-astro">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.astro?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.astro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.astro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-astro?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-astro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-astro?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,14 +55,14 @@
 ## Installation
 
 ```bash
-npm install @master/css.astro
+npm install @master/css-astro
 ```
 
 ## Usage
 
 ```js
 import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css.astro'
+import masterCSS from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
@@ -71,9 +71,9 @@ export default defineConfig({
 })
 ```
 
-`masterCSS()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. Source extraction for `.astro` files is handled automatically by `@master/css-source`.
+The integration uses `static` mode by default, generating CSS at build time without injecting the browser runtime. Choose `mode: 'progressive'` to register Astro middleware that pre-renders initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. The runtime downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
 
-In static builds with `mode: 'runtime'`, the integration modulepreloads the emitted manifest JSON module when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
+In static builds with `mode: 'runtime'`, the integration modulepreloads the emitted manifest JSON module when it also injects the runtime script. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
 
 ```css
 @import '@master/css';
@@ -81,30 +81,30 @@ In static builds with `mode: 'runtime'`, the integration modulepreloads the emit
 
 ## Options
 
-The `options` object extends `@master/css.vite` plugin options and is passed to the Astro integration.
+The `options` object extends `@master/css-vite` plugin options and is passed to the Astro integration.
 
 ```js
 import { defineConfig } from 'astro/config'
-import masterCSS from '@master/css.astro'
+import masterCSS from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
     masterCSS({
-      mode: 'static'
+      mode: 'progressive'
     })
   ]
 })
 ```
 
-For `pre-render` and `progressive` modes, Astro owns the HTML rendering step through `@master/css.astro/middleware`, so you do not need to add `@master/css-server` manually.
+For `pre-render` and `progressive` modes, Astro owns the HTML rendering step through `@master/css-astro/middleware`, so you do not need to add `@master/css-server` manually.
 
 Default options:
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `mode` | `'progressive'` | Astro defaults to progressive rendering. |
-| `scanner` | `undefined` | Scanner options passed through to the shared Vite pipeline. |
-| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
-| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+| `enabled` | `true` | Enables the integration. |
+| `mode` | `'static'` | Selects static, pre-render, runtime, or progressive rendering. |
+| `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
+| `runtime` | `{ enabled: false }` | Enabled by runtime/progressive modes; optional FOUC protection. Explicit enabled values must agree with the mode. |
 
 See the [Astro installation guide](https://rc.css.master.co/guide/installation/astro) for a full project setup.

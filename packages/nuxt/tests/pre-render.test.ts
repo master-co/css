@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest'
+import { it, expect, vi } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch } from '@nuxt/test-utils'
 import { dirname, join, resolve } from 'node:path'
@@ -8,8 +8,11 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
-import { setupNuxtTest } from './setup-test'
-import { externalizeNitroPrerenderHydrationManifest } from '../src/module'
+import { fetchDeliveredStylesheet, setupNuxtTest } from './setup-test'
+import {
+  externalizeNitroPrerenderHydrationManifest,
+  registerNitroPrerenderHydrationManifest
+} from '../src/external-hydration-manifest'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,12 +27,15 @@ it('matches generated CSS', async () => {
   if (!match) throw new Error('Expected a stylesheet link in Nuxt pre-render HTML.')
   const href = match[1]
   if (!href) throw new Error('Expected Nuxt pre-render stylesheet link to include an href.')
-  expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+  expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
-  const css = await $fetch(href) as string
+  expect(html).toContain('.fg-host')
+  expect(html).not.toContain('--color-host:')
+  const css = await fetchDeliveredStylesheet(href)
   expect(css).toContain('.box')
   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+  expect(css).toMatch(/--color-host:\s*#123456/)
 })
 
 it('externalizes Nitro prerender hydration manifests', () => {
@@ -39,7 +45,7 @@ it('externalizes Nitro prerender hydration manifests', () => {
     fileName: 'index.html',
     contents: [
       '<html><head>',
-      '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+      "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
       `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
       '</head></html>'
     ].join('')
@@ -61,6 +67,45 @@ it('externalizes Nitro prerender hydration manifests', () => {
     const file = join(dir, ...source.replace(/^\//, '').split('/'))
     expect(existsSync(file)).toBe(true)
     expect(readFileSync(file, 'utf-8')).toContain('"className":"block"')
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+it('registers hydration externalization on Nitro prerender generation', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'master-css-nuxt-hook-'))
+  const hook = vi.fn()
+  try {
+    const nitro = {
+      options: {
+        baseURL: '/docs',
+        output: {
+          publicDir: dir
+        }
+      },
+      hooks: {
+        hook
+      }
+    }
+    registerNitroPrerenderHydrationManifest(nitro)
+    expect(hook).toHaveBeenCalledWith('prerender:generate', expect.any(Function))
+
+    const route = {
+      contentType: 'text/html',
+      fileName: 'index.html',
+      contents: [
+        '<html><head>',
+        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
+        `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
+        '</head></html>'
+      ].join('')
+    }
+    hook.mock.calls[0][1](route)
+
+    expect(route.contents).toContain(
+      `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/docs/_master-css/hydration/`
+    )
+    expect(route.contents).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }

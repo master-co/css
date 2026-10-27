@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@master/css.nuxt-playground",
+  "name": "@master/css-nuxt-playground",
   "type": "module",
   "scripts": {
     "dev": "nuxi dev",
@@ -9,6 +9,6 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
-    "nuxt": "latest"
+    "nuxt": "4.5.2"
   }
 }

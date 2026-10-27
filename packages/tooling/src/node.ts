@@ -1,0 +1,47 @@
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingBindingSync } from '@master/css-binding/tooling/node'
+import { bindLexerSession } from './lexer/session'
+import { bindLanguageSession } from './language/session'
+import { bindLintSession } from './lint/binding-session'
+import { bindSourceExtractor } from './source/session'
+import {
+  bindToolingSessionInternal,
+  type MasterCSSToolingSession
+} from './tooling-session'
+import { bindValidatorSession } from './validator/binding-session'
+
+export type { MasterCSSToolingSession } from './tooling-session'
+export { cssValueStatus, validateRuleDeclarations, CSS_VALUE_CHECK } from './value-validation'
+
+export function createToolingSessionSync(options: {
+  readonly manifest: MasterCSSManifest
+  /** Classes the project defines in native CSS; they report no diagnostics while they generate no rules. */
+  readonly nativeClassNames?: readonly string[]
+}): MasterCSSToolingSession {
+  const tooling = createToolingBindingSync()
+  const lexer = tooling.createLexerSession()
+  const source = tooling.createSourceSession()
+  const validator = tooling.createValidatorSession(options.manifest)
+  const language = tooling.createLanguageSession(options.manifest)
+  const lint = tooling.createLintSession(options.manifest)
+  const lintValidator = tooling.createValidatorSession(options.manifest)
+  const lintLanguage = tooling.createLanguageSession(options.manifest)
+  return bindToolingSessionInternal({
+    lexer: bindLexerSession('native', lexer),
+    source: bindSourceExtractor('native', source),
+    validator: bindValidatorSession(
+      'native',
+      validator,
+      options.nativeClassNames
+    ),
+    lint: bindLintSession(lint, lintValidator, lintLanguage),
+    language: bindLanguageSession('native', language, options.nativeClassNames)
+  })
+}
+
+/** Versions from the artifact that actually executes project semantics. */
+export function getToolingBindingInfo() {
+  return createToolingBindingSync().info
+}
+
+export { cssSyntaxStatus, CSS_SYNTAX_CHECK } from './syntax-validation'

@@ -1,32 +1,13 @@
 # Review Pack
 
-Use this for PR or code review.
+Use for PR or code review. Start with the diff, affected package guidance, and evidence in source/tests. Use `.ai/review-checklist.md` for the review contract; use [accuracy-guardrails.md](accuracy-guardrails.md) for high-risk behavior.
 
-## Read
+## Relevant Context
 
-- `AGENTS.md`
-- `.ai/context/index.md`
-- `.ai/review-checklist.md`
-- Affected package `AI.md` files, if present
-- Diff, tests, fixtures, and public API changes
+- Ownership or dependency questions: [package-boundaries.md](package-boundaries.md), `.ai/architecture.md`, `.ai/boundaries.md`.
+- CSS differences: [css-output.md](css-output.md).
+- Performance claims: [performance.md](performance.md).
 
-## Findings First
+## Findings
 
-Prioritize:
-
-- Bugs and regressions
-- CSS output changes
-- Public API and export changes
-- Missing tests
-- Priority, cascade, variable, manifest, runtime, extraction, language, and ESLint risks
-- Unrelated files, lockfile, CI, release, generated output, or broad formatting churn
-
-## Escalate When
-
-- Dependency direction or ownership is unclear: read `.ai/context/package-boundaries.md`, `.ai/architecture.md`, and `.ai/boundaries.md`.
-- Output changes are present: read `.ai/context/css-output.md`.
-- Performance claims are present: read `.ai/context/performance.md`.
-
-## Output
-
-Lead with findings ordered by severity and include file/line references. Then list open questions or assumptions. Keep summaries secondary. If no issues are found, say so and mention remaining test gaps or residual risk.
+Follow the severity order in `AGENTS.md`. Include file/line evidence, impact, and missing validation. Flag unexplained CSS changes and unrelated lockfile, CI, release, generated-file, or formatting churn. Lead with findings, then open questions; if none are found, state that and identify residual risks or validation gaps.

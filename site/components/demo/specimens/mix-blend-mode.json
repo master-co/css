@@ -1,0 +1,43 @@
+[
+  {
+    "page": "mix-blend-mode",
+    "id": "blend-an-element-with-its-backdrop",
+    "title": "Blend an element with its backdrop",
+    "html": [
+      "<!-- Normal · one foreground color -->\n<div class=\"position:relative isolation:isolate height:160px width:240px\n         max-width:100% background-color:#e2e8f0\">\n  <div aria-hidden=\"true\"\n    class=\"position:absolute bottom:0 right:0 top:0 width:120px background-color:#c4b5fd\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"position:absolute left:72px top-xl width:96px height:96px r-lg\n           background-color:#2563eb mix-blend-mode:normal\"></div>\n</div>",
+      "<!-- Multiply · combines with both backdrops -->\n<div class=\"position:relative isolation:isolate height:160px width:240px\n         max-width:100% background-color:#e2e8f0\">\n  <div aria-hidden=\"true\"\n    class=\"position:absolute bottom:0 right:0 top:0 width:120px background-color:#c4b5fd\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"position:absolute left:72px top-xl width:96px height:96px r-lg\n           background-color:#2563eb mix-blend-mode:multiply\"></div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "position:relative",
+      "isolation:isolate",
+      "height:160px",
+      "width:240px",
+      "max-width:100%",
+      "background-color:#e2e8f0",
+      "position:absolute",
+      "bottom:0",
+      "right:0",
+      "top:0",
+      "width:120px",
+      "background-color:#c4b5fd",
+      "left:72px",
+      "top-xl",
+      "width:96px",
+      "height:96px",
+      "r-lg",
+      "background-color:#2563eb",
+      "mix-blend-mode:normal",
+      "mix-blend-mode:multiply"
+    ],
+    "classLists": [
+      "position:relative isolation:isolate height:160px width:240px max-width:100% background-color:#e2e8f0",
+      "position:absolute bottom:0 right:0 top:0 width:120px background-color:#c4b5fd",
+      "position:absolute left:72px top-xl width:96px height:96px r-lg background-color:#2563eb mix-blend-mode:normal",
+      "position:relative isolation:isolate height:160px width:240px max-width:100% background-color:#e2e8f0",
+      "position:absolute bottom:0 right:0 top:0 width:120px background-color:#c4b5fd",
+      "position:absolute left:72px top-xl width:96px height:96px r-lg background-color:#2563eb mix-blend-mode:multiply"
+    ],
+    "highlighted": []
+  }
+]

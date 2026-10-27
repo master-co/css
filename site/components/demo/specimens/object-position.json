@@ -1,0 +1,27 @@
+[
+  {
+    "page": "object-position",
+    "id": "use-precise-positions",
+    "title": "Use precise positions",
+    "html": [
+      "<!-- 50% 25% · 12.5px top crop -->\n<img id=\"target\" src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"Blue and violet mountains beneath a yellow sun\"\n  class=\"display:block height:100px width:240px max-width:100%\n         bg-surface-base object-fit:cover\n         object-position:50%|25%\" />",
+      "<!-- Left 12px · top 8px -->\n<img id=\"target\" src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"Blue and violet mountains beneath a yellow sun\"\n  class=\"display:block height:100px width:240px max-width:100%\n         bg-surface-base object-fit:cover\n         object-position:left|12px|top|8px\" />"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "height:100px",
+      "width:240px",
+      "max-width:100%",
+      "bg-surface-base",
+      "object-fit:cover",
+      "object-position:50%|25%",
+      "object-position:left|12px|top|8px"
+    ],
+    "classLists": [
+      "display:block height:100px width:240px max-width:100% bg-surface-base object-fit:cover object-position:50%|25%",
+      "display:block height:100px width:240px max-width:100% bg-surface-base object-fit:cover object-position:left|12px|top|8px"
+    ],
+    "highlighted": []
+  }
+]

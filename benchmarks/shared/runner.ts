@@ -35,7 +35,7 @@ export async function resetDirectory(path: string) {
   await mkdir(path, { recursive: true })
 }
 
-export async function writeWorkspaceFiles(root: string, files: Record<string, string>) {
+export async function writeWorkspaceFiles(root: string, files: Record<string, string | Buffer>) {
   await Promise.all(Object.entries(files).map(async ([name, content]) => {
     const file = resolve(root, name)
     await mkdir(dirname(file), { recursive: true })

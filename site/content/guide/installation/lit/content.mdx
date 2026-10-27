@@ -1,0 +1,72 @@
+import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create a Lit project
+      If you don't have a Lit project, create one first.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create vite@latest my-app -- --template lit-ts
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS
+      Run the installer from the Lit project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework lit --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Include styles in the shadow root
+      Import the generated stylesheet as text and include it with Lit’s `unsafeCSS`. The CSS comes from your build input; do not pass untrusted user text to `unsafeCSS`. The installer preserves the standard component’s existing styles when adding this stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=src/my-element.ts
+      import { LitElement, html, unsafeCSS } from 'lit'
+      import { customElement } from 'lit/decorators.js'
+      import masterCSSStyles from './index.css?inline'
+
+      @customElement('my-element')
+      export class MyElement extends LitElement {
+        static styles = [unsafeCSS(masterCSSStyles)]
+
+        render() {
+          return html`<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>`
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Start dev server
+      Run the command to start the Vite dev server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal&action=run
+      dev
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Now style elements inside your Lit templates using Master CSS syntax.
+  </Step>
+  <HelloWorld url="localhost:5173" />
+</StepSection>
+
+
+For newly generated class names, explicitly select `--mode runtime` and use the
+`withMasterCSSRuntime` decorator with `virtual:master-css-program` and
+`virtual:master-css-emitted-globals`. Attach one runtime to each shadow root.
+Static mode needs no engine, program, or decorator in the browser.

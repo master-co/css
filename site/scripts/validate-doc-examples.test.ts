@@ -1,17 +1,98 @@
+import './maintenance-examples.test'
+import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
+import { stylesheetExamples } from '../tests/stylesheet-examples'
+import { stylesheetExampleCSS } from '../reference/stylesheet-example'
+import { verifyDirectiveExamples } from '../tests/directive-examples'
+import { verifyToolContractExamples } from '../tests/tool-contract-examples'
+import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
+import { verifyInstallationExamples } from '../tests/installation-examples'
+import { verifyLanguageExamples } from '../tests/tooling-examples-checks'
+import { authoringSource } from '../utils/authoring-examples'
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { test } from 'node:test'
+import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { extractClassCandidates } from '@master/css-source'
-import { validate } from '@master/css-validator'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import { validateCSS } from '@master/css-tooling/css'
+import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
+import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
+import { configuredExampleCSS } from '../reference/configured-example'
+import { routeStyles } from '../tests/delivery-examples'
+import { installationGuideSlugs } from '../utils/installation-content'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
-const appRoot = path.join(siteRoot, 'app/[locale]')
-const docSections = new Set(['blog', 'guide', 'messages', 'reference'])
+const appRoot = path.join(siteRoot, 'content')
+const docSections = new Set(['blog', 'guide', 'reference'])
 const visibleSourceFiles = [
-  'app/examples/layout-system/page.tsx'
+  'content/examples/layout-system/page.tsx'
 ]
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const tooling = createToolingSessionSync({ manifest: defaultManifest })
+const privateRuntimeNames = [
+  'classCounts',
+  'classUtilities',
+  'retainedClassNames',
+  'flushRetainedClassRules'
+] as const
+
+interface PublicAPIPackage {
+  entrypoints: Record<string, string[]>
+  exports: string[]
+}
+
+interface PublicAPIContract {
+  packages: Record<string, PublicAPIPackage>
+}
+
+interface APICensusContract {
+  records: {
+    id: string
+    kind: string
+    name?: string
+  }[]
+}
+
+const publicAPI = publicAPIJSON as PublicAPIContract
+const cliCommands = new Set((apiCensusJSON as APICensusContract).records
+  .filter(({ id, kind }) => kind === 'cli-command' && id.startsWith('cli-command:master-css:'))
+  .flatMap(({ name }) => name ? [name] : []))
+
+after(() => tooling.dispose())
+
+test('route-level native CSS retains referenced tokens and named conditions', async () => {
+  const css = await routeStyles()
+  assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
+  assert.match(css, /--color-surface-raised:/)
+  assert.match(css, /--spacing-5xl:/)
+  assert.match(css, /\.home-cta\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*background-color:/)
+  assert.match(css, /@media \(width\s*<\s*52\.125rem\)\s*\{\s*width:\s*100%/)
+  assert.doesNotMatch(css, /@compose|@reference/)
+})
+
+function extractClassCandidates(content: string) {
+  return tooling.extractClassCandidates(content)
+}
+
+function validate(className: string) {
+  const generated = tooling.validateClassNames([className]).classes[0]
+  if (generated?.matchStatus !== 'matched') {
+    return {
+      matched: false,
+      errors: [{
+        class: className,
+        message: `'${className}' is not a valid Master CSS class`,
+        rawMessage: 'Mismatch'
+      }]
+    }
+  }
+  return {
+    matched: true,
+    errors: generated.rules.flatMap((rule) => validateCSS(rule.text))
+  }
+}
 
 interface ExampleCandidate {
   candidate: string
@@ -23,6 +104,19 @@ interface ExampleCandidate {
 
 interface PageCategory {
   name: string
+}
+
+interface FencedExample {
+  index: number
+  info: string
+  range: [number, number]
+  text: string
+}
+
+interface DocumentedImport {
+  index: number
+  names: string[]
+  specifier: string
 }
 
 test('overview category references resolve to generated categories', async () => {
@@ -52,6 +146,65 @@ test('overview category references resolve to generated categories', async () =>
   assert.deepEqual(failures, [])
 })
 
+test('installation routes use static entry points and explicit optional modes', async () => {
+  const root = path.join(appRoot, 'guide/installation')
+  const actual = new Set<string>(['', 'integrations', 'cli', 'cdn'])
+
+  for (const framework of await readdir(root, { withFileTypes: true })) {
+    if (!framework.isDirectory() || framework.name === '(main)') continue
+    const frameworkRoot = path.join(root, framework.name)
+    const entries = await readdir(frameworkRoot, { withFileTypes: true })
+    if (entries.some((entry) => entry.isFile() && entry.name === 'content.mdx')) actual.add(framework.name)
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const files = await readdir(path.join(frameworkRoot, entry.name))
+      if (files.includes('content.mdx')) actual.add(`${framework.name}/${entry.name}`)
+    }
+  }
+
+  assert.deepEqual([...actual].sort(), [...installationGuideSlugs].sort())
+  assert.ok([...actual].every((slug) => !/(?:static|runtime|progressive)-rendering/.test(slug)))
+  assert.ok(!actual.has('angular/progressive'))
+  assert.ok(!actual.has('laravel/runtime'))
+
+  for (const slug of actual) {
+    if (!slug || ['integrations', 'cli', 'cdn'].includes(slug)) continue
+    const [framework, mode] = slug.split('/')
+    const directory = path.join(root, slug)
+    const content = await readFile(path.join(directory, 'content.mdx'), 'utf8')
+    const metadata = await readFile(path.join(directory, 'metadata.ts'), 'utf8')
+    if (mode) {
+      assert.match(metadata, new RegExp(`title: '${mode === 'runtime' ? 'Runtime' : 'Progressive'} Rendering`), slug)
+      if (content.includes('npm create @master/css@rc')) assert.match(content, new RegExp(`--mode ${mode}\\b`), slug)
+      assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
+    } else {
+      const layout = await readFile(path.join(directory, 'layout.tsx'), 'utf8').catch(() => '')
+      if (layout) {
+        assert.match(metadata, /title: 'Static Rendering/, slug)
+        assert.ok(layout.includes(`<Tab href='/guide/installation/${framework}'>{$('Static Rendering')}`), slug)
+        for (const line of layout.split('\n').filter((line) => line.includes('<TabBadge>'))) {
+          assert.ok(line.includes(`<Tab href='/guide/installation/${framework}'`), slug)
+        }
+      }
+      if (content.includes('npm create @master/css@rc') && framework !== 'laravel') {
+        assert.doesNotMatch(content, /npm create @master\/css@rc[^\n]*--mode\s+(?:runtime|progressive)/, slug)
+      }
+    }
+  }
+
+  const sourceFiles: string[] = []
+  await walk(appRoot, sourceFiles)
+  sourceFiles.push(path.join(siteRoot, 'utils/installation-content.ts'))
+  const staleLinks: string[] = []
+  for (const file of sourceFiles.filter((file) => /\.(?:mdx|ts|tsx)$/.test(file))) {
+    const content = await readFile(file, 'utf8')
+    if (/\/guide\/installation\/[a-z-]+\/(?:static|runtime|progressive)-rendering\b/.test(content)) {
+      staleLinks.push(path.relative(siteRoot, file))
+    }
+  }
+  assert.deepEqual(staleLinks, [])
+})
+
 test('docs example classes are valid default preset classes or locally defined custom classes', async () => {
   const files = [
     ...await collectMdxDocs(),
@@ -61,7 +214,23 @@ test('docs example classes are valid default preset classes or locally defined c
 
   for (const file of files) {
     const content = await readFile(file, 'utf8')
+    // Opted-in paired fences are checked with their actual project definitions,
+    // rather than accepting a custom class solely because its name appears nearby.
+    const compiledRanges: [number, number][] = []
+    for (const html of content.matchAll(/```html name=([^&\n]+)&verify=compile\n([\s\S]*?)```/g)) {
+      const cssName = html[1].replace(/\.html$/, '.css')
+      const css = [...content.matchAll(/```css name=([^\n]+)\n([\s\S]*?)```/g)].find(match => match[1] === cssName)
+      assert.ok(css, `Missing paired CSS example ${cssName}`)
+      const classes = tooling.extractSource({ files: [{ source: html[1], content: html[2], kind: 'html' }] }).files[0].candidates
+      configuredExampleCSS(css[2], [...classes])
+      compiledRanges.push([lineAt(content, html.index), lineAt(content, html.index + html[0].length)])
+    }
+    for (const example of stylesheetExamples(content)) {
+      const css = await stylesheetExampleCSS(example.source)
+      assert.deepEqual(validateCSS(css), [], `${file}: ${example.title}`)
+    }
     for (const eachCandidate of extractExampleCandidates(file, content)) {
+      if (compiledRanges.some(([start, end]) => eachCandidate.line >= start && eachCandidate.line <= end)) continue
       const result = validate(eachCandidate.candidate)
       if (result.matched && result.errors.length === 0) continue
       if (isAllowedPresetValidatorGap(eachCandidate.candidate, result)) continue
@@ -78,6 +247,220 @@ test('docs example classes are valid default preset classes or locally defined c
 
   assert.deepEqual(failures, [])
 })
+
+test('docs @master imports resolve to public package subpaths and exports', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const example of extractFencedExamples(content)) {
+      for (const documentedImport of extractDocumentedImports(example.text)) {
+        for (const message of validateDocumentedImport(documentedImport)) {
+          failures.push(`${formatFileLine(file, lineAt(content, example.index + documentedImport.index))} | ${message}`)
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs CLI examples use registered master-css subcommands', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const example of extractFencedExamples(content)) {
+      if (!isShellFence(example.info)) continue
+      for (const invocation of extractCLIInvocations(example.text)) {
+        if (invocation.command && cliCommands.has(invocation.command)) continue
+        failures.push(`${formatFileLine(file, lineAt(content, example.index + invocation.index))} | master-css requires a registered subcommand; received ${invocation.command || 'none'}`)
+      }
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs runtime examples use the public runtime state and rule API signatures', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const name of privateRuntimeNames) {
+      for (const match of content.matchAll(new RegExp(`\\b${name}\\b`, 'g'))) {
+        failures.push(`${formatFileLine(file, lineAt(content, match.index))} | ${name} is private runtime state`)
+      }
+    }
+    for (const call of extractRuntimeRuleCalls(content)) {
+      if (isValidRuntimeRuleCall(call.arguments)) continue
+      failures.push(`${formatFileLine(file, lineAt(content, call.index))} | ${call.name} expects one class-name array`)
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs contract helpers reject stale public examples', () => {
+  assert.deepEqual(validateDocumentedImport({
+    index: 0,
+    names: ['MasterCSSRuntime'],
+    specifier: '@master/css-runtime'
+  }), [])
+  assert.match(validateDocumentedImport({
+    index: 0,
+    names: ['classCounts'],
+    specifier: '@master/css-runtime'
+  })[0], /is not exported/)
+  assert.match(validateDocumentedImport({
+    index: 0,
+    names: [],
+    specifier: '@master/css-runtime/private'
+  })[0], /is not a public package subpath/)
+  assert.deepEqual(extractCLIInvocations('npx @master/css-cli generate "index.html"')[0]?.command, 'generate')
+  assert.equal(cliCommands.has(extractCLIInvocations('npx @master/css-cli "index.html"')[0]?.command || ''), false)
+  assert.equal(isValidRuntimeRuleCall("['btn', 'grid']"), true)
+  assert.equal(isValidRuntimeRuleCall('...classNames'), false)
+  assert.equal(isValidRuntimeRuleCall("'btn'"), false)
+})
+
+function extractFencedExamples(content: string): FencedExample[] {
+  const examples: FencedExample[] = []
+  const pattern = /^```([^\n]*)\n([\s\S]*?)^```/gm
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(content))) {
+    const text = match[2]
+    examples.push({
+      index: match.index + match[0].indexOf(text),
+      info: match[1].trim(),
+      range: [match.index, pattern.lastIndex],
+      text
+    })
+  }
+  return examples
+}
+
+function extractDocumentedImports(text: string): DocumentedImport[] {
+  const imports: DocumentedImport[] = []
+  const add = (match: RegExpExecArray, specifier: string, names: string[] = []) => {
+    imports.push({ index: match.index, names, specifier })
+  }
+  const importPattern = /\bimport\s+(?:type\s+)?(?:([A-Za-z_$][\w$]*)\s*(?:,\s*)?)?(?:\{([^{}]*?)\}|\*\s+as\s+[A-Za-z_$][\w$]*)?\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\3/g
+  const exportPattern = /\bexport\s+(?:type\s+)?\{([^{}]*?)\}\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\2/g
+  const exportAllPattern = /\bexport\s+\*\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1/g
+  const sideEffectPattern = /\bimport\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1/g
+  const dynamicPattern = /\bimport\s*\(\s*(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1\s*\)/g
+  let match: RegExpExecArray | null
+
+  while ((match = importPattern.exec(text))) {
+    add(match, match[4], [
+      ...(match[1] ? ['default'] : []),
+      ...extractImportedNames(match[2] || '')
+    ])
+  }
+  while ((match = exportPattern.exec(text))) add(match, match[3], extractImportedNames(match[1]))
+  while ((match = exportAllPattern.exec(text))) add(match, match[2])
+  while ((match = sideEffectPattern.exec(text))) add(match, match[2])
+  while ((match = dynamicPattern.exec(text))) add(match, match[2])
+
+  return imports.sort((left, right) => left.index - right.index)
+}
+
+function extractImportedNames(clause: string): string[] {
+  return clause
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+    .split(',')
+    .map((name) => name.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0])
+    .filter(Boolean)
+}
+
+function validateDocumentedImport(documentedImport: DocumentedImport): string[] {
+  const match = documentedImport.specifier.match(/^(@master\/[^/]+)(?:\/(.+))?$/)
+  if (!match) return [`${documentedImport.specifier} is not a valid @master package specifier`]
+  const packageName = match[1]
+  const subpath = match[2] ? `./${match[2]}` : '.'
+  const packageContract = publicAPI.packages[packageName]
+  if (!packageContract) return [`${packageName} is not a public package`]
+  if (!packageContract.exports.includes(subpath)) {
+    return [`${documentedImport.specifier} is not a public package subpath`]
+  }
+  const exports = new Set(packageContract.entrypoints[subpath] || [])
+  return documentedImport.names
+    .filter((name) => !exports.has(name))
+    .map((name) => `${name} is not exported by ${documentedImport.specifier}`)
+}
+
+function isShellFence(info: string) {
+  return /^(?:bash|console|sh|shell|zsh)(?:\s|$)/.test(info)
+}
+
+function extractCLIInvocations(text: string): { command?: string, index: number }[] {
+  const invocations: { command?: string, index: number }[] = []
+  let offset = 0
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim().replace(/^\$\s*/, '')
+    const npxPattern = /\bnpx\s+(?:(?:-y|--yes)\s+)?@master\/css-cli(?:@[^\s]+)?(?:\s+([^\s\\]+))?/g
+    let match: RegExpExecArray | null
+    while ((match = npxPattern.exec(line))) {
+      invocations.push({ command: match[1], index: offset + rawLine.indexOf(match[0]) })
+    }
+    const direct = line.match(/^(?:[A-Za-z_]\w*=\S+\s+)*master-css(?:\s+([^\s\\]+))?/)
+    if (direct) invocations.push({ command: direct[1], index: offset + rawLine.indexOf('master-css') })
+    offset += rawLine.length + 1
+  }
+  return invocations
+}
+
+function extractRuntimeRuleCalls(content: string): { arguments: string, index: number, name: string }[] {
+  const calls: { arguments: string, index: number, name: string }[] = []
+  const pattern = /\b(ensureClassRules|deleteClassRules)\s*\(/g
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(content))) {
+    const open = content.indexOf('(', match.index)
+    const call = readCallArguments(content, open)
+    if (!call) continue
+    calls.push({ arguments: call.value, index: match.index, name: match[1] })
+    pattern.lastIndex = call.end
+  }
+  return calls
+}
+
+function readCallArguments(text: string, open: number): { end: number, value: string } | undefined {
+  let depth = 1
+  for (let index = open + 1; index < text.length; index++) {
+    const char = text[index]
+    if (char === '"' || char === '\'' || char === '`') {
+      const literal = readStringLiteral(text, index)
+      if (!literal) return
+      index = literal.end - 1
+    } else if (char === '(') {
+      depth++
+    } else if (char === ')' && --depth === 0) {
+      return { end: index + 1, value: text.slice(open + 1, index) }
+    }
+  }
+}
+
+function isValidRuntimeRuleCall(argumentsText: string) {
+  const value = argumentsText.trim()
+  if (!value || value.startsWith('...') || /^["'`]/.test(value)) return false
+  let squareDepth = 0
+  let braceDepth = 0
+  let parenthesisDepth = 0
+  for (let index = 0; index < value.length; index++) {
+    const char = value[index]
+    if (char === '"' || char === '\'' || char === '`') {
+      const literal = readStringLiteral(value, index)
+      if (!literal) return false
+      index = literal.end - 1
+    } else if (char === '[') squareDepth++
+    else if (char === ']') squareDepth--
+    else if (char === '{') braceDepth++
+    else if (char === '}') braceDepth--
+    else if (char === '(') parenthesisDepth++
+    else if (char === ')') parenthesisDepth--
+    else if (char === ',' && squareDepth === 0 && braceDepth === 0 && parenthesisDepth === 0) return false
+  }
+  return squareDepth === 0 && braceDepth === 0 && parenthesisDepth === 0
+}
 
 async function collectMdxDocs(): Promise<string[]> {
   const files: string[] = []
@@ -130,25 +513,19 @@ function isNotFoundError(error: unknown): boolean {
 function extractExampleCandidates(file: string, content: string): ExampleCandidate[] {
   const candidates: ExampleCandidate[] = []
   const fencedRanges: [number, number][] = []
-  const fencePattern = /^```([^\n]*)\n([\s\S]*?)^```/gm
-  let fenceMatch: RegExpExecArray | null
-
-  while ((fenceMatch = fencePattern.exec(content))) {
-    const info = fenceMatch[1]
-    const body = fenceMatch[2]
-    const bodyIndex = fenceMatch.index + fenceMatch[0].indexOf(body)
-    fencedRanges.push([fenceMatch.index, fencePattern.lastIndex])
+  for (const example of extractFencedExamples(content)) {
+    fencedRanges.push(example.range)
     candidates.push(...extractCandidatesFromSnippet({
       content,
       file,
-      index: bodyIndex,
-      kind: `fenced:${info.trim().split(/\s+/)[0] || 'text'}`,
+      index: example.index,
+      kind: `fenced:${example.info.split(/\s+/)[0] || 'text'}`,
       scanClassAttributes: true,
-      text: body
+      text: example.text
     }))
   }
 
-  const unfenced = blankRanges(content, fencedRanges)
+  const unfenced = blankRanges(content, [...fencedRanges, ...stylesheetExamples(content).map(example => example.range)])
   candidates.push(...extractCandidatesFromSnippet({
     content,
     file,
@@ -158,6 +535,11 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
     text: unfenced
   }))
 
+  // This page displays its literal package CSS through a registered source component.
+  if (relativeSitePath(file) === 'content/guide/authoring-packages/content.mdx'
+    && content.includes('<PackageAuthoringExample part="source"')) {
+    for (const candidate of candidates) candidate.context += '\n' + authoringSource
+  }
   return candidates
 }
 
@@ -202,11 +584,7 @@ function extractCandidatesFromSnippet(input: {
     }
   }
 
-  for (const each of extractDirectiveValues(input.text, '@compose')) {
-    add(each.value, each.index, `${input.kind}:compose`)
-  }
-
-  for (const each of extractDirectiveValues(input.text, '@safelist')) {
+  for (const each of extractSafelistValues(input.text)) {
     add(each.value, each.index, `${input.kind}:safelist`)
   }
 
@@ -235,14 +613,12 @@ function extractMarkedClasses(text: string): { index: number, value: string }[] 
   return out
 }
 
-function extractDirectiveValues(text: string, directive: '@compose' | '@safelist'): { index: number, value: string }[] {
+function extractSafelistValues(text: string): { index: number, value: string }[] {
   const out: { index: number, value: string }[] = []
-  const pattern = directive === '@compose'
-    ? /@compose\s+([^;\n]+)/g
-    : /@safelist\s+(["'])([\s\S]*?)\1/g
+  const pattern = /@safelist\s+(["'])([\s\S]*?)\1/g
   let match: RegExpExecArray | null
   while ((match = pattern.exec(text))) {
-    const value = directive === '@compose' ? match[1] : match[2]
+    const value = match[2]
     out.push({ index: match.index, value })
   }
   return out
@@ -374,13 +750,22 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
   if (/^[:@]/.test(candidate)) return true
   if (candidate.includes('`') || candidate.includes('…') || /[<>]/.test(candidate)) return true
   if (candidate === 'light' || candidate === 'dark') return true
+  if (isMigrationVendorClass(eachCandidate)) return true
   if (isExpectedDiagnostic(candidate, eachCandidate.file)) return true
   if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
   if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedVariant(candidate, eachCandidate.context)) return true
+  if (usesLocallyDefinedCustomMedia(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedToken(candidate, eachCandidate.context)) return true
   if (usesSiteThemeRoleToken(candidate)) return true
   return false
+}
+
+/** These literal classes belong to the retained Bootstrap 5.3 markup, not Master CSS. */
+function isMigrationVendorClass(example: ExampleCandidate): boolean {
+  return relativeSitePath(example.file) === 'content/guide/migration/bootstrap/content.mdx'
+    && example.kind === 'fenced:html:class'
+    && ['py-5', 'row', 'g-4', 'col-md-4'].includes(example.candidate)
 }
 
 function isExpectedDiagnostic(candidate: string, file: string): boolean {
@@ -409,73 +794,44 @@ function isSelectorMarker(candidate: string, file: string): boolean {
 function isLocallyDefinedClass(candidate: string, context: string): boolean {
   if (!/^[a-z][\w-]*$/.test(candidate)) return false
   const escapedCandidate = escapeRegExp(candidate)
+  if (new RegExp(`@mixin\\s+--${escapedCandidate}\\s*(?:\\(\\s*\\))?\\s*\\{`).test(context)) return true
   return new RegExp(`(?:\\.${escapedCandidate}|(?:^|[\\s{])${escapedCandidate})\\s*\\{`, 'm').test(context)
 }
 
 function usesLocallyDefinedVariant(candidate: string, context: string): boolean {
-  for (const eachVariant of candidate.match(/@[a-z][\w-]*/g) ?? []) {
-    if (!context.includes(`@custom-variant ${eachVariant.slice(1)}`)) return false
-  }
-  return /@[a-z][\w-]*/.test(candidate)
+  const calls = [...candidate.matchAll(/@apply\((--[\w-]+)/g)]
+  return calls.length > 0 && calls.every(([, name]) => new RegExp(`@mixin\\s+${escapeRegExp(name)}(?:\\s|\\(|\\{)`).test(context))
 }
 
 function usesLocallyDefinedToken(candidate: string, context: string): boolean {
-  const localTokens = collectLocalTokenNames(context)
-  if (!localTokens.size) return false
-  const candidateTokens = collectCandidateTokenNames(candidate)
-  return candidateTokens.some((eachToken) => localTokens.has(eachToken))
+  const declarations = [...context.replaceAll('\\n', '\n').matchAll(/(?<=^|[;{])\s*(--[a-z][\w-]*\s*:\s*[^;{}]+;)/gm)].map(match => match[1])
+  if (!declarations.length) return false
+  try {
+    configuredExampleCSS(`@theme { ${declarations.join(' ')}  }`, [candidate])
+    return true
+  } catch { return false }
 }
 
-const siteThemeRoleTokenNames = new Set([
-  'surface',
-  'surface-base',
-  'surface-muted',
-  'surface-raised',
-  'surface-overlay',
-  'line',
-  'line-muted',
-  'line-subtle',
-  'line-strong',
-  'strong',
-  'muted',
-  'subtle',
-  'disabled'
-])
+function usesLocallyDefinedCustomMedia(candidate: string, context: string): boolean {
+  const variants = candidate.match(/@[a-z][\w-]*/g) ?? []
+  if (!variants.length) return false
+  const declarations: string[] = []
+  for (const variant of variants) {
+    const declaration = context.match(new RegExp(`@custom-media\\s+--${escapeRegExp(variant.slice(1))}\\s+([^;{}]+);`))?.[0]
+    if (!declaration) return false
+    declarations.push(declaration)
+  }
+  try {
+    configuredExampleCSS(declarations.join(' '), [candidate])
+    return true
+  } catch { return false }
+}
 
 function usesSiteThemeRoleToken(candidate: string): boolean {
-  if (!/^(?:bg|fg|text|b|bt|br|bb|bl|bx|by|border(?:-[\w-]+)?|outline|background-color):/.test(candidate)) return false
-  return collectCandidateTokenNames(candidate).some((eachToken) => siteThemeRoleTokenNames.has(eachToken))
-}
-
-function collectLocalTokenNames(context: string): Set<string> {
-  const names = new Set<string>()
-  for (const match of context.matchAll(/--([a-z][\w-]*)\s*:/g)) {
-    const parts = match[1].split('-')
-    for (let index = 0; index < parts.length; index++) {
-      names.add(parts.slice(index).join('-'))
-    }
-  }
-  return names
-}
-
-function collectCandidateTokenNames(candidate: string): string[] {
-  const headlessCandidate = candidate
-    .replace(/!.*/, '')
-    .replace(/@[a-z0-9_()<>=!&|:-]+/gi, '')
-  const valueIndex = headlessCandidate.indexOf(':')
-  if (valueIndex === -1) return []
-  const value = headlessCandidate
-    .slice(valueIndex + 1)
-    .split(':')[0]
-    .replace(/\$([a-z][\w-]*)/gi, '$1')
-  const names = new Set<string>()
-  for (const part of value.split(/[|/(),\s]+/)) {
-    const normalized = part.replace(/^[-+]?\d*\.?\d+[a-z%]*$/i, '').replace(/[^a-z0-9-]/gi, '')
-    if (!normalized || ['none', 'solid', 'auto', 'normal', 'inherit', 'initial'].includes(normalized)) continue
-    names.add(normalized)
-    names.add(normalized.replace(/-\d+$/, ''))
-  }
-  return [...names]
+  try {
+    configuredExampleCSS('', [candidate])
+    return true
+  } catch { return false }
 }
 
 function contextFor(content: string, index: number, length: number): string {
@@ -521,3 +877,90 @@ function formatFileLine(file: string, line: number): string {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+test('migration TypeScript examples parse and preserve native button and progress props', async () => {
+  const { migrationFences, migrationSlugs, compileMigrationExample, renderMigrationExample } = await import('../tests/migration-examples')
+  for (const slug of migrationSlugs) {
+    const examples = migrationFences(slug).filter(example => ['tsx', 'ts', 'jsx', 'js'].includes(example.language))
+    for (const example of examples) {
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(diagnostic => diagnostic.messageText), [], `${slug}: ${example.text}`)
+      if (example.text.includes('export function Button')) {
+        const html = renderMigrationExample(example.text, 'Button', { children: 'Save changes', className: 'caller-class', type: 'submit', disabled: true })
+        assert.match(html, /type="submit"/)
+        assert.match(html, /disabled=""/)
+        assert.match(html, /class="[^\"]+ caller-class"/)
+        assert.match(html, />Save changes<\/button>/)
+        assert.doesNotMatch(html, /(?:tone|size)=/)
+        assert.match(renderMigrationExample(example.text, 'Button', { children: 'Preview' }), /type="button"/)
+      }
+      if (example.text.includes('export function Progress')) {
+        for (const [value, expected] of [[75, 75], [150, 100], [-1, 0], [NaN, 0]]) {
+          const html = renderMigrationExample(example.text, 'Progress', { value })
+          assert.match(html, /role="progressbar" aria-label="Upload progress"/)
+          assert.ok(html.includes(`aria-valuenow="${expected}"`))
+          assert.ok(html.includes(`--progress:${expected}%`))
+          assert.ok(html.includes('w:var(--progress)'))
+        }
+      }
+    }
+  }
+})
+
+
+test('vendor migration snippets parse and the documented engine wrapper forwards current state', async () => {
+  const { migrationFences, vendorMigrationSlugs, compileMigrationExample } = await import('../tests/migration-examples')
+  for (const slug of vendorMigrationSlugs) {
+    for (const example of migrationFences(slug).filter(f => ['ts', 'tsx', 'js', 'jsx'].includes(f.language))) {
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => d.messageText), [], `${slug || 'overview'}: ${example.text}`)
+    }
+  }
+  const source = migrationFences('').find(f => f.text.includes('function wrapEngine'))!.text
+  const { createEngineSync } = await import('@master/css/node')
+  const inner = createEngineSync({ manifest: defaultManifest })
+  const exports: { wrapEngine?: (engine: typeof inner) => typeof inner } = {}
+  // Only the checked, repository-authored wrapper fence is evaluated.
+  new Function('exports', compileMigrationExample(`${source}\nexport { wrapEngine }`).outputText)(exports)
+  const wrapper = exports.wrapEngine!(inner)
+  try {
+    assert.equal(wrapper.binding, inner.binding)
+    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
+    wrapper.ensureClassRules(['display:block'])
+    assert.deepEqual(wrapper.executionState(['display:block']), inner.executionState(['display:block']))
+    assert.ok(wrapper.executionState(['display:block']).classes[0].references.length)
+    wrapper.deleteClassRules(['display:block'])
+    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
+    assert.deepEqual(wrapper.snapshot(), inner.snapshot())
+  } finally { wrapper[Symbol.dispose]() }
+  assert.throws(() => inner.executionState([]), /disposed/)
+})
+
+
+test('Bootstrap class allowance is limited to its documented vendor vocabulary', () => {
+  const example = { file: path.join(appRoot, 'guide/migration/bootstrap/content.mdx'), kind: 'fenced:html:class', context: '', line: 1, candidate: 'col-md-4' }
+  assert.equal(isMigrationVendorClass(example), true)
+  assert.equal(isMigrationVendorClass({ ...example, candidate: 'col-md-broken' }), false)
+  assert.equal(isMigrationVendorClass({ ...example, kind: 'fenced:css:compose' }), false)
+  assert.equal(isMigrationVendorClass({ ...example, file: path.join(appRoot, 'guide/theme/content.mdx') }), false)
+})
+
+test('language service guide examples match actual completion, hover and formatter output', verifyLanguageExamples)
+
+test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
+test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
+test('installation guides match the setup output and package asset paths', verifyInstallationExamples)
+
+test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
+
+
+test('removed compose statements are not treated as class-list sources', () => {
+  const snippet = (kind: string, text: string) => extractCandidatesFromSnippet({ content: text, file: 'guide.mdx', index: 0, kind, scanClassAttributes: false, text }).filter(candidate => candidate.kind.endsWith(':compose'))
+  assert.deepEqual(snippet('mdx', 'Replace `@compose button` with native declarations.'), [])
+  assert.deepEqual(snippet('fenced:text', 'Use @compose only for shared behavior;'), [])
+  assert.deepEqual(snippet('fenced:css', '.a { @compose block; }').map(candidate => candidate.candidate), [])
+})
+
+
+test('authoring packages and monorepo examples retain native components and utility references', async () => {
+  await verifyPackageAuthoringExamples()
+  await verifyMonorepoExamples()
+})

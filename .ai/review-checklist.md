@@ -9,7 +9,7 @@ Use this for human and AI review.
 - Package exports are unchanged unless intentional.
 - Refactor changes do not keep legacy compatibility paths unless compatibility was explicitly required.
 - CSS output changes are intentional and explained.
-- New or changed preset utilities first prove `keyAliases` plus `nativeValueNamespaces` cannot satisfy the behavior.
+- New preset recipes beyond direct-value families first prove native property classes plus existing registered token families cannot satisfy the behavior; canonical token prefixes never become raw property aliases.
 - Parser, syntax, selector, condition, variable, mode, priority, and cascade changes have tests.
 - Runtime or hydration changes have browser/e2e coverage.
 - Static extraction changes cover false positives and false negatives.
@@ -22,5 +22,5 @@ Use this for human and AI review.
 - No unnecessary dependencies were added.
 - CI, release, lockfile, package manager, and generated files were not changed casually.
 - Docs/examples were updated if user-facing behavior changed.
-- Directive syntax, semantics, lowering, extraction, or refactor changes updated `site/app/[locale]/guide/directives/content.mdx`.
+- Directive syntax, semantics, lowering, extraction, or refactor changes updated `site/content/guide/directives/contract.mdx`.
 - Performance risk was considered for hot paths.

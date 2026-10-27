@@ -1,3 +1,4 @@
+import '../scripts/typescript-tooling-compat.mjs'
 import { readFileSync } from 'node:fs'
 import { extname, resolve } from 'node:path'
 import { defineConfig, type TsdownInputOption, type TsdownPlugin } from 'tsdown'
@@ -12,8 +13,36 @@ const packageRoot = process.cwd()
 const packageJSON = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as PackageJSON
 
 const entryByPackageName: Record<string, TsdownInputOption> = {
-  '@master/eslint-plugin-css': ['src/**/*.{js,ts}']
+  '@master/css-binding': [
+    'src/index.ts',
+    'src/browser.ts',
+    'src/engine-binding.ts',
+    'src/engine-binding-browser.ts',
+    'src/engine-binding-node.ts',
+    'src/compiler-binding.ts',
+    'src/compiler-binding-browser.ts',
+    'src/compiler-binding-node.ts',
+    'src/tooling-binding.ts',
+    'src/tooling-binding-browser.ts',
+    'src/tooling-binding-node.ts'
+  ],
+  '@master/css-binding-wasm-compiler': ['src/provider.ts', 'src/provider-node.ts'],
+  '@master/css-binding-wasm-engine': ['src/provider.ts', 'src/provider-node.ts'],
+  '@master/css-binding-wasm-tooling': ['src/provider.ts', 'src/provider-node.ts'],
+  '@master/css-language-server': ['src/index.ts', 'src/server.ts'],
+  '@master/css-mcp': ['src/index.ts', 'src/bin/index.ts'],
+  '@master/eslint-plugin-css': ['src/**/*.{js,ts}', '!src/**/*.d.ts'],
+  '@master/css-svelte': ['src/lib/*.ts']
 }
+
+const rootByPackageName: Record<string, string> = {
+  '@master/css-svelte': 'src/lib'
+}
+
+// Repository-private packages bundled into their published consumers.
+const privateInternalPackagePattern = /^@master\/css-(?:internal|engine-js)(?:\/|$)/
+// Rolldown also checks resolved IDs: a Windows drive path is not a package import.
+const bareImportPattern = /^(?![a-zA-Z]:[/\\])[^./\\\0]/
 
 const externalLanguageSyntaxJSON: TsdownPlugin = {
   name: 'external-language-syntax-json',
@@ -72,21 +101,26 @@ function hasExportTypes(exports: unknown): boolean {
 
 export default defineConfig({
   cwd: packageRoot,
-  entry: entryByPackageName[packageJSON.name || ''] || ['src/**/*.ts'],
+  entry: entryByPackageName[packageJSON.name || ''] || ['src/**/*.ts', '!src/**/*.d.ts'],
   unbundle: true,
-  root: 'src',
+  root: rootByPackageName[packageJSON.name || ''] || 'src',
   tsconfig: './tsconfig.prod.json',
   fixedExtension: false,
   deps: {
-    skipNodeModulesBundle: true,
+    alwaysBundle: [privateInternalPackagePattern],
     dts: {
-      neverBundle: [/^[^./]/, /^\.{1,2}\//]
+      alwaysBundle: [privateInternalPackagePattern],
+      neverBundle: ['@master/css-binding', '@master/css-tooling', '@master/css-language-server', '@master/css-mcp'].includes(packageJSON.name || '')
+        ? [bareImportPattern]
+        : [bareImportPattern, /^\.{1,2}\//]
     }
   },
   plugins: [
     preserveDeclarationRelativeImports,
     externalVirtualModules,
-    ...(packageJSON.name === '@master/css-language' ? [externalLanguageSyntaxJSON] : [])
+    ...(packageJSON.name === '@master/css-language-service' ? [externalLanguageSyntaxJSON] : [])
   ],
-  dts: Boolean(packageJSON.types || hasExportTypes(packageJSON.exports))
+  // TS7 emits imported files outside rootDir beside their source, escaping its
+  // temporary outDir. The compatible compiler API emits declarations in memory.
+  dts: packageJSON.types || hasExportTypes(packageJSON.exports) ? { generator: 'tsc' } : false
 })

@@ -1,0 +1,36 @@
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
+
+## Override a component locally
+
+CSS cascade layers give groups of declarations an order before selector specificity is compared. Keep reusable component styling in the components layer, then apply a utility when one instance needs a different value:
+
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; } }'} classes={['btn', 'display:flex']} />
+
+With the base layer order loaded, the normal `display` declaration in utilities takes precedence over the component declaration. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
+
+## Diagnose a competing declaration
+
+1. Confirm both rules target the element and their conditions match.
+2. Check which layer owns each declaration, including native CSS outside layers.
+3. Keep broad defaults in their intended layer before adding local overrides.
+4. Inspect importance and the native cascade when layer order alone does not explain the result.
+
+Load the base stylesheet through the normal Master CSS entry. Generated rules contain their layer blocks; they do not add the base layer statement themselves.
+
+## Look up a rule
+
+- <a id="how-layers-control-the-cascade"></a> [How layers control the cascade](/reference/rules/layers#how-layers-control-the-cascade)
+- <a id="priority-matrix"></a> [Priority within and between layers](/reference/rules/layers#priority-matrix)
+- <a id="the-five-layers"></a> [The five layers](/reference/rules/layers#the-five-layers)
+- <a id="base"></a> [Base](/reference/rules/layers#base)
+- <a id="theme"></a> [Theme](/reference/rules/layers#theme)
+- <a id="defaults"></a> [Defaults](/reference/rules/layers#defaults)
+- <a id="components"></a> [Components](/reference/rules/layers#components)
+- <a id="utilities"></a> [Utilities](/reference/rules/layers#utilities)
+- <a id="a-complete-flow"></a> [A complete flow](/reference/rules/layers#a-complete-flow)
+- <a id="base-is-for-normalization"></a> [Base is for normalization](/reference/rules/layers#base-is-for-normalization)
+- <a id="defaults-are-for-broad-defaults"></a> [Defaults are for broad defaults](/reference/rules/layers#defaults-are-for-broad-defaults)
+- <a id="utilities-can-override-components"></a> [Utilities can override components](/reference/rules/layers#utilities-can-override-components)
+- <a id="summary"></a> [Summary](/reference/rules/layers#summary)
+- <a id="writing-regular-css"></a> [Writing regular CSS](/reference/rules/layers#writing-regular-css)
+- <a id="layer-checklist"></a> [Layer checklist](/reference/rules/layers#layer-checklist)

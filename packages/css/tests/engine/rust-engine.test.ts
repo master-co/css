@@ -1,0 +1,452 @@
+import { beforeAll, describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { createRenderBindingSession } from '@master/css-binding/engine'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import { MasterCSSError } from '@master/css-schema'
+import defaultManifest from '@master/css-preset/default-manifest.json'
+import createEngine from '../../src/engine/create-engine'
+import { createEngineSync } from '../../src/node'
+
+const typedDefaultManifest = defaultManifest as unknown as MasterCSSManifest
+type EngineParityStep =
+  | {
+    op: 'ensure'
+    classes: string[]
+    expectedCss: string
+    expectedResourceOrder?: string[]
+  }
+  | {
+    op: 'delete'
+    classes: string[]
+    expectedCss: string
+  }
+  | {
+    op: 'inspect'
+    className: string
+    expectedValid: boolean
+    expectedRuleTexts?: string[]
+    expectedSelectorTexts?: (string | null)[]
+    expectedLayers?: string[]
+    expectedPriorities?: unknown[]
+    expectedVariableNames?: string[][]
+    expectedAnimationNames?: string[][]
+  }
+  | {
+    op: 'inspectContains'
+    className: string
+    expectedRuleContains: string
+  }
+
+interface EngineParityCase {
+  id: string
+  manifest: 'default' | MasterCSSManifest
+  emittedGlobals?: MasterCSSEmittedGlobals
+  steps: EngineParityStep[]
+}
+
+interface SemanticParityCorpus {
+  version: 3
+  engineCases: EngineParityCase[]
+}
+
+const semanticParityCorpus = JSON.parse(readFileSync(
+  new URL('../../../../parity/v2-language-corpus.json', import.meta.url),
+  'utf8'
+)) as SemanticParityCorpus
+const selectorVariantClassName = 'display:flex_:is(h4,.app-nav)@layer(defaults)'
+const selectorVariantSelector = '.display\\:flex_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)'
+const selectorVariantRuleTexts = [
+  `${selectorVariantSelector}{display:flex}`
+]
+const selectorVariantRuleText = selectorVariantRuleTexts.join('')
+const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
+  version: 6 as const, languageVersion: 16 as const,
+  utilities: typedDefaultManifest.utilities,
+  variables: {
+    color: [
+      {
+        name: 'color-white',
+        key: 'white',
+        values: [{ path: [':root,:host'], value: 'oklch(100% 0 none)' }]
+      },
+      {
+        name: 'color-gray-90',
+        key: 'gray-90',
+        values: [{ path: [':root,:host'], value: 'oklch(23.5% 0 none)' }]
+      }
+    ],
+    'color-surface': [
+      {
+        name: 'color-surface-raised',
+        key: 'raised',
+        dependencies: ['color-white', 'color-gray-90'],
+        values: [{ path: ['.light'], value: 'var(--color-white)' }, { path: ['.dark'], value: 'var(--color-gray-90)' }]
+      }
+    ]
+  },
+
+} as unknown as MasterCSSManifest
+const scopedThemeCSS = [
+  '@layer theme{',
+  ':root,:host{--color-white:oklch(100% 0 none);--color-gray-90:oklch(23.5% 0 none)}',
+  '.light{--color-surface-raised:var(--color-white)}',
+  '.dark{--color-surface-raised:var(--color-gray-90)}',
+  '}',
+  '@layer utilities{.bg-surface-raised{background-color:var(--color-surface-raised)}}'
+].join('')
+
+const manifest: MasterCSSManifest = {
+  "version": 6 as const,
+  "languageVersion": 16 as const,
+  customMedia: { "--sm": { type: "feature", value: "(width>=52.125rem)" } },
+  "mixins": [
+  {
+    "name": "--block",
+    "body": [
+      {
+        "type": "declaration" as const,
+        "property": "display",
+        "value": [
+          {
+            "type": "text" as const,
+            "value": "block"
+          }
+        ]
+      }
+    ]
+  }
+]
+, utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
+
+beforeAll(() => {
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
+  )
+})
+
+describe('Rust engine session', () => {
+  it('uses v2 language engine corpus version 3', () => {
+    expect(semanticParityCorpus.version).toBe(3)
+  })
+
+  for (const parityCase of semanticParityCorpus.engineCases) {
+    it(`executes v2 language engine corpus case ${parityCase.id} through native and Wasm sessions`, async () => {
+      const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
+      Object.defineProperty(globalThis, 'CSS', {
+        configurable: true,
+        value: { supports: () => true }
+      })
+
+      try {
+        const caseManifest = parityCase.manifest === 'default'
+          ? typedDefaultManifest
+          : parityCase.manifest
+        const native = createEngineSync({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        })
+        const wasm = await createEngine({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals,
+          binding: 'wasm'
+        })
+        const nativeRender = await createRenderBindingSession({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        }, { binding: 'native' })
+        const wasmRender = await createRenderBindingSession({
+          manifest: caseManifest,
+          emittedGlobals: parityCase.emittedGlobals
+        }, { binding: 'wasm' })
+
+        let operation = 'create sessions'
+        try {
+          for (const step of parityCase.steps) {
+            if (step.op === 'inspectContains') {
+              operation = `native candidates for ${step.className}`
+              const nativeCandidates = nativeRender.nativeDeclarationCandidates([step.className])
+              operation = `Wasm candidates for ${step.className}`
+              const wasmCandidates = wasmRender.nativeDeclarationCandidates([step.className])
+              expect(wasmCandidates, `${parityCase.id}: native candidates`).toEqual(nativeCandidates)
+              operation = `native ensure for ${step.className}`
+              nativeRender.ensureClassRules([step.className])
+              operation = `Wasm ensure for ${step.className}`
+              wasmRender.ensureClassRules([step.className])
+              operation = `native snapshot for ${step.className}`
+              const nativeSnapshot = nativeRender.snapshot()
+              operation = `Wasm snapshot for ${step.className}`
+              const wasmSnapshot = wasmRender.snapshot()
+              expect(wasmSnapshot, `${parityCase.id}: render snapshot`).toEqual(nativeSnapshot)
+              expect(
+                nativeSnapshot.snapshot.rules.some((rule) =>
+                  rule.className === step.className
+                  && rule.text.includes(step.expectedRuleContains)
+                ),
+                `${parityCase.id}: ${step.className} contains ${step.expectedRuleContains}`
+              ).toBe(true)
+              continue
+            }
+
+            if (step.op === 'ensure') {
+              const nativeTransition = native.ensureClassRules(step.classes)
+              const wasmTransition = wasm.ensureClassRules(step.classes)
+              expect(wasmTransition, `${parityCase.id}: ensure transition`).toEqual(nativeTransition)
+              const nativeSnapshot = native.snapshot()
+              expect(wasm.snapshot(), `${parityCase.id}: ensure snapshot`).toEqual(nativeSnapshot)
+              expect(nativeSnapshot.text, parityCase.id).toBe(step.expectedCss)
+              if (step.expectedResourceOrder) {
+                expect([
+                  ...nativeSnapshot.resources.variables.map(({ name }) => name)
+                ], `${parityCase.id}: resource order`).toEqual(step.expectedResourceOrder)
+              }
+              continue
+            }
+
+            if (step.op === 'delete') {
+              const nativeTransition = native.deleteClassRules(step.classes)
+              const wasmTransition = wasm.deleteClassRules(step.classes)
+              expect(wasmTransition, `${parityCase.id}: delete transition`).toEqual(nativeTransition)
+              const nativeSnapshot = native.snapshot()
+              expect(wasm.snapshot(), `${parityCase.id}: delete snapshot`).toEqual(nativeSnapshot)
+              expect(nativeSnapshot.text, parityCase.id).toBe(step.expectedCss)
+              continue
+            }
+
+            const nativeInspection = native.inspect(step.className)
+            const wasmInspection = wasm.inspect(step.className)
+            expect(wasmInspection, `${parityCase.id}: inspection`).toEqual(nativeInspection)
+            expect((nativeInspection.matchStatus === 'matched'), parityCase.id).toBe(step.expectedValid)
+            if (step.expectedRuleTexts?.length) {
+              expect(nativeInspection.rules.map(({ text }) => text), parityCase.id)
+                .toEqual(step.expectedRuleTexts)
+            }
+            if (step.expectedSelectorTexts?.length) {
+              expect(nativeInspection.rules.map(({ selectorText }) => selectorText ?? null), parityCase.id)
+                .toEqual(step.expectedSelectorTexts)
+            }
+            if (step.expectedLayers?.length) {
+              expect(nativeInspection.rules.map(({ layer }) => layer), parityCase.id)
+                .toEqual(step.expectedLayers)
+            }
+            if (step.expectedPriorities?.length) {
+              expect(nativeInspection.rules.map(({ priority }) => priority), parityCase.id)
+                .toEqual(step.expectedPriorities)
+            }
+            if (step.expectedVariableNames?.length) {
+              expect(nativeInspection.rules.map(({ variableNames }) => variableNames ?? []), parityCase.id)
+                .toEqual(step.expectedVariableNames)
+            }
+
+          }
+        } catch (cause) {
+          throw new Error(`${parityCase.id} ${operation}: ${cause instanceof Error ? cause.message : String(cause)}`, {
+            cause
+          })
+        } finally {
+          native.dispose()
+          wasm.dispose()
+          nativeRender.dispose()
+          wasmRender.dispose()
+        }
+      } finally {
+        if (originalCSS) Object.defineProperty(globalThis, 'CSS', originalCSS)
+        else delete (globalThis as { CSS?: unknown }).CSS
+      }
+    })
+  }
+
+  it('uses Wasm for auto binding when native addons are disabled', async () => {
+    process.execArgv.push('--no-addons')
+    try {
+      const engine = await createEngine({ manifest, binding: 'auto' })
+      try {
+        expect(engine.binding).toBe('wasm')
+        engine.ensureClassRules(['display:block'])
+        expect(engine.snapshot().text).toBe('@layer utilities{.display\\:block{display:block}}')
+      } finally {
+        engine.dispose()
+      }
+    } finally {
+      process.execArgv.splice(process.execArgv.lastIndexOf('--no-addons'), 1)
+    }
+  })
+
+  it('does not hide an invalid native binding behind Wasm fallback', async () => {
+    const bindingPath = process.env.MASTER_CSS_NATIVE_BINDING_PATH
+    process.env.MASTER_CSS_NATIVE_BINDING_PATH = '/missing/master-css/mastercss.node'
+    try {
+      await expect(createEngine({ manifest, binding: 'auto' })).rejects.toMatchObject({
+        name: 'MasterCSSError',
+        code: 'NATIVE_LOAD_FAILED'
+      })
+    } finally {
+      if (bindingPath === undefined) delete process.env.MASTER_CSS_NATIVE_BINDING_PATH
+      else process.env.MASTER_CSS_NATIVE_BINDING_PATH = bindingPath
+    }
+  })
+
+  it('keeps transitions synchronous after session creation', () => {
+    const engine = createEngineSync({ manifest })
+    expect(engine.ensureClassRules(['display:block', "width:10px"]).mutations).toHaveLength(2)
+    expect(engine.snapshot().text).toBe("@layer utilities{.display\\:block{display:block}.width\\:10px{width:10px}}")
+    expect(engine.ensureClassRules(['display:block']).mutations).toEqual([])
+    expect(engine.deleteClassRules(['display:block']).mutations).toHaveLength(1)
+    expect(engine.snapshot().text).toBe("@layer utilities{.width\\:10px{width:10px}}")
+    engine.dispose()
+  })
+
+  it('inspects without mutating state and rejects use after disposal', () => {
+    const engine = createEngineSync({ manifest })
+    expect(engine.inspect('display:block:hover')).toMatchObject({
+      version: 2 as const,
+      className: 'display:block:hover',
+      matchStatus: 'matched',
+      cssValueStatus: 'not-checked',
+      browserSupport: 'not-checked'
+    })
+    expect(engine.snapshot().text).toBe('')
+    engine.dispose()
+    expect(() => engine.snapshot()).toThrow('has been disposed')
+  })
+
+  it('preserves structured Rust errors', () => {
+    expect(() => createEngineSync({
+      manifest: { version: 3 as const } as unknown as MasterCSSManifest
+    })).toThrowError(expect.objectContaining({
+      name: 'MasterCSSError',
+      code: 'UNSUPPORTED_MANIFEST_VERSION'
+    }))
+
+    const engine = createEngineSync({ manifest })
+    engine.ensureClassRules(['display:block'])
+    const before = engine.snapshot().text
+    expect(() => engine.refresh({ version: 3 as const } as unknown as MasterCSSManifest))
+      .toThrow(MasterCSSError)
+    expect(engine.snapshot().text).toBe(before)
+    engine.dispose()
+  })
+
+  it('serializes manifests when refreshing a Wasm engine', async () => {
+    const engine = await createEngine({ manifest, binding: 'wasm' })
+    try {
+      engine.ensureClassRules(['display:block'])
+      expect(engine.refresh(manifest)).toMatchObject({
+        version: 4 as const,
+        mutations: [
+          { op: 'delete', key: 'display:block' },
+          { op: 'insert', key: 'display:block' }
+        ]
+      })
+      expect(engine.snapshot().text).toBe('@layer utilities{.display\\:block{display:block}}')
+    } finally {
+      engine.dispose()
+    }
+  })
+
+  it('registers emitted globals through native and Wasm engines', async () => {
+    const native = createEngineSync({ manifest: typedDefaultManifest })
+    const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
+    const classNames = ['fg-red-60', 'animation:fade|1s']
+
+    try {
+      native.ensureClassRules(classNames)
+      wasm.ensureClassRules(classNames)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().text).not.toContain('@keyframes fade{')
+
+      const emittedGlobals = {
+        variables: { 'color-red-60': 1 }
+      }
+      expect(wasm.registerEmittedGlobals(emittedGlobals))
+        .toEqual(native.registerEmittedGlobals(emittedGlobals))
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().text).toContain('.fg-red-60')
+      expect(native.snapshot().text).toContain('.animation\\:fade\\|1s')
+      expect(native.snapshot().text).not.toContain('--color-red-60:')
+      expect(native.snapshot().text).not.toContain('@keyframes fade{')
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
+    expect(() => native.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
+    expect(() => wasm.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
+  })
+
+  it('renders representative default-manifest classes without a TypeScript oracle', () => {
+    const engine = createEngineSync({ manifest: typedDefaultManifest })
+    const transition = engine.ensureClassRules([
+      'display:block',
+      'fg-red-60',
+      "width:calc(100%-2rem)",
+      'bg-blue-20:hover@sm',
+      "fg-black!", "border-bottom:2px|solid"
+    ])
+    expect(transition.mutations.length).toBeGreaterThanOrEqual(5)
+    expect(engine.snapshot().rules.map((rule) => rule.className)).toEqual(expect.arrayContaining([
+      'display:block',
+      'fg-red-60',
+      "width:calc(100%-2rem)",
+      'bg-blue-20:hover@sm',
+      "fg-black!", "border-bottom:2px|solid"
+    ]))
+    engine.dispose()
+  })
+
+  it('preserves descendant selectors across condition-only variants in native and Wasm', async () => {
+    const native = createEngineSync({ manifest: typedDefaultManifest })
+    const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
+
+    try {
+      const nativeInspection = native.inspect(selectorVariantClassName)
+      const wasmInspection = wasm.inspect(selectorVariantClassName)
+
+      expect(nativeInspection.rules).toHaveLength(1)
+      for (const [index, rule] of nativeInspection.rules.entries()) expect(rule).toMatchObject({
+        layer: 'defaults',
+        priority: { selector: 0 },
+        selectorText: selectorVariantSelector,
+        sortTier: 1,
+        text: selectorVariantRuleTexts[index]
+      })
+      expect(wasmInspection).toEqual(nativeInspection)
+      expect(native.snapshot().text).toBe('')
+      expect(wasm.snapshot().text).toBe('')
+
+      const nativeTransition = native.ensureClassRules([selectorVariantClassName])
+      const wasmTransition = wasm.ensureClassRules([selectorVariantClassName])
+
+      expect(wasmTransition).toEqual(nativeTransition)
+      expect(native.snapshot().text).toBe(`@layer defaults{${selectorVariantRuleText}}`)
+      expect(wasm.snapshot().text).toBe(native.snapshot().text)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
+  })
+
+  it('retains dependencies in all authored variable scopes in native and Wasm', async () => {
+    const native = createEngineSync({ manifest: scopedThemeManifest })
+    const wasm = await createEngine({ manifest: scopedThemeManifest, binding: 'wasm' })
+
+    try {
+      const nativeTransition = native.ensureClassRules(['bg-surface-raised'])
+      const wasmTransition = wasm.ensureClassRules(['bg-surface-raised'])
+
+      expect(wasmTransition).toEqual(nativeTransition)
+      expect(native.snapshot().text).toBe(scopedThemeCSS)
+      expect(wasm.snapshot().text).toBe(native.snapshot().text)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().resources.variables.map(({ name }) => name)).toEqual([
+        'color-surface-raised',
+        'color-white',
+        'color-gray-90'
+      ])
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
+  })
+})

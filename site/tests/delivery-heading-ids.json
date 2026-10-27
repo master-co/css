@@ -1,0 +1,185 @@
+{
+  "rendering-modes": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "runtime-rendering",
+      "title": "Runtime Rendering",
+      "depth": 2
+    },
+    {
+      "id": "running-style-sheet",
+      "title": "Running style sheet",
+      "depth": 3
+    },
+    {
+      "id": "runtime-state",
+      "title": "Runtime state",
+      "depth": 3
+    },
+    {
+      "id": "interaction-heavy-screens",
+      "title": "Interaction-heavy screens",
+      "depth": 3
+    },
+    {
+      "id": "project-manifest-delivery",
+      "title": "Project manifest delivery",
+      "depth": 3
+    },
+    {
+      "id": "progressive-rendering",
+      "title": "Progressive Rendering",
+      "depth": 2
+    },
+    {
+      "id": "pre-rendering--ssg-ssr",
+      "title": "Pre-rendering \u2014 SSG, SSR",
+      "depth": 3
+    },
+    {
+      "id": "css-hydration",
+      "title": "CSS hydration",
+      "depth": 3
+    },
+    {
+      "id": "static-rendering",
+      "title": "Static Rendering",
+      "depth": 2
+    },
+    {
+      "id": "generated-stylesheet-entry",
+      "title": "Generated stylesheet entry",
+      "depth": 3
+    },
+    {
+      "id": "native-css-entries",
+      "title": "Native CSS entries",
+      "depth": 3
+    },
+    {
+      "id": "dynamic-class-limitations",
+      "title": "Dynamic class limitations",
+      "depth": 3
+    },
+    {
+      "id": "shared-rendering-pipeline",
+      "title": "Shared rendering pipeline",
+      "depth": 2
+    },
+    {
+      "id": "comparisons",
+      "title": "Comparisons",
+      "depth": 2
+    },
+    {
+      "id": "engine-state-for-custom-hosts",
+      "title": "Engine state for custom hosts",
+      "depth": 2
+    }
+  ],
+  "scanning-latent-classes": [
+    {
+      "id": "keep-complete-classes-in-source",
+      "title": "Keep complete classes in source",
+      "depth": 2
+    },
+    {
+      "id": "find-why-a-style-is-missing",
+      "title": "Find why a style is missing",
+      "depth": 2
+    },
+    {
+      "id": "look-up-a-rule",
+      "title": "Look up a rule",
+      "depth": 2
+    }
+  ],
+  "native-css-pruning": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "default-pruning",
+      "title": "Default pruning",
+      "depth": 2
+    },
+    {
+      "id": "import-graph",
+      "title": "Import graph",
+      "depth": 2
+    },
+    {
+      "id": "root-scope",
+      "title": "Root scope",
+      "depth": 2
+    },
+    {
+      "id": "scoped-scanning",
+      "title": "Scoped scanning",
+      "depth": 2
+    },
+    {
+      "id": "rule-filtering",
+      "title": "Rule filtering",
+      "depth": 2
+    },
+    {
+      "id": "manifest-references",
+      "title": "Manifest references",
+      "depth": 2
+    },
+    {
+      "id": "included-classes",
+      "title": "Included classes",
+      "depth": 2
+    },
+    {
+      "id": "checklist",
+      "title": "Checklist",
+      "depth": 2
+    }
+  ],
+  "route-level-styles": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "reference-the-app-entry",
+      "title": "Reference the app entry",
+      "depth": 2
+    },
+    {
+      "id": "write-native-selectors",
+      "title": "Write native selectors",
+      "depth": 2
+    },
+    {
+      "id": "use-variants-locally",
+      "title": "Use variants locally",
+      "depth": 2
+    },
+    {
+      "id": "use-native-keyframes",
+      "title": "Use native keyframes",
+      "depth": 2
+    },
+    {
+      "id": "use-container-queries",
+      "title": "Use container queries",
+      "depth": 2
+    },
+    {
+      "id": "promote-shared-patterns",
+      "title": "Promote shared patterns",
+      "depth": 2
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+import { DemoItem, DemoLabel, DemoSurface } from '~/site/components/demo/primitives'
+
+const bars = [
+  ['Mon', 80, 'height:2rem'], ['Tue', 130, 'height:3.25rem'], ['Wed', 100, 'height:2.5rem'],
+  ['Thu', 160, 'height:4rem'], ['Fri', 120, 'height:3rem'], ['Sat', 190, 'height:4.75rem'],
+] as const
+const tasks = [['Audit onboarding', 'Today'], ['Review campaign', 'Thu'], ['Ship billing panel', 'Fri']]
+
+
+export default function Page() {
+  return <main className="min-height:100dvh p-md bg-surface-base fg-text-body">
+    <section data-workspace className="grid-cols(4) gap-sm width:100% max-w-3xl margin-inline:auto grid-cols(8)@2xs gap-md@2xs">
+      <header id="overview" className="display:flex flex-wrap:wrap grid-col-span(4) align-items:center justify-content:space-between gap-sm grid-col-span(8)@2xs">
+        <div><DemoLabel>Sample workspace / 024</DemoLabel><h1 className="margin-inline:0 mt-2xs margin-bottom:0 text-lg font-semibold">Project overview</h1></div>
+        <DemoLabel>September 2026</DemoLabel>
+      </header>
+      <nav aria-label="Workspace sections" className="display:flex flex-wrap:wrap grid-col-span(4) gap-xs grid-col-span(8)@2xs">
+        <a className="py-xs px-sm r-sm border-width:1px border-style:solid b-line-divider text-xs text-decoration:none bg-surface-raised fg-text-body outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible" href="#metrics">Metrics</a>
+        <a className="py-xs px-sm r-sm border-width:1px border-style:solid b-line-divider text-xs text-decoration:none bg-surface-raised fg-text-body outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible" href="#demand">Demand</a>
+        <a className="py-xs px-sm r-sm border-width:1px border-style:solid b-line-divider text-xs text-decoration:none bg-surface-raised fg-text-body outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible" href="#launch-tasks">Tasks</a>
+      </nav>
+      <DemoSurface id="metrics" className="grid-col-span(4) p-md grid-col-span(2)@4xs grid-col-span(4)@2xs">
+        <DemoLabel>Revenue</DemoLabel>
+        <div className="mt-sm text-2xl font-semibold">$128.4k</div>
+        <div className="mt-xs text-xs fg-text-muted">+12.8% from last month</div>
+      </DemoSurface>
+      <DemoSurface className="grid-col-span(4) p-md grid-col-span(2)@4xs grid-col-span(4)@2xs">
+        <DemoLabel>Activation</DemoLabel>
+        <div className="mt-sm text-2xl font-semibold">64.2%</div>
+        <div className="mt-xs text-xs fg-text-muted">+4.1 percentage points</div>
+      </DemoSurface>
+      <DemoSurface id="demand" className="grid-col-span(4) min-width:0 p-md grid-col-span(5)@2xs">
+        <figure className="margin:0">
+          <figcaption className="text-sm font-semibold">Weekly demand</figcaption>
+          <p className="margin-inline:0 mt-2xs margin-bottom:0 text-xs fg-text-muted">Sample requests per day</p>
+          <div className="display:flex align-items:end gap-xs height:8rem mt-sm">
+            {bars.map(([day, value, height]) => <div key={day} className="display:flex flex:1 flex-direction:column gap-xs min-width:0 text-align:center">
+              <DemoLabel>{value}</DemoLabel>
+              <DemoItem className={`${height} width:100% border-top-left-radius:var(--radius-sm) border-top-right-radius:var(--radius-sm) border-bottom-right-radius:0px border-bottom-left-radius:0px`} aria-hidden="true" />
+              <DemoLabel>{day}</DemoLabel>
+            </div>)}
+          </div>
+        </figure>
+      </DemoSurface>
+      <DemoSurface id="launch-tasks" className="grid-col-span(4) min-width:0 p-md grid-col-span(3)@2xs">
+        <h2 className="margin:0 text-sm font-semibold">Launch tasks</h2>
+        <p className="margin-inline:0 mt-2xs margin-bottom:0 text-xs fg-text-muted">Check off a task to try the controls.</p>
+        <div className="mt-sm">
+          {tasks.map(([task, date]) => <label key={task} className="display:flex align-items:start gap-xs py-sm border-top-width:1px:not(:first-child) border-top-style:solid:not(:first-child) bt-line-divider:not(:first-child)">
+            <input type="checkbox" className="flex-shrink:0 mt-3xs accent-color-blue" />
+            <span className="flex:1 min-width:0 text-sm">{task}<span className="display:block mt-2xs text-xs fg-text-muted">{date}</span></span>
+          </label>)}
+        </div>
+      </DemoSurface>
+    </section>
+  </main>
+}

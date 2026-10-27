@@ -4,7 +4,11 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
-import { render } from '@master/css-server';
+import defaultManifestJSON from '@master/css-preset/default-manifest.json';
+import type { MasterCSSManifest } from '@master/css-schema/manifest';
+import { renderHTML } from '@master/css-server';
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -13,7 +17,7 @@ export function app(): express.Express {
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
-  const commonEngine = new CommonEngine();
+  const commonEngine = new CommonEngine({ allowedHosts: ['localhost', '127.0.0.1'] });
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
@@ -21,12 +25,13 @@ export function app(): express.Express {
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
-  server.get('*.*', express.static(browserDistFolder, {
-    maxAge: '1y'
+  server.use(express.static(browserDistFolder, {
+    maxAge: '1y',
+    index: false
   }));
 
   // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
+  server.get('/{*path}', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     commonEngine
@@ -37,7 +42,10 @@ export function app(): express.Express {
         publicPath: browserDistFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html: string) => res.send(render(html, undefined, { hydrationManifest: 'inject' }).html))
+      .then((html: string) => res.send(renderHTML(html, {
+        manifest: defaultManifest,
+        hydrationManifest: 'inject'
+      }).html))
       .catch((err: unknown) => next(err));
   });
 

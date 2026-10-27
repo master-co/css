@@ -3,35 +3,38 @@ import { jsxTester } from './testers'
 
 jsxTester.run('class matching react', rule, {
   valid: [
-    { code: '<h1 className={"bg:black"}>Welcome {name}</h1>' }
+    { code: '<h1 className={"bg-black"}>Welcome {name}</h1>' }
   ],
   invalid: [
-    { code: '<h1 className={"text-decoration:bad()"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' }] },
+    { code: '<h1 className={"text-decoration:1"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }] },
     {
       code: `
         import React from 'react'
         import styled from '@master/styled.react'
 
-        const H1 = styled.h1\`text-decoration:bad()\`
+        const H1 = styled.h1\`text-decoration:1\`
 
         export default () => (
           <H1>Hello World</H1>
         )
       `,
-      errors: [{ messageId: 'invalidClass' }],
+      errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }],
     },
     {
       code: `
         import React from 'react'
         import styled from '@master/styled.react'
 
-        const H1 = styled.h1('text-decoration:bad()')
+        const H1 = styled.h1('text-decoration:1')
 
         export default () => (
           <H1>Hello World</H1>
         )
       `,
-      errors: [{ messageId: 'invalidClass' }],
+      errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }],
     },
   ]
 })

@@ -1,5 +1,5 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
@@ -11,5 +11,10 @@
     "strict": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext"
-  }
+  },
+  "include": [
+    "src",
+    "tests",
+    "vite.config.ts"
+  ]
 }

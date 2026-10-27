@@ -1,124 +1,114 @@
-import { Layer, Rule, VariableRule } from '@master/css-engine'
-import findNativeCSSRuleIndex from './utils/find-native-css-rule-index'
-import CSSRuntime from './core'
+import type HydratedGeneratedRule from './generated-rule'
 
-function getRuleNodes(rule: Rule | VariableRule) {
-  const nodes = (rule as { nodes?: { native?: CSSRule, text: string }[] }).nodes
-  return Array.isArray(nodes) ? nodes : undefined
+export interface RuntimeResourceRule {
+  readonly key: string
+  readonly name: string
+  readonly text: string
+  native?: CSSRule
+  nativeNodeCount?: number
 }
 
-export default class RuntimeLayer extends Layer {
-  readonly rules: (Rule | VariableRule)[] = []
+export type RuntimeLayerRule = HydratedGeneratedRule | RuntimeResourceRule
+
+export function getRuleNodeCount(rule: RuntimeLayerRule) {
+  return rule.nativeNodeCount ?? ('nodeCount' in rule ? rule.nodeCount : 1)
+}
+
+type MutateNativeRule = (layer: RuntimeLayer, rule: RuntimeLayerRule, nativeIndex: number) => void
+
+export default class RuntimeLayer {
+  readonly rules: RuntimeLayerRule[] = []
   readonly tokenCounts = new Map<string, number>()
+  private readonly byKey = new Map<string, RuntimeLayerRule>()
+  private offsets: number[] | undefined
+  private nodeCount = 0
   native: CSSLayerBlockRule | null = null
 
   constructor(
-    public name: string,
-    public cssRuntime: CSSRuntime
-  ) {
-    super(name, cssRuntime)
+    public readonly name: string,
+    private readonly insertRule: MutateNativeRule,
+    private readonly deleteRule: MutateNativeRule
+  ) { }
+
+  get text() {
+    return this.rules.length
+      ? `@layer ${this.name}{${this.rules.map(({ text }) => text).join('')}}`
+      : ''
   }
 
-  attach() {
-    super.attach()
-    const nativeSheet = this.cssRuntime.style?.sheet
-    if (nativeSheet && !this.native?.parentStyleSheet) {
-      const insertedIndex = nativeSheet.insertRule(this.text, nativeSheet.cssRules.length)
-      this.native = nativeSheet.cssRules.item(insertedIndex) as CSSLayerBlockRule
+  get(key: string) {
+    return this.byKey.get(key)
+  }
+
+  /** Single-node layers and tail operations need no prefix traversal. */
+  nativeIndex(index: number) {
+    return index === this.rules.length ? this.nodeCount : this.offsets?.[index] ?? index
+  }
+
+  private track(rule: RuntimeLayerRule, index: number) {
+    const count = getRuleNodeCount(rule)
+    const nativeIndex = this.nativeIndex(index)
+    if (count !== 1) {
+      this.offsets ??= Array.from({ length: this.rules.length }, (_, index) => index)
     }
-  }
-
-  insert(rule: Rule | VariableRule, index = this.rules.length) {
-    const hadNative = !!this.native?.parentStyleSheet
-    const wasEmpty = this.rules.length === 0
-    const insertedIndex = super.insert(rule, index)
-    if (insertedIndex === undefined || !this.native) return
-    const nativeInsertIndex = this.getNativeInsertIndex(insertedIndex)
-    const wasAttachedWithRule = !hadNative && wasEmpty
-    const insertRuleSafely = (text: string, position: number) => {
-      // Checks if the rule is inserted in a native CSS rule with this.attach()
-      if (wasAttachedWithRule) {
-        return this.native!.cssRules.item(position) as CSSRule
-      } else {
-        try {
-          const insertedIndex = this.native!.insertRule(text, position)
-          return this.native!.cssRules.item(insertedIndex) as CSSRule
-        } catch (error) {
-          console.error(error, rule)
-          /**
-           * If the rule is invalid, remove it from the rules array.
-           * It's important to note that the rule may break the entire CSS runtime,
-           */
-          this.rules.splice(insertedIndex, 1)
-          return
-        }
+    if (this.offsets) {
+      this.offsets.splice(index, 0, nativeIndex)
+      for (let next = index + 1; next < this.offsets.length; next++) {
+        this.offsets[next] += count
       }
     }
-    const nodes = getRuleNodes(rule)
-    if (nodes) {
-      let currentIndex = nativeInsertIndex
-      nodes.forEach((node) => {
-        node.native = insertRuleSafely(node.text, currentIndex)
-        if (node.native) currentIndex++
-      })
-    } else {
-      ;(rule as Rule).native = insertRuleSafely(rule.text, nativeInsertIndex)
-    }
-    return insertedIndex
-  }
-
-  getNativeInsertIndex(index: number) {
-    let nativeIndex = 0
-    for (let i = 0; i < index; i++) {
-      const rule = this.rules[i]
-      nativeIndex += getRuleNodes(rule)?.length ?? 1
-    }
+    this.nodeCount += count
+    this.rules.splice(index, 0, rule)
+    this.byKey.set(rule.key, rule)
     return nativeIndex
   }
 
-  detach() {
-    super.detach()
-    const nativeSheet = this.cssRuntime.style?.sheet
-    if (nativeSheet && this.native?.parentStyleSheet) {
-      const foundIndex = findNativeCSSRuleIndex(nativeSheet.cssRules, this.native)
-      if (foundIndex !== -1) {
-        nativeSheet.deleteRule(foundIndex)
-      }
-    }
+  /** Track an already hydrated rule without mutating the stylesheet. */
+  adopt(rule: RuntimeLayerRule) {
+    if (!this.byKey.has(rule.key)) this.track(rule, this.rules.length)
   }
 
-  delete(key: string) {
-    const deletedRule = super.delete(key)
-    if (!deletedRule || !this.native) return
-    const deleteRuleSafely = (rule?: CSSRule) => {
-      if (!rule) return
-      const foundIndex = findNativeCSSRuleIndex(this.native!.cssRules, rule)
-      if (foundIndex !== -1) {
-        try {
-          this.native!.deleteRule(foundIndex)
-        } catch (error) {
-          console.error(error, rule)
-        }
+  insert(rule: RuntimeLayerRule, index = this.rules.length) {
+    if (this.byKey.has(rule.key)) return
+    const boundedIndex = Math.max(0, Math.min(index, this.rules.length))
+    const nativeIndex = this.nativeIndex(boundedIndex)
+    this.insertRule(this, rule, nativeIndex)
+    this.track(rule, boundedIndex)
+    return boundedIndex
+  }
+
+  delete(key: string, index?: number) {
+    const rule = this.byKey.get(key)
+    if (!rule) return
+    const foundIndex = index !== undefined && this.rules[index] === rule
+      ? index
+      : this.rules.indexOf(rule)
+    const nativeIndex = this.nativeIndex(foundIndex)
+    const count = getRuleNodeCount(rule)
+    this.rules.splice(foundIndex, 1)
+    this.byKey.delete(key)
+    this.nodeCount -= count
+    if (this.nodeCount === this.rules.length) this.offsets = undefined
+    if (this.offsets) {
+      this.offsets.splice(foundIndex, 1)
+      for (let next = foundIndex; next < this.offsets.length; next++) {
+        this.offsets[next] -= count
       }
     }
-    const nodes = getRuleNodes(deletedRule)
-    if (nodes) {
-      nodes.forEach((node) => deleteRuleSafely(node.native))
-    } else {
-      deleteRuleSafely((deletedRule as Rule).native)
-    }
-    return deletedRule
+    this.deleteRule(this, rule, nativeIndex)
+    return rule
+  }
+
+  clearRules() {
+    this.rules.length = 0
+    this.byKey.clear()
+    this.offsets = undefined
+    this.nodeCount = 0
   }
 
   reset() {
-    super.reset()
-    const nativeSheet = this.cssRuntime.style?.sheet
-    if (this.native && nativeSheet) {
-      const foundIndex = findNativeCSSRuleIndex(nativeSheet.cssRules, this.native)
-      if (foundIndex !== -1) {
-        nativeSheet.deleteRule(foundIndex)
-      }
-      this.native = null
-    }
+    this.clearRules()
+    this.tokenCounts.clear()
+    this.native = null
   }
 }

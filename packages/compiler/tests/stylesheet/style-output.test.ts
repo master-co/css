@@ -1,0 +1,510 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { describe, expect, it } from 'vitest'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import {
+  compileCSSManifest,
+  createManifestFromCSSResult,
+  resolveMasterCSSPackageImportGraph
+} from '../../src/node-compiler'
+import { MasterCSSScanner } from '../helpers/scanner'
+import {
+  compileStylesheet,
+  compileRenderedStylesheet,
+  createStyleEntryEmittedGlobals,
+  createStylesheetHostSource,
+  createMasterCSSPackageHostSource,
+  createExtractedCSS,
+  createExtractedCSSResult,
+  collectStylesheetDependencies,
+  cleanStyleRequest,
+  getNativeCSS,
+  hasPreserveNativeDirective,
+  hasMasterStyleEntrypoint,
+  hasLocalStyleDirectives,
+  isMasterStyleSource,
+  isStylesheetRequest,
+  removeMasterStyleDirectives,
+  removeStylesheetImports,
+  registerStylesheetSource,
+  resolveMasterStyleSource,
+  resolveStylesheetImportGraph,
+  replaceStylesheetImports,
+  transformLocalStylesheet
+} from '../../src/stylesheet'
+import { renderCompiledManifestCSS } from '../../src/stylesheet/render'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+function createFixture() {
+  const root = mkdtempSync(join(tmpdir(), 'master-css-stylesheet-'))
+  mkdirSync(join(root, 'app'), { recursive: true })
+  return root
+}
+
+describe('style CSS extraction helpers', () => {
+  it('removes top-level master style directives', () => {
+    const result = removeMasterStyleDirectives([
+      '@source "./page.tsx";',
+      '@safelist "card";',
+      '@blocklist "debug-*";',
+      '@preserve native;',
+      "@import \"@master/css\";",
+      '',
+      '@media (min-width: 768px) {',
+      '    @preserve native;',
+      '}',
+      '',
+      '.card { color: red; }'
+    ].join('\n'))
+
+    expect(hasMasterStyleEntrypoint("@import \"@master/css\";\n.card { color: red; }")).toBe(true)
+    expect(result.removed).toBe(true)
+    expect(result.code).not.toContain('@source')
+    expect(result.code).not.toContain('@safelist')
+    expect(result.code).not.toContain('@blocklist')
+    expect(result.code).not.toContain('@preserve native;\n@master')
+    expect(result.code).toContain('@media (min-width: 768px) {\n    @preserve native;\n}')
+  })
+
+  it('treats an empty host source as an intentionally handled Master CSS import', () => {
+    const result = createStylesheetHostSource('@import "@master/css";', {
+      masterSource: ''
+    })
+
+    expect(result).toBe('')
+  })
+
+  it('keeps native imports before generated host CSS', () => {
+    const masterFirst = createStylesheetHostSource([
+      '@import "@master/css";',
+      '@import "@fontsource/fira-mono";',
+      '',
+      '.card { color: red; }'
+    ].join('\n'), {
+      masterSource: '#master-css-slot{--slot:0}'
+    })
+    const masterLast = createStylesheetHostSource([
+      '@import "@fontsource/fira-mono";',
+      '@import "@master/css";',
+      '',
+      '.card { color: red; }'
+    ].join('\n'), {
+      masterSource: '#master-css-slot{--slot:0}'
+    })
+
+    expect(masterFirst).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
+    expect(masterLast).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
+  })
+
+  it('preserves native import modifiers before generated host CSS', () => {
+    const result = createStylesheetHostSource([
+      '@import url("@fontsource/fira-mono") layer(fonts) screen;',
+      '@import "normalize.css" layer(reset);',
+      '@import "@master/css";'
+    ].join('\n'), {
+      masterSource: '#master-css-slot{--slot:0}'
+    })
+
+    expect(result).toBe([
+      '@import url("@fontsource/fira-mono") layer(fonts) screen;',
+      '@import "normalize.css" layer(reset);',
+      '#master-css-slot{--slot:0}'
+    ].join('\n'))
+  })
+
+  it('uses the managed CSS entry config and native CSS sources', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @import "@master/css";
+
+      @theme {
+        --color-primary: #ff0000;
+        --animation-main: scale 1s;
+      }
+
+      @keyframes native-fade {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @layer components {
+        .btn {
+          display: grid;
+        }
+      }
+
+      .main {
+        color: var(--color-primary);
+        animation-name: native-fade;
+      }
+
+      .unused {
+        color: var(--color-primary);
+      }
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.tsx'), "<main class=\"btn display:block main fg-red\"></main>")
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root
+    })
+
+    expect(css).toContain('@layer base')
+    expect(css).not.toContain('text-rendering: geometricprecision')
+    expect(css).toContain('.main')
+    expect(css).toContain('.unused')
+    expect(css).toContain('--color-primary:red')
+    expect(css).toContain('--color-red')
+    expect(css).toContain('@keyframes native-fade')
+    expect(css.match(/@keyframes native-fade/g) || []).toHaveLength(1)
+    expect(css).toContain('.btn')
+    expect(css).toContain('display: grid')
+    expect(css).toContain(".display\\:block{display:block}")
+    expect(css).toContain('.fg-red{color:var(--color-red)}')
+    expect(css).not.toContain('@master')
+    expect(css).not.toContain('virtual:master-utilities.css')
+    expect(css).not.toContain('@master/css')
+  })
+
+  it('keeps non-expandable native imports out of generated managed CSS', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), [
+      '@import "@master/css";',
+      '@import "@fontsource/fira-mono";',
+      '',
+      '.card {',
+      '    color: red;',
+      '}'
+    ].join('\n'), { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root
+    })
+
+    expect(css).toContain('.card')
+    expect(css).not.toContain('@fontsource/fira-mono')
+    expect(css).not.toContain('@master/css')
+  })
+
+  it('reports emitted variables while keyframes remain native CSS', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @theme {
+        --animation-main: scale 1s;
+        --color-primary: #ff0000;
+
+
+
+
+
+
+       }
+@keyframes native-fade {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+@keyframes slide {
+          to {
+            transform: translateX(1rem);
+          }
+        }
+@keyframes scale {
+          to {
+            transform: scale(1.1);
+          }
+        }
+
+      .main {
+        color: var(--color-primary);
+        animation-name: native-fade,slide;
+      }
+
+      .main-animated {
+        animation: var(--animation-main);
+      }
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
+
+    const result = await createExtractedCSSResult({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root,
+      includeGeneratedCSS: false
+    })
+
+    expect(result.css).toContain('.main')
+    expect(result.css).toContain('--color-primary:red')
+    expect(result.css).toContain('@keyframes native-fade')
+    expect(result.emittedGlobals.variables).toEqual({ 'animation-main': 1, 'color-primary': 1 })
+    expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1, 1, 1])
+    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
+  })
+
+  it('emits referenced theme tokens without substituting their values', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @theme {
+        --color-primary: #ff0000;
+       }
+
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg-primary"></main>')
+
+    const result = await createExtractedCSSResult({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root
+    })
+
+    expect(result.css).toContain('.fg-primary{color:var(--color-primary)}')
+    expect(result.css).toContain('--color-primary:red')
+    expect(result.emittedGlobals.variables).toEqual({ 'color-primary': 1 })
+  })
+
+  it('emits native theme declarations and keyframes without class references', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @layer theme { :root, :host {\n        --color-primary: #ff0000;\n\n        \n      } }\n@keyframes static-fade {\n          to {\n            opacity: 1;\n          }\n        }\n\n    ", { baseManifest: defaultManifest })
+
+    const result = await createExtractedCSSResult({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root,
+      includeGeneratedCSS: false
+    })
+
+    expect(result.css).toContain('@layer theme')
+    expect(result.css).toContain('--color-primary: red')
+    expect(result.css).toContain('@keyframes static-fade')
+    expect(result.emittedGlobals.variables).toEqual({})
+    expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1])
+    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
+  })
+
+  it('prunes local CSS imports from Master CSS import roots when explicitly enabled', async () => {
+    const root = createFixture()
+    mkdirSync(join(root, 'app/styles'), { recursive: true })
+    writeFileSync(join(root, 'app/styles/btn.css'), `
+      .btn-native {
+        color: red;
+      }
+
+      .btn-unused {
+        color: blue;
+      }
+    `)
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    const result = await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @import "@master/css";
+      @import "./styles/btn.css";
+
+      .card {
+        display: grid;
+      }
+
+      .unused {
+        display: block;
+      }
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root,
+      pruneNativeCSS: true
+    })
+
+    expect(result.dependencies).toContain(join(root, 'app/globals.css'))
+    expect(result.dependencies).toContain(join(root, 'app/styles/btn.css'))
+    expect(result.dependencies.filter((dependency: string) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
+    expect(css).toContain('.card')
+    expect(css).toContain('.btn-native')
+    expect(css).not.toContain('.unused')
+    expect(css).not.toContain('.btn-unused')
+    expect(css).not.toContain('@import "./styles/btn.css"')
+  })
+
+  it('preserves native CSS when a Master CSS import root opts out of pruning', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @import "@master/css";
+      @preserve native;
+
+      .card {
+        display: grid;
+      }
+
+      .unused {
+        display: block;
+      }
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.html'), '<div class="card"></div>')
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root
+    })
+
+    expect([...scanner.nativeClassNames]).toEqual(['card', 'unused'])
+    expect([...scanner.usedNativeClasses]).toEqual(['card'])
+    expect(css).toContain('.card')
+    expect(css).toContain('.unused')
+    expect(css).not.toContain('@preserve native')
+  })
+
+  it('preserves imported native CSS when a root graph opts out of pruning', async () => {
+    const root = createFixture()
+    mkdirSync(join(root, 'app/styles'), { recursive: true })
+    writeFileSync(join(root, 'app/styles/btn.css'), `
+      .btn-native {
+        color: red;
+      }
+
+      .btn-unused {
+        color: blue;
+      }
+    `)
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), `
+      @import "@master/css";
+      @preserve native;
+      @import "./styles/btn.css";
+    `, { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.html'), '<div class="btn-native"></div>')
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root
+    })
+
+    expect([...scanner.nativeClassNames]).toEqual(['btn-native', 'btn-unused'])
+    expect(css).toContain('.btn-native')
+    expect(css).toContain('.btn-unused')
+    expect(css).not.toContain('@preserve native')
+  })
+
+  it('can emit pruned native CSS without generated Master CSS', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      .card {\n        display: grid;\n      }\n    ", { baseManifest: defaultManifest })
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"card display:block\"></div>")
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root,
+      includeGeneratedCSS: false
+    })
+
+    expect(css).toContain('.card')
+    expect(css).toContain('@layer base')
+    expect(css).not.toContain('text-rendering: geometricprecision')
+    expect(css).not.toContain(".display\\:block{display:block}")
+  })
+
+  it('keeps package base CSS without generated utilities for Master CSS imports', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+
+    const stylesheetSources = new Map()
+    await registerStylesheetSource(
+      scanner,
+      stylesheetSources,
+      join(root, 'app/globals.css'),
+      '@import "@master/css";',
+      { baseManifest: defaultManifest }
+    )
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"display:block\"></div>")
+
+    const css = await createExtractedCSS({
+      scanner,
+      stylesheetSources,
+      baseManifest: defaultManifest,
+      projectDir: root,
+      includeGeneratedCSS: false
+    })
+
+    expect(css).toContain('@layer base')
+    expect(css).not.toContain('text-rendering: geometricprecision')
+    expect(css).toMatch(/font-family:\s*var\(--font-family-sans\)/)
+    expect(css).not.toContain(".display\\:block{display:block}")
+    expect(css).not.toContain('@master/css')
+  })
+
+  it('returns empty CSS when generated output is disabled without style sources', async () => {
+    const root = createFixture()
+    const scanner = new MasterCSSScanner({}, root)
+    await scanner.init()
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"display:block\"></div>")
+
+    const css = await createExtractedCSS({
+      scanner,
+      baseManifest: defaultManifest,
+      includeGeneratedCSS: false
+    })
+
+    expect(css).toBe('')
+  })
+})

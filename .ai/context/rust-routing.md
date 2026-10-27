@@ -1,0 +1,70 @@
+# Rust Crate Routing Pack
+
+Use this for changes to `crates/**`,
+Rust-backed behavior, native bindings, Wasm bindings, code generation, or parity.
+
+## Relevant Context
+
+1. Root `Cargo.toml` and the affected crate `Cargo.toml`.
+2. The affected crate `AI.md`, when present.
+3. The smallest source module and adjacent tests named below.
+4. The matching TypeScript host package `package.json` and `AI.md` only when the
+   binding or public host surface is involved.
+
+Do not begin with every crate or every binding. Rust owns semantics; TypeScript hosts
+own loading, filesystem, browser, editor, and platform adaptation.
+
+## Semantic Crates
+
+| Crate | Responsibility | Start with |
+|---|---|---|
+| `mastercss-schema` | Serializable Manifest, engine, and directive contracts | `src/manifest.rs`, `src/engine.rs`, `src/directives.rs` |
+| `mastercss-lexer` | Escapes, functions, variables, directives, statements, class-list tokens | matching `src/*.rs`, then `src/tests.rs` |
+| `mastercss-engine` | Manifest execution, utility/value matching, conditions, priority, resources, transitions | `src/session.rs`, then the owning domain module |
+| `mastercss-compiler` | Directive parsing, import graph, managed CSS, manifest lowering | `src/directives.rs`, `src/manifest/`, or `src/lower/` |
+| `mastercss-project` | Project entry/import graph and manifest merge policy | `src/lib.rs`, `src/tests.rs` |
+| `mastercss-source` | HTML/JS/Vue/Svelte-neutral source extraction IR | `src/lib.rs` and scanner tests |
+| `mastercss-scanner` | Multi-file scan state over source extraction and engine transitions | `src/lib.rs` and tooling scanner tests |
+| `mastercss-validator` | Rust validation operations | `src/lib.rs` |
+| `mastercss-lint` | Ordering, conflict, and recommendation policy | matching domain module and its tests |
+| `mastercss-language` | UTF-16 positions, document analysis, formatting, semantic tokens | `src/session.rs`, then domain module |
+| `mastercss-render` | Server render/hydration IR | `src/lib.rs` and server fixtures |
+| `mastercss-diagnostics` | Dependency-light diagnostic/report contracts | `src/lib.rs` |
+
+## Delivery And Host Crates
+
+| Crate | Responsibility | Pair with |
+|---|---|---|
+| `mastercss-binding-native` | napi ABI adapters grouped by engine, compiler, tooling, render/scanner | `packages/binding`, affected public host package |
+| `mastercss-binding-wasm-engine` | Engine Wasm ABI with manifest compilation, render sessions and inspection, for Node without a native binding and other non-browser hosts. Browsers run `packages/engine-js` instead; the differential runs against this Wasm | `packages/binding-wasm-engine`, `packages/engine-js`, `packages/css` |
+| `mastercss-binding-wasm-compiler` | Compiler Wasm ABI | `packages/binding-wasm-compiler`, `packages/compiler` |
+| `mastercss-binding-wasm-tooling` | Tooling Wasm ABI | `packages/binding-wasm-tooling`, `packages/tooling` |
+| `mastercss-cli` | Native CLI transport over project/scanner/engine | `packages/cli` |
+| `xtask` | Artifact builds, codegen, parity, and release staging | generated target plus `parity/**` evidence |
+
+For engine/compiler domain modules, use the corresponding crate-local `AI.md`; the tables above identify the owner without duplicating its module map.
+
+## Validation
+
+Start scoped, then widen for semantic or ABI changes:
+
+```sh
+cargo test -p <crate>
+cargo clippy -p <crate> --all-targets --all-features -- -D warnings
+cargo fmt --check
+```
+
+For generated bindings or ABI changes also run:
+
+```sh
+cargo xtask codegen --check
+cargo xtask parity
+```
+
+Engine/compiler output changes require the matching npm package tests. Engine
+semantics changes (`mastercss-engine`, the lexer and schema code it executes, the
+program encoding) also change `packages/engine-js` in the same change: rebuild the Wasm
+(`pnpm run build:rust:wasm`) and keep `pnpm --filter @master/css-engine-js differential`
+at zero differences (`.ai/architecture.md#browser-engine`). Browser engine changes
+require runtime e2e and bundle-size review (`pnpm run check:runtime-size`). Never edit generated binding
+protocol files directly.

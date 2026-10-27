@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
-import { Settings } from '../../src'
-import CSSLanguageService from '../../src/core'
+import type { Settings } from '../helpers/language-service'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc, { languageIdOfExt } from '../../src/utils/create-doc'
 
 export const expectClassPosition = (target: string, contents: string[], ext: keyof typeof languageIdOfExt = 'html', settings?: Settings) => {
@@ -54,28 +54,21 @@ test.concurrent('full-width spaces are part of the class token', () => {
 })
 
 test.concurrent('valid classes', () => {
-  const target = 'bg:black'
+  const target = 'bg-black'
   const contents = ['<div class="class-a ', target, '"></div>']
   expectClassPosition(target, contents)
 })
 
-test.concurrent('class in CSS @compose', () => {
-  const target = 'bg:primary'
-  const contents = ['.btn { @compose inline-flex ', target, '; }']
+test.concurrent('class in CSS @safelist', () => {
+  const target = 'bg-primary'
+  const contents = ['.btn { @safelist "display:inline-flex ', target, '"; }']
   expectClassPosition(target, contents, 'css')
 })
 
-test.concurrent('class in Vue style @compose', () => {
-  const target = 'bg:primary'
-  const contents = ['<template><button /></template><style>.btn { @compose inline-flex ', target, '; }</style>']
+test.concurrent('class in Vue style @safelist', () => {
+  const target = 'bg-primary'
+  const contents = ['<template><button /></template><style>.btn { @safelist "display:inline-flex ', target, '"; }</style>']
   expectClassPosition(target, contents, 'vue')
-})
-
-test.concurrent('ignores quoted CSS @compose classes', () => {
-  const doc = createDoc('css', '.btn { @compose "inline-flex bg:primary"; }')
-  const languageService = new CSSLanguageService()
-
-  expect(languageService.getClassPosition(doc, doc.positionAt(doc.getText().indexOf('bg:primary')))).toBeUndefined()
 })
 
 test.concurrent('quote in class', () => {
@@ -84,18 +77,18 @@ test.concurrent('quote in class', () => {
   expectClassPosition(target, contents)
 })
 
-test.concurrent('group syntax', () => {
-  const target = '{abs}'
+test.concurrent('preserves the complete removed group range for diagnostics', () => {
+  const target = '{display:block}'
   const contents = ['<div class="class-a ', target, '"></div>']
   expectClassPosition(target, contents)
 })
 
 test.concurrent('ignores class attributes inside HTML comments', () => {
-  const doc = createDoc('html', '<!-- <div class="fg:red"></div> -->\n<div class="fg:blue"></div>')
+  const doc = createDoc('html', '<!-- <div class="fg-red"></div> -->\n<div class="fg-blue"></div>')
   const languageService = new CSSLanguageService()
 
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
-    'fg:blue'
+    'fg-blue'
   ])
   expect(languageService.getClassPosition(doc, doc.positionAt(17))).toBeUndefined()
 })

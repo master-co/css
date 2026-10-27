@@ -1,42 +1,60 @@
 # Package Boundaries Pack
 
-Use this for dependency direction, package ownership, public exports, config shapes, virtual module protocols, or cycle pressure.
+Use this for dependency direction, public exports, config shapes, virtual-module
+protocol, package consolidation, or cycle pressure.
 
 ## Dependency Direction
 
 ```txt
-shared / external data
-  -> @master/css-schema / @master/css-lexer
-  -> @master/css-source
-  -> @master/css-engine / @master/css-preset / @master/css-integration
-  -> @master/css-compiler / @master/css-project
-  -> validator / server / scanner / runtime / language / language-service / stylesheet
-  -> build plugins / CLI / ESLint / language-server
-  -> framework integrations / VS Code / examples / site
+external data / shared build support
+  -> schema + native/Wasm artifact loaders (bundling the JavaScript engine) + preset
+  -> @master/css + @master/css-tooling
+  -> @master/css-compiler
+  -> runtime / server / language-service / ESLint
+  -> build adapters / CLI / language-server
+  -> framework adapters / VS Code / examples / site
 ```
 
 ## Ownership Rules
 
-- `@master/css-engine` owns manifest execution, class semantics, generated rules, priority, layers, variables, animations, and CSS text generation.
-- `@master/css-preset` owns default preset CSS source and generated default manifest.
-- `@master/css` is a facade; do not move behavior there casually.
-- `@master/css-compiler` owns CSS-first authoring and manifest lowering.
-- `@master/css-project` owns project entry and manifest resource resolution.
-- `@master/css-integration` owns adapter-neutral virtual module and integration protocol.
-- `@master/css-source` owns source-level class candidate extraction.
-- `@master/css-stylesheet` owns stylesheet entry output and generated CSS composition.
-- Class pipeline ownership: `@master/css-lexer` owns raw class-list token/range parsing, whitespace splitting, and dependency-free lexical helpers; `@master/css-engine/inspect` owns manifest-driven class semantic inspection for tooling; `@master/css-lint` owns framework-neutral lint policy and class-list edit plans; `@master/eslint-plugin-css` owns ESLint AST visitors, reports, and fixer adaptation; `@master/css-language` owns editor source-position scanning and semantic tokenization.
-- Runtime-covered value surface: `@master/css-runtime` directly extends `MasterCSS` and bundles runtime source, selected engine value exports, schema runtime constants, and default manifest loading. Classify additions as runtime core, build-time-only configuration, or tooling-only logic before adding them to any runtime-imported value module.
-- Runtime observation: runtime must not grow global event buses or tooling observer APIs. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state.
+- Rust crates are the semantic implementation. The browser engine,
+  `@master/css-engine-js`, is the one deliberate second implementation, held
+  byte-identical by its differential gate (`.ai/architecture.md#browser-engine`).
+- `@master/css-engine-js` is private and zero-dependency, bundled into
+  `@master/css-binding` like `@master/css-internal`; it executes programs only.
+- `@master/css-schema` owns versioned dependency-light contracts and codecs.
+- `@master/css` owns the public Manifest v6 execution surface and CSS entry proxies.
+- `@master/css-preset` owns default CSS source and the generated default manifest.
+- `@master/css-compiler` owns compiler, project, stylesheet, and project-diagnostics
+  orchestration.
+- `@master/css-tooling` owns public lexer, source, scanner, validator, lint, language,
+  and dependency-light diagnostics sessions.
+- `@master/css-runtime` owns DOM/CSSOM behavior around the browser engine.
+- `@master/css-language-service` owns editor-document mapping and Shiki/TextMate assets.
+- `@master/eslint-plugin-css` owns only ESLint AST and fixer adaptation.
+- `@master/eslint-config-css` remains the deliberate thin public flat-config preset.
+- `@master/css-internal` is private, official-only, and bundled into its
+  published consumers. It is an integration kernel, not a generic shared utility
+  package.
+- Official Vue/Svelte extraction adapters are private implementation details. Do not
+  restore a public third-party adapter registry.
 
 ## Escalate When
 
-- A dependency edge seems necessary across layers: read `.ai/architecture.md`, `.ai/package-map.md`, and `.ai/boundaries.md`.
-- Public exports, config shapes, or virtual ids change: inspect downstream packages and add validation.
-- A cycle appears: extract dependency-light contracts into `@master/css-schema`, lexical scanners into `@master/css-lexer`, source extraction into `@master/css-source`, or adapter-neutral protocol into `@master/css-integration`.
-- A proposed helper is not required by runtime execution but would live under runtime source, `MasterCSS`, engine root value exports, schema value constants, or another runtime-imported value module: split it into an explicit tooling subpath or owning package and measure runtime bundle impact when feasible.
+- A dependency edge seems necessary across layers: read `.ai/architecture.md`,
+  `.ai/package-map.md`, and `.ai/boundaries.md`.
+- Public exports, config shapes, virtual ids, or package names change: inspect all
+  downstream packages and add validation.
+- A cycle appears: move contracts to schema, semantics to the owning Rust crate,
+  compiler orchestration to compiler, or editor-neutral behavior to tooling.
+- A proposed helper would enter runtime-imported modules but is not runtime behavior:
+  move it to compiler/tooling and measure bundle impact when feasible.
 
 ## Do Not
 
-- Do not make engine depend on compiler, integration contracts, runtime, server, scanner, language service, ESLint, examples, or site.
-- Do not solve package pressure with hidden runtime imports or package-specific loaders in the wrong layer.
+- Do not implement TypeScript semantic fallbacks outside the browser engine, and do
+  not grow the browser engine beyond executing programs.
+- Do not make `@master/css` depend on compiler, tooling, integrations, or editors.
+- Do not make tooling depend on compiler, language-service, build adapters, or UI hosts.
+- Do not publish or emit imports to the private integration package.
+- Do not solve package pressure by creating another public wrapper package.

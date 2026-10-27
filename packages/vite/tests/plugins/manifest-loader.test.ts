@@ -2,10 +2,13 @@ import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import CSSScanner from '@master/css-scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
-import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-integration/node'
+import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal/manifest-module'
+import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId, toResolvedMasterCSSProgramId } from '@master/css-internal/node'
+import { MASTER_CSS_PROGRAM_QUERY } from '@master/css-internal/program-module'
+import { createEngineSync } from '@master/css/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
 
@@ -23,7 +26,7 @@ async function createContext(root = FIXTURE_DIR) {
         }
       }
     },
-    scanner: new CSSScanner({}, root)
+    scanner: new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
   } as any
   await context.scanner.init()
   return context
@@ -59,10 +62,26 @@ describe('ManifestLoaderPlugin', () => {
     expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
     expect(context.config.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'theme.css'))
     expect(context.config.server.fs.allow).toContain(themeComponentsPath)
-    expect(code).toContain('"version":1')
+    expect(code).toContain('"version":6')
     expect(code).toContain('accent')
     expect(code).toContain('#456')
     expect(code).toContain('badge')
+  })
+
+  it('compiles per-file CSS manifests into runtime programs with ?master-css-program', async () => {
+    const context = await createContext()
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call(
+      { resolve },
+      './theme.css' + MASTER_CSS_PROGRAM_QUERY,
+      path.join(FIXTURE_DIR, 'entry.ts')
+    )
+    expect(resolvedId).toBe(toResolvedMasterCSSProgramId(path.join(FIXTURE_DIR, 'theme.css')))
+    const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    const { default: program } = await import(`data:text/javascript;charset=utf-8,${encodeURIComponent(code)}`) as { default: Uint8Array }
+    using engine = createEngineSync({ program })
+    expect(engine.ensureClassRules(['badge']).mutations.length).toBeGreaterThan(0)
   })
 
   it('keeps per-file manifest dependencies registered after invalid CSS and recovers on the next run', async () => {
@@ -70,30 +89,22 @@ describe('ManifestLoaderPlugin', () => {
     const manifestPath = path.join(root, 'theme.css')
     try {
       mkdirSync(root, { recursive: true })
-      writeFileSync(manifestPath, [
-        '@components {',
-        '    card { @compose bg:neutral-120; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(manifestPath, ".card{@contents;} .card{@contents;}")
       const context = await createContext(root)
       const plugin = ManifestLoaderPlugin(context)
       const resolvedId = toResolvedMasterCSSManifestId(manifestPath)
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, resolvedId))
-        .rejects.toThrow('Invalid @compose class')
+        .rejects.toThrow('@contents is only valid inside @mixin')
       expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
       expect(context.config.server.fs.allow).toContain(manifestPath)
 
-      writeFileSync(manifestPath, [
-        '@components {',
-        '    card { @compose block; }',
-        '}'
-      ].join('\n'))
+      writeFileSync(manifestPath, "@mixin --card { @media all{display:block;} } @utility card { @media all{display:block;} }")
 
       const code = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
 
-      expect(code).toContain('"card"')
+      expect(code).toContain('"--card"')
       expect(code).toContain('display')
     } finally {
       rmSync(root, { recursive: true, force: true })
@@ -138,9 +149,28 @@ describe('ManifestLoaderPlugin', () => {
       source: expect.stringContaining('#456')
     }))
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
-    expect(code).toContain(`const masterCSSManifestResponse = await fetch(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href);`)
-    expect(code).toContain('export default await masterCSSManifestResponse.json();')
+    expect(code).toContain(`new Function('specifier', "return import(specifier, { with: { type: 'json' } })")`)
+    expect(code).toContain(`masterCSSManifest = (await loadMasterCSSManifestModule(masterCSSManifestSpecifier)).default;`)
+    expect(code).toContain('const response = await fetch(masterCSSManifestSpecifier)')
     expect(code).not.toContain('#456')
+  })
+
+  it('omits source provenance only from production per-file CSS manifests', async () => {
+    const context = await createContext()
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call({ resolve }, './theme.css' + MASTER_CSS_MANIFEST_QUERY, path.join(FIXTURE_DIR, 'entry.ts'))
+    const development = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    expect(development).toContain(`"source":{"file":${JSON.stringify(path.join(FIXTURE_DIR, 'styles/theme-components.css'))}`)
+
+    context.config.command = 'build'
+    const emitFile = vi.fn((_asset: { source: string }) => 'master_css_query_manifest_ref')
+    await (plugin.load as any).call({ addWatchFile: vi.fn(), emitFile }, resolvedId)
+    const inline = await (plugin.load as any).call({ addWatchFile: vi.fn() }, resolvedId)
+    for (const json of [emitFile.mock.calls[0][0].source, inline]) {
+      expect(json).toContain('"name":"--badge"')
+      expect(json).not.toContain('"source"')
+    }
   })
 
   it('emits per-file CSS manifests through a universal facade in SSR production build', async () => {
@@ -162,11 +192,28 @@ describe('ManifestLoaderPlugin', () => {
 
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
     expect(code).toContain('loadMasterCSSManifestFromFile')
-    expect(code).toContain('loadMasterCSSManifestFromFetch')
     expect(code).toContain(`with: { type: 'json' }`)
-    expect(code).toContain('await fetch(specifier)')
+    expect(code).toContain('const response = await fetch(specifier)')
     expect(code).not.toContain(`import { readFile } from 'node:fs/promises';`)
     expect(code).not.toContain('#456')
+  })
+
+  it('resolves server CSS manifest file URLs relative to the chunk', async () => {
+    const context = await createContext()
+    context.config.command = 'build'
+    const plugin = ManifestLoaderPlugin(context)
+    const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+    const resolvedId = await (plugin.resolveId as any).call({ resolve }, './theme.css' + MASTER_CSS_MANIFEST_QUERY, path.join(FIXTURE_DIR, 'entry.ts'))
+    const load = (consumer: string, referenceId: string) => (plugin.load as any).call({ environment: { config: { consumer } }, addWatchFile: vi.fn(), emitFile: () => referenceId }, resolvedId)
+    // An environment build keeps one config, so `build.ssr` cannot tell the outputs apart.
+    const serverCode = await load('server', 'server_ref')
+    const clientCode = await load('client', 'client_ref')
+    const resolveFileUrl = (referenceId: string) => (plugin.resolveFileUrl as any)({ referenceId, relativePath: '../assets/master-css-manifest.json', format: 'es' })
+
+    expect(serverCode).toContain('loadMasterCSSManifestFromFile')
+    expect(clientCode).not.toContain('loadMasterCSSManifestFromFile')
+    expect(resolveFileUrl('server_ref')).toBe('new URL("../assets/master-css-manifest.json", import.meta.url).href')
+    expect(resolveFileUrl('client_ref')).toBeUndefined()
   })
 
   it('updates per-file CSS manifest modules through HMR when imported', async () => {

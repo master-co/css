@@ -1,5 +1,5 @@
 import { ClientCapabilities, InitializeParams, InitializeRequest, InitializedNotification, ProtocolConnection } from 'vscode-languageserver/node'
-import CSSLanguageServer, { Settings, Workspace } from '../src'
+import { MasterCSSLanguageServer, type MasterCSSLanguageServerSettings, type MasterCSSWorkspace } from '../src'
 import { beforeAll, describe } from 'vitest'
 import { resolve } from 'node:path'
 import { URI } from 'vscode-uri'
@@ -8,16 +8,16 @@ import { connect } from './connection'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 
 declare interface FixtureContext {
-  server: CSSLanguageServer,
+  server: MasterCSSLanguageServer,
   fixtureDir: string,
   rootUri: string,
-  rootWorkspace: Workspace | undefined,
+  rootWorkspace: MasterCSSWorkspace | undefined,
   workspaceFolders: { uri: string, name: string }[],
   clientConnection: ProtocolConnection,
   createDocument: (text?: string, options?: { lang?: string, dir?: string }) => TextDocument
 }
 
-export function withFixture(fixture: string, cb: (context: FixtureContext) => void, settings?: Settings) {
+export function withFixture(fixture: string, cb: (context: FixtureContext) => void, settings?: MasterCSSLanguageServerSettings) {
   describe(fixture, async () => {
     const context = {}
     beforeAll(async () => {
@@ -102,7 +102,7 @@ export function withFixture(fixture: string, cb: (context: FixtureContext) => vo
         }
       } as FixtureContext)
       return () => {
-        server.stop()
+        server.dispose()
         clientConnection.dispose()
       }
     })

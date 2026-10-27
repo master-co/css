@@ -1,11 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import UtilityType from '@master/css-schema/utility-type'
-import CSSRuntime from '../src'
-import init from './init'
-
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+import { UtilityType } from '@master/css-schema/utility-type'
+import init, { compileProgram } from './init'
 
 async function waitForRuntimeRuleFlush(page: Page) {
   await page.evaluate(() => new Promise<void>((resolve) => {
@@ -15,14 +10,29 @@ async function waitForRuntimeRuleFlush(page: Page) {
   }))
 }
 
-test('does not expose tooling-only engine inspection helpers', async ({ page }) => {
+test('starts the browser runtime through the JavaScript engine', async ({ page }) => {
+  await init(page)
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime.binding)).toBe('js')
+})
+
+test('exposes only the frozen runtime facade and immutable snapshot', async ({ page }) => {
   await init(page)
   await expect(page.evaluate(() => ({
+    frozen: Object.isFrozen(globalThis.masterCSSRuntime),
+    snapshotFrozen: Object.isFrozen(globalThis.masterCSSRuntime.snapshot()),
     inspectClass: 'inspectClass' in globalThis.masterCSSRuntime,
-    normalizeNumericValue: 'normalizeNumericValue' in globalThis.masterCSSRuntime
+    normalizeNumericValue: 'normalizeNumericValue' in globalThis.masterCSSRuntime,
+    classCounts: 'classCounts' in globalThis.masterCSSRuntime,
+    classUtilities: 'classUtilities' in globalThis.masterCSSRuntime,
+    retainedClassNames: 'retainedClassNames' in globalThis.masterCSSRuntime
   }))).resolves.toEqual({
+    frozen: true,
+    snapshotFrozen: true,
     inspectClass: false,
-    normalizeNumericValue: false
+    normalizeNumericValue: false,
+    classCounts: false,
+    classUtilities: false,
+    retainedClassNames: false
   })
 })
 
@@ -31,55 +41,126 @@ test('does not install the removed devtools hook global', async ({ page }) => {
   await expect(page.evaluate(() => ['__MASTER', 'CSS', 'DEVTOOLS', 'HOOK__'].join('_') in globalThis)).resolves.toBe(false)
 })
 
-test('destroy on progressive', async ({ page }) => {
+test('dispose on progressive', async ({ page }) => {
   await init(page, '@layer utilities{}')
   await page.evaluate(() => {
-    document.body.classList.add('text-center')
+    document.body.classList.add("text-align:center")
   })
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.length)).toBe(1)
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || [])
-    .filter(cssRule => cssRule === globalThis.masterCSSRuntime.utilitiesLayer.native)
-    .length
+  expect(await page.evaluate(() =>
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().layers
+      .find(({ name }) => name === 'utilities')?.ruleCount
   )).toBe(1)
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
   await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime
-    runtime.destroy()
-    ;(globalThis as any).destroyedRuntime = runtime
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.dispose()
   })
-  expect(await page.evaluate(() => (globalThis as any).destroyedRuntime.utilitiesLayer.rules.length)).toBe(0)
-  expect(await page.evaluate(() => Array.from((globalThis as any).destroyedRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
-  await page.evaluate(() => {
-    const runtime = (globalThis as any).destroyedRuntime as typeof globalThis.masterCSSRuntime
-    runtime.register().observe()
-    document.body.classList.add('block')
-    document.body.classList.add('font:bold')
+  expect(await page.evaluate(() => ({
+    globalCleared: globalThis.masterCSSRuntime === undefined,
+    styleRemoved: !document.getElementById('master-css')
+  }))).toEqual({
+    globalCleared: true,
+    styleRemoved: true
   })
+  await page.evaluate(async (program) => {
+    const nextRuntime = await globalThis.MasterCSSRuntime.start({ program })
+    nextRuntime.observe()
+    document.body.classList.add("display:block")
+    document.body.classList.add('font-bold')
+  }, compileProgram())
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
+  expect(await page.evaluate(() => {
+    const classRules = globalThis.masterCSSRuntime?.snapshot().classRules
+    return Object.fromEntries(Object.entries(classRules || {})
+      .map(([className, snapshot]) => [className, snapshot.rules.length]))
+  })).toMatchObject({
+    'display:block': 1,
+    'font-bold': 1
+  })
 })
 
 test('prevent attach layer twice', async ({ page }) => {
   await init(page, '@layer components{}', {
     utilities: [
+  {
+    "kind": "static" as const, "name": "app-wrapper",
+    "body": [
       {
-        name: 'app-wrapper',
-        type: UtilityType.Semantic,
-        layer: 'components',
-        rules: [
-          { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
-          { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
-          { selector: '&', declarations: { height: '2.5rem' } }
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "margin-left",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "auto"
+              }
+            ]
+          },
+          {
+            "type": "declaration" as const,
+            "property": "margin-right",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:hover",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "padding-left",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "1.25rem"
+              }
+            ]
+          },
+          {
+            "type": "declaration" as const,
+            "property": "padding-right",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "1.25rem"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:focus",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "height",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "2.5rem"
+              }
+            ]
+          }
         ]
       }
     ]
+  }
+]
   })
   await page.evaluate(() => {
-    document.body.classList.add('app-wrapper')
+    document.body.classList.add('app-wrapper@layer(components)')
   })
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
 
 test('insert semantic utility with multiple native rules into existing layer', async ({ page }) => {
@@ -88,97 +169,103 @@ test('insert semantic utility with multiple native rules into existing layer', a
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="block multi-rule"></div>'
+    document.body.innerHTML = "<div class=\"display:block multi-rule\"></div>"
   })
   await init(page, '', {
     utilities: [
+  {
+    "kind": "static" as const, "name": "multi-rule",
+    "body": [
       {
-        name: 'multi-rule',
-        rules: [
-          { selector: '&', declarations: { display: 'flex' } },
-          { selector: '&:hover', declarations: { color: 'red' } },
-          { selector: '&', conditions: ['@supports (appearance:none)'], declarations: { 'scrollbar-width': 'thin' } }
+        "type": "rule" as const,
+        "selector": "&",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "display",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "flex"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "rule" as const,
+        "selector": "&:hover",
+        "body": [
+          {
+            "type": "declaration" as const,
+            "property": "color",
+            "value": [
+              {
+                "type": "text" as const,
+                "value": "red"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "condition" as const,
+        "condition": "@supports (appearance:none)",
+        "body": [
+          {
+            "type": "rule" as const,
+            "selector": "&",
+            "body": [
+              {
+                "type": "declaration" as const,
+                "property": "scrollbar-width",
+                "value": [
+                  {
+                    "type": "text" as const,
+                    "value": "thin"
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
     ]
+  }
+]
   })
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules.length)).toBe(4)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules.length)).toBe(4)
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
-test('inserts functional pseudo-class selector aliases into native CSSOM', async ({ page }) => {
+test('inserts native functional pseudo-class selectors into CSSOM', async ({ page }) => {
   const consoleErrors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="pb:8x:not(:last) text-center_td:not(:first)"></div>'
+    document.body.innerHTML = "<div class=\"padding-bottom:2rem:not(:last-child) text-align:center_td:not(:first-child)\"></div>"
   })
   await init(page)
 
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules || [])
+  expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
     .map((cssRule) => cssRule.cssText)
   )).toEqual([
-    '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }',
-    '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
+    ".padding-bottom\\:2rem\\:not\\(\\:last-child\\):not(:last-child) { padding-bottom: 2rem; }",
+    '.text-align\\:center_td\\:not\\(\\:first-child\\) td:not(:first-child) { text-align: center; }'
   ])
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
-test('refresh clears stale native keyframes', async ({ page }) => {
+test('refresh leaves native stylesheets and keyframes under browser ownership', async ({ page }) => {
+  await page.setContent('<style id="native">:root{--color-static:#123}@keyframes steady{to{opacity:1}}</style><div class="animation:steady|1s"></div>')
   await init(page)
-  await page.evaluate(() => {
-    document.body.classList.add('animation:fade|1s', 'animation:flash|1s')
-  })
-  await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style!.sheet!.cssRules)
-    .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
-    .map((cssRule) => (cssRule as CSSKeyframesRule).name)
-  )).toEqual(['fade', 'flash'])
-
-  await page.evaluate(() => {
-    globalThis.masterCSSRuntime.refresh()
-  })
-  expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style!.sheet!.cssRules)
-    .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
-    .map((cssRule) => (cssRule as CSSKeyframesRule).name)
-  )).toEqual(['fade', 'flash'])
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh())
+  expect(await page.locator('#native').textContent()).toBe(':root{--color-static:#123}@keyframes steady{to{opacity:1}}')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('@keyframes')
 })
 
-test('observes static theme variables and keyframes without class references', async ({ page }) => {
-  await init(page, undefined, {
-    variables: [
-      {
-        name: 'color-static',
-        key: 'static',
-        namespace: 'color',
-        type: 'string',
-        value: '#123',
-        static: true
-      }
-    ],
-    animations: {
-      'static-fade': {
-        to: {
-          opacity: '1'
-        }
-      }
-    },
-    animationOptions: {
-      'static-fade': {
-        static: true
-      }
-    }
-  })
-
-  const cssRules = await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style!.sheet!.cssRules)
-    .map((cssRule) => cssRule.cssText)
-  )
-  expect(cssRules.some((cssRule) => cssRule.includes('--color-static'))).toBe(true)
-  expect(cssRules.some((cssRule) => cssRule.includes('@keyframes static-fade'))).toBe(true)
-})
-
-test('generates browser native declarations through CSS.supports fallback', async ({ page }) => {
+test('preserves native declarations independently of browser support', async ({ page }) => {
   await page.evaluate(() => {
     document.body.innerHTML = [
       '<div class="float:left display:block field-sizing:content transition-behavior:allow-discrete color:oklch(63.7%|0.237|25.331)"></div>',
@@ -192,8 +279,11 @@ test('generates browser native declarations through CSS.supports fallback', asyn
       fieldSizing: CSS.supports('field-sizing', 'content'),
       transitionBehavior: CSS.supports('transition-behavior', 'allow-discrete')
     },
-    classUtilities: [...globalThis.masterCSSRuntime.classUtilities.keys()],
-    cssRules: Array.from(globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules || [])
+    classUtilities: Object.entries(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules)
+      .filter(([, { rules }]) => rules.length)
+      .map(([className]) => className),
+    rustText: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().cssText,
+    cssRules: Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
       .map((cssRule) => cssRule.cssText)
   }))
 
@@ -203,7 +293,13 @@ test('generates browser native declarations through CSS.supports fallback', asyn
   expect(result.cssRules.some((cssRule) => cssRule.includes('float: left'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('display: block'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('oklch'))).toBe(true)
+  expect(result.rustText).toContain('.float\\:left{float:left}')
+  expect(result.rustText).toContain('.display\\:block{display:block}')
+  expect(result.rustText).toContain('made-up:left')
+  expect(result.rustText).toContain('display:banana')
 
+  expect(result.classUtilities).toContain('field-sizing:content')
+  expect(result.classUtilities).toContain('transition-behavior:allow-discrete')
   if (result.supports.fieldSizing) {
     expect(result.classUtilities).toContain('field-sizing:content')
     expect(result.cssRules.some((cssRule) => cssRule.includes('field-sizing: content'))).toBe(true)
@@ -213,93 +309,130 @@ test('generates browser native declarations through CSS.supports fallback', asyn
     expect(result.cssRules.some((cssRule) => cssRule.includes('transition-behavior: allow-discrete'))).toBe(true)
   }
 
-  expect(result.classUtilities).not.toContain('made-up:left')
-  expect(result.classUtilities).not.toContain('float:banana')
-  expect(result.classUtilities).not.toContain('display:banana')
+  expect(result.classUtilities).toContain('made-up:left')
+  expect(result.classUtilities).toContain('float:banana')
+  expect(result.classUtilities).toContain('display:banana')
 })
 
-test('hydrates progressive static theme variables and keyframes', async ({ page }) => {
+test('progressive hydration leaves unconditional native CSS in its own stylesheet', async ({ page }) => {
+  await page.setContent("<style id=\"native\">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class=\"display:block\"></div>")
+  await init(page, "@layer utilities{.display\\:block{display:block}}", {}, 'auto')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('--color-static')
+  expect(await page.locator('#native').textContent()).toContain('@keyframes steady')
+})
+
+test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
+  await init(page)
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="block"></div>'
+    document.body.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
   })
-  await init(page, [
-    '@layer theme{:root{--color-static:#123}}',
-    '@layer utilities{.block{display:block}}',
-    '@keyframes static-fade{to{opacity:1}}'
-  ].join(''), {
-    variables: [
-      {
-        name: 'color-static',
-        key: 'static',
-        namespace: 'color',
-        type: 'string',
-        value: '#123',
-        static: true
+  await waitForRuntimeRuleFlush(page)
+  const result = await page.evaluate(async (program) => {
+    const current = globalThis.__MASTER_CSS_RUNTIME_TEST__
+    const before = current.text
+    const returned = await globalThis.MasterCSSRuntime.start({
+      program,
+      emittedGlobals: {
+        variables: { 'color-red-60': 1 }
       }
-    ],
-    animations: {
-      'static-fade': {
-        to: {
-          opacity: '1'
-        }
-      }
-    },
-    animationOptions: {
-      'static-fade': {
-        static: true
-      }
+    })
+    const returnedAgain = await globalThis.MasterCSSRuntime.start({ program })
+    return {
+      same: returned === returnedAgain,
+      before,
+      after: current.text,
+      variables: current.emittedGlobals.variables,
+      variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),
     }
-  }, 'auto')
+  }, compileProgram())
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.progressive)).toBe(true)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.themeLayer.rules.map((rule) => rule.name))).toEqual(['color-static'])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.animationsNonLayer.rules.map((rule) => rule.name))).toEqual(['static-fade'])
+  expect(result.same).toBe(true)
+  expect(result.before).toContain('--color-red-60:')
+  expect(result.before).not.toContain('@keyframes fade{')
+  expect(result.after).toContain('.fg-red-60')
+  expect(result.after).toContain('.animation\\:fade\\|1s')
+  expect(result.after).not.toContain('--color-red-60:')
+  expect(result.after).not.toContain('@keyframes fade{')
+  expect(result.variables).toMatchObject({ 'color-red-60': 1 })
+  expect(result.variableCounts).toMatchObject({ 'color-red-60': 1 })
 })
 
-test('registers emittedGlobals counts on an existing runtime', () => {
-  const root = { host: {} } as unknown as ShadowRoot
-  const cssRuntime = CSSRuntime.create({ manifest: defaultManifest, root })
-  const returnedCSSRuntime = CSSRuntime.create({
-    manifest: defaultManifest,
-    root,
-    emittedGlobals: {
-      variables: {
-        'color-primary': 1
-      },
-      animations: {
-        fade: 1
+test('merges emittedGlobals from concurrent starts before resolving callers', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (program) => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = host.attachShadow({ mode: 'open' })
+    root.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
+    const first = globalThis.MasterCSSRuntime.start({ program, root })
+    const second = globalThis.MasterCSSRuntime.start({
+      program,
+      root,
+      emittedGlobals: {
+        variables: { 'color-red-60': 1 }
+      }
+    })
+    const third = globalThis.MasterCSSRuntime.start({
+      program,
+      root,
+      emittedGlobals: {
+        variables: { 'color-red-60': 2 }
+      }
+    })
+    const [firstRuntime, secondRuntime, thirdRuntime] = await Promise.all([first, second, third])
+    firstRuntime.observe()
+    const snapshot = firstRuntime.snapshot()
+    const internal = firstRuntime as unknown as {
+      emittedGlobals: {
+        variables: Record<string, number>
       }
     }
+    const emittedGlobals = structuredClone(internal.emittedGlobals)
+    firstRuntime.dispose()
+    return {
+      same: firstRuntime === secondRuntime && secondRuntime === thirdRuntime,
+      text: snapshot.cssText,
+      counts: snapshot.usageCounts,
+      emittedGlobals
+    }
+  }, compileProgram())
+
+  expect(result.same).toBe(true)
+  expect(result.counts).toEqual({
+    'animation:fade|1s': 1,
+    'fg-red-60': 1
   })
-
-  expect(returnedCSSRuntime).toBe(cssRuntime)
-  expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
-  expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
-  expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
-  expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
-
-  cssRuntime.destroy()
+  expect(result.emittedGlobals).toEqual({
+    variables: { 'color-red-60': 3 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: []
+  })
+  expect(result.text).toContain('.fg-red-60')
+  expect(result.text).toContain('.animation\\:fade\\|1s')
+  expect(result.text).not.toContain('--color-red-60:')
+  expect(result.text).toContain('@keyframes fade')
 })
 
-test('registers emittedGlobals counts once on a new runtime', () => {
-  const root = { host: {} } as unknown as ShadowRoot
-  const cssRuntime = CSSRuntime.create({
-    manifest: defaultManifest,
-    root,
-    emittedGlobals: {
-      variables: {
-        'color-primary': 1
-      },
-      animations: {
-        fade: 1
+test('registers emittedGlobals counts once on a new runtime', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (program) => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = host.attachShadow({ mode: 'open' })
+    const runtime = await globalThis.MasterCSSRuntime.start({
+      program,
+      root,
+      emittedGlobals: {
+        variables: { 'color-primary': 1 }
       }
+    })
+    const result = {
+      variables: runtime.emittedGlobals.variables,
+      variableCounts: Object.fromEntries(runtime.themeLayer.tokenCounts),
     }
-  })
+    runtime.dispose()
+    return result
+  }, compileProgram())
 
-  expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
-  expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
-  expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
-  expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
-
-  cssRuntime.destroy()
+  expect(result.variables).toMatchObject({ 'color-primary': 1 })
+  expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })
 })

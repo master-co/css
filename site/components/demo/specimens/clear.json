@@ -1,0 +1,77 @@
+[
+  {
+    "page": "clear",
+    "id": "clearing-both-left-and-right-floats",
+    "title": "Clearing both left and right floats",
+    "html": [
+      "<div>\n  <div class=\"float:left height:8.5rem width:34%\">Left</div>\n  <div class=\"float:right height:5.5rem width:34%\">Right</div>\n  \n  <div class=\"clear:both\">Clear</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "float:left",
+      "height:8.5rem",
+      "width:34%",
+      "float:right",
+      "height:5.5rem",
+      "clear:both"
+    ],
+    "classLists": [
+      "float:left height:8.5rem width:34%",
+      "float:right height:5.5rem width:34%",
+      "clear:both"
+    ],
+    "highlighted": [
+      "clear:both"
+    ]
+  },
+  {
+    "page": "clear",
+    "id": "clearing-left-floats",
+    "title": "Clearing left floats",
+    "html": [
+      "<div>\n  <div class=\"float:left height:4.5rem width:34%\">Left</div>\n  <div class=\"float:right height:8.5rem width:34%\">Right</div>\n  \n  <div class=\"clear:left\">Clear</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "float:left",
+      "height:4.5rem",
+      "width:34%",
+      "float:right",
+      "height:8.5rem",
+      "clear:left"
+    ],
+    "classLists": [
+      "float:left height:4.5rem width:34%",
+      "float:right height:8.5rem width:34%",
+      "clear:left"
+    ],
+    "highlighted": [
+      "clear:left"
+    ]
+  },
+  {
+    "page": "clear",
+    "id": "clearing-right-floats",
+    "title": "Clearing right floats",
+    "html": [
+      "<div>\n  <div class=\"float:left height:8.5rem width:34%\">Left</div>\n  <div class=\"float:right height:4.5rem width:34%\">Right</div>\n  \n  <div class=\"clear:right\">Clear</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "float:left",
+      "height:8.5rem",
+      "width:34%",
+      "float:right",
+      "height:4.5rem",
+      "clear:right"
+    ],
+    "classLists": [
+      "float:left height:8.5rem width:34%",
+      "float:right height:4.5rem width:34%",
+      "clear:right"
+    ],
+    "highlighted": [
+      "clear:right"
+    ]
+  }
+]

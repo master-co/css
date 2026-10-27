@@ -1,17 +1,12 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { type ComponentType, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-type LayoutFunction = (page: ReactNode) => ReactNode;
-type LayoutComponent = ComponentType<{ children: ReactNode }>;
-type InertiaPage = ComponentType<any> & {
-  layout?: LayoutComponent | LayoutComponent[] | LayoutFunction | ((props: any) => any);
-};
+type InertiaPage = ResolvedComponent;
 const pages = import.meta.glob<InertiaPage>('./pages/**/*.tsx');
 
 createInertiaApp({

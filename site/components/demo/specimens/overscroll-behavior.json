@@ -1,0 +1,29 @@
+[
+  {
+    "page": "overscroll-behavior",
+    "id": "contain-nested-scrolling",
+    "title": "Contain nested scrolling",
+    "html": [
+      "<div id=\"outer-scroll\" class=\"overflow-y:auto height:14rem p-sm overscroll-behavior:contain\"\n  tabindex=\"0\" aria-label=\"Outer collection\">\n  \n  <div id=\"inner-scroll\" class=\"overflow-y:auto height:9rem overscroll-behavior:contain\"\n    tabindex=\"0\" aria-label=\"Inner collection\">\n    <div class=\"h-xs\">Inner collection</div>\n  </div>\n  <div class=\"h-xs mt-md\">Outer collection continues</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "overflow-y:auto",
+      "height:14rem",
+      "p-sm",
+      "overscroll-behavior:contain",
+      "height:9rem",
+      "h-xs",
+      "mt-md"
+    ],
+    "classLists": [
+      "overflow-y:auto height:14rem p-sm overscroll-behavior:contain",
+      "overflow-y:auto height:9rem overscroll-behavior:contain",
+      "h-xs",
+      "h-xs mt-md"
+    ],
+    "highlighted": [
+      "overscroll-behavior:contain"
+    ]
+  }
+]

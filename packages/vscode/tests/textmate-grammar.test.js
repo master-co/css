@@ -4,10 +4,10 @@ import { beforeAll, expect, test } from 'vitest'
 import { INITIAL, Registry, parseRawGrammar } from 'vscode-textmate'
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma'
 import cssGrammars from '@shikijs/langs/css'
-import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language/src/shiki'
+import { MASTER_CSS_TEXTMATE_GRAMMAR } from '@master/css-language-service/shiki'
 
 const require = createRequire(import.meta.url)
-const grammarPath = require.resolve('@master/css-language/syntaxes/master-css.tmLanguage.json')
+const grammarPath = require.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
 const grammarScope = 'master-css.directive.injection'
 const cssGrammarScope = 'source.css'
 const grammarSource = readFileSync(grammarPath, 'utf8')
@@ -50,10 +50,6 @@ beforeAll(async () => {
   injectedCSSGrammar = await injectedCSSRegistry.loadGrammar(cssGrammarScope)
 })
 
-test('keeps shared grammar asset in sync with the language Shiki registration', () => {
-  expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
-})
-
 function tokenizeWith(targetGrammar, source) {
   const tokens = []
   let ruleStack = INITIAL
@@ -92,6 +88,25 @@ function expectNoSomeScope(tokens, text, scope) {
 function expectNoScope(tokens, text, scope) {
   expect(tokens.some((token) => token.text === text && token.scopes.includes(scope))).toBe(false)
 }
+
+test('keeps shared grammar asset in sync with the language Shiki registration', () => {
+  expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
+})
+
+test('highlights class lists and static mixin parameters', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@safelist "fg-red/0.5 fg-blue/.5 center:hover@sm color:red";
+@mixin --size(--value <integer>) { width: var(--value); }
+.card { @apply --size(3); }`)
+  expectScope(tokens, 'fg-red', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '/', 'keyword.operator.master-css')
+  expectScope(tokens, '0.5', 'constant.numeric.master-css')
+  expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
+  expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, '--size', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '--value', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '<integer>', 'support.function.misc.master-css')
+  expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
+})
 
 test('does not change native CSS TextMate scopes when injected', () => {
   const nativeCSS = [
@@ -207,35 +222,14 @@ test('does not change native CSS TextMate scopes when injected', () => {
   expect(injectedTokens).toEqual(nativeTokens)
 })
 
-test('highlights keyframes nested inside theme directives with native CSS scopes', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, [
-    '@theme {',
-    '    --font-sans: "Inter";',
-    '',
-    '    @keyframes zoom {',
-    '        0% {',
-    '            transform: scale(0);',
-    '        }',
-    '',
-    '        to {',
-    '            transform: none;',
-    '        }',
-    '    }',
-    '',
-    '    --color-stone-0: oklch(99% 0.0033 72);',
-    '}'
-  ].join('\n'))
-
-  expectScope(tokens, '@', 'punctuation.definition.keyword.css')
-  expectScope(tokens, 'keyframes', 'keyword.control.at-rule.keyframes.css')
+test('delegates top-level keyframes and scoped theme declarations to native CSS', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@theme { --font-sans: "Inter";  }
+@keyframes zoom { 0% { transform: scale(0); } to { transform: none; } }`)
   expectScope(tokens, 'zoom', 'variable.parameter.keyframe-list.css')
   expectScope(tokens, '0%', 'entity.other.keyframe-offset.percentage.css')
   expectScope(tokens, 'to', 'entity.other.keyframe-offset.css')
   expectNoScope(tokens, 'to', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'transform', 'support.type.property-name.css')
-  expectScope(tokens, 'scale', 'support.function.transform.css')
-  expectScope(tokens, 'none', 'support.constant.property-value.css')
-  expectScope(tokens, '--color-stone-0', 'variable.css.custom-property.master-css')
 })
 
 test('documents native CSS punctuation scopes used by semantic token mappings', () => {
@@ -274,211 +268,73 @@ test('documents native CSS punctuation scopes used by semantic token mappings', 
   expectScope(tokens, '--token', 'variable.css')
 })
 
-test('highlights every Master CSS directive keyword', () => {
-  const tokens = tokenize(`
-    @master entry;
-    @settings {}
-    @source not "app.tsx";
-    @safelist "block";
-    @blocklist "debug-*";
-    @preserve native;
-    @reference "./tokens.css";
-    @theme {}
-    @defaults {}
-    @components {}
-    @utilities {}
-    @custom-variant motion-safe {}
-    @compose block;
-    @variant sm {}
-    @slot;
-    @dark {}
-    @light {}
-  `)
-
-  for (const directive of [
-    'master',
-    'settings',
-    'source',
-    'safelist',
-    'blocklist',
-    'preserve',
-    'reference',
-    'theme',
-    'defaults',
-    'components',
-    'utilities',
-    'custom-variant',
-    'compose',
-    'variant',
-    'slot',
-    'dark',
-    'light'
-  ]) {
-    expectScope(tokens, directive, 'keyword.control.at-rule.master-css')
+test('highlights all retained directive keywords', () => {
+  const source = `@source not "app.tsx";
+@safelist "block";
+@blocklist "debug-*";
+@preserve native;
+@prune native;
+@reference "./tokens.css";
+@theme { --color: red;  }
+@mixin --box { display: block; }
+@custom-media --wide (width >= 48rem);
+@mixin --hocus { &:hover { @contents; } }
+.box { @media (--wide) { display: grid; } }`
+  const tokens = tokenizeWith(injectedCSSGrammar, source)
+  for (const name of ['source', 'safelist', 'blocklist', 'preserve', 'prune', 'reference', 'theme', 'mixin', 'contents']) {
+    expectScope(tokens, `@${name}`, 'keyword.control.at-rule.master-css')
   }
-  expectScope(tokens, 'entry', 'support.constant.property-value.master-css')
 })
 
-test('highlights directive preludes, strings, class lists, and dynamic patterns', () => {
-  const tokens = tokenize(`
-    @source not "src/**/*.{ts,tsx}";
-    @reference './tokens.css';
-    @blocklist "debug-*";
-    @theme inline dark {}
-    @preserve native;
-    @safelist "block fg:red:hover@md";
-    @compose inline-flex fg:primary:hover@md bg:transparent! bg:transparent!@sm;
-    @utilities {
-      font:<~font-size|number> {
-        font-size: --value();
-      }
-      text-<left|center|right> {
-        text-align: --value();
-      }
-    }
-  `)
-
-  expectScope(tokens, 'not', 'storage.modifier.master-css')
-  expectSomeScope(tokens, 'src', 'string.quoted.double.master-css')
-  expectSomeScope(tokens, 'tokens', 'string.quoted.single.master-css')
-  expectSomeScope(tokens, 'debug-', 'string.quoted.double.master-css')
-  expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
-  expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')
-  expectNoSomeScope(tokens, 'debug-', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'inline', 'storage.modifier.master-css')
-  expectScope(tokens, 'dark', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'native', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'fg', 'support.type.property-name.master-css')
-  expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
-  expectScope(tokens, 'md', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, '!', 'keyword.operator.important.css')
-  expectScope(tokens, 'sm', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'font', 'support.type.property-name.master-css')
-  expectScope(tokens, '~', 'keyword.operator.master-css')
-  expectScope(tokens, 'font-size', 'variable.parameter.master-css')
-  expectScope(tokens, 'number', 'variable.parameter.master-css')
-  expectScope(tokens, 'text-', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'left', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'center', 'support.constant.property-value.master-css')
-  expectScope(tokens, '--value', 'support.function.misc.master-css')
-})
-
-test('highlights custom variants, nested selectors, queries, and values', () => {
-  const tokens = tokenize(`
-    @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-    @components {
-      scroll-area {
-        ::scrollbar:is(.active, #thumb) { @compose block; }
-      }
-    }
-    @dark {
-      color: oklch(99% 0.0033 72);
-      background-color: var(--color-gray-100);
-    }
-  `)
-
-  expectScope(tokens, 'custom-variant', 'keyword.control.at-rule.master-css')
-  expectScope(tokens, 'motion-safe', 'variable.parameter.master-css')
-  expectScope(tokens, 'media', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'slot', 'keyword.control.at-rule.master-css')
-  expectScope(tokens, '::', 'punctuation.definition.entity.master-css')
-  expectScope(tokens, '.', 'punctuation.definition.entity.master-css')
-  expectScope(tokens, 'active', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, '#', 'punctuation.definition.entity.master-css')
-  expectScope(tokens, 'thumb', 'variable.other.master-css')
-  expectScope(tokens, '--color-gray-100', 'variable.argument.css')
-  expectNoScope(tokens, 'oklch', 'support.function.misc.master-css')
-  expectNoScope(tokens, '99% 0.0033 72', 'constant.numeric.master-css')
-})
-
-test('highlights detailed Master directive syntax without misclassifying native pieces', () => {
-  const tokens = tokenize(`
-    @theme static brand {
-      /* Font families */
-      --color-primary: --alpha(var(--color-blue-60) / 80%);
-      --radius-card: 1rem;
-      --tracking-tightest: -0.072em;
-    }
-
-    @source not "src/**/*.{ts,tsx}";
-    @reference "./tokens.css";
-    @blocklist "debug-*";
-    @safelist "dialog-open bg:primary@dark {fg:red;bg:blue}";
-
-    @custom-variant headings { @media all { @slot; } }
-
-    @components {
-      btn:hover {
-        @compose static native inline-flex align-items:center fg:primary:hover@md w:$size;
-        @variant h>=sm&h<lg {
-          @compose block;
-        }
-        ::scrollbar-thumb:hover {
-          @dark {
-            @compose fg:primary;
-          }
-        }
-      }
-    }
-
-    @utilities {
-      content-auto {
-        content-visibility: auto;
-      }
-
-      text-decoration:<~color|*> {
-        text-decoration: --value();
-      }
-    }
-  `)
-
-  expectScope(tokens, 'static', 'storage.modifier.master-css')
-  expectScope(tokens, 'brand', 'support.constant.property-value.master-css')
-  expectSomeScope(tokens, 'Font families', 'comment.block.css')
-  expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
-  expectScope(tokens, '--alpha', 'support.function.misc.master-css')
-  expectScope(tokens, '--color-blue-60', 'variable.argument.css')
-  expectScope(tokens, '$size', 'variable.other.master-css')
-  expectScope(tokens, '-0.072', 'constant.numeric.css')
-  expectScope(tokens, 'em', 'keyword.other.unit.em.css')
+test('keeps source and reference paths separate from class lists', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@source not "src/**/*.{ts,tsx}";
+@reference "./tokens.css";
+@blocklist "debug-*";
+@safelist "dialog-open block:hover@sm";`)
   expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'bg', 'support.type.property-name.master-css')
-  expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
-  expectScope(tokens, '@dark', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'headings', 'variable.parameter.master-css')
-  expectScope(tokens, 'btn', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'static', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'native', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'align-items', 'support.type.property-name.master-css')
-  expectScope(tokens, 'center', 'support.constant.property-value.master-css')
-  expectScope(tokens, 'h', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'sm', 'support.constant.property-value.master-css.query')
-  expectScope(tokens, 'lg', 'support.constant.property-value.master-css.query')
-  expectScope(tokens, 'scrollbar-thumb', 'entity.other.attribute-name.pseudo-class.master-css')
-  expectScope(tokens, 'text-decoration', 'support.type.property-name.master-css')
-  expectScope(tokens, 'color', 'variable.parameter.master-css')
-  expectScope(tokens, '*', 'keyword.operator.master-css')
-  expectScope(tokens, '--value', 'support.function.misc.master-css')
-  expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
-  expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')
-  expectNoSomeScope(tokens, 'debug-', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
+  for (const value of ['src', 'tokens', 'debug-']) expectNoSomeScope(tokens, value, 'entity.other.attribute-name.class.master-css')
+})
+
+test('highlights explicit custom-variant slots and native wrappers', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --hocus { &:is(:hover,:focus) { @contents; } }
+@mixin --card { @apply --hocus { color: red; } @media print { display: block; } }`)
+  expectScope(tokens, '--hocus', 'variable.css.custom-property.master-css')
+  expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
+  expectScope(tokens, '@contents', 'keyword.control.at-rule.master-css')
+  expectScope(tokens, '--card', 'variable.css.custom-property.master-css')
+})
+
+test('colors named conditions and delegates native at-rules', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --card { @media (--wide) { display: block; } }
+@mixin --supported { @supports (display: grid) { @contents; } }
+@mixin --contained { @container (width > 30rem) { @contents; } }`)
+  const query = tokens.find(token => token.text.includes('--wide'))
+  expect(query).toBeDefined()
+  expect(query.scopes.at(-1)).toBe(tokenizeWith(nativeCSSGrammar, '@media (--wide) {}').find(token => token.text.includes('--wide')).scopes.at(-1))
+  for (const [rule, condition] of [['@supports', '(display: grid)'], ['@container', '(width > 30rem)']]) {
+    const name = rule.slice(1)
+    const native = tokenizeWith(nativeCSSGrammar, `${rule} ${condition} {}`).find(token => token.text === name)
+    const nested = tokens.find(token => token.text === name)
+    expect(nested?.scopes.at(-1)).toBe(native?.scopes.at(-1))
+  }
+})
+
+test('removed directives do not receive active directive scopes', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, '@master entry; @settings {} @mode dark {} @utilities {} .x { @compose block; @dark {} @light {} }')
+  expect(tokens.filter(token => token.scopes.includes('keyword.control.at-rule.master-css'))).toEqual([])
+})
+
+test('leaves removed compose directives to native CSS highlighting', () => {
+  const source = '.card { @compose fg-red block:hover@sm; }'
+  expect(tokenizeWith(injectedCSSGrammar, source)).toEqual(tokenizeWith(nativeCSSGrammar, source))
 })
 
 test('does not highlight directives inside comments or quoted strings', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `
-    /* @theme {} */
-    .btn::before {
-      content: "@utilities";
-    }
-    @theme {}
-  `)
+  const tokens = tokenizeWith(injectedCSSGrammar, '\n    /* @theme {}\n */\n    .btn::before {\n      content: "@utilities";\n    }\n    @theme {}\n\n  ')
   const directiveTokens = tokens.filter((token) => token.scopes.includes('keyword.control.at-rule.master-css'))
 
   expect(directiveTokens).toEqual([
-    expect.objectContaining({ text: 'theme' })
+    expect.objectContaining({ text: '@theme' })
   ])
 })

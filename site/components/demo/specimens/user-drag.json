@@ -1,0 +1,28 @@
+[
+  {
+    "page": "user-drag",
+    "id": "prevent-dragging-media",
+    "title": "Prevent dragging media",
+    "html": [
+      "<!-- CSS · native image drag disabled -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"display:block height:auto width:240px max-width:100% r-sm user-drag:none\">",
+      "<!-- Default image · native drag allowed -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"display:block height:auto width:240px max-width:100% r-sm user-drag:auto\">",
+      "<!-- HTML · explicit false -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"display:block height:auto width:240px max-width:100% r-sm \" draggable=\"false\">"
+    ],
+    "css": "",
+    "classes": [
+      "display:block",
+      "height:auto",
+      "width:240px",
+      "max-width:100%",
+      "r-sm",
+      "user-drag:none",
+      "user-drag:auto"
+    ],
+    "classLists": [
+      "display:block height:auto width:240px max-width:100% r-sm user-drag:none",
+      "display:block height:auto width:240px max-width:100% r-sm user-drag:auto",
+      "display:block height:auto width:240px max-width:100% r-sm "
+    ],
+    "highlighted": []
+  }
+]

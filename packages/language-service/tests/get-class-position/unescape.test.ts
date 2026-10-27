@@ -12,3 +12,4 @@ test.concurrent('escaped backticks', () => {
   const contents = ['const className = ctl(`', target, '`)']
   expectClassPosition(target, contents, 'ts')
 })
+

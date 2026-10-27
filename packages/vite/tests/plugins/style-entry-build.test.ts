@@ -34,6 +34,7 @@ function makeContext(slot: string, css: string) {
       validClasses: new Set(),
       nativeClassNames: new Set(),
       usedNativeClasses: new Set(),
+      registerNativeClasses: vi.fn(),
       options: { safelist: [] },
       emit: vi.fn(),
     },
@@ -49,7 +50,7 @@ function makeBundle(entries: Record<string, string>) {
 }
 
 const SLOT = '#master-css-slot{--slot:0}'
-const REAL_CSS = '.bg\\:white{background-color:white}.fg\\:black{color:black}'
+const REAL_CSS = '.bg-white{background-color:white}.fg-black{color:black}'
 
 describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
   test('replaces placeholder when present and does NOT warn', async () => {
@@ -106,8 +107,9 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     expect(warn).not.toHaveBeenCalled()
   })
 
-  test('warns when placeholder was emitted but no CSS asset still contains it', async () => {
+  test.each([false, true])('warns when a CSS asset lacks the placeholder (SSR: %s)', async (ssr) => {
     const ctx = makeContext(SLOT, REAL_CSS)
+    ctx.config = { build: { ssr } }
     const plugin = StyleEntryBuildPlugin({} as any, ctx)
     const warn = vi.fn()
 
@@ -159,6 +161,18 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     expect(warn).not.toHaveBeenCalled()
   })
 
+  test('does NOT warn for an SSR bundle with no CSS assets', async () => {
+    const ctx = makeContext(SLOT, REAL_CSS)
+    ctx.config = { build: { ssr: true } }
+    ctx.virtualCSSPlaceholderEmitted = true
+    const plugin = StyleEntryBuildPlugin({} as any, ctx)
+    const warn = vi.fn()
+
+    await (plugin as any).generateBundle.call({ warn }, {}, makeBundle({ 'server.js': 'export default {}' }))
+
+    expect(warn).not.toHaveBeenCalled()
+  })
+
   test('only treats `type: asset` chunks (skips `chunk` entries)', async () => {
     const ctx = makeContext(SLOT, REAL_CSS)
     const plugin = StyleEntryBuildPlugin({} as any, ctx)
@@ -180,24 +194,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
     try {
       const entryPath = path.join(root, 'app.css')
-      const source = `
-        @master entry;
-
-        body {
-          margin: 0;
-        }
-
-        .native-card,
-        .unused-card {
-          color: red;
-        }
-
-        @components {
-          btn {
-            display: inline-flex;
-          }
-        }
-      `
+      const source = "\n        @import url(\"@master/css\");\n\n        body {\n          margin: 0;\n        }\n\n        .native-card,\n        .unused-card {\n          color: red;\n        }\n\n        \n          @mixin --btn {\n            display: inline-flex;\n          } @utility btn {\n            display: inline-flex;\n          }\n        \n      "
       writeFileSync(entryPath, source)
       const ctx = makeContext(SLOT, '')
       ctx.config = {
@@ -210,6 +207,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
         }
       }
       ctx.scanner.validClasses = new Set(['btn'])
+      ctx.pruneNativeCSS = true
       ctx.scanner.usedNativeClasses = new Set(['native-card'])
       ctx.scanner.options.safelist = []
       const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
@@ -221,9 +219,12 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       const bundle = makeBundle({
         'assets/index-abc.css': SLOT,
       })
-      await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+      const assets: { source: string }[] = []
+      await (plugin as any).renderStart()
+      await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
+      await (plugin as any).closeBundle()
 
-      const css = String(bundle['assets/index-abc.css'].source)
+      const css = assets.map(asset => asset.source).join('\n')
       expect(css).toContain('body')
       expect(css).toContain('.native-card')
       expect(css).not.toContain('.unused-card')
@@ -239,7 +240,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     try {
       const entryPath = path.join(root, 'app.css')
       const source = `
-        @master entry;
+        @import url("@master/css");
 
         .native-used,
         .native-unused {
@@ -250,11 +251,13 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
           --color-primary: #123456;
         }
 
-        @components {
-          btn {
+
+          @mixin --btn {
+            display: grid;
+          } @utility btn {
             display: grid;
           }
-        }
+
       `
       writeFileSync(entryPath, source)
       const ctx = makeContext(SLOT, '')
@@ -267,6 +270,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
           }
         }
       }
+      ctx.pruneNativeCSS = true
       ctx.scanner.latentClasses = new Set(['btn', 'native-used'])
 
       const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
@@ -278,9 +282,12 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       const bundle = makeBundle({
         'assets/index-abc.css': SLOT,
       })
-      await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+      const assets: { source: string }[] = []
+      await (plugin as any).renderStart()
+      await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
+      await (plugin as any).closeBundle()
 
-      const css = String(bundle['assets/index-abc.css'].source)
+      const css = assets.map(asset => asset.source).join('\n')
       expect(css).toContain('.native-used')
       expect(css).not.toContain('.native-unused')
       expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)

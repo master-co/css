@@ -1,0 +1,105 @@
+[
+  {
+    "id": "external-first",
+    "entry": "@import 'https://remote.test/external.css';@import './local.css';",
+    "expected": "red"
+  },
+  {
+    "id": "external-last",
+    "entry": "@import './local.css';@import 'https://remote.test/external.css';",
+    "expected": "blue"
+  },
+  {
+    "id": "same-layer",
+    "entry": "@import './local.css' layer(shared);@import 'https://remote.test/external.css' layer(shared);",
+    "expected": "blue"
+  },
+  {
+    "id": "different-layers",
+    "entry": "@import './local.css' layer(a);@import 'https://remote.test/external.css' layer(b);",
+    "expected": "blue"
+  },
+  {
+    "id": "predeclared-layers",
+    "entry": "@layer a,b;@import './local.css' layer(a);@import 'https://remote.test/external.css' layer(b);",
+    "expected": "blue"
+  },
+  {
+    "id": "conditional-local",
+    "entry": "@import './local.css' print;@import 'https://remote.test/external.css';",
+    "expected": "blue"
+  },
+  {
+    "id": "nested-plain",
+    "entry": "@import './local.css';",
+    "local": "@import 'https://remote.test/external.css';.example{color:red}",
+    "expected": "red"
+  },
+  {
+    "id": "nested-named",
+    "entry": "@import './local.css' layer(outer);",
+    "local": "@import 'https://remote.test/external.css' layer(inner);.example{color:red}",
+    "expected": "red"
+  },
+  {
+    "id": "nested-anonymous",
+    "entry": "@import './local.css' layer;",
+    "local": "@import 'https://remote.test/external.css';.example{color:red}",
+    "expected": "red"
+  },
+  {
+    "id": "nested-supports-media",
+    "entry": "@import './local.css' supports(display:grid) screen;",
+    "local": "@import 'https://remote.test/external.css';.example{color:red}",
+    "expected": "red",
+    "printExpected": "black"
+  },
+  {
+    "id": "external-last-important",
+    "entry": "@import './local.css';@import 'https://remote.test/external.css';",
+    "local": ".example{color:red!important}",
+    "remote": ".example{color:blue!important}",
+    "expected": "blue"
+  },
+  {
+    "id": "different-layers-important",
+    "entry": "@import './local.css' layer(a);@import 'https://remote.test/external.css' layer(b);",
+    "local": ".example{color:red!important}",
+    "remote": ".example{color:blue!important}",
+    "expected": "red"
+  },
+  {
+    "id": "nested-shared-anonymous-important",
+    "entry": "@import './local.css' layer;",
+    "local": "@import 'https://remote.test/external.css';.example{color:red!important}",
+    "remote": ".example{color:blue!important}",
+    "expected": "red"
+  },
+  {
+    "id": "repeated-anonymous",
+    "entry": "@import './local.css' layer;@import 'https://remote.test/external.css' layer;@import './local.css' layer;",
+    "expected": "red"
+  },
+  {
+    "id": "nested-negated-media",
+    "entry": "@import './local.css' not print;",
+    "local": "@import 'https://remote.test/external.css' not screen;",
+    "expected": "black"
+  },
+  {
+    "id": "nested-media-lists",
+    "entry": "@import './local.css' screen, print;",
+    "local": "@import 'https://remote.test/external.css' print, (min-width:500px);",
+    "expected": "blue"
+  },
+  {
+    "id": "false-supports-layer",
+    "entry": "@import './local.css' layer(a) supports(unknown-property:unknown);@import 'https://remote.test/external.css' layer(b);",
+    "expected": "blue"
+  },
+  {
+    "id": "anonymous-before-named",
+    "entry": "@import './local.css' layer;@import 'https://remote.test/external.css' layer(b);",
+    "expected": "blue"
+  }
+]

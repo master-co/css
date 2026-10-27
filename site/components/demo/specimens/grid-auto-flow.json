@@ -1,0 +1,37 @@
+[
+  {
+    "page": "grid-auto-flow",
+    "id": "fill-gaps-densely",
+    "title": "Fill gaps densely",
+    "html": [
+      "<div id=\"layout\" class=\"display:grid grid-cols(3) grid-auto-flow:row grid-auto-rows:48px gap-md width:17.5rem max-width:100%\">\n  <button id=\"target\" class=\"grid-col-span(2) p-sm\" type=\"button\" tabindex=\"0\">01</button>\n  <button id=\"peer\" class=\"grid-col-span(2) p-sm\" type=\"button\" tabindex=\"0\">02</button>\n  <button id=\"item-3\" class=\"p-sm\" type=\"button\" tabindex=\"0\">03</button>\n  <button id=\"item-4\" class=\"p-sm\" type=\"button\" tabindex=\"0\">04</button>\n</div>",
+      "<div id=\"layout\" class=\"display:grid grid-cols(3) grid-auto-flow:row|dense grid-auto-rows:48px gap-md width:17.5rem max-width:100%\">\n  <button id=\"target\" class=\"grid-col-span(2) p-sm\" type=\"button\" tabindex=\"0\">01</button>\n  <button id=\"peer\" class=\"grid-col-span(2) p-sm\" type=\"button\" tabindex=\"0\">02</button>\n  <button id=\"item-3\" class=\"p-sm\" type=\"button\" tabindex=\"0\">03</button>\n  <button id=\"item-4\" class=\"p-sm\" type=\"button\" tabindex=\"0\">04</button>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "grid-cols(3)",
+      "grid-auto-flow:row",
+      "grid-auto-rows:48px",
+      "gap-md",
+      "width:17.5rem",
+      "max-width:100%",
+      "grid-col-span(2)",
+      "p-sm",
+      "grid-auto-flow:row|dense"
+    ],
+    "classLists": [
+      "display:grid grid-cols(3) grid-auto-flow:row grid-auto-rows:48px gap-md width:17.5rem max-width:100%",
+      "grid-col-span(2) p-sm",
+      "grid-col-span(2) p-sm",
+      "p-sm",
+      "p-sm",
+      "display:grid grid-cols(3) grid-auto-flow:row|dense grid-auto-rows:48px gap-md width:17.5rem max-width:100%",
+      "grid-col-span(2) p-sm",
+      "grid-col-span(2) p-sm",
+      "p-sm",
+      "p-sm"
+    ],
+    "highlighted": []
+  }
+]

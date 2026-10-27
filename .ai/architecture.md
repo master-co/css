@@ -3,120 +3,224 @@
 ## Package Layers
 
 ```txt
-shared / external data
-  ↓
-@master/css-schema
-@master/css-lexer
-  ↓
-@master/css-source
-  ↓
-@master/css-engine
-@master/css-preset
-@master/css-integration
-  ↓
-@master/css-compiler
-@master/css-project
-  ↓
-@master/css-validator
-@master/css-lint
-@master/css-server
-@master/css-scanner
-@master/css-runtime
-@master/css-language
-@master/css-language-service
-@master/css-stylesheet
-  ↓
-@master/css.vite
-@master/css.webpack
-@master/css-cli
-@master/create-css
-@master/eslint-plugin-css
-@master/css-language-server
-  ↓
-@master/css.astro
-@master/css.nuxt
-@master/css.svelte
-@master/css-sv
-master-css-vscode
-examples
-site
+external data / repository build support
+  -> @master/css-schema
+  -> @master/css-binding / @master/css-binding-wasm-{engine,compiler,tooling}
+     (the binding bundles the private JavaScript engine, @master/css-engine-js)
+  -> @master/css-preset
+  -> @master/css / @master/css-tooling
+  -> @master/css-compiler
+  -> runtime / server / language-service / ESLint
+  -> build adapters / CLI / language-server
+  -> framework adapters / VS Code / examples / site
 ```
 
-The engine package must remain independent from integrations and tooling packages. `@master/css-integration` may depend on `@master/css-schema` contracts and type surfaces from engine, but engine must not depend on it. The compiler is the CSS front-end for manifests: it parses Master CSS stylesheets, resolves CSS import graphs, and lowers CSS-first authoring into `MasterCSSManifest` values and native CSS results.
+Rust is the semantic source. The Rust crates own class parsing, matching,
+priority, rule generation, directive lowering, extraction, validation, lint policy,
+language analysis, project policy, and report shaping. TypeScript owns platform
+loading, filesystem and package resolution, browser or editor adaptation, and host
+capability callbacks. Do not add a TypeScript semantic fallback. The one deliberate
+second implementation is the browser engine; see [Browser Engine](#browser-engine).
 
-When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `@master/css-schema` for public type/data contracts, `@master/css-lexer` for raw source/range/token scanning, and `@master/css-source` for source-level class candidate extraction. Keep `shared` limited to repo-internal test/build support. Keep engine independent; packages above engine may depend on engine for manifest-driven semantic interpretation.
+The public JavaScript architecture is intentionally concentrated into three primary
+surfaces:
 
-`@master/css-schema` owns public dependency-light contracts such as MasterCSSManifest, manifest JSON normalization helpers, hydration manifest contracts, CSS directive result contracts, CSS syntax value types, utility type constants, and runtime style constants. `shared` is private and should only hold repo-internal test/build support. `@master/css-lexer` owns dependency-free source scanners and lexical helpers: generic ranges, CSS directive ranges, Master CSS manifest entrypoint statements, CSS escaping, regular-expression escaping, Master class lexical display tokens, and CSS unit constants. `@master/css-source` owns source-level class candidate extraction and source-format-aware adapters such as HTML, OXC-based JavaScript/TypeScript, Astro, Svelte, and Vue scanning, and depends on `@master/css-lexer` for lexical constants rather than duplicating low-level data. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-manifest`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, `virtual:master-utilities.css`, generated JSON/emittedGlobals source helpers, and runtime injection source. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural scanner state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
+- `@master/css` executes Manifest v6 and exposes the stable CSS entrypoints.
+- `@master/css-compiler` owns CSS authoring, project loading, stylesheet composition,
+  and project inspection.
+- `@master/css-tooling` owns lexer, source extraction, scanning, validation, lint, and
+  editor-neutral language sessions.
 
-## Engine, Preset, And Facade Packages
+`@master/css-schema`, `@master/css-preset`, and the native/Wasm delivery packages are
+supporting contracts and artifacts, not alternate semantic implementations.
+`@master/css-engine-js` is the browser engine, held to the Rust engine's output.
 
-`packages/engine` owns:
+## Core Execution
 
-- MasterCSSManifest validation/execution
-- Utility opcode matching
-- Value parsing
-- Selector parsing and generation
-- At-rule parsing and generation
-- Variable and mode execution
-- Cascade layer insertion
-- Rule priority sorting
-- CSS text generation
+`packages/css` is the public execution surface. Its TypeScript code binds native or
+Wasm engine sessions in Node, and JavaScript engine (`packages/engine-js`) sessions in
+browsers, and exposes versioned state. The Rust engine owns utility
+matching, value and selector semantics, modes, variables, animations, layer placement,
+priority, and CSS bytes. `packages/css` must not grow config resolution, declarers,
+transformers, or duplicated parsers.
 
-`packages/preset` owns default preset CSS source files and the generated default manifest.
+## Browser Engine
 
-`packages/facade` keeps the public package name `@master/css`, but it is a facade over engine and preset exports. It must not own config resolution, matcher construction, declarers, transformers, or runtime authoring adapters.
+`packages/engine-js` (`@master/css-engine-js`) is a second implementation of the Rust
+`EngineSession`, deliberately kept: browsers run it instead of an engine Wasm, which
+makes the CDN page about 60 KB brotli smaller and its startup and class generation
+faster. It executes compiled runtime programs only: ensure, delete, execution state,
+snapshot, keyframe definitions, emitted globals and refresh. Rust keeps compiling
+manifests into programs, and inspection, diagnostic text, rendering and every other
+language surface stay Rust-only. `@master/css-binding`'s browser entry creates every
+browser engine session from it, and its default entry does so where Node is absent
+and the source is a program; such sessions report binding `'js'`.
+
+The contract:
+
+- Output is byte-identical. For the same program, classes and emitted globals, the
+  JavaScript engine's transitions, execution state, snapshots and keyframe
+  definitions equal the Rust engine's. Rust is the reference: any difference is a
+  JavaScript bug.
+- `pnpm --filter @master/css-engine-js differential` compares both engines (Rust through
+  the engine Wasm) on the language corpus, Rust test strings, site and example
+  markup, every token key, seeded fuzz, and manifests compiled for mixins, recipes,
+  `@apply`, keyframes and emitted globals. It must report zero differences, also with
+  other `--fuzz`/`--seed` values. `verify:program` keeps the program decoder exact, and
+  `check:size` keeps the engine at most 30 KB and the CDN default page at most 55 KB
+  brotli.
+- A change to engine semantics (`mastercss-engine`, the lexer and schema code it
+  executes, or the program encoding) lands with the matching JavaScript change and a
+  zero-difference differential in the same change. Rebuild the Wasm first
+  (`pnpm run build:rust:wasm`); new syntax needs differential sources that reach it.
+- The JavaScript engine implements no retired syntax and has no dependencies. It is
+  repository-private: the shared tsdown config bundles it into the binding, and
+  package checks keep it out of published imports and dependencies.
+- CI runs the differential as the engine package's `test` task in its own Validation
+  step, because `--affected` selects packages by their own files and so never selects
+  it for Rust, site or example changes. The task's Turbo inputs list everything it
+  reads outside the package (the engine and compiler crates, the corpus, the default
+  manifest, site and example markup), and its dependencies on the Wasm bindings carry
+  their source and artifact hashes; keep both in step with the differential's sources.
+  `verify:program` (about four minutes) and `check:size` stay local gates.
+
+`packages/preset` owns the default preset CSS and generated default Manifest v6. The
+stable layer statement remains:
+
+```txt
+@layer theme, base, defaults, components, utilities;
+```
 
 Important files:
 
-- `packages/engine/src/core.ts`
-- `packages/engine/src/utility.ts`
-- `packages/engine/src/utils/compare-rule-priority.ts`
-- `packages/engine/src/utils/parse-condition.ts`
-- `packages/engine/src/utils/parse-selector.ts`
-- `packages/engine/src/utils/generate-selector.ts`
+- `crates/mastercss-engine/src/session.rs`
+- `crates/mastercss-engine/src/utility.rs`
+- `crates/mastercss-engine/src/condition.rs`
+- `crates/mastercss-engine/src/resources.rs`
+- `packages/css/src/engine/bound-engine.ts`
+- `packages/css/src/engine/create-engine.ts`
+- `packages/css/src/node.ts`
 - `packages/preset/src/default-manifest.json`
-- `packages/facade/src/index.ts`
 
-## Rendering Packages
+## Compiler Surface
 
-`packages/runtime` extends the manifest-driven engine for browser DOM observation, native CSSStyleSheet insertion, and hydration.
+`packages/compiler` contains four cohesive host responsibilities:
 
-`packages/server` parses HTML, extracts classes, generates CSS, and injects `style#master-css`.
+- Root compiler sessions for directive inspection, lowering, normalization, and
+  Manifest v6 compilation.
+- `./project` for entry discovery, project manifests, sync loading, and workspace
+  package resolution.
+- `./stylesheet` for managed stylesheet lifecycle, extraction policy, native CSS
+  pruning, generated CSS composition, and emitted-global metadata.
+- `./diagnostics` for complete project inspection reports.
 
-`packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master manifest directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master entry;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSManifest` values. `@master entry;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master entry;`.
+The Rust compiler and project crates own parsing, graph policy, merge policy, and
+report classification. TypeScript supplies files, Node package exports resolution,
+host CSS support, and orchestration. Directive syntax or CSS-byte changes remain
+high-risk even though these responsibilities now share one npm package.
 
-`packages/project` resolves Master CSS project manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source. It delegates CSS parsing, CSS import graph resolution, and manifest compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume `@master/css-project` for project-level manifests instead of rediscovering entries locally.
+Within `mastercss-compiler`, directive/native/import domains live at crate root,
+Manifest normalization lives under `src/manifest/`, and lowering orchestration lives
+under `src/lower/`. Use `.ai/context/rust-routing.md` instead of loading the entire
+crate for a focused change.
 
-`packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Scanner, Compiler, or Manifest dependencies. Browser-safe subpaths must not import `node:*` or use Node globals; Node filesystem, path, hash, and resolved-id helpers are isolated under `./node`, while build plugin helpers live under explicit build-only subpaths.
+## Tooling Surface
 
-`packages/scanner` scans source files, validates latent classes, and maintains generated CSS scanner state. It consumes `@master/css-source` for source adapters and fallback class candidate extraction. Stylesheet entry detection, native CSS pruning/source directives, generated CSS composition, and emittedGlobals manifest output belong in `@master/css-stylesheet`. Project manifest discovery and manifest loading belong in `@master/css-project` or the calling integration.
+`packages/tooling` exposes Rust-backed feature subpaths:
 
-`packages/stylesheet` owns the stylesheet pipeline used by Vite, Webpack, Next, and the CLI. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, scopes extraction directives, and composes native CSS with generated CSS. It accepts structural scanner state and must not depend on `@master/css-scanner`.
+- `./lexer`
+- `./source`
+- `./scanner`
+- `./validator`
+- `./lint`
+- `./language`
+- `./diagnostics` for the dependency-light Rust report bridge used by the compiler
 
-## Integration Packages
+The package may contain private official Vue and Svelte source adapters, but it does
+not expose a third-party adapter registry. First-party integrations use the built-in
+pipeline. New syntax, extraction, lint, or language semantics belong in the matching
+Rust crate, then flow through the tooling session API.
 
-`packages/vite` coordinates runtime, static, pre-render, and progressive modes.
+Shiki transformation and the TextMate grammar are editor presentation assets and
+belong to `@master/css-language-service`, not the editor-neutral tooling core.
 
-`packages/webpack` provides static rendering through Webpack virtual modules.
+## Runtime And Server
 
-`packages/next` integrates pre-render and static modes without depending on Webpack-specific extraction internals.
+`packages/runtime` owns browser DOM observation, class reference counts, CSSOM
+mutation, scheduling, hydration, and engine startup around the browser engine
+session. Progressive pages defer the engine until a class outside the page hydration
+manifest appears. It must not gain build-time observers, global tooling event buses,
+or configuration loaders.
 
-Framework packages wrap those lower layers for Astro, Nuxt, React, and Svelte. `@master/css-sv` is a Svelte CLI add-on that edits a SvelteKit app once and installs `@master/css.svelte`; it must not own runtime, SSR, hydration manifest, Vite mode, or CSS output behavior.
+Runtime host responsibilities are split across `core.ts` (public orchestration),
+`host.ts` (DOM/CSSOM host), `hydration.ts`, `mutation.ts`, `retention-config.ts`, and
+`startup.ts`. Read only the domain involved, then its browser tests.
 
-## Tooling Packages
+`packages/server` owns HTML parsing/serialization and `style#master-css` injection.
+Rust render sessions extract classes, generate CSS, and produce hydration/resource IR.
 
-`packages/language` owns editor-neutral language primitives: class-position scanning, semantic token classification, browser helpers, Shiki helpers, and the shared TextMate grammar.
+## Integration Protocol And Adapters
 
-`packages/language-service` uses manifest-driven engine utilities for completion, hover, and color features, and delegates class-position scanning and semantic token classification to `@master/css-language`.
+`packages/internal` is named `@master/css-internal`, is private, and is
+bundled into official compiler, integration, editor, and tooling artifacts. It owns
+virtual ids, generated manifest/emitted-global/runtime-bootstrap modules, default
+build-manifest helpers, and Node path/hash/workspace helpers.
+It is not a supported third-party SPI and must never appear in a published package's
+dependencies or emitted import specifiers. It is not a generic destination for
+unrelated repository helpers.
 
-`packages/language-server` exposes the language service through LSP, manages workspace manifests, and serves active/full semantic token requests.
+Official adapter package names use one normalized hyphenated family:
 
-`packages/vscode` packages the VS Code extension, generated settings, and active semantic token provider. Master CSS no longer ships a TextMate grammar package or `.mcss` language contribution.
+```txt
+@master/css-vite
+@master/css-webpack
+@master/css-next
+@master/css-astro
+@master/css-nuxt
+@master/css-svelte
+```
 
-`packages/lint` owns framework-neutral class lint policy such as sorting, conflict detection, validation diagnostics, and canonical class suggestions.
+User-facing framework configuration uses each adapter's ecosystem default export,
+while the same entrypoint retains its branded named export for programmatic
+composition. General library entrypoints remain named-only. SvelteKit server hooks
+follow the framework's named `handle` contract instead of adding a default export.
+The exact default-export entrypoints are enforced by
+`scripts/check-package-contracts.mjs`.
 
-`packages/eslint-plugin` scans class locations and adapts `@master/css-lint` helpers to ESLint rules, reports, and autofix ranges.
+Vite coordinates runtime, static, pre-render, and progressive modes. Webpack owns its
+module lifecycle. Next owns Next-specific build and instrumentation behavior. Astro,
+Nuxt, and Svelte wrap the official lower adapters without reimplementing CSS semantics.
+
+## Language And ESLint
+
+`packages/language-service` maps tooling language IR to completion, hover, colors,
+semantic tokens, edits, and Shiki output over editor documents.
+
+`packages/language-server` owns LSP workspace lifecycle and protocol responses.
+`packages/vscode` packages the extension under npm name `@master/css-vscode`; its
+staged Marketplace manifest retains the historical extension id `master-css-vscode`.
+
+`packages/eslint-plugin` owns ESLint AST visitors, settings, reports, and fixer range
+adaptation over `@master/css-tooling/lint`. `@master/eslint-config-css` is deliberately
+retained as the thin public ecosystem preset and delegates to the matching plugin
+version without duplicating rules or configuration policy.
+
+## Cycles And New Responsibilities
+
+When cycle pressure appears:
+
+1. Put versioned dependency-light contracts in `@master/css-schema`.
+2. Put semantic operations in the owning Rust crate and expose them through the
+   appropriate native/Wasm session.
+3. Put compiler/project/stylesheet orchestration in `@master/css-compiler`.
+4. Put editor-neutral analysis in `@master/css-tooling`.
+5. Keep official virtual-module protocol private and bundled.
+
+Do not create another public package merely to break a TypeScript import cycle, and do
+not move host-specific behavior into schema or runtime code.
 
 ## Documentation And Examples
 
-The public docs live under `site/` and depend on the `internal` submodule. The root currently has no `docs/` directory. Avoid adding one unless maintainers explicitly want human-facing docs outside the site.
+Public docs live under `site/` and use the `internal` submodule. The root has no public
+`docs/` directory. Examples validate official adapters and must use the normalized
+package names.

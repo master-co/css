@@ -1,0 +1,32 @@
+'use client'
+
+import { useState } from 'react'
+import { Demo, DemoControls, DemoItem, DemoLabel, DemoMotion, DemoScrollArea } from '~/site/components/demo'
+
+export default function DemoInteractions() {
+  const options = [
+    { value: 'align-items:flex-start', label: 'start' },
+    { value: 'align-items:center', label: 'center' },
+    { value: 'align-items:flex-end', label: 'end' }
+  ]
+  const [alignment, setAlignment] = useState(options[0].value)
+  return (
+    <>
+      <Demo title="Controls with a purpose" controls={<DemoControls label="Cross-axis alignment" variant="segmented">
+        {options.map(({ value, label }) => <button type="button" key={value} className="demo-button" aria-pressed={value === alignment} onClick={() => setAlignment(value)}>{label}</button>)}
+      </DemoControls>} caption="Controls sit outside the measured layout. Selection changes the actual utility class.">
+        <div className={`display:flex gap-sm height:10rem ${alignment}`}>
+          <DemoItem className="flex:1 p-md" tone="blue">01</DemoItem><DemoItem className="flex:1 height:6rem p-md" tone="violet">02</DemoItem><DemoItem className="flex:1 p-md" tone="neutral">03</DemoItem>
+        </div>
+      </Demo>
+      <Demo title="Motion" caption="Animation starts only when requested. Replay returns every animation to its starting time.">
+        <DemoMotion><div className="display:flex justify-content:center p-lg"><DemoItem className="display:grid place-content:center height:4rem width:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem></div></DemoMotion>
+      </Demo>
+      <Demo title="Scroll region" caption="A keyboard-focusable, bounded region keeps scrolling local to the example.">
+        <DemoScrollArea role="region" aria-label="Layer collection" className="height:10rem">
+          {['Background', 'Composition', 'Typography', 'Annotations', 'Export'].map((name, index) => <DemoItem key={name} tone="neutral" className="mb-xs p-md"><DemoLabel>0{index + 1}</DemoLabel><span className="ml-md">{name}</span></DemoItem>)}
+        </DemoScrollArea>
+      </Demo>
+    </>
+  )
+}

@@ -1,10 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
-import CSSLanguageService from '../src/core'
+import CSSLanguageService from './helpers/language-service'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { Position } from 'vscode-languageserver-textdocument'
 import dedent from 'ts-dedent'
-import { Settings } from '../src'
+import type { Settings } from './helpers/language-service'
 
 export const inspect = (target: string, settings: Settings = {}) => {
   const content = `export default () => <div className='${target}'></div>`
@@ -14,15 +14,26 @@ export const inspect = (target: string, settings: Settings = {}) => {
   return languageService.inspectSyntax(doc, range?.start as Position)
 }
 
-test.concurrent('text-center', async () => {
-  const target = 'text-center'
+test('animation token hover shows the complete shorthand', () => {
+  const hover = inspect('animate-fade')
+  expect(hover?.contents).toMatchObject({
+    kind: 'markdown',
+    value: expect.stringContaining('animation: var(--animate-fade)')
+  })
+  expect(hover?.contents).toMatchObject({
+    value: expect.not.stringContaining('animation-duration:')
+  })
+})
+
+test.concurrent("text-align:center", async () => {
+  const target = "text-align:center"
   const hover = inspect(target)
   expect(hover?.contents).toEqual({
     'kind': 'markdown',
     'value': dedent`
       \`\`\`css
       @layer utilities {
-        .text-center {
+        .text-align\\:center {
           text-align: center
         }
       }
@@ -31,15 +42,15 @@ test.concurrent('text-center', async () => {
   })
 })
 
-test.concurrent('hidden', async () => {
-  const target = 'hidden'
+test.concurrent("display:none", async () => {
+  const target = "display:none"
   const hover = inspect(target)
   expect(hover?.contents).toEqual({
     'kind': 'markdown',
     'value': dedent`
       \`\`\`css
       @layer utilities {
-        .hidden {
+        .display\\:none {
           display: none
         }
       }
@@ -56,4 +67,11 @@ test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover sy
     expect(contents?.value).toContain(`${property}: none`)
     expect(contents?.value).toContain(`.${property}\\:none`)
   }
+})
+
+
+test.each(['{color:red;display:block}'])('does not offer CSS hover for an invalid class: %s', (target) => {
+  const hover = inspect(target)
+  expect(hover?.contents).toMatchObject({ kind: 'markdown', value: expect.stringContaining('CLASS_SYNTAX_ERROR') })
+  expect((hover?.contents as { value: string }).value).not.toContain('```css')
 })

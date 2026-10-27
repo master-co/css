@@ -1,12 +1,15 @@
 {
   "name": "@master/css-preset",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "pnpm generate",
     "generate": "node --import tsx scripts/generate-default-manifest.ts",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "The default Master CSS preset source and compiled manifest.",
@@ -43,7 +46,7 @@
     "./index.css": "./src/index.css",
     "./base.css": "./src/base.css",
     "./theme.css": "./src/theme.css",
-    "./variants.css": "./src/variants.css",
+    "./media.css": "./src/media.css",
     "./utilities.css": "./src/utilities.css"
   },
   "files": [
@@ -56,9 +59,10 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css-schema": "workspace:^"
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.22.4"
+    "@master/css-binding": "workspace:*",
+    "tsx": "^4.23.15"
   }
 }

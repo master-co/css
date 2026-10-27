@@ -1,12 +1,15 @@
-@settings {
-  mode-trigger: media;
-  modes: light dark;
-}
 
-@theme light {
+@theme {
   --color-primary: #000000;
 }
 
-@theme dark {
+@media (prefers-color-scheme: light) { :root, :host {
+  --color-primary: #000000;
+} }
+
+
+
+
+@media (prefers-color-scheme: dark) { :root, :host {
   --color-primary: #ffffff;
-}
+} }

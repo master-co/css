@@ -1,17 +1,17 @@
-# @master/css.next
+# @master/css-next
 
 Next.js integration for Master CSS.
 
 ## Installation
 
 ```bash
-npm install @master/css.next
+npm install @master/css-next
 ```
 
 ## Usage
 
 ```js
-import { withMasterCSS } from '@master/css.next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
@@ -23,16 +23,14 @@ export default nextConfig
 
 ## Modes
 
-`@master/css.next` defaults to progressive rendering and supports these mode values:
+`@master/css-next` defaults to static rendering and supports these mode values:
 
 | Mode | Description |
 | --- | --- |
-| `progressive` | Combines pre-rendered first-page CSS with the browser runtime for later client-side class changes. |
+| `progressive` | Combines pre-rendered first-page CSS with the browser runtime for later client-side class changes. The runtime downloads its engine only when such a class appears. |
 | `runtime` | Injects the browser runtime through the Next.js client instrumentation hook without adding the build adapter. |
 | `pre-render` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
-| `static` | Scans source files with `@master/css-scanner`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
-| `null` | Skips rendering modes while keeping the CSS manifest loaders available. |
-
+| `static` | Scans source files with `MasterCSSScanner` from `@master/css-tooling/scanner/node`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
 Use `progressive` when route HTML should carry its first-render CSS and client-side class changes still need runtime coverage. Use `runtime` when CSS should be generated only in the browser. Use `pre-render` when build-rendered HTML should carry first-render CSS without runtime injection. Use `static` when classes are statically visible in source and should be emitted into a generated CSS asset.
 
 ## Static rendering
@@ -51,10 +49,10 @@ In static mode, import the generated stylesheet from your app stylesheet:
 }
 ```
 
-Then enable static mode:
+Static mode is the default. To select it explicitly:
 
 ```js
-import { withMasterCSS } from '@master/css.next'
+import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = await withMasterCSS({
@@ -66,14 +64,16 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with generated CSS. CSS files that import `@master/css` are treated as native CSS pruning roots by default; add `@preserve native;` when native CSS must be preserved.
+Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with generated CSS. Native CSS is preserved by default. Enable `pruneNativeCSS: true` for intentional project pruning, or use `@prune native;` for one source file. With integration-level pruning enabled, `@preserve native;` excludes one source file.
+
+The generated entry can import companion stylesheets. Static mode publishes these stylesheets and referenced resources together for Turbopack, preserving source-relative resource URLs. Resource updates receive new filenames; earlier immutable assets remain available to builds already reading them. Static preparation rejects output failures so callers can retry after the cause is removed.
 
 ## Client types
 
-Add `@master/css-integration/client` to a project environment file when TypeScript imports Master CSS virtual modules.
+Add `@master/css/client` to a project environment file when TypeScript imports Master CSS virtual modules.
 
 ```ts
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 ```
 
 ## Runtime input imports
@@ -82,10 +82,11 @@ The integration exposes canonical project-level runtime input modules:
 
 ```ts
 import manifest from 'virtual:master-css-manifest'
+import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 ```
 
-Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state discovered from the project CSS entry.
+Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state discovered from the project CSS entry. Browser code passes `program`, the manifest compiled for the browser engine, to `MasterCSSRuntime.start()`; browsers cannot execute manifests. A CSS entry import with `?master-css-manifest` or `?master-css-program` returns that entry's manifest or program.
 
 ## Options
 
@@ -93,9 +94,11 @@ The `options` object is passed to `withMasterCSS(nextConfig, options)`.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `mode` | `'runtime' \| 'pre-render' \| 'static' \| 'progressive' \| null` | `'progressive'` | Next.js integration mode. Use `null` to skip rendering modes while keeping CSS manifest loaders. |
-| `injectRuntime` | `boolean` | `true` | Include the Master CSS runtime through the Next.js client instrumentation hook in `runtime` and `progressive` modes. |
-| `scannerOptions` | `ScannerOptions` | `{}` | Scanner options for static mode. |
+| `enabled` | `boolean` | `true` | Enables the integration. Use `false` to disable it. |
+| `mode` | `'runtime' \| 'pre-render' \| 'static' \| 'progressive'` | `'static'` | Next.js integration mode. |
+| `runtime` | `boolean \| { enabled?: boolean; avoidFOUC?: boolean }` | `{ enabled: false }` | Enabled by runtime/progressive modes. Explicit enabled values must agree with the mode. |
+| `pruneNativeCSS` | `boolean` | `false` | Opts project-owned native CSS into pruning. |
+| `scanner` | `MasterCSSScannerConfiguration` | `{}` | Scanner configuration for static mode. |
 | `buildReport` | `boolean \| string` | `false` | Write a build report with rendered files. `true` writes `.next/master-css-build-report.json`; a string is resolved from `distDir`. |
 | `debug` | `boolean` | `false` | Log rendered output details during `next build`. |
 | `adapterOrder` | `'master-first' \| 'external-first'` | `'master-first'` | Adapter execution order when composing with another Next adapter. |

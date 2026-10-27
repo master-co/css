@@ -1,0 +1,449 @@
+#![forbid(unsafe_code)]
+
+use std::collections::HashSet;
+
+use mastercss_engine::{EngineError, EngineSession};
+use mastercss_schema::{
+    EmittedGlobals, EngineSnapshotIr, HydrationManifest, NativeDeclarationCandidateIr,
+};
+use serde::Serialize;
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ServerRenderIr {
+    pub stylesheet_edits: Vec<Vec<mastercss_engine::KeyframeOutputEdit>>,
+    pub classes: Vec<String>,
+    pub snapshot: EngineSnapshotIr,
+    pub hydration_manifest: HydrationManifest,
+    pub output_mappings: Vec<mastercss_schema::CssOutputMapping>,
+}
+
+#[derive(Debug)]
+pub struct RenderSession {
+    engine: EngineSession,
+    classes: Vec<String>,
+    class_index: HashSet<String>,
+    stylesheets: Vec<String>,
+    selector_classes: Vec<String>,
+}
+
+impl RenderSession {
+    pub fn create(
+        manifest_json: &str,
+        emitted_globals_json: Option<&str>,
+    ) -> Result<Self, EngineError> {
+        let engine =
+            EngineSession::create_with_emitted_globals(manifest_json, emitted_globals_json)?;
+        Ok(Self {
+            selector_classes: engine.selector_class_names_without_rules()?,
+            engine,
+            classes: Vec::new(),
+            class_index: HashSet::new(),
+            stylesheets: Vec::new(),
+        })
+    }
+
+    pub fn native_declaration_candidates<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.engine.native_declaration_candidates(
+            class_names
+                .into_iter()
+                .filter(|class_name| !self.class_index.contains(class_name.as_ref())),
+        )
+    }
+
+    pub fn ensure_classes<I, S>(&mut self, class_names: I) -> Result<(), EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut new_classes = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if !class_name.is_empty() && self.class_index.insert(class_name.to_owned()) {
+                self.classes.push(class_name.to_owned());
+                new_classes.push(class_name.to_owned());
+            }
+        }
+        self.engine.ensure_class_rules(&new_classes)?;
+        Ok(())
+    }
+
+    pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
+        self.engine.ensure_hosted_stylesheet_resources(native_css)?;
+        self.stylesheets.push(native_css.into());
+        Ok(())
+    }
+
+    pub fn emitted_globals(&self) -> Result<EmittedGlobals, EngineError> {
+        self.engine.emitted_globals_snapshot()
+    }
+
+    pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
+        let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
+        let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes)?;
+        Ok(ServerRenderIr {
+            stylesheet_edits: self
+                .stylesheets
+                .iter()
+                .map(|css| self.engine.keyframe_output_edits(css))
+                .collect(),
+            classes: self.classes.clone(),
+            output_mappings: self.engine.keyframe_output_mappings(&snapshot),
+            snapshot,
+            hydration_manifest,
+        })
+    }
+
+    pub fn snapshot_for_classes<I, S>(&self, class_names: I) -> Result<ServerRenderIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut classes = Vec::new();
+        let mut class_index = HashSet::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if !class_name.is_empty() && class_index.insert(class_name.to_owned()) {
+                classes.push(class_name.to_owned());
+            }
+        }
+        let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
+        let hydration_manifest = self.hydration_manifest(&snapshot, &classes)?;
+        Ok(ServerRenderIr {
+            stylesheet_edits: self
+                .stylesheets
+                .iter()
+                .map(|css| self.engine.keyframe_output_edits(css))
+                .collect(),
+            classes,
+            output_mappings: self.engine.keyframe_output_mappings(&snapshot),
+            snapshot,
+            hydration_manifest,
+        })
+    }
+
+    fn hydration_manifest(
+        &self,
+        snapshot: &EngineSnapshotIr,
+        classes: &[String],
+    ) -> Result<HydrationManifest, EngineError> {
+        // The runtime ships its own emitted globals, which may describe other stylesheets
+        // than this page links. It reproduces the snapshot from the server's instead.
+        let mut hydration_manifest = HydrationManifest::from_snapshot(snapshot);
+        hydration_manifest.emitted_globals = self.engine.host_emitted_globals().clone();
+        // Rendered classes without rules follow the rule classes. Classes that selectors
+        // reference without rules come last: state classes in this page's rules, such as
+        // `active`, then manifest classes such as mode classes. Client scripts toggling
+        // them keep the engine deferred.
+        let state_classes = self.engine.class_names_without_rules_in(
+            snapshot
+                .rules
+                .iter()
+                .filter_map(|rule| rule.selector_text.as_deref()),
+        )?;
+        let mut covered = hydration_manifest
+            .class_names
+            .iter()
+            .cloned()
+            .collect::<HashSet<_>>();
+        for class_name in classes
+            .iter()
+            .chain(&state_classes)
+            .chain(&self.selector_classes)
+        {
+            if covered.insert(class_name.clone()) {
+                hydration_manifest.class_names.push(class_name.clone());
+            }
+        }
+        Ok(hydration_manifest)
+    }
+
+    fn hydratable_snapshot(
+        &self,
+        snapshot: EngineSnapshotIr,
+    ) -> Result<EngineSnapshotIr, EngineError> {
+        // The hydration manifest exposes sorted rules, not the original class insertion
+        // order. Replay their classes so resource discovery has the same order on both
+        // sides, including shared transitive dependencies and warmed renderer sessions.
+        // snapshot_for_classes also carries compiler-owned stylesheet roots and slots.
+        self.engine
+            .snapshot_for_classes(snapshot.rules.iter().map(|rule| &rule.class_name))
+    }
+
+    pub fn dispose(&mut self) {
+        self.engine.dispose();
+        self.stylesheets.clear();
+        self.classes.clear();
+        self.class_index.clear();
+    }
+}
+
+/// Generates the deterministic server-side stylesheet and hydration IR from an
+/// already extracted class list. HTML parsing and serialization intentionally
+/// remain in the host adapter, where existing DOM parser behavior is preserved.
+pub fn render_classes<I, S>(
+    manifest_json: &str,
+    class_names: I,
+) -> Result<ServerRenderIr, EngineError>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>,
+{
+    let classes = class_names
+        .into_iter()
+        .map(|class_name| class_name.as_ref().to_owned())
+        .collect::<Vec<_>>();
+    let mut session = RenderSession::create(manifest_json, None)?;
+    session.ensure_classes(classes)?;
+    session.snapshot()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn manifest() -> String {
+        serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]})
+        .to_string()
+    }
+
+    #[test]
+    fn composes_sorted_css_and_hydration_rules() {
+        let rendered = render_classes(&manifest(), ["red", "block", "red", "unknown"]).unwrap();
+        assert_eq!(rendered.classes, ["red", "block", "unknown"]);
+        assert_eq!(
+            rendered.snapshot.text,
+            "@layer utilities{.block{display:block}.red{color:red}}"
+        );
+        assert_eq!(rendered.hydration_manifest.version, 5);
+        assert_eq!(
+            rendered.hydration_manifest.class_names,
+            ["block", "red", "unknown"]
+        );
+        assert!(
+            rendered
+                .hydration_manifest
+                .resource_order
+                .variables
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn covers_selector_classes_without_rules_of_their_own() {
+        let manifest = serde_json::json!({
+            "version":6,"languageVersion":16,
+            "mixins":[{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark, .dark *)","body":[{"type":"contents","fallback":[]}]}]}],
+            "utilities":[
+                {"kind":"static","name":"red","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]},
+                {"kind":"static","name":"muted","body":[{"type":"rule","selector":".red &, [data-x=\".ignored\"] &","body":[{"type":"declaration","property":"opacity","value":[{"type":"text","value":".5"}]}]}]}
+            ]
+        })
+        .to_string();
+        let rendered = render_classes(&manifest, ["muted", "card", "red.active!"]).unwrap();
+        // Page scripts may toggle the `active` state and `dark` mode; `red` generates
+        // rules, so it still needs the engine.
+        assert_eq!(
+            rendered.hydration_manifest.class_names,
+            ["muted", "red.active!", "card", "active", "dark"]
+        );
+    }
+
+    #[test]
+    fn repeated_classes_share_generated_rules() {
+        let mut session =
+            RenderSession::create(r#"{"version":6,"languageVersion":16}"#, None).unwrap();
+        let candidates = session
+            .native_declaration_candidates(["display:block"])
+            .unwrap();
+        assert_eq!(candidates.len(), 1);
+        session.ensure_classes(["display:block"]).unwrap();
+
+        assert!(
+            session
+                .native_declaration_candidates(["display:block"])
+                .unwrap()
+                .is_empty()
+        );
+        session.ensure_classes(["display:block"]).unwrap();
+        assert_eq!(
+            session.snapshot().unwrap().snapshot.text,
+            "@layer utilities{.display\\:block{display:block}}"
+        );
+    }
+
+    #[test]
+    fn snapshots_cached_class_subsets_like_fresh_sessions() {
+        let manifest = manifest();
+        let mut cached = RenderSession::create(&manifest, None).unwrap();
+        cached.ensure_classes(["block", "red", "unknown"]).unwrap();
+
+        let red = cached
+            .snapshot_for_classes(["red", "unknown", "red"])
+            .unwrap();
+        let fresh_red = render_classes(&manifest, ["red", "unknown", "red"]).unwrap();
+        assert_eq!(red, fresh_red);
+
+        let block_red = cached.snapshot_for_classes(["block", "red"]).unwrap();
+        let fresh_block_red = render_classes(&manifest, ["block", "red"]).unwrap();
+        assert_eq!(block_red, fresh_block_red);
+    }
+
+    #[test]
+    fn cached_subset_output_does_not_depend_on_warm_up_order() {
+        let manifest = manifest();
+        let mut forward = RenderSession::create(&manifest, None).unwrap();
+        forward.ensure_classes(["block", "red"]).unwrap();
+        let mut reverse = RenderSession::create(&manifest, None).unwrap();
+        reverse.ensure_classes(["red", "block"]).unwrap();
+
+        assert_eq!(
+            forward.snapshot_for_classes(["red", "block"]).unwrap(),
+            reverse.snapshot_for_classes(["red", "block"]).unwrap()
+        );
+    }
+
+    #[test]
+    fn cached_native_declarations_preserve_later_pseudo_states() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"":[{"name":"stripe","key":"stripe","type":"string","values":[{"path":[":root,:host"],"value":"linear-gradient(red,blue)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"stripe","value":"linear-gradient(red,blue)"}]}]})
+        .to_string();
+        let mut cached = RenderSession::create(&manifest, None).unwrap();
+        cached.ensure_classes(["background:var(--stripe)"]).unwrap();
+        cached
+            .ensure_classes(["background:var(--stripe):hover"])
+            .unwrap();
+
+        let cached_snapshot = cached
+            .snapshot_for_classes(["background:var(--stripe):hover"])
+            .unwrap();
+        let fresh_snapshot = render_classes(&manifest, ["background:var(--stripe):hover"]).unwrap();
+        assert_eq!(cached_snapshot, fresh_snapshot);
+        assert_eq!(
+            cached_snapshot.snapshot.text,
+            "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\)\\:hover:hover{background:var(--stripe)}}"
+        );
+    }
+
+    #[test]
+    fn cached_subsets_preserve_page_resource_composition() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"mixins":[{"name":"--brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"name":"--animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}],"utilities":[{"kind":"static","name":"brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]},{"kind":"static","name":"animated","body":[{"type":"declaration","property":"animation","value":[{"type":"text","value":"fade 1s"}]}]}]})
+        .to_string();
+        let emitted_globals = r#"{"variables":{}}"#;
+        let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
+        cached.ensure_classes(["animated", "brand"]).unwrap();
+
+        for classes in [["brand"].as_slice(), ["animated", "brand"].as_slice()] {
+            let cached_snapshot = cached.snapshot_for_classes(classes).unwrap();
+            let mut fresh = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
+            fresh.ensure_classes(classes).unwrap();
+            assert_eq!(cached_snapshot, fresh.snapshot().unwrap());
+        }
+    }
+
+    #[test]
+    fn hydration_manifest_carries_host_emitted_globals() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}],"utilities":[{"kind":"static","name":"brand","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"var(--color-primary)"}]}]}]})
+        .to_string();
+        let mut server =
+            RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":1}}"#)).unwrap();
+        server
+            .ensure_stylesheet_resources(".card{color:var(--color-primary)}")
+            .unwrap();
+        server.ensure_classes(["brand"]).unwrap();
+        let rendered = server.snapshot().unwrap();
+        let emitted_globals = &rendered.hydration_manifest.emitted_globals;
+        assert!(
+            rendered
+                .hydration_manifest
+                .resource_order
+                .variables
+                .is_empty()
+        );
+        assert_eq!(emitted_globals.variable_count("color-primary"), 1);
+        assert_eq!(
+            &server
+                .snapshot_for_classes(["brand"])
+                .unwrap()
+                .hydration_manifest
+                .emitted_globals,
+            emitted_globals
+        );
+
+        // A runtime built without the stylesheet's globals diverges until it
+        // registers the ones the server planned against.
+        let mut runtime = EngineSession::create(&manifest).unwrap();
+        runtime.ensure_class_rules(["brand"]).unwrap();
+        assert_ne!(
+            HydrationManifest::from_snapshot(&runtime.snapshot().unwrap()).resource_order,
+            rendered.hydration_manifest.resource_order
+        );
+        runtime
+            .register_emitted_globals(emitted_globals.clone())
+            .unwrap();
+        let snapshot = runtime.snapshot().unwrap();
+        assert_eq!(
+            HydrationManifest::from_snapshot(&snapshot).resource_order,
+            rendered.hydration_manifest.resource_order
+        );
+        assert_eq!(snapshot.text, rendered.snapshot.text);
+
+        let unhosted = render_classes(&manifest, ["brand"]).unwrap();
+        assert!(
+            serde_json::to_value(&unhosted.hydration_manifest)
+                .unwrap()
+                .get("emittedGlobals")
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        .to_string();
+        let mut session = RenderSession::create(&manifest, None).unwrap();
+
+        session
+            .ensure_stylesheet_resources(
+                r#"
+                .quoted { content: "var(--color-ignored)"; }
+                /* var(--color-commented); animation: native-spin 1s; */
+                .native { color: var(--color-primary); animation: fade 1s; }
+                @keyframes native-spin { to { opacity: .5; } }
+                "#,
+            )
+            .unwrap();
+
+        let rendered = session.snapshot().unwrap();
+        assert!(rendered.snapshot.text.contains("--color-primary:red"));
+        assert!(!rendered.snapshot.text.contains("@keyframes fade"));
+        assert!(!rendered.snapshot.text.contains("@keyframes native-spin"));
+        let emitted_globals = session.emitted_globals().unwrap();
+        assert_eq!(emitted_globals.variable_count("color-primary"), 1);
+        assert_eq!(emitted_globals.variable_count("color-ignored"), 0);
+        assert_eq!(emitted_globals.variable_count("color-commented"), 0);
+    }
+
+    #[test]
+    fn preserves_and_increments_host_resource_counts() {
+        let manifest = serde_json::json!({"version":6,"languageVersion":16,"variables":{"color":[{"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-primary","value":"red"}]}]})
+        .to_string();
+        let mut session =
+            RenderSession::create(&manifest, Some(r#"{"variables":{"color-primary":2}}"#)).unwrap();
+        session
+            .ensure_stylesheet_resources(
+                ".native{color:var(--color-primary)}@keyframes native-spin{to{opacity:.5}}",
+            )
+            .unwrap();
+
+        assert_eq!(session.snapshot().unwrap().snapshot.text, "");
+        let emitted_globals = session.emitted_globals().unwrap();
+        assert_eq!(emitted_globals.variable_count("color-primary"), 2);
+    }
+}

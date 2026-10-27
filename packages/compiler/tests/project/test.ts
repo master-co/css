@@ -1,0 +1,623 @@
+import { expect, test } from 'vitest'
+import {
+  compileProjectManifest,
+  loadProjectManifest
+} from '../../src/project/manifest'
+import {
+  compileProjectManifestSync,
+  loadProjectManifestSync
+} from '../../src/project/manifest-sync'
+import {
+  cleanCSSManifestRequest,
+  findCSSManifestEntryFiles,
+  findMasterCSSWorkspaceDirectories,
+  hasMasterCSSManifestEntrypoint,
+  isCSSManifestRequest,
+  resolveMasterCSSPackageEntryFile
+} from '../../src/project/entries'
+import {
+  isCompatibleMasterCSSPackageVersion,
+  resolveMasterCSSWorkspacePackages
+} from '@master/css-internal/workspace'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { isAbsolute, join, relative, sep } from 'node:path'
+import { tmpdir } from 'node:os'
+import {
+  flattenMasterCSSManifestVariables,
+  serializeMasterCSSManifest,
+  type MasterCSSManifest
+} from '@master/css-schema/manifest'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { stripWindowsExtendedPathPrefix } from '../../src/node-compiler'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+test('recognizes CSS requests with Windows extended-length path prefixes', () => {
+  const paths = [
+    '//?/C:/workspace/index.css',
+    '\\\\?\\C:\\workspace\\index.css',
+    '//?/UNC/server/share/index.css',
+    '\\\\?\\UNC\\server\\share\\index.css'
+  ]
+
+  for (const path of paths) {
+    expect(cleanCSSManifestRequest(path)).toBe(path)
+    expect(cleanCSSManifestRequest(`${path}?inline`)).toBe(path)
+    expect(cleanCSSManifestRequest(`${path}#fragment`)).toBe(path)
+    expect(isCSSManifestRequest(`${path}?inline`)).toBe(true)
+  }
+  expect(isCSSManifestRequest('//?/C:/workspace/index.ts?lang=css')).toBe(false)
+})
+
+test('normalizes Windows extended-length binding paths for host filesystem access', () => {
+  expect(stripWindowsExtendedPathPrefix('//?/C:/workspace/index.css'))
+    .toBe('C:/workspace/index.css')
+  expect(stripWindowsExtendedPathPrefix('\\\\?\\C:\\workspace\\index.css'))
+    .toBe('C:\\workspace\\index.css')
+  expect(stripWindowsExtendedPathPrefix('//?/UNC/server/share/index.css'))
+    .toBe('\\\\server/share/index.css')
+  expect(stripWindowsExtendedPathPrefix('\\\\?\\UNC\\server\\share\\index.css'))
+    .toBe('\\\\server\\share\\index.css')
+})
+
+function createFixture() {
+  return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
+}
+
+function isSameOrChildPath(parentPath: string, childPath: string) {
+  const relativePath = relative(parentPath, childPath)
+  return relativePath === ''
+    || (
+      !!relativePath
+      && relativePath !== '..'
+      && !relativePath.startsWith(`..${sep}`)
+      && !isAbsolute(relativePath)
+    )
+}
+
+function writeCSSFixture(cwd: string) {
+  mkdirSync(join(cwd, 'styles'), { recursive: true })
+  const entry = join(cwd, 'index.css')
+  const tokens = join(cwd, 'styles', 'tokens.css')
+  writeFileSync(tokens, `
+    @theme {
+      --color-primary: #123;
+    }
+
+  `)
+  writeFileSync(entry, "\n    @import \"@master/css\";\n    @import './styles/tokens.css';\n\n    \n      @mixin --btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      } @utility btn {\n        color: var(--color-primary);\n        display: inline-flex;\n      }\n    \n  ")
+  return { entry, tokens }
+}
+
+function writeJSON(file: string, value: unknown) {
+  writeFileSync(file, JSON.stringify(value, null, 2))
+}
+
+function toPackagePath(packageName: string) {
+  return join(...packageName.split('/'))
+}
+
+function writeNodePackage(
+  root: string,
+  packageName: string,
+  packageJSON: Record<string, unknown>,
+  files: Record<string, string> = { 'index.js': 'export default {}' }
+) {
+  const packageDir = join(root, 'node_modules', toPackagePath(packageName))
+  mkdirSync(packageDir, { recursive: true })
+  writeJSON(join(packageDir, 'package.json'), {
+    name: packageName,
+    type: 'module',
+    version: '1.2.3',
+    exports: {
+      '.': './index.js'
+    },
+    ...packageJSON
+  })
+  for (const [file, source] of Object.entries(files)) {
+    writeFileSync(join(packageDir, file), source)
+  }
+  return packageDir
+}
+
+test('compiles explicit CSS project entries', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: expect.arrayContaining([entry, tokens])
+    })
+    expect(result.manifest.version).toBe(6)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      values: [{ path: [':root,:host'], value: '#123' }]
+    }))
+    expect(result.manifest.mixins).toContainEqual(expect.objectContaining({
+      name: '--btn',
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('loads CSS manifest resources', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: expect.arrayContaining([entry, tokens])
+    })
+    expect(result.manifest.version).toBe(6)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      values: [{ path: [':root,:host'], value: '#123' }]
+    }))
+    expect(result.manifest.mixins).toContainEqual(expect.objectContaining({
+      name: '--btn',
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('compiles explicit CSS project entries synchronously', () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: expect.arrayContaining([entry, tokens])
+    })
+    expect(result.manifest.version).toBe(6)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      values: [{ path: [':root,:host'], value: '#123' }]
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('loads CSS manifest resources synchronously', () => {
+  const cwd = createFixture()
+  try {
+    const { entry, tokens } = writeCSSFixture(cwd)
+
+    const result = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(result).toMatchObject({
+      dependencies: expect.arrayContaining([entry, tokens])
+    })
+    expect(result.manifest.version).toBe(6)
+    expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
+      name: 'color-primary',
+      namespace: 'color',
+      key: 'primary',
+      values: [{ path: [':root,:host'], value: '#123' }]
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('loads package entry preset manifest from CSS imports', async () => {
+  const cwd = createFixture()
+  try {
+    const entry = join(cwd, 'index.css')
+    writeFileSync(entry, `
+      @import "@master/css";
+
+
+        @mixin --card {
+          @media (--sm) {
+            color: red;
+          }
+        } @utility card {
+          @media (--sm) {
+            color: red;
+          }
+        }
+
+    `)
+
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, cwd)
+    expect(packageEntry).toBeTruthy()
+    if (!packageEntry) throw new Error('Expected Master CSS package entry')
+    expect(result.dependencies).toContain(packageEntry)
+    const packageDependencies = result.dependencies
+      .filter((dependency: string) => !isSameOrChildPath(cwd, dependency))
+    expect(packageDependencies.length).toBeGreaterThan(1)
+    expect(result.manifest.customMedia?.['--sm']).toEqual({
+      type: 'feature', value: '(width >= 52.125rem)'
+    })
+    expect(result.manifest.mixins).toContainEqual(expect.objectContaining({
+      name: '--card',
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('does not duplicate base preset tokens re-imported by a project entry', async () => {
+  const cwd = createFixture()
+  try {
+    const entry = join(cwd, 'index.css')
+    writeFileSync(entry, '@import "@master/css";\n@theme { --color-brand: #123; }')
+
+    const { manifest } = await loadProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    expect(manifest.theme).toStrictEqual([
+      ...defaultManifest.theme!,
+      {
+        type: 'rule',
+        prelude: ':root,:host',
+        children: [{ type: 'declaration', name: 'color-brand', value: '#123' }]
+      }
+    ])
+    const defaultValues = new Map(flattenMasterCSSManifestVariables(defaultManifest.variables)
+      .map(variable => [variable.name, variable.values]))
+    for (const variable of flattenMasterCSSManifestVariables(manifest.variables)) {
+      expect(variable.values).toStrictEqual(defaultValues.get(variable.name)
+        ?? [{ path: [':root,:host'], value: '#123' }])
+    }
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('loads project-level CSS manifest entries', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    writeFileSync(join(cwd, 'ignored.css'), `
+      @preserve native;
+      @layer components {
+        .ignored {
+          color: red;
+        }
+      }
+    `)
+
+    expect(hasMasterCSSManifestEntrypoint("@import \"@master/css\";")).toBe(true)
+    expect(hasMasterCSSManifestEntrypoint('@master;')).toBe(false)
+    expect(hasMasterCSSManifestEntrypoint('@master global;')).toBe(false)
+    expect(hasMasterCSSManifestEntrypoint('@preserve native;')).toBe(false)
+    expect(hasMasterCSSManifestEntrypoint('@import "@master/css/index.css";')).toBe(false)
+    await expect(findCSSManifestEntryFiles(cwd)).resolves.toStrictEqual([entry])
+
+    const result = await loadProjectManifest({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
+    const syncResult = loadProjectManifestSync({
+      root: cwd,
+      baseManifest: defaultManifest
+    })
+
+    expect(result.entries).toStrictEqual([entry])
+    expect(syncResult.manifest).toStrictEqual(result.manifest)
+    expect(result.manifest.mixins).toContainEqual(expect.objectContaining({
+      name: '--btn'
+    }))
+    expect(result.manifest.mixins).not.toContainEqual(expect.objectContaining({
+      name: 'ignored'
+    }))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('ignores generated stylesheets during implicit discovery but accepts explicit entries', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    const generated = join(cwd, '.master', 'stylesheets', 'revision', 'entry.css')
+    mkdirSync(join(cwd, '.master', 'stylesheets', 'revision'), { recursive: true })
+    writeFileSync(generated, "@import \"@master/css\";")
+
+    await expect(findCSSManifestEntryFiles(cwd)).resolves.toStrictEqual([entry])
+    expect(loadProjectManifestSync({ root: cwd, baseManifest: defaultManifest }).entries).toStrictEqual([entry])
+    expect(loadProjectManifestSync({ root: cwd, entries: [generated], baseManifest: defaultManifest }).entries)
+      .toStrictEqual([generated])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('finds Master CSS workspace directories from package and CSS entries', async () => {
+  const cwd = createFixture()
+  try {
+    mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
+    mkdirSync(join(cwd, 'docs', 'styles'), { recursive: true })
+    writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
+      dependencies: {
+        '@master/css': 'workspace:*'
+      }
+    }))
+    writeFileSync(join(cwd, 'packages', 'app', 'index.css'), "@import \"@master/css\";")
+    writeFileSync(join(cwd, 'docs', 'styles', 'global.css'), '@import "@master/css";')
+    mkdirSync(join(cwd, '.master', 'stylesheets', 'revision'), { recursive: true })
+    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'entry.css'), "@import \"@master/css\";")
+    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'package.json'), JSON.stringify({
+      dependencies: { '@master/css': 'workspace:*' }
+    }))
+
+    await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
+      cwd,
+      join(cwd, 'docs', 'styles'),
+      join(cwd, 'packages', 'app')
+    ])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('does not match sibling workspace path prefixes', async () => {
+  const cwd = createFixture()
+  try {
+    mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
+    mkdirSync(join(cwd, 'packages', 'app-kit'), { recursive: true })
+    writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
+      dependencies: {
+        '@master/css': 'workspace:*'
+      }
+    }))
+    writeFileSync(join(cwd, 'packages', 'app-kit', 'index.css'), "@import \"@master/css\";")
+
+    await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
+      cwd,
+      join(cwd, 'packages', 'app'),
+      join(cwd, 'packages', 'app-kit')
+    ])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('resolves Master CSS workspace packages and optional language server', () => {
+  const cwd = createFixture()
+  try {
+    writeJSON(join(cwd, 'package.json'), {
+      dependencies: {
+        '@master/css': '^1.2.3',
+        '@master/css-language-server': '^1.2.3'
+      }
+    })
+    const cssDir = writeNodePackage(cwd, '@master/css', {
+      dependencies: {
+        '@master/css-preset': '^1.2.3'
+      }
+    }, {
+      'index.js': 'export const createToolingSession = () => ({})'
+    })
+    const presetDir = writeNodePackage(cssDir, '@master/css-preset', {
+      exports: {
+        './default-manifest.json': './default-manifest.json'
+      }
+    }, {
+      'default-manifest.json': '{"version":2}'
+    })
+    const languageServerDir = writeNodePackage(cwd, '@master/css-language-server', {
+      exports: {
+        './server': './server.js'
+      }
+    }, {
+      'server.js': 'export {}'
+    })
+
+    const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+    expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+    expect(realpathSync(resolution.presetManifest?.directory || '')).toBe(realpathSync(presetDir))
+    expect(realpathSync(resolution.languageServer?.directory || '')).toBe(realpathSync(languageServerDir))
+    expect(resolution.errors).toEqual([])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('reports a missing workspace preset without throwing', () => {
+  const cwd = createFixture()
+  try {
+    writeJSON(join(cwd, 'package.json'), {
+      dependencies: {
+        '@master/css': '^1.2.3'
+      }
+    })
+    const cssDir = writeNodePackage(cwd, '@master/css', {})
+    writeNodePackage(cssDir, '@master/css-preset', {
+      exports: {
+        './default-manifest.json': './missing.json'
+      }
+    }, {})
+
+    const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+    expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+    expect(resolution.presetManifest).toBeUndefined()
+    expect(resolution.errors.map(({ name }) => name)).toEqual([
+      '@master/css-preset/default-manifest.json'
+    ])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('reports missing workspace runtime packages without throwing', () => {
+  const cwd = createFixture()
+  try {
+    writeJSON(join(cwd, 'package.json'), {
+      dependencies: {
+        '@master/css': '^1.2.3'
+      }
+    })
+    const cssDir = writeNodePackage(cwd, '@master/css', {})
+    writeNodePackage(cssDir, '@master/css-preset', {
+      exports: {
+        './default-manifest.json': './missing.json'
+      }
+    }, {})
+
+    const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+    expect(realpathSync(resolution.css?.directory || '')).toBe(realpathSync(cssDir))
+    expect(resolution.presetManifest).toBeUndefined()
+    expect(resolution.errors.map(({ name }) => name)).toEqual([
+      '@master/css-preset/default-manifest.json'
+    ])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('reports invalid package exports as resolution errors', () => {
+  const cwd = createFixture()
+  try {
+    writeJSON(join(cwd, 'package.json'), {
+      dependencies: {
+        '@master/css': '^1.2.3'
+      }
+    })
+    writeNodePackage(cwd, '@master/css', {
+      exports: {
+        '.': './missing.js'
+      }
+    }, {})
+
+    const resolution = resolveMasterCSSWorkspacePackages(cwd)
+
+    expect(resolution.css).toBeUndefined()
+    expect(resolution.errors[0]).toMatchObject({
+      name: '@master/css'
+    })
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('checks compatible package majors when versions are known', () => {
+  expect(isCompatibleMasterCSSPackageVersion('2.1.0', '^2.0.0')).toBe(true)
+  expect(isCompatibleMasterCSSPackageVersion('3.0.0', '^2.0.0')).toBe(false)
+  expect(isCompatibleMasterCSSPackageVersion(undefined, '^2.0.0')).toBe(true)
+  expect(isCompatibleMasterCSSPackageVersion('3.0.0', undefined)).toBe(true)
+})
+
+test('serializes project manifests through the schema codec', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const syncResult = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const json = serializeMasterCSSManifest(result.manifest)
+    const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
+
+    expect(json).toContain('"version":6')
+    expect(JSON.parse(json).version).toBe(6)
+    expect(syncJSON).toBe(json)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('turns CSS manifest results into JSON sources', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    const result = await compileProjectManifest({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const syncResult = compileProjectManifestSync({
+      root: cwd,
+      entries: [entry],
+      baseManifest: defaultManifest
+    })
+    const json = serializeMasterCSSManifest(result.manifest)
+    const syncJSON = serializeMasterCSSManifest(syncResult.manifest)
+
+    expect(json).toContain('"version":6')
+    expect(JSON.parse(json).version).toBe(6)
+    expect(syncJSON).toBe(json)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('rejects script config paths', async () => {
+  const cwd = createFixture()
+  try {
+    const script = join(cwd, 'config.ts')
+    writeFileSync(script, 'export default {}')
+
+    await expect(compileProjectManifest({
+      root: cwd,
+      entries: [script],
+      baseManifest: defaultManifest
+    })).rejects.toThrow('CSS files')
+    expect(() => compileProjectManifestSync({
+      root: cwd,
+      entries: [script],
+      baseManifest: defaultManifest
+    })).toThrow('CSS files')
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+
+test('projects immutable native registrations from imported CSS for tooling', async () => {
+  const root = createFixture()
+  try {
+    writeFileSync(join(root, 'index.css'), "@import \"@master/css\"; @import \"./native.css\";")
+    writeFileSync(join(root, 'native.css'), String.raw`.size\:20px { color: red; }`)
+    const options = { root, entries: [join(root, 'index.css')], baseManifest: defaultManifest }
+    for (const result of [await loadProjectManifest(options), loadProjectManifestSync(options)]) {
+      expect(result.nativeClassNames).toContain('size:20px')
+      expect(Object.isFrozen(result.nativeClassNames)).toBe(true)
+      expect(result.manifest).not.toHaveProperty('nativeClassNames')
+    }
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})

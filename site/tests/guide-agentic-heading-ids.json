@@ -1,0 +1,141 @@
+{
+  "ai-coding": [
+    {
+      "id": "set-up-the-project-first",
+      "title": "Set up the project first",
+      "depth": 2
+    },
+    {
+      "id": "give-the-agent-useful-context",
+      "title": "Give the agent useful context",
+      "depth": 2
+    },
+    {
+      "id": "use-the-mcp-server",
+      "title": "Use the MCP server",
+      "depth": 2
+    },
+    {
+      "id": "add-project-agent-rules",
+      "title": "Add project agent rules",
+      "depth": 2
+    },
+    {
+      "id": "prompt-for-readable-class-strings",
+      "title": "Prompt for readable class strings",
+      "depth": 2
+    },
+    {
+      "id": "review-ai-output",
+      "title": "Review AI output",
+      "depth": 2
+    },
+    {
+      "id": "know-what-to-leave-alone",
+      "title": "Know what to leave alone",
+      "depth": 2
+    },
+    {
+      "id": "prompt-templates",
+      "title": "Prompt templates",
+      "depth": 2
+    },
+    {
+      "id": "feature-styling",
+      "title": "Feature styling",
+      "depth": 3
+    },
+    {
+      "id": "token-extraction",
+      "title": "Token extraction",
+      "depth": 3
+    },
+    {
+      "id": "class-review",
+      "title": "Class review",
+      "depth": 3
+    },
+    {
+      "id": "visual-qa",
+      "title": "Visual QA",
+      "depth": 3
+    },
+    {
+      "id": "next-steps",
+      "title": "Next steps",
+      "depth": 2
+    }
+  ],
+  "mcp-server": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "install-and-start",
+      "title": "Install and start",
+      "depth": 2
+    },
+    {
+      "id": "ask-an-agent-to-set-it-up",
+      "title": "Ask an agent to set it up",
+      "depth": 3
+    },
+    {
+      "id": "configure-an-mcp-client",
+      "title": "Configure an MCP client",
+      "depth": 2
+    },
+    {
+      "id": "use-with-codex-app",
+      "title": "Use with Codex App",
+      "depth": 3
+    },
+    {
+      "id": "use-with-claude-code",
+      "title": "Use with Claude Code",
+      "depth": 3
+    },
+    {
+      "id": "available-tools",
+      "title": "Available tools",
+      "depth": 2
+    },
+    {
+      "id": "project-tools",
+      "title": "Project tools",
+      "depth": 3
+    },
+    {
+      "id": "contributor-tools",
+      "title": "Contributor tools",
+      "depth": 3
+    },
+    {
+      "id": "prompt-templates",
+      "title": "Prompt templates",
+      "depth": 2
+    },
+    {
+      "id": "machine-readable-results",
+      "title": "Machine-readable results",
+      "depth": 2
+    },
+    {
+      "id": "safe-write-previews",
+      "title": "Safe write previews",
+      "depth": 2
+    },
+    {
+      "id": "choose-the-right-tool",
+      "title": "Choose the right tool",
+      "depth": 2
+    },
+    {
+      "id": "next-steps",
+      "title": "Next steps",
+      "depth": 2
+    }
+  ]
+}

@@ -10,26 +10,26 @@ const __dirname = dirname(__filename)
 test('complex', async ({ page }) => {
   await init(page)
   /**
-   * <p class="block font:bold">
-   * <p class="block font:bold italic">
+   * <p class="block font-bold">
+   * <p class="block font-bold italic">
    */
   await page.evaluate(() => {
     const p1 = document.createElement('p')
-    p1.classList.add('block', 'font:bold')
+    p1.classList.add("display:block", 'font-bold')
     document.body.append(p1)
-    p1.classList.add('italic')
+    p1.classList.add("font-style:italic")
   })
 
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.classCounts))).toEqual({
-    'block': 1,
-    'font:bold': 1,
-    'italic': 1
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toEqual({
+    "display:block": 1,
+    'font-bold': 1,
+    "font-style:italic": 1
   })
 
   expect(
     await page.evaluate((complexHTML) => {
       document.body.innerHTML = complexHTML
-      return globalThis.masterCSSRuntime.classCounts.size
+      return globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.size
     }, readFileSync(resolve(__dirname, './complex.html'), 'utf-8').toString())
   ).toBeTruthy()
 
@@ -37,7 +37,7 @@ test('complex', async ({ page }) => {
     await page.evaluate(async () => {
       document.body.innerHTML = ''
       await new Promise(resolve => setTimeout(resolve, 100))
-      return Object.fromEntries(globalThis.masterCSSRuntime.classCounts)
+      return Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts)
     })
   ).toEqual({})
 })

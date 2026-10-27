@@ -12,12 +12,14 @@ export default function parseHTML(html: string): {
   nodes: ChildNode[],
   htmlElement: Element | null,
   headElement: Element | null,
-  styleElement: Element | null
+  styleElement: Element | null,
+  nativeStyleElements: Element[]
 } {
-  const classes: string[] = []
+  const classes = new Set<string>()
   let htmlElement: Element | null = null
   let headElement: Element | null = null
   let styleElement: Element | null = null
+  const nativeStyleElements: Element[] = []
 
   const handler = new DomHandler(undefined, {}, (element) => {
     if (element.type === 'tag') {
@@ -34,17 +36,15 @@ export default function parseHTML(html: string): {
     } else if (element.type === 'style') {
       if (element.attribs.id === MASTER_CSS_RUNTIME_STYLE_ID)
         styleElement = element
+      else if (!element.attribs.type || element.attribs.type === 'text/css') nativeStyleElements.push(element)
     }
 
     if (element.attribs.class) {
-      element.attribs.class
-        .trim()
-        .split(/\s+/)
+      decodeHTML(element.attribs.class)
+        .split(/[\t\n\f\r ]+/)
         .forEach((className) => {
           if (!className) return
-          className = decodeHTML(className)
-          if (!classes.includes(className))
-            classes.push(className)
+          classes.add(className)
         })
     }
   })
@@ -54,10 +54,11 @@ export default function parseHTML(html: string): {
   }).end(html)
 
   return {
-    classes,
+    classes: [...classes],
     nodes: handler.root.childNodes,
     htmlElement,
     headElement,
-    styleElement
+    styleElement,
+    nativeStyleElements
   }
 }

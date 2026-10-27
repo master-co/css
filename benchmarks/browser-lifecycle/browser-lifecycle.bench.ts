@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkRoot, runCommandStream } from '../shared/runner'
 
 const benchOptions = {
@@ -39,7 +39,9 @@ async function writeBrowserLifecycleReportOnce() {
 }
 
 describe('browser lifecycle', () => {
-  bench('write browser lifecycle report', async () => {
-    await writeBrowserLifecycleReportOnce()
-  }, benchOptions)
+  test('write browser lifecycle report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write browser lifecycle report', async () => {
+      await writeBrowserLifecycleReportOnce()
+    }).run(benchOptions)
+  })
 })

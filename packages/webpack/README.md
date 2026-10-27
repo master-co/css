@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.webpack">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-webpack">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-webpack?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-webpack?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,13 +55,13 @@
 ## Installation
 
 ```bash
-npm install @master/css.webpack
+npm install @master/css-webpack
 ```
 
 ## Usage
 
 ```js
-import MasterCSSPlugin from '@master/css.webpack'
+import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   plugins: [
@@ -70,11 +70,26 @@ export default {
 }
 ```
 
+Static mode is the default and does not inject the browser runtime. Select
+`mode: 'runtime'` or `mode: 'progressive'` explicitly when class names first
+appear in the browser. The webpack integration does not write page hydration
+manifests itself. The browser runtime executes the project's runtime program, the
+manifest compiled at build time: development inlines it, and production builds emit
+it as a hashed `master-css-program.<hash>.bin` asset that runtime-mode HTML
+preloads. In `progressive` mode, the runtime defers its engine when the server that
+renders the HTML injects one, and loads the program only when the engine starts.
+
+In those modes, when `output.filename` is fixed, uses only a build-wide hash, or is a callback,
+the injected runtime entry uses its own content-hashed file under `_master-css/`.
+Application filenames retain their configured behavior. Chunk-specific templates
+such as `[name].js` or `[contenthash].js` also apply to the runtime entry.
+
 ## Client types
-Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, or `?master-css-manifest` modules:
+
+Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-program`, `virtual:master-css-emitted-globals`, `?master-css-manifest`, or `?master-css-program` modules:
 
 ```ts
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 ```
 
 ## Stylesheet entry
@@ -85,6 +100,24 @@ Import the default stylesheet from your application CSS so the plugin can replac
 @import '@master/css';
 ```
 
-The Webpack plugin uses `@master/css-scanner` for source scanning and writes generated CSS through virtual modules.
+The Webpack plugin uses `MasterCSSScanner` from `@master/css-tooling/scanner/node` for source scanning and writes generated CSS through virtual modules.
+
+For production builds with `mode: 'static'` that emit CSS assets, the plugin
+preserves imported stylesheet boundaries and emits the required CSS fragments
+and resources beside the host CSS asset. Deploy these emitted files together.
+Changes to imported CSS or resource contents participate in the entry CSS
+content hash.
+Each emitted resource uses the same captured bytes for its filename and contents.
+Later builds read a fresh snapshot, including changes made during publication.
+
+In production static watch builds, missing imported CSS or resources are
+reported as compilation errors. Restoring those files triggers a new build.
+Removing a managed stylesheet entry also releases its unused graph dependencies.
+Watch builds reconcile the current module graph, including cached modules when
+an import is restored. Shared resources and separately loaded project manifest
+dependencies remain watched while they still have an active owner.
+Each production static stylesheet keeps its own position in the host CSS chunk.
+Separate entrypoints and lazy chunks receive their own native stylesheet graphs
+and resources; lazy native styles take effect when their CSS chunk is loaded.
 
 See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

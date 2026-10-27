@@ -1,11 +1,8 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, css, html, unsafeCSS } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
-import { cssRuntime } from '@master/css-runtime'
-import type CSSRuntime from '@master/css-runtime'
-import manifest from 'virtual:master-css-manifest'
-import emittedGlobals from 'virtual:master-css-emitted-globals'
+import masterCSSStyles from './index.css?inline'
 
 /**
  * An example element.
@@ -14,10 +11,7 @@ import emittedGlobals from 'virtual:master-css-emitted-globals'
  * @csspart button - The button
  */
 @customElement('my-element')
-@cssRuntime({ manifest, emittedGlobals })
 export class MyElement extends LitElement {
-
-    cssRuntime?: CSSRuntime
 
     /**
      * Copy for the read the docs hint.
@@ -38,7 +32,7 @@ export class MyElement extends LitElement {
           <img src=${litLogo} class="logo" alt="Vite logo" />
         </a>
         <a href="https://css.master.co" target="_blank">
-          <img src=${masterLogo} class="logo size:172px" alt="Master logo" />
+          <img src=${masterLogo} class="logo width:172px height:172px" alt="Master logo" />
         </a>
       </div>
       <slot></slot>
@@ -55,7 +49,7 @@ export class MyElement extends LitElement {
         this.count++
     }
 
-    static styles = css`
+    static styles = [unsafeCSS(masterCSSStyles), css`
     :host {
       max-width: 1280px;
       margin: 0 auto;
@@ -125,7 +119,7 @@ export class MyElement extends LitElement {
         background-color: #f9f9f9;
       }
     }
-  `
+  `]
 }
 
 declare global {

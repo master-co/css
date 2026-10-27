@@ -1,8 +1,5 @@
-import 'internal/scripts/prepare-app'
+import './scripts/bundler-imports'
+import { prepareTokenFamilies } from './scripts/prepare-token-families'
 
-import { rm } from 'node:fs/promises'
-import { generateTranslatedContentRegistry } from './scripts/generate-translation-registry'
-
-await generateTranslatedContentRegistry()
-
-await rm(new URL('./public/monaco-editor', import.meta.url), { recursive: true, force: true })
+await prepareTokenFamilies()
+await import('./prepare-run')

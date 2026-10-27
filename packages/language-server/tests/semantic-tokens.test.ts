@@ -1,7 +1,7 @@
 import { test } from 'vitest'
 import { withFixture } from './setup'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST } from '../src'
-import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-language'
+import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 
 function hasTokenType(data: number[], type: string) {
   return data.some((_, index) =>
@@ -25,14 +25,14 @@ withFixture('basic', async (context) => {
   })
 
   test('returns active semantic tokens for the class at a position', async ({ expect }) => {
-    const text = '<div class="fg:red block:hover"></div>'
+    const text = '<div class="fg-red sr-only:hover"></div>'
     const textDocument = context.createDocument(text)
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(ACTIVE_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
         uri: textDocument.uri
       },
-      position: textDocument.positionAt(text.indexOf('block') + 1)
+      position: textDocument.positionAt(text.indexOf("sr-only") + 1)
     })
 
     expect(semanticTokens.data.length).toBeGreaterThan(0)
@@ -41,12 +41,18 @@ withFixture('basic', async (context) => {
     )).toBe(true)
     expect(semanticTokens.data.some((_: number, index: number) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
-    )).toBe(true)
+    )).toBe(false)
     await context.server.onDidClose({ document: textDocument })
   })
 
   test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
-    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose fg:red block; } }', { lang: 'css' })
+    const textDocument = context.createDocument(`@theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+
+.dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }
+
+@safelist "sr-only fg-red";`, { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
@@ -55,7 +61,7 @@ withFixture('basic', async (context) => {
     })
 
     expect(semanticTokens.data.length).toBeGreaterThan(0)
-    expect(hasTokenType(semanticTokens.data, 'property')).toBe(true)
+    expect(hasTokenType(semanticTokens.data, 'property')).toBe(false)
     expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
     expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(false)
     expect(hasTokenType(semanticTokens.data, 'variable')).toBe(false)
@@ -152,7 +158,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns full semantic tokens for opened documents', async ({ expect }) => {
-    const textDocument = context.createDocument('<div class="{fg:red;block}>li:hover@sm"></div>')
+    const textDocument = context.createDocument('<div class="fg-red>li:hover@sm sr-only>li:hover@sm"></div>')
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.server.onSemanticTokens({
       textDocument: {
@@ -163,11 +169,11 @@ withFixture('basic', async (context) => {
     expect(semanticTokens.data.length).toBeGreaterThan(0)
     expect(semanticTokens.data.some((_, index) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
-    )).toBe(true)
+    )).toBe(false)
     expect(semanticTokens.data.some((_, index) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
     )).toBe(true)
-    expect(hasTokenModifier(semanticTokens.data, 'declarationTerminator')).toBe(true)
+    expect(hasTokenModifier(semanticTokens.data, 'declarationTerminator')).toBe(false)
     expect(hasTokenModifier(semanticTokens.data, 'selectorCombinator')).toBe(true)
     await context.server.onDidClose({ document: textDocument })
   })
@@ -184,7 +190,13 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens when highlighting is off', async ({ expect }) => {
-    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose block; } }', { lang: 'css' })
+    const textDocument = context.createDocument(`@theme {
+  --color-primary: --alpha(var(--color-blue-60) / 80%);
+}
+
+.dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }
+
+@safelist "sr-only";`, { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {

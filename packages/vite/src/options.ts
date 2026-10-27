@@ -1,39 +1,48 @@
-import type { ScannerOptions } from '@master/css-scanner'
+import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
+import type {
+  MasterCSSIntegrationRuntimeOptions,
+  MasterCSSRenderingMode
+} from '@master/css-schema/integration'
+import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/node'
 
-/* The default options */
-const options: PluginOptions = {
-  mode: 'runtime',
-  injectRuntime: true,
-  avoidFOUC: true,
+export interface MasterCSSVitePluginOptions {
+  enabled?: boolean
+  mode?: MasterCSSRenderingMode
+  pruneNativeCSS?: boolean
+  scanner?: MasterCSSScannerConfiguration
+  runtime?: boolean | MasterCSSIntegrationRuntimeOptions
 }
 
-export default options
-
-export interface PluginOptions {
-  /**
-   * Defines how Master CSS should be integrated into the build.
-   *
-   * - `'runtime'`: Injects CSSRuntime through Vite's HTML transform and imports the project manifest code.
-   * - `'static'`: Wires the generated CSS module and enables generated utilities in the shared style entry pipeline.
-   * - `'pre-render'`: Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.
-   * - `'progressive'`: Combines `'runtime'` and `'pre-render'` modes.
-   * - `null`: Disables automatic integration
-   */
-  mode?: 'runtime' | 'static' | 'progressive' | 'pre-render' | null
-
-  /**
-   * Scanner options for class usage scanning.
-   */
-  scanner?: ScannerOptions
-
-  /**
-   * Whether to include Master CSS’s runtime engine through Vite's HTML transform.
-   */
+export interface ResolvedMasterCSSVitePluginOptions {
+  enabled?: boolean
+  mode?: MasterCSSRenderingMode
+  pruneNativeCSS?: boolean
+  scanner?: MasterCSSScannerConfiguration
   injectRuntime?: boolean
-
-  /**
-   * Prevents Flash of Unstyled Content (FOUC) during the initial render.
-   * Useful in Runtime
-   */
   avoidFOUC?: boolean
+}
+
+export const defaultMasterCSSVitePluginOptions:
+Readonly<ResolvedMasterCSSVitePluginOptions> = Object.freeze({
+  enabled: true,
+  mode: 'static',
+  pruneNativeCSS: false,
+  scanner: Object.freeze({}),
+  injectRuntime: false,
+  avoidFOUC: true
+})
+
+export function resolveMasterCSSVitePluginOptions(
+  options: MasterCSSVitePluginOptions = {}
+): ResolvedMasterCSSVitePluginOptions {
+  const mode = options.mode ?? 'static'
+  const runtime = resolveIntegrationRuntime(mode, options.runtime)
+  return {
+    enabled: options.enabled ?? true,
+    mode,
+    pruneNativeCSS: options.pruneNativeCSS ?? false,
+    scanner: options.scanner ?? {},
+    injectRuntime: runtime.enabled,
+    avoidFOUC: runtime.avoidFOUC ?? true
+  }
 }

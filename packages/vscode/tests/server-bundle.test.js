@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import * as ts from 'typescript6'
 import {
   createStagedExtension,
   getCurrentTarget,
@@ -16,8 +17,8 @@ const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.js')
 const extensionPath = resolve(distDir, 'extension.min.js')
-const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const sourceGrammarPath = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const stagedGrammarPath = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 function readPackageJSON(path = resolve(packageDir, 'package.json')) {
   return JSON.parse(readFileSync(path, 'utf8'))
@@ -32,8 +33,15 @@ function encode(message) {
 }
 
 function createLanguageServer(options = {}) {
-  const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
+  const child = spawn(process.execPath, [
+    '--import', new URL('./native-timing-preload.js', import.meta.url).href,
+    options.serverPath ?? serverPath, '--stdio'
+  ], {
     cwd: options.cwd ?? packageDir,
+    env: {
+      ...process.env,
+      NODE_PATH: ''
+    },
     stdio: ['pipe', 'pipe', 'pipe']
   })
   let closed = false
@@ -41,6 +49,7 @@ function createLanguageServer(options = {}) {
   let nextId = 1
   let stdout = Buffer.alloc(0)
   const stderr = []
+  const messages = []
   const pending = new Map()
   const closedPromise = new Promise((resolvePromise) => {
     child.on('close', (code) => {
@@ -61,6 +70,10 @@ function createLanguageServer(options = {}) {
   }
 
   function handleMessage(message) {
+    if (message.method) {
+      messages.push(JSON.stringify(message).slice(0, 1000))
+      if (messages.length > 20) messages.shift()
+    }
     if (Object.hasOwn(message, 'id') && pending.has(message.id)) {
       const request = pending.get(message.id)
       pending.delete(message.id)
@@ -113,10 +126,13 @@ function createLanguageServer(options = {}) {
         params
       })
       return new Promise((resolvePromise, rejectPromise) => {
+        // The staged debug addon builds its full native index on first completion.
+        // Keep lifecycle requests short without using their budget for cold indexing.
+        const timeout = method === 'textDocument/completion' ? 30_000 : 5000
         const timer = setTimeout(() => {
           pending.delete(id)
-          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}`))
-        }, 5000)
+          rejectPromise(new Error(`Timed out waiting for ${method}\n${stderr.join('')}\nRecent LSP messages:\n${messages.join('\n')}\nBuffered response bytes: ${stdout.length}`))
+        }, timeout)
         pending.set(id, {
           resolve: resolvePromise,
           reject: rejectPromise,
@@ -169,6 +185,14 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
   }
 }
 
+function expectCurrentNativeArtifacts(stagingDir, target) {
+  const packageName = getRuntimePackagesForTarget(target)[0]
+  const packagePath = join(stagingDir, 'dist', 'node_modules', ...packageName.split('/'))
+  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
+  expect(statSync(join(packagePath, 'mastercss.node')).isFile()).toBe(true)
+  expect(statSync(join(packagePath, executableName)).isFile()).toBe(true)
+}
+
 test('build emits the server bundle', () => {
   expect(statSync(serverPath).isFile()).toBe(true)
 })
@@ -192,28 +216,61 @@ test('extension bundle includes workspace language server resolution fallback', 
 
 test('extension bundle reuses one Master CSS output channel for the language client', () => {
   const source = readFileSync(extensionPath, 'utf8')
-  const masterCSSOutputChannelCalls = source.match(/\.createOutputChannel\((?:`Master CSS`|"Master CSS"|'Master CSS')/g) ?? []
-  const languageClientConstruction = source.match(
-    /new\s+[A-Za-z_$][\w$]*\.LanguageClient\(\s*(?:`masterCSS`|"masterCSS"|'masterCSS')\s*,\s*(?:`Master CSS`|"Master CSS"|'Master CSS')[\s\S]*?\}\)/
-  )?.[0]
-
-  expect(masterCSSOutputChannelCalls).toHaveLength(1)
-  expect(languageClientConstruction).toContain('outputChannel:')
+  const ast = ts.createSourceFile(extensionPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS)
+  const bindings = new Map()
+  const channelCalls = []
+  let clientOptions
+  function visit(node) {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer) {
+      bindings.set(node.name.text, node.initializer)
+    } else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken
+      && ts.isIdentifier(node.left)) {
+      bindings.set(node.left.text, node.right)
+    }
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)
+      && node.expression.name.text === 'createOutputChannel' && node.arguments[0]?.text === 'Master CSS') {
+      channelCalls.push(node)
+    }
+    if (ts.isNewExpression(node) && ts.isPropertyAccessExpression(node.expression)
+      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS'
+      && node.arguments[1]?.text === 'Master CSS') {
+      clientOptions = node.arguments[3]
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(ast)
+  const resolveBinding = (node) => node && ts.isIdentifier(node) ? bindings.get(node.text) : node
+  const options = resolveBinding(clientOptions)
+  expect(options && ts.isObjectLiteralExpression(options)).toBe(true)
+  const outputChannel = options.properties.find((property) => property.name?.getText(ast) === 'outputChannel')
+  expect(channelCalls).toHaveLength(1)
+  expect(resolveBinding(outputChannel?.initializer ?? outputChannel?.name)).toBe(channelCalls[0])
 })
 
-test('server bundle keeps expected native runtime imports external', () => {
+test('server bundle does not retain removed TypeScript semantic bindings', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
-  const nativeRuntimeImports = imports.filter((specifier) =>
+  const legacySemanticImports = imports.filter((specifier) =>
     /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
   )
 
-  expect(nativeRuntimeImports.sort()).toEqual(['lightningcss', 'oxc-parser'])
+  expect(legacySemanticImports).toEqual([])
+})
+
+test('server bundle embeds referenced MDN JSON modules', () => {
+  const source = readFileSync(serverPath, 'utf8')
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+
+  expect(imports.filter((specifier) => specifier.startsWith('mdn-data/'))).toEqual([])
+  expect(source).not.toContain('../data/patch.json')
+  expect(source).not.toContain('mdn-data/css/')
+  expect(source).toContain('repeating-linear-gradient()')
 })
 
 test('staged extension includes runtime packages for the current target', async () => {
-  await withStagedExtension(({ stagingDir, files }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
+  await withStagedExtension(({ stagingDir, files, target }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
     expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget(getCurrentTarget()))
+    expectCurrentNativeArtifacts(stagingDir, target)
   })
 })
 
@@ -305,7 +362,55 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server starts and shuts down', async () => {
+test('staged language server starts without workspace node_modules and shuts down', async () => {
+  await withStagedExtension(async ({ stagingDir }) => {
+    const server = createLanguageServer({
+      cwd: stagingDir,
+      serverPath: resolve(stagingDir, 'dist', 'server.min.js')
+    })
+
+    try {
+      const result = await server.request('initialize', {
+        processId: null,
+        rootUri: null,
+        capabilities: {
+          workspace: {
+            workspaceFolders: true
+          }
+        },
+        workspaceFolders: []
+      })
+
+      expect(result.capabilities?.textDocumentSync).toBeTruthy()
+      expect(result.capabilities?.hoverProvider).toBe(true)
+
+      server.notify('initialized', {})
+      const uri = 'untitled:selector-test.html'
+      const text = '<div class="display:block:">'
+      server.notify('textDocument/didOpen', {
+        textDocument: { uri, languageId: 'html', version: 1, text }
+      })
+      const completion = await server.request('textDocument/completion', {
+        textDocument: { uri },
+        position: { line: 0, character: text.indexOf('display:block:') + 'display:block:'.length },
+        context: { triggerKind: 2, triggerCharacter: ':' }
+      })
+      expect(completion.find((item) => item.label === ':first-child')?.insertText).toBe('first-child')
+      expect(completion.some((item) => item.label === ':first')).toBe(false)
+
+      await server.request('shutdown', null)
+      server.notify('exit')
+      await expect(server.closed()).resolves.toBe(0)
+
+      expect(server.stderr()).not.toContain('Cannot find module')
+      expect(server.stderr()).not.toContain('Cannot find package')
+    } finally {
+      await server.dispose()
+    }
+  })
+})
+
+test('proves the staged language server lifecycle without workspace node_modules', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,

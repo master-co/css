@@ -16,4 +16,4 @@
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/svelte).
 
-This example uses `@master/css.svelte/vite` with the default `progressive` mode and re-exports the SvelteKit server hook from `@master/css.svelte/hooks.server`.
+This example explicitly selects `masterCSS({ mode: 'progressive' })` from `@master/css-svelte/vite`, loads `virtual:master-css-runtime` in `src/hooks.client.ts`, and re-exports the named SvelteKit server `handle` from `@master/css-svelte/hooks.server`. The integration's default mode is `static`, which needs neither hook.

@@ -1,0 +1,19 @@
+'use client'
+
+import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
+import clsx from 'clsx'
+import type { SelectHTMLAttributes } from 'react'
+import { useTranslation } from '../contexts/i18n'
+
+export default function ThemeSelect({ className, ...props }: Omit<SelectHTMLAttributes<HTMLSelectElement>, 'value' | 'defaultValue' | 'onChange'>) {
+  const themeMode = useThemeMode()
+  const $ = useTranslation()
+  return (
+    <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer', className)} value={themeMode.preference}
+      onChange={(event) => themeMode.preference = event.target.value}>
+      <option value="light">{$('Light')}</option>
+      <option value="dark">{$('Dark')}</option>
+      <option value="system">{$('System')}</option>
+    </select>
+  )
+}

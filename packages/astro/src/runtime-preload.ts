@@ -1,9 +1,9 @@
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, join, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { toManifestPreloadLinkTag } from '@master/css-integration/manifest-facade'
+import { toProgramPreloadLinkTag } from '@master/css-internal/program-module'
 
-const RUNTIME_MANIFEST_REFERENCE_PATTERN = /new URL\((["'])([^"']*master-css-manifest[^"']*\.json)\1\s*,\s*import\.meta\.url\)\.href/g
+const RUNTIME_PROGRAM_REFERENCE_PATTERN = /new URL\((["'])([^"']*master-css-program[^"']*\.bin)\1\s*,\s*import\.meta\.url\)\.href/g
 
 function escapeRegExp(source: string) {
   return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -22,10 +22,10 @@ function toPublicAssetHref(root: string, file: string, base?: string) {
   return `${toPublicBase(base)}${outputPath.replace(/^\/+/, '')}`
 }
 
-function hasManifestPreloadLink(html: string, href: string) {
+function hasProgramPreloadLink(html: string, href: string) {
   const quotedHref = escapeRegExp(href)
   return new RegExp(
-    String.raw`<link\b(?=[^>]*\brel=(["'])modulepreload\1)(?=[^>]*\bas=(["'])json\2)(?=[^>]*\bhref=(["'])${quotedHref}\3)[^>]*>`,
+    String.raw`<link\b(?=[^>]*\brel=(["'])preload\1)(?=[^>]*\bas=(["'])fetch\2)(?=[^>]*\bhref=(["'])${quotedHref}\3)[^>]*>`,
     'i'
   ).test(html)
 }
@@ -48,13 +48,17 @@ function toRuntimeScriptPreloadLinkTag(href: string) {
   return `<link rel="modulepreload" crossorigin href="${escapeAttributeValue(href)}">`
 }
 
-function injectRuntimePreloads(html: string, runtimeScriptHref: string | undefined, manifestHref: string) {
+function injectRuntimePreloads(
+  html: string,
+  runtimeScriptHref: string | undefined,
+  programHref: string
+) {
   const tags: string[] = []
   if (runtimeScriptHref && !hasRuntimeScriptPreloadLink(html, runtimeScriptHref)) {
     tags.push(toRuntimeScriptPreloadLinkTag(runtimeScriptHref))
   }
-  if (!hasManifestPreloadLink(html, manifestHref)) {
-    tags.push(toManifestPreloadLinkTag(manifestHref))
+  if (!hasProgramPreloadLink(html, programHref)) {
+    tags.push(toProgramPreloadLinkTag(programHref))
   }
   if (!tags.length) return html
   return html.replace(/<head\b[^>]*>/i, (openingTag) => `${openingTag}${tags.join('')}`)
@@ -81,30 +85,30 @@ async function collectOutputFiles(dir: string, files: string[] = []) {
   return files
 }
 
-function isManifestAssetFile(file: string) {
+function isProgramAssetFile(file: string) {
   const name = basename(file)
-  return name.startsWith('master-css-manifest') && name.endsWith('.json')
+  return name.startsWith('master-css-program') && name.endsWith('.bin')
 }
 
 async function findRuntimePreloadAssets(files: string[]) {
   for (const file of files) {
     if (!file.endsWith('.js')) continue
     const source = await readFile(file, 'utf8')
-    for (const match of source.matchAll(RUNTIME_MANIFEST_REFERENCE_PATTERN)) {
+    for (const match of source.matchAll(RUNTIME_PROGRAM_REFERENCE_PATTERN)) {
       const specifier = match[2]
       if (!specifier) continue
-      const manifestFile = join(dirname(file), specifier)
-      if (await pathExists(manifestFile)) {
+      const programFile = join(dirname(file), specifier)
+      if (await pathExists(programFile)) {
         return {
-          manifestFile,
+          programFile,
           runtimeScriptFile: file
         }
       }
     }
   }
-  const manifestFile = files.find(isManifestAssetFile)
-  if (!manifestFile) return
-  return { manifestFile }
+  const programFile = files.find(isProgramAssetFile)
+  if (!programFile) return
+  return { programFile }
 }
 
 export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string) {
@@ -112,14 +116,14 @@ export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string
   const files = await collectOutputFiles(root)
   const assets = await findRuntimePreloadAssets(files)
   if (!assets) return []
-  const manifestHref = toPublicAssetHref(root, assets.manifestFile, base)
+  const programHref = toPublicAssetHref(root, assets.programFile, base)
   const runtimeScriptHref = assets.runtimeScriptFile
     ? toPublicAssetHref(root, assets.runtimeScriptFile, base)
     : undefined
   const updatedFiles: string[] = []
   for (const htmlFile of files.filter((file) => file.endsWith('.html'))) {
     const html = await readFile(htmlFile, 'utf8')
-    const nextHTML = injectRuntimePreloads(html, runtimeScriptHref, manifestHref)
+    const nextHTML = injectRuntimePreloads(html, runtimeScriptHref, programHref)
     if (nextHTML === html) continue
     await writeFile(htmlFile, nextHTML)
     updatedFiles.push(htmlFile)

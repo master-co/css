@@ -1,0 +1,126 @@
+{
+  "version": 3,
+  "languageVersion": 16,
+  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@utility erased { color:red; }\n@utility erased {}\n@utility pair(--value) { width:var(--value); height:var(--value); }\n",
+  "cases": [
+    {
+      "className": "font-brand",
+      "matchStatus": "ambiguous",
+      "cssValueStatus": "not-checked",
+      "code": "AMBIGUOUS_TOKEN",
+      "cssSyntaxStatus": "not-checked"
+    },
+    {
+      "className": "padding:red",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID",
+      "cssSyntaxStatus": "valid"
+    },
+    {
+      "className": "font:16px",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID",
+      "cssSyntaxStatus": "valid"
+    },
+    {
+      "className": "grid-cols(2.5)",
+      "matchStatus": "syntax-error",
+      "cssValueStatus": "not-checked",
+      "code": "CSS_DIRECTIVE_ERROR",
+      "cssSyntaxStatus": "not-checked"
+    },
+    {
+      "className": "grid-cols(foo)",
+      "matchStatus": "syntax-error",
+      "cssValueStatus": "not-checked",
+      "code": "CSS_DIRECTIVE_ERROR",
+      "cssSyntaxStatus": "not-checked"
+    },
+    {
+      "className": "future-property:future(1furlong)",
+      "matchStatus": "matched",
+      "cssValueStatus": "unknown",
+      "cssSyntaxStatus": "valid"
+    },
+    {
+      "className": "width:var(--dynamic)",
+      "matchStatus": "matched",
+      "cssValueStatus": "unknown",
+      "cssSyntaxStatus": "valid"
+    },
+    {
+      "className": "ordinary-card",
+      "matchStatus": "unmatched",
+      "cssValueStatus": "not-checked",
+      "cssSyntaxStatus": "not-checked"
+    },
+    {
+      "className": "display:block@missing",
+      "matchStatus": "syntax-error",
+      "cssValueStatus": "not-checked",
+      "code": "UNKNOWN_CONDITION",
+      "cssSyntaxStatus": "not-checked"
+    },
+    {
+      "className": "padding:1px.<br",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "invalid",
+      "cssValueStatus": "not-checked",
+      "code": "CLASS_SYNTAX_ERROR"
+    },
+    {
+      "className": "display:display:block@supports(selector([lang|=en]))",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "code": "MASTER_QUERY_REQUIRES_CSS"
+    },
+    {
+      "className": "--money:$100",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "unknown"
+    },
+    {
+      "className": "padding:1px@media((40rem<=width<64rem))",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "valid"
+    },
+    {
+      "className": "pair(red)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "pair(var(--size))",
+      "matchStatus": "syntax-error",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked",
+      "code": "CSS_DIRECTIVE_ERROR"
+    },
+    {
+      "className": "pair(calc(1px|+|))",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "display:block:state(open)",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "valid",
+      "cssValueStatus": "valid"
+    },
+    {
+      "className": "erased",
+      "matchStatus": "matched",
+      "cssSyntaxStatus": "not-checked",
+      "cssValueStatus": "not-checked"
+    }
+  ]
+}

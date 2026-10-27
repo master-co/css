@@ -1,0 +1,44 @@
+[
+  {
+    "page": "appearance",
+    "id": "remove-default-styling",
+    "title": "Remove default styling",
+    "html": [
+      "<!-- Custom appearance -->\n<label class=\"display:grid gap-sm width:240px max-width:100%\">\n  Sort assets\n  <span class=\"position:relative display:block\">\n    <select id=\"target\"\n\n    class=\"width:100% pr-xl border-width:1px border-style:solid b-line-divider r-sm\n           bg-surface-base appearance:none\">\n      <option value=\"newest\">Newest first</option>\n      <option value=\"oldest\">Oldest first</option>\n      <option value=\"name\">Name</option>\n    </select>\n    <svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"\n      fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"\n      class=\"position:absolute right-sm top:50%\n             transform:translateY(-50%) pointer-events:none\">\n      <path d=\"m4 6 4 4 4-4\" />\n    </svg>\n  </span>\n</label>",
+      "<!-- Native comparison -->\n<label class=\"display:grid gap-sm width:240px max-width:100%\">\n  Sort assets\n  <span class=\"position:relative display:block\">\n    <select id=\"target\" class=\"width:100% appearance:auto\">\n      <option value=\"newest\">Newest first</option>\n      <option value=\"oldest\">Oldest first</option>\n      <option value=\"name\">Name</option>\n    </select>\n  </span>\n</label>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "gap-sm",
+      "width:240px",
+      "max-width:100%",
+      "position:relative",
+      "display:block",
+      "width:100%",
+      "pr-xl",
+      "border-width:1px",
+      "border-style:solid",
+      "b-line-divider",
+      "r-sm",
+      "bg-surface-base",
+      "appearance:none",
+      "position:absolute",
+      "right-sm",
+      "top:50%",
+      "transform:translateY(-50%)",
+      "pointer-events:none",
+      "appearance:auto"
+    ],
+    "classLists": [
+      "display:grid gap-sm width:240px max-width:100%",
+      "position:relative display:block",
+      "width:100% pr-xl border-width:1px border-style:solid b-line-divider r-sm bg-surface-base appearance:none",
+      "position:absolute right-sm top:50% transform:translateY(-50%) pointer-events:none",
+      "display:grid gap-sm width:240px max-width:100%",
+      "position:relative display:block",
+      "width:100% appearance:auto"
+    ],
+    "highlighted": []
+  }
+]

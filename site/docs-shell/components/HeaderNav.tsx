@@ -1,0 +1,13 @@
+import '~/site/styles/docs-shell/header.css'
+import Link from './Link'
+import DocBadge from './DocBadge'
+import clsx from 'clsx'
+
+export default function HeaderNav({ name, children, isNew, className, ...props }: any) {
+  return (
+    <Link {...props} className={clsx('app-header-nav', className)} key={name} activeClassName="fg-text-strong font-weight:460" ambiguous>
+      {children}
+      {isNew && <DocBadge />}
+    </Link>
+  )
+}

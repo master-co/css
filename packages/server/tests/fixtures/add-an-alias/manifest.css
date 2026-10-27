@@ -2,6 +2,7 @@
   --color-white: oklch(100% 0 none);
 }
 
+
 @theme {
   --secondary: var(--color-white);
 }

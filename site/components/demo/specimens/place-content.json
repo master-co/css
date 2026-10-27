@@ -1,0 +1,31 @@
+[
+  {
+    "page": "place-content",
+    "id": "use-separate-axis-values",
+    "title": "Use separate axis values",
+    "html": [
+      "<div id=\"layout\" class=\"display:grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem align-content:start justify-content:space-between gap-md height:14rem width:17.5rem max-width:100%\">\n  <div id=\"target\" class=\"p-sm\">01</div>\n  <div id=\"peer\" class=\"p-sm\">02</div>\n  <div id=\"item-3\" class=\"p-sm\">03</div>\n  <div id=\"item-4\" class=\"p-sm\">04</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:grid",
+      "grid-template-columns:5rem|5rem",
+      "grid-template-rows:3rem|3rem",
+      "align-content:start",
+      "justify-content:space-between",
+      "gap-md",
+      "height:14rem",
+      "width:17.5rem",
+      "max-width:100%",
+      "p-sm"
+    ],
+    "classLists": [
+      "display:grid grid-template-columns:5rem|5rem grid-template-rows:3rem|3rem align-content:start justify-content:space-between gap-md height:14rem width:17.5rem max-width:100%",
+      "p-sm",
+      "p-sm",
+      "p-sm",
+      "p-sm"
+    ],
+    "highlighted": []
+  }
+]

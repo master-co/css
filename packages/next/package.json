@@ -1,6 +1,9 @@
 {
-  "name": "@master/css.next",
+  "name": "@master/css-next",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -8,7 +11,7 @@
     "e2e": "vitest run tests/*-e2e.test.ts --no-file-parallelism",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Next.js integration for Master CSS",
@@ -35,10 +38,6 @@
     "mastercss"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -64,21 +63,19 @@
     "next": ">=16"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-scanner": "workspace:^",
-    "@master/css-integration": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-runtime": "workspace:^",
-    "@master/css-server": "workspace:^",
-    "@master/css-stylesheet": "workspace:^",
-    "@master/css-schema": "workspace:^",
-    "@master/css-lexer": "workspace:^"
+    "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-tooling": "workspace:*",
+    "@master/css-runtime": "workspace:*",
+    "@master/css-server": "workspace:*",
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "next": "^16.2.10",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "@master/css-internal": "workspace:*",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }

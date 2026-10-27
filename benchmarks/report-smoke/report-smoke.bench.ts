@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkAdapters, benchmarkFixtures } from '../fixtures/manifest'
 import { collectEnvironment, collectPackageVersions } from '../shared/environment'
 import { validateFixtures } from '../shared/fixtures'
@@ -115,7 +115,9 @@ function createSamples(): BenchmarkSample[] {
 }
 
 describe('report smoke', () => {
-  bench('write normalized benchmark report', async () => {
-    await writeSmokeReportOnce()
-  }, benchOptions)
+  test('write normalized benchmark report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write normalized benchmark report', async () => {
+      await writeSmokeReportOnce()
+    }).run(benchOptions)
+  })
 })

@@ -50,18 +50,18 @@ const selectedMetrics = {
     'vite-master-generate-bundle-ms'
   ],
   'compiler-diagnostics': [
-    'production-create-extracted-css-ms',
-    'diagnostic-compiler-total-ms',
-    'render-compiled-css-ms',
+    'baseline-compose-ms',
+    'public-pipeline-total-ms',
+    'diagnostic-compose-ms',
     'generated-css-raw-bytes',
     'final-css-raw-bytes'
   ],
   'extraction-diagnostics': [
-    'production-create-extracted-css-ms',
-    'diagnostic-extraction-total-ms',
-    'engine-rule-generation-ms',
-    'css-text-serialization-ms',
-    'final-css-assembly-ms',
+    'baseline-compose-ms',
+    'public-pipeline-total-ms',
+    'generated-only-compose-ms',
+    'stylesheet-registration-ms',
+    'native-only-compose-ms',
     'generated-css-brotli-bytes',
     'final-css-brotli-bytes'
   ]
@@ -86,6 +86,7 @@ const snapshot = {
     generatedAt: reports[source.suite].generatedAt,
     command: source.command
   })),
+  sourceLimits: Object.fromEntries(reportSources.map((source) => [source.suite, reports[source.suite].limits])),
   environment: reports['startup-diagnostics'].environment,
   packages: mergePackages(reportSources.map((source) => reports[source.suite].packages)),
   fixtures: fixtureIds.map((id) => {

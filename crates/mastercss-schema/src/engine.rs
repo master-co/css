@@ -1,0 +1,297 @@
+use super::*;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConditionBoundIr {
+    pub value: f64,
+    pub inclusive: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConditionRangeIr {
+    pub domain: String,
+    pub feature: String,
+    pub unit: String,
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub lower: Option<ConditionBoundIr>,
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub upper: Option<ConditionBoundIr>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RulePriorityIr {
+    /// Required even for an unconditional rule: old RC priorities must be rebuilt.
+    pub features: Vec<ConditionRangeIr>,
+    pub selector: i32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conditions: Vec<String>,
+    /// Named tokens precede direct values within the same utility/condition tier.
+    #[serde(default, skip_serializing_if = "is_zero_priority")]
+    pub value_priority: i8,
+    /// Declaration semantics, independent of aliases and the class separator.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub sort_key: String,
+}
+
+fn is_zero_priority(value: &i8) -> bool {
+    *value == 0
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneratedRuleNodeIr {
+    pub text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneratedRuleIr {
+    pub class_name: String,
+    pub key: String,
+    pub layer: UtilityLayerName,
+    #[serde(rename = "type")]
+    pub utility_type: i32,
+    pub sort_tier: i32,
+    pub priority: RulePriorityIr,
+    pub text: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub nodes: Vec<GeneratedRuleNodeIr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selector_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub variable_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub keyframe_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub retain_all_keyframes: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HydrationManifest {
+    pub version: u32,
+    pub language_version: u32,
+    /// Every rendered class: those with rules in rule order, then those without,
+    /// such as authored component classes, then classes manifest selectors reference
+    /// without rules of their own, such as mode classes. A deferred runtime treats
+    /// them as covered, then replays them to verify the pre-rendered CSS.
+    pub class_names: Vec<String>,
+    pub resource_order: HydrationResourceOrder,
+    /// Resource counts the server render treated as already emitted by the page's
+    /// stylesheets. The runtime cannot reproduce `resource_order` without them.
+    #[serde(default, skip_serializing_if = "EmittedGlobals::is_empty")]
+    pub emitted_globals: EmittedGlobals,
+}
+
+impl HydrationManifest {
+    pub fn new(class_names: Vec<String>, resource_order: Vec<String>) -> Self {
+        Self {
+            version: HYDRATION_MANIFEST_VERSION,
+            language_version: LANGUAGE_VERSION,
+            class_names,
+            resource_order: HydrationResourceOrder {
+                variables: resource_order,
+                keyframes: Vec::new(),
+            },
+            emitted_globals: EmittedGlobals::default(),
+        }
+    }
+
+    /// Replaying classes in sorted rule order reproduces the snapshot's resource order.
+    pub fn from_snapshot(snapshot: &EngineSnapshotIr) -> Self {
+        let mut class_names: Vec<String> = Vec::new();
+        for rule in &snapshot.rules {
+            if !class_names.contains(&rule.class_name) {
+                class_names.push(rule.class_name.clone());
+            }
+        }
+        let resource_order = snapshot
+            .resources
+            .variables
+            .iter()
+            .map(|resource| resource.name.clone())
+            .collect();
+        let mut manifest = Self::new(class_names, resource_order);
+        manifest.resource_order.keyframes = snapshot
+            .resources
+            .keyframes
+            .iter()
+            .map(|r| r.id.clone())
+            .collect();
+        manifest
+    }
+
+    pub fn to_script_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(self).map(|json| json.replace('<', "\\u003c"))
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "op", rename_all = "lowercase", rename_all_fields = "camelCase")]
+pub enum RuleMutationIr {
+    Insert {
+        target: RuleTarget,
+        index: u32,
+        key: String,
+        text: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        rule: Option<Box<GeneratedRuleIr>>,
+    },
+    Delete {
+        target: RuleTarget,
+        index: u32,
+        key: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineTransitionIr {
+    pub version: u32,
+    pub mutations: Vec<RuleMutationIr>,
+}
+
+impl EngineTransitionIr {
+    pub fn new(mutations: Vec<RuleMutationIr>) -> Self {
+        Self {
+            version: ENGINE_TRANSITION_VERSION,
+            mutations,
+        }
+    }
+
+    pub fn empty() -> Self {
+        Self::new(Vec::new())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineSnapshotIr {
+    pub version: u32,
+    pub rules: Vec<GeneratedRuleIr>,
+    pub resources: EngineResourcesIr,
+    pub text: String,
+    /// Materialized native stylesheet inputs in ensureStylesheetResources order.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub stylesheets: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineVariableResourceIr {
+    pub name: String,
+    pub ref_count: u32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependencies: Vec<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineResourcesIr {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub theme_text: Option<String>,
+    pub variables: Vec<EngineVariableResourceIr>,
+    pub keyframes: Vec<EngineKeyframeResourceIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineRuleReferenceIr {
+    pub layer: UtilityLayerName,
+    pub key: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineClassExecutionStateIr {
+    pub class_name: String,
+    pub references: Vec<EngineRuleReferenceIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineExecutionStateIr {
+    pub classes: Vec<EngineClassExecutionStateIr>,
+    pub resources: EngineResourcesIr,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineInspectionIr {
+    pub version: u32,
+    pub class_name: String,
+    pub match_status: MatchStatus,
+    pub css_syntax_status: CssSyntaxStatus,
+    pub css_value_status: CssValueStatus,
+    pub browser_support: BrowserSupport,
+    pub rules: Vec<GeneratedRuleIr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeDeclarationCandidateIr {
+    pub class_name: String,
+    pub property: String,
+    pub value: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MatchStatus {
+    Matched,
+    Unmatched,
+    Ambiguous,
+    SyntaxError,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CssValueStatus {
+    Valid,
+    Invalid,
+    Unknown,
+    NotChecked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CssSyntaxStatus {
+    Valid,
+    Invalid,
+    Unknown,
+    NotChecked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum BrowserSupport {
+    Supported,
+    Unsupported,
+    Unknown,
+    NotChecked,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HydrationResourceOrder {
+    pub variables: Vec<String>,
+    pub keyframes: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineKeyframeResourceIr {
+    pub id: String,
+    pub name: String,
+    pub text: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub containers: Vec<crate::KeyframeContainer>,
+    #[serde(default)]
+    pub anchored: bool,
+    pub ref_count: u32,
+    pub dependencies: Vec<String>,
+}

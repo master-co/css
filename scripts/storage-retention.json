@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "root": "..",
+  "rules": [
+    {
+      "path": ".turbo/cache",
+      "mode": "turbo",
+      "maxAgeDays": 7,
+      "maxGiB": 5,
+      "keepNewest": 0,
+      "quietHours": 1,
+      "common": true
+    },
+    {
+      "path": "test-results",
+      "mode": "children",
+      "maxAgeDays": 14,
+      "maxGiB": 2,
+      "keepNewest": 3,
+      "quietHours": 24
+    },
+    {
+      "path": "site/test-results",
+      "mode": "children",
+      "maxAgeDays": 14,
+      "maxGiB": 2,
+      "keepNewest": 3,
+      "quietHours": 24
+    },
+    {
+      "path": "site/playwright-report",
+      "mode": "children",
+      "maxAgeDays": 14,
+      "maxGiB": 0.5,
+      "keepNewest": 3,
+      "quietHours": 24
+    },
+    {
+      "path": "packages/runtime/test-results",
+      "mode": "children",
+      "maxAgeDays": 14,
+      "maxGiB": 2,
+      "keepNewest": 3,
+      "quietHours": 24
+    },
+    {
+      "path": "packages/runtime/playwright-report",
+      "mode": "children",
+      "maxAgeDays": 14,
+      "maxGiB": 0.5,
+      "keepNewest": 3,
+      "quietHours": 24
+    }
+  ]
+}

@@ -1,0 +1,538 @@
+use super::variables::{compile_variables, group_variables, manifest_error, object};
+use super::{
+    CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
+    MANIFEST_VERSION, Map, MasterCssManifest, Value,
+};
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+
+pub(super) fn merge_array_by(
+    base: Option<&Value>,
+    next: Option<&Value>,
+    key: impl Fn(&Value) -> Option<String>,
+) -> Option<Value> {
+    let mut merged = base.and_then(Value::as_array).cloned().unwrap_or_default();
+    // Replace the last effective base definition, including manifests containing
+    // repeated registrations. Final normalization removes shadowed entries.
+    let mut slots = HashMap::new();
+    for (index, existing) in merged.iter().enumerate() {
+        if let Some(existing_key) = key(existing) {
+            slots.insert(existing_key, index);
+        }
+    }
+    for value in next.and_then(Value::as_array).into_iter().flatten() {
+        match key(value) {
+            Some(value_key) => match slots.entry(value_key) {
+                Entry::Occupied(slot) => merged[*slot.get()] = value.clone(),
+                Entry::Vacant(slot) => {
+                    slot.insert(merged.len());
+                    merged.push(value.clone());
+                }
+            },
+            None => merged.push(value.clone()),
+        }
+    }
+    (!merged.is_empty()).then_some(Value::Array(merged))
+}
+
+pub(super) fn merge_records(base: Option<&Value>, next: Option<&Value>) -> Option<Value> {
+    let mut merged = base.and_then(Value::as_object).cloned().unwrap_or_default();
+    if let Some(next) = next.and_then(Value::as_object) {
+        merged.extend(next.clone());
+    }
+    (!merged.is_empty()).then_some(Value::Object(merged))
+}
+
+pub(crate) fn flatten_variables(value: Option<&Value>) -> Vec<Value> {
+    let mut flattened = Vec::new();
+    for (namespace, definitions) in value
+        .and_then(Value::as_object)
+        .into_iter()
+        .flat_map(Map::iter)
+    {
+        for definition in definitions.as_array().into_iter().flatten() {
+            let Some(mut definition) = definition.as_object().cloned() else {
+                continue;
+            };
+            let key = definition
+                .get("key")
+                .and_then(Value::as_str)
+                .unwrap_or_default();
+            let name = definition
+                .get("name")
+                .and_then(Value::as_str)
+                .map(str::to_owned)
+                .unwrap_or_else(|| {
+                    if namespace.is_empty() {
+                        key.into()
+                    } else if key.is_empty() {
+                        namespace.into()
+                    } else {
+                        format!("{namespace}-{key}")
+                    }
+                });
+            definition.insert("name".into(), Value::String(name));
+            if !namespace.is_empty() {
+                definition.insert("namespace".into(), Value::String(namespace.clone()));
+            }
+            if !definition.contains_key("type") {
+                definition.insert("type".into(), Value::String("string".into()));
+            }
+            flattened.push(Value::Object(definition));
+        }
+    }
+    flattened
+}
+
+pub(super) fn merge_variables(base: Option<&Value>, next: Option<&Value>) -> Option<Value> {
+    let mut merged = flatten_variables(base);
+    let mut slots = merged
+        .iter()
+        .enumerate()
+        .filter_map(|(index, variable)| {
+            variable
+                .get("name")
+                .and_then(Value::as_str)
+                .map(|name| (name.to_owned(), index))
+        })
+        .collect::<HashMap<_, _>>();
+    for variable in flatten_variables(next) {
+        let name = variable
+            .get("name")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_owned();
+        if let Some(index) = slots.get(&name) {
+            let previous = &mut merged[*index];
+            let values = previous
+                .get_mut("values")
+                .and_then(Value::as_array_mut)
+                .expect("scoped values");
+            // Re-declared values replace identical base values, matching theme rules.
+            let next_values = variable["values"].as_array().map_or(&[][..], Vec::as_slice);
+            values.retain(|value| !next_values.contains(value));
+            values.extend(next_values.iter().cloned());
+            let dependencies = previous
+                .as_object_mut()
+                .expect("variable")
+                .entry("dependencies")
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .expect("dependencies");
+            for dependency in variable["dependencies"].as_array().into_iter().flatten() {
+                if !dependencies.contains(dependency) {
+                    dependencies.push(dependency.clone());
+                }
+            }
+            if previous.get("numeric") != variable.get("numeric") {
+                previous
+                    .as_object_mut()
+                    .expect("variable")
+                    .shift_remove("numeric");
+            }
+            if previous.get("type") != variable.get("type") {
+                previous["type"] = "string".into();
+            }
+        } else {
+            slots.insert(name, merged.len());
+            merged.push(variable);
+        }
+    }
+    group_variables(
+        merged
+            .into_iter()
+            .filter_map(|variable| variable.as_object().cloned())
+            .collect(),
+    )
+}
+
+pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
+    let Some(base) = base.and_then(Value::as_object) else {
+        return fragment.clone();
+    };
+    let fragment = fragment
+        .as_object()
+        .expect("manifest fragment is an object");
+    let mut manifest = Map::new();
+    manifest.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    manifest.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
+    let variables = merge_variables(base.get("variables"), fragment.get("variables"));
+    // A fragment may re-declare base theme rules, such as a project entry importing
+    // the preset already supplied as the default build manifest. An earlier
+    // identical rule never wins the cascade, so the later declaration replaces it.
+    let fragment_theme = fragment
+        .get("theme")
+        .and_then(Value::as_array)
+        .map_or(&[][..], Vec::as_slice);
+    let theme = base
+        .get("theme")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter(|node| !fragment_theme.contains(node))
+        .chain(fragment_theme)
+        .cloned()
+        .collect::<Vec<_>>();
+    if !theme.is_empty() {
+        manifest.insert("theme".into(), Value::Array(theme));
+    }
+    let mut keyframes = base
+        .get("keyframes")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .chain(
+            fragment
+                .get("keyframes")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten(),
+        )
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut animation_variables = base
+        .get("animationVariables")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
+    for (name, values) in fragment
+        .get("animationVariables")
+        .and_then(Value::as_object)
+        .into_iter()
+        .flatten()
+    {
+        animation_variables
+            .entry(name.clone())
+            .or_insert_with(|| Value::Array(Vec::new()))
+            .as_array_mut()
+            .expect("animation variable values")
+            .extend(values.as_array().into_iter().flatten().cloned());
+    }
+    if !animation_variables.is_empty() {
+        manifest.insert(
+            "animationVariables".into(),
+            Value::Object(animation_variables),
+        );
+    }
+    let mut seen_keyframes = std::collections::HashSet::new();
+    keyframes.reverse();
+    keyframes.retain(|definition| {
+        seen_keyframes.insert(definition["id"].as_str().unwrap_or_default().to_owned())
+    });
+    keyframes.reverse();
+    if !keyframes.is_empty() {
+        manifest.insert("keyframes".into(), Value::Array(keyframes));
+    }
+    let mixins = merge_array_by(base.get("mixins"), fragment.get("mixins"), |definition| {
+        definition
+            .get("name")
+            .and_then(Value::as_str)
+            .map(str::to_owned)
+    });
+    for (key, value) in [
+        ("variables", variables),
+        (
+            "customMedia",
+            merge_records(base.get("customMedia"), fragment.get("customMedia")),
+        ),
+        ("mixins", mixins),
+        (
+            "utilities",
+            merge_array_by(
+                base.get("utilities"),
+                fragment.get("utilities"),
+                |definition| {
+                    let kind: mastercss_schema::UtilityKind =
+                        serde_json::from_value(definition.get("kind")?.clone()).ok()?;
+                    Some(kind.identity(
+                        definition.get("name")?.as_str()?,
+                        definition["parameters"][0]["name"].as_str(),
+                    ))
+                },
+            ),
+        ),
+        (
+            "debug",
+            merge_records(base.get("debug"), fragment.get("debug")),
+        ),
+    ] {
+        if let Some(value) = value {
+            manifest.insert(key.into(), value);
+        }
+    }
+    Value::Object(manifest)
+}
+
+pub fn compile_manifest_input(
+    input: &CssDirectiveManifestInput,
+    options: &CompileManifestOptions,
+) -> Result<CompileManifestResult, CompilerError> {
+    compile_manifest_fragment(input, options)
+}
+
+pub(crate) fn compile_manifest_fragment(
+    input: &CssDirectiveManifestInput,
+    options: &CompileManifestOptions,
+) -> Result<CompileManifestResult, CompilerError> {
+    if let Some(base_manifest) = &options.base_manifest {
+        MasterCssManifest::new(base_manifest.clone())
+            .map_err(|error| manifest_error(error.to_string()))?;
+    }
+    let registry = crate::custom_media::resolve(input, options.base_manifest.as_ref())?;
+    let variables = compile_variables(input, options.base_manifest.as_ref())?;
+    let grouped_variables = group_variables(variables);
+    let mut fragment = Map::new();
+    fragment.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    fragment.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
+    if !registry.is_empty() {
+        fragment.insert(
+            "customMedia".into(),
+            serde_json::to_value(&registry).expect("custom media"),
+        );
+    }
+    if let Some(variables) = &input.animation_variables {
+        fragment.insert(
+            "animationVariables".into(),
+            serde_json::to_value(variables).expect("native animation variable values"),
+        );
+    }
+    if let Some(keyframes) = &input.keyframes {
+        fragment.insert(
+            "keyframes".into(),
+            serde_json::to_value(keyframes).expect("keyframe definitions"),
+        );
+    }
+    if let Some(theme) = &input.theme {
+        fragment.insert(
+            "theme".into(),
+            serde_json::to_value(crate::custom_media::lower_theme(theme, &registry)?)
+                .expect("theme"),
+        );
+    }
+    if let Some(variables) = grouped_variables {
+        fragment.insert("variables".into(), variables);
+    }
+    if let Some(utilities) = &input.utilities {
+        fragment.insert(
+            "utilities".into(),
+            serde_json::to_value(utilities).expect("utility definitions"),
+        );
+    }
+    if let Some(mixins) = &input.mixins {
+        fragment.insert(
+            "mixins".into(),
+            serde_json::to_value(mixins).expect("mixin definitions"),
+        );
+    }
+    let mut manifest = merge_manifest(options.base_manifest.as_ref(), &Value::Object(fragment));
+    if let Some(names) = &input.keyframe_safelist {
+        for definition in manifest
+            .get_mut("keyframes")
+            .and_then(Value::as_array_mut)
+            .into_iter()
+            .flatten()
+        {
+            if definition
+                .get("name")
+                .and_then(Value::as_str)
+                .is_some_and(|name| names.iter().any(|value| value == name))
+            {
+                definition["retained"] = Value::Bool(true);
+            }
+        }
+    }
+    crate::mixins::resolve_definitions(&mut manifest, &registry)?;
+    MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))?;
+    Ok(CompileManifestResult { manifest })
+}
+
+pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerError> {
+    let mut manifest = object(manifest)?.clone();
+    if let Some(variables) = manifest.get("variables").and_then(Value::as_object) {
+        let mut normalized_groups = Map::new();
+        for (namespace, definitions) in variables {
+            let mut normalized = Vec::new();
+            for definition in definitions.as_array().into_iter().flatten() {
+                let mut definition = object(definition)?.clone();
+                let key = definition
+                    .get("key")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default();
+                let expected_name = if namespace.is_empty() {
+                    key.to_owned()
+                } else if key.is_empty() {
+                    namespace.clone()
+                } else {
+                    format!("{namespace}-{key}")
+                };
+                if definition.get("name").and_then(Value::as_str) == Some(&expected_name) {
+                    definition.shift_remove("name");
+                }
+                if definition.get("type").and_then(Value::as_str) == Some("string") {
+                    definition.shift_remove("type");
+                }
+                definition.shift_remove("namespace");
+                normalized.push(Value::Object(definition));
+            }
+            if !normalized.is_empty() {
+                normalized_groups.insert(namespace.clone(), Value::Array(normalized));
+            }
+        }
+        manifest.insert("variables".into(), Value::Object(normalized_groups));
+    }
+    Ok(Value::Object(manifest))
+}
+
+/// Produces the public default-preset artifact shape.
+pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, CompilerError> {
+    MasterCssManifest::new(manifest.clone()).map_err(|error| manifest_error(error.to_string()))?;
+    let manifest = object(manifest)?;
+    let mut preset = Map::new();
+    preset.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    preset.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
+    for key in [
+        "theme",
+        "keyframes",
+        "animationVariables",
+        "customMedia",
+        "variables",
+        "mixins",
+        "utilities",
+    ] {
+        if let Some(value) = manifest.get(key) {
+            preset.insert(key.into(), value.clone());
+        }
+    }
+    for definition in preset
+        .get_mut("keyframes")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        definition
+            .as_object_mut()
+            .expect("keyframe definition")
+            .shift_remove("source");
+    }
+    for definition in preset
+        .get_mut("mixins")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        let mut parsed: mastercss_schema::MixinDefinition =
+            serde_json::from_value(definition.clone())
+                .map_err(|error| manifest_error(error.to_string()))?;
+        crate::mixins::visit_sources(&mut parsed, &mut |source| *source = None);
+        *definition = serde_json::to_value(parsed).expect("mixin");
+    }
+    for definition in preset
+        .get_mut("utilities")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        let mut parsed: mastercss_schema::UtilityDefinition =
+            serde_json::from_value(definition.clone())
+                .map_err(|error| manifest_error(error.to_string()))?;
+        crate::mixins::visit_sources(&mut parsed.recipe, &mut |source| *source = None);
+        *definition = serde_json::to_value(parsed).expect("utility");
+    }
+    normalize_manifest_for_json(&Value::Object(preset))
+}
+
+/// Reference context supplies definitions, never additional unconditional roots.
+/// Local definitions are merged after this view; delivered base roots remain live.
+pub(crate) fn reference_context(mut resolution: Value, base: Option<&Value>) -> Value {
+    let retained_ids = base
+        .and_then(|base| base.get("keyframes"))
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter(|definition| definition["retained"] == true)
+        .filter_map(|definition| definition["id"].as_str())
+        .collect::<std::collections::HashSet<_>>();
+    for definition in resolution
+        .get_mut("keyframes")
+        .and_then(Value::as_array_mut)
+        .into_iter()
+        .flatten()
+    {
+        if !definition["id"]
+            .as_str()
+            .is_some_and(|id| retained_ids.contains(id))
+        {
+            definition
+                .as_object_mut()
+                .expect("keyframe definition")
+                .shift_remove("retained");
+        }
+    }
+    let mut roots = std::collections::HashSet::new();
+    for variable in flatten_variables(base.and_then(|base| base.get("variables"))) {
+        if variable["values"]
+            .as_array()
+            .is_some_and(|values| values.iter().any(|value| value["static"] == true))
+            && let Some(name) = variable["name"].as_str()
+        {
+            roots.insert(name.to_owned());
+        }
+    }
+    if let Some(groups) = resolution
+        .get_mut("variables")
+        .and_then(Value::as_object_mut)
+    {
+        for (namespace, variables) in groups {
+            for variable in variables.as_array_mut().into_iter().flatten() {
+                let name = variable["name"]
+                    .as_str()
+                    .map(str::to_owned)
+                    .unwrap_or_else(|| {
+                        let key = variable["key"].as_str().unwrap_or_default();
+                        if namespace.is_empty() {
+                            key.into()
+                        } else if key.is_empty() {
+                            namespace.clone()
+                        } else {
+                            format!("{namespace}-{key}")
+                        }
+                    });
+                if !roots.contains(&name) {
+                    for value in variable["values"].as_array_mut().into_iter().flatten() {
+                        if let Some(value) = value.as_object_mut() {
+                            value.shift_remove("static");
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fn strip(nodes: &mut Value, roots: &std::collections::HashSet<String>) {
+        for node in nodes.as_array_mut().into_iter().flatten() {
+            if let Some(children) = node.get_mut("children") {
+                strip(children, roots);
+            }
+            if node["type"] == "declaration"
+                && !node["name"]
+                    .as_str()
+                    .is_some_and(|name| roots.contains(name))
+                && let Some(node) = node.as_object_mut()
+            {
+                node.shift_remove("static");
+            }
+        }
+    }
+    if let Some(theme) = resolution.get_mut("theme") {
+        strip(theme, &roots);
+    }
+    resolution
+}

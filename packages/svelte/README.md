@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.svelte">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-svelte">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.svelte?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-svelte?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-svelte?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,19 +55,19 @@
 ## Installation
 
 ```bash
-npx sv add @master/css-sv
+npx sv add @master/css-svelte-addon
 ```
 
-The Svelte CLI add-on installs `@master/css.svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
+The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and defaults to static rendering without adding a server hook.
 
-`@master/css.svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-source`.
+`@master/css-svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. It requires SvelteKit 3 and Svelte 5. Source extraction for `.svelte` files is handled automatically by `@master/css-tooling/source`.
 
 ## Manual setup
 
 Use this path when `sv add` is not available for the project.
 
 ```bash
-npm install @master/css @master/css.svelte
+npm install @master/css @master/css-svelte
 ```
 
 ### Vite plugin
@@ -75,7 +75,7 @@ npm install @master/css @master/css.svelte
 ```ts
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css.svelte/vite'
+import masterCSS from '@master/css-svelte/vite'
 
 export default defineConfig({
   plugins: [
@@ -85,12 +85,24 @@ export default defineConfig({
 })
 ```
 
-### Server hook
+### Client runtime
 
-Export the server handle to inject streamed CSS before `</head>`.
+For `runtime` or `progressive` mode, load the Vite-provided runtime bootstrap in `src/hooks.client.ts`. SvelteKit renders its own HTML, so selecting a mode does not insert Vite's HTML runtime script into the page.
 
 ```ts
-export { default as handle } from '@master/css.svelte/hooks.server'
+/// <reference types="@master/css/client" />
+
+import 'virtual:master-css-runtime'
+```
+
+This module starts the runtime with the project manifest and emitted globals and handles Vite HMR. Static and pre-render modes do not use this client import.
+
+### Server hook
+
+For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })`, load the client runtime above, and export the server handle to inject streamed CSS before `</head>`. The runtime then downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+
+```ts
+export { handle } from '@master/css-svelte/hooks.server'
 ```
 
 If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.

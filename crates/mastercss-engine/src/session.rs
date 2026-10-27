@@ -1,0 +1,1136 @@
+use super::{
+    ClassSemanticInspection, ClassSemanticKind, EmittedGlobals, EngineClassCompletionCandidate,
+    EngineClassVariableIr, EngineColorToken, EngineCompositionRuleIr, EngineError,
+    EngineInspectionIr, EngineSession, EngineSnapshotIr, EngineTransitionIr, HashMap, HashSet,
+    NativeDeclarationCandidateIr, Program, RuleMutationIr, RuleTarget, StoredRule, UTILITY_LAYERS,
+    UtilityLayerName, UtilityMatcherType, collect_class_completion_candidates,
+    collect_engine_color_tokens, compare_stored_rules, emit_declarations, engine_variable_ir,
+    layer_index, layer_name, resolve_state_branches,
+};
+use super::{MasterCssManifest, compile_manifest};
+use mastercss_lexer::concat_text;
+
+impl EngineSession {
+    /// Shared compiler/native-CSS expansion; does not register a class or resources.
+    pub fn expand_mixin(
+        &self,
+        name: &str,
+        arguments: &[String],
+    ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
+        self.expand_mixin_with_contents(name, arguments, None)
+    }
+
+    pub fn expand_mixin_with_contents(
+        &self,
+        name: &str,
+        arguments: &[String],
+        contents: Option<&[mastercss_schema::MixinNode]>,
+    ) -> Result<Vec<crate::ExpandedMixinRule>, String> {
+        let mut rules =
+            crate::expand_mixin_with_contents(&self.compiled.mixins, name, arguments, contents)?;
+        for declaration in rules.iter_mut().flat_map(|rule| &mut rule.declarations) {
+            declaration.value = super::inline_theme::substitute(&declaration.value, &self.compiled);
+        }
+        Ok(rules)
+    }
+
+    pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
+        Self::from_manifest(manifest_json, EmittedGlobals::default())
+    }
+
+    pub fn create_with_emitted_globals(
+        manifest_json: &str,
+        emitted_globals_json: Option<&str>,
+    ) -> Result<Self, EngineError> {
+        Self::from_manifest(
+            manifest_json,
+            emitted_globals_json
+                .map(parse_emitted_globals)
+                .transpose()?
+                .unwrap_or_default(),
+        )
+    }
+
+    /// Compiles the manifest into a program and executes its encoding, exactly as a
+    /// browser executes the program it receives.
+    pub fn from_manifest(
+        manifest_json: &str,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<Self, EngineError> {
+        let manifest = MasterCssManifest::parse(manifest_json)?;
+        let program = super::program::encode(&compile_manifest(&manifest)?);
+        let mut session = Self::with_program(decode_program(&program)?, emitted_globals);
+        session.manifest = Some(manifest);
+        Ok(session)
+    }
+
+    /// Executes a program that [`compile_program`](crate::compile_program) encoded.
+    pub fn from_program(
+        program: &[u8],
+        emitted_globals: EmittedGlobals,
+    ) -> Result<Self, EngineError> {
+        Ok(Self::with_program(
+            decode_program(program)?,
+            emitted_globals,
+        ))
+    }
+
+    pub(crate) fn with_program(compiled: Program, emitted_globals: EmittedGlobals) -> Self {
+        let mut session = Self {
+            manifest: None,
+            compiled,
+            layers: std::array::from_fn(|_| Vec::new()),
+            class_rules: HashMap::default(),
+            class_order: Vec::new(),
+            rule_counts: HashMap::default(),
+            emitted_globals,
+            variable_counts: HashMap::default(),
+            keyframe_counts: HashMap::default(),
+            stylesheet_keyframe_slots: HashSet::default(),
+            variable_floors: HashMap::default(),
+            keyframe_floors: HashMap::default(),
+            keyframe_texts: Vec::new(),
+            stylesheet_sources: Vec::new(),
+            theme_variable_names: Vec::new(),
+            theme_text: None,
+            theme_dirty: false,
+            theme_batch_depth: 0,
+            disposed: false,
+        };
+        session.initialize_variable_resources();
+        session.sync_theme_text();
+        session.sync_keyframes();
+        session
+    }
+
+    pub fn manifest_json(&self) -> Result<String, EngineError> {
+        self.ensure_active()?;
+        let manifest = self.manifest.as_ref().ok_or_else(|| {
+            EngineError::InvalidManifest("this session executes a program, not a manifest".into())
+        })?;
+        Ok(manifest.to_json()?)
+    }
+
+    pub fn ensure_class_rules<I, S>(
+        &mut self,
+        class_names: I,
+    ) -> Result<EngineTransitionIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.with_theme_batch(|session| {
+            let mut mutations = Vec::new();
+            for class_name in class_names {
+                let class_name = class_name.as_ref();
+                if class_name.is_empty() || session.class_rules.contains_key(class_name) {
+                    continue;
+                }
+                let generated = session.generate_class_rules(class_name);
+                session.insert_generated_class_rules(class_name, generated, &mut mutations);
+            }
+            Ok(EngineTransitionIr::new(mutations))
+        })
+    }
+
+    pub(crate) fn insert_generated_class_rules(
+        &mut self,
+        class_name: &str,
+        generated: Vec<StoredRule>,
+        mutations: &mut Vec<RuleMutationIr>,
+    ) {
+        let mut class_rule_keys = Vec::with_capacity(generated.len());
+        for rule in generated {
+            let layer = rule.ir.layer;
+            let reference = (layer, rule.ir.key.clone());
+            if let Some(count) = self.rule_counts.get_mut(&reference) {
+                *count += 1;
+                class_rule_keys.push(reference);
+                continue;
+            }
+            self.register_rule_variables(&rule.ir.variable_names);
+            self.register_keyframes(&rule.ir.keyframe_names, rule.ir.retain_all_keyframes);
+            let layer_rules = &mut self.layers[layer_index(layer)];
+            let index = layer_rules
+                .binary_search_by(|existing| compare_stored_rules(existing, &rule))
+                .unwrap_or_else(|index| index);
+            layer_rules.insert(index, rule.clone());
+            class_rule_keys.push(reference.clone());
+            self.rule_counts.insert(reference, 1);
+            mutations.push(RuleMutationIr::Insert {
+                target: layer.into(),
+                index: index as u32,
+                key: rule.ir.key.clone(),
+                text: rule.ir.text.clone(),
+                rule: Some(Box::new(rule.ir)),
+            });
+        }
+        // Keep requested classes even while their token is missing or ambiguous.
+        // A later manifest refresh can make them valid without another DOM edit.
+        if !self.class_rules.contains_key(class_name) {
+            self.class_order.push(class_name.to_owned());
+        }
+        self.class_rules
+            .insert(class_name.to_owned(), class_rule_keys);
+    }
+
+    pub fn delete_class_rules<I, S>(
+        &mut self,
+        class_names: I,
+    ) -> Result<EngineTransitionIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.with_theme_batch(|session| {
+            let mut mutations = Vec::new();
+            for class_name in class_names {
+                let class_name = class_name.as_ref();
+                let Some(keys) = session.class_rules.remove(class_name) else {
+                    continue;
+                };
+                for (layer, key) in keys.into_iter().rev() {
+                    let reference = (layer, key.clone());
+                    let should_remove = match session.rule_counts.get_mut(&reference) {
+                        Some(count) if *count > 1 => {
+                            *count -= 1;
+                            false
+                        }
+                        Some(_) => true,
+                        None => false,
+                    };
+                    if !should_remove {
+                        continue;
+                    }
+                    session.rule_counts.remove(&reference);
+                    let rules = &mut session.layers[layer_index(layer)];
+                    let Some(index) = rules.iter().position(|rule| rule.ir.key == key) else {
+                        continue;
+                    };
+                    let rule = rules.remove(index);
+                    mutations.push(RuleMutationIr::Delete {
+                        target: RuleTarget::from(layer),
+                        index: index as u32,
+                        key,
+                    });
+                    session.unregister_rule_variables(&rule.ir.variable_names);
+                    session.unregister_keyframes(
+                        &rule.ir.keyframe_names,
+                        rule.ir.retain_all_keyframes,
+                    );
+                }
+                session
+                    .class_order
+                    .retain(|connected_class_name| connected_class_name != class_name);
+            }
+            Ok(EngineTransitionIr::new(mutations))
+        })
+    }
+
+    pub fn native_declaration_candidates<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        Ok(class_names
+            .into_iter()
+            .flat_map(|class_name| {
+                self.native_declaration_candidates_for_class(class_name.as_ref())
+                    .into_iter()
+                    .map(|candidate| candidate.ir)
+            })
+            .collect())
+    }
+
+    pub fn ensure_stylesheet_resources(
+        &mut self,
+        native_css: &str,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        if native_css.is_empty() {
+            self.stylesheet_sources.push(String::new());
+            return Ok(EngineTransitionIr::empty());
+        }
+        let template = self.keyframe_template(native_css);
+        let changes_variables =
+            crate::stylesheet_declarations(&template)
+                .iter()
+                .any(|(name, value)| {
+                    name.strip_prefix("--").is_some_and(|name| {
+                        !self
+                            .compiled
+                            .animation_variables
+                            .get(name)
+                            .is_some_and(|values| values.contains(value))
+                    })
+                });
+        self.stylesheet_sources.push(native_css.into());
+        if changes_variables {
+            self.rebuild(self.emitted_globals.clone())
+        } else {
+            self.register_stylesheet_resources(native_css)
+        }
+    }
+
+    fn register_stylesheet_resources(
+        &mut self,
+        native_css: &str,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        let template = self.keyframe_template(native_css);
+        let native_css = template.as_str();
+        self.with_theme_batch(|session| {
+            session.register_keyframe_slots(native_css);
+            let animation = session.animation_references(native_css)?;
+            session.register_keyframes(&animation.names, animation.retain_all);
+            let stylesheet_variables = mastercss_lexer::collect_css_variable_references(native_css);
+            let variable_names = stylesheet_variables
+                .into_iter()
+                .filter(|name| session.compiled.compiled_variables.contains_key(name))
+                .collect::<Vec<_>>();
+            for variable_name in &variable_names {
+                session.register_variable(variable_name, &mut HashSet::default());
+            }
+
+            Ok(EngineTransitionIr::empty())
+        })
+    }
+
+    /// Resource counts the host reports as emitted outside this session.
+    pub fn host_emitted_globals(&self) -> &EmittedGlobals {
+        &self.emitted_globals
+    }
+
+    pub fn emitted_globals_snapshot(&self) -> Result<EmittedGlobals, EngineError> {
+        self.ensure_active()?;
+        let mut emitted_globals = self.emitted_globals.clone();
+        for name in &self.theme_variable_names {
+            emitted_globals.variables.get_or_insert(name.clone(), 1);
+        }
+        for definition in self.keyframe_snapshot() {
+            emitted_globals.keyframes.get_or_insert(definition.id, 1);
+        }
+        for id in &self.stylesheet_keyframe_slots {
+            if !emitted_globals.keyframe_slots.contains(id) {
+                emitted_globals.keyframe_slots.push(id.clone());
+            }
+        }
+        emitted_globals.keyframe_slots.sort();
+        Ok(emitted_globals)
+    }
+
+    /// Adds resource counts the host emitted outside this session to the ones it
+    /// reported before.
+    pub fn register_emitted_globals(
+        &mut self,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        let mut merged = self.emitted_globals.clone();
+        let mut changed = false;
+        for id in &emitted_globals.suppressed_keyframes {
+            if !merged.suppressed_keyframes.contains(id) {
+                merged.suppressed_keyframes.push(id.clone());
+                changed = true;
+            }
+        }
+        for (name, count) in emitted_globals.variables {
+            if count == 0 {
+                continue;
+            }
+            let current = merged.variable_count(&name);
+            let next = current.saturating_add(count);
+            if next != current {
+                merged.variables.insert(name, next);
+                changed = true;
+            }
+        }
+        for (name, count) in emitted_globals.keyframes {
+            if count > 0 {
+                let previous = merged.keyframes.get(&name).copied().unwrap_or_default();
+                merged
+                    .keyframes
+                    .insert(name, previous.saturating_add(count));
+                changed = true;
+            }
+        }
+        for id in emitted_globals.keyframe_slots {
+            if !merged.keyframe_slots.contains(&id) {
+                merged.keyframe_slots.push(id);
+                changed = true;
+            }
+        }
+        if !changed {
+            return Ok(EngineTransitionIr::new(Vec::new()));
+        }
+        self.rebuild(merged)
+    }
+
+    pub fn refresh(&mut self, manifest_json: &str) -> Result<EngineTransitionIr, EngineError> {
+        self.refresh_with_emitted_globals(manifest_json, None)
+    }
+
+    pub fn refresh_with_emitted_globals(
+        &mut self,
+        manifest_json: &str,
+        globals: Option<&str>,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        let manifest = MasterCssManifest::parse(manifest_json)?;
+        let program = decode_program(&super::program::encode(&compile_manifest(&manifest)?))?;
+        let emitted = match globals {
+            Some(globals) => parse_emitted_globals(globals)?,
+            None => self.emitted_globals.clone(),
+        };
+        self.manifest = Some(manifest);
+        self.compiled = program;
+        self.rebuild(emitted)
+    }
+
+    /// Replaces the executed program, as [`refresh_with_emitted_globals`] does with a
+    /// manifest. Without `emitted_globals` the session keeps the ones it has.
+    ///
+    /// [`refresh_with_emitted_globals`]: Self::refresh_with_emitted_globals
+    pub fn refresh_program(
+        &mut self,
+        program: &[u8],
+        emitted_globals: Option<EmittedGlobals>,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        let program = decode_program(program)?;
+        let emitted = emitted_globals.unwrap_or_else(|| self.emitted_globals.clone());
+        {
+            self.manifest = None;
+        }
+        self.compiled = program;
+        self.rebuild(emitted)
+    }
+
+    /// Re-executes the session's classes against its program and `emitted_globals`.
+    pub(crate) fn rebuild(
+        &mut self,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.with_theme_batch(|session| {
+            let connected_classes = session.class_order.clone();
+            let mut mutations = Vec::new();
+            for layer in UTILITY_LAYERS.into_iter().rev() {
+                let rules = &mut session.layers[layer_index(layer)];
+                for index in (0..rules.len()).rev() {
+                    let rule = rules.remove(index);
+                    mutations.push(RuleMutationIr::Delete {
+                        target: layer.into(),
+                        index: index as u32,
+                        key: rule.ir.key,
+                    });
+                }
+            }
+            session.theme_dirty = true;
+            session.variable_counts.clear();
+            session.keyframe_counts.clear();
+            session.stylesheet_keyframe_slots.clear();
+            session.theme_variable_names.clear();
+            for source in &session.stylesheet_sources {
+                for (name, value) in
+                    crate::stylesheet_declarations(&session.keyframe_template(source))
+                {
+                    if let Some(name) = name.strip_prefix("--") {
+                        let values = session
+                            .compiled
+                            .animation_variables
+                            .entry(name.into())
+                            .or_default();
+                        if !values.contains(&value) {
+                            values.push(value);
+                        }
+                    }
+                }
+            }
+            session.emitted_globals = emitted_globals;
+            session.class_rules.clear();
+            session.class_order.clear();
+            session.rule_counts.clear();
+            session.initialize_variable_resources();
+            for source in session.stylesheet_sources.clone() {
+                session.register_stylesheet_resources(&source)?;
+            }
+            mutations.extend(session.ensure_class_rules(connected_classes)?.mutations);
+            Ok(EngineTransitionIr::new(mutations))
+        })
+    }
+
+    pub fn snapshot(&self) -> Result<EngineSnapshotIr, EngineError> {
+        self.ensure_active()?;
+        let rules = UTILITY_LAYERS
+            .iter()
+            .flat_map(|layer| self.layers[layer_index(*layer)].iter())
+            .map(|rule| rule.ir.clone())
+            .collect();
+        Ok(EngineSnapshotIr {
+            version: mastercss_schema::ENGINE_TRANSITION_VERSION,
+            rules,
+            resources: self.resource_snapshot(),
+            text: self.css_text(),
+            stylesheets: self.rendered_stylesheets(),
+        })
+    }
+
+    fn rendered_stylesheets(&self) -> Vec<String> {
+        self.stylesheet_sources
+            .iter()
+            .map(|source| self.render_stylesheet_resources(source))
+            .collect()
+    }
+
+    pub fn snapshot_for_classes<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<EngineSnapshotIr, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        let mut seen = HashSet::default();
+        let mut cached_classes = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            if class_name.is_empty() || !seen.insert(class_name.to_owned()) {
+                continue;
+            }
+            let Some(references) = self.class_rules.get(class_name) else {
+                continue;
+            };
+            let generated = references
+                .iter()
+                .filter_map(|(layer, key)| {
+                    self.layers[layer_index(*layer)]
+                        .iter()
+                        .find(|rule| rule.ir.key == *key)
+                        .cloned()
+                })
+                .collect::<Vec<_>>();
+            cached_classes.push((class_name.to_owned(), generated));
+        }
+
+        let mut subset = self.fork_empty_with_emitted_globals(self.emitted_globals.clone());
+        for source in &self.stylesheet_sources {
+            subset.ensure_stylesheet_resources(source)?;
+        }
+        let mut mutations = Vec::new();
+        for (class_name, generated) in cached_classes {
+            subset.insert_generated_class_rules(&class_name, generated, &mut mutations);
+        }
+        subset.sync_theme_text();
+        subset.snapshot()
+    }
+
+    /// Resolve registered definitions independently of emitted rule count.
+    pub fn matched_utility_names(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let class_name = class_name.to_owned();
+        if !super::named::diagnostics(&class_name, &self.compiled).is_empty() {
+            return Ok(Vec::new());
+        }
+        Ok(
+            super::named::matching_utilities(&class_name, &self.compiled)
+                .into_iter()
+                .filter_map(|(index, _)| self.compiled.utilities[index].name.clone())
+                .collect(),
+        )
+    }
+
+    pub fn composition_rules(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<EngineCompositionRuleIr>, EngineError> {
+        self.ensure_active()?;
+        Ok(self.generate_composition_rules(class_name))
+    }
+
+    /// Distinguish a known false condition from an unknown name during stylesheet lowering.
+    pub fn has_named_condition(&self, name: &str) -> Result<bool, EngineError> {
+        self.ensure_active()?;
+        Ok(self
+            .compiled
+            .custom_media
+            .contains_key(&concat_text!("--", name)))
+    }
+
+    pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
+        self.ensure_active()?;
+        Ok(selector.to_owned())
+    }
+
+    /// Classes that manifest selectors reference without generating rules themselves,
+    /// such as the mode class in a mixin's `&:where(.dark, .dark *)`. Page scripts
+    /// often add them on the client, where they never need new CSS.
+    pub fn selector_class_names_without_rules(&self) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut selectors = Vec::new();
+        collect_theme_selectors(&self.compiled.theme, &mut selectors);
+        for mixin in &self.compiled.mixins {
+            collect_mixin_selectors(&mixin.body, &mut selectors);
+        }
+        for utility in &self.compiled.utility_definitions {
+            collect_mixin_selectors(&utility.recipe.body, &mut selectors);
+        }
+        self.class_names_without_rules_in(selectors)
+    }
+
+    /// Classes the selectors reference without generating rules of their own, such
+    /// as `active` in a generated `.fg-accent\.active\!.active` rule.
+    pub fn class_names_without_rules_in<'a>(
+        &self,
+        selectors: impl IntoIterator<Item = &'a str>,
+    ) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut seen = HashSet::default();
+        Ok(selectors
+            .into_iter()
+            .flat_map(mastercss_lexer::selector_class_names)
+            .filter(|class_name| seen.insert(class_name.clone()))
+            .filter(|class_name| self.generate_class_rules(class_name).is_empty())
+            .collect())
+    }
+
+    pub fn inspect(&self, class_name: &str) -> Result<EngineInspectionIr, EngineError> {
+        self.ensure_active()?;
+        let rules = self
+            .generate_class_rules(class_name)
+            .into_iter()
+            .map(|rule| rule.ir)
+            .collect::<Vec<_>>();
+        let mut diagnostics = super::named::diagnostics(class_name, &self.compiled);
+        if diagnostics.is_empty()
+            && let Some(Err(message)) = self.application_rules(class_name)
+        {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::ClassSyntaxError,
+                phase: mastercss_schema::DiagnosticPhase::Match,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
+                message,
+                source: Some(class_name.into()),
+                range: None,
+                notes: Vec::new(),
+            });
+        }
+        if rules.iter().any(|rule| rule.retain_all_keyframes) && !self.compiled.keyframes.is_empty()
+        {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::DynamicAnimationNames,
+                phase: mastercss_schema::DiagnosticPhase::Match,
+                severity: mastercss_schema::DiagnosticSeverity::Info,
+                message: "Dynamic animation names retain all managed keyframes while this usage root is active".into(),
+                source: Some(class_name.into()), range: None, notes: Vec::new(),
+            });
+        }
+        let has_errors = diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.severity == mastercss_schema::DiagnosticSeverity::Error);
+        Ok(EngineInspectionIr {
+            version: 2,
+            class_name: class_name.to_owned(),
+            match_status: if !has_errors
+                && (!rules.is_empty() || !self.matched_utility_names(class_name)?.is_empty())
+            {
+                mastercss_schema::MatchStatus::Matched
+            } else if diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::AmbiguousToken)
+            {
+                mastercss_schema::MatchStatus::Ambiguous
+            } else if has_errors {
+                mastercss_schema::MatchStatus::SyntaxError
+            } else {
+                mastercss_schema::MatchStatus::Unmatched
+            },
+            css_syntax_status: if diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::ClassSyntaxError)
+            {
+                mastercss_schema::CssSyntaxStatus::Invalid
+            } else if rules.is_empty() {
+                mastercss_schema::CssSyntaxStatus::NotChecked
+            } else {
+                mastercss_schema::CssSyntaxStatus::Valid
+            },
+            css_value_status: mastercss_schema::CssValueStatus::NotChecked,
+            browser_support: mastercss_schema::BrowserSupport::NotChecked,
+            rules,
+            diagnostics,
+        })
+    }
+
+    /// Definition metadata follows explicit utility registration.
+    pub fn class_utility_definition(
+        &self,
+        class_name: &str,
+    ) -> Result<Option<mastercss_schema::UtilityDefinition>, EngineError> {
+        self.ensure_active()?;
+        let source = class_name.strip_suffix('!').unwrap_or(class_name);
+        if let Some(Ok(head)) = mastercss_lexer::parse_functional_class(source) {
+            return Ok(self
+                .compiled
+                .utility_definitions
+                .iter()
+                .find(|definition| {
+                    definition.kind == mastercss_schema::UtilityKind::Function
+                        && definition.recipe.name == head.name
+                })
+                .cloned());
+        }
+        Ok(super::named::matching_utilities(source, &self.compiled)
+            .iter()
+            .find_map(|(index, _)| {
+                let id = &self.compiled.utilities[*index].id;
+                self.compiled
+                    .utility_definitions
+                    .iter()
+                    .find(|definition| &super::utility_matching::identity(definition) == id)
+                    .cloned()
+            }))
+    }
+
+    pub fn inspect_class_semantics(
+        &self,
+        class_name: &str,
+    ) -> Result<ClassSemanticInspection, EngineError> {
+        self.ensure_active()?;
+        let rules = self.generate_class_rules(class_name);
+        let canonical = class_name.to_owned();
+        let empty_matches = if rules.is_empty()
+            && super::named::diagnostics(&canonical, &self.compiled).is_empty()
+        {
+            super::named::matching_utilities(&canonical, &self.compiled)
+        } else {
+            Vec::new()
+        };
+        if rules.is_empty() && empty_matches.is_empty() {
+            return Ok(ClassSemanticInspection {
+                class_name: class_name.to_owned(),
+                kind: ClassSemanticKind::Unknown,
+                matcher_types: Vec::new(),
+                key_token: None,
+                value_token: None,
+                state_token: None,
+                important: false,
+            });
+        }
+
+        let (semantic_class_name, trailing_important) = class_name
+            .strip_suffix('!')
+            .map_or((class_name, false), |name| (name, true));
+        let mut matcher_types = Vec::new();
+        let mut state_token = None;
+        for rule in &rules {
+            if let Some(matcher_type) = rule.matcher_type
+                && !matcher_types.contains(&matcher_type)
+            {
+                matcher_types.push(matcher_type);
+            }
+            state_token.get_or_insert_with(|| rule.state_token.clone());
+        }
+
+        for (_, matched) in &empty_matches {
+            if !matcher_types.contains(&matched.matcher_type) {
+                matcher_types.push(matched.matcher_type);
+            }
+            state_token.get_or_insert_with(|| matched.state_token.clone());
+        }
+        let first_type = rules.first().map(|rule| rule.ir.utility_type).or_else(|| {
+            empty_matches
+                .first()
+                .map(|(index, _)| self.compiled.utilities[*index].utility_type)
+        });
+        let component = rules.iter().any(|rule| {
+            rule.ir.utility_type == -2 && rule.ir.layer == UtilityLayerName::Components
+        });
+        let kind = if component {
+            ClassSemanticKind::Component
+        } else if matcher_types.contains(&UtilityMatcherType::Function) {
+            ClassSemanticKind::Utility
+        } else if matcher_types.contains(&UtilityMatcherType::Token) {
+            ClassSemanticKind::Token
+        } else if first_type == Some(-2) {
+            ClassSemanticKind::Semantic
+        } else {
+            ClassSemanticKind::Declaration
+        };
+
+        let raw_state_token = state_token.unwrap_or_default();
+        let (state_token, state_important) = raw_state_token
+            .strip_prefix('!')
+            .map_or((raw_state_token.as_str(), false), |state| (state, true));
+        let important = trailing_important || state_important;
+        let state_token = (!state_token.is_empty()).then(|| state_token.to_owned());
+        let (key_token, value_token) = if kind == ClassSemanticKind::Token {
+            let prefix =
+                super::named::token_prefix(semantic_class_name, &self.compiled).unwrap_or_default();
+            let prefix_length =
+                prefix.len() + usize::from(!semantic_class_name.starts_with(prefix));
+            let value_end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            (
+                Some(semantic_class_name[..prefix_length].to_owned()),
+                Some(semantic_class_name[prefix_length..value_end].to_owned()),
+            )
+        } else if kind == ClassSemanticKind::Utility {
+            let end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            semantic_class_name[..end]
+                .find('(')
+                .map_or((None, None), |open| {
+                    (
+                        Some(semantic_class_name[..open].into()),
+                        Some(semantic_class_name[open + 1..end - 1].into()),
+                    )
+                })
+        } else if kind == ClassSemanticKind::Declaration {
+            let value_end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            semantic_class_name[..value_end]
+                .find(':')
+                .map_or((None, None), |colon| {
+                    (
+                        Some(semantic_class_name[..=colon].to_owned()),
+                        Some(semantic_class_name[colon + 1..value_end].to_owned()),
+                    )
+                })
+        } else {
+            (None, None)
+        };
+
+        Ok(ClassSemanticInspection {
+            class_name: class_name.to_owned(),
+            kind,
+            matcher_types,
+            key_token,
+            value_token,
+            state_token,
+            important,
+        })
+    }
+
+    /// Whether a declaration key has a registered named-token counterpart.
+    pub fn has_named_tokens_for_key(&self, key: &str) -> bool {
+        // Native-property policy queries resolve the property's canonical family;
+        // this does not register another token spelling.
+        self.compiled
+            .token_families
+            .iter()
+            .filter(|family| {
+                family.prefix == key || family.properties.iter().any(|property| property == key)
+            })
+            .any(|family| {
+                self.compiled
+                    .token_utilities
+                    .get(&concat_text!(family.prefix, "-"))
+                    .is_some_and(|indexes| {
+                        indexes.iter().any(|index| {
+                            let utility = &self.compiled.utilities[*index];
+                            utility.variable_alias_refs == [concat_text!("~", family.namespace)]
+                                && super::utility::utility_variable_entries(utility, &self.compiled)
+                                    .iter()
+                                    .any(|(key, _)| {
+                                        super::named::matching_utilities(
+                                            &concat_text!(family.prefix, "-", key),
+                                            &self.compiled,
+                                        )
+                                        .iter()
+                                        .any(|(matched, _)| matched == index)
+                                    })
+                        })
+                    })
+            })
+    }
+
+    /// Effective named families, including definitions without any current tokens.
+    pub fn token_families(&self) -> Result<&[super::TokenFamily], EngineError> {
+        self.ensure_active()?;
+        Ok(&self.compiled.token_families)
+    }
+
+    pub fn class_variable_keys(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
+        let mut keys = self
+            .class_variable_aliases(class_name)?
+            .into_iter()
+            .map(|(key, _)| key)
+            .collect::<Vec<_>>();
+        keys.sort();
+        keys.dedup();
+        Ok(keys)
+    }
+
+    pub fn variable_names(&self) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut names = self
+            .compiled
+            .compiled_variables
+            .keys()
+            .cloned()
+            .collect::<Vec<_>>();
+        names.sort();
+        Ok(names)
+    }
+
+    pub fn class_variable_entries(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<EngineClassVariableIr>, EngineError> {
+        Ok(self
+            .class_variable_aliases(class_name)?
+            .into_iter()
+            .filter_map(|(key, name)| {
+                self.compiled
+                    .compiled_variables
+                    .get(&name)
+                    .map(|variable| EngineClassVariableIr {
+                        key,
+                        variable: engine_variable_ir(variable),
+                    })
+            })
+            .collect())
+    }
+
+    pub(crate) fn class_variable_aliases(
+        &self,
+        class_name: &str,
+    ) -> Result<Vec<(String, String)>, EngineError> {
+        self.ensure_active()?;
+        let (semantic_class_name, important) = class_name
+            .strip_suffix('!')
+            .map_or((class_name, false), |name| (name, true));
+        let matching_class_names = [semantic_class_name.to_owned()];
+        let mut variable_aliases = Vec::new();
+        let mut seen_aliases = HashSet::default();
+        let mut seen = HashSet::default();
+        for matching_class_name in matching_class_names {
+            let mut generated = false;
+            for (utility_index, matched) in
+                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            {
+                let utility = &self.compiled.utilities[utility_index];
+                if utility.native_fallback && generated {
+                    break;
+                }
+                let mut emitted = false;
+                for (branch_index, branch) in
+                    resolve_state_branches(&matched.state_token, important, &self.compiled)
+                        .into_iter()
+                        .enumerate()
+                {
+                    if emit_declarations(utility, &matched, branch.important, &self.compiled)
+                        .is_empty()
+                    {
+                        continue;
+                    }
+                    let key = if branch_index == 0 && branch.key.is_empty() {
+                        class_name.to_owned()
+                    } else {
+                        concat_text!(class_name, "\0", branch.key)
+                    };
+                    emitted |= seen.insert((key, branch.layer.unwrap_or(utility.layer)));
+                }
+                if !emitted {
+                    continue;
+                }
+                generated = true;
+                for (key, name) in super::utility::utility_variable_entries(utility, &self.compiled)
+                {
+                    if seen_aliases.insert(key.clone()) {
+                        variable_aliases.push((key, name));
+                    }
+                }
+            }
+            if generated {
+                break;
+            }
+        }
+        Ok(variable_aliases)
+    }
+
+    pub fn class_completion_candidates(
+        &self,
+    ) -> Result<Vec<EngineClassCompletionCandidate>, EngineError> {
+        self.ensure_active()?;
+        Ok(collect_class_completion_candidates(&self.compiled))
+    }
+
+    pub fn render_class_names_isolated<I, S>(
+        &self,
+        class_names: I,
+    ) -> Result<Vec<String>, EngineError>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        self.ensure_active()?;
+        let mut isolated = self.fork_empty();
+        let mut rendered = Vec::new();
+        for class_name in class_names {
+            let class_name = class_name.as_ref();
+            isolated.ensure_class_rules([class_name])?;
+            rendered.push(isolated.snapshot()?.text);
+            isolated.delete_class_rules([class_name])?;
+        }
+        Ok(rendered)
+    }
+
+    pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {
+        self.ensure_active()?;
+        let generated = self.generate_class_rules(class_name);
+        let value_family = super::named::matching_utilities(
+            class_name.strip_suffix('!').unwrap_or(class_name),
+            &self.compiled,
+        )
+        .iter()
+        .any(|(index, matched)| {
+            matched.matcher_type == UtilityMatcherType::Token
+                && !matches!(
+                    self.compiled.utilities[*index].emit,
+                    super::UtilityEmit::Recipe { key: true, .. }
+                )
+        });
+        if !generated.iter().any(|rule| {
+            rule.matcher_type == Some(UtilityMatcherType::Key)
+                || (value_family && rule.matcher_type == Some(UtilityMatcherType::Token))
+        }) {
+            return Ok(Vec::new());
+        }
+        Ok(collect_engine_color_tokens(class_name, &self.compiled))
+    }
+
+    pub fn css_text(&self) -> String {
+        let mut output = String::new();
+        if let Some(theme) = self.theme_rule_text() {
+            output.push_str("@layer theme{");
+            output.push_str(&theme);
+            output.push('}');
+        }
+        for layer in UTILITY_LAYERS {
+            let rules = &self.layers[layer_index(layer)];
+            if rules.is_empty() {
+                continue;
+            }
+            output.push_str("@layer ");
+            output.push_str(layer_name(layer));
+            output.push('{');
+            for rule in rules {
+                output.push_str(&rule.ir.text);
+            }
+            output.push('}');
+        }
+        output.push_str(&self.standalone_keyframe_text());
+        output
+    }
+
+    pub fn dispose(&mut self) {
+        self.layers.iter_mut().for_each(Vec::clear);
+        self.class_rules.clear();
+        self.class_order.clear();
+        self.rule_counts.clear();
+        self.variable_counts.clear();
+        self.keyframe_counts.clear();
+        self.stylesheet_keyframe_slots.clear();
+        self.variable_floors.clear();
+        self.keyframe_floors.clear();
+        self.keyframe_texts.clear();
+        self.stylesheet_sources.clear();
+        self.theme_variable_names.clear();
+        self.theme_text = None;
+        self.theme_dirty = false;
+        self.disposed = true;
+    }
+
+    pub(crate) fn fork_empty_with_emitted_globals(&self, emitted_globals: EmittedGlobals) -> Self {
+        let mut session = Self {
+            manifest: self.manifest.clone(),
+            compiled: self.compiled.clone(),
+            layers: std::array::from_fn(|_| Vec::new()),
+            class_rules: HashMap::default(),
+            class_order: Vec::new(),
+            rule_counts: HashMap::default(),
+            emitted_globals,
+            variable_counts: HashMap::default(),
+            keyframe_counts: HashMap::default(),
+            stylesheet_keyframe_slots: HashSet::default(),
+            variable_floors: HashMap::default(),
+            keyframe_floors: HashMap::default(),
+            keyframe_texts: Vec::new(),
+            stylesheet_sources: Vec::new(),
+            theme_variable_names: Vec::new(),
+            theme_text: None,
+            theme_dirty: false,
+            theme_batch_depth: 0,
+            disposed: false,
+        };
+        session.initialize_variable_resources();
+        session.sync_theme_text();
+        session.sync_keyframes();
+        session
+    }
+
+    pub(crate) fn fork_empty(&self) -> Self {
+        self.fork_empty_with_emitted_globals(EmittedGlobals::default())
+    }
+}
+
+/// Validates a manifest and encodes the program that sessions execute.
+pub fn compile_program(manifest_json: &str) -> Result<Vec<u8>, EngineError> {
+    let manifest = MasterCssManifest::parse(manifest_json)?;
+    Ok(super::program::encode(&compile_manifest(&manifest)?))
+}
+
+fn decode_program(program: &[u8]) -> Result<Program, EngineError> {
+    super::program::decode(program).map_err(|error| match error {
+        super::program::ProgramError::Invalid(reason) => EngineError::InvalidProgram(reason.into()),
+        super::program::ProgramError::UnsupportedVersion => EngineError::UnsupportedProgramVersion,
+    })
+}
+
+/// Parses emitted globals JSON for hosts that receive them as text.
+pub fn parse_emitted_globals(json: &str) -> Result<EmittedGlobals, EngineError> {
+    EmittedGlobals::parse(json)
+        .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))
+}
+
+fn collect_theme_selectors<'a>(
+    nodes: &'a [mastercss_schema::ThemeNode],
+    selectors: &mut Vec<&'a str>,
+) {
+    for node in nodes {
+        if let mastercss_schema::ThemeNode::Rule { prelude, children } = node {
+            selectors.push(prelude);
+            collect_theme_selectors(children, selectors);
+        }
+    }
+}
+
+fn collect_mixin_selectors<'a>(
+    nodes: &'a [mastercss_schema::MixinNode],
+    selectors: &mut Vec<&'a str>,
+) {
+    use mastercss_schema::MixinNode;
+    for node in nodes {
+        match node {
+            MixinNode::Rule { selector, body } => {
+                selectors.push(selector);
+                collect_mixin_selectors(body, selectors);
+            }
+            MixinNode::Condition { body, .. } => collect_mixin_selectors(body, selectors),
+            MixinNode::Apply {
+                contents: Some(contents),
+                ..
+            } => collect_mixin_selectors(contents, selectors),
+            MixinNode::Contents { fallback } => collect_mixin_selectors(fallback, selectors),
+            MixinNode::Declaration { .. } | MixinNode::Apply { contents: None, .. } => {}
+        }
+    }
+}

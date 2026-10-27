@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkMetric } from './types'
 import { benchmarkToneTextClasses } from './utils'
 

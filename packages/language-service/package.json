@@ -1,12 +1,15 @@
 {
   "name": "@master/css-language-service",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "description": "Master CSS Language Service",
   "author": "Aoyue Design LLC.",
@@ -17,26 +20,28 @@
     "directory": "packages/language-service"
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-engine": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "colorjs.io": "^0.6.1",
+    "@master/css-preset": "workspace:*",
+    "@master/css-schema": "workspace:*",
+    "@master/css-tooling": "workspace:*",
+    "colorjs.io": "^0.7.1",
     "defu": "^6.1.7",
-    "js-beautify": "^1.15.4",
-    "minimatch": "^10.2.5",
-    "vscode-languageserver-protocol": "^3.18.0",
-    "vscode-languageserver-textdocument": "^1.0.12"
+    "js-beautify": "^2.0.3",
+    "minimatch": "^10.2.6",
+    "vscode-languageserver-protocol": "^3.18.5",
+    "vscode-languageserver-textdocument": "^1.0.16"
   },
   "devDependencies": {
+    "@angular-eslint/template-parser": "^22.6.0",
+    "@master/eslint-config-css": "workspace:*",
+    "@types/js-beautify": "^1.14.3",
     "@types/vscode": "^1.125.0",
-    "vscode-languageserver": "^10.0.0",
-    "@master/css-schema": "workspace:^"
+    "@typescript-eslint/parser": "^8.72.0",
+    "shiki": "^4.5.0",
+    "vscode-languageserver": "^11.0.0"
   },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
+  "sideEffects": [
+    "./src/*.css"
+  ],
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -48,10 +53,19 @@
       "types": "./dist/common.d.ts",
       "import": "./dist/common.js",
       "default": "./dist/common.js"
-    }
+    },
+    "./shiki": {
+      "types": "./dist/shiki.d.ts",
+      "import": "./dist/shiki.js",
+      "default": "./dist/shiki.js"
+    },
+    "./shiki.css": "./src/shiki.css",
+    "./syntaxes/master-css.tmLanguage.json": "./syntaxes/master-css.tmLanguage.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/*.css",
+    "syntaxes"
   ],
   "publishConfig": {
     "access": "public",

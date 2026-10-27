@@ -1,0 +1,27 @@
+[
+  {
+    "page": "flex-grow",
+    "id": "let-an-item-grow",
+    "title": "Let an item grow",
+    "html": [
+      "<div id=\"layout\" class=\"display:flex gap-md\">\n  <div id=\"target\" class=\"flex-basis:4rem flex-grow:1 height:6rem min-width:0 p-sm\">Grow 1</div>\n  <div id=\"peer\" class=\"flex-basis:4rem flex-grow:2 height:6rem min-width:0 p-sm\">Grow 2</div>\n</div>"
+    ],
+    "css": "",
+    "classes": [
+      "display:flex",
+      "gap-md",
+      "flex-basis:4rem",
+      "flex-grow:1",
+      "height:6rem",
+      "min-width:0",
+      "p-sm",
+      "flex-grow:2"
+    ],
+    "classLists": [
+      "display:flex gap-md",
+      "flex-basis:4rem flex-grow:1 height:6rem min-width:0 p-sm",
+      "flex-basis:4rem flex-grow:2 height:6rem min-width:0 p-sm"
+    ],
+    "highlighted": []
+  }
+]

@@ -1,0 +1,375 @@
+## Overview [sr-only]
+Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, named media and reusable mixins, generated class vocabulary, and native CSS that belongs to the whole app.
+
+Most applications should have exactly one app stylesheet that starts with the default Master CSS entry:
+
+```css name=app.css
+@import "@master/css";
+```
+
+That import marks the file as a full Master CSS entry. It loads the package stylesheet graph, declares the stable layer order, includes the preset theme and base styles, and gives integrations the stylesheet that receives generated CSS.
+
+---
+
+## Entry stylesheet
+Use the app stylesheet for project-wide styling inputs:
+
+```css name=app.css
+@import "@master/css";
+
+@theme {
+  --color-brand: var(--color-blue-60);
+  --spacing-action-x: 1rem;
+ }
+
+@custom-media --motion-safe (prefers-reduced-motion: no-preference);
+```
+
+Load this stylesheet once from the app root, framework layout, or build entry. Do not import it again from page-level CSS. A second import duplicates global native CSS and makes ownership harder to trace.
+
+Use `@reference` when a local stylesheet needs definition context without delivering the referenced native CSS.
+
+---
+
+## Base layer
+The default entry includes the base layer. Base styles are normalization and document baseline rules emitted before project defaults, components, and utilities.
+
+The package base entry declares the stable layer order:
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+Write browser normalization and structural baselines in `@layer base`. Put broad product choices, such as the page background and text color, in `@layer defaults` so component and utility styles can override them:
+
+```css name=app.css
+@import "@master/css";
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  :where(button, input, textarea, select) {
+    font: inherit;
+  }
+}
+
+@layer defaults {
+  body {
+    background: var(--color-surface-base);
+    color: var(--color-text-body);
+  }
+}
+```
+
+`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography. It leaves document height, text rendering precision, font smoothing and button text selection to the application and platform. Use `min-height:100dvh` for a screen that needs it or `user-select:none` on a particular interaction surface.
+
+Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
+
+```css
+@import "@master/css/base.css";
+```
+
+That is a specialized import. It does not replace the app entry in ordinary projects.
+
+---
+
+## Site typeface
+Treat the app typeface as global vocabulary. Put reusable font families and OpenType feature sets in `@theme`; the default base layer applies them to the inherited document targets for you.
+
+```css name=globals.css
+@import "@master/css";
+
+@theme {
+  --font-sans: "Geist", "Noto Sans TC";
+  --font-mono: "IBM Plex Mono";
+  --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --font-feature-mono: "cv01", "cv02", "cv29";
+ }
+
+```
+
+The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp`, and `pre`. Define `--font-feature-sans` and `--font-feature-mono` when those stacks need shared OpenType features; otherwise the base layer falls back to `normal`. Form controls inherit the surrounding font and feature settings.
+
+Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font-mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
+
+---
+
+## Shared vocabulary
+Reusable styling is an ownership decision. Keep local choices in markup while a pattern is changing. Promote only the part that has become shared.
+
+Use this order:
+
+1. Keep one-off styling in markup utilities.
+2. Give shared product decisions theme tokens; keep independent roles separate even when their current values match.
+3. Write native global CSS for global selectors and app-wide stylesheet surfaces.
+4. Use a static mixin only when a parameterized combination has a clear shared responsibility.
+5. Create component classes for repeated product UI roles.
+6. Write broad native defaults in `@layer defaults`.
+
+Start with utilities when the style belongs to one element or one usage site:
+
+```html
+<button class="display:inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
+  Save changes
+</button>
+```
+
+Do not abstract just to shorten a class list. Abstract when the name improves product vocabulary, such as `btn`, `card`, `field`, `toolbar`, or `empty-state`.
+
+When the repeated part is a value, make it a token instead of a class:
+
+```css name=app.css
+@theme {
+  --color-brand: var(--color-blue-60);
+  --spacing-action-x: 1rem;
+ }
+
+```
+
+```html
+<button class="r-lg fg-white bg-brand px-action-x">
+  Submit
+</button>
+```
+
+Use [Theme Tokens](/guide/theme) for shared colors, spacing, typography, radius, shadow, motion, breakpoints, container sizes, and mode-specific values.
+
+Write native CSS when the selector itself is global output you always ship:
+
+```css name=app.css
+.skip-link {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: var(--color-blue);
+  color: white;
+  transform: translateY(-100%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+```
+
+Native global CSS is emitted as part of the app stylesheet. It is not generated on demand, so use it for global surfaces and selectors that should always exist.
+
+---
+
+## Component classes
+Use native component classes for repeated product roles. Define class selectors in `@layer components` and apply them from markup:
+
+```css name=app.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    background: var(--color-blue);
+    color: white;
+  }
+}
+```
+
+```html
+<button class="btn">Save changes</button>
+```
+
+Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
+
+Keep component classes small enough to combine:
+
+```css name=app.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+
+  .btn-sm {
+    height: 2rem;
+    padding-inline: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+  }
+
+  .btn-md {
+    height: 2.5rem;
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
+  }
+}
+```
+
+```html
+<button class="btn btn-md btn-primary">Submit</button>
+```
+
+Put state behavior inside the component only when it belongs to every usage:
+
+```css name=app.css
+@layer components {
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
+
+    &:hover {
+      background: var(--color-blue-60);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-blue);
+      outline-offset: var(--spacing-4xs);
+    }
+  }
+}
+```
+
+Use markup utilities for one-off variations at a specific call site.
+
+---
+
+## Custom utilities
+Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
+
+```css name=app.css
+@utility flow {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+@utility content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
+@utility print-hidden {
+    @media (--print) {
+      display: none;
+    }
+  }
+```
+
+```html
+<section class="content-auto flow print-hidden">...</section>
+```
+
+Custom utilities are generated only when used. Use them for shared layout helpers, rendering hints, print behavior, or other primitives that should feel like part of the project class language.
+
+Use component classes when the name describes a UI role. Use theme tokens when the reusable part is a value.
+
+---
+
+## Organize global files
+Split global CSS files by ownership, then import them from the app entry. Imported CSS becomes one project entry graph.
+
+```txt
+styles/
+  app.css
+  theme.css
+  base.css
+  buttons.css
+```
+
+```css name=styles/app.css
+@import "@master/css";
+@import "./theme.css";
+@import "./base.css";
+@import "./buttons.css";
+```
+
+```css name=styles/buttons.css
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
+  }
+}
+```
+
+Keep project-wide tokens, named conditions, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Route-level styles](/guide/route-level-styles), and promote them here only after they become shared.
+
+Use native declarations and selectors for component styles. Share design values through CSS custom properties; use shared native classes or component interfaces for common behavior.
+
+
+## Keep responsibilities clear when editing
+
+In this panel, local adjustments stay in markup, colors carry product roles, the container controls layout, and shared button behavior lives in native CSS. The stack recipe has one explicit parameter. Progress changes through a custom property, so it does not need new class names or runtime compilation.
+
+```css name=maintenance.css
+@import '@master/css';
+
+@theme {
+  --color-brand: #4f46e5;
+  --color-information: #4f46e5;
+}
+
+@utility panel-stack(--gap <number>: 1) {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 1rem);
+}
+
+@layer components {
+  .card-region { container-type: inline-size; }
+  .card { display: grid; gap: 1rem; }
+  @container (width >= 30rem) {
+    .card { grid-template-columns: 1fr 1fr; }
+  }
+  .button {
+    padding: .625rem 1rem;
+    background-color: var(--color-brand);
+    color: white;
+  }
+  .button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  .button:disabled { opacity: .5; cursor: not-allowed; }
+  .progress-fill {
+    transform-origin: left;
+    transform: scaleX(var(--progress, 0));
+    transition: transform 150ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress-fill { transition: none; }
+  }
+}
+
+[data-theme='dark'] { --color-brand: #818cf8; color-scheme: dark; }
+```
+
+```html name=maintenance.html&verify=compile
+<section class="card-region p-lg">
+  <article class="card">
+    <div class="panel-stack(1.5)">
+      <h2 class="margin:0 fg-brand">Workspace</h2>
+      <p class="fg-information">Your files stay available during updates.</p>
+      <button class="button" type="button" disabled>Saving</button>
+    </div>
+    <div aria-hidden="true">
+      <div class="progress-fill height:.5rem bg-brand" style="--progress:.4"></div>
+    </div>
+  </article>
+</section>
+```
+
+Change `--color-brand` without changing `--color-information`, even though they start with the same value. The dark override is a separate product decision. Update `--progress` from application state; use semantic progress text or a native progress element when the value must be communicated to users. A style or token name cannot establish accessible interaction behavior.
+
+Use the same card in different container widths and verify it in the browser. For token and recipe edits, the [project comparison workflow](/guide/ai-coding#review-the-second-change) identifies known consumers and discloses the limits of static analysis.
