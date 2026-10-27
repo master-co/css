@@ -44,7 +44,7 @@ session, and live CSS state are internal.
 - Injecting into documents without `<head>` or `<html>`.
 - Serialization preserving source expectations.
 - Fixture `generated.css` output changes.
-- Hydration manifest v5 `classNames`: rendered rule-producing classes in rule order, rendered classes without rules, then rule-free classes referenced by project selectors (`EngineSession::selector_class_names_without_rules()`, computed once per render session). A missing class makes a progressive page start its runtime engine; a reordered one changes resource discovery. Whether to inject or externalize the manifest follows the snapshot's rules.
+- Hydration manifest v5 `classNames`: rendered rule-producing classes in rule order, rendered classes without rules, rule-free classes referenced by the page's generated rule `selectorText` (`EngineSession::class_names_without_rules_in()`), then rule-free classes referenced by project selectors (`selector_class_names_without_rules()`, computed once per render session). A missing class makes a progressive page start its runtime engine; a reordered one changes resource discovery. Whether to inject or externalize the manifest follows the snapshot's rules.
 
 ## Constraints
 

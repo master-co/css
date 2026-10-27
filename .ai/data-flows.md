@@ -114,7 +114,7 @@ document or shadow root
   -> MasterCSSRuntime.start({ manifest, emittedGlobals, root, hydrationManifest, engine })
   -> resolve hydration data; defer the engine when style#master-css has a non-empty hydration manifest
   -> runtime.observe()
-  -> deferred: track class counts against the hydration manifest's classNames (rendered classes plus rule-free selector classes); leave the CSSOM untouched
+  -> deferred: track class counts against the hydration manifest's classNames (rendered classes, then rule-free classes in the page's rule selectors and in project selectors); leave the CSSOM untouched
   -> first uncovered class, ready(), rule API, refresh() or idle startup: import the engine and the project manifest
   -> register emitted variable and managed keyframe counts; replace the complete external snapshot on HMR
   -> find or create style#master-css

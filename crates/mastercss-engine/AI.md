@@ -36,7 +36,7 @@ Token utility identity is (form, decoded prefix, namespace); same-branch replace
 
 A token key resolves to its variable on demand through `utility::utility_variable`: explicit aliases first, then each `~namespace` reference in order, where the earliest declared variable whose namespace key is the key wins (`namespace_variable_names` inverts `get_variable_key_by_namespace`, and every candidate is checked forward). `finish_program` builds no per-utility token maps: mapping every variable of every token utility was nearly all of session creation. Tooling lists a utility's tokens with `utility_variable_entries`, which must keep the same precedence.
 
-`selector_class_names_without_rules()` lists classes that theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks) reference without generating rules themselves. Render appends them to hydration manifest `classNames` so client-toggled mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear there.
+`class_names_without_rules_in(selectors)` returns the classes in the given selectors that generate no rules themselves. Render applies it to the page's generated rule `selectorText` (state classes such as `active`) and, through `selector_class_names_without_rules()`, to theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks). Both lists follow the rendered classes in hydration manifest `classNames`, so client-toggled state and mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear in either.
 
 ## Browser Engine
 
