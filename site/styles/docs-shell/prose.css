@@ -346,13 +346,13 @@
     }
   }
 
-  :is(.code, .codeTabs, .code-wrapper, .site-demo, .doc-table, table, figure:not(.doc-code-example), video, iframe):is(
+  /* Demos bleed the same way from demo.css, so routes without demos ship no demo selectors. */
+  :is(.code, .codeTabs, .code-wrapper, .doc-table, table, figure:not(.doc-code-example), video, iframe):is(
     .prose > *,
     .prose > :is(div, section, site-island):not([class]) > *,
     .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
   ),
-  .prose > .doc-code-example .doc-code-example-part,
-  .prose > .step-section > .site-demo {
+  .prose > .doc-code-example .doc-code-example-part {
     --prose-table-gutter: var(--prose-bleed);
     margin-inline: calc(var(--prose-bleed) * -1);
 
@@ -362,13 +362,9 @@
     }
   }
 
-  .prose .site-demo table {
-    --prose-table-gutter: 0rem;
-  }
-
   /* Below --sm the bleed reaches the viewport edge, so framed surfaces drop their side frame. */
   @media (width < 52.125rem) {
-    :is(.code, .codeTabs, .code-wrapper, .site-demo):is(
+    :is(.code, .codeTabs, .code-wrapper):is(
       .prose > *,
       .prose > figure > *,
       .prose > :is(div, section, site-island):not([class]) > *,

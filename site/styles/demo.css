@@ -8,6 +8,34 @@
     background: var(--color-demo-canvas);
     text-align: start;
   }
+
+  /* Demos in prose bleed past the text column with the other wide surfaces in prose.css. */
+  .site-demo:is(
+    .prose > *,
+    .prose > :is(div, section, site-island):not([class]) > *,
+    .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *,
+    .prose > .step-section > *
+  ) {
+    --prose-table-gutter: var(--prose-bleed);
+    margin-inline: calc(var(--prose-bleed) * -1);
+  }
+
+  .prose .site-demo table {
+    --prose-table-gutter: 0rem;
+  }
+
+  @media (width < 52.125rem) {
+    .site-demo:is(
+      .prose > *,
+      .prose > figure > *,
+      .prose > :is(div, section, site-island):not([class]) > *,
+      .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *,
+      .prose > .step-section > *
+    ) {
+      border-inline-width: 0;
+      border-radius: 0;
+    }
+  }
   .demo-header {
     display: flex;
     align-items: center;
