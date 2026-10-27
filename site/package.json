@@ -18,6 +18,7 @@
     "translate:site": "tsx scripts/translate-site.ts",
     "audit:i18n": "tsx scripts/audit-i18n.ts",
     "preview:cloudflare-pages": "pnpm build:cloudflare-pages && wrangler pages dev site/out --cwd ..",
+    "test:home": "tsx --test content/components/home-content.test.ts",
     "test:image-loader": "tsx --test utils/cloudflare-image-loader.test.ts",
     "test:public-env": "tsx --test utils/public-env.test.ts",
     "test:islands": "tsx --test islands/islands.test.tsx",
