@@ -31,6 +31,21 @@
   --color-gray-95: oklch(18.5% 0 none);
   --color-gray-100: oklch(14.5% 0 none);
 
+  /* zinc */
+  --color-zinc-0: oklch(98.6% 0.0015 265);
+  --color-zinc-5: oklch(96.5% 0.0022 265);
+  --color-zinc-10: oklch(93.2% 0.003 265);
+  --color-zinc-20: oklch(86.8% 0.0042 265);
+  --color-zinc-30: oklch(78% 0.0052 265);
+  --color-zinc-40: oklch(68.6% 0.0058 265);
+  --color-zinc-50: oklch(58% 0.006 265);
+  --color-zinc-60: oklch(48.6% 0.006 265);
+  --color-zinc-70: oklch(39.8% 0.0056 265);
+  --color-zinc-80: oklch(31.4% 0.005 265);
+  --color-zinc-90: oklch(24.6% 0.0044 265);
+  --color-zinc-95: oklch(19.4% 0.0038 265);
+  --color-zinc-100: oklch(15% 0.0032 265);
+
   /* neutral */
   --color-neutral-0: oklch(98.38% 0.0033 250);
   --color-neutral-5: oklch(96.8% 0.0048 253);
@@ -336,6 +351,7 @@
 @theme {
   --color-stone: var(--color-stone-30);
   --color-gray: var(--color-gray-30);
+  --color-zinc: var(--color-zinc-30);
   --color-neutral: var(--color-neutral-30);
   --color-slate: var(--color-slate-30);
   --color-brown: var(--color-brown-40);
@@ -356,23 +372,24 @@
   --color-pink: var(--color-pink-60);
   --color-crimson: var(--color-crimson-60);
   --color-red: var(--color-red-60);
-  --color-surface-base: light-dark(var(--color-neutral-0), var(--color-gray-95));
-  --color-surface-inset: light-dark(var(--color-neutral-5), var(--color-gray-100));
-  --color-surface-raised: light-dark(var(--color-white), var(--color-gray-90));
-  --color-surface-floating: light-dark(var(--color-white), var(--color-gray-80));
+  --color-surface-base: light-dark(var(--color-zinc-0), var(--color-zinc-95));
+  --color-surface-inset: light-dark(var(--color-zinc-5), var(--color-zinc-100));
+  --color-surface-raised: light-dark(var(--color-white), var(--color-zinc-90));
+  --color-surface-floating: light-dark(var(--color-white), var(--color-zinc-80));
   --color-surface-inverse: light-dark(var(--color-black), var(--color-white));
   --color-line-divider: light-dark(oklch(0% 0 none / 0.12), oklch(100% 0 none / 0.12));
-  --color-line-control: light-dark(var(--color-neutral-50), var(--color-gray-40));
+  --color-line-control: light-dark(var(--color-zinc-50), var(--color-zinc-40));
   --color-line-subtle: light-dark(oklch(0% 0 none / 0.06), oklch(100% 0 none / 0.06));
-  --color-text-body: light-dark(var(--color-neutral-70), var(--color-gray-30));
-  --color-text-strong: light-dark(var(--color-neutral-100), var(--color-white));
-  --color-text-muted: light-dark(var(--color-neutral-60), var(--color-gray-40));
-  --color-text-disabled: light-dark(var(--color-neutral-40), var(--color-gray-60));
+  --color-text-body: light-dark(var(--color-zinc-70), var(--color-zinc-30));
+  --color-text-strong: light-dark(var(--color-zinc-100), var(--color-white));
+  --color-text-muted: light-dark(var(--color-zinc-60), var(--color-zinc-40));
+  --color-text-disabled: light-dark(var(--color-zinc-40), var(--color-zinc-60));
   --color-text-inverse: light-dark(var(--color-white), var(--color-black));
   --color-text-link: light-dark(var(--color-blue-60), var(--color-blue-30));
   --color-text-link-hover: light-dark(var(--color-blue-70), var(--color-blue-20));
   --color-text-stone: light-dark(var(--color-stone-60), var(--color-stone-30));
   --color-text-gray: light-dark(var(--color-gray-60), var(--color-gray-30));
+  --color-text-zinc: light-dark(var(--color-zinc-60), var(--color-zinc-30));
   --color-text-neutral: light-dark(var(--color-neutral-60), var(--color-neutral-30));
   --color-text-slate: light-dark(var(--color-slate-60), var(--color-slate-30));
   --color-text-brown: light-dark(var(--color-brown-60), var(--color-brown-30));

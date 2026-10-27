@@ -6,18 +6,18 @@ import source from '../src/default-manifest.json' with { type: 'json' }
 
 const variables = flattenMasterCSSManifestVariables((source as unknown as MasterCSSManifest).variables)
 
-test('preserves all 286 fixed palette values', () => {
+test('preserves all 299 fixed palette values', () => {
   const css = readFileSync(new URL('../src/colors.css', import.meta.url), 'utf8')
   const values = [...css.matchAll(/(--color-[a-z]+-\d+):\s*([^;]+);/g)].sort((a, b) => a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0).map(([, name, value]) => `${name}:${value}`)
-  expect(values).toHaveLength(286)
-  expect(createHash('sha256').update(values.join('\n')).digest('hex')).toBe('22f6bfc103d65b37af7c934c226bb514c27362e0382a1cb82b65e30d7f8e21b0')
+  expect(values).toHaveLength(299)
+  expect(createHash('sha256').update(values.join('\n')).digest('hex')).toBe('86b5d3ab58489272e0047d9031c21e10886b39cb32ed10804d2c9e2f51fb355f')
 })
 
-test('has exactly 37 adaptive semantic colors and 22 fixed hue aliases', () => {
+test('has exactly 38 adaptive semantic colors and 23 fixed hue aliases', () => {
   const adaptive = variables.filter(v => v.name?.startsWith('color-') && v.values.some(entry => entry.value.startsWith('light-dark(')))
-  expect(adaptive).toHaveLength(37)
+  expect(adaptive).toHaveLength(38)
   const hues = variables.filter(v => v.namespace === 'color' && /^[a-z]+$/.test(v.key) && !['white', 'black', 'current'].includes(v.key))
-  expect(hues).toHaveLength(22)
+  expect(hues).toHaveLength(23)
   for (const variable of [...adaptive, ...hues]) {
     expect(variable.values).toHaveLength(1)
     expect(variable.values[0].path).toEqual([':root,:host'])

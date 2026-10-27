@@ -115,18 +115,18 @@ fn native_light_dark_keeps_both_branches_until_the_last_consumer_is_removed() {
         .ensure_class_rules(["bg-surface-base", "fg-text-body"])
         .unwrap();
     let css = engine.css_text();
-    assert!(css.contains("light-dark(var(--color-neutral-0), var(--color-gray-95))"));
+    assert!(css.contains("light-dark(var(--color-zinc-0), var(--color-zinc-95))"));
     for name in [
-        "color-neutral-0",
-        "color-gray-95",
-        "color-neutral-70",
-        "color-gray-30",
+        "color-zinc-0",
+        "color-zinc-95",
+        "color-zinc-70",
+        "color-zinc-30",
     ] {
         assert!(css.contains(&format!("--{name}:")), "{name}");
     }
     engine.delete_class_rules(["bg-surface-base"]).unwrap();
-    assert!(!engine.css_text().contains("--color-gray-95:"));
-    assert!(engine.css_text().contains("--color-gray-30:"));
+    assert!(!engine.css_text().contains("--color-zinc-95:"));
+    assert!(engine.css_text().contains("--color-zinc-30:"));
     engine.delete_class_rules(["fg-text-body"]).unwrap();
     assert!(engine.css_text().is_empty());
 }

@@ -76,7 +76,9 @@ The preset contains 119 direct-value utilities and seven other recipes. `r-pill`
 
 ## Palette boundary
 
-`colors.css` defines exactly 22 families of 13 steps, one fixed alias per family, one `--color-text-<family>` alias per family, and the surface, line and text roles. The preset palette is a functional baseline, not a curated collection; aesthetic or material palettes belong in project `@theme` tokens. A new default family must be perceptually distinct from every existing family across its steps, must not take a name whose established CSS named-color or ecosystem palette meaning differs from its values, and must serve a role that project tokens or relative color syntax cannot. The eight unreleased natural material families were removed under this rule.
+`colors.css` defines exactly 23 families of 13 steps, one fixed alias per family, one `--color-text-<family>` alias per family, and the surface, line and text roles. The preset palette is a functional baseline, not a curated collection; aesthetic or material palettes belong in project `@theme` tokens. A new default family must be perceptually distinct from every existing family across its steps, must not take a name whose established CSS named-color or ecosystem palette meaning differs from its values, and must serve a role that project tokens or relative color syntax cannot. The eight unreleased natural material families were removed under this rule.
+
+`zinc` is the one deliberate exception to step-by-step distinctness: it is the interface neutral that the default surface, line and text roles use. It sits between achromatic `gray` and the bluer `neutral` with a faint metallic cast (hue 265, chroma at most 0.006) and a lightness curve tuned for surfaces, denser at the light end. `tests/design-tokens.test.ts` holds that cast, the monotonic lightness and the WCAG contrast of the default roles; change those roles only with the contrast checks.
 
 ## Conditions and wrappers
 

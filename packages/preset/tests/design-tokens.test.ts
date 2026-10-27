@@ -17,11 +17,31 @@ function varDependencyName(value: string) {
   return value.match(/^var\(--([A-Za-z0-9_-]+)\)$/)?.[1]
 }
 
+/** WCAG relative luminance of an `oklch(L% C H)` token value. */
+function oklchLuminance(value: string) {
+  const [, lightness, chroma, hue] = value.match(/^oklch\(([\d.]+)% ([\d.]+) ([\d.]+)\)$/)!.map(Number)
+  const l = lightness / 100
+  const a = chroma * Math.cos(hue * Math.PI / 180)
+  const b = chroma * Math.sin(hue * Math.PI / 180)
+  const lms = [l + 0.3963377774 * a + 0.2158037573 * b, l - 0.1055613458 * a - 0.0638541728 * b, l - 0.0894841775 * a - 1.291485548 * b].map((channel) => channel ** 3)
+  const rgb = [
+    4.0767416621 * lms[0] - 3.3077115913 * lms[1] + 0.2309699292 * lms[2],
+    -1.2684380046 * lms[0] + 2.6097574011 * lms[1] - 0.3413193965 * lms[2],
+    -0.0041960863 * lms[0] - 0.7034186147 * lms[1] + 1.707614701 * lms[2]
+  ]
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]
+}
+
+function contrast(foreground: string, background: string) {
+  const [lighter, darker] = [oklchLuminance(foreground), oklchLuminance(background)].sort((a, b) => b - a)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
 const textRoleAliases = [
-  ['body', 'var(--color-neutral-70)', 'var(--color-gray-30)'],
-  ['strong', 'var(--color-neutral-100)', 'var(--color-white)'],
-  ['muted', 'var(--color-neutral-60)', 'var(--color-gray-40)'],
-  ['disabled', 'var(--color-neutral-40)', 'var(--color-gray-60)'],
+  ['body', 'var(--color-zinc-70)', 'var(--color-zinc-30)'],
+  ['strong', 'var(--color-zinc-100)', 'var(--color-white)'],
+  ['muted', 'var(--color-zinc-60)', 'var(--color-zinc-40)'],
+  ['disabled', 'var(--color-zinc-40)', 'var(--color-zinc-60)'],
   ['inverse', 'var(--color-white)', 'var(--color-black)'],
   ['link', 'var(--color-blue-60)', 'var(--color-blue-30)'],
   ['link-hover', 'var(--color-blue-70)', 'var(--color-blue-20)']
@@ -29,7 +49,7 @@ const textRoleAliases = [
 
 const lineRoleAliases = [
   ['color-line-divider', 'color-line', 'divider', 'oklch(0% 0 none / .12)', 'oklch(100% 0 none / .12)'],
-  ['color-line-control', 'color-line', 'control', 'var(--color-neutral-50)', 'var(--color-gray-40)'],
+  ['color-line-control', 'color-line', 'control', 'var(--color-zinc-50)', 'var(--color-zinc-40)'],
   ['color-line-subtle', 'color-line', 'subtle', 'oklch(0% 0 none / .06)', 'oklch(100% 0 none / .06)']
 ] as const
 
@@ -54,6 +74,7 @@ const darkShadowEdges = [
 const baseHueAliases = [
   ['stone', 'var(--color-stone-30)', 'var(--color-stone-40)'],
   ['gray', 'var(--color-gray-30)', 'var(--color-gray-40)'],
+  ['zinc', 'var(--color-zinc-30)', 'var(--color-zinc-40)'],
   ['neutral', 'var(--color-neutral-30)', 'var(--color-neutral-40)'],
   ['slate', 'var(--color-slate-30)', 'var(--color-slate-40)'],
   ['brown', 'var(--color-brown-40)', 'var(--color-brown-50)'],
@@ -79,6 +100,7 @@ const baseHueAliases = [
 const textHueAliases = [
   ['stone', 'var(--color-stone-60)', 'var(--color-stone-30)'],
   ['gray', 'var(--color-gray-60)', 'var(--color-gray-30)'],
+  ['zinc', 'var(--color-zinc-60)', 'var(--color-zinc-30)'],
   ['neutral', 'var(--color-neutral-60)', 'var(--color-neutral-30)'],
   ['slate', 'var(--color-slate-60)', 'var(--color-slate-30)'],
   ['brown', 'var(--color-brown-60)', 'var(--color-brown-30)'],
@@ -167,12 +189,34 @@ describe.concurrent('@master/css-preset design token parity', () => {
     })
   })
 
+  test('keeps zinc a near-neutral interface gray', () => {
+    const levels = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+    const values = levels.map((level) => findVariable(`color-zinc-${level}`)!.values[0].value as string)
+    const parts = values.map((value) => value.match(/^oklch\(([\d.]+)% ([\d.]+) 265\)$/)?.slice(1).map(Number))
+    expect(parts.every(Boolean), values.join(', ')).toBe(true)
+    for (const [index, [lightness, chroma]] of (parts as [number, number][]).entries()) {
+      expect(chroma, `zinc-${levels[index]}`).toBeGreaterThan(0)
+      expect(chroma, `zinc-${levels[index]}`).toBeLessThanOrEqual(0.006)
+      if (index) expect(lightness, `zinc-${levels[index]}`).toBeLessThan(parts[index - 1]![0])
+    }
+    const zinc = (level: number) => values[levels.indexOf(level)]
+    // Default text roles keep WCAG AA on the default surfaces in both schemes.
+    expect(contrast(zinc(60), zinc(0))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(zinc(60), zinc(5))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(zinc(70), zinc(0))).toBeGreaterThanOrEqual(7)
+    expect(contrast(zinc(40), zinc(95))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(zinc(40), zinc(80))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(zinc(30), zinc(95))).toBeGreaterThanOrEqual(7)
+    expect(contrast(zinc(50), zinc(0))).toBeGreaterThanOrEqual(3)
+    expect(contrast(zinc(40), zinc(95))).toBeGreaterThanOrEqual(3)
+  })
+
   test('keeps surface color roles mode-specific', () => {
     const surfaceAliases = [
-      ['base', 'var(--color-neutral-0)', 'var(--color-gray-95)'],
-      ['inset', 'var(--color-neutral-5)', 'var(--color-gray-100)'],
-      ['raised', 'var(--color-white)', 'var(--color-gray-90)'],
-      ['floating', 'var(--color-white)', 'var(--color-gray-80)'],
+      ['base', 'var(--color-zinc-0)', 'var(--color-zinc-95)'],
+      ['inset', 'var(--color-zinc-5)', 'var(--color-zinc-100)'],
+      ['raised', 'var(--color-white)', 'var(--color-zinc-90)'],
+      ['floating', 'var(--color-white)', 'var(--color-zinc-80)'],
       ['inverse', 'var(--color-black)', 'var(--color-white)']
     ] as const
 
