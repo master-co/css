@@ -153,4 +153,4 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 </h1>
 ```
 
-Progressive rendering sends the first response with `style#master-css`, then the runtime reads the injected hydration manifest and keeps handling classes added after the initial response. The manifest loader keeps the project manifest out of the first page load: the runtime imports it, together with its engine and Wasm, only when a class outside the hydration manifest appears. Use [Express static rendering](/guide/installation/express) when templates contain complete class strings and you want a generated CSS asset instead.
+Progressive rendering sends the first response with `style#master-css`, then the runtime reads the injected hydration manifest and keeps handling classes added after the initial response. The manifest loader keeps the project manifest out of the first page load: the runtime imports it, together with its engine, only when a class outside the hydration manifest appears. Use [Express static rendering](/guide/installation/express) when templates contain complete class strings and you want a generated CSS asset instead.

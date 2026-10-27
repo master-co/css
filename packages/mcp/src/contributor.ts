@@ -96,6 +96,7 @@ const HIGH_RISK_PACKAGES: Record<string, PackageRisk> = {
   preset: { id: 'css-output', severity: 'warning', reason: 'default preset and generated manifest output' },
   compiler: { id: 'css-output', severity: 'high', reason: 'CSS-first lowering, project loading, and stylesheet composition' },
   tooling: { id: 'tooling', severity: 'high', reason: 'extraction, scanning, validation, lint, and language analysis' },
+  'engine-js': { id: 'css-output', severity: 'high', reason: 'browser engine CSS output, which the differential keeps identical to Rust' },
   runtime: { id: 'runtime', severity: 'high', reason: 'runtime hydration, CSSOM insertion, and DOM observation' },
   server: { id: 'server', severity: 'warning', reason: 'server rendering and generated CSS injection' },
   'language-service': { id: 'language-service', severity: 'warning', reason: 'completion, hover, colors, and semantic token features' },
@@ -103,7 +104,7 @@ const HIGH_RISK_PACKAGES: Record<string, PackageRisk> = {
   'eslint-plugin': { id: 'eslint-plugin', severity: 'warning', reason: 'ESLint parser support, diagnostics, and autofix ranges' },
   native: { id: 'native', severity: 'high', reason: 'native ABI loading and target artifact delivery' },
   'binding-wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
-  'binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'runtime Wasm ABI and browser delivery' },
+  'binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'engine Wasm ABI and Node delivery' },
   'binding-wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' }
 }
 
@@ -119,7 +120,7 @@ const HIGH_RISK_CRATES: Record<string, PackageRisk> = {
   'mastercss-language': { id: 'language-service', severity: 'high', reason: 'canonical UTF-16 language analysis and edit IR' },
   'mastercss-render': { id: 'server', severity: 'warning', reason: 'server rendering and hydration IR' },
   'mastercss-binding-native': { id: 'native', severity: 'high', reason: 'native ABI adaptation and artifact delivery' },
-  'mastercss-binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'runtime engine Wasm ABI and browser payload' },
+  'mastercss-binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'engine Wasm ABI and Node payload' },
   'mastercss-binding-wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
   'mastercss-binding-wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' },
   xtask: { id: 'parity-codegen', severity: 'warning', reason: 'generated protocols, artifacts, and parity evidence' }
@@ -132,6 +133,7 @@ const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
   compiler: ['.ai/context/css-output.md', '.ai/context/package-boundaries.md'],
   tooling: ['.ai/context/package-boundaries.md', '.ai/context/testing.md', '.ai/context/css-output.md'],
   integration: ['.ai/context/package-boundaries.md'],
+  'engine-js': ['.ai/context/css-output.md', '.ai/context/performance.md'],
   runtime: ['.ai/context/css-output.md', '.ai/context/performance.md'],
   server: ['.ai/context/css-output.md'],
   native: ['.ai/context/package-boundaries.md', '.ai/context/testing.md'],

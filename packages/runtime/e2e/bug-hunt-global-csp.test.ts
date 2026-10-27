@@ -4,7 +4,7 @@ import { createEngineSync } from '@master/css/node'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-test('BH-0008 built global runtime hydrates and updates under CSP without unsafe-eval', async ({ page }) => {
+test('BH-0008 built global runtime hydrates and updates under CSP without unsafe-eval or wasm-unsafe-eval', async ({ page }) => {
   const engine = createEngineSync({ manifest: defaultManifest as unknown as MasterCSSManifest })
   let text: string
   let hydration: string
@@ -28,12 +28,11 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
     const assets: Record<string, { contentType: string, body: string | Buffer }> = {
       '/runtime/global.min.js': { contentType: 'text/javascript', body: readFileSync(new URL('../dist/global.min.js', import.meta.url)) },
       '/runtime/default-program.bin': { contentType: 'application/octet-stream', body: readFileSync(new URL('../dist/default-program.bin', import.meta.url)) },
-      '/artifacts/mastercss_binding_wasm_engine_bg.wasm': { contentType: 'application/wasm', body: readFileSync(new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url)) },
       '/hydration.json': { contentType: 'application/json', body: hydration }
     }
     if (path === '/') return route.fulfill({
       contentType: 'text/html',
-      headers: { 'Content-Security-Policy': "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; connect-src 'self'" },
+      headers: { 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'" },
       body: `<!doctype html><html><head><style id="master-css" data-master-css-hydration-manifest="/hydration.json">${text}</style><script defer src="/runtime/global.min.js"></script></head><body><div id="probe" class="display:block"></div></body></html>`
     })
     return route.fulfill(assets[path] ?? { status: 404, body: 'not found' })
@@ -47,6 +46,7 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
   await expect(page.locator('#probe')).toHaveCSS('display', 'none')
   expect(await page.evaluate(() => globalThis.masterCSSRuntime!.snapshot().usageCounts)).toEqual({ 'display:none': 1 })
   expect(requests.filter(path => path === '/hydration.json')).toHaveLength(1)
+  expect(requests.filter(path => path.endsWith('.wasm'))).toEqual([])
   expect(await page.evaluate(() => (globalThis as typeof globalThis & { auditCSPViolations: string[] }).auditCSPViolations)).toEqual([])
   expect(errors).toEqual([])
   await page.evaluate(() => globalThis.masterCSSRuntime!.dispose())

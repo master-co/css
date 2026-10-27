@@ -1,11 +1,9 @@
 import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
 
-const runtimeArtifactModule = fileURLToPath(new URL('../binding-wasm-engine/src/runtime-artifact.ts', import.meta.url))
-const globalRuntimeArtifact = '\0master-css-global-runtime-artifact'
-
+// Browsers execute programs with the JavaScript engine the binding's browser entry
+// creates sessions from; both are bundled from source.
 const browserBindingLoader = {
   name: 'browser-binding-loader',
   resolveId: {
@@ -17,38 +15,10 @@ const browserBindingLoader = {
           import.meta.url
         ))
       }
-      if (source === '@master/css-binding-wasm-engine') {
-        return fileURLToPath(new URL(
-          '../binding-wasm-engine/src/provider.ts',
-          import.meta.url
-        ))
+      if (source === '@master/css-engine-js') {
+        return fileURLToPath(new URL('../engine-js/src/index.ts', import.meta.url))
       }
     }
-  }
-}
-
-// The CDN serves the runtime Wasm from this package's `artifacts/` beside `dist/`,
-// so the global bundle resolves it against its script URL instead of the binding's.
-const globalRuntimeArtifactLoader = {
-  name: 'global-runtime-artifact-loader',
-  resolveId: {
-    order: 'pre' as const,
-    handler(source: string, importer?: string) {
-      if (importer && resolve(dirname(importer), `${source}.ts`) === runtimeArtifactModule) {
-        return globalRuntimeArtifact
-      }
-    }
-  },
-  load(id: string) {
-    if (id !== globalRuntimeArtifact) return
-    const bindings = fileURLToPath(new URL(
-      '../binding-wasm-engine/artifacts/runtime/mastercss_binding_wasm_engine.js',
-      import.meta.url
-    ))
-    return [
-      'export const runtimeWasmURL = new URL(\'../artifacts/mastercss_binding_wasm_engine_bg.wasm\', import.meta.url)',
-      `export const loadRuntimeBindings = () => import(${JSON.stringify(bindings)})`
-    ].join('\n')
   }
 }
 
@@ -125,24 +95,19 @@ export default defineConfig([
       'global.min': 'src/global.min.ts'
     },
     platform: 'browser',
-    // The inlined engine initializes lazily, after document.currentScript is
-    // cleared; capture the script URL while the bundle first runs.
-    define: {
-      'import.meta.url': 'masterCSSRuntimeScriptURL'
-    },
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    plugins: [globalEngineLoader, globalRuntimeArtifactLoader, browserBindingLoader],
+    plugins: [globalEngineLoader, browserBindingLoader],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false
     },
-    minify: true,
+    // CDNs and pages may serve the bundle without a UTF-8 charset.
+    minify: { compress: true, mangle: true, codegen: { asciiOnly: true } },
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false,
-      comments: false,
-      intro: 'const masterCSSRuntimeScriptURL = document.currentScript?.src || globalThis.location.href'
+      comments: false
     }
   }
 ])

@@ -1,5 +1,5 @@
 import { MasterCSSError } from '@master/css-schema'
-import type { MasterCSSResolvedBinding } from '@master/css-binding'
+import type { MasterCSSEngineResolvedBinding } from '@master/css-binding'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
@@ -16,7 +16,7 @@ export default class BoundEngine implements MasterCSSEngine {
   private disposed = false
 
   constructor(
-    public readonly binding: MasterCSSResolvedBinding,
+    public readonly binding: MasterCSSEngineResolvedBinding,
     private readonly session: BindingEngineSession
   ) { }
 

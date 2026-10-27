@@ -1,6 +1,6 @@
-// Size gate prototype for the JS runtime engine plan: the minified JS engine and the
-// CDN default page's total download must each stay within their brotli budgets.
-// Until the runtime switches engines (J5), the CDN total still counts the runtime Wasm.
+// Size gate of the JS runtime engine plan: the minified JS engine and the CDN default
+// page's total download, the global bundle that inlines the engine and the default
+// program it fetches, must each stay within their brotli budgets.
 //
 //   node packages/engine-js/scripts/check-size.mjs [--report]
 import { existsSync, readFileSync } from 'node:fs'
@@ -19,14 +19,13 @@ const BUDGETS = {
 }
 const CDN_FILES = [
   'packages/runtime/dist/global.min.js',
-  'packages/runtime/dist/default-program.bin',
-  'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm'
+  'packages/runtime/dist/default-program.bin'
 ]
 
 const brotli = (source) => brotliCompressSync(source, { params: { [constants.BROTLI_PARAM_QUALITY]: 11 } }).byteLength
 const kb = (bytes) => `${(bytes / 1024).toFixed(1)} KB`
 
-/** Bundles the engine entry the way the CDN global bundle will inline it. */
+/** Bundles the engine entry the way the CDN global bundle inlines it. */
 async function bundleEngine() {
   const bundle = await Rolldown.rolldown({
     input: join(root, 'packages/engine-js/src/index.ts'),

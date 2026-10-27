@@ -942,6 +942,10 @@ importers:
       '@master/css-schema':
         specifier: workspace:*
         version: link:../schema
+    devDependencies:
+      '@master/css-engine-js':
+        specifier: workspace:*
+        version: link:../engine-js
     optionalDependencies:
       '@master/css-binding-darwin-arm64':
         specifier: workspace:*
@@ -1096,6 +1100,8 @@ importers:
       svelte:
         specifier: ^5.57.2
         version: 5.57.2(@typescript-eslint/types@8.69.0)
+
+  packages/engine-js: {}
 
   packages/eslint-config:
     dependencies:

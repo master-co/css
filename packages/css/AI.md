@@ -3,9 +3,11 @@
 ## Responsibility
 
 `@master/css` is the public Manifest v6 execution surface. It binds the canonical Rust
-engine through native or runtime-Wasm bindings and exposes the stable preset CSS
-entrypoints. Engines execute either a manifest, which only Node hosts compile, or a
-runtime program compiled from one; browsers accept only programs.
+engine through native or Wasm bindings in Node, and the JavaScript engine
+(`@master/css-engine-js`, `binding: 'js'`) through the binding's browser entry in
+browsers, and exposes the stable preset CSS entrypoints. Engines execute either a
+manifest, which only Node hosts compile, or a runtime program compiled from one;
+browsers accept only programs.
 
 ## Owns
 
@@ -52,7 +54,7 @@ compatibility subpaths.
 
 ## Risk Areas
 
-- Native/Wasm behavior divergence.
+- Native/Wasm/JavaScript engine behavior divergence; the engine-js differential and `tests/engine/browser-engine-parity.test.ts` guard the browser engine.
 - Engine state disposal and refresh.
 - Generated CSS bytes, layer order, priority, variables, animations, and snapshots.
 - Accidentally widening the public API or pulling tooling/compiler code into runtime

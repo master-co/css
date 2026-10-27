@@ -25,7 +25,7 @@ external data / shared build support
   orchestration.
 - `@master/css-tooling` owns public lexer, source, scanner, validator, lint, language,
   and dependency-light diagnostics sessions.
-- `@master/css-runtime` owns DOM/CSSOM behavior around runtime Wasm.
+- `@master/css-runtime` owns DOM/CSSOM behavior around the browser engine.
 - `@master/css-language-service` owns editor-document mapping and Shiki/TextMate assets.
 - `@master/eslint-plugin-css` owns only ESLint AST and fixer adaptation.
 - `@master/eslint-config-css` remains the deliberate thin public flat-config preset.

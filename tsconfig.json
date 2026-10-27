@@ -28,6 +28,7 @@
       "@master/css-schema/*": [ "./node_modules/@master/css-schema/src/*" ],
       "@master/css-binding-wasm-compiler": [ "./packages/binding-wasm-compiler/src/provider.ts" ],
       "@master/css-binding-wasm-engine": [ "./packages/binding-wasm-engine/src/provider.ts" ],
+      "@master/css-engine-js": [ "./packages/engine-js/src/index.ts" ],
       "@master/css-binding-wasm-tooling": [ "./packages/binding-wasm-tooling/src/provider.ts" ],
       "@master/css-tooling": [ "./node_modules/@master/css-tooling/src" ],
       "@master/css-tooling/*": [ "./node_modules/@master/css-tooling/src/*" ],

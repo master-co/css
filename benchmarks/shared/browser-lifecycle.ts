@@ -1,4 +1,3 @@
-import { readRuntimeWasm, runtimeWasmFile } from './runtime-payload'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -634,17 +633,13 @@ async function writeBrowserLifecyclePage(options: {
   const root = resolve(benchmarkRoot, '.results', 'browser-lifecycle', 'pages', options.variantId)
   await resetDirectory(root)
 
-  const runtimeWasm = options.runtimeJS ? await readRuntimeWasm() : Buffer.alloc(0)
   const files: Record<string, string | Buffer> = {
     'index.html': options.html
   }
 
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
-  if (options.runtimeJS) {
-    files['global.min.js'] = options.runtimeJS
-    files[runtimeWasmFile] = runtimeWasm
-  }
+  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
   if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
 
@@ -660,7 +655,6 @@ async function writeBrowserLifecyclePage(options: {
         externalCSS: Buffer.from(options.externalCSS || ''),
         inlineCSS: Buffer.from(options.inlineCSS || ''),
         runtimeJS: options.runtimeJS || Buffer.alloc(0),
-        runtimeWasm,
         manifestJSON: options.manifestJSON || Buffer.alloc(0),
         hydrationManifestJSON: Buffer.from(options.hydrationManifestJSON || '')
       }),

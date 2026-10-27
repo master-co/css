@@ -60,7 +60,7 @@ Master CSS hands off different files at different points:
 ---
 
 ## Defer runtime engine
-On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module, the Wasm and the project program are requested only when a class that the page hydration manifest does not cover appears.
+On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module and the project program are requested only when a class that the page hydration manifest does not cover appears.
 
 (o) Load the runtime as an ordinary deferred module script.
 ```html
@@ -73,13 +73,12 @@ On a progressive page, the critical CSS is already in `style#master-css`. The ru
 </html>
 ```
 
-(x) Do not preload the runtime, its engine Wasm or the project program in progressive rendering mode. A preload downloads them even when the page never needs the engine.
+(x) Do not preload the runtime or the project program in progressive rendering mode. A preload downloads them even when the page never needs the engine.
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
-  <link rel="preload" as="fetch" type="application/wasm" crossorigin href="/assets/mastercss_binding_wasm_engine_bg.<hash>.wasm"> <!-- [!code --] -->
   <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code --] -->
 </head>
 </html>

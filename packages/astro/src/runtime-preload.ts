@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import { toProgramPreloadLinkTag } from '@master/css-internal/program-module'
 
 const RUNTIME_PROGRAM_REFERENCE_PATTERN = /new URL\((["'])([^"']*master-css-program[^"']*\.bin)\1\s*,\s*import\.meta\.url\)\.href/g
-const RUNTIME_WASM_REFERENCE_PATTERN = /new URL\((["'])([^"']*mastercss_binding_wasm_engine[^"']*\.wasm)\1\s*,\s*import\.meta\.url\)/g
 
 function escapeRegExp(source: string) {
   return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -49,23 +48,10 @@ function toRuntimeScriptPreloadLinkTag(href: string) {
   return `<link rel="modulepreload" crossorigin href="${escapeAttributeValue(href)}">`
 }
 
-function hasRuntimeWasmPreloadLink(html: string, href: string) {
-  const quotedHref = escapeRegExp(href)
-  return new RegExp(
-    String.raw`<link\b(?=[^>]*\brel=(["'])preload\1)(?=[^>]*\bas=(["'])fetch\2)(?=[^>]*\btype=(["'])application/wasm\3)(?=[^>]*\bhref=(["'])${quotedHref}\4)[^>]*>`,
-    'i'
-  ).test(html)
-}
-
-function toRuntimeWasmPreloadLinkTag(href: string) {
-  return `<link rel="preload" as="fetch" type="application/wasm" crossorigin href="${escapeAttributeValue(href)}">`
-}
-
 function injectRuntimePreloads(
   html: string,
   runtimeScriptHref: string | undefined,
-  programHref: string,
-  wasmHref?: string
+  programHref: string
 ) {
   const tags: string[] = []
   if (runtimeScriptHref && !hasRuntimeScriptPreloadLink(html, runtimeScriptHref)) {
@@ -73,9 +59,6 @@ function injectRuntimePreloads(
   }
   if (!hasProgramPreloadLink(html, programHref)) {
     tags.push(toProgramPreloadLinkTag(programHref))
-  }
-  if (wasmHref && !hasRuntimeWasmPreloadLink(html, wasmHref)) {
-    tags.push(toRuntimeWasmPreloadLinkTag(wasmHref))
   }
   if (!tags.length) return html
   return html.replace(/<head\b[^>]*>/i, (openingTag) => `${openingTag}${tags.join('')}`)
@@ -116,28 +99,16 @@ async function findRuntimePreloadAssets(files: string[]) {
       if (!specifier) continue
       const programFile = join(dirname(file), specifier)
       if (await pathExists(programFile)) {
-        let wasmFile: string | undefined
-        for (const wasmMatch of source.matchAll(RUNTIME_WASM_REFERENCE_PATTERN)) {
-          const wasmSpecifier = wasmMatch[2]
-          if (!wasmSpecifier) continue
-          const candidate = join(dirname(file), wasmSpecifier)
-          if (await pathExists(candidate)) {
-            wasmFile = candidate
-            break
-          }
-        }
         return {
           programFile,
-          runtimeScriptFile: file,
-          wasmFile
+          runtimeScriptFile: file
         }
       }
     }
   }
   const programFile = files.find(isProgramAssetFile)
   if (!programFile) return
-  const wasmFile = files.find((file) => basename(file).includes('mastercss_binding_wasm_engine') && file.endsWith('.wasm'))
-  return { programFile, wasmFile }
+  return { programFile }
 }
 
 export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string) {
@@ -149,13 +120,10 @@ export async function preloadAstroRuntimeAssets(dir: URL | string, base?: string
   const runtimeScriptHref = assets.runtimeScriptFile
     ? toPublicAssetHref(root, assets.runtimeScriptFile, base)
     : undefined
-  const wasmHref = assets.wasmFile
-    ? toPublicAssetHref(root, assets.wasmFile, base)
-    : undefined
   const updatedFiles: string[] = []
   for (const htmlFile of files.filter((file) => file.endsWith('.html'))) {
     const html = await readFile(htmlFile, 'utf8')
-    const nextHTML = injectRuntimePreloads(html, runtimeScriptHref, programHref, wasmHref)
+    const nextHTML = injectRuntimePreloads(html, runtimeScriptHref, programHref)
     if (nextHTML === html) continue
     await writeFile(htmlFile, nextHTML)
     updatedFiles.push(htmlFile)

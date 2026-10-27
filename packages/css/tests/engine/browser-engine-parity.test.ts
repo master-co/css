@@ -1,14 +1,14 @@
-import { readFile } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { compileRuntimeProgram, createEngineBindingSession } from '@master/css-binding/engine'
+import { createEngineBindingSession as createBrowserEngineBindingSession } from '../../../binding/src/engine-binding-browser'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import defaultManifest from '@master/css-preset/default-manifest.json'
 
-// Browsers load the engine Wasm built without the binding's `full` feature, while Node
-// tests otherwise exercise the full build. Run the corpus through that runtime build,
+// Browsers execute compiled programs with the JavaScript engine of the binding's browser
+// entry, while Node runs the Rust engine. Run the corpus through the browser entry,
 // executing the program compiled from each manifest against native manifest sessions.
 type EngineParityStep =
   | { op: 'ensure', classes: string[] }
@@ -27,18 +27,10 @@ const corpus = JSON.parse(readFileSync(
   new URL('../../../../parity/v2-language-corpus.json', import.meta.url),
   'utf8'
 )) as { engineCases: EngineParityCase[] }
-const runtimeArtifacts = new URL('../../../binding-wasm-engine/artifacts/runtime/', import.meta.url)
-
-let runtimeWasm: { module: object, input: Uint8Array }
-
-beforeAll(async () => {
+beforeAll(() => {
   process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
     new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
   )
-  runtimeWasm = {
-    module: await import(new URL('mastercss_binding_wasm_engine.js', runtimeArtifacts).href) as object,
-    input: new Uint8Array(await readFile(new URL('mastercss_binding_wasm_engine_bg.wasm', runtimeArtifacts)))
-  }
 })
 
 const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
@@ -47,21 +39,21 @@ afterEach(() => {
   else delete (globalThis as { CSS?: unknown }).CSS
 })
 
-describe('runtime engine Wasm artifact', () => {
-  it('runs without the full feature', async () => {
+describe('browser JavaScript engine', () => {
+  it('executes programs without inspection or manifest compilation', async () => {
     const manifest = defaultManifest as unknown as MasterCSSManifest
-    const runtime = await createEngineBindingSession({
+    const browser = await createBrowserEngineBindingSession({
       program: await compileRuntimeProgram(manifest, { binding: 'native' })
-    }, { binding: 'wasm', wasm: runtimeWasm })
+    })
     try {
-      expect(() => runtime.inspect('block')).toThrowError(expect.objectContaining({
-        code: 'WASM_FEATURE_UNAVAILABLE'
+      expect(browser.binding).toBe('js')
+      expect(() => browser.inspect('block')).toThrowError(expect.objectContaining({
+        code: 'FEATURE_UNAVAILABLE'
       }))
     } finally {
-      runtime.dispose()
+      browser.dispose()
     }
-    await expect(createEngineBindingSession({ manifest }, { binding: 'wasm', wasm: runtimeWasm }))
-      .rejects.toMatchObject({ code: 'WASM_FEATURE_UNAVAILABLE' })
+    await expect(createBrowserEngineBindingSession({ manifest })).rejects.toMatchObject({ code: 'INVALID_INPUT' })
   })
 
   for (const parityCase of corpus.engineCases) {
@@ -75,14 +67,14 @@ describe('runtime engine Wasm artifact', () => {
         : parityCase.manifest
       const { emittedGlobals } = parityCase
       const native = await createEngineBindingSession({ manifest, emittedGlobals }, { binding: 'native' })
-      const runtime = await createEngineBindingSession({
+      const runtime = await createBrowserEngineBindingSession({
         program: await compileRuntimeProgram(manifest, { binding: 'native' }),
         emittedGlobals
-      }, { binding: 'wasm', wasm: runtimeWasm })
+      })
       try {
         expect(runtime.snapshot(), `${parityCase.id}: initial snapshot`).toEqual(native.snapshot())
         for (const step of parityCase.steps) {
-          // Inspection exists only in the full build; the runtime throws WASM_FEATURE_UNAVAILABLE.
+          // Browsers have no inspection; it throws FEATURE_UNAVAILABLE there.
           if (step.op !== 'ensure' && step.op !== 'delete') continue
           const label = `${parityCase.id}: ${step.op} ${step.classes.join(' ')}`
           const method = step.op === 'ensure' ? 'ensureClassRules' : 'deleteClassRules'

@@ -102,7 +102,7 @@ function escape() {
       at++
       if (whitespace === 0x0d && text.charCodeAt(at) === 0x0a) at++
     }
-    return value === 0 || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff) ? '�' : String.fromCodePoint(value)
+    return value === 0 || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff) ? '\ufffd' : String.fromCodePoint(value)
   }
   const character = String.fromCodePoint(text.codePointAt(at)!)
   at += character.length

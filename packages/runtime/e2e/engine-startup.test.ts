@@ -1,15 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
-import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { compileProgram, getRuntimeLoaderURL } from './init'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const wasm = readFileSync(resolve(__dirname, '../artifacts/mastercss_binding_wasm_engine_bg.wasm'))
-const wasmRequest = /mastercss_binding_wasm_engine_bg\.wasm(?:\?.*)?$/
-
 async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
-  const blankURL = new URL('/__master-css-runtime-wasm-startup.html', loaderURL).href
+  const blankURL = new URL('/__master-css-runtime-engine-startup.html', loaderURL).href
   await page.route(blankURL, route => route.fulfill({
     contentType: 'text/html',
     body: '<!doctype html><html hidden><head></head><body><p class="display:block"></p></body></html>'
@@ -17,35 +10,11 @@ async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
   await page.goto(blankURL, { waitUntil: 'domcontentloaded' })
 }
 
-async function startAndCaptureFailure(page: Page, loaderURL: string, startupTimeoutMs?: number) {
-  return await page.evaluate(async ({ loaderURL, startupTimeoutMs }) => {
-    const { startCSSRuntimeAsync } = await import(loaderURL)
-    try {
-      await startCSSRuntimeAsync({ startupTimeoutMs })
-    } catch (error) {
-      return {
-        code: (error as { code?: string }).code,
-        hidden: document.documentElement.hasAttribute('hidden'),
-        runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__)
-      }
-    }
-    throw new Error('Expected runtime startup to fail.')
-  }, { loaderURL, startupTimeoutMs })
-}
-
-test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', async ({ page }) => {
+test('executes the program with the JavaScript engine without fetching Wasm', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
-  const warnings: string[] = []
-  let wasmRequests = 0
-  page.on('console', (message) => {
-    if (message.type() === 'warning') warnings.push(message.text())
-  })
-  await page.route(wasmRequest, route => {
-    wasmRequests++
-    return route.fulfill({
-      contentType: 'application/octet-stream',
-      body: wasm
-    })
+  const wasmRequests: string[] = []
+  page.on('request', (request) => {
+    if (request.url().endsWith('.wasm')) wasmRequests.push(request.url())
   })
   await gotoRuntimeOrigin(page, loaderURL)
 
@@ -59,49 +28,68 @@ test('falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type', 
     }
   }, { loaderURL })
 
-  expect(wasmRequests).toBe(1)
-  expect(warnings.some(message => message.includes('Falling back to `WebAssembly.instantiate`'))).toBe(true)
+  expect(wasmRequests).toEqual([])
   expect(result).toEqual({
-    binding: 'wasm',
+    binding: 'js',
     hidden: false,
     text: "@layer utilities{.display\\:block{display:block}}"
   })
 })
 
-test('fails open when the Wasm asset returns 404', async ({ page }) => {
+test('fails open with the engine diagnostic for an invalid program', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
-  await page.route(wasmRequest, route => route.fulfill({
-    status: 404,
-    contentType: 'text/plain',
-    body: 'not found'
-  }))
   await gotoRuntimeOrigin(page, loaderURL)
 
-  expect(await startAndCaptureFailure(page, loaderURL)).toEqual({
-    code: 'WASM_LOAD_FAILED',
-    hidden: false,
-    runtimeStarted: false
+  expect(await page.evaluate(async ({ loaderURL }) => {
+    await import(loaderURL)
+    const diagnostics: { code: string, domain: string }[] = []
+    try {
+      await globalThis.MasterCSSRuntime.start({
+        program: new Uint8Array([1, 2, 3]),
+        onDiagnostic: ({ code, domain }) => diagnostics.push({ code, domain })
+      })
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        diagnostics,
+        hidden: document.documentElement.hasAttribute('hidden')
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
+  }, { loaderURL })).toEqual({
+    code: 'INVALID_PROGRAM',
+    diagnostics: [{ code: 'INVALID_PROGRAM', domain: 'engine' }],
+    hidden: false
   })
 })
 
-test('fails open when Wasm startup exceeds the configured timeout', async ({ page }) => {
+test('fails open when engine startup exceeds the configured timeout', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
-  await page.route(wasmRequest, async route => {
-    await new Promise(resolve => setTimeout(resolve, 150))
-    await route.fulfill({
-      contentType: 'application/wasm',
-      body: wasm
-    })
-  })
   await gotoRuntimeOrigin(page, loaderURL)
 
-  expect(await startAndCaptureFailure(page, loaderURL, 25)).toEqual({
+  expect(await page.evaluate(async ({ loaderURL, program }) => {
+    await import(loaderURL)
+    try {
+      await globalThis.MasterCSSRuntime.start({
+        program: async () => {
+          await new Promise(resolve => setTimeout(resolve, 150))
+          return program
+        },
+        startupTimeoutMs: 25
+      })
+    } catch (error) {
+      return {
+        code: (error as { code?: string }).code,
+        hidden: document.documentElement.hasAttribute('hidden')
+      }
+    }
+    throw new Error('Expected runtime startup to fail.')
+  }, { loaderURL, program: compileProgram() })).toEqual({
     code: 'RUNTIME_STARTUP_TIMEOUT',
-    hidden: false,
-    runtimeStarted: false
+    hidden: false
   })
   await page.waitForTimeout(175)
-  expect(await page.evaluate(() => Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__))).toBe(false)
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime)).toBeUndefined()
 })
 
 test('disposes an eager engine that resolves before hydration startup times out', async ({ page }) => {
@@ -124,7 +112,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
     document.head.append(style)
     let disposals = 0
     const engine = {
-      binding: 'wasm' as const,
+      binding: 'js' as const,
       ensureClassRules: () => ({ version: 3, mutations: [] }),
       deleteClassRules: () => ({ version: 3, mutations: [] }),
       registerEmittedGlobals: () => ({ version: 3, mutations: [] }),
@@ -141,7 +129,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
       [Symbol.dispose]: () => { disposals++ }
     }
     const binding = {
-      kind: 'wasm' as const,
+      kind: 'js' as const,
       createEngine: async () => engine
     }
     let code: string | undefined
@@ -165,7 +153,7 @@ test('disposes an eager engine that resolves before hydration startup times out'
   expect(result).toEqual({
     code: 'RUNTIME_STARTUP_TIMEOUT',
     disposals: 1,
-    retryBinding: 'wasm'
+    retryBinding: 'js'
   })
 })
 
@@ -177,7 +165,7 @@ test('rejects every pending caller and disposes when emitted globals registratio
     await import(loaderURL)
     let disposals = 0
     const engine = {
-      binding: 'wasm' as const,
+      binding: 'js' as const,
       ensureClassRules: () => ({ version: 3, mutations: [] }),
       deleteClassRules: () => ({ version: 3, mutations: [] }),
       registerEmittedGlobals: () => {
@@ -196,7 +184,7 @@ test('rejects every pending caller and disposes when emitted globals registratio
       [Symbol.dispose]: () => { disposals++ }
     }
     const binding = {
-      kind: 'wasm' as const,
+      kind: 'js' as const,
       createEngine: async () => {
         await new Promise(resolve => setTimeout(resolve, 25))
         return engine
@@ -227,6 +215,6 @@ test('rejects every pending caller and disposes when emitted globals registratio
       { status: 'rejected', message: 'Error: invalid emitted globals' },
       { status: 'rejected', message: 'Error: invalid emitted globals' }
     ],
-    retryBinding: 'wasm'
+    retryBinding: 'js'
   })
 })

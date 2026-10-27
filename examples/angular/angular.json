@@ -22,12 +22,7 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              {
-                "glob": "*.wasm",
-                "input": "node_modules/@master/css-runtime/artifacts",
-                "output": "artifacts"
-              }
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"

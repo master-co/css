@@ -68,6 +68,9 @@
       "path": "./packages/binding-wasm-engine/tsconfig.typecheck.json"
     },
     {
+      "path": "./packages/engine-js/tsconfig.typecheck.json"
+    },
+    {
       "path": "./packages/binding-wasm-tooling/tsconfig.typecheck.json"
     },
     {

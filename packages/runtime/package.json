@@ -50,8 +50,7 @@
     }
   },
   "files": [
-    "dist",
-    "artifacts"
+    "dist"
   ],
   "publishConfig": {
     "access": "public",

@@ -35,7 +35,8 @@ supporting contracts and artifacts, not alternate semantic implementations.
 ## Core Execution
 
 `packages/css` is the public execution surface. Its TypeScript code binds native or
-runtime-Wasm engine sessions and exposes versioned state. The Rust engine owns utility
+Wasm engine sessions in Node, and JavaScript engine (`packages/engine-js`) sessions in
+browsers, and exposes versioned state. The Rust engine owns utility
 matching, value and selector semantics, modes, variables, animations, layer placement,
 priority, and CSS bytes. `packages/css` must not grow config resolution, declarers,
 transformers, or duplicated parsers.
@@ -103,7 +104,7 @@ belong to `@master/css-language-service`, not the editor-neutral tooling core.
 ## Runtime And Server
 
 `packages/runtime` owns browser DOM observation, class reference counts, CSSOM
-mutation, scheduling, hydration, and engine startup around the runtime-Wasm engine
+mutation, scheduling, hydration, and engine startup around the browser engine
 session. Progressive pages defer the engine until a class outside the page hydration
 manifest appears. It must not gain build-time observers, global tooling event buses,
 or configuration loaders.

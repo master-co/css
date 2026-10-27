@@ -7,7 +7,7 @@ const packagesRoot = path.resolve('packages')
 const apiCensusPath = path.resolve('.ai/contracts/api-census.json')
 const textArtifactExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.json'])
 const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
-const forbiddenSpecifierPattern = /@master\/(?:css-internal|css-build-internal|css-internal-integration|css-(?:diagnostics|engine|integration|language|lexer|lint|project|scanner|source|stylesheet|validator)|css\.(?:astro|figma|next|nuxt|svelte|vite|webpack)|css-vs-code)(?=$|[/'"?\s])/g
+const forbiddenSpecifierPattern = /@master\/(?:css-internal|css-build-internal|css-internal-integration|css-(?:diagnostics|engine(?:-js)?|integration|language|lexer|lint|project|scanner|source|stylesheet|validator)|css\.(?:astro|figma|next|nuxt|svelte|vite|webpack)|css-vs-code)(?=$|[/'"?\s])/g
 const forbiddenDeclarationPattern = /\b(?:[A-Za-z_$][\w$]*(?:IR|Ir)|Generated(?:Binding|Module|Session)[A-Za-z_$\d]*)\b/g
 const moduleSpecifierPattern = /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)['"]([^'"]+)['"]/g
 const nodeBuiltins = new Set(

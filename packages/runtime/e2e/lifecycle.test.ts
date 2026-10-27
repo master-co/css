@@ -10,9 +10,9 @@ async function waitForRuntimeRuleFlush(page: Page) {
   }))
 }
 
-test('starts the browser runtime through the Wasm binding', async ({ page }) => {
+test('starts the browser runtime through the JavaScript engine', async ({ page }) => {
   await init(page)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.binding)).toBe('wasm')
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime.binding)).toBe('js')
 })
 
 test('exposes only the frozen runtime facade and immutable snapshot', async ({ page }) => {

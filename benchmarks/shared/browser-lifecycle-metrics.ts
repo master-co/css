@@ -1,4 +1,3 @@
-import { runtimeWasmMetrics } from './runtime-payload'
 import type { BenchmarkMetric } from './types'
 
 export const browserLifecycleMetrics = [
@@ -74,7 +73,6 @@ export const browserLifecycleMetrics = [
     unit: 'B',
     description: 'Brotli bytes for the Master CSS browser runtime bundle.'
   },
-  ...runtimeWasmMetrics,
   {
     id: 'manifest-json-raw-bytes',
     label: 'Manifest JSON raw bytes',

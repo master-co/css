@@ -1,4 +1,3 @@
-import { readRuntimeWasm, runtimeWasmFile } from './runtime-payload'
 import { createServer, type Server } from 'node:http'
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
@@ -388,7 +387,6 @@ async function writeDeliveryModePage(options: {
   const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'master-delivery-modes', 'pages', options.variantId)
   await resetDirectory(root)
 
-  const runtimeWasm = options.runtimeJS ? await readRuntimeWasm() : Buffer.alloc(0)
   const files: Record<string, string | Buffer> = {
     'index.html': options.html
   }
@@ -396,10 +394,7 @@ async function writeDeliveryModePage(options: {
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
-  if (options.runtimeJS) {
-    files['global.min.js'] = options.runtimeJS
-    files[runtimeWasmFile] = runtimeWasm
-  }
+  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS
   if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
 
   await writeWorkspaceFiles(root, files)
@@ -414,7 +409,6 @@ async function writeDeliveryModePage(options: {
         externalCSS: Buffer.from(options.externalCSS || ''),
         inlineCSS: Buffer.from(options.inlineCSS || ''),
         runtimeJS: options.runtimeJS || Buffer.alloc(0),
-        runtimeWasm,
         manifestJSON: options.manifestJSON || Buffer.alloc(0),
         hydrationManifestJSON: Buffer.from(options.hydrationManifestJSON || '')
       }),

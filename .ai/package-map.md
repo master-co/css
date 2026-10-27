@@ -16,7 +16,7 @@
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v6 |
 | `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation |
 | `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
-| `@master/css-binding-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
+| `@master/css-binding-wasm-engine` | `.`, `./wasm` | Engine Wasm artifact loader for Node and non-browser hosts |
 | `@master/css-binding-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
 | `@master/css-binding-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
 

@@ -256,12 +256,12 @@ export function cssEscape(value: string) {
   for (let index = 0; index < value.length; index++) {
     const unit = value.charCodeAt(index)
     const digit = unit >= 0x30 && unit <= 0x39
-    if (unit === 0) result += '�'
+    if (unit === 0) result += '\ufffd'
     else if (unit <= 0x1f || unit === 0x7f || (index === 0 && digit) || (index === 1 && digit && value.charCodeAt(0) === 0x2d)) {
       result += `\\${unit.toString(16)} `
     } else if (unit >= 0x80) {
       // Rust converts each code unit alone, so surrogate halves become U+FFFD.
-      result += unit >= 0xd800 && unit <= 0xdfff ? '�' : value[index]
+      result += unit >= 0xd800 && unit <= 0xdfff ? '\ufffd' : value[index]
     } else if (unit === 0x2d || unit === 0x5f || digit || (unit >= 0x41 && unit <= 0x5a) || (unit >= 0x61 && unit <= 0x7a)) {
       result += value[index]
     } else {

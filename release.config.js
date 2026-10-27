@@ -34,11 +34,6 @@ const config = configure({
           label: 'global-${nextRelease.gitTag}.min.js'
         },
         {
-          path: 'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm',
-          name: 'runtime-${nextRelease.gitTag}.wasm',
-          label: 'runtime-${nextRelease.gitTag}.wasm'
-        },
-        {
           path: 'packages/runtime/dist/default-program.bin',
           name: 'default-program-${nextRelease.gitTag}.bin',
           label: 'default-program-${nextRelease.gitTag}.bin'

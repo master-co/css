@@ -14,7 +14,6 @@ test.each([
   for (const module of [false, true]) {
     const assets: Record<string, { source: () => string }> = {
       'pages/deep/index.html': { source: () => '<html><head></head><body></body></html>' },
-      'binary/mastercss_binding_wasm_engine_bg.wasm': { source: () => 'wasm' },
       'master-css-program.12345678.bin': { source: () => 'program' }
     }
     const handlers: ((values: typeof assets) => void)[] = []
@@ -39,7 +38,7 @@ test.each([
     RuntimeHTMLAssetsPlugin({ name: 'test', runtimeEntryName: 'runtime', shouldPreloadRuntime: () => true } as never).apply(compiler as never)
     for (const handler of handlers) handler(assets)
     const html = assets['pages/deep/index.html'].source()
-    for (const [attribute, file] of [['src', 'js/runtime.js'], ['href', 'js/runtime.js'], ['href', 'master-css-program.12345678.bin'], ['href', 'binary/mastercss_binding_wasm_engine_bg.wasm']]) {
+    for (const [attribute, file] of [['src', 'js/runtime.js'], ['href', 'js/runtime.js'], ['href', 'master-css-program.12345678.bin']]) {
       expect(html.split(`${attribute}="${prefix}${file}"`)).toHaveLength(2)
     }
     expect(html).toContain(module ? 'rel="modulepreload"' : 'rel="preload" as="script"')

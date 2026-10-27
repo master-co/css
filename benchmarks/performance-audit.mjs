@@ -121,7 +121,7 @@ try {
   }
 } finally { await browser?.close(); await server.close() }
 
-for (const path of ['packages/runtime/dist/global.min.js', 'packages/runtime/dist/default-manifest.json', 'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm']) {
+for (const path of ['packages/runtime/dist/global.min.js', 'packages/runtime/dist/default-program.bin']) {
   const bytes = await readFile(path)
   report.assets.push({ path, raw: bytes.length, gzip: gzipSync(bytes).length, brotli: brotliCompressSync(bytes).length })
 }

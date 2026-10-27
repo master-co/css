@@ -39,8 +39,8 @@ export type MasterCSSRuntimeBinding = 'auto' | 'native' | 'wasm'
 export interface MasterCSSRuntimeStartOptions extends MasterCSSRuntimeOptions {
   readonly binding?: MasterCSSRuntimeBinding
   /**
-   * Progressive pages with a hydration manifest defer the engine, its Wasm and
-   * a lazy program until a class lacks pre-rendered CSS. `eager` starts it now.
+   * Progressive pages with a hydration manifest defer the engine and a lazy
+   * program until a class lacks pre-rendered CSS. `eager` starts it now.
    */
   readonly engine?: 'eager' | 'deferred'
   /** `idle` starts a deferred engine when the browser is idle, before a class needs it. */

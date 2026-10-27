@@ -1,6 +1,5 @@
-import { createWasmEngineLoader } from './index'
+import { fullWasmEngine } from './full-artifact'
 import { createWasmEngineProvider } from './provider-core'
-import { loadRuntimeBindings, runtimeWasmURL } from './runtime-artifact'
 
 export type MasterCSSWasmEngineInput =
   | RequestInfo
@@ -14,13 +13,8 @@ export interface MasterCSSWasmEngineLoadOptions {
   readonly input?: MasterCSSWasmEngineInput
 }
 
-const runtimeWasmEngine = createWasmEngineLoader({
-  url: runtimeWasmURL,
-  load: loadRuntimeBindings
-})
-
 export async function createMasterCSSEngineWasmProvider(
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ): Promise<object> {
-  return await createWasmEngineProvider(runtimeWasmEngine, loadOptions)
+  return await createWasmEngineProvider(fullWasmEngine, loadOptions)
 }

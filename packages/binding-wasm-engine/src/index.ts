@@ -18,10 +18,9 @@ export type MasterCSSWasmInput =
  */
 type GeneratedEmittedGlobals = [names: string[], counts: Uint32Array]
 
-// The browser runtime artifact is built without the binding's `full` feature,
-// so manifest compilation, render sessions and inspection exports are absent
-// from its module. Sessions execute compiled runtime programs, and results cross
-// the boundary as JSON text.
+// A module built without the binding's `full` feature has no manifest compilation,
+// render session or inspection exports. Sessions execute compiled runtime programs,
+// and results cross the boundary as JSON text.
 interface GeneratedEngineSession {
   manifestJSON?(): string
   ensureClassRules(classNames: string[]): string

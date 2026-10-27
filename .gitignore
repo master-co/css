@@ -17,7 +17,6 @@
 # Rust binding artifacts copied into npm packages by xtask
 /packages/binding/artifacts
 /packages/binding-wasm-*/artifacts
-/packages/runtime/artifacts
 
 # monorepo
 **/*.vscode-test

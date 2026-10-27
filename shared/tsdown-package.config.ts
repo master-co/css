@@ -39,7 +39,8 @@ const rootByPackageName: Record<string, string> = {
   '@master/css-svelte': 'src/lib'
 }
 
-const privateInternalPackagePattern = /^@master\/css-internal(?:\/|$)/
+// Repository-private packages bundled into their published consumers.
+const privateInternalPackagePattern = /^@master\/css-(?:internal|engine-js)(?:\/|$)/
 // Rolldown also checks resolved IDs: a Windows drive path is not a package import.
 const bareImportPattern = /^(?![a-zA-Z]:[/\\])[^./\\\0]/
 

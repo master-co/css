@@ -10,8 +10,9 @@ import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { compileProgram, getRuntimeLoaderURL } from '../init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const wasmRequest = /mastercss_binding_wasm_engine_bg\.wasm(?:\?.*)?$/
-const engineRequest = /\/packages\/css\/dist\/|_bg\.wasm/
+// The harness compiles the lazily loaded program on request (see `init.ts`).
+const programRequest = '**/@master-css/runtime-program'
+const engineRequest = /\/packages\/css\/dist\//
 
 interface PrerenderedPage {
   readonly loaderURL: string
@@ -65,7 +66,7 @@ function engineRequests(requests: string[]) {
   return requests.filter(url => engineRequest.test(url))
 }
 
-test('keeps a fully pre-rendered page off the engine, its Wasm and the program', async ({ page }) => {
+test('keeps a fully pre-rendered page off the engine and the program', async ({ page }) => {
   const { loaderURL, requests } = await openPrerenderedPage(
     page,
     '<p id="target" class="fg-red-60"></p><p id="other"></p>',
@@ -155,13 +156,14 @@ test('starts the engine once for the first class pre-rendered CSS lacks', async 
       display: getComputedStyle(document.getElementById('target')!).display
     }
   })).toEqual({
-    binding: 'wasm',
+    binding: 'js',
     hydration: 'progressive',
     generated: [1, 1, 1],
     programLoads: 1,
     display: 'flex'
   })
-  expect(requests.filter(url => wasmRequest.test(url))).toHaveLength(1)
+  expect(engineRequests(requests)).not.toEqual([])
+  expect(requests.filter(url => url.endsWith('.wasm'))).toEqual([])
 })
 
 test('retains classes removed while deferred once the engine starts', async ({ page }) => {
@@ -210,8 +212,12 @@ test('detects a hydration mismatch when the deferred engine starts', async ({ pa
 })
 
 test('keeps pre-rendered CSS and waits for a retry when the deferred engine fails', async ({ page }) => {
-  await page.route(wasmRequest, route => route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' }))
-  const { loaderURL, requests } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60"></p>', ['fg-red-60'])
+  let programRequests = 0
+  await page.route(programRequest, (route) => {
+    programRequests++
+    return route.fulfill({ contentType: 'application/octet-stream', body: Buffer.from([1, 2, 3]) })
+  })
+  const { loaderURL } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60"></p>', ['fg-red-60'])
   await startDeferredRuntime(page, loaderURL)
   await page.evaluate(() => document.getElementById('target')!.classList.add('display:flex'))
   await waitForEngine(page, 'failed')
@@ -231,15 +237,15 @@ test('keeps pre-rendered CSS and waits for a retry when the deferred engine fail
       color: getComputedStyle(document.getElementById('target')!).color
     }
   })).toEqual({
-    readyError: 'WASM_LOAD_FAILED',
+    readyError: 'INVALID_PROGRAM',
     diagnostics: ['error'],
     engine: 'failed',
     prerendered: true,
     color: expect.not.stringMatching(/^rgb\(0, 0, 0\)$/)
   })
-  expect(requests.filter(url => wasmRequest.test(url))).toHaveLength(1)
+  expect(programRequests).toBe(1)
 
-  await page.unroute(wasmRequest)
+  await page.unroute(programRequest)
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh())
   await waitForEngine(page, 'ready')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules['fg-blue-60']?.rules.length)).toBe(1)
@@ -284,7 +290,7 @@ test('starts a deferred engine from refreshed inputs without the original progra
 test('disposes an engine that finishes loading after the runtime is disposed', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  await page.route(wasmRequest, async (route) => {
+  await page.route(programRequest, async (route) => {
     await new Promise(resolve => setTimeout(resolve, 150))
     await route.continue()
   })

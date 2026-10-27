@@ -68,7 +68,7 @@ async function createWasmProvider(
   factory: MasterCSSEngineWasmProviderFactory = loadDefaultWasmProvider
 ) {
   const provider = await factory(options) as MasterCSSEngineWasmProviderContract
-  // The browser runtime artifact ships only the engine feature.
+  // A module built without the binding's `full` feature ships only the engine.
   assertMasterCSSBindingInfo(provider.info, {
     surface: 'runtime',
     features: [feature]

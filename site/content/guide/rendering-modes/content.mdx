@@ -10,13 +10,13 @@ Official build integrations default to `static`. Toggling known classes, changin
 | `'runtime'`               | Starts `MasterCSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
 | `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, preserves native CSS by default, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
-| `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. The runtime engine, Wasm and project manifest load only when such a class appears. |
+| `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. The runtime engine and project manifest load only when such a class appears. |
 
 Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, defaults, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
 Runtime and progressive rendering optimize what CSS is delivered up front. They do not make browser style calculation free: when a highly interactive screen creates many first-time utility rules during one interaction, the browser still needs to account for those new stylesheet rules before it can paint the updated DOM.
 
-Measure runtime JavaScript, Wasm, manifest delivery, initialization, DOM observation and CSSOM work together. A compressed JavaScript file alone does not describe runtime cost.
+Measure runtime JavaScript, manifest delivery, initialization, DOM observation and CSSOM work together. A compressed JavaScript file alone does not describe runtime cost.
 
 For page-level CSS size and delivery measurements, see the [benchmarks](/guide/benchmarks).
 
@@ -278,7 +278,7 @@ On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a
   <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
   <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-Progressive outputs point `style#master-css` at a page hydration manifest that hands the generated rules to the runtime. Static and pre-render outputs load no runtime, so they need no engine, Wasm, project manifest or hydration manifest:
+Progressive outputs point `style#master-css` at a page hydration manifest that hands the generated rules to the runtime. Static and pre-render outputs load no runtime, so they need no engine, project manifest or hydration manifest:
 
 ```html
 <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
@@ -290,7 +290,7 @@ The `/_master-css/hydration/` path above is the integration-neutral route. Frame
 <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
-This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. `MasterCSSRuntime.start()` imports the hydration manifest as a JSON module and then defers the engine: it does not load the engine module, the Wasm or the project manifest, and it leaves the pre-rendered CSSOM untouched while it observes class usage. A page whose connected classes all appear in the hydration manifest never downloads the engine.
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. `MasterCSSRuntime.start()` imports the hydration manifest as a JSON module and then defers the engine: it does not load the engine module or the project manifest, and it leaves the pre-rendered CSSOM untouched while it observes class usage. A page whose connected classes all appear in the hydration manifest never downloads the engine.
 
 The hydration manifest's `classNames` lists every class in the rendered HTML, including ordinary authored CSS classes that generate no Master CSS rules. It also lists classes that project selectors reference without generating rules of their own, such as `dark` in a `&:where(.dark, .dark *)` mixin, so a page script that toggles a mode class keeps the engine deferred. The first connected class outside that list starts the engine, as does `cssRuntime.ready()`. The runtime then replays the listed classes in the Rust engine, compares the engine's CSS with `style#master-css`, adopts the existing CSSOM rules, generates the uncovered classes, and moves hydrated classes that are no longer connected into the retained-rule cache. If the manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If a pre-rendered style has no manifest pointer, the runtime starts its engine immediately and rebuilds the same way. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
 
@@ -584,9 +584,9 @@ An inspection can recognize `padding:red` as declaration syntax while leaving it
 CSS value and browser support `not-checked`. Use the validator from
 `@master/css-tooling` for value validation; a matched rule alone is not a validation
 result. Inspection results are immutable and do not register classes with the engine.
-Browsers load an engine Wasm build without inspection or render sessions, so
-`inspect()` throws `WASM_FEATURE_UNAVAILABLE` there; inspect classes in Node or with
-`@master/css-tooling`.
+Browsers execute programs with the JavaScript engine, which has no inspection or
+render sessions, so `inspect()` throws `FEATURE_UNAVAILABLE` there; inspect classes
+in Node or with `@master/css-tooling`.
 
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v6, engine snapshot v4 and transition v4 define the data exchanged with the engine; page hydration manifests use v5.
 

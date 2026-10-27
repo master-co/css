@@ -45,6 +45,7 @@
           "MasterCSSBindingLoadOptions",
           "MasterCSSBindingRequirements",
           "MasterCSSBindingSurface",
+          "MasterCSSEngineResolvedBinding",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSResolvedBinding",
           "MasterCSSWasmBindingLoadOptions",
@@ -210,7 +211,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "e379671a0eba536e"
+      "surface": "7ab68af1036b3e06"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",

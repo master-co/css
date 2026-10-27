@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
+import { fullWasmEngine } from './full-artifact'
 import {
-  createWasmEngineLoader,
   type MasterCSSWasmEngineLoadOptions,
   type MasterCSSWasmEngineSessionOptions,
   type MasterCSSWasmEngineSource
@@ -12,11 +12,7 @@ export type {
   MasterCSSWasmEngineSource
 } from './index'
 
-// Node hosts also render on the server, so they load the module with every feature.
-export const fullWasmEngine = createWasmEngineLoader({
-  url: new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', import.meta.url),
-  load: () => import('../artifacts/mastercss_binding_wasm_engine.js')
-})
+export { fullWasmEngine }
 
 function resolveFileURL(input: MasterCSSWasmEngineLoadOptions['input']) {
   if (input instanceof URL) return input.protocol === 'file:' ? input : undefined

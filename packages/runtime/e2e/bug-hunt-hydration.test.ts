@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { getRuntimeLoaderURL } from './init'
 
-test('BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied', async ({ page }) => {
+test('BH-0008: external hydration works with modules allowed but unsafe-eval and wasm-unsafe-eval denied', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const manifestURL = new URL('/audit-hydration.json', loaderURL).href
   await page.route(manifestURL, (route) => route.fulfill({
@@ -15,7 +15,7 @@ test('BH-0008: external hydration works with modules and Wasm allowed but unsafe
 })
   }))
   await page.setContent(`<html><head>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' http://127.0.0.1:*">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' http://127.0.0.1:*">
     <style id="master-css" data-master-css-hydration-manifest="${manifestURL}"></style>
     </head><body class="display:block"></body></html>`)
   const result = await page.evaluate(async ({ loaderURL, manifestURL }) => {

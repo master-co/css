@@ -144,7 +144,9 @@ describe('static export e2e', () => {
       expect(requests.some(request => request.path === programChunkPath)).toBe(false)
       await page.locator('main').evaluate(element => element.classList.add('padding:17px'))
       await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).padding)).toBe('17px')
-      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(true)
+      // Browsers execute the program with the JavaScript engine.
+      expect(await page.evaluate(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__.runtime.snapshot().binding)).toBe('js')
+      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(false)
       expect(requests.some(request => request.path === programChunkPath)).toBe(true)
       expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
       if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({

@@ -59,7 +59,7 @@ export function wellFormed(value: string) {
         continue
       }
     }
-    result += unit >= 0xd800 && unit <= 0xdfff ? '�' : value[index]
+    result += unit >= 0xd800 && unit <= 0xdfff ? '\ufffd' : value[index]
   }
   return result
 }

@@ -11,5 +11,6 @@ export {
   type MasterCSSBindingFeature,
   type MasterCSSBindingInfo,
   type MasterCSSBindingSurface,
+  type MasterCSSEngineResolvedBinding,
   type MasterCSSResolvedBinding
 } from './protocol'

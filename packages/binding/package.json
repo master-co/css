@@ -81,5 +81,7 @@
     "@master/css-binding-wasm-engine": "workspace:*",
     "@master/css-binding-wasm-tooling": "workspace:*"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@master/css-engine-js": "workspace:*"
+  }
 }

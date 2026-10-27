@@ -71,21 +71,11 @@ function createRuntimePreloadTag(href: string, moduleScript: boolean) {
     : `<link rel="preload" as="script" href="${escapeAttributeValue(href)}">`
 }
 
-function createRuntimeWasmPreloadTag(href: string) {
-  return `<link rel="preload" as="fetch" type="application/wasm" crossorigin href="${escapeAttributeValue(href)}">`
-}
-
 function getRuntimeFiles(compilation: Compilation, entryName: string) {
   const entrypoint = compilation.entrypoints.get(entryName)
   return entrypoint
     ? entrypoint.getFiles().filter((fileName) => JS_FILE_PATTERN.test(fileName))
     : []
-}
-
-function getRuntimeWasmFiles(assets: Compilation['assets']) {
-  return Object.keys(assets).filter((fileName) =>
-    fileName.endsWith('.wasm') && fileName.includes('mastercss_binding_wasm_engine')
-  )
 }
 
 function transformHTML(
@@ -113,13 +103,6 @@ function transformHTML(
       const href = toPublicHref(compilation, programFileName, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, toProgramPreloadLinkTag(href))
-      }
-    }
-
-    for (const wasmFile of getRuntimeWasmFiles(assets)) {
-      const href = toPublicHref(compilation, wasmFile, htmlFileName)
-      if (!hasTagWithHref(nextHTML, 'link', href)) {
-        nextHTML = injectBeforeHeadClose(nextHTML, createRuntimeWasmPreloadTag(href))
       }
     }
   }

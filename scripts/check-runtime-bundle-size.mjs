@@ -6,14 +6,11 @@ import { Rolldown } from 'tsdown'
 
 const baselinePath = path.resolve('.ai/contracts/runtime-bundle-size.json')
 const artifactPaths = [
+  // The CDN bundle, which inlines the JavaScript engine.
   'packages/runtime/dist/global.min.js',
-  'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm',
   // The default preset's runtime program, which the CDN bundle fetches.
   'packages/runtime/dist/default-program.bin'
 ]
-// Bundler apps load the browser build from the binding package; the CDN bundle and
-// the release asset load the copy staged into the runtime package.
-const bundlerRuntimeWasmPath = 'packages/binding-wasm-engine/artifacts/runtime/mastercss_binding_wasm_engine_bg.wasm'
 const runtimeEntryPath = 'packages/runtime/dist/index.js'
 // What an app bundler ships before a progressive page needs the engine.
 const progressiveCriticalPath = `${runtimeEntryPath} (progressive critical path)`
@@ -52,14 +49,9 @@ async function createBaseline() {
     assert.equal(
       existsSync(file),
       true,
-      `Runtime bundle ${file} does not exist. Build the runtime Wasm and @master/css-runtime before checking its size.`
+      `Runtime bundle ${file} does not exist. Build @master/css-runtime before checking its size.`
     )
   }
-  assert.equal(existsSync(bundlerRuntimeWasmPath), true, `Runtime Wasm ${bundlerRuntimeWasmPath} does not exist. Build the runtime Wasm first.`)
-  assert.ok(
-    readFileSync(bundlerRuntimeWasmPath).equals(readFileSync(artifactPaths[1])),
-    `${bundlerRuntimeWasmPath} differs from ${artifactPaths[1]}; rebuild with cargo xtask build-wasm runtime.`
-  )
   for (const file of artifactPaths) artifacts[file] = measure(readFileSync(file))
   artifacts[progressiveCriticalPath] = measure(await bundleProgressiveCriticalPath())
   return {

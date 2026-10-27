@@ -1,7 +1,7 @@
 import {
   MasterCSSError
 } from '@master/css-schema'
-import type { MasterCSSBinding, MasterCSSResolvedBinding } from '@master/css-binding'
+import type { MasterCSSBinding, MasterCSSEngineResolvedBinding } from '@master/css-binding'
 import type { MasterCSSEngineBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
@@ -101,7 +101,7 @@ export type MasterCSSEngineBindingOptions = MasterCSSEngineSource & {
 }
 
 export interface MasterCSSEngineBinding {
-  readonly kind: MasterCSSResolvedBinding
+  readonly kind: MasterCSSEngineResolvedBinding
   createEngine(options: MasterCSSEngineBindingOptions): Promise<MasterCSSEngine>
   createEngineSync?(options: MasterCSSEngineBindingOptions): MasterCSSEngine
 }
@@ -111,7 +111,7 @@ export type MasterCSSEngineOptions = MasterCSSEngineBindingOptions & {
 }
 
 export interface MasterCSSEngine extends Disposable {
-  readonly binding: MasterCSSResolvedBinding
+  readonly binding: MasterCSSEngineResolvedBinding
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   /**

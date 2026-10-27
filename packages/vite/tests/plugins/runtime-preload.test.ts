@@ -44,11 +44,6 @@ describe('RuntimePreloadPlugin', () => {
               '/repo/app/src/main.ts',
               RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
             ]
-          },
-          'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm': {
-            type: 'asset',
-            fileName: 'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm',
-            name: 'mastercss_binding_wasm_engine_bg.wasm'
           }
         }
       }
@@ -61,17 +56,6 @@ describe('RuntimePreloadPlugin', () => {
           rel: 'modulepreload',
           crossorigin: '',
           href: '/assets/index.C2zmEykZ.js'
-        },
-        injectTo: 'head-prepend'
-      },
-      {
-        tag: 'link',
-        attrs: {
-          rel: 'preload',
-          as: 'fetch',
-          type: 'application/wasm',
-          crossorigin: '',
-          href: '/assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm'
         },
         injectTo: 'head-prepend'
       }
@@ -101,24 +85,6 @@ describe('RuntimePreloadPlugin', () => {
         }
       }
     )
-
-    expect(result).toBeUndefined()
-  })
-
-  it('does not inject a duplicate runtime Wasm preload link', () => {
-    const plugin = RuntimePreloadPlugin({ config: { base: '/' } } as never)
-    const href = '/assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm'
-    const html = `<html><head><link rel="preload" as="fetch" type="application/wasm" crossorigin href="${href}"></head></html>`
-    const result = (plugin.transformIndexHtml as any).handler.call({}, html, {
-      path: '/index.html',
-      bundle: {
-        'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm': {
-          type: 'asset',
-          fileName: 'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm',
-          name: 'mastercss_binding_wasm_engine_bg.wasm'
-        }
-      }
-    })
 
     expect(result).toBeUndefined()
   })

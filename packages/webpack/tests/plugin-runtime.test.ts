@@ -732,9 +732,6 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const assets: Record<string, { source: () => string }> = {
       'index.html': {
         source: () => "<html><head></head><body><main class=\"box display:block\"></main></body></html>"
-      },
-      'assets/mastercss_binding_wasm_engine_bg.12345678.wasm': {
-        source: () => 'wasm'
       }
     }
     const { compiler, compilation } = makeFakeCompiler({
@@ -754,7 +751,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect(html).not.toContain('master-css-manifest')
     expect(compilation.emitAsset).toHaveBeenCalledWith('master-css-program.12345678.bin', expect.anything(), { immutable: true })
     expect(Object.keys(assets).filter(file => file.includes('master-css-manifest'))).toEqual(['assets/master-css-manifest.12345678.json'])
-    expect(html).toContain('<link rel="preload" as="fetch" type="application/wasm" crossorigin href="/static/assets/mastercss_binding_wasm_engine_bg.12345678.wasm">')
+    expect(html).not.toContain('application/wasm')
     expect(html).toContain('<script defer src="/static/assets/master-css-runtime.js"></script></body>')
   })
 

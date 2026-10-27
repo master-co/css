@@ -1,7 +1,4 @@
-import {
-  MasterCSSError
-} from '@master/css-schema'
-import { createMasterCSSEngineWasmProvider } from '@master/css-binding-wasm-engine'
+import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   type MasterCSSBindingLoadOptions,
@@ -13,14 +10,7 @@ import {
   type MasterCSSRenderBindingSessionOptions,
   type MasterCSSWasmBindingLoadOptions
 } from './engine-binding'
-import {
-  createWasmEngineBindingSession,
-  createWasmRenderBindingSession
-} from './engine-binding-wasm'
-import {
-  bindEngineBindingSession,
-  bindRenderBindingSession
-} from './engine-binding-adapter'
+import { createJavaScriptEngineBindingSession, programRequired } from './engine-binding-js'
 import { callBindingAsync } from './normalize-error'
 
 export type {
@@ -34,7 +24,10 @@ export type {
   MasterCSSWasmBindingLoadOptions
 }
 
-function browserOptions(options: MasterCSSBindingLoadOptions): MasterCSSBindingLoadOptions {
+// Browsers execute compiled programs with the JavaScript engine. Native and Wasm
+// engines, manifest compilation and rendering run in Node.
+
+function assertBrowserBinding(options: MasterCSSBindingLoadOptions) {
   if (options.binding === 'native') {
     throw new MasterCSSError({
       code: 'NATIVE_UNAVAILABLE',
@@ -42,54 +35,36 @@ function browserOptions(options: MasterCSSBindingLoadOptions): MasterCSSBindingL
       message: 'Master CSS native bindings are unavailable in browsers.'
     })
   }
-  return { ...options, binding: 'wasm' }
-}
-
-/** Browsers execute compiled programs; compiling a manifest is a Node build step. */
-function programRequired(): never {
-  throw new MasterCSSError({
-    code: 'INVALID_INPUT',
-    domain: 'binding',
-    message: 'Master CSS engines in browsers execute compiled runtime programs, not manifests. '
-      + 'Compile the manifest with compileRuntimeProgram() from @master/css/node and pass { program }.'
-  })
-}
-
-function program(source: MasterCSSManifest | Uint8Array) {
-  return ArrayBuffer.isView(source) ? source : programRequired()
+  if (options.binding === 'wasm') {
+    throw new MasterCSSError({
+      code: 'WASM_UNAVAILABLE',
+      domain: 'binding',
+      message: 'Master CSS Wasm engines are unavailable in browsers, which execute programs with the JavaScript engine.'
+    })
+  }
 }
 
 export function createEngineBindingSession(
   options: MasterCSSEngineBindingSessionOptions,
   loadOptions: MasterCSSBindingLoadOptions = {}
 ): Promise<MasterCSSEngineBindingSession> {
-  const resolved = browserOptions(loadOptions)
   return callBindingAsync('engine', async () => {
-    const session = await createWasmEngineBindingSession(
-      { program: program(options.program ?? options.manifest), emittedGlobals: options.emittedGlobals },
-      resolved.wasm,
-      createMasterCSSEngineWasmProvider
-    )
-    return bindEngineBindingSession('wasm', {
-      ...session,
-      refresh: (source, emittedGlobals) => session.refresh(program(source), emittedGlobals)
-    })
+    assertBrowserBinding(loadOptions)
+    return createJavaScriptEngineBindingSession(options)
   })
 }
 
 export function createRenderBindingSession(
-  options: MasterCSSRenderBindingSessionOptions,
-  loadOptions: MasterCSSBindingLoadOptions = {}
+  _options: MasterCSSRenderBindingSessionOptions,
+  _loadOptions: MasterCSSBindingLoadOptions = {}
 ): Promise<MasterCSSRenderBindingSession> {
-  const resolved = browserOptions(loadOptions)
-  return callBindingAsync('server', async () => bindRenderBindingSession(
-    'wasm',
-    await createWasmRenderBindingSession(
-      options,
-      resolved.wasm,
-      createMasterCSSEngineWasmProvider
-    )
-  ))
+  return callBindingAsync('server', async () => {
+    throw new MasterCSSError({
+      code: 'FEATURE_UNAVAILABLE',
+      domain: 'server',
+      message: 'Master CSS rendering is unavailable in browsers; use @master/css/node.'
+    })
+  })
 }
 
 export function compileRuntimeProgram(

@@ -10,13 +10,13 @@ import type {
   MasterCSSServerRender
 } from './protocol'
 import { normalizeBindingError } from './normalize-error'
-import type { MasterCSSBinding, MasterCSSResolvedBinding } from './protocol'
+import type { MasterCSSBinding, MasterCSSEngineResolvedBinding, MasterCSSResolvedBinding } from './protocol'
 import type {
   MasterCSSBindingLoadOptions,
   MasterCSSNativeBindingLoadOptions,
   MasterCSSWasmBindingLoadOptions
 } from './binding-options'
-import { shouldLoadMasterCSSNativeBinding } from './binding-options'
+import { hasMasterCSSNodeRuntime, shouldLoadMasterCSSNativeBinding } from './binding-options'
 import {
   compileWasmRuntimeProgram,
   createWasmEngineBindingSession,
@@ -26,6 +26,7 @@ import {
   bindEngineBindingSession,
   bindRenderBindingSession
 } from './engine-binding-adapter'
+import { createJavaScriptEngineBindingSession } from './engine-binding-js'
 
 async function loadNativeEngineFactories() {
   const nodeEngineModule = import.meta.url.endsWith('.ts') ? './engine.ts' : './engine.js'
@@ -54,7 +55,7 @@ export interface MasterCSSRenderBindingSessionOptions {
 }
 
 export interface MasterCSSEngineBindingSession extends Disposable {
-  readonly binding: MasterCSSResolvedBinding
+  readonly binding: MasterCSSEngineResolvedBinding
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
@@ -92,6 +93,11 @@ export async function createEngineBindingSession(
         required: loadOptions.binding === 'native'
       })
       if (native) return bindEngineBindingSession('native', native)
+    }
+    // Hosts without Node execute programs with the JavaScript engine, as the browser
+    // entry does, whichever entry a bundler resolves; Wasm compiles their manifests.
+    if (loadOptions.binding !== 'wasm' && options.program && !hasMasterCSSNodeRuntime()) {
+      return createJavaScriptEngineBindingSession(options)
     }
     return bindEngineBindingSession(
       'wasm',

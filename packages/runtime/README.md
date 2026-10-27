@@ -100,7 +100,7 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 ```
 
-The IIFE starts automatically and registers the document runtime as `globalThis.masterCSSRuntime`. When its engine starts, it fetches `default-program.bin` next to the runtime script, the default preset compiled for the engine, and the runtime package's `artifacts/mastercss_binding_wasm_engine_bg.wasm`, an engine build without manifest compilation, render sessions or inspection. The CDN must serve both with CORS headers, and a Content Security Policy must allow fetching them (`connect-src`). The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime and preset on compatible versions. The IIFE does not read global options or custom programs. Use ESM `await MasterCSSRuntime.start({ program, emittedGlobals })` for custom inputs.
+The IIFE starts automatically and registers the document runtime as `globalThis.masterCSSRuntime`. The bundle includes the JavaScript engine. When its engine starts, it fetches `default-program.bin` next to the runtime script, the default preset compiled for the engine. The CDN must serve it with CORS headers, and a Content Security Policy must allow fetching it (`connect-src`); no Wasm is loaded, so `wasm-unsafe-eval` is not needed. The `@rc` URLs follow published packages and may lag unreleased source changes; keep the runtime and preset on compatible versions. The IIFE does not read global options or custom programs. Use ESM `await MasterCSSRuntime.start({ program, emittedGlobals })` for custom inputs.
 
 ## API
 
@@ -114,7 +114,7 @@ const cssRuntime = await MasterCSSRuntime.start({ program })
 cssRuntime.observe()
 ```
 
-`MasterCSSRuntime` is the DOM/CSSOM host around a Rust/Wasm engine session. Public state is available only through `snapshot()` and the readonly global facade.
+`MasterCSSRuntime` is the DOM/CSSOM host around an engine session; browsers execute the runtime program with the JavaScript engine, whose CSS output matches the Rust engine. Public state is available only through `snapshot()` and the readonly global facade.
 
 | API | Type | Description |
 | --- | --- | --- |
@@ -126,7 +126,7 @@ cssRuntime.observe()
 | `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously ensures rules for a readonly class-name collection. |
 | `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Synchronously deletes rules for a readonly class-name collection, bypassing retention. |
 | `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, engine state, and hydration state. |
-| `binding` | `'native' \| 'wasm' \| undefined` | The engine binding; `undefined` until the engine is ready. |
+| `binding` | `'js' \| 'native' \| 'wasm' \| undefined` | The engine binding: `'js'` in browsers; `undefined` until the engine is ready. |
 | `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the binding session, and cancels a pending engine startup. |
 
 | Option | Description |
@@ -136,8 +136,8 @@ cssRuntime.observe()
 | `hydrationManifest` | Explicit page hydration data. Without it, `start()` reads inline or external hydration data from the document. |
 | `root` | The `Document` or `ShadowRoot` to observe; defaults to `document`. |
 | `engine` | `'eager'` starts the engine during `start()`. `'deferred'` waits for the first class that the page hydration manifest does not cover. Defaults to `'deferred'` when `style#master-css` has a valid, non-empty hydration manifest, and `'eager'` otherwise. |
-| `enginePrefetch` | `'none'` (default) starts a deferred engine only when it is needed. `'idle'` starts it during browser idle time, including the engine module, Wasm and runtime program downloads, so later uncovered classes do not wait. |
-| `binding` | `'auto'` (default), `'wasm'`, or `'native'`. |
+| `enginePrefetch` | `'none'` (default) starts a deferred engine only when it is needed. `'idle'` starts it during browser idle time, including the engine module and runtime program downloads, so later uncovered classes do not wait. |
+| `binding` | `'auto'` (default), `'wasm'`, or `'native'`. Browsers execute programs with the JavaScript engine and reject `'wasm'` and `'native'`, which run in Node. |
 | `startupTimeoutMs` | Fails hydration data loading or engine startup that takes longer than this with `RUNTIME_STARTUP_TIMEOUT`. |
 | `onDiagnostic` | Receives startup and engine startup diagnostics. |
 
@@ -152,7 +152,7 @@ const cssRuntime = await MasterCSSRuntime.start({
 cssRuntime.observe()
 ```
 
-`start()` resolves explicit, inline, or external hydration data before returning. When `style#master-css` has a valid, non-empty hydration manifest, the engine is deferred: `start()` does not load the engine module, the Wasm, or the project manifest, and the runtime leaves the pre-rendered CSSOM untouched while it tracks class usage. The hydration manifest's `classNames` lists every server-rendered class, including ordinary authored CSS classes that generate no Master CSS rules, and classes that project selectors reference without generating rules, such as a `dark` mode class a page script adds. The first connected class outside that list starts the engine. The runtime then replays the listed classes in the Rust engine, verifies the pre-rendered CSS against its output, generates the uncovered classes, and releases hydrated classes that are no longer connected. A page whose classes are all pre-rendered never downloads the engine.
+`start()` resolves explicit, inline, or external hydration data before returning. When `style#master-css` has a valid, non-empty hydration manifest, the engine is deferred: `start()` does not load the engine module or the project manifest, and the runtime leaves the pre-rendered CSSOM untouched while it tracks class usage. The hydration manifest's `classNames` lists every server-rendered class, including ordinary authored CSS classes that generate no Master CSS rules, and classes that project selectors reference without generating rules, such as a `dark` mode class a page script adds. The first connected class outside that list starts the engine. The runtime then replays the listed classes in the engine, verifies the pre-rendered CSS against its output, generates the uncovered classes, and releases hydrated classes that are no longer connected. A page whose classes are all pre-rendered never downloads the engine.
 
 `snapshot().engine` reports `'deferred'`, `'loading'`, `'ready'`, or `'failed'`. While the engine is deferred or loading, `ensureClassRules()` and `deleteClassRules()` throw `RUNTIME_ENGINE_NOT_READY` and start the engine; call `await cssRuntime.ready()` before using them. Until the engine is ready, `snapshot().classRules` lists connected classes with their usage counts and no rules, `cssText` comes from `style#master-css`, and no layers are reported. If engine startup fails, `onDiagnostic` receives the failure, pre-rendered CSS stays in place, and classes outside the hydration manifest remain unstyled. Rule APIs keep throwing `RUNTIME_ENGINE_NOT_READY` without restarting the engine; `refresh()` or a new `start()` retries.
 

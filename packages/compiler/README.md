@@ -457,4 +457,4 @@ Rust returns ordered `css` and its UTF-16 `outputMappings`; the Node stylesheet
 host chains those mappings through import and Sass origins. Treat `nativeOutput`
 as a compiler-produced plan and pass it unchanged. Invalid or overlapping slot
 ranges are rejected. The plan stays in compiler data and is not part of a runtime
-manifest or the engine Wasm payload.
+manifest or program.

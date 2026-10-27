@@ -121,7 +121,7 @@ document or shadow root
   -> replay classNames in order, verify engine CSS against the pre-rendered CSSOM, or connect current classes; reconcile classes counted while deferred
   -> MutationObserver detects class and subtree changes
   -> class reference counts change
-  -> runtime-Wasm engine transition
+  -> browser engine transition
   -> add/remove native CSS rules in stable order
 ```
 

@@ -9,24 +9,18 @@ Use `artifacts.rs` for build/staging, `codegen.rs` for generated contracts,
 `parity.rs` for parity ledgers, and `main.rs` only for command routing. Never edit a
 generated target to bypass codegen.
 
-`build-wasm runtime` builds the engine binding twice with the `release-wasm`
-profile, which optimizes every crate for size: with the default `full` feature into
-`packages/binding-wasm-engine/artifacts` for Node, and without it into
-`packages/binding-wasm-engine/artifacts/runtime` for the binding's browser entry. It
-then stages that Wasm into `packages/runtime/artifacts` for the CDN bundle and the
-release asset. `build-wasm runtime --names` builds the browser module with its name
-section into `target/wasm-size/runtime` for `pnpm run report:runtime-wasm-size`.
-Both browser module builds use the pinned nightly `RUNTIME_WASM_TOOLCHAIN`
-(`artifacts.rs`, installed with `rust-src` on first use) to rebuild the standard
-library with `panic = "immediate-abort"` and trimmed paths, so no panic formatting,
-location or Unicode escape table is linked (about 8 KB brotli). Panics there trap as
-`RuntimeError: unreachable` without a message; reproduce them with the full build or
-native to see it. The rebuilt `core`, `alloc` and `std` keep opt-level 3 like the
-prebuilt library: `s` measured 1.5 KB larger under brotli and 13% slower empty-page
-startup, `z` larger still. Fat LTO measured no smaller. The runtime build goes to
-`target/wasm-runtime`, apart from stable outputs. Native code and every other Wasm
-build keep the stable toolchain. The engine Wasm binding allocates with talc instead
-of std's dlmalloc: 2.0 KB smaller under brotli and within 2% of its memory over
+`build-wasm runtime` builds the engine binding with the `release-wasm` profile, which
+optimizes every crate for size, and the default `full` feature into
+`packages/binding-wasm-engine/artifacts`, for Node without a native binding and other
+non-browser hosts. Browsers execute programs with the JavaScript engine
+(`packages/engine-js`), so no browser Wasm is built, staged or released.
+`build-wasm runtime --names` still builds the former browser module, without `full`,
+with its name section into `target/wasm-size/runtime` for
+`pnpm run report:runtime-wasm-size`. It uses the pinned nightly
+`RUNTIME_WASM_TOOLCHAIN` (`artifacts.rs`, installed with `rust-src` on first use) to
+rebuild the standard library with `panic = "immediate-abort"` and trimmed paths.
+Native code and every other Wasm build keep the stable toolchain.
+The engine Wasm binding allocates with talc instead of std's dlmalloc: 2.0 KB smaller under brotli and within 2% of its memory over
 repeated ensure and delete cycles, for up to 3% slower startup in the runtime
 benchmark.
 `opt-level "z"` is smaller still but measured about 18% slower in the runtime

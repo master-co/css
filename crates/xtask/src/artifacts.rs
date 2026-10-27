@@ -314,7 +314,6 @@ pub(crate) fn assemble_native_release_at(
     let mut assets = Vec::new();
     let public_assets = [
         "packages/runtime/dist/global.min.js",
-        "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm",
         "packages/runtime/dist/default-program.bin",
     ];
     for relative in public_assets {
@@ -352,8 +351,11 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
     }
     let root = workspace_root();
     match surface {
-        "runtime" => {
-            let engine = WasmBuild {
+        // Browsers execute programs with the JavaScript engine; the engine Wasm
+        // serves Node without a native binding and other non-browser hosts.
+        "runtime" => build_wasm_artifact(
+            &root,
+            &WasmBuild {
                 label: "engine",
                 crate_name: "mastercss-binding-wasm-engine",
                 artifact_name: "mastercss_binding_wasm_engine",
@@ -364,24 +366,8 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 target_dir: None,
                 keep_names: false,
                 rebuild_std: false,
-            };
-            build_wasm_artifact(&root, &engine)?;
-            // Browsers execute only engine sessions, so the binding package's
-            // browser entry loads a module built without `full`. The CDN bundle and
-            // the release asset take the same Wasm from the runtime package.
-            build_wasm_artifact(
-                &root,
-                &WasmBuild {
-                    label: "runtime",
-                    default_features: false,
-                    output: RUNTIME_WASM_OUTPUT,
-                    target_dir: Some(RUNTIME_WASM_TARGET),
-                    rebuild_std: true,
-                    ..engine
-                },
-            )?;
-            stage_runtime_wasm(&root)
-        }
+            },
+        ),
         "compiler" => build_wasm_artifact(
             &root,
             &WasmBuild {
@@ -416,12 +402,8 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
     }
 }
 
-const RUNTIME_WASM_OUTPUT: &str = "packages/binding-wasm-engine/artifacts/runtime";
-const RUNTIME_WASM_STAGE: &str = "packages/runtime/artifacts";
-const RUNTIME_WASM_FILE: &str = "mastercss_binding_wasm_engine_bg.wasm";
-const WASM_SIZE_TARGET: &str = "target/wasm-size";
 // Keeps nightly build outputs apart from the stable ones in `target`.
-const RUNTIME_WASM_TARGET: &str = "target/wasm-runtime";
+const WASM_SIZE_TARGET: &str = "target/wasm-size";
 /// Browsers download the runtime engine Wasm, so it rebuilds the standard library
 /// with immediate-abort panics: no panic message, location or formatting code is
 /// linked. Native code and the other Wasm builds use the stable toolchain in
@@ -451,39 +433,6 @@ pub(crate) fn build_wasm_names(surface: &str) -> Result<(), String> {
             rebuild_std: true,
         },
     )
-}
-
-fn stage_runtime_wasm(root: &Path) -> Result<(), String> {
-    let source = root.join(RUNTIME_WASM_OUTPUT).join(RUNTIME_WASM_FILE);
-    let stage = root.join(RUNTIME_WASM_STAGE);
-    fs::create_dir_all(&stage)
-        .map_err(|error| format!("Cannot create {}: {error}", stage.display()))?;
-    // Older builds staged generated bindings here; the CDN bundle now inlines them.
-    for entry in
-        fs::read_dir(&stage).map_err(|error| format!("Cannot read {}: {error}", stage.display()))?
-    {
-        let path = entry
-            .map_err(|error| format!("Cannot read {}: {error}", stage.display()))?
-            .path();
-        if path
-            .file_name()
-            .is_some_and(|name| name != RUNTIME_WASM_FILE)
-            && path.is_file()
-        {
-            fs::remove_file(&path)
-                .map_err(|error| format!("Cannot remove {}: {error}", path.display()))?;
-        }
-    }
-    let target = stage.join(RUNTIME_WASM_FILE);
-    fs::copy(&source, &target).map_err(|error| {
-        format!(
-            "Cannot stage {} as {}: {error}",
-            source.display(),
-            target.display()
-        )
-    })?;
-    println!("Staged {}", target.display());
-    Ok(())
 }
 
 struct WasmBuild {

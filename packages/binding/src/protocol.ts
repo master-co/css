@@ -50,6 +50,8 @@ export interface MasterCSSBindingInfo {
 
 export type MasterCSSBinding = 'auto' | 'native' | 'wasm'
 export type MasterCSSResolvedBinding = Exclude<MasterCSSBinding, 'auto'>
+/** An engine session's binding; `js` is the JavaScript engine browsers execute programs with. */
+export type MasterCSSEngineResolvedBinding = MasterCSSResolvedBinding | 'js'
 export type MasterCSSRuleTarget =
   | 'keyframes'
   | 'theme'

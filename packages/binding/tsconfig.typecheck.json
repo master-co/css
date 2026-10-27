@@ -15,6 +15,7 @@
     { "path": "../schema/tsconfig.typecheck.json" },
     { "path": "../binding-wasm-compiler/tsconfig.typecheck.json" },
     { "path": "../binding-wasm-engine/tsconfig.typecheck.json" },
+    { "path": "../engine-js/tsconfig.typecheck.json" },
     { "path": "../binding-wasm-tooling/tsconfig.typecheck.json" }
   ],
   "include": ["src/**/*.ts", "tests/**/*.test.ts"]

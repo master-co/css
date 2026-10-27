@@ -8,12 +8,10 @@ const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
 const RUNTIME_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js'
 const DEFAULT_PROGRAM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin'
-const RUNTIME_WASM_URL = 'https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/artifacts/mastercss_binding_wasm_engine_bg.wasm'
 const PRESET_BASE_CSS_URL = 'https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css'
 
 type RuntimeAssetRouteOptions = {
   onDefaultProgramRequest?: () => void
-  onWasmRequest?: () => void
 }
 
 async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions = {}) {
@@ -31,16 +29,6 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
         'access-control-allow-origin': '*'
       },
       body: readFileSync(resolve(__dirname, '../dist/default-program.bin'))
-    })
-  })
-  await page.route(RUNTIME_WASM_URL, (route) => {
-    options.onWasmRequest?.()
-    route.fulfill({
-      contentType: 'application/wasm',
-      headers: {
-        'access-control-allow-origin': '*'
-      },
-      body: readFileSync(resolve(__dirname, '../artifacts/mastercss_binding_wasm_engine_bg.wasm'))
     })
   })
 }
@@ -163,13 +151,13 @@ test('ignores global manifest override', async ({ page }) => {
   expect(snapshot.cssText).not.toContain('--primary:#000000')
 })
 
-test('fails open when a cross-origin Wasm request is blocked', async ({ page }) => {
+test('fails open when the cross-origin default program request is blocked', async ({ page }) => {
   const consumerURL = 'http://master-css-consumer.test/'
-  let wasmRequests = 0
+  let programRequests = 0
   await routeRuntimeAssets(page)
-  await page.unroute(RUNTIME_WASM_URL)
-  await page.route(RUNTIME_WASM_URL, (route) => {
-    wasmRequests++
+  await page.unroute(DEFAULT_PROGRAM_URL)
+  await page.route(DEFAULT_PROGRAM_URL, (route) => {
+    programRequests++
     route.abort()
   })
   await page.route(consumerURL, route => route.fulfill({
@@ -180,29 +168,28 @@ test('fails open when a cross-origin Wasm request is blocked', async ({ page }) 
   await page.goto(consumerURL)
   await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
 
-  expect(wasmRequests).toBe(1)
+  expect(programRequests).toBe(1)
   expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
 })
 
-test('fails open when strict CSP disallows Wasm compilation', async ({ page }) => {
+test('renders under a strict CSP that disallows Wasm compilation', async ({ page }) => {
   const consumerURL = 'http://master-css-csp-consumer.test/'
-  let wasmRequests = 0
-  await routeRuntimeAssets(page, {
-    onWasmRequest: () => {
-      wasmRequests++
-    }
-  })
+  const requests: string[] = []
+  page.on('request', request => requests.push(request.url()))
+  await routeRuntimeAssets(page)
   await page.route(consumerURL, route => route.fulfill({
     contentType: 'text/html',
     headers: {
-      'content-security-policy': "default-src 'none'; script-src https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net"
+      'content-security-policy': "default-src 'none'; script-src https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net; style-src 'unsafe-inline'"
     },
-    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body><h1 class="font-size:40px">Hello</h1></body></html>`
   }))
 
   await page.goto(consumerURL)
-  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
+  await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 
-  expect(wasmRequests).toBe(1)
-  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+  expect(await page.locator('html').getAttribute('hidden')).toBeNull()
+  expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime!.binding)).toBe('js')
+  expect(requests.filter(url => url.endsWith('.wasm'))).toEqual([])
 })

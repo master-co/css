@@ -1,8 +1,12 @@
-// Browser baseline: the rc.87 pure JS runtime against the current Wasm runtime, on the
-// DOM scenarios of `pnpm --filter @master/css-runtime bench` that both runtimes share.
-// Readiness is checked through computed styles, so neither runtime's API is assumed.
+// Browser baseline: the current runtime, which inlines the JS engine, against the rc.87
+// pure JS runtime and a Wasm-engine runtime build, on the DOM scenarios of
+// `pnpm --filter @master/css-runtime bench` that they share. Readiness is checked
+// through computed styles, so no runtime's API is assumed.
 //
-//   node packages/engine-js/scripts/bench-baseline.mjs --rc87 <dir with rc.87 dist> [--out file.json]
+//   node packages/engine-js/scripts/bench-baseline.mjs [--rc87 <rc.87 dist>] [--wasm <package dir>] [--out file.json]
+//
+// `--wasm` takes a runtime package built with the Wasm engine: its `dist/` and the
+// `artifacts/` Wasm beside it.
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
@@ -19,26 +23,36 @@ const rounds = Number(args.get('rounds') ?? process.env.MASTER_CSS_BENCH_ROUNDS 
 const warmupRounds = Number(args.get('warmup') ?? 2)
 const scanClassCount = Number(args.get('scan') ?? 1000)
 const browserName = args.get('browser') ?? 'chromium'
-const rc87Dist = resolve(args.get('rc87') ?? '')
 const outputFile = args.get('out')
 
 const targets = {
-  wasm: {
+  js: {
     files: {
       'global.min.js': join(root, 'packages/runtime/dist/global.min.js'),
-      'default-program.bin': join(root, 'packages/runtime/dist/default-program.bin'),
-      'artifacts/mastercss_binding_wasm_engine_bg.wasm': join(root, 'packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm')
+      'default-program.bin': join(root, 'packages/runtime/dist/default-program.bin')
     },
     preload: 'default-program.bin'
-  },
-  rc87: {
-    files: {
-      'global.min.js': join(rc87Dist, 'global.min.js'),
-      'default-manifest.json': join(rc87Dist, 'default-manifest.json')
-    },
+  }
+}
+if (args.has('rc87')) {
+  const dist = resolve(args.get('rc87'))
+  targets.rc87 = {
+    files: { 'global.min.js': join(dist, 'global.min.js'), 'default-manifest.json': join(dist, 'default-manifest.json') },
     preload: 'default-manifest.json'
   }
 }
+if (args.has('wasm')) {
+  const packageDir = resolve(args.get('wasm'))
+  targets.wasm = {
+    files: {
+      'global.min.js': join(packageDir, 'dist/global.min.js'),
+      'default-program.bin': join(packageDir, 'dist/default-program.bin'),
+      'artifacts/mastercss_binding_wasm_engine_bg.wasm': join(packageDir, 'artifacts/mastercss_binding_wasm_engine_bg.wasm')
+    },
+    preload: 'default-program.bin'
+  }
+}
+if (Object.keys(targets).length < 2) throw new Error('Pass --rc87 or --wasm to compare against.')
 for (const target of Object.values(targets)) {
   for (const file of Object.values(target.files)) if (!existsSync(file)) throw new Error(`Missing ${file}`)
 }
@@ -59,7 +73,7 @@ const server = createServer(async (request, response) => {
     return
   }
   // The Wasm global bundle loads `../artifacts/…` relative to its script.
-  const file = name === 'artifacts' ? targets.wasm.files[url.pathname.slice(1)] : target?.files[rest.join('/')]
+  const file = name === 'artifacts' ? targets.wasm?.files[url.pathname.slice(1)] : target?.files[rest.join('/')]
   if (!file) {
     response.writeHead(404)
     response.end()
@@ -179,11 +193,12 @@ const report = {
   rounds,
   warmupRounds,
   scanClassCount,
-  sizes: { wasm: await sizes(targets.wasm), rc87: await sizes(targets.rc87) },
+  sizes: Object.fromEntries(await Promise.all(Object.entries(targets).map(async ([name, target]) => [name, await sizes(target)]))),
   results
 }
 for (const [scenario, byTarget] of Object.entries(results)) {
-  process.stdout.write(`${scenario.padEnd(46)} wasm ${byTarget.wasm.median.toFixed(2).padStart(8)} ms   rc87 ${byTarget.rc87.median.toFixed(2).padStart(8)} ms\n`)
+  const columns = Object.entries(byTarget).map(([name, { median }]) => `${name} ${median.toFixed(2).padStart(8)} ms`)
+  process.stdout.write(`${scenario.padEnd(46)} ${columns.join('   ')}\n`)
 }
 if (outputFile) {
   await mkdir(dirname(outputFile), { recursive: true })

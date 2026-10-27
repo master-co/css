@@ -355,11 +355,13 @@ for (const { directory, manifest } of packages) {
   }
 
   for (const field of publishedDependencyFields) {
-    assert.equal(
-      Object.hasOwn(manifest[field] ?? {}, '@master/css-internal'),
-      false,
-      `${manifest.name} must bundle the private internal package instead of publishing it in ${field}.`
-    )
+    for (const privatePackage of ['@master/css-internal', '@master/css-engine-js']) {
+      assert.equal(
+        Object.hasOwn(manifest[field] ?? {}, privatePackage),
+        false,
+        `${manifest.name} must bundle the private ${privatePackage} package instead of publishing it in ${field}.`
+      )
+    }
   }
 }
 
@@ -380,6 +382,9 @@ const internalPackage = packages.find(({ manifest }) => manifest.name === '@mast
 assert.ok(internalPackage?.manifest.private, '@master/css-internal must remain repository-private.')
 assert.equal(internalPackage.directory, 'internal', '@master/css-internal must remain in packages/internal.')
 assert.equal(internalPackage.manifest.publishConfig, undefined, 'The private internal package must not have publish metadata.')
+const engineJSPackage = packages.find(({ manifest }) => manifest.name === '@master/css-engine-js')
+assert.ok(engineJSPackage?.manifest.private, '@master/css-engine-js must remain repository-private.')
+assert.equal(engineJSPackage.manifest.publishConfig, undefined, 'The private JavaScript engine package must not have publish metadata.')
 
 assert.equal(
   packages.some(({ manifest }) => manifest.name === '@master/eslint-config-css'),
