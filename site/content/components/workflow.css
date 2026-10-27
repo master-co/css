@@ -118,14 +118,13 @@
     height: 3.25rem;
     border-radius: var(--radius-2xl);
     outline: 1px solid var(--home-hairline);
-    color: var(--home-text);
+    color: var(--home-brand, var(--home-text));
     background-color: var(--home-sheet);
     box-shadow: var(--home-elevation-1);
-    transition: color var(--home-slow) var(--home-ease), outline-color var(--home-slow) var(--home-ease);
+    transition: outline-color var(--home-slow) var(--home-ease);
 
     .home-mcp-face:hover & {
       outline-color: var(--home-rule);
-      color: var(--home-brand, var(--home-text));
     }
   }
 
@@ -246,17 +245,6 @@
     color: var(--home-text);
     background-color: var(--home-sheet);
     box-shadow: var(--home-edge);
-
-    & svg {
-      filter: grayscale(1);
-      opacity: 0.7;
-      transition: filter var(--duration-slow) var(--easing-smooth), opacity var(--duration-slow) var(--easing-smooth);
-    }
-
-    &:hover svg {
-      filter: none;
-      opacity: 1;
-    }
   }
 
   .home-workspace {

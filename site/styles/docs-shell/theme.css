@@ -15,23 +15,32 @@
   --radius-panel: 1rem;
 }
 
-/* Site roles on the zinc interface neutral, alongside the preset's surface, line and text roles. */
+/*
+ * Site roles on the zinc interface neutral, alongside the preset's surface, line and text roles.
+ * Light mode stays clean and white: the canvas sits halfway between zinc 0 and 5, and the shell that
+ * wraps content is only a step below it, so structure comes from contours rather than dark grounds.
+ */
 @theme {
-  --color-surface-canvas: light-dark(var(--color-zinc-5), var(--color-zinc-95));
-  --color-surface-shell: light-dark(var(--color-zinc-10), var(--color-zinc-100));
+  --color-surface-canvas: light-dark(color-mix(in oklab, var(--color-zinc-0) 50%, var(--color-zinc-5)), var(--color-zinc-95));
+  --color-surface-shell: light-dark(color-mix(in oklab, var(--color-zinc-5) 70%, var(--color-zinc-10)), color-mix(in oklab, var(--color-zinc-95) 55%, var(--color-zinc-100)));
   --color-surface-ink: light-dark(var(--color-zinc-90), var(--color-zinc-5));
   --color-text-subtle: light-dark(var(--color-zinc-40), var(--color-zinc-60));
+  --color-line-contour: light-dark(oklch(24% .002 265 / .085), oklch(100% 0 none / .075));
 }
 
 /*
- * Site light. One source above: raised surfaces take a 1px line of light on their top edge, a hairline
- * ring and a short contact shadow; floating surfaces add a long, faint falloff; pressed ones sink.
- * Radii nest by an 8px inset: r-lg (wells), r-2xl (sheets), r-3xl (shells), r-xl (controls).
+ * Site light. One source above and slightly left. A raised surface is built from parts: a 1px dark
+ * contour holds the shape, a 1px inner light finishes the top edge (fainter on the left), and three
+ * contact layers fade out from the edge so it never looks cut out. Floating surfaces add a wide, soft
+ * falloff; pressed tracks take two soft inner layers. Radii nest by an 8px inset: r-lg (wells),
+ * r-xl (controls and code), r-2xl (sheets) and r-3xl (shells).
  */
 @theme {
-  --shadow-raised: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-subtle), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5));
-  --shadow-floating: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-subtle), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)), 0 16px 32px -20px light-dark(oklch(0% 0 none / .18), oklch(0% 0 none / .6));
-  --shadow-pressed: inset 0 1px 2px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .5)), inset 0 0 0 1px var(--color-line-subtle);
+  --shadow-edge: inset 0 1px 0 light-dark(oklch(100% 0 none / .95), oklch(100% 0 none / .06)), inset 1px 0 0 light-dark(oklch(100% 0 none / .45), oklch(100% 0 none / .02));
+  --shadow-contact: 0 .5px 1px light-dark(oklch(18% 0 none / .045), oklch(0% 0 none / .4)), 0 2px 4px -1px light-dark(oklch(18% 0 none / .025), oklch(0% 0 none / .24)), 0 5px 12px -4px light-dark(oklch(18% 0 none / .016), oklch(0% 0 none / .2));
+  --shadow-raised: var(--shadow-edge), 0 0 0 1px var(--color-line-contour), var(--shadow-contact);
+  --shadow-floating: var(--shadow-edge), 0 0 0 1px var(--color-line-contour), var(--shadow-contact), 0 10px 28px -8px light-dark(oklch(18% 0 none / .05), oklch(0% 0 none / .45)), 0 28px 64px -24px light-dark(oklch(18% 0 none / .06), oklch(0% 0 none / .5));
+  --shadow-pressed: inset 0 .5px 1px light-dark(oklch(18% 0 none / .035), oklch(0% 0 none / .4)), inset 0 2px 5px -1px light-dark(oklch(18% 0 none / .018), oklch(0% 0 none / .25)), inset 0 0 0 1px var(--color-line-contour);
 }
 @keyframes slide-to-right {
     from {

@@ -1,5 +1,5 @@
 @layer components {
-  /* Measurements read in grays; Master CSS is the one signal, and brands take their color only on hover. */
+  /* Bars read in grays with Master CSS as the one signal; the brand icons beside them keep their own colors. */
   .home-bench {
     padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
     border-radius: var(--radius-2xl);
@@ -35,17 +35,12 @@
     transition: color var(--home-quick) var(--home-ease);
   }
 
+  /* Fills carry a half-pixel of light on top, like the progress bars of the reference dashboard. */
   .home-bench-bar {
     height: 0.5rem;
     border-radius: 2px;
-    background-color: color-mix(in oklab, var(--home-text) 14%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-text) 6%, transparent);
-  }
-
-  .home-bench-icon {
-    opacity: 0.5;
-    filter: grayscale(1);
-    transition: opacity var(--home-base) var(--home-ease), filter var(--home-base) var(--home-ease);
+    background-color: color-mix(in oklab, var(--home-text) 16%, var(--home-sheet));
+    box-shadow: inset 0 0.5px 0 light-dark(rgb(255 255 255 / 0.45), rgb(255 255 255 / 0.08)), 0 0.5px 1px light-dark(oklch(18% 0 none / 0.04), rgb(0 0 0 / 0.3));
   }
 
   .home-bench-value {
@@ -69,12 +64,7 @@
     }
 
     .home-bench-bar {
-      background-color: color-mix(in oklab, var(--home-text) 28%, transparent);
-    }
-
-    .home-bench-icon {
-      opacity: 1;
-      filter: none;
+      background-color: color-mix(in oklab, var(--home-text) 30%, var(--home-sheet));
     }
   }
 
@@ -86,12 +76,7 @@
 
     .home-bench-bar {
       background-color: var(--home-signal);
-      box-shadow: 0 0 0 3px var(--home-signal-glow);
-    }
-
-    .home-bench-icon {
-      opacity: 1;
-      filter: none;
+      box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.5), 0 0 0 3px color-mix(in oklab, var(--home-signal) 18%, transparent);
     }
 
     .home-bench-value {

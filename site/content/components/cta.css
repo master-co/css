@@ -4,7 +4,6 @@
     padding: var(--home-gap);
     border-radius: var(--home-radius-tray);
     background-color: var(--home-tray);
-    box-shadow: inset 0 0 0 1px var(--home-hairline);
   }
 
   /* The closing stage is always dark, so the page ends on the same matrix it opened with, lit from above. */

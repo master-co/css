@@ -31,7 +31,7 @@ const mcpClients: { name: string, Logo: Logo, color?: string }[] = [
   { name: 'GitHub Copilot', Logo: copilotLogo },
   { name: 'Gemini CLI', Logo: geminiLogo, color: '#8e75b2' },
   { name: 'Windsurf', Logo: windsurfLogo },
-  { name: 'Zed', Logo: zedLogo },
+  { name: 'Zed', Logo: zedLogo, color: '#084ccf' },
   { name: 'Cline', Logo: clineLogo }
 ]
 

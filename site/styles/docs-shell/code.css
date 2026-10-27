@@ -27,7 +27,7 @@
     overflow: auto;
     padding: 1rem 0;
     white-space: nowrap;
-    background-color: var(--color-surface-inset);
+    background-color: var(--color-surface-canvas);
     line-height: 20px;
     counter-reset: line;
     hyphens: none;
@@ -74,7 +74,7 @@
 
   .code-bar {
     display: flex;
-    background-color: var(--color-surface-inset);
+    background-color: var(--color-surface-canvas);
     font-size: var(--font-size-xs);
   }
 
@@ -205,10 +205,10 @@
 }
 
 @layer components {
-  /* Code sits in a recessed well: a hairline frame, the inset surface and a 12px radius. */
+  /* Code sits in a soft well: a 1px contour, the canvas surface and a 12px radius. */
   .code, .codeTabs {
     min-width: 0;
-    border: 1px solid var(--color-line-subtle);
+    border: 1px solid var(--color-line-contour);
     border-radius: var(--radius-xl);
     overflow: hidden;
   }
@@ -228,18 +228,22 @@
   }
   .code-bar-tabs { display: flex; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .code-bar-tabs::-webkit-scrollbar { display: none; }
-  .code-window-controls { display: flex; flex: none; align-items: center; gap: .375rem; padding-inline: .75rem; border-right: 1px solid var(--color-line-subtle); }
+  .code-window-controls { position: relative; display: flex; flex: none; align-items: center; gap: .375rem; padding-inline: .75rem; }
+  /* Seams inside the bar are single, inset lines with a 1px light beside them, never full-height borders. */
+  :is(.code-window-controls, .code-tab)::after, .code-bar-actions::before { position: absolute; top: .5rem; bottom: .5rem; width: 1px; border-radius: 1px; background: var(--color-line-contour); box-shadow: 1px 0 0 light-dark(oklch(100% 0 none / .9), transparent); content: ''; }
+  :is(.code-window-controls, .code-tab)::after { right: 0; }
+  .code-bar-actions::before { left: 0; }
   .code-window-dot { display: block; width: .5625rem; height: .5625rem; border-radius: 50%; background-color: color-mix(in oklab, var(--color-text-subtle) 45%, transparent); }
   .code-file-label, .code-tab { display: inline-flex; flex: none; align-items: center; min-width: 0; max-width: 250px; min-height: 2.25rem; gap: .375rem; padding-inline: .75rem; font: inherit; white-space: nowrap; }
   .code-file-label { flex: 1; overflow: hidden; color: var(--color-text-strong); }
   .code-file-label span, .code-tab span { overflow: hidden; text-overflow: ellipsis; }
-  .code-tab { border: 0; border-right: 1px solid var(--color-line-subtle); background: transparent; color: var(--color-text-body); cursor: pointer; }
+  .code-tab { position: relative; border: 0; background: transparent; color: var(--color-text-body); cursor: pointer; }
   .code-tab:hover { color: var(--color-text-strong); background: var(--color-surface-raised); }
-  .code-tab[aria-selected="true"] { color: var(--color-text-strong); background: var(--color-surface-base); font-weight: 560; box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)); }
+  .code-tab[aria-selected="true"] { color: var(--color-text-strong); background: var(--color-surface-base); font-weight: 560; box-shadow: var(--shadow-edge); }
   .code-tab:not([aria-selected="true"]) .code-tab-icon { display: none; }
   .code-tab-icon { flex: none; width: 14px; height: 14px; }
   .code-tab:focus-visible, .code-copy-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -3px; }
-  .code-bar-actions { display: flex; flex: none; align-items: center; margin-inline-start: auto; border-left: 1px solid var(--color-line-subtle); }
+  .code-bar-actions { position: relative; display: flex; flex: none; align-items: center; margin-inline-start: auto; }
   .code-copy { position: relative; display: inline-flex; align-items: center; min-width: 0; }
   .code-copy-button { display: inline-grid; flex: none; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; background: transparent; color: var(--color-text-muted); cursor: pointer; }
   .code-copy-button:hover { color: var(--color-text-strong); background: var(--color-surface-raised); }

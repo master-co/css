@@ -16,7 +16,7 @@
     --home-ink: var(--color-surface-ink);
 
     /* Lines: hairlines separate, rules divide, strong rules mark the selected state. */
-    --home-hairline: var(--color-line-subtle);
+    --home-hairline: var(--color-line-contour);
     --home-rule: var(--color-line-divider);
     --home-rule-strong: color-mix(in oklab, var(--color-line-control) 55%, transparent);
     --home-guide: var(--color-line-subtle);
@@ -45,15 +45,15 @@
     --home-code-selector: light-dark(oklch(0.56 0.1 70), oklch(0.82 0.1 85));
 
     /* Light: a single source above. Raised surfaces catch a 1px line of it on their top edge and sit on a contact shadow. */
-    --home-edge: inset 0 1px 0 light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.06));
-    --home-contact: 0 1px 2px light-dark(rgb(0 0 0 / 0.07), rgb(0 0 0 / 0.5));
-    --home-shade-near: light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.4));
-    --home-shade-far: light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.55));
+    --home-edge: var(--shadow-edge);
+    --home-contact: var(--shadow-contact);
+    --home-shade-near: light-dark(oklch(18% 0 none / 0.04), rgb(0 0 0 / 0.4));
+    --home-shade-far: light-dark(oklch(18% 0 none / 0.07), rgb(0 0 0 / 0.55));
     --home-elevation-1: var(--home-edge), var(--home-contact);
-    --home-elevation-2: var(--home-edge), var(--home-contact), 0 12px 24px -16px var(--home-shade-far);
-    --home-elevation-3: var(--home-edge), var(--home-contact), 0 32px 64px -40px light-dark(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.8));
-    --home-groove: inset 0 1px 2px light-dark(rgb(0 0 0 / 0.07), rgb(0 0 0 / 0.45)), inset 0 0 0 1px var(--home-hairline);
-    --home-pressed: inset 0 1px 2px light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.5));
+    --home-elevation-2: var(--home-edge), var(--home-contact), 0 10px 28px -8px light-dark(oklch(18% 0 none / 0.05), oklch(0% 0 none / 0.45));
+    --home-elevation-3: var(--home-edge), var(--home-contact), 0 24px 60px -28px light-dark(oklch(18% 0 none / 0.1), oklch(0% 0 none / 0.7));
+    --home-groove: var(--shadow-pressed);
+    --home-pressed: var(--shadow-pressed);
 
     /* Shape: an 8px inset everywhere, and radii that nest concentrically: outer = inner + inset. */
     --home-gap: 0.5rem;
@@ -106,11 +106,17 @@
   }
 
   /* Glass is for things that float over the matrix: a thin translucent surface with a bright top rim. Main content stays solid. */
+  /* A barely-there dark contour defines the edge, the inner light sits on top and left, and the falloff spreads wide and soft. */
   .home-glass {
-    border: 1px solid light-dark(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.08));
-    border-bottom-color: light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4));
-    background-color: light-dark(rgb(250 250 250 / 0.55), rgb(30 30 30 / 0.55));
-    box-shadow: inset 0 1px 0 light-dark(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.05)), var(--home-contact);
+    border: 1px solid light-dark(oklch(24% 0.002 265 / 0.05), rgb(255 255 255 / 0.08));
+    border-bottom-color: light-dark(oklch(24% 0.002 265 / 0.07), rgb(0 0 0 / 0.4));
+    background-color: light-dark(rgb(252 252 252 / 0.6), rgb(30 30 30 / 0.55));
+    box-shadow:
+      inset 0 1px 0 light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.05)),
+      inset 1px 0 0 light-dark(rgb(255 255 255 / 0.35), transparent),
+      0 0.5px 1px light-dark(oklch(18% 0 none / 0.02), rgb(0 0 0 / 0.3)),
+      0 3px 8px -2px light-dark(oklch(18% 0 none / 0.02), rgb(0 0 0 / 0.25)),
+      0 12px 32px -8px light-dark(oklch(18% 0 none / 0.035), rgb(0 0 0 / 0.35));
     backdrop-filter: blur(10px) saturate(1.1);
   }
 

@@ -4,9 +4,9 @@
   .doc-index a { text-decoration: none; }
   .doc-index :is(a, button):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border-radius: var(--radius-sm); }
   /* The section cards sit in a recessed shell, 8px apart, like the homepage bento. */
-  .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); box-shadow: inset 0 0 0 1px var(--color-line-subtle); }
+  .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
   .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: 1.25rem; border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); color: var(--color-text-body); transition: box-shadow .2s; }
-  .doc-index-section-link:hover { box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-divider), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)); }
+  .doc-index-section-link:hover { box-shadow: var(--shadow-edge), 0 0 0 1px var(--color-line-divider), var(--shadow-contact); }
   .doc-index-section-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-lg); background: var(--color-surface-canvas); box-shadow: var(--shadow-pressed); color: var(--color-text-muted); }
   .doc-index-section-link > svg { margin-left: auto; color: var(--color-text-muted); order: 1; }
   .doc-index-section-copy { display: flex; flex-direction: column; gap: var(--spacing-xs); width: 100%; order: 2; }
@@ -25,7 +25,7 @@
   .doc-index-heading p { margin-top: var(--spacing-xs); font-size: .8125rem; line-height: 1.6; color: var(--color-text-muted); }
   .doc-index-groups { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); }
   .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); font-size: var(--font-size-xs); color: var(--color-text-body); line-height: var(--leading-md); transition: color .16s, box-shadow .16s; }
-  .doc-index-groups a:hover { color: var(--color-text-strong); box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-divider), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)); }
+  .doc-index-groups a:hover { color: var(--color-text-strong); box-shadow: var(--shadow-edge), 0 0 0 1px var(--color-line-divider), var(--shadow-contact); }
   .doc-index-categories { columns: 3; column-gap: var(--spacing-xl); }
   .doc-index-category { break-inside: avoid; margin-bottom: var(--spacing-xl); }
   .doc-index-category h3 { display: flex; align-items: baseline; gap: var(--spacing-xs); width: 100%; margin-bottom: var(--spacing-sm); font-size: .8125rem; line-height: 1.5; font-weight: 600; color: var(--color-text-strong); }

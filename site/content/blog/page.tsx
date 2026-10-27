@@ -53,7 +53,7 @@ export default async function Page(props: any) {
     <main className='pt-2xl padding-inline:1.25rem padding-top:3.75rem@sm'>
       <div className="max-w-5xl margin-block:4.5rem margin-inline:auto margin-block:7.5rem@sm prose">
         {/* Posts sit as raised sheets in a recessed shell, 8px apart, like the reference index. */}
-        <div className='grid-cols(1) gap-xs p-xs r-3xl bg-surface-shell box-shadow:inset|0|0|0|1px|var(--color-line-subtle) grid-cols(2)@sm grid-cols(3)@md'>
+        <div className='grid-cols(1) gap-xs p-xs r-3xl bg-surface-shell grid-cols(2)@sm grid-cols(3)@md'>
           {pages
             .map((page: any, index: number) => {
               const formattedDate = dayjs(page.date).format('ddd, MMMM D')

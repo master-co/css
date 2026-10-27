@@ -17,14 +17,14 @@ From the page outward. Each home token aliases a role; light step first, dark se
 
 | Token | Role | Zinc steps | Use | Treatment |
 | --- | --- | --- | --- | --- |
-| `--home-ground` | `surface-canvas` (site) | 5 / 95 | The page and the canvas | Flat |
-| `--home-tray` | `surface-shell` (site) | 10 / 100 | The shell that wraps a set of cards, a stage or the call to action | Recessed: darker than the ground, hairline ring |
+| `--home-ground` | `surface-canvas` (site) | 0–5 mix / 95 | The page and the canvas | Flat |
+| `--home-tray` | `surface-shell` (site) | 5–10 mix / 95–100 mix | The shell that wraps a set of cards, a stage or the call to action | Flat: one soft step below the ground, no ring and no shadow |
 | `--home-sheet` | `surface-raised` | white / 90 | Cards, windows, selected segments | Hairline ring, 1px top light, contact shadow (`--home-elevation-1`) |
-| `--home-well` | `surface-canvas` (site) | 5 / 95 | Figures and code inside a sheet: a recess back down to the canvas | Groove (`--home-groove`) |
+| `--home-well` | `surface-canvas` (site) | 0–5 mix / 95 | Figures and code inside a sheet: a recess back down to the canvas | Groove (`--home-groove`) |
 | `--home-float` | `surface-floating` | white / 80 | Popovers and menus | `--home-elevation-2` |
 | `--home-ink` | `surface-ink` (site) | 90 / 5 | The primary action and the selected icon | Flat, 1px inner light |
 
-Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtle` (zinc 40 / 60); lines alias `line-subtle`, `line-divider` and a 55% mix of `line-control`.
+Light mode stays clean and white: the ground is about `#f7f7f7`, the shell about `#f1f1f1` and sheets white, so structure comes from contours, not dark grounds. Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtle` (zinc 40 / 60); lines alias the site's `line-contour` (an 8.5% dark contour), `line-divider` and a 55% mix of `line-control`.
 
 ## Shell, inset and radii
 
@@ -35,9 +35,11 @@ Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtl
 
 ## Light and shadow
 
-- `--home-edge`: a 1px inner line of light on the top edge of raised surfaces.
-- `--home-contact`: `0 1px 2px` at 7% black. Shadows stay close to the surface; only the hero shell adds a long, faint falloff.
-- `--home-pressed`: an inner shadow. Tracks are pressed into the shell; pressing a button swaps its outer shadow for this and nothing moves.
+- An edge is built from parts: a 1px dark contour holds the shape, a 1px inner light finishes the top edge (fainter on the left, the light comes from above and slightly left), and the shadow fades out in layers.
+- `--home-edge`: the inner lights (`shadow-edge`).
+- `--home-contact`: three contact layers, `.5px`, `2px` and `5px` deep at 4.5%, 2.5% and 1.6%, so the edge never looks cut out (`shadow-contact`). Frames (the shells around the bento sections, the hero stage and the call to action) carry no shadow at all; depth starts at the sheets inside them.
+- `--home-pressed`: two soft inner layers and a contour (`shadow-pressed`). Tracks are pressed into the shell; pressing a button swaps its outer shadow for this and nothing moves.
+- Seams inside a bar are single 1px lines inset from both ends with a 1px light beside them, never full-height borders.
 - The rest of the site uses the same light through `shadow-raised`, `shadow-floating` and `shadow-pressed` in `styles/docs-shell/theme.css`, with radii `r-lg` (wells), `r-xl` (controls and code), `r-2xl` (sheets) and `r-3xl` (shells). The docs' `--color-accent` and `--color-focus` are ink too, so active and focused states read the same on every page.
 
 ## Controls
@@ -49,7 +51,7 @@ Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtl
 
 ## Glass
 
-Only elements that float over the character matrix use `.home-glass`: the announcement pill and the install command. Glass is a translucent fill, 10px backdrop blur and a bright top rim. Main content is always solid.
+Only elements that float over the character matrix use `.home-glass`: the announcement pill and the install command. Glass is a translucent fill, 10px backdrop blur, inner light on the top and left, a barely-there dark contour (5%, 7% at the bottom) and a falloff that spreads wide and soft. Main content is always solid.
 
 ## Lines, guides and text
 
@@ -86,7 +88,7 @@ Short, plain sentences. Name what the reader gets, then stop. No claims the samp
 ## Data
 
 - Charts are gray. Bars, gridlines and ticks use text and rule tokens; the Master CSS row alone uses the signal.
-- Third-party logos sit in grayscale and take their own color only on hover.
+- Third-party logos and brand icons keep their own colors; the gray system governs surfaces, lines and text, not other people's marks.
 - Every figure that shows a number names its source and date, such as the benchmark snapshot, and the tests read the same file.
 
 ## Stable figures
