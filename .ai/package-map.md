@@ -71,27 +71,6 @@ The private internal package is an official integration kernel, not a public ext
 point or generic utility package. Published manifests and built
 JavaScript/declarations must not reference it.
 
-## Retired Public Packages
-
-The following responsibilities were consolidated and these package identities must not
-be restored:
-
-```txt
-@master/css-engine          -> @master/css
-@master/css-project         -> @master/css-compiler/project
-@master/css-stylesheet      -> @master/css-compiler/stylesheet
-@master/css-diagnostics     -> @master/css-compiler/diagnostics and @master/css-tooling/diagnostics
-@master/css-lexer           -> @master/css-tooling/lexer
-@master/css-source          -> @master/css-tooling/source
-@master/css-scanner         -> @master/css-tooling/scanner
-@master/css-validator       -> @master/css-tooling/validator
-@master/css-lint            -> @master/css-tooling/lint
-@master/css-language        -> @master/css-tooling/language and @master/css-language-service
-@master/css-integration     -> private bundled module
-```
-
-The old dotted adapter names and unscoped npm VS Code name are also retired.
-
 ## Dependency Rules
 
 - Rust owns semantics; TypeScript owns hosts and adapters.

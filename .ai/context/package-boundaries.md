@@ -35,12 +35,6 @@ external data / shared build support
 - Official Vue/Svelte extraction adapters are private implementation details. Do not
   restore a public third-party adapter registry.
 
-## Retired Boundaries
-
-Do not restore public engine, project, stylesheet, lexer, source, scanner, validator,
-diagnostics, lint, language, or integration packages. Use the consolidated subpaths
-documented in `.ai/package-map.md`.
-
 ## Escalate When
 
 - A dependency edge seems necessary across layers: read `.ai/architecture.md`,

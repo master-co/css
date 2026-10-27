@@ -2,449 +2,123 @@
   "version": 3,
   "semanticBaseline": "language-16-shared-prefixes",
   "publicBaseline": "Master CSS v2",
-  "historicalSource": "parity/rust-semantic-corpus.json",
-  "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
   "parserCases": [
     {
-      "id": "rc87-condition-885ce94a18bfa418",
-      "sourceId": "rc87-885ce94a18bfa418",
-      "kind": "condition",
-      "input": "print",
-      "expectedCanonical": "@media print",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-cc61ba98b35b45c8",
-      "sourceId": "rc87-cc61ba98b35b45c8",
-      "kind": "condition",
-      "input": "base",
-      "expectedCanonical": "@layer base",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-1734f5d7bb822911",
-      "sourceId": "rc87-1734f5d7bb822911",
-      "kind": "condition",
-      "input": "default",
-      "expectedCanonical": "@layer defaults",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-28504c7efc2294a1",
-      "sourceId": "rc87-28504c7efc2294a1",
-      "kind": "condition",
-      "input": "!print",
-      "expectedCanonical": "@media not print",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-c9332509fb0a43c3",
-      "sourceId": "rc87-c9332509fb0a43c3",
-      "kind": "condition",
-      "input": "start",
-      "expectedCanonical": "@starting-style",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-8def2a63c36141bf",
-      "sourceId": "rc87-8def2a63c36141bf",
-      "kind": "condition",
-      "input": "and()",
-      "expectedCanonical": "@media and",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-09cc8b7b4334f1dc",
-      "sourceId": "rc87-09cc8b7b4334f1dc",
-      "kind": "condition",
-      "input": "or",
-      "expectedCanonical": "@media or",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-76514e9a4f1efaf8",
-      "sourceId": "rc87-76514e9a4f1efaf8",
-      "kind": "condition",
-      "input": "not",
-      "expectedCanonical": "@media not",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-d0cbb50965f0cc3d",
-      "sourceId": "rc87-d0cbb50965f0cc3d",
-      "kind": "condition",
-      "input": ",",
-      "expectedCanonical": "@media or",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-76bbc72ab3707d91",
-      "sourceId": "rc87-76bbc72ab3707d91",
-      "kind": "condition",
-      "input": "!",
-      "expectedCanonical": "@media not",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-2df2f09622f07b54",
-      "sourceId": "rc87-2df2f09622f07b54",
-      "kind": "condition",
-      "input": "&",
-      "expectedCanonical": "@media and",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-20df4f7a223926ef",
-      "sourceId": "rc87-20df4f7a223926ef",
-      "kind": "condition",
-      "input": ">=sm",
-      "expectedCanonical": "@media (width>=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-993d9a7e0530a526",
-      "sourceId": "rc87-993d9a7e0530a526",
-      "kind": "condition",
-      "input": "<=sm",
-      "expectedCanonical": "@media (width<=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-ebba0d9a797a9ff3",
-      "sourceId": "rc87-ebba0d9a797a9ff3",
-      "kind": "condition",
-      "input": ">sm",
-      "expectedCanonical": "@media (width>52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-4803e1bddcdd0be1",
-      "sourceId": "rc87-4803e1bddcdd0be1",
-      "kind": "condition",
-      "input": "<sm",
-      "expectedCanonical": "@media (width<52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-d92b086d04d17b4e",
-      "sourceId": "rc87-d92b086d04d17b4e",
-      "kind": "condition",
-      "input": "=sm",
-      "expectedCanonical": "@media (width=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-dc9516907f133ebe",
-      "sourceId": "rc87-dc9516907f133ebe",
-      "kind": "condition",
-      "input": "height>=sm",
-      "expectedCanonical": "@media (height>=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-6ad929666b6b9cca",
-      "sourceId": "rc87-6ad929666b6b9cca",
-      "kind": "condition",
-      "input": "w>=sm",
-      "expectedCanonical": "@media (width>=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-18fefe8d6af39855",
-      "sourceId": "rc87-18fefe8d6af39855",
-      "kind": "condition",
-      "input": "h>=sm",
-      "expectedCanonical": "@media (height>=52.125rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-ac827a631d0bfdea",
-      "sourceId": "rc87-ac827a631d0bfdea",
-      "kind": "condition",
-      "input": "container(h>160)",
-      "expectedCanonical": "@container (height>10rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-2a8c45db27ac6165",
-      "sourceId": "rc87-2a8c45db27ac6165",
-      "kind": "condition",
-      "input": "sidebar(sm)",
-      "expectedCanonical": "@container sidebar (width>=24rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-c38ee72bdf82e32f",
-      "sourceId": "rc87-c38ee72bdf82e32f",
-      "kind": "condition",
-      "input": "screen&print",
-      "expectedCanonical": "@media screen and print",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-8bf1d207e6ee449d",
-      "sourceId": "rc87-8bf1d207e6ee449d",
-      "kind": "condition",
-      "input": "screen,print",
-      "expectedCanonical": "@media screen or print",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-72d0a2a759b0467c",
-      "sourceId": "rc87-72d0a2a759b0467c",
-      "kind": "condition",
-      "input": "!screen",
-      "expectedCanonical": "@media not screen",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-197914ffe79e30b8",
-      "sourceId": "rc87-197914ffe79e30b8",
-      "kind": "condition",
-      "input": "sm&<=lg",
-      "expectedCanonical": "@media (width>=52.125rem) and (width<=80rem)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-condition-7ce311ee0f038ad0",
-      "sourceId": "rc87-7ce311ee0f038ad0",
-      "kind": "condition",
-      "input": "@media",
-      "expectedCanonical": "@media",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-7672156d45b19824",
-      "sourceId": "rc87-7672156d45b19824",
+      "id": "selector-7672156d45b19824",
       "kind": "selector",
       "input": ".class",
       "expectedCanonical": "&.class"
     },
     {
-      "id": "rc87-selector-b60dd80a8d04ba94",
-      "sourceId": "rc87-b60dd80a8d04ba94",
+      "id": "selector-b60dd80a8d04ba94",
       "kind": "selector",
       "input": ":hover",
       "expectedCanonical": "&:hover"
     },
     {
-      "id": "rc87-selector-56c9ec5b998ed407",
-      "sourceId": "rc87-56c9ec5b998ed407",
-      "kind": "selector",
-      "input": ":first",
-      "expectedCanonical": "&:first-child",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-359d5de5eb9aface",
-      "sourceId": "rc87-359d5de5eb9aface",
-      "kind": "selector",
-      "input": ":last",
-      "expectedCanonical": "&:last-child",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-e8b333d9e0703577",
-      "sourceId": "rc87-e8b333d9e0703577",
-      "kind": "selector",
-      "input": ":even",
-      "expectedCanonical": "&:nth-child(2n)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-be833c156b48227f",
-      "sourceId": "rc87-be833c156b48227f",
-      "kind": "selector",
-      "input": ":odd",
-      "expectedCanonical": "&:nth-child(odd)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-522d69740a4af27e",
-      "sourceId": "rc87-522d69740a4af27e",
+      "id": "selector-522d69740a4af27e",
       "kind": "selector",
       "input": ":nth-child(2)",
       "expectedCanonical": "&:nth-child(2)"
     },
     {
-      "id": "rc87-selector-f10371238c9efe81",
-      "sourceId": "rc87-f10371238c9efe81",
+      "id": "selector-f10371238c9efe81",
       "kind": "selector",
       "input": ":nth(2)",
       "expectedCanonical": "&:nth(2)"
     },
     {
-      "id": "rc87-selector-c38bc18f349f1945",
-      "sourceId": "rc87-c38bc18f349f1945",
+      "id": "selector-c38bc18f349f1945",
       "kind": "selector",
       "input": ":nth-last(2)",
       "expectedCanonical": "&:nth-last(2)"
     },
     {
-      "id": "rc87-selector-49b911c28bcb9bd8",
-      "sourceId": "rc87-49b911c28bcb9bd8",
+      "id": "selector-49b911c28bcb9bd8",
       "kind": "selector",
       "input": "::scrollbar-thumb",
       "expectedCanonical": "&::scrollbar-thumb"
     },
     {
-      "id": "rc87-selector-00adc47b4fde6037",
-      "sourceId": "rc87-00adc47b4fde6037",
+      "id": "selector-00adc47b4fde6037",
       "kind": "selector",
       "input": "::scrollbar-corner",
       "expectedCanonical": "&::scrollbar-corner"
     },
     {
-      "id": "rc87-selector-139cfa16f8dd5610",
-      "sourceId": "rc87-139cfa16f8dd5610",
+      "id": "selector-139cfa16f8dd5610",
       "kind": "selector",
       "input": "::view-transition-new(root)",
       "expectedCanonical": "&::view-transition-new(root)"
     },
     {
-      "id": "rc87-selector-1b996087ea8109f5",
-      "sourceId": "rc87-1b996087ea8109f5",
+      "id": "selector-1b996087ea8109f5",
       "kind": "selector",
       "input": "::vt-new(root)",
       "expectedCanonical": "&::vt-new(root)"
     },
     {
-      "id": "rc87-selector-bd5d33a12de469be",
-      "sourceId": "rc87-bd5d33a12de469be",
+      "id": "selector-bd5d33a12de469be",
       "kind": "selector",
       "input": "[open]",
       "expectedCanonical": "&[open]"
     },
     {
-      "id": "rc87-selector-ec79a41cf8a0524c",
-      "sourceId": "rc87-ec79a41cf8a0524c",
+      "id": "selector-ec79a41cf8a0524c",
       "kind": "selector",
       "input": ":has(.active)",
       "expectedCanonical": "&:has(.active)"
     },
     {
-      "id": "rc87-selector-15b32890c36a85e9",
-      "sourceId": "rc87-15b32890c36a85e9",
-      "kind": "selector",
-      "input": ":of(.active)",
-      "expectedCanonical": ".active &",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-32a046dabc542c75",
-      "sourceId": "rc87-32a046dabc542c75",
-      "kind": "selector",
-      "input": ":of(#active)",
-      "expectedCanonical": "#active &",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-162ff02b6632f8d4",
-      "sourceId": "rc87-162ff02b6632f8d4",
-      "kind": "selector",
-      "input": ":of(active)",
-      "expectedCanonical": "active &",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-607cf543e3bdec74",
-      "sourceId": "rc87-607cf543e3bdec74",
-      "kind": "selector",
-      "input": ":of(.active_)",
-      "expectedCanonical": ".active &",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-2da2114031098406",
-      "sourceId": "rc87-2da2114031098406",
-      "kind": "selector",
-      "input": ":of(.active>)",
-      "expectedCanonical": ".active>&",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-a7caf8516afa1558",
-      "sourceId": "rc87-a7caf8516afa1558",
-      "kind": "selector",
-      "input": ":first:focus:disabled",
-      "expectedCanonical": "&:first-child:focus:disabled",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-de38516129dd991d",
-      "sourceId": "rc87-de38516129dd991d",
-      "kind": "selector",
-      "input": ":not(:last)",
-      "expectedCanonical": "&:not(:last-child)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-50e5b69d383fa53c",
-      "sourceId": "rc87-50e5b69d383fa53c",
-      "kind": "selector",
-      "input": ":has(:first)",
-      "expectedCanonical": "&:has(:first-child)",
-      "historicalRejection": true
-    },
-    {
-      "id": "rc87-selector-4b5ab83b1729ab93",
-      "sourceId": "rc87-4b5ab83b1729ab93",
+      "id": "selector-4b5ab83b1729ab93",
       "kind": "selector",
       "input": ":before",
       "expectedCanonical": "&:before"
     },
     {
-      "id": "rc87-selector-dbf9b9b2b8a7031b",
-      "sourceId": "rc87-dbf9b9b2b8a7031b",
+      "id": "selector-dbf9b9b2b8a7031b",
       "kind": "selector",
       "input": "::first-letter",
       "expectedCanonical": "&::first-letter"
     },
     {
-      "id": "rc87-selector-e28dbc847daa1817",
-      "sourceId": "rc87-e28dbc847daa1817",
+      "id": "selector-e28dbc847daa1817",
       "kind": "selector",
       "input": ">.title",
       "expectedCanonical": "&>.title"
     },
     {
-      "id": "rc87-selector-8cb307639b25de69",
-      "sourceId": "rc87-8cb307639b25de69",
+      "id": "selector-8cb307639b25de69",
       "kind": "selector",
       "input": "*",
       "expectedCanonical": "&*"
     },
     {
-      "id": "rc87-selector-57a76e2ef2de6ae4",
-      "sourceId": "rc87-57a76e2ef2de6ae4",
+      "id": "selector-57a76e2ef2de6ae4",
       "kind": "selector",
       "input": "_hr+*",
       "expectedCanonical": "& hr+*"
     },
     {
-      "id": "rc87-selector-ab231dfc9b4427f6",
-      "sourceId": "rc87-ab231dfc9b4427f6",
+      "id": "selector-ab231dfc9b4427f6",
       "kind": "selector",
       "input": ":hover+div:has(:active)",
       "expectedCanonical": "&:hover+div:has(:active)"
     },
     {
-      "id": "rc87-selector-37cd5d624475d02e",
-      "sourceId": "rc87-37cd5d624475d02e",
+      "id": "selector-37cd5d624475d02e",
       "kind": "selector",
       "input": ">li::before,>li::after",
       "expectedCanonical": "&>li::before,&>li::after"
     },
     {
-      "id": "rc87-selector-a9439c2e913bf21b",
-      "sourceId": "rc87-a9439c2e913bf21b",
+      "id": "selector-a9439c2e913bf21b",
       "kind": "selector",
       "input": "_.feature__tab-title",
       "expectedCanonical": "& .feature__tab-title"
     },
     {
-      "id": "rc87-lexer-f388e6c161004b97",
-      "sourceId": "rc87-f388e6c161004b97",
+      "id": "lexer-f388e6c161004b97",
       "kind": "lexer",
       "input": "  block\tfg:red\nm:1x ",
       "expectedCanonical": "ASCII whitespace and class ranges are preserved",
@@ -452,8 +126,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-6d5d386f580d29af",
-      "sourceId": "rc87-6d5d386f580d29af",
+      "id": "lexer-6d5d386f580d29af",
       "kind": "lexer",
       "input": "block　fg:red",
       "expectedCanonical": "full-width whitespace remains inside one class token",
@@ -461,8 +134,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-56bd470c266dafff",
-      "sourceId": "rc87-56bd470c266dafff",
+      "id": "lexer-56bd470c266dafff",
       "kind": "lexer",
       "input": "a  b ",
       "expectedCanonical": "empty cursor positions are preserved at ASCII whitespace boundaries",
@@ -470,8 +142,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-167ae2709f22cd6d",
-      "sourceId": "rc87-167ae2709f22cd6d",
+      "id": "lexer-167ae2709f22cd6d",
       "kind": "lexer",
       "input": "content:\\'\\' block|content:\\`\\`",
       "expectedCanonical": "configured quote characters are unescaped without changing raw ranges",
@@ -479,8 +150,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-9548ae64df5ed481",
-      "sourceId": "rc87-9548ae64df5ed481",
+      "id": "lexer-9548ae64df5ed481",
       "kind": "lexer",
       "input": " block  fg:red　m:1x ",
       "expectedCanonical": "shared class range collection uses UTF-16 offsets",
@@ -488,8 +158,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-51f771f5b7ef1697",
-      "sourceId": "rc87-51f771f5b7ef1697",
+      "id": "lexer-51f771f5b7ef1697",
       "kind": "lexer",
       "input": "12px/$space url(\"/a;b.png\")!",
       "expectedCanonical": "value numbers units variables functions strings separators and priority are tokenized",
@@ -497,8 +166,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-1e55f6831835ae55",
-      "sourceId": "rc87-1e55f6831835ae55",
+      "id": "lexer-1e55f6831835ae55",
       "kind": "lexer",
       "input": "--value() calc(--value() * -1)",
       "expectedCanonical": "managed placeholders are CSS function tokens",
@@ -506,8 +174,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-3b3607e8b4b583a3",
-      "sourceId": "rc87-3b3607e8b4b583a3",
+      "id": "lexer-3b3607e8b4b583a3",
       "kind": "lexer",
       "input": "@sm>=640:hover>.item",
       "expectedCanonical": "query and selector state token ranges remain exact",
@@ -515,8 +182,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-58dfe44e344938aa",
-      "sourceId": "rc87-58dfe44e344938aa",
+      "id": "lexer-58dfe44e344938aa",
       "kind": "lexer",
       "input": "@media(pointer:coarse),screen_:is(.active,#target,button)",
       "expectedCanonical": "native query and selector punctuation roles remain exact",
@@ -524,8 +190,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-116f378a8315c994",
-      "sourceId": "rc87-116f378a8315c994",
+      "id": "lexer-116f378a8315c994",
       "kind": "lexer",
       "input": "@sm&<=md",
       "expectedCanonical": "named query range endpoints remain separate value tokens",
@@ -533,8 +198,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-377b579d44d48303",
-      "sourceId": "rc87-377b579d44d48303",
+      "id": "lexer-377b579d44d48303",
       "kind": "lexer",
       "input": "{fg:red;bg:blue}",
       "expectedCanonical": "group braces and declaration terminators wrap semantic class tokens",
@@ -542,8 +206,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-26f2db55b217f0d5",
-      "sourceId": "rc87-26f2db55b217f0d5",
+      "id": "lexer-26f2db55b217f0d5",
       "kind": "lexer",
       "input": "{fg:red;block}>li:hover@sm",
       "expectedCanonical": "group suffix selector and query state remain tokenized",
@@ -551,8 +214,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-bcbede53a81f0bc5",
-      "sourceId": "rc87-bcbede53a81f0bc5",
+      "id": "lexer-bcbede53a81f0bc5",
       "kind": "lexer",
       "input": "{block}@sm",
       "expectedCanonical": "group query suffix remains a query keyword",
@@ -560,8 +222,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-eb118a232c54e6de",
-      "sourceId": "rc87-eb118a232c54e6de",
+      "id": "lexer-eb118a232c54e6de",
       "kind": "lexer",
       "input": "{fg:red;bg:blue",
       "expectedCanonical": "unclosed group recovery preserves parsed declarations",
@@ -569,8 +230,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-af4d2924300d54db",
-      "sourceId": "rc87-af4d2924300d54db",
+      "id": "lexer-af4d2924300d54db",
       "kind": "lexer",
       "input": "fg:red;bg:blue",
       "expectedCanonical": "brace-less grouped declarations preserve their terminator",
@@ -578,8 +238,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-7de028667721a877",
-      "sourceId": "rc87-7de028667721a877",
+      "id": "lexer-7de028667721a877",
       "kind": "lexer",
       "input": "@import url(\"@master/css\") layer(theme);\n.x { content: \"@import url(\\\"ignored\\\");\" }\n@import \"./a;b.css\";",
       "expectedCanonical": "@master/css|./a;b.css",
@@ -587,8 +246,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-80cea11f6437844e",
-      "sourceId": "rc87-80cea11f6437844e",
+      "id": "lexer-80cea11f6437844e",
       "kind": "lexer",
       "input": "@master entry;|@import \"@master/css\";|@master;|@master global;",
       "expectedCanonical": "true|true|false|false",
@@ -596,8 +254,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-c338962e34e07c1c",
-      "sourceId": "rc87-c338962e34e07c1c",
+      "id": "lexer-c338962e34e07c1c",
       "kind": "lexer",
       "input": "@master entry;\n@source \"./x.css\";\n.a{}",
       "expectedCanonical": "\n@source \"./x.css\";\n.a{}",
@@ -605,8 +262,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-85fe07eee3ea650e",
-      "sourceId": "rc87-85fe07eee3ea650e",
+      "id": "lexer-85fe07eee3ea650e",
       "kind": "lexer",
       "input": "@master;\n@master global;\n@master shake;\n@master no-shake;\n.a{}",
       "expectedCanonical": "no entry directives",
@@ -614,8 +270,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-a99556d32ad12a9b",
-      "sourceId": "rc87-a99556d32ad12a9b",
+      "id": "lexer-a99556d32ad12a9b",
       "kind": "lexer",
       "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }\n.fallback { color: var(--color-brand, var(--color-green-60)); }",
       "expectedCanonical": "color-green-60|color-brand",
@@ -623,8 +278,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-4d294d715eb82c2d",
-      "sourceId": "rc87-4d294d715eb82c2d",
+      "id": "lexer-4d294d715eb82c2d",
       "kind": "lexer",
       "input": "--alpha(var(--color-brand, \"a)b\") / calc(100% - 20% /* ) */))",
       "expectedCanonical": "balanced function ends at UTF-16 offset 61",
@@ -632,8 +286,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-9ccb1609c26acb3a",
-      "sourceId": "rc87-9ccb1609c26acb3a",
+      "id": "lexer-9ccb1609c26acb3a",
       "kind": "lexer",
       "input": ".quoted { content: \"var(--color-blue-60)\"; }\n/* var(--color-red-60) */\n.real { color: var(--color-green-60); }",
       "expectedCanonical": "only active variable references are replaced",
@@ -641,8 +294,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-c853daf53b370443",
-      "sourceId": "rc87-c853daf53b370443",
+      "id": "lexer-c853daf53b370443",
       "kind": "lexer",
       "input": "@source \"a;b.css\";\n@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } }",
       "expectedCanonical": "source|theme with exact statement block and quoted ranges",
@@ -650,8 +302,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-9e23b9ca5eba0b7f",
-      "sourceId": "rc87-9e23b9ca5eba0b7f",
+      "id": "lexer-9e23b9ca5eba0b7f",
       "kind": "lexer",
       "input": "@reference \"./a;b.css\";\n@layer components { .btn { @reference \"./nested.css\"; } }",
       "expectedCanonical": "top-level and nested reference ranges retain depth and quotes",
@@ -659,8 +310,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-cd1d137ee89e9efb",
-      "sourceId": "rc87-cd1d137ee89e9efb",
+      "id": "lexer-cd1d137ee89e9efb",
       "kind": "lexer",
       "input": "@layer components { .btn { @compose block; @variant <sm { @compose hidden; } } }",
       "expectedCanonical": "",
@@ -668,8 +318,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-0ecc38899002a5db",
-      "sourceId": "rc87-0ecc38899002a5db",
+      "id": "lexer-0ecc38899002a5db",
       "kind": "lexer",
       "input": ".card { @dark { @compose fg:white; } @light { color: black; } }",
       "expectedCanonical": "",
@@ -677,8 +326,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-bf007c1edf054a11",
-      "sourceId": "rc87-bf007c1edf054a11",
+      "id": "lexer-bf007c1edf054a11",
       "kind": "lexer",
       "input": "@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }",
       "expectedCanonical": "",
@@ -686,8 +334,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-8b8911fa6dc3e148",
-      "sourceId": "rc87-8b8911fa6dc3e148",
+      "id": "lexer-8b8911fa6dc3e148",
       "kind": "lexer",
       "input": "@components { btn { @compose block; } }",
       "expectedCanonical": "components",
@@ -695,8 +342,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-2f3cc1f8149e5aac",
-      "sourceId": "rc87-2f3cc1f8149e5aac",
+      "id": "lexer-2f3cc1f8149e5aac",
       "kind": "lexer",
       "input": "@utility text-<left|center|right> { text-align: --value(); }",
       "expectedCanonical": "no Master CSS directives",
@@ -704,8 +350,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-0200c9f8cb24fb9e",
-      "sourceId": "rc87-0200c9f8cb24fb9e",
+      "id": "lexer-0200c9f8cb24fb9e",
       "kind": "lexer",
       "input": "@theme { --content: \"a;b\"; --root-size: 16 }",
       "expectedCanonical": "--content=\"a;b\"|--root-size=16",
@@ -713,8 +358,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-9e290a26e4a4bcd2",
-      "sourceId": "rc87-9e290a26e4a4bcd2",
+      "id": "lexer-9e290a26e4a4bcd2",
       "kind": "lexer",
       "input": "@theme { --color-primary: red; @keyframes fade { to { opacity: 1; } } --duration-fast: 150ms }",
       "expectedCanonical": "--color-primary|--duration-fast",
@@ -722,8 +366,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-8825de071b213b2d",
-      "sourceId": "rc87-8825de071b213b2d",
+      "id": "lexer-8825de071b213b2d",
       "kind": "lexer",
       "input": "@theme dark",
       "expectedCanonical": "eof at UTF-16 source length",
@@ -731,8 +374,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-a16dfb59baf769b1",
-      "sourceId": "rc87-a16dfb59baf769b1",
+      "id": "lexer-a16dfb59baf769b1",
       "kind": "lexer",
       "input": "font:48px|1col|-1col|-|a b",
       "expectedCanonical": "font\\:48px|\\31 col|-\\31 col|\\-|a\\ b",
@@ -740,8 +382,7 @@
       "runner": "cargo-test"
     },
     {
-      "id": "rc87-lexer-e84fc87f66b88072",
-      "sourceId": "rc87-e84fc87f66b88072",
+      "id": "lexer-e84fc87f66b88072",
       "kind": "lexer",
       "input": "a.b[c]",
       "expectedCanonical": "a\\.b\\[c\\]",
@@ -1165,7 +806,7 @@
       ]
     },
     {
-      "id": "engine-legacy-pseudo-element-bytes",
+      "id": "engine-single-colon-pseudo-element-bytes",
       "manifest": "default",
       "steps": [
         {
@@ -1386,7 +1027,6 @@
         {
           "op": "ensure",
           "classes": [
-            "display:block:of(.active>)",
             "display:block:nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
@@ -1722,8 +1362,7 @@
       ]
     },
     {
-      "id": "rc87-rule-b34b6305ef89bb24",
-      "sourceId": "rc87-b34b6305ef89bb24",
+      "id": "rule-b34b6305ef89bb24",
       "manifest": "default",
       "steps": [
         {
@@ -1734,8 +1373,7 @@
       ]
     },
     {
-      "id": "rc87-rule-7a36e09838ade737",
-      "sourceId": "rc87-7a36e09838ade737",
+      "id": "rule-7a36e09838ade737",
       "manifest": "default",
       "steps": [
         {
@@ -1751,14 +1389,12 @@
       ]
     },
     {
-      "id": "rc87-rule-c04505259861369b",
-      "sourceId": "rc87-c04505259861369b",
+      "id": "rule-c04505259861369b",
       "manifest": "default",
       "steps": []
     },
     {
-      "id": "rc87-rule-3f25eb2d165c2792",
-      "sourceId": "rc87-3f25eb2d165c2792",
+      "id": "rule-3f25eb2d165c2792",
       "manifest": "default",
       "steps": [
         {
@@ -1799,8 +1435,7 @@
       ]
     },
     {
-      "id": "rc87-rule-6d53dce3a8f4a608",
-      "sourceId": "rc87-6d53dce3a8f4a608",
+      "id": "rule-6d53dce3a8f4a608",
       "manifest": "default",
       "steps": [
         {
@@ -1841,8 +1476,7 @@
       ]
     },
     {
-      "id": "rc87-rule-59505396e17bdf8e",
-      "sourceId": "rc87-59505396e17bdf8e",
+      "id": "rule-59505396e17bdf8e",
       "manifest": "default",
       "steps": [
         {
@@ -1878,8 +1512,7 @@
       ]
     },
     {
-      "id": "rc87-rule-5230468339100f6c",
-      "sourceId": "rc87-5230468339100f6c",
+      "id": "rule-5230468339100f6c",
       "manifest": "default",
       "steps": [
         {
@@ -1940,8 +1573,7 @@
       ]
     },
     {
-      "id": "rc87-rule-f491aa129b9a3a74",
-      "sourceId": "rc87-f491aa129b9a3a74",
+      "id": "rule-f491aa129b9a3a74",
       "manifest": "default",
       "steps": [
         {
@@ -1977,8 +1609,7 @@
       ]
     },
     {
-      "id": "rc87-rule-d289666fcc196b64",
-      "sourceId": "rc87-d289666fcc196b64",
+      "id": "rule-d289666fcc196b64",
       "manifest": "default",
       "steps": [
         {
@@ -2124,8 +1755,7 @@
       ]
     },
     {
-      "id": "rc87-rule-8d2ee1e868c38dd6",
-      "sourceId": "rc87-8d2ee1e868c38dd6",
+      "id": "rule-8d2ee1e868c38dd6",
       "manifest": "default",
       "steps": [
         {
@@ -2146,8 +1776,7 @@
       ]
     },
     {
-      "id": "rc87-rule-fb85c91f2d14846a",
-      "sourceId": "rc87-fb85c91f2d14846a",
+      "id": "rule-fb85c91f2d14846a",
       "manifest": "default",
       "steps": [
         {
@@ -2158,8 +1787,7 @@
       ]
     },
     {
-      "id": "rc87-rule-afba0d33467fc574",
-      "sourceId": "rc87-afba0d33467fc574",
+      "id": "rule-afba0d33467fc574",
       "manifest": "default",
       "steps": [
         {
@@ -2170,8 +1798,7 @@
       ]
     },
     {
-      "id": "rc87-rule-4d6d766d11fd57af",
-      "sourceId": "rc87-4d6d766d11fd57af",
+      "id": "rule-4d6d766d11fd57af",
       "manifest": "default",
       "steps": [
         {
@@ -2207,20 +1834,17 @@
       ]
     },
     {
-      "id": "rc87-rule-743a5f3fb61f7d88",
-      "sourceId": "rc87-743a5f3fb61f7d88",
+      "id": "rule-743a5f3fb61f7d88",
       "manifest": "default",
       "steps": []
     },
     {
-      "id": "rc87-rule-5e304b15af0d12dd",
-      "sourceId": "rc87-5e304b15af0d12dd",
+      "id": "rule-5e304b15af0d12dd",
       "manifest": "default",
       "steps": []
     },
     {
-      "id": "rc87-rule-22b7c994c8342eaa",
-      "sourceId": "rc87-22b7c994c8342eaa",
+      "id": "rule-22b7c994c8342eaa",
       "manifest": "default",
       "steps": [
         {
@@ -2241,8 +1865,7 @@
       ]
     },
     {
-      "id": "rc87-rule-3054317e5047ac84",
-      "sourceId": "rc87-3054317e5047ac84",
+      "id": "rule-3054317e5047ac84",
       "manifest": "default",
       "steps": [
         {
@@ -2253,8 +1876,7 @@
       ]
     },
     {
-      "id": "rc87-rule-afbc5c93d6ab3dc2",
-      "sourceId": "rc87-afbc5c93d6ab3dc2",
+      "id": "rule-afbc5c93d6ab3dc2",
       "manifest": "default",
       "steps": [
         {
@@ -2330,8 +1952,7 @@
       ]
     },
     {
-      "id": "rc87-rule-9c9ee122cd4a3bd3",
-      "sourceId": "rc87-9c9ee122cd4a3bd3",
+      "id": "rule-9c9ee122cd4a3bd3",
       "manifest": "default",
       "steps": [
         {
@@ -2382,8 +2003,7 @@
       ]
     },
     {
-      "id": "rc87-rule-8a293bcf0d290eb7",
-      "sourceId": "rc87-8a293bcf0d290eb7",
+      "id": "rule-8a293bcf0d290eb7",
       "manifest": "default",
       "steps": [
         {
@@ -2474,8 +2094,7 @@
       ]
     },
     {
-      "id": "rc87-rule-acdce9660356cb28",
-      "sourceId": "rc87-acdce9660356cb28",
+      "id": "rule-acdce9660356cb28",
       "manifest": "default",
       "steps": [
         {
@@ -2496,8 +2115,7 @@
       ]
     },
     {
-      "id": "rc87-rule-9895f7ecdc656497",
-      "sourceId": "rc87-9895f7ecdc656497",
+      "id": "rule-9895f7ecdc656497",
       "manifest": "default",
       "steps": [
         {
@@ -2543,8 +2161,7 @@
       ]
     },
     {
-      "id": "rc87-rule-4a94dd75caf59534",
-      "sourceId": "rc87-4a94dd75caf59534",
+      "id": "rule-4a94dd75caf59534",
       "manifest": "default",
       "steps": [
         {
@@ -2575,8 +2192,7 @@
       ]
     },
     {
-      "id": "rc87-rule-2f0ff0b730818d53",
-      "sourceId": "rc87-2f0ff0b730818d53",
+      "id": "rule-2f0ff0b730818d53",
       "manifest": "default",
       "steps": [
         {
@@ -2607,8 +2223,7 @@
       ]
     },
     {
-      "id": "rc87-rule-2f7b1c97993db611",
-      "sourceId": "rc87-2f7b1c97993db611",
+      "id": "rule-2f7b1c97993db611",
       "manifest": "default",
       "steps": [
         {
@@ -2629,8 +2244,7 @@
       ]
     },
     {
-      "id": "rc87-rule-5169d112e4169271",
-      "sourceId": "rc87-5169d112e4169271",
+      "id": "rule-5169d112e4169271",
       "manifest": "default",
       "steps": [
         {
@@ -2641,8 +2255,7 @@
       ]
     },
     {
-      "id": "rc87-rule-ff4cac57b6cc0943",
-      "sourceId": "rc87-ff4cac57b6cc0943",
+      "id": "rule-ff4cac57b6cc0943",
       "manifest": "default",
       "steps": [
         {
@@ -2668,8 +2281,7 @@
       ]
     },
     {
-      "id": "rc87-rule-bc7c658b17e46149",
-      "sourceId": "rc87-bc7c658b17e46149",
+      "id": "rule-bc7c658b17e46149",
       "manifest": "default",
       "steps": [
         {
@@ -2680,8 +2292,7 @@
       ]
     },
     {
-      "id": "rc87-rule-081769c168f88151",
-      "sourceId": "rc87-081769c168f88151",
+      "id": "rule-081769c168f88151",
       "manifest": "default",
       "steps": [
         {
@@ -2707,20 +2318,9 @@
       ]
     },
     {
-      "id": "rc87-rule-cb69eb9c0c7aad3d",
-      "sourceId": "rc87-cb69eb9c0c7aad3d",
+      "id": "rule-cb69eb9c0c7aad3d",
       "manifest": "default",
       "steps": [
-        {
-          "op": "inspect",
-          "className": "text:1.25rem",
-          "expectedValid": false
-        },
-        {
-          "op": "inspect",
-          "className": "text:50%",
-          "expectedValid": false
-        },
         {
           "op": "inspectContains",
           "className": "fg-text-blue",
@@ -2739,8 +2339,7 @@
       ]
     },
     {
-      "id": "rc87-rule-9e6b271a6d859a81",
-      "sourceId": "rc87-9e6b271a6d859a81",
+      "id": "rule-9e6b271a6d859a81",
       "manifest": "default",
       "steps": [
         {
@@ -2751,8 +2350,7 @@
       ]
     },
     {
-      "id": "rc87-rule-067aa7686b1c6ef6",
-      "sourceId": "rc87-067aa7686b1c6ef6",
+      "id": "rule-067aa7686b1c6ef6",
       "manifest": "default",
       "steps": [
         {
@@ -2833,8 +2431,7 @@
       ]
     },
     {
-      "id": "rc87-rule-81dae146767af74c",
-      "sourceId": "rc87-81dae146767af74c",
+      "id": "rule-81dae146767af74c",
       "manifest": "default",
       "steps": []
     },
@@ -2846,9 +2443,7 @@
           "op": "ensure",
           "classes": [
             "padding-md",
-            "font-size-sm",
-            "display:block:first",
-            "p:1rem"
+            "font-size-sm"
           ],
           "expectedCss": ""
         },
@@ -3177,8 +2772,7 @@
       "expectedGeneratedCss": "@media (width>=42rem){.card{display:grid}}@media (width>=800px){.card{display:flex}}"
     },
     {
-      "id": "rc87-compiler-variables-modes-dependencies",
-      "sourceId": "rc87-5ae87bddfc5f375d",
+      "id": "compiler-variables-modes-dependencies",
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
       "baseManifest": {
         "version": 6,
@@ -3286,7 +2880,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-variables-modes-dependencies.css",
+              "file": "parity/compiler-variables-modes-dependencies.css",
               "range": {
                 "start": 0,
                 "end": 59
@@ -3318,7 +2912,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-variables-modes-dependencies.css",
+              "file": "parity/compiler-variables-modes-dependencies.css",
               "range": {
                 "start": 60,
                 "end": 116
@@ -3339,8 +2933,7 @@
       }
     },
     {
-      "id": "rc87-compiler-reject-token-alias",
-      "sourceId": "rc87-1ef0184cc6a4bd8e",
+      "id": "compiler-reject-token-alias",
       "source": "@theme { --color-brand: $color-blue-50;  }\n",
       "baseManifest": {
         "version": 6,
@@ -3384,57 +2977,7 @@
       }
     },
     {
-      "id": "rc87-compiler-explicit-negative-variable",
-      "sourceId": "rc87-58a8b9e387f59ddb",
-      "source": "@theme { --spacing--card: -12;  }\n",
-      "baseManifest": {
-        "version": 6,
-        "languageVersion": 16,
-        "customMedia": {}
-      },
-      "expectedManifest": {
-        "version": 6,
-        "languageVersion": 16,
-        "theme": [
-          {
-            "type": "rule",
-            "prelude": ":root,:host",
-            "children": [
-              {
-                "type": "declaration",
-                "name": "spacing--card",
-                "value": "-12"
-              }
-            ]
-          }
-        ],
-        "variables": {
-          "spacing": [
-            {
-              "name": "spacing--card",
-              "key": "-card",
-              "values": [
-                {
-                  "path": [
-                    ":root,:host"
-                  ],
-                  "value": "-12"
-                }
-              ],
-              "dependencies": [],
-              "type": "number",
-              "numeric": {
-                "value": -12,
-                "unit": ""
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "rc87-compiler-static-animation",
-      "sourceId": "rc87-7d6ba9d28d83415c",
+      "id": "compiler-static-animation",
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 6,
@@ -3446,13 +2989,13 @@
         "languageVersion": 16,
         "keyframes": [
           {
-            "id": "k829dcf0e51e283f1-00000000",
-            "ownerId": "kd2eccba66899eb5a",
+            "id": "k96349710441b4a62-00000000",
+            "ownerId": "k80f5f797de67c9c7",
             "name": "fade",
             "text": "@keyframes fade { to { opacity: 1; } }",
             "retained": true,
             "source": {
-              "file": "parity/rc87-compiler-static-animation.css",
+              "file": "parity/compiler-static-animation.css",
               "range": {
                 "start": 0,
                 "end": 38
@@ -3473,35 +3016,7 @@
       }
     },
     {
-      "id": "rc87-compiler-omits-registry-input",
-      "sourceId": "rc87-da6ec108d6e14a3a",
-      "source": "",
-      "baseManifest": {
-        "version": 6,
-        "keyAliases": {
-          "w": "inline-size"
-        },
-        "nativeValueNamespaces": [
-          {
-            "properties": [
-              "width"
-            ],
-            "variableAliasRefs": [
-              "~spacing"
-            ]
-          }
-        ],
-        "languageVersion": 16,
-        "customMedia": {}
-      },
-      "expectedManifest": {
-        "version": 6,
-        "languageVersion": 16
-      }
-    },
-    {
-      "id": "rc87-compiler-breakpoint-container-conditions",
-      "sourceId": "rc87-e793d99a43aa91ea",
+      "id": "compiler-breakpoint-container-conditions",
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
       "baseManifest": {
         "version": 6,
@@ -3574,8 +3089,7 @@
       }
     },
     {
-      "id": "rc87-compiler-unitful-numeric-tokens",
-      "sourceId": "rc87-bce3dcbace35c62f",
+      "id": "compiler-unitful-numeric-tokens",
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
       "baseManifest": {
         "version": 6,
@@ -3719,8 +3233,7 @@
       }
     },
     {
-      "id": "rc87-compiler-variant-branches",
-      "sourceId": "rc87-2763794c2aab6ae8",
+      "id": "compiler-variant-branches",
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 6,
@@ -3746,7 +3259,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-variant-branches.css",
+              "file": "parity/compiler-variant-branches.css",
               "range": {
                 "start": 0,
                 "end": 85
@@ -3780,7 +3293,7 @@
                       }
                     ],
                     "source": {
-                      "file": "parity/rc87-compiler-variant-branches.css",
+                      "file": "parity/compiler-variant-branches.css",
                       "range": {
                         "start": 125,
                         "end": 139
@@ -3814,7 +3327,7 @@
                       }
                     ],
                     "source": {
-                      "file": "parity/rc87-compiler-variant-branches.css",
+                      "file": "parity/compiler-variant-branches.css",
                       "range": {
                         "start": 166,
                         "end": 179
@@ -3833,7 +3346,7 @@
                   }
                 ],
                 "source": {
-                  "file": "parity/rc87-compiler-variant-branches.css",
+                  "file": "parity/compiler-variant-branches.css",
                   "range": {
                     "start": 143,
                     "end": 163
@@ -3852,7 +3365,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-variant-branches.css",
+              "file": "parity/compiler-variant-branches.css",
               "range": {
                 "start": 86,
                 "end": 184
@@ -3873,8 +3386,7 @@
       }
     },
     {
-      "id": "rc87-compiler-semantic-utility",
-      "sourceId": "rc87-e9991ac8889c54d6",
+      "id": "compiler-semantic-utility",
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 6,
@@ -3898,7 +3410,7 @@
                   }
                 ],
                 "source": {
-                  "file": "parity/rc87-compiler-semantic-utility.css",
+                  "file": "parity/compiler-semantic-utility.css",
                   "range": {
                     "start": 16,
                     "end": 29
@@ -3931,7 +3443,7 @@
                   }
                 ],
                 "source": {
-                  "file": "parity/rc87-compiler-semantic-utility.css",
+                  "file": "parity/compiler-semantic-utility.css",
                   "range": {
                     "start": 31,
                     "end": 58
@@ -3950,7 +3462,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-semantic-utility.css",
+              "file": "parity/compiler-semantic-utility.css",
               "range": {
                 "start": 0,
                 "end": 61
@@ -3971,8 +3483,7 @@
       }
     },
     {
-      "id": "rc87-compiler-browser-manifest",
-      "sourceId": "rc87-229f90c18e0fc001",
+      "id": "compiler-browser-manifest",
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 6,
@@ -3996,7 +3507,7 @@
                   }
                 ],
                 "source": {
-                  "file": "parity/rc87-compiler-browser-manifest.css",
+                  "file": "parity/compiler-browser-manifest.css",
                   "range": {
                     "start": 15,
                     "end": 28
@@ -4023,7 +3534,7 @@
                   }
                 ],
                 "source": {
-                  "file": "parity/rc87-compiler-browser-manifest.css",
+                  "file": "parity/compiler-browser-manifest.css",
                   "range": {
                     "start": 30,
                     "end": 40
@@ -4042,7 +3553,7 @@
               }
             ],
             "source": {
-              "file": "parity/rc87-compiler-browser-manifest.css",
+              "file": "parity/compiler-browser-manifest.css",
               "range": {
                 "start": 0,
                 "end": 43

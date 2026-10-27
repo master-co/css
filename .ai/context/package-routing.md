@@ -39,7 +39,7 @@ with the public host named by the Rust routing pack.
 | `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
 | `benchmarks/**` | `benchmarks/package.json`, `benchmarks/AI.md`, `performance.md` | Do not commit benchmark history output. |
 | `crates/**`, `Cargo.toml`, `Cargo.lock` | root/affected `Cargo.toml`, `rust-routing.md` | Rust is the semantic source; use crate-local tests first. |
-| `parity/**`, `parity-exceptions.json`, `scripts/ts-test-migration/**` | `rust-routing.md`, `testing.md` | Evidence and digests are contracts; do not refresh blindly. |
+| `parity/**` | `rust-routing.md`, `testing.md` | Corpora are language contracts; do not refresh blindly. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |
 | `.github/workflows/**`, release config, lockfiles | `accuracy-guardrails.md` | Do not modify unless explicitly requested. |
