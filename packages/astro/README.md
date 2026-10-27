@@ -71,9 +71,9 @@ export default defineConfig({
 })
 ```
 
-The integration uses `static` mode by default, generating CSS at build time without injecting the browser runtime. Choose `mode: 'progressive'` to register Astro middleware that pre-renders initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. The runtime downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
+The integration uses `static` mode by default, generating CSS at build time without injecting the browser runtime. Choose `mode: 'progressive'` to register Astro middleware that pre-renders initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration. The runtime downloads its engine and the runtime program only when a page introduces a class that was not pre-rendered. Source extraction for `.astro` files is handled automatically by `@master/css-tooling/source`.
 
-In static builds with `mode: 'runtime'`, the integration modulepreloads the emitted manifest JSON module when it also injects the runtime script. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
+In static builds with `mode: 'runtime'`, the integration modulepreloads the runtime script and preloads the emitted runtime program with `<link rel="preload" as="fetch">` when it also injects the runtime script. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected. SSR-only Astro output does not receive these preloads because the integration cannot reliably resolve the final client program asset URL at build time.
 
 ```css
 @import '@master/css';
