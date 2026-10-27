@@ -1,4 +1,4 @@
-import { fullWasmEngine, withNodeWasmInput } from './node'
+import { wasmEngine, withNodeWasmInput } from './node'
 import type { MasterCSSWasmEngineLoadOptions } from './provider'
 import { createWasmEngineProvider } from './provider-core'
 
@@ -9,5 +9,5 @@ export type {
 export async function createMasterCSSEngineWasmProvider(
   options: MasterCSSWasmEngineLoadOptions = {}
 ): Promise<object> {
-  return await createWasmEngineProvider(fullWasmEngine, await withNodeWasmInput(options))
+  return await createWasmEngineProvider(wasmEngine, await withNodeWasmInput(options))
 }

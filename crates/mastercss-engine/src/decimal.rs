@@ -1,6 +1,6 @@
 //! Decimal numbers as CSS writes them, decided on their digits. Range checks stay
 //! exact without binary floats, and conversion needs no correctly rounded parser,
-//! whose tables would dominate the runtime Wasm's data.
+//! whose tables would dominate the engine Wasm's data.
 
 use mastercss_lexer::concat_text;
 

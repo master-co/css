@@ -1,8 +1,6 @@
 //! Token metadata from explicit utility registration.
-#[cfg(feature = "manifest")]
 use super::HashSet;
 use mastercss_lexer::{CssSyntaxKind, tokenize_css_syntax};
-#[cfg(feature = "manifest")]
 use mastercss_schema::MixinParameterSyntax;
 use mastercss_schema::{MixinDefinition, MixinNode, MixinValuePart};
 use serde::Serialize;
@@ -70,7 +68,6 @@ pub fn direct_value_mixin(definition: &MixinDefinition) -> Option<(&str, &str)> 
     Some((&parameter.name, property))
 }
 
-#[cfg(feature = "manifest")]
 pub(crate) fn infer(
     definitions: &[mastercss_schema::UtilityDefinition],
     mixins: &[MixinDefinition],
@@ -103,7 +100,6 @@ pub(crate) fn infer(
         .collect()
 }
 
-#[cfg(feature = "manifest")]
 fn collect_properties(
     nodes: &[MixinNode],
     definitions: &[MixinDefinition],

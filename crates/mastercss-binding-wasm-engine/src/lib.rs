@@ -7,15 +7,9 @@ use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_schema::EmittedGlobals;
 use wasm_bindgen::prelude::*;
 
-// Talc replaces the default dlmalloc: 2 KB smaller in the runtime Wasm under brotli
-// for a little slower startup. Sessions run on one thread.
-#[cfg(all(target_family = "wasm", not(target_feature = "atomics")))]
-#[global_allocator]
-static ALLOCATOR: talc::wasm::WasmDynamicTalc = talc::wasm::new_wasm_dynamic_allocator();
-
 // Results cross the boundary as JSON text that the JavaScript provider parses.
-// Sessions execute encoded programs, and emitted globals arrive as two arrays so the
-// runtime parses no JSON. Only `full` builds compile manifests; those entry points
+// Sessions execute encoded programs, and emitted globals arrive as two arrays, so
+// the provider passes them without JSON. Manifest compilation and render sessions
 // take JSON like the native binding.
 
 fn js_error(error: EngineError) -> JsValue {
@@ -55,8 +49,7 @@ fn emitted_globals(names: Vec<String>, counts: Vec<u32>) -> Result<EmittedGlobal
     Ok(globals)
 }
 
-/// Results of `full`-only APIs, which the browser runtime never calls.
-#[cfg(feature = "full")]
+/// Results of the inspection and render APIs, serialized with serde.
 fn render_value<T: serde::Serialize>(value: &T) -> Result<String, JsValue> {
     serde_json::to_string(value).map_err(|error| JsValue::from_str(&error.to_string()))
 }
@@ -80,7 +73,6 @@ impl WasmEngineSession {
         })
     }
 
-    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = fromManifest)]
     pub fn from_manifest(
         manifest_json: &str,
@@ -95,7 +87,6 @@ impl WasmEngineSession {
         })
     }
 
-    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = manifestJSON)]
     pub fn manifest_json(&self) -> Result<String, JsValue> {
         self.inner.manifest_json().map_err(js_error)
@@ -147,7 +138,6 @@ impl WasmEngineSession {
         Ok(transition.to_json())
     }
 
-    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
         &self,
@@ -178,7 +168,6 @@ impl WasmEngineSession {
         Ok(transition.to_json())
     }
 
-    #[cfg(feature = "full")]
     #[wasm_bindgen(js_name = refreshManifest)]
     pub fn refresh_manifest(
         &mut self,
@@ -211,7 +200,6 @@ impl WasmEngineSession {
         Ok(snapshot.to_json())
     }
 
-    #[cfg(feature = "full")]
     pub fn inspect(&self, class_name: &str) -> Result<String, JsValue> {
         let inspection = self.inner.inspect(class_name).map_err(js_error)?;
         render_value(&inspection)
@@ -222,13 +210,11 @@ impl WasmEngineSession {
     }
 }
 
-#[cfg(feature = "full")]
 #[wasm_bindgen(js_name = RenderSession)]
 pub struct WasmRenderSession {
     inner: mastercss_render::RenderSession,
 }
 
-#[cfg(feature = "full")]
 #[wasm_bindgen(js_class = RenderSession)]
 impl WasmRenderSession {
     #[wasm_bindgen(constructor)]
@@ -295,7 +281,6 @@ impl WasmRenderSession {
 }
 
 /// Compiles a manifest into the program that engine sessions execute.
-#[cfg(feature = "full")]
 #[wasm_bindgen(js_name = compileRuntimeProgram)]
 pub fn compile_runtime_program(manifest_json: &str) -> Result<Vec<u8>, JsValue> {
     mastercss_engine::compile_program(manifest_json).map_err(js_error)
@@ -307,11 +292,7 @@ pub fn binding_info() -> String {
         env!("CARGO_PKG_VERSION"),
         "wasm32-unknown-unknown",
         "runtime",
-        if cfg!(feature = "full") {
-            &["engine", "render"]
-        } else {
-            &["engine"]
-        },
+        &["engine", "render"],
     )
     .to_json()
 }

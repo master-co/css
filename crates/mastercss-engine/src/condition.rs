@@ -69,7 +69,7 @@ pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
 }
 
 /// Orders features by domain, feature and unit. A stable insertion sort: the lists
-/// are short, and the standard sort would add its merge code to the runtime Wasm.
+/// are short, and the standard sort would add its merge code to the engine Wasm.
 fn sort_features(features: &mut [ConditionFeature]) {
     let after = |left: &ConditionFeature, right: &ConditionFeature| {
         natural_compare(&left.domain, &right.domain)

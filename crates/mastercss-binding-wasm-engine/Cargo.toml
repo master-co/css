@@ -10,28 +10,10 @@ publish.workspace = true
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["full"]
-# Render sessions and engine inspection. The browser runtime artifact is built
-# without it.
-full = [
-  "dep:mastercss-render",
-  "dep:serde",
-  "dep:serde_json",
-  "mastercss-engine/diagnostic-messages",
-  "mastercss-engine/stylesheet-resources",
-]
-
 [dependencies]
-mastercss-engine = { path = "../mastercss-engine", default-features = false }
-mastercss-render = { path = "../mastercss-render", optional = true }
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-render = { path = "../mastercss-render" }
 mastercss-schema = { path = "../mastercss-schema" }
-serde = { workspace = true, optional = true }
-serde_json = { workspace = true, optional = true }
-wasm-bindgen.workspace = true
-
-[target.'cfg(target_family = "wasm")'.dependencies]
-talc.workspace = true
-
-[dev-dependencies]
+serde.workspace = true
 serde_json.workspace = true
+wasm-bindgen.workspace = true

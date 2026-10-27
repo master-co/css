@@ -40,6 +40,8 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 | Rule priority/cascade | Engine priority/layer tests and fixture review |
 | Variables/tokens/modes | Compiler manifest lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
 | Manifest lowering/execution | Compiler manifest lowering tests and engine parity tests |
+| Engine semantics (any row above that changes what the engine executes) | Also `pnpm run build:rust:wasm`, then `pnpm --filter @master/css-engine-js differential` at zero differences with the matching `packages/engine-js` change; `verify:program` when the program encoding changes |
+| Browser engine (`packages/engine-js`) | The differential at zero, `verify:program` for decoder changes, `check:size`, and `pnpm --filter @master/css-runtime e2e` |
 | Server rendering | `pnpm --filter @master/css-server test` |
 | Static scanning | `pnpm --filter @master/css-tooling test`; add scanning false positive/negative cases |
 | Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |

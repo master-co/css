@@ -36,7 +36,7 @@ own loading, filesystem, browser, editor, and platform adaptation.
 | Crate | Responsibility | Pair with |
 |---|---|---|
 | `mastercss-binding-native` | napi ABI adapters grouped by engine, compiler, tooling, render/scanner | `packages/binding`, affected public host package |
-| `mastercss-binding-wasm-engine` | Engine Wasm ABI for Node without a native binding and other non-browser hosts; default `full` adds manifest compilation, render sessions, inspection, diagnostic text and stylesheet resources. Browsers run `packages/engine-js` instead, which its differential gate keeps byte-identical | `packages/binding-wasm-engine`, `packages/engine-js`, `packages/css` |
+| `mastercss-binding-wasm-engine` | Engine Wasm ABI with manifest compilation, render sessions and inspection, for Node without a native binding and other non-browser hosts. Browsers run `packages/engine-js` instead; the differential runs against this Wasm | `packages/binding-wasm-engine`, `packages/engine-js`, `packages/css` |
 | `mastercss-binding-wasm-compiler` | Compiler Wasm ABI | `packages/binding-wasm-compiler`, `packages/compiler` |
 | `mastercss-binding-wasm-tooling` | Tooling Wasm ABI | `packages/binding-wasm-tooling`, `packages/tooling` |
 | `mastercss-cli` | Native CLI transport over project/scanner/engine | `packages/cli` |
@@ -61,7 +61,10 @@ cargo xtask codegen --check
 cargo xtask parity
 ```
 
-Engine/compiler output changes require the matching npm package tests, and engine
-semantics changes the `@master/css-engine-js` differential. Browser engine changes
+Engine/compiler output changes require the matching npm package tests. Engine
+semantics changes (`mastercss-engine`, the lexer and schema code it executes, the
+program encoding) also change `packages/engine-js` in the same change: rebuild the Wasm
+(`pnpm run build:rust:wasm`) and keep `pnpm --filter @master/css-engine-js differential`
+at zero differences (`.ai/architecture.md#browser-engine`). Browser engine changes
 require runtime e2e and bundle-size review (`pnpm run check:runtime-size`). Never edit generated binding
 protocol files directly.

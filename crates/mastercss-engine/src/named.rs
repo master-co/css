@@ -120,8 +120,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         code,
         message,
         source: None,
-        // Like messages, ranges only matter to hosts that report diagnostics.
-        range: super::DIAGNOSTIC_MESSAGES.then(|| mastercss_schema::SourceRange {
+        range: Some(mastercss_schema::SourceRange {
             start: 0,
             end: diagnostic_source.encode_utf16().count() as u32,
         }),
@@ -133,7 +132,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
     if mastercss_lexer::decode_native_content(source).is_none() {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
-            super::message(|| format!("Unbalanced or invalid Master class structure: {source}")),
+            format!("Unbalanced or invalid Master class structure: {source}"),
         )];
     }
     let native_state = super::native_declaration_head(source)
@@ -150,7 +149,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         {
             return vec![error(
                 super::ErrorCode::ClassSyntaxError,
-                super::message(|| format!("Invalid selector structure: {selector}")),
+                format!("Invalid selector structure: {selector}"),
             )];
         }
     }
@@ -169,7 +168,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             if explicit_layer.is_some_and(|current| current != layer) {
                 return vec![error(
                     super::ErrorCode::ClassSyntaxError,
-                    super::message(|| "A class cannot select multiple layers".into()),
+                    "A class cannot select multiple layers".into(),
                 )];
             }
             explicit_layer = Some(layer);
@@ -179,24 +178,20 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             let (kind, body) = token.split_once('(').expect("recognized query");
             let mut diagnostic = error(
                 super::ErrorCode::MasterQueryRequiresCss,
-                super::message(|| {
-                    format!(
-                        "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
-                    )
-                }),
+                format!(
+                    "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
+                ),
             );
-            if super::DIAGNOSTIC_MESSAGES {
-                let prelude =
-                    mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
-                        .unwrap_or_default();
-                diagnostic.notes.push(format!(
-                    "@mixin --query-name {{ @{kind} {prelude} {{ @contents; }} }}"
-                ));
-                diagnostic.notes.push(
-                    "Use @apply(--query-name). Verify literal pipes in the CSS query before copying."
-                        .into(),
-                );
-            }
+            let prelude =
+                mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
+                    .unwrap_or_default();
+            diagnostic.notes.push(format!(
+                "@mixin --query-name {{ @{kind} {prelude} {{ @contents; }} }}"
+            ));
+            diagnostic.notes.push(
+                "Use @apply(--query-name). Verify literal pipes in the CSS query before copying."
+                    .into(),
+            );
             return vec![diagnostic];
         }
         if let Some(query) = mastercss_lexer::parse_native_query(&token)
@@ -220,11 +215,9 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         {
             return vec![error(
                 super::ErrorCode::UnknownCondition,
-                super::message(|| {
-                    format!(
-                        "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
-                    )
-                }),
+                format!(
+                    "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
+                ),
             )];
         }
     }
@@ -235,13 +228,9 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
     if let Some(prefix) = prefix {
         let candidates = token_owners(source, prefix, manifest);
         if candidates.len() > 1 {
-            let mut diagnostic = error(super::ErrorCode::AmbiguousToken, String::new());
-            if super::DIAGNOSTIC_MESSAGES {
-                let (message, notes) =
-                    ambiguous_token_message(source, prefix, candidates, manifest);
-                diagnostic.message = message;
-                diagnostic.notes = notes;
-            }
+            let (message, notes) = ambiguous_token_message(source, prefix, candidates, manifest);
+            let mut diagnostic = error(super::ErrorCode::AmbiguousToken, message);
+            diagnostic.notes = notes;
             return vec![diagnostic];
         }
     }
@@ -255,11 +244,9 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         .unwrap_or_default();
     vec![error(
         super::ErrorCode::UnknownToken,
-        super::message(|| {
-            format!(
-                "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
-            )
-        }),
+        format!(
+            "Unknown or unsupported token for {prefix}: {raw}; named tokens require a registered token, a supported sign, and a color-only opacity modifier"
+        ),
     )]
 }
 

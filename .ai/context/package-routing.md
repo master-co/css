@@ -11,6 +11,7 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/schema/**` | `@master/css-schema` | `package-boundaries.md` |
 | `packages/preset/**` | `@master/css-preset` | `css-output.md` |
 | `packages/binding*/**` | native/Wasm binding delivery | `package-boundaries.md`, `testing.md` |
+| `packages/engine-js/**` | `@master/css-engine-js`, the private browser engine | `css-output.md`, `performance.md`; keep its differential at zero |
 | `packages/css/**` | `@master/css` | `package-boundaries.md`, `css-output.md`, `performance.md` |
 | `packages/compiler/**` | compiler, project, stylesheet, diagnostics | `css-output.md`, `package-boundaries.md` |
 | `packages/tooling/**` | lexer, source, scanner, validator, lint, language | `package-boundaries.md`, `testing.md` |
@@ -38,7 +39,7 @@ with the public host named by the Rust routing pack.
 | `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs, site-owned document shell, assets, and site behavior. |
 | `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
 | `benchmarks/**` | `benchmarks/package.json`, `benchmarks/AI.md`, `performance.md` | Do not commit benchmark history output. |
-| `crates/**`, `Cargo.toml`, `Cargo.lock` | root/affected `Cargo.toml`, `rust-routing.md` | Rust is the semantic source; use crate-local tests first. |
+| `crates/**`, `Cargo.toml`, `Cargo.lock` | root/affected `Cargo.toml`, `rust-routing.md` | Rust is the semantic source; use crate-local tests first. Engine semantics changes also update `packages/engine-js`. |
 | `parity/**` | `rust-routing.md`, `testing.md` | Corpora are language contracts; do not refresh blindly. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |

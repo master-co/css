@@ -46,9 +46,11 @@ pub(crate) fn resolve_state_branches(
                 .filter(|query| query.kind == "media" && query.prelude.contains("--"))
                 .map(|query| {
                     crate::parse_custom_media_query(&query.prelude, &mut |name| {
-                        manifest.custom_media.get(name).cloned().ok_or_else(|| {
-                            crate::message(|| format!("Undefined custom media {name}"))
-                        })
+                        manifest
+                            .custom_media
+                            .get(name)
+                            .cloned()
+                            .ok_or_else(|| format!("Undefined custom media {name}"))
                     })
                     .and_then(|media| crate::custom_media_branches(&media))
                     .map(std::borrow::Cow::Owned)

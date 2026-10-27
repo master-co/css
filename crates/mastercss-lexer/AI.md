@@ -11,8 +11,8 @@ and `tests.rs` locks cross-domain behavior. Keep parser ownership out of TypeScr
 `selector.rs` `selector_class_names()` returns only real class selectors, decoding
 escapes and skipping attribute selectors and string contents.
 
-`text.rs` (`concat_text!`, `decimal`) builds text without `core::fmt` for code the
-browser runtime Wasm links; see the engine AI notes for when `format!` is allowed.
+`text.rs` (`concat_text!`, `decimal`) builds text without `core::fmt` for code that
+engine sessions run per class; see the engine AI notes for when `format!` is allowed.
 
 ```sh
 cargo test -p mastercss-lexer

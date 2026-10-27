@@ -1,7 +1,7 @@
-//! Text building without `core::fmt`. The browser runtime Wasm links no formatting
-//! machinery, so code it runs joins text with [`concat_text!`](crate::concat_text)
-//! and these helpers instead of `format!`; diagnostic messages behind the engine's
-//! `diagnostic-messages` feature and tooling-only code may still format.
+//! Text building without `core::fmt`, which the former browser runtime Wasm did not
+//! link. Engine code that runs for each class still joins text with
+//! [`concat_text!`](crate::concat_text) and these helpers instead of `format!`;
+//! diagnostic messages and tooling-only code may format.
 
 /// Joins `parts` into one string.
 pub fn concat(parts: &[&str]) -> String {

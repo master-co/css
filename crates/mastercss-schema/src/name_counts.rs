@@ -1,6 +1,6 @@
 //! Counts keyed by name, kept in name order in one sorted `Vec`. `EmittedGlobals`
 //! uses it instead of `BTreeMap`, whose node code was most of what its two maps
-//! cost the runtime Wasm; the JSON form is the same object.
+//! cost the former browser runtime Wasm; the JSON form is the same object.
 use serde::de::{MapAccess, Visitor};
 use serde::ser::SerializeMap;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};

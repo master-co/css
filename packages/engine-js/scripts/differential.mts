@@ -1,4 +1,4 @@
-// Differential harness: runs the Rust engine (full Wasm, Node entry) and the JS engine
+// Differential harness: runs the Rust engine (engine Wasm, Node entry) and the JS engine
 // on the same compiled runtime program and class sets, and reports every divergence in
 // transitions, execution state, snapshots, keyframe definitions, emitted globals and
 // refreshes.
@@ -294,7 +294,7 @@ const lines = [
   '',
   `${report.generatedAt}, ${report.elapsedMs} ms. fuzz=${fuzzCount} seed=${seed} chunk=${chunkSize}`,
   '',
-  `**${mismatched} / ${compared} comparisons differ** (Rust full Wasm vs JS engine).`,
+  `**${mismatched} / ${compared} comparisons differ** (Rust engine Wasm vs JS engine).`,
   '',
   '| source | candidates | Rust-valid | operation | compared | mismatched |',
   '|---|---|---|---|---|---|'

@@ -3,7 +3,7 @@
 // - re-encoding the decoded program in the Rust layout reproduces the Rust bytes,
 // - table sizes, name sets and samples agree with the manifest and the Rust session,
 // - truncated and bit-flipped programs are accepted or rejected exactly when the Rust
-//   engine (full Wasm) accepts or rejects them, without the decoder throwing.
+//   engine Wasm accepts or rejects them, without the decoder throwing.
 //
 //   node --import tsx packages/engine-js/scripts/verify-program.mts [--flips 4000] [--seed 1]
 import { readFileSync } from 'node:fs'

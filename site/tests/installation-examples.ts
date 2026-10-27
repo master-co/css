@@ -57,7 +57,7 @@ export function verifyInstallationExamples() {
         assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
       } else {
         assert.ok(assets.some(name => /master-css-program/.test(name)), assets.join(', '))
-        assert.ok(assets.some(name => name.endsWith('.wasm')), assets.join(', '))
+        assert.ok(!assets.some(name => name.endsWith('.wasm')), assets.join(', '))
       }
 
     } finally { rmSync(root, { recursive: true, force: true }) }

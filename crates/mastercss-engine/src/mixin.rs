@@ -35,13 +35,11 @@ fn validate_argument(
 ) -> Result<(), String> {
     let tokens = tokenize_css_syntax(value);
     if tokens.is_empty() {
-        return Err(crate::message(|| {
-            format!("Missing argument {}", parameter.name)
-        }));
+        return Err(format!("Missing argument {}", parameter.name));
     }
     if tokens.iter().any(|token| matches!(&token.kind, Kind::Function(name)
         if (name.eq_ignore_ascii_case("var") && !allow_var) || matches!(name.to_ascii_lowercase().as_str(), "attr" | "env" | "random" | "random-item") || name.starts_with("--"))) {
-        return Err(crate::message(|| format!("Argument {} must be static; express dynamic values in native CSS", parameter.name)));
+        return Err(format!("Argument {} must be static; express dynamic values in native CSS", parameter.name));
     }
     if tokens
         .iter()
@@ -51,9 +49,7 @@ fn validate_argument(
                 && token.close.is_none()
         })
     {
-        return Err(crate::message(|| {
-            format!("Invalid argument {}", parameter.name)
-        }));
+        return Err(format!("Invalid argument {}", parameter.name));
     }
     let wide = |name: &str| {
         matches!(
@@ -62,12 +58,10 @@ fn validate_argument(
         )
     };
     if tokens.len() == 1 && matches!(&tokens[0].kind, Kind::Ident(name) if wide(name)) {
-        return Err(crate::message(|| {
-            format!(
-                "CSS-wide argument values are not supported for {}",
-                parameter.name
-            )
-        }));
+        return Err(format!(
+            "CSS-wide argument values are not supported for {}",
+            parameter.name
+        ));
     }
     let valid = match parameter.syntax {
         None => true,
@@ -87,12 +81,10 @@ fn validate_argument(
     if valid {
         Ok(())
     } else {
-        Err(crate::message(|| {
-            format!(
-                "Argument {} does not match {:?}",
-                parameter.name, parameter.syntax
-            )
-        }))
+        Err(format!(
+            "Argument {} does not match {:?}",
+            parameter.name, parameter.syntax
+        ))
     }
 }
 
@@ -117,28 +109,24 @@ fn validate_recipe_definitions(
         done: &mut HashSet<&'a str>,
     ) -> Result<(), String> {
         if visiting.len() >= 64 {
-            return Err(crate::message(|| "Mixin call depth exceeds 64".into()));
+            return Err("Mixin call depth exceeds 64".into());
         }
         if done.contains(name) {
             return Ok(());
         }
         if !visiting.insert(name) {
-            return Err(crate::message(|| {
-                format!("Recursive mixin call involving {name}")
-            }));
+            return Err(format!("Recursive mixin call involving {name}"));
         }
         let definition = registry
             .get(name)
-            .ok_or_else(|| crate::message(|| format!("Unknown mixin {name}")))?;
+            .ok_or_else(|| format!("Unknown mixin {name}"))?;
         let mut names = HashSet::default();
         for parameter in &definition.parameters {
             if !parameter.name.starts_with("--") || !names.insert(&parameter.name) {
-                return Err(crate::message(|| {
-                    format!(
-                        "Invalid or duplicate parameter {} in {name}",
-                        parameter.name
-                    )
-                }));
+                return Err(format!(
+                    "Invalid or duplicate parameter {} in {name}",
+                    parameter.name
+                ));
             }
             if let Some(default) = &parameter.default {
                 validate_mixin_argument(parameter, default)?;
@@ -161,7 +149,7 @@ fn validate_recipe_definitions(
                     } => {
                         let target_definition = registry
                             .get(target.as_str())
-                            .ok_or_else(|| crate::message(|| format!("Unknown mixin {target}")))?;
+                            .ok_or_else(|| format!("Unknown mixin {target}"))?;
                         if arguments.len() > target_definition.parameters.len()
                             || target_definition
                                 .parameters
@@ -169,20 +157,16 @@ fn validate_recipe_definitions(
                                 .skip(arguments.len())
                                 .any(|parameter| parameter.default.is_none())
                         {
-                            return Err(crate::message(|| {
-                                format!("Incorrect argument count for {target} in {name}")
-                            }));
+                            return Err(format!("Incorrect argument count for {target} in {name}"));
                         }
                         if !same_element
                             && arguments
                                 .iter()
                                 .any(|value| references_parameters(value, &parameters))
                         {
-                            return Err(crate::message(|| {
-                                format!(
-                                    "Mixin parameters cannot be passed across elements in {name}"
-                                )
-                            }));
+                            return Err(format!(
+                                "Mixin parameters cannot be passed across elements in {name}"
+                            ));
                         }
                         visit(target, registry, visiting, done)?;
                         if let Some(contents) = contents {
@@ -196,16 +180,14 @@ fn validate_recipe_definitions(
                         pending.push((body, same_element))
                     }
                     MixinNode::Declaration { property, .. } if names.contains(property) => {
-                        return Err(crate::message(|| {
-                            format!("Mixin parameter {property} cannot be reassigned")
-                        }));
+                        return Err(format!("Mixin parameter {property} cannot be reassigned"));
                     }
                     MixinNode::Declaration { value, .. }
                         if !same_element && references_parameters(value, &parameters) =>
                     {
-                        return Err(crate::message(|| {
-                            format!("Mixin parameters cannot be used across elements in {name}")
-                        }));
+                        return Err(format!(
+                            "Mixin parameters cannot be used across elements in {name}"
+                        ));
                     }
                     _ => {}
                 }
@@ -220,7 +202,7 @@ fn validate_recipe_definitions(
         if utility_root != Some(name)
             && (!name.starts_with("--") || !mastercss_lexer::valid_utility_name(&name[2..]))
         {
-            return Err(crate::message(|| format!("Invalid mixin name {name}")));
+            return Err(format!("Invalid mixin name {name}"));
         }
         visit(name, &registry, &mut HashSet::default(), &mut done)?;
     }
@@ -234,16 +216,12 @@ fn ident(value: &str) -> Result<String, String> {
             Kind::String(value) | Kind::Ident(value) => result.push_str(&value),
             Kind::Number(value) if value.parse::<i64>().is_ok() => result.push_str(value),
             _ => {
-                return Err(crate::message(|| {
-                    "ident() requires static strings, identifiers or integers".into()
-                }));
+                return Err("ident() requires static strings, identifiers or integers".into());
             }
         }
     }
     if result.is_empty() {
-        return Err(crate::message(|| {
-            "ident() cannot produce an empty identifier".into()
-        }));
+        return Err("ident() cannot produce an empty identifier".into());
     }
     Ok(css_escape(&result))
 }
@@ -362,17 +340,13 @@ fn validate_declaration(property: &str, value: &str) -> Result<(), String> {
             && let Some(Kind::Number(number)) = tokens.get(index + 1).map(|next| &next.kind)
             && !is_positive_integer(number)
         {
-            return Err(crate::message(|| {
-                format!("{property} requires a positive integer")
-            }));
+            return Err(format!("{property} requires a positive integer"));
         }
     }
     if property == "-webkit-line-clamp"
         && matches!(tokens.first().map(|token| &token.kind), Some(Kind::Number(number)) if !is_positive_integer(number))
     {
-        return Err(crate::message(|| {
-            "-webkit-line-clamp requires a positive integer".into()
-        }));
+        return Err("-webkit-line-clamp requires a positive integer".into());
     }
     Ok(())
 }
@@ -413,28 +387,26 @@ impl Expansion<'_> {
         contents: Option<&ContentsContext>,
     ) -> Result<(), String> {
         if self.depth >= 64 {
-            return Err(crate::message(|| "Mixin call depth exceeds 64".into()));
+            return Err("Mixin call depth exceeds 64".into());
         }
         if self.stack.iter().any(|value| value == name) {
-            return Err(crate::message(|| format!("Recursive mixin call {name}")));
+            return Err(format!("Recursive mixin call {name}"));
         }
         let definition = *self
             .registry
             .get(name)
-            .ok_or_else(|| crate::message(|| format!("Unknown mixin {name}")))?;
+            .ok_or_else(|| format!("Unknown mixin {name}"))?;
         self.stack.push(name.into());
         self.depth += 1;
         if arguments.len() > definition.parameters.len() {
-            return Err(crate::message(|| format!("Too many arguments for {name}")));
+            return Err(format!("Too many arguments for {name}"));
         }
         let mut environment = outer.clone();
         for (index, parameter) in definition.parameters.iter().enumerate() {
             let value = arguments
                 .get(index)
                 .or(parameter.default.as_ref())
-                .ok_or_else(|| {
-                    crate::message(|| format!("Missing argument {} for {name}", parameter.name))
-                })?;
+                .ok_or_else(|| format!("Missing argument {} for {name}", parameter.name))?;
             validate_argument(
                 parameter,
                 value,
@@ -475,9 +447,7 @@ impl Expansion<'_> {
         for node in nodes {
             self.steps += 1;
             if self.steps > 100000 {
-                return Err(crate::message(|| {
-                    "Mixin expansion exceeds 100000 body nodes".into()
-                }));
+                return Err("Mixin expansion exceeds 100000 body nodes".into());
             }
             match node {
                 MixinNode::Declaration {
@@ -486,9 +456,7 @@ impl Expansion<'_> {
                     source,
                 } => {
                     if environment.contains_key(property) {
-                        return Err(crate::message(|| {
-                            format!("Mixin parameter {property} cannot be reassigned")
-                        }));
+                        return Err(format!("Mixin parameter {property} cannot be reassigned"));
                     }
                     if (!safe_subject && references_parameters(value, environment))
                         || references_parameters(
@@ -796,21 +764,15 @@ pub fn validate_utilities(
             || !mastercss_lexer::valid_utility_name(&recipe.name)
             || recipe.name.ends_with('-')
         {
-            return Err(crate::message(|| {
-                format!("Invalid utility name {}", recipe.name)
-            }));
+            return Err(format!("Invalid utility name {}", recipe.name));
         }
         match definition.kind {
             UtilityKind::Static if !recipe.parameters.is_empty() => {
-                return Err(crate::message(|| {
-                    "Static utilities cannot have parameters".into()
-                }));
+                return Err("Static utilities cannot have parameters".into());
             }
             UtilityKind::Token => {
                 let [parameter] = recipe.parameters.as_slice() else {
-                    return Err(crate::message(|| {
-                        "Token patterns require exactly one parameter".into()
-                    }));
+                    return Err("Token patterns require exactly one parameter".into());
                 };
                 if parameter.default.is_some()
                     || !matches!(parameter.syntax, None | Some(MixinParameterSyntax::String))

@@ -7,7 +7,7 @@ protocol, package consolidation, or cycle pressure.
 
 ```txt
 external data / shared build support
-  -> schema + native/Wasm artifact loaders + preset
+  -> schema + native/Wasm artifact loaders (bundling the JavaScript engine) + preset
   -> @master/css + @master/css-tooling
   -> @master/css-compiler
   -> runtime / server / language-service / ESLint
@@ -17,7 +17,11 @@ external data / shared build support
 
 ## Ownership Rules
 
-- Rust crates are the only semantic implementation.
+- Rust crates are the semantic implementation. The browser engine,
+  `@master/css-engine-js`, is the one deliberate second implementation, held
+  byte-identical by its differential gate (`.ai/architecture.md#browser-engine`).
+- `@master/css-engine-js` is private and zero-dependency, bundled into
+  `@master/css-binding` like `@master/css-internal`; it executes programs only.
 - `@master/css-schema` owns versioned dependency-light contracts and codecs.
 - `@master/css` owns the public Manifest v6 execution surface and CSS entry proxies.
 - `@master/css-preset` owns default CSS source and the generated default manifest.
@@ -48,7 +52,8 @@ external data / shared build support
 
 ## Do Not
 
-- Do not implement TypeScript semantic fallbacks.
+- Do not implement TypeScript semantic fallbacks outside the browser engine, and do
+  not grow the browser engine beyond executing programs.
 - Do not make `@master/css` depend on compiler, tooling, integrations, or editors.
 - Do not make tooling depend on compiler, language-service, build adapters, or UI hosts.
 - Do not publish or emit imports to the private integration package.

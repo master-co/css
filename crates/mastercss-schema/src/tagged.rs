@@ -2,7 +2,7 @@
 //!
 //! Serde buffers internally tagged and flattened values into its private
 //! `Content` tree, which instantiates a second deserializer for every
-//! recursive manifest type and dominated the runtime Wasm. Those enums
+//! recursive manifest type and dominated the former browser runtime Wasm. Those enums
 //! deserialize through plain `Raw*` structs instead: one optional slot per
 //! variant field, converted with `try_from`. Serialization keeps the derived
 //! tagged form, so the wire format is unchanged.

@@ -1,5 +1,5 @@
 //! The engine's hash maps use an FxHash-style multiply hash, like rustc's: keys are
-//! class names and names from the project's program, and the runtime Wasm needs
+//! class names and names from the project's program, and the engine Wasm needs
 //! neither SipHash's code nor random keys.
 use std::hash::{BuildHasherDefault, Hasher};
 

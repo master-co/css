@@ -1,7 +1,8 @@
-//! JSON for the engine session results the browser runtime reads, written without
-//! serde so the runtime Wasm ships no serializer. Field names, order and omissions
-//! match the schema types' serde derives; tests compare both encodings. Keyframe
-//! definitions leave out their authoring `source`, which browsers never map.
+//! JSON for the engine session results the JavaScript provider reads, written without
+//! serde, which the former browser runtime Wasm did not ship. Field names, order and
+//! omissions match the schema types' serde derives; tests compare both encodings, and
+//! the JavaScript engine reproduces them. Keyframe definitions leave out their
+//! authoring `source`, which runtimes never map.
 use mastercss_schema::{
     BindingInfo, ConditionBoundIr, ConditionRangeIr, Diagnostic, DiagnosticPhase,
     DiagnosticSeverity, EngineExecutionStateIr, EngineKeyframeResourceIr, EngineResourcesIr,
@@ -131,8 +132,8 @@ impl WriteJson for f64 {
     }
 }
 
-// The shortest round-trip text of a finite number. The browser formats it, so the
-// runtime Wasm needs no float formatting code; other targets only run tests.
+// The shortest round-trip text of a finite number. JavaScript formats it, so the
+// engine Wasm needs no float formatting code; other targets only run tests.
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen::prelude::wasm_bindgen]
 extern "C" {

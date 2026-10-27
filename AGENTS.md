@@ -27,13 +27,13 @@ Native defaults and components use `@layer` with class selectors. Top-level `@ut
 
 Generated rules use those layer blocks without dynamically adding the layer statement. Keyframes retain native source order and container/layer identity. `@theme` accepts only token declarations. Tokens use `:root,:host`; optional `static` retains tokens and `inline` substitutes their values once in Master-generated declarations. Native selectors and conditions remain outside `@theme` and do not register utility tokens. Native classes and keyframes share per-file preserve/prune policy. `@safelist keyframes` accepts exact quoted names; reference-only definitions do not create roots. Track keyframes by definition ID, preserving same-name definitions and import occurrences. Analyze animation declarations and transitive tokens in Rust, retaining all managed definitions for dynamic names. Any CSS output difference is an intentional, explained behavior change covered by tests or fixtures.
 
-Rust is the single semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and diagnostic capability checks; it must not implement semantic fallbacks.
+Rust is the semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and diagnostic capability checks; it must not implement semantic fallbacks. The one deliberate exception is the browser engine, `@master/css-engine-js`: it executes compiled runtime programs in browsers and must match the Rust engine byte for byte. A Rust engine semantics change lands with the matching JavaScript change and a zero-difference `pnpm --filter @master/css-engine-js differential` in the same change; see `.ai/architecture.md#browser-engine`.
 
 Preserve dependency direction:
 
 ```txt
 shared / external data
-  -> schema / native and Wasm artifact loaders / preset
+  -> schema / native and Wasm artifact loaders, which bundle the JavaScript engine / preset
   -> @master/css / @master/css-tooling
   -> @master/css-compiler
   -> server / runtime / language-service

@@ -1,16 +1,13 @@
 //! Class registration from explicit utility definitions.
-#[cfg(feature = "manifest")]
 use super::UtilityMatcher;
 use super::{Program, UtilityDefinition, UtilityEmit, UtilityMatch, UtilityMatcherType};
 use mastercss_lexer::concat_text;
-#[cfg(feature = "manifest")]
 use mastercss_schema::{MixinParameterSyntax, UtilityKind};
 
 pub(crate) fn identity(definition: &mastercss_schema::UtilityDefinition) -> String {
     definition.identity()
 }
 
-#[cfg(feature = "manifest")]
 pub(crate) fn register(manifest: &mut Program) {
     manifest.token_families =
         super::token_family::infer(&manifest.utility_definitions, &manifest.mixins);
@@ -129,7 +126,7 @@ pub(crate) fn diagnostic(source: &str, manifest: &Program) -> Option<String> {
             Err(message) => Some(message),
             Ok((name, arguments, _)) => match function_definition(manifest, &name) {
                 Some((_, definition)) => expand(manifest, definition, &arguments).err(),
-                None => Some(crate::message(|| format!("Unknown utility {name}"))),
+                None => Some(format!("Unknown utility {name}")),
             },
         };
     }

@@ -14,14 +14,16 @@
 |---|---|---|
 | `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
 | `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v6 |
-| `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation |
+| `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation; browser engine sessions run the bundled JavaScript engine |
+| `@master/css-engine-js` (private) | bundled into `@master/css-binding` | The browser engine: executes compiled runtime programs, byte-identical to the Rust engine by its differential gate |
 | `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
 | `@master/css-binding-wasm-engine` | `.`, `./wasm` | Engine Wasm artifact loader for Node and non-browser hosts |
 | `@master/css-binding-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
 | `@master/css-binding-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
 
 Native, Wasm, schema, preset, and their consumers publish in exact lockstep. They are
-not alternative implementations of the language.
+not alternative implementations of the language; the browser engine is the one
+deliberate second implementation of engine execution (`architecture.md#browser-engine`).
 
 ## Rust Workspace
 

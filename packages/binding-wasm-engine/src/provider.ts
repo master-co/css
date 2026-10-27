@@ -1,4 +1,4 @@
-import { fullWasmEngine } from './full-artifact'
+import { wasmEngine } from './artifact'
 import { createWasmEngineProvider } from './provider-core'
 
 export type MasterCSSWasmEngineInput =
@@ -16,5 +16,5 @@ export interface MasterCSSWasmEngineLoadOptions {
 export async function createMasterCSSEngineWasmProvider(
   loadOptions: MasterCSSWasmEngineLoadOptions = {}
 ): Promise<object> {
-  return await createWasmEngineProvider(fullWasmEngine, loadOptions)
+  return await createWasmEngineProvider(wasmEngine, loadOptions)
 }

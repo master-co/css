@@ -7,7 +7,6 @@ use super::{
     collect_engine_color_tokens, compare_stored_rules, emit_declarations, engine_variable_ir,
     layer_index, layer_name, resolve_state_branches,
 };
-#[cfg(feature = "manifest")]
 use super::{MasterCssManifest, compile_manifest};
 use mastercss_lexer::concat_text;
 
@@ -35,12 +34,10 @@ impl EngineSession {
         Ok(rules)
     }
 
-    #[cfg(feature = "manifest")]
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
         Self::from_manifest(manifest_json, EmittedGlobals::default())
     }
 
-    #[cfg(feature = "manifest")]
     pub fn create_with_emitted_globals(
         manifest_json: &str,
         emitted_globals_json: Option<&str>,
@@ -56,7 +53,6 @@ impl EngineSession {
 
     /// Compiles the manifest into a program and executes its encoding, exactly as a
     /// browser executes the program it receives.
-    #[cfg(feature = "manifest")]
     pub fn from_manifest(
         manifest_json: &str,
         emitted_globals: EmittedGlobals,
@@ -81,7 +77,6 @@ impl EngineSession {
 
     pub(crate) fn with_program(compiled: Program, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
-            #[cfg(feature = "manifest")]
             manifest: None,
             compiled,
             layers: std::array::from_fn(|_| Vec::new()),
@@ -108,7 +103,6 @@ impl EngineSession {
         session
     }
 
-    #[cfg(feature = "manifest")]
     pub fn manifest_json(&self) -> Result<String, EngineError> {
         self.ensure_active()?;
         let manifest = self.manifest.as_ref().ok_or_else(|| {
@@ -252,7 +246,6 @@ impl EngineSession {
             .collect())
     }
 
-    #[cfg(feature = "stylesheet-resources")]
     pub fn ensure_stylesheet_resources(
         &mut self,
         native_css: &str,
@@ -283,7 +276,6 @@ impl EngineSession {
         }
     }
 
-    #[cfg(feature = "stylesheet-resources")]
     fn register_stylesheet_resources(
         &mut self,
         native_css: &str,
@@ -377,12 +369,10 @@ impl EngineSession {
         self.rebuild(merged)
     }
 
-    #[cfg(feature = "manifest")]
     pub fn refresh(&mut self, manifest_json: &str) -> Result<EngineTransitionIr, EngineError> {
         self.refresh_with_emitted_globals(manifest_json, None)
     }
 
-    #[cfg(feature = "manifest")]
     pub fn refresh_with_emitted_globals(
         &mut self,
         manifest_json: &str,
@@ -412,7 +402,6 @@ impl EngineSession {
         self.ensure_active()?;
         let program = decode_program(program)?;
         let emitted = emitted_globals.unwrap_or_else(|| self.emitted_globals.clone());
-        #[cfg(feature = "manifest")]
         {
             self.manifest = None;
         }
@@ -444,7 +433,6 @@ impl EngineSession {
             session.keyframe_counts.clear();
             session.stylesheet_keyframe_slots.clear();
             session.theme_variable_names.clear();
-            #[cfg(feature = "stylesheet-resources")]
             for source in &session.stylesheet_sources {
                 for (name, value) in
                     crate::stylesheet_declarations(&session.keyframe_template(source))
@@ -466,7 +454,6 @@ impl EngineSession {
             session.class_order.clear();
             session.rule_counts.clear();
             session.initialize_variable_resources();
-            #[cfg(feature = "stylesheet-resources")]
             for source in session.stylesheet_sources.clone() {
                 session.register_stylesheet_resources(&source)?;
             }
@@ -491,17 +478,11 @@ impl EngineSession {
         })
     }
 
-    #[cfg(feature = "stylesheet-resources")]
     fn rendered_stylesheets(&self) -> Vec<String> {
         self.stylesheet_sources
             .iter()
             .map(|source| self.render_stylesheet_resources(source))
             .collect()
-    }
-
-    #[cfg(not(feature = "stylesheet-resources"))]
-    fn rendered_stylesheets(&self) -> Vec<String> {
-        Vec::new()
     }
 
     pub fn snapshot_for_classes<I, S>(
@@ -536,7 +517,6 @@ impl EngineSession {
         }
 
         let mut subset = self.fork_empty_with_emitted_globals(self.emitted_globals.clone());
-        #[cfg(feature = "stylesheet-resources")]
         for source in &self.stylesheet_sources {
             subset.ensure_stylesheet_resources(source)?;
         }
@@ -1071,7 +1051,6 @@ impl EngineSession {
 
     pub(crate) fn fork_empty_with_emitted_globals(&self, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
-            #[cfg(feature = "manifest")]
             manifest: self.manifest.clone(),
             compiled: self.compiled.clone(),
             layers: std::array::from_fn(|_| Vec::new()),
@@ -1104,7 +1083,6 @@ impl EngineSession {
 }
 
 /// Validates a manifest and encodes the program that sessions execute.
-#[cfg(feature = "manifest")]
 pub fn compile_program(manifest_json: &str) -> Result<Vec<u8>, EngineError> {
     let manifest = MasterCssManifest::parse(manifest_json)?;
     Ok(super::program::encode(&compile_manifest(&manifest)?))
@@ -1118,7 +1096,6 @@ fn decode_program(program: &[u8]) -> Result<Program, EngineError> {
 }
 
 /// Parses emitted globals JSON for hosts that receive them as text.
-#[cfg(feature = "manifest")]
 pub fn parse_emitted_globals(json: &str) -> Result<EmittedGlobals, EngineError> {
     EmittedGlobals::parse(json)
         .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))

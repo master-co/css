@@ -48,7 +48,6 @@ regex = "1.13.1"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
 sha2 = "0.11.0"
-talc = { version = "5.1.1", default-features = false }
 serde-wasm-bindgen = "0.6.5"
 thiserror = "2.0.20"
 wasm-bindgen = "0.2.128"
@@ -78,11 +77,12 @@ opt-level = "s"
 [profile.release.package.mastercss-binding-wasm-tooling]
 opt-level = "s"
 
-# The runtime engine Wasm is downloaded by browser pages. Optimize every crate in
-# it for size; `release` keeps opt-level 3 for native code. The engine, lexer and
-# schema crates hold most of its code: "z" for them is about 11% smaller under
-# brotli and at most 16% slower in `pnpm --filter @master/css-runtime bench`,
-# while "z" for every crate saves only 1% more and slowed DOM scans by 24%.
+# The engine Wasm serves Node without a native binding and non-browser hosts such
+# as edge workers, where its package and deploy size count. Optimize every crate in
+# it for size; `release` keeps opt-level 3 for native code. Measured on the former
+# browser runtime Wasm, "z" for the engine, lexer and schema crates, which hold
+# most of its code, was about 11% smaller under brotli and at most 16% slower,
+# while "z" for every crate saved only 1% more and slowed DOM scans by 24%.
 [profile.release-wasm]
 inherits = "release"
 opt-level = "s"

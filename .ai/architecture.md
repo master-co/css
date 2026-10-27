@@ -6,6 +6,7 @@
 external data / repository build support
   -> @master/css-schema
   -> @master/css-binding / @master/css-binding-wasm-{engine,compiler,tooling}
+     (the binding bundles the private JavaScript engine, @master/css-engine-js)
   -> @master/css-preset
   -> @master/css / @master/css-tooling
   -> @master/css-compiler
@@ -14,11 +15,12 @@ external data / repository build support
   -> framework adapters / VS Code / examples / site
 ```
 
-Rust is the single semantic source. The Rust crates own class parsing, matching,
+Rust is the semantic source. The Rust crates own class parsing, matching,
 priority, rule generation, directive lowering, extraction, validation, lint policy,
 language analysis, project policy, and report shaping. TypeScript owns platform
 loading, filesystem and package resolution, browser or editor adaptation, and host
-capability callbacks. Do not add a TypeScript semantic fallback.
+capability callbacks. Do not add a TypeScript semantic fallback. The one deliberate
+second implementation is the browser engine; see [Browser Engine](#browser-engine).
 
 The public JavaScript architecture is intentionally concentrated into three primary
 surfaces:
@@ -31,6 +33,7 @@ surfaces:
 
 `@master/css-schema`, `@master/css-preset`, and the native/Wasm delivery packages are
 supporting contracts and artifacts, not alternate semantic implementations.
+`@master/css-engine-js` is the browser engine, held to the Rust engine's output.
 
 ## Core Execution
 
@@ -40,6 +43,40 @@ browsers, and exposes versioned state. The Rust engine owns utility
 matching, value and selector semantics, modes, variables, animations, layer placement,
 priority, and CSS bytes. `packages/css` must not grow config resolution, declarers,
 transformers, or duplicated parsers.
+
+## Browser Engine
+
+`packages/engine-js` (`@master/css-engine-js`) is a second implementation of the Rust
+`EngineSession`, deliberately kept: browsers run it instead of an engine Wasm, which
+makes the CDN page about 60 KB brotli smaller and its startup and class generation
+faster. It executes compiled runtime programs only: ensure, delete, execution state,
+snapshot, keyframe definitions, emitted globals and refresh. Rust keeps compiling
+manifests into programs, and inspection, diagnostic text, rendering and every other
+language surface stay Rust-only. `@master/css-binding`'s browser entry creates every
+browser engine session from it, and its default entry does so where Node is absent
+and the source is a program; such sessions report binding `'js'`.
+
+The contract:
+
+- Output is byte-identical. For the same program, classes and emitted globals, the
+  JavaScript engine's transitions, execution state, snapshots and keyframe
+  definitions equal the Rust engine's. Rust is the reference: any difference is a
+  JavaScript bug.
+- `pnpm --filter @master/css-engine-js differential` compares both engines (Rust through
+  the engine Wasm) on the language corpus, Rust test strings, site and example
+  markup, every token key, seeded fuzz, and manifests compiled for mixins, recipes,
+  `@apply`, keyframes and emitted globals. It must report zero differences, also with
+  other `--fuzz`/`--seed` values. `verify:program` keeps the program decoder exact, and
+  `check:size` keeps the engine at most 30 KB and the CDN default page at most 55 KB
+  brotli.
+- A change to engine semantics (`mastercss-engine`, the lexer and schema code it
+  executes, or the program encoding) lands with the matching JavaScript change and a
+  zero-difference differential in the same change. Rebuild the Wasm first
+  (`pnpm run build:rust:wasm`); new syntax needs differential sources that reach it.
+- The JavaScript engine implements no retired syntax and has no dependencies. It is
+  repository-private: the shared tsdown config bundles it into the binding, and
+  package checks keep it out of published imports and dependencies.
+- The differential is not yet a CI job; run it locally for engine changes.
 
 `packages/preset` owns the default preset CSS and generated default Manifest v6. The
 stable layer statement remains:

@@ -23,7 +23,7 @@ emitted globals as `EmittedGlobals` values; hosts that receive JSON use
 - `manifest.rs`: manifest validation, compilation into a `Program`, and `finish_program`.
 - `program.rs`: the versioned binary `Program` encoding; decoding checks every bound.
 - `completion.rs`: completion-facing engine data.
-- `decimal.rs`: numbers decided on their decimal digits; use it instead of `str::parse::<f64>()`, whose tables the runtime Wasm omits.
+- `decimal.rs`: numbers decided on their decimal digits, which keeps range checks exact; use it instead of `str::parse::<f64>()`. `packages/engine-js/src/value.ts` ports it.
 - `hash.rs`: the `HashMap` and `HashSet` aliases every module uses, hashed with an FxHash-style hasher; build them with `default()`.
 - `tests/`: lifecycle and syntax behavior; `tests.rs` owns broader unit coverage.
 
@@ -38,9 +38,11 @@ A token key resolves to its variable on demand through `utility::utility_variabl
 
 `selector_class_names_without_rules()` lists classes that theme preludes and mixin or `@utility` body selectors (including conditions, `@apply` contents and `@contents` fallbacks) reference without generating rules themselves. Render appends them to hydration manifest `classNames` so client-toggled mode classes keep a progressive runtime's engine deferred; a class that generates rules must never appear there.
 
-## Runtime Wasm Features
+## Browser Engine
 
-`diagnostic-messages`, `manifest` and `stylesheet-resources` are default features that the browser runtime Wasm disables. `manifest` compiles manifests into programs and parses JSON inputs; without it a session starts only from an encoded program and the program encoder is absent, so keep manifest parsing, validation and `serde_json` input on that side of the gate. Without `diagnostic-messages`, every verdict, code and control flow is unchanged but message and note text is empty: build new diagnostic or error text inside `message(|| ...)`. Code the runtime Wasm reaches joins text with `concat_text!` and `mastercss_lexer::text::decimal` instead of `format!`, so no `core::fmt` is linked; `format!` stays fine inside `message(|| ...)` and `DIAGNOSTIC_MESSAGES` blocks, in tests and in tooling-only modules such as `completion.rs`. `EngineError::message()` is the single source of error text, which `Display` also writes. Short lists sort with a small local insertion sort or a partition rather than `sort*`, which adds generic merge code per element type to the runtime Wasm. `stylesheet-resources` compiles keyframe slots, native stylesheet replay and rendered stylesheets, which only compiler and render hosts feed; gate code that only they reach. Check both builds with `cargo clippy -p mastercss-engine --no-default-features` and `pnpm run report:runtime-wasm-size`, which fails when formatting, panic formatting, Unicode tables, float parsing, SipHash, `BTreeMap` or dlmalloc are linked again.
+Browsers do not run this crate: `packages/engine-js` executes the same programs in JavaScript and must produce byte-identical results (`.ai/architecture.md#browser-engine`). A change to what sessions execute (matching, values, selectors, conditions, priority, ordering, mixins, resources, transitions, snapshots, emitted globals, the program encoding or `finish_program`) lands with the matching `packages/engine-js` change: run `pnpm run build:rust:wasm`, then `pnpm --filter @master/css-engine-js differential` at zero differences, adding differential sources for new syntax. Retired syntax has no JavaScript counterpart.
+
+Code that sessions run for each class joins text with `concat_text!` and `mastercss_lexer::text::decimal`, and short lists sort with a small insertion sort or a partition. Both were chosen for the former browser runtime Wasm; `format!` stays fine in diagnostics, tests and tooling-only modules such as `completion.rs`. `EngineError::message()` is the single source of error text, which `Display` also writes.
 
 ## Validation
 

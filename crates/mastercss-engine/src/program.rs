@@ -16,7 +16,6 @@ use mastercss_schema::{
     SourceRange, ThemeNode, UtilityKind,
 };
 
-#[cfg(feature = "manifest")]
 use super::HashMap;
 use super::{
     CompiledVariable, Program, TokenFamily, TokenFamilyArgument, UtilityDefinition, UtilityEmit,
@@ -35,9 +34,7 @@ pub(crate) enum ProgramError {
 
 type Result<T> = std::result::Result<T, ProgramError>;
 
-#[cfg(feature = "manifest")]
 pub(crate) use encoding::encode;
-#[cfg(feature = "manifest")]
 use encoding::{Encode, Writer};
 
 pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
@@ -277,7 +274,6 @@ impl<A: Decode, B: Decode> Decode for (A, B) {
 /// Field-by-field encoding for plain structs.
 macro_rules! record {
     ($type:ident { $($field:ident),* $(,)? }) => {
-        #[cfg(feature = "manifest")]
         impl Encode for $type {
             fn encode(&self, writer: &mut Writer) {
                 $(self.$field.encode(writer);)*
@@ -295,7 +291,6 @@ macro_rules! record {
 /// Tag-and-fields encoding for enums whose variants have named or no fields.
 macro_rules! variants {
     ($type:ident { $($variant:ident $({ $($field:ident),* })?),* $(,)? }) => {
-        #[cfg(feature = "manifest")]
         impl Encode for $type {
             #[allow(unused_assignments)]
             fn encode(&self, writer: &mut Writer) {
@@ -332,7 +327,6 @@ macro_rules! variants {
 /// Boxed fields encode as their contents.
 macro_rules! boxed {
     ($type:ty) => {
-        #[cfg(feature = "manifest")]
         impl Encode for Box<$type> {
             fn encode(&self, writer: &mut Writer) {
                 self.as_ref().encode(writer);
@@ -569,7 +563,6 @@ impl Decode for MixinNode {
 }
 
 /// Encoding, which only hosts that compile manifests need.
-#[cfg(feature = "manifest")]
 mod encoding {
     use super::*;
 

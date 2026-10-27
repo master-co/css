@@ -344,7 +344,7 @@ pub(crate) fn assemble_native_release_at(
 
 pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
     if surface == "all" {
-        for surface in ["runtime", "compiler", "tooling"] {
+        for surface in ["engine", "compiler", "tooling"] {
             build_wasm(surface)?;
         }
         return Ok(());
@@ -353,19 +353,14 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
     match surface {
         // Browsers execute programs with the JavaScript engine; the engine Wasm
         // serves Node without a native binding and other non-browser hosts.
-        "runtime" => build_wasm_artifact(
+        "engine" => build_wasm_artifact(
             &root,
             &WasmBuild {
                 label: "engine",
                 crate_name: "mastercss-binding-wasm-engine",
                 artifact_name: "mastercss_binding_wasm_engine",
                 profile: "release-wasm",
-                default_features: true,
-                typescript: true,
                 output: "packages/binding-wasm-engine/artifacts",
-                target_dir: None,
-                keep_names: false,
-                rebuild_std: false,
             },
         ),
         "compiler" => build_wasm_artifact(
@@ -375,12 +370,7 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 crate_name: "mastercss-binding-wasm-compiler",
                 artifact_name: "mastercss_binding_wasm_compiler",
                 profile: "release",
-                default_features: true,
-                typescript: true,
                 output: "packages/binding-wasm-compiler/artifacts",
-                target_dir: None,
-                keep_names: false,
-                rebuild_std: false,
             },
         ),
         "tooling" => build_wasm_artifact(
@@ -390,49 +380,11 @@ pub(crate) fn build_wasm(surface: &str) -> Result<(), String> {
                 crate_name: "mastercss-binding-wasm-tooling",
                 artifact_name: "mastercss_binding_wasm_tooling",
                 profile: "release",
-                default_features: true,
-                typescript: true,
                 output: "packages/binding-wasm-tooling/artifacts",
-                target_dir: None,
-                keep_names: false,
-                rebuild_std: false,
             },
         ),
         _ => Err(format!("Unknown Wasm surface: {surface}")),
     }
-}
-
-// Keeps nightly build outputs apart from the stable ones in `target`.
-const WASM_SIZE_TARGET: &str = "target/wasm-size";
-/// Browsers download the runtime engine Wasm, so it rebuilds the standard library
-/// with immediate-abort panics: no panic message, location or formatting code is
-/// linked. Native code and the other Wasm builds use the stable toolchain in
-/// `rust-toolchain.toml`.
-const RUNTIME_WASM_TOOLCHAIN: &str = "nightly-2026-09-03";
-
-/// Builds the runtime engine Wasm with its name section into `target/wasm-size/runtime`
-/// for `scripts/report-runtime-wasm-size.mjs`. Nothing is staged into packages.
-pub(crate) fn build_wasm_names(surface: &str) -> Result<(), String> {
-    if surface != "runtime" {
-        return Err(format!(
-            "build-wasm --names supports only the runtime surface, not {surface}"
-        ));
-    }
-    build_wasm_artifact(
-        &workspace_root(),
-        &WasmBuild {
-            label: "runtime (names)",
-            crate_name: "mastercss-binding-wasm-engine",
-            artifact_name: "mastercss_binding_wasm_engine",
-            profile: "release-wasm",
-            default_features: false,
-            typescript: false,
-            output: "target/wasm-size/runtime",
-            target_dir: Some(WASM_SIZE_TARGET),
-            keep_names: true,
-            rebuild_std: true,
-        },
-    )
 }
 
 struct WasmBuild {
@@ -440,76 +392,27 @@ struct WasmBuild {
     crate_name: &'static str,
     artifact_name: &'static str,
     profile: &'static str,
-    default_features: bool,
-    typescript: bool,
     output: &'static str,
-    target_dir: Option<&'static str>,
-    keep_names: bool,
-    /// Rebuilds the standard library with [`RUNTIME_WASM_TOOLCHAIN`] so panics abort
-    /// without formatting a message.
-    rebuild_std: bool,
 }
 
 fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
-    let profile_env = |key: &str| {
-        format!(
-            "CARGO_PROFILE_{}_{key}",
-            build.profile.to_ascii_uppercase().replace('-', "_")
-        )
-    };
-    let mut command = Command::new("cargo");
-    command.current_dir(root);
-    if build.rebuild_std {
-        ensure_runtime_wasm_toolchain()?;
-        command.arg(format!("+{RUNTIME_WASM_TOOLCHAIN}"));
-    }
-    command.args([
-        "build",
-        "--package",
-        build.crate_name,
-        "--target",
-        "wasm32-unknown-unknown",
-        "--profile",
-        build.profile,
-    ]);
-    if !build.default_features {
-        command.arg("--no-default-features");
-    }
-    if let Some(target_dir) = build.target_dir {
-        command.arg("--target-dir").arg(root.join(target_dir));
-    }
-    if build.rebuild_std {
-        // Trimming keeps local toolchain and checkout paths, which the rebuilt
-        // standard library would otherwise embed, out of the shipped bytes.
-        command
-            .args([
-                "-Zbuild-std=std,panic_abort",
-                "-Zpanic-immediate-abort",
-                "-Ztrim-paths",
-            ])
-            .env(profile_env("PANIC"), "immediate-abort")
-            .env(profile_env("TRIM_PATHS"), "all");
-        // The standard library keeps the opt-level of its prebuilt copy: rebuilt for
-        // size it measured larger under brotli and slower to start.
-        for package in ["core", "alloc", "std"] {
-            command.arg("--config").arg(format!(
-                "profile.{}.package.{package}.opt-level=3",
-                build.profile
-            ));
-        }
-    }
-    if build.keep_names {
-        // The release profile strips symbols, which drops the name section at link time.
-        command.env(profile_env("STRIP"), "none");
-    }
-    run_command(&mut command, &format!("{} Wasm build", build.label))?;
+    run_command(
+        Command::new("cargo").current_dir(root).args([
+            "build",
+            "--package",
+            build.crate_name,
+            "--target",
+            "wasm32-unknown-unknown",
+            "--profile",
+            build.profile,
+        ]),
+        &format!("{} Wasm build", build.label),
+    )?;
 
-    let input = root
-        .join(build.target_dir.unwrap_or("target"))
-        .join(format!(
-            "wasm32-unknown-unknown/{}/{}.wasm",
-            build.profile, build.artifact_name
-        ));
+    let input = root.join(format!(
+        "target/wasm32-unknown-unknown/{}/{}.wasm",
+        build.profile, build.artifact_name
+    ));
     let output = root.join(build.output);
     fs::create_dir_all(&output)
         .map_err(|error| format!("Cannot create {}: {error}", output.display()))?;
@@ -517,8 +420,8 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
     bindgen
         .input_path(&input)
         .out_name(build.artifact_name)
-        .typescript(build.typescript)
-        .remove_name_section(!build.keep_names)
+        .typescript(true)
+        .remove_name_section(true)
         .remove_producers_section(true)
         .web(true)
         .map_err(|error| error.to_string())?
@@ -526,38 +429,4 @@ fn build_wasm_artifact(root: &Path, build: &WasmBuild) -> Result<(), String> {
         .map_err(|error| format!("Cannot generate Wasm bindings: {error}"))?;
     println!("Built {}", output.display());
     Ok(())
-}
-
-/// Installs [`RUNTIME_WASM_TOOLCHAIN`] with the standard library sources when missing.
-fn ensure_runtime_wasm_toolchain() -> Result<(), String> {
-    let installed = Command::new("rustup")
-        .args([
-            "component",
-            "list",
-            "--installed",
-            "--toolchain",
-            RUNTIME_WASM_TOOLCHAIN,
-        ])
-        .output()
-        .is_ok_and(|output| {
-            output.status.success()
-                && String::from_utf8_lossy(&output.stdout)
-                    .lines()
-                    .any(|line| line == "rust-src")
-        });
-    if installed {
-        return Ok(());
-    }
-    run_command(
-        Command::new("rustup").args([
-            "toolchain",
-            "install",
-            RUNTIME_WASM_TOOLCHAIN,
-            "--profile",
-            "minimal",
-            "--component",
-            "rust-src",
-        ]),
-        &format!("{RUNTIME_WASM_TOOLCHAIN} installation"),
-    )
 }

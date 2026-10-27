@@ -8,7 +8,6 @@ use mastercss_lexer::concat_text;
 use mastercss_lexer::{
     collect_css_variable_references as collect_css_variable_names, css_escape, utf16_len,
 };
-#[cfg(feature = "manifest")]
 use mastercss_schema::MasterCssManifest;
 use mastercss_schema::{
     CssDeclaration, Diagnostic, EmittedGlobals, EngineInspectionIr, EngineResourcesIr,
@@ -17,29 +16,15 @@ use mastercss_schema::{
     UtilityLayerName,
 };
 use serde::Serialize;
-#[cfg(feature = "manifest")]
 use serde_json::Map;
 use serde_json::Value;
 
 const LAYER_COUNT: usize = 4;
 
-/// Hosts that report diagnostics (tooling, compilers, inspection) build their text.
-/// The browser runtime only needs each verdict, so its Wasm omits every message.
-pub(crate) const DIAGNOSTIC_MESSAGES: bool = cfg!(feature = "diagnostic-messages");
-
-/// Builds a diagnostic message only when this build reports diagnostics.
-pub(crate) fn message(build: impl FnOnce() -> String) -> String {
-    if DIAGNOSTIC_MESSAGES {
-        build()
-    } else {
-        String::new()
-    }
-}
 type ConditionFeature = mastercss_schema::ConditionRangeIr;
 
 #[derive(Debug)]
 pub enum EngineError {
-    #[cfg(feature = "manifest")]
     Schema(mastercss_schema::SchemaError),
     InvalidManifest(String),
     InvalidEmittedGlobals(String),
@@ -48,7 +33,6 @@ pub enum EngineError {
     SessionDisposed,
 }
 
-#[cfg(feature = "manifest")]
 impl From<mastercss_schema::SchemaError> for EngineError {
     fn from(error: mastercss_schema::SchemaError) -> Self {
         Self::Schema(error)
@@ -64,7 +48,6 @@ impl std::fmt::Display for EngineError {
 impl std::error::Error for EngineError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            #[cfg(feature = "manifest")]
             Self::Schema(error) => std::error::Error::source(error),
             _ => None,
         }
@@ -72,11 +55,10 @@ impl std::error::Error for EngineError {
 }
 
 impl EngineError {
-    /// The message, built without `core::fmt` so the runtime Wasm links none;
+    /// The message, built without `core::fmt`;
     /// `Display` writes the same text.
     pub fn message(&self) -> String {
         match self {
-            #[cfg(feature = "manifest")]
             Self::Schema(error) => error.to_string(),
             Self::InvalidManifest(detail) => {
                 concat_text!("Invalid MasterCSSManifest engine field: ", detail)
@@ -94,7 +76,6 @@ impl EngineError {
 
     pub fn diagnostic(&self) -> Diagnostic {
         let code = match self {
-            #[cfg(feature = "manifest")]
             Self::Schema(error) => error.code(),
             Self::InvalidManifest(_) => ErrorCode::InvalidManifest,
             Self::InvalidEmittedGlobals(_) => ErrorCode::InvalidInput,
@@ -344,7 +325,6 @@ pub struct EngineCompositionRuleIr {
 pub struct EngineSession {
     /// The manifest a session was created from; sessions created from an encoded
     /// program have none.
-    #[cfg(feature = "manifest")]
     manifest: Option<MasterCssManifest>,
     compiled: Program,
     layers: [Vec<StoredRule>; LAYER_COUNT],
@@ -387,14 +367,12 @@ mod condition;
 mod custom_media;
 mod decimal;
 mod keyframe_slots;
-#[cfg(feature = "stylesheet-resources")]
 pub use keyframe_slots::KeyframeOutputEdit;
 mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;
 mod execution_state;
 mod generation;
-#[cfg(feature = "stylesheet-resources")]
 mod hosted_stylesheet;
 mod manifest;
 mod mixin;
@@ -410,7 +388,6 @@ mod program;
 mod render;
 mod resources;
 mod session;
-#[cfg(feature = "manifest")]
 pub use session::{compile_program, parse_emitted_globals};
 mod state;
 mod stylesheet_resources;
@@ -423,7 +400,6 @@ pub(crate) use condition::{
     add_condition_wrapper, normalize_dynamic_value, parse_raw_condition_wrapper,
     render_condition_token, resolve_layer_condition,
 };
-#[cfg(feature = "manifest")]
 pub(crate) use manifest::compile_manifest;
 pub(crate) use manifest::{
     add_unique_string, engine_variable_ir, finish_program, layer_name, single_native_declaration,
