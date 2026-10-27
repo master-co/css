@@ -6,6 +6,8 @@ import type { ConditionBound, ConditionFeature, GeneratedRule } from './types'
 
 export interface StoredRule {
   ir: GeneratedRule
+  /** The condition features rules sort by. The reported ones write `-0` as `0`, as the Rust JSON does. */
+  features: ConditionFeature[]
   manifestOrder: number
   declarations: string
   nativeFallback: boolean
@@ -84,16 +86,16 @@ function compareConditions(left: string[] = [], right: string[] = []) {
   return sign(left.length - right.length)
 }
 
-export function compareRulePriority(left: GeneratedRule, right: GeneratedRule) {
-  return sign(left.sortTier - right.sortTier)
-    || compareConditionFeatures(left.priority.features, right.priority.features)
-    || compareConditions(left.priority.conditions, right.priority.conditions)
-    || sign(left.priority.selector - right.priority.selector)
-    || sign(left.type - right.type)
-    || sign((left.priority.valuePriority ?? 0) - (right.priority.valuePriority ?? 0))
-    || naturalCompare(left.priority.sortKey ?? '', right.priority.sortKey ?? '')
-    || naturalCompare(left.key, right.key)
+export function compareStoredRules(left: StoredRule, right: StoredRule) {
+  const a = left.ir
+  const b = right.ir
+  return sign(a.sortTier - b.sortTier)
+    || compareConditionFeatures(left.features, right.features)
+    || compareConditions(a.priority.conditions, b.priority.conditions)
+    || sign(a.priority.selector - b.priority.selector)
+    || sign(a.type - b.type)
+    || sign((a.priority.valuePriority ?? 0) - (b.priority.valuePriority ?? 0))
+    || naturalCompare(a.priority.sortKey ?? '', b.priority.sortKey ?? '')
+    || naturalCompare(a.key, b.key)
+    || sign(left.manifestOrder - right.manifestOrder)
 }
-
-export const compareStoredRules = (left: StoredRule, right: StoredRule) =>
-  compareRulePriority(left.ir, right.ir) || sign(left.manifestOrder - right.manifestOrder)

@@ -223,6 +223,44 @@ export function parseDecimal(text: string): Decimal | undefined {
   return { negative, digits: all.slice(leading).replace(/0+$/, ''), point: integer.length - leading + exponent }
 }
 
+/** `2^1024 − 2^970`, the least magnitude that `f64::from_str` rounds to infinity. */
+const F64_OVERFLOW = '179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497792'
+
+/** Whether `f64::from_str` parses the number to a finite value. */
+export function decimalIsFinite({ digits, point }: Decimal) {
+  if (!digits || point !== F64_OVERFLOW.length) return !digits || point < F64_OVERFLOW.length
+  // Equal digits round, as ties to even, to infinity.
+  for (let index = 0; index < F64_OVERFLOW.length; index++) {
+    const digit = digits[index] ?? '0'
+    if (digit !== F64_OVERFLOW[index]) return digit < F64_OVERFLOW[index]
+  }
+  return false
+}
+
+/** Whether a digit string without leading zeros is below 2^53. */
+const belowTwo53 = (digits: string) => digits.length < 16 || (digits.length === 16 && digits < '9007199254740992')
+
+/**
+ * The number as Rust's `Decimal::to_f64` computes it: exact for at most 15 significant
+ * digits within the exactly representable powers of ten, close to it otherwise.
+ */
+export function decimalToNumber({ negative, digits, point }: Decimal) {
+  const significant = digits.slice(0, 19)
+  const exponent = point - significant.length
+  // A u64 converts to the nearest double, as a correctly rounded parse of its digits does.
+  let value = Number(significant || '0')
+  if (belowTwo53(significant) && exponent >= -22 && exponent <= 22) {
+    // Decimal literals of powers of ten up to 1e22 are exact doubles.
+    value = exponent < 0 ? value / Number(`1e${-exponent}`) : value * Number(`1e${exponent}`)
+  } else if (exponent > 22 && exponent - 22 <= 19 && belowTwo53(significant + '0'.repeat(exponent - 22))) {
+    value = Number(significant + '0'.repeat(exponent - 22)) * 1e22
+  } else {
+    // Out of the exact range, overflow and underflow still reach infinity and zero.
+    for (let step = Math.min(Math.abs(exponent), 400); step > 0; step--) value = exponent < 0 ? value / 10 : value * 10
+  }
+  return negative ? -value : value
+}
+
 /** An opacity from 0 to 1 as a percentage, computed on its digits so `.07` is `7`, not `7.000000000000001`. */
 export function alphaPercentage(alpha: string) {
   const decimal = parseDecimal(alpha)

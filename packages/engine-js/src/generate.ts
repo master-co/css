@@ -4,28 +4,17 @@
 // registered utility matches.
 import { analyzeAnimations, stylesheetDeclarations, type AnimationReferences } from './animation'
 import { decodeNativeContent, splitDynamicValueState, splitStateToken } from './class-syntax'
+import { conditionPriority } from './condition'
 import { leadingDeclarationName } from './css-syntax'
 import type { StoredRule } from './order'
 import { pending } from './pending'
 import { cssEscape } from './program'
 import type { Program, Utility } from './program-model'
-import type { GeneratedRule, RulePriority } from './types'
+import { replaceNestingSelector, selectorPriority } from './selector'
+import { resolveStateBranches, type StateBranch } from './state'
+import type { ConditionFeature, GeneratedRule, RulePriority } from './types'
 import { matchingUtilities, tokenCandidates, tokenPrefix, type UtilityMatch } from './utility'
 import { collectCssVariableReferences, resolveValueComponents, substituteInlineTokens } from './value'
-
-interface StateBranch {
-  key: string
-  important: boolean
-}
-
-function resolveStateBranches(stateToken: string, important: boolean): StateBranch[] {
-  if (stateToken[0] === '!') {
-    important = true
-    stateToken = stateToken.slice(1)
-  }
-  if (stateToken) pending('J3', 'selector state or condition')
-  return [{ key: '', important }]
-}
 
 function formatDeclaration(property: string, value: string, important: boolean) {
   return important && !value.endsWith('!important') ? `${property}:${value}!important` : `${property}:${value}`
@@ -88,6 +77,20 @@ function nativeDeclarationFallback(className: string, program: Program): [Utilit
   ]
 }
 
+function createSelectorText(className: string, branch: StateBranch) {
+  const body = `.${cssEscape(className)}`
+  const template = branch.selectorTemplate
+  return template === undefined ? body : replaceNestingSelector(template, body) ?? template
+}
+
+const reportedFeatures = (features: ConditionFeature[]) => features.some(({ lower, upper }) => Object.is(lower?.value, -0) || Object.is(upper?.value, -0))
+  ? features.map((feature) => ({
+      ...feature,
+      lower: feature.lower && { ...feature.lower, value: feature.lower.value + 0 },
+      upper: feature.upper && { ...feature.upper, value: feature.upper.value + 0 }
+    }))
+  : features
+
 function declarationAnimationReferences(declarations: string, program: Program): AnimationReferences {
   if (!declarations.includes('\\') && !/animation/i.test(declarations)) return { names: [], retainAll: false }
   return analyzeAnimations(stylesheetDeclarations(`a{${declarations}}`), program)
@@ -112,18 +115,21 @@ export function generateClassRules(className: string, program: Program): StoredR
     // A native fallback only applies when no registered utility emitted.
     if (utility.nativeFallback && rules.length) break
     let ruleSortKey: string | undefined
-    for (const [branchIndex, branch] of resolveStateBranches(matched.stateToken, important).entries()) {
+    for (const [branchIndex, branch] of resolveStateBranches(matched.stateToken, important, program).entries()) {
       const emitted = emitDeclarations(utility, matched, branch.important)
       if (!emitted.length) continue
       const key = branchIndex === 0 && !branch.key ? className : `${className}\0${branch.key}`
-      const layer = utility.layer
+      const layer = branch.layer ?? utility.layer
       if (seen.has(`${layer} ${key}`)) continue
       seen.add(`${layer} ${key}`)
+      const wrappers = branch.conditionWrappers
+      const [features, conditions] = conditionPriority(wrappers)
       ruleSortKey ??= sortKey(utility, matched)
-      const priority: RulePriority = { features: [], selector: 0 }
+      const priority: RulePriority = { features: reportedFeatures(features), selector: selectorPriority(branch.selectorTemplate) }
+      if (conditions.length) priority.conditions = conditions
       if (matched.matcherType === 'token') priority.valuePriority = -1
       if (ruleSortKey) priority.sortKey = ruleSortKey
-      const selectorText = `.${cssEscape(className)}`
+      const selectorText = createSelectorText(className, branch)
       const declarations = emitted.map((text) => substituteInlineTokens(text, program))
       const joined = declarations.join(';')
       const variableNames = matched.variableNames.filter((name) => program.variables.get(name)?.inlineValue === undefined)
@@ -137,13 +143,13 @@ export function generateClassRules(className: string, program: Program): StoredR
         key,
         layer,
         type: utility.utilityType,
-        sortTier: 0,
+        sortTier: wrappers.length ? 3 : branch.selectorTemplate === undefined ? 0 : 1,
         priority,
-        text: declarations.map((text) => `${selectorText}{${text}}`).join(''),
+        text: declarations.map((text) => wrappers.reduceRight((rule, [, wrapper]) => `${wrapper}{${rule}}`, `${selectorText}{${text}}`)).join(''),
         selectorText
       }
       if (variableNames.length) ir.variableNames = variableNames
-      rules.push({ ir, manifestOrder: utility.order, declarations: joined, nativeFallback: utility.nativeFallback })
+      rules.push({ ir, features, manifestOrder: utility.order, declarations: joined, nativeFallback: utility.nativeFallback })
     }
   }
   return rules

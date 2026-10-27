@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { compileRuntimeProgram, createWasmEngineSession } from '../../binding-wasm-engine/src/node.ts'
 import { createEngineSession, decodeProgram, type EngineSession, type Program } from '../src/index.ts'
 import { PendingFeatureError } from '../src/pending.ts'
-import { corpusEngineCases, fuzzClasses, markupClasses, noiseClasses, rustTestClasses, themeEngineCases, tokenClasses, valueClasses, type EngineCase } from './class-sources.mts'
+import { corpusEngineCases, fuzzClasses, markupClasses, noiseClasses, rustTestClasses, stateClasses, themeEngineCases, tokenClasses, valueClasses, type EngineCase } from './class-sources.mts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const args = new Map<string, string>()
@@ -260,6 +260,7 @@ await runClassSet(`fuzz (seed ${seed})`, fuzzClasses(manifest, fuzzCount, seed))
 await runClassSet('token utilities', tokenClasses((decodeProgram(await programFor('default')) as { program: Program }).program))
 await runClassSet(`value fuzz (seed ${seed})`, valueClasses(fuzzCount * 2, seed))
 await runClassSet(`noise (seed ${seed})`, noiseClasses(fuzzCount, seed))
+await runClassSet(`states and conditions (seed ${seed})`, stateClasses(manifest, fuzzCount * 3, seed))
 await runGlobals()
 const elapsed = performance.now() - startedAt
 

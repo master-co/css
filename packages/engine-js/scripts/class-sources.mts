@@ -284,9 +284,33 @@ export function themeEngineCases(): EngineCase[] {
     { op: 'ensure', classes: classes.slice(5) },
     { op: 'delete', classes }
   ]
+  const feature = (value: string) => ({ type: 'feature', value })
+  const mediaManifest = {
+    ...manifest,
+    customMedia: {
+      '--wide': { type: 'and', queries: [feature('(width >= 40rem)'), feature('(width < 80rem)')] },
+      '--screen-wide': { type: 'and', queries: [{ type: 'media-type', name: 'screen' }, feature('(width>=40rem)')] },
+      '--not-print': { type: 'not', query: { type: 'media-type', name: 'print' } },
+      '--either': { type: 'or', queries: [feature('(hover)'), feature('(pointer: fine)')] },
+      '--never': { type: 'false' },
+      '--always': { type: 'true' },
+      '--mixed': { type: 'not', query: { type: 'and', queries: [{ type: 'or', queries: [feature('(width >= 30em)'), feature('(height >= 30em)')] }, { type: 'media-type', name: 'screen' }] } },
+      '--odd-type': { type: 'media-type', name: 'tv 3d' }
+    }
+  }
+  const media = ['@wide', '@screen-wide', '@not-print', '@either', '@never', '@always', '@mixed', '@odd-type', '@media((--wide))', '@media((--either))',
+    '@media((--never))', '@media((--mixed))', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media((width>=40rem))@wide']
+  const mediaClasses = ['fg-red', 'gap-md', 'color:red:hover'].flatMap((base) => media.map((condition) => base + condition))
+  const mediaSteps: EngineCaseStep[] = [
+    { op: 'ensure', classes: mediaClasses },
+    { op: 'delete', classes: mediaClasses.filter((_, index) => index % 3 === 0) },
+    { op: 'ensure', classes: mediaClasses.toReversed() },
+    { op: 'delete', classes: mediaClasses }
+  ]
   return [
     { id: 'theme-tokens', manifest, steps },
-    { id: 'theme-tokens-emitted', manifest, steps, emittedGlobals: { variables: { 'spacing-md': 1, 'color-d': 2, 'color-unknown': 1, 'spacing-sm': 0 } } }
+    { id: 'theme-tokens-emitted', manifest, steps, emittedGlobals: { variables: { 'spacing-md': 1, 'color-d': 2, 'color-unknown': 1, 'spacing-sm': 0 } } },
+    { id: 'custom-media', manifest: mediaManifest, steps: mediaSteps }
   ]
 }
 
@@ -304,6 +328,45 @@ export function noiseClasses(count: number, seed: number) {
   for (let attempt = 0; classes.size < count && attempt < count * 10; attempt++) {
     let className = pick(NOISE_HEADS)
     for (let length = 1 + Math.floor(random() * 24); length > 0; length--) className += pick(NOISE)
+    classes.add(className)
+  }
+  return classes
+}
+
+const STATE_BASES = ['color:red', 'fg-red-60', 'm-md', '-m-md', 'width:calc(1px+2px)', 'gap-x-md', 'bg-blue-50/.5', 'content:"a_b"', 'opacity:.5', 'font:12px|sans']
+const SELECTORS = [
+  ':hover', ':focus', ':focus-visible', ':active', ':disabled', ':hover:focus', '::before', '::after', '::placeholder', ':first-child',
+  ':nth-child(2n+1)', ':nth-child(2n+1_of_.item)', ':nth-last-child(odd_of_li_a)', ':not(.disabled)', ':not(:hover)', ':is(_h1,_h2)',
+  ':where(.a_.b)', ':has(>img)', ':has(+_.x)', '_div', '_>_p', '>li', '+.x', '~.y', '_.dark_&', '.active', '#main', '[disabled]',
+  '[data-x="a_b"]', "[data-y='&']", '[aria-pressed=true]:hover', ':hover,:focus', '::before,::after', ':is(.a,.b)_span', ':lang(en_US)',
+  ':dir(rtl)', ':host(.x)', '::slotted(span_b)', '\\:hover', '_\\_x', '__a', '_a__b', ':nth-child(1)', '.a\\.b', '.', '#', '[x', ':is(',
+  '_', '<x', ':hover!', '::part(a_b)', ':state(checked)', '*', '_*', '>*'
+]
+const CONDITIONS = [
+  '@media((width>=40rem))', '@media((40rem<=width<64rem))', '@media((min-width:40rem))', '@media((max-width:63.99rem))', '@media((width>40rem))',
+  '@media((width=40rem))', '@media((hover))', '@media((orientation:landscape))', '@media((resolution>=2x))', '@media((aspect-ratio>16/9))',
+  '@media((prefers-color-scheme:dark))', '@media(print)', '@media(screen)', '@media((width>=-0px))', '@media((width>=1e3px))', '@media((--sm))',
+  '@media((--dark))', '@media((--unknown))', '@media((--sm)|and|(--dark))', '@media(not|(--sm))', '@media(--sm)', '@media((width>=40rem)|and|(hover))',
+  '@supports((display:grid))', '@supports(display:grid)', '@supports((--x:1))', '@container((width>=30rem))', '@container(card|(width>=30rem))',
+  '@container(style(--x))', '@container(card|style(--density))', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
+  '@layer(utilities)', '@layer(other)', '@print', '@media((height<=600px))', '@media((width<64rem))', '@media((width>=40em))', '@media()', '@'
+]
+
+/** Selector states and conditions, alone and combined, on a few bases each. */
+export function stateClasses(manifest: ManifestLike, count: number, seed: number) {
+  const random = mulberry32(seed)
+  const pick = <T,>(values: readonly T[]) => values[Math.floor(random() * values.length)]
+  const conditions = [...CONDITIONS, ...Object.keys(manifest.customMedia).map((name) => `@${name.slice(2)}`)]
+  const classes = new Set<string>()
+  for (const base of STATE_BASES.slice(0, 3)) {
+    for (const selector of SELECTORS) classes.add(base + selector)
+    for (const condition of conditions) classes.add(base + condition)
+  }
+  for (let attempt = 0; classes.size < count && attempt < count * 10; attempt++) {
+    let className = pick(STATE_BASES)
+    if (random() < 0.5) className += pick(SELECTORS)
+    for (let index = Math.floor(random() * 4); index > 0; index--) className += pick(conditions)
+    if (random() < 0.15) className += '!'
     classes.add(className)
   }
   return classes
