@@ -17,6 +17,8 @@ writeFileSync(join(root, 'packages/engine-js/src/native-properties.ts'), [
   '',
   '/** The native CSS property registry in byte order, including the `--*` entry. */',
   `export const NATIVE_CSS_PROPERTIES: readonly string[] = ${JSON.stringify(names.join(' '))}.split(' ')`,
+  '',
+  'export const NATIVE_CSS_PROPERTY_SET: ReadonlySet<string> = new Set(NATIVE_CSS_PROPERTIES)',
   ''
 ].join('\n'))
 process.stdout.write(`${names.length} native properties\n`)

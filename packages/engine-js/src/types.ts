@@ -10,24 +10,78 @@ export interface EmittedGlobals {
   suppressedKeyframes?: string[]
 }
 
-/** One CSSOM change a transition asks the host to apply, as the Rust engine reports it. */
-export type RuleMutation = Readonly<Record<string, unknown>>
+export type UtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
+export type RuleTarget = 'theme' | 'keyframes' | UtilityLayerName
+
+export interface ConditionBound {
+  value: number
+  inclusive: boolean
+}
+
+export interface ConditionFeature {
+  domain: string
+  feature: string
+  unit: string
+  lower: ConditionBound | null
+  upper: ConditionBound | null
+}
+
+export interface RulePriority {
+  features: ConditionFeature[]
+  selector: number
+  conditions?: string[]
+  valuePriority?: number
+  sortKey?: string
+}
+
+/** A generated rule as the Rust engine reports it; optional fields are absent when empty. */
+export interface GeneratedRule {
+  className: string
+  key: string
+  layer: UtilityLayerName
+  type: number
+  sortTier: number
+  priority: RulePriority
+  text: string
+  nodes?: { text: string }[]
+  selectorText?: string
+  variableNames?: string[]
+  keyframeNames?: string[]
+  retainAllKeyframes?: boolean
+}
+
+/** One CSSOM change a transition asks the host to apply. */
+export type RuleMutation =
+  | { readonly op: 'insert', readonly target: RuleTarget, readonly index: number, readonly key: string, readonly text: string, readonly rule?: GeneratedRule }
+  | { readonly op: 'delete', readonly target: RuleTarget, readonly index: number, readonly key: string }
 
 export interface Transition {
   readonly version: number
   readonly mutations: readonly RuleMutation[]
 }
 
+export interface VariableResource {
+  name: string
+  refCount: number
+  dependencies?: string[]
+}
+
+export interface Resources {
+  themeText?: string
+  variables: VariableResource[]
+  keyframes: unknown[]
+}
+
 export interface Snapshot {
   readonly version: number
-  readonly rules: readonly unknown[]
-  readonly resources: unknown
+  readonly rules: readonly GeneratedRule[]
+  readonly resources: Resources
   readonly text: string
 }
 
 export interface ExecutionState {
-  readonly classes: readonly unknown[]
-  readonly resources: unknown
+  readonly classes: readonly { className: string, references: { layer: UtilityLayerName, key: string }[] }[]
+  readonly resources: Resources
 }
 
 export interface KeyframeDefinition {

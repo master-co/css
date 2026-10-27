@@ -22,6 +22,7 @@ import {
   type UtilityMatcher,
   type Variable
 } from './program-model'
+import { selectedInlineValue } from './value'
 
 export const PROGRAM_VERSION = 1
 export const LANGUAGE_VERSION = 16
@@ -247,24 +248,6 @@ const utility = (): EncodedUtility => ({
     : { type: 'property', property: string() },
   matchers: vec(matcher)
 })
-
-/**
- * The value an inlined variable reference becomes: the last declared value, unless an
- * earlier `!important` one outranks it; only when that value is an inline one.
- */
-function selectedInlineValue(values: Variable['values']) {
-  if (!values.some((entry) => entry.inline)) return
-  let selected: [inline: boolean, value: string] | undefined
-  let selectedImportant = false
-  for (const entry of values) {
-    const match = /^([\s\S]*?)\s*!\s*important\s*$/i.exec(entry.value)
-    const important = !!match
-    if (selectedImportant && !important) continue
-    selected = [entry.inline, match ? match[1] : entry.value]
-    selectedImportant = important
-  }
-  return selected?.[0] ? selected[1] : undefined
-}
 
 /** `CSS.escape` as `mastercss_lexer::css_escape` implements it, code unit by code unit. */
 export function cssEscape(value: string) {

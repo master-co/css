@@ -1,12 +1,20 @@
 export { decodeProgram, LANGUAGE_VERSION, PROGRAM_VERSION } from './program'
 export type * from './program-model'
-export { createEngineSession, EngineError } from './session'
+export { createEngineSession, EngineError, TRANSITION_VERSION } from './session'
 export type {
+  ConditionBound,
+  ConditionFeature,
   EmittedGlobals,
   EngineSession,
   ExecutionState,
+  GeneratedRule,
   KeyframeDefinition,
+  Resources,
   RuleMutation,
+  RulePriority,
+  RuleTarget,
   Snapshot,
-  Transition
+  Transition,
+  UtilityLayerName,
+  VariableResource
 } from './types'

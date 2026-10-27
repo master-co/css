@@ -1,14 +1,17 @@
 // Differential harness: runs the Rust engine (full Wasm, Node entry) and the JS engine
 // on the same compiled runtime program and class sets, and reports every divergence in
 // transitions, execution state, snapshots, keyframe definitions and emitted globals.
+// Inputs the JS engine reports as pending (a later plan phase) are skipped on both
+// engines and counted by feature instead.
 //
 //   node --import tsx packages/engine-js/scripts/differential.mts [--fuzz 2000] [--seed 1] [--out dir]
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileRuntimeProgram, createWasmEngineSession } from '../../binding-wasm-engine/src/node.ts'
-import { createEngineSession, type EngineSession } from '../src/index.ts'
-import { corpusEngineCases, fuzzClasses, markupClasses, rustTestClasses, type EngineCase } from './class-sources.mts'
+import { createEngineSession, decodeProgram, type EngineSession, type Program } from '../src/index.ts'
+import { PendingFeatureError } from '../src/pending.ts'
+import { corpusEngineCases, fuzzClasses, markupClasses, noiseClasses, rustTestClasses, themeEngineCases, tokenClasses, valueClasses, type EngineCase } from './class-sources.mts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const args = new Map<string, string>()
@@ -24,7 +27,13 @@ type Operation = 'ensure' | 'delete' | 'executionState' | 'snapshot' | 'keyframe
   | 'registerEmittedGlobals' | 'replaceEmittedGlobals' | 'refresh' | 'batchEnsure' | 'batchDelete'
 
 interface OperationStats { compared: number, mismatched: number, examples: unknown[] }
-interface SourceStats { candidates: number, rustValid?: number, operations: Partial<Record<Operation, OperationStats>> }
+interface SourceStats {
+  candidates: number
+  rustValid?: number
+  /** Inputs skipped because the JS engine reports them pending, by phase and feature. */
+  pending: Record<string, number>
+  operations: Partial<Record<Operation, OperationStats>>
+}
 
 const sources = new Map<string, SourceStats>()
 
@@ -45,21 +54,40 @@ function firstDifference(left: unknown, right: unknown, path = '$'): string | un
 
 function source(name: string) {
   let stats = sources.get(name)
-  if (!stats) sources.set(name, stats = { candidates: 0, operations: {} })
+  if (!stats) sources.set(name, stats = { candidates: 0, pending: {}, operations: {} })
   return stats
 }
 
-/** Runs one operation on both engines; a thrown error is compared as `{ error }`. */
+const PENDING = Symbol('pending')
+
+function recordPending(name: string, error: PendingFeatureError) {
+  const feature = `${error.phase}: ${error.feature}`
+  const stats = source(name)
+  stats.pending[feature] = (stats.pending[feature] ?? 0) + 1
+}
+
+/**
+ * Runs one operation on the JS engine, then the Rust engine, and compares them; a
+ * thrown error is compared as `{ error }`. When the JS engine reports the input
+ * pending, Rust does not run it either and the result is `PENDING`.
+ */
 function compare(name: string, operation: Operation, subject: unknown, rust: () => unknown, js: () => unknown) {
   const run = (callback: () => unknown) => {
     try {
       return callback()
     } catch (error) {
+      if (error instanceof PendingFeatureError) throw error
       return { error: (error as { code?: string }).code ?? String(error) }
     }
   }
+  let jsResult: unknown
+  try {
+    jsResult = run(js)
+  } catch (error) {
+    recordPending(name, error as PendingFeatureError)
+    return PENDING
+  }
   const rustResult = run(rust)
-  const jsResult = run(js)
   const stats = source(name).operations[operation] ??= { compared: 0, mismatched: 0, examples: [] }
   stats.compared++
   const difference = firstDifference(rustResult, jsResult)
@@ -80,8 +108,17 @@ async function programFor(manifestSource: EngineCase['manifest']) {
   return program
 }
 
-async function sessions(program: Uint8Array): Promise<[RustSession, EngineSession]> {
-  return [await createWasmEngineSession(program), createEngineSession(program)]
+/** Both engines on one program, or undefined when the JS engine reports the program pending. */
+async function sessions(name: string, program: Uint8Array, emittedGlobals?: EngineCase['emittedGlobals']): Promise<[RustSession, EngineSession] | undefined> {
+  let js: EngineSession
+  try {
+    js = createEngineSession(program, emittedGlobals)
+  } catch (error) {
+    if (!(error instanceof PendingFeatureError)) throw error
+    recordPending(name, error)
+    return
+  }
+  return [await createWasmEngineSession(program, { emittedGlobals }), js]
 }
 
 // Coverage: syntactic features among the classes Rust accepts, plus which manifest
@@ -132,93 +169,117 @@ async function runClassSet(name: string, classes: Iterable<string>) {
   source(name).candidates = list.length
   for (let start = 0; start < list.length; start += chunkSize) {
     const chunk = list.slice(start, start + chunkSize)
-    const [rust, js] = await sessions(program)
+    const [rust, js] = (await sessions(name, program))!
+    const supported: string[] = []
     for (const className of chunk) {
-      const transition = compare(name, 'ensure', className, () => rust.ensureClassRules([className]), () => js.ensureClassRules([className])) as
-        { mutations?: { rule?: { variableNames?: string[], keyframeNames?: string[] } }[] }
+      const transition = compare(name, 'ensure', className, () => rust.ensureClassRules([className]), () => js.ensureClassRules([className]))
+      if (transition === PENDING) continue
+      supported.push(className)
       const state = compare(name, 'executionState', className, () => rust.executionState([className]), () => js.executionState([className])) as
         { classes?: { references: unknown[] }[] }
       if (state.classes?.[0]?.references.length) {
         source(name).rustValid = (source(name).rustValid ?? 0) + 1
-        recordCoverage(className, (transition.mutations ?? []).flatMap((mutation) => mutation.rule ? [mutation.rule] : []))
+        const { mutations = [] } = transition as { mutations?: { rule?: { variableNames?: string[], keyframeNames?: string[] } }[] }
+        recordCoverage(className, mutations.flatMap((mutation) => mutation.rule ? [mutation.rule] : []))
       }
       compare(name, 'delete', className, () => rust.deleteClassRules([className]), () => js.deleteClassRules([className]))
     }
+    // Batches hold only the classes the JS engine supports, so both sessions see the same inputs.
     const subject = `${name}[${start}..${start + chunk.length}]`
-    compare(name, 'batchEnsure', subject, () => rust.ensureClassRules(chunk), () => js.ensureClassRules(chunk))
+    compare(name, 'batchEnsure', subject, () => rust.ensureClassRules(supported), () => js.ensureClassRules(supported))
     compare(name, 'snapshot', `${subject} ensured`, () => rust.snapshot(), () => js.snapshot())
-    const half = chunk.slice(0, chunk.length >> 1)
+    const half = supported.slice(0, supported.length >> 1)
     compare(name, 'batchDelete', `${subject} first half`, () => rust.deleteClassRules(half), () => js.deleteClassRules(half))
     compare(name, 'snapshot', `${subject} half deleted`, () => rust.snapshot(), () => js.snapshot())
-    compare(name, 'batchDelete', `${subject} rest`, () => rust.deleteClassRules(chunk.slice(half.length)), () => js.deleteClassRules(chunk.slice(half.length)))
+    compare(name, 'batchDelete', `${subject} rest`, () => rust.deleteClassRules(supported.slice(half.length)), () => js.deleteClassRules(supported.slice(half.length)))
     compare(name, 'snapshot', `${subject} all deleted`, () => rust.snapshot(), () => js.snapshot())
     rust.dispose()
     js.dispose()
   }
 }
 
-async function runCorpusCases(cases: EngineCase[]) {
-  const name = 'corpus engineCases'
+/** Runs each case until the JS engine reports a step pending; later steps depend on it. */
+async function runEngineCases(name: string, cases: EngineCase[]) {
   for (const engineCase of cases) {
-    const [rust, js] = await sessions(await programFor(engineCase.manifest))
-    for (const [index, step] of engineCase.steps.entries()) {
-      source(name).candidates += step.classes.length
-      const subject = `${engineCase.id}#${index}`
-      if (step.op === 'ensure') compare(name, 'batchEnsure', subject, () => rust.ensureClassRules(step.classes), () => js.ensureClassRules(step.classes))
-      else compare(name, 'batchDelete', subject, () => rust.deleteClassRules(step.classes), () => js.deleteClassRules(step.classes))
-      compare(name, 'snapshot', subject, () => rust.snapshot(), () => js.snapshot())
+    source(name).candidates += engineCase.steps.reduce((count, step) => count + step.classes.length, 0)
+    const engines = await sessions(name, await programFor(engineCase.manifest), engineCase.emittedGlobals)
+    if (!engines) continue
+    const [rust, js] = engines
+    compare(name, 'snapshot', `${engineCase.id} initial`, () => rust.snapshot(), () => js.snapshot())
+    run: {
+      for (const [index, step] of engineCase.steps.entries()) {
+        const subject = `${engineCase.id}#${index}`
+        const result = step.op === 'ensure'
+          ? compare(name, 'batchEnsure', subject, () => rust.ensureClassRules(step.classes), () => js.ensureClassRules(step.classes))
+          : compare(name, 'batchDelete', subject, () => rust.deleteClassRules(step.classes), () => js.deleteClassRules(step.classes))
+        if (result === PENDING) break run
+        compare(name, 'snapshot', subject, () => rust.snapshot(), () => js.snapshot())
+      }
+      compare(name, 'keyframeDefinitions', engineCase.id, () => rust.keyframeDefinitions(), () => js.keyframeDefinitions())
     }
-    compare(name, 'keyframeDefinitions', engineCase.id, () => rust.keyframeDefinitions(), () => js.keyframeDefinitions())
     rust.dispose()
     js.dispose()
   }
 }
 
+/** Stops at the first pending step; each step builds on the previous state. */
 async function runGlobals() {
   const name = 'emitted globals'
   const program = await programFor('default')
-  const [rust, js] = await sessions(program)
+  const [rust, js] = (await sessions(name, program))!
   const classes = ['fg-red-60', 'animation:fade|1s', 'bg-blue-50@dark', 'm-md']
-  compare(name, 'batchEnsure', 'initial', () => rust.ensureClassRules(classes), () => js.ensureClassRules(classes))
-  const steps: [Operation, string, Parameters<EngineSession['registerEmittedGlobals']>[0]][] = [
-    ['registerEmittedGlobals', 'variable', { variables: { 'color-red-60': 1 } }],
-    ['registerEmittedGlobals', 'keyframe', { keyframes: { fade: 1 } }],
-    ['replaceEmittedGlobals', 'replace all', { variables: { 'spacing-md': 2 }, suppressedKeyframes: ['fade'] }],
-    ['replaceEmittedGlobals', 'clear', {}]
-  ]
-  for (const [operation, subject, globals] of steps) {
-    compare(name, operation, subject, () => rust[operation as 'registerEmittedGlobals'](globals), () => js[operation as 'registerEmittedGlobals'](globals))
-    compare(name, 'snapshot', subject, () => rust.snapshot(), () => js.snapshot())
+  source(name).candidates = classes.length
+  run: {
+    if (compare(name, 'batchEnsure', 'initial', () => rust.ensureClassRules(classes), () => js.ensureClassRules(classes)) === PENDING) break run
+    const steps: [Operation, string, Parameters<EngineSession['registerEmittedGlobals']>[0]][] = [
+      ['registerEmittedGlobals', 'variable', { variables: { 'color-red-60': 1 } }],
+      ['registerEmittedGlobals', 'keyframe', { keyframes: { fade: 1 } }],
+      ['replaceEmittedGlobals', 'replace all', { variables: { 'spacing-md': 2 }, suppressedKeyframes: ['fade'] }],
+      ['replaceEmittedGlobals', 'clear', {}]
+    ]
+    for (const [operation, subject, globals] of steps) {
+      if (compare(name, operation, subject, () => rust[operation as 'registerEmittedGlobals'](globals), () => js[operation as 'registerEmittedGlobals'](globals)) === PENDING) break run
+      compare(name, 'snapshot', subject, () => rust.snapshot(), () => js.snapshot())
+    }
+    const globals = { variables: { 'color-red-60': 1 } }
+    if (compare(name, 'refresh', 'same program + globals', () => rust.refresh(program, globals), () => js.refresh(program, globals)) === PENDING) break run
+    compare(name, 'snapshot', 'after refresh', () => rust.snapshot(), () => js.snapshot())
+    compare(name, 'keyframeDefinitions', 'default', () => rust.keyframeDefinitions(), () => js.keyframeDefinitions())
   }
-  compare(name, 'refresh', 'same program + globals', () => rust.refresh(program, { variables: { 'color-red-60': 1 } }), () => js.refresh(program, { variables: { 'color-red-60': 1 } }))
-  compare(name, 'snapshot', 'after refresh', () => rust.snapshot(), () => js.snapshot())
-  compare(name, 'keyframeDefinitions', 'default', () => rust.keyframeDefinitions(), () => js.keyframeDefinitions())
   rust.dispose()
   js.dispose()
 }
 
 const startedAt = performance.now()
 const markup = markupClasses(root)
-await runCorpusCases(corpusEngineCases(root))
+await runEngineCases('corpus engineCases', corpusEngineCases(root))
+await runEngineCases('theme manifests', themeEngineCases())
 await runClassSet('rust tests', rustTestClasses(root))
 await runClassSet('site + examples', markup.classes)
 await runClassSet(`fuzz (seed ${seed})`, fuzzClasses(manifest, fuzzCount, seed))
+await runClassSet('token utilities', tokenClasses((decodeProgram(await programFor('default')) as { program: Program }).program))
+await runClassSet(`value fuzz (seed ${seed})`, valueClasses(fuzzCount * 2, seed))
+await runClassSet(`noise (seed ${seed})`, noiseClasses(fuzzCount, seed))
 await runGlobals()
 const elapsed = performance.now() - startedAt
 
 let compared = 0
 let mismatched = 0
+const pendingFeatures: Record<string, number> = {}
 for (const stats of sources.values()) {
   for (const operation of Object.values(stats.operations)) {
     compared += operation!.compared
     mismatched += operation!.mismatched
   }
+  for (const [feature, count] of Object.entries(stats.pending)) pendingFeatures[feature] = (pendingFeatures[feature] ?? 0) + count
 }
+const pendingTotal = Object.values(pendingFeatures).reduce((total, count) => total + count, 0)
 const report = {
   generatedAt: new Date().toISOString(),
   elapsedMs: Math.round(elapsed),
   config: { fuzzCount, seed, chunkSize, markupFiles: markup.files },
-  totals: { compared, mismatched, matched: compared - mismatched },
+  totals: { compared, mismatched, matched: compared - mismatched, pending: pendingTotal },
+  pending: pendingFeatures,
   coverage: {
     features: coverage.features,
     utilities: { reached: coverage.utilities.size, total: new Set(utilityNames).size, missing: [...new Set(utilityNames)].filter((name) => !coverage.utilities.has(name)) },
@@ -237,7 +298,7 @@ const lines = [
   '',
   `${report.generatedAt}, ${report.elapsedMs} ms. fuzz=${fuzzCount} seed=${seed} chunk=${chunkSize}`,
   '',
-  `**${mismatched} / ${compared} comparisons differ** (Rust full Wasm vs JS engine).`,
+  `**${mismatched} / ${compared} comparisons differ** (Rust full Wasm vs JS engine). ${pendingTotal} inputs pending a later phase were skipped on both engines.`,
   '',
   '| source | candidates | Rust-valid | operation | compared | mismatched |',
   '|---|---|---|---|---|---|'
@@ -247,7 +308,11 @@ for (const [name, stats] of sources) {
     lines.push(`| ${name} | ${stats.candidates} | ${stats.rustValid ?? '—'} | ${operation} | ${operationStats!.compared} | ${operationStats!.mismatched} |`)
   }
 }
-lines.push('', '## Coverage (Rust-valid classes)', '', '| feature | classes |', '|---|---|')
+lines.push('', '## Pending inputs (skipped)', '', '| source | feature | inputs |', '|---|---|---|')
+for (const [name, stats] of sources) {
+  for (const [feature, count] of Object.entries(stats.pending).sort(([, left], [, right]) => right - left)) lines.push(`| ${name} | ${feature} | ${count} |`)
+}
+lines.push('', '## Coverage (compared Rust-valid classes)', '', '| feature | classes |', '|---|---|')
 for (const [feature, count] of Object.entries(coverage.features)) lines.push(`| ${feature} | ${count} |`)
 lines.push(
   '',
