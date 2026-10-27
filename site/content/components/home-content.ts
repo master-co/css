@@ -125,8 +125,8 @@ export const themeVariablesCode = `@theme {
 
   /* bg-surface-base, in light and dark */
   --color-surface-base: light-dark(
-    var(--color-neutral-0),
-    var(--color-gray-95)
+    var(--color-zinc-0),
+    var(--color-zinc-95)
   );
 }
 `
@@ -402,7 +402,7 @@ export const colorToolClasses = [
   { className: 'color:#4f46e5', swatchAt: 'color:'.length, color: '#4f46e5' },
   { className: 'bg-blue-60', swatchAt: 0, color: getColor('blue', 60) },
   { className: 'fg-amber-60', swatchAt: 0, color: getColor('amber', 60) },
-  { className: 'b-gray-30', swatchAt: 0, color: getColor('gray', 30) },
+  { className: 'b-zinc-30', swatchAt: 0, color: getColor('zinc', 30) },
   { className: 'outline-green-50', swatchAt: 0, color: getColor('green', 50) }
 ] as const
 

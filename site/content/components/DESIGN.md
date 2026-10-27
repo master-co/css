@@ -5,7 +5,7 @@ The homepage explains a precise tool, so it should look precise and stay quiet: 
 ## Principles
 
 1. **Type carries the hierarchy.** Size, weight and gray level order the page. Color is a signal, not decoration.
-2. **Neutral, never tinted.** Grays have no hue in either theme. While the homepage is mounted, the site's shared text, surface and line tokens are remapped to the same grays so the header and footer match.
+2. **One neutral: zinc.** Every gray is a step of the preset's `zinc` family, a near-neutral with a faint cool, metallic cast. Home tokens alias the preset roles and the site roles in `styles/docs-shell/theme.css`, so the homepage, header, footer and docs share one system.
 3. **One light, one accent.** Light falls from above. The primary action is solid ink; the yellow signal marks only live states and the Master CSS figure in a chart.
 4. **Figures explain mechanisms.** Every illustration shows something Master CSS actually does: classes becoming rules, layers ordering them, rules flowing to a delivery target. No ornamental art.
 5. **Motion shows cause and effect.** Things move because data moves or state changes. Ambient motion is slow; everything stops for reduced motion.
@@ -13,16 +13,18 @@ The homepage explains a precise tool, so it should look precise and stay quiet: 
 
 ## Surfaces
 
-From the page outward. Light values first, dark second.
+From the page outward. Each home token aliases a role; light step first, dark second.
 
-| Token | Value | Role | Treatment |
-| --- | --- | --- | --- |
-| `--home-ground` | `#f2f2f2` / `#141414` | The page and the canvas | Flat |
-| `--home-tray` | `#e8e8e8` / `#0e0e0e` | The shell that wraps a set of cards, a stage or the call to action | Recessed: darker than the ground, hairline ring |
-| `--home-sheet` | `#fbfbfb` / `#1c1c1c` | Cards, windows, selected segments | Hairline ring, 1px top light, contact shadow (`--home-elevation-1`) |
-| `--home-well` | `#f4f4f4` / `#171717` | Figures and code inside a sheet | Groove (`--home-groove`) |
-| `--home-float` | `#fdfdfd` / `#232323` | Popovers and menus | `--home-elevation-2` |
-| `--home-ink` | `#292929` / `#ededed` | The primary action and the selected icon | Flat, 1px inner light |
+| Token | Role | Zinc steps | Use | Treatment |
+| --- | --- | --- | --- | --- |
+| `--home-ground` | `surface-canvas` (site) | 5 / 95 | The page and the canvas | Flat |
+| `--home-tray` | `surface-shell` (site) | 10 / 100 | The shell that wraps a set of cards, a stage or the call to action | Recessed: darker than the ground, hairline ring |
+| `--home-sheet` | `surface-raised` | white / 90 | Cards, windows, selected segments | Hairline ring, 1px top light, contact shadow (`--home-elevation-1`) |
+| `--home-well` | `surface-canvas` (site) | 5 / 95 | Figures and code inside a sheet: a recess back down to the canvas | Groove (`--home-groove`) |
+| `--home-float` | `surface-floating` | white / 80 | Popovers and menus | `--home-elevation-2` |
+| `--home-ink` | `surface-ink` (site) | 90 / 5 | The primary action and the selected icon | Flat, 1px inner light |
+
+Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtle` (zinc 40 / 60); lines alias `line-subtle`, `line-divider` and a 55% mix of `line-control`.
 
 ## Shell, inset and radii
 
@@ -36,6 +38,7 @@ From the page outward. Light values first, dark second.
 - `--home-edge`: a 1px inner line of light on the top edge of raised surfaces.
 - `--home-contact`: `0 1px 2px` at 7% black. Shadows stay close to the surface; only the hero shell adds a long, faint falloff.
 - `--home-pressed`: an inner shadow. Tracks are pressed into the shell; pressing a button swaps its outer shadow for this and nothing moves.
+- The rest of the site uses the same light through `shadow-raised`, `shadow-floating` and `shadow-pressed` in `styles/docs-shell/theme.css`, with radii `r-lg` (wells), `r-xl` (controls and code), `r-2xl` (sheets) and `r-3xl` (shells). The docs' `--color-accent` and `--color-focus` are ink too, so active and focused states read the same on every page.
 
 ## Controls
 

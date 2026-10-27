@@ -1,31 +1,32 @@
 /*
  * Home design language: quiet precision.
  * Semantics and usage rules live in components/DESIGN.md; components use these names,
- * never raw palette steps, so the whole page can be tuned from here. The tokens sit on the
- * root while the homepage is mounted, so the shared header and footer pick them up too.
+ * never raw palette steps. Every surface, line and text token aliases a zinc role from the preset
+ * or the site theme (styles/docs-shell/theme.css), so the homepage and the docs share one system.
  */
 @layer components {
   :root:has(.home-page) {
-    /* Neutral grays, never tinted: a gray ground, a recessed shell that wraps content, near-white sheets on top. */
-    --home-ground: light-dark(#f2f2f2, #141414);
-    --home-tray: light-dark(#e8e8e8, #0e0e0e);
-    --home-sheet: light-dark(#fbfbfb, #1c1c1c);
-    --home-well: light-dark(#f4f4f4, #171717);
-    --home-float: light-dark(#fdfdfd, #232323);
-    --home-ink: light-dark(#292929, #ededed);
+    /* Surfaces: the site's zinc roles. A canvas ground, a recessed shell that wraps content, raised sheets on top. */
+    --home-ground: var(--color-surface-canvas);
+    --home-tray: var(--color-surface-shell);
+    --home-sheet: var(--color-surface-raised);
+    /* A well is a recess back down to the canvas, one step below the sheet around it in either scheme. */
+    --home-well: var(--color-surface-canvas);
+    --home-float: var(--color-surface-floating);
+    --home-ink: var(--color-surface-ink);
 
     /* Lines: hairlines separate, rules divide, strong rules mark the selected state. */
-    --home-hairline: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.07));
-    --home-rule: light-dark(rgb(0 0 0 / 0.11), rgb(255 255 255 / 0.11));
-    --home-rule-strong: light-dark(rgb(0 0 0 / 0.22), rgb(255 255 255 / 0.24));
-    --home-guide: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.07));
+    --home-hairline: var(--color-line-subtle);
+    --home-rule: var(--color-line-divider);
+    --home-rule-strong: color-mix(in oklab, var(--color-line-control) 55%, transparent);
+    --home-guide: var(--color-line-subtle);
 
     /* Text: display and data in full strength, prose quieter, annotations faint. */
-    --home-text: light-dark(#262626, #ededed);
-    --home-text-body: light-dark(#3a3a3a, #cfcfcf);
-    --home-text-quiet: light-dark(#6b6b6b, #9a9a9a);
-    --home-text-faint: light-dark(#9b9b9b, #6a6a6a);
-    --home-text-inverse: light-dark(#fafafa, #171717);
+    --home-text: var(--color-text-strong);
+    --home-text-body: var(--color-text-body);
+    --home-text-quiet: var(--color-text-muted);
+    --home-text-faint: var(--color-text-subtle);
+    --home-text-inverse: var(--color-text-inverse);
 
     /* Signal: the one accent, reserved for the primary action and a live state. */
     --home-signal: var(--color-yellow);
@@ -37,7 +38,7 @@
     --home-info: light-dark(oklch(0.55 0.1 250), oklch(0.76 0.09 250));
 
     /* Code: low-chroma hues so samples read as structure, not decoration. */
-    --home-code-tag: light-dark(#7d7d7d, #8f8f8f);
+    --home-code-tag: light-dark(var(--color-zinc-50), var(--color-zinc-40));
     --home-code-attr: light-dark(oklch(0.52 0.09 300), oklch(0.76 0.08 300));
     --home-code-string: light-dark(oklch(0.5 0.1 150), oklch(0.78 0.09 150));
     --home-code-property: light-dark(oklch(0.5 0.09 250), oklch(0.78 0.08 250));
@@ -78,18 +79,6 @@
 
     /* Depth for the 3D stages. */
     --home-perspective: 1800px;
-
-    /* The site's shared tokens follow the same neutral grays on this route, so the header, footer and utility classes match. */
-    --color-text-strong: var(--home-text);
-    --color-text-body: var(--home-text-body);
-    --color-text-muted: var(--home-text-quiet);
-    --color-surface-base: var(--home-ground);
-    --color-surface-raised: var(--home-sheet);
-    --color-surface-inset: var(--home-well);
-    --color-surface-floating: var(--home-float);
-    --color-line-subtle: var(--home-hairline);
-    --color-line-divider: var(--home-rule);
-    --color-line-control: var(--home-rule-strong);
   }
 
   /* The page sits on the neutral ground, and so does the canvas around it, so the footer and overscroll match. */
