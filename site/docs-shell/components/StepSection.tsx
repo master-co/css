@@ -1,6 +1,7 @@
 import styled from '@master/styled.react'
 
 const StepSection = styled.div`
+  step-section
   mt-2xl
   counter-reset:step
   margin-block:1.875rem_hr

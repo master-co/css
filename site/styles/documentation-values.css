@@ -117,7 +117,7 @@
   .doc-option-default { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); align-items: baseline; color: var(--color-text-muted); font-size: var(--font-size-xs); }
   .doc-option p { margin-block: var(--spacing-xs) 0; font-size: var(--font-size-sm); line-height: var(--leading-lg); }
   .doc-code-example { margin: var(--spacing-lg) 0; }
-  .doc-code-example > figcaption { width: auto; margin: 0 0 var(--spacing-sm); color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+  .doc-code-example > figcaption { width: auto; margin: 0 0 var(--spacing-sm); padding: 0; color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
   .doc-code-example-part { min-width: 0; }
   .doc-code-example .code { margin-block: 0; }
   .doc-code-example-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--spacing-xs); margin-bottom: var(--spacing-xs); color: var(--color-text-muted); font-family: var(--font-family-mono); font-size: var(--font-size-xs); }

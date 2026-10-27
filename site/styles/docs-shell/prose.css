@@ -289,11 +289,11 @@
     }
 
     :is(td, th):first-child {
-      padding-left: 0;
+      padding-left: var(--prose-table-gutter, 0);
     }
 
     :is(td, th):last-child {
-      padding-right: 0;
+      padding-right: var(--prose-table-gutter, 0);
     }
 
     :is(th):first-child {
@@ -322,6 +322,66 @@
 
     :is(th, td) {
       vertical-align: baseline;
+    }
+  }
+}
+
+/* Wide surfaces (code, demos, figures, tables, media) bleed past the text column so prose keeps
+   its reading measure while visual content gains room. Surfaces bleed as direct children or
+   through up to two class-less wrappers (data-only divs, sections and island hosts). */
+@layer components {
+  .prose {
+    --prose-bleed: 1.25rem;
+
+    @media (--sm) {
+      --prose-bleed: 1.5rem;
+    }
+
+    @media (--md) {
+      --prose-bleed: 2rem;
+    }
+
+    @media print {
+      --prose-bleed: 0rem;
+    }
+  }
+
+  :is(.code, .codeTabs, .code-wrapper, .site-demo, .doc-table, table, figure:not(.doc-code-example), video, iframe):is(
+    .prose > *,
+    .prose > :is(div, section, site-island):not([class]) > *,
+    .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
+  ),
+  .prose > .doc-code-example .doc-code-example-part,
+  .prose > .step-section > .site-demo {
+    --prose-table-gutter: var(--prose-bleed);
+    margin-inline: calc(var(--prose-bleed) * -1);
+
+    &:is(table, video, iframe) {
+      width: calc(100% + var(--prose-bleed) * 2);
+      max-width: none;
+    }
+  }
+
+  .prose .site-demo table {
+    --prose-table-gutter: 0rem;
+  }
+
+  /* Below --sm the bleed reaches the viewport edge, so framed surfaces drop their side frame. */
+  @media (width < 52.125rem) {
+    :is(.code, .codeTabs, .code-wrapper, .site-demo):is(
+      .prose > *,
+      .prose > figure > *,
+      .prose > :is(div, section, site-island):not([class]) > *,
+      .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *,
+      .prose > .doc-code-example .code,
+      .prose > .step-section > *
+    ) {
+      border-inline-width: 0;
+      border-radius: 0;
+    }
+
+    .prose > .doc-code-example .doc-code-example-bar {
+      padding-inline: var(--prose-bleed);
     }
   }
 }
