@@ -6,7 +6,6 @@ import { getStaticPaths as getRoutePaths, loadRoute, type RouteProps } from '~/s
 export const getStaticPaths = getRoutePaths
 
 const route = await loadRoute(Astro.props as RouteProps)
-if (route.kind === 'redirect') return Astro.redirect(route.location, 301)
 ---
 
 <Document metadata={route.metadata} assets={route.assets} bodyClass={route.bodyClass} locales={route.locales} bare={route.bare}>

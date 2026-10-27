@@ -18,21 +18,17 @@ Migration guides for source styling systems with enough differences to need thei
     { ...brands['mui'], disabled: false, path: 'material-ui' },
     { ...brands['bootstrap'], disabled: false, path: 'bootstrap' },
     { ...brands['sass'], disabled: false },
-    { ...brands['mastercss'], disabled: false, name: 'Master CSS v2 RC', path: 'v2-rc' },
-    { ...brands['v1'], disabled: false, name: 'Master CSS v1' },
   ]}
 </IconButtons>
 
 ---
 
 ## Migration strategy
-For an existing v2 RC project, follow [Migrating from Master CSS v2 RC](/guide/migration/v2-rc). That guide coordinates package, artifact, and source upgrades from a saved baseline; do not initialize old and new Master runtimes together.
-
 CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
 
 Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
 
-For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. Master CSS version upgrades follow their dedicated v1 or v2 RC guide; they are outside that prompt’s scope. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
+For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
 
 ### Plan an external-system conversion with MCP
 
@@ -111,7 +107,7 @@ Review the migration as code and as UI.
 
 ## Custom engine and binding migration
 
-The current binding ABI is **26**. The RC migration introduced named token matchers, value-source priority, and token diagnostics, and removed `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v6 / languageVersion 16 and hydration v4 data with the upgraded packages. Engine snapshots and transitions are v4; inspection retains its existing envelope. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+The current binding ABI is **26**. Upgrade the native artifact and all Wasm providers together; loaders reject incompatible artifacts. Regenerate Manifest v6 / languageVersion 16 and hydration v4 data with the upgraded packages. Engine snapshots and transitions are v4.
 
 Only `@theme` registers utility tokens. Its direct custom-property declarations use `:root,:host`, with optional `static` retention and `inline` value substitution. Native CSS supplies scoped overrides and must be delivered separately from the manifest; `@reference` supplies resolution context only. See the [theme contract](/reference/directives/theme).
 
@@ -141,6 +137,6 @@ function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
 
 An independent implementation must read its stored class-to-rule references and resource counts, return an immutable result, and return empty references for classes that have not been ensured. Reimplementing this method through repeated `inspect()` calls or a full `snapshot()` recreates the overhead this API removes. See [engine state for custom hosts](/guide/rendering-modes#engine-state-for-custom-hosts) for the result contract.
 
-Tooling binding implementers must also provide the session-scoped document prepare/finish/cancel flow and scanner content-cache query. Scanner validation now uses the pending, blocklist-filtered candidates returned by its session; commit must consume native support in that same order. Reset the scanner after changing its manifest or extraction settings.
+Tooling binding implementers must also provide the session-scoped document prepare/finish/cancel flow and scanner content-cache query. Scanner validation uses the pending, blocklist-filtered candidates returned by its session; commit must consume native support in that same order. Reset the scanner after changing its manifest or extraction settings.
 
-Transition consumers should replay the returned operations without depending on intermediate theme updates: each outermost batch now emits at most one theme delete and one theme insert, placed before utility and keyframe operations. Final CSS, cascade order and resource reference counts remain unchanged.
+Transition consumers should replay the returned operations without depending on intermediate theme updates: each outermost batch emits at most one theme delete and one theme insert, placed before utility and keyframe operations. Final CSS, cascade order and resource reference counts remain unchanged.

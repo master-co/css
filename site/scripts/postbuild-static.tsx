@@ -358,25 +358,11 @@ async function writeHeaders() {
 
 async function writeRedirects() {
     await writeFile(path.join(outDir, '_redirects'), [
-        ...await collectPageRedirects(),
         '/en/* /:splat 301',
         '/en / 301',
         '/cdn/* https://cdn.jsdelivr.net/npm/@master/:splat 200',
         ''
     ].join('\n'), 'utf8')
-}
-
-/** Astro writes retired routes as refresh pages; hosts serve them as permanent redirects. */
-async function collectPageRedirects() {
-    const redirects: string[] = []
-    for (const file of (await listFiles(outDir)).filter((file) => file.endsWith('.html')).sort()) {
-        const content = await readFile(file, 'utf8')
-        const target = content.length < 2048 && content.match(/<meta http-equiv="refresh" content="0;url=([^"]+)"/)?.[1]
-        if (!target) continue
-        const source = '/' + path.relative(outDir, file).split(path.sep).join('/').replace(/\.html$/, '')
-        redirects.push(`${source} ${target} 301`)
-    }
-    return redirects
 }
 
 async function validateInlineScripts() {

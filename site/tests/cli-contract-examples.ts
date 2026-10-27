@@ -5,9 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { once } from 'node:events'
-import preset from '../utils/preset-manifest'
 import { cliEditorial } from '../reference/cli-editorial'
-import { migrationFences } from './migration-examples'
 
 const quote = (text: string) => "'" + text.replaceAll("'", "'\\''") + "'"
 const bin = fileURLToPath(new URL('../../packages/cli/dist/bin/index.js', import.meta.url))
@@ -82,32 +80,5 @@ export async function verifyCLIContractExamples() {
     assert.equal(saved.status, 0, saved.stderr)
     assert.equal(saved.stdout, '')
     assert.equal(JSON.parse(readFileSync(join(root, 'inspection.json'), 'utf8')).version, 5)
-    writeFileSync(join(root, 'app.css'), '@master entry; @settings { root-size:16; }')
-    const rcSource = "<button class=\"font:mono padding:4x\">Save</button>"
-    writeFileSync(file, rcSource)
-    writeFileSync(join(root, 'master.rc.manifest.json'), readFileSync(new URL('../../crates/mastercss-compiler/tests/fixtures/v2-rc-before-named-tokens.manifest.json', import.meta.url)))
-    writeFileSync(join(root, 'master.v2.manifest.json'), JSON.stringify(preset))
-    const examples = migrationFences('v2-rc').filter(fence => fence.language === 'sh').map(fence => fence.text.trim().replaceAll('YOUR_ACTUAL_RC_VERSION', '2.0.0-rc.87'))
-    const proposal = examples.filter(command => command.startsWith('master-css migrate src app.css --from rc-legacy') && !command.includes('\n'))
-    const migrationPreview = proposal.find(command => !command.includes('--write') && !command.includes('--target-manifest'))!
-    const migrationWrite = proposal.find(command => command.includes('--write'))!
-    const migrationTarget = proposal.find(command => command.includes('--target-manifest'))!
-    assert.ok(migrationPreview && migrationWrite && migrationTarget, 'Migration Guide supplies all three executable CLI examples')
-    for (const preview of [migrationPreview, migrationTarget]) {
-      const result = run(preview)
-      assert.equal(result.status, 0, result.stderr)
-      assert.ok(JSON.parse(result.stdout).files.some((file: any) => file.edits.length === 2))
-      assert.equal(readFileSync(file, 'utf8'), rcSource)
-    }
-    const migrated = run(migrationWrite)
-    assert.equal(migrated.status, 0, migrated.stderr)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="font-mono padding:1rem">Save</button>')
-    writeFileSync(file, '<button class="font-family:monospace padding:4x">Save</button>')
-    const safeMigration = run(migrationWrite)
-    assert.equal(safeMigration.status, 0, safeMigration.stderr)
-    assert.equal(readFileSync(file, 'utf8'), '<button class="font-family:monospace padding:1rem">Save</button>')
-    const repeated = run(migrationPreview)
-    assert.equal(repeated.status, 0, repeated.stderr)
-    assert.ok(JSON.parse(repeated.stdout).files.every((file: any) => file.edits.length === 0))
   } finally { rmSync(root, { recursive: true, force: true }) }
 }

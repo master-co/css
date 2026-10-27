@@ -6,7 +6,7 @@ import ts from 'typescript6'
 
 const require = createRequire(import.meta.url)
 export const vendorMigrationSlugs = ['bootstrap', 'material-ui', 'sass', ''] as const
-export const migrationSlugs = ['css', 'css-in-js', 'tailwindcss', 'v1'] as const
+export const migrationSlugs = ['css', 'css-in-js', 'tailwindcss'] as const
 
 export function migrationSource(slug: string) {
   return readFileSync(new URL(`../content/guide/migration/${slug}/content.mdx`, import.meta.url), 'utf8')

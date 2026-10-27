@@ -7,7 +7,7 @@ import type { PageParams, Props } from './docs-shell/types/Props'
 /**
  * Content routes follow `content/<url>/page.tsx`. A page module default-exports a
  * React server component and may export `metadata`, `generateMetadata`,
- * `generateStaticParams` or a permanent `redirect`. `layout.tsx` modules wrap
+ * or `generateStaticParams`. `layout.tsx` modules wrap
  * nested pages; `(group)` directories do not add URL segments.
  */
 interface PageModule {
@@ -15,7 +15,6 @@ interface PageModule {
   metadata?: Partial<Metadata>
   generateMetadata?: (props: Pick<Props, 'params'>) => Promise<Partial<Metadata>> | Partial<Metadata>
   generateStaticParams?: () => Record<string, string | string[]>[] | Promise<Record<string, string | string[]>[]>
-  redirect?: string
 }
 
 interface LayoutModule {
@@ -126,15 +125,12 @@ export async function getStaticPaths() {
   return paths
 }
 
-export type LoadedRoute =
-  | { kind: 'redirect', location: string }
-  | { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean, locales: readonly string[] }
+export type LoadedRoute = { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean, locales: readonly string[] }
 
 export async function loadRoute({ file, locale, params }: RouteProps): Promise<LoadedRoute> {
   const page = await loadPropagated(pageModules, file)
   const module = page.module
-  if (module.redirect) return { kind: 'redirect', location: localizePathname(module.redirect, locale) }
-  if (!module.default) throw new Error(`${file} must export a page component or a redirect`)
+  if (!module.default) throw new Error(`${file} must export a page component`)
   const props: Props = { params: { ...params, locale } }
   const metadata = (module.generateMetadata ? await module.generateMetadata(props) : module.metadata) ?? {}
   let element: ReactNode = h(module.default, props)

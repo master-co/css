@@ -17,7 +17,6 @@ import { firstPaintMarkdown, resourceWaterfallsMarkdown } from '../utils/first-p
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { legacySyntaxPages } from '../utils/legacy-syntax'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
@@ -297,7 +296,6 @@ test('llms includes the complete tutorial and excludes retired Guide bodies', as
   const pages = await loadPages(`${root}/content`)
   const tutorial = pages.find(page => page.url === '/en/guide/syntax-tutorial')
   assert.equal(tutorial?.body, (await syntaxTutorialContent(root)).markdown)
-  for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!pages.some(page => page.url === `/en/guide/${slug}`))
   assert.match(renderLlmsFull(pages), /--spacing-action:1rem/)
 })
 

@@ -20,7 +20,6 @@ import { collectCSSVariableReferences } from '../scripts/css-variable-references
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
 import { compileManifestSync } from '@master/css-compiler/node'
-import { legacySyntaxPages, type LegacySyntaxSlug } from '../utils/legacy-syntax'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
@@ -63,7 +62,7 @@ test('catalog covers every public family and preset recipe without indexing reti
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
     assert.ok(families.headings.some(heading => heading.id === `family-${family.prefix}`))
   }
-  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient', 'directives/settings', 'directives/compose']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)
@@ -94,7 +93,6 @@ test('30 acceptance queries find the intended document in the first three result
       assert.equal(result.page.title, 'Token families', query)
       assert.match(result.href, /#family-/, query)
     }
-    assert.ok(search('@compose', 3).some(result => result.href.includes('/guide/migration/v2-rc')))
     assert.match(search('@master/css#createEngine', 1)[0].href, /\/reference\/packages\/css#api-/)
     for (const page of pages.filter((page: any) => page.identifiers)) {
       for (const identifier of page.identifiers) assert.ok(search(identifier.text, 1).length, `${identifier.text} has no results`)
@@ -108,13 +106,7 @@ test('current Reference excludes upgrade workflows and obsolete syntax identifie
   assert.ok(!pages.some(page => page.pathname === '/reference/tools/cli/migrate'))
   for (const doc of catalog.documents) {
     assert.deepEqual(documentationHygieneIssues(doc.markdown), [], doc.id)
-    for (const name of ['@compose', '@settings', '@mode', '@custom-variant']) assert.ok(!doc.aliases.includes(name), `${doc.id}: ${name}`)
   }
-  const guide = await readFile(path.join(root, 'content/guide/migration/v2-rc/content.mdx'), 'utf8')
-  const { execFileSync } = await import('node:child_process')
-  const help = execFileSync(process.execPath, [path.join(root, '../packages/cli/dist/bin/index.js'), 'migrate', '--help'], { encoding: 'utf8' })
-  for (const option of help.matchAll(/(?:^|\n) {2}(--[\w-]+)/g)) assert.ok(guide.includes(option[1]), option[1])
-  for (const name of ['bg-surface-muted', 'bg-surface-overlay', 'b-line-divider', 'master-entry', 'custom-variant']) assert.ok(guide.includes(name), name)
 })
 
 test('namespace consumer tables cover the registry including color role groups', async () => {
@@ -240,12 +232,6 @@ test('continuing recipe and Guide anchors remain available', async () => {
   for (const page of legacyAnchors.pages) {
     const retired = page.source.match(/\/reference\/([^/]+)\/content.mdx$/)?.[1]
     if (retired && !catalog.documents.some(doc => doc.id === retired)) continue
-    const slug = page.source.match(/\/guide\/([^/]+)\/content.mdx$/)?.[1]
-    if (slug && Object.hasOwn(legacySyntaxPages, slug)) {
-      const anchors = legacySyntaxPages[slug as LegacySyntaxSlug].anchors
-      for (const id of page.anchors) if (!Object.hasOwn(anchors, id)) missing.push(`${page.source}#${id}`)
-      continue
-    }
     const generated = catalog.documents.find(doc => page.source === `site/content/reference/${doc.id}/content.mdx`)
     if (generated) {
       for (const id of page.anchors) if (!generated.markdown.includes(`id="${id}"`) && !generated.headings.some(h => h.id === id)) missing.push(`${page.source}#${id}`)
@@ -284,21 +270,6 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
     const source = await readFile(path.join(root, '..', doc.source), 'utf8')
     for (const heading of extractSearchNodesFromMdx(source).filter(node => node.id)) assert.ok(guide.includes(`id="${heading.id}"`), `${doc.guide}#${heading.id}`)
   }
-})
-
-test('all 121 retired Guide anchors target an existing contract or migration section', async () => {
-  let count = 0
-  for (const page of Object.values(legacySyntaxPages)) for (const target of Object.values(page.anchors)) {
-    const [url, anchor] = target.split('#')
-    const doc = catalog.documents.find(doc => doc.url === url)
-    if (doc) assert.ok(doc.headings.some(heading => heading.id === anchor), target)
-    else {
-      const text = await readFile(path.join(root, `content${url}/content.mdx`), 'utf8')
-      assert.ok(text.includes(`{#${anchor}`) || text.includes(`id="${anchor}"`), target)
-    }
-    count++
-  }
-  assert.equal(count, 121)
 })
 
 test('Syntax Tutorial exports every working example, stable anchor and searchable output', async () => {
@@ -355,7 +326,6 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
     for (const id of ['declarations', 'composition', 'states', 'conditions', 'project-settings', 'complete-button']) {
       assert.ok(page.nodes.some((node: { id?: string }) => node.id === id), `${locale}: ${id}`)
     }
-    for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!searchPages.some((page: any) => canonical(page.url) === `/guide/${slug}`))
   }
 })
 
@@ -561,10 +531,6 @@ test('directive contracts preserve stable entrances and complete compiled styles
     assert.equal(matching.length, 1, example.title)
     assert.ok(matching[0].markdown.includes(await stylesheetExampleMarkdown(example.title, example.source)))
   }
-  const settings = { markdown: await readFile(path.join(root, 'content/guide/migration/v2-rc/content.mdx'), 'utf8') }
-  assert.match(settings.markdown, /entire directive and manifest `settings` field are removed/)
-  assert.match(settings.markdown, /native selectors/)
-  assert.match(settings.markdown, /global important/)
 })
 
 

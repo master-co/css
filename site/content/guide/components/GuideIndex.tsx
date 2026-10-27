@@ -23,7 +23,6 @@ export default function GuideIndex({ pageCategories }: { pageCategories: GuideCa
     title: tw ? $(section.category) : section.title,
     description: tw ? section.descriptionTW : section.description,
     Icon: sectionIcons[section.id],
-    legacyIds: section.id === 'getting-started' ? ['syntax-tutorial'] : [],
     groups: [{ entries: section.entries.map(entry => ({ ...entry, displayTitle: $(entry.title) })) }]
   }))
   return <DocumentationIndex name="guide" sections={sections} showDescriptions related={{

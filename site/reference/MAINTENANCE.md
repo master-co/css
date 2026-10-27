@@ -16,7 +16,7 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 | MCP | Public stdio `tools/list` protocol | Actual tool descriptions and input/output schemas when advertised |
 | Package APIs | Published exports and public TypeScript entrypoints | Declarations, overloads and public names; API census controls visibility |
 
-The declarations, selectors, conditions and directives Guide routes redirect through `utils/legacy-syntax.json`: known rule anchors lead to Reference, while other visits lead to a step in the Getting Started Syntax Tutorial. They have no indexed teaching body. Other Guide locations retain their workflow content and old anchor entrances. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
+The declarations, selectors, conditions and directives contracts have no Guide route; Reference publishes them and the Getting Started Syntax Tutorial teaches them. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
 
 `prepare-app` builds `.generated/reference.json`, a compact `.generated/reference-route-index.json`, individual `.generated/reference-documents/*.json` files, the searchable documents, `public/reference/index.json`, per-page English and Traditional Chinese Markdown URLs, and section text bundles. The route reads only its selected document; generated files whose content has not changed keep their modification time. `build:llms` reuses the same normalized Reference in `llms.txt` and `llms-full.txt`. Generated outputs are ignored; edit their sources.
 
@@ -71,7 +71,7 @@ Namespace consumers come from `utils/variable-namespace-sources.ts` and build-ti
 2. Extract shared foundation data using existing theme/manifest helpers. Move reusable MDX before removing source routes; Typography and Corner Radius own their teaching MDX locally after this migration.
 3. Populate complete family/namespace lookups and recipe contracts. Preserve full values, scopes, modes, dependencies, minimal examples and useful lookup specimens; Guide keeps task-specific selections and compositions.
 4. Split `tokens/containers`: values/consumers belong to `tokens/container`, query contracts to `rules/conditions`, and teaching to `/guide/containers`. Retain the Guide URL and title it `Container queries`; width-cap design belongs in Sizing. Keep breakpoint definitions identified as custom media.
-5. Identify the actual owner of useful content before retiring pages. Move removed capabilities to the migration guide. Preserve Master-specific behavior found inside native CSS articles in its owning contract; retain only demos that support a concrete teaching task. Do not create placeholder property catalogs to replace retired pages.
+5. Identify the actual owner of useful content before retiring pages. Preserve Master-specific behavior found inside native CSS articles in its owning contract; retain only demos that support a concrete teaching task. Do not create placeholder property catalogs to replace retired pages.
 6. Update Guide/Reference navigation, internal links, search tasks, sitemap, Markdown and llms together. Rebuild from authored sources, verify active link targets and remove retired route files.
 
 Completion requires full family/mixin coverage; successful property, prefix and namespace lookup; runnable self-contained Guide examples; identical selected facts across HTML/search/portable output; and no broken imports or meaningful anchors. A preset-value change must update all related presentations without implying that a literal container-query threshold changes with it. Validate lookup by `padding`, `p`, `px` and `padding-inline` alongside concrete design tasks. Preserve the documented conditions on mode and accessibility claims when relocating them.
@@ -102,8 +102,6 @@ pnpm --filter site type-check
 pnpm --filter internal test
 pnpm run check:ai-context
 ```
-
-After a full static build, `pnpm --filter site test:syntax-migration` checks existing Syntax Tutorial compatibility routes and verifies that retired Reference content stays out of navigation, sitemap and machine indexes.
 
 `internal` has no package-local lint script. Shared search, heading and table changes also require Guide regression checks. Inspect 390px, 768px and 1280px layouts, keyboard selection, one-press Escape, focus restoration, direct row links and reopening search with its query preserved.
 

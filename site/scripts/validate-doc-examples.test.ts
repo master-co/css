@@ -515,8 +515,6 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
   const fencedRanges: [number, number][] = []
   for (const example of extractFencedExamples(content)) {
     fencedRanges.push(example.range)
-    if (relativeSitePath(file) === 'content/guide/migration/v2-rc/content.mdx'
-      && example.info.includes('RC reference — not executed')) continue
     candidates.push(...extractCandidatesFromSnippet({
       content,
       file,

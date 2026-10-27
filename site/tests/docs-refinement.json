@@ -821,18 +821,6 @@
       ]
     },
     {
-      "url": "/guide/migration/v1",
-      "kind": "guide",
-      "source": "site/content/guide/migration/v1/content.mdx",
-      "prose": "reviewed",
-      "visual": "reviewed",
-      "notes": [
-        "Pending review finding from language-rule validation: runtime-only custom property examples use $name, which requires a registered manifest variable. Replace those examples with native var(--name) and verify their rendered behavior. Evidence: crates/mastercss-engine/src/utility.rs resolve_value and public native render session.",
-        "Complete source and desktop/light plus mobile/WebKit/dark baseline reviewed. Fix invalid TSX, runtime-only variable references, conversion parity, isolated compiler setup and narrow comparison readability; preserve existing anchors.",
-        "Complete documents and final two-column tables visually inspected. Shared DocumentComparison is cataloged and portable; corrected runnable native-prop wrappers, exact geometry, real breakpoints, CSS pipeline ownership and accessible runtime progress. Final six-project browser matrix 54/54, docs 7/7, Reference 16/16, LLMs 21/21, prepare, types, actual LLM generation, AI context and whitespace pass. Frozen full site lint: zero errors, 23 warnings outside this batch. Evidence: refinement-migration-ready and refinement-migration-final."
-      ]
-    },
-    {
       "url": "/guide/monorepo",
       "kind": "guide",
       "source": "site/content/guide/monorepo/content.mdx",

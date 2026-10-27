@@ -32,7 +32,7 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro owns routing, the document head and the build; React renders page bodies.
 
-- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.tsx`. A page module default-exports a React server component and may export `metadata`, `generateMetadata`, `generateStaticParams` or a permanent `redirect`. Nested `layout.tsx` modules wrap pages; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/`.
+- `src/pages/[...path].astro` renders every route in `routes.ts`, which reads `content/<url>/page.tsx`. A page module default-exports a React server component and may export `metadata`, `generateMetadata` or `generateStaticParams`; there are no redirect routes. Nested `layout.tsx` modules wrap pages; `(group)` directories add no URL segment; `index` is not a route segment. Each section shell lives in `sections/`.
 - English is unprefixed and Traditional Chinese uses `/tw`. `astro/site-context.ts` derives the locale, canonical pathname and translations from the URL; `SiteRoot` provides them to every React root.
 - Mark interactive React modules `'use client'`. `islands/` gives them React Server Component semantics: server code receives client references, props must be serializable, server-component children become static slots, and the browser hydrates each island root. Do not use Astro `client:*` directives. Components that only read context or render markup need no directive; delegated document behavior lives in `docs-shell/scripts/document.ts`.
 - MDX compiles to React through `@mdx-js/rollup`, so content may pass arrays, elements and nested components as children. `docs-shell/components/mdx-provider.tsx` supplies Markdown renderers.
@@ -100,9 +100,9 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 ### Current documentation and migration ownership
 
-Public Guide, Reference, Blog, examples and package READMEs describe current behavior. Version differences, retired syntax/API names, replacement tables and upgrade steps belong only in `content/guide/migration/`. Describe supported syntax directly rather than teaching its history. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
+Public Guide, Reference, Blog, examples and package READMEs describe current behavior only. Describe supported syntax directly; never mention retired syntax, retired API names or version history. Migration Guide covers converting external styling systems. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
 
-MCP Guide and README may list `migrate-to-mastercss` and its purpose of converting external styling systems to current Master CSS. Keep its instructions, examples and comparisons in Migration Guide. The prompt does not support Master CSS version upgrades. Ordinary CSS diffs, fix previews and class-to-generated-CSS teaching remain valid. Preserve native CSS concepts and current failure conditions; do not ban words such as “before”, “after” or “removed” indiscriminately.
+MCP Guide and README may list `migrate-to-mastercss` and its purpose of converting external styling systems to current Master CSS. Keep its instructions, examples and comparisons in Migration Guide. Ordinary CSS diffs, fix previews and class-to-generated-CSS teaching remain valid. Preserve native CSS concepts and current failure conditions; do not ban words such as “before”, “after” or “removed” indiscriminately.
 
 ### Guide and Reference ownership
 
@@ -170,7 +170,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Prefer native `html`, `css`, and `js` blocks.
 - Use `class`, not React `className`, in visible HTML examples.
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
-- Use native CSS references such as `width:var(--size)` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference; the `$name` shortcut and Master length `x` are removed. Preserve native resolution `x`.
+- Use native CSS references such as `width:var(--size)` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference. Preserve native resolution `x`.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing React state, `flushSync`, or site image components in visible examples unless the section is about that framework integration.
 - Implementation demos may use React and `flushSync`; displayed code does not need to match exactly.

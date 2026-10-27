@@ -58,9 +58,6 @@ for (const locale of ['en', 'tw']) {
   for (const page of pages) {
     const nodes = guideContentNodes.get(page.url.replace(/^\/(en|tw)(?=\/)/, ''))
     if (nodes) page.nodes = nodes
-    if (page.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/migration/v2-rc') {
-      page.identifiers = [{ text: '@compose', id: 'compose' }, { text: '@settings', id: 'settings' }, { text: 'size', id: 'sizing-and-resolution' }]
-    }
   }
   await writeIfChanged(searchFile, JSON.stringify(pages))
 }

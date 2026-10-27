@@ -36,7 +36,6 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('A parameter utility')!, /width:2rem;height:2rem/)
   assert.match(output.get('A named media condition')!, /@media\(width>=40rem\)/)
   await assert.rejects(stylesheetExampleCSS('@theme unknown { --color-brand: red; }'), /accepts only static and inline modifiers/)
-  assert.throws(() => configuredExampleCSS('@settings { important: true; }', ['padding:1rem']), /removed/)
   const preservation = deliveryFences(directiveSection('native-css-preservation')).find(fence => fence.text.includes('@preserve native;'))!.text
   const pruningFixture = deliveryFixture()
   const scanner = new MasterCSSScanner({ manifest: preset }, pruningFixture.root)

@@ -23,7 +23,6 @@ export interface DocumentationIndexSection {
   title: string
   description: string
   Icon: typeof IconBook
-  legacyIds?: string[]
   groups: { id?: string; title?: string; entries: DocumentationIndexEntry[] }[]
 }
 
@@ -47,7 +46,7 @@ export default function DocumentationIndex({ name, sections, related, showDescri
   const entries = sections.flatMap(section => section.groups.flatMap(group => group.entries))
   const letters = Map.groupBy([...entries].sort((a, b) => a.title.localeCompare(b.title)), entry => /^[a-z]/i.test(entry.title) ? entry.title[0].toUpperCase() : '#')
   const groupId = (section: DocumentationIndexSection, index: number) => section.groups[index].id ?? `${section.id}-group-${index + 1}`
-  const sectionIds = sections.flatMap(section => [section.id, ...(section.legacyIds ?? []), ...section.groups.map((_, index) => groupId(section, index))]).join(',')
+  const sectionIds = sections.flatMap(section => [section.id, ...section.groups.map((_, index) => groupId(section, index))]).join(',')
   const panelId = (part: 'category' | 'alphabetical') => `${idPrefix ?? name}-${part}-index`
   const letterId = (letter: string) => `${idPrefix ? `${idPrefix}-` : ''}index-${letter === '#' ? 'symbols' : letter.toLowerCase()}`
   const letterHashPrefix = `#${idPrefix ? `${idPrefix}-` : ''}index-`
@@ -83,7 +82,6 @@ export default function DocumentationIndex({ name, sections, related, showDescri
     <div id={panelId('category')} hidden={alphabetical}>
       {sections.map(section => <section key={section.id} className="doc-index-section" aria-labelledby={section.id}>
         <header className="doc-index-heading">
-          {section.legacyIds?.map(id => <span key={id} id={id} />)}
           <h2 id={section.id}>{section.title} <span className="doc-index-count">{section.groups.reduce((total, group) => total + group.entries.length, 0)}</span></h2>
           <p>{section.description}</p>
         </header>
