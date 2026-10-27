@@ -36,17 +36,17 @@ export const projectStyleExamples = {
 
 @theme {
   --color-surface-card: var(--color-white);
-  --color-text-card: var(--color-neutral-70);
+  --color-text-card: var(--color-zinc-70);
 }
 
 .light {
   --color-surface-card: var(--color-white);
-  --color-text-card: var(--color-neutral-70);
+  --color-text-card: var(--color-zinc-70);
 }
 
 .dark {
-  --color-surface-card: var(--color-gray-90);
-  --color-text-card: var(--color-gray-20);
+  --color-surface-card: var(--color-zinc-90);
+  --color-text-card: var(--color-zinc-20);
 }
 `,
     html: "<article class=\"p-lg r-lg border-width:1px border-style:solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"margin:0 text-lg font-semibold\">Collection details</h2>\n  <p class=\"mt-sm margin-bottom:0 text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",

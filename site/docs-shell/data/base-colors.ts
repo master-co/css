@@ -5,6 +5,7 @@ export default [
   'white',
   'stone',
   'gray',
+  'zinc',
   'neutral',
   'slate',
   'brown',
