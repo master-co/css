@@ -10,7 +10,7 @@ test('preserves all 299 fixed palette values', () => {
   const css = readFileSync(new URL('../src/colors.css', import.meta.url), 'utf8')
   const values = [...css.matchAll(/(--color-[a-z]+-\d+):\s*([^;]+);/g)].sort((a, b) => a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0).map(([, name, value]) => `${name}:${value}`)
   expect(values).toHaveLength(299)
-  expect(createHash('sha256').update(values.join('\n')).digest('hex')).toBe('86b5d3ab58489272e0047d9031c21e10886b39cb32ed10804d2c9e2f51fb355f')
+  expect(createHash('sha256').update(values.join('\n')).digest('hex')).toBe('a19ad9256f6df55c244c4c56110675a9a98e111f856ca17ef125b999a6c1c2c0')
 })
 
 test('has exactly 38 adaptive semantic colors and 23 fixed hue aliases', () => {

@@ -196,7 +196,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(parts.every(Boolean), values.join(', ')).toBe(true)
     for (const [index, [lightness, chroma]] of (parts as [number, number][]).entries()) {
       expect(chroma, `zinc-${levels[index]}`).toBeGreaterThan(0)
-      expect(chroma, `zinc-${levels[index]}`).toBeLessThanOrEqual(0.006)
+      expect(chroma, `zinc-${levels[index]}`).toBeLessThanOrEqual(0.003)
       if (index) expect(lightness, `zinc-${levels[index]}`).toBeLessThan(parts[index - 1]![0])
     }
     const zinc = (level: number) => values[levels.indexOf(level)]

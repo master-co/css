@@ -32,19 +32,19 @@
   --color-gray-100: oklch(14.5% 0 none);
 
   /* zinc */
-  --color-zinc-0: oklch(98.6% 0.0015 265);
-  --color-zinc-5: oklch(96.5% 0.0022 265);
-  --color-zinc-10: oklch(93.2% 0.003 265);
-  --color-zinc-20: oklch(86.8% 0.0042 265);
-  --color-zinc-30: oklch(78% 0.0052 265);
-  --color-zinc-40: oklch(68.6% 0.0058 265);
-  --color-zinc-50: oklch(58% 0.006 265);
-  --color-zinc-60: oklch(48.6% 0.006 265);
-  --color-zinc-70: oklch(39.8% 0.0056 265);
-  --color-zinc-80: oklch(31.4% 0.005 265);
-  --color-zinc-90: oklch(24.6% 0.0044 265);
-  --color-zinc-95: oklch(19.4% 0.0038 265);
-  --color-zinc-100: oklch(15% 0.0032 265);
+  --color-zinc-0: oklch(98.6% 0.0008 265);
+  --color-zinc-5: oklch(96.5% 0.0011 265);
+  --color-zinc-10: oklch(93.2% 0.0015 265);
+  --color-zinc-20: oklch(86.8% 0.002 265);
+  --color-zinc-30: oklch(78% 0.0025 265);
+  --color-zinc-40: oklch(68.6% 0.0028 265);
+  --color-zinc-50: oklch(58% 0.003 265);
+  --color-zinc-60: oklch(48.6% 0.003 265);
+  --color-zinc-70: oklch(39.8% 0.0028 265);
+  --color-zinc-80: oklch(31.4% 0.0025 265);
+  --color-zinc-90: oklch(24.6% 0.0022 265);
+  --color-zinc-95: oklch(19.4% 0.0019 265);
+  --color-zinc-100: oklch(15% 0.0016 265);
 
   /* neutral */
   --color-neutral-0: oklch(98.38% 0.0033 250);
