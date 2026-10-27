@@ -1,12 +1,13 @@
 // Utility matching: which registered utilities a class names and with what value, as
 // the engine's named.rs, utility.rs and utility_matching.rs select them. Token
 // variables resolve on demand instead of from a precomputed table.
-import { hasTopLevelValueSeparator, isMatchStateBoundary, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
+import { hasTopLevelValueSeparator, isMatchStateBoundary, isQuote, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
 import { leadingDeclarationName, leadingFunctionName } from './css-syntax'
+import { expandUtility, type ExpandedRule } from './mixin'
 import { NATIVE_CSS_PROPERTY_SET } from './native-properties'
-import { pending } from './pending'
 import { cssEscape } from './program'
-import type { Program, Utility, UtilityMatcher } from './program-model'
+import type { Program, RecipeDefinition, Utility, UtilityMatcher } from './program-model'
+import { trim } from './text'
 import { alphaPercentage, resolveValueComponents } from './value'
 
 export type MatcherType = 'function' | 'static' | 'key' | 'token'
@@ -16,6 +17,8 @@ export interface UtilityMatch {
   value?: string
   /** The arguments of a recipe utility. */
   arguments: string[]
+  /** The recipe expansion, computed once per match for every state branch; null when it fails. */
+  expansion?: ExpandedRule[] | null
   stateToken: string
   variableNames: string[]
   matcherType: MatcherType
@@ -135,6 +138,44 @@ function matchUtility(className: string, utility: Utility, program: Program, typ
   }
 }
 
+/** Master `|` separators outside strings become spaces; nothing else changes. */
+function normalizeUnmanagedValue(value: string) {
+  let output = ''
+  let copied = 0
+  let quote = 0
+  let escaped = false
+  for (let index = 0; index < value.length; index++) {
+    const unit = value.charCodeAt(index)
+    if (escaped) {
+      escaped = false
+    } else if (unit === 0x5c) {
+      escaped = true
+    } else if (quote) {
+      if (unit === quote) quote = 0
+    } else if (isQuote(unit)) {
+      quote = unit
+    } else if (unit === 0x7c) {
+      output += `${value.slice(copied, index)} `
+      copied = index + 1
+    }
+  }
+  return output + value.slice(copied)
+}
+
+/**
+ * The registered recipe, arguments and state token a function class calls; null when
+ * the class starts with a function no registered recipe takes, undefined otherwise.
+ */
+export function functionInvocation(source: string, program: Program): [index: number, recipe: RecipeDefinition, arguments: string[], stateToken: string] | null | undefined {
+  if (leadingFunctionName(source) === undefined) return
+  const head = parseFunctionalClass(source)
+  if (typeof head !== 'object') return null
+  const index = program.functionUtilities.get(head.name)
+  const emit = index === undefined ? undefined : program.utilities[index].emit
+  if (emit?.type !== 'recipe') return null
+  return [index!, program.utilityDefinitions[emit.definition], head.arguments.map((argument) => normalizeUnmanagedValue(trim(argument))), head.suffix]
+}
+
 /** The longest registered token prefix of a class, with or without its negative sign. */
 export function tokenPrefix(source: string, program: Program) {
   // A native declaration key owns its colon (font-family:mono never means font-family:hover).
@@ -183,11 +224,12 @@ export function tokenCandidates(source: string, prefix: string, program: Program
 export function matchingUtilities(source: string, program: Program): [number, UtilityMatch][] {
   const matches: [number, UtilityMatch][] = []
   // A class that starts with a function token only names function utilities.
-  if (leadingFunctionName(source) !== undefined) {
-    const head = parseFunctionalClass(source)
-    if (typeof head !== 'object') return matches
-    const index = program.functionUtilities.get(head.name)
-    if (index !== undefined && program.utilities[index].emit.type === 'recipe') pending('J4', 'function utility')
+  const invocation = functionInvocation(source, program)
+  if (invocation !== undefined) {
+    if (!invocation) return matches
+    const [index, recipe, args, stateToken] = invocation
+    const expansion = expandUtility(program, recipe, args)
+    if (expansion) matches.push([index, { arguments: args, expansion, stateToken, variableNames: [], matcherType: 'function' }])
     return matches
   }
   if (!isNativeDeclaration(source)) {

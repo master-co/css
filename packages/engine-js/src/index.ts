@@ -9,6 +9,7 @@ export type {
   ExecutionState,
   GeneratedRule,
   KeyframeDefinition,
+  KeyframeResource,
   Resources,
   RuleMutation,
   RulePriority,

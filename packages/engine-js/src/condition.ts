@@ -28,6 +28,26 @@ export function parseNativeQuery(token: string): NativeQuery | undefined {
   return { kind, prelude }
 }
 
+/** A balanced recognized query beyond the class grammar, which belongs in CSS. */
+export function queryRequiresCss(token: string) {
+  const open = token.indexOf('(')
+  const kind = token.slice(0, open)
+  if (open < 0 || (kind !== 'media' && kind !== 'supports' && kind !== 'container') || !token.endsWith(')')) return false
+  const prelude = decodeNativeContent(token.slice(open + 1, -1))
+  return prelude !== undefined && !simpleQuery(kind, prelude)
+}
+
+/** A raw `@rule prelude` wrapper with its at-rule name as the kind. */
+export function parseRawConditionWrapper(raw: string): [kind: string, wrapper: string] | undefined {
+  const wrapper = trim(raw)
+  if (wrapper[0] !== '@') return
+  let start = 1
+  while (start < wrapper.length && isWhitespace(wrapper.charCodeAt(start))) start++
+  let end = start
+  while (end < wrapper.length && !isWhitespace(wrapper.charCodeAt(end))) end++
+  return end > start ? [wrapper.slice(start, end), wrapper] : undefined
+}
+
 function simpleQuery(kind: string, prelude: string) {
   const tokens = tokenize(prelude)
   if (!tokens.length) return false

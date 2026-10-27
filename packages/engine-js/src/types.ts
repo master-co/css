@@ -66,10 +66,21 @@ export interface VariableResource {
   dependencies?: string[]
 }
 
+/** A keyframes rule the session emits; anchored ones fill a host keyframe slot instead of the keyframes sheet. */
+export interface KeyframeResource {
+  id: string
+  name: string
+  text: string
+  containers?: { id: string, prelude: string }[]
+  anchored: boolean
+  refCount: number
+  dependencies: string[]
+}
+
 export interface Resources {
   themeText?: string
   variables: VariableResource[]
-  keyframes: unknown[]
+  keyframes: KeyframeResource[]
 }
 
 export interface Snapshot {

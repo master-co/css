@@ -1,18 +1,18 @@
 // The engine session: class rules ordered per layer with reference counts, and the
-// theme variables those rules reference, as the Rust `EngineSession` (session.rs,
-// resources.rs, theme_batch.rs) keeps them.
-import { analyzeAnimations, stylesheetDeclarations } from './animation'
-import { generateClassRules } from './generate'
+// theme variables and keyframes those rules reference, counted over what the host
+// already emits, as the Rust `EngineSession` (session.rs, resources.rs, keyframes.rs,
+// keyframe_slots.rs, theme_batch.rs) keeps them.
+import { declarationAnimationReferences, generateClassRules } from './generate'
 import { compareStoredRules, type StoredRule } from './order'
-import { pending } from './pending'
 import { cssEscape, decodeProgram } from './program'
-import { UTILITY_LAYERS, type KeyframeDefinition as ProgramKeyframe, type Program, type SourceReference, type ThemeNode } from './program-model'
-import { wellFormed } from './text'
+import { UTILITY_LAYERS, type KeyframeDefinition as ProgramKeyframe, type Program, type ThemeNode } from './program-model'
+import { compareText, wellFormed } from './text'
 import type {
   EmittedGlobals,
   EngineSession,
   ExecutionState,
   KeyframeDefinition,
+  KeyframeResource,
   Resources,
   RuleMutation,
   Snapshot,
@@ -28,6 +28,35 @@ export class EngineError extends Error {
   }
 }
 
+function decode(program: Uint8Array) {
+  const decoded = decodeProgram(program)
+  if (!decoded.ok) throw new EngineError(decoded.error.code, decoded.error.message)
+  return decoded.program
+}
+
+/** Emitted globals as the session keeps them; counts of zero stay, as names the host reported. */
+interface Globals {
+  variables: Map<string, number>
+  keyframes: Map<string, number>
+  keyframeSlots: string[]
+  suppressedKeyframes: string[]
+}
+
+const globalsOf = (emitted: EmittedGlobals = {}): Globals => ({
+  variables: new Map(Object.entries(emitted.variables ?? {})),
+  keyframes: new Map(Object.entries(emitted.keyframes ?? {})),
+  keyframeSlots: [...emitted.keyframeSlots ?? []],
+  suppressedKeyframes: [...emitted.suppressedKeyframes ?? []]
+})
+
+const sameCounts = (left: Map<string, number>, right: Map<string, number>) => left.size === right.size && [...left].every(([name, count]) => right.get(name) === count)
+const sameList = (left: readonly unknown[], right: readonly unknown[]) => left.length === right.length && left.every((item, index) => item === right[index])
+const sameGlobals = (left: Globals, right: Globals) => sameCounts(left.variables, right.variables) && sameCounts(left.keyframes, right.keyframes)
+  && sameList(left.keyframeSlots, right.keyframeSlots) && sameList(left.suppressedKeyframes, right.suppressedKeyframes)
+
+/** Counts are `u32`, which adding saturates. */
+const addCount = (count: number, added: number) => Math.min(count + added, 0xffffffff)
+
 function renderTheme(nodes: ThemeNode[], active: Set<string>): string {
   let text = ''
   for (const node of nodes) {
@@ -41,13 +70,9 @@ function renderTheme(nodes: ThemeNode[], active: Set<string>): string {
   return text.endsWith(';') ? text.slice(0, -1) : text
 }
 
-const sourceShape = ({ file, range, loc }: SourceReference) => ({
-  ...file === undefined ? {} : { file },
-  range: { start: range.start, end: range.end },
-  ...loc ? { loc: { start: { ...loc.start }, end: { ...loc.end } } } : {}
-})
+const containersShape = (containers: ProgramKeyframe['containers']) => containers.map(({ id, prelude }) => ({ id, prelude }))
 
-/** A keyframe definition as the Rust engine serializes it: absent options, empty lists and `false` are omitted. */
+/** A keyframe definition as the Rust engine serializes it: without its source, and absent options, empty lists and `false` omitted. */
 function keyframeDefinitionShape(definition: ProgramKeyframe): KeyframeDefinition {
   return {
     id: definition.id,
@@ -57,12 +82,17 @@ function keyframeDefinitionShape(definition: ProgramKeyframe): KeyframeDefinitio
     name: definition.name,
     text: definition.text,
     ...definition.resources.length ? { resources: definition.resources.map(({ start, end, value }) => ({ start, end, value })) } : {},
-    ...definition.containers.length ? { containers: definition.containers.map(({ id, prelude }) => ({ id, prelude })) } : {},
+    ...definition.containers.length ? { containers: containersShape(definition.containers) } : {},
     ...definition.retained ? { retained: true } : {},
-    ...definition.dependencies.length ? { dependencies: [...definition.dependencies] } : {},
-    ...definition.source ? { source: sourceShape(definition.source) } : {}
+    ...definition.dependencies.length ? { dependencies: [...definition.dependencies] } : {}
   }
 }
+
+/** Where an emitted keyframes rule is placed; a change of any part replaces the rule. */
+type KeyframePlacement = [id: string, text: string, anchored: boolean, containers: ProgramKeyframe['containers']]
+
+const samePlacement = (left: KeyframePlacement, right: KeyframePlacement) => left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
+  && left[3].length === right[3].length && left[3].every((container, index) => container.id === right[3][index].id && container.prelude === right[3][index].prelude)
 
 class Session implements EngineSession {
   /** Per layer, rules in CSS order. */
@@ -73,40 +103,56 @@ class Session implements EngineSession {
   /** Connected classes in request order, kept even while they generate no rules. */
   private readonly classOrder = new Set<string>()
   private readonly variableCounts = new Map<string, number>()
+  private readonly keyframeCounts = new Map<string, number>()
   /** Counts the host emitted, which removing rules never goes below. */
   private variableFloors = new Map<string, number>()
+  private keyframeFloors = new Map<string, number>()
+  /** The keyframes rules the host has, in order. */
+  private keyframeTexts: KeyframePlacement[] = []
   private themeVariableNames: string[] = []
   private themeText: string | undefined
   private themeDirty = false
   private batchDepth = 0
   private disposed = false
 
-  constructor(private readonly program: Program, private readonly emittedGlobals: EmittedGlobals) {
-    this.initializeVariableResources()
+  constructor(private program: Program, private globals: Globals) {
+    this.initializeResources()
     this.syncThemeText()
+    this.syncKeyframes()
   }
 
   private assertActive() {
     if (this.disposed) throw new EngineError('SESSION_DISPOSED', 'Master CSS engine session has been disposed.')
   }
 
-  private initializeVariableResources() {
-    const { emittedGlobals, program } = this
-    if (Object.values(emittedGlobals.keyframes ?? {}).some((count) => count > 0) || emittedGlobals.keyframeSlots?.length || emittedGlobals.suppressedKeyframes?.length) {
-      pending('J4', 'emitted keyframes')
+  private initializeResources() {
+    const { globals, program } = this
+    for (const [name, count] of globals.variables) if (count > 0) this.variableCounts.set(name, count)
+    // Emitted keyframes register their dependencies in name order.
+    for (const [id, count] of [...globals.keyframes].sort(([left], [right]) => compareText(left, right))) {
+      if (count <= 0 || globals.suppressedKeyframes.includes(id)) continue
+      this.keyframeCounts.set(id, count)
+      const definition = program.keyframes.find((keyframe) => keyframe.id === id)
+      if (definition) this.registerVariables(definition.dependencies)
     }
-    for (const [name, count] of Object.entries(emittedGlobals.variables ?? {})) if (count > 0) this.variableCounts.set(name, count)
-    if (program.keyframes.some((definition) => definition.retained)) pending('J4', 'retained keyframes')
+    for (const definition of program.keyframes) {
+      if (globals.suppressedKeyframes.includes(definition.id)) continue
+      if (definition.retained && !this.keyframeCounts.has(definition.id)) {
+        this.keyframeCounts.set(definition.id, 1)
+        this.registerVariables(definition.dependencies)
+      }
+    }
     for (const name of program.variableOrder) {
       const variable = program.variables.get(name)!
       if (!variable.isStatic) continue
       this.registerVariable(name)
       if (variable.namespace === 'animate') {
-        const animation = analyzeAnimations(stylesheetDeclarations(`a{animation:var(--${name})}`), program)
-        if (animation.names.length || animation.retainAll) pending('J4', 'keyframe resources')
+        const { names, retainAll } = declarationAnimationReferences(`animation:var(--${name})`, program)
+        this.registerKeyframes(names, retainAll)
       }
     }
     this.variableFloors = new Map(this.variableCounts)
+    this.keyframeFloors = new Map(this.keyframeCounts)
   }
 
   /** Counts a variable and, the first time, each dependency it pulls into the theme. */
@@ -127,6 +173,10 @@ class Session implements EngineSession {
         this.themeDirty = true
       }
     }
+  }
+
+  private registerVariables(names: readonly string[]) {
+    for (const name of names) this.registerVariable(name)
   }
 
   private unregisterVariable(name: string) {
@@ -152,13 +202,102 @@ class Session implements EngineSession {
     }
   }
 
+  private unregisterVariables(names: readonly string[]) {
+    for (const name of names) this.unregisterVariable(name)
+  }
+
+  /** The managed keyframes a rule references by name, or all of them; never suppressed ones. */
+  private referencedKeyframes(names: readonly string[], all: boolean) {
+    if (!all && !names.length) return []
+    const { suppressedKeyframes } = this.globals
+    return this.program.keyframes.filter((definition) => (all || names.includes(definition.name)) && !suppressedKeyframes.includes(definition.id))
+  }
+
+  private registerKeyframes(names: readonly string[] = [], all = false) {
+    for (const definition of this.referencedKeyframes(names, all)) {
+      const count = addCount(this.keyframeCounts.get(definition.id) ?? 0, 1)
+      this.keyframeCounts.set(definition.id, count)
+      if (count === 1) this.registerVariables(definition.dependencies)
+    }
+  }
+
+  private unregisterKeyframes(names: readonly string[] = [], all = false) {
+    for (const definition of this.referencedKeyframes(names, all)) {
+      const count = this.keyframeCounts.get(definition.id)
+      if (count === undefined || count <= (this.keyframeFloors.get(definition.id) ?? 0)) continue
+      if (count === 1) {
+        this.keyframeCounts.delete(definition.id)
+        this.unregisterVariables(definition.dependencies)
+      } else {
+        this.keyframeCounts.set(definition.id, count - 1)
+      }
+    }
+  }
+
+  /** Keyframes this session emits: referenced, and not emitted by the host. */
+  private keyframeResources(): KeyframeResource[] {
+    const resources: KeyframeResource[] = []
+    for (const definition of this.program.keyframes) {
+      const count = this.keyframeCounts.get(definition.id) ?? 0
+      if (count <= 0 || (this.globals.keyframes.get(definition.id) ?? 0) !== 0) continue
+      const resource: KeyframeResource = { id: definition.id, name: definition.name, text: definition.text, anchored: this.globals.keyframeSlots.includes(definition.id), refCount: count, dependencies: [...definition.dependencies] }
+      if (definition.containers.length) resource.containers = containersShape(definition.containers)
+      resources.push(resource)
+    }
+    return resources
+  }
+
+  /** The keyframes rule changes since the last sync. */
+  private syncKeyframes(): RuleMutation[] {
+    const next = this.keyframeResources().map(({ id, text, anchored, containers }): KeyframePlacement => [id, text, anchored, containers ?? []])
+    const texts = this.keyframeTexts
+    const mutations: RuleMutation[] = []
+    for (let index = texts.length - 1; index >= 0; index--) {
+      if (next.some((placement) => samePlacement(placement, texts[index]))) continue
+      const [[key]] = texts.splice(index, 1)
+      mutations.push({ op: 'delete', target: 'keyframes', index, key })
+    }
+    for (const [index, placement] of next.entries()) {
+      if (texts[index] && samePlacement(texts[index], placement)) continue
+      const [key, text] = placement
+      const previous = texts.findIndex(([id]) => id === key)
+      if (previous >= 0) {
+        texts.splice(previous, 1)
+        mutations.push({ op: 'delete', target: 'keyframes', index: previous, key })
+      }
+      texts.splice(index, 0, placement)
+      mutations.push({ op: 'insert', target: 'keyframes', index, key, text })
+    }
+    return mutations
+  }
+
+  /** Keyframes without a host slot, nested in their native containers. */
+  private standaloneKeyframeText() {
+    let text = ''
+    let path: { id: string, prelude: string }[] = []
+    for (const frame of this.keyframeResources()) {
+      if (frame.anchored) continue
+      const containers = frame.containers ?? []
+      let common = 0
+      while (common < path.length && common < containers.length && path[common].id === containers[common].id) common++
+      text += '}'.repeat(path.length - common)
+      for (const container of containers.slice(common)) text += `${container.prelude}{`
+      text += frame.text
+      path = containers
+    }
+    return text + '}'.repeat(path.length)
+  }
+
   private syncThemeText() {
     if (!this.themeDirty) return
     this.themeText = renderTheme(this.program.theme, new Set(this.themeVariableNames)) || undefined
     this.themeDirty = false
   }
 
-  /** Runs an operation and, outermost, prepends the theme rule change it caused. */
+  /**
+   * Runs an operation and, outermost, prepends the theme rule change and appends the
+   * keyframes rule changes it caused.
+   */
   private batch(operation: (mutations: RuleMutation[]) => void): Transition {
     this.assertActive()
     const mutations: RuleMutation[] = []
@@ -166,12 +305,15 @@ class Session implements EngineSession {
     try {
       operation(mutations)
     } catch (error) {
-      // Keep the theme consistent; only a successful outermost batch reports its change.
-      if (!--this.batchDepth) this.syncThemeText()
+      // Keep the theme and keyframes consistent; only a successful outermost batch reports their changes.
+      if (!--this.batchDepth) {
+        this.syncThemeText()
+        this.syncKeyframes()
+      }
       throw error
     }
-    this.batchDepth--
-    if (!this.batchDepth && this.themeDirty) {
+    if (--this.batchDepth) return { version: TRANSITION_VERSION, mutations }
+    if (this.themeDirty) {
       const previous = this.themeText
       this.syncThemeText()
       if (previous !== this.themeText) {
@@ -181,6 +323,7 @@ class Session implements EngineSession {
         mutations.unshift(...theme)
       }
     }
+    mutations.push(...this.syncKeyframes())
     return { version: TRANSITION_VERSION, mutations }
   }
 
@@ -211,7 +354,8 @@ class Session implements EngineSession {
         stored.count++
         continue
       }
-      for (const name of rule.ir.variableNames ?? []) this.registerVariable(name)
+      this.registerVariables(rule.ir.variableNames ?? [])
+      this.registerKeyframes(rule.ir.keyframeNames, rule.ir.retainAllKeyframes)
       const index = this.position(layer, rule)
       this.layers[layer].splice(index, 0, rule)
       this.layerRules[layer].set(key, { rule, count: 1 })
@@ -253,30 +397,85 @@ class Session implements EngineSession {
           if (rules[index] !== rule) index = rules.indexOf(rule)
           rules.splice(index, 1)
           mutations.push({ op: 'delete', target: UTILITY_LAYERS[layer], index, key })
-          for (const variableName of rule.ir.variableNames ?? []) this.unregisterVariable(variableName)
+          this.unregisterVariables(rule.ir.variableNames ?? [])
+          this.unregisterKeyframes(rule.ir.keyframeNames, rule.ir.retainAllKeyframes)
         }
         this.classOrder.delete(className)
       }
     })
   }
 
+  /** Re-executes the connected classes against the program and `globals`. */
+  private rebuild(globals: Globals) {
+    return this.batch((mutations) => {
+      const connected = [...this.classOrder]
+      for (let layer = this.layers.length - 1; layer >= 0; layer--) {
+        const rules = this.layers[layer]
+        for (let index = rules.length - 1; index >= 0; index--) mutations.push({ op: 'delete', target: UTILITY_LAYERS[layer], index, key: rules[index].ir.key })
+        rules.length = 0
+        this.layerRules[layer].clear()
+      }
+      this.themeDirty = true
+      this.variableCounts.clear()
+      this.keyframeCounts.clear()
+      this.themeVariableNames = []
+      this.globals = globals
+      this.classRules.clear()
+      this.classOrder.clear()
+      this.initializeResources()
+      mutations.push(...this.ensureClassRules(connected).mutations)
+    })
+  }
+
+  /** Adds resource counts the host emitted outside this session to the ones it reported before. */
   registerEmittedGlobals(emittedGlobals: EmittedGlobals): Transition {
     this.assertActive()
-    void emittedGlobals
-    return pending('J4', 'emitted globals')
+    const added = globalsOf(emittedGlobals)
+    const merged: Globals = {
+      variables: new Map(this.globals.variables),
+      keyframes: new Map(this.globals.keyframes),
+      keyframeSlots: [...this.globals.keyframeSlots],
+      suppressedKeyframes: [...this.globals.suppressedKeyframes]
+    }
+    let changed = false
+    for (const id of added.suppressedKeyframes) {
+      if (merged.suppressedKeyframes.includes(id)) continue
+      merged.suppressedKeyframes.push(id)
+      changed = true
+    }
+    for (const [name, count] of added.variables) {
+      if (!count) continue
+      const current = merged.variables.get(name) ?? 0
+      const next = addCount(current, count)
+      if (next === current) continue
+      merged.variables.set(name, next)
+      changed = true
+    }
+    for (const [id, count] of added.keyframes) {
+      if (count <= 0) continue
+      merged.keyframes.set(id, addCount(merged.keyframes.get(id) ?? 0, count))
+      changed = true
+    }
+    for (const id of added.keyframeSlots) {
+      if (merged.keyframeSlots.includes(id)) continue
+      merged.keyframeSlots.push(id)
+      changed = true
+    }
+    return changed ? this.rebuild(merged) : { version: TRANSITION_VERSION, mutations: [] }
   }
 
+  /** Replaces the host's resource counts with a complete snapshot, as HMR reports it. */
   replaceEmittedGlobals(emittedGlobals: EmittedGlobals): Transition {
     this.assertActive()
-    void emittedGlobals
-    return pending('J4', 'emitted globals')
+    const globals = globalsOf(emittedGlobals)
+    return sameGlobals(globals, this.globals) ? { version: TRANSITION_VERSION, mutations: [] } : this.rebuild(globals)
   }
 
+  /** Executes another program, with new emitted globals when given. */
   refresh(program: Uint8Array, emittedGlobals?: EmittedGlobals): Transition {
     this.assertActive()
-    void program
-    void emittedGlobals
-    return pending('J4', 'refresh')
+    this.program = decode(program)
+    return this.rebuild(emittedGlobals === undefined ? this.globals : globalsOf(emittedGlobals))
   }
 
   keyframeDefinitions(): readonly KeyframeDefinition[] {
@@ -293,7 +492,8 @@ class Session implements EngineSession {
       if (variable.dependencies.length) resource.dependencies = [...variable.dependencies]
       variables.push(resource)
     }
-    return this.themeText === undefined ? { variables, keyframes: [] } : { themeText: this.themeText, variables, keyframes: [] }
+    const keyframes = this.keyframeResources()
+    return this.themeText === undefined ? { variables, keyframes } : { themeText: this.themeText, variables, keyframes }
   }
 
   executionState(classNames: readonly string[]): ExecutionState {
@@ -318,7 +518,7 @@ class Session implements EngineSession {
       version: TRANSITION_VERSION,
       rules: this.layers.flatMap((rules) => rules.map((rule) => rule.ir)),
       resources: this.resources(),
-      text
+      text: text + this.standaloneKeyframeText()
     }
   }
 
@@ -328,7 +528,10 @@ class Session implements EngineSession {
     this.classRules.clear()
     this.classOrder.clear()
     this.variableCounts.clear()
+    this.keyframeCounts.clear()
     this.variableFloors.clear()
+    this.keyframeFloors.clear()
+    this.keyframeTexts = []
     this.themeVariableNames = []
     this.themeText = undefined
     this.themeDirty = false
@@ -336,8 +539,6 @@ class Session implements EngineSession {
   }
 }
 
-export function createEngineSession(program: Uint8Array, emittedGlobals: EmittedGlobals = {}): EngineSession {
-  const decoded = decodeProgram(program)
-  if (!decoded.ok) throw new EngineError(decoded.error.code, decoded.error.message)
-  return new Session(decoded.program, emittedGlobals)
+export function createEngineSession(program: Uint8Array, emittedGlobals?: EmittedGlobals): EngineSession {
+  return new Session(decode(program), globalsOf(emittedGlobals))
 }

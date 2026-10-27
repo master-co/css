@@ -2,18 +2,22 @@
 // invalid ones are kept on purpose, since both engines must reject them alike.
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
-import type { Program } from '../src/index.ts'
+import type { EmittedGlobals, Program } from '../src/index.ts'
 
-export interface EngineCaseStep {
-  op: 'ensure' | 'delete'
-  classes: string[]
-}
+export type ManifestSource = 'default' | Record<string, unknown>
+
+export type EngineCaseStep =
+  | { op: 'ensure' | 'delete', classes: string[] }
+  | { op: 'register' | 'replace', globals: EmittedGlobals }
+  /** Another program, or bytes no program decodes from. */
+  | { op: 'refresh', manifest: ManifestSource, globals?: EmittedGlobals }
+  | { op: 'refresh', invalid: 'truncated' | 'garbage' }
 
 export interface EngineCase {
   id: string
-  manifest: 'default' | Record<string, unknown>
+  manifest: ManifestSource
   steps: EngineCaseStep[]
-  emittedGlobals?: { variables?: Record<string, number> }
+  emittedGlobals?: EmittedGlobals
 }
 
 const SKIP_DIRECTORIES = new Set(['node_modules', 'dist', '.next', '.nuxt', '.astro', '.output', 'target', '.git', '.turbo', 'artifacts', 'public'])

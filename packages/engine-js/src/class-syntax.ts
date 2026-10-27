@@ -6,7 +6,7 @@ import { isAsciiDigit, trim } from './text'
 
 const isOpen = (unit: number) => unit === 0x28 || unit === 0x5b || unit === 0x7b
 const isClose = (unit: number) => unit === 0x29 || unit === 0x5d || unit === 0x7d
-const isQuote = (unit: number) => unit === 0x22 || unit === 0x27
+export const isQuote = (unit: number) => unit === 0x22 || unit === 0x27
 
 /**
  * Balanced native content outside strings, escapes and comments, or undefined. With
