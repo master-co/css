@@ -8,9 +8,9 @@ import { describe, it } from 'vitest'
 const require = createRequire(import.meta.url)
 const tscPath = path.join(path.dirname(require.resolve('typescript/package.json')), 'bin', 'tsc')
 
-describe('rc.87 integration types through @master/css/client', () => {
+describe('integration types through @master/css/client', () => {
   it('provides types for Master CSS integration virtual modules', () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'master-css-rc87-client-'))
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-client-'))
 
     try {
       const cssPackageDir = path.join(root, 'node_modules', '@master', 'css')

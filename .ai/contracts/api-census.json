@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 915,
+    "records": 910,
     "byKind": {
       "bin": 3,
-      "cli-command": 4,
-      "export": 730,
+      "cli-command": 3,
+      "export": 726,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -110,20 +110,6 @@
       "disposition": "retain",
       "id": "cli-command:master-css:lint",
       "name": "lint"
-    },
-    {
-      "kind": "cli-command",
-      "owner": "@master/css-cli",
-      "responsibility": "command-line host",
-      "consumers": [
-        "CLI users"
-      ],
-      "platform": "node",
-      "lifecycle": "command",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "cli-command:master-css:migrate",
-      "name": "migrate"
     },
     {
       "kind": "export",
@@ -5333,33 +5319,6 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-compiler:./node#migrateRCSync",
-      "package": "@master/css-compiler",
-      "subpath": "./node",
-      "name": "migrateRCSync"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-compiler",
-      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "node",
-      "lifecycle": "compiler-session",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-compiler:./node#resolveStylesheetDependenciesSync",
       "package": "@master/css-compiler",
       "subpath": "./node",
@@ -7277,60 +7236,6 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-compiler:.#MasterCSSRCMigrationRequest",
-      "package": "@master/css-compiler",
-      "subpath": ".",
-      "name": "MasterCSSRCMigrationRequest"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-compiler",
-      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "compiler-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-compiler:.#MasterCSSRCMigrationResult",
-      "package": "@master/css-compiler",
-      "subpath": ".",
-      "name": "MasterCSSRCMigrationResult"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-compiler",
-      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "compiler-session",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-compiler:.#MasterCSSRenderStylesheetBundleRequest",
       "package": "@master/css-compiler",
       "subpath": ".",
@@ -7389,33 +7294,6 @@
       "package": "@master/css-compiler",
       "subpath": ".",
       "name": "MasterCSSStylesheetBundle"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-compiler",
-      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-language-server",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-server",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "compiler-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-compiler:.#migrateRC",
-      "package": "@master/css-compiler",
-      "subpath": ".",
-      "name": "migrateRC"
     },
     {
       "kind": "export",
@@ -23823,7 +23701,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 27
+      "value": 28
     },
     {
       "kind": "wire-contract",

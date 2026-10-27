@@ -59,11 +59,7 @@ export type MasterCSSMediaQueryExpression =
   | { type: 'and' | 'or'; queries: MasterCSSMediaQueryExpression[] }
 
 export interface MasterCSSManifest {
-  /**
-   * MasterCSSManifest IR schema/codec version.
-   * This is not a legacy Config compatibility marker; engines must reject
-   * unsupported manifest versions instead of migrating authoring APIs at runtime.
-   */
+  /** MasterCSSManifest IR schema/codec version; engines reject any other version. */
   version: 6
   languageVersion: 16
   keyframes?: MasterCSSKeyframeDefinition[]

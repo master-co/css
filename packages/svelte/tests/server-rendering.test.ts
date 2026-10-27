@@ -40,7 +40,7 @@ async function renderWithHandle(
   return response.text()
 }
 
-describe('rc.87 Svelte server hook renderer', () => {
+describe('Svelte server hook renderer with external hydration', () => {
   test('injects collected CSS when the head closes', async () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),

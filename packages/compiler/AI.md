@@ -61,7 +61,7 @@
 
 - Focused directive parsing or lowering fixes with compiler tests.
 - CSS import dependency reporting fixes.
-- CSS-first migration coverage for former core behavior.
+- CSS-first coverage of core behavior.
 
 ## Dangerous Changes
 

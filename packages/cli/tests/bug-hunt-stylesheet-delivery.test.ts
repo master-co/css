@@ -29,7 +29,6 @@ test('BH-0004 CLI emits a referenced resource and native declarations without em
     expect(css).toContain('color:red')
     expect(css).toContain('?q=1#mark')
     expect(css).not.toContain('.reference-only')
-    expect(css).not.toContain('@compose')
     expect(css).not.toContain('@reference')
     const resource = files.find(file => file.endsWith('.svg'))
     expect(resource).toBeDefined()

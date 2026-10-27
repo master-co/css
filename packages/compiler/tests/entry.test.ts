@@ -4,7 +4,6 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import {
-  compileCSS,
   compileProjectManifest,
   inspectCSS,
   resolveMasterCSSPackageEntryFile
@@ -14,10 +13,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '../../..')
 
 test.concurrent('recognizes only the preset import as a project entry', () => {
-  for (const source of ['@master entry;', '@master;', '@master global;']) {
-    expect(inspectCSS(source).hasMasterEntry).toBe(false)
-    expect(() => compileCSS(source)).toThrow()
-  }
   expect(inspectCSS('@import "@master/css";')).toMatchObject({ hasMasterCSSImport: true, hasMasterEntry: true })
 })
 

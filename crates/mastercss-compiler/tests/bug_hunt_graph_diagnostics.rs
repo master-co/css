@@ -16,20 +16,20 @@ fn request(source: &str) -> Value {
 fn graph_diagnostics_retain_original_utf16_ranges_after_resource_edits() {
     for (source, token) in [
         (
-            "/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}",
-            "@compose",
+            "/*😀*/.image{background:url(a.png)}\r\n.x{@contents;}",
+            "@contents",
         ),
         (
-            "/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}",
-            "@utilities",
+            "/*😀*/.image{background:url(a.png)} .y{color:red;@contents;}",
+            "@contents",
         ),
         (
-            ".a{background:image-set(\"a.png\" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}",
-            "@compose",
+            ".a{background:image-set(\"a.png\" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@contents;}",
+            "@contents",
         ),
         (
-            "/*\u{1F600}*/.a{background:image-set(\r\n\"a.png\" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}",
-            "@compose",
+            "/*\u{1F600}*/.a{background:image-set(\r\n\"a.png\" 1x,\r\nurl(b.png) 2x)}\n.x{@contents;}",
+            "@contents",
         ),
     ] {
         let error = compile_css_stylesheet_graph(&serde_json::from_value(request(source)).unwrap())

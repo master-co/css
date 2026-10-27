@@ -147,9 +147,9 @@ describe('StyleEntryPlugin', () => {
 
     await expect((plugin as any).transform.call(
       { addWatchFile },
-      "@import url(\"@master/css\");\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }",
+      "@import url(\"@master/css\");\n.card{@contents;} .card{@contents;}",
       '/project/src/style.css'
-    )).rejects.toThrow('@compose has been removed')
+    )).rejects.toThrow('@contents is only valid inside @mixin')
 
     expect(addWatchFile).toHaveBeenCalledWith(normalizePath(resolve('/project/src/style.css')))
   })
@@ -237,7 +237,7 @@ describe('StyleEntryPlugin', () => {
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
-  test('ignores non-entry definitions but diagnoses removed directives', async () => {
+  test('ignores non-entry definitions but diagnoses invalid directives', async () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -252,8 +252,8 @@ describe('StyleEntryPlugin', () => {
     expect(context.virtualCSSImporters).toBeUndefined()
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     await expect((plugin as any).transform.call(
-      {}, '@settings { important: off; }', '/project/src/style.css'
-    )).rejects.toThrow('@settings has been removed')
+      {}, '.card { @contents; }', '/project/src/style.css'
+    )).rejects.toThrow('@contents is only valid inside @mixin')
   })
 
   test('ignores non-CSS modules and unrelated CSS imports', async () => {

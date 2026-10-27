@@ -1,9 +1,8 @@
-//! The v3 named token contract. RC spellings occur only in rejection/migration cases.
+//! The named token contract.
 use mastercss_compiler::{
     CompileManifestOptions, CompileNativeCssOptions, compile_css_directives, compile_manifest_input,
 };
 use mastercss_engine::{ClassSemanticKind, EngineSession};
-use mastercss_schema::{CssDirectiveManifestInput, MasterCssManifest};
 use serde_json::json;
 
 fn compile(source: &str) -> Result<EngineSession, String> {
@@ -197,7 +196,6 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
         .inspect("padding:1px@media((resolution>=2x))")
         .unwrap();
     assert!(resolution.rules[0].text.contains("resolution>=2x"));
-    assert!(compile("@settings{root-size:20}").is_err());
     assert_eq!(declarations(&engine, "padding:4px"), "padding:4px");
     assert_eq!(
         declarations(&engine, "margin:calc(var(--spacing-sm)+2px)"),
@@ -253,64 +251,6 @@ fn native_property_names_do_not_become_token_prefixes() {
         assert_eq!(candidates[0].value, value);
         engine.ensure_class_rules(class.split_whitespace()).unwrap();
         assert_eq!(declarations(&engine, class), format!("{property}:{value}"));
-    }
-}
-
-#[test]
-fn rejects_rc_contracts_in_formal_compilation() {
-    assert!(
-        compile("@utility font:<~font-family> {font-family:var(--value)}")
-            .unwrap_err()
-            .contains("utility")
-    );
-    assert!(
-        compile("@utility font-* from(--font-family-*, --*-*) {font-family:var(--value)}").is_err()
-    );
-    let native = compile("@mixin --outline(--value) {outline-width:var(--value)} @utility outline(--value) {outline-width:var(--value)}@utility outline-(--value) {outline-width:var(--value)}").unwrap();
-    assert_eq!(declarations(&native, "outline:2px"), "outline:2px");
-    assert_eq!(declarations(&native, "outline(2px)"), "outline-width:2px");
-    assert!(
-        compile("@settings{base-unit:4}")
-            .unwrap_err()
-            .contains("removed")
-    );
-    assert!(serde_json::from_value::<CssDirectiveManifestInput>(json!({"baseUnit":4})).is_err());
-    assert!(
-        MasterCssManifest::new(json!({
-          "version": 1,
-          "languageVersion": 3
-        }))
-        .is_err()
-    );
-    assert!(
-        MasterCssManifest::new(
-            json!({"version":6,"languageVersion":16,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
-        )
-        .is_err()
-    );
-}
-
-#[test]
-fn migration_map_preserves_saved_rc_declarations_except_recorded_corrections() {
-    let engine = EngineSession::create(include_str!(
-        "../../../packages/preset/src/default-manifest.json"
-    ))
-    .unwrap();
-    let mapping: serde_json::Value =
-        serde_json::from_str(include_str!("fixtures/v2-rc-syntax-map.json")).unwrap();
-    for case in mapping["cases"].as_array().unwrap() {
-        let class = case["current"].as_str().unwrap();
-        assert_eq!(
-            declarations(&engine, class),
-            case["currentDeclarations"].as_str().unwrap(),
-            "{class}"
-        );
-        if case["intentionalChange"].is_null() {
-            assert_eq!(
-                case["rcDeclarations"], case["currentDeclarations"],
-                "{class}"
-            );
-        }
     }
 }
 

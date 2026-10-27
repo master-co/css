@@ -68,7 +68,7 @@ test('public inspection example distinguishes an empty result, validation states
     expect(report.classes.map(item => item.inspection.matchStatus)).toEqual(['matched', 'matched', 'unmatched'])
     expect(report.classes.map(item => item.validation.cssValueStatus)).toEqual(['valid', 'invalid', 'not-checked'])
 
-    writeFileSync(join(root, 'app.css'), '@import "@master/css"; @settings { root-size: 16; }')
+    writeFileSync(join(root, 'app.css'), '@import "@master/css"; @theme dark { --color-brand: red; }')
     const failure = await inspectProject(root, 'app.css', ['color:red'])
     expect(failure).toMatchObject({ status: 'error' })
     expect(failure).not.toHaveProperty('classes')

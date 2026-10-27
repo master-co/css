@@ -87,7 +87,7 @@ for (const addition of ['none', 'string', 'mapped']) for (const syntax of ['scss
     }
     const css = assets.join('\n')
     expect(css).toMatch(/padding:\s*7rem/)
-    expect(css).not.toMatch(/99rem|\.never|@reference|@compose|master-css:module-input/)
+    expect(css).not.toMatch(/99rem|\.never|@reference|master-css:module-input/)
     expect(css).toContain('?v=partial#icon')
     expect(css).toContain('data-owner="partial"')
   } finally { f.remove() }

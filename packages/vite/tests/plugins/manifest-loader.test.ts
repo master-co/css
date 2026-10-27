@@ -89,14 +89,14 @@ describe('ManifestLoaderPlugin', () => {
     const manifestPath = path.join(root, 'theme.css')
     try {
       mkdirSync(root, { recursive: true })
-      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
+      writeFileSync(manifestPath, ".card{@contents;} .card{@contents;}")
       const context = await createContext(root)
       const plugin = ManifestLoaderPlugin(context)
       const resolvedId = toResolvedMasterCSSManifestId(manifestPath)
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, resolvedId))
-        .rejects.toThrow('@compose has been removed')
+        .rejects.toThrow('@contents is only valid inside @mixin')
       expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
       expect(context.config.server.fs.allow).toContain(manifestPath)
 

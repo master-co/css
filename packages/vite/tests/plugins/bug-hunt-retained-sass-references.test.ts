@@ -76,7 +76,7 @@ for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) 
     const text = sources.join('\n')
     expect(text).toMatch(/padding:\s*2rem/)
     expect(text).toMatch(/padding:\s*3rem/)
-    expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+    expect(text).not.toMatch(/99rem|never-|@reference/)
     for (const side of ['a', 'b']) {
       expect(text).toMatch(new RegExp(`(?:layer\\(owner-${side}\\)|@layer owner-${side}\\s*\\{)`))
       expect(text).toContain(`data-owner="${side}"`)

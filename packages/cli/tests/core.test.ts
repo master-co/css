@@ -88,13 +88,6 @@ describe('root command', () => {
     expect(generateHelp).toContain('--no-export')
   })
 
-  it.each(['extract', 'render', 'scan'])('has no compatibility command for %s', (command) => {
-    const error = runFailedCLI([command])
-    expect(error.status).toBe(1)
-    expect(String(error.stderr)).toContain(`unknown command '${command}'`)
-    expect(String(error.stderr)).not.toContain('was removed')
-  })
-
   it('publishes only the master-css binary', () => {
     expect(pkg.bin).toEqual({
       'master-css': './dist/bin/index.js'
@@ -275,7 +268,7 @@ describe('lint command', () => {
   it('reports manifest preflight diagnostics', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-manifest-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n\n.btn { @compose \"block\"; }")
+      fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n\n.btn { @contents; }")
       const error = runFailedCLI(['lint'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -303,6 +296,5 @@ describe('lint command', () => {
       fs.rmSync(cwd, { recursive: true, force: true })
     }
   })
-
 
 })

@@ -1,5 +1,5 @@
 #[test]
-fn executes_language_v2_parser_cases_and_historical_rejections() {
+fn executes_language_v2_parser_cases() {
     let corpus: ParserParityCorpus =
         serde_json::from_str(include_str!("../../../../parity/v2-language-corpus.json"))
             .expect("semantic parity corpus parses");
@@ -11,23 +11,6 @@ fn executes_language_v2_parser_cases_and_historical_rejections() {
     ))
     .unwrap();
     for case in corpus.parser_cases {
-        assert!(!case.source_id.is_empty(), "{}", case.id);
-        if case.historical_rejection {
-            if case.kind == "selector" {
-                assert!(
-                    selector_token_to_template(&case.input, &engine.compiled).is_none(),
-                    "{}",
-                    case.id
-                );
-            } else {
-                assert!(
-                    render_condition_token(&case.input, &engine.compiled).is_none(),
-                    "{} must not infer legacy conditions",
-                    case.id
-                );
-            }
-            continue;
-        }
         let actual = match case.kind.as_str() {
             "condition" => render_condition_token(&case.input, &engine.compiled)
                 .map(|(_, wrapper)| wrapper)
@@ -321,32 +304,6 @@ fn validates_and_saturates_host_globals_before_classes_are_ensured() {
 }
 
 #[test]
-fn rejects_removed_animation_resource_registration_atomically() {
-    let mut engine = EngineSession::create(include_str!(
-        "../../../../packages/preset/src/default-manifest.json"
-    ))
-    .unwrap();
-    engine.ensure_class_rules(["animation:fade|1s"]).unwrap();
-    assert!(crate::parse_emitted_globals(r#"{"animations":{"fade":1}}"#).is_err());
-}
-
-#[test]
-fn removed_static_variable_and_managed_animation_fields_are_rejected() {
-    for field in [
-        r#""settings":{}"#,
-        r#""animations":{}"#,
-        r#""animationOptions":{}"#,
-        r#""modes":[]"#,
-    ] {
-        assert!(
-            EngineSession::create(&format!(r#"{{"version":6,"languageVersion":16,{field}}}"#))
-                .is_err()
-        );
-    }
-    assert!(EngineSession::create(r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"brand","value":"red","static":true}]}}"#).is_err());
-}
-
-#[test]
 fn commits_native_declarations_without_host_support_filtering() {
     let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
     let candidates = engine
@@ -364,9 +321,7 @@ fn commits_native_declarations_without_host_support_filtering() {
 }
 
 #[test]
-// RC takeover lineage: validates_native_value_namespaces_before_committing_rules.
-// Also replaces commits_only_host_supported_native_declarations with preservation assertions.
-// The final v2 contract preserves declarations; value validation is tooling-only.
+// Native declarations are preserved; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
     let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
     let candidates = engine

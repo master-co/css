@@ -15,40 +15,6 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
-export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins' | 'rc-preset'
-  readonly sourceVersion: string
-  readonly manifest: Readonly<Record<string, unknown>>
-  readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
-  readonly targetIsPreset?: boolean
-  readonly classLists: readonly (readonly string[])[]
-  readonly stylesheets?: readonly string[]
-  readonly documents?: readonly string[]
-}
-
-export interface MasterCSSRCClassMigration {
-  readonly before: string
-  readonly after: string | null
-  readonly status: 'unchanged' | 'replace' | 'review'
-  readonly notes: readonly string[]
-}
-
-export interface MasterCSSRCMigrationResult {
-  readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed' | 'rc-utilities' | 'rc-sizing' | 'rc-mixins' | 'rc-preset'
-  readonly sourceVersion: string
-  readonly behaviorChanges: readonly string[]
-  readonly configurationCSS: string
-  readonly notes: readonly string[]
-  readonly classLists: readonly (readonly MasterCSSRCClassMigration[])[]
-  readonly stylesheets: readonly {
-    readonly isEntry: boolean
-    readonly edits: readonly { readonly range: { readonly start: number, readonly end: number }, readonly before: string, readonly after: string }[]
-    readonly notes: readonly string[]
-  }[]
-  readonly documents: readonly (readonly string[])[]
-}
-
 export type MasterCSSBindingFeature =
   | 'cli'
   | 'compiler'

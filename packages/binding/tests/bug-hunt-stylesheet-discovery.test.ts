@@ -19,7 +19,7 @@ test('BH-0004 native/Wasm discovery retains file boundaries, occurrences and UTF
   try {
     for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
       const entry = `/*😀*/@import './child.css'${qualifier};@import './child.css'${qualifier};@source './root/*.html';`
-      const child = "@import 'https://invalid.invalid/external.css';@reference './missing.css';@source './child/*.html';@mixin --broken {@compose undefined;} @utility broken {@compose undefined;}.native{unknown:???}"
+      const child = "@import 'https://invalid.invalid/external.css';@reference './missing.css';@source './child/*.html';.broken{@contents;}.native{unknown:???}"
       const request = { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] }
       const a = native.resolveCSSStylesheetGraph(request), b = wasm.resolveCSSStylesheetGraph(request)
       expect(b).toEqual(a)
@@ -31,7 +31,7 @@ test('BH-0004 native/Wasm discovery retains file boundaries, occurrences and UTF
         expect(edge.resolved).toBe('/child.css')
       }
       expect(a.stylesheets[1].source).toContain('@source')
-      expect(a.stylesheets[1].source).toContain('@compose undefined')
+      expect(a.stylesheets[1].source).toContain('.broken{@contents;}')
       expect(a.stylesheets[1].imports[0].resolved).toBeNull()
       expect(a.references).toMatchObject([{ source: './missing.css', file: '/child.css' }])
     }

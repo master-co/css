@@ -4,30 +4,6 @@ use mastercss_schema::{
     MixinDefinition, MixinNode, MixinParameter, MixinParameterSyntax, MixinValue, MixinValuePart,
 };
 
-pub(crate) fn reject_placeholder(source: &str, filename: &str) -> Result<(), crate::CompilerError> {
-    let tokens = tokenize_css_syntax(source);
-    let mut index = 0;
-    while index < tokens.len() {
-        let token = &tokens[index];
-        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("url")) {
-            index = token.close.unwrap_or(index) + 1;
-            continue;
-        }
-        if matches!(&token.kind, Kind::Function(name) if name == "--master-value") {
-            return Err(crate::ranged_directive_diagnostic(
-                source,
-                filename,
-                token.bytes.start,
-                token.bytes.end,
-                mastercss_schema::ErrorCode::CssDirectiveError,
-                "--master-value() was removed; use var(--parameter) inside @mixin",
-            ));
-        }
-        index += 1;
-    }
-    Ok(())
-}
-
 pub(crate) fn value(source: &str) -> Result<MixinValue, String> {
     let tokens = tokenize_css_syntax(source);
     let mut output = Vec::new();
@@ -41,9 +17,6 @@ pub(crate) fn value(source: &str) -> Result<MixinValue, String> {
             if name.eq_ignore_ascii_case("url") {
                 index = close + 1;
                 continue;
-            }
-            if name == "--master-value" {
-                return Err("--master-value() was removed; use a mixin parameter".into());
             }
             if token.bytes.start > end {
                 output.push(MixinValuePart::Text {

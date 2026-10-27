@@ -147,10 +147,4 @@ fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
     let shorthand = css.find("animation:var(--animate-fade)").unwrap();
     assert!(css.find("animation-duration:var(--duration-fast)").unwrap() < shorthand);
     assert!(shorthand < css.find("animation-duration:var(--duration-slow)").unwrap());
-    for class in ["animation-fade", "animate:fade"] {
-        assert_ne!(
-            left.inspect(class).unwrap().match_status,
-            MatchStatus::Matched
-        );
-    }
 }

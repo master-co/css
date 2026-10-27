@@ -31,28 +31,11 @@ const BINDING_TARGET_PACKAGES: [&str; 8] = [
 ];
 
 #[derive(Deserialize)]
-struct ParityFile {
-    exceptions: Vec<ParityException>,
-}
-
-#[derive(Deserialize)]
-struct ParityException {
-    id: String,
-    reason: String,
-    old: String,
-    new: String,
-    packages: Vec<String>,
-    test: String,
-}
-
-#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct SemanticParityCorpus {
     version: u32,
     semantic_baseline: String,
     public_baseline: String,
-    #[serde(default)]
-    historical_sha256: Option<String>,
     #[serde(default)]
     parser_cases: Vec<ParserParityCase>,
     engine_cases: Vec<EngineParityCase>,
@@ -63,7 +46,6 @@ struct SemanticParityCorpus {
 #[serde(rename_all = "camelCase")]
 struct ParserParityCase {
     id: String,
-    source_id: String,
     kind: String,
     input: String,
     expected_canonical: String,
@@ -77,8 +59,6 @@ struct ParserParityCase {
 #[serde(rename_all = "camelCase")]
 struct EngineParityCase {
     id: String,
-    #[serde(default)]
-    source_id: Option<String>,
     manifest: Value,
     #[serde(default)]
     emitted_globals: Option<Value>,
@@ -122,8 +102,6 @@ enum EngineParityStep {
 #[serde(rename_all = "camelCase")]
 struct CompilerParityCase {
     id: String,
-    #[serde(default)]
-    source_id: Option<String>,
     source: String,
     base_manifest: Value,
     #[serde(default)]
@@ -134,30 +112,6 @@ struct CompilerParityCase {
     expected_error: Option<String>,
     #[serde(default)]
     expected_mixins: Vec<Value>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct RustTakeoverLedger {
-    version: u32,
-    semantic_baseline: String,
-    expected_legacy_tests: usize,
-    suites: Vec<RustTakeoverLedgerSuite>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct RustTakeoverLedgerSuite {
-    file: String,
-    expected_tests: usize,
-    tests: Vec<RustTakeoverLedgerEntry>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct RustTakeoverLedgerEntry {
-    name: String,
-    coverage: Vec<String>,
 }
 
 #[derive(Deserialize)]

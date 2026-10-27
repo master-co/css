@@ -32,16 +32,6 @@ fn compiles_scoped_variables_custom_media_and_utilities() {
 }
 
 #[test]
-fn rejects_removed_variant_input() {
-    assert!(
-        serde_json::from_value::<CssDirectiveManifestInput>(json!({
-            "variants":[{"token":"@hocus","branches":[{"selector":"&:hover,&:focus"}]}]
-        }))
-        .is_err()
-    );
-}
-
-#[test]
 fn ignores_placeholders_and_dependencies_inside_quoted_values() {
     let input: CssDirectiveManifestInput = serde_json::from_value(json!({
         "theme":[{"type":"rule","prelude":":root","children":[{"type":"declaration","name":"content-demo","value":"\"var(--color-blue-60) | $quoted\""}]}],
@@ -62,16 +52,6 @@ fn ignores_placeholders_and_dependencies_inside_quoted_values() {
     let body = &manifest["mixins"][0]["body"];
     assert_eq!(body[0]["value"][0]["value"], "\"var(--value)\"");
     assert_eq!(body[1]["value"][0]["name"], "var");
-}
-
-#[test]
-fn removed_enum_authoring_input_is_not_treated_as_a_static_definition() {
-    assert!(
-        serde_json::from_value::<CssDirectiveManifestInput>(
-            json!({"utilities":[{"name":"x-<a|b>"}]})
-        )
-        .is_err()
-    );
 }
 
 #[test]

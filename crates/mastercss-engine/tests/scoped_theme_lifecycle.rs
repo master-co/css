@@ -88,20 +88,6 @@ fn refresh_replaces_authored_scopes_while_preserving_live_class_names() {
     assert!(engine.css_text().is_empty());
 }
 #[test]
-fn removed_static_inline_and_mode_metadata_is_rejected_atomically() {
-    let source = manifest(false);
-    let mut engine = EngineSession::create(&source).unwrap();
-    engine.ensure_class_rules(["fg-a"]).unwrap();
-    let before = engine.snapshot().unwrap();
-    for field in ["static", "inline", "mode", "modes", "value"] {
-        let mut changed: Value = serde_json::from_str(&source).unwrap();
-        changed["variables"]["color"][0][field] = json!(true);
-        assert!(engine.refresh(&changed.to_string()).is_err(), "{field}");
-        assert_eq!(engine.snapshot().unwrap(), before);
-    }
-}
-
-#[test]
 fn direct_manifest_values_are_opaque_and_dependencies_are_explicit() {
     for value in [
         "hsl(120 50% 40%)",

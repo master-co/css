@@ -60,7 +60,7 @@ function sessionFrom(
     const generated = css.generate(className) as GeneratedCompat
     if (generated.__session) return generated.__session
   }
-  throw new Error('The rc.87 lint adapter cannot resolve its Rust tooling session.')
+  throw new Error('The lint test adapter cannot resolve its Rust tooling session.')
 }
 
 function tokens(

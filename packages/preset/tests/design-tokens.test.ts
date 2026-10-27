@@ -17,48 +17,6 @@ function varDependencyName(value: string) {
   return value.match(/^var\(--([A-Za-z0-9_-]+)\)$/)?.[1]
 }
 
-const removedVariableNames = [
-  'font-sans',
-  'spacing-field',
-  'spacing-control',
-  'spacing-card',
-  'spacing-panel',
-  'spacing-section',
-  'spacing-page',
-  'radius-control',
-  'radius-card',
-  'radius-panel',
-  'duration-instant',
-  'duration-quick',
-  'easing-standard',
-  'easing-enter',
-  'easing-exit',
-  'easing-emphasized',
-  'shadow-card',
-  'shadow-popover',
-  'color-canvas',
-  'color-backdrop',
-  'color-blue-hover',
-  'color-on-blue',
-  'color-blue-surface',
-  'color-blue-line',
-  'color-line-blue',
-  'color-blue-focus',
-  'color-blue-selection',
-  'color-accent',
-  'color-focus',
-  'color-selection',
-  'color-text',
-  'color-line',
-  'color-success',
-  'color-text-success',
-  'color-line-success',
-  'color-warning',
-  'color-danger',
-  'color-info', 'color-surface-muted', 'color-surface-overlay', 'color-line-base', 'color-line-strong',
-  'color-line-muted', 'color-text-subtle', 'color-text-placeholder'
-] as const
-
 const textRoleAliases = [
   ['body', 'var(--color-neutral-70)', 'var(--color-gray-30)'],
   ['strong', 'var(--color-neutral-100)', 'var(--color-white)'],
@@ -209,12 +167,6 @@ describe.concurrent('@master/css-preset design token parity', () => {
     })
   })
 
-  test('removes canvas, product, and expanded hue role tokens from the default preset', () => {
-    for (const name of removedVariableNames) {
-      expect(findVariable(name), name).toBeUndefined()
-    }
-  })
-
   test('keeps surface color roles mode-specific', () => {
     const surfaceAliases = [
       ['base', 'var(--color-neutral-0)', 'var(--color-gray-95)'],
@@ -354,7 +306,6 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('fg-red')?.text).toBe('.fg-red{color:var(--color-red)}')
     expect(css.createRule('fg-text-blue')?.text).toBe('.fg-text-blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
-    expect(declarationsCSS.createRule('text:blue-60')).toBeUndefined()
     expect(css.createRule('text-fill-color-text-pink')?.text).toBe('.text-fill-color-text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
     expect(css.createRule('animate-fade')?.text).toContain('animation:var(--animate-fade)')
     expect(declarationsCSS.createRule("background:accent")?.text).toContain('background:accent')

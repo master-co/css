@@ -79,9 +79,9 @@ test('expanded lowering diagnostics point to the authored child rather than flat
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-expanded-error-')))
   try {
     const child = join(root, 'child.css')
-    writeFileSync(child, '/* authored */\n.card{@compose does-not-exist;}')
+    writeFileSync(child, '/* authored */\n.card{@contents;}')
     await expect(compileRenderedStylesheet(join(root, 'entry.css'), '\n\n@import "./child.css";', { baseManifest, projectDir: root }))
-      .rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: child, range: { start: { line: 1, character: 6 }, end: { line: 1, character: 14 } } })] })
+      .rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: child, range: { start: { line: 1, character: 6 }, end: { line: 1, character: 15 } } })] })
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 

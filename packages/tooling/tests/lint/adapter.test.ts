@@ -24,7 +24,7 @@ import {
   sortClassList,
   sortClassNames,
   suggestCanonicalClassName
-} from './rc87-compat'
+} from './adapter'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const css = createCSSWithNativeDeclarations(createPresetManifest())
@@ -76,15 +76,7 @@ const registryFieldCSS = createCSSWithNativeDeclarations(createPresetManifest({
   variables: [
     { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
   ],
-  keyAliases: { space: 'margin' },
-  nativeValueNamespaces: [{
-    properties: ['--space'],
-    variableAliasRefs: ['~spacing']
-  }]
-} as PresetManifestInput & {
-  keyAliases: Record<string, string>
-  nativeValueNamespaces: { properties: string[], variableAliasRefs: string[] }[]
-}))
+} as PresetManifestInput))
 
 describe('class sorting', () => {
   test('sorts known classes and keeps unknown classes last', () => {
@@ -393,7 +385,7 @@ describe('source content linting', () => {
   })
 
   test('leaves removed compose statements to compiler diagnostics', () => {
-    const content = '.btn { @compose contain:content; }'
+    const content = '.btn { @contents; }'
     expect(lintMasterCSSContent({ content, filePath: '/project/index.css', css }).diagnostics).toEqual([])
     expect(fixMasterCSSContent({ content, filePath: '/project/index.css', css })).toBe(content)
   })

@@ -35,12 +35,6 @@ test('formats safelist class lists and repairs detached important suffixes', () 
     .toBe('@safelist "background-color:transparent! fg-red!@sm";')
 })
 
-test('leaves removed compose directives unchanged', () => {
-  for (const source of ['.btn { @compose block  fg-red !; }', '.btn { @compose "block"; }', '.btn { @compose {block}; }']) {
-    expect(format(source)).toBe(source)
-  }
-})
-
 test('preserves safelist quote style', () => {
   expect(format("@safelist  'display:block  bg-blue !' ;")).toBe("@safelist 'display:block bg-blue!';")
 })
@@ -51,7 +45,7 @@ test('normalizes directive spacing without changing block contents', () => {
 })
 
 test('ignores directives inside comments and strings', () => {
-  const source = '/* @compose block !; */ .x { content: "@compose block !;"; }'
+  const source = '/* @contents; */ .x { content: "@contents;"; }'
   expect(format(source)).toBe(source)
 })
 

@@ -45,20 +45,6 @@ describe('Rust lint session', () => {
     }
   })
 
-  it('diagnoses retired tokens without offering an alias autofix', () => {
-    const lint = createTestToolingSession(createPresetManifest())
-    try {
-      const classList = 'margin-md'
-      const classNames = lint.tokenizeClassList(classList).map(({ token }) => token)
-      const result = lint.analyzeLintClassList(classList, classNames, { canonicalOptions: {} })
-      const diagnostics = result.diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes')
-      expect(diagnostics.length).toBeGreaterThan(0)
-      expect(diagnostics.every(({ fix }) => !fix)).toBe(true)
-    } finally {
-      lint.dispose()
-    }
-  })
-
   it('ignores token, static, invalid, unknown, and component classes', () => {
     const lint = createTestToolingSession(createPresetManifest({
       mixins: [
@@ -95,7 +81,7 @@ describe('Rust lint session', () => {
     }
   })
 
-  it('does not restore retired property token spellings through recommendations', () => {
+  it('does not recommend unknown token spellings', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       expect(lint.canonicalClassNames([

@@ -29,21 +29,14 @@ function runFailedCLI(args: string[]) {
   throw new Error(`Expected CLI command to fail: ${args.join(' ')}`)
 }
 
-describe('rc.87 root command divergences', () => {
-  it('uses the explicit generate command instead of rc.87 root scan options', () => {
+describe('root command', () => {
+  it('uses the explicit generate command instead of root scan options', () => {
     const output = runCLI(['--help'])
     expect(output).toContain('Usage: master-css [options] [command]')
     expect(output).toContain('generate')
     expect(output).toContain('lint')
     expect(output).toContain('inspect')
     expect(output.split('\n')[0]).not.toContain('[source paths...]')
-  })
-
-  it.each(['extract', 'render', 'scan'])('does not restore the removed rc.87 %s command shim', (command) => {
-    const error = runFailedCLI([command])
-    expect(error.status).toBe(1)
-    expect(String(error.stderr)).toContain(`unknown command '${command}'`)
-    expect(String(error.stderr)).not.toContain('was removed')
   })
 
   it('publishes only the master-css binary', () => {

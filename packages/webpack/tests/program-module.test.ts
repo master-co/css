@@ -94,10 +94,10 @@ describe('virtual:master-css-program', () => {
 
   test('keeps program file dependencies after invalid CSS', () => withRoot(async root => {
     const entryPath = path.join(root, 'app.css')
-    writeFileSync(entryPath, '@import "@master/css";\n@utility card { @compose bg-missing-token; }')
+    writeFileSync(entryPath, '@import "@master/css";\n.card { @contents; }')
     const { resolve } = setup(root, 'production')
     const failed = resolve(VIRTUAL_PROGRAM_ID)
-    await expect(failed).rejects.toThrow('@compose has been removed')
+    await expect(failed).rejects.toThrow('@contents is only valid inside @mixin')
     writeFileSync(entryPath, '@import "@master/css";\n@utility card { display: grid; }')
     const resolveData = await resolve(VIRTUAL_PROGRAM_ID)
     expect(resolveData.fileDependencies.has(entryPath)).toBe(true)

@@ -246,14 +246,14 @@ describe('css manifest loader', () => {
     const virtualManifestPath = join(projectDir, 'node_modules/.master-css/master-css-manifest.js')
     const dependencies: string[] = []
     mkdirSync(join(projectDir, 'app'), { recursive: true })
-    writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @compose bg-missing-token;\n    } @utility card {\n        @compose bg-missing-token;\n    }")
+    writeFileSync(entryPath, "@import url(\"@master/css\");\n.card { @contents; }")
 
     await expect(runManifestLoader({
       resourcePath: virtualManifestPath,
       rootContext: projectDir,
       getOptions: () => ({ virtual: true, module: true }),
       addDependency: (dependency: string) => dependencies.push(dependency)
-    })).rejects.toThrow('@compose has been removed')
+    })).rejects.toThrow('@contents is only valid inside @mixin')
     expect(dependencies).toContain(entryPath)
 
     writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card {\n        @media all{display:block;}\n    } @utility card {\n        @media all{display:block;}\n    }")

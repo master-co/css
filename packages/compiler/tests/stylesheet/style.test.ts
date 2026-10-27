@@ -174,14 +174,12 @@ describe('style CSS extraction helpers', () => {
     expect(isMasterStyleSource('@preserve native;')).toBe(false)
     expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
     expect(hasPreserveNativeDirective('@preserve native;\n.card { color: red; }')).toBe(true)
-    expect(hasPreserveNativeDirective('@master no-shake;\n.card { color: red; }')).toBe(false)
   })
 
   it('detects local compose styles without treating them as Master entries', () => {
     expect(hasLocalStyleDirectives(".card { @apply --all {display:block;} }")).toBe(true)
     expect(hasLocalStyleDirectives('.card { @media (--print) { color: red; } }')).toBe(true)
     expect(hasLocalStyleDirectives(".card { @media (prefers-color-scheme: dark) { color: red; } }")).toBe(false)
-    expect(() => hasLocalStyleDirectives('.card { @slot; }')).toThrow('Variants were removed')
     expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
     expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
     expect(isStylesheetRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
@@ -229,7 +227,7 @@ describe('style CSS extraction helpers', () => {
     ])
   })
 
-  it('locally lowers @compose using the provided project context', async () => {
+  it('locally lowers @apply using the provided project context', async () => {
     const { manifest } = compileCSSManifest(' @mixin --brand { color: #fff; } @utility brand { color: #fff; } ', {
       baseManifest: defaultManifest
     })
@@ -241,7 +239,6 @@ describe('style CSS extraction helpers', () => {
     expect(result.code).toContain('.button{')
     expect(result.code).toContain('display:inline-flex')
     expect(result.code).toContain('color:#fff')
-    expect(result.code).not.toContain('@compose')
   })
 
   it('locally lowers explicit @reference styles without emitting referenced CSS', async () => {

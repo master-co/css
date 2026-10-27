@@ -232,19 +232,6 @@ fn named_media_and_mixin_names_are_independent_and_false_discards_contents() {
 }
 
 #[test]
-fn removed_variants_and_layer_wrapping_are_rejected() {
-    for source in [
-        "@custom-variant hocus{&:hover{@slot;}}",
-        ".x{@variant hocus{color:red}}",
-        ".x{@slot;}",
-        "@mixin --x{@layer components{@contents;}} @utility x {@layer components{@contents;}}",
-        ".x{@apply --x{@layer components{color:red}}}",
-    ] {
-        assert!(compile(source).is_err(), "{source}");
-    }
-}
-
-#[test]
 fn contents_preserve_selector_lists_pseudo_elements_and_declaration_sources() {
     let source = "@mixin --wrap{&:hover,&:focus{&::before{@contents;}}} @utility wrap {&:hover,&:focus{&::before{@contents;}}} .a,#b{@apply --wrap{content:'x';color:red;color:blue}}";
     let result = compile(source).unwrap();

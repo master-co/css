@@ -175,61 +175,11 @@ pub(crate) fn selector_token_to_template(
     selector_token: &str,
     _manifest: &Program,
 ) -> Option<String> {
-    if selector_token.is_empty() || !valid_class_selector(selector_token) {
+    if selector_token.is_empty() {
         return None;
     }
     let selector = replace_selector_underscores(selector_token);
     Some(suffix_to_template(&selector))
-}
-
-/// Master selector suffixes accept native CSS, excluding retired class syntax.
-/// Inspect tokens so strings, escaped punctuation and attribute contents stay literal.
-pub(crate) fn valid_class_selector(selector: &str) -> bool {
-    removed_selector(selector).is_none()
-}
-
-/// Only active pseudo-class tokens are retired; literals and native pseudo-elements are opaque.
-pub(crate) fn removed_selector(selector: &str) -> Option<(&'static str, &'static str)> {
-    use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
-    let tokens = tokenize_css_syntax(selector);
-    let mut index = 0;
-    while let Some(token) = tokens.get(index) {
-        if matches!(token.kind, Kind::Delim('[')) {
-            index = token.close.map_or(tokens.len(), |close| close + 1);
-            continue;
-        }
-        if matches!(token.kind, Kind::Delim(':'))
-            && (index == 0 || !matches!(tokens[index - 1].kind, Kind::Delim(':')))
-            && let Some(next) = tokens.get(index + 1)
-            && token.bytes.end == next.bytes.start
-        {
-            let name = match &next.kind {
-                Kind::Ident(name) => name.as_ref(),
-                Kind::Function(name) if name.eq_ignore_ascii_case("of") => "of",
-                _ => "",
-            };
-            for (old, new) in [
-                ("first", ":first-child"),
-                ("last", ":last-child"),
-                ("even", ":nth-child(2n)"),
-                ("odd", ":nth-child(odd)"),
-                ("only", ":only-child"),
-                ("rtl", ":dir(rtl)"),
-                ("ltr", ":dir(ltr)"),
-                ("of", ":nth-child(...)"),
-            ] {
-                if name.eq_ignore_ascii_case(old) {
-                    return Some((old, new));
-                }
-            }
-        }
-        index += 1;
-    }
-    None
-}
-
-pub(crate) fn resolve_style_selector_aliases(selector: &str, _manifest: &Program) -> String {
-    selector.to_owned()
 }
 
 pub(crate) fn replace_selector_underscores(source: &str) -> String {

@@ -134,25 +134,14 @@ impl EngineSession {
     ) -> Option<NativeDeclarationCandidate> {
         mastercss_lexer::decode_native_content(class_name)?;
         let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
-        if super::named::retired_token_message(semantic_class_name, &self.compiled).is_some() {
-            return None;
-        }
         if super::named::token_prefix(semantic_class_name, &self.compiled).is_some_and(|prefix| {
             !super::named::token_candidates(semantic_class_name, prefix, &self.compiled).is_empty()
         }) {
             return None;
         }
-        let (colon, decoded) = native_declaration_head(semantic_class_name)?;
+        let (colon, _) = native_declaration_head(semantic_class_name)?;
         let property = &semantic_class_name[..colon];
-        if super::removed_syntax::removed_raw_alias(&decoded).is_some()
-            || super::removed_syntax::removed_recipe(&decoded).is_some()
-        {
-            return None;
-        }
-        let (raw_value, state) = split_dynamic_value_state(&semantic_class_name[colon + 1..]);
-        if !super::state::valid_class_selector(&super::state::split_state_token(&state).0) {
-            return None;
-        }
+        let (raw_value, _) = split_dynamic_value_state(&semantic_class_name[colon + 1..]);
         if raw_value.is_empty() {
             return None;
         }

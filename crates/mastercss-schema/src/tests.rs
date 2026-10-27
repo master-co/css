@@ -1,29 +1,28 @@
 use super::*;
 
 #[test]
-fn validates_current_manifest_without_dropping_unknown_fields() {
-    let source = r#"{"version":6,"languageVersion":16,"future":{"value":true}}"#;
+fn validates_current_manifest_fields_only() {
+    let source =
+        r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"red","values":[]}]}}"#;
     let manifest = MasterCssManifest::parse(source).unwrap();
     assert_eq!(manifest.to_json().unwrap(), source);
+    assert!(matches!(
+        MasterCssManifest::parse(r#"{"version":6,"languageVersion":16,"future":{}}"#),
+        Err(SchemaError::UnknownField(field)) if field == "future"
+    ));
+    assert!(matches!(
+        MasterCssManifest::parse(
+            r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"red","values":[],"future":1}]}}"#
+        ),
+        Err(SchemaError::UnknownField(field)) if field == "variables.*.future"
+    ));
 }
 
 #[test]
-fn rejects_legacy_manifest_shapes() {
+fn rejects_unsupported_manifest_versions_and_shapes() {
     assert!(matches!(
         MasterCssManifest::parse(r#"{"version":6,"languageVersion":15}"#),
         Err(SchemaError::UnsupportedLanguageVersion)
-    ));
-    assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":6,"languageVersion":10}"#),
-        Err(SchemaError::UnsupportedLanguageVersion)
-    ));
-    assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":6,"languageVersion":7}"#),
-        Err(SchemaError::UnsupportedLanguageVersion)
-    ));
-    assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":4,"languageVersion":13}"#),
-        Err(SchemaError::UnsupportedManifestVersion)
     ));
     assert!(matches!(
         MasterCssManifest::parse(r#"{"version":0}"#),
@@ -32,10 +31,6 @@ fn rejects_legacy_manifest_shapes() {
     assert!(matches!(
         MasterCssManifest::parse(r#"{"version":6,"languageVersion":16,"variables":[]}"#),
         Err(SchemaError::UnsupportedVariablesFormat)
-    ));
-    assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":6,"languageVersion":16,"utilityBuckets":{}}"#),
-        Err(SchemaError::UnsupportedUtilityBuckets)
     ));
 }
 

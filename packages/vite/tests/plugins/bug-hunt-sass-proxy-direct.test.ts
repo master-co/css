@@ -56,7 +56,7 @@ for (const mode of ["static", 'runtime', 'pre-render', 'progressive'] as const) 
       for (const direct of [false, true]) {
         const text = await collect(direct)
         expect(text).toMatch(/padding:\s*2rem/)
-        expect(text).not.toMatch(/@compose|@reference|__vite__css/)
+        expect(text).not.toMatch(/@reference|__vite__css/)
       }
       const loaded = await server.ssrLoadModule('/entry.js')
       expect(Object.keys(loaded.default)).toEqual(['target'])

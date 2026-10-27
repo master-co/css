@@ -50,7 +50,7 @@ test.each(cases)('BH-0004 startup $missing recovers $kind in $mode', async ({ mo
     const encoded = restored.match(/const __vite__css = ("(?:[^"\\]|\\.)*")/)
     const css = encoded ? JSON.parse(encoded[1]) as string : restored
     expect(css).toMatch(/padding:\s*7rem/)
-    expect(css).not.toMatch(/@reference|@compose|\.never/)
+    expect(css).not.toMatch(/@reference|\.never/)
     const path = css.match(/url\(["']?([^"'\)]+\.svg[^"'\)]*)["']?\)/)?.[1]
     expect(path).toBeDefined()
     const url = new URL(path!, origin), image = await fetch(url)

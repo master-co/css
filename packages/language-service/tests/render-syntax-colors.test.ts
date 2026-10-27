@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { createPresetManifest } from './helpers/create-preset-manifest'
@@ -339,7 +339,7 @@ describe.concurrent('color space', () => {
   })
 })
 
-test.each(['{color:#999}', 'color:#999:of(.active)', 'color:#999:is(:of(.active))'])('does not color a retired class: %s', async (target) => {
+test.each(['{color:#999}'])('does not color an invalid class: %s', async (target) => {
   const doc = createDoc('html', `<div class="${target}"></div>`)
   expect(await createLanguageService().renderSyntaxColors(doc)).toEqual([])
 })

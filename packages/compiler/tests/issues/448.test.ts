@@ -35,15 +35,3 @@ test.each(['native', 'wasm'] as const)('448: %s preserves duplicate fallbacks wi
   expect(declarations(css)).toEqual(['display: block', 'display: made-up-value', 'width: 2rem', 'display: flex'])
 })
 
-test.each(['native', 'wasm'] as const)('448: %s rejects compose instead of partially expanding known or dynamic targets', async (binding) => {
-  using compiler = await createCompiler({ binding })
-  for (const source of [
-    '@mixin --frame { @compose base; } @utility frame { @compose base; } @mixin --base { display: block; } @utility base { display: block; }',
-    '@mixin --frame(--value) { @compose width:var(--value); } @utility frame(--value) { @compose width:var(--value); }',
-    '@mixin --frame(--name <string>) { @compose display:block; } @utility frame(--name <string>) { @compose display:block; }@utility frame-(--frame <string>) { @compose display:block; }',
-    '@mixin --frame-left { @compose display:block; } @utility frame-left { @compose display:block; }',
-    '.card { display: block; @compose display:flex; width: 2rem; }'
-  ]) {
-    expect(() => compiler.compileManifest(source, { baseManifest })).toThrow('@compose has been removed')
-  }
-})

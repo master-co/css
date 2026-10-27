@@ -21,19 +21,6 @@ createTester({ settings: { '@master/css': { manifest: {
   invalid: [{ code: '<div class="font-family:serif" />', errors: [{ messageId: 'unapprovedRawValue' }] }]
 })
 
-type PresetManifestInput = Parameters<typeof createPresetManifest>[0]
-const registryFieldManifest = createPresetManifest({
-  variables: [
-    { namespace: 'spacing', key: 'card', name: 'spacing-card', type: 'number' as const, values: [{ path: [':root,:host'], value: '1.25rem' }], numeric: { value: 1.25, unit: 'rem' } }
-  ],
-  nativeValueNamespaces: [{
-    properties: ['--space'],
-    variableAliasRefs: ['~spacing']
-  }]
-} as PresetManifestInput & {
-  nativeValueNamespaces: { properties: string[], variableAliasRefs: string[] }[]
-})
-
 jsxTester.run('no unapproved raw values', rule, {
   valid: [
     { code: '<div class="font-size:15px">Unregulated property</div>', options: [{ requireProperties: ['color'] }] },
@@ -151,19 +138,6 @@ createTester({
       ]
     }
   ]
-})
-
-createTester({
-  settings: {
-    '@master/css': {
-      manifest: registryFieldManifest
-    }
-  }
-}).run('no unapproved raw values ignored manifest registry fields', rule, {
-  valid: [
-    { code: `<div class="--space:17px">Manifest-carried native namespace is ignored</div>` }
-  ],
-  invalid: []
 })
 
 jsxTester.run('no unapproved raw values parser smoke tests', rule, {

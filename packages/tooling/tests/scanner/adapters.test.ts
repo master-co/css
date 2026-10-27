@@ -4,21 +4,6 @@ import { MasterCSSScanner } from './test-scanner'
 const CSSScanner = MasterCSSScanner
 
 describe('scanner source adapters', () => {
-  test('does not restore the removed custom source adapter registry', async () => {
-    const adapter = {
-      name: 'test',
-      test: /\.txt$/,
-      extract: async () => ["display:block"]
-    }
-    const scanner = await new CSSScanner({
-      // @ts-expect-error rc.87 exposed custom adapters; the Rust scanner intentionally does not.
-      adapters: [adapter]
-    }).init()
-
-    await expect(scanner.collectCandidates('fixture.txt', "display:none"))
-      .resolves
-      .toEqual(["display:none"])
-  })
 
   test('uses built-in source adapters from @master/css-source by default', async () => {
     const scanner = await new CSSScanner({}).init()

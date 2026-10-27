@@ -106,7 +106,12 @@ pub(crate) fn combine_managed_selectors(parent: &[String], child: &[String]) -> 
     selectors
 }
 
-pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<(), CompilerError> {
+/// `@contents` marks where a mixin call's block goes, so it is only valid inside
+/// `@mixin` and `@utility`.
+pub(crate) fn validate_contents_placement(
+    source: &str,
+    filename: &str,
+) -> Result<(), CompilerError> {
     use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
     let tokens = tokenize_css_syntax(source);
     let statements = collect_css_syntax_statements(&tokens);
@@ -114,54 +119,27 @@ pub(crate) fn reject_removed_directives(source: &str, filename: &str) -> Result<
         let Some(token) = tokens.get(statement.tokens.start) else {
             continue;
         };
-        if let CssSyntaxKind::AtKeyword(name) = &token.kind {
-            let mut ancestor = statement.parent;
-            let mut in_mixin = false;
-            while let Some(index) = ancestor {
-                let parent = &statements[index];
-                in_mixin |= matches!(&tokens[parent.tokens.start].kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("mixin") || name.eq_ignore_ascii_case("utility"));
-                ancestor = parent.parent;
-            }
-            let message = match name.to_ascii_lowercase().as_str() {
-                "contents" if !in_mixin => Some("@contents is only valid inside @mixin"),
-                "custom-variant" | "variant" | "slot" => Some(
-                    "Variants were removed; use @custom-media, native conditions, or @mixin with @apply and @contents. Move layer selection to the call site.",
-                ),
-                "master" => Some(
-                    "@master entry has been removed; use @import \"@master/css\" for a project entry",
-                ),
-                "settings" => Some(
-                    "@settings has been removed; use per-class ! for important and native selectors for scope",
-                ),
-                "mode" => Some(
-                    "@mode has been removed; author explicit native selectors and conditions outside @theme and use @custom-media or @mixin for reuse",
-                ),
-                "utilities" => Some("@utilities has been removed; use @mixin --name { ... }"),
-                "dark" | "light" => Some(
-                    "@dark and @light blocks have been removed; use native @media (--dark) or @media (--light)",
-                ),
-                _ => None,
-            };
-            if let Some(message) = message {
-                return Err(ranged_directive_diagnostic(
-                    source,
-                    filename,
-                    token.bytes.start,
-                    token.bytes.end,
-                    ErrorCode::CssDirectiveError,
-                    message,
-                ));
-            }
+        let CssSyntaxKind::AtKeyword(name) = &token.kind else {
+            continue;
+        };
+        if !name.eq_ignore_ascii_case("contents") {
+            continue;
         }
-        if matches!(&token.kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("compose"))
-        {
+        let mut ancestor = statement.parent;
+        let mut in_mixin = false;
+        while let Some(index) = ancestor {
+            let parent = &statements[index];
+            in_mixin |= matches!(&tokens[parent.tokens.start].kind, CssSyntaxKind::AtKeyword(name) if name.eq_ignore_ascii_case("mixin") || name.eq_ignore_ascii_case("utility"));
+            ancestor = parent.parent;
+        }
+        if !in_mixin {
             return Err(ranged_directive_diagnostic(
                 source,
                 filename,
                 token.bytes.start,
                 token.bytes.end,
-                ErrorCode::RemovedComposeDirective,
-                "@compose has been removed; use native CSS declarations and selectors, or use utilities directly in markup",
+                ErrorCode::CssDirectiveError,
+                "@contents is only valid inside @mixin",
             ));
         }
     }

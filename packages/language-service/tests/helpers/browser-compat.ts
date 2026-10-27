@@ -1,6 +1,6 @@
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 import createDoc, { languageIdOfExt } from '../../src/utils/create-doc'
-import CSSLanguageService from './rc87-language-service'
+import CSSLanguageService from './language-service'
 
 type Extension = keyof typeof languageIdOfExt
 

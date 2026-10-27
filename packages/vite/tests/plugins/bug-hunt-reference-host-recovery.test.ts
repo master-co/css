@@ -76,7 +76,7 @@ test.each(cases)('BH-0004 dev reference recovery $syntax/$kind/startup=$startupM
       return result.status === 200 && /padding:\s*7rem/.test(result.body)
     }, { timeout: watchDeadline }).toBe(true)
     const restored = await readGraph()
-    expect(restored.body).not.toMatch(/\.never|@reference|@compose/)
+    expect(restored.body).not.toMatch(/\.never|@reference/)
     const resource = restored.body.match(/url\(["']?([^"'\)]+\.svg[^"'\)]*)["']?\)/)?.[1]
     expect(resource).toBeDefined()
     const response = await fetch(new URL(resource!, origin))
@@ -125,7 +125,7 @@ test.each(cases)('BH-0004 build-watch reference recovery $syntax/$kind/startup=$
     const css = output()
     expect(css).toMatch(/padding:\s*7rem/)
     expect(css).toContain('data-owner="reference"')
-    expect(css).not.toMatch(/\.never|@reference|@compose/)
+    expect(css).not.toMatch(/\.never|@reference/)
     await Promise.all(closing)
   } finally { await watcher?.close(); await Promise.all(closing); rmSync(f.root, { recursive: true, force: true }) }
 })

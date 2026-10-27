@@ -7,30 +7,6 @@ fn baseline() -> Vec<serde_json::Value> {
     serde_json::from_str(include_str!("fixtures/token-family-baseline.json")).unwrap()
 }
 
-// Preserve the original 139-family snapshot; these preset APIs were deliberately retired.
-const RETIRED_PRESET_FAMILIES: [&str; 20] = [
-    "perspective",
-    "perspective-origin",
-    "transform-origin",
-    "background-position",
-    "mask-position",
-    "object-position",
-    "background-size",
-    "mask-size",
-    "cx",
-    "cy",
-    "stroke-dashoffset",
-    "x",
-    "y",
-    "content",
-    "font-feature-settings",
-    "text-underline",
-    "text-decoration",
-    "text-stroke",
-    "contain-intrinsic-block-size",
-    "contain-intrinsic-inline-size",
-];
-
 fn engine() -> EngineSession {
     engine_namespace(None)
 }
@@ -48,7 +24,7 @@ fn engine_namespace(namespace: Option<&str>) -> EngineSession {
 }
 
 #[test]
-fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
+fn every_preset_value_family_keeps_its_builtin_contract() {
     let engine = engine();
     let mut prefixes = HashSet::new();
     let mut properties = HashSet::new();
@@ -58,41 +34,10 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
         .into_iter()
         .map(|entry| entry.label)
         .collect::<HashSet<_>>();
-    assert_eq!(baseline().len(), 139);
+    assert_eq!(baseline().len(), 119);
     for family in baseline() {
         let prefix = family["prefix"].as_str().unwrap();
         let property = family["property"].as_str().unwrap();
-        if RETIRED_PRESET_FAMILIES.contains(&prefix) {
-            for class in [
-                format!("{prefix}-proof"),
-                format!(
-                    "{prefix}(var(--{}-proof))",
-                    family["namespace"].as_str().unwrap()
-                ),
-            ] {
-                let result = engine.inspect(&class).unwrap();
-                assert_ne!(result.match_status, MatchStatus::Matched, "{class}");
-                assert!(result.rules.is_empty(), "{class}");
-                assert!(!labels.contains(&class), "{class}");
-            }
-            // The existing native-declaration fallback accepts unknown property names.
-            let suffixed = engine
-                .inspect(&format!("{prefix}-proof:hover@layer(utilities)!"))
-                .unwrap();
-            assert!(
-                suffixed.rules[0]
-                    .text
-                    .contains(&format!("{{{prefix}-proof:hover!important}}"))
-            );
-            assert_eq!(
-                engine
-                    .inspect(&format!("{property}:initial"))
-                    .unwrap()
-                    .match_status,
-                MatchStatus::Matched
-            );
-            continue;
-        }
         let original_prefix = prefix;
         let prefix = match prefix {
             "font-family" | "font-size" | "font-weight" => "font",
@@ -143,15 +88,6 @@ fn every_retained_preset_value_family_preserves_the_frozen_builtin_contract() {
         );
         assert!(expanded.rules.is_empty(), "{call}");
         assert!(labels.contains(&canonical), "{canonical}");
-        if prefix != property {
-            for suffix in ["", ":hover", ":hover@layer(utilities)!"] {
-                let retired = format!("{property}-proof{suffix}");
-                let result = engine.inspect(&retired).unwrap();
-                assert_ne!(result.match_status, MatchStatus::Matched, "{retired}");
-                assert!(result.rules.is_empty(), "{retired}");
-            }
-            assert!(!labels.contains(&format!("{property}-proof")));
-        }
         assert_eq!(
             engine
                 .inspect(&format!("{property}:initial"))
@@ -248,22 +184,6 @@ fn native_selectors_keep_literal_spelling() {
                 .ends_with(expected)
         );
         assert_eq!(engine.resolve_style_selector(suffix).unwrap(), suffix);
-    }
-    for suffix in [
-        ":first",
-        ":last",
-        ":odd",
-        ":even",
-        ":only",
-        ":rtl",
-        ":ltr",
-        ":is(:first)",
-        ":of(2)",
-    ] {
-        let result = engine.inspect(&format!("display:block{suffix}")).unwrap();
-        assert_eq!(result.match_status, MatchStatus::SyntaxError, "{suffix}");
-        assert!(result.rules.is_empty());
-        assert!(result.diagnostics[0].message.contains("use"));
     }
 }
 

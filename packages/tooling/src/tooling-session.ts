@@ -71,7 +71,7 @@ let bindToolingSession: (parts: ToolingSessionParts) => MasterCSSToolingSession
 
 export interface MasterCSSToolingSessionOptions {
   readonly manifest: MasterCSSManifest
-  /** Explicit native class registrations; suppresses retired-utility advice only. */
+  /** Classes the project defines in native CSS; they report no diagnostics while they generate no rules. */
   readonly nativeClassNames?: readonly string[]
   readonly binding?: MasterCSSBinding
 }

@@ -124,10 +124,6 @@ pub enum ErrorCode {
     CssParseError,
     CssPrintError,
     CssDirectiveError,
-    #[serde(rename = "removed-managed-directive")]
-    RemovedManagedDirective,
-    #[serde(rename = "removed-compose-directive")]
-    RemovedComposeDirective,
     CssImportError,
     SessionDisposed,
     InvalidInput,
@@ -135,7 +131,6 @@ pub enum ErrorCode {
     SourceParseError,
     UnknownCondition,
     MasterQueryRequiresCss,
-    RemovedPresetUtility,
     UtilityNameConflict,
     AmbiguousToken,
     DynamicAnimationNames,
@@ -144,7 +139,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 29] = [
+    pub const ALL: [Self; 26] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidProgram,
@@ -159,8 +154,6 @@ impl ErrorCode {
         Self::CssParseError,
         Self::CssPrintError,
         Self::CssDirectiveError,
-        Self::RemovedManagedDirective,
-        Self::RemovedComposeDirective,
         Self::CssImportError,
         Self::SessionDisposed,
         Self::InvalidInput,
@@ -168,7 +161,6 @@ impl ErrorCode {
         Self::SourceParseError,
         Self::UnknownCondition,
         Self::MasterQueryRequiresCss,
-        Self::RemovedPresetUtility,
         Self::UtilityNameConflict,
         Self::AmbiguousToken,
         Self::DynamicAnimationNames,
@@ -192,15 +184,12 @@ impl ErrorCode {
             Self::CssParseError => "CSS_PARSE_ERROR",
             Self::CssPrintError => "CSS_PRINT_ERROR",
             Self::CssDirectiveError => "CSS_DIRECTIVE_ERROR",
-            Self::RemovedManagedDirective => "removed-managed-directive",
-            Self::RemovedComposeDirective => "removed-compose-directive",
             Self::CssImportError => "CSS_IMPORT_ERROR",
             Self::SessionDisposed => "SESSION_DISPOSED",
             Self::InvalidInput => "INVALID_INPUT",
             Self::ClassSyntaxError => "CLASS_SYNTAX_ERROR",
             Self::SourceParseError => "SOURCE_PARSE_ERROR",
             Self::UnknownCondition => "UNKNOWN_CONDITION",
-            Self::RemovedPresetUtility => "REMOVED_PRESET_UTILITY",
             Self::MasterQueryRequiresCss => "MASTER_QUERY_REQUIRES_CSS",
             Self::UtilityNameConflict => "UTILITY_NAME_CONFLICT",
             Self::AmbiguousToken => "AMBIGUOUS_TOKEN",

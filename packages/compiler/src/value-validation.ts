@@ -36,9 +36,6 @@ function origin(input: ValidationSource, range: OffsetRange): Origin | undefined
 }
 
 export function assertValidationOptions(options: object) {
-  if ('cssValuePolicy' in options) {
-    throw new MasterCSSError({ code: 'INVALID_INPUT', domain: 'compiler', message: "cssValuePolicy was removed; use validation: 'report' | 'error'." })
-  }
   if ('validation' in options && options.validation !== undefined && options.validation !== 'report' && options.validation !== 'error') {
     throw new MasterCSSError({ code: 'INVALID_INPUT', domain: 'compiler', message: "validation must be 'report' or 'error'." })
   }

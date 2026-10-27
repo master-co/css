@@ -79,13 +79,13 @@ describe('ManifestVirtualModulePlugin', () => {
     const entryPath = path.join(root, 'app.css')
     try {
       mkdirSync(root, { recursive: true })
-      writeFileSync(entryPath, "@import url(\"@master/css\");\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
+      writeFileSync(entryPath, "@import url(\"@master/css\");\n.card{@contents;} .card{@contents;}")
       const { context, viteConfig } = createContext(root)
       const plugin = ManifestVirtualModulePlugin(context)
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, RESOLVED_VIRTUAL_MANIFEST_ID))
-        .rejects.toThrow('@compose has been removed')
+        .rejects.toThrow('@contents is only valid inside @mixin')
       expect(addWatchFile).toHaveBeenCalledWith(normalizePath(entryPath))
       expect(viteConfig.server.fs.allow).toContain(normalizePath(entryPath))
 

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 import type { TextEdit } from 'vscode-languageserver-protocol'
 

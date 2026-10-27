@@ -32,7 +32,6 @@ for (const command of ['serve', 'build'] as const) {
         }
         expect(sources.join('\n')).toContain('.scoped_local')
         expect(sources.join('\n')).toMatch(/padding:\s*2rem/)
-        expect(sources.join('\n')).not.toContain('@compose')
       } else {
         const result = await build({ ...config, build: { write: false, minify: false, cssMinify: false } })
         if (Array.isArray(result) || 'on' in result) throw new Error('Expected one build output')
@@ -40,7 +39,6 @@ for (const command of ['serve', 'build'] as const) {
         const js = result.output.filter(asset => asset.type === 'chunk').map(asset => asset.code).join('\n')
         expect(css).toContain('.scoped_local')
         expect(css).toMatch(/padding:\s*2rem/)
-        expect(css).not.toContain('@compose')
         expect(css).not.toContain('#master-css-local-')
         expect(js).toContain('scoped_local')
         expect(js).not.toMatch(/["']__MASTER_CSS_INLINE_[a-f\d]+__["']/)

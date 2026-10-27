@@ -22,7 +22,7 @@ async function waitForRuntimeRemovalFlush(page: Page) {
 }
 
 async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
-  const blankURL = new URL('/__master-css-runtime-rc87.html', loaderURL).href
+  const blankURL = new URL('/__master-css-runtime-blank.html', loaderURL).href
   await page.route(blankURL, route => route.fulfill({
     status: 200,
     contentType: 'text/html',
@@ -128,7 +128,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 
 test('preserves the strict Rust contract when an external hydration manifest import fails', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/missing-rc87.json', loaderURL).href
+  const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
 
   await gotoRuntimeOrigin(page, loaderURL)
   await page.route(source, route => route.fulfill({

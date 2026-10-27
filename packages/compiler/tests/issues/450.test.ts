@@ -73,9 +73,8 @@ test.each(['native', 'wasm'] as const)('450: %s validates execution versions ind
     const wire = serializeMasterCSSManifest(invalid as MasterCSSManifest)
     await expect(createEngine({ manifest: JSON.parse(wire), binding })).rejects.toThrow()
   }
-  const extensible = { ...minimal, auditMetadata: { retained: true } }
-  const reloaded = JSON.parse(serializeMasterCSSManifest(extensible))
-  expect(reloaded.auditMetadata).toEqual({ retained: true })
-  using engine = await createEngine({ manifest: reloaded, binding })
+  const extended = JSON.parse(serializeMasterCSSManifest({ ...minimal, auditMetadata: { retained: true } } as MasterCSSManifest))
+  await expect(createEngine({ manifest: extended, binding })).rejects.toThrow('Unknown MasterCSSManifest field auditMetadata')
+  using engine = await createEngine({ manifest: minimal, binding })
   expect(engine.inspect('audit-block').matchStatus).toBe('matched')
 })

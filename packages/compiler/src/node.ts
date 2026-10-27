@@ -115,7 +115,3 @@ export function compileManifestFileSync(
   )
 }
 
-export function migrateRCSync(request: import('./index').MasterCSSRCMigrationRequest): import('./index').MasterCSSRCMigrationResult {
-  using session = createBindingSessionSync()
-  return session.migrateRC(request)
-}

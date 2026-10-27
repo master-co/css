@@ -23,7 +23,7 @@ test('lints markup and leaves standalone stylesheets to CSS tooling', async () =
     overrideConfig: config
   })
   const [stylesheet] = await stylesheetESLint.lintText(
-    '.btn { @compose contain:content; }',
+    '.btn { @contents; }',
     { filePath: 'index.css' }
   )
   expect(stylesheet.errorCount).toBe(0)
@@ -57,8 +57,8 @@ test('the default configuration does not lint or fix removed directives', async 
     overrideConfigFile: true,
     overrideConfig: css
   })
-  const [diagnosticResult] = await diagnosticESLint.lintText('.btn { @compose contain:content; }', { filePath: 'index.css' })
-  const [fixResult] = await fixESLint.lintText('.btn { @compose contain:content; }', { filePath: 'index.css' })
+  const [diagnosticResult] = await diagnosticESLint.lintText('.btn { @contents; }', { filePath: 'index.css' })
+  const [fixResult] = await fixESLint.lintText('.btn { @contents; }', { filePath: 'index.css' })
 
   expect(diagnosticResult.errorCount).toBe(0)
   expect(diagnosticResult.warningCount).toBe(1)

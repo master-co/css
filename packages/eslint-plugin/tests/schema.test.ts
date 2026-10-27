@@ -71,13 +71,6 @@ test('rejects rule options for rules configured through settings only', async ()
     .rejects.toThrow()
 })
 
-test('does not expose the removed compose stylesheet config', () => {
-  expect(plugin.configs).not.toHaveProperty('stylesheet')
+test('recommends the source config', () => {
   expect(plugin.configs.recommended).toEqual([plugin.configs.source])
-})
-
-test('rejects the removed property alias preference instead of accepting a no-op', async () => {
-  await expect(createESLint({
-    '@master/css/prefer-canonical-classes': ['error', { preferPropertyAliases: false }]
-  }).lintText('<div className="p-md" />', { filePath: 'index.jsx' })).rejects.toThrow()
 })

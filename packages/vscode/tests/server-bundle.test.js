@@ -257,16 +257,6 @@ test('server bundle does not retain removed TypeScript semantic bindings', () =>
   expect(legacySemanticImports).toEqual([])
 })
 
-test('records the rc.87 native semantic import externalization divergence', () => {
-  const source = readFileSync(serverPath, 'utf8')
-  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
-  const legacySemanticImports = imports.filter((specifier) =>
-    /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
-  )
-
-  expect(legacySemanticImports).toEqual([])
-})
-
 test('server bundle embeds referenced MDN JSON modules', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
@@ -420,7 +410,7 @@ test('staged language server starts without workspace node_modules and shuts dow
   })
 })
 
-test('proves the rc.87 staged language server lifecycle without workspace node_modules', async () => {
+test('proves the staged language server lifecycle without workspace node_modules', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,

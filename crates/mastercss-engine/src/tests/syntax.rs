@@ -114,7 +114,7 @@ fn preserves_selector_templates_across_selectorless_variants() {
 }
 
 #[test]
-fn resolves_legacy_pseudo_elements_without_rewriting_explicit_double_colons() {
+fn resolves_single_colon_pseudo_elements_without_rewriting_explicit_double_colons() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     assert_eq!(
         engine

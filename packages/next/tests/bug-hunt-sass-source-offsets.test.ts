@@ -26,7 +26,7 @@ function compile(root: string, file: string, source: string, dependencies: strin
 for (const syntax of ['scss', 'sass']) test(`Next ${syntax} additionalData keeps root diagnostic line`, async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.' + syntax)
-    const source = syntax === 'sass' ? '/* authored */\n.card\n  @compose "block"\n' : '/* authored */\n.card { @compose "block"; }'
+    const source = syntax === 'sass' ? '/* authored */\n.card\n  @contents\n' : '/* authored */\n.card { @contents; }'
     const additionalData = syntax === 'sass' ? '$space: 2rem\n$other: 3rem' : '$space:2rem;\n$other:3rem;'
     await expect(compile(root, file, source, [], { implementation: sassFile, additionalData })).rejects.toMatchObject({
       diagnostics: [expect.objectContaining({ source: file, range: { start: expect.objectContaining({ line: syntax === 'sass' ? 2 : 1 }), end: expect.objectContaining({ line: syntax === 'sass' ? 2 : 1 }) } })]
@@ -36,7 +36,7 @@ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} additionalData keeps
 test('Next additionalData does not shift imported partial diagnostics', async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.scss'), partial = join(root, 'parts/_rules.scss')
-    writeFileSync(partial, '/* partial */\n.card{@compose "block";}')
+    writeFileSync(partial, '/* partial */\n.card{@contents;}')
     await expect(compile(root, file, '@use "parts/rules";', [], { implementation: sassFile, additionalData: "$a:1;\n$border:2;" })).rejects.toMatchObject({
       diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })]
     })
@@ -55,7 +55,7 @@ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} reports Sass errors 
 test('Next labels compiler errors in injected Sass as injected content', async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.scss')
-    await expect(compile(root, file, '.card{padding:1rem}', [], { implementation: sassFile, additionalData: '.injected{@compose "block";}' })).rejects.toMatchObject({
+    await expect(compile(root, file, '.card{padding:1rem}', [], { implementation: sassFile, additionalData: '.injected{@contents;}' })).rejects.toMatchObject({
       diagnostics: [expect.objectContaining({ source: expect.stringContaining('card.module.scss?master-css-additional-data'), range: { start: expect.objectContaining({ line: 0 }), end: expect.objectContaining({ line: 0 }) } })]
     })
   })

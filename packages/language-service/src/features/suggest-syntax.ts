@@ -177,7 +177,7 @@ export default function suggestSyntax(
     : field.lastIndexOf('@')
   if (atIndex > 0) {
     if (field.endsWith('@')) return queryCompletionItems(entries)
-    // Native query contents and retired shorthand are not property or selector completions.
+    // Native query contents are not property or selector completions.
     return []
   }
 

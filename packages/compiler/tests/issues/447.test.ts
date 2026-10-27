@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { createCompiler, migrateRC } from '@master/css-compiler'
+import { createCompiler } from '@master/css-compiler'
 import { createEngine } from '@master/css'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -55,7 +55,6 @@ const valid = [
 
 const invalid = [
   ["{p-probe;padding-top:12px}:hover", "syntax-error", "CLASS_SYNTAX_ERROR"],
-  ["p-probe:of(.active)", "syntax-error", "CLASS_SYNTAX_ERROR"],
   ['ordinary-audit-class', 'unmatched', undefined],
   ['font-probe', 'ambiguous', 'AMBIGUOUS_TOKEN'],
   ['font-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
@@ -120,52 +119,6 @@ test('447: compiler and engine binding combinations agree on the language contra
       const byName = (left: { name: string }, right: { name: string }) => left.name.localeCompare(right.name)
       expect([...reversed.resources.variables].sort(byName)).toEqual([...snapshot.resources.variables].sort(byName))
       expect(reversed.resources).not.toHaveProperty('animations')
-    }
-  }
-})
-
-test('447: legacy mode settings are rejected consistently by both engine bindings', async () => {
-  for (const binding of ['native', 'wasm'] as const) {
-    for (const [key, value] of [
-      ['modeTrigger', 'media'], ['defaultMode', 'dark'], ['modes', ['light', 'dark']], ['rootSize', 16]
-    ] as const) {
-      const manifest = { ...baseManifest, settings: { [key]: value } } as MasterCSSManifest
-      await expect(createEngine({ manifest, binding }), `${binding}: ${key}`)
-        .rejects.toThrow('settings was removed')
-    }
-  }
-})
-
-test('447: saved media mode settings migrate to executable custom media', async () => {
-  const migrated = await migrateRC({
-    from: 'rc-named',
-    sourceVersion: '2.0.0-rc.named',
-    manifest: {
-      version: 1 as const,
-      settings: { modeTrigger: 'media', modes: ['light', 'dark'] },
-      conditions: {
-        sm: { id: 'media', nodes: [{ type: 'number' as const, value: 52.125, unit: 'rem' }] }
-      },
-      utilities: []
-    },
-    targetManifest: baseManifest,
-    targetIsPreset: true,
-    classLists: [['padding:8px@dark@sm']]
-  })
-  expect(migrated.configurationCSS).toContain('@custom-media --dark (prefers-color-scheme:dark);')
-  expect(migrated.classLists[0][0].status).not.toBe('review')
-  const className = migrated.classLists[0][0].after!
-  for (const binding of ['native', 'wasm'] as const) {
-    using compiler = await createCompiler({ binding })
-    const { manifest } = compiler.compileManifest(migrated.configurationCSS, { baseManifest })
-    using engine = await createEngine({ manifest, binding })
-    const inspection = engine.inspect(className)
-    expect(inspection.matchStatus).toBe('matched')
-    expect(inspection.rules).not.toHaveLength(0)
-    for (const rule of inspection.rules) {
-      expect(rule.text.match(/(?<!\\)@media\b/g), rule.text).toHaveLength(2)
-      expect(rule.text).toContain('prefers-color-scheme:dark')
-      expect(rule.text).toContain('padding:8px')
     }
   }
 })

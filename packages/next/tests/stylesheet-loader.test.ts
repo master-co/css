@@ -165,7 +165,6 @@ describe('Next style CSS loader', () => {
     expect(result.content).toMatch(/display:\s*inline-flex/)
     expect(result.content).toMatch(/background-color:\s*#123456/)
     expect(result.content).toMatch(/color:\s*(?:#fff|white)/)
-    expect(result.content).not.toContain('@compose')
     expect(result.content).not.toContain('@master/css')
     expect(result.dependencies).toContain(join(root, 'app/globals.css'))
     expect(result.dependencies).toContain(join(root, 'app/Button.module.css'))
@@ -278,18 +277,18 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toContain(globalsPath)
   })
 
-  it('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
+  it('keeps local style dependencies registered after an invalid directive and recovers on the next run', async () => {
     const root = createFixture()
     const modulePath = join(root, 'app/Button.module.css')
     let error: Error & { dependencies?: string[] } | undefined
 
     try {
-      await runStylesheetLoader(root, modulePath, '.button { @compose bg-missing-token; }')
+      await runStylesheetLoader(root, modulePath, '.button { @contents; }')
     } catch (caught) {
       error = caught as Error & { dependencies?: string[] }
     }
     expect(error).toBeInstanceOf(Error)
-    expect(error?.message).toContain('@compose has been removed')
+    expect(error?.message).toContain('@contents is only valid inside @mixin')
     expect(error?.dependencies).toContain(modulePath)
 
     const result = await runStylesheetLoader(root, modulePath, ".button { @media all{display:block;} }")

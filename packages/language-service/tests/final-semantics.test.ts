@@ -3,7 +3,7 @@ import workflows from '../../../parity/v2-tooling-workflows.json' with { type: '
 import { compileManifestSync } from '@master/css-compiler/node'
 import preset from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 
 test('editor inspection shares the CLI and AI workflow conclusions and keeps CSS in diagnostic hovers', () => {

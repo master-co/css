@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
-import type { Settings } from '../helpers/rc87-language-service'
-import CSSLanguageService from '../helpers/rc87-language-service'
+import type { Settings } from '../helpers/language-service'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc, { languageIdOfExt } from '../../src/utils/create-doc'
 
 export const expectClassPosition = (target: string, contents: string[], ext: keyof typeof languageIdOfExt = 'html', settings?: Settings) => {
@@ -59,23 +59,16 @@ test.concurrent('valid classes', () => {
   expectClassPosition(target, contents)
 })
 
-test.concurrent('class in CSS @compose', () => {
+test.concurrent('class in CSS @safelist', () => {
   const target = 'bg-primary'
   const contents = ['.btn { @safelist "display:inline-flex ', target, '"; }']
   expectClassPosition(target, contents, 'css')
 })
 
-test.concurrent('class in Vue style @compose', () => {
+test.concurrent('class in Vue style @safelist', () => {
   const target = 'bg-primary'
   const contents = ['<template><button /></template><style>.btn { @safelist "display:inline-flex ', target, '"; }</style>']
   expectClassPosition(target, contents, 'vue')
-})
-
-test.concurrent('ignores quoted CSS @compose classes', () => {
-  const doc = createDoc('css', '.btn { @compose "inline-flex bg-primary"; }')
-  const languageService = new CSSLanguageService()
-
-  expect(languageService.getClassPosition(doc, doc.positionAt(doc.getText().indexOf('bg-primary')))).toBeUndefined()
 })
 
 test.concurrent('quote in class', () => {

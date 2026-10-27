@@ -29,10 +29,9 @@ const baseManifest = {
   "languageVersion": 16 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 const inputs = [
-  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },
-  { source: "/*😀*/.image{background:url(a.png)} @utilities {paint {color:red}}", token: '@utilities' as const, code: 'CSS_DIRECTIVE_ERROR' },
-  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' },
-  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@compose unknown-utility;}', token: '@compose' as const, code: 'removed-compose-directive' }
+  { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@contents;}', token: '@contents' as const, code: 'CSS_DIRECTIVE_ERROR' },
+  { source: '.a{background:image-set("a.png" 1x,url(b.png) 2x)}\n/*😀*/.b{background:url(b.png)}.x{@contents;}', token: '@contents' as const, code: 'CSS_DIRECTIVE_ERROR' },
+  { source: '/*\u{1F600}*/.a{background:image-set(\r\n"a.png" 1x,\r\nurl(b.png) 2x)}\n.x{@contents;}', token: '@contents' as const, code: 'CSS_DIRECTIVE_ERROR' }
 ]
 function rangeFor(source: string, token: string) {
   const start = source.indexOf(token)
@@ -67,7 +66,7 @@ for (const binding of ['native', 'wasm'] as const) {
 test('collection reports removed directives using the original owner', async () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-graph-diagnostic-'))
   const child = join(cwd, 'child.css'), entry = join(cwd, 'entry.css')
-  const source = '/*😀*/.x{@compose known;}'
+  const source = '/*😀*/.x{@contents;}'
   writeFileSync(entry, '@import "./child.css";@import \"@master/css\";')
   writeFileSync(child, source)
   const scanner = new MasterCSSScanner({ manifest: baseManifest, verbose: 0 }, cwd)
@@ -75,6 +74,6 @@ test('collection reports removed directives using the original owner', async () 
   try {
     await scanner.init()
     await expect(collection.register(scanner, entry, '@import "./child.css";@import \"@master/css\";', { baseManifest, projectDir: cwd }))
-      .rejects.toMatchObject({ code: 'removed-compose-directive', diagnostics: [expect.objectContaining({ source: child, range: rangeFor(source, '@compose') })] })
+      .rejects.toMatchObject({ code: 'CSS_DIRECTIVE_ERROR', diagnostics: [expect.objectContaining({ source: child, range: rangeFor(source, '@contents') })] })
   } finally { await scanner.dispose(); collection.dispose(); rmSync(cwd, { recursive: true, force: true }) }
 })

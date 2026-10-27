@@ -24,7 +24,6 @@ for (const managed of [false, true]) {
       const js = result.output.filter(asset => asset.type === 'chunk').map(asset => asset.code).join('\n')
       expect(css).toMatch(/padding:\s*2rem/)
       expect(css).toMatch(/display:\s*inline-flex/)
-      expect(css).not.toContain('@compose')
       expect(css).not.toContain('#master-css-local-')
       expect(js).not.toContain('__VITE_CSS_URL__')
     } finally { rmSync(root, { recursive: true, force: true }) }

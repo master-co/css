@@ -4,7 +4,7 @@ use super::{
     MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
     extraction_policy_from_statements, filter_native_css_rules, lower_theme_rule,
-    reject_removed_directives,
+    validate_contents_placement,
 };
 use mastercss_lexer::{
     find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
@@ -55,9 +55,8 @@ fn compile_css_directives_impl(
         Some(slots) => slots,
         None => &mut local_slots,
     });
-    reject_removed_directives(source, &options.from)?;
+    validate_contents_placement(source, &options.from)?;
     crate::native_keyframes::validate_safelists(source, &options.from)?;
-    crate::mixins::reject_placeholder(source, &options.from)?;
     let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
     let standalone_directives = find_standalone_css_directive_statements(source);
@@ -202,23 +201,6 @@ fn compile_css_directives_impl(
             CssRule::Custom(directive) => match directive.name {
                 DirectiveName::Theme => {
                     lower_theme_rule(source, &options.from, directive, &mut manifest_input)?
-                }
-                DirectiveName::Defaults | DirectiveName::Components => {
-                    let name = if matches!(directive.name, DirectiveName::Defaults) {
-                        "defaults"
-                    } else {
-                        "components"
-                    };
-                    return Err(crate::syntax::ranged_directive_diagnostic(
-                        source,
-                        &options.from,
-                        directive.start_byte,
-                        directive.start_byte + name.len() + 1,
-                        mastercss_schema::ErrorCode::RemovedManagedDirective,
-                        format!(
-                            "@{name} has been removed; use native @layer {name} with class selectors. Run master-css migrate --from rc-managed"
-                        ),
-                    ));
                 }
                 DirectiveName::Mixin => {
                     let body = directive.body.as_deref().ok_or_else(|| {

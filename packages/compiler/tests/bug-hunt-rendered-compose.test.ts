@@ -87,7 +87,7 @@ test('rendered graph parser diagnostics retain imported file positions', async (
   const root = mkdtempSync(join(tmpdir(), 'rendered-diagnostic-'))
   try {
     const child = join(root, 'child.css')
-    writeFileSync(child, '/* authored */\n.card{@compose "block";}')
+    writeFileSync(child, '/* authored */\n.card{@contents;}')
     await expect(compileRenderedStylesheet(join(root, 'entry.css'), '@import "./child.css";', { baseManifest, projectDir: root })).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: child, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })] })
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

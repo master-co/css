@@ -7,9 +7,9 @@ const require = createRequire(new URL('../../vite/package.json', import.meta.url
 const sass = createRequire(require.resolve('vite'))('sass')
 const identity = () => ({ async compileStringAsync(css: string) { return { css } } })
 for (const source of [
-  '/* 😀 */ .card { @compose "block"; }',
-  `$bad: '"block"'; .card { @compose #{$bad}; }`,
-  '$name: "very-long-expanded-selector"; .#{$name} { @compose "block"; }'
+  '/* 😀 */ .card { @contents; }',
+  `$bad: '"block"'; .card { @contents; }`,
+  '$name: "very-long-expanded-selector"; .#{$name} { @contents; }'
 ]) test(`prepared diagnostic columns identify an original segment: ${source}`, async () => {
   const file = resolve('/tmp/master-source-columns.scss')
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
@@ -44,13 +44,13 @@ for (const source of [
     expect(start.character).toBeGreaterThanOrEqual(0)
     expect(end.character).toBeLessThanOrEqual(source.length)
     const original = source.slice(start.character, end.character)
-    expect(original === '@compose' || start.character === end.character).toBe(true)
+    expect(original === '@contents' || start.character === end.character).toBe(true)
     if (start.character === end.character) expect(diagnostic.notes?.join(' ')).toContain('segment')
   }
 })
 
 test('rendered root diagnostics are mapped once through the Sass source map', async () => {
-  const file = resolve('/tmp/master-root-columns.scss'), source = '/* authored */\n\n\n.card{@compose "block";}'
+  const file = resolve('/tmp/master-root-columns.scss'), source = '/* authored */\n\n\n.card{@contents;}'
   const prepared = await prepareStylesheet(file, source, { loadSass: () => sass })
   await expect(compileRenderedStylesheet(file, prepared.source, { baseManifest: {
   mixins: [

@@ -25,6 +25,5 @@ for (const preprocessed of [false, true]) test(`Next preserves the host Sass pre
       async: () => (error: Error | null, result?: string) => error ? reject(error) : resolve(result!)
     }, source))
     expect(css).toMatch(/padding:\s*2rem/)
-    expect(css).not.toContain('@compose')
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

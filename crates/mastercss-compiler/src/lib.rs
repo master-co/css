@@ -3,13 +3,9 @@
 mod keyframes;
 mod lower;
 mod manifest;
-mod migration;
 mod mixins;
 mod project_comparison;
 mod utilities;
-pub use migration::{
-    RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
-};
 pub use project_comparison::{
     ProjectAsset, ProjectComparison, ProjectComparisonRequest, ProjectSnapshot, ProjectSource,
     compare_project_snapshots,
@@ -423,8 +419,6 @@ struct ThemePrelude {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DirectiveName {
     Theme,
-    Defaults,
-    Components,
     Mixin,
     Apply,
     Utility,
@@ -434,8 +428,6 @@ impl DirectiveName {
     const fn as_str(self) -> &'static str {
         match self {
             Self::Theme => "theme",
-            Self::Defaults => "defaults",
-            Self::Components => "components",
             Self::Utility => "utility",
             Self::Mixin => "mixin",
             Self::Apply => "apply",
@@ -470,8 +462,6 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
     ) -> Result<Self::Prelude, ParseError<'i, Self::Error>> {
         let directive_name = match name.as_ref() {
             name if name.eq_ignore_ascii_case("theme") => DirectiveName::Theme,
-            name if name.eq_ignore_ascii_case("defaults") => DirectiveName::Defaults,
-            name if name.eq_ignore_ascii_case("components") => DirectiveName::Components,
             name if name.eq_ignore_ascii_case("utility") => DirectiveName::Utility,
             name if name.eq_ignore_ascii_case("mixin") => DirectiveName::Mixin,
             name if name.eq_ignore_ascii_case("apply") => DirectiveName::Apply,
@@ -546,8 +536,6 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
 
 fn directive_name_from_prelude(prelude: &ThemePrelude) -> DirectiveName {
     match prelude.parts.first().map(String::as_str) {
-        Some("defaults") => DirectiveName::Defaults,
-        Some("components") => DirectiveName::Components,
         Some("utility") => DirectiveName::Utility,
         Some("mixin") => DirectiveName::Mixin,
         Some("apply") => DirectiveName::Apply,
@@ -697,7 +685,7 @@ pub(crate) use imports::{
     decode_css_quoted_string, default_filename, default_true, extraction_policy_from_statements,
 };
 pub(crate) use native_selectors::{
-    combine_managed_selectors, printed_selectors, reject_removed_directives,
+    combine_managed_selectors, printed_selectors, validate_contents_placement,
 };
 pub(crate) use native_style::{
     NativeStyleContext, lower_native_style_rule, native_rule_list_has_directives,

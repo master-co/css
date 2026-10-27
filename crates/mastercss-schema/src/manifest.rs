@@ -33,6 +33,31 @@ pub enum DiagnosticSeverity {
     Info,
 }
 
+/// The fields a manifest may have; any other is rejected.
+const MANIFEST_FIELDS: [&str; 10] = [
+    "version",
+    "languageVersion",
+    "keyframes",
+    "animationVariables",
+    "theme",
+    "customMedia",
+    "variables",
+    "mixins",
+    "utilities",
+    "debug",
+];
+
+/// The fields a manifest variable may have.
+const VARIABLE_FIELDS: [&str; 7] = [
+    "name",
+    "key",
+    "namespace",
+    "type",
+    "values",
+    "numeric",
+    "dependencies",
+];
+
 #[derive(Debug, Error)]
 pub enum SchemaError {
     #[error("Unsupported MasterCSSManifest version. Expected version 6.")]
@@ -41,18 +66,14 @@ pub enum SchemaError {
         "Unsupported Master CSS languageVersion. Expected 16; recompile the manifest and hydration data with matching packages."
     )]
     UnsupportedLanguageVersion,
-    #[error("Manifest field {0} was removed; recompile with the current directive syntax.")]
-    RemovedField(String),
+    #[error("Unknown MasterCSSManifest field {0}.")]
+    UnknownField(String),
     #[error("Custom media --starting-style conflicts with the native @starting-style suffix.")]
     ReservedCustomMediaName,
     #[error(
         "Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables."
     )]
     UnsupportedVariablesFormat,
-    #[error(
-        "Unsupported MasterCSSManifest utilityBuckets field. Matcher indexes are engine-derived."
-    )]
-    UnsupportedUtilityBuckets,
     #[error("Invalid MasterCSSManifest JSON: {0}")]
     InvalidJson(#[from] serde_json::Error),
     #[error("Invalid MasterCSSManifest. Expected an object.")]
@@ -66,11 +87,10 @@ impl SchemaError {
                 ErrorCode::UnsupportedManifestVersion
             }
             Self::UnsupportedVariablesFormat
-            | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
             | Self::InvalidManifest
             | Self::ReservedCustomMediaName
-            | Self::RemovedField(_) => ErrorCode::InvalidManifest,
+            | Self::UnknownField(_) => ErrorCode::InvalidManifest,
         }
     }
 }
@@ -97,20 +117,11 @@ impl MasterCssManifest {
         if object.get("languageVersion").and_then(Value::as_u64) != Some(LANGUAGE_VERSION.into()) {
             return Err(SchemaError::UnsupportedLanguageVersion);
         }
-        for field in [
-            "variants",
-            "conditions",
-            "selectors",
-            "containerConditions",
-            "settings",
-            "modes",
-            "animations",
-            "animationOptions",
-            "breakpointConditions",
-        ] {
-            if object.contains_key(field) {
-                return Err(SchemaError::RemovedField(field.into()));
-            }
+        if let Some(field) = object
+            .keys()
+            .find(|field| !MANIFEST_FIELDS.contains(&field.as_str()))
+        {
+            return Err(SchemaError::UnknownField(field.clone()));
         }
         if let Some(keyframes) = object.get("keyframes") {
             serde_json::from_value::<Vec<KeyframeDefinition>>(keyframes.clone())?;
@@ -142,10 +153,11 @@ impl MasterCssManifest {
                     let fields = variable
                         .as_object()
                         .ok_or(SchemaError::UnsupportedVariablesFormat)?;
-                    for field in ["value", "modes", "mode", "inline", "static"] {
-                        if fields.contains_key(field) {
-                            return Err(SchemaError::RemovedField(format!("variables.*.{field}")));
-                        }
+                    if let Some(field) = fields
+                        .keys()
+                        .find(|field| !VARIABLE_FIELDS.contains(&field.as_str()))
+                    {
+                        return Err(SchemaError::UnknownField(format!("variables.*.{field}")));
                     }
                     let values = fields
                         .get("values")
@@ -156,9 +168,6 @@ impl MasterCssManifest {
         }
         if object.get("variables").is_some_and(Value::is_array) {
             return Err(SchemaError::UnsupportedVariablesFormat);
-        }
-        if object.contains_key("utilityBuckets") {
-            return Err(SchemaError::UnsupportedUtilityBuckets);
         }
         Ok(Self(value))
     }

@@ -59,8 +59,7 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
     let compiled_variables: Vec<CompiledVariable> = Decode::decode(&mut reader)?;
     program.utilities = Decode::decode(&mut reader)?;
     reader.end()?;
-    for (order, mut variable) in compiled_variables.into_iter().enumerate() {
-        variable.order = order;
+    for variable in compiled_variables {
         program.compiled_variable_order.push(variable.name.clone());
         program
             .compiled_variables
@@ -442,7 +441,6 @@ impl Decode for CompiledVariable {
             numeric: Decode::decode(reader)?,
             variable_type: Decode::decode(reader)?,
             dependencies: Decode::decode(reader)?,
-            order: 0,
         })
     }
 }

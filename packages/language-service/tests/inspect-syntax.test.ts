@@ -1,10 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { Position } from 'vscode-languageserver-textdocument'
 import dedent from 'ts-dedent'
-import type { Settings } from './helpers/rc87-language-service'
+import type { Settings } from './helpers/language-service'
 
 export const inspect = (target: string, settings: Settings = {}) => {
   const content = `export default () => <div className='${target}'></div>`
@@ -70,7 +70,7 @@ test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover sy
 })
 
 
-test.each(['{color:red;display:block}', 'color:red:of(.active)', 'color:red:is(:of(.active))'])('does not offer CSS hover for a retired class: %s', (target) => {
+test.each(['{color:red;display:block}'])('does not offer CSS hover for an invalid class: %s', (target) => {
   const hover = inspect(target)
   expect(hover?.contents).toMatchObject({ kind: 'markdown', value: expect.stringContaining('CLASS_SYNTAX_ERROR') })
   expect((hover?.contents as { value: string }).value).not.toContain('```css')

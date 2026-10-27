@@ -35,14 +35,12 @@ test('BH-0057 native and Wasm graphs preserve conditional structure and sibling 
     const output = native.compileStylesheets(request)
     expect(wasm.compileStylesheets(request)).toEqual(output)
     const css = output.stylesheets[0].css.replace(/\s+/g, '')
-    expect(css).not.toContain('@compose')
     expect(css.indexOf('padding:2rem')).toBeLessThan(css.indexOf('padding:3rem'))
     expect(css.match(/@(media|supports|container|layer|starting-style)/g)).toHaveLength(2)
     const nestedRequest = { ...request, graph: { ...request.graph, files: { '/entry.css': `@mixin --paint {padding:2rem} @utility paint {padding:2rem}.card{${wrapper}{@apply --all{padding:2rem;}}}` } } }
     const nested = native.compileStylesheets(nestedRequest)
     expect(wasm.compileStylesheets(nestedRequest)).toEqual(nested)
     expect(nested.stylesheets[0].css).toContain('padding:2rem')
-    expect(nested.stylesheets[0].css).not.toContain('@compose')
   }
 })
 
@@ -50,7 +48,6 @@ test('BH-0057 public direct output maps conditional compose to authored selector
   for (const wrapper of wrappers) {
     const source = `/* 😀 */\n@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n${wrapper}{\n.card{@apply --all{padding:2rem;}}\n}`
     const result = await compileRenderedStylesheet('/entry.css', source, { baseManifest, preserveNativeCSS: true })
-    expect(result.css).not.toContain('@compose')
     expect(result.css).toContain('padding:2rem')
     const map = new SourceMap(JSON.parse(result.sourceMap!))
     for (const [generated, originalColumn] of [['.card', 0], ['padding:2rem', source.split('\n')[3].indexOf('padding')]] as const) {

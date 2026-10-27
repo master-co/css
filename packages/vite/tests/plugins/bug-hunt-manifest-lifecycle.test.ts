@@ -107,9 +107,9 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
     await environment.transformRequest('/entry.js');await environment.waitForRequestsIdle()
     const module = environment.moduleGraph.getModuleById('\0virtual:master-css-manifest')!
     expect(module.isSelfAccepting).toBe(false)
-    writeFileSync(f.dependency, '@mixin --paint {@compose lifecycle-invalid-class;} @utility paint {@compose lifecycle-invalid-class;}')
+    writeFileSync(f.dependency, '.paint{@contents;} .paint{@contents;}')
     environment.moduleGraph.invalidateModule(module)
-    await expect(environment.transformRequest(module.url)).rejects.toThrow('@compose has been removed')
+    await expect(environment.transformRequest(module.url)).rejects.toThrow('@contents is only valid inside @mixin')
     const send = vi.spyOn(server.ws, 'send');f.write('9rem')
     await vi.waitFor(() => expect(send).toHaveBeenCalled(), { timeout: watchDeadline })
     expect(reloaded(send.mock.calls)).toBe(false)

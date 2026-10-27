@@ -37,9 +37,8 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
 }
 
 /// The variable a utility's token `key` names: an explicit alias first, then the
-/// first `~namespace` reference with a variable whose namespace key is `key`, the
-/// earliest in variable order. Resolving on demand spares session creation from
-/// mapping every token of every utility.
+/// first `~namespace` reference that declares `namespace-key`. Resolving on demand
+/// spares session creation from mapping every token of every utility.
 pub(crate) fn utility_variable<'a>(
     utility: &'a UtilityDefinition,
     key: &str,
@@ -53,23 +52,15 @@ pub(crate) fn utility_variable<'a>(
     {
         return Some(name);
     }
-    if excludes_key(utility, key) {
+    if excludes_key(utility, key) || !is_variable_key(key) {
         return None;
     }
-    for reference in &utility.variable_alias_refs {
+    utility.variable_alias_refs.iter().find_map(|reference| {
         let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
-        let found = namespace_variable_names(namespace, key)
-            .iter()
-            .filter_map(|name| variables.get_key_value(name))
-            .filter(|(name, _)| {
-                get_variable_key_by_namespace(name, namespace).as_deref() == Some(key)
-            })
-            .min_by_key(|(_, variable)| variable.order);
-        if let Some((name, _)) = found {
-            return Some(name);
-        }
-    }
-    None
+        variables
+            .get_key_value(&concat_text!(namespace, "-", key))
+            .map(|(name, _)| name.as_str())
+    })
 }
 
 /// Every token key of a utility with the variable it names, in the order and with
@@ -104,47 +95,19 @@ fn excludes_key(utility: &UtilityDefinition, key: &str) -> bool {
     matches!(utility.emit, UtilityEmit::Recipe { key: true, .. }) && key.contains("--")
 }
 
-/// The variable names whose key in `namespace` can be `key`, the inverse of
-/// `get_variable_key_by_namespace`: `namespace-key`, or `namespace` and
-/// `namespace-` for an empty key, and the negative `-namespace…` forms of a key
-/// starting with `-`.
-fn namespace_variable_names(namespace: &str, key: &str) -> Vec<String> {
-    let mut names = Vec::with_capacity(2);
-    if key.is_empty() {
-        names.push(namespace.to_owned());
-        names.push(concat_text!(namespace, "-"));
-    } else {
-        names.push(concat_text!(namespace, "-", key));
-    }
-    if let Some(positive) = key.strip_prefix('-') {
-        if positive.is_empty() {
-            names.push(concat_text!("-", namespace));
-            names.push(concat_text!("-", namespace, "-"));
-        } else {
-            names.push(concat_text!("-", namespace, "-", positive));
-        }
-    }
-    names
+/// Token keys are non-empty and neither start nor end with `-`; manifests with
+/// such variable keys or names fail to compile.
+pub(crate) fn is_variable_key(key: &str) -> bool {
+    !key.is_empty() && !key.starts_with('-') && !key.ends_with('-')
 }
 
+/// The token key of `variable_name` in `namespace`: the part after `namespace-`.
 pub(crate) fn get_variable_key_by_namespace(
     variable_name: &str,
     namespace: &str,
 ) -> Option<String> {
-    let (negative, positive_name) = variable_name
-        .strip_prefix('-')
-        .map_or((false, variable_name), |name| (true, name));
-    let rest = positive_name.strip_prefix(namespace)?;
-    let key = match rest.strip_prefix('-') {
-        Some(key) => key,
-        None if rest.is_empty() => "",
-        None => return None,
-    };
-    Some(if negative {
-        concat_text!("-", key)
-    } else {
-        key.to_owned()
-    })
+    let key = variable_name.strip_prefix(namespace)?.strip_prefix('-')?;
+    is_variable_key(key).then(|| key.to_owned())
 }
 
 pub(crate) fn layer_index(layer: UtilityLayerName) -> usize {

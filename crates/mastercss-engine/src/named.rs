@@ -127,23 +127,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         }),
         notes: Vec::new(),
     };
-    if let Some((_, property)) = super::native_declaration_head(source)
-        && let Some(message) = super::removed_syntax::removed_recipe(&property)
-    {
-        return vec![error(super::ErrorCode::ClassSyntaxError, message)];
-    }
-    if let Some((_, property)) = super::native_declaration_head(source)
-        && let Some(target) = super::removed_syntax::removed_raw_alias(&property)
-    {
-        return vec![error(
-            super::ErrorCode::ClassSyntaxError,
-            super::message(|| {
-                format!(
-                    "Raw property alias {property}: was removed; use {target}: (named tokens use their canonical prefixes)"
-                )
-            }),
-        )];
-    }
     if let Some(message) = super::utility_matching::diagnostic(source, manifest) {
         return vec![error(super::ErrorCode::CssDirectiveError, message)];
     }
@@ -161,12 +144,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         .chain(native_state)
     {
         let selector = super::state::split_state_token(&state).0;
-        if let Some((old, replacement)) = super::state::removed_selector(&selector) {
-            return vec![error(
-                super::ErrorCode::ClassSyntaxError,
-                super::message(|| format!(":{old} was removed; use {replacement}")),
-            )];
-        }
         if !selector.is_empty()
             && super::state::selector_token_to_template(&selector, manifest)
                 .is_none_or(|template| !mastercss_lexer::valid_selector_structure(&template))
@@ -179,37 +156,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
     }
     let mut explicit_layer = None;
     for token in super::state::split_state_token(source).1 {
-        if !manifest
-            .custom_media
-            .contains_key(&concat_text!("--", token))
-        {
-            let replacement = match token.as_str() {
-                "base" => Some("@layer(base)"),
-                "default" => Some("@layer(defaults)"),
-                "component" => Some("@layer(components)"),
-                "utility" => Some("@layer(utilities)"),
-                "motion" => Some("@motion-safe"),
-                "reduce-motion" => Some("@motion-reduce"),
-                "print" => Some("@media(print)"),
-                "screen" => Some("@media(screen)"),
-                "all" => Some("@media(all)"),
-                _ => None,
-            };
-            if let Some(replacement) = replacement {
-                return vec![error(
-                    super::ErrorCode::UnknownCondition,
-                    super::message(|| format!("@{token} was removed; use {replacement}")),
-                )];
-            }
-            if token == "speech" {
-                return vec![error(
-                    super::ErrorCode::UnknownCondition,
-                    super::message(|| {
-                        "@speech was removed; speech is an obsolete CSS media type".into()
-                    }),
-                )];
-            }
-        }
         if let Some(call) = super::class_apply::invocation(&token) {
             let result = call.and_then(|(name, arguments)| {
                 super::expand_mixin_with_contents(&manifest.mixins, &name, &arguments, Some(&[]))
@@ -299,9 +245,6 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             return vec![diagnostic];
         }
     }
-    if let Some(message) = retired_token_message(source, manifest) {
-        return vec![error(super::ErrorCode::ClassSyntaxError, message)];
-    }
     let Some(prefix) = prefix else {
         return Vec::new();
     };
@@ -384,54 +327,6 @@ fn ambiguous_token_message(
         ),
         alternatives,
     )
-}
-
-/// Retirement metadata never participates in matching. A valid canonical class
-/// or project mixin always wins, including token keys resembling an old prefix.
-pub(crate) fn retired_token_message(source: &str, manifest: &Program) -> Option<String> {
-    if is_native_declaration(source) || !matching_utilities(source, manifest).is_empty() {
-        return None;
-    }
-    let mut replacements = Vec::new();
-    let families = manifest
-        .token_families
-        .iter()
-        .filter(|family| family.argument == super::TokenFamilyArgument::Value)
-        .filter_map(|family| {
-            family
-                .properties
-                .first()
-                .map(|property| (property.as_str(), family.prefix.as_str()))
-        })
-        .filter(|(property, prefix)| property != prefix)
-        .chain([("text-stroke-color", "text-stroke")]);
-    for (old, current) in families {
-        for (positive, sign) in [
-            (source, ""),
-            (source.strip_prefix('-').unwrap_or(source), "-"),
-        ] {
-            if let Some(tail) = positive
-                .strip_prefix(old)
-                .and_then(|tail| tail.strip_prefix('-'))
-            {
-                let candidate = concat_text!(sign, current, "-", tail);
-                if !matching_utilities(&candidate, manifest).is_empty()
-                    && !replacements.contains(&candidate)
-                {
-                    replacements.push(candidate);
-                }
-            }
-        }
-    }
-    if !replacements.is_empty() {
-        return Some(super::message(|| {
-            format!(
-                "Token spelling {source} was removed; use the canonical family: {}",
-                replacements.join(", ")
-            )
-        }));
-    }
-    None
 }
 
 pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a Program) -> Option<&'a str> {

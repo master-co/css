@@ -38,7 +38,7 @@ it('queries only the families loaded by the workspace, including empty namespace
 
 it('distinguishes missing entries from failed entries without selecting a preset', async () => {
   const missing = project()
-  const failed = project("@import \"@master/css\"; @settings { root-size: 16; }")
+  const failed = project("@import \"@master/css\"; @theme dark { --color-brand: red; }")
   try {
     expect(await loadWorkspaceManifest(missing)).toMatchObject({ status: 'error', reason: 'entry-not-found', context: 'project' })
     expect(await loadWorkspaceManifest(failed)).toMatchObject({ status: 'error', reason: 'entry-load-failed', context: 'project' })
@@ -54,7 +54,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: 26 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: 28 } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
@@ -63,8 +63,6 @@ it('explicit preset context reports matching separately from validity and browse
     expect(rendered.diagnostics.map(diagnostic => diagnostic.code)).toEqual(['CSS_VALUE_INVALID', 'CSS_VALUE_UNKNOWN'])
     const math = await inspectClass(context, { className: 'width:calc(1px|+|1s)', context: 'preset' })
     expect(math.cssValueStatus).toBe('invalid')
-    const removed = await inspectClass(context, { className: 'size:20px', context: 'preset' })
-    expect(removed.diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
   } finally { context.dispose() }
 })
 
@@ -80,21 +78,13 @@ it('keeps complete ambiguous-token alternatives in both structured and JSON outp
   } finally { context.dispose() }
 })
 
-it('does not warn about retired builtins for registered project CSS classes', async () => {
-  const context = project("@import \"@master/css\"; .size\\:20px, .padding-md, .font-brand { color:red; }")
+it('reports no diagnostics for classes the project defines in CSS', async () => {
+  const context = project("@import \"@master/css\"; .padding-md, .font-brand { color:red; }")
   try {
-    const inspected = await inspectClass(context, { className: 'size:20px' })
-    const rendered = await renderCSS(context, { classList: 'size:20px' })
-    for (const diagnostics of [inspected.diagnostics, rendered.diagnostics]) {
-      expect(diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
-    }
     for (const className of ['padding-md', 'font-brand']) {
       const native = await inspectClass(context, { className })
       expect(native.diagnostics ?? []).toEqual([])
     }
-    expect(inspected.manifest).not.toHaveProperty('nativeClassNames')
-    const other = await inspectClass(context, { className: 'size:30px' })
-    expect(other.diagnostics?.some(diagnostic => diagnostic.code === 'REMOVED_PRESET_UTILITY')).toBe(true)
   } finally { context.dispose() }
 })
 

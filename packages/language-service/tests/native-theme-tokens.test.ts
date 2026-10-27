@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 
 test('inline tokens provide completion and substituted hover without token output', () => {

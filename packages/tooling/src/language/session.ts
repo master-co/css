@@ -4,7 +4,6 @@ import type {
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
 import { freezeToolingResult } from '../immutable'
-import { removedUtilityDiagnostics } from '../removed-utilities'
 import { withCSSValueValidation } from '../value-validation'
 import type {
   MasterCSSDocumentAnalysis,
@@ -109,9 +108,8 @@ export function bindLanguageSession(
     },
     inspectClassName(className) {
       assertActive()
-      const candidates = session.nativeDeclarationCandidates([className]) as MasterCSSNativeDeclarationCandidate[]
       const result = parse<MasterCSSLanguageInspection>(session.inspectClassName(className))
-      return validate(withCSSValueValidation({ ...result, diagnostics: [...(nativeClasses.has(className) && !result.rules.length ? [] : result.diagnostics ?? []), ...(result.rules.length ? removedUtilityDiagnostics(className, candidates, nativeClasses) : [])] }))
+      return validate(withCSSValueValidation({ ...result, diagnostics: nativeClasses.has(className) && !result.rules.length ? [] : result.diagnostics ?? [] }))
     },
     tokenFamilies() {
       assertActive()

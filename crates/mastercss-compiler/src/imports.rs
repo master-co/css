@@ -498,7 +498,7 @@ pub fn compile_native_css(
         let result = crate::compile_css_directives(source, options)?;
         return Ok(CompileNativeCssResult { css: result.native_css.clone(), native_css: result.native_css });
     }
-    crate::reject_removed_directives(source, &options.from)?;
+    crate::validate_contents_placement(source, &options.from)?;
     let policy = crate::analyze_standalone_directives(source);
     let prune = !policy.extraction_policy.preserve_native
         && (options.prune_native_css || policy.extraction_policy.prune_native);

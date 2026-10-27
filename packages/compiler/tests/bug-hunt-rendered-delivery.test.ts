@@ -138,7 +138,7 @@ test('rendered delivery maps invalid composed tokens back to their Sass partial'
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-rendered-error-')))
   try {
     const entry = join(root, 'entry.scss'), partial = join(root, '_rules.scss')
-    writeFileSync(partial, '/* original */\n.bad{@compose "block";}')
+    writeFileSync(partial, '/* original */\n.bad{@contents;}')
     const require = createRequire(new URL('../../vite/package.json', import.meta.url))
     const sass = createRequire(require.resolve('vite'))('sass')
     await expect(compileRenderedStylesheet(entry, '@use "./rules";', { projectDir: root, loadSass: () => sass,

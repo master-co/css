@@ -68,7 +68,7 @@ Token values live in `src/theme.css`. All 119 value mappings and 7 recipes live 
 
 Author recipes in the stable `src/utilities.css` entrypoint using `@utility`. Only used classes and delivered native `@apply` roots emit CSS/resources. General parameter recipes require static arguments; token patterns bind symbolic token values. Grid counts and spans must be positive integers. Each token mapping has one canonical prefix. The font-family, font-size and font-weight namespaces share `font-*`; duration and easing share `transition-*` and `animation-*`. Delays retain distinct prefixes. A key must identify one namespace; ambiguity emits no CSS and requires a native declaration or distinct key. Metadata entries use prefix plus namespace. `text-*` is the explicit `@utility text-(--text <string>)` key recipe with explicit typography companion tokens; it is never a color alias. Direct declarations use full native property names. Vendor declaration pairs belong to Rust output rules.
 
-The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing and migration must not enter runtime bundles. No TypeScript semantic fallback is allowed.
+The runtime keeps unused IR definitions for future DOM classes. Compiler-only parsing must not enter runtime bundles. No TypeScript semantic fallback is allowed.
 
 ## Refined preset contract
 

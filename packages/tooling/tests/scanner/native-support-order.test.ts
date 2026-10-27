@@ -38,23 +38,3 @@ test.each(['native', 'wasm'] as const)('%s scanner keeps native validation align
     }
   }
 })
-
-test.each(['native', 'wasm'] as const)('%s scanner rejects complete retired tokens across source syntaxes', async (binding) => {
-  const scanner = await new MasterCSSScanner({ manifest: defaultManifest as unknown as MasterCSSManifest, binding, wasm, verbose: 0 }).init()
-  const classes = '{p-md;animation:float|1s} color:red:of(.active) padding:11px'
-  try {
-    for (const [file, source] of [
-      ['index.html', `😀<div class="${classes}"/>`],
-      ['index.tsx', `const view = <div className="${classes}"/>`],
-      ['index.vue', `<template><div class="${classes}"/></template>`],
-      ['index.svelte', `<div class={'${classes}'}/>`],
-      ['index.mdx', `<div className="${classes}"/>`]
-    ]) await scanner.scan(file, source)
-    expect([...scanner.validClasses]).toEqual(['padding:11px'])
-    expect(scanner.css.text).toBe('@layer utilities{.padding\\:11px{padding:11px}}')
-    expect(scanner.css.text).not.toContain('--spacing-md')
-    expect(scanner.css.text).not.toContain('@keyframes')
-  } finally {
-    await scanner.dispose()
-  }
-})

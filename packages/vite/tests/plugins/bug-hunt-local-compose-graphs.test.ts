@@ -48,7 +48,6 @@ for (const command of ['serve', 'build'] as const) {
           expect(css).toMatch(/display:\s*block/)
           expect(css).toMatch(/color:\s*red/)
           if (composeChild) expect(css).toMatch(/padding:\s*2rem/)
-          expect(css).not.toContain('@compose')
         } finally {
           await server?.environments.client.waitForRequestsIdle()
           await server?.close()

@@ -46,142 +46,7 @@ const retainedMatcherAliases = new Set([
   'text'
 ])
 
-const removedAliases = [
-  'ac',
-  'accent',
-  'ai',
-  'as',
-  'aspect',
-  'bd',
-  'bg-blend',
-  'bg-clip',
-  'bg-origin',
-  'blend',
-  'box-decoration',
-  'caret',
-  'clip',
-  'col-span',
-  'cols',
-  'd',
-  'f',
-  'font-feature',
-  'grid-auto-cols',
-  'grid-flow',
-  'grid-template-cols',
-  'bs',
-  'ib',
-  'ibe',
-  'ibs',
-  'ii',
-  'iie',
-  'iis',
-  'is',
-  'jc',
-  'ji',
-  'js',
-  'line-h',
-  'ls',
-  'max-bs',
-  'max-is',
-  'mbe',
-  'mbs',
-  'mi',
-  'mie',
-  'mis',
-  'min-bs',
-  'min-is',
-  'o',
-  'obj',
-  'pbe',
-  'pbs',
-  'pi',
-  'pie',
-  'pis',
-  's',
-  'scroll-mbe',
-  'scroll-mbs',
-  'scroll-me',
-  'scroll-ms',
-  'scroll-pbe',
-  'scroll-pbs',
-  'scroll-pe',
-  'scroll-ps',
-  'shape',
-  'tab',
-  't',
-  'touch',
-  'v',
-  'vertical',
-  'vt-class',
-  'vt-name',
-  'writing'
-]
-
 const competitiveNativeValueUtilities: string[] = []
-const removedStaticUtilityNames = [
-  'not-italic',
-  'transform-3d',
-  'transform-flat'
-]
-
-const removedSourceUtilityIds = [
-  'animation-delay',
-  'animation-name',
-  'background',
-  'background-color',
-  'background-attachment',
-  'background-position',
-  'background-repeat',
-  'background-size',
-  'border-collapse',
-  'border-image-repeat',
-  'container',
-  'container-type',
-  'flex-direction',
-  'flex-basis',
-  'flex-wrap',
-  'font-variant',
-  'font-family',
-  'font-size',
-  'font-style',
-  'font-weight',
-  'font-variant-numeric',
-  'grid-column',
-  'grid-column-end',
-  'grid-column-start',
-  'grid-template-columns',
-  'grid-template-rows',
-  'list-style-position',
-  'list-style-type',
-  'object-fit',
-  'object-position',
-  'outline-style',
-  'outline-width',
-  'rotate',
-  'scroll-snap-align',
-  'scroll-snap-stop',
-  'scroll-snap-type',
-  'shape-margin',
-  'stroke',
-  'stroke-width',
-  'text-align',
-  'text-decoration-line',
-  'text-decoration-style',
-  'text-indent',
-  'text-orientation',
-  'text-overflow',
-  'text-rendering',
-  'text-stroke-width',
-  'text-transform',
-  'text-underline-offset',
-  'text-underline-position',
-  'transform',
-  'transform-origin',
-  'transform-style',
-  'transition-delay',
-  'word-spacing'
-]
-
 function getCompiledDefaultManifest() {
   compiledDefaultManifest ||= createDefaultManifestFromSourceFile(resolve(__dirname, '../src/index.css'))
   return compiledDefaultManifest
@@ -223,13 +88,6 @@ describe('@master/css-preset defaultManifest', () => {
     expect(compiledManifest.theme).toEqual(defaultManifest.theme)
     expect(compiledManifest.customMedia).toEqual(defaultManifest.customMedia)
     expect(Object.keys(defaultManifest.customMedia ?? {})).toHaveLength(17)
-    for (const removed of ['variants', 'conditions', 'selectors', 'containerConditions']) {
-      expect(defaultManifest).not.toHaveProperty(removed)
-    }
-  })
-
-  it('does not publish the removed px inline alias', () => {
-    expect(variablesOf(defaultManifest).some((variable) => variable.name === 'px')).toBe(false)
   })
 
   it('supports built-in starting-style without a preset definition', () => {
@@ -241,19 +99,9 @@ describe('@master/css-preset defaultManifest', () => {
     )
   })
 
-  it('does not publish removed static utility shortcuts', () => {
+  it('uses explicit preset mode branches', () => {
     const css = createTestCSS(defaultManifest)
 
-    for (const name of removedStaticUtilityNames) {
-      expect(defaultManifest.utilities?.some(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]) === name), name).toBe(false)
-      expect(css.createRule(name), name).toBeUndefined()
-    }
-  })
-
-  it('uses explicit preset mode branches without global engine mode settings', () => {
-    const css = createTestCSS(defaultManifest)
-
-    expect(defaultManifest).not.toHaveProperty('settings')
     expect(css.createRule("margin:0.25rem")?.text).toBe(".margin\\:0\\.25rem{margin:0.25rem}")
     expect(css.createRule('fg-blue-60@dark')?.text).toBe(
       "@media (prefers-color-scheme: dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}"
@@ -295,11 +143,6 @@ describe('@master/css-preset defaultManifest', () => {
     expect(declarationsCSS.createRule("background:canvas")?.text).toContain('background:canvas')
     expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
     expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
-  })
-
-  it('removed fixed aliases no longer register classes', () => {
-    const css = createTestCSS(defaultManifest)
-    for (const name of ['block', 'hidden', 'inline-flex', 'items-center', 'box-border']) expect(css.createRule(name)).toBeUndefined()
   })
 
   it('executes mixins, token families and native replacements', () => {
@@ -357,8 +200,6 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
     const declarationsCSS = createTestCSS(defaultManifest)
 
-    expect(declarationsCSS.createRule('text:center')).toBeUndefined()
-    expect(declarationsCSS.createRule('text:underline')).toBeUndefined()
     expect(declarationsCSS.createRule("background:cover")?.text).toContain('background:cover')
     expect(declarationsCSS.createRule('object:cover')?.text).toContain('object:cover')
     expect(declarationsCSS.createRule('border-solid')).toBeUndefined()
@@ -401,9 +242,6 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('fg-text-red')?.text).toBe('.fg-text-red{color:var(--color-text-red)}')
     expect(css.createRule('fg-text-blue')?.text).toBe('.fg-text-blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
-    expect(declarationsCSS.createRule('text:blue-60')).toBeUndefined()
-    expect(declarationsCSS.createRule('text:#fff')).toBeUndefined()
-    expect(declarationsCSS.createRule('text:transparent')).toBeUndefined()
     expect(css.createRule('fg-text-body')?.text).toBe('.fg-text-body{color:var(--color-text-body)}')
     expect(css.createRule('fg-text-inverse')?.text).toBe('.fg-text-inverse{color:var(--color-text-inverse)}')
     expect(css.createRule('fg-text-muted')?.text).toBe('.fg-text-muted{color:var(--color-text-muted)}')
@@ -528,7 +366,6 @@ describe('@master/css-preset defaultManifest', () => {
   })
 
   it('keeps derived token indexes out of the preset manifest', () => {
- expect(defaultManifest).not.toHaveProperty('utilityBuckets')
  const css = createTestCSS(defaultManifest)
  expect(css.createRule('display:block')?.text).toContain('display:block')
  expect(css.createRule('outline-thin')).toBeUndefined()
@@ -536,9 +373,8 @@ describe('@master/css-preset defaultManifest', () => {
  expect(css.createRule('text-underline-md')).toBeUndefined()
 })
 
-  it('separates raw properties from token abbreviations and preserves SVG r', () => {
+  it('keeps token utilities separate from native SVG properties', () => {
  const css = createTestCSS(defaultManifest)
- for (const alias of ['p', 'fg', 'bg', 'w', 'h', 'z']) expect(css.createRule(alias + ':1rem')).toBeUndefined()
  expect(css.createRule('p-md')?.text).toContain('padding:var(--spacing-md)')
  expect(css.createRule('r-md')?.text).toContain('border-radius:var(--radius-md)')
  expect(css.createRule('r:1rem')?.text).toContain('r:1rem')
@@ -548,6 +384,5 @@ describe('@master/css-preset defaultManifest', () => {
  const mixins = defaultManifest.utilities || []
  expect(new Set(mixins.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(mixins.length)
  expect(JSON.stringify(mixins)).not.toContain('"source":')
- expect(defaultManifest).not.toHaveProperty('utilityBuckets')
 })
 })

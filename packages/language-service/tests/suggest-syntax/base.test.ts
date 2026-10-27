@@ -1,6 +1,6 @@
 import { expect, it, test } from 'vitest'
 import { hint } from './helper'
-import CSSLanguageService from '../helpers/rc87-language-service'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc from '../../src/utils/create-doc'
 
 function suggestInSource(source: string, marker: string) {

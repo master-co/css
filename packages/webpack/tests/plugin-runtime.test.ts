@@ -390,14 +390,14 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-invalid-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      const source = "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }"
+      const source = "@import \"@master/css\";\n.card { @contents; }"
       writeFileSync(entryPath, source)
       const plugin = await new MasterCSSWebpackPlugin({
         scanner: { verbose: 0 }
       }, root).init()
 
       await expect((plugin as any).processModuleContents([[entryPath, source]], () => false))
-        .rejects.toThrow('@compose has been removed')
+        .rejects.toThrow('@contents is only valid inside @mixin')
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 

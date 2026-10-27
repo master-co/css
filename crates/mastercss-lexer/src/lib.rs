@@ -8,7 +8,7 @@ mod functional_class;
 pub use functional_class::{FunctionalClassHead, parse_functional_class, parse_mixin_call};
 
 mod utility_name;
-pub use utility_name::{decode_utility_name, valid_utility_name};
+pub use utility_name::valid_utility_name;
 
 mod query;
 mod selector;

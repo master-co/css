@@ -143,12 +143,4 @@ export async function compileManifest(
   }
 }
 
-export type MasterCSSRCMigrationRequest = Parameters<import('./session').BindingCompilerSession['migrateRC']>[0]
-export type MasterCSSRCMigrationResult = ReturnType<import('./session').BindingCompilerSession['migrateRC']>
-
-export async function migrateRC(request: MasterCSSRCMigrationRequest): Promise<MasterCSSRCMigrationResult> {
-  const session = await createCompilerBindingSession()
-  try { return session.migrateRC(request) } finally { session.dispose() }
-}
-
 export type { MasterCSSProjectSnapshot, MasterCSSProjectComparisonRequest, MasterCSSProjectComparison, MasterCSSProjectAssetChange } from '@master/css-binding/compiler'

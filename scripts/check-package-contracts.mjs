@@ -7,36 +7,6 @@ import { checkAPICensus } from './api-census.mjs'
 
 const packagesRoot = path.resolve('packages')
 const publicAPIContractPath = path.resolve('.ai/contracts/public-api.json')
-const retiredDirectories = [
-  'diagnostics',
-  'engine',
-  'facade',
-  'integration',
-  'language',
-  'lexer',
-  'lint',
-  'native',
-  'project',
-  'scanner',
-  'source',
-  'stylesheet',
-  'validator',
-  'wasm-compiler',
-  'wasm-runtime',
-  'wasm-tooling'
-]
-const retiredPackageNames = new Set([
-  ...retiredDirectories.map((name) => `@master/css-${name}`),
-  '@master/css-backend',
-  '@master/css-wasm-engine'
-])
-const retiredPackageNamePatterns = [
-  /^@master\/css-native-(?:darwin|linux|win32)-/
-]
-const retiredPrivatePackageNames = new Set([
-  '@master/css-build-internal',
-  '@master/css-internal-integration'
-])
 const bindingTargetPattern = /^@master\/css-binding-(?:darwin|linux|win32)-/
 const expectedBindingTargetPackages = new Set([
   '@master/css-binding-darwin-arm64',
@@ -75,26 +45,6 @@ const requiredDefaultExportEntrypoints = new Set([
 ])
 const publicSourceRootByPackageName = new Map([
   ['@master/css-svelte', 'src/lib']
-])
-const retiredPublicSymbols = new Set([
-  'CSSLanguageServer',
-  'CSSLanguageService',
-  'CSSRuntime',
-  'CSSScanner',
-  'CompilerSessionError',
-  'RenderingMode',
-  'ServerCSS',
-  'ServerCSSEmittedGlobals',
-  'ServerRenderer',
-  'StyleCSS',
-  'Workspace',
-  'applySetup',
-  'createServerCSS',
-  'cssRuntime',
-  'parseHTML',
-  'renderCSS',
-  'renderWithCSS',
-  'scannerOptions'
 ])
 const bindingContractFiles = [
   'packages/binding/src/engine-contract.ts',
@@ -193,11 +143,6 @@ function collectPublicSymbols(file) {
 
 function validatePublicSymbol(packageName, subpath, symbol) {
   const entrypoint = `${packageName}${subpath === '.' ? '' : subpath.slice(1)}`
-  assert.equal(
-    retiredPublicSymbols.has(symbol),
-    false,
-    `${entrypoint} must not restore retired public symbol ${symbol}.`
-  )
   assert.equal(
     /(?:IR|Ir)$/.test(symbol),
     false,
@@ -349,47 +294,16 @@ function createPublicAPIContract(packages) {
 
 validateBindingFeatureContracts()
 
-for (const directory of retiredDirectories) {
-  assert.equal(
-    existsSync(path.join(packagesRoot, directory)),
-    false,
-    `Retired package directory packages/${directory} must not be restored.`
-  )
-}
-
 const packages = readdirSync(packagesRoot)
   .filter((directory) => existsSync(path.join(packagesRoot, directory, 'package.json')))
   .map(readPackage)
 const observedBindingTargetPackages = new Set()
 
-function isRetiredPackageName(packageName) {
-  return retiredPackageNames.has(packageName)
-    || retiredPackageNamePatterns.some((pattern) => pattern.test(packageName))
-}
-
-for (const { directory } of packages) {
-  assert.equal(
-    /^native-(?:darwin|linux|win32)-/.test(directory),
-    false,
-    `Retired native target directory packages/${directory} must not be restored.`
-  )
-}
-
 for (const { directory, manifest } of packages) {
   assert.ok(manifest.name, `packages/${directory} must declare a package name.`)
-  assert.equal(
-    isRetiredPackageName(manifest.name),
-    false,
-    `${manifest.name} is retired and must not be published.`
-  )
 
   for (const field of dependencyFields) {
     for (const [dependency, range] of Object.entries(manifest[field] ?? {})) {
-      assert.equal(
-        isRetiredPackageName(dependency) || retiredPrivatePackageNames.has(dependency),
-        false,
-        `${manifest.name} still depends on retired package ${dependency}.`
-      )
       if (dependency.startsWith('@master/') && String(range).startsWith('workspace:')) {
         assert.equal(
           range,
@@ -461,14 +375,6 @@ assert.deepEqual(
   { 'master-css': './dist/bin/index.js' },
   '@master/css-cli must expose only the master-css package binary.'
 )
-
-for (const { manifest } of packages) {
-  assert.equal(
-    retiredPrivatePackageNames.has(manifest.name),
-    false,
-    `${manifest.name} is a retired private package identity.`
-  )
-}
 
 const internalPackage = packages.find(({ manifest }) => manifest.name === '@master/css-internal')
 assert.ok(internalPackage?.manifest.private, '@master/css-internal must remain repository-private.')

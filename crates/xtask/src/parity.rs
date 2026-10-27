@@ -26,86 +26,6 @@ pub(crate) fn validate_semantic_parity_corpus(
     {
         return Err("Language corpus has an unsupported version or contract.".into());
     }
-    // Preserve the frozen RC oracle. The new corpus records the intentional
-    // breaking contract without claiming historical byte-for-byte parity.
-    const RC_SHA256: &str = "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9";
-    let historical_bytes = fs::read(root.join("parity/rust-semantic-corpus.json"))
-        .map_err(|error| error.to_string())?;
-    if Sha256::digest(&historical_bytes)
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect::<String>()
-        != RC_SHA256
-        || corpus.historical_sha256.as_deref() != Some(RC_SHA256)
-    {
-        return Err("Frozen RC semantic evidence changed.".into());
-    }
-    let historical: SemanticParityCorpus =
-        serde_json::from_slice(&historical_bytes).map_err(|error| error.to_string())?;
-    // New language cases may be appended; every frozen case keeps its position.
-    if historical
-        .engine_cases
-        .iter()
-        .map(|case| &case.id)
-        .collect::<Vec<_>>()
-        != corpus
-            .engine_cases
-            .iter()
-            .take(historical.engine_cases.len())
-            .map(|case| &case.id)
-            .collect::<Vec<_>>()
-        || historical
-            .compiler_cases
-            .iter()
-            .map(|case| &case.id)
-            .collect::<Vec<_>>()
-            != corpus
-                .compiler_cases
-                .iter()
-                .map(|case| &case.id)
-                .collect::<Vec<_>>()
-        || historical
-            .parser_cases
-            .iter()
-            .map(|case| {
-                // The frozen oracle retains compose; the current lexer no longer
-                // recognizes that removed directive as a Master CSS node.
-                let canonical = if case.kind == "selector"
-                    && matches!(case.input.as_str(), ":before" | "::scrollbar-thumb")
-                {
-                    format!("&{}", case.input)
-                } else if case.kind == "lexer" {
-                    case.expected_canonical
-                        .split('|')
-                        .filter(|name| {
-                            !matches!(*name, "compose" | "variant" | "custom-variant" | "slot")
-                        })
-                        .collect::<Vec<_>>()
-                        .join("|")
-                } else {
-                    case.expected_canonical.clone()
-                };
-                (&case.id, &case.kind, &case.input, canonical)
-            })
-            .collect::<Vec<_>>()
-            != corpus
-                .parser_cases
-                .iter()
-                .map(|case| {
-                    (
-                        &case.id,
-                        &case.kind,
-                        &case.input,
-                        case.expected_canonical.clone(),
-                    )
-                })
-                .collect::<Vec<_>>()
-    {
-        return Err(
-            "V2 language corpus must retain every historical case and parser evidence, except removed directive lexer nodes."
-                .into(),
-        );
-    }
     let mut ids = HashSet::new();
     for case in &corpus.parser_cases {
         if case.id.is_empty() || !ids.insert(case.id.clone()) {
@@ -114,8 +34,7 @@ pub(crate) fn validate_semantic_parity_corpus(
                 case.id
             ));
         }
-        if case.source_id.is_empty()
-            || !matches!(case.kind.as_str(), "condition" | "selector" | "lexer")
+        if !matches!(case.kind.as_str(), "condition" | "selector" | "lexer")
             || case.input.is_empty()
             || (case.kind != "lexer" && case.expected_canonical.is_empty())
         {
@@ -134,9 +53,6 @@ pub(crate) fn validate_semantic_parity_corpus(
                 "Duplicate or empty semantic parity case id: {}",
                 case.id
             ));
-        }
-        if case.source_id.as_deref().is_some_and(str::is_empty) {
-            return Err(format!("Parity case {} has an empty source id.", case.id));
         }
         let manifest = manifest_json(root, &case.manifest)?;
         let emitted_globals = case
@@ -349,9 +265,6 @@ pub(crate) fn validate_semantic_parity_corpus(
                 case.id
             ));
         }
-        if case.source_id.as_deref().is_some_and(str::is_empty) {
-            return Err(format!("Parity case {} has an empty source id.", case.id));
-        }
         let base_manifest = serde_json::from_str(&manifest_json(root, &case.base_manifest)?)
             .map_err(|error| {
                 format!(
@@ -435,106 +348,8 @@ pub(crate) fn validate_semantic_parity_corpus(
     Ok(ids)
 }
 
-pub(crate) fn validate_rust_takeover_ledger(
-    root: &Path,
-    ledger: &RustTakeoverLedger,
-    corpus_ids: &HashSet<String>,
-    exception_ids: &HashSet<String>,
-) -> Result<(), String> {
-    if ledger.version != 1 || ledger.semantic_baseline != "ef1a7c851" {
-        return Err("Rust takeover ledger has an unsupported version or baseline.".into());
-    }
-    let mut entries = HashSet::new();
-    let mut total = 0;
-    for suite in &ledger.suites {
-        if suite.tests.len() != suite.expected_tests {
-            return Err(format!(
-                "Rust takeover ledger suite {} expected {} tests but lists {}.",
-                suite.file,
-                suite.expected_tests,
-                suite.tests.len()
-            ));
-        }
-        for test in &suite.tests {
-            total += 1;
-            let id = format!("{}#{}", suite.file, test.name);
-            if test.name.is_empty() || !entries.insert(id.clone()) {
-                return Err(format!(
-                    "Duplicate or empty Rust takeover ledger entry: {id}"
-                ));
-            }
-            if test.coverage.is_empty() {
-                return Err(format!("Rust takeover ledger entry {id} has no coverage."));
-            }
-            for coverage in &test.coverage {
-                if let Some(case_id) = coverage.strip_prefix("corpus:") {
-                    if !corpus_ids.contains(case_id) {
-                        return Err(format!(
-                            "Rust takeover ledger entry {id} references unknown corpus case {case_id}."
-                        ));
-                    }
-                } else if let Some(exception_id) = coverage.strip_prefix("exception:") {
-                    if !exception_ids.contains(exception_id) {
-                        return Err(format!(
-                            "Rust takeover ledger entry {id} references unknown exception {exception_id}."
-                        ));
-                    }
-                } else if let Some(test_reference) = coverage.strip_prefix("test:") {
-                    let (path, needle) = test_reference.split_once('#').ok_or_else(|| {
-                        format!("Rust takeover ledger entry {id} has invalid test reference.")
-                    })?;
-                    let source_path = root.join(path);
-                    let source = fs::read_to_string(&source_path).map_err(|error| {
-                        format!(
-                            "Cannot read coverage test {}: {error}",
-                            source_path.display()
-                        )
-                    })?;
-                    if needle.is_empty() || !source.contains(needle) {
-                        return Err(format!(
-                            "Rust takeover ledger entry {id} references missing test marker {coverage}."
-                        ));
-                    }
-                } else {
-                    return Err(format!(
-                        "Rust takeover ledger entry {id} has unsupported coverage {coverage}."
-                    ));
-                }
-            }
-        }
-    }
-    if total != ledger.expected_legacy_tests {
-        return Err(format!(
-            "Rust takeover ledger expected {} legacy tests but lists {total}.",
-            ledger.expected_legacy_tests
-        ));
-    }
-    Ok(())
-}
-
 pub(crate) fn validate_parity() -> Result<(), String> {
     let root = workspace_root();
-    let path = root.join("parity-exceptions.json");
-    let parity: ParityFile = read_json(&path)?;
-    let mut ids = HashSet::new();
-    for exception in parity.exceptions {
-        if !ids.insert(exception.id.clone()) {
-            return Err(format!("Duplicate parity exception id: {}", exception.id));
-        }
-        if exception.id.is_empty()
-            || exception.reason.is_empty()
-            || exception.packages.is_empty()
-            || exception.test.is_empty()
-        {
-            return Err(format!(
-                "Parity exception {} is missing required evidence.",
-                exception.id
-            ));
-        }
-        let _ = (exception.old, exception.new);
-    }
     let corpus: SemanticParityCorpus = read_json(&root.join("parity/v2-language-corpus.json"))?;
-    let corpus_ids = validate_semantic_parity_corpus(&root, &corpus)?;
-    let ledger: RustTakeoverLedger = read_json(&root.join("parity/rust-takeover-ledger.json"))?;
-    validate_rust_takeover_ledger(&root, &ledger, &corpus_ids, &ids)
+    validate_semantic_parity_corpus(&root, &corpus).map(|_| ())
 }

@@ -68,13 +68,13 @@ test('BH-0004 managed CSS Modules inline requests keep the scoped stylesheet str
 })
 
 test('BH-0004 CSS Modules compiler errors retain authored directive locations', async () => {
-  await expect(compile('css', "@import url(\"@master/css\");\n.example {\n  @compose unknown-utility;\n}", 'import names from "./style.module.css";console.log(names)')).rejects.toMatchObject({
-    errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/[\\/]style\.module\.css$/), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 10 } } }] }]
+  await expect(compile('css', "@import url(\"@master/css\");\n.example {\n  @contents;\n}", 'import names from "./style.module.css";console.log(names)')).rejects.toMatchObject({
+    errors: [{ diagnostics: [{ code: 'CSS_DIRECTIVE_ERROR', source: expect.stringMatching(/[\\/]style\.module\.css$/), range: { start: { line: 2, character: 2 }, end: { line: 2, character: 11 } } }] }]
   })
 })
 
 test('BH-0004 unattributed composed Module content does not invent an original filename', async () => {
-  await expect(compile('css', "@import url(\"@master/css\");.example{composes:shared from \"./shared.module.css\"}", 'import names from "./style.module.css";console.log(names)', undefined, '.shared{@compose unknown-utility;}')).rejects.toMatchObject({
-    errors: [{ diagnostics: [{ code: 'removed-compose-directive', source: expect.stringMatching(/[\\/]style\.module\.css\.master-css-sass\.css$/), notes: ['Original CSS Modules location is unavailable; this range refers to preprocessed CSS.'] }] }]
+  await expect(compile('css', "@import url(\"@master/css\");.example{composes:shared from \"./shared.module.css\"}", 'import names from "./style.module.css";console.log(names)', undefined, '.shared{@contents;}')).rejects.toMatchObject({
+    errors: [{ diagnostics: [{ code: 'CSS_DIRECTIVE_ERROR', source: expect.stringMatching(/[\\/]style\.module\.css\.master-css-sass\.css$/), notes: ['Original CSS Modules location is unavailable; this range refers to preprocessed CSS.'] }] }]
   })
 })

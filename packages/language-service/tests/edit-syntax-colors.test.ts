@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 import { ColorInformation } from 'vscode-languageserver-protocol'
 import { createPresetManifest } from './helpers/create-preset-manifest'

@@ -107,25 +107,6 @@ fn rejects_provider_import_cycles_deterministically() {
 }
 
 #[test]
-fn native_css_rejects_removed_entry_directive() {
-    let error = compile_native_css(
-        "@master entry;\n.card { color: red; }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err();
-    assert!(error.diagnostic().range.is_some());
-    let result = compile_native_css(
-        ".card { color: red; margin: 0px 1.0rem; }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap();
-    assert_eq!(
-        result.native_css,
-        ".card {\n  color: red;\n  margin: 0 1rem;\n}"
-    );
-}
-
-#[test]
 fn can_skip_native_css_printing() {
     let result = compile_native_css(
         ".card { color: red; }",
@@ -245,20 +226,6 @@ fn preserves_native_theme_functions_dollars_and_pipes() {
     for literal in ["--value()", "$100", "a|b"] {
         assert!(result.native_css.contains(literal));
     }
-}
-
-#[test]
-fn settings_are_removed_at_the_directive_boundary() {
-    let error = compile_css_directives(
-        "@settings { important: on; scope: .app; }",
-        &CompileNativeCssOptions::default(),
-    )
-    .unwrap_err();
-    assert!(error.to_string().contains("@settings has been removed"));
-    assert_eq!(
-        error.diagnostic().range,
-        Some(SourceRange { start: 0, end: 9 })
-    );
 }
 
 #[test]

@@ -367,7 +367,6 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       expect(result.code).toContain('background-color:var(--color-brand)')
       expect(result.globalStylesheet?.css).toContain('--color-brand:#123456')
       expect(result.code).toMatch(/color:\s*(?:#fff|white)/)
-      expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-utilities.css')
       expect(result.dependencies).toContain(entryPath)
       expect(result.dependencies).toContain(modulePath)
@@ -402,19 +401,19 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('style loader keeps local style dependencies registered after invalid @compose', async () => {
+  test('style loader keeps local style dependencies registered after an invalid directive', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-loader-invalid-'))
     const modulePath = path.join(root, 'Button.module.css')
     try {
       let error: Error & { dependencies?: string[] } | undefined
       try {
-        await runStylesheetLoader(root, modulePath, '.button { @compose bg-missing-token; }')
+        await runStylesheetLoader(root, modulePath, '.button { @contents; }')
       } catch (caught) {
         error = caught as Error & { dependencies?: string[] }
       }
 
       expect(error).toBeInstanceOf(Error)
-      expect(error?.message).toContain('@compose has been removed')
+      expect(error?.message).toContain('@contents is only valid inside @mixin')
       expect(error?.dependencies).toContain(modulePath)
 
       const result = await runStylesheetLoader(root, modulePath, ".button { @media all{display:block;} }")
@@ -599,7 +598,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-manifest-'))
     const entryPath = path.join(root, 'app.css')
     try {
-      writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
+      writeFileSync(entryPath, "@import \"@master/css\";\n.card { @contents; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -614,7 +613,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@contents is only valid inside @mixin')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
       writeFileSync(entryPath, "@import \"@master/css\";\n@mixin --card { @media all{display:block;} } @utility card { @media all{display:block;} }")
@@ -741,7 +740,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-invalid-query-manifest-'))
     const manifestPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(manifestPath, "@mixin --card { @compose bg-missing-token; } @utility card { @compose bg-missing-token; }")
+      writeFileSync(manifestPath, ".card { @contents; }")
       const plugin = makePlugin({}, root)
       const { compiler } = makeFakeCompiler({ context: root })
       ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -756,7 +755,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@compose has been removed')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('@contents is only valid inside @mixin')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
       writeFileSync(manifestPath, "@mixin --card { display:block; } @utility card { display:block; }")

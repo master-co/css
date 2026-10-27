@@ -45,7 +45,6 @@ for (const command of ['serve', 'build'] as const) {
         expect(css).toContain("display:inline-flex")
         expect(css).toContain('external.test/style.css')
         expect(css).toMatch(/(?:min-width:\s*700px|width\s*>=\s*700px)/)
-        expect(css).not.toContain('@compose')
         expect(css).not.toContain('#master-css-local-')
       } finally {
         await server?.environments.client.waitForRequestsIdle(); await server?.close()

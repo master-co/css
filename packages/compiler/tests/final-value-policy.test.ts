@@ -60,7 +60,3 @@ describe('preserve and diagnose CSS values', () => {
     expect(() => compiler.compileStylesheets(request, { validation: 'error' })).toThrow('Strict CSS validation failed')
   })
 })
-
-it('rejects the removed value-only policy explicitly', () => {
-  expect(() => compileManifestSync('.a{padding:1px}', { baseManifest, cssValuePolicy: 'error' } as never)).toThrow('cssValuePolicy was removed')
-})

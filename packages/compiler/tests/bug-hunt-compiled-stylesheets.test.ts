@@ -80,7 +80,6 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
-    expect(result.stylesheets[1].css).not.toContain('@compose')
     expect(result.directiveSummary.styleDefinitions).toBe(2)
     expect(result.directiveSummary.extractionPolicy.blocklist[0]).toBeInstanceOf(RegExp)
   }

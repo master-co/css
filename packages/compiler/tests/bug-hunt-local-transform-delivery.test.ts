@@ -24,8 +24,6 @@ test.each([false, true])('BH-0004 local transform delivers imported compose with
     expect(result.stylesheets?.[0].css).toContain('padding:2rem')
     expect(result.stylesheets?.[0].css).toContain('https://external.test/style.css')
     expect(result.stylesheets?.[0].css).toContain('/assets/pixel.svg?q=1#part')
-    expect(result.stylesheets?.[0].css).not.toContain('@compose')
-    expect(result.code).not.toContain('@compose')
     expect(result.dependencies).toEqual(expect.arrayContaining([entry, child, pixel]))
     expect(result.resources).toEqual([{ file: pixel, href: '/assets/pixel.svg' }])
     expect(Object.isFrozen(result.stylesheets)).toBe(true)

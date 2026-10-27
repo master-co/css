@@ -107,13 +107,6 @@ pub fn compare_project_snapshots(request: JsValue) -> Result<JsValue, JsValue> {
     render_value(&mastercss_compiler::compare_project_snapshots(&request).map_err(compiler_error)?)
 }
 
-#[wasm_bindgen(js_name = migrateRC)]
-pub fn migrate_rc(request: JsValue) -> Result<JsValue, JsValue> {
-    let request = serde_wasm_bindgen::from_value::<mastercss_compiler::RcMigrationRequest>(request)
-        .map_err(serialization_error)?;
-    render_value(&mastercss_compiler::migrate_rc(&request).map_err(compiler_error)?)
-}
-
 #[wasm_bindgen(js_name = compileNativeCSS)]
 pub fn compile_native_css(source: &str, options: JsValue) -> Result<JsValue, JsValue> {
     let options = if options.is_null() || options.is_undefined() {

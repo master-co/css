@@ -284,7 +284,7 @@ fn suggests_canonical_composition_groups_from_engine_facts() {
 }
 
 #[test]
-fn retired_aliases_are_not_autofixed_and_conflicts_follow_engine_order() {
+fn unknown_tokens_are_not_autofixed_and_conflicts_follow_engine_order() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let names = [
         "margin-md",
@@ -370,12 +370,4 @@ fn unknown_named_prefixes_follow_the_unknown_class_policy() {
             assert_eq!(unknown[0].code, "UNKNOWN_TOKEN");
         }
     }
-}
-
-#[test]
-fn retired_alias_preference_is_rejected() {
-    assert!(
-        serde_json::from_str::<CanonicalClassNameOptions>(r#"{"preferPropertyAliases":false}"#)
-            .is_err()
-    );
 }

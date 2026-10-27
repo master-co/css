@@ -5,7 +5,7 @@ use super::{
     NativeDeclarationCandidateIr, Program, RuleMutationIr, RuleTarget, StoredRule, UTILITY_LAYERS,
     UtilityLayerName, UtilityMatcherType, collect_class_completion_candidates,
     collect_engine_color_tokens, compare_stored_rules, emit_declarations, engine_variable_ir,
-    layer_index, layer_name, resolve_state_branches, resolve_style_selector_aliases,
+    layer_index, layer_name, resolve_state_branches,
 };
 #[cfg(feature = "manifest")]
 use super::{MasterCssManifest, compile_manifest};
@@ -582,7 +582,7 @@ impl EngineSession {
 
     pub fn resolve_style_selector(&self, selector: &str) -> Result<String, EngineError> {
         self.ensure_active()?;
-        Ok(resolve_style_selector_aliases(selector, &self.compiled))
+        Ok(selector.to_owned())
     }
 
     /// Classes that manifest selectors reference without generating rules themselves,

@@ -51,19 +51,6 @@ fn utility_rules_preserve_fallbacks_through_manifest_and_variant() {
 }
 
 #[test]
-fn removed_managed_directives_are_diagnosed() {
-    for name in ["defaults", "components"] {
-        let error = compile_css_directives(
-            &format!("@{name}{{card{{color:red}}}}"),
-            &CompileNativeCssOptions::default(),
-        )
-        .unwrap_err();
-        assert!(error.to_string().contains("has been removed"));
-        assert!(error.to_string().contains(&format!("@layer {name}")));
-    }
-}
-
-#[test]
 fn native_components_are_output_without_becoming_utilities() {
     let result = compile("@layer components{.card{color:red}}");
     assert!(result.manifest.get("utilities").is_none());

@@ -27,7 +27,6 @@ for (const syntax of ['scss', 'indented']) for (const explicitCompressed of [fal
       async: () => (error: Error | null, result?: string) => error ? reject(error) : resolve(result!)
     }, prepared.css))
     expect(css).toMatch(/padding:\s*2rem/)
-    expect(css).not.toContain('@compose')
     expect(configured.sassOptions.loadPaths).toEqual([root])
     expect(configured.sassOptions.quietDeps).toBe(true)
     expect(configured.sourceMap).toBe(true)

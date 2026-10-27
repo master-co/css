@@ -68,6 +68,6 @@ pnpm --filter @master/css-language-service type-check
 pnpm --filter @master/css-language-service build
 ```
 
-For Shiki or grammar changes, use `tests/shiki.test.ts`, `tests/shiki-session.test.ts`, and `tests/rc87-shiki.test.ts`.
+For Shiki or grammar changes, use `tests/shiki.test.ts`, `tests/shiki-session.test.ts`, and `tests/shiki-textmate.test.ts`.
 
 Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-semantic-tokens.test.ts`, `tests/render-css-semantic-tokens.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.

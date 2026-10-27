@@ -97,44 +97,6 @@ fn native_selectors_preserve_attribute_literals_and_escaped_identifiers() {
 }
 
 #[test]
-fn removed_manifest_selector_indexes_are_rejected() {
-    for selectors in [
-        serde_json::json!({":first":[{"type":"pseudo-class","value":"first-child"}]}),
-        serde_json::json!({":pick(2)":[{"type":"pseudo-class","value":"nth-child","children":[{"value":"2"}]}]}),
-    ] {
-        let manifest = serde_json::json!({"version":6,"languageVersion":16,"selectors":selectors});
-        assert!(EngineSession::create(&manifest.to_string()).is_err());
-    }
-}
-
-#[test]
-fn raw_manifest_mode_conditions_require_balanced_native_queries() {
-    for condition in [
-        "@media (width>1px",
-        "@supports ",
-        "@media width>1px",
-        "@container (width>1px)",
-        "@media (width>1px);body{display:none}",
-    ] {
-        let manifest = serde_json::json!({"version":6,"languageVersion":16,"modes":[{"name":"custom","branches":[{"selector":".custom","conditions":[condition]}]}]});
-        assert!(
-            EngineSession::create(&manifest.to_string()).is_err(),
-            "{condition}"
-        );
-    }
-}
-
-#[test]
-fn raw_manifest_variant_index_cannot_hide_a_different_condition() {
-    let mut manifest = serde_json::json!({"version":6,"languageVersion":16,"conditions":{"wide":{"id":"media","nodes":[{"type":"string","value":"(width>=800px)"}]}},"variants":[{"token":"@wide","branches":[{"conditions":["@media (width>=900px)"]}]}]});
-    assert!(EngineSession::create(&manifest.to_string()).is_err());
-    manifest["variants"][0]["branches"][0]["conditions"][0] = "@media (width>=800px)".into();
-    assert!(EngineSession::create(&manifest.to_string()).is_err());
-    manifest["variables"] = serde_json::json!({"breakpoint":[{"key":"wide","value":"800px"}]});
-    assert!(EngineSession::create(&manifest.to_string()).is_err());
-}
-
-#[test]
 fn native_data_urls_preserve_semicolons_and_resolution_descriptors() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     let result = engine

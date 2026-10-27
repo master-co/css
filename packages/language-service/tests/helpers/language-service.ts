@@ -6,7 +6,7 @@ import type { MasterCSSLanguageServiceSettings } from '../../src/settings'
 
 export type Settings = MasterCSSLanguageServiceSettings
 
-export default class RC87LanguageService extends MasterCSSLanguageService {
+export default class TestLanguageService extends MasterCSSLanguageService {
   constructor(settings: Settings = {}) {
     const manifest = settings.manifest
       ?? defaultManifestJSON as unknown as MasterCSSManifest

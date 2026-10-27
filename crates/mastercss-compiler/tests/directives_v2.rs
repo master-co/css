@@ -63,16 +63,8 @@ fn tokens_preserve_duplicates_and_native_overrides_keep_dependencies() {
 }
 
 #[test]
-fn removed_directives_are_ranged_errors_but_literals_remain_native() {
-    for source in [
-        "@master entry;",
-        "@settings { important: on; }",
-        "@mode dark {}",
-        "@utilities { box {display:block} }",
-        ".x { @dark { color:red; } }",
-        "@theme inline inline { --x: red; }",
-        ".x { @variant media((width > 1px)) { color:red; } }",
-    ] {
+fn directive_errors_are_ranged_but_literals_remain_native() {
+    for source in ["@theme inline inline { --x: red; }", ".x { @contents; }"] {
         let error =
             compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap_err();
         assert!(error.diagnostic().range.is_some(), "{source}: {error}");
@@ -135,11 +127,8 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
 #[test]
 fn parameters_are_tokens_only_in_parameterized_declaration_values() {
     for source in [
-        "@mixin --box(--value) { width: --master-value(1); } @utility box(--value) { width: --master-value(1); }",
         "@mixin --box(--value) { @media (width > var(--value)) { width: 1px; } } @utility box(--value) { @media (width > var(--value)) { width: 1px; } }",
         "@mixin --box(--value) { &:nth-child(var(--value)) { width: 1px; } } @utility box(--value) { &:nth-child(var(--value)) { width: 1px; } }",
-        "@theme {--color:red;  } @variant dark { --color: red; }",
-        "@media print { @variant dark { color: red; } }",
     ] {
         let error =
             compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap_err();
@@ -245,12 +234,8 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
     let error =
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
-    for manifest in [
-        r#"{"version":6,"languageVersion":16,"customMedia":{"--wide":{"type":"true"}},"variants":[{"token":"@wide","branches":[{"selector":"&:hover"}]}]}"#,
-        r#"{"version":6,"languageVersion":16,"customMedia":{"wide":{"type":"true"}}}"#,
-    ] {
-        assert!(EngineSession::create(manifest).is_err(), "{manifest}");
-    }
+    let manifest = r#"{"version":6,"languageVersion":16,"customMedia":{"wide":{"type":"true"}}}"#;
+    assert!(EngineSession::create(manifest).is_err(), "{manifest}");
 }
 
 #[test]

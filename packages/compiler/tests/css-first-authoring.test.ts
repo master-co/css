@@ -76,18 +76,11 @@ describe('directive language v13 authoring contracts', () => {
   })
 
   test.each([
-    '@master entry;', '@settings { important: true; }', '@mode dark { .dark { @contents; } }',
-    '@utilities { card { display: block; } }', '@dark { .card { color: red; } }',
-    '.card { @variant media((width>=40rem)) { display: block; } }',
     '@theme inline inline { --color-brand: red; }', '@theme static static { --color-brand: red; }',
     '@theme dark { --color-brand: red; }',
     '@theme { color: red;  }',
-    '@utility align-<left|right> { text-align: --master-value(); }',
-    '@utility pair:<*> { width: --master-value(); }',
-    '@utility pair:* { width: --master-value(1px); }',
-    '@utility card { width: --master-value(); }',
     '@custom-media --card (--missing);', '@custom-media --a (--b); @custom-media --b (--a);',
-  ])('rejects removed or invalid authoring syntax: %s', source => {
+  ])('rejects invalid authoring syntax: %s', source => {
     expect(() => compile(source)).toThrow()
   })
 })

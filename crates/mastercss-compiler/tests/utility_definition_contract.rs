@@ -54,18 +54,6 @@ fn untyped_static_arguments_do_not_depend_on_property_value_kind() {
 }
 
 #[test]
-fn removed_authoring_forms_fail_explicitly() {
-    for source in [
-        "@utility --card{color:red}",
-        "@utility font-* from(--font-size-*){font-size:--master-value()}",
-        "@utilities{x:<number>{width:--value()}}",
-        ".x{width:--master-value()}",
-    ] {
-        assert!(compile(source).is_err(), "{source}");
-    }
-}
-
-#[test]
 fn registration_forms_have_independent_replacements() {
     let source = "@mixin --card{color:red;&:hover{color:blue}} @utility card {color:red;&:hover{color:blue}}@mixin --card(--n <integer>){order:var(--n)} @utility card(--n <integer>) {order:var(--n)}";
     let generated = css(source, &["card(2)"]);
@@ -183,10 +171,4 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
         generated.contains("padding:var(--gutter-md)") && !generated.contains("margin:"),
         "{generated}"
     );
-}
-
-#[test]
-fn old_manifest_matcher_and_emit_authoring_is_rejected() {
-    let old = serde_json::json!({"version":6,"languageVersion":16,"utilities":[{"id":"x","emit":{"type":"property","property":"color"},"matchers":[{"type":"static","name":"x"}]}]});
-    assert!(EngineSession::create(&old.to_string()).is_err());
 }

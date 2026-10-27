@@ -20,7 +20,6 @@ import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 export interface BindingCompilerSession {
   readonly binding: MasterCSSCompilerBindingSession['binding']
   compareProjectSnapshots: MasterCSSCompilerBindingSession['compareProjectSnapshots']
-  migrateRC: MasterCSSCompilerBindingSession['migrateRC']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
   analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
@@ -57,7 +56,6 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
   return {
     binding: session.binding,
     compareProjectSnapshots: (request) => session.compareProjectSnapshots(request),
-    migrateRC: (request) => session.migrateRC(request),
     inspectCSS: (source: string) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
       assertValidationOptions(options)

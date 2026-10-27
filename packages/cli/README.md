@@ -7,7 +7,7 @@ npm install --save-dev @master/css-cli
 npx @master/css-cli generate
 ```
 
-Use the explicit `generate`, `lint`, `inspect` or `migrate` command. The app CSS entry starts with `@import '@master/css';`, loading the complete preset. Static generation emits CSS without a Master browser runtime. Native CSS is preserved unless pruning is explicitly enabled.
+Use the explicit `generate`, `lint` or `inspect` command. The app CSS entry starts with `@import '@master/css';`, loading the complete preset. Static generation emits CSS without a Master browser runtime. Native CSS is preserved unless pruning is explicitly enabled.
 
 ```bash
 npx @master/css-cli generate 'src/**/*.{html,tsx}' --output public/master.css

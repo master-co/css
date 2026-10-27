@@ -53,7 +53,6 @@ describe('LocalStylesPlugin', () => {
       )
       expect(result.code).toContain('--color-brand:#123456')
       expect(result.code).toMatch(/color:\s*(?:#fff|white)/)
-      expect(result.code).not.toContain('@compose')
       expect(result.code).not.toContain('master-css-slot')
       expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'app.css')))
       expect(addWatchFile).toHaveBeenCalledWith(normalizePath(path.join(root, 'src/Button.module.css')))
@@ -197,7 +196,7 @@ describe('LocalStylesPlugin', () => {
     }
   })
 
-  test('keeps local style dependencies registered after invalid @compose and recovers on the next run', async () => {
+  test('keeps local style dependencies registered after an invalid directive and recovers on the next run', async () => {
     const root = createFixture()
     try {
       const context = createContext(root)
@@ -207,9 +206,9 @@ describe('LocalStylesPlugin', () => {
 
       await expect((plugin as any).transform.call(
         { addWatchFile },
-        '.button { @compose bg-missing-token; }',
+        '.button { @contents; }',
         modulePath
-      )).rejects.toThrow('@compose has been removed')
+      )).rejects.toThrow('@contents is only valid inside @mixin')
       expect(addWatchFile).toHaveBeenCalledWith(normalizePath(modulePath))
 
       const result = await (plugin as any).transform.call(

@@ -78,7 +78,7 @@ test('prepared source registers a missing mapped reference before failure and re
 test('prepared source reports invalid compose at the original partial diagnostic location', async () => {
   await fixture(async root => {
     const file = join(root, 'entry.scss'), partial = join(root, 'parts/_rules.scss')
-    writeFileSync(partial, '/* 😀 original source */\n.bad { @compose "block"; }')
+    writeFileSync(partial, '/* 😀 original source */\n.bad { @contents; }')
     const prepared = await prepareStylesheet(file, '@use "parts/rules";', { loadSass: () => sass })
     await expect(transformStylesheet(file, prepared.source, {
       baseManifest, projectDir: root, loadSass: identitySass, sourceMap: prepared.sourceMap

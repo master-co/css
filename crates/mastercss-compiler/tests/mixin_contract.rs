@@ -242,31 +242,7 @@ fn direct_declarations_follow_recipe_declarations() {
 }
 
 #[test]
-fn raw_aliases_are_removed_without_removing_svg_properties() {
-    let session = engine("");
-    for class in [
-        "p:1rem",
-        "fg:red",
-        "bg:#fff",
-        "w:2px",
-        "text-stroke:1px",
-        "grid-cols:3",
-        "grid-rows:2",
-        "grid-col-span:2",
-        "grid-row-span:2",
-        "clamp-lines:2",
-        "text:sm",
-    ] {
-        let inspection = session.inspect(class).unwrap();
-        assert!(inspection.rules.is_empty(), "{class}: {inspection:?}");
-        assert!(
-            inspection
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.message.contains("removed")),
-            "{class}"
-        );
-    }
+fn svg_properties_are_native_declarations() {
     assert!(css("", &["r:2px"]).contains("r:2px"));
 }
 

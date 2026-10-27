@@ -3,7 +3,7 @@ import { expect, test } from 'vitest'
 import {
   collectBrowserSemanticTokenItems,
   renderBrowserSemanticTokens
-} from './helpers/rc87-browser-compat'
+} from './helpers/browser-compat'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
@@ -133,7 +133,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
   expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable' as const, modifiers: [] })
   expect(mapped).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
-  expect(mapped).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(mapped).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: 'var', type: 'function' as const, modifiers: [] })
   expect(mapped).not.toContainEqual({ text: '@keyframes', type: 'keyword' as const, modifiers: [] })
 })

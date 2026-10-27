@@ -243,8 +243,6 @@ struct CompiledVariable {
     dependencies: Vec<String>,
     inline_value: Option<String>,
     is_static: bool,
-    /// The position in `Program::compiled_variable_order`.
-    order: usize,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -409,7 +407,6 @@ mod utility_matching;
 pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
 mod program;
-mod removed_syntax;
 mod render;
 mod resources;
 mod session;
@@ -435,7 +432,7 @@ pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
 };
-pub(crate) use state::{resolve_state_branches, resolve_style_selector_aliases, split_top_level};
+pub(crate) use state::{resolve_state_branches, split_top_level};
 pub(crate) use stylesheet_resources::is_css_identifier_character;
 pub(crate) use utility::{
     append_builtin_native_declaration_utilities, compare_stored_rules, layer_index,

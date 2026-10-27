@@ -18,7 +18,7 @@ test.each(cases)('imported Sass maps original file and token: $rootExtension / $
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     mkdirSync(join(root, 'nested'))
-    const source = syntax === 'scss' ? '// removed\n$unused: 1;\n.bad {\n  @compose unknown-utility;\n}\n' : '// removed\n$unused: 1\n.bad\n  @compose unknown-utility\n'
+    const source = syntax === 'scss' ? '// removed\n$unused: 1;\n.bad {\n  @contents;\n}\n' : '// removed\n$unused: 1\n.bad\n  @contents\n'
     const child = join(root, `nested/child.${syntax}`)
     const original = partial ? join(root, `nested/_bad.${syntax}`) : child
     writeFileSync(original, source)
@@ -46,12 +46,12 @@ test.each(cases)('imported Sass maps original file and token: $rootExtension / $
       }
     } catch (error) { failure = (error as MasterCSSError).diagnostics ? error as MasterCSSError : (error as { errors?: MasterCSSError[] }).errors?.[0] }
     finally { await server?.environments.client.waitForRequestsIdle(); await server?.close() }
-    expect(failure?.diagnostics[0]?.code).toBe('removed-compose-directive')
+    expect(failure?.diagnostics[0]?.code).toBe('CSS_DIRECTIVE_ERROR')
     expect(calls.filter(file => file === normalizePath(child))).toHaveLength(addition === 'string' ? 0 : 1)
     const diagnostic = failure!.diagnostics[0]
     console.log(JSON.stringify({ rootExtension, syntax, partial, addition, command, diagnostic, additionalDataCalls: calls }))
     expect(diagnostic.source).toBe(original)
-    expect(diagnostic.range).toEqual({ start: { line: 3, character: 2 }, end: { line: 3, character: 10 } })
+    expect(diagnostic.range).toEqual({ start: { line: 3, character: 2 }, end: { line: 3, character: 11 } })
     expect(diagnostic.notes).toBeUndefined()
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
@@ -61,14 +61,14 @@ test.each(['scss', 'sass'])('pure Vite direct preprocessing exposes original imp
   try {
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const original = join(root, `_bad.${syntax}`), child = join(root, `child.${syntax}`)
-    const source = syntax === 'scss' ? '// removed\n.bad {\n  @compose unknown-utility;\n}\n' : '// removed\n.bad\n  @compose unknown-utility\n'
+    const source = syntax === 'scss' ? '// removed\n.bad {\n  @contents;\n}\n' : '// removed\n.bad\n  @contents\n'
     const input = syntax === 'scss' ? '@use "./bad";' : '@use "./bad"'
     writeFileSync(original, source); writeFileSync(child, input)
     const config = await resolveConfig({ root, configFile: false, logLevel: 'silent', css: { devSourcemap: true, preprocessorOptions: { scss: { sourceMapIncludeSources: true }, sass: { sourceMapIncludeSources: true } }, postcss: { plugins: [] } } }, 'serve')
     const result = await preprocessCSS(input, child, config)
     const raw = typeof result.map === 'string' ? JSON.parse(result.map) : result.map
-    const line = result.code.split('\n').findIndex(text => text.includes('@compose'))
-    const column = result.code.split('\n')[line].indexOf('@compose')
+    const line = result.code.split('\n').findIndex(text => text.includes('@contents'))
+    const column = result.code.split('\n')[line].indexOf('@contents')
     const origin = new SourceMap(raw as ConstructorParameters<typeof SourceMap>[0]).findEntry(line, column)
     expect('originalSource' in origin).toBe(true)
     if (!('originalSource' in origin)) throw new Error('Missing original map source')
@@ -85,7 +85,7 @@ for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unma
     mkdirSync(join(root, 'node_modules')); symlinkSync(sassDirectory, join(root, 'node_modules/sass'), 'dir')
     const child = join(root, `child.${syntax}`)
     const value = kind === 'interpolated' ? '#{$name}' : 'unknown-utility'
-    const source = syntax === 'scss' ? `$name: unknown-utility;\n.bad {\n  @compose ${value};\n}\n` : `$name: unknown-utility\n.bad\n  @compose ${value}\n`
+    const source = syntax === 'scss' ? `$name: unknown-utility;\n.bad {\n  @contents;\n}\n` : `$name: unknown-utility\n.bad\n  @contents\n`
     writeFileSync(child, source)
     writeFileSync(join(root, 'style.module.css'), `@import "./child.${syntax}" layer(guard);`)
     writeFileSync(join(root, 'entry.js'), 'import "./style.module.css";')
@@ -98,10 +98,10 @@ for (const syntax of ['scss', 'sass']) for (const kind of ['interpolated', 'unma
     } catch (error) { failure = (error as { errors?: MasterCSSError[] }).errors?.[0] }
     expect(calls).toBe(1)
     const diagnostic = failure!.diagnostics[0]
-    expect(diagnostic.code).toBe('removed-compose-directive')
+    expect(diagnostic.code).toBe('CSS_DIRECTIVE_ERROR')
     if (kind === 'interpolated') {
       expect(diagnostic.source).toBe(child)
-      expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 10 } })
+      expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 11 } })
       expect(diagnostic.notes).toBeUndefined()
     } else {
       expect(diagnostic.source).toBe(normalizePath(child) + '.master-css-sass.css')

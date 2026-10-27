@@ -1,4 +1,4 @@
-//! Language v4 semantics. Historical RC syntax appears only in rejection cases.
+//! Language v4 semantics.
 use mastercss_compiler::{
     CompileManifestOptions, CompileNativeCssOptions, compile_css_directives, compile_manifest_input,
 };
@@ -59,7 +59,7 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
 }
 
 #[test]
-fn legacy_conditions_and_unknown_names_do_not_generate() {
+fn invalid_conditions_and_unknown_names_do_not_generate() {
     let e = engine("").unwrap();
     for class in [
         "width:1px@>=800",
@@ -123,24 +123,6 @@ fn variant_redefinition_preserves_authored_theme_order() {
         native.find(".b{").unwrap() < native.find(".a{").unwrap(),
         "{output}"
     );
-}
-
-#[test]
-fn invalid_modes_and_removed_settings_are_rejected() {
-    for source in [
-        "@mode a { @contents; }",
-        "@mode a { .a::before { @contents; } }",
-        "@mode a { .a { color: red; @contents; } }",
-        "@mode a { @container (width>1px) { .a { @contents; } } }",
-        "@mode a { @layer utilities { .a { @contents; } } }",
-        "@theme missing { --color-x: red; }",
-        "@mode sm { .sm { @contents; } } @theme { --breakpoint-sm: 1rem; }",
-        "@settings { root-size: 20; }",
-        "@settings { default-mode: dark; }",
-        "@settings { mode-trigger: class; }",
-    ] {
-        assert!(engine(source).is_err(), "{source}");
-    }
 }
 
 #[test]

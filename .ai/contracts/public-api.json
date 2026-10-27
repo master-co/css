@@ -369,16 +369,13 @@
           "MasterCSSProjectComparison",
           "MasterCSSProjectComparisonRequest",
           "MasterCSSProjectSnapshot",
-          "MasterCSSRCMigrationRequest",
-          "MasterCSSRCMigrationResult",
           "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSStylesheetAsset",
           "MasterCSSStylesheetBundle",
           "compileCSS",
           "compileManifest",
           "createCompiler",
-          "inspectCSS",
-          "migrateRC"
+          "inspectCSS"
         ],
         "./node": [
           "MasterCSSCompileManifestFileDeliveryOptions",
@@ -407,7 +404,6 @@
           "composeStylesheetHostSync",
           "createCompilerSync",
           "inspectCSSSync",
-          "migrateRCSync",
           "resolveStylesheetDependenciesSync",
           "resolveStylesheetSync"
         ],
@@ -493,7 +489,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "0abe175b8e7afddb"
+      "surface": "0bae938fd4d95846"
     },
     "@master/create-css": {
       "directory": "create",

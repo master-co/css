@@ -97,23 +97,33 @@ fn utility_variables_resolve_like_their_entries_in_every_corpus_program() {
 }
 
 #[test]
-fn utility_variables_follow_alias_namespace_and_declaration_precedence() {
+fn variable_keys_and_names_cannot_start_or_end_with_a_dash() {
+    for (name, key) in [
+        (None, "-x"),
+        (None, "x-"),
+        (Some("-space-x"), "x"),
+        (Some("space-"), "x"),
+    ] {
+        let mut variable = serde_json::json!({ "key": key, "values": [] });
+        if let Some(name) = name {
+            variable["name"] = name.into();
+        }
+        let manifest = serde_json::json!({
+            "version": mastercss_schema::MANIFEST_VERSION,
+            "languageVersion": mastercss_schema::LANGUAGE_VERSION,
+            "variables": { "space": [variable] }
+        });
+        assert!(
+            crate::compile_program(&manifest.to_string()).is_err(),
+            "{name:?} {key}"
+        );
+    }
+}
+
+#[test]
+fn utility_variables_follow_alias_and_namespace_precedence() {
     let program = variables_program(&[
-        (
-            "space",
-            &[
-                // Both name the key `-x`; the earlier declaration wins.
-                (Some("space--x"), "a"),
-                (Some("-space-x"), "b"),
-                // Both name the empty key, and both the key `-`.
-                (Some("space-"), "c"),
-                (None, ""),
-                (Some("-space"), "d"),
-                (Some("-space-"), "e"),
-                (None, "y"),
-                (Some("space---q"), "f"),
-            ],
-        ),
+        ("space", &[(None, ""), (None, "y"), (None, "a--b")]),
         ("alt", &[(None, "y"), (None, "z")]),
     ]);
     let property = || super::UtilityEmit::Property {
@@ -121,13 +131,12 @@ fn utility_variables_follow_alias_namespace_and_declaration_precedence() {
     };
     let utility = token_utility(&[], &["space", "alt"], property());
     for (key, expected) in [
-        ("-x", Some("space--x")),
-        ("", Some("space-")),
-        ("-", Some("-space")),
         // The first namespace with the key wins over later ones.
         ("y", Some("space-y")),
         ("z", Some("alt-z")),
-        ("--q", Some("space---q")),
+        ("a--b", Some("space-a--b")),
+        // A namespace's own variable is not a token.
+        ("", None),
         ("w", None),
     ] {
         assert_eq!(
@@ -136,7 +145,7 @@ fn utility_variables_follow_alias_namespace_and_declaration_precedence() {
             "{key:?}"
         );
     }
-    assert_lookups_match_entries(&utility, &program, &["-x", "", "-", "y", "z", "--q", "w"]);
+    assert_lookups_match_entries(&utility, &program, &["y", "z", "a--b", "", "w"]);
 
     // Explicit aliases come first; one naming a missing variable is skipped.
     let aliased = token_utility(
@@ -152,7 +161,7 @@ fn utility_variables_follow_alias_namespace_and_declaration_precedence() {
         crate::utility::utility_variable(&aliased, "w", &program),
         Some("alt-z")
     );
-    assert_lookups_match_entries(&aliased, &program, &["y", "w", "-x"]);
+    assert_lookups_match_entries(&aliased, &program, &["y", "w"]);
 
     // String keys of recipes never resolve custom-property-like keys through a
     // namespace, while aliases still do.
@@ -164,10 +173,10 @@ fn utility_variables_follow_alias_namespace_and_declaration_precedence() {
             key: true,
         },
     );
-    assert_eq!(crate::utility::utility_variable(&recipe, "--q", &program), None);
+    assert_eq!(crate::utility::utility_variable(&recipe, "a--b", &program), None);
     assert_eq!(
         crate::utility::utility_variable(&recipe, "--alias", &program),
         Some("space-y")
     );
-    assert_lookups_match_entries(&recipe, &program, &["--q", "--alias", "y"]);
+    assert_lookups_match_entries(&recipe, &program, &["a--b", "--alias", "y"]);
 }

@@ -60,10 +60,10 @@ test('Next registers missing mapped CSS reference before error and recovers on c
     expect(await compile(root, file, '@use "parts/rules";', [])).toContain('--paint-padding:5rem')
   })
 })
-test('Next reports invalid compose in the original Sass partial', async () => {
+test('Next reports an invalid directive in the original Sass partial', async () => {
   await fixture(async root => {
     const file = join(root, 'card.module.scss'), partial = join(root, 'parts/_rules.scss')
-    writeFileSync(partial, '/* original */\n.card{@compose "block";}')
+    writeFileSync(partial, '/* original */\n.card{@contents;}')
     await expect(compile(root, file, '@use "parts/rules";', [])).rejects.toMatchObject({ diagnostics: [expect.objectContaining({ source: partial, range: { start: expect.objectContaining({ line: 1 }), end: expect.objectContaining({ line: 1 }) } })] })
   })
 })

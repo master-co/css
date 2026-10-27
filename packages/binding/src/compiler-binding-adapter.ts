@@ -8,7 +8,6 @@ interface CompilerOperations {
   loadProjectManifest?: MasterCSSCompilerBindingSession['loadProjectManifest']
   loadPreparedProjectManifest?: MasterCSSCompilerBindingSession['loadPreparedProjectManifest']
   compareProjectSnapshots: MasterCSSCompilerBindingSession['compareProjectSnapshots']
-  migrateRC: MasterCSSCompilerBindingSession['migrateRC']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileNativeCSS: MasterCSSCompilerBindingSession['compileNativeCSS']
   compileCSSDirectives: MasterCSSCompilerBindingSession['compileCSSDirectives']
@@ -74,7 +73,6 @@ export function bindCompilerBindingSession(
       operations.loadPreparedProjectManifest?.(projectDir, baseManifest, graphs)
         ?? unavailable('Prepared project manifest loading')),
     compareProjectSnapshots: (request) => invoke('compiler', () => operations.compareProjectSnapshots(request)),
-    migrateRC: (request) => invoke('compiler', () => operations.migrateRC(request)),
     inspectCSS: (source) => invoke('compiler', () => operations.inspectCSS(source), source),
     compileNativeCSS: (source, options) =>
       invoke('compiler', () => operations.compileNativeCSS(source, options), source),

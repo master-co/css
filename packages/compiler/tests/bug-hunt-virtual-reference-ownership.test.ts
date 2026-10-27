@@ -69,9 +69,9 @@ test('BH-0004 original virtual diagnostic identity survives filesystem reference
   const f = fixture()
   try {
     const id = '\0prepared:diagnostic.css'
-    await expect(transformStylesheet(id, f.sources[0].source + '\n.bad{@compose unknown-owner-utility;}', {
+    await expect(transformStylesheet(id, f.sources[0].source + '\n.bad{@contents;}', {
       baseManifest, projectDir: f.root, delivery: { ...f.delivery, baseFile: f.sources[0].owner }
-    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: id, code: 'removed-compose-directive' })]) })
+    })).rejects.toMatchObject({ diagnostics: expect.arrayContaining([expect.objectContaining({ source: id, code: 'CSS_DIRECTIVE_ERROR' })]) })
   } finally { f.remove() }
 })
 
@@ -108,7 +108,7 @@ for (const location of ['physical', 'virtual-entry', 'virtual-child'] as const) 
       const text = css.join('\n')
       expect(text).toContain('padding:2rem')
       expect(text).toContain('padding:3rem')
-      expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+      expect(text).not.toMatch(/99rem|never-|@reference/)
       expect(new Set(resources)).toEqual(new Set(f.sources.map(item => item.resource)))
       for (const [index, item] of f.sources.entries()) {
         expect(text).toContain(`${f.delivery.resourceURL(item.resource)}?q=${index ? 'b' : 'a'}#icon`)

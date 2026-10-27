@@ -81,7 +81,7 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="font-size:16px">Literal values are preserved</div>`,
         },
 {
-            code: `<div class="margin-md">Retired token names are diagnosed by no-invalid-classes; no autofix</div>`,
+            code: `<div class="margin-md">Unknown token names have no autofix</div>`,
         },
 {
             code: `<div class="display:block">Static utilities disabled</div>`,
@@ -156,7 +156,7 @@ code: `<div class="font-size:16px@dark@sm text-align:center@dark@sm">Condition o
 code: `<div class="font-size:16px@dark@sm">Literal values are preserved preserves condition nesting</div>`
 },
 {
-code: `<div class="margin-md@dark@sm">Retired token names are diagnosed by no-invalid-classes; no autofix preserves condition nesting</div>`,
+code: `<div class="margin-md@dark@sm">Unknown token names have no autofix, with conditions</div>`,
 },
 {
 code: "<div class=\"margin:var(--spacing-md)@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"

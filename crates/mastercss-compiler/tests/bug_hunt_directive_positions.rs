@@ -2,17 +2,15 @@ use mastercss_compiler::compile_css_stylesheet_graph;
 use serde_json::json;
 
 #[test]
-fn diagnostics_after_removed_directives_retain_original_utf16_offsets() {
+fn diagnostics_after_source_directives_retain_original_utf16_offsets() {
     for prefix in [
         "@source './src/**';\n",
         "@reference './😀.css';\r\n@source './src/**';@preserve native;\n",
         "@source './😀.html';\n/*😀*/@source './src/**';\n",
     ] {
         for (body, token) in [
-            (".example {\n  @compose unknown-utility;\n}", "@compose"),
-            ("@utilities invalid {paint{color:red}}", "@utilities"),
-            ("@mixin --paint {@compose unknown-utility;}", "@compose"),
-            ("@utility paint {@compose unknown-utility;}", "@compose"),
+            (".example {\n  @contents;\n}", "@contents"),
+            ("@contents;", "@contents"),
         ] {
             let source = format!("{prefix}{body}");
             let request = serde_json::from_value(json!({

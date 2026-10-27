@@ -93,9 +93,9 @@ test('BH-0004 unchanged failures are not retried continuously and corrected cont
   try {
     result = await start(f)
     await delay(350);expect(result.transform).not.toHaveBeenCalled()
-    mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '@mixin --paint {@compose definitely-missing-class;}')
+    mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '.paint{@contents;}')
     await vi.waitFor(() => expect(result!.transform).toHaveBeenCalled(), { timeout: watchDeadline })
-    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('@compose has been removed'), { timeout: watchDeadline })
+    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('@contents is only valid inside @mixin'), { timeout: watchDeadline })
     await result.server.environments.client.waitForRequestsIdle()
     const attempts = result.transform.mock.calls.length
     await delay(350);expect(result.transform).toHaveBeenCalledTimes(attempts);expect(notified(result.send.mock.calls)).toBe(false)

@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
-import type { Settings } from '../helpers/rc87-language-service'
+import type { Settings } from '../helpers/language-service'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings = {

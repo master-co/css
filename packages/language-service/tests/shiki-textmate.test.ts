@@ -120,12 +120,6 @@ function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes:
   ))
 }
 
-test.concurrent('does not restore the rc.87 Shiki default array export', async () => {
-  const shikiModule = await import('../src/shiki')
-  expect(shikiModule.masterCSSShikiLanguage).toBe(masterCSSShikiLanguage)
-  expect('default' in shikiModule).toBe(false)
-})
-
 test.concurrent('defines deterministic directive scopes with native blocks', () => {
   expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
   expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
@@ -136,8 +130,6 @@ test.concurrent('defines deterministic directive scopes with native blocks', () 
   }
   const utility = findGrammarPattern(directive, pattern => pattern.begin?.includes('(utility|mixin|apply)') === true)
   expectGrammarIncludes({ patterns: utility.patterns ?? [] }, ['#master-block', '#master-mixin-prelude'])
-  expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-compose-prelude')
-  expect(MASTER_CSS_TEXTMATE_GRAMMAR.repository).not.toHaveProperty('master-theme-prelude')
   const classFragment = grammarEntry('master-class-fragment')
   findGrammarPattern(classFragment, pattern => pattern.name === 'keyword.control.at-rule.master-css.query')
 })

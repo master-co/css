@@ -33,7 +33,6 @@ const cases = [
   { name: 'one anonymous layer', body: "@layer{.example{@apply --all {color:red;}}.example{color:blue!important}}", order: ['red', 'blue'] }
 ]
 function check(css: string, entry: typeof cases[number]) {
-  expect(css).not.toContain('@compose')
   expect(css).not.toContain('@--master-css-style-slot-')
   expect([...css.matchAll(/color:\s*(red|blue|#00f)/g)].map(match => match[1] === '#00f' ? 'blue' : match[1])).toEqual(entry.order)
   if (entry.name === 'one anonymous layer') expect(css.match(/@layer/g)).toHaveLength(1)

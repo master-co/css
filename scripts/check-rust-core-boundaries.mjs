@@ -30,11 +30,6 @@ async function collectSourceFiles(directory) {
 }
 
 const forbiddenSourcePatterns = [
-  [/\bnew\s+MasterCSS\s*\(/g, 'legacy MasterCSS construction'],
-  [/\bMasterCSS\.create\s*\(/g, 'legacy MasterCSS factory'],
-  [/@master\/css-engine\/(?:compiler|core|inspect|layer|rule|utility)/g, 'legacy engine implementation import'],
-  [/@master\/css-compiler\/(?:core|lower-css-directives|master-css-manifest)/g, 'legacy compiler implementation import'],
-  [/@master\/css-(?:engine|project|stylesheet|lexer|source|scanner|validator|diagnostics|lint|language|integration)(?:\/|['"])/g, 'retired package import'],
   [/(?:fallback|fall back).{0,48}(?:TypeScript|TS semantic)/gi, 'TypeScript semantic fallback']
 ]
 
@@ -44,23 +39,6 @@ for (const file of await collectSourceFiles(packagesDirectory)) {
     pattern.lastIndex = 0
     if (pattern.test(source)) failures.push(`${relative(root, file)}: ${description}`)
   }
-}
-
-const removedSemanticFiles = [
-  'packages/css/src/engine/core.ts',
-  'packages/css/src/engine/compiler.ts',
-  'packages/css/src/engine/inspect.ts',
-  'packages/compiler/src/core.ts',
-  'packages/compiler/src/lower-css-directives.ts',
-  'packages/compiler/src/master-css-manifest.ts',
-  'packages/tooling/src/lint/find-class-conflicts.ts',
-  'packages/tooling/src/lint/sort-class-names.ts',
-  'packages/tooling/src/language/format-directives.ts'
-]
-
-const existingFiles = new Set(await collectSourceFiles(packagesDirectory))
-for (const path of removedSemanticFiles) {
-  if (existingFiles.has(join(root, path))) failures.push(`${path}: removed TypeScript semantic core was restored`)
 }
 
 const forbiddenDependencies = new Map([

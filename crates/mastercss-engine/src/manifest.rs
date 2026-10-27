@@ -189,9 +189,6 @@ pub(crate) fn compile_variables(
                     " entries must be objects"
                 )));
             };
-            if object.get("value") == Some(&Value::Bool(false)) {
-                continue;
-            }
             let key = object
                 .get("key")
                 .and_then(Value::as_str)
@@ -204,6 +201,16 @@ pub(crate) fn compile_variables(
                 .unwrap_or_else(|| default_variable_name(namespace, &key));
             if name.is_empty() {
                 continue;
+            }
+            if [&key, &name]
+                .iter()
+                .any(|text| text.starts_with('-') || text.ends_with('-'))
+            {
+                return Err(EngineError::InvalidManifest(concat_text!(
+                    "Variable ",
+                    name,
+                    " must not have a key or name that starts or ends with -"
+                )));
             }
             let values: Vec<mastercss_schema::ScopedThemeValue> =
                 serde_json::from_value(object.get("values").cloned().unwrap_or_default())
@@ -248,14 +255,8 @@ pub(crate) fn compile_variables(
                     }),
                     variable_type,
                     dependencies,
-                    order: 0,
                 },
             );
-        }
-    }
-    for (index, name) in order.iter().enumerate() {
-        if let Some(variable) = variables.get_mut(name) {
-            variable.order = index;
         }
     }
     Ok((variables, order))

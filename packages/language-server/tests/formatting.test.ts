@@ -75,7 +75,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns no formatting edits when disabled', async ({ expect }) => {
-    const textDocument = context.createDocument('.btn { @compose background-color:transparent !; }', { lang: 'css' })
+    const textDocument = context.createDocument('.btn { @contents; }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const edits = await context.server.onDocumentFormatting({
       textDocument: {

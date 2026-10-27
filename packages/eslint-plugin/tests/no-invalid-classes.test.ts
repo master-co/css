@@ -15,8 +15,8 @@ jsxTester.run('invalid', rule, {
   ],
   invalid: [
     {
-      code: `<div class="{content:'';display:block}::after display:block:of(.active)"></div>`,
-      errors: [{ message: /Unbalanced or invalid Master class structure/ }, { message: /:of was removed/ }],
+      code: `<div class="{content:'';display:block}::after"></div>`,
+      errors: [{ message: /Unbalanced or invalid Master class structure/ }],
       output: null
     },
     {

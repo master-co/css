@@ -8,12 +8,12 @@
     "packages/runtime/dist/global.min.js": {
       "raw": 64113,
       "gzip": 17881,
-      "brotli": 15847
+      "brotli": 15866
     },
     "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
-      "raw": 272990,
-      "gzip": 97671,
-      "brotli": 82294
+      "raw": 263789,
+      "gzip": 94624,
+      "brotli": 79792
     },
     "packages/runtime/dist/default-program.bin": {
       "raw": 52492,

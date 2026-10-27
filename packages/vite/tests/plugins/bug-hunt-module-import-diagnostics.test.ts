@@ -35,7 +35,7 @@ async function failure(files: Record<string, string>, request: string, css?: Inl
 
 const cases = ['css', 'scss'].flatMap(rootExtension => ['css', 'scss'].map(childExtension => ({ rootExtension, childExtension })))
 test.each(cases)('imported Module diagnostics identify their real source $rootExtension / $childExtension', async ({ rootExtension, childExtension }) => {
-  const child = childExtension === 'scss' ? '// removed\n$unused: 1;\n.bad {\n  @compose unknown-utility;\n}\n' : '/* original 😀 */\n.bad {\n  @compose unknown-utility;\n}\n'
+  const child = childExtension === 'scss' ? '// removed\n$unused: 1;\n.bad {\n  @contents;\n}\n' : '/* original 😀 */\n.bad {\n  @contents;\n}\n'
   const { error, root } = await failure({ [`style.module.${rootExtension}`]: `@import "./nested/child.${childExtension}" layer(guard);`, [`nested/child.${childExtension}`]: child }, `./style.module.${rootExtension}`)
   console.log(JSON.stringify({ rootExtension, childExtension, diagnostics: error.diagnostics, loc: error.loc }))
   const diagnostic = error.diagnostics[0]
@@ -43,7 +43,7 @@ test.each(cases)('imported Module diagnostics identify their real source $rootEx
   expect(diagnostic.source).toContain(join(root, `nested/child.${childExtension}`))
   if (childExtension === 'css') {
     expect(diagnostic.source).toBe(join(root, 'nested/child.css'))
-    expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 10 } })
+    expect(diagnostic.range).toEqual({ start: { line: 2, character: 2 }, end: { line: 2, character: 11 } })
     expect(diagnostic.notes).toBeUndefined()
   } else {
     // Vite's imported Sass preprocessing must either provide an original range

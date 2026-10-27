@@ -966,6 +966,6 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
   expect(tokens?.some((token) => token.content === 'sm' && token.className)).toBe(false)
 })
 
-test.each(['{color:red;display:block}:hover', 'color:red:of(.active)', 'color:red:is(:of(.active))'])('does not decorate retired class syntax: %s', (code) => {
+test.each(['{color:red;display:block}:hover'])('does not decorate invalid class syntax: %s', (code) => {
   expect(createMasterCSSShikiDecorations(code, { lang: 'mcss' })).toEqual([])
 })

@@ -37,8 +37,8 @@ runtime program compiled from one; browsers accept only programs.
 - Virtual manifest, emitted-global, and generated CSS declarations from `./client`.
 - Stable CSS subpaths listed above.
 
-Do not restore legacy Config APIs, semantic TypeScript helpers, engine deep imports,
-or compatibility subpaths.
+Do not add Config APIs, semantic TypeScript helpers, engine deep imports, or
+compatibility subpaths.
 
 ## Key Files
 

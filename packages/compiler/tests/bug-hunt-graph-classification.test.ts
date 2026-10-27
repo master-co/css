@@ -59,12 +59,12 @@ test.each([
 /** A directive diagnostic raised while classifying must name the file it is in,
  *  not the compiler's default filename. */
 test('BH-0004 a directive diagnostic raised during classification names its file', () => {
-  const source = '/* original */\n.card{@compose "block";}'
+  const source = '/* original */\n.card{@contents;}'
   const f = fixture(source)
   try {
     for (const preserveImports of [false, true]) {
       let source: string | undefined
-      try { resolveStylesheetSync(f.entry, '/* original */\n.card{@compose "block";}', { projectDir: f.root, preserveImports }) }
+      try { resolveStylesheetSync(f.entry, '/* original */\n.card{@contents;}', { projectDir: f.root, preserveImports }) }
       catch (error) { source = (error as { diagnostics?: { source?: string }[] }).diagnostics?.[0]?.source }
       expect({ preserveImports, source }).toEqual({ preserveImports, source: f.entry })
     }

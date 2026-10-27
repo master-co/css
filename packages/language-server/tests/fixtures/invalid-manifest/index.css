@@ -1,5 +1,5 @@
 @import "@master/css";
 
 .btn {
-  @compose "block";
+  @contents;
 }

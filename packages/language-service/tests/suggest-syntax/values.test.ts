@@ -2,7 +2,7 @@ import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
-import CSSLanguageService from '../helpers/rc87-language-service'
+import CSSLanguageService from '../helpers/language-service'
 import createDoc from '../../src/utils/create-doc'
 
 function labels(target: string, settings?: ConstructorParameters<typeof CSSLanguageService>[0]) {

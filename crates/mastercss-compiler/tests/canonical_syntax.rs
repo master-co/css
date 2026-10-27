@@ -15,7 +15,7 @@ fn engine(source: &str) -> EngineSession {
 }
 
 #[test]
-fn custom_recipes_and_canonical_token_keys_are_not_retired_aliases() {
+fn custom_recipes_and_canonical_token_keys_match_their_utilities() {
     let engine = engine(
         r#"
         @theme {

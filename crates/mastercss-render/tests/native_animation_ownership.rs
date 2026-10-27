@@ -59,7 +59,6 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
                 .collect::<Vec<_>>()
         )
     );
-    assert!(RenderSession::create(manifest, Some(r#"{"animations":{"fade":1}}"#)).is_err());
 }
 
 #[test]

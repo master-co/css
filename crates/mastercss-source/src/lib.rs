@@ -605,8 +605,7 @@ fn should_exclude(candidate: &str) -> bool {
     if candidate.starts_with("${") && candidate.ends_with('}') {
         return false;
     }
-    if candidate.starts_with('$')
-        || candidate.ends_with(';')
+    if candidate.ends_with(';')
         || candidate.contains("</")
         || contains_tag_like_pair(candidate)
         || candidate.ends_with('>')
@@ -722,7 +721,7 @@ mod tests {
     }
 
     #[test]
-    fn keeps_native_custom_properties_but_not_legacy_assignments() {
+    fn keeps_native_custom_properties_but_not_dollar_prefixed_words() {
         assert_eq!(
             extract_class_candidates(r#"<div class="--token:1rem $token:1rem"></div>"#),
             vec!["--token:1rem"]

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 import { createPresetManifest } from './helpers/create-preset-manifest'
@@ -418,7 +418,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class' as const, modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '<', type: 'operator' as const, modifiers: ['query', 'queryOperator'] })
   expect(tokens).not.toContainEqual({ text: 'sm', type: 'enumMember' as const, modifiers: ['query'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
@@ -476,7 +476,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
   expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class' as const, modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@dark', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'font', type: 'property' as const, modifiers: [] })
@@ -502,7 +502,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
   expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@preserve', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'native', type: 'enumMember' as const, modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword' as const, modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword' as const, modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@apply(--quoted)', type: 'keyword' as const, modifiers: ['query'] })
   expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword' as const, modifiers: ['directive'] })
@@ -510,7 +510,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
 })
 
 test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
-  const { tokens } = renderTokens(".btn { @compose \"sr-only fg-red\"; }", 'css')
+  const { tokens } = renderTokens(".btn { @contents; }", 'css')
 
   expect(tokens).toEqual([])
 })

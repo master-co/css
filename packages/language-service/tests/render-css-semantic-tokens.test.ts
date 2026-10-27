@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import CSSLanguageService from './helpers/rc87-language-service'
+import CSSLanguageService from './helpers/language-service'
 import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tooling/language'
 import { createPresetManifest } from './helpers/create-preset-manifest'
@@ -164,7 +164,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
   expectToken(tokens, "sr-only", 'enumMember')
   expect(tokens).not.toContainEqual({ text: "@theme", type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
@@ -240,7 +240,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@h', type: 'keyword', modifiers: ['query'] })
   expect(tokens).not.toContainEqual({ text: '>=', type: 'operator', modifiers: ['query', 'queryOperator'] })
@@ -367,7 +367,7 @@ test.concurrent('renders active semantic tokens for CSS directive class-list spa
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
 })
 
 test.concurrent('does not render active semantic tokens for custom variant blocks', () => {
@@ -420,5 +420,5 @@ test.concurrent('renders CSS directive class-list semantic tokens when embedded 
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@contents', type: 'keyword', modifiers: ['directive'] })
 })
