@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import masterCSS from '@master/eslint-config-css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -6,11 +7,12 @@ import { compileManifestSync } from '@master/css-compiler/node'
 import { MasterCSSLanguageService } from '@master/css-language-service'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import Color from 'colorjs.io'
 import { Linter } from 'eslint'
 import snapshot from '../../../benchmarks/docs-page-css-size/snapshot.json'
 import { getHomePageCSSSize } from '../../utils/home-page-css-size'
 import preset from '../../utils/preset-manifest'
-import { activeSyntaxHighlightingCode, agentDiagnosticCards, heroExampleCode, manifestSuggestionItems, manifestSuggestionsPrefix, manifestSuggestionsTyped, nativeCssPrimitivesCode, themeVariablesCode } from './home-content'
+import { activeSyntaxHighlightingCode, agentDiagnosticCards, agentSession, colorToolClasses, ctaClassRows, deliveryFlowPackets, deliveryFlowSources, heroComposerProblem, heroComposerSortedTokens, heroComposerTokens, hoverInspectionLines, manifestSuggestionItems, manifestSuggestionsPrefix, manifestSuggestionsTyped, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })
 const recommendedConfig: Linter.Config[] = [...masterCSS, {
@@ -31,6 +33,19 @@ function lintSample(code: string, config = recommendedConfig) {
   return {
     messages: linter.verify(source, config, { filename: 'home.jsx' }),
     fixed: linter.verifyAndFix(source, config, { filename: 'home.jsx' }).output.slice('const sample = <>\n'.length, -'\n</>'.length)
+  }
+}
+
+/** A one-line text document for the language service. */
+function createDocument(text: string) {
+  return {
+    uri: 'file:///home.html',
+    languageId: 'html',
+    version: 1,
+    lineCount: 1,
+    getText: (range?: { start: { character: number }, end: { character: number } }) => range ? text.slice(range.start.character, range.end.character) : text,
+    positionAt: (index: number) => ({ line: 0, character: index }),
+    offsetAt: (position: { character: number }) => position.character
   }
 }
 
@@ -56,16 +71,64 @@ test('the fix preview card previews the class order fix', () => {
   assert.deepEqual(preview.code.trim().split('\n').slice(0, 2), [`${before} <!-- [!code --] -->`, `${after} <!-- [!code ++] -->`])
 })
 
+test('the agent session shows what the lint rules report and fix', () => {
+  const { messages, fixed } = lintSample(agentSession.code)
+  assert.deepEqual(messages.map((message) => ({
+    location: `${agentSession.file}:${message.line - 1}:${message.column}`,
+    message: message.message,
+    severity: message.severity === 2 ? 'error' : 'warning',
+    source: message.ruleId
+  })), agentSession.problems)
+  assert.equal(fixed, agentSession.fixedCode.trim())
+})
+
+test('the hero composer types unsorted classes that the class order fix sorts', () => {
+  const { messages, fixed } = lintSample(`<button class="${heroComposerTokens.join(' ')}">Upgrade</button>`)
+  assert.deepEqual(messages.map((message) => message.message), [heroComposerProblem])
+  assert.equal(fixed, `<button class="${heroComposerSortedTokens.join(' ')}">Upgrade</button>`)
+})
+
 test('homepage markup samples are valid and sorted', () => {
-  for (const code of [heroExampleCode, activeSyntaxHighlightingCode]) {
-    assert.deepEqual(lintSample(code).messages, [])
+  const samples = [
+    activeSyntaxHighlightingCode,
+    hoverInspectionLines.join('\n'),
+    colorToolClasses.map((item) => `<span class="${item.className}"></span>`).join('\n'),
+    deliveryFlowSources.map((source) => `<span ${source.code}></span>`).join('\n'),
+    ...ctaClassRows.map((row) => row.map((className) => `<span class="${className}"></span>`).join('\n'))
+  ]
+  for (const code of samples) {
+    assert.deepEqual(lintSample(code, strictConfig).messages.filter((message) => message.ruleId !== '@master/css/no-unapproved-raw-values'), [], code)
   }
 })
 
+test('the delivery diagram carries the classes its sources declare', () => {
+  assert.deepEqual(deliveryFlowSources.flatMap((source) => source.code.match(/"([^"]*)"/)![1].split(' ')), [...deliveryFlowPackets])
+})
+
 test('homepage stylesheet samples compile without errors', () => {
-  for (const source of [themeVariablesCode, nativeCssPrimitivesCode]) {
+  for (const source of [themeVariablesCode]) {
     const { diagnostics } = compileManifestSync(source, { baseManifest: preset })
     assert.deepEqual(diagnostics.filter((diagnostic) => diagnostic.severity === 'error'), [])
+  }
+})
+
+test('the cascade layer figure follows the preset layer order', () => {
+  const base = readFileSync(new URL('../../../packages/preset/src/base.css', import.meta.url), 'utf8')
+  assert.equal(base.match(/@layer ([^;{]+);/)?.[1], cascadeLayers.map((layer) => layer.name).join(', '))
+})
+
+test('color tool swatches are the ones the language service renders', async () => {
+  const manifest = defaultManifestJSON as unknown as MasterCSSManifest
+  const service = new MasterCSSLanguageService({ manifest }, { session: createToolingSessionSync({ manifest }) })
+  const before = '<span class="'
+  for (const item of colorToolClasses) {
+    const text = `${before}${item.className}"></span>`
+    const document = createDocument(text)
+    const [swatch, ...rest] = await service.renderSyntaxColors(document as never) ?? []
+    assert.equal(rest.length, 0, item.className)
+    assert.equal(swatch?.range.start.character, before.length + item.swatchAt, item.className)
+    const expected = new Color(item.color).to('srgb')
+    assert.ok(expected.deltaE(new Color('srgb', [swatch.color.red, swatch.color.green, swatch.color.blue]), '2000') < 1, item.className)
   }
 })
 
@@ -75,15 +138,7 @@ test('manifest suggestions mirror the language service completions', () => {
   const before = '<button class="'
   const text = `${before}${manifestSuggestionsPrefix}">Upgrade plan</button>`
   const offset = before.length + manifestSuggestionsPrefix.length
-  const document = {
-    uri: 'file:///home.html',
-    languageId: 'html',
-    version: 1,
-    lineCount: 1,
-    getText: (range?: { start: { character: number }, end: { character: number } }) => range ? text.slice(range.start.character, range.end.character) : text,
-    positionAt: (index: number) => ({ line: 0, character: index }),
-    offsetAt: (position: { character: number }) => position.character
-  }
+  const document = createDocument(text)
   const items = service.suggestSyntax(document as never, document.positionAt(offset), { triggerKind: 2, triggerCharacter: '-' }) ?? []
   assert.deepEqual(items.slice(0, manifestSuggestionItems.length).map((item) => item.label), manifestSuggestionItems.map((item) => item.label))
   assert.ok(items[0].detail?.startsWith(manifestSuggestionItems[0].detail), items[0].detail)

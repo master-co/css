@@ -1,0 +1,236 @@
+/* Registered so the palette can tilt, rise and flatten smoothly from a single number each. */
+@property --home-flat {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --home-rise {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+@layer components {
+  /* P3 palette: an isometric field whose swatches rise with chroma; hovering flattens it into a table. */
+  .home-palette-stage {
+    --home-flat: 0;
+    display: grid;
+    place-items: center;
+    height: 24rem;
+    transition: --home-flat 0.9s var(--home-ease);
+
+    @media (--md) {
+      height: 32rem;
+    }
+
+    .home-bento-card:hover &,
+    &:focus-within {
+      @media (--md) {
+        --home-flat: 1;
+      }
+    }
+  }
+
+  .home-palette-scene {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    perspective: var(--home-perspective);
+  }
+
+  .home-palette {
+    --home-tilt: calc(1 - var(--home-flat));
+    display: grid;
+    gap: 4px;
+    width: max-content;
+    transform-style: preserve-3d;
+    transform:
+      rotateX(calc(56deg * var(--home-tilt)))
+      rotateZ(calc(-32deg * var(--home-tilt)))
+      scale(calc(0.42 + 0.58 * var(--home-flat)));
+
+    @media (--md) {
+      transform:
+        rotateX(calc(56deg * var(--home-tilt)))
+        rotateZ(calc(-32deg * var(--home-tilt)))
+        scale(calc(0.8 + 0.2 * var(--home-flat)));
+    }
+  }
+
+  .home-palette-label {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    font-family: var(--home-mono);
+    font-size: 0.5625rem;
+    line-height: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--home-text-quiet);
+  }
+
+  .home-palette-tier {
+    justify-content: flex-end;
+    padding-right: var(--spacing-3xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .home-swatch {
+    --home-swatch-height: calc(var(--home-swatch-lift) * 150px * var(--home-rise) * var(--home-tilt));
+    position: relative;
+    display: block;
+    border-radius: 4px;
+    outline: 1px solid color-mix(in oklab, black 6%, transparent);
+    outline-offset: -1px;
+    transform-style: preserve-3d;
+    transform: translateZ(var(--home-swatch-height));
+
+    /* The swatch's shadow stays on the ground plane while the swatch rises. */
+    &::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
+      opacity: calc(var(--home-swatch-lift) * 3 * var(--home-tilt));
+      transform: translateZ(calc(var(--home-swatch-height) * -1));
+      content: '';
+    }
+  }
+
+  /* Swatches outside sRGB carry a fine light rim. */
+  .home-swatch-wide,
+  .home-palette-legend-swatch {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55), 0 0 0 1px color-mix(in oklab, black 10%, transparent);
+  }
+
+  .home-palette-legend {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs) var(--spacing-md);
+    margin: 0;
+
+    & > span {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+  }
+
+  .home-palette-legend-swatch {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 3px;
+    background: oklch(62% 0.27 145);
+  }
+
+  /* Cascade layers: five planes in preset order; hovering the card spreads them apart. */
+  .home-layers {
+    display: grid;
+    place-items: center;
+  }
+
+  .home-layers-scene {
+    perspective: var(--home-perspective);
+  }
+
+  .home-layers-stack {
+    --home-layer-gap: 2.75rem;
+    position: relative;
+    width: 16.5rem;
+    height: 8rem;
+    margin-top: 8rem;
+    transform-style: preserve-3d;
+    transform: rotateX(58deg) rotateZ(-38deg);
+
+    .home-bento-card:hover & {
+      --home-layer-gap: 3.75rem;
+    }
+  }
+
+  .home-layer {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: end;
+    gap: 0.125rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    outline: 1px solid var(--home-rule);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-edge), 0 18px 30px -18px var(--home-shade-far);
+    transform: translateZ(calc(var(--home-layer-index) * var(--home-layer-gap)));
+    transition: transform 0.8s var(--home-ease);
+  }
+
+  /* Utilities are the live layer: the one that wins. */
+  .home-layer[data-layer='utilities'] {
+    outline-color: color-mix(in oklab, var(--home-signal) 80%, transparent);
+    box-shadow: var(--home-edge), 0 0 0 4px var(--home-signal-glow), 0 18px 30px -18px var(--home-shade-far);
+  }
+
+  .home-layer-name {
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--home-text);
+  }
+
+  .home-layer-example {
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    color: var(--home-text-quiet);
+  }
+
+  .home-layers-note {
+    position: absolute;
+    right: var(--spacing-md);
+    bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3xs);
+    margin: 0;
+
+    &::before {
+      content: '↑';
+    }
+  }
+
+  @media (--motion-safe) {
+    @supports (animation-timeline: view()) {
+      /* The palette rises out of the ground as it scrolls into view. */
+      .home-palette-stage {
+        animation-name: home-palette-rise;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 30% cover 50%;
+      }
+    }
+  }
+
+  @media (--motion-reduce) {
+    .home-palette-stage,
+    .home-layer {
+      transition: none;
+    }
+  }
+}
+
+@keyframes home-palette-rise {
+  from {
+    --home-rise: 0;
+  }
+
+  to {
+    --home-rise: 1;
+  }
+}

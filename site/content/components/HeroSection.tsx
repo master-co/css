@@ -1,22 +1,37 @@
+import './hero.css'
 import { IconArrowRight, IconCode } from '@tabler/icons-react'
+import { createRenderSessionSync } from '@master/css/node'
+import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
+import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
+import preset from '~/site/utils/preset-manifest'
+import CopyCommand from './CopyCommand'
+import GlyphField from './GlyphField'
+import HeroComposer, { type HeroComposerRule } from './HeroComposer'
 import HomeAction from './HomeAction'
-import HomeCodeWindow from './HomeCodeWindow'
-import { heroExampleCode, homeSections } from './home-content'
+import { glyphFieldLines, heroComposerProblem, heroComposerSortedTokens, heroComposerTokens, homeSections, installCommand } from './home-content'
 
 export default function HeroSection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.hero} className="position:relative overflow:hidden isolation:isolate home-section">
-      <div className="app-wrapper home-section-wrap">
-        <div className="max-w-8xl margin-inline:auto text-align:center home-rise">
-          <h1 className="mt-xl font-5xl font-light line-height:1 tracking-tight text-wrap:balance fg-text-strong font-9xl@md">
-            {$('The markup-driven CSS language and framework')}
+    <section data-glyph-host id={homeSections.hero} className="position:relative overflow:hidden isolation:isolate home-hero">
+      <GlyphField className="home-hero-field" lines={glyphFieldLines} />
+      <div aria-hidden="true" className="home-hero-veil" />
+      <div className="position:relative app-wrapper home-section-wrap">
+        <div className="display:flex flex-direction:column align-items:center max-w-6xl margin-inline:auto text-align:center home-rise">
+          <Link className="home-glass home-hero-pill" href="/guide/mcp-server">
+            <span className="home-hero-pill-badge">{$('New')}</span>
+            {$('An MCP server for your AI agents')}
+            <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />
+          </Link>
+          <h1 className="home-display">
+            <span className="display:block">{$('Maintainable styles,')}</span>
+            <span className="display:block home-display-quiet">{$('right in markup.')}</span>
           </h1>
-          <p className="max-width:50ch mt-xl margin-inline:auto text-md fg-text-muted text-2xl@lg">
-            {$('build websites that are readable by humans, reliable for AI agents, and expressive enough for modern design systems.')}
+          <p className="home-hero-lead">
+            {$('Write native CSS and design tokens as class names. Master CSS checks them, shows what each change affects, and generates CSS only for the classes in your code.')}
           </p>
-          <div className="display:flex flex-wrap:wrap justify-content:center mt-2xl gap-x-md gap-y-sm">
+          <div className="display:flex flex-wrap:wrap justify-content:center gap-sm mt-xl">
             <HomeAction href="/guide/introduction" variant="primary">
               {$('Get started')}
               <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
@@ -26,52 +41,65 @@ export default function HeroSection() {
               {$('Syntax tutorial')}
             </HomeAction>
           </div>
+          <CopyCommand className="mt-lg" command={installCommand} />
         </div>
-        <div className="mt-3xl mt-4xl@md home-rise home-rise-delayed">
-          <HeroExampleStage />
+        <div className="home-rise home-rise-delayed home-stage">
+          <div className="home-stage-tilt">
+            <HeroComposer problem={heroComposerProblem} rules={createComposerRules()} sortedTokens={[...heroComposerSortedTokens]} />
+          </div>
         </div>
+        <HomeHighlights />
       </div>
     </section>
   )
 }
 
-function HeroExampleStage() {
+/** Generated CSS for each composer class, split for display. */
+function createComposerRules(): HeroComposerRule[] {
+  const engine = createRenderSessionSync({ manifest: preset })
+  try {
+    const { classRules } = engine.ensureClassRules([...heroComposerTokens])
+    return heroComposerTokens.map((token) => {
+      const [rule] = classRules[token]
+      const match = rule.text.match(/^([^{]+)\{([^}]*)\}$/)
+      if (!match) throw new Error(`Unexpected rule for ${token}: ${rule.text}`)
+      return {
+        token,
+        selector: match[1],
+        declarations: match[2].split(';').filter(Boolean).map((declaration) => {
+          const index = declaration.indexOf(':')
+          return [declaration.slice(0, index), declaration.slice(index + 1)] as [string, string]
+        })
+      }
+    })
+  } finally {
+    engine.dispose()
+  }
+}
+
+function HomeHighlights() {
   const $ = useTranslation()
+  const brotli = getHomePageCSSSize().find((mode) => mode.id === 'brotli')!
+  const master = brotli.rows.find((row) => row.isMasterCSS)!
+  const tailwind = brotli.rows.find((row) => row.name === 'Tailwind CSS')!
+  const highlights = [
+    { value: (master.bytes / 1000).toFixed(1), unit: 'kB', label: $('of CSS on the Master CSS docs page, Brotli') },
+    // Floored so the headline never rounds up past the measured ratio.
+    { value: String(Math.floor(tailwind.ratio)), unit: '×', label: $('less CSS than the Tailwind CSS docs page') },
+    { value: '0', unit: 'kB', label: $('of runtime with the default static setup') },
+    { value: '1', unit: '', label: $('set of Rust semantics, matched byte for byte in the browser') }
+  ]
   return (
-    <div className="position:relative overflow:hidden r-3xl outline-line-subtle outline-style:solid outline-width:1px bg-surface-raised shadow-lg">
-      <div aria-hidden="true" className="position:absolute inset:0 pointer-events:none home-hero-glow" />
-      <div className="position:relative grid-cols(1) grid-cols(12)@lg">
-        <HomeCodeWindow className="grid-col-span(7)@lg" lang="html" preClassName="min-height:19rem" variant="embedded">
-          {heroExampleCode}
-        </HomeCodeWindow>
-        <div className="p-md bl-line-subtle bg-surface-inset/0.24 grid-col-span(5)@lg p-xl@lg border-left-style:solid@lg border-left-width:1px@lg">
-          <div className="display:grid align-content:center height:100% min-h-2xs">
-            <article className="display:grid gap-lg p-lg r-3xl outline-line-subtle outline-style:solid outline-width:1px bg-surface-raised shadow-xs">
-              <div className="display:flex align-items:center justify-content:space-between gap-md">
-                <p className="text-sm fg-text-muted">{$('Design system surface')}</p>
-                <span className="display:inline-flex align-items:center height:1.5rem px-xs r-lg text-xs bg-yellow/0.14 fg-text-strong">{$('Preview')}</span>
-              </div>
-              <div>
-                <h2 className="font-2xl font-regular leading-xs fg-text-strong">{$('Agent-ready UI')}</h2>
-                <p className="max-width:34ch mt-sm font-sm leading-md fg-text-muted">
-                  {$('Semantic classes describe the interface before CSS is generated.')}
-                </p>
-              </div>
-              <button className="justify-self:start py-sm px-md r-xl font-medium bg-yellow fg-yellow-95" type="button">
-                {$('Ship interface')}
-              </button>
-              <div className="grid-cols(3) gap-xs pt-sm bt-line-subtle border-top-style:solid border-top-width:1px">
-                {['Theme tokens', 'Semantic surface', 'Reliable output'].map((label) => (
-                  <div className="display:grid gap-xs" key={label}>
-                    <span className="height:0.375rem r-md bg-yellow" />
-                    <span className="font-xs line-height:1.25 fg-text-muted">{$(label)}</span>
-                  </div>
-                ))}
-              </div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ul className="home-highlights">
+      {highlights.map((highlight) => (
+        <li className="home-highlight" key={highlight.label}>
+          <strong className="home-highlight-value">
+            {highlight.value}
+            {highlight.unit && <span className={highlight.unit === '×' ? 'home-highlight-sign' : 'home-highlight-unit'}>{highlight.unit}</span>}
+          </strong>
+          <span className="home-highlight-label">{highlight.label}</span>
+        </li>
+      ))}
+    </ul>
   )
 }

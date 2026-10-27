@@ -1,0 +1,430 @@
+@layer components {
+  /* Stacked on small screens; from md the nodes sit on the SVG's 1200 × 480 coordinates. */
+  .home-flow {
+    position: relative;
+    display: grid;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    background-image: radial-gradient(var(--home-rule) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: 8px 8px;
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+
+    @media (--md) {
+      display: block;
+      aspect-ratio: 1200 / 480;
+      padding: 0;
+    }
+  }
+
+  .home-flow-wires {
+    display: none;
+
+    @media (--md) {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+
+  .home-flow-wire {
+    fill: none;
+    stroke: var(--home-rule);
+    stroke-width: 2;
+    stroke-dasharray: 6 8;
+    animation: home-flow-dash 1.4s linear infinite;
+  }
+
+  .home-flow-output-wire {
+    opacity: 0.35;
+    transition: opacity var(--duration-slow) var(--easing-smooth), stroke var(--duration-slow) var(--easing-smooth);
+  }
+
+  .home-flow-packet {
+    & rect {
+      fill: var(--home-sheet);
+      stroke: var(--home-rule);
+    }
+
+    & text {
+      font-family: var(--home-mono);
+      font-size: 13px;
+      fill: var(--home-text);
+    }
+  }
+
+  .home-flow-pulse {
+    display: none;
+    fill: var(--home-text);
+  }
+
+  .home-flow-column {
+    display: grid;
+    gap: var(--spacing-sm);
+
+    @media (--md) {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      display: block;
+    }
+  }
+
+  .home-flow-column-label {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--home-text-quiet);
+
+    @media (--md) {
+      position: absolute;
+      top: 5%;
+      left: 0;
+    }
+  }
+
+  .home-flow-sources {
+    @media (--md) {
+      left: 2%;
+      width: 17.4%;
+    }
+  }
+
+  .home-flow-outputs {
+    @media (--md) {
+      left: 77.4%;
+      width: 20.6%;
+    }
+  }
+
+  .home-flow-node {
+    display: grid;
+    gap: var(--spacing-3xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-lg);
+    outline: 1px solid var(--home-hairline);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-1);
+
+    @media (--md) {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      translate: 0 -50%;
+    }
+
+    &:nth-of-type(1) {
+      @media (--md) {
+        top: 22.9%;
+      }
+    }
+
+    &:nth-of-type(2) {
+      @media (--md) {
+        top: 50%;
+      }
+    }
+
+    &:nth-of-type(3) {
+      @media (--md) {
+        top: 77.1%;
+      }
+    }
+  }
+
+  .home-flow-file {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--home-text);
+  }
+
+  .home-flow-code {
+    overflow: hidden;
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-code-string);
+  }
+
+  .home-flow-entry {
+    display: grid;
+    justify-items: center;
+    gap: var(--spacing-4xs);
+    justify-self: center;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    outline: 1px dashed var(--home-rule-strong);
+    background-color: var(--home-sheet);
+
+    @media (--md) {
+      position: absolute;
+      top: 13.3%;
+      left: 50%;
+      translate: -50% -50%;
+    }
+  }
+
+  .home-flow-engine {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-2xl);
+    outline: 1px solid var(--home-rule);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-2);
+
+    @media (--md) {
+      position: absolute;
+      top: 35%;
+      left: 39%;
+      width: 22%;
+      height: 30%;
+      padding: var(--spacing-sm);
+    }
+  }
+
+  .home-flow-steps {
+    position: relative;
+    display: flex;
+    gap: var(--spacing-3xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      padding: var(--spacing-4xs) var(--spacing-xs);
+      border-radius: var(--radius-pill);
+      font-size: 0.6875rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--home-text-quiet);
+      background-color: var(--home-well);
+      animation: home-flow-step 3.6s var(--easing-smooth) infinite;
+    }
+
+    & li:nth-child(2) {
+      animation-delay: 1.2s;
+    }
+
+    & li:nth-child(3) {
+      animation-delay: 2.4s;
+    }
+  }
+
+  .home-flow-engine-ring {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    outline: 1px solid var(--home-rule-strong);
+    opacity: 0;
+    animation: home-flow-ring 3.6s var(--easing-smooth) infinite;
+  }
+
+  .home-flow-artifact {
+    padding: 0 var(--spacing-3xs);
+    border-radius: var(--radius-sm);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    color: var(--home-text);
+    background-color: var(--home-well);
+  }
+
+  .home-flow-output {
+    opacity: 0.5;
+    transition: opacity var(--duration-slow) var(--easing-smooth), outline-color var(--duration-slow) var(--easing-smooth), box-shadow var(--duration-slow) var(--easing-smooth);
+  }
+
+  /* The modes sit on the shell like a segmented control: the chosen one is a raised sheet, the others stay flush with the track. */
+  .home-delivery-modes {
+    display: grid;
+    gap: var(--home-gap);
+    margin-top: var(--home-gap);
+
+    @media (--lg) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .home-delivery-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+    border-radius: var(--home-radius-sheet);
+    cursor: pointer;
+    transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+
+    &:hover {
+      background-color: color-mix(in oklab, var(--home-sheet) 45%, transparent);
+    }
+  }
+
+  .home-delivery-title {
+    display: block;
+    margin-top: var(--spacing-lg);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: -0.015em;
+    color: var(--home-text);
+  }
+
+  .home-delivery-body {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--home-text-quiet);
+    text-wrap: pretty;
+  }
+
+  /* Links share a baseline across the three modes, whatever the length of the copy above. */
+  .home-delivery-link {
+    margin-top: auto;
+    padding-top: var(--spacing-lg);
+    font-size: 0.875rem;
+  }
+
+  .home-delivery-icon {
+    display: grid;
+    place-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--home-radius-control);
+    color: var(--home-text-quiet);
+    background-color: color-mix(in oklab, var(--home-sheet) 60%, transparent);
+    box-shadow: inset 0 0 0 1px var(--home-hairline);
+    transition: background-color var(--home-base) var(--home-ease), color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+  }
+
+  /* The checked radio before the diagram lights its lane, its output and its card. */
+  .home-delivery:has(#home-delivery-static:checked) .home-flow-output-wire[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-output-wire[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-output-wire[data-mode='runtime'] {
+    opacity: 1;
+    stroke: var(--home-text-quiet);
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-flow-pulse[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-pulse[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-pulse[data-mode='runtime'] {
+    display: inline;
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-flow-output[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-output[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-output[data-mode='runtime'] {
+    opacity: 1;
+    outline-color: var(--home-rule-strong);
+    box-shadow: var(--home-elevation-2);
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-delivery-card[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-card[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-card[data-mode='runtime'] {
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+
+    .home-delivery-icon {
+      color: var(--home-text-inverse);
+      background-color: var(--home-ink);
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--home-contact);
+    }
+  }
+
+  .home-delivery:has(#home-delivery-static:focus-visible) .home-delivery-card[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:focus-visible) .home-delivery-card[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:focus-visible) .home-delivery-card[data-mode='runtime'] {
+    outline: 2px solid var(--home-ink);
+    outline-offset: 2px;
+  }
+
+  /* On small screens the inactive outputs step back so the chosen path reads top to bottom. */
+  @media (width < 64rem) {
+    .home-flow-sources {
+      grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    }
+
+    .home-flow-column-label {
+      grid-column: 1 / -1;
+    }
+
+    .home-flow-entry::after,
+    .home-flow-engine::after {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 2px;
+      height: var(--spacing-xl);
+      background-image: linear-gradient(var(--home-rule-strong) 50%, transparent 50%);
+      background-size: 2px 10px;
+      content: '';
+      animation: home-flow-drop 0.8s linear infinite;
+    }
+
+    .home-flow-entry {
+      position: relative;
+    }
+  }
+
+  @media (--motion-reduce) {
+    .home-flow-wire,
+    .home-flow-engine-ring,
+    .home-flow-steps li,
+    .home-flow-entry::after,
+    .home-flow-engine::after {
+      animation: none;
+    }
+
+    .home-flow-packet,
+    .home-flow-pulse {
+      visibility: hidden;
+    }
+  }
+}
+
+@keyframes home-flow-dash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes home-flow-ring {
+  0% {
+    opacity: 0.6;
+    scale: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 1.06;
+  }
+}
+
+@keyframes home-flow-step {
+  0%, 40%, 100% {
+    color: var(--home-text-quiet);
+    background-color: var(--home-well);
+  }
+
+  8%, 30% {
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+  }
+}
+
+@keyframes home-flow-drop {
+  to {
+    background-position: 0 10px;
+  }
+}

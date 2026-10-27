@@ -3,7 +3,7 @@ import Link from '~/site/docs-shell/components/Link'
 
 const actionClassNames = {
   primary: 'home-action home-action-primary',
-  secondary: 'home-action app-object app-object-interactive'
+  secondary: 'home-action home-action-secondary'
 }
 
 export default function HomeAction({ children, href, variant }: { children: ReactNode, href: string, variant: keyof typeof actionClassNames }) {

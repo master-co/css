@@ -1,0 +1,531 @@
+@layer components {
+  .home-mcp {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    position: relative;
+    min-height: 30rem;
+  }
+
+  .home-mcp-note {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    z-index: 1;
+    margin: 0;
+  }
+
+  /* The orbit plane tilts back; the spin turns it, and each face turns the other way to stay upright. */
+  .home-mcp-stage {
+    --home-orbit-radius: 9rem;
+    --home-orbit-tilt: 64deg;
+    position: relative;
+    display: grid;
+    flex: auto;
+    place-items: center;
+    min-height: 22rem;
+    overflow: hidden;
+    perspective: var(--home-perspective);
+    background-image: radial-gradient(ellipse 50% 40% at 50% 52%, light-dark(rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.03)), transparent 70%);
+
+    @media (--sm) {
+      --home-orbit-radius: 14rem;
+    }
+
+    @media (--lg) {
+      --home-orbit-radius: 16rem;
+      --home-orbit-tilt: 60deg;
+    }
+  }
+
+  .home-mcp-orbit {
+    position: relative;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--home-orbit-tilt));
+  }
+
+  .home-mcp-ring {
+    position: absolute;
+    top: calc(var(--home-orbit-radius) * -1);
+    left: calc(var(--home-orbit-radius) * -1);
+    width: calc(var(--home-orbit-radius) * 2);
+    height: calc(var(--home-orbit-radius) * 2);
+    border: 1px solid var(--home-rule);
+    border-radius: 50%;
+  }
+
+  .home-mcp-ring-inner {
+    inset: calc(var(--home-orbit-radius) * -0.5);
+    width: var(--home-orbit-radius);
+    height: var(--home-orbit-radius);
+    border-style: dashed;
+    border-color: var(--home-hairline);
+  }
+
+  .home-mcp-spin {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+    animation: home-mcp-spin 72s linear infinite;
+  }
+
+  .home-mcp-slot {
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: rotateZ(calc(var(--home-orbit-angle) * 1deg));
+  }
+
+  /* Each client's request travels the spoke toward the server. */
+  .home-mcp-spoke {
+    position: absolute;
+    top: -0.5px;
+    left: 0;
+    width: var(--home-orbit-radius);
+    height: 1px;
+    background-image: repeating-linear-gradient(90deg, var(--home-rule-strong) 0 3px, transparent 3px 9px);
+    background-size: 9px 1px;
+    opacity: 0.55;
+    animation: home-mcp-request 1.2s linear infinite;
+  }
+
+  .home-mcp-face {
+    position: absolute;
+    left: var(--home-orbit-radius);
+    display: grid;
+    justify-items: center;
+    gap: var(--spacing-3xs);
+    width: 6rem;
+    margin-left: -3rem;
+    top: -1.625rem;
+    transform-origin: 50% 1.625rem;
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+    /* The depth fade runs on the same clock, offset by the slot's angle, so clients dim as they pass behind the server. */
+    animation-name: home-mcp-face, home-mcp-depth;
+    animation-duration: 72s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-delay: 0s, calc(var(--home-orbit-angle) * -0.2s);
+  }
+
+  .home-mcp-client-logo {
+    display: grid;
+    place-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: var(--radius-2xl);
+    outline: 1px solid var(--home-hairline);
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-1);
+    transition: color var(--home-slow) var(--home-ease), outline-color var(--home-slow) var(--home-ease);
+
+    .home-mcp-face:hover & {
+      outline-color: var(--home-rule);
+      color: var(--home-brand, var(--home-text));
+    }
+  }
+
+  .home-mcp-client-name {
+    font-size: 0.6875rem;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+  }
+
+  .home-mcp:hover :is(.home-mcp-spin, .home-mcp-face) {
+    animation-play-state: paused;
+  }
+
+  /* The server stands upright at the center of the plane. */
+  .home-mcp-core {
+    position: absolute;
+    top: -4.25rem;
+    left: -4.25rem;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 0.25rem;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: var(--radius-pill);
+    outline: 1px solid var(--home-rule);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-2);
+    transform-origin: 50% 50%;
+    transform: rotateX(calc(var(--home-orbit-tilt) * -1)) translateZ(1px);
+  }
+
+  .home-mcp-footer {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--home-hairline);
+    background-color: color-mix(in oklab, var(--home-ground) 70%, transparent);
+  }
+
+  .home-impact {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+
+  .home-impact-stage {
+    position: relative;
+    height: 12rem;
+  }
+
+  .home-impact-wires {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .home-impact-wire {
+    fill: none;
+    stroke: var(--home-rule);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    animation: home-impact-wire 4.4s var(--easing-smooth) infinite;
+  }
+
+  .home-impact-node {
+    position: absolute;
+    padding: var(--spacing-4xs) var(--spacing-xs);
+    border-radius: var(--radius-md);
+    outline: 1px solid var(--home-rule);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    white-space: nowrap;
+    color: var(--home-text-body);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-edge);
+    translate: -50% -50%;
+    animation: home-impact-node 4.4s var(--easing-smooth) infinite;
+  }
+
+  .home-impact-node-definition {
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+    animation: none;
+  }
+
+  .home-impact-node-output {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .home-impact-legend {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    font-size: 0.625rem;
+    letter-spacing: var(--tracking-wider);
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--home-text-quiet);
+  }
+
+  .home-frameworks {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding-block: var(--spacing-lg);
+  }
+
+  .home-framework {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-lg);
+    outline: 1px solid var(--home-hairline);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-edge);
+
+    & svg {
+      filter: grayscale(1);
+      opacity: 0.7;
+      transition: filter var(--duration-slow) var(--easing-smooth), opacity var(--duration-slow) var(--easing-smooth);
+    }
+
+    &:hover svg {
+      filter: none;
+      opacity: 1;
+    }
+  }
+
+  .home-workspace {
+    padding-block: var(--spacing-sm);
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+  }
+
+  .home-workspace-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-3xs);
+    padding-right: var(--spacing-sm);
+    color: var(--home-text-body);
+  }
+
+  .home-workspace-badge {
+    margin-left: auto;
+    padding: 0 var(--spacing-3xs);
+    border-radius: var(--radius-sm);
+    font-size: 0.625rem;
+    white-space: nowrap;
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+    opacity: 0;
+  }
+
+  /* The highlight alternates between the two apps, each paired with its nearest manifest. */
+  .home-workspace-row-web,
+  .home-workspace-manifest-web {
+    animation: home-workspace-first 6s var(--easing-smooth) infinite;
+  }
+
+  .home-workspace-row-docs,
+  .home-workspace-manifest-docs {
+    animation: home-workspace-second 6s var(--easing-smooth) infinite;
+  }
+
+  .home-workspace-row-web .home-workspace-badge {
+    animation: home-workspace-badge-first 6s var(--easing-smooth) infinite;
+  }
+
+  .home-workspace-row-docs .home-workspace-badge {
+    animation: home-workspace-badge-second 6s var(--easing-smooth) infinite;
+  }
+
+  .home-routes {
+    display: grid;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+  }
+
+  .home-routes-shared {
+    justify-self: start;
+    margin-bottom: var(--spacing-3xs);
+    padding: var(--spacing-4xs) var(--spacing-xs);
+    border-radius: var(--radius-md);
+    outline: 1px dashed var(--home-rule-strong);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    color: var(--home-text-quiet);
+  }
+
+  .home-routes-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-3xs) var(--spacing-xs);
+    border-radius: var(--radius-lg);
+    font-size: 0.75rem;
+    color: var(--home-text-quiet);
+    animation: home-routes-row 3.6s var(--easing-smooth) infinite;
+  }
+
+  .home-routes-arrow {
+    flex: auto;
+    height: 1px;
+    background-image: linear-gradient(90deg, var(--home-rule-strong) 50%, transparent 50%);
+    background-size: 8px 1px;
+    animation: home-routes-arrow 1s linear infinite;
+  }
+
+  .home-policy {
+    display: grid;
+    gap: var(--spacing-sm);
+    justify-items: start;
+    padding: var(--spacing-md);
+  }
+
+  .home-policy-surfaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .home-policy-surface {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3xs);
+    padding: var(--spacing-3xs) var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    outline: 1px solid var(--home-hairline);
+    font-size: 0.75rem;
+    color: var(--home-text-quiet);
+    background-color: var(--home-sheet);
+    animation: home-policy-surface 4.8s var(--easing-smooth) infinite;
+  }
+
+  .home-policy-rules {
+    display: grid;
+    gap: var(--spacing-4xs);
+    font-size: 0.6875rem;
+    color: var(--home-text-quiet);
+
+    & code::before {
+      color: var(--home-ok);
+      content: '✓ ';
+    }
+  }
+
+  @media (--motion-reduce) {
+    .home-mcp-spin,
+    .home-mcp-face,
+    .home-mcp-spoke,
+    .home-impact-wire,
+    .home-impact-node,
+    .home-workspace-row,
+    .home-workspace-badge,
+    .home-workspace-manifest-web,
+    .home-workspace-manifest-docs,
+    .home-routes-row,
+    .home-routes-arrow,
+    .home-policy-surface {
+      animation: none;
+    }
+  }
+}
+
+@keyframes home-impact-node {
+  0%, 8% {
+    outline-color: var(--home-rule);
+  }
+
+  14%, 34% {
+    outline-color: var(--home-rule-strong);
+  }
+
+  46%, 100% {
+    outline-color: var(--home-rule);
+  }
+}
+
+@keyframes home-impact-wire {
+  0%, 6% {
+    stroke: var(--home-rule);
+  }
+
+  14%, 34% {
+    stroke: var(--home-text-quiet);
+  }
+
+  46%, 100% {
+    stroke: var(--home-rule);
+  }
+}
+
+@keyframes home-workspace-first {
+  0%, 45% {
+    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
+  }
+
+  50%, 100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes home-workspace-second {
+  0%, 45% {
+    background-color: transparent;
+  }
+
+  50%, 95% {
+    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
+  }
+}
+
+@keyframes home-workspace-badge-first {
+  0%, 45% {
+    opacity: 1;
+  }
+
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes home-workspace-badge-second {
+  0%, 45% {
+    opacity: 0;
+  }
+
+  50%, 95% {
+    opacity: 1;
+  }
+}
+
+@keyframes home-routes-row {
+  0%, 30% {
+    color: var(--home-text);
+    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
+  }
+
+  34%, 100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes home-routes-arrow {
+  to {
+    background-position: 8px 0;
+  }
+}
+
+@keyframes home-policy-surface {
+  0%, 10% {
+    color: var(--home-text-quiet);
+    outline-color: var(--home-hairline);
+  }
+
+  20%, 100% {
+    color: var(--home-text);
+    outline-color: var(--home-rule);
+  }
+}
+
+@keyframes home-mcp-spin {
+  to {
+    rotate: z 1turn;
+  }
+}
+
+/* Orbit angle 90° faces the reader and 270° sits behind the server. */
+@keyframes home-mcp-depth {
+  0%, 50%, 100% {
+    opacity: 0.8;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.38;
+  }
+}
+
+@keyframes home-mcp-face {
+  from {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+
+  to {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg - 360deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+}
+
+@keyframes home-mcp-request {
+  to {
+    background-position: -9px 0;
+  }
+}

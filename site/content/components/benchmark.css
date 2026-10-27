@@ -1,0 +1,101 @@
+@layer components {
+  /* Measurements read in grays; Master CSS is the one signal, and brands take their color only on hover. */
+  .home-bench {
+    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+    border-radius: var(--radius-2xl);
+    outline: 1px solid var(--home-hairline);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-1);
+
+    @media (--md) {
+      padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-lg);
+    }
+  }
+
+  .home-bench-gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-image: linear-gradient(var(--home-rule) 50%, transparent 0);
+    background-size: 1px 4px;
+    opacity: 0.7;
+  }
+
+  .home-bench-tick {
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+  }
+
+  .home-bench-name {
+    font-size: var(--font-size-sm);
+    color: var(--home-text-quiet);
+    transition: color var(--home-quick) var(--home-ease);
+  }
+
+  .home-bench-bar {
+    height: 0.5rem;
+    border-radius: 2px;
+    background-color: color-mix(in oklab, var(--home-text) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-text) 6%, transparent);
+  }
+
+  .home-bench-icon {
+    opacity: 0.5;
+    filter: grayscale(1);
+    transition: opacity var(--home-base) var(--home-ease), filter var(--home-base) var(--home-ease);
+  }
+
+  .home-bench-value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    color: var(--home-text);
+  }
+
+  .home-bench-ratio {
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+  }
+
+  .home-bench-row:hover {
+    .home-bench-name {
+      color: var(--home-text);
+    }
+
+    .home-bench-bar {
+      background-color: color-mix(in oklab, var(--home-text) 28%, transparent);
+    }
+
+    .home-bench-icon {
+      opacity: 1;
+      filter: none;
+    }
+  }
+
+  .home-bench-row-signal {
+    .home-bench-name {
+      font-weight: var(--font-weight-medium);
+      color: var(--home-text);
+    }
+
+    .home-bench-bar {
+      background-color: var(--home-signal);
+      box-shadow: 0 0 0 3px var(--home-signal-glow);
+    }
+
+    .home-bench-icon {
+      opacity: 1;
+      filter: none;
+    }
+
+    .home-bench-value {
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}

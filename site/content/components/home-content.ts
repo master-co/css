@@ -1,7 +1,7 @@
 import colorNames from '~/site/docs-shell/data/color-names'
-import { COLOR_LEVELS } from '~/site/docs-shell/data/color-palette'
+import { COLOR_LEVELS, getColor } from '~/site/docs-shell/data/color-palette'
 
-export type DeliveryModeIconId = 'bolt' | 'fileCode' | 'stack'
+export type DeliveryModeId = 'static' | 'progressive' | 'runtime'
 
 export type HomeSectionId = typeof homeSections[keyof typeof homeSections]
 
@@ -18,7 +18,7 @@ export interface DesignSystemTileContent {
   title: string
   body: string
   gridColumnClassName?: string
-  visual: 'theme-modes' | 'theme-variables' | 'art-gallery' | 'native-css-primitives'
+  visual: 'theme-modes' | 'theme-variables' | 'art-gallery' | 'cascade-layers'
 }
 
 export interface DesignSystemRowContent {
@@ -30,12 +30,15 @@ export interface DesignSystemRowContent {
 }
 
 export interface DeliveryModeContent {
+  id: DeliveryModeId
   title: string
   body: string
   href: string
-  icon: DeliveryModeIconId
-  accentClassName: string
-  signal: string
+  /** Where the CSS is generated for this mode. */
+  stage: string
+  /** What reaches the browser. */
+  artifacts: readonly string[]
+  default?: boolean
 }
 
 export interface AgentDiagnosticCardContent {
@@ -51,10 +54,10 @@ export interface AgentDiagnosticCardContent {
 export interface LanguageServiceCardContent {
   title: string
   body: string
-  visual: 'active-syntax-highlighting' | 'manifest-aware-suggestions'
+  visual: 'hover-inspection' | 'manifest-aware-suggestions' | 'active-syntax-highlighting' | 'color-tools'
 }
 
-export interface DevelopmentWorkflowCardContent {
+export interface WorkflowCardContent {
   title: string
   body: string
   signal: string
@@ -63,23 +66,55 @@ export interface DevelopmentWorkflowCardContent {
 export const homeSections = {
   hero: 'hero',
   designSystem: 'design-system',
+  deliveryModes: 'delivery-modes',
   cssCost: 'css-cost',
   codeDiagnostics: 'code-diagnostics',
   languageService: 'language-service',
   developmentWorkflow: 'development-workflow',
-  deliveryModes: 'delivery-modes',
   getStarted: 'get-started'
 } as const
 
-export const heroExampleCode = `
-<article class="display:grid gap-lg p-lg r-3xl bg-surface-raised">
-  <p class="fg-text-muted">Design system surface</p>
-  <h2 class="text-2xl fg-text-strong">Agent-ready UI</h2>
-  <button class="py-sm px-md r-xl bg-yellow fg-yellow-95">
-    Ship interface
-  </button>
-</article>
-`
+export const installCommand = 'npm create @master/css@rc'
+
+/** Classes the hero composer types, in authoring order, onto its preview button. */
+export const heroComposerTokens = [
+  'bg-yellow',
+  'fg-yellow-95',
+  'px-lg',
+  'py-sm',
+  'r-pill',
+  'font-semibold',
+  'shadow-lg',
+  'display:inline-flex',
+  'align-items:center',
+  'gap-xs'
+] as const
+
+/** The same classes after the `sort-classes` autofix. */
+export const heroComposerSortedTokens = [
+  'display:inline-flex',
+  'align-items:center',
+  'gap-xs',
+  'py-sm',
+  'px-lg',
+  'r-pill',
+  'font-semibold',
+  'bg-yellow',
+  'fg-yellow-95',
+  'shadow-lg'
+] as const
+
+export const heroComposerProblem = `Sort classes into the expected order: "${heroComposerSortedTokens.join(' ')}".`
+
+/** Real classes, linted by the tests, that the character matrices are written in. */
+export const ctaClassRows = [
+  ['display:grid', 'gap-lg', 'grid-cols(3)@md', 'p-xl', 'r-3xl', 'bg-surface-raised', 'shadow-lg', 'fg-text-strong'],
+  ['text-2xl', 'font-semibold', 'tracking-tight', 'fg-blue-60:hover', 'outline-width:2px:focus-visible', 'transition-normal', 'opacity:0@starting-style'],
+  ['container-type:inline-size', 'display:none@media(print)', 'bg-blue-60/0.2', '-mt-sm', 'clamp-lines(2)', 'fg-text-muted', 'r-pill', 'px-lg']
+] as const
+
+/** Rows of class text for the character matrices behind the hero and the call to action. */
+export const glyphFieldLines = ctaClassRows.map((row) => `${row.join('   ')}   `)
 
 export const themeVariablesCode = `@theme {
   --font-family-sans: "Inter", sans-serif; /* font-sans */
@@ -96,33 +131,14 @@ export const themeVariablesCode = `@theme {
 }
 `
 
-export const nativeCssPrimitivesCode = `@import '@master/css';
-
-@mixin --control {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  border-radius: var(--radius-lg);
-}
-
-@layer components {
-  .btn {
-    @apply --control;
-    height: 2.5rem;
-    padding-inline: var(--spacing-md);
-    color: white;
-    background: var(--color-blue-60);
-
-    &:hover {
-      background: var(--color-blue-70);
-    }
-
-    @media (--dark) {
-      background: var(--color-blue-50);
-    }
-  }
-}
-`
+/** The preset layer order, bottom to top, with what typically lives in each layer. */
+export const cascadeLayers = [
+  { name: 'theme', example: '--spacing-md: 1rem' },
+  { name: 'base', example: 'h1, p { margin: 0 }' },
+  { name: 'defaults', example: 'body { color: var(--color-text-body) }' },
+  { name: 'components', example: '.btn { @apply --control }' },
+  { name: 'utilities', example: '.px-lg  .bg-yellow' }
+] as const
 
 export const p3PaletteColorNames = [...colorNames].reverse()
 
@@ -134,20 +150,20 @@ export const designSystemRows = [
     gridClassName: 'grid-cols(1) grid-cols(2)@md',
     tiles: [
       {
-        title: 'Theme modes without forks',
-        body: 'Switch light, dark, and custom modes through the same tokens while components keep their markup.',
+        title: 'Modes without forks',
+        body: 'Light, dark and custom modes switch through the same tokens. The markup stays the same.',
         visual: 'theme-modes'
       },
       {
-        title: 'System-wide variables',
-        body: 'Define color, spacing, radius, and type once, then reuse them across utilities, components, and modes.',
+        title: 'Tokens, defined once',
+        body: 'Set color, spacing, radius and type once. Utilities, components and modes all read from them.',
         visual: 'theme-variables'
       }
     ]
   },
   {
-    title: 'Wide-gamut color system',
-    body: 'Use vivid P3 palettes with a predictable tier scale, from deep anchors to bright interface accents.',
+    title: 'Wide-gamut color',
+    body: 'P3 palettes on a predictable tier scale, from deep anchors to bright accents.',
     gridClassName: 'grid-cols(1)',
     visual: 'p3-palette'
   },
@@ -157,14 +173,14 @@ export const designSystemRows = [
     tiles: [
       {
         title: 'Layout and motion, together',
-        body: 'Compose CSS Grid, responsive spans, animations, and View Transition selectors right beside the UI.',
+        body: 'Grid, responsive spans, animation and view transitions, written right beside the UI.',
         gridColumnClassName: 'grid-col-span(2)@md',
         visual: 'art-gallery'
       },
       {
-        title: 'Reusable native CSS',
-        body: 'Package declarations, nested selectors, mixins, and condition blocks into compact component classes.',
-        visual: 'native-css-primitives'
+        title: 'Native CSS, in predictable layers',
+        body: 'Write components in native CSS with mixins and nesting. Utilities sit in a later layer, so a class in markup wins without !important.',
+        visual: 'cascade-layers'
       }
     ]
   }
@@ -172,39 +188,50 @@ export const designSystemRows = [
 
 export const deliveryModes = [
   {
-    title: 'Runtime rendering',
-    body: 'Generate rules from live DOM changes while teams keep moving.',
-    href: '/guide/rendering-modes#runtime-rendering',
-    icon: 'bolt',
-    accentClassName: 'bg-yellow',
-    signal: 'Live DOM'
-  },
-  {
+    id: 'static',
     title: 'Static rendering',
-    body: 'Scan source once and ship a compact CSS file with production builds.',
+    body: 'Scan class names at build time and ship a plain stylesheet. No runtime in the browser.',
     href: '/guide/rendering-modes#static-rendering',
-    icon: 'fileCode',
-    accentClassName: 'bg-blue',
-    signal: 'Build CSS'
+    stage: 'Build',
+    artifacts: ['app.css'],
+    default: true
   },
   {
+    id: 'progressive',
     title: 'Progressive rendering',
-    body: 'Render first-response CSS, then let runtime hydration adopt late UI states.',
+    body: 'Render first-load CSS on the server or at build time. The runtime starts its engine only for classes outside that CSS.',
     href: '/guide/rendering-modes#progressive-rendering',
-    icon: 'stack',
-    accentClassName: 'bg-red',
-    signal: 'Hybrid'
+    stage: 'Server',
+    artifacts: ['style#master-css', 'hydration manifest']
+  },
+  {
+    id: 'runtime',
+    title: 'Runtime rendering',
+    body: 'Generate rules in the browser for classes that first appear there, from editors, CMS content or playgrounds.',
+    href: '/guide/rendering-modes#runtime-rendering',
+    stage: 'Browser',
+    artifacts: ['MasterCSSRuntime']
   }
 ] satisfies readonly DeliveryModeContent[]
 
+/** Class names that travel through the delivery diagram. */
+export const deliveryFlowPackets = ['p-lg', 'r-xl', 'gap-md', 'grid-cols(3)@md', 'text-sm', 'fg-text-strong'] as const
+
+/** Sources the delivery diagram scans. */
+export const deliveryFlowSources = [
+  { file: 'app.tsx', code: 'className="p-lg r-xl"' },
+  { file: 'page.vue', code: 'class="gap-md grid-cols(3)@md"' },
+  { file: 'index.html', code: 'class="text-sm fg-text-strong"' }
+] as const
+
 /**
  * Each sample reproduces what `@master/eslint-config-css` reports for the
- * code shown; `site/utils/home-content.test.ts` lints them to keep it so.
+ * code shown; `home-content.test.ts` lints them to keep it so.
  */
 export const agentDiagnosticCards = [
   {
     title: 'Invalid classes',
-    body: 'Catch classes that match Master CSS syntax but generate invalid CSS before they reach the browser.',
+    body: 'Catch classes that parse but produce invalid CSS.',
     code: `
 <button class="display:inline-flex color:12px">
   Save changes
@@ -220,7 +247,7 @@ export const agentDiagnosticCards = [
   },
   {
     title: 'Class order',
-    body: 'Sort class strings into stable generated-rule order and remove duplicates so diffs stay reviewable.',
+    body: 'Sort classes into a stable order and drop duplicates, so diffs stay small.',
     code: `
 <article class="bg-white font-md display:flex px-md position:relative">
   Preview card
@@ -241,7 +268,7 @@ export const agentDiagnosticCards = [
   },
   {
     title: 'Conflicting classes',
-    body: 'Find classes that emit the same declarations in the same variant scope, decided by generated CSS order.',
+    body: 'Find classes that set the same property in the same variant scope.',
     code: `
 <section class="display:grid gap-md m-md m-sm">
   Settings
@@ -262,7 +289,7 @@ export const agentDiagnosticCards = [
   },
   {
     title: 'Strict vocabulary',
-    body: 'Opt in to reject classes and token keys that the active project manifest does not generate.',
+    body: 'Opt in to reject classes and tokens your project manifest does not generate.',
     code: `
 <button class="px-md fg-brand-tone">
   Upgrade plan
@@ -278,7 +305,7 @@ export const agentDiagnosticCards = [
   },
   {
     title: 'Theme tokens',
-    body: 'Enforce an opt-in raw value policy so token-backed properties use project tokens unless a value is allowed.',
+    body: 'Opt in to require project tokens for token-backed properties, with an allowlist for raw values.',
     code: `
 <p class="color:#dc2626">
   Destructive action
@@ -294,7 +321,7 @@ export const agentDiagnosticCards = [
   },
   {
     title: 'Safe fix preview',
-    body: 'Return lint fixes as a reviewable diff with a confirmation token before an agent writes to the workspace.',
+    body: 'Fixes come back as a diff with a confirmation token, before anything is written.',
     code: `
 <article class="bg-white font-md display:flex px-md position:relative"> <!-- [!code --] -->
 <article class="position:relative display:flex px-md font-md bg-white"> <!-- [!code ++] -->
@@ -302,7 +329,7 @@ export const agentDiagnosticCards = [
 `,
     problem: {
       location: 'home.html',
-      message: 'Preview created for review.',
+      message: '1 file changed. Pass the confirmToken to mastercss_apply_preview within 5 minutes.',
       severity: 'info',
       source: 'mastercss_preview_fixes'
     },
@@ -310,18 +337,74 @@ export const agentDiagnosticCards = [
   }
 ] satisfies readonly AgentDiagnosticCardContent[]
 
+/** The draft an agent checks, with what `@master/eslint-config-css` reports and fixes in it. */
+export const agentSession = {
+  file: 'plan-card.html',
+  code: `
+<article class="bg-surface-raised p-lg display:grid gap-md r-xl">
+  <h3 class="text-xl font-medium mt-sm mt-md">Pro plan</h3>
+  <p class="fg-text-muted text-sm">Unlimited projects</p>
+</article>
+`,
+  fixedCode: `
+<article class="display:grid gap-md p-lg r-xl bg-surface-raised">
+  <h3 class="mt-sm text-xl font-medium">Pro plan</h3>
+  <p class="text-sm fg-text-muted">Unlimited projects</p>
+</article>
+`,
+  problems: [
+    { location: 'plan-card.html:1:17', message: 'Sort classes into the expected order: "display:grid gap-md p-lg r-xl bg-surface-raised".', severity: 'warning', source: '@master/css/sort-classes' },
+    { location: 'plan-card.html:2:14', message: 'Sort classes into the expected order: "mt-md mt-sm text-xl font-medium".', severity: 'warning', source: '@master/css/sort-classes' },
+    { location: 'plan-card.html:2:40', message: 'Remove class "mt-md"; it is overridden by class "mt-sm" in generated CSS.', severity: 'warning', source: '@master/css/no-conflicting-classes' },
+    { location: 'plan-card.html:3:13', message: 'Sort classes into the expected order: "text-sm fg-text-muted".', severity: 'warning', source: '@master/css/sort-classes' }
+  ]
+} satisfies { file: string, code: string, fixedCode: string, problems: HomeCodeWindowProblem[] }
+
 export const languageServiceCards = [
   {
-    title: 'Manifest-aware suggestions',
-    body: 'Complete utilities, values, selectors, queries, directives, and project tokens from the active workspace manifest.',
+    title: 'Hover inspection',
+    body: 'Hover a class to see the CSS it generates, including its state and query.',
+    visual: 'hover-inspection'
+  },
+  {
+    title: 'Manifest completions',
+    body: 'Complete utilities, values, selectors, queries and tokens from your project manifest.',
     visual: 'manifest-aware-suggestions'
   },
   {
-    title: 'Active syntax highlighting',
-    body: 'Highlight the current class context by default so dense markup stays calm until a human is reading it.',
+    title: 'Focused highlighting',
+    body: 'Markup stays calm until the cursor enters a class string; then its class context lights up.',
     visual: 'active-syntax-highlighting'
+  },
+  {
+    title: 'Color tools',
+    body: 'A swatch beside every color class that resolves to one color. Edit literal colors with the native picker.',
+    visual: 'color-tools'
   }
 ] satisfies readonly LanguageServiceCardContent[]
+
+/** The class the hover inspection tile points at. */
+export const hoverInspectionClass = 'fg-blue-60:hover@sm'
+
+/** Markup for the hover inspection tile; the second line holds the hovered class. */
+export const hoverInspectionLines = [
+  '<nav class="display:flex gap-lg">',
+  `  <a class="font-medium ${hoverInspectionClass}">Guide</a>`,
+  '</nav>'
+] as const
+
+/**
+ * Color classes the language service decorates with swatches. Tokens that switch with the
+ * color scheme, such as `fg-text-amber`, have no single color and get none. The first
+ * class is a literal, the kind the color picker edits in place.
+ */
+export const colorToolClasses = [
+  { className: 'color:#4f46e5', swatchAt: 'color:'.length, color: '#4f46e5' },
+  { className: 'bg-blue-60', swatchAt: 0, color: getColor('blue', 60) },
+  { className: 'fg-amber-60', swatchAt: 0, color: getColor('amber', 60) },
+  { className: 'b-gray-30', swatchAt: 0, color: getColor('gray', 30) },
+  { className: 'outline-green-50', swatchAt: 0, color: getColor('green', 50) }
+] as const
 
 export const activeSyntaxHighlightingCode = `
 <section class="display:grid gap-lg p-lg r-3xl bg-surface-raised">
@@ -361,25 +444,51 @@ export const manifestSuggestionItems = [
   { label: 'fg-text-indigo' }
 ] as const satisfies readonly { label: string, detail?: string }[]
 
-export const developmentWorkflowCards = [
-  {
-    title: 'Workspace-aware manifests',
-    body: 'Keep monorepo completions, colors, hover previews, and directive diagnostics aligned with the nearest Master CSS project.',
+export const workflowCards = {
+  mcp: {
+    title: 'AI agents over MCP',
+    body: 'Agents get your manifest, scanner and lint rules. They inspect classes, lint their changes and preview fixes as diffs.',
+    signal: 'MCP server'
+  },
+  impact: {
+    title: 'Trace a change',
+    body: 'Snapshot the project, change a token or recipe, and see the definitions, consumers and rules it touches.',
+    signal: 'Impact report'
+  },
+  frameworks: {
+    title: 'Your framework, your build',
+    body: 'Vite, Astro, Next.js, Nuxt, SvelteKit, webpack and more, on the same project manifest and rendering modes.',
+    signal: 'Integrations'
+  },
+  workspaces: {
+    title: 'Monorepo-aware',
+    body: 'Completions, hover, colors and directive diagnostics follow the nearest Master CSS project.',
     signal: 'Nearest manifest'
   },
-  {
-    title: 'Build-tool mode integration',
-    body: 'Share the same manifest and rendering mode across Vite, Astro, Next.js, webpack, and CLI builds without changing authoring syntax.',
-    signal: 'Toolchain mode'
-  },
-  {
+  routes: {
     title: 'Route-level styles',
-    body: 'Load native route stylesheets with shared project tokens, mixins, and custom media, without copying global rules into each page.',
+    body: 'Route stylesheets use shared tokens, mixins and custom media without copying global rules.',
     signal: 'Route boundary'
   },
-  {
-    title: 'Project policy feedback',
-    body: 'Carry raw value policy, diagnostics, and fix previews into editors, ESLint, and MCP automation from one workspace source.',
-    signal: 'Shared policy'
+  policy: {
+    title: 'One set of lint rules',
+    body: 'ESLint, the CLI and the MCP server share each rule and its fixes. Options in eslint.config.js apply to ESLint.',
+    signal: 'Shared rules'
   }
-] satisfies readonly DevelopmentWorkflowCardContent[]
+} satisfies Record<string, WorkflowCardContent>
+
+/** Project tools from the Master CSS MCP server, shown as the agent tool surface. */
+export const mcpToolNames = [
+  'mastercss_scan_project',
+  'mastercss_inspect_class',
+  'mastercss_trace_class',
+  'mastercss_manifest_query',
+  'mastercss_lint_project',
+  'mastercss_render_css',
+  'mastercss_css_compare',
+  'mastercss_preview_fixes'
+] as const
+
+export const mcpCommand = 'npx -y @master/css-mcp@rc --root /path/to/project'
+
+export const impactCommand = 'npx @master/css-cli inspect --compare before.json'

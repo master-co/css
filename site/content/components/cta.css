@@ -1,0 +1,156 @@
+@layer components {
+  /* The same shell as the hero stage: a light tray 8px around the dark panel. */
+  .home-cta-frame {
+    padding: var(--home-gap);
+    border-radius: var(--home-radius-tray);
+    background-color: var(--home-tray);
+    box-shadow: inset 0 0 0 1px var(--home-hairline);
+  }
+
+  /* The closing stage is always dark, so the page ends on the same matrix it opened with, lit from above. */
+  .home-cta {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: var(--spacing-4xl) var(--spacing-md) calc(var(--spacing-4xl) + var(--spacing-lg));
+    border-radius: var(--home-radius-sheet);
+    outline: 1px solid var(--home-hairline);
+    color-scheme: dark;
+    color: var(--home-text);
+    background:
+      radial-gradient(ellipse 60% 48% at 50% -8%, rgb(255 255 255 / 0.09), transparent 70%),
+      color-mix(in oklab, var(--home-ground) 82%, black);
+    box-shadow: var(--home-edge), var(--home-contact);
+
+    @media (--md) {
+      padding-block: var(--spacing-5xl) calc(var(--spacing-5xl) + var(--spacing-2xl));
+    }
+  }
+
+  .home-cta-field {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    color: var(--home-text);
+    /* Clear an oval behind the copy and let the matrix settle into the floor. */
+    mask-image:
+      linear-gradient(transparent 0, black 22%, black 55%, transparent 92%),
+      radial-gradient(ellipse 42% 40% at 50% 46%, transparent 55%, black 100%);
+    mask-composite: intersect;
+
+    @media (width < 48rem) {
+      opacity: 0.7;
+      mask-image:
+        linear-gradient(transparent 0, black 18%, black 45%, transparent 85%),
+        radial-gradient(ellipse 90% 40% at 50% 46%, transparent 62%, black 100%);
+    }
+  }
+
+  /* A grid plane recedes to a horizon below the actions and drifts slowly toward the reader. */
+  .home-cta-horizon {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 46%;
+    perspective: 32rem;
+    perspective-origin: 50% 0;
+    pointer-events: none;
+    mask-image: linear-gradient(transparent, black 45%);
+  }
+
+  .home-cta-floor {
+    --home-floor-cell: 3rem;
+    position: absolute;
+    inset: 0 -50% -40%;
+    background-image:
+      linear-gradient(90deg, var(--home-rule) 1px, transparent 1px),
+      linear-gradient(var(--home-rule) 1px, transparent 1px);
+    background-size: var(--home-floor-cell) var(--home-floor-cell);
+    background-position: center top;
+    transform: rotateX(68deg);
+    transform-origin: 50% 0;
+    opacity: 0.55;
+    mask-image: radial-gradient(ellipse 50% 90% at 50% 0, black, transparent);
+  }
+
+  .home-cta-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  /* Centered, the section marker draws its rule out to both sides. */
+  .home-cta-marker {
+    align-self: stretch;
+    justify-content: center;
+
+    &::before {
+      flex: auto;
+      max-width: 6rem;
+      height: 1px;
+      background: linear-gradient(270deg, var(--home-rule), transparent);
+      transform-origin: right;
+      content: '';
+    }
+
+    &::after {
+      max-width: 6rem;
+    }
+  }
+
+  .home-cta-title {
+    max-width: 20ch;
+    margin: var(--spacing-xl) 0 0;
+    font-size: calc(var(--home-title) * 1.1);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+    color: var(--home-text);
+    text-wrap: balance;
+  }
+
+  /* The second line steps back, as in the hero. */
+  .home-cta-title-quiet {
+    color: var(--home-text-quiet);
+  }
+
+  .home-cta-lead {
+    max-width: 44ch;
+    margin: var(--spacing-lg) 0 0;
+    font-size: var(--home-lead);
+    line-height: 1.6;
+    color: var(--home-text-quiet);
+    text-wrap: pretty;
+  }
+
+  @media (--motion-safe) {
+    .home-cta-floor {
+      animation-name: home-cta-floor;
+      animation-duration: 9s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @supports (animation-timeline: view()) {
+      .home-cta-marker::before {
+        animation-name: home-marker-rule;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 20% entry 80%;
+      }
+    }
+  }
+}
+
+@keyframes home-cta-floor {
+  to {
+    background-position: center var(--home-floor-cell);
+  }
+}

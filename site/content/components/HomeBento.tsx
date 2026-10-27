@@ -23,13 +23,15 @@ export function HomeBentoCard({ body, children, className, signal, title }: { bo
   )
 }
 
-export function HomeSectionHeader({ body, children, label, title }: { body: string, children?: ReactNode, label: string, title: string }) {
+export function HomeSectionHeader({ body, children, index, label, title }: { body: string, children?: ReactNode, index: string, label: string, title: string }) {
   return (
-    <div className="home-section-copy">
-      <p className="home-section-label">{label}</p>
+    <header className="home-section-header">
+      <p className="home-marker"><span className="home-marker-index">{index}</span>{label}</p>
       <h2 className="home-section-heading">{title}</h2>
-      <p className="home-section-body">{body}</p>
-      {children}
-    </div>
+      <div className="home-section-aside">
+        <p className="home-section-body">{body}</p>
+        {children}
+      </div>
+    </header>
   )
 }

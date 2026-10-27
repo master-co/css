@@ -1,3 +1,4 @@
+import './design.css'
 import './home.css'
 import DocHeader from '~/site/docs-shell/components/DocHeader'
 import Footer from '~/site/docs-shell/components/Footer'
@@ -7,21 +8,21 @@ import BenchmarkSection from './components/BenchmarkSection'
 import CTASection from './components/CTASection'
 import DeliveryModesSection from './components/DeliveryModesSection'
 import DesignSystemSection from './components/DesignSystemSection'
-import DevelopmentWorkflowSection from './components/DevelopmentWorkflowSection'
 import HeroSection from './components/HeroSection'
 import LanguageServiceSection from './components/LanguageServiceSection'
+import WorkflowSection from './components/WorkflowSection'
 
 export default function Page() {
   return <>
     <DocHeader stickable />
-    <main className="overflow:hidden">
+    <main className="overflow:hidden home-page">
       <HeroSection />
       <DesignSystemSection />
+      <DeliveryModesSection />
       <BenchmarkSection />
       <AgentDiagnosticsSection />
       <LanguageServiceSection />
-      <DevelopmentWorkflowSection />
-      <DeliveryModesSection />
+      <WorkflowSection />
       <CTASection />
     </main>
     <Footer {...footerProps} className="app-wrapper" />

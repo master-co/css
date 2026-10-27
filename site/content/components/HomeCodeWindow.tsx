@@ -6,9 +6,9 @@ import type { HomeCodeWindowProblem, HomeCodeWindowProblemSeverity } from './hom
 const windowDots = ['close', 'minimize', 'zoom'] as const
 
 const problemIcons = {
-  error: { Icon: IconCircleX, className: 'fg-text-red' },
-  info: { Icon: IconInfoCircle, className: 'fg-text-blue' },
-  warning: { Icon: IconAlertTriangle, className: 'fg-text-amber' }
+  error: { Icon: IconCircleX, className: 'home-tone-error' },
+  info: { Icon: IconInfoCircle, className: 'home-tone-info' },
+  warning: { Icon: IconAlertTriangle, className: 'home-tone-warn' }
 } satisfies Record<HomeCodeWindowProblemSeverity, { Icon: typeof IconCircleX, className: string }>
 
 export interface HomeCodeWindowProps {

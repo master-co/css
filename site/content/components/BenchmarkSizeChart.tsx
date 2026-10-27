@@ -8,13 +8,13 @@ import type { HomePageCSSSizeMode, HomePageCSSSizeModeId, HomePageCSSSizeRow } f
 import HomeSegmentedControl from './HomeSegmentedControl'
 
 export interface BenchmarkSizeChartLabels {
+  caption: string
   largerSuffix: string
   modeLabels: Record<HomePageCSSSizeModeId, string>
   modeSelectorLabel: string
 }
 
 export interface BenchmarkBrand {
-  colorClassName: string
   icon?: ReactNode
 }
 
@@ -38,9 +38,12 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
   return (
-    <div className="position:relative py-md" ref={ref}>
+    <div className="position:relative" ref={ref}>
       <div className="display:flex flex-direction:column gap-lg">
-        <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
+        <div className="display:flex flex-wrap:wrap align-items:center justify-content:space-between gap-sm">
+          <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
+          <span className="home-annotation">{labels.caption}</span>
+        </div>
         {/* Remounting per mode replays the bars from the shared start. */}
         <BenchmarkRows brands={brands} key={activeMode.id} labels={labels} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
       </div>
@@ -74,7 +77,7 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
         <span />
         <div className="position:relative">
           {axis.ticks.map((tick) => (
-            <span className="position:absolute bottom:0 top:0 width:1px bg-line-divider opacity:0.42" key={tick.label} style={{ left: `${tick.percent}%` }} />
+            <span className="home-bench-gridline" key={tick.label} style={{ left: `${tick.percent}%` }} />
           ))}
         </div>
       </div>
@@ -102,7 +105,7 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
             const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
             return (
               <span
-                className={clsx('position:absolute top:0 font-2xs white-space:nowrap fg-text-muted', !compactTick && 'display:none@media((width<64rem))')}
+                className={clsx('position:absolute top:0 white-space:nowrap home-bench-tick', !compactTick && 'display:none@media((width<64rem))')}
                 key={tick.label}
                 style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
                 {tick.label}
@@ -134,28 +137,28 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played,
     transitionTimingFunction: chartEasing
   }
   return (
-    <div className="display:grid align-items:center gap-sm min-height:2.75rem" style={chartGridStyle}>
-      <span className="display:block overflow:hidden min-width:0 font-sm text-overflow:ellipsis white-space:nowrap fg-text-strong">{row.name}</span>
+    <div className={clsx('display:grid align-items:center gap-sm min-height:2.75rem home-bench-row', row.isMasterCSS && 'home-bench-row-signal')} style={chartGridStyle}>
+      <span className="display:block overflow:hidden min-width:0 text-overflow:ellipsis white-space:nowrap home-bench-name">{row.name}</span>
       <div className="position:relative height:2.75rem min-width:0">
         <div
-          className={clsx('position:absolute left:0 top:50% height:12px min-width:1px r-md translate:0|-50% transition-property:width', brand?.colorClassName ?? 'bg-blue')}
+          className="position:absolute left:0 top:50% min-width:1px translate:0|-50% transition-property:width home-bench-bar"
           style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }} />
         <span
           className="position:absolute top:50% z-index:1 display:inline-flex align-items:center gap-2xs white-space:nowrap translate:0|-50% transition-property:left pointer-events:none gap-sm@md"
           style={{ ...transition, left: settled ? `${rowPercent}%` : `min(${startPercent}, calc(100% - 5.25rem))` }}>
-          {brand?.icon && <span className="display:inline-flex flex:none ml-xs ml-sm@md">{brand.icon}</span>}
+          {brand?.icon && <span className="display:inline-flex flex:none ml-xs ml-sm@md home-bench-icon">{brand.icon}</span>}
           <span className="display:inline-flex align-items:baseline gap-2xs gap-xs@md">
             <CountdownKilobytes
               active={played}
               barDuration={barDuration}
-              className={clsx('font-lg font-variant-numeric:tabular-nums', row.isMasterCSS ? 'fg-text-yellow' : 'fg-text-strong')}
+              className="home-bench-value"
               delay={delay}
               fromBytes={axisMaxBytes * chartAnimationStartPercent / 100}
               reduceMotion={reduceMotion}
               toBytes={row.bytes} />
             {!row.isMasterCSS && (
               <span
-                className={clsx('font-xs fg-text-muted transition-property:opacity,translate display:none@media((width<64rem))', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
+                className={clsx('transition-property:opacity,translate display:none@media((width<64rem)) home-bench-ratio', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
                 style={{ transitionDelay: `${reduceMotion ? 0 : delay + barDuration}s`, transitionDuration: `${ratioFadeDuration}s`, transitionTimingFunction: chartEasing }}>
                 {`${row.ratio.toFixed(1)}${labels.largerSuffix}`}
               </span>
@@ -216,7 +219,7 @@ function createBenchmarkAxis(maxBytes: number) {
   const axisMaxKilobytes = (Math.ceil(maxKilobytes / step) + 1) * step
   const ticks: BenchmarkAxisTick[] = []
   for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
-    ticks.push({ label: `${formatAxisNumber(valueKilobytes)}kB`, percent: toPercent(valueKilobytes, axisMaxKilobytes) })
+    ticks.push({ label: `${formatAxisNumber(valueKilobytes)} kB`, percent: toPercent(valueKilobytes, axisMaxKilobytes) })
   }
   return { maxBytes: axisMaxKilobytes * 1000, ticks }
 }
