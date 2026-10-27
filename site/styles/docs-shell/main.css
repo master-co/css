@@ -57,13 +57,13 @@
 
     @apply --site-dark {
       &:hover {
-        background-color: var(--color-gray-80);
+        background-color: var(--color-zinc-80);
       }
     }
 
     @apply --site-light {
       &:hover {
-        background-color: var(--color-neutral-5);
+        background-color: var(--color-zinc-5);
       }
     }
   }

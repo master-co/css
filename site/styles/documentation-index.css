@@ -3,10 +3,11 @@
   .doc-index :is(h2, h3, p, ul) { margin: 0; }
   .doc-index a { text-decoration: none; }
   .doc-index :is(a, button):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border-radius: var(--radius-sm); }
-  .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--color-line-subtle); border-left: 1px solid var(--color-line-subtle); }
-  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: 1.25rem; border-right: 1px solid var(--color-line-subtle); border-bottom: 1px solid var(--color-line-subtle); color: var(--color-text-body); }
-  .doc-index-section-link:hover { background: var(--color-surface-raised); }
-  .doc-index-section-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-inset); color: var(--color-text-muted); }
+  /* The section cards sit in a recessed shell, 8px apart, like the homepage bento. */
+  .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); box-shadow: inset 0 0 0 1px var(--color-line-subtle); }
+  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: 1.25rem; border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); color: var(--color-text-body); transition: box-shadow .2s; }
+  .doc-index-section-link:hover { box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-divider), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)); }
+  .doc-index-section-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-lg); background: var(--color-surface-canvas); box-shadow: var(--shadow-pressed); color: var(--color-text-muted); }
   .doc-index-section-link > svg { margin-left: auto; color: var(--color-text-muted); order: 1; }
   .doc-index-section-copy { display: flex; flex-direction: column; gap: var(--spacing-xs); width: 100%; order: 2; }
   .doc-index-section-title { color: var(--color-text-strong); font-size: .9375rem; line-height: 1.5; font-weight: 600; letter-spacing: -.01em; }
@@ -14,16 +15,17 @@
   .doc-index-section-link:hover .doc-index-section-icon, .doc-index-section-link:hover > svg { color: var(--color-accent); }
   .doc-index-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-block: var(--spacing-2xl) var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-line-subtle); font-size: .8125rem; font-weight: 600; color: var(--color-text-body); }
   .doc-index-count { display: inline-flex; align-items: center; justify-content: center; margin-left: var(--spacing-xs); font-size: .6875rem; font-weight: 400; line-height: 1.5; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-  .doc-index-view { display: flex; gap: .125rem; padding: .1875rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-md); background: var(--color-surface-inset); }
-  .doc-index-view button { min-height: 2.25rem; padding: .375rem .75rem; border-radius: var(--radius-sm); font-size: .75rem; line-height: 1.5; }
-  .doc-index-view button[aria-pressed="true"] { background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: 0 1px 3px #0001; }
+  .doc-index-view { display: flex; gap: 2px; padding: 4px; border-radius: var(--radius-2xl); background: var(--color-surface-shell); box-shadow: var(--shadow-pressed); }
+  .doc-index-view button { min-height: 2rem; padding: .375rem .75rem; border-radius: var(--radius-xl); font-size: .75rem; line-height: 1.5; color: var(--color-text-muted); }
+  .doc-index-view button:hover { color: var(--color-text-strong); }
+  .doc-index-view button[aria-pressed="true"] { background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: var(--shadow-raised); }
   .doc-index-section + .doc-index-section { margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-line-subtle); }
   .doc-index-heading { margin-bottom: var(--spacing-lg); }
   .doc-index-heading h2 { display: flex; align-items: center; font-size: 1.375rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--color-text-strong); }
   .doc-index-heading p { margin-top: var(--spacing-xs); font-size: .8125rem; line-height: 1.6; color: var(--color-text-muted); }
   .doc-index-groups { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); }
-  .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-line-divider); border-radius: var(--radius-sm); background: var(--color-surface-raised); font-size: var(--font-size-xs); color: var(--color-text-body); line-height: var(--leading-md); }
-  .doc-index-groups a:hover { color: var(--color-text-strong); background: var(--color-surface-raised); border-color: var(--color-line-divider); }
+  .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); font-size: var(--font-size-xs); color: var(--color-text-body); line-height: var(--leading-md); transition: color .16s, box-shadow .16s; }
+  .doc-index-groups a:hover { color: var(--color-text-strong); box-shadow: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-divider), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)); }
   .doc-index-categories { columns: 3; column-gap: var(--spacing-xl); }
   .doc-index-category { break-inside: avoid; margin-bottom: var(--spacing-xl); }
   .doc-index-category h3 { display: flex; align-items: baseline; gap: var(--spacing-xs); width: 100%; margin-bottom: var(--spacing-sm); font-size: .8125rem; line-height: 1.5; font-weight: 600; color: var(--color-text-strong); }

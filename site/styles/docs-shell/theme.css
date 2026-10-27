@@ -14,6 +14,25 @@
   --radius-card: 0.75rem;
   --radius-panel: 1rem;
 }
+
+/* Site roles on the zinc interface neutral, alongside the preset's surface, line and text roles. */
+@theme {
+  --color-surface-canvas: light-dark(var(--color-zinc-5), var(--color-zinc-95));
+  --color-surface-shell: light-dark(var(--color-zinc-10), var(--color-zinc-100));
+  --color-surface-ink: light-dark(var(--color-zinc-90), var(--color-zinc-5));
+  --color-text-subtle: light-dark(var(--color-zinc-40), var(--color-zinc-60));
+}
+
+/*
+ * Site light. One source above: raised surfaces take a 1px line of light on their top edge, a hairline
+ * ring and a short contact shadow; floating surfaces add a long, faint falloff; pressed ones sink.
+ * Radii nest by an 8px inset: r-lg (wells), r-2xl (sheets), r-3xl (shells), r-xl (controls).
+ */
+@theme {
+  --shadow-raised: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-subtle), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5));
+  --shadow-floating: inset 0 1px 0 light-dark(oklch(100% 0 none / .8), oklch(100% 0 none / .06)), 0 0 0 1px var(--color-line-subtle), 0 1px 2px light-dark(oklch(0% 0 none / .07), oklch(0% 0 none / .5)), 0 16px 32px -20px light-dark(oklch(0% 0 none / .18), oklch(0% 0 none / .6));
+  --shadow-pressed: inset 0 1px 2px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .5)), inset 0 0 0 1px var(--color-line-subtle);
+}
 @keyframes slide-to-right {
     from {
       transform: translateX(-100%);
@@ -32,8 +51,8 @@
   --color-primary: var(--color-yellow-40);
   --color-float: var(--color-white);
   --color-text-primary: var(--color-yellow-90);
-  --color-accent: var(--color-yellow-60);
-  --color-focus: var(--color-yellow-60);
+  --color-accent: var(--color-zinc-90);
+  --color-focus: var(--color-zinc-90);
   --color-success: var(--color-green-40);
   --color-text-success: var(--color-green-70);
   --color-danger: var(--color-red-60);
@@ -52,8 +71,8 @@
     --color-primary: var(--color-yellow-40);
     --color-float: var(--color-white);
     --color-text-primary: var(--color-yellow-90);
-    --color-accent: var(--color-yellow-60);
-    --color-focus: var(--color-yellow-60);
+    --color-accent: var(--color-zinc-90);
+    --color-focus: var(--color-zinc-90);
     --color-success: var(--color-green-40);
     --color-text-success: var(--color-green-70);
     --color-danger: var(--color-red-60);
@@ -71,10 +90,10 @@
     --tiny-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='white' fill-opacity='0.1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E");
     --grid: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255/ 0.02)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
     --color-primary: var(--color-yellow-50);
-    --color-float: var(--color-gray-70);
+    --color-float: var(--color-zinc-70);
     --color-text-primary: var(--color-yellow-95);
-    --color-accent: var(--color-amber-10);
-    --color-focus: var(--color-amber-40);
+    --color-accent: var(--color-zinc-5);
+    --color-focus: var(--color-zinc-5);
     --color-success: var(--color-green-50);
     --color-text-success: var(--color-green-40);
     --color-danger: var(--color-red-50);

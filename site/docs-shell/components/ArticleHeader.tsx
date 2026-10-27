@@ -20,7 +20,8 @@ export default async function ArticleHeader(props: any) {
   let { h1ClassName, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc } = props
   const $ = await createTranslation(locale, dictionaries)
   const Category = ({ children }: any) => {
-    const categoryClasses = clsx('mb-sm font-sm font-weight:460 letter-spacing:.01em', { 'fg-accent': !categoryLink })
+    // The category reads as a mono annotation above the title, the same marker style as the homepage sections.
+    const categoryClasses = clsx('mb-md font-mono font-2xs letter-spacing:.14em text-transform:uppercase', { 'fg-text-muted': !categoryLink })
     return (
       categoryLink
         ? (
