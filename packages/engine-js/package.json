@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "test": "pnpm run differential",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "differential": "node --import tsx scripts/differential.mts",
     "check:size": "node scripts/check-size.mjs",
@@ -27,5 +28,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "devDependencies": {
+    "@master/css-binding-wasm-compiler": "workspace:*",
+    "@master/css-binding-wasm-engine": "workspace:*"
+  }
 }

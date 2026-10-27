@@ -164,6 +164,15 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # `--affected` selects packages by their own files, so Rust, site and example
+      # changes never select the browser engine. Its task inputs cover them instead,
+      # and the Turbo cache skips the differential when nothing it reads changed.
+      - name: Compare the browser engine with Rust
+        id: differential
+        run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo run test --filter=@master/css-engine-js
+      - name: Summarize browser engine differences
+        if: ${{ failure() && steps.differential.outcome == 'failure' && hashFiles('packages/engine-js/.reports/differential.md') != '' }}
+        run: cat packages/engine-js/.reports/differential.md >> "$GITHUB_STEP_SUMMARY"
       - name: Build and verify site
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
         shell: bash

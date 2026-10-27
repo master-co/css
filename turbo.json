@@ -70,6 +70,28 @@
       ],
       "outputs": []
     },
+    "@master/css-engine-js#test": {
+      "dependsOn": [
+        "build",
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!*.md",
+        "$TURBO_ROOT$/crates/mastercss-engine/**",
+        "$TURBO_ROOT$/crates/mastercss-compiler/**",
+        "$TURBO_ROOT$/examples/**/*.{astro,html,jsx,md,mdx,php,svelte,ts,tsx,vue}",
+        "$TURBO_ROOT$/packages/preset/src/default-manifest.json",
+        "$TURBO_ROOT$/parity/v2-language-corpus.json",
+        "$TURBO_ROOT$/site/**/*.{astro,html,jsx,md,mdx,php,svelte,ts,tsx,vue}",
+        "!$TURBO_ROOT$/examples/**/node_modules/**",
+        "!$TURBO_ROOT$/site/**/node_modules/**"
+      ],
+      "outputs": []
+    },
     "lint": {
       "dependsOn": [],
       "outputLogs": "new-only",

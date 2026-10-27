@@ -1101,7 +1101,14 @@ importers:
         specifier: ^5.57.2
         version: 5.57.2(@typescript-eslint/types@8.69.0)
 
-  packages/engine-js: {}
+  packages/engine-js:
+    devDependencies:
+      '@master/css-binding-wasm-compiler':
+        specifier: workspace:*
+        version: link:../binding-wasm-compiler
+      '@master/css-binding-wasm-engine':
+        specifier: workspace:*
+        version: link:../binding-wasm-engine
 
   packages/eslint-config:
     dependencies:

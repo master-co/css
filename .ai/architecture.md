@@ -76,7 +76,13 @@ The contract:
 - The JavaScript engine implements no retired syntax and has no dependencies. It is
   repository-private: the shared tsdown config bundles it into the binding, and
   package checks keep it out of published imports and dependencies.
-- The differential is not yet a CI job; run it locally for engine changes.
+- CI runs the differential as the engine package's `test` task in its own Validation
+  step, because `--affected` selects packages by their own files and so never selects
+  it for Rust, site or example changes. The task's Turbo inputs list everything it
+  reads outside the package (the engine and compiler crates, the corpus, the default
+  manifest, site and example markup), and its dependencies on the Wasm bindings carry
+  their source and artifact hashes; keep both in step with the differential's sources.
+  `verify:program` (about four minutes) and `check:size` stay local gates.
 
 `packages/preset` owns the default preset CSS and generated default Manifest v6. The
 stable layer statement remains:

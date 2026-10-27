@@ -352,7 +352,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -368,7 +369,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -384,7 +386,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -400,7 +403,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -416,7 +420,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -432,7 +437,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -20287,7 +20293,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -20301,7 +20308,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -20905,7 +20913,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -20932,7 +20941,8 @@
       "owner": "@master/css-binding-wasm-compiler",
       "responsibility": "compiler Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "artifact",
       "lifecycle": "module",
@@ -20951,7 +20961,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "conditional",
       "lifecycle": "module",
@@ -20978,7 +20989,8 @@
       "owner": "@master/css-binding-wasm-engine",
       "responsibility": "engine Wasm artifact delivery",
       "consumers": [
-        "@master/css-binding"
+        "@master/css-binding",
+        "@master/css-engine-js"
       ],
       "platform": "artifact",
       "lifecycle": "module",
