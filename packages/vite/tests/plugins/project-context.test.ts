@@ -9,6 +9,15 @@ import { createServer } from 'vite'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
+const discovery = vi.hoisted(() => ({ calls: 0 }))
+vi.mock('@master/css-compiler/project', async importOriginal => {
+  const actual = await importOriginal<typeof import('@master/css-compiler/project')>()
+  return { ...actual, discoverManifestEntries(...args: Parameters<typeof actual.discoverManifestEntries>) {
+    discovery.calls++
+    return actual.discoverManifestEntries(...args)
+  } }
+})
+
 const roots: string[] = []
 function fixture(command = 'serve') {
   const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'vite-project-context-')))
@@ -55,6 +64,25 @@ test('native no-ops are invalidated when project entries are added, changed and 
     else expect(output).toBeUndefined()
   }
   expect(invalidateModule).toHaveBeenCalledTimes(3)
+})
+
+test('stylesheet events skip project discovery unless they can change the entries', async () => {
+  const { root, plugin } = fixture('test')
+  const id = join(root, 'src/card.css'), other = join(root, 'src/other.css')
+  writeFileSync(join(root, 'app.css'), '@import url("@master/css");@theme {--color-new:red}')
+  const module = { id }
+  const environment = { moduleGraph: { getModuleById: () => module, invalidateModule: vi.fn() } }
+  await plugin.transform.call({ addWatchFile: vi.fn() }, '.card{color:var(--color-new)}', id)
+  discovery.calls = 0
+  writeFileSync(other, '.other{color:red}')
+  for (const type of ['create', 'update', 'delete'] as const) {
+    if (type === 'delete') rmSync(other)
+    expect(await plugin.hotUpdate.call({ environment }, { type, file: other, modules: [] })).toBeUndefined()
+  }
+  expect(discovery.calls).toBe(0)
+  writeFileSync(other, '@import url("@master/css");@theme {--color-other:blue}')
+  expect(await plugin.hotUpdate.call({ environment }, { type: 'create', file: other, modules: [] })).toEqual([module])
+  expect(discovery.calls).toBe(1)
 })
 
 test('development server refreshes native consumers after a project entry is added and removed', async () => {

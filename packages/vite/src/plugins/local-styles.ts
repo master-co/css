@@ -11,8 +11,10 @@ import {
   resolveStylesheet
 } from '@master/css-compiler/stylesheet'
 import {
-  collectStylesheetDependenciesSync
+  collectStylesheetDependenciesSync,
+  inspectCSSSync
 } from '@master/css-compiler/node'
+import { readFileSync } from 'node:fs'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { includesFile } from '../utils/path'
@@ -23,6 +25,14 @@ import { getDevStylesheetDelivery, publishDevGlobalStylesheet, publishDevStylesh
 import { getBuildStylesheetDelivery } from '../utils/build-stylesheet-delivery'
 import { inlineDelivery, isInlineStylesheet, registerLocalInlineStylesheet } from '../utils/inline-stylesheet'
 import { clearLocalStylesheets, registerLocalStylesheet } from '../utils/local-stylesheet'
+
+function declaresManifestEntry(file: string) {
+  try {
+    return inspectCSSSync(readFileSync(file, 'utf8')).hasMasterEntry
+  } catch {
+    return false
+  }
+}
 
 export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
@@ -163,7 +173,12 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
       }))
     },
     async hotUpdate({ type, file, modules }) {
-      const entriesChanged = /\.(?:css|scss|sass)$/u.test(file)
+      // Discovery walks the whole project, and this runs for every stylesheet
+      // event in every environment. Only CSS files are entries, so discovery can
+      // change only when this file declares an entry or a known entry stopped
+      // declaring one (including its deletion).
+      const entriesChanged = file.endsWith('.css')
+        && (declaresManifestEntry(file) || projectManifestEntries.some(entry => !declaresManifestEntry(entry)))
         && JSON.stringify(await discoverManifestEntries({ root: context.config?.root })) !== JSON.stringify(projectManifestEntries)
       if (!includesFile(projectManifestDependencies, file) && !entriesChanged) return
       projectManifest = undefined
