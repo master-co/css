@@ -1,23 +1,24 @@
-/* Static because Shiki emits these references into server-rendered inline styles. */
+/* Soft rose, ice blue, parchment and lavender on a charcoal code surface.
+   Static because Shiki emits these references into server-rendered inline styles. */
 @theme static {
-  --color-code-text: light-dark(#344054, #d8dee9);
-  --color-code-comment: light-dark(#5f697a, #9aa8bc);
-  --color-code-punctuation: light-dark(#596579, #a3afc2);
-  --color-code-keyword: light-dark(#7c4d9f, #c6a0dd);
-  --color-code-function: light-dark(#3764a5, #8db6e2);
-  --color-code-property: light-dark(#256a78, #87c5cf);
-  --color-code-string: light-dark(#3d7053, #a3caa8);
-  --color-code-number: light-dark(#8c572f, #dab389);
+  --color-code-text: light-dark(#344054, #dedbd7);
+  --color-code-comment: light-dark(#636779, #9b9cad);
+  --color-code-punctuation: light-dark(#626675, #b6b3bd);
+  --color-code-keyword: light-dark(#91466f, #e6a0c4);
+  --color-code-function: light-dark(#3764a5, #9dbce6);
+  --color-code-property: light-dark(#256a78, #9acbd4);
+  --color-code-string: light-dark(#71622f, #d9ce96);
+  --color-code-number: light-dark(#71549e, #c5b0e6);
 
-  --color-code-surface: light-dark(var(--color-zinc-0), var(--color-zinc-90));
+  --color-code-surface: light-dark(var(--color-zinc-0), var(--color-zinc-95));
   --color-code-inline: light-dark(var(--color-zinc-5), var(--color-zinc-90));
-  --color-code-active: light-dark(#eef2f7, #2c333e);
-  --color-code-mark: light-dark(#eee7f4, #3a3248);
+  --color-code-active: light-dark(#f4f0e5, #302b23);
+  --color-code-mark: light-dark(#eee7f4, #352f40);
   --color-code-added: light-dark(#eef5ef, #26372f);
   --color-code-removed: light-dark(#faeff1, #3d2d35);
   --color-code-selection: light-dark(#dee8f5, #34445c);
-  --color-code-success: var(--color-code-string);
-  --color-code-warning: var(--color-code-number);
+  --color-code-success: light-dark(#3d7053, #a3caa8);
+  --color-code-warning: light-dark(#8c572f, #dab389);
   --color-code-danger: light-dark(#a33f56, #e5a0b0);
 }
 

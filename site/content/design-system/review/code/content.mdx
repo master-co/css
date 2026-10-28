@@ -13,8 +13,14 @@ The shared code window keeps source text, tab names and copy feedback together. 
 ```css
 /* Shared tokens and native CSS use the same palette. */
 @theme {
+  --font-family-sans: "Inter";
   --color-brand: #3764a5;
   --spacing-card: 1.5rem;
+  --radius-card: 0.75rem;
+  --color-surface-card: light-dark(
+    var(--color-zinc-0), /* [!code highlight] */
+    var(--color-zinc-95) /* [!code highlight] */
+  );
 }
 
 @utility card {

@@ -85,7 +85,7 @@ Only elements that float over the character matrix use `.home-glass`: the announ
 - `--home-hairline` separates, `--home-rule` divides, `--home-rule-strong` marks the selected item.
 - Drafting guides: from `md`, each section draws rails 20px outside the content edges (`--home-rail`), a rule across its top and a cross where they meet (`--home-guide`). They sit behind content.
 - `--home-text` is for display type, titles and data; `--home-text-body` for code; `--home-text-quiet` for prose; `--home-text-faint` for annotations.
-- Code samples share the site's syntax palette in `styles/docs-shell/syntax-theme.css`: violet keywords, blue tags and functions, teal properties, green strings and warm numbers. The hand-rendered editor figures alias those same roles through `--home-code-*`; code surfaces use `--color-code-surface`. Keep syntax colors intact on highlighted and diff lines, and maintain at least 4.5:1 text contrast in both modes. Status tones (`.home-tone-*`) remain separate from syntax colors.
+- Code samples share the site's syntax palette in `styles/docs-shell/syntax-theme.css`: rose keywords, blue tags and functions, cyan properties, parchment strings and lavender numbers. Dark mode pairs soft colors with warm-white text on zinc-95; light mode deepens the same hues. Highlighted lines use a subdued amber wash. The hand-rendered editor figures alias those same roles through `--home-code-*`; code surfaces use `--color-code-surface`. Keep syntax colors intact on highlighted and diff lines, and maintain at least 4.5:1 text contrast in both modes. Success, warning and error retain green, amber and red independently of syntax colors; status tones (`.home-tone-*`) remain separate.
 
 ## Markers
 
