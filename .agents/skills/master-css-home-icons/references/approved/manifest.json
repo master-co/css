@@ -1,0 +1,261 @@
+{
+  "collection": "Master CSS homepage icon style references",
+  "date": "2026-10-28",
+  "branchAtApproval": "rc",
+  "sourceCommit": "f7205ccddd3e27fab478d24682a28f16f7ad2df9",
+  "note": "Frozen reference copies. WebP originals keep their original channels; final homepage color uses grayscale(1). PNG captures already include that treatment. Current user instructions and current source take precedence for later work.",
+  "files": [
+    {
+      "file": "editor-hover-inspection-light.webp",
+      "kind": "approved-icon",
+      "subject": "editor-hover-inspection",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/editor-hover-inspection-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "235ac6833c874658fda5c57794d8b7a2ed851deb708090394141e54178da2ae3"
+    },
+    {
+      "file": "editor-hover-inspection-dark.webp",
+      "kind": "approved-icon",
+      "subject": "editor-hover-inspection",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/editor-hover-inspection-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "7076f2159a481c34c266cedddf0d1601025bdcc187590e7f2f074951502c3c3d"
+    },
+    {
+      "file": "section-editor-light.webp",
+      "kind": "approved-icon",
+      "subject": "section-editor",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/section-editor-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "753e1a7728bb9503eaac20119cae87ffb064d5bb5d3a3d3b5f5988180ef44221"
+    },
+    {
+      "file": "section-editor-dark.webp",
+      "kind": "approved-icon",
+      "subject": "section-editor",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/section-editor-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "64dc53641f5dde3bf66f06fb09fbc1403a83aeb673ef2a94e03845230cfaeb9b"
+    },
+    {
+      "file": "design-theme-modes-light.webp",
+      "kind": "approved-icon",
+      "subject": "design-theme-modes",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/design-theme-modes-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "b8c15202b607db4aca4f3e7494e80eba8865ac90144d886848b32610eb1614b1"
+    },
+    {
+      "file": "design-theme-modes-dark.webp",
+      "kind": "approved-icon",
+      "subject": "design-theme-modes",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/design-theme-modes-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "5af54ace058526585f306881af703948a39f5a4527796a28386e273a6851a9d2"
+    },
+    {
+      "file": "design-p3-gamut-light.webp",
+      "kind": "approved-icon",
+      "subject": "design-p3-gamut",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/design-p3-gamut-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "3c6a7c71897232e06be1f16092e9ff551c6e5a6b32b4754b783b86d39ebb84b2"
+    },
+    {
+      "file": "design-p3-gamut-dark.webp",
+      "kind": "approved-icon",
+      "subject": "design-p3-gamut",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/design-p3-gamut-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "23e066dcf8c523a6acbde8e84902fe687136a70bea8500a738d2d7eb0a0c1e5c"
+    },
+    {
+      "file": "design-cascade-layers-light.webp",
+      "kind": "approved-icon",
+      "subject": "design-cascade-layers",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/design-cascade-layers-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "b9114ffe8ab8eed4fa2de3b30586c7c14084147e6be1558dbd3ce69aaf009baa"
+    },
+    {
+      "file": "design-cascade-layers-dark.webp",
+      "kind": "approved-icon",
+      "subject": "design-cascade-layers",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/design-cascade-layers-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "566a62cf5de00d3bd72391d464ae3e55085a9fc85b17bc48625476566ef5f93f"
+    },
+    {
+      "file": "render-progressive-light.webp",
+      "kind": "approved-icon",
+      "subject": "render-progressive",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/render-progressive-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "14d850b0e7173aaae88188378c21f4e8042b01a0b0e0634825e58d9fef962322"
+    },
+    {
+      "file": "render-progressive-dark.webp",
+      "kind": "approved-icon",
+      "subject": "render-progressive",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/render-progressive-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "6130f37faa6a1b4ee7546677933823da9e3a6c6580e3cecb2172d004d427d5d7"
+    },
+    {
+      "file": "mcp-scan-project-light.webp",
+      "kind": "approved-icon",
+      "subject": "mcp-scan-project",
+      "theme": "light",
+      "source": "site/assets/images/home/icons/artwork/mcp-scan-project-light.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "01e5a87482451eec1e57af5e77f23b7b70de1c834befcb9258382baa45bf05ca"
+    },
+    {
+      "file": "mcp-scan-project-dark.webp",
+      "kind": "approved-icon",
+      "subject": "mcp-scan-project",
+      "theme": "dark",
+      "source": "site/assets/images/home/icons/artwork/mcp-scan-project-dark.webp",
+      "dimensions": [
+        384,
+        384
+      ],
+      "sha256": "2a1bde9e71f7297bf36430eb923419cddf670b3a1213d328f13b4cd45fd14d55"
+    },
+    {
+      "file": "mcp-scan-project-compact.svg",
+      "kind": "compact-svg",
+      "subject": "mcp-scan-project",
+      "source": "site/assets/images/home/icons/mcp-scan-project-compact.svg",
+      "viewBox": "0 0 32 32",
+      "sha256": "606cb473675c91ced057b5ed18211f1a1dbb0804744b9403754aa823e1ca7449"
+    },
+    {
+      "file": "lint-invalid-classes-compact.svg",
+      "kind": "compact-svg",
+      "subject": "lint-invalid-classes",
+      "source": "site/assets/images/home/icons/lint-invalid-classes-compact.svg",
+      "viewBox": "0 0 32 32",
+      "sha256": "c7e630b6158af2ef2e74a068ed8fbef83691c3a59c99b72a5fb2825e4511fa0c"
+    },
+    {
+      "file": "mcp-apply-preview-compact.svg",
+      "kind": "compact-svg",
+      "subject": "mcp-apply-preview",
+      "source": "site/assets/images/home/icons/mcp-apply-preview-compact.svg",
+      "viewBox": "0 0 32 32",
+      "sha256": "8a4108e2421c7399ae282879be1967ea9373a153b96400f794755ec10cdf5c85"
+    },
+    {
+      "file": "bento-desktop-light.png",
+      "kind": "approved-homepage-capture",
+      "route": "/",
+      "theme": "light",
+      "viewportWidth": 1280,
+      "deviceScaleFactor": 2,
+      "crop": "Single Design system bento card",
+      "dimensions": [
+        1184,
+        1328
+      ],
+      "colorTreatment": "Rendered with home-icon-artwork grayscale(1)",
+      "sha256": "6ca10a5ba498d8e967dd4eff6c9cadf6fb522aa0ad1da1771735524a544c3f7d"
+    },
+    {
+      "file": "bento-desktop-dark.png",
+      "kind": "approved-homepage-capture",
+      "route": "/",
+      "theme": "dark",
+      "viewportWidth": 1280,
+      "deviceScaleFactor": 2,
+      "crop": "Single Design system bento card",
+      "dimensions": [
+        1184,
+        1328
+      ],
+      "colorTreatment": "Rendered with home-icon-artwork grayscale(1)",
+      "sha256": "a95a4c722efc766a56429c46eef25039c972744c5fd49bd353c7a5881b79dd4b"
+    },
+    {
+      "file": "bento-mobile-light.png",
+      "kind": "approved-homepage-capture",
+      "route": "/",
+      "theme": "light",
+      "viewportWidth": 390,
+      "deviceScaleFactor": 2,
+      "crop": "Single Design system bento card",
+      "dimensions": [
+        700,
+        1442
+      ],
+      "colorTreatment": "Rendered with home-icon-artwork grayscale(1)",
+      "sha256": "9bc331ce70f128c67661d6edb0adace3e0484a71ac5f9e06020394d4031b5bc0"
+    },
+    {
+      "file": "bento-p3-desktop-light.png",
+      "kind": "approved-homepage-capture",
+      "route": "/",
+      "theme": "light",
+      "viewportWidth": 1280,
+      "deviceScaleFactor": 2,
+      "crop": "Single Design system bento card",
+      "dimensions": [
+        2400,
+        1338
+      ],
+      "colorTreatment": "Rendered with home-icon-artwork grayscale(1)",
+      "sha256": "a34e4fa93484110759dd30958e2c727474edda30f55042f1d5b48317d02b5adc"
+    }
+  ]
+}

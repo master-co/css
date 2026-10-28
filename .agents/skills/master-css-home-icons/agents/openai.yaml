@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master CSS 首頁圖示"
+  short_description: "延續 Master CSS 首頁的柔和玻璃圖示、zinc 色調與版面規範"
+  default_prompt: "請使用 $master-css-home-icons，依最後定案的柔和玻璃與 zinc 風格，設計或調整指定的首頁圖示。"
