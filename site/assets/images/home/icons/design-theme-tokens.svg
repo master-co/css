@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M20.64 41.32 L26.36 37.68 Q29 36 31.703 37.577 L38.12 41.32 Q41 43 41 46.334 L41 53.871 Q41 57 38.36 58.68 L32.64 62.32 Q30 64 27.297 62.423 L20.88 58.68 Q18 57 18 53.666 L18 46.129 Q18 43 20.64 41.32 Z M18.66 43.362 L27.297 48.423 Q30 50 32.64 48.32 L40.28 43.414 M29.984 49.186 L29.984 63.186" />
-  <path d="M41 50 L48.6 50 Q51 50 51 47.6 L51 28.88 Q51 26 53.88 26 L63 26 M50.4 49.4 L63 50 M50.4 49.4 L51 71.12 Q51 74 53.88 74 L63 74" stroke-width="1.2" />
-  <circle cx="72" cy="26" r="7" />
-  <rect x="65" y="43" width="14" height="14" rx="3" />
-  <path d="M65 80 L65 70.12 Q65 67 68.12 67 L79 67" />
-  <path d="M23 72 L36 72 M23 76 L30 76 M72 69 L72 73 L76 73" stroke-width="1.2" />
-  <circle cx="51" cy="50" r="2" fill="currentColor" stroke="none" />
+  <path d="m18 42 9.5-6.3q2.5-1.7 5-.4l9 4.8q2.5 1.4 2.5 4.1v10q0 2.7-2.2 4.2L32.5 65q-2.5 1.7-5 .3l-9-4.8Q16 59 16 56.3v-10q0-2.8 2-4.3Z" />
+  <path d="m16.8 44 11 5.8q2.2 1.2 4.4-.3l11-7.3M30 50.3v15.4" />
+  <path d="M44 50h7m0-22q0-3 3-3h9M51 28v42q0 3 3 3h8m-11-23h11" stroke-width="1.2" />
+  <circle cx="70" cy="25" r="7" />
+  <rect x="62" y="43" width="15" height="14" rx="3.5" />
+  <path d="M62 80V69q0-4 4-4h12M69 68v4q0 2 2 2h4" />
+  <circle cx="51" cy="50" r="1.6" fill="currentColor" stroke="none" />
 </svg>

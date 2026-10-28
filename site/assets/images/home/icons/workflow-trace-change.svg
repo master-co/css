@@ -1,11 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="26" cy="48" r="8" />
-  <circle cx="70" cy="22" r="6" />
-  <circle cx="70" cy="48" r="6" />
-  <circle cx="70" cy="74" r="6" />
-  <path d="M34 48 L48 48 M48 22 L64 22 M48 22 L48 70.16 Q48 74 51.84 74 L64 74 M48 48 L64 48" />
-  <path d="M18 48 L12 48 M26 34 L26 29 M26 67 L26 62 M76 22 L83 17 M76 48 L83 43 M76 74 L83 69" stroke-width="1.2" />
-  <circle cx="26" cy="48" r="2" fill="currentColor" stroke="none" />
-  <circle cx="48" cy="48" r="2" fill="currentColor" stroke="none" />
-  <path d="M18 76 L34 76 M18 81 L27 81" stroke-width="1.2" />
+  <circle cx="23" cy="48" r="8" />
+  <circle cx="68" cy="23" r="6" />
+  <circle cx="68" cy="48" r="6" />
+  <circle cx="68" cy="73" r="6" />
+  <path d="M31 48 L45 48 M45 26 Q45 23 48 23 L62 23 M45 26 L45 70 Q45 73 48 73 L62 73 M45 48 L62 48" stroke-width="1.2" />
+  <path d="M10 48 L14 48 M23 35 L23 31 M23 65 L23 61" stroke-width="1.2" />
+  <circle cx="23" cy="48" r="1.8" fill="currentColor" stroke="none" />
+  <circle cx="45" cy="48" r="1.5" fill="currentColor" stroke="none" />
 </svg>

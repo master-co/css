@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M22.5 31 L61.5 31 Q66 31 66 35.5 L66 71.5 Q66 76 61.5 76 L22.5 76 Q18 76 18 71.5 L18 35.5 Q18 31 22.5 31 Z M19.125 32.125 L27.12 24.92 Q30 23 33.461 23 L73.5 23 Q78 23 78 27.5 L78 64.539 Q78 68 75.12 69.92 L64.875 74.875 M64.875 32.125 L76.875 24.125" />
-  <path d="M42 31 L42 76 M22 81 L62 81" stroke-width="1.2" />
-  <circle cx="30" cy="53" r="5" />
-  <path d="M30 42 L30 44 M30 62 L30 64 M19 53 L21 53 M39 53 L41 53 M22 45 L24 47 M36 59 L38 61 M22 61 L24 59 M36 47 L38 45" stroke-width="1.2" />
-  <path d="M55 46 A7 7 0 1 0 60 58 A7 7 0 0 1 55 46 Z" />
-  <path d="M70 44 L74 41 M70 60 L74 57" stroke-width="1.2" />
+  <rect x="18" y="29" width="48" height="46" rx="5" />
+  <path d="M19.5 30.5 29.7 23.7Q32.3 22 35.5 22H73Q78 22 78 27V62.8Q78 66.2 75.2 68.1L64.5 74M64.6 30.4 76.6 23.4" />
+  <path d="M42 29v46" stroke-width="1.2" />
+  <circle cx="30" cy="52" r="4.7" />
+  <path d="M30 42v2m0 16v2M20 52h2m16 0h2M23 45l1.4 1.4m11.2 11.2L37 59M23 59l1.4-1.4m11.2-11.2L37 45" stroke-width="1.2" />
+  <path d="M55.2 45.7a6.8 6.8 0 1 0 4.7 11.5 6.8 6.8 0 0 1-4.7-11.5Z" />
+  <path d="m70.5 43 3-2m-3 18 3-2" stroke-width="1.2" />
 </svg>

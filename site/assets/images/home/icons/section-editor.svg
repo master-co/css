@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M20.5 30 L58.5 30 Q63 30 63 34.5 L63 71.5 Q63 76 58.5 76 L20.5 76 Q16 76 16 71.5 L16 34.5 Q16 30 20.5 30 Z M17.125 31.125 L25.12 23.92 Q28 22 31.461 22 L63 22 M61.875 74.875 L69.84 71.44 Q72 70 72 67.404 L72 53" />
-  <path d="M23 40 L39 40 M44 40 L54 40 M23 48 L30 48 M35 48 L48 48 M23 57 L41 57 M23 65 L35 65" stroke-width="1.2" />
-  <path d="M56.17 52.325 L69 23 L77 27 L64.232 56.184 Q63 59 60.6 60.92 L53 67 L54.52 57.88 Q55 55 56.17 52.325 Z M69 23 L72 16 L80 20 L77 27 M55.173 55.051 L62.708 58.776 M58 57 L73 25" stroke-width="1.2" />
-  <path d="M43 64 L43 70 M40 64 L46 64 M40 70 L46 70" stroke-width="1.2" />
+  <rect x="16" y="30" width="47" height="46" rx="4.5" />
+  <path d="m17.4 31.4 9.2-6.2Q29 23.5 32 23.5h30M61.7 74.7l7.6-5.1Q72 67.8 72 64.5V53" />
+  <path d="M24 40h14m6 0h9M24 48h6m6 0h12M24 57h17M24 65h11" stroke-width="1.2" />
+  <path d="m55 55 13-32 7 3-13 32-9 7Z" />
+  <path d="M68 23l2-5q1-2.5 3.5-1.5l2 .8q2.5 1 1.5 3.5L75 26M55 55l7 3m-3.5-1.5 13-32" stroke-width="1.2" />
+  <path d="M43 63v7m-3-7h6m-6 7h6" stroke-width="1.2" />
 </svg>

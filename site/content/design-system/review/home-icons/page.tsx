@@ -121,6 +121,7 @@ export default function Page() {
           <p>The catalog exposes <code>homeIcons</code>, <code>homeIconGroups</code>, <code>HomeIconId</code> and <code>HomeIconDefinition</code>. Entries provide <code>target</code>, <code>placement</code>, <code>recommendedSize</code>, <code>Icon</code> and, for list items, <code>CompactIcon</code>.</p>
           <h3>Size and color</h3>
           <p>Main artwork: 96-unit canvas, softened corners, 1.6-unit outlines and 1.2-unit details; display at 64–96px. Compact artwork: a redrawn 32-unit canvas with 1.4-unit strokes; display at 24–40px. The recommended size refers to the compact version when one exists.</p>
+          <p>Keep the original viewBox and size the canvas with width and height. Its internal spacing includes optical adjustments for alignment with headings and neighboring icons.</p>
           <p>Set CSS <code>color</code> on the inline SVG or its parent. Use the existing SVG component imports to inherit <code>currentColor</code>; an SVG loaded through an <code>img</code> element cannot inherit its parent’s text color.</p>
           <h3>Accessible use</h3>
           <p>Beside a visible heading, hide the decorative illustration from assistive technology. When it conveys information by itself, give the SVG a meaningful label. No embedded IDs, fonts, images, filters or animation are required.</p>
