@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config'
+import { fileURLToPath } from 'node:url'
 import react from '@astrojs/react'
 import masterCSS from '@master/css-astro'
 import site from './astro/integration'
@@ -20,6 +21,13 @@ export default defineConfig({
   },
   server: {
     port: 3000
+  },
+  vite: {
+    server: {
+      // A build writes thousands of files into outDir while a dev server may be
+      // running; each one would otherwise be processed as a source change.
+      watch: { ignored: [fileURLToPath(new URL('./out/**', import.meta.url))] }
+    }
   },
   devToolbar: {
     enabled: false

@@ -9,7 +9,7 @@
     "prepare-app": "tsx ./prepare",
     "resolve-public-env": "tsx scripts/resolve-public-env.ts --fetch-tags --write .generated/public-env.json",
     "clean": "rm -rf out .astro node_modules/.vite",
-    "dev": "pnpm prepare-app && astro dev",
+    "dev": "pnpm prepare-app && astro dev --ignore-lock",
     "build": "pnpm resolve-public-env && pnpm prepare-app && pnpm build:llms && pnpm build:astro && pnpm postbuild:static",
     "build:cloudflare-pages": "pnpm build",
     "build:astro": "cross-env NODE_OPTIONS=--max-old-space-size=16384 MASTER_CSS_PUBLIC_ENV_FILE=.generated/public-env.json astro build",

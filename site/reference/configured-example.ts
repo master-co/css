@@ -16,11 +16,26 @@ export function configuredExampleHTML(classes: string[], element: 'div' | 'butto
   return `<${element}${element === 'button' ? ' type="button"' : ''} class="${classes.join(' ')}">${label}</${element}>`
 }
 
-/** Compile the complete configuration before validating any class that depends on it. */
-export function configuredExampleCSS(source: string, classes: string[]) {
-  const result = compileManifestSync(source, { baseManifest: preset })
+// Pages and generated content repeat the same configurations; each compile costs tens of milliseconds.
+const configurations = new Map<string, ReturnType<typeof compileManifestSync>>()
+const examples = new Map<string, string>()
+
+function compileConfiguration(source: string) {
+  let result = configurations.get(source)
+  if (result) return result
+  result = compileManifestSync(source, { baseManifest: preset })
   const errors = result.diagnostics.filter(diagnostic => diagnostic.severity === 'error')
   if (errors.length) throw new Error(`Invalid documentation configuration: ${JSON.stringify(errors)}`)
+  configurations.set(source, result)
+  return result
+}
+
+/** Compile the complete configuration before validating any class that depends on it. */
+export function configuredExampleCSS(source: string, classes: string[]) {
+  const key = JSON.stringify([source, classes])
+  const cached = examples.get(key)
+  if (cached !== undefined) return cached
+  const result = compileConfiguration(source)
   const engine = createRenderSessionSync({ manifest: result.manifest })
   try {
     engine.ensureStylesheetResources(result.css)
@@ -30,6 +45,8 @@ export function configuredExampleCSS(source: string, classes: string[]) {
         throw new Error(`Invalid configured documentation class: ${className}`)
       }
     }
-    return (snapshot.engine.stylesheets ?? []).join('\n\n') + snapshot.cssText
+    const css = (snapshot.engine.stylesheets ?? []).join('\n\n') + snapshot.cssText
+    examples.set(key, css)
+    return css
   } finally { engine.dispose() }
 }
