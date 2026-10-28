@@ -1,5 +1,5 @@
 /*
- * The Editor section: one editor window standing on the page ground, open captions under it.
+ * The Editor section: open feature columns above one editor window standing on the page ground.
  * Positions inside the editor are character cells and lines, so the caret, the drawn pointer and
  * every overlay are placed from the same two lengths. They are registered so they resolve once,
  * on the editor body, and reach the overlays (set in other fonts) as pixels.
@@ -17,7 +17,7 @@
 }
 
 @layer components {
-  /* No shell: the window stands on the page ground, and the captions read as open columns below it. */
+  /* No shell: the features and window share the page ground, with one left rail. */
   .home-editor-stage {
     /* Class strings at rest: the string color, pulled toward the quiet text. */
     --editor-string: color-mix(in oklab, var(--home-code-string) 70%, var(--home-text-faint));
@@ -26,6 +26,10 @@
     display: grid;
     gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
     container: home-editor-stage / inline-size;
+  }
+
+  .home-editor-guide {
+    margin-top: clamp(1.5rem, 1rem + 1.5vw, 2rem);
   }
 
   /* The window is one object: a single contour, a contact shadow and a long soft one under it. */
@@ -844,13 +848,13 @@
   }
 
   /*
-   * Open feature columns: an index and illustration above each title keep long labels aligned.
+   * Open feature columns: shared icon, title and body rows keep long labels aligned.
    * The active hairline fills in the signal only while the tour runs.
    */
   .home-editor-chapters {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--spacing-lg) clamp(1.5rem, 0.5rem + 2vw, 2.5rem);
+    gap: var(--spacing-sm) clamp(1.5rem, 0.5rem + 2vw, 2.5rem);
 
     /* Two by two until all four titles fit on one line each. */
     @container home-editor-stage (width < 64rem) {
@@ -860,9 +864,11 @@
 
   .home-editor-chapter {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    justify-items: start;
+    align-items: start;
     gap: var(--spacing-sm);
     /* Padding the hairline does not reach, so the focus ring clears the text. */
     margin-inline: -0.75rem;
@@ -922,31 +928,8 @@
     transition: color var(--home-base) var(--home-ease);
   }
 
-  .home-editor-chapter-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md);
-    width: 100%;
-    min-height: 3.5rem;
-  }
-
-  .home-editor-chapter-index {
-    font-family: var(--home-mono);
-    font-size: var(--home-label);
-    font-variant-numeric: tabular-nums;
-    color: var(--home-text-faint);
-  }
-
-  .home-editor-chapter-meta .home-illustration {
-    --home-illustration-size: 3.5rem;
-    margin-block: 0;
-    opacity: 0.7;
-    transition: opacity var(--home-base) var(--home-ease);
-  }
-
-  .home-editor-chapter-short-title {
-    display: none;
+  .home-editor-chapter .home-illustration {
+    --home-illustration-size: 6rem;
   }
 
   .home-editor-chapter-body {
@@ -961,110 +944,23 @@
     color: var(--home-text);
   }
 
-  .home-editor-chapter:is([aria-pressed='true'], :hover) .home-illustration {
-    opacity: 1;
-  }
-
-  /* Named steps remain visible on phones; the selected feature gets its full caption below. */
-  .home-editor-caption {
-    display: none;
+  @container home-editor-stage (width < 64rem) {
+    .home-editor-chapter .home-illustration {
+      --home-illustration-size: 5rem;
+    }
   }
 
   @container home-editor-stage (width < 40rem) {
     .home-editor-chapters {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--spacing-xs);
+      column-gap: var(--spacing-lg);
     }
 
-    .home-editor-chapter {
-      align-items: center;
-      gap: var(--spacing-xs);
-      min-height: 4.75rem;
-      margin-inline: 0;
-      padding: var(--spacing-md) 0.125rem var(--spacing-sm);
-    }
-
-    .home-editor-chapter-track {
-      inset: 0;
-      bottom: auto;
-    }
-
-    .home-editor-chapter-meta {
-      justify-content: center;
-      min-height: auto;
-    }
-
-    .home-editor-chapter-meta .home-illustration,
-    .home-editor-chapter-full-title {
-      display: none;
-    }
-
-    .home-editor-chapter-short-title {
-      display: inline;
+    .home-editor-chapter .home-illustration {
+      --home-illustration-size: 4rem;
     }
 
     .home-editor-chapter-title {
-      font-size: 0.75rem;
-      line-height: 1.5;
-      letter-spacing: 0;
-      text-align: center;
-    }
-
-    .home-editor-chapter-body {
-      position: absolute;
-      overflow: hidden;
-      width: 1px;
-      height: 1px;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-
-    .home-editor-caption {
-      display: grid;
-      margin-top: -0.5rem;
-    }
-
-    .home-editor-caption-item {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas: 'title icon' 'body icon';
-      align-items: center;
-      align-content: center;
-      gap: var(--spacing-sm) var(--spacing-md);
-      grid-area: 1 / 1;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity var(--home-base) var(--home-ease), visibility 0s linear var(--home-base);
-
-      &[data-active] {
-        visibility: visible;
-        opacity: 1;
-        transition-delay: 0s;
-      }
-    }
-
-    .home-editor-caption-title {
-      grid-area: title;
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: var(--font-weight-medium);
-      line-height: 1.4;
-      letter-spacing: -0.02em;
-      color: var(--home-text);
-    }
-
-    .home-editor-caption-body {
-      grid-area: body;
-      margin: 0;
-      font-size: var(--home-body);
-      line-height: 1.6;
-      color: var(--home-text-quiet);
-    }
-
-    .home-editor-caption-item .home-illustration {
-      --home-illustration-size: 3.5rem;
-      grid-area: icon;
-      margin-block: 0;
+      font-size: 1.125rem;
     }
   }
 
@@ -1082,9 +978,7 @@
     .home-editor-pointer,
     .home-editor-playback,
     .home-editor-chapter,
-    .home-editor-chapter-title,
-    .home-editor-chapter-meta .home-illustration,
-    .home-editor-caption-item {
+    .home-editor-chapter-title {
       transition: none;
     }
 

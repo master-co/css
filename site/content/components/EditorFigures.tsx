@@ -93,11 +93,6 @@ export default function EditorFigures({ features, icons, model }: { features: re
   const scene = scenes[sceneId]
   const playing = inView && !paused && !reduceMotion && (!touring || !held)
 
-  const setRoot = useCallback((node: HTMLDivElement | null) => {
-    rootRef.current = node
-    inViewRef(node)
-  }, [inViewRef])
-
   const show = useCallback((next: Frame) => {
     const key = JSON.stringify(next)
     if (key === frameKeyRef.current) return
@@ -205,7 +200,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
 
   return (
     <div
-      ref={setRoot}
+      ref={rootRef}
       className="home-editor-stage"
       data-scene={sceneId}
       onBlur={(event) => {
@@ -214,7 +209,25 @@ export default function EditorFigures({ features, icons, model }: { features: re
       onFocus={() => setHeld(true)}
       onPointerEnter={() => setHeld(true)}
       onPointerLeave={() => setHeld(false)}>
-      <div className="home-editor-frame home-marks">
+      <div className="home-editor-chapters" role="group" aria-label={$('Language service features')}>
+        {features.map((feature, index) => (
+          <button
+            key={feature.id}
+            aria-label={$(feature.title)}
+            aria-describedby={`${descriptionId}-${index}`}
+            aria-pressed={index === sceneIndex}
+            className="home-editor-chapter"
+            data-touring={touring && !reduceMotion ? '' : undefined}
+            onClick={() => choose(index)}
+            type="button">
+            <span aria-hidden="true" className="home-editor-chapter-track"><span className="home-editor-chapter-progress" /></span>
+            {icons[index]}
+            <span className="home-editor-chapter-title">{$(feature.title)}</span>
+            <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
+          </button>
+        ))}
+      </div>
+      <div ref={inViewRef} className="home-editor-frame home-marks">
         <div className="home-editor-window">
           <div aria-hidden="true" className="home-editor-bar">
             <span className="home-editor-dots"><span /><span /><span /></span>
@@ -283,36 +296,6 @@ export default function EditorFigures({ features, icons, model }: { features: re
             )}
           </div>
         </div>
-      </div>
-      <div className="home-editor-chapters" role="group" aria-label={$('Language service features')}>
-        {features.map((feature, index) => (
-          <button
-            key={feature.id}
-            aria-label={$(feature.title)}
-            aria-describedby={`${descriptionId}-${index}`}
-            aria-pressed={index === sceneIndex}
-            className="home-editor-chapter"
-            data-touring={touring && !reduceMotion ? '' : undefined}
-            onClick={() => choose(index)}
-            type="button">
-            <span aria-hidden="true" className="home-editor-chapter-track"><span className="home-editor-chapter-progress" /></span>
-            <span aria-hidden="true" className="home-editor-chapter-meta">
-              <span className="home-editor-chapter-index">{String(index + 1).padStart(2, '0')}</span>
-              {icons[index]}
-            </span>
-            <span className="home-editor-chapter-title"><span className="home-editor-chapter-full-title">{$(feature.title)}</span><span className="home-editor-chapter-short-title">{$(feature.label)}</span></span>
-            <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
-          </button>
-        ))}
-      </div>
-      <div aria-hidden="true" className="home-editor-caption">
-        {features.map((feature, index) => (
-          <div key={feature.id} className="home-editor-caption-item" data-active={index === sceneIndex ? '' : undefined}>
-            <p className="home-editor-caption-title">{$(feature.title)}</p>
-            {icons[index]}
-            <p className="home-editor-caption-body">{$(feature.body)}</p>
-          </div>
-        ))}
       </div>
     </div>
   )
