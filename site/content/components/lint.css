@@ -1,46 +1,133 @@
-@layer components {
-  /* Rules on the shell beside one editor; the chosen rule is a raised sheet, the rest stay flush with the shell. */
-  .home-lint {
-    display: grid;
-    gap: var(--home-gap);
+/* The column the scan beam is reading; an integer, so it counts instead of blending. */
+@property --home-lint-scan-column {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 1;
+}
 
-    @media (--md) {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+@layer components {
+  /*
+   * Lint bench. The rules read as a typographic list on the shell; beside them one editor stands for ESLint,
+   * with the CLI and the MCP server under it. One check plays at a time: a beam reads the classes, the problem
+   * is drawn on a column ruler like a dimension, the two other surfaces stand up and report the same line and
+   * column, and the quick fix moves the classes themselves. Every state shares one cell, so nothing moves below.
+   */
+  .home-lint-frame {
+    container: home-lint / inline-size;
+  }
+
+  .home-lint {
+    --home-lint-tone: var(--home-warn);
+    /* The same code type and row as the other editors on the page. */
+    --home-lint-code-size: var(--home-code);
+    --home-lint-row: 1.375rem;
+    --home-lint-gutter: 3.25rem;
+    --home-lint-ruler: 1.5rem;
+    --home-lint-lead: 0.875rem;
+    /* How far the CLI and MCP windows sit under the editor, and how much narrower they stand behind it. */
+    --home-lint-tuck: 1.25rem;
+    --home-lint-behind: 0.75rem;
+    display: grid;
+    grid-template-areas: 'aside' 'stage';
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2rem;
+
+    @container home-lint (width < 40rem) {
+      --home-lint-code-size: 0.75rem;
+      --home-lint-row: 1.25rem;
+      --home-lint-gutter: 2.75rem;
+      --home-lint-behind: 0.5rem;
+    }
+
+    @container home-lint (width >= 40rem) {
+      --home-lint-behind: 1.25rem;
+    }
+
+    &[data-severity='error'] {
+      --home-lint-tone: var(--home-error);
+    }
+
+    &[data-severity='info'] {
+      --home-lint-tone: var(--home-info);
+    }
+
+    /* The rules run beside the stage, hung on the content rail. */
+    @container home-lint (width >= 68rem) {
+      grid-template-areas: 'aside stage';
+      grid-template-columns: minmax(14rem, 3fr) minmax(0, 9fr);
+      column-gap: 3rem;
     }
   }
 
+  /* Rules: a list of titles, each with the glyph of what it catches, hung from a hairline. */
+
   .home-lint-aside {
+    grid-area: aside;
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   .home-lint-rules {
     display: grid;
-    align-content: start;
-    gap: 2px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+
+    @container home-lint (width >= 40rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 1.75rem;
+    }
+
+    /* Beside the stage the list runs its full height, each rule an equal band, closed by a last hairline. */
+    @container home-lint (width >= 68rem) {
+      flex: auto;
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: 1fr;
+      border-bottom: 1px solid var(--home-rule);
+    }
   }
 
   .home-lint-rule {
     position: relative;
-    display: grid;
-    padding: 0.875rem 1rem;
-    border-radius: var(--home-radius-sheet);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    padding: 0.875rem 0;
+    border-radius: 0.25rem;
     text-align: left;
     color: var(--home-text-quiet);
     cursor: pointer;
-    transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+    transition: color var(--home-base) var(--home-ease);
 
-    @media (--sm) {
-      padding-inline: 1.25rem;
+    @container home-lint (width >= 68rem) {
+      gap: 0.875rem;
+      padding: 0.75rem 0;
     }
 
-    &:hover {
-      background-color: color-mix(in oklab, var(--home-sheet) 45%, transparent);
+    &::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background-color: var(--home-rule);
+      transition: background-color var(--home-base) var(--home-ease);
+      content: '';
     }
 
+    &:hover,
     &[aria-selected='true'] {
-      background-color: var(--home-sheet);
-      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+      color: var(--home-text);
+    }
+
+    &[aria-selected='true']::before {
+      background-color: var(--home-text);
+    }
+
+    /* While touring, the chosen rule's line starts as a hairline and the live progress draws over it in the signal. */
+    [data-touring] &[aria-selected='true']::before {
+      background-color: var(--home-rule);
     }
 
     &:focus-visible {
@@ -49,107 +136,985 @@
     }
   }
 
-  .home-lint-rule-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-sm);
+  /* The glyph sits flush until its rule is chosen; then it rises as a small key, lit from above. */
+  .home-lint-rule-glyph {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 0.5rem;
+    color: var(--home-text-faint);
+    transition: color var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);
+
+    .home-lint-rule:hover > & {
+      color: var(--home-text-quiet);
+    }
+
+    [aria-selected='true'] > & {
+      color: var(--home-text);
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-edge), var(--home-contact), 0 4px 10px -4px light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
+      translate: 0 -1px;
+    }
   }
 
   .home-lint-rule-title {
-    font-size: var(--home-body);
-    font-weight: var(--font-weight-medium);
+    min-width: 0;
+    font-size: 0.9375rem;
+    line-height: 1.3;
     letter-spacing: -0.01em;
-    transition: color var(--home-base) var(--home-ease);
 
-    [aria-selected='true'] & {
-      color: var(--home-text);
+    @container home-lint (width >= 68rem) {
+      font-size: var(--home-body);
     }
-  }
-
-  /* The chosen rule opens to its description; the rows animate their height from content. */
-  .home-lint-rule-reveal {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--home-base) var(--home-ease);
-
-    [aria-selected='true'] & {
-      grid-template-rows: 1fr;
-    }
-  }
-
-  .home-lint-rule-body {
-    overflow: hidden;
-    min-height: 0;
-    font-size: var(--home-caption);
-    line-height: 1.55;
-    color: var(--home-text-quiet);
-    opacity: 0;
-    transition: opacity var(--home-base) var(--home-ease);
-
-    [aria-selected='true'] & {
-      opacity: 1;
-    }
-  }
-
-  /* While the explorer tours the rules, a hairline under the chosen rule fills toward the next one. */
-  .home-lint-rule-text {
-    display: block;
-    padding-top: 0.25rem;
   }
 
   .home-lint-rule-progress {
     position: absolute;
-    right: 1rem;
-    bottom: 0.4375rem;
-    left: 1rem;
+    top: 0;
+    right: 0;
+    left: 0;
     display: none;
     height: 1px;
-    background-color: var(--home-rule-strong);
+    background-color: var(--home-signal);
     transform-origin: left;
     scale: var(--home-lint-progress, 0) 1;
-
-    @media (--sm) {
-      right: 1.25rem;
-      left: 1.25rem;
-    }
 
     [data-touring] & {
       display: block;
     }
   }
 
-  .home-lint-editor {
+  /*
+   * Stage: the editor stands in front; the CLI and MCP windows stand behind it, a step narrower,
+   * their tops tucked under its lower edge. A soft pool of light falls on the ground from above.
+   */
+  .home-lint-stage {
+    position: relative;
+    grid-area: stage;
+    display: grid;
+    min-width: 0;
+    isolation: isolate;
+
+    &::before {
+      position: absolute;
+      top: -2.5rem;
+      right: 5%;
+      left: 5%;
+      z-index: -1;
+      height: 75%;
+      background-image: radial-gradient(closest-side, light-dark(rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.045)), transparent);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /* Windows: a 1px contour with the top light, a top-lit bar, a real tab, and at most two surfaces. */
+
+  .home-lint-editor,
+  .home-lint-pane {
+    position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     min-width: 0;
     border-radius: var(--home-radius-sheet);
     background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
   }
 
-  /* Every sample shares one cell, so the editor keeps the height of the longest one. */
-  .home-lint-code {
-    display: grid;
-    flex: auto;
+  .home-lint-editor {
+    z-index: 2;
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      var(--home-edge),
+      var(--home-contact),
+      0 10px 24px -12px light-dark(oklch(18% 0 none / 0.1), oklch(0% 0 none / 0.5)),
+      0 28px 56px -28px light-dark(oklch(18% 0 none / 0.16), oklch(0% 0 none / 0.65));
+  }
+
+  .home-lint-bar,
+  .home-lint-pane-bar {
+    position: relative;
+    display: flex;
     align-items: center;
-    min-height: 9rem;
-    container-type: inline-size;
-    background-color: var(--home-well);
-    box-shadow: var(--home-groove);
+    gap: 0.75rem;
+    min-width: 0;
+    height: 2.75rem;
+    padding-inline: 0.875rem;
+    border-bottom: 1px solid var(--home-hairline);
+    background-image: linear-gradient(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 78%, var(--home-ground)));
   }
 
-  /* Narrow editors wrap long class lists instead of cutting them off. */
-  @container (width < 34rem) {
-    .home-lint-window .code-block {
-      width: auto;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+  /* Window lights: three small domes, lit from above. */
+  .home-lint-dots {
+    display: flex;
+    flex: none;
+    gap: 0.4375rem;
+    margin-right: 0.25rem;
+
+    & > i {
+      width: 0.6875rem;
+      height: 0.6875rem;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-rule);
+      background-image: radial-gradient(circle at 50% 30%, var(--home-highlight), transparent 62%);
+      box-shadow: inset 0 0 0 0.5px light-dark(oklch(18% 0 none / 0.16), oklch(100% 0 none / 0.1)), 0 1px 0 var(--home-highlight);
     }
   }
 
-  .home-lint-window {
+  /* A real tab: it rises from the bar's line and opens into the well below it. */
+  .home-lint-tab {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    align-self: flex-end;
+    gap: 0.4375rem;
+    height: 2.125rem;
+    margin-bottom: -1px;
+    padding-inline: 0.75rem 0.875rem;
+    border: 1px solid var(--home-hairline);
+    border-bottom: 0;
+    border-radius: 0.5rem 0.5rem 0 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: var(--home-text);
+    background-color: var(--home-well);
+
+    .home-lint-pane & {
+      font-family: var(--font-family-sans);
+      font-size: 0.8125rem;
+    }
+  }
+
+  .home-lint-tab-icon {
+    flex: none;
+    color: var(--home-text-quiet);
+  }
+
+  .home-lint-surface-name,
+  .home-lint-pane-package {
+    overflow: hidden;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+  }
+
+  .home-lint-surface-name {
+    display: none;
+
+    @container home-lint (width >= 30rem) {
+      display: inline;
+    }
+  }
+
+  /* One status for every surface: the dot carries the tone, the word stays quiet. */
+  .home-lint-status {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.4375rem;
+    margin-left: auto;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+    transition: color var(--home-base) var(--home-ease);
+
+    &::before {
+      width: 0.375rem;
+      height: 0.375rem;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-rule);
+      transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+      content: '';
+    }
+
+    &[data-tone='idle'] {
+      color: var(--home-text-faint);
+    }
+
+    &[data-tone='running']::before {
+      background-color: var(--home-signal);
+      box-shadow: 0 0 0 3px var(--home-signal-glow);
+    }
+
+    &[data-tone='error']::before {
+      background-color: var(--home-error);
+    }
+
+    &[data-tone='warning']::before {
+      background-color: var(--home-warn);
+    }
+
+    &[data-tone='info']::before {
+      background-color: var(--home-info);
+    }
+
+    &[data-tone='ok']::before {
+      background-color: var(--home-ok);
+    }
+
+    &[data-tone='off'] {
+      color: var(--home-text-faint);
+
+      &::before {
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1px var(--home-rule-strong);
+      }
+    }
+  }
+
+  /* Code: the well inside the editor. It holds the ruler and the source and grows only as far as they need. */
+  .home-lint-code {
+    position: relative;
+    padding-block: 1rem 1.25rem;
+    font-size: var(--home-lint-code-size);
+    container: home-lint-code / inline-size;
+    background-color: var(--home-well);
+  }
+
+  /* What the beam reads: the ruler and the source, one frame. */
+  .home-lint-reading {
+    position: relative;
+  }
+
+  .home-lint-sources {
+    display: grid;
+    /* Room for the quick fix menu under a wrapped class list. */
+    min-height: 11rem;
+    padding-top: var(--home-lint-lead);
+
+    @container home-lint-code (width >= 49em) {
+      min-height: 7.5rem;
+    }
+  }
+
+  .home-lint-source {
+    position: relative;
+    grid-area: 1 / 1;
+    min-width: 0;
+    font-family: var(--home-mono);
+    font-size: var(--home-lint-code-size);
+    line-height: var(--home-lint-row);
+    font-variant-ligatures: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease), visibility 0s var(--home-base);
+
+    &[data-active] {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity var(--home-base) var(--home-ease);
+    }
+  }
+
+  .home-lint-line {
+    display: grid;
+    grid-template-columns: var(--home-lint-gutter) minmax(0, 1fr);
+    transition: background-color var(--home-base) var(--home-ease);
+
+    /* The reported line carries a faint band of its severity, like an editor's problem line. */
+    &[data-problem] {
+      background-color: color-mix(in oklab, var(--home-lint-tone) 5%, transparent);
+    }
+  }
+
+  /* Line numbers are as quiet as in the other editors; the reported line's number reads in full. */
+  .home-lint-gutter {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-right: 0.75rem;
+    color: color-mix(in oklab, var(--home-text-faint) 70%, transparent);
+    user-select: none;
+  }
+
+  .home-lint-glyph {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 0.875rem;
+    height: var(--home-lint-row);
+
+    /* The ring the severity glyph sends out once when the problem lands. */
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0.875rem;
+      height: 0.875rem;
+      margin: -0.4375rem 0 0 -0.4375rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 0 0 1px var(--home-lint-tone);
+      opacity: 0;
+      pointer-events: none;
+      content: '';
+    }
+
+    & > svg {
+      animation-name: home-lint-pop;
+      animation-duration: 0.42s;
+      animation-timing-function: var(--home-ease);
+      animation-fill-mode: both;
+    }
+  }
+
+  .home-lint-bulb {
+    color: var(--home-signal);
+  }
+
+  .home-lint-number {
+    min-width: 2ch;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--home-base) var(--home-ease);
+
+    [data-problem] & {
+      color: var(--home-text);
+    }
+  }
+
+  .home-lint-text {
+    min-width: 0;
+    padding-right: 1.25rem;
+    font: inherit;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--home-text-body);
+  }
+
+  .home-lint-punct {
+    color: var(--home-text-faint);
+  }
+
+  .home-lint-tag {
+    color: var(--home-code-tag);
+  }
+
+  .home-lint-attr {
+    color: var(--home-code-attr);
+  }
+
+  .home-lint-string {
+    color: var(--home-code-string);
+  }
+
+  .home-lint-property {
+    color: var(--home-code-property);
+  }
+
+  /* Each class is its own token, so the fix can move or remove it as a whole. */
+  .home-lint-token {
+    position: relative;
+    display: inline-block;
+    border-radius: 0.25rem;
+    line-height: 1.35;
+    color: var(--home-text);
+    transition: box-shadow var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease), color var(--home-base) var(--home-ease), opacity var(--home-base) var(--home-ease);
+
+    /* The squiggle sits under exactly the reported range and runs across the spaces inside it. */
+    &::after {
+      position: absolute;
+      right: 0;
+      bottom: -0.1875rem;
+      left: 0;
+      height: 0.25rem;
+      background-color: var(--home-lint-tone);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath d='M0 2 Q1 0.4 2 2 T4 2' fill='none' stroke='black' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x left center / 0.25rem 0.25rem;
+      transform-origin: left;
+      scale: 0 1;
+      content: '';
+    }
+
+    &[data-marked-next]::after {
+      right: -1ch;
+    }
+
+    &[data-marked]::after {
+      scale: 1 1;
+    }
+
+    /* A token pulled forward lifts off the line as a chip; the ones it passes slide underneath. */
+    &[data-moving='slide'] {
+      z-index: 1;
+      color: var(--home-text-quiet);
+    }
+
+    &[data-moving='lift'] {
+      z-index: 2;
+      color: var(--home-text);
+      background-color: var(--home-float);
+      box-shadow: 0 0 0 0.125rem var(--home-float), 0 0 0 calc(0.125rem + 1px) var(--home-rule), 0 6px 14px -4px light-dark(oklch(18% 0 none / 0.18), oklch(0% 0 none / 0.6));
+    }
+
+    /* The overriding class is outlined while the conflict is open. */
+    &[data-keeps] {
+      box-shadow: 0 0 0 0.1875rem var(--home-well), 0 0 0 calc(0.1875rem + 1px) color-mix(in oklab, var(--home-ok) 60%, transparent);
+    }
+
+    /* The overridden class is struck through, then folds away with the space after it. */
+    &::before {
+      position: absolute;
+      top: 52%;
+      right: -0.125rem;
+      left: -0.125rem;
+      height: 1px;
+      background-color: var(--home-lint-tone);
+      transform-origin: left;
+      scale: 0 1;
+      content: '';
+    }
+
+    &[data-removing] {
+      animation-name: home-lint-fold;
+      animation-duration: 0.52s;
+      animation-timing-function: var(--home-ease);
+      animation-delay: 0.3s;
+      animation-fill-mode: both;
+
+      &::before {
+        animation-name: home-lint-strike;
+        animation-duration: 0.28s;
+        animation-timing-function: var(--home-ease);
+        animation-fill-mode: both;
+      }
+
+      &::after {
+        scale: 0 1;
+      }
+    }
+  }
+
+  /* Before the sort lands, each class shows the slot it belongs in: a small number, no badge. */
+  .home-lint-order {
+    position: absolute;
+    bottom: calc(100% + 0.0625rem);
+    left: 50%;
+    font-size: 0.625rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text);
+    translate: -50% 0;
+    animation-name: home-lint-badge;
+    animation-duration: 0.4s;
+    animation-timing-function: var(--home-ease);
+    animation-fill-mode: both;
+    animation-delay: calc(var(--order) * 70ms);
+
+    /* Wrapped lines leave no room above a token, and the problem already names the order. */
+    @container home-lint-code (width < 49em) {
+      display: none;
+    }
+  }
+
+  /* A fix preview: the removed line, then the added line its tokens are copied into. */
+  .home-lint-line[data-diff='remove'] {
+    background-color: color-mix(in oklab, var(--home-error) 6%, transparent);
+  }
+
+  .home-lint-line[data-diff='add'] {
+    background-color: color-mix(in oklab, var(--home-ok) 7%, transparent);
+  }
+
+  .home-lint-diff-sign {
+    [data-diff='remove'] & {
+      color: var(--home-error);
+    }
+
+    [data-diff='add'] & {
+      color: var(--home-ok);
+    }
+  }
+
+  .home-lint:is([data-phase='idle'], [data-phase='scan']) .home-lint-source[data-active] [data-diff='add'] {
+    background-color: transparent;
+
+    & :is(.home-lint-text, .home-lint-diff-sign) {
+      opacity: 0;
+    }
+  }
+
+  .home-lint:is([data-phase='report'], [data-phase='action']) .home-lint-source[data-active] [data-diff='add'] :is(.home-lint-punct, .home-lint-tag, .home-lint-attr, .home-lint-diff-sign) {
+    animation-name: home-lint-fade;
+    animation-duration: 0.5s;
+    animation-timing-function: var(--home-ease);
+    animation-fill-mode: both;
+  }
+
+  /* Column ruler: shown only while lines fit without wrapping, so its ticks match the columns. */
+  .home-lint-ruler {
+    position: relative;
+    display: none;
+    height: var(--home-lint-ruler);
+    margin-left: var(--home-lint-gutter);
+    font-family: var(--home-mono);
+    font-size: var(--home-lint-code-size);
+
+    @container home-lint-code (width >= 49em) {
+      display: block;
+    }
+
+    /* Ticks every column, longer every ten; they fade out past the longest line. The guide below stays unmasked. */
+    &::before {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, var(--home-rule) 0 1px, transparent 1px),
+        linear-gradient(to right, var(--home-hairline) 0 1px, transparent 1px);
+      background-repeat: repeat-x;
+      background-position: 9ch 100%, 0 100%;
+      background-size: 10ch 0.375rem, 1ch 0.1875rem;
+      mask-image: linear-gradient(to right, black calc(100% - 3rem), transparent calc(100% - 0.5rem));
+      content: '';
+    }
+  }
+
+  /* The label box sits at the ruler's own size, so its column offset uses the code's character width. */
+  .home-lint-ruler-label {
+    position: absolute;
+    bottom: 0.5rem;
+    left: calc((var(--column) - 1) * 1ch);
+    display: flex;
+    justify-content: center;
+    width: 0;
+    transition: opacity var(--home-base) var(--home-ease);
+
+    & > span {
+      font-size: 0.5625rem;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--home-text-faint);
+    }
+
+    /* A tick number under the location callout steps aside while the range is drawn. */
+    .home-lint[data-phase='report'] &[data-covered] {
+      opacity: 0;
+    }
+
+    /* While the sort shows each class's slot, those numbers are the ones to read. */
+    .home-lint[data-phase='action'] & {
+      opacity: 0.25;
+    }
+  }
+
+  /* The reported range, drawn like a dimension: two end ticks, a line between them, the location above. */
+  .home-lint-range {
+    position: absolute;
+    bottom: 0;
+    left: calc((var(--column) - 1) * 1ch);
+    width: calc((var(--end) - var(--column)) * 1ch);
+    height: 0.5rem;
+    border-inline: 1px solid var(--home-lint-tone);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease);
+
+    /* The dimension line. */
+    &::before {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background-color: var(--home-lint-tone);
+      transform-origin: left;
+      content: '';
+    }
+
+    /* Extension lines drop from both ends of the range to the reported token, as on a drawing. */
+    &::after,
+    & > .home-lint-range-end {
+      position: absolute;
+      top: 100%;
+      left: -1px;
+      width: 1px;
+      height: calc(var(--home-lint-lead) + (var(--line) - 1) * var(--home-lint-row) + 0.1875rem);
+      background-image: linear-gradient(var(--home-lint-tone) 50%, transparent 50%);
+      background-size: 1px 3px;
+      opacity: 0.7;
+      transform-origin: top;
+      content: '';
+    }
+
+    & > .home-lint-range-end {
+      right: -1px;
+      left: auto;
+    }
+
+    .home-lint[data-phase='report'] & {
+      visibility: visible;
+      opacity: 1;
+
+      &::before {
+        animation-name: home-lint-draw;
+        animation-duration: 0.6s;
+        animation-timing-function: var(--home-ease);
+        animation-delay: 0.1s;
+        animation-fill-mode: both;
+      }
+
+      &::after,
+      & > .home-lint-range-end {
+        animation-name: home-lint-drop;
+        animation-duration: 0.4s;
+        animation-timing-function: var(--home-ease);
+        animation-fill-mode: both;
+      }
+
+      & > .home-lint-range-end {
+        animation-delay: 0.5s;
+      }
+    }
+  }
+
+  /* The location callout: a small tag in the tone, where the tick numbers were, its edge on the range's start. */
+  .home-lint-range-label {
+    position: absolute;
+    bottom: calc(100% + 0.25rem);
+    left: -1px;
+    padding: 0.0625rem 0.375rem;
+    border-radius: 0.25rem 0.25rem 0.25rem 0;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--home-lint-tone);
+    background-color: color-mix(in oklab, var(--home-lint-tone) 10%, var(--home-well));
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-lint-tone) 32%, transparent), 0 1px 2px light-dark(oklch(18% 0 none / 0.06), oklch(0% 0 none / 0.4));
+  }
+
+  /*
+   * The scan: a 1px line of light reads the source left to right, with a short trail and, on the ruler,
+   * the column it is reading. It travels exactly the longest line, so it meets each class as it lights.
+   */
+  .home-lint-beam {
+    position: absolute;
+    top: 0;
+    left: var(--home-lint-gutter);
+    width: 1px;
+    height: calc(var(--home-lint-ruler) + var(--home-lint-lead) + var(--home-lint-lines) * var(--home-lint-row));
+    font-size: var(--home-lint-code-size);
+    background-image: linear-gradient(transparent, var(--home-signal) 18%, var(--home-signal) 82%, transparent);
+    box-shadow: 0 0 5px 0.5px color-mix(in oklab, var(--home-signal) 45%, transparent);
+    opacity: 0;
+    counter-reset: home-lint-column var(--home-lint-scan-column);
+    pointer-events: none;
+
+    &::before {
+      position: absolute;
+      top: var(--home-lint-ruler);
+      right: 1px;
+      bottom: 0;
+      width: 3rem;
+      background-image: linear-gradient(to right, transparent, color-mix(in oklab, var(--home-signal) 14%, transparent));
+      mask-image: linear-gradient(transparent, black 30%, black 70%, transparent);
+      content: '';
+    }
+
+    &::after {
+      position: absolute;
+      top: 0.0625rem;
+      left: 0.375rem;
+      padding: 0.0625rem 0.25rem;
+      border-radius: 0.1875rem;
+      font-family: var(--home-mono);
+      font-size: 0.5625rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      color: var(--home-signal-ink);
+      background-color: var(--home-signal);
+      content: counter(home-lint-column);
+    }
+
+    /* Wrapped source: the beam spans the whole frame, and without a ruler there is no column to show. */
+    @container home-lint-code (width < 49em) {
+      height: auto;
+      bottom: 0;
+
+      &::before {
+        top: 0;
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  /* Problems: docked under the code, one line above it. */
+  .home-lint-problems {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    padding: 0.75rem 1rem 0.75rem 1.25rem;
+    border-top: 1px solid var(--home-hairline);
+
+    @container home-lint (width >= 40rem) {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  /* Until a check reports, the problem line is a hatched reserved slot, the same one the agent's output uses. */
+  .home-lint-problems::after {
+    position: absolute;
+    inset: 0.625rem 1rem 0.625rem 1.25rem;
+    border-radius: var(--home-radius-well);
+    background-image: var(--home-hatch);
+    background-size: var(--home-hatch-size) var(--home-hatch-size);
+    box-shadow: inset 0 0 0 1px var(--home-guide);
+    transition: opacity var(--home-quick) var(--home-ease);
+    pointer-events: none;
+    content: '';
+
+    @container home-lint (width >= 40rem) {
+      inset-inline: 1.5rem;
+    }
+  }
+
+  .home-lint-problems:has(.home-lint-problem[data-shown])::after {
+    opacity: 0;
+  }
+
+  .home-lint-replay {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.75rem;
+    padding-inline: 0.625rem;
+    border-radius: var(--home-radius-chip);
+    font-size: 0.75rem;
+    color: var(--home-text-quiet);
+    cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease), background-color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      color: var(--home-text);
+      background-color: var(--home-well);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-lint-problem-stack {
+    display: grid;
+    flex: auto;
+    min-width: 0;
+  }
+
+  .home-lint-problem-cell {
+    grid-area: 1 / 1;
+    display: grid;
+    min-width: 0;
+    visibility: hidden;
+
+    &[data-active] {
+      visibility: visible;
+    }
+
+    & > * {
+      grid-area: 1 / 1;
+    }
+  }
+
+  /* One line leaves before the next arrives, so two never overlap. */
+  .home-lint-problem {
+    opacity: 0;
+    translate: 0 0.25rem;
+    transition: opacity var(--home-quick) var(--home-ease), translate var(--home-quick) var(--home-ease);
+
+    &[data-shown] {
+      opacity: 1;
+      translate: 0 0;
+      transition-duration: var(--home-base);
+      transition-delay: var(--home-quick);
+    }
+  }
+
+  .home-lint-problem {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--home-text-quiet);
+  }
+
+  .home-lint-problem-rule {
+    overflow-wrap: anywhere;
+    color: var(--home-text);
+  }
+
+  .home-lint-problem-icon {
+    flex: none;
+  }
+
+  /* The quick fix menu floats over the code, under the line it fixes. */
+  .home-lint-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: max-content;
+    max-width: min(30rem, calc(100% - 1rem));
+    padding: 0.3125rem;
+    border-radius: 0.625rem;
+    font-family: var(--font-family-sans);
+    line-height: 1.4;
+    background-color: var(--home-float);
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      var(--home-edge),
+      0 1px 2px light-dark(oklch(18% 0 none / 0.06), oklch(0% 0 none / 0.4)),
+      0 8px 20px -6px light-dark(oklch(18% 0 none / 0.14), oklch(0% 0 none / 0.55)),
+      0 24px 48px -16px light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
+    transform-origin: 1rem 0;
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 -0.25rem;
+    scale: 0.97;
+    transition: opacity var(--home-quick) var(--home-ease), translate var(--home-quick) var(--home-ease), scale var(--home-quick) var(--home-ease), visibility 0s var(--home-quick);
+
+    &[data-open] {
+      visibility: visible;
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+      transition: opacity var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease), scale var(--home-base) var(--home-ease);
+    }
+  }
+
+  .home-lint-menu-label {
+    padding: 0.25rem 0.5rem 0.375rem;
+  }
+
+  .home-lint-menu-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    text-align: left;
+    color: var(--home-text);
+    cursor: pointer;
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    & code {
+      font-family: var(--home-mono);
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    &:hover,
+    [data-open] > & {
+      background-color: color-mix(in oklab, var(--home-text) 6%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-lint-menu-icon {
+    flex: none;
+    margin-top: 0.0625rem;
+    color: var(--home-signal);
+  }
+
+  /* Surfaces: the same check in the CLI and the MCP server. */
+
+  .home-lint-surfaces {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    align-content: start;
+    gap: var(--home-gap);
+    margin-top: calc(-1 * var(--home-lint-tuck));
+    padding-inline: var(--home-lint-behind);
+
+    @container home-lint (width >= 40rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * A surface waits drawn in under the window above it; when the editor reports, both slide out
+   * together into full light. On phones the MCP window tucks under the CLI window the same way.
+   */
+  .home-lint-pane {
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-edge), var(--home-contact), 0 12px 28px -18px light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.55));
+    transition: translate var(--home-slow) var(--home-ease), opacity var(--home-slow) var(--home-ease);
+
+    @container home-lint (width < 40rem) {
+      & + & {
+        z-index: -1;
+        margin-top: calc(-1 * var(--home-lint-tuck) - var(--home-gap));
+      }
+    }
+
+    &:is([data-state='idle'], [data-state='running']) {
+      opacity: 0.7;
+      translate: 0 -0.625rem;
+      transition-duration: var(--home-base);
+    }
+
+    &[data-state='off'] {
+      opacity: 0.6;
+    }
+  }
+
+  /* The moment a surface reports, a short light runs along its divider: the same light that read the source. */
+  .home-lint-pane-bar::after,
+  .home-lint-problems::before {
+    position: absolute;
+    left: 0;
+    width: 40%;
+    height: 1px;
+    background-image: linear-gradient(to right, transparent, var(--home-signal), transparent);
+    opacity: 0;
+    pointer-events: none;
+    content: '';
+  }
+
+  .home-lint-pane-bar {
+    height: calc(2.75rem + var(--home-lint-tuck));
+    padding-top: var(--home-lint-tuck);
+  }
+
+  .home-lint-pane-bar::after {
+    bottom: -1px;
+  }
+
+  .home-lint-problems::before {
+    top: -1px;
+  }
+
+  .home-lint-pane-body {
+    display: grid;
+    flex: auto;
+    padding: 1rem 1rem 1.25rem;
+    background-color: var(--home-well);
+  }
+
+  .home-lint-pane-cell {
     grid-area: 1 / 1;
     min-width: 0;
     visibility: hidden;
@@ -163,64 +1128,316 @@
     }
   }
 
-  /* The fixed source replaces the original in place. */
-  .home-lint-editor[data-fixed] {
-    .home-code-window-source {
-      opacity: 0;
-    }
-
-    .home-code-window-fix {
-      opacity: 1;
-    }
-  }
-
-  .home-lint-problems {
+  .home-lint-terminal {
     display: grid;
-    align-content: start;
-    gap: var(--spacing-sm);
-    min-height: 7.5rem;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--home-hairline);
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--home-text-body);
+    background: none;
 
-    @media (--sm) {
-      padding-inline: var(--spacing-lg);
+    /* A line that wraps hangs its continuation, the way a terminal reads. */
+    & > * {
+      display: block;
+      min-width: 0;
+      padding-left: 2ch;
+      text-indent: -2ch;
     }
   }
 
-  .home-lint-problem {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-    animation: home-lint-problem 0.4s var(--home-ease) both;
+  .home-lint-command {
+    color: var(--home-text);
   }
 
-  .home-lint-surfaces {
+  .home-lint-prompt,
+  .home-lint-call {
+    color: var(--home-text-faint);
+  }
+
+  /* A stylish report line, location, severity and rule; the message column is left to the guide. */
+  .home-lint-report {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin: auto 0 0;
-    padding: var(--spacing-md) 1rem var(--spacing-xs);
+    column-gap: 2ch;
+    padding-left: 2ch;
+    text-indent: 0;
+  }
 
-    @media (--sm) {
-      padding-inline: 1.25rem;
+  .home-lint-rule-id {
+    color: var(--home-text-body);
+  }
+
+  .home-lint-json-key {
+    color: var(--home-code-attr);
+  }
+
+  .home-lint-json-string {
+    color: var(--home-code-string);
+  }
+
+  .home-lint-json-number {
+    color: var(--home-code-property);
+  }
+
+  /* Output prints when the surface reports; once the editor applies the fix, the report fades back. */
+  .home-lint-out {
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease);
+
+    :is([data-state='lit'], [data-state='resolved']) [data-active] & {
+      opacity: 1;
     }
 
-    & > .home-annotation {
-      margin-right: var(--spacing-3xs);
+    [data-state='resolved'] [data-active] & {
+      opacity: 0.4;
+    }
+  }
+
+  .home-lint-loc {
+    border-radius: 0.1875rem;
+  }
+
+  @media (--motion-safe) {
+    .home-lint[data-phase='scan'] .home-lint-beam {
+      animation: home-lint-scan 1s linear both;
+    }
+
+    /* After a fix lands the beam reads the line once more, faster, before the clean status. */
+    .home-lint[data-phase='fixed'] .home-lint-beam {
+      animation: home-lint-scan 0.6s linear 0.1s both;
+    }
+
+    .home-lint[data-phase='report'] [data-problem] .home-lint-glyph::after {
+      animation: home-lint-ring 0.9s ease-out 0.2s both;
+    }
+
+    .home-lint[data-phase='scan'] .home-lint-source[data-active] .home-lint-token {
+      animation: home-lint-read 0.5s ease-out both;
+      animation-delay: calc(var(--column) / var(--home-lint-columns) * 1s - 0.08s);
+    }
+
+    .home-lint[data-phase='report'] .home-lint-token[data-marked]::after {
+      animation-name: home-lint-squiggle;
+      animation-duration: 0.32s;
+      animation-timing-function: var(--home-ease);
+      animation-delay: calc((var(--column) - 1) * 4ms);
+      animation-fill-mode: both;
+    }
+
+    .home-lint[data-reported] :is([data-active], .home-lint-range) .home-lint-loc {
+      animation-name: home-lint-lit;
+      animation-duration: 2.2s;
+      animation-timing-function: var(--home-ease);
+      animation-fill-mode: both;
+    }
+
+    .home-lint-problem[data-shown] .home-lint-problem-icon {
+      animation-name: home-lint-pop;
+      animation-duration: 0.42s;
+      animation-timing-function: var(--home-ease);
+      animation-fill-mode: both;
+    }
+
+    [data-state='lit'] [data-active] .home-lint-out {
+      animation-name: home-lint-print;
+      animation-duration: 0.42s;
+      animation-timing-function: var(--home-ease);
+      animation-delay: calc(var(--i) * 70ms + 0.12s);
+      animation-fill-mode: both;
+    }
+
+    .home-lint[data-phase='report'] .home-lint-problems::before,
+    [data-state='lit'] > .home-lint-pane-bar::after {
+      animation-name: home-lint-pulse;
+      animation-duration: 1.1s;
+      animation-timing-function: var(--home-ease-inout);
+      animation-fill-mode: both;
+    }
+
+    /* The caret takes no room in the line, so it never wraps the command onto another row. */
+    [data-state='running'] [data-active] .home-lint-command::after {
+      display: inline-block;
+      width: 0.5em;
+      height: 1.1em;
+      margin-inline: 0.25em -0.75em;
+      vertical-align: -0.2em;
+      background-color: var(--home-text-quiet);
+      animation: home-lint-caret 0.8s steps(1) infinite;
+      content: '';
     }
   }
 
   @media (--motion-reduce) {
-    .home-lint-problem {
+    .home-lint-pane,
+    .home-lint-pane:is([data-state='idle'], [data-state='running']) {
+      opacity: 1;
+      translate: none;
+      transition: none;
+    }
+
+    .home-lint-token[data-removing],
+    .home-lint-token[data-removing]::before,
+    .home-lint-order,
+    .home-lint-glyph > svg,
+    .home-lint-range::before,
+    .home-lint-range::after,
+    .home-lint-range-end {
       animation: none;
+    }
+
+    .home-lint-problem,
+    .home-lint-menu {
+      translate: none;
+      scale: none;
     }
   }
 }
 
-@keyframes home-lint-problem {
+@keyframes home-lint-scan {
+  0% {
+    left: var(--home-lint-gutter);
+    opacity: 0;
+    --home-lint-scan-column: 1;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    left: min(100% - 1rem, var(--home-lint-gutter) + var(--home-lint-columns) * 1ch);
+    opacity: 0;
+    --home-lint-scan-column: var(--home-lint-columns);
+  }
+}
+
+@keyframes home-lint-ring {
+  from {
+    opacity: 0.9;
+    scale: 0.6;
+  }
+
+  to {
+    opacity: 0;
+    scale: 2.4;
+  }
+}
+
+@keyframes home-lint-read {
+  35% {
+    color: var(--home-text);
+    background-color: color-mix(in oklab, var(--home-signal) 20%, transparent);
+  }
+}
+
+@keyframes home-lint-squiggle {
+  from {
+    scale: 0 1;
+  }
+}
+
+@keyframes home-lint-strike {
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes home-lint-fold {
+  to {
+    margin-right: calc((var(--length) + 1) * -1ch);
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+@keyframes home-lint-badge {
   from {
     opacity: 0;
-    translate: 0 4px;
+    translate: -50% 0.25rem;
+  }
+}
+
+@keyframes home-lint-pop {
+  from {
+    opacity: 0;
+    scale: 0.5;
+  }
+}
+
+@keyframes home-lint-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes home-lint-draw {
+  from {
+    scale: 0 1;
+  }
+}
+
+@keyframes home-lint-drop {
+  from {
+    scale: 1 0;
+  }
+}
+
+@keyframes home-lint-lit {
+  0% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0.125rem transparent;
+  }
+
+  14% {
+    color: var(--home-text);
+    background-color: color-mix(in oklab, var(--home-signal) 34%, transparent);
+    box-shadow: 0 0 0 0.125rem color-mix(in oklab, var(--home-signal) 34%, transparent);
+  }
+
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0.125rem transparent;
+  }
+}
+
+@keyframes home-lint-pulse {
+  0% {
+    opacity: 0;
+    translate: -100% 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 250% 0;
+  }
+}
+
+@keyframes home-lint-print {
+  from {
+    opacity: 0;
+    translate: 0 0.25rem;
+  }
+}
+
+@keyframes home-lint-caret {
+  50% {
+    opacity: 0;
   }
 }

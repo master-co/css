@@ -3,16 +3,26 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import masterCSS from '@master/eslint-config-css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { createRenderSessionSync } from '@master/css/node'
 import { compileManifestSync } from '@master/css-compiler/node'
-import { MasterCSSLanguageService } from '@master/css-language-service'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import Color from 'colorjs.io'
 import { Linter } from 'eslint'
 import snapshot from '../../../benchmarks/docs-page-css-size/snapshot.json'
 import { getHomePageCSSSize } from '../../utils/home-page-css-size'
 import preset from '../../utils/preset-manifest'
-import { activeSyntaxHighlightingCode, agentSession, colorToolClasses, ctaClassRows, deliveryFlowPackets, deliveryFlowSources, heroComposerProblem, heroComposerSortedTokens, heroComposerTokens, hoverInspectionLines, lintRules, manifestSuggestionItems, manifestSuggestionsPrefix, manifestSuggestionsTyped, cascadeLayers, themeVariablesCode } from './home-content'
+import { fixMasterCSSContent, lintMasterCSSContent, resolveMasterCSSLintRules } from '@master/css-tooling/lint'
+import { lintRuleReach } from './lint-content'
+import { deliveryLateClass, deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
+// The Design system section checks its gallery classes, token values and cascade probe against the engine.
+import './design-system-content.test'
+// The AI agents section checks its MCP samples against the server source and the tooling lint.
+import './agents-content.test'
+// The Editor section checks its file, swatches, completions and hovers against the language service.
+import './editor-content.test'
+// The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
+import './workflow-content.test'
+import { agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })
 const recommendedConfig: Linter.Config[] = [...masterCSS, {
@@ -36,19 +46,6 @@ function lintSample(code: string, config = recommendedConfig) {
   }
 }
 
-/** A one-line text document for the language service. */
-function createDocument(text: string) {
-  return {
-    uri: 'file:///home.html',
-    languageId: 'html',
-    version: 1,
-    lineCount: 1,
-    getText: (range?: { start: { character: number }, end: { character: number } }) => range ? text.slice(range.start.character, range.end.character) : text,
-    positionAt: (index: number) => ({ line: 0, character: index }),
-    offsetAt: (position: { character: number }) => position.character
-  }
-}
-
 test('lint rule samples show what the lint rules report', () => {
   for (const rule of lintRules) {
     if (!rule.problem.source.startsWith('@master/css/')) continue
@@ -63,13 +60,12 @@ test('lint rule samples show what the lint rules report', () => {
   }
 })
 
-test('lint rule marks point at what the rules report and fix', () => {
+test('lint rule marks point at what the rules report', () => {
   for (const rule of lintRules) {
     if (rule.mark) {
       const [, line, column] = rule.problem.location.split(':').map(Number)
       assert.equal(rule.code.trim().split('\n')[line - 1].indexOf(rule.mark) + 1, column, rule.title)
     }
-    if (rule.fixMark) assert.ok(rule.fixPreviewCode?.includes(rule.fixMark), rule.title)
   }
 })
 
@@ -80,6 +76,42 @@ test('the fix preview rule previews the class order fix', () => {
   const [before] = classOrder.code.trim().split('\n')
   const [after] = classOrder.fixPreviewCode!.trim().split('\n')
   assert.deepEqual(preview.code.trim().split('\n').slice(0, 2), [`${before} <!-- [!code --] -->`, `${after} <!-- [!code ++] -->`])
+})
+
+test('the CLI and the MCP server report what ESLint reports for each lint rule', () => {
+  const lintSession = createToolingSessionSync({ manifest: defaultManifestJSON as unknown as MasterCSSManifest })
+  const lint = (code: string, file: string, rules?: string) => lintMasterCSSContent({ content: `${code.trim()}\n`, filePath: file, rules: resolveMasterCSSLintRules(rules), lintSession }).diagnostics
+  try {
+    for (const rule of lintRules) {
+      const reach = lintRuleReach[rule.title]
+      assert.ok(reach, rule.title)
+      if (reach.eslintOption) {
+        // An option only ESLint reads: the CLI and the MCP server name it instead of reporting.
+        assert.equal(reach.cli ?? reach.mcp, undefined, rule.title)
+        assert.deepEqual(lint(rule.code, rule.file, 'all'), [], rule.title)
+        continue
+      }
+      if (reach.mcp === 'mastercss_preview_fixes') {
+        // The preview is the class order fix, which `lint --fix` writes.
+        const classOrder = lintRules.find((item) => item.title === 'Class order')!
+        const content = `${classOrder.code.trim()}\n`
+        assert.equal(fixMasterCSSContent({ content, filePath: classOrder.file, rules: resolveMasterCSSLintRules(reach.rules), lintSession }), `${classOrder.fixPreviewCode!.trim()}\n`)
+        continue
+      }
+      assert.equal(reach.cli?.endsWith('--rules all'), reach.rules === 'all', rule.title)
+      const [, line, column] = rule.problem.location.split(':').map(Number)
+      assert.deepEqual(lint(rule.code, rule.file, reach.rules).map((diagnostic) => ({
+        line: diagnostic.loc.start.line,
+        column: diagnostic.loc.start.column,
+        end: diagnostic.loc.end.column,
+        severity: diagnostic.severity,
+        message: diagnostic.message,
+        source: `@master/css/${diagnostic.ruleId}`
+      })), [{ line, column, end: column + rule.mark!.length, severity: rule.problem.severity, message: rule.problem.message, source: rule.problem.source }], rule.title)
+    }
+  } finally {
+    lintSession.dispose()
+  }
 })
 
 test('the agent session shows what the lint rules report and fix', () => {
@@ -93,18 +125,9 @@ test('the agent session shows what the lint rules report and fix', () => {
   assert.equal(fixed, agentSession.fixedCode.trim())
 })
 
-test('the hero composer types unsorted classes that the class order fix sorts', () => {
-  const { messages, fixed } = lintSample(`<button class="${heroComposerTokens.join(' ')}">Upgrade</button>`)
-  assert.deepEqual(messages.map((message) => message.message), [heroComposerProblem])
-  assert.equal(fixed, `<button class="${heroComposerSortedTokens.join(' ')}">Upgrade</button>`)
-})
-
 test('homepage markup samples are valid and sorted', () => {
   const samples = [
-    activeSyntaxHighlightingCode,
-    hoverInspectionLines.join('\n'),
-    colorToolClasses.map((item) => `<span class="${item.className}"></span>`).join('\n'),
-    deliveryFlowSources.map((source) => `<span ${source.code}></span>`).join('\n'),
+    [...deliveryMarkup.map((line) => `<${line.tag} class="${line.className}"></${line.tag}>`), `<li class="${deliveryLateClass}"></li>`].join('\n'),
     ...ctaClassRows.map((row) => row.map((className) => `<span class="${className}"></span>`).join('\n'))
   ]
   for (const code of samples) {
@@ -112,8 +135,17 @@ test('homepage markup samples are valid and sorted', () => {
   }
 })
 
-test('the delivery diagram carries the classes its sources declare', () => {
-  assert.deepEqual(deliveryFlowSources.flatMap((source) => source.code.match(/"([^"]*)"/)![1].split(' ')), [...deliveryFlowPackets])
+test('the rendering stage generates a rule for every class, and the script adds one the markup lacks', () => {
+  const engine = createRenderSessionSync({ manifest: preset })
+  try {
+    const { classRules, invalidClassNames } = engine.ensureClassRules([...deliveryRenderedClasses, deliveryLateClass])
+    assert.deepEqual(invalidClassNames, [])
+    for (const className of [...deliveryRenderedClasses, deliveryLateClass]) assert.equal(classRules[className].length, 1, className)
+  } finally {
+    engine.dispose()
+  }
+  assert.deepEqual(deliveryRenderedClasses, deliveryMarkup.flatMap((line) => line.className.split(' ')))
+  assert.ok(!deliveryRenderedClasses.includes(deliveryLateClass))
 })
 
 test('homepage stylesheet samples compile without errors', () => {
@@ -126,34 +158,6 @@ test('homepage stylesheet samples compile without errors', () => {
 test('the cascade layer figure follows the preset layer order', () => {
   const base = readFileSync(new URL('../../../packages/preset/src/base.css', import.meta.url), 'utf8')
   assert.equal(base.match(/@layer ([^;{]+);/)?.[1], cascadeLayers.map((layer) => layer.name).join(', '))
-})
-
-test('color tool swatches are the ones the language service renders', async () => {
-  const manifest = defaultManifestJSON as unknown as MasterCSSManifest
-  const service = new MasterCSSLanguageService({ manifest }, { session: createToolingSessionSync({ manifest }) })
-  const before = '<span class="'
-  for (const item of colorToolClasses) {
-    const text = `${before}${item.className}"></span>`
-    const document = createDocument(text)
-    const [swatch, ...rest] = await service.renderSyntaxColors(document as never) ?? []
-    assert.equal(rest.length, 0, item.className)
-    assert.equal(swatch?.range.start.character, before.length + item.swatchAt, item.className)
-    const expected = new Color(item.color).to('srgb')
-    assert.ok(expected.deltaE(new Color('srgb', [swatch.color.red, swatch.color.green, swatch.color.blue]), '2000') < 1, item.className)
-  }
-})
-
-test('manifest suggestions mirror the language service completions', () => {
-  const manifest = defaultManifestJSON as unknown as MasterCSSManifest
-  const service = new MasterCSSLanguageService({ manifest }, { session: createToolingSessionSync({ manifest }) })
-  const before = '<button class="'
-  const text = `${before}${manifestSuggestionsPrefix}">Upgrade plan</button>`
-  const offset = before.length + manifestSuggestionsPrefix.length
-  const document = createDocument(text)
-  const items = service.suggestSyntax(document as never, document.positionAt(offset), { triggerKind: 2, triggerCharacter: '-' }) ?? []
-  assert.deepEqual(items.slice(0, manifestSuggestionItems.length).map((item) => item.label), manifestSuggestionItems.map((item) => item.label))
-  assert.ok(items[0].detail?.startsWith(manifestSuggestionItems[0].detail), items[0].detail)
-  assert.equal(manifestSuggestionItems[0].label, manifestSuggestionsPrefix + manifestSuggestionsTyped)
 })
 
 test('homepage page CSS sizes come from the committed snapshot', () => {

@@ -1,4 +1,4 @@
-/* Registered so the palette can tilt, rise and flatten smoothly from a single number each. */
+/* Registered so the figures can tilt, rise, open and count smoothly from a single number each. */
 @property --home-flat {
   syntax: '<number>';
   inherits: true;
@@ -11,79 +11,507 @@
   initial-value: 1;
 }
 
+@property --home-layer-gap {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 40px;
+}
+
 @property --home-layer-open {
   syntax: '<number>';
   inherits: true;
   initial-value: 1;
 }
 
+/* The whole percentage of the theme preview a token line paints, for its counter. */
+@property --home-token-percent {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+
 @layer components {
-  /* P3 palette: an isometric field whose swatches rise with chroma; hovering flattens it into a table. */
-  .home-palette-stage {
-    --home-flat: 0;
+  /* Each card spans a header track and a figure track, so every figure in a row starts at the same height. */
+  .home-ds-row > .home-bento-card {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .home-ds-row .home-bento-visual {
+    margin-top: 0;
+  }
+
+  /* A quiet link to the guide under each line of copy; the shared header track keeps the figures aligned. */
+  .home-ds-link {
+    align-self: flex-start;
+    justify-self: start;
+    margin-top: 1rem;
+  }
+
+  /*
+   * Light and dark: one markup rendered twice on an artboard, the light copy clipped to the left of the split
+   * and the dark copy to the right. Only the `light` or `dark` class on each copy's root differs. The class
+   * names sit above the artboard like frame names, corner marks hold its edge, and a dimension line below
+   * measures the share each mode paints.
+   */
+  .home-theme {
+    container-type: inline-size;
+  }
+
+  .home-theme-slider {
+    position: absolute;
+    inset: 0;
     display: grid;
     place-items: center;
-    height: 20rem;
+    outline: none;
+    cursor: ew-resize;
+    user-select: none;
+    touch-action: pan-y;
+  }
+
+  .home-theme-board {
+    display: grid;
+    gap: 0.75rem;
+    width: min(100% - 4rem, 21rem);
+
+    @container (width < 22rem) {
+      width: calc(100% - 3rem);
+    }
+  }
+
+  .home-theme-labels {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    line-height: 1;
+    color: var(--home-text-faint);
+  }
+
+  .home-theme-artboard {
+    position: relative;
+    display: grid;
+    border-radius: var(--home-radius-sheet);
+    box-shadow: var(--home-elevation-2);
+  }
+
+  /* Both copies share one cell; each is clipped to its side of the split. */
+  .home-theme-copy {
+    grid-area: 1 / 1;
+    min-width: 0;
+  }
+
+  .home-theme-copy-light {
+    clip-path: inset(0 calc(100% - var(--home-split)) 0 0);
+  }
+
+  .home-theme-copy-dark {
+    clip-path: inset(0 0 0 var(--home-split));
+  }
+
+  /* The screen's edge is one 1px line in either mode, drawn over it. */
+  .home-theme-screen {
+    position: relative;
+    border-radius: var(--home-radius-sheet);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px var(--home-hairline);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /* The split: a 1px line that overshoots the artboard a little, the way a measured guide does. */
+  .home-theme-divider {
+    position: absolute;
+    inset-block: -0.75rem;
+    left: var(--home-split);
+    width: 1px;
+    margin-left: -0.5px;
+    background-color: var(--home-rule-strong);
+    pointer-events: none;
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    .home-theme[data-dragging] &,
+    .home-theme-slider:focus-visible & {
+      background-color: var(--home-signal);
+    }
+  }
+
+  /* A slim ink handle on the line, with a two-line grip. */
+  .home-theme-knob {
+    --home-grip: color-mix(in oklab, var(--home-text-inverse) 62%, transparent);
+    position: absolute;
+    top: 50%;
+    left: var(--home-split);
+    width: 1.125rem;
+    height: 2.75rem;
+    margin: -1.375rem 0 0 -0.5625rem;
+    border-radius: var(--radius-pill);
+    background:
+      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% - 2px) 50% / 1px 0.875rem no-repeat,
+      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% + 2px) 50% / 1px 0.875rem no-repeat,
+      var(--home-ink);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-sheet) 16%, transparent), var(--home-contact), 0 6px 16px -6px var(--home-shade-far);
+    pointer-events: none;
+    transition: scale var(--home-quick) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+
+    .home-theme-slider:hover &,
+    .home-theme[data-dragging] & {
+      scale: 1.08;
+      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-sheet) 16%, transparent), var(--home-contact), 0 10px 22px -8px var(--home-shade-far);
+    }
+
+    .home-theme-slider:focus-visible & {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  /* The dimension line: end ticks at the artboard's edges, a tick at the split, a share over each segment. */
+  .home-theme-measure {
+    position: relative;
+    height: 0.875rem;
+    margin: 0.25rem 0 0;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    line-height: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+    background:
+      linear-gradient(var(--home-rule-strong), var(--home-rule-strong)) 0 50% / 100% 1px no-repeat,
+      linear-gradient(var(--home-rule-strong), var(--home-rule-strong)) 0 0 / 1px 100% no-repeat,
+      linear-gradient(var(--home-rule-strong), var(--home-rule-strong)) 100% 0 / 1px 100% no-repeat;
+
+    /* The tick at the split. */
+    &::before {
+      position: absolute;
+      inset-block: 0;
+      left: var(--home-split);
+      width: 1px;
+      margin-left: -0.5px;
+      background-color: var(--home-rule-strong);
+      transition: background-color var(--home-quick) var(--home-ease);
+      content: '';
+    }
+
+    .home-theme[data-dragging] &::before,
+    .home-theme-slider:focus-visible &::before {
+      background-color: var(--home-signal);
+    }
+  }
+
+  /* Each share sits on the line, cut out of it by the canvas color. */
+  .home-theme-measure-label {
+    position: absolute;
+    top: 0;
+    padding-inline: 0.3125rem;
+    background-color: var(--home-well);
+    translate: -50% 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /*
+   * Tokens: the @theme sample alone, with bare, quiet line numbers like the page's other editors. Long lines wrap
+   * with a hanging indent instead of running out of the well. The theme preview beside it tints each
+   * light-dark() value by the share of the screen it paints.
+   */
+  .home-tokens {
+    --home-gutter: 2.75rem;
+    height: 28rem;
+    container-type: inline-size;
+
+    /* Alone in its row, the pane is as tall as its code. */
+    @media (width < 64rem) {
+      height: auto;
+    }
+  }
+
+  .home-tokens-code {
+    position: relative;
+    height: 100%;
+
+    & :is(pre, code) {
+      font-size: 0.875rem;
+    }
+
+    & .home-code-window-pre {
+      padding: 1.75rem 0;
+    }
+
+    /* The code takes the pane's width, not its longest line's, so long lines wrap. */
+    & .home-code-window-pre > code {
+      width: auto;
+      min-width: 0;
+    }
+
+    @container (width < 34rem) {
+      & :is(pre, code) {
+        font-size: var(--home-code);
+      }
+    }
+
+    @container (width < 30rem) {
+      --home-gutter: 2.25rem;
+
+      & :is(pre, code) {
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  /* Whole-pixel lines, so neighbouring tints meet without a seam; a wrapped line hangs 4ch in from its start. */
+  .home-tokens-code .line {
+    padding: 0 1.25rem 0 calc(var(--home-gutter) + 1rem + 4ch);
+    line-height: 1.625rem;
+    text-indent: -4ch;
+    white-space: pre-wrap;
+
+    @container (width < 34rem) {
+      line-height: 1.375rem;
+    }
+
+    /* The line number sits in its own column, right-aligned and quiet. */
+    &:not(:only-child)::before {
+      width: var(--home-gutter);
+      margin: 0 1rem 0 calc((var(--home-gutter) + 1rem) * -1);
+      padding-right: 0.75rem;
+      text-indent: 0;
+      color: var(--home-text-faint);
+    }
+  }
+
+  /* The tint and the share in whole percent sit on the line itself, the number quiet at its right end. */
+  .home-tokens-code .line[style] {
+    --home-token-percent: calc(var(--home-token-share, 0) * 100);
+    position: relative;
+    z-index: 0;
+    counter-reset: home-token var(--home-token-percent);
+
+    &:not(:only-child)::before {
+      color: var(--home-text-body);
+    }
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 1.25rem;
+      font-family: var(--home-mono);
+      font-size: var(--home-label);
+      font-variant-numeric: tabular-nums;
+      text-indent: 0;
+      color: var(--home-text-faint);
+      background-color: color-mix(in oklab, var(--home-signal) calc(var(--home-token-share, 0) * 30%), transparent);
+      transition: background-color var(--home-quick) linear;
+      pointer-events: none;
+      content: counter(home-token) '%';
+    }
+  }
+
+  /*
+   * P3 palette, the grid's last card across the full width. Its caption and the readout share the header,
+   * and the field stands in the well below: extruded bars as tall as their chroma, flattening into a table
+   * under the pointer or the keyboard.
+   */
+  .home-ds-row > .home-ds-palette {
+    display: flex;
+    grid-row: auto;
+  }
+
+  .home-palette-stage {
+    --home-flat: 0;
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    container-type: inline-size;
     transition: --home-flat 0.9s var(--home-ease);
 
-    /* Flat below md: a field this dense only reads in 3D at full size. */
+    /* Flat below lg: a field this dense only reads in 3D at full size. */
     @media (width < 64rem) {
       --home-flat: 1;
-      height: auto;
-      padding: 3.25rem var(--spacing-md) var(--spacing-lg);
     }
 
-    @media (--md) {
-      height: 30rem;
-    }
-
-    .home-bento-card:hover &,
-    &:focus-within {
-      @media (--md) {
+    @media (width >= 64rem) {
+      &:has(.home-palette-scene:hover),
+      &:has(.home-palette-scene:focus-visible),
+      &[data-active] {
         --home-flat: 1;
       }
     }
   }
 
-  .home-palette-scene {
+  /*
+   * The well's top-right corner, like a callout on a drawing: the height mark while the field stands in 3D, the
+   * picked swatch's readout once one is picked. Both share one cell, so neither moves the other. In the flat
+   * grid below lg there is no mark and the picked swatch's tag names it, so the corner is not drawn at all.
+   */
+  .home-palette-meta {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    z-index: 1;
     display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    perspective: var(--home-perspective);
+    justify-items: end;
+    max-width: calc(100% - 2rem);
+    pointer-events: none;
 
-    /* The tilted field projects down and to the left of its box; lift it so the lightest tier stays in the well. */
-    @media (--md) {
-      translate: 0 -2.5rem;
+    & > * {
+      grid-area: 1 / 1;
+    }
+
+    @media (width < 64rem) {
+      display: none;
     }
   }
 
-  /* Narrow screens get a fluid grid at the card's width; from md the swatches keep their size and the field tilts. */
+  .home-palette-readout {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    max-width: 100%;
+    height: 1.5rem;
+    margin: 0;
+
+    &:empty {
+      visibility: hidden;
+    }
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .home-palette-readout-swatch {
+    flex: none;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px var(--home-rule);
+  }
+
+  .home-palette-readout-token {
+    color: var(--home-text);
+  }
+
+  .home-palette-readout-value {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
+    color: var(--home-text-quiet);
+  }
+
+  .home-palette-readout-gamut {
+    flex: none;
+    color: var(--home-text-faint);
+
+    &[data-gamut='P3'] {
+      color: var(--home-text);
+    }
+  }
+
+  /* The one mark the field keeps: height means chroma, while the field stands in 3D. */
+  .home-palette-mark {
+    align-self: center;
+    margin: 0;
+    opacity: calc(1 - var(--home-flat));
+
+    .home-palette-stage[data-active] & {
+      visibility: hidden;
+    }
+  }
+
+  .home-palette-scene {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    place-items: center;
+    min-width: 0;
+    border-radius: var(--home-radius-well);
+    outline: none;
+    perspective: var(--home-perspective);
+    /* The top padding leaves room for the picked swatch's tag above the first row. */
+    padding: 2rem var(--spacing-md) var(--spacing-lg);
+
+    @container (width >= 40rem) {
+      padding-inline: var(--spacing-xl);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+
+    @media (width >= 64rem) {
+      height: clamp(26rem, 36vw, 32rem);
+      perspective-origin: 50% 40%;
+    }
+  }
+
+  /* Narrow screens get a fluid grid at the content width; from lg the swatches keep their size and the field tilts. */
   .home-palette {
     --home-tilt: calc(1 - var(--home-flat));
+    position: relative;
     display: grid;
     grid-template-columns: 1.5rem repeat(var(--home-palette-columns), minmax(0, 1fr));
-    grid-template-rows: repeat(var(--home-palette-rows), clamp(0.75rem, 2.4vw, 1.5rem));
+    grid-template-rows: repeat(var(--home-palette-rows), clamp(1rem, 3.6vw, 1.5rem));
     gap: 2px;
     width: 100%;
     transform-style: preserve-3d;
 
-    @media (--md) {
-      grid-template-columns: 2.5rem repeat(var(--home-palette-columns), minmax(2.25rem, 1fr));
-      grid-template-rows: 1rem repeat(var(--home-palette-rows), 2.25rem);
+    @media (width >= 64rem) {
+      /* tan(atan2()) turns the ratio of two lengths into a number: full size at 72rem, smaller in narrower columns. */
+      --home-palette-fit: min(1.06, tan(atan2(100cqw, 72rem)));
+      grid-template-columns: 2rem repeat(var(--home-palette-columns), 2.5rem);
+      grid-template-rows: 1rem repeat(var(--home-palette-rows), 1.75rem);
       gap: 4px;
       width: max-content;
+      /* In a column narrower than the field's own box, center the box anyway; the scale brings it back inside. */
+      place-self: unsafe center;
+      /* The tilted field projects down and to the left of its box; lift it so the nearest tier stays clear. */
+      translate: calc(-0.5rem * var(--home-tilt)) calc(-3rem * var(--home-tilt) + 0.375rem * var(--home-flat));
       transform:
         rotateX(calc(56deg * var(--home-tilt)))
-        rotateZ(calc(-32deg * var(--home-tilt)))
-        scale(calc(0.74 + 0.26 * var(--home-flat)));
-    }
-  }
+        rotateZ(calc(-30deg * var(--home-tilt)))
+        scale(calc(var(--home-palette-fit) * (0.86 + 0.12 * var(--home-flat))));
 
-  /* Color names need the room of a full-size swatch; the tier scale stays at every size. */
-  .home-palette-label:not(.home-palette-tier) {
-    @media (width < 64rem) {
-      display: none;
+      /* A soft contact shadow on the ground under the field; it fades as the field lies flat. */
+      &::before {
+        position: absolute;
+        inset: 1.25rem 0 0 2rem;
+        border-radius: 1rem;
+        background-color: var(--home-shade-far);
+        filter: blur(24px);
+        opacity: calc(var(--home-tilt) * 0.9);
+        transform: translateZ(-2px);
+        pointer-events: none;
+        content: '';
+      }
+
+      /* The floor plate the bars stand on: a hatched margin around the swatches, closed by a hairline. */
+      &::after {
+        position: absolute;
+        inset: calc(1rem + 4px - 0.875rem) -0.875rem -0.875rem calc(2rem + 4px - 0.875rem);
+        border-radius: 0.5rem;
+        background-color: var(--home-well);
+        background-image: var(--home-hatch);
+        background-size: var(--home-hatch-size) var(--home-hatch-size);
+        box-shadow: inset 0 0 0 1px var(--home-rule);
+        opacity: var(--home-tilt);
+        transform: translateZ(-1px);
+        pointer-events: none;
+        content: '';
+      }
     }
   }
 
@@ -97,179 +525,578 @@
     font-size: 0.5625rem;
     line-height: 1;
     white-space: nowrap;
-    text-overflow: ellipsis;
     color: var(--home-text-quiet);
+
+    /* Names and tiers face the reader only once the field lies flat. */
+    @media (width >= 64rem) {
+      font-size: 0.625rem;
+      opacity: var(--home-flat);
+    }
+  }
+
+  /* Color names need the room of a full-size swatch; the tier scale stays at every size. */
+  .home-palette-name {
+    @media (width < 64rem) {
+      display: none;
+    }
   }
 
   .home-palette-tier {
     justify-content: flex-end;
     padding-right: var(--spacing-3xs);
     font-variant-numeric: tabular-nums;
+
+    @media (width >= 64rem) {
+      padding-right: var(--spacing-xs);
+    }
   }
 
   .home-swatch {
-    --home-swatch-height: calc(var(--home-swatch-lift) * 150px * var(--home-rise) * var(--home-tilt));
     position: relative;
     display: block;
     border-radius: 2px;
-    outline: 1px solid color-mix(in oklab, black 6%, transparent);
-    outline-offset: -1px;
-    transform-style: preserve-3d;
-    transform: translateZ(var(--home-swatch-height));
+    box-shadow: inset 0 0 0 1px var(--home-hairline);
+    cursor: crosshair;
+    transition: scale var(--home-quick) var(--home-ease);
 
-    @media (--md) {
-      border-radius: 4px;
+    @media (width >= 64rem) {
+      /* Each bar rises a little after the one before it, so the field grows in a diagonal wave as it scrolls in. */
+      --home-swatch-rise: clamp(0, var(--home-rise) * 1.6 - var(--home-swatch-index) / 34 * 0.6, 1);
+      --home-swatch-height: calc(var(--home-swatch-lift) * 180px * var(--home-swatch-rise) * var(--home-tilt));
+      border-radius: 3px;
+      transform-style: preserve-3d;
+      transform: translateZ(var(--home-swatch-height));
+
+      /* The two faces that turn toward the reader: the front edge and the left edge, shaded away from the light. */
+      &::before,
+      &::after {
+        position: absolute;
+        background-color: inherit;
+        pointer-events: none;
+        content: '';
+      }
+
+      &::before {
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: var(--home-swatch-height);
+        background-image: linear-gradient(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.34));
+        transform-origin: top;
+        transform: rotateX(-90deg);
+      }
+
+      &::after {
+        top: 0;
+        right: 100%;
+        width: var(--home-swatch-height);
+        height: 100%;
+        background-image: linear-gradient(90deg, rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.24));
+        transform-origin: right;
+        transform: rotateY(-90deg);
+      }
     }
 
-    /* The swatch's shadow stays on the ground plane while the swatch rises. */
+    /* The picked swatch: a gold ring, the one accent, set off by a 1px gap of canvas. */
+    &[data-active] {
+      z-index: 1;
+      scale: 1.18;
+      box-shadow: 0 0 0 1px var(--home-well), 0 0 0 2px var(--home-signal);
+    }
+
+    /*
+     * The picked swatch carries its class on a tag above it, the way a design tool names a selection. The tag
+     * leans toward the field's middle by the swatch's column, so it never runs past the first or last column.
+     */
+    &[data-active]::after {
+      --home-tag-lean: calc(var(--home-swatch-column) / (var(--home-palette-columns) - 1));
+      position: absolute;
+      top: auto;
+      right: auto;
+      bottom: calc(100% + 0.375rem);
+      left: calc(var(--home-tag-lean) * 100%);
+      width: auto;
+      height: auto;
+      padding: 0.1875rem 0.4375rem;
+      border-radius: var(--home-radius-chip);
+      font-family: var(--home-mono);
+      font-size: 0.625rem;
+      line-height: 1.3;
+      white-space: nowrap;
+      color: var(--home-text-inverse);
+      background-color: var(--home-ink);
+      background-image: none;
+      opacity: var(--home-flat);
+      transform: translateX(calc(var(--home-tag-lean) * -100%));
+      pointer-events: none;
+      content: attr(data-token);
+    }
+  }
+
+  /*
+   * Layout and motion: photos placed by span classes on a 12-column layout grid, drawn the way a design tool
+   * overlays one. Columns are quiet tinted bands, gutters and margins stay hatched, and the photo in
+   * hand marks the columns it spans in gold on the rulers above and below, with its classes on a tag.
+   */
+  .home-gallery {
+    --home-gallery-pad: var(--spacing-lg);
+    min-height: 28rem;
+    container-type: inline-size;
+
+    @media (--md) {
+      min-height: 32rem;
+    }
+
+    @container (width >= 36rem) {
+      --home-gallery-pad: var(--spacing-xl);
+    }
+  }
+
+  .home-gallery-grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xs);
+    padding: var(--home-gallery-pad);
+  }
+
+  /* The bands run the full height of the well, so the rulers show in the top and bottom margins. */
+  .home-gallery-guides {
+    padding-block: 0;
+    grid-template-rows: minmax(0, 1fr);
+    pointer-events: none;
+
+    & > span {
+      position: relative;
+      background-color: color-mix(in oklab, var(--home-text) 2%, var(--home-well));
+
+      /* Ruler ticks: a short bar at each end of the column, gold while the column is selected. */
+      &::before,
+      &::after {
+        position: absolute;
+        inset-inline: 0;
+        height: 2px;
+        background-color: var(--home-rule-strong);
+        opacity: 0;
+        transition: opacity var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease);
+        content: '';
+      }
+
+      &::before {
+        top: calc(var(--home-gallery-pad) / 2 - 1px);
+      }
+
+      &::after {
+        bottom: calc(var(--home-gallery-pad) / 2 - 1px);
+      }
+
+      &[data-active]::before,
+      &[data-active]::after {
+        background-color: var(--home-signal);
+        opacity: 1;
+      }
+    }
+
+    .home-gallery:is(:hover, :focus-within) & > span:not([data-active])::before,
+    .home-gallery:is(:hover, :focus-within) & > span:not([data-active])::after {
+      opacity: 0.6;
+    }
+  }
+
+  .home-gallery-photo {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background-color: var(--home-sheet);
+    cursor: zoom-in;
+
+    /* A single contour drawn over the photo's edge. */
     &::after {
       position: absolute;
       inset: 0;
+      z-index: 1;
       border-radius: inherit;
-      background: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
-      opacity: calc(var(--home-swatch-lift) * 3 * var(--home-tilt));
-      transform: translateZ(calc(var(--home-swatch-height) * -1));
-      content: '';
-    }
-  }
-
-  /* Swatches outside sRGB carry a fine light rim. */
-  .home-swatch-wide,
-  .home-palette-legend-swatch {
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55), 0 0 0 1px color-mix(in oklab, black 10%, transparent);
-  }
-
-  .home-palette-legend {
-    position: absolute;
-    top: var(--spacing-md);
-    left: var(--spacing-md);
-    z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-xs) var(--spacing-md);
-    margin: 0;
-
-    & > span {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-    }
-  }
-
-  .home-palette-legend-swatch {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 3px;
-    background: oklch(62% 0.27 145);
-  }
-
-  /* The token values the theme preview is showing: each line tints by the share of the preview its mode fills. */
-  .home-tokens-code .line[style] {
-    position: relative;
-    z-index: 0;
-
-    &::after {
-      position: absolute;
-      inset: -0.1rem -100cqw -0.1rem -1rem;
-      z-index: -1;
-      background-color: color-mix(in oklab, var(--home-signal) calc(var(--home-token-share, 0) * 22%), transparent);
-      transition: background-color var(--home-quick) linear;
+      box-shadow: inset 0 0 0 1px var(--home-hairline);
       pointer-events: none;
       content: '';
     }
-  }
 
-  /* The gallery opens a photo on click; the hint sits in the top gutter above the grid. */
-  .home-gallery-hint {
-    position: absolute;
-    top: 0.375rem;
-    left: calc(var(--spacing-lg) - 0.25rem);
-    z-index: 1;
-    padding-inline: 0.25rem;
-    background-color: var(--home-well);
-
-    @media (--md) {
-      top: 0.625rem;
-      left: calc(var(--spacing-xl) - 0.25rem);
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
     }
   }
 
-  /* Cascade layers: five planes in preset order; hovering the card spreads them apart. */
-  .home-layers {
+  /* Until a photo arrives its cell holds a quiet tone, never a blank. */
+  .home-gallery-frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: color-mix(in oklab, var(--home-text) 8%, var(--home-well));
+
+    & img {
+      transition: scale var(--home-slow) var(--home-ease), opacity var(--home-slow) var(--home-ease);
+    }
+
+    &[data-pending] img {
+      opacity: 0;
+    }
+
+    .home-gallery-photo:is(:hover, :focus-visible) & img {
+      scale: 1.03;
+    }
+  }
+
+  /* The selected photo's span classes, on one tag at its lower left. */
+  .home-gallery-classes {
+    position: absolute;
+    bottom: var(--spacing-xs);
+    left: var(--spacing-xs);
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.125rem 0.5rem;
+    max-width: calc(100% - var(--spacing-xs) * 2);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--home-radius-chip);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    color: var(--home-text);
+    background-color: var(--home-float);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact);
+    opacity: 0;
+    translate: 0 4px;
+    transition: opacity var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);
+    pointer-events: none;
+
+    & > code {
+      white-space: nowrap;
+    }
+
+    .home-gallery-photo[data-selected] & {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    /* Photos too narrow for a class name keep only the gold ruler ticks. */
+    @container (width < 30rem) {
+      display: none;
+    }
+  }
+
+  /* The open photo: a dialog over a frosted ground, reached by a view transition from the grid. */
+  .home-gallery-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
     display: grid;
     place-items: center;
   }
 
-  .home-layers-scene {
-    perspective: var(--home-perspective);
+  .home-gallery-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: color-mix(in oklab, var(--home-ground) 72%, transparent);
+    backdrop-filter: blur(20px) saturate(1.1);
   }
 
-  .home-layers-stack {
-    --home-layer-gap: 2.75rem;
+  .home-gallery-view {
     position: relative;
-    width: 16.5rem;
-    height: 8rem;
-    margin-top: 8rem;
-    transform-style: preserve-3d;
-    transform: rotateX(58deg) rotateZ(-38deg);
+    overflow: hidden;
+    margin: 0;
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-well);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-3);
+  }
 
-    .home-bento-card:hover & {
-      --home-layer-gap: 3.75rem;
+  .home-gallery-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 1;
+    display: grid;
+    place-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: var(--home-radius-control);
+    color: var(--home-text);
+    background-color: var(--home-float);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-2);
+    cursor: pointer;
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      background-color: var(--home-sheet);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
     }
   }
 
+  ::view-transition-group(home-gallery-photo) {
+    animation-duration: 0.52s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  ::view-transition-old(home-gallery-photo),
+  ::view-transition-new(home-gallery-photo) {
+    animation-duration: 0.52s;
+  }
+
+  /*
+   * Cascade layers: five slabs in preset order, following one element's padding through them.
+   * The stack is orthographic, so the flat callouts beside it rise by exactly the amount their slab does.
+   */
+  .home-layers {
+    --home-layer-tilt: 58deg;
+    --home-layer-turn: 36deg;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    container-type: inline-size;
+    min-height: 28rem;
+
+    @media (--md) {
+      min-height: 32rem;
+    }
+  }
+
+  /* The element whose padding the stack decides, set as plain code above it. */
+  .home-layers-element {
+    z-index: 1;
+    margin: 0;
+    padding: 1.25rem 1.375rem 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: var(--home-text-body);
+  }
+
+  /* One origin for the slabs and the callouts: the base slab's center, lowered by half the stack's rise. */
+  .home-layers-scene {
+    --home-layer-width: 11rem;
+    --home-layer-depth: 6.5rem;
+    --home-layer-gap: 3.75rem;
+    --home-layer-rise: calc(var(--home-layer-gap) * var(--home-layer-open) * sin(var(--home-layer-tilt)));
+    --home-layers-x: 40%;
+    --home-layers-y: calc(50% + 2 * var(--home-layer-rise));
+    /* The slab's right-hand corner, where each callout's leader starts. */
+    --home-layer-corner-x: calc(cos(var(--home-layer-turn)) * var(--home-layer-width) / 2 + sin(var(--home-layer-turn)) * var(--home-layer-depth) / 2);
+    --home-layer-corner-y: calc(cos(var(--home-layer-tilt)) * (cos(var(--home-layer-turn)) * var(--home-layer-depth) / 2 - sin(var(--home-layer-turn)) * var(--home-layer-width) / 2));
+    position: relative;
+    min-height: 18rem;
+    transition: --home-layer-gap 0.8s var(--home-ease);
+
+    .home-bento-card:hover & {
+      --home-layer-gap: 4.5rem;
+    }
+  }
+
+  .home-layers-stack {
+    position: absolute;
+    top: var(--home-layers-y);
+    left: var(--home-layers-x);
+    width: var(--home-layer-width);
+    height: var(--home-layer-depth);
+    margin: calc(var(--home-layer-depth) / -2) 0 0 calc(var(--home-layer-width) / -2);
+    transform-style: preserve-3d;
+    transform: rotateX(var(--home-layer-tilt)) rotateZ(calc(var(--home-layer-turn) * -1));
+  }
+
+  /* A slab: a sheet with a 1px contour over a darker copy 4px below it, so its front edges read as thickness. */
   .home-layer {
     position: absolute;
     inset: 0;
-    display: grid;
-    align-content: end;
-    gap: 0.125rem;
-    padding: var(--spacing-sm) var(--spacing-md);
+    display: flex;
+    align-items: flex-end;
+    padding: 0.625rem 0.75rem;
     border-radius: var(--radius-xl);
-    outline: 1px solid var(--home-rule);
     background-color: var(--home-sheet);
-    box-shadow: var(--home-edge), 0 18px 30px -18px var(--home-shade-far);
+    box-shadow: inset 0 0 0 1px var(--home-rule), 0 18px 30px -18px var(--home-shade-far);
+    transform-style: preserve-3d;
     transform: translateZ(calc(var(--home-layer-index) * var(--home-layer-gap) * var(--home-layer-open)));
-    transition: transform 0.8s var(--home-ease);
+
+    &::before {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-color: color-mix(in oklab, var(--home-sheet) 82%, var(--home-text));
+      transform: translateZ(-4px);
+      content: '';
+    }
   }
 
-  /* Utilities are the live layer: the one that wins. */
-  .home-layer[data-layer='utilities'] {
-    outline-color: color-mix(in oklab, var(--home-signal) 80%, transparent);
-    box-shadow: var(--home-edge), 0 0 0 4px var(--home-signal-glow), 0 18px 30px -18px var(--home-shade-far);
+  /* Utilities are the layer that wins: an amber contour and a soft glow, still one line. */
+  .home-layer[data-wins] {
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-signal) 85%, transparent), 0 0 28px -6px var(--home-signal-glow), 0 18px 30px -18px var(--home-shade-far);
+
+    &::before {
+      background-color: color-mix(in oklab, var(--home-signal) 55%, var(--home-sheet));
+    }
   }
 
   .home-layer-name {
     font-family: var(--home-mono);
     font-size: 0.75rem;
     font-weight: var(--font-weight-medium);
+    white-space: nowrap;
     color: var(--home-text);
   }
 
-  .home-layer-example {
-    font-family: var(--home-mono);
-    font-size: 0.625rem;
-    color: var(--home-text-quiet);
+  .home-layer-keyword {
+    font-weight: var(--font-weight-regular);
+    color: var(--home-text-faint);
   }
 
-  .home-layers-note {
+  /* A callout names the rule on its slab: a leader's length right of the slab's corner, rising with the slab. */
+  .home-layer-callout {
+    --home-callout-leader: 1rem;
     position: absolute;
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
+    top: calc(var(--home-layers-y) + var(--home-layer-corner-y) - var(--home-layer-index) * var(--home-layer-rise));
+    left: calc(var(--home-layers-x) + var(--home-layer-corner-x) + var(--home-callout-leader));
     display: flex;
     align-items: center;
-    gap: var(--spacing-3xs);
+    gap: 0.375rem;
     margin: 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 1.35;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+    translate: 0 -50%;
+    /* Callouts come in once the slabs have lifted far enough apart to be told apart. */
+    opacity: clamp(0, (var(--home-layer-open) - 0.55) * 2.5, 1);
+
+    /* The overridden rule is struck; the winning one is in full ink with a check. */
+    & > code {
+      text-decoration: line-through;
+      text-decoration-color: color-mix(in oklab, var(--home-text-quiet) 70%, transparent);
+    }
+
+    &[data-wins] {
+      color: var(--home-text);
+
+      & > code {
+        text-decoration: none;
+      }
+    }
+
+    /* The leader: a 1px rule from the slab's corner, ending in a dot on the corner. */
+    &::before {
+      position: absolute;
+      top: 50%;
+      right: calc(100% + 0.375rem);
+      width: calc(var(--home-callout-leader) - 0.375rem + 0.3125rem);
+      height: 1px;
+      background: linear-gradient(90deg, var(--home-text-faint) 3px, var(--home-rule-strong) 3px);
+      content: '';
+    }
+  }
+
+  /* The dimension line: ticks level with each slab's left corner, an arrowhead toward the layer that wins. */
+  .home-layers-dimension {
+    --home-dimension-mark: var(--home-rule-strong);
+    position: absolute;
+    --home-dimension-reach: 0.875rem;
+    top: calc(var(--home-layers-y) - var(--home-layer-corner-y) - 4 * var(--home-layer-rise) - var(--home-dimension-reach));
+    left: calc(var(--home-layers-x) - var(--home-layer-corner-x) - 1.125rem);
+    width: 0.375rem;
+    height: calc(4 * var(--home-layer-rise) + 1px + var(--home-dimension-reach));
+    background:
+      linear-gradient(var(--home-dimension-mark), var(--home-dimension-mark)) 0 0 / 1px 100% no-repeat,
+      repeating-linear-gradient(to top, var(--home-dimension-mark) 0 1px, transparent 1px var(--home-layer-rise));
+    opacity: clamp(0, (var(--home-layer-open) - 0.55) * 2.5, 1);
+
+    /* The arrowhead: two 1px strokes meeting at the top of the line. */
+    &::before,
+    &::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 0.375rem;
+      background-color: var(--home-dimension-mark);
+      transform-origin: top;
+      content: '';
+    }
 
     &::before {
-      content: '↑';
+      rotate: 40deg;
+    }
+
+    &::after {
+      rotate: -40deg;
+    }
+  }
+
+  /* Wide wells, such as the single-column card on tablets: a larger stack nearer the middle. */
+  @container (width >= 32rem) {
+    .home-layers-scene {
+      --home-layer-width: 13rem;
+      --home-layer-depth: 7.5rem;
+      --home-layers-x: 42%;
+    }
+  }
+
+  /* Narrow wells: a smaller stack, layer names without the keyword, and a shorter leader. */
+  @container (width < 21rem) {
+    .home-layers-scene {
+      --home-layer-width: 8.5rem;
+      --home-layer-depth: 5.25rem;
+      --home-layer-gap: 3.75rem;
+      --home-layers-x: 34%;
+
+      .home-bento-card:hover & {
+        --home-layer-gap: 4.5rem;
+      }
+    }
+
+    .home-layer-keyword {
+      display: none;
+    }
+
+    .home-layer-callout {
+      --home-callout-leader: 0.875rem;
+      font-size: 0.6875rem;
+    }
+  }
+
+  /* The narrowest wells, such as the two-column card at lg: a compact stack set further right, so the dimension line clears the edge. */
+  @container (width < 18.5rem) {
+    .home-layers-scene {
+      --home-layer-width: 7rem;
+      --home-layer-depth: 4.5rem;
+      --home-layers-x: 42%;
+    }
+
+    .home-layer-callout {
+      font-size: 0.625rem;
     }
   }
 
   @media (--motion-safe) {
+    /* Browsers without view transitions still fade the ground in. */
+    .home-gallery-backdrop {
+      transition: opacity var(--home-base) var(--home-ease);
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
+
     @supports (animation-timeline: view()) {
-      /* The layers lift apart as the card scrolls in, from a stack to the five planes. */
+      /* The layers lift apart as the card scrolls in, from a stack to the five slabs. */
       .home-layers {
         animation-name: home-layers-open;
         animation-timing-function: linear;
@@ -293,14 +1120,23 @@
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: view();
-        animation-range: entry 30% cover 50%;
+        animation-range: entry 10% cover 45%;
       }
     }
   }
 
   @media (--motion-reduce) {
     .home-palette-stage,
-    .home-layer {
+    .home-layers-scene,
+    .home-swatch,
+    .home-theme-knob,
+    .home-tokens-code .line[style]::after,
+    .home-gallery-frame img,
+    .home-gallery-classes,
+    .home-gallery-guides > span::before,
+    .home-gallery-guides > span::after,
+    .home-theme-divider,
+    .home-theme-measure::before {
       transition: none;
     }
   }

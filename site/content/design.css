@@ -29,10 +29,11 @@
     --home-text-faint: color-mix(in oklab, var(--color-text-muted) 72%, var(--color-text-subtle));
     --home-text-inverse: var(--color-text-inverse);
 
-    /* Signal: the one accent, reserved for the primary action and a live state. */
-    --home-signal: var(--color-yellow);
-    --home-signal-ink: var(--color-on-yellow);
-    --home-signal-glow: color-mix(in oklab, var(--color-yellow) 32%, transparent);
+    /* Signal: the one accent, reserved for a live state and the path a change takes. It is the logo's gold
+       (amber, hue ≈ 80), the same light as the hero silk, so the page carries one brand color. */
+    --home-signal: var(--color-amber-40);
+    --home-signal-ink: var(--color-amber-95);
+    --home-signal-glow: color-mix(in oklab, var(--color-amber-40) 32%, transparent);
     --home-ok: light-dark(oklch(0.53 0.12 150), oklch(0.76 0.12 150));
     --home-warn: light-dark(oklch(0.62 0.13 65), oklch(0.8 0.12 75));
     --home-error: light-dark(oklch(0.56 0.17 25), oklch(0.72 0.15 25));
@@ -48,16 +49,20 @@
     /* Light: a single source above. Raised surfaces catch a 1px line of it on their top edge and sit on a contact shadow. */
     --home-edge: var(--shadow-edge);
     --home-contact: var(--shadow-contact);
-    --home-shade-near: light-dark(oklch(18% 0 none / 0.04), rgb(0 0 0 / 0.4));
-    --home-shade-far: light-dark(oklch(18% 0 none / 0.07), rgb(0 0 0 / 0.55));
+    --home-shade-near: light-dark(oklch(18% 0 none / 0.04), oklch(0% 0 none / 0.4));
+    --home-shade-far: light-dark(oklch(18% 0 none / 0.07), oklch(0% 0 none / 0.55));
     --home-elevation-1: var(--home-edge), var(--home-contact);
     --home-elevation-2: var(--home-edge), var(--home-contact), 0 10px 28px -8px light-dark(oklch(18% 0 none / 0.05), oklch(0% 0 none / 0.45));
     --home-elevation-3: var(--home-edge), var(--home-contact), 0 24px 60px -28px light-dark(oklch(18% 0 none / 0.1), oklch(0% 0 none / 0.7));
-    --home-groove: var(--shadow-pressed);
+    /* A well is cut in with exactly one hairline; no inner blur thickens its top edge. */
+    --home-groove: inset 0 0 0 1px var(--color-line-contour);
     --home-pressed: var(--shadow-pressed);
+    /* The same light caught on a top edge: on a sheet or glass, and on an ink surface. */
+    --home-highlight: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.06));
+    --home-highlight-ink: rgb(255 255 255 / 0.15);
 
-    /* Shape: an 8px inset everywhere, and radii that nest concentrically: outer = inner + inset. */
-    --home-gap: 0.5rem;
+    /* Shape: a 12px inset everywhere, and radii that nest concentrically: outer = inner + inset. */
+    --home-gap: 0.75rem;
     --home-radius-chip: 0.375rem;
     --home-radius-well: 0.5rem;
     --home-radius-sheet: calc(var(--home-radius-well) + var(--home-gap));
@@ -73,22 +78,30 @@
     --home-slow: 640ms;
 
     /* Type: one scale. Display and section titles scale with the viewport; everything else is fixed. */
-    --home-display: clamp(2.625rem, 1.15rem + 5.3vw, 5.5rem);
-    --home-title: clamp(2rem, 1.45rem + 1.7vw, 3rem);
-    --home-lead: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
-    --home-card-title: 1.125rem;
-    --home-body: 0.9375rem;
+    --home-display: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
+    --home-title: clamp(2.25rem, 1.55rem + 2.1vw, 3.5rem);
+    --home-lead: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
+    --home-card-title: 1.5rem;
+    --home-body: 1rem;
     --home-caption: 0.8125rem;
     --home-label: 0.6875rem;
     --home-code: 0.8125rem;
     --home-mono: var(--font-family-mono);
 
     /* Rhythm: sections breathe the same amount, and every figure sits the same distance below its header. */
-    --home-section-space: clamp(5rem, 2.6rem + 6.4vw, 9rem);
-    --home-header-space: clamp(2.5rem, 1.9rem + 1.8vw, 3.75rem);
+    --home-section-space: clamp(6rem, 3rem + 7.5vw, 10.5rem);
+    --home-header-space: clamp(3rem, 2rem + 2.6vw, 5rem);
 
     /* Depth for the 3D stages. */
     --home-perspective: 1800px;
+
+    /*
+     * Drafting material: the site's own diagonal stripe tile (`--stripe-image`, 6% ink) as a quiet hatch
+     * for margins, reserved space and inactive surfaces, and the guide color for hairlines and marks.
+     */
+    --home-hatch: var(--stripe-image);
+    --home-hatch-size: 8px;
+    --home-mark: var(--home-rule-strong);
   }
 
   /* The page sits on the neutral ground, and so does the canvas around it, so the footer and overscroll match. */
@@ -147,12 +160,6 @@
     color: var(--home-info);
   }
 
-  .home-well {
-    border-radius: var(--home-radius-well);
-    background-color: var(--home-well);
-    box-shadow: var(--home-groove);
-  }
-
   /*
    * Han characters already sit on square bodies; display tracking that tightens Latin would make them touch.
    * Titles break only at spaces and punctuation so a word never splits, unless a line would overflow.
@@ -165,6 +172,11 @@
 
   .home-page:lang(zh) .home-section-heading {
     max-width: 16em;
+  }
+
+  /* Where a two-line title runs on as one sentence, Han text keeps the break between its lines but not the space. */
+  .home-page:lang(zh) .home-title-gap {
+    font-size: 0;
   }
 
   .home-page ::selection {

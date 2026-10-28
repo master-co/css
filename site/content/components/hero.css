@@ -1,30 +1,51 @@
 @layer components {
+  /*
+   * The opening fills the first screen: the copy sits centered over a sheet of gold silk that dips
+   * under the headline and rises toward both sides. The fixed header (60px) is cleared by the top padding.
+   * The section paints its own ground so the grain on top has something opaque to blend with.
+   */
   .home-hero {
-    padding-block: clamp(3rem, 1.6rem + 4.2vw, 6rem) var(--home-section-space);
-  }
+    display: grid;
+    align-content: center;
+    min-height: max(42rem, 100svh);
+    padding-block: clamp(8.5rem, 6rem + 6vw, 11rem) clamp(9rem, 6rem + 9vw, 14rem);
+    text-align: center;
+    background-color: var(--home-ground);
 
-  /* The class matrix sits to the right of the copy and fades out toward it and toward the stage. */
-  .home-hero-field {
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: -2;
-    width: 100%;
-    height: min(100%, 46rem);
-    color: var(--home-text);
-    mask-image:
-      radial-gradient(ellipse 48% 74% at 100% 52%, black 20%, transparent 78%),
-      linear-gradient(transparent 0, black 14%, black 56%, transparent 96%);
-    mask-composite: intersect;
+    /* Short laptop screens keep the actions in the first screen: less air above, a title sized by height too. */
+    @media (width >= 48rem) and (height < 50rem) {
+      padding-block: 7.5rem 6rem;
+    }
 
-    /* Narrow screens have no free side for it, so the copy keeps the whole width. */
-    @media (width < 48rem) {
-      display: none;
+    /* Film grain frosts the silk; over the flat ground it all but disappears. */
+    &::before {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      content: '';
     }
   }
 
-  .home-hero-copy {
+  .home-hero-field {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    /* The silk's shadow, body and sheen; the canvas reads them from these three properties. */
+    /* Light mode keeps the chroma up in the shadows too, so the silk reads as gold rather than khaki. */
+    color: light-dark(oklch(0.79 0.09 76), oklch(0.17 0.02 60));
+    caret-color: light-dark(oklch(0.87 0.115 83), oklch(0.56 0.11 74));
+    outline-color: light-dark(oklch(0.985 0.035 92), oklch(0.95 0.08 90));
+  }
+
+  .home-hero-body {
     display: grid;
-    justify-items: start;
+    justify-items: center;
   }
 
   .home-hero-pill {
@@ -37,11 +58,19 @@
     font-size: var(--home-caption);
     line-height: 1.5;
     color: var(--home-text-quiet);
-    transition: color var(--home-base) var(--home-ease), gap var(--home-base) var(--home-ease);
+    transition: color var(--home-base) var(--home-ease);
+
+    /* The arrow moves on its own; the centered pill keeps its width. */
+    & > svg {
+      transition: translate var(--home-base) var(--home-ease);
+    }
 
     &:hover {
-      gap: var(--spacing-sm);
       color: var(--home-text);
+
+      & > svg {
+        translate: 3px 0;
+      }
     }
 
     &:focus-visible {
@@ -76,34 +105,64 @@
   }
 
   .home-display {
+    max-width: 15em;
     margin: var(--spacing-xl) 0 0;
-    font-size: var(--home-display);
-    font-weight: var(--font-weight-medium);
-    line-height: 1;
-    letter-spacing: -0.05em;
+    font-size: min(var(--home-display), 5.25rem, max(10.5svh, 3.25rem));
+    font-weight: var(--font-weight-regular);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
+  /* Two set lines on wide screens; below lg the lines flow together and balance, so no word is left alone. */
   .home-display-line {
     display: block;
+
+    @media (width < 64rem) {
+      display: inline;
+    }
   }
 
-  /* The second line steps back in tone instead of color. */
-  .home-display-quiet {
-    color: var(--home-text-faint);
+  /*
+   * As the title arrives, one band of the silk's gold passes across both lines, left to right, and
+   * leaves the ink as it was. The text keeps its color without motion or before the sweep starts.
+   */
+  @media (--motion-safe) {
+    .home-display .home-display-line {
+      --home-sweep: light-dark(oklch(0.7 0.14 72), oklch(0.88 0.12 85));
+      background-image: linear-gradient(105deg, var(--home-text) 0 43%, var(--home-sweep) 49% 51%, var(--home-text) 57% 100%);
+      background-size: 260% 100%;
+      background-position: 100% 0;
+      background-clip: text;
+      color: transparent;
+      animation-name: home-rise, home-display-sweep;
+      animation-duration: 0.9s, 1.9s;
+      animation-timing-function: var(--home-ease), var(--home-ease-inout);
+      animation-fill-mode: both, both;
+    }
+
+    .home-display .home-display-line:first-child {
+      animation-delay: 0.12s, 0.9s;
+    }
+
+    .home-display .home-display-line:last-child {
+      animation-delay: 0.2s, 1.15s;
+    }
   }
 
   .home-hero-lead {
-    max-width: 36rem;
-    margin: var(--spacing-xl) 0 0;
+    max-width: 40rem;
+    margin: var(--spacing-xl) auto 0;
     font-size: var(--home-lead);
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
 
-    /* Han text breaks between any two characters; balancing keeps a word from splitting onto a short last line. */
+    /* Han text breaks only at spaces, punctuation and the dictionary's phrase hints, so no word splits across lines. */
     &:lang(zh) {
+      word-break: keep-all;
+      overflow-wrap: anywhere;
       text-wrap: balance;
     }
   }
@@ -112,490 +171,20 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-sm);
-    margin-top: var(--spacing-xl);
-  }
+    margin-top: var(--spacing-2xl);
 
-  /*
-   * The stage leans back and settles flat as it scrolls into place; inside it the window
-   * leans a few degrees toward the pointer and the preview card floats in front.
-   */
-  .home-stage {
-    position: relative;
-    margin-top: var(--spacing-3xl);
-    perspective: var(--home-perspective);
-    perspective-origin: 50% 0%;
-
-    @media (--md) {
-      margin-top: var(--spacing-4xl);
-    }
-  }
-
-  /* The shell: a recessed tray 8px around the window, the same wrap the bento sections use. */
-  .home-stage-tilt {
-    position: relative;
-    z-index: 1;
-    padding: var(--home-gap);
-    border-radius: var(--home-radius-tray);
-    background-color: color-mix(in oklab, var(--home-tray) 82%, transparent);
-    transform-style: preserve-3d;
-    transform-origin: 50% 100%;
-  }
-
-  .home-composer {
-    --home-tilt-x: 0;
-    --home-tilt-y: 0;
-    position: relative;
-    border-radius: var(--home-radius-sheet);
-    text-align: left;
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
-    transform-style: preserve-3d;
-
-    @media (--motion-safe) {
-      transform: rotateX(calc(var(--home-tilt-y) * -3deg)) rotateY(calc(var(--home-tilt-x) * 4deg));
-      transition: transform 0.9s var(--home-ease);
-    }
-  }
-
-  .home-composer-bar {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: 1px solid var(--home-hairline);
-    border-radius: var(--home-radius-sheet) var(--home-radius-sheet) 0 0;
-    background-color: color-mix(in oklab, var(--home-ground) 72%, var(--home-sheet));
-  }
-
-  /* The source column clips its own corner so the window itself can keep its 3D children unclipped. */
-  .home-composer-source {
-    position: relative;
-
-    @media (--md) {
-      overflow: hidden;
-      border-bottom-left-radius: var(--home-radius-sheet);
-    }
-  }
-
-  .home-composer-tab {
-    padding: 0.125rem var(--spacing-xs);
-    border-radius: var(--home-radius-chip);
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    color: var(--home-text);
-    background-color: var(--home-well);
-  }
-
-  /* Compose → Check → Fix: the current step reads in full strength. */
-  .home-composer-steps {
-    display: none;
-    gap: var(--spacing-3xs);
-    margin: 0 auto;
-    padding: 0;
-    list-style: none;
-    font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--home-text-faint);
-
-    @media (--sm) {
-      display: flex;
-    }
-
-    & li {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-3xs);
-      padding: 0.125rem var(--spacing-xs);
-      border-radius: var(--radius-pill);
-      transition: color var(--home-base) var(--home-ease);
-    }
-
-    & li + li::before {
-      width: 1rem;
-      height: 1px;
-      margin-right: var(--spacing-3xs);
-      background-color: var(--home-rule);
-      content: '';
-    }
-
-    .home-composer[data-phase='typing'] & li[data-step='typing'],
-    .home-composer[data-phase='problem'] & li[data-step='problem'],
-    .home-composer[data-phase='done'] & li[data-step='done'] {
-      color: var(--home-text);
-    }
-  }
-
-  .home-composer-status {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-3xs);
-    margin-left: auto;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    color: var(--home-text-quiet);
-    transition: color var(--home-base) var(--home-ease);
-
-    /* With the step list between them, the steps take the free space instead. */
-    .home-composer-steps + & {
-      @media (--sm) {
-        margin-left: 0;
-      }
-    }
-  }
-
-  .home-composer-status-warning {
-    color: var(--home-warn);
-  }
-
-  .home-composer-status-error {
-    color: var(--home-error);
-  }
-
-  .home-composer-status-ok {
-    color: var(--home-ok);
-  }
-
-  .home-composer-panel-label {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--spacing-3xs) var(--spacing-md);
-    margin: 0 0 var(--spacing-xs);
-    font-family: var(--home-mono);
-    font-size: var(--home-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--home-text-faint);
-  }
-
-  .home-composer-hint {
-    letter-spacing: 0.02em;
-    text-transform: none;
-  }
-
-  /* Only pointers can point; touch readers see the rules arrive on their own. */
-  .home-composer-hint-pointer {
-    @media (hover: none) {
-      display: none;
-    }
-  }
-
-  .home-composer-markup {
-    flex: auto;
-    min-height: 11rem;
-    margin: 0;
-    padding: var(--spacing-lg);
-    font-family: var(--home-mono);
-    font-size: 0.8125rem;
-    line-height: 1.75;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    color: var(--color-code-text);
-    background-color: var(--color-code-surface);
-    box-shadow: var(--home-groove);
-  }
-
-  .home-composer-muted {
-    color: var(--home-code-tag);
-  }
-
-  .home-composer-classes {
-    color: var(--home-code-string);
-    text-decoration: underline wavy transparent;
-    text-underline-offset: 5px;
-    transition: text-decoration-color var(--home-base) var(--home-ease);
-  }
-
-  .home-composer-classes-problem {
-    text-decoration-color: var(--color-code-warning);
-  }
-
-  .home-composer-classes-fixed {
-    border-radius: var(--radius-sm);
-    /* Longhands: a route variable inside the shorthand would make every preset keyframe ship. */
-    animation-name: home-composer-fixed;
-    animation-duration: 1.2s;
-    animation-timing-function: var(--home-ease);
-  }
-
-  .home-composer-token-typing {
-    color: var(--home-text);
-  }
-
-  /* Editing: the reader takes over the class list; the page's runtime renders what they type. */
-  .home-composer-edit {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-3xs);
-    height: 1.75rem;
-    padding-inline: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-pill);
-    font-size: 0.75rem;
-    font-weight: var(--font-weight-medium);
-    color: var(--home-text-quiet);
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
-    cursor: pointer;
-    transition: color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
-
-    &:hover {
-      color: var(--home-text);
-      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
-    }
-
-    &:active {
-      box-shadow: 0 0 0 1px var(--home-rule), var(--home-pressed);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
-    }
-  }
-
-  /* Narrow sources have no free corner beside the first line, so the code starts below the button. */
-  .home-composer-source:has(.home-composer-edit) .home-composer-markup {
-    @media (width < 52.125rem) {
-      padding-top: 3.25rem;
-    }
-  }
-
-  /* The editable class list reads as a field: a soft signal wash while it has the caret. */
-  .home-composer-editable {
-    margin-inline: -0.125rem;
-    padding-inline: 0.125rem;
-    border-radius: var(--radius-sm);
-    outline: none;
-    color: var(--home-code-string);
-    caret-color: var(--home-signal);
-    box-shadow: 0 0 0 1px var(--home-rule);
-    transition: background-color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
-
-    &:focus {
-      background-color: color-mix(in oklab, var(--home-signal) 10%, transparent);
-      box-shadow: 0 0 0 1px color-mix(in oklab, var(--home-signal) 70%, transparent);
-    }
-  }
-
-  /* The live marker takes the place of the step list while editing. */
-  .home-composer-live {
-    display: none;
-    margin-inline: auto;
-    font-family: var(--home-mono);
-    font-size: var(--home-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-
-    @media (--sm) {
-      display: inline-flex;
-    }
-  }
-
-  /* Whatever the reader types stays inside the preview, even fixed positioning. */
-  .home-composer[data-editing] .home-composer-preview {
-    contain: layout paint;
-  }
-
-  .home-composer-at-rule {
-    color: var(--color-code-keyword);
-  }
-
-  .home-composer-rule.home-composer-rule-missing {
-    color: var(--color-code-warning);
-  }
-
-  .home-composer-rule-note {
-    color: var(--color-code-comment);
-  }
-
-  /* Pointing at a class marks it and lifts its rule in the generated CSS below. */
-  .home-composer-token {
-    border-radius: var(--radius-sm);
-    transition: background-color var(--home-quick) var(--home-ease), color var(--home-quick) var(--home-ease);
-  }
-
-  .home-composer-token-inspected {
-    background-color: var(--color-code-active);
-  }
-
-  .home-composer-caret {
-    display: inline-block;
-    width: 2px;
-    height: 1.15em;
-    margin-left: 1px;
-    vertical-align: text-bottom;
-    background-color: var(--home-signal);
-    animation: home-manifest-suggestions-caret-blink 1s steps(1, end) infinite;
-  }
-
-  .home-composer-css {
-    min-height: 9.25rem;
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--home-hairline);
-    background-color: var(--color-code-surface);
-  }
-
-  .home-composer-rules {
-    display: grid;
-    gap: var(--spacing-3xs);
-  }
-
-  .home-composer-rule {
-    display: block;
-    overflow: hidden;
-    margin-inline: calc(var(--spacing-3xs) * -1);
-    padding: 0 var(--spacing-3xs);
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    line-height: 1.75;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--color-code-punctuation);
-    animation-name: home-composer-rule;
-    animation-duration: 0.35s;
-    animation-timing-function: var(--home-ease);
-    animation-fill-mode: both;
-  }
-
-  .home-composer-rule-latest {
-    background-color: var(--color-code-active);
-  }
-
-  .home-composer-selector {
-    color: var(--home-code-selector);
-  }
-
-  .home-composer-property {
-    color: var(--home-code-property);
-  }
-
-  .home-composer-value {
-    color: var(--home-code-string);
-  }
-
-  .home-composer-problems {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    overflow: hidden;
-    max-height: 0;
-    padding: 0 var(--spacing-lg);
-    font-size: var(--text-sm);
-    background-color: var(--home-ground);
-    transition: max-height var(--home-slow) var(--home-ease), padding var(--home-slow) var(--home-ease);
-  }
-
-  .home-composer-problems-open {
-    max-height: 5rem;
-    padding-block: var(--spacing-sm);
-    border-top: 1px solid var(--home-hairline);
-  }
-
-  .home-composer-preview {
-    position: relative;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    min-height: 22rem;
-    padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
-    border-top: 1px solid var(--home-hairline);
-    border-radius: 0 0 var(--home-radius-sheet) var(--home-radius-sheet);
-    background-color: var(--home-well);
-    background-image: radial-gradient(var(--home-rule) 1px, transparent 1px);
-    background-size: 16px 16px;
-    box-shadow: var(--home-groove);
-    transform-style: preserve-3d;
-
-    @media (--md) {
-      border-top: 0;
-      border-left: 1px solid var(--home-hairline);
-      border-radius: 0 0 var(--home-radius-sheet) 0;
-    }
-
-    & > .home-composer-panel-label {
-      position: absolute;
-      top: var(--spacing-md);
-      left: var(--spacing-lg);
-    }
-
-    & button {
-      transition:
-        background-color var(--home-slow) var(--home-ease),
-        color var(--home-slow) var(--home-ease),
-        padding var(--home-slow) var(--home-ease),
-        border-radius var(--home-slow) var(--home-ease),
-        box-shadow var(--home-slow) var(--home-ease);
-    }
-  }
-
-  /* The preview card floats in front of the window. */
-  .home-composer-card {
-    display: grid;
-    gap: var(--spacing-sm);
-    width: 100%;
-    max-width: var(--container-2xs);
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-3xl);
-    outline: 1px solid var(--home-hairline);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-elevation-2);
-
-    @media (--motion-safe) {
-      @media (--md) {
-        transform: translateZ(48px);
-      }
-    }
-  }
-
-  @media (--motion-safe) {
-    @supports (animation-timeline: view()) {
-      .home-stage-tilt {
-        animation-name: home-stage-settle;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 42%;
-      }
-    }
-  }
-
-  @media (--motion-reduce) {
-    .home-composer-caret,
-    .home-composer-rule,
-    .home-composer-classes-fixed {
-      animation: none;
+    /* Stacked on phones, both take one width. */
+    @media (width < 40rem) {
+      flex-direction: column;
+      align-items: stretch;
+      width: min(100%, 21rem);
     }
   }
 }
 
-@keyframes home-stage-settle {
-  from {
-    opacity: 0.6;
-    transform: rotateX(20deg) translateY(2rem) scale(0.94);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes home-composer-rule {
-  from {
-    opacity: 0;
-    translate: 0 8px;
-  }
-}
-
-@keyframes home-composer-fixed {
-  from {
-    background-color: color-mix(in oklab, var(--home-ok) 18%, transparent);
-  }
+@keyframes home-display-sweep {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
 }

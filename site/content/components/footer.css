@@ -1,0 +1,288 @@
+@layer components {
+  /*
+   * The homepage footer, drawn like a spec sheet: the rails and rulers carry on from the
+   * sections, the brand and link groups sit in hairline cells, a quiet base line follows, and a hatched
+   * wordmark rests on the bottom edge.
+   */
+  .home-footer {
+    --home-gutter: 1.25rem;
+    --home-column: min(100%, 80rem);
+    --home-rail: calc((100% - var(--home-column)) / 2 + var(--home-gutter) - 1.25rem);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--home-ground);
+    /* The page's guide closes the last section; the sheet's own top rule lies on it across the column. */
+    box-shadow: inset 0 1px 0 var(--home-guide);
+
+    @media (--sm) {
+      --home-gutter: 2.5rem;
+    }
+  }
+
+  /* Rails 20px outside the content edges and rulers beyond them, starting at the footer's top, as in each section above. */
+  .home-footer-drafting {
+    display: none;
+
+    @media (--md) {
+      --home-tick: color-mix(in oklab, var(--home-text) 9%, var(--home-ground));
+      --home-tick-major: color-mix(in oklab, var(--home-text) 20%, var(--home-ground));
+      position: absolute;
+      inset: 0 calc(var(--home-rail) - 0.75rem);
+      z-index: -1;
+      display: block;
+      background:
+        linear-gradient(var(--home-tick-major) 0 1px, transparent 1px) left 0 top 0 / 0.75rem 8rem repeat-y,
+        linear-gradient(var(--home-tick-major) 0 1px, transparent 1px) right 0 top 0 / 0.75rem 8rem repeat-y,
+        linear-gradient(var(--home-tick) 0 1px, transparent 1px) left 0.375rem top 0 / 0.375rem 1rem repeat-y,
+        linear-gradient(var(--home-tick) 0 1px, transparent 1px) right 0.375rem top 0 / 0.375rem 1rem repeat-y,
+        linear-gradient(var(--home-guide), var(--home-guide)) left 0.75rem top 0 / 1px 100% no-repeat,
+        linear-gradient(var(--home-guide), var(--home-guide)) right 0.75rem top 0 / 1px 100% no-repeat;
+      pointer-events: none;
+    }
+  }
+
+  .home-footer-wrap {
+    position: relative;
+    max-width: 80rem;
+  }
+
+  /* One hairline sheet of cells: the brand, then a cell per link group. */
+  .home-footer-sheet {
+    display: grid;
+    border-block: 1px solid var(--home-rule);
+
+    @media (--md) {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+  }
+
+  .home-footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-2xl) 0;
+
+    @media (--md) {
+      padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-2xl) 0;
+    }
+  }
+
+  .home-footer-logo {
+    display: inline-flex;
+    border-radius: var(--radius-sm);
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 4px;
+    }
+  }
+
+  .home-footer-tagline {
+    max-width: 22em;
+    margin: var(--spacing-lg) 0 0;
+    font-size: var(--home-body);
+    line-height: 1.6;
+    color: var(--home-text-quiet);
+    text-wrap: pretty;
+  }
+
+  /* Icons sit in a row of hairline squares, like a tool palette. */
+  .home-footer-social {
+    display: flex;
+    margin: auto 0 0;
+    padding: var(--spacing-xl) 0 0;
+    list-style: none;
+
+    & > li + li {
+      margin-left: -1px;
+    }
+  }
+
+  .home-footer-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--home-text-quiet);
+    box-shadow: inset 0 0 0 1px var(--home-rule);
+    transition: color var(--home-quick) var(--home-ease), background-color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      z-index: 1;
+      color: var(--home-text);
+      background-color: var(--home-sheet);
+      box-shadow: inset 0 0 0 1px var(--home-rule-strong);
+    }
+
+    &:focus-visible {
+      z-index: 1;
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-footer-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--home-rule);
+
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (--md) {
+      border-top: 0;
+      border-left: 1px solid var(--home-rule);
+    }
+  }
+
+  .home-footer-group {
+    padding: var(--spacing-2xl) var(--spacing-xl);
+
+    @media (width >= 40rem) and (width < 64rem) {
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+
+    & + & {
+      border-left: 1px solid var(--home-rule);
+    }
+
+    /* On phones the groups stack, each under its own hairline. */
+    @media (width < 40rem) {
+      padding: var(--spacing-xl) 0;
+
+      & + & {
+        border-left: 0;
+        border-top: 1px solid var(--home-rule);
+      }
+    }
+  }
+
+  .home-footer-heading {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin: 0;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--home-text-body);
+  }
+
+  .home-footer-index {
+    color: var(--home-text-faint);
+  }
+
+  .home-footer-links {
+    display: grid;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .home-footer-link {
+    font-size: 0.875rem;
+    color: var(--home-text-quiet);
+    text-decoration: none;
+    transition: color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      color: var(--home-text);
+    }
+
+    &:focus-visible {
+      border-radius: var(--radius-sm);
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-footer-base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs) var(--spacing-lg);
+    padding-block: var(--spacing-lg);
+    font-size: 0.8125rem;
+    color: var(--home-text-faint);
+
+    & .home-footer-link {
+      font-size: inherit;
+      color: var(--home-text-faint);
+
+      &:hover {
+        color: var(--home-text);
+      }
+    }
+  }
+
+  /* On phones the copyright takes its own row, so the legal links stay together on the next. */
+  .home-footer-copyright {
+    @media (width < 40rem) {
+      flex-basis: 100%;
+    }
+  }
+
+  .home-footer-preferences {
+    display: flex;
+    gap: var(--spacing-lg);
+
+    /* Its own row on phones, under the legal links; at the far end of the line from 40rem. */
+    @media (width < 40rem) {
+      flex-basis: 100%;
+    }
+
+    @media (width >= 40rem) {
+      margin-left: auto;
+    }
+  }
+
+  /* The native select covers the label, so the page reads as text and the control stays native. */
+  .home-footer-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--home-text-quiet);
+
+    &:hover {
+      color: var(--home-text);
+    }
+
+    &:has(select:focus-visible) {
+      border-radius: var(--radius-sm);
+      outline: 2px solid var(--home-ink);
+      outline-offset: 3px;
+    }
+  }
+
+  /*
+   * The wordmark, set large across the content column and cut by the page's bottom edge: a signature,
+   * not a link. Its glyphs are engraved with 1px diagonal hatching over a faint tint and fade out toward the
+   * edge, like a drafted title block.
+   */
+  .home-footer-mark {
+    --home-footer-engrave: color-mix(in oklab, var(--home-text) 15%, transparent);
+    margin: clamp(1rem, 0.5rem + 2vw, 2.5rem) auto 0;
+    font-size: min(15.5rem, 17.6vw);
+    font-weight: var(--font-weight-medium);
+    line-height: 0.74;
+    letter-spacing: -0.055em;
+    text-align: center;
+    white-space: nowrap;
+    color: transparent;
+    background-image:
+      linear-gradient(135deg, var(--home-footer-engrave) 9%, transparent 0 50%, var(--home-footer-engrave) 0 59%, transparent 0),
+      linear-gradient(color-mix(in oklab, var(--home-text) 3%, transparent) 0 0);
+    background-size: var(--home-hatch-size) var(--home-hatch-size), auto;
+    background-clip: text;
+    mask-image: linear-gradient(to bottom, black 35%, transparent);
+    user-select: none;
+  }
+}
