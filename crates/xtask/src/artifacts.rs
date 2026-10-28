@@ -78,6 +78,8 @@ pub(crate) fn copy_fresh(source: &Path, output: &Path) -> Result<(), String> {
 
 pub(crate) fn build_native(release: bool) -> Result<(), String> {
     let root = workspace_root();
+    // Local builds use the optimized, incremental `native-dev` profile; see Cargo.toml.
+    let profile = if release { "release" } else { "native-dev" };
     let mut command = Command::new("cargo");
     command.current_dir(&root).args([
         "build",
@@ -85,13 +87,11 @@ pub(crate) fn build_native(release: bool) -> Result<(), String> {
         "mastercss-binding-native",
         "--package",
         "mastercss-cli",
+        "--profile",
+        profile,
     ]);
-    if release {
-        command.arg("--release");
-    }
     run_command(&mut command, "native binding build")?;
 
-    let profile = if release { "release" } else { "debug" };
     let candidates = if cfg!(target_os = "macos") {
         vec![root.join(format!(
             "target/{profile}/libmastercss_binding_native.dylib"

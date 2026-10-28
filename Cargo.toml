@@ -71,6 +71,19 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 
+# The native binding and CLI that local package builds load (`cargo xtask
+# build-native` without `--release`). Package tests, `prepare-app` and the site dev
+# server spend most of their time in it, and at opt-level 0 they ran about five times
+# slower. Optimize like `release`, but skip LTO and keep many codegen units and
+# incremental compilation so an edited crate rebuilds quickly. Keep symbols for
+# native profilers.
+[profile.native-dev]
+inherits = "release"
+lto = false
+codegen-units = 16
+incremental = true
+strip = "none"
+
 [profile.release.package.mastercss-binding-wasm-compiler]
 opt-level = "s"
 
