@@ -24,7 +24,7 @@
     /* Code behind a floating pane: one neutral gray, at least 3:1 on the window in either scheme. */
     --editor-dim: color-mix(in oklab, var(--home-text-faint) 84%, var(--home-sheet));
     display: grid;
-    gap: clamp(2rem, 1rem + 2.5vw, 3.5rem);
+    gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
     container: home-editor-stage / inline-size;
   }
 
@@ -54,8 +54,8 @@
     display: flex;
     align-items: flex-end;
     gap: var(--spacing-md);
-    height: 2.75rem;
-    padding-inline: 1rem var(--spacing-md);
+    height: 3rem;
+    padding-inline: clamp(0.875rem, 2cqw, 1.5rem);
     background-color: color-mix(in oklab, var(--home-ground) 62%, var(--home-sheet));
     /* Light from above: the bar is a shade brighter at its top edge. */
     background-image: linear-gradient(color-mix(in oklab, var(--home-sheet) 55%, transparent), transparent 80%);
@@ -73,25 +73,35 @@
       width: 0.625rem;
       height: 0.625rem;
       border-radius: var(--radius-pill);
-      background-color: var(--home-rule);
+      background: linear-gradient(var(--home-rule), var(--home-rule-strong));
+      box-shadow: inset 0 1px 1px var(--home-highlight), 0 1px 0 var(--home-highlight);
     }
   }
 
   .home-editor-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-end;
     overflow: hidden;
     min-width: 0;
-    height: 2.125rem;
-    padding-inline: 0.875rem;
+    height: 2.25rem;
+    padding-inline: var(--spacing-md);
     border-radius: 0.5rem 0.5rem 0 0;
     font-family: var(--home-mono);
     font-size: 0.75rem;
-    line-height: 2.125rem;
+    line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--home-text);
     background-color: var(--home-sheet);
     /* Top and sides only: the open tab continues into the code below. */
     box-shadow: inset 1px 0 0 var(--home-hairline), inset -1px 0 0 var(--home-hairline), inset 0 1px 0 var(--home-hairline);
+
+    & svg {
+      flex: none;
+      color: var(--home-text-faint);
+    }
   }
 
   .home-editor-status {
@@ -103,13 +113,17 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     color: var(--home-text-faint);
+
+    @container (width < 26rem) {
+      display: none;
+    }
   }
 
   .home-editor-body {
     --editor-ch: 1ch;
-    --editor-row: 1.375rem;
+    --editor-row: 1.5rem;
     --editor-css-line: 1.0625rem;
-    --editor-pad-y: 1.25rem;
+    --editor-pad-y: 1.5rem;
     --editor-pad-x: 1rem;
     --editor-fade: 2.5rem;
     --editor-gutter: calc(var(--editor-ch) * 2 + 2.25rem);
@@ -130,7 +144,7 @@
     @container (width >= 64rem) {
       --editor-row: 1.5rem;
       --editor-css-line: 1.125rem;
-      --editor-pad-y: 1.5rem;
+      --editor-pad-y: 1.75rem;
       --editor-pad-x: 1.25rem;
       --editor-gutter: calc(var(--editor-ch) * 2 + 2.5rem);
       font-size: 0.875rem;
@@ -142,13 +156,13 @@
     }
 
     @container (width < 40rem) {
-      --editor-row: 1.25rem;
+      --editor-row: 1.375rem;
       --editor-css-line: 1rem;
       --editor-pad-y: 1rem;
       --editor-pad-x: 0.75rem;
       --editor-fade: 4.5rem;
       --editor-gutter: calc(var(--editor-ch) * 2 + 1.25rem);
-      font-size: 0.75rem;
+      font-size: 0.78125rem;
     }
   }
 
@@ -156,6 +170,7 @@
     flex: none;
     width: var(--editor-gutter);
     padding: var(--editor-pad-y) 0.75rem 0 0;
+    box-shadow: 1px 0 0 color-mix(in oklab, var(--home-hairline) 65%, transparent);
     text-align: right;
     font-variant-numeric: tabular-nums;
     color: color-mix(in oklab, var(--home-text-faint) 70%, transparent);
@@ -169,6 +184,71 @@
 
     & > [data-current] {
       color: var(--home-text);
+    }
+  }
+
+  .home-editor-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-height: 2.75rem;
+    padding: 0.25rem clamp(0.875rem, 2cqw, 1.5rem);
+    box-shadow: inset 0 1px 0 var(--home-hairline);
+    font-size: var(--home-caption);
+    color: var(--home-text-quiet);
+  }
+
+  .home-editor-file-type,
+  .home-editor-scene,
+  .home-editor-playback {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .home-editor-file-type {
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    letter-spacing: 0.04em;
+  }
+
+  .home-editor-scene {
+    gap: var(--spacing-sm);
+    padding-left: var(--spacing-md);
+    border-left: 1px solid var(--home-hairline);
+
+    & > span {
+      font-family: var(--home-mono);
+      font-size: var(--home-label);
+      font-variant-numeric: tabular-nums;
+      color: var(--home-text-faint);
+    }
+
+    @container (width < 40rem) {
+      display: none;
+    }
+  }
+
+  .home-editor-playback {
+    justify-content: center;
+    min-height: 2.25rem;
+    margin-left: auto;
+    padding-inline: var(--spacing-sm);
+    border: 0;
+    border-radius: var(--home-radius-chip);
+    font: inherit;
+    color: var(--home-text-body);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      background-color: var(--home-well);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
     }
   }
 
@@ -764,13 +844,13 @@
   }
 
   /*
-   * Captions: a title and one line per feature under the window. The chosen title reads in full
-   * strength and its hairline fills toward the next while the tour runs.
+   * Open feature columns: an index and illustration above each title keep long labels aligned.
+   * The active hairline fills in the signal only while the tour runs.
    */
   .home-editor-chapters {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2rem clamp(1.5rem, 0.5rem + 2vw, 2.5rem);
+    gap: var(--spacing-lg) clamp(1.5rem, 0.5rem + 2vw, 2.5rem);
 
     /* Two by two until all four titles fit on one line each. */
     @container home-editor-stage (width < 64rem) {
@@ -783,19 +863,24 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: var(--spacing-sm);
     /* Padding the hairline does not reach, so the focus ring clears the text. */
     margin-inline: -0.75rem;
-    padding: 1.5rem 0.75rem 0.75rem;
+    padding: 1rem 0.75rem;
     border: 0;
+    border-radius: var(--home-radius-well);
     text-align: left;
     font: inherit;
     color: inherit;
     background: none;
     cursor: pointer;
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    &:hover {
+      background-color: color-mix(in oklab, var(--home-text) 3%, transparent);
+    }
 
     &:focus-visible {
-      border-radius: var(--radius-sm);
       outline: 2px solid var(--home-ink);
       outline-offset: 2px;
     }
@@ -805,7 +890,8 @@
     position: absolute;
     inset: 0 0.75rem auto;
     overflow: hidden;
-    height: 1px;
+    height: 2px;
+    border-radius: var(--radius-pill);
     background-color: var(--home-rule);
   }
 
@@ -818,31 +904,53 @@
   }
 
   .home-editor-chapter[aria-pressed='true'] .home-editor-chapter-progress {
+    scale: 1 1;
+  }
+
+  .home-editor-chapter[aria-pressed='true'][data-touring] .home-editor-chapter-progress {
+    background-color: var(--home-signal);
     scale: var(--editor-progress, 0) 1;
   }
 
   .home-editor-chapter-title {
-    font-size: var(--home-card-title);
-    font-weight: var(--font-weight-regular);
-    line-height: 1.25;
-    letter-spacing: -0.025em;
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
     color: var(--home-text-quiet);
     text-wrap: balance;
     transition: color var(--home-base) var(--home-ease);
   }
 
-  .home-editor-chapter-heading {
+  .home-editor-chapter-meta {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: var(--spacing-md);
     width: 100%;
+    min-height: 3.5rem;
   }
 
-  .home-editor-chapter-heading > .home-illustration { --home-illustration-size: 4rem; }
+  .home-editor-chapter-index {
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+  }
+
+  .home-editor-chapter-meta .home-illustration {
+    --home-illustration-size: 3.5rem;
+    margin-block: 0;
+    opacity: 0.7;
+    transition: opacity var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-chapter-short-title {
+    display: none;
+  }
 
   .home-editor-chapter-body {
-    max-width: 40ch;
+    max-width: 32ch;
     font-size: var(--home-body);
     line-height: 1.6;
     color: var(--home-text-quiet);
@@ -853,34 +961,55 @@
     color: var(--home-text);
   }
 
-  /* On a phone the captions become four hairlines, and the chosen title reads below them. */
+  .home-editor-chapter:is([aria-pressed='true'], :hover) .home-illustration {
+    opacity: 1;
+  }
+
+  /* Named steps remain visible on phones; the selected feature gets its full caption below. */
   .home-editor-caption {
     display: none;
   }
 
   @container home-editor-stage (width < 40rem) {
-    .home-editor-chapter-heading { display: none; }
     .home-editor-chapters {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--spacing-xs);
     }
 
     .home-editor-chapter {
-      height: 1.75rem;
+      align-items: center;
+      gap: var(--spacing-xs);
+      min-height: 4.75rem;
       margin-inline: 0;
-      padding: 0;
+      padding: var(--spacing-md) 0.125rem var(--spacing-sm);
     }
 
     .home-editor-chapter-track {
-      inset: 50% 0 auto;
+      inset: 0;
+      bottom: auto;
     }
 
-    /* Like a row of stories: the features already shown stay filled. */
-    .home-editor-chapter[data-done] .home-editor-chapter-progress {
-      scale: 1 1;
+    .home-editor-chapter-meta {
+      justify-content: center;
+      min-height: auto;
     }
 
-    .home-editor-chapter-title,
+    .home-editor-chapter-meta .home-illustration,
+    .home-editor-chapter-full-title {
+      display: none;
+    }
+
+    .home-editor-chapter-short-title {
+      display: inline;
+    }
+
+    .home-editor-chapter-title {
+      font-size: 0.75rem;
+      line-height: 1.5;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
     .home-editor-chapter-body {
       position: absolute;
       overflow: hidden;
@@ -892,16 +1021,16 @@
 
     .home-editor-caption {
       display: grid;
-      margin-top: -1rem;
+      margin-top: -0.5rem;
     }
 
     .home-editor-caption-item {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas: 'title icon' 'body body';
+      grid-template-areas: 'title icon' 'body icon';
       align-items: center;
-      align-content: start;
-      column-gap: var(--spacing-md);
+      align-content: center;
+      gap: var(--spacing-sm) var(--spacing-md);
       grid-area: 1 / 1;
       visibility: hidden;
       opacity: 0;
@@ -917,21 +1046,26 @@
     .home-editor-caption-title {
       grid-area: title;
       margin: 0;
-      font-size: var(--home-card-title);
-      line-height: 1.25;
-      letter-spacing: -0.025em;
+      font-size: 1.25rem;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+      letter-spacing: -0.02em;
       color: var(--home-text);
     }
 
     .home-editor-caption-body {
       grid-area: body;
-      margin: 0.75rem 0 0;
+      margin: 0;
       font-size: var(--home-body);
       line-height: 1.6;
       color: var(--home-text-quiet);
     }
 
-    .home-editor-caption-item > .home-illustration { grid-area: icon; }
+    .home-editor-caption-item .home-illustration {
+      --home-illustration-size: 3.5rem;
+      grid-area: icon;
+      margin-block: 0;
+    }
   }
 
   @media (--motion-reduce) {
@@ -946,6 +1080,10 @@
     .home-editor-suggest,
     .home-editor-suggest-list,
     .home-editor-pointer,
+    .home-editor-playback,
+    .home-editor-chapter,
+    .home-editor-chapter-title,
+    .home-editor-chapter-meta .home-illustration,
     .home-editor-caption-item {
       transition: none;
     }

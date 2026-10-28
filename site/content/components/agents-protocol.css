@@ -9,7 +9,7 @@
    * Gold appears only while a call is in flight.
    */
   .home-mcp {
-    --home-mcp-gap: clamp(3rem, 1.5rem + 3.5vw, 5.5rem);
+    --home-mcp-gap: clamp(2.5rem, 1.25rem + 3vw, 4rem);
     container: home-mcp / inline-size;
     position: relative;
     display: grid;
@@ -20,7 +20,7 @@
 
   .home-mcp-stage {
     /* A wide, low ellipse: the ring spans most of the column and the tilt keeps it flat. */
-    --home-orbit-radius: min(28rem, calc(50cqw - 4rem));
+    --home-orbit-radius: min(26rem, calc(50cqw - 4rem));
     --home-orbit-tilt: 73deg;
     --home-mcp-logo: 3.25rem;
     --home-mcp-core: 4.75rem;
@@ -40,7 +40,7 @@
     display: grid;
     place-items: center;
     width: 100%;
-    height: clamp(17rem, 26cqw + 7rem, 28rem);
+    height: clamp(16rem, 22cqw + 5rem, 24rem);
     /* A longer lens than the page's other stages, so the near side of a wide ring does not swell. */
     perspective: calc(var(--home-perspective) * 1.5);
     perspective-origin: 50% 10%;
@@ -52,7 +52,7 @@
       --home-mcp-logo: 2.375rem;
       --home-mcp-core: 3.5rem;
       --home-mcp-spoke-start: 2.25rem;
-      height: 16rem;
+      height: 15rem;
     }
   }
 

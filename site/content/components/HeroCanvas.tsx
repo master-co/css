@@ -1,137 +1,148 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
+import { heroClothSource, heroCompositeSource, heroCopySource, heroPlaneScale, heroVertexSource } from './hero-shaders'
+import { rasterizeHeroTitle } from './hero-title-mask'
 
-/** The silk renders at this share of the device's pixel density: its folds are soft, and the grain on top is CSS at full density. */
 const renderScale = 0.6
-/** The shader's plane spans this many units of the canvas height, which sets how many folds fit across it. */
-const planeScale = 5.5
-/** The silk rises out of the ground over this long when the page opens. */
 const introDuration = 2400
+const materialDuration = 640
+/** Keep large retina surfaces within a measured fill budget; glyph masks retain up to 2x density. */
+const compositePixelBudget = 3_000_000
 
-const vertexSource = `
-attribute vec2 position;
-varying vec2 vUv;
-void main() {
-  vUv = position * 0.5 + 0.5;
-  gl_Position = vec4(position, 0.0, 1.0);
-}`
-
-const fragmentSource = `
-precision highp float;
-varying vec2 vUv;
-uniform vec2 resolution;
-uniform float time;
-uniform float intro;
-uniform float rise;
-uniform vec3 pointer;
-uniform vec3 ring;
-uniform vec3 shadow;
-uniform vec3 body;
-uniform vec3 sheen;
-
-// The cloth's height: three folds flowing over a slowly warped plane, the pointer's lift and a click's ring.
-float cloth(vec2 p) {
-  vec2 q = p + 0.32 * vec2(sin(p.y * 1.6 + time * 0.23), sin(p.x * 1.2 - time * 0.19));
-  float h = sin(q.x * 1.5 + q.y * 0.8 + time * 0.31) * 0.55;
-  h += sin(q.x * 0.6 - q.y * 1.7 + time * 0.21 + sin(q.x * 0.45 + time * 0.12) * 1.6) * 0.38;
-  h += sin((q.x + q.y) * 2.6 - time * 0.42) * 0.1;
-  vec2 toPointer = p - pointer.xy;
-  h += pointer.z * 0.45 * exp(-dot(toPointer, toPointer) * 1.4);
-  if (ring.z >= 0.0) {
-    float front = length(p - ring.xy) - ring.z * 2.2;
-    h += 0.3 * exp(-front * front * 5.0) * max(0.0, 1.0 - ring.z / 2.4);
-  }
-  return h;
-}
-
-void main() {
-  float aspect = resolution.x / resolution.y;
-  vec2 p = (vUv - 0.5) * vec2(aspect, 1.0) * ${planeScale.toFixed(1)};
-  float e = 0.012;
-  float h = cloth(p);
-  vec2 slope = vec2(cloth(p + vec2(e, 0.0)) - h, cloth(p + vec2(0.0, e)) - h) / e;
-  vec3 normal = normalize(vec3(-slope * 0.4, 1.0));
-  // A low light from the upper left; the pointer pulls it across the cloth.
-  vec3 light = normalize(vec3(-0.5 + pointer.z * 0.25 * pointer.x / aspect, 0.62, 0.6));
-  float lit = max(dot(normal, light), 0.0);
-  // Satin: a broad sheen over each fold and a narrow glint along its ridge.
-  float facing = max(dot(normal, normalize(light + vec3(0.0, 0.0, 1.0))), 0.0);
-  float gloss = pow(facing, 18.0) + pow(facing, 90.0) * 0.6;
-  vec3 color = mix(shadow, body, smoothstep(0.05, 0.9, lit));
-  color = mix(color, sheen, clamp(gloss + pow(lit, 10.0) * 0.3, 0.0, 1.0));
-  // The cloth's upper edge dips under the copy and rises toward both sides; the folds ripple it.
-  float x = vUv.x - 0.5;
-  float edge = rise + 0.95 * x * x + h * 0.05;
-  float alpha = (1.0 - smoothstep(edge - 0.24, edge + 0.02, vUv.y)) * intro;
-  // A soft clearing behind the copy keeps the silk out of the text, and the silk settles back into
-  // the ground before the section's bottom rule.
-  alpha *= smoothstep(0.3, 1.0, length((vUv - vec2(0.5, 0.56)) / vec2(0.46, 0.34)));
-  alpha *= smoothstep(0.0, 0.16, vUv.y);
-  gl_FragColor = vec4(color * alpha, alpha);
-}`
-
-/**
- * A sheet of gold silk flowing under the copy. A fragment shader folds the cloth, lights it from
- * the upper left and lets its edge dip under the headline and rise toward both sides, clearing a
- * soft space behind the text; a CSS grain on top frosts it. The pointer lifts the cloth and drags the light, a click sends a ring through
- * it, and scrolling the hero away quickens the flow. Without WebGL the section keeps its static glow.
- */
+/** One shared scene for the silk and its reflection through the title; the DOM owns all layout. */
 export default function HeroCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [generation, setGeneration] = useState(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const gl = canvas?.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true })
+    const host = canvas?.closest<HTMLElement>('[data-glyph-host]')
+    const title = host?.querySelector<HTMLElement>('[data-glass-title]')
+    if (!canvas || !host || !title) return
+    canvas.hidden = false
+    let gl: WebGLRenderingContext | null = null
+    try {
+      gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false })
+    } catch {
+      // The live heading is already the fallback when a browser refuses a WebGL context.
+    }
+    if (!gl) return
+    const context = gl
     const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
-    if (!canvas || !gl || !probe) return
-    const host = canvas.closest<HTMLElement>('[data-glyph-host]') ?? canvas
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const compile = (type: number, source: string) => {
-      const shader = gl.createShader(type)!
-      gl.shaderSource(shader, source)
-      gl.compileShader(shader)
-      return shader
+    if (!probe) return
+    const motion = matchMedia('(prefers-reduced-motion: reduce)')
+    const contrast = matchMedia('(forced-colors: active)')
+    const scheme = matchMedia('(prefers-color-scheme: dark)')
+    const programs: WebGLProgram[] = []
+    const shaders: WebGLShader[] = []
+    const textures: WebGLTexture[] = []
+    const buffers: WebGLBuffer[] = []
+    const framebuffers: WebGLFramebuffer[] = []
+    let contextLost = false
+    const release = () => {
+      // Restoring a context invalidates its old handles. The driver has already reclaimed them;
+      // deleting those handles after restoration would leave INVALID_OPERATION on the new scene.
+      if (contextLost) return
+      programs.forEach((program) => context.deleteProgram(program))
+      shaders.forEach((shader) => context.deleteShader(shader))
+      textures.forEach((texture) => context.deleteTexture(texture))
+      buffers.forEach((buffer) => context.deleteBuffer(buffer))
+      framebuffers.forEach((buffer) => context.deleteFramebuffer(buffer))
     }
-    const program = gl.createProgram()!
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexSource))
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentSource))
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
-    gl.useProgram(program)
-    // One triangle that covers the whole canvas.
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
-    const position = gl.getAttribLocation(program, 'position')
-    gl.enableVertexAttribArray(position)
-    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
-    const uniform = (name: string) => gl.getUniformLocation(program, name)
-    const uniforms = {
-      resolution: uniform('resolution'),
-      time: uniform('time'),
-      intro: uniform('intro'),
-      rise: uniform('rise'),
-      pointer: uniform('pointer'),
-      ring: uniform('ring'),
-      shadow: uniform('shadow'),
-      body: uniform('body'),
-      sheen: uniform('sheen')
+    const program = (source: string, names: string[]) => {
+      const result = context.createProgram()
+      if (!result) throw new Error('Cannot allocate a hero program')
+      programs.push(result)
+      for (const [type, sourceText] of [[context.VERTEX_SHADER, heroVertexSource], [context.FRAGMENT_SHADER, source]] as const) {
+        const shader = context.createShader(type)
+        if (!shader) throw new Error('Cannot allocate a hero shader')
+        shaders.push(shader)
+        context.shaderSource(shader, sourceText)
+        context.compileShader(shader)
+        if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) throw new Error('Cannot compile a hero shader')
+        context.attachShader(result, shader)
+      }
+      context.bindAttribLocation(result, 0, 'position')
+      context.linkProgram(result)
+      if (!context.getProgramParameter(result, context.LINK_STATUS)) throw new Error('Cannot link a hero program')
+      return { program: result, uniforms: Object.fromEntries(names.map((name) => [name, context.getUniformLocation(result, name)])) }
+    }
+    const texture = (unit: number) => {
+      const result = context.createTexture()
+      if (!result) throw new Error('Cannot allocate a hero texture')
+      textures.push(result)
+      context.activeTexture(context.TEXTURE0 + unit)
+      context.bindTexture(context.TEXTURE_2D, result)
+      context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR)
+      context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR)
+      context.texParameteri(context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE)
+      context.texParameteri(context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE)
+      context.texImage2D(context.TEXTURE_2D, 0, context.RGBA, 1, 1, 0, context.RGBA, context.UNSIGNED_BYTE, new Uint8Array(4))
+      return result
+    }
+    let cloth: ReturnType<typeof program>
+    let composite: ReturnType<typeof program>
+    let copy: ReturnType<typeof program>
+    let scene: WebGLTexture
+    let glyphs: WebGLTexture
+    let target: WebGLFramebuffer
+    try {
+      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'rise', 'pointer', 'ring', 'shadow', 'body', 'sheen', 'ground', 'title', 'fontSize'])
+      composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'pointer', 'ink', 'ground', 'scene', 'glyphs'])
+      copy = program(heroCopySource, ['scene'])
+      context.useProgram(copy.program)
+      context.uniform1i(copy.uniforms.scene, 0)
+      const buffer = context.createBuffer()
+      if (!buffer) throw new Error('Cannot allocate a hero triangle')
+      buffers.push(buffer)
+      context.bindBuffer(context.ARRAY_BUFFER, buffer)
+      context.bufferData(context.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), context.STATIC_DRAW)
+      context.enableVertexAttribArray(0)
+      context.vertexAttribPointer(0, 2, context.FLOAT, false, 0, 0)
+      scene = texture(0)
+      glyphs = texture(1)
+      const framebuffer = context.createFramebuffer()
+      if (!framebuffer) throw new Error('Cannot allocate a hero background')
+      target = framebuffer
+      framebuffers.push(target)
+      context.bindFramebuffer(context.FRAMEBUFFER, target)
+      context.framebufferTexture2D(context.FRAMEBUFFER, context.COLOR_ATTACHMENT0, context.TEXTURE_2D, scene, 0)
+      context.bindFramebuffer(context.FRAMEBUFFER, null)
+    } catch {
+      canvas.hidden = true
+      release()
+      return
     }
 
-    let width = 0
-    let height = 0
-    let frame = 0
+    let disposed = false
+    let failed = false
     let visible = true
+    let fontsReady = false
+    let dirty = true
+    let frame = 0
+    let width = 1
+    let height = 1
+    let sceneWidth = 0
+    let sceneHeight = 0
     let startedAt = -1
+    let materialAt = -1
     let ringAt = -1
-    const ringPoint = { x: 0, y: 0 }
-    // The pointer in the shader's plane, eased toward where it is aimed.
+    let hasMask = false
+    let scissor = [0, 0, 0, 0]
+    let fontFace: FontFace | undefined
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, targetStrength: 0 }
-
-    /** Any CSS color as 0–1 sRGB channels for the shader, by painting one pixel of it. */
-    const toChannels = (color: string) => {
+    const ring = { x: 0, y: 0 }
+    const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
+    const fallback = () => {
+      failed = true
+      cancelAnimationFrame(frame)
+      frame = 0
+      host.removeAttribute('data-glass-ready')
+      canvas.hidden = true
+    }
+    const channels = (color: string) => {
       probe.clearRect(0, 0, 1, 1)
       probe.fillStyle = '#000'
       probe.fillStyle = color
@@ -139,111 +150,230 @@ export default function HeroCanvas({ className }: { className?: string }) {
       const [red, green, blue] = probe.getImageData(0, 0, 1, 1).data
       return [red / 255, green / 255, blue / 255] as const
     }
-
-    // The silk's shadow, body and sheen come from the canvas's `color`, `caret-color` and `outline-color`.
-    const readStyle = () => {
-      const style = getComputedStyle(canvas)
-      gl.uniform3f(uniforms.shadow, ...toChannels(style.color))
-      gl.uniform3f(uniforms.body, ...toChannels(style.caretColor))
-      gl.uniform3f(uniforms.sheen, ...toChannels(style.outlineColor))
-    }
-
     const layout = () => {
       const rect = canvas.getBoundingClientRect()
+      if (!rect.width || !rect.height) return false
       width = rect.width
       height = rect.height
-      const ratio = Math.min(devicePixelRatio || 1, 2) * renderScale
-      canvas.width = Math.max(1, Math.round(width * ratio))
-      canvas.height = Math.max(1, Math.round(height * ratio))
-      gl.viewport(0, 0, canvas.width, canvas.height)
-      gl.uniform2f(uniforms.resolution, canvas.width, canvas.height)
-      // Narrow screens stack the copy taller, so the cloth stays lower under it.
-      gl.uniform1f(uniforms.rise, width < 640 ? 0.26 : 0.4)
-      readStyle()
+      const maskRatio = Math.min(devicePixelRatio || 1, 2, maximumTexture / (Math.max(width, height) + 16))
+      const ratio = Math.min(maskRatio, Math.max(1, Math.sqrt(compositePixelBudget / (width * height))))
+      const pixelWidth = Math.max(1, Math.floor(width * ratio))
+      const pixelHeight = Math.max(1, Math.floor(height * ratio))
+      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth
+        canvas.height = pixelHeight
+      }
+      const backgroundWidth = Math.max(1, Math.round(width * maskRatio * renderScale))
+      const backgroundHeight = Math.max(1, Math.round(height * maskRatio * renderScale))
+      if (sceneWidth !== backgroundWidth || sceneHeight !== backgroundHeight) {
+        sceneWidth = backgroundWidth
+        sceneHeight = backgroundHeight
+        context.activeTexture(context.TEXTURE0)
+        context.bindTexture(context.TEXTURE_2D, scene)
+        context.texImage2D(context.TEXTURE_2D, 0, context.RGBA, sceneWidth, sceneHeight, 0, context.RGBA, context.UNSIGNED_BYTE, null)
+        context.bindFramebuffer(context.FRAMEBUFFER, target)
+        if (context.checkFramebufferStatus(context.FRAMEBUFFER) !== context.FRAMEBUFFER_COMPLETE) throw new Error('Incomplete hero background')
+        context.bindFramebuffer(context.FRAMEBUFFER, null)
+      }
+      const titleStyle = getComputedStyle(title)
+      const mask = fontsReady ? rasterizeHeroTitle(title, canvas, maskRatio, titleStyle.fontFamily.replace(/\bGeist\b/, 'Home Hero Geist')) : null
+      const titleRect = title.getBoundingClientRect()
+      const bounds = mask ? [mask.left, mask.top, mask.cssWidth, mask.cssHeight] : [titleRect.left - rect.left, titleRect.top - rect.top, titleRect.width, titleRect.height]
+      const left = Math.max(0, Math.floor(bounds[0] * canvas.width / width))
+      const bottom = Math.max(0, Math.floor((height - bounds[1] - bounds[3]) * canvas.height / height))
+      const right = Math.min(canvas.width, Math.ceil((bounds[0] + bounds[2]) * canvas.width / width))
+      const top = Math.min(canvas.height, Math.ceil((height - bounds[1]) * canvas.height / height))
+      scissor = [left, bottom, Math.max(0, right - left), Math.max(0, top - bottom)]
+      hasMask = !!mask
+      if (mask) {
+        context.activeTexture(context.TEXTURE1)
+        context.bindTexture(context.TEXTURE_2D, glyphs)
+        context.texImage2D(context.TEXTURE_2D, 0, context.RGBA, mask.width, mask.height, 0, context.RGBA, context.UNSIGNED_BYTE, mask.pixels)
+      } else {
+        host.removeAttribute('data-glass-ready')
+        context.activeTexture(context.TEXTURE1)
+        context.bindTexture(context.TEXTURE_2D, glyphs)
+        context.texImage2D(context.TEXTURE_2D, 0, context.RGBA, 1, 1, 0, context.RGBA, context.UNSIGNED_BYTE, new Uint8Array(4))
+      }
+      const style = getComputedStyle(canvas)
+      const ground = channels(getComputedStyle(host).backgroundColor)
+      for (const renderer of [cloth, composite]) {
+        context.useProgram(renderer.program)
+        context.uniform2f(renderer.uniforms.resolution, width, height)
+        context.uniform4f(renderer.uniforms.title, bounds[0], bounds[1], bounds[2], bounds[3])
+        context.uniform1f(renderer.uniforms.fontSize, mask?.fontSize ?? parseFloat(titleStyle.fontSize))
+        context.uniform3f(renderer.uniforms.ground, ...ground)
+      }
+      context.useProgram(cloth.program)
+      context.uniform1f(cloth.uniforms.rise, width < 640 ? 0.26 : 0.4)
+      context.uniform3f(cloth.uniforms.shadow, ...channels(style.color))
+      context.uniform3f(cloth.uniforms.body, ...channels(style.caretColor))
+      context.uniform3f(cloth.uniforms.sheen, ...channels(style.outlineColor))
+      context.useProgram(composite.program)
+      context.uniform1f(composite.uniforms.distanceRange, mask?.range ?? 1)
+      context.uniform3f(composite.uniforms.ink, ...channels(titleStyle.color))
+      context.uniform1i(composite.uniforms.scene, 0)
+      context.uniform1i(composite.uniforms.glyphs, 1)
+      return true
     }
-
-    /** A screen point in the shader's plane, centered on the canvas. */
-    const toPlane = (clientX: number, clientY: number) => {
-      const rect = canvas.getBoundingClientRect()
-      return {
-        x: ((clientX - rect.left) / rect.width - 0.5) * (rect.width / rect.height) * planeScale,
-        y: (0.5 - (clientY - rect.top) / rect.height) * planeScale
+    const canDraw = () => !disposed && !failed && visible && !document.hidden && !contrast.matches
+    const schedule = () => {
+      if (!frame && canDraw()) frame = requestAnimationFrame(tick)
+    }
+    const invalidate = () => {
+      dirty = true
+      schedule()
+    }
+    const tick = (time: number) => {
+      frame = 0
+      if (!canDraw()) return
+      try {
+        if (dirty) {
+          if (!layout()) return
+          dirty = false
+        }
+        if (startedAt < 0) startedAt = time
+        if (hasMask && materialAt < 0) materialAt = time
+        const reduced = motion.matches
+        pointer.x += (pointer.targetX - pointer.x) * 0.06
+        pointer.y += (pointer.targetY - pointer.y) * 0.06
+        pointer.strength += ((reduced ? 0 : pointer.targetStrength) - pointer.strength) * 0.04
+        const opened = reduced ? 1 : Math.min(1, (time - startedAt) / introDuration)
+        const formed = reduced ? 1 : Math.max(0, Math.min(1, (time - materialAt) / materialDuration))
+        context.bindFramebuffer(context.FRAMEBUFFER, target)
+        context.viewport(0, 0, sceneWidth, sceneHeight)
+        context.useProgram(cloth.program)
+        context.uniform1f(cloth.uniforms.time, reduced ? 8 : (time + Math.min(window.scrollY, height) * 6) / 1000)
+        context.uniform1f(cloth.uniforms.intro, 1 - Math.pow(1 - opened, 3))
+        context.uniform3f(cloth.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
+        context.uniform3f(cloth.uniforms.ring, ring.x, ring.y, reduced || ringAt < 0 ? -1 : (time - ringAt) / 1000)
+        if (ringAt >= 0 && time - ringAt > 2400) ringAt = -1
+        context.drawArrays(context.TRIANGLES, 0, 3)
+        context.bindFramebuffer(context.FRAMEBUFFER, null)
+        context.viewport(0, 0, canvas.width, canvas.height)
+        context.useProgram(copy.program)
+        context.drawArrays(context.TRIANGLES, 0, 3)
+        if (hasMask) {
+          context.useProgram(composite.program)
+          context.uniform3f(composite.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
+          context.uniform1f(composite.uniforms.material, 1 - Math.pow(1 - formed, 3))
+          context.enable(context.SCISSOR_TEST)
+          context.scissor(scissor[0], scissor[1], scissor[2], scissor[3])
+          context.drawArrays(context.TRIANGLES, 0, 3)
+          context.disable(context.SCISSOR_TEST)
+        }
+        if (hasMask && !host.hasAttribute('data-glass-ready')) {
+          if (context.getError() !== context.NO_ERROR) throw new Error('Cannot draw the hero title')
+          host.setAttribute('data-glass-ready', '')
+        }
+        if (!reduced) schedule()
+      } catch {
+        if (!disposed) fallback()
       }
     }
-
-    const draw = (time: number) => {
-      if (startedAt < 0) startedAt = time
-      pointer.x += (pointer.targetX - pointer.x) * 0.06
-      pointer.y += (pointer.targetY - pointer.y) * 0.06
-      pointer.strength += (pointer.targetStrength - pointer.strength) * 0.04
-      const opened = reduceMotion ? 1 : Math.min(1, (time - startedAt) / introDuration)
-      // Scrolling the hero away quickens the flow.
-      const flow = (time + Math.min(window.scrollY, height) * 6) / 1000
-      gl.uniform1f(uniforms.time, reduceMotion ? 8 : flow)
-      gl.uniform1f(uniforms.intro, 1 - Math.pow(1 - opened, 3))
-      gl.uniform3f(uniforms.pointer, pointer.x, pointer.y, pointer.strength)
-      gl.uniform3f(uniforms.ring, ringPoint.x, ringPoint.y, ringAt < 0 ? -1 : (time - ringAt) / 1000)
-      if (ringAt >= 0 && time - ringAt > 2400) ringAt = -1
-      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    const activity = () => {
+      cancelAnimationFrame(frame)
+      frame = 0
+      schedule()
     }
-
-    const tick = (time: number) => {
-      frame = requestAnimationFrame(tick)
-      if (visible) draw(time)
+    const toPlane = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      return {
+        x: ((event.clientX - rect.left) / width - 0.5) * width / height * heroPlaneScale,
+        y: (0.5 - (event.clientY - rect.top) / height) * heroPlaneScale
+      }
     }
-
-    const onPointerMove = (event: PointerEvent) => {
-      const point = toPlane(event.clientX, event.clientY)
+    const move = (event: PointerEvent) => {
+      if (motion.matches || event.pointerType !== 'mouse') return
+      const point = toPlane(event)
       pointer.targetX = point.x
       pointer.targetY = point.y
       pointer.targetStrength = 1
     }
-    const onPointerLeave = () => {
-      pointer.targetStrength = 0
-    }
-    const onPointerDown = (event: PointerEvent) => {
-      Object.assign(ringPoint, toPlane(event.clientX, event.clientY))
+    const leave = () => { pointer.targetStrength = 0 }
+    const press = (event: PointerEvent) => {
+      if (motion.matches) return
+      Object.assign(ring, toPlane(event))
       ringAt = performance.now()
     }
-
-    layout()
-    const resize = new ResizeObserver(() => {
-      layout()
-      if (reduceMotion) draw(0)
-    })
-    resize.observe(canvas)
-    const restyle = () => {
-      readStyle()
-      if (reduceMotion) draw(0)
+    const lost = (event: Event) => {
+      event.preventDefault()
+      contextLost = true
+      fallback()
     }
-    const theme = new MutationObserver(restyle)
-    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'style'] })
-    const scheme = matchMedia('(prefers-color-scheme: dark)')
-    scheme.addEventListener('change', restyle)
+    const restored = () => { setGeneration((value) => value + 1) }
+    const resize = new ResizeObserver(invalidate)
+    resize.observe(canvas)
+    resize.observe(title)
+    const body = host.querySelector('.home-hero-body')
+    if (body) resize.observe(body)
+    const theme = new MutationObserver(invalidate)
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'style', 'lang'] })
+    const text = new MutationObserver(invalidate)
+    text.observe(title, { childList: true, characterData: true, subtree: true })
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting
+      activity()
     })
-    intersection.observe(canvas)
-    if (reduceMotion) {
-      draw(0)
-    } else {
-      host.addEventListener('pointermove', onPointerMove)
-      host.addEventListener('pointerleave', onPointerLeave)
-      host.addEventListener('pointerdown', onPointerDown)
-      frame = requestAnimationFrame(tick)
+    intersection.observe(host)
+    document.addEventListener('visibilitychange', activity)
+    document.fonts.addEventListener('loadingdone', invalidate)
+    window.addEventListener('resize', invalidate)
+    motion.addEventListener('change', activity)
+    contrast.addEventListener('change', activity)
+    scheme.addEventListener('change', invalidate)
+    host.addEventListener('pointermove', move)
+    host.addEventListener('pointerleave', leave)
+    host.addEventListener('pointerdown', press)
+    canvas.addEventListener('webglcontextlost', lost)
+    canvas.addEventListener('webglcontextrestored', restored)
+    schedule()
+    // Canvas has no font-feature-settings property. A private face descriptor preserves Geist's
+    // site stylistic sets while the real heading continues to use its original fallback stack.
+    const prepareFont = async () => {
+      try {
+        fontFace = new FontFace('Home Hero Geist', 'url("/fonts/GeistVariable.woff2")', {
+          weight: '100 900', featureSettings: getComputedStyle(title).fontFeatureSettings
+        })
+        await fontFace.load()
+        if (disposed) return
+        document.fonts.add(fontFace)
+        const style = getComputedStyle(title)
+        // Resolve the complete headline, including its CJK fallback, before measuring either face.
+        await document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily.replace(/\bGeist\b/, 'Home Hero Geist')}`, title.textContent ?? '')
+        await document.fonts.ready
+        if (disposed) return
+        fontsReady = true
+        invalidate()
+      } catch {
+        if (!disposed) fallback()
+      }
     }
+    void prepareFont()
 
     return () => {
+      disposed = true
       cancelAnimationFrame(frame)
+      host.removeAttribute('data-glass-ready')
       resize.disconnect()
       theme.disconnect()
+      text.disconnect()
       intersection.disconnect()
-      scheme.removeEventListener('change', restyle)
-      host.removeEventListener('pointermove', onPointerMove)
-      host.removeEventListener('pointerleave', onPointerLeave)
-      host.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('visibilitychange', activity)
+      document.fonts.removeEventListener('loadingdone', invalidate)
+      window.removeEventListener('resize', invalidate)
+      motion.removeEventListener('change', activity)
+      contrast.removeEventListener('change', activity)
+      scheme.removeEventListener('change', invalidate)
+      host.removeEventListener('pointermove', move)
+      host.removeEventListener('pointerleave', leave)
+      host.removeEventListener('pointerdown', press)
+      canvas.removeEventListener('webglcontextlost', lost)
+      canvas.removeEventListener('webglcontextrestored', restored)
+      if (fontFace) document.fonts.delete(fontFace)
+      release()
     }
-  }, [])
+  }, [generation])
 
   return <canvas aria-hidden="true" className={clsx('home-hero-canvas', className)} ref={canvasRef} />
 }

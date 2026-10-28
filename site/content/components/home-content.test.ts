@@ -22,6 +22,8 @@ import './agents-content.test'
 import './editor-content.test'
 // The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
 import './workflow-content.test'
+// The Hero's glass surface must preserve letter counters, coverage and CSS-pixel distances.
+import './hero-title-mask.test'
 import { agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })

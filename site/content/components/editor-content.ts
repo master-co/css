@@ -9,6 +9,7 @@ export type EditorSceneId = 'complete' | 'hover' | 'highlight' | 'color'
 
 export interface EditorFeature {
   id: EditorSceneId
+  label: string
   title: string
   body: string
 }
@@ -17,21 +18,25 @@ export interface EditorFeature {
 export const editorFeatures = [
   {
     id: 'complete',
+    label: 'Completions',
     title: 'Manifest completions',
     body: 'Complete utilities, values, selectors, queries and tokens from your project manifest.'
   },
   {
     id: 'hover',
+    label: 'Inspect',
     title: 'Hover inspection',
     body: 'Hover a class to see the CSS it generates, including its state and query.'
   },
   {
     id: 'highlight',
+    label: 'Highlighting',
     title: 'Focused highlighting',
     body: 'Markup stays calm until the cursor enters a class string; then its class context lights up.'
   },
   {
     id: 'color',
+    label: 'Colors',
     title: 'Color tools',
     body: 'A swatch beside every color class that resolves to one color. Edit literal colors with the native picker.'
   }

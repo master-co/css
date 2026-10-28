@@ -256,7 +256,7 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
             <span aria-hidden="true" className="home-lint-dots"><i /><i /><i /></span>
             <span className="home-lint-tab">
               <IconBrandHtml5 aria-hidden="true" className="home-lint-tab-icon" size={14} stroke={1.75} />
-              {rule.file}
+              <span className="home-lint-tab-label">{rule.file}</span>
             </span>
             <span className="home-lint-surface-name">{rule.problem.severity === 'info' ? $('MCP server') : 'ESLint'}</span>
             <LintStatus tone={phase === 'idle' ? 'idle' : phase === 'scan' ? 'running' : fixed ? 'ok' : rule.problem.severity}>
@@ -521,7 +521,7 @@ function LintPane({ active, children, icon: Icon, litLabel, name, note, phase, r
       <header className="home-lint-pane-bar">
         <span className="home-lint-tab">
           <Icon aria-hidden="true" className="home-lint-tab-icon" size={14} stroke={1.75} />
-          {name}
+          <span className="home-lint-tab-label">{name}</span>
         </span>
         <span className="home-lint-pane-package">{note}</span>
         <LintStatus tone={state === 'lit' ? rule.problem.severity : state === 'resolved' ? 'ok' : state}>

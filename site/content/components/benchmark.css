@@ -1,38 +1,17 @@
 @layer components {
-  /*
-   * An open figure on the page ground, like the other drawings: no frame, no sheet, no rule.
-   * Bars read in grays with Master CSS as the one signal; the brand icons beside them keep their own colors.
-   */
+  /* An open chart on the page ground. Brand colors belong to the data, with a shared zero edge. */
   .home-bench {
     position: relative;
+    padding-block: var(--spacing-sm);
   }
 
-  /* Each row's full extent is a hatched track, so the space a page does not use reads as space. */
-  .home-bench-track::before {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1.25rem;
-    border-radius: 4px;
-    background-image: var(--home-hatch);
-    background-size: var(--home-hatch-size) var(--home-hatch-size);
-    translate: 0 -50%;
-    content: '';
-  }
-
-  /* The axis baseline carries four short ticks per labelled step, like a ruler. */
-  .home-bench-axis {
-    padding-top: 0.5rem;
-    background:
-      linear-gradient(var(--home-rule), var(--home-rule)) 0 0 / 100% 1px no-repeat,
-      linear-gradient(90deg, var(--home-rule) 0 1px, transparent 1px) 0 0 / var(--home-bench-minor, 5%) 0.375rem repeat-x;
-  }
-
-  /* A slim header (the measure and the source) over bars that take the full content width. */
   .home-bench-layout {
     display: grid;
     gap: var(--spacing-xl);
+  }
+
+  .home-bench-layout[data-visible] {
+    --home-bench-pulse-state: running;
   }
 
   .home-bench-summary {
@@ -44,24 +23,231 @@
   }
 
   .home-bench-caption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2xs) var(--spacing-xs);
     margin: 0;
+    line-height: 1.6;
   }
 
-  /* The value and ratio sit on the ground's own color, so a gridline never runs through their text. */
+  .home-bench-chart {
+    --home-bench-brand-width: 0px;
+    position: relative;
+
+    @media (--sm) {
+      --home-bench-brand-width: 10rem;
+    }
+  }
+
+  .home-bench-grid {
+    position: absolute;
+    inset: 0 0 1.75rem var(--home-bench-brand-width);
+    display: grid;
+    pointer-events: none;
+
+    @media (width < 52rem) {
+      opacity: 0.5;
+    }
+  }
+
+  .home-bench-gridline {
+    position: absolute;
+    inset-block: 0;
+    width: 1px;
+    background-image: linear-gradient(var(--home-rule) 50%, transparent 0);
+    background-size: 1px 4px;
+    opacity: 0.6;
+  }
+
+  .home-bench-rows {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--spacing-lg);
+
+    @media (--sm) {
+      gap: var(--spacing-xs);
+    }
+  }
+
+  .home-bench-row {
+    --home-bench-color: var(--home-signal);
+    --home-bench-color-end: var(--home-bench-color);
+    display: grid;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    @media (--sm) {
+      grid-template-columns: var(--home-bench-brand-width) minmax(0, 1fr);
+      gap: 0;
+      min-height: 3.25rem;
+    }
+  }
+
+  .home-bench-row[data-brand='React'] {
+    --home-bench-color: #149eca;
+    --home-bench-color-end: #00d8ff;
+  }
+
+  .home-bench-row[data-brand='Material UI'] {
+    --home-bench-color: #0081cb;
+    --home-bench-color-end: #00b0ff;
+  }
+
+  .home-bench-row[data-brand='Bootstrap'] {
+    --home-bench-color: #6610f2;
+    --home-bench-color-end: #9013fe;
+  }
+
+  .home-bench-row[data-brand='Angular'] {
+    --home-bench-color: #f0060b;
+    --home-bench-color-end: #c026d3;
+  }
+
+  .home-bench-row[data-brand='Vue.js'] {
+    --home-bench-color: #2f9468;
+    --home-bench-color-end: #41b883;
+  }
+
+  .home-bench-row[data-brand='Next.js'] {
+    --home-bench-color: light-dark(#18181b, #a1a1aa);
+    --home-bench-color-end: light-dark(#52525b, #e4e4e7);
+  }
+
+  .home-bench-row[data-brand='Tailwind CSS'] {
+    --home-bench-color: #0891b2;
+    --home-bench-color-end: #38bdf8;
+  }
+
+  .home-bench-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    padding-right: 7rem;
+    font-size: var(--home-caption);
+    line-height: 1.5;
+    color: var(--home-text-quiet);
+
+    @media (--sm) {
+      padding-right: var(--spacing-md);
+    }
+  }
+
+  .home-bench-icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: var(--home-ground);
+  }
+
+  .home-bench-track {
+    position: relative;
+    min-width: 0;
+    height: 1.5rem;
+
+    @media (--sm) {
+      height: 3.25rem;
+    }
+  }
+
+  /* The unfilled track stays quiet; its square left edge is the common zero. */
+  .home-bench-track::before {
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1.25rem;
+    border-radius: 0 3px 3px 0;
+    background-image: var(--home-hatch);
+    background-size: var(--home-hatch-size) var(--home-hatch-size);
+    translate: 0 -50%;
+    opacity: 0.5;
+    content: '';
+  }
+
+  .home-bench-bar {
+    overflow: hidden;
+    height: 1.25rem;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(90deg,
+      color-mix(in oklab, var(--home-bench-color) 64%, var(--home-ground)),
+      var(--home-bench-color) 55%, var(--home-bench-color-end));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 -1px 0 rgb(0 0 0 / 0.08);
+
+    /* A breath of light changes brightness, never the measured bar length. */
+    &::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6) 65%, transparent);
+      opacity: 0.12;
+      content: '';
+
+      @media (--motion-safe) {
+        animation: home-bench-pulse 4.8s ease-in-out infinite;
+        animation-delay: var(--home-bench-pulse-delay, 0s);
+        animation-play-state: var(--home-bench-pulse-state, paused);
+      }
+    }
+  }
+
+  .home-bench-readout {
+    position: absolute;
+    top: -1.25rem;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    pointer-events: none;
+    translate: 0 -50%;
+
+    @media (--sm) {
+      top: 50%;
+      right: auto;
+      left: var(--home-bench-end);
+      padding-left: var(--spacing-sm);
+      transition-property: left;
+    }
+  }
+
   .home-bench-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
     padding-inline: 0.25rem;
     border-radius: var(--radius-sm);
     background-color: var(--home-ground);
   }
 
-  .home-bench-gridline {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background-image: linear-gradient(var(--home-rule) 50%, transparent 0);
-    background-size: 1px 4px;
-    opacity: 0.7;
+  .home-bench-value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--home-text);
+  }
+
+  .home-bench-ratio {
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+  }
+
+  .home-bench-row-signal .home-bench-brand {
+    color: var(--home-text);
+  }
+
+  /* The axis shares the bars' zero and leaves the brand column outside the measurement. */
+  .home-bench-axis {
+    display: grid;
+    margin-top: var(--spacing-sm);
+    margin-left: var(--home-bench-brand-width);
+    padding-top: var(--spacing-xs);
+    background:
+      linear-gradient(var(--home-rule), var(--home-rule)) 0 0 / 100% 1px no-repeat,
+      linear-gradient(90deg, var(--home-rule) 0 1px, transparent 1px) 0 0 / var(--home-bench-minor, 5%) 0.375rem repeat-x;
   }
 
   .home-bench-tick {
@@ -70,81 +256,9 @@
     font-variant-numeric: tabular-nums;
     color: var(--home-text-faint);
   }
-
-  /* Each bar is a strip of CSS text: its length is the page's CSS, and the text streams slowly through it. */
-  .home-bench-bar {
-    --home-bench-fill: color-mix(in oklab, var(--home-text) 7%, var(--home-ground));
-    overflow: hidden;
-    height: 1.25rem;
-    border-radius: 4px;
-    background-color: var(--home-bench-fill);
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-text) 6%, transparent);
-
-    /* The text streams through the bar, so it fades in and out at both ends instead of being cut mid-word. */
-    &::after {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, var(--home-bench-fill), transparent 1rem, transparent calc(100% - 1rem), var(--home-bench-fill));
-      content: '';
-    }
-  }
-
-  .home-bench-bar-text {
-    display: block;
-    width: max-content;
-    padding-inline: 0.375rem;
-    font-family: var(--home-mono);
-    font-size: 0.5625rem;
-    line-height: 1.25rem;
-    white-space: nowrap;
-    color: color-mix(in oklab, var(--home-text) 34%, transparent);
-
-    @media (--motion-safe) {
-      animation-name: home-bench-stream;
-      animation-duration: 60s;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-    }
-  }
-
-  .home-bench-value {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-medium);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-    color: var(--home-text);
-  }
-
-  .home-bench-ratio {
-    font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--home-text-faint);
-  }
-
-  .home-bench-row:hover {
-    .home-bench-bar {
-      --home-bench-fill: color-mix(in oklab, var(--home-text) 12%, var(--home-ground));
-    }
-  }
-
-  .home-bench-row-signal {
-    .home-bench-bar {
-      --home-bench-fill: var(--home-signal);
-    }
-
-    .home-bench-bar-text {
-      color: color-mix(in oklab, var(--home-signal-ink) 55%, transparent);
-    }
-
-    .home-bench-value {
-      font-weight: var(--font-weight-medium);
-    }
-  }
 }
 
-@keyframes home-bench-stream {
-  to {
-    translate: -50% 0;
-  }
+@keyframes home-bench-pulse {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.4; }
 }

@@ -1,66 +1,92 @@
 @layer components {
-  /*
-   * The close is a quiet framed band on the page ground: the two-line invitation, then the two ways in
-   * under it, in one hairline frame.
-   */
   .home-cta {
     position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    justify-items: start;
-    gap: var(--spacing-2xl);
-    padding: clamp(3rem, 1.5rem + 5vw, 6rem) clamp(1.75rem, 0.5rem + 5vw, 6rem);
+    justify-items: center;
+    overflow: hidden;
+    padding: clamp(3.5rem, 2rem + 5vw, 7rem) clamp(1.25rem, 0.5rem + 3vw, 4rem);
     border-radius: var(--home-radius-sheet);
-    background-color: var(--home-sheet);
+    background:
+      radial-gradient(ellipse at 50% 140%, color-mix(in oklab, var(--home-signal) 9%, transparent), transparent 65%),
+      var(--home-sheet);
     box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    text-align: center;
 
-    /* On phones the band gives its width to the command, which must fit on one line. */
-    @media (width < 30rem) {
-      padding-inline: 1.25rem;
-    }
-
-    /* On the full 100rem column the actions move beside the invitation, on its last line. */
-    @media (--2xl) {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-      column-gap: var(--spacing-4xl);
-    }
-  }
-
-  /* The narrowest phones set the command a step smaller rather than cut it. */
-  .home-cta .home-command {
     @media (width < 24rem) {
-      gap: var(--spacing-xs);
-      font-size: 0.8125rem;
+      padding-inline: var(--spacing-sm);
+    }
+
+    /* A thin gold horizon echoes the hero's light along the panel's lower edge. */
+    &::after {
+      position: absolute;
+      inset: auto 15% 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--home-signal), transparent);
+      content: '';
     }
   }
 
   .home-cta-title {
-    position: relative;
-    z-index: 1;
     max-width: 20em;
     margin: 0;
-    /* Held at 3.5rem, so on the 100rem column its two lines still fit beside the actions. */
-    font-size: min(var(--home-title), 3.5rem);
+    font-size: clamp(2rem, 1.2rem + 2.8vw, 3.75rem);
     font-weight: var(--font-weight-regular);
-    line-height: 1.08;
+    line-height: 1.15;
     letter-spacing: -0.04em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
+  .home-cta-title-start {
+    display: block;
+    margin-bottom: var(--spacing-md);
+    font-size: clamp(1.0625rem, 0.875rem + 0.8vw, 1.5rem);
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+    color: var(--home-text-quiet);
+  }
+
+  .home-cta-title-finish {
+    display: block;
+  }
+
   .home-cta-actions {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--spacing-sm);
+    min-width: 0;
+    max-width: 100%;
+    margin-top: var(--spacing-2xl);
 
-    /* Stacked on phones, both take one width. */
     @media (width < 40rem) {
       flex-direction: column;
       align-items: stretch;
+      width: min(100%, 22rem);
+    }
+  }
+
+  /* The hydrated command has its own island wrapper; it shares the mobile button's width. */
+  .home-cta .home-command {
+    border: 0;
+    background-color: var(--home-well);
+    box-shadow: inset 0 0 0 1px var(--home-hairline), var(--home-edge);
+    backdrop-filter: none;
+
+    @media (width < 40rem) {
       width: 100%;
+    }
+
+    @media (width < 24rem) {
+      gap: var(--spacing-xs);
+      padding-left: var(--spacing-sm);
+      font-size: 0.8125rem;
+    }
+
+    @media (width < 22rem) {
+      font-size: 0.75rem;
     }
   }
 }

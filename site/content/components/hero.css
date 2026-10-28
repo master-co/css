@@ -1,8 +1,7 @@
 @layer components {
   /*
-   * The opening fills the first screen: the copy sits centered over a sheet of gold silk that dips
-   * under the headline and rises toward both sides. The fixed header (60px) is cleared by the top padding.
-   * The section paints its own ground so the grain on top has something opaque to blend with.
+   * The opening fills the first screen. Silk flows behind the lower glass letters and clears the
+   * prose; the canvas shares this ground color. The fixed header (60px) is cleared by the top padding.
    */
   .home-hero {
     display: grid;
@@ -16,18 +15,6 @@
     @media (width >= 48rem) and (height < 50rem) {
       padding-block: 7.5rem 6rem;
     }
-
-    /* Film grain frosts the silk; over the flat ground it all but disappears. */
-    &::before {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0.5;
-      mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      content: '';
-    }
   }
 
   .home-hero-field {
@@ -36,6 +23,7 @@
     z-index: -2;
     width: 100%;
     height: 100%;
+    pointer-events: none;
     /* The silk's shadow, body and sheen; the canvas reads them from these three properties. */
     /* Light mode keeps the chroma up in the shadows too, so the silk reads as gold rather than khaki. */
     color: light-dark(oklch(0.79 0.09 76), oklch(0.17 0.02 60));
@@ -108,7 +96,7 @@
     max-width: 15em;
     margin: var(--spacing-xl) 0 0;
     font-size: min(var(--home-display), 5.25rem, max(10.5svh, 3.25rem));
-    font-weight: var(--font-weight-regular);
+    font-weight: var(--font-weight-medium);
     line-height: 1.02;
     letter-spacing: -0.045em;
     color: var(--home-text);
@@ -124,30 +112,24 @@
     }
   }
 
-  /*
-   * As the title arrives, one band of the silk's gold passes across both lines, left to right, and
-   * leaves the ink as it was. The text keeps its color without motion or before the sweep starts.
-   */
-  @media (--motion-safe) {
-    .home-display .home-display-line {
-      --home-sweep: light-dark(oklch(0.7 0.14 72), oklch(0.88 0.12 85));
-      background-image: linear-gradient(105deg, var(--home-text) 0 43%, var(--home-sweep) 49% 51%, var(--home-text) 57% 100%);
-      background-size: 260% 100%;
-      background-position: 100% 0;
-      background-clip: text;
-      color: transparent;
-      animation-name: home-rise, home-display-sweep;
-      animation-duration: 0.9s, 1.9s;
-      animation-timing-function: var(--home-ease), var(--home-ease-inout);
-      animation-fill-mode: both, both;
+  /* Keep the real heading selectable and accessible; reveal glass only after a successful frame. */
+  .home-hero[data-glass-ready] .home-display {
+    -webkit-text-fill-color: transparent;
+
+    &::selection,
+    & *::selection {
+      -webkit-text-fill-color: var(--home-text);
+      background-color: var(--home-signal-glow);
+    }
+  }
+
+  @media (forced-colors: active), print {
+    .home-hero-field {
+      display: none;
     }
 
-    .home-display .home-display-line:first-child {
-      animation-delay: 0.12s, 0.9s;
-    }
-
-    .home-display .home-display-line:last-child {
-      animation-delay: 0.2s, 1.15s;
+    .home-hero[data-glass-ready] .home-display {
+      -webkit-text-fill-color: currentColor;
     }
   }
 
@@ -182,9 +164,4 @@
       width: min(100%, 21rem);
     }
   }
-}
-
-@keyframes home-display-sweep {
-  from { background-position: 100% 0; }
-  to { background-position: 0 0; }
 }

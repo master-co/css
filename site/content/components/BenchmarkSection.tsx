@@ -35,17 +35,17 @@ export default function BenchmarkSection() {
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-          <div className="home-bench home-marks">
-            <BenchmarkSizeChart
-              brands={chartBrands}
-              labels={{
-                caption: $('CSS per documentation page'),
-                date: snapshot.generatedAt.slice(0, 10),
-                modeLabels: { brotli: $('Brotli'), raw: $('Raw') },
-                modeSelectorLabel: $('CSS size mode')
-              }}
-              modes={modes} />
-          </div>
+        <div className="home-bench home-marks">
+          <BenchmarkSizeChart
+            brands={chartBrands}
+            labels={{
+              caption: $('CSS per documentation page'),
+              date: snapshot.generatedAt.slice(0, 10),
+              modeLabels: { brotli: $('Brotli'), raw: $('Raw') },
+              modeSelectorLabel: $('CSS size mode')
+            }}
+            modes={modes} />
+        </div>
       </div>
     </section>
   )

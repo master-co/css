@@ -26,8 +26,6 @@ const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
 const axisHeadroom = 1.45
-/** The texture inside every bar: plain CSS text, streaming slowly, its length the page's share. */
-const barTexture = 'display:flex;gap:1rem;padding:0 1.5rem;color:var(--text);border-radius:.5rem;margin:0 auto;line-height:1.5;font:inherit;'.repeat(4)
 
 /** Page CSS sizes as bars that grow from a shared start once the chart scrolls into view. */
 export default function BenchmarkSizeChart({ brands, labels, modes }: {
@@ -41,41 +39,41 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
   return (
-    <div className="home-bench-layout" ref={ref}>
-      {/* The measure on the left, the source on the right; the Master CSS bar carries the headline number. */}
+    <div className="home-bench-layout" data-visible={inView || undefined} ref={ref}>
       <div className="home-bench-summary">
         <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
         <p className="home-annotation home-bench-caption">{labels.caption} <span className="white-space:nowrap">· {labels.date}</span></p>
       </div>
       {/* Remounting per mode replays the bars from the shared start. */}
-      <BenchmarkRows brands={brands} key={activeMode.id} labels={labels} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
+      <BenchmarkRows brands={brands} key={activeMode.id} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
     </div>
   )
 }
 
-function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
+function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
   brands: Record<string, BenchmarkBrand>
-  labels: BenchmarkSizeChartLabels
   mode: HomePageCSSSizeMode
   reduceMotion: boolean
   visible: boolean
 }) {
   const [played, setPlayed] = useState(false)
   const rowsRef = useRef<HTMLDivElement>(null)
-  // A narrow chart needs more of its axis past the longest bar for that bar's value and labels only
-  // the ends of its axis; a compact one spaces its ticks wider.
-  const [width, setWidth] = useState(Infinity)
+  // Measure the plot, excluding the desktop brand column. Mobile readouts sit above their bars.
+  const [{ inlineLabels, width }, setSize] = useState({ inlineLabels: true, width: Infinity })
   useEffect(() => {
     const rows = rowsRef.current
     if (!rows) return
-    const resize = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width))
-    resize.observe(rows)
+    const resize = new ResizeObserver(([entry]) => setSize({
+      inlineLabels: parseFloat(getComputedStyle(rows).getPropertyValue('--home-bench-brand-width')) > 0,
+      width: entry.contentRect.width
+    }))
+    resize.observe(rows.querySelector('.home-bench-track') || rows)
     return () => resize.disconnect()
   }, [])
   const narrow = width < 320
   const ticks = width < 640 ? 2 : axisTickTarget
-  // Room past the longest bar for its value: a fixed label needs a larger share of a narrower axis.
-  const headroom = narrow ? 2.1 : width < 900 ? axisHeadroom : 1.2
+  // Only inline readouts need extra axis space beyond the longest bar.
+  const headroom = inlineLabels ? (narrow ? 2.1 : width < 900 ? axisHeadroom : 1.2) : 1.1
   const axis = useMemo(() => createBenchmarkAxis(mode.maxBytes, headroom, ticks), [mode.maxBytes, headroom, ticks])
   const barDuration = Math.max(1.2, chartAnimationDuration - (mode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
 
@@ -88,8 +86,8 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
 
   const settled = reduceMotion || played
   return (
-    <div className="position:relative" ref={rowsRef}>
-      <div aria-hidden="true" className="position:absolute bottom:1.5rem left:0 right:0 top:0 display:grid pointer-events:none">
+    <div className="home-bench-chart" ref={rowsRef}>
+      <div aria-hidden="true" className="home-bench-grid">
         <div className="position:relative">
           {axis.ticks.map((tick) => (
             <span className="home-bench-gridline" key={tick.label} style={{ left: `${tick.percent}%` }} />
@@ -97,7 +95,7 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
         </div>
       </div>
 
-      <div className="position:relative z-index:1 display:grid gap-2xs">
+      <div className="home-bench-rows">
         {mode.rows.map((row, index) => (
           <BenchmarkRow
             axisMaxBytes={axis.maxBytes}
@@ -105,7 +103,6 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
             brand={brands[row.name]}
             delay={index * rowDelayStep}
             key={row.name}
-            labels={labels}
             played={played}
             reduceMotion={reduceMotion}
             row={row}
@@ -114,7 +111,7 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
       </div>
 
       {/* The axis is a ruler: a baseline with four ticks per labelled step, and labels under the major ones. */}
-      <div className="display:grid mt-xs home-bench-axis" style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
+      <div className="home-bench-axis" style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
         <div className="position:relative height:1.25rem width:100%">
           {axis.ticks.map((tick, index) => (
             <span
@@ -130,12 +127,11 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
   )
 }
 
-function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played, reduceMotion, row, settled }: {
+function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, played, reduceMotion, row, settled }: {
   axisMaxBytes: number
   barDuration: number
   brand?: BenchmarkBrand
   delay: number
-  labels: BenchmarkSizeChartLabels
   played: boolean
   reduceMotion: boolean
   row: HomePageCSSSizeRow
@@ -144,25 +140,28 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played,
   const rowPercent = toPercent(row.bytes, axisMaxBytes)
   const startPercent = `${chartAnimationStartPercent}%`
   const transition = {
-    transitionDelay: `${delay}s`,
+    transitionDelay: reduceMotion ? '0s' : `${delay}s`,
     transitionDuration: reduceMotion ? '0s' : `${barDuration}s`,
     transitionTimingFunction: chartEasing
   }
   return (
-    // The brand mark beside the bar names the row; the name itself is for screen readers.
-    <div className={clsx('display:grid align-items:center min-height:2.75rem home-bench-row', row.isMasterCSS && 'home-bench-row-signal')}>
-      <span className="sr-only">{row.name}</span>
-      <div className="position:relative height:2.75rem min-width:0 home-bench-track">
+    <div
+      className={clsx('home-bench-row', row.isMasterCSS && 'home-bench-row-signal')}
+      data-brand={row.name}
+      style={{ '--home-bench-pulse-delay': `${-delay * 12}s` } as CSSProperties}>
+      <div className="home-bench-brand">
+        {brand?.icon && <span aria-hidden="true" className="home-bench-icon">{brand.icon}</span>}
+        <span>{row.name}</span>
+      </div>
+      <div className="home-bench-track">
         <div
+          aria-hidden="true"
           className="position:absolute left:0 top:50% min-width:1px translate:0|-50% transition-property:width home-bench-bar"
-          style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }}>
-          <span aria-hidden="true" className="home-bench-bar-text">{barTexture}</span>
-        </div>
+          style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }} />
         <span
-          className="position:absolute top:50% z-index:1 display:inline-flex align-items:center gap-2xs white-space:nowrap translate:0|-50% transition-property:left pointer-events:none gap-sm@md"
-          style={{ ...transition, left: settled ? `${rowPercent}%` : `min(${startPercent}, calc(100% - 5.25rem))` }}>
-          {brand?.icon && <span className="display:inline-flex flex:none ml-xs ml-sm@md home-bench-icon">{brand.icon}</span>}
-          <span className="display:inline-flex align-items:baseline gap-2xs gap-xs@md home-bench-label">
+          className="home-bench-readout"
+          style={{ ...transition, '--home-bench-end': settled ? `${rowPercent}%` : `min(${startPercent}, calc(100% - 7rem))` } as CSSProperties}>
+          <span className="home-bench-label">
             <CountdownKilobytes
               active={played}
               barDuration={barDuration}
@@ -173,7 +172,7 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played,
               toBytes={row.bytes} />
             {!row.isMasterCSS && (
               <span
-                className={clsx('transition-property:opacity,translate display:none@media((width<64rem)) home-bench-ratio', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
+                className={clsx('transition-property:opacity,translate home-bench-ratio', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
                 style={{ transitionDelay: `${reduceMotion ? 0 : delay + barDuration}s`, transitionDuration: `${ratioFadeDuration}s`, transitionTimingFunction: chartEasing }}>
                 {`${row.ratio.toFixed(1)}×`}
               </span>

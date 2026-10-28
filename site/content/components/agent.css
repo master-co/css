@@ -3,11 +3,11 @@
    * The agent session is a tool window standing on the page, in front of the figure tucked under its
    * lower edge: a transcript, the file the agent edits, the server's output docked under it, and a
    * step bar. The window is one sheet with one contour outside it and a top light drawn over its
-   * panes; every seam inside is a single 1px line. One inset aligns every pane, bar and row. A narrow
+   * panes; every seam inside is a single 1px line. A fluid inset aligns every pane, bar and row. A narrow
    * window keeps the same panes in one cell and shows one at a time, so it is short and never resizes.
    */
   .home-agent {
-    --home-agent-inset: 1.25rem;
+    --home-agent-inset: clamp(1rem, 2vw, 1.75rem);
     container: home-agent / inline-size;
     position: relative;
     z-index: 1;
@@ -36,7 +36,7 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'tabs' 'pane' 'steps';
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       grid-template-rows: auto auto 1fr auto;
       grid-template-areas: 'bar-chat bar-file' 'chat code' 'chat output' 'steps steps';
@@ -49,7 +49,7 @@
     align-items: center;
     gap: var(--spacing-sm);
     min-width: 0;
-    height: 3rem;
+    height: 3.5rem;
     padding-inline: var(--home-agent-inset);
     border-bottom: 1px solid var(--home-hairline);
     background-color: var(--home-agent-chrome);
@@ -61,6 +61,12 @@
     grid-area: bar-chat;
   }
 
+  .home-agent-bar-label {
+    font-size: var(--home-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--home-text-body);
+  }
+
   .home-agent-bar-file {
     grid-area: bar-file;
   }
@@ -70,7 +76,7 @@
   .home-agent-bar-file {
     display: none;
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       display: flex;
     }
   }
@@ -79,21 +85,27 @@
   .home-agent-tabs {
     grid-area: tabs;
     align-items: flex-end;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     padding-inline: var(--home-agent-inset) var(--spacing-xs);
 
     & > .home-agent-dots {
       flex: none;
       align-self: center;
+
+      @container home-agent (width < 24rem) {
+        display: none;
+      }
     }
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       display: none;
     }
   }
 
   .home-agent-tab-list {
-    display: flex;
+    display: grid;
+    flex: 1;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: flex-end;
     min-width: 0;
   }
@@ -105,10 +117,12 @@
   .home-agent-tab {
     position: relative;
     display: inline-flex;
+    flex: 1 1 auto;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-3xs);
     min-width: 0;
-    height: 2.375rem;
+    height: 2.75rem;
     margin-bottom: -1px;
     padding: 0 0.625rem;
     border: 1px solid transparent;
@@ -122,7 +136,6 @@
     transition: color var(--home-quick) var(--home-ease);
 
     &:nth-child(2) {
-      flex: 0 1 auto;
       font-family: var(--home-mono);
       font-size: 0.75rem;
     }
@@ -154,6 +167,13 @@
     }
   }
 
+  .home-agent-tab-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .home-agent-dots {
     display: flex;
     gap: 0.375rem;
@@ -161,8 +181,8 @@
 
     /* Embossed: lit from above, a contour below. */
     & > span {
-      width: 0.6875rem;
-      height: 0.6875rem;
+      width: 0.625rem;
+      height: 0.625rem;
       border-radius: var(--radius-pill);
       background-color: var(--home-rule);
       background-image: linear-gradient(light-dark(color-mix(in oklab, var(--home-float) 45%, transparent), color-mix(in oklab, var(--home-float) 20%, transparent)), transparent);
@@ -216,6 +236,7 @@
   /* The file's state as a mark only; its tone class colors it. */
   .home-agent-file-status {
     display: inline-flex;
+    flex: none;
     align-items: center;
   }
 
@@ -228,7 +249,7 @@
     min-width: 0;
 
     /* The leaving pane fades out before the next fades in, so two panes never show through each other. */
-    @container home-agent (width < 46rem) {
+    @container home-agent (width < 56rem) {
       visibility: hidden;
       opacity: 0;
       transition: opacity var(--home-quick) var(--home-ease), visibility 0s linear var(--home-quick);
@@ -244,10 +265,10 @@
   /* Transcript: the newest entry sits at the bottom and older ones rise out under a fade, like a chat. */
   .home-agent-chat {
     position: relative;
-    min-height: 20rem;
+    min-height: 24rem;
     background-color: var(--home-well);
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       grid-area: chat;
       min-height: 0;
     }
@@ -260,10 +281,10 @@
     flex-direction: column;
     justify-content: flex-end;
     /* Each entry's bleed (below) cancels its own padding, so this is the space the reader sees. */
-    gap: 0.625rem;
+    gap: var(--spacing-sm);
     overflow: hidden;
     margin: 0;
-    padding: 2rem var(--home-agent-inset) var(--home-agent-inset);
+    padding: var(--spacing-xl) var(--home-agent-inset) var(--home-agent-inset);
     list-style: none;
     mask-image: linear-gradient(transparent, black 4.5rem);
     transition: opacity 0.5s var(--home-ease);
@@ -295,7 +316,7 @@
   }
 
   .home-agent-entry-inner[data-turn] {
-    padding-top: 1.25rem;
+    padding-top: 1.5rem;
   }
 
   .home-agent-message {
@@ -306,7 +327,7 @@
     & p {
       min-width: 0;
       margin: 0;
-      font-size: 0.9375rem;
+      font-size: 0.875rem;
       line-height: 1.6;
       color: var(--home-text-body);
       text-wrap: pretty;
@@ -326,7 +347,7 @@
     }
   }
 
-  /* Avatars: the agent in ink, the reader in the sheet's quiet tone. */
+  /* Claude's brand mark and Aron's shared author portrait distinguish the two speakers. */
   .home-agent-avatar {
     display: grid;
     flex: none;
@@ -340,13 +361,20 @@
     box-shadow: 0 0 0 1px var(--home-hairline), var(--home-edge);
 
     .home-agent-message-agent & {
-      color: var(--home-text-inverse);
-      background-color: var(--home-ink);
-      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-float) 18%, transparent);
+      color: #d97757;
     }
 
     .home-agent-message-user & {
       margin-top: 0.375rem;
+    }
+
+    & img {
+      display: block;
+      width: inherit;
+      height: inherit;
+      border-radius: inherit;
+      object-fit: cover;
+      object-position: 50% 25%;
     }
   }
 
@@ -409,7 +437,11 @@
     transition: min-height var(--home-slow) var(--home-ease);
 
     [data-expanded] > & {
-      min-height: 2.75rem;
+      min-height: 3rem;
+    }
+
+    @container home-agent (width < 24rem) {
+      gap: var(--spacing-2xs);
     }
   }
 
@@ -438,6 +470,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--home-text);
+
+    @container home-agent (width < 24rem) {
+      font-size: var(--home-label);
+    }
   }
 
   .home-agent-call-summary {
@@ -453,6 +489,10 @@
 
     /* A narrow window keeps the full tool name; the status glyph alone carries the result. */
     @container home-agent (width < 30rem) {
+      display: none;
+    }
+
+    @container home-agent (width >= 56rem) and (width < 72rem) {
       display: none;
     }
   }
@@ -492,9 +532,9 @@
    */
   .home-agent-call-detail {
     display: grid;
-    gap: 0.125rem;
+    gap: var(--spacing-2xs);
     margin-inline: var(--spacing-sm);
-    padding: var(--spacing-xs) 0 var(--spacing-sm);
+    padding: var(--spacing-sm) 0 var(--spacing-md);
     border-top: 1px solid var(--home-hairline);
     opacity: 0;
     transition: opacity var(--home-quick) var(--home-ease);
@@ -555,12 +595,12 @@
     container: home-agent-file / inline-size;
     background-color: var(--home-sheet);
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       grid-area: code;
     }
   }
 
-  @container home-agent (width >= 46rem) {
+  @container home-agent (width >= 56rem) {
     .home-agent-bar-file,
     .home-agent-code,
     .home-agent-panel {
@@ -765,7 +805,7 @@
     flex-direction: column;
     background-color: var(--home-sheet);
 
-    @container home-agent (width >= 46rem) {
+    @container home-agent (width >= 56rem) {
       grid-area: output;
       border-top: 1px solid var(--home-hairline);
     }
@@ -787,14 +827,32 @@
     align-items: center;
     gap: var(--spacing-sm);
     min-width: 0;
-    padding: var(--home-agent-inset) var(--home-agent-inset) 0;
+    min-height: 3rem;
+    padding: var(--spacing-sm) var(--home-agent-inset);
+    border-bottom: 1px solid var(--home-hairline);
+    background-color: var(--home-agent-chrome);
+  }
+
+  .home-agent-panel-label {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--home-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--home-text-body);
+
+    & svg {
+      color: var(--home-text-quiet);
+    }
   }
 
   .home-agent-panel-tool {
     min-width: 0;
+    margin-left: auto;
     overflow: hidden;
     font-family: var(--home-mono);
-    font-size: 0.75rem;
+    font-size: var(--home-label);
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--home-text-quiet);
@@ -803,7 +861,7 @@
   .home-agent-panel-body {
     display: grid;
     flex: auto;
-    padding: 0.875rem var(--home-agent-inset) var(--home-agent-inset);
+    padding: var(--spacing-md) var(--home-agent-inset) var(--home-agent-inset);
   }
 
   /* Before the first result: a reserved slot, hatched inside one faint contour. */
@@ -858,7 +916,7 @@
   .home-agent-problems {
     display: grid;
     align-content: start;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -878,8 +936,8 @@
   /* Messages wrap in full, as the linter wrote them; nothing is clipped under the meta line. */
   .home-agent-problem-message {
     display: block;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: var(--home-caption);
+    line-height: 1.6;
     color: var(--home-text);
     text-wrap: pretty;
 
@@ -891,9 +949,10 @@
   .home-agent-problem-meta {
     display: block;
     overflow: hidden;
-    margin-top: 0.125rem;
+    margin-top: var(--spacing-2xs);
     font-family: var(--home-mono);
     font-size: 0.6875rem;
+    line-height: 1.5;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--home-text-faint);
@@ -1015,8 +1074,8 @@
     display: grid;
     flex: none;
     place-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border: 0;
     border-radius: var(--radius-pill);
     color: var(--home-text);
@@ -1042,7 +1101,7 @@
   .home-agent-step-list {
     display: flex;
     flex: auto;
-    gap: var(--spacing-3xs);
+    gap: var(--spacing-xs);
     min-width: 0;
     margin: 0;
     padding: 0;
@@ -1055,6 +1114,8 @@
 
     /* A narrow window sizes each step to its word, so all five names fit. */
     @container home-agent (width < 34rem) {
+      gap: 0;
+
       & > li {
         flex: 1 1 auto;
       }
@@ -1066,18 +1127,20 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'label' 'track';
     align-items: baseline;
-    gap: var(--spacing-2xs);
+    gap: var(--spacing-xs);
     width: 100%;
-    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+    min-height: 2.75rem;
+    padding: var(--spacing-sm) var(--spacing-xs);
     border: 0;
     border-radius: var(--radius-lg);
     font-size: var(--home-caption);
+    text-align: left;
 
     @container home-agent (width < 34rem) {
-      padding-inline: 0.3125rem;
-      font-size: 0.75rem;
+      padding-inline: var(--spacing-3xs);
+      font-size: var(--home-label);
+      text-align: center;
     }
-    text-align: left;
     color: var(--home-text-faint);
     background-color: transparent;
     cursor: pointer;
@@ -1088,6 +1151,11 @@
       color: var(--home-text);
     }
 
+    &[aria-current] {
+      background-color: color-mix(in oklab, var(--home-sheet) 75%, transparent);
+      box-shadow: var(--home-edge);
+    }
+
     &:focus-visible {
       outline: 2px solid var(--home-ink);
       outline-offset: 2px;
@@ -1095,15 +1163,34 @@
   }
 
   .home-agent-step-name {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
     grid-area: label;
     white-space: nowrap;
+
+    @container home-agent (width < 34rem) {
+      justify-content: center;
+    }
+  }
+
+  .home-agent-step-index {
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-faint);
+
+    @container home-agent (width < 56rem) {
+      display: none;
+    }
   }
 
   .home-agent-step-track {
     position: relative;
     grid-area: track;
     overflow: hidden;
-    height: 1px;
+    height: 2px;
+    border-radius: var(--radius-pill);
     background-color: var(--home-rule);
 
     [data-state='done'] > & {

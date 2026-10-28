@@ -28,7 +28,7 @@ The page reads as a sequence, each section answering the next question a reader 
 | 05 | Lint | How is it checked? | Rule bench: rules beside an editor, with the CLI and MCP server reporting the same check |
 | 06 | AI agents | Can agents use it safely? | Agent session window, joined by a beam to a liquid-glass MCP server on a floor of classes |
 | 07 | Workflow | Does it fit my stack? | Frameworks, impact graph, monorepo, routes |
-| — | Call to action | How do I start? | A framed band: the invitation, Get started and the install command |
+| — | Call to action | How do I start? | A centered invitation, Get started and the install command |
 
 Figures alternate in weight (colorful bento, quiet cards, diagram, chart, editor, session, logos) so no two neighbours look alike.
 
@@ -123,7 +123,7 @@ Plain and specific, the way the docs would say it. Say what the thing is or does
 
 ## Data
 
-- Charts are gray. Bars, gridlines and ticks use text and rule tokens; the Master CSS row alone uses the signal.
+- The CSS size chart uses each brand's colors for its gradient bars, with the Master CSS row in gold. Gridlines, ticks and text stay neutral. Bars share a square left edge; a slow brightness pulse never changes their measured lengths and stops for reduced motion.
 - Third-party logos and brand icons keep their own colors; the gray system governs surfaces, lines and text, not other people's marks.
 - Every figure that shows a number names its source and date, such as the benchmark snapshot, and the tests read the same file.
 
@@ -167,9 +167,10 @@ One bento grid of six columns holds all five cards: themes on the first row, pri
 
 ## Editor stage
 
-Section 02 is one editor window standing directly on the page ground at the content width: one contour, a contact shadow and a long soft shadow, no shell. Below it, four features sit in open columns, a title and one sentence each, under a tour hairline (stories on phones); each sentence is also its button's accessible description.
+Section 02 is one editor window standing directly on the page ground at the content width: one contour, a contact shadow and a long soft shadow, no shell. Below it, four features sit in open columns, with an index and illustration above a title and one sentence; each sentence is also its button's accessible description. Titles share a baseline, with illustrations on their own row so long names never compete for space. Phones keep four named steps visible above the selected feature's full caption.
 
-- The chrome is quiet: a bar lit along its top edge, and an open tab that continues into the code. The status shows only the caret's line and column.
+- The chrome is quiet: a bar lit along its top edge, domed neutral window lights, and an open file tab that continues into the code. A faint seam separates the line gutter. The top status shows the caret's line and column; a slim footer holds the file type, current feature and an explicit play/pause control. Reduced motion omits playback and reveals the selected scene immediately.
+- The selected feature's hairline is ink; while touring it fills in gold. Hover gives the open column a faint wash, and keyboard focus has an ink ring. Clicking a feature replays it, including the current feature, and leaves it at its revealed moment; Play resumes the tour from that feature.
 - The window holds one dense file, and a caret and a drawn pointer walk through the language service in turn: type a completion while the real list narrows, inspect a class with a state and a query, step down the file so each class string lights only while the caret is in it, then drag the color picker on the one literal.
 - Class strings rest in a quiet string color; the lit one takes role colors on a faint signal wash, and the hover card colors its CSS with the same roles so each part of a class finds its rule.
 - Panes unfold from their line like a hinge and settle flat. Their edges fall between lines of code, never through a glyph, and a soft shadow lifts them off it. While one is open, the other lines turn one neutral gray (at least 3:1). Detail text breaks only after commas, so a `var(--…)` never splits. Hover CSS decodes in from the class matrix's glyphs.
@@ -206,8 +207,8 @@ A rule bench that leads with the check. The rules are a list of titles hung from
 
 A framed tool window, and below it, open on the page, the server it calls as a quiet accent.
 
-- The window is one sheet with a 1px contour outside it, elevation-3 and a top light over its panes. One 1.25rem inset aligns the chrome, the file tab (a real editor tab that opens into the code), the line gutter, the transcript, the output and the step bar (Manifest, Inspect, Lint, Preview, Apply). Every inline icon is 14px at a 1.75 stroke, and every seam is a single 1px line. A narrow window keeps the traffic lights and shows one pane at a time behind the same folder tabs; the step bar names all five steps at every width.
-- The agent speaks beside a sparkle avatar on ink, the reader on the right. The agent's calls and edits hang in its turn on one icon column, each call with its own tool icon and a status glyph; the latest call opens to its `tools/call` arguments and result. Before the first result, the output is a hatched reserved slot.
+- The window is one sheet with a 1px contour outside it, elevation-3 and a top light over its panes. One fluid 16–28px inset aligns the chrome, the file tab (a real editor tab that opens into the code), the line gutter, the transcript, the output and the step bar (Manifest, Inspect, Lint, Preview, Apply). Session and Output labels distinguish the conversation and results. Every inline icon is 14px at a 1.75 stroke, and every seam is a single 1px line. Below 56rem the window shows one pane at a time behind folder tabs; below 24rem the traffic lights give their space to the tabs. The step bar names all five steps at every width, adds numbers on wide windows, and gives its controls at least 44px of height.
+- The agent speaks beside Claude's brand mark, with Aron's messages and shared blog portrait on the right. The agent's calls and edits hang in its turn on one icon column, each call with its own tool icon and a status glyph; the latest call opens to its `tools/call` arguments and result. Before the first result, the output is a hatched reserved slot.
 - Each state shares one grid cell and fully fades out before the next fades in, so nothing moves and no two states ever show at once. The inspection card docks in the space the diff reserves. When the digests match, both catch the gold and a shield seal lands, then settles to the ok tone.
 - The server is a wide, low ellipse on a lit floor, with a frosted hatched rim, a dial of evenly spaced 1px ticks drawn flat along the ring's outline, and artboard corner marks on the content column's edges, set apart from the window and joined to it by a beam. The floor's classes stay almost invisible and show only as a call's wave reads them. Client marks and the server are liquid glass: a thin tint, a sheen, thickness at the lower edge, and one 1px rim bright at the top-left, at elevation-1 (the server at elevation-2). Each call falls down the beam as a gold comet, the server's rim turns gold, a wave lights the floor, and the reply climbs back in ink. It carries no title or copy of its own.
 - Gold appears only while a call is in flight or at the hash match. Results are real and tested against the preset, the tooling lint and `server.ts`. Reduced motion shows the finished session, every step selectable, and a still scene.
@@ -223,11 +224,11 @@ Each Workflow card follows the Design system card: a title, one plain sentence a
 
 ## The call to action
 
-The close is plain: a framed band on the page ground with the two-line invitation and, under it, the two ways in (Get started, and the install command). One hairline frame, nothing inside it but the copy and the actions: no marks, no hatch, no playground. Below 48rem the two lines run on as one balanced sentence, the actions stack at full width, and the band narrows its inset so the install command stays on one line.
+The close centers on the hero's axis: a hairline panel with a quiet opening line above a large, full-strength destination, then the two ways in (Get started, and the install command). Typography and generous whitespace carry the composition, without an illustration. A faint wash of the hero's gold light meets a thin horizon along the panel's lower edge. Each title line balances independently; below 40rem the actions stack at one shared width, including the command's island wrapper. The command uses a solid recessed surface here, and the panel narrows its inset so the complete command stays on one line.
 
 ## The footer
 
-The homepage closes on its own footer (`HomeFooter`), drawn like a spec sheet. The rails and rulers carry on from the sections, and the sheet's top rule lies on the guide that closes the last section, so the cells hang from one line. The logotype, the positioning line and the community icons (a row of hairline squares, like a tool palette) fill the first cell, and the link groups follow in hairline cells, each headed by a mono index and name. One quiet base line holds the copyright, the license, and the theme and language choices (native selects under plain text); on phones each takes its own row. The wordmark rests on the bottom edge, set large across the column and engraved with 1px diagonal hatching over a faint tint, fading toward the edge like a drafted title block: a signature, not a link. The docs keep the shared footer.
+The homepage closes on its own footer (`HomeFooter`), an open colophon held by whitespace. The logotype and spaced community icons sit on the left; three navigation columns align on the right, with quiet mono headings and generous link hit areas. On phones, Docs occupies the left column while Resources and More stack on the right. A single hairline separates navigation from the copyright and grouped legal links; theme and language are native selects with icons, explicit accessible names and outlined controls. Links underline on hover, every control has a visible keyboard focus ring, and reduced motion removes transitions. The drafting rails continue from the page and fade toward a lightly engraved wordmark sized to the content column at the bottom edge. The docs keep the shared footer.
 
 ## Figures under the pointer
 
