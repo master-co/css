@@ -103,19 +103,19 @@ export const designSystemTiles = [
   {
     title: 'Light and dark, same markup',
     body: 'Modes swap token values, not class names. Drag the divider to see which value is in use.',
-    gridColumnClassName: 'grid-col-span(3)@md',
+    gridColumnClassName: 'grid-col-span(4)@md',
     visual: 'theme-modes'
   },
   {
     title: 'Tokens, defined once',
     body: 'Define color, spacing, radius and type once in @theme; utilities, components and modes all read from them.',
-    gridColumnClassName: 'grid-col-span(3)@md',
+    gridColumnClassName: 'grid-col-span(4)@md',
     visual: 'theme-variables'
   },
   {
     title: 'Layout and motion, together',
     body: 'Grid spans, responsive layouts, animation and view transitions, written right beside the markup they style.',
-    gridColumnClassName: 'grid-col-span(3)@md',
+    gridColumnClassName: 'grid-col-span(5)@md',
     visual: 'art-gallery'
   },
   {

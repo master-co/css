@@ -57,10 +57,10 @@ export default function DesignSystemSection() {
         </HomeSectionHeader>
         {/* Themes first, the full-width palette in the middle, then layout and layers side by side. */}
         <HomeBentoFrame>
-          <HomeBentoGrid className="grid-cols(1) grid-cols(6)@md home-ds-row">
+          <HomeBentoGrid className="grid-cols(1) grid-cols(8)@md home-ds-row">
             {designSystemTiles.slice(0, 2).map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
-            <P3Palette body={$(designSystemPalette.body)} title={$(designSystemPalette.title)} />
             {designSystemTiles.slice(2).map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
+            <P3Palette body={$(designSystemPalette.body)} title={$(designSystemPalette.title)} />
           </HomeBentoGrid>
         </HomeBentoFrame>
       </div>
@@ -150,7 +150,7 @@ function P3Palette({ body, title }: { body: string, title: string }) {
   return (
     <HomeBentoCard
       body={body}
-      className="grid-col-span(6)@md home-ds-palette home-reveal-item"
+      className="grid-col-span(8)@md home-ds-palette home-reveal-item"
       href={designSystemGuides['p3-palette']}
       icon={tileIcons['p3-palette']}
       title={title}>
