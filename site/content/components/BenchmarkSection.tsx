@@ -22,13 +22,18 @@ export default function BenchmarkSection() {
     }]
   }))
   return (
-    <section id={homeSections.cssCost} className="position:relative home-section home-section-reveal">
+    <section id={homeSections.cssCost} className="position:relative home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
-          index="03"
-          label={$('Measure')}
-          title={$('Ship a fraction of the CSS.')}
-          body={$('The CSS each documentation page delivers, measured raw and with Brotli. Master CSS sends the rules a page uses, not a framework.')} />
+          index="04"
+          label={$('CSS size')}
+          title={$('Only the CSS a page uses.')}
+          body={$('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships the rules a page uses, not a whole framework.')}>
+          <Link className="home-section-link" href="/guide/benchmarks#page-css-size">
+            {$('View benchmark details')}
+            <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+          </Link>
+        </HomeSectionHeader>
         <HomeBentoFrame>
           <div className="home-bench">
             <BenchmarkSizeChart
@@ -42,10 +47,6 @@ export default function BenchmarkSection() {
               modes={modes} />
           </div>
         </HomeBentoFrame>
-        <Link className="mt-lg home-section-link" href="/guide/benchmarks#page-css-size">
-          {$('View benchmark detail')}
-          <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
-        </Link>
       </div>
     </section>
   )

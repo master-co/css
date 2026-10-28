@@ -1,41 +1,30 @@
 @layer components {
   .home-hero {
-    padding-block: var(--spacing-3xl) var(--spacing-4xl);
-
-    @media (--md) {
-      padding-top: var(--spacing-4xl);
-    }
+    padding-block: clamp(3rem, 1.6rem + 4.2vw, 6rem) var(--home-section-space);
   }
 
-  /* The class matrix fills the upper hero and fades out toward the stage. */
+  /* The class matrix sits to the right of the copy and fades out toward it and toward the stage. */
   .home-hero-field {
     position: absolute;
     inset: 0 0 auto;
     z-index: -2;
     width: 100%;
-    height: min(100%, 58rem);
+    height: min(100%, 46rem);
     color: var(--home-text);
-    /* Fade in below the header, clear an oval behind the copy, and fade out toward the stage. */
     mask-image:
-      linear-gradient(transparent 0, black 12%, black 46%, transparent 94%),
-      radial-gradient(ellipse 40% 34% at 50% 38%, transparent 58%, black 100%);
+      radial-gradient(ellipse 48% 74% at 100% 52%, black 20%, transparent 78%),
+      linear-gradient(transparent 0, black 14%, black 56%, transparent 96%);
     mask-composite: intersect;
 
+    /* Narrow screens have no free side for it, so the copy keeps the whole width. */
     @media (width < 48rem) {
-      opacity: 0.6;
-      mask-image:
-        linear-gradient(transparent 0, black 10%, black 40%, transparent 80%),
-        radial-gradient(ellipse 80% 34% at 50% 38%, transparent 62%, black 100%);
+      display: none;
     }
   }
 
-  /* A soft clearing behind the headline keeps the matrix out of the copy. */
-  .home-hero-veil {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.025)), transparent 70%);
+  .home-hero-copy {
+    display: grid;
+    justify-items: start;
   }
 
   .home-hero-pill {
@@ -45,8 +34,8 @@
     max-width: 100%;
     padding: 0.25rem var(--spacing-sm) 0.25rem 0.25rem;
     border-radius: var(--radius-pill);
-    font-size: var(--text-sm);
-    line-height: var(--text-sm--line-height);
+    font-size: var(--home-caption);
+    line-height: 1.5;
     color: var(--home-text-quiet);
     transition: color var(--home-base) var(--home-ease), gap var(--home-base) var(--home-ease);
 
@@ -69,7 +58,7 @@
     padding: 0.125rem var(--spacing-xs);
     border-radius: var(--radius-pill);
     font-family: var(--home-mono);
-    font-size: 0.6875rem;
+    font-size: var(--home-label);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--home-text);
@@ -89,27 +78,42 @@
   .home-display {
     margin: var(--spacing-xl) 0 0;
     font-size: var(--home-display);
-    font-weight: var(--font-weight-regular);
-    line-height: 0.98;
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
     letter-spacing: -0.05em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
+  .home-display-line {
+    display: block;
+  }
+
   /* The second line steps back in tone instead of color. */
   .home-display-quiet {
-    color: transparent;
-    background: linear-gradient(180deg, var(--home-text-quiet), color-mix(in oklab, var(--home-text-quiet) 60%, transparent));
-    background-clip: text;
+    color: var(--home-text-faint);
   }
 
   .home-hero-lead {
-    max-width: 40rem;
+    max-width: 36rem;
     margin: var(--spacing-xl) 0 0;
     font-size: var(--home-lead);
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
+
+    /* Han text breaks between any two characters; balancing keeps a word from splitting onto a short last line. */
+    &:lang(zh) {
+      text-wrap: balance;
+    }
+  }
+
+  .home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
   }
 
   /*
@@ -166,7 +170,9 @@
 
   /* The source column clips its own corner so the window itself can keep its 3D children unclipped. */
   .home-composer-source {
-    @media (--lg) {
+    position: relative;
+
+    @media (--md) {
       overflow: hidden;
       border-bottom-left-radius: var(--home-radius-sheet);
     }
@@ -232,8 +238,11 @@
     color: var(--home-text-quiet);
     transition: color var(--home-base) var(--home-ease);
 
-    @media (--sm) {
-      margin-left: 0;
+    /* With the step list between them, the steps take the free space instead. */
+    .home-composer-steps + & {
+      @media (--sm) {
+        margin-left: 0;
+      }
     }
   }
 
@@ -241,17 +250,37 @@
     color: var(--home-warn);
   }
 
+  .home-composer-status-error {
+    color: var(--home-error);
+  }
+
   .home-composer-status-ok {
     color: var(--home-ok);
   }
 
   .home-composer-panel-label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-3xs) var(--spacing-md);
     margin: 0 0 var(--spacing-xs);
     font-family: var(--home-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.14em;
+    font-size: var(--home-label);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--home-text-faint);
+  }
+
+  .home-composer-hint {
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /* Only pointers can point; touch readers see the rules arrive on their own. */
+  .home-composer-hint-pointer {
+    @media (hover: none) {
+      display: none;
+    }
   }
 
   .home-composer-markup {
@@ -294,6 +323,107 @@
 
   .home-composer-token-typing {
     color: var(--home-text);
+  }
+
+  /* Editing: the reader takes over the class list; the page's runtime renders what they type. */
+  .home-composer-edit {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3xs);
+    height: 1.75rem;
+    padding-inline: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--home-text-quiet);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
+
+    &:hover {
+      color: var(--home-text);
+      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
+    }
+
+    &:active {
+      box-shadow: 0 0 0 1px var(--home-rule), var(--home-pressed);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Narrow sources have no free corner beside the first line, so the code starts below the button. */
+  .home-composer-source:has(.home-composer-edit) .home-composer-markup {
+    @media (width < 52.125rem) {
+      padding-top: 3.25rem;
+    }
+  }
+
+  /* The editable class list reads as a field: a soft signal wash while it has the caret. */
+  .home-composer-editable {
+    margin-inline: -0.125rem;
+    padding-inline: 0.125rem;
+    border-radius: var(--radius-sm);
+    outline: none;
+    color: var(--home-code-string);
+    caret-color: var(--home-signal);
+    box-shadow: 0 0 0 1px var(--home-rule);
+    transition: background-color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
+
+    &:focus {
+      background-color: color-mix(in oklab, var(--home-signal) 10%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in oklab, var(--home-signal) 70%, transparent);
+    }
+  }
+
+  /* The live marker takes the place of the step list while editing. */
+  .home-composer-live {
+    display: none;
+    margin-inline: auto;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    @media (--sm) {
+      display: inline-flex;
+    }
+  }
+
+  /* Whatever the reader types stays inside the preview, even fixed positioning. */
+  .home-composer[data-editing] .home-composer-preview {
+    contain: layout paint;
+  }
+
+  .home-composer-at-rule {
+    color: var(--home-text-faint);
+  }
+
+  .home-composer-rule.home-composer-rule-missing {
+    color: var(--home-warn);
+  }
+
+  .home-composer-rule-note {
+    color: var(--home-text-faint);
+  }
+
+  /* Pointing at a class marks it and lifts its rule in the generated CSS below. */
+  .home-composer-token {
+    border-radius: var(--radius-sm);
+    transition: background-color var(--home-quick) var(--home-ease), color var(--home-quick) var(--home-ease);
+  }
+
+  .home-composer-token-inspected {
+    color: var(--home-text);
+    background-color: color-mix(in oklab, var(--home-text) 8%, transparent);
   }
 
   .home-composer-caret {
@@ -383,7 +513,7 @@
     box-shadow: var(--home-groove);
     transform-style: preserve-3d;
 
-    @media (--lg) {
+    @media (--md) {
       border-top: 0;
       border-left: 1px solid var(--home-hairline);
       border-radius: 0 0 var(--home-radius-sheet) 0;
@@ -418,80 +548,10 @@
     box-shadow: var(--home-elevation-2);
 
     @media (--motion-safe) {
-      @media (--lg) {
+      @media (--md) {
         transform: translateZ(48px);
       }
     }
-  }
-
-  .home-highlights {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--spacing-lg);
-    row-gap: var(--spacing-xl);
-    margin: var(--spacing-4xl) 0 0;
-    padding: 0;
-    list-style: none;
-
-    @media (--md) {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      column-gap: 0;
-      border-top: 1px solid var(--home-rule);
-    }
-  }
-
-  .home-highlight {
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--home-hairline);
-    text-align: left;
-
-    @media (--md) {
-      padding-inline: var(--spacing-lg);
-      border-top: 0;
-      border-left: 1px solid var(--home-hairline);
-
-      &:first-child {
-        padding-left: 0;
-        border-left: 0;
-      }
-    }
-  }
-
-  .home-highlight-value {
-    display: flex;
-    align-items: baseline;
-    gap: 0.3125rem;
-    font-size: clamp(2rem, 1.5rem + 1.6vw, 3rem);
-    font-weight: var(--font-weight-regular);
-    line-height: 1;
-    letter-spacing: -0.045em;
-    font-variant-numeric: tabular-nums;
-    color: var(--home-text);
-  }
-
-  /* Units drop to mono at caption size, like a dimension on a drawing. */
-  .home-highlight-unit {
-    font-family: var(--home-mono);
-    font-size: 0.8125rem;
-    font-weight: var(--font-weight-regular);
-    letter-spacing: 0;
-    color: var(--home-text-quiet);
-  }
-
-  /* A multiplier stays in the display face, one step quieter. */
-  .home-highlight-sign {
-    margin-left: -0.25rem;
-    font-size: 0.7em;
-    color: var(--home-text-quiet);
-  }
-
-  .home-highlight-label {
-    display: block;
-    max-width: 24ch;
-    margin-top: var(--spacing-sm);
-    font-size: var(--text-sm);
-    line-height: var(--text-sm--line-height);
-    color: var(--home-text-quiet);
   }
 
   @media (--motion-safe) {
@@ -502,14 +562,6 @@
         animation-fill-mode: both;
         animation-timeline: view();
         animation-range: entry 0% cover 42%;
-      }
-
-      .home-highlight {
-        animation-name: home-reveal-item;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 10% entry 60%;
       }
     }
   }

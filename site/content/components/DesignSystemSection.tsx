@@ -1,7 +1,9 @@
 import './design-system.css'
 import { Fragment, type CSSProperties } from 'react'
+import { IconArrowRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import Color from 'colorjs.io'
+import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { getColor } from '~/site/docs-shell/data/color-palette'
 import ArtGalleryPreview from './ArtGalleryPreview'
@@ -11,20 +13,25 @@ import ThemeModesPreview from './ThemeModesPreview'
 import { cascadeLayers, designSystemRows, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemTileContent } from './home-content'
 
 const p3PaletteGridStyle = {
-  gridTemplateColumns: `2.5rem repeat(${p3PaletteColorNames.length}, minmax(2.25rem, 1fr))`,
-  gridTemplateRows: `1rem repeat(${p3PaletteTiers.length}, 2.25rem)`
-}
+  '--home-palette-columns': p3PaletteColorNames.length,
+  '--home-palette-rows': p3PaletteTiers.length
+} as CSSProperties
 
 export default function DesignSystemSection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.designSystem} className="home-section home-section-reveal">
+    <section id={homeSections.designSystem} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
           index="01"
-          label={$('Compose')}
-          title={$('One vocabulary for your design system.')}
-          body={$('Themes, tokens, layout and motion stay readable in markup, and the CSS they generate stays predictable.')} />
+          label={$('Design system')}
+          title={$('Build modern interfaces from one class vocabulary.')}
+          body={$('Themes, tokens, wide-gamut color, layout and motion stay readable in markup, and the CSS they generate stays predictable.')}>
+          <Link className="home-section-link" href="/guide/theme">
+            {$('Define your theme tokens')}
+            <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+          </Link>
+        </HomeSectionHeader>
         <HomeBentoFrame>
           <HomeBentoGrid>
             {designSystemRows.map((row) => (
@@ -48,7 +55,7 @@ function DesignSystemTile({ tile }: { tile: DesignSystemTileContent }) {
       {tile.visual === 'theme-modes' && <ThemeModesPreview className="h-md home-bento-visual" />}
       {tile.visual === 'art-gallery' && <ArtGalleryPreview className="h-md h-lg@md home-bento-visual" />}
       {tile.visual === 'theme-variables' && (
-        <HomeCodeWindow className="h-md home-bento-visual home-bento-visual-top" lang="css" preClassName="height:100%" variant="embedded">
+        <HomeCodeWindow className="h-md home-bento-visual home-bento-visual-top home-tokens-code" lang="css" preClassName="height:100%">
           {themeVariablesCode}
         </HomeCodeWindow>
       )}
@@ -82,14 +89,13 @@ function P3PalettePreview() {
   const $ = useTranslation()
   return (
     <div aria-label={$('P3 palette tiers from 100 through 0')} className="home-bento-visual home-palette-stage" role="img">
-      <div aria-hidden="true" className="position:absolute inset:0 opacity:0.8 pointer-events:none home-dot-grid" />
       <p aria-hidden="true" className="home-palette-legend">
         <span className="home-annotation">↑ {$('Height: chroma')}</span>
         <span><span className="home-palette-legend-swatch" /><span className="home-annotation">{$('Rim: outside sRGB')}</span></span>
       </p>
       <div aria-hidden="true" className="home-palette-scene">
         <div className="home-palette" style={p3PaletteGridStyle}>
-          <span />
+          <span className="home-palette-label" />
           {p3PaletteColorNames.map((colorName) => (
             <span className="home-palette-label" key={colorName}>{colorName}</span>
           ))}

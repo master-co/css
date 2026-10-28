@@ -1,39 +1,14 @@
 import './workflow.css'
 import type { ComponentType, CSSProperties, SVGProps } from 'react'
-import { IconBrandOpenai, IconCircleCheck, IconFileText, IconFolder, IconRoute } from '@tabler/icons-react'
+import { IconArrowRight, IconFileText, IconFolder, IconRoute } from '@tabler/icons-react'
 import clsx from 'clsx'
+import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import brands from '~/site/docs-shell/data/brands'
-import claudeLogo from '~/site/assets/images/home/clients/claude.svg'
-import clineLogo from '~/site/assets/images/home/clients/cline.svg'
-import cursorLogo from '~/site/assets/images/home/clients/cursor.svg'
-import copilotLogo from '~/site/assets/images/home/clients/githubcopilot.svg'
-import geminiLogo from '~/site/assets/images/home/clients/googlegemini.svg'
-import windsurfLogo from '~/site/assets/images/home/clients/windsurf.svg'
-import zedLogo from '~/site/assets/images/home/clients/zedindustries.svg'
 import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
-import { homeSections, impactCommand, mcpCommand, mcpToolNames, workflowCards } from './home-content'
+import { homeSections, impactCommand, workflowCards } from './home-content'
 
 type Logo = ComponentType<SVGProps<SVGSVGElement>>
-
-const MasterCSSLogo = brands.mastercss.src
-
-/** Tabler's outlined OpenAI mark, sized like the filled client logos. */
-function OpenAILogo(props: SVGProps<SVGSVGElement>) {
-  return <IconBrandOpenai {...(props as object)} size={24} stroke={1.5} />
-}
-
-/** MCP clients that run local stdio servers such as `@master/css-mcp`. */
-const mcpClients: { name: string, Logo: Logo, color?: string }[] = [
-  { name: 'Claude Code', Logo: claudeLogo, color: '#d97757' },
-  { name: 'Codex', Logo: OpenAILogo },
-  { name: 'Cursor', Logo: cursorLogo },
-  { name: 'GitHub Copilot', Logo: copilotLogo },
-  { name: 'Gemini CLI', Logo: geminiLogo, color: '#8e75b2' },
-  { name: 'Windsurf', Logo: windsurfLogo },
-  { name: 'Zed', Logo: zedLogo, color: '#084ccf' },
-  { name: 'Cline', Logo: clineLogo }
-]
 
 const frameworkKeys = ['vite', 'astro', 'nextjs', 'nuxtjs', 'svelte', 'react-router', 'webpack', 'rspack', 'rsbuild', 'react', 'vuejs', 'angular', 'laravel', 'rails', 'lit', 'storybook'] as const
 
@@ -50,37 +25,59 @@ const impactNodes = [
 
 const impactEdges = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 4], [2, 5], [3, 6], [4, 6], [5, 6]] as const
 
-const impactColumnX = [10, 36, 64, 90]
+// Outer columns sit far enough in for their widest label at the narrowest card.
+const impactColumnX = [17, 40, 63, 87]
+
+/** A node's trace: itself, everything it depends on and everything that depends on it. */
+function traceOf(node: number) {
+  const walk = (start: number, next: (edge: readonly [number, number]) => number | undefined) => {
+    const seen = new Set([start])
+    for (const index of seen) {
+      for (const edge of impactEdges) {
+        const found = edge[0] === index || edge[1] === index ? next(edge) : undefined
+        if (found !== undefined && found !== index) seen.add(found)
+      }
+    }
+    return seen
+  }
+  return new Set([...walk(node, (edge) => edge[1]), ...walk(node, (edge) => edge[0])])
+}
+
+/** For each node and edge, the hovered nodes whose trace includes it, as a `data-trace` word list. */
+const impactNodeTraces = impactNodes.map((_, node) => impactNodes.map((__, other) => other).filter((other) => traceOf(other).has(node)).join(' '))
+const impactEdgeTraces = impactEdges.map(([from, to]) => impactNodes.map((_, other) => other).filter((other) => {
+  const trace = traceOf(other)
+  return trace.has(from) && trace.has(to)
+}).join(' '))
 
 export default function WorkflowSection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.developmentWorkflow} className="home-section home-section-reveal">
+    <section id={homeSections.developmentWorkflow} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
-          index="06"
+          index="07"
           label={$('Workflow')}
-          title={$('Built into the tools you already use.')}
-          body={$('Connect agents over MCP, see what a token change touches, and run the same lint rules in ESLint, CI and agent sessions.')} />
+          title={$('Works with your framework and build.')}
+          body={$('The same manifest and rendering modes in every integration, from a single app to a monorepo, with a report of what each change touches.')}>
+          <Link className="home-section-link" href="/guide/installation">
+            {$('Install for your framework')}
+            <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+          </Link>
+        </HomeSectionHeader>
         <HomeBentoFrame>
           <HomeBentoGrid className="grid-cols(1) grid-cols(2)@md grid-cols(12)@lg">
-            <HomeBentoCard className="grid-col-span(2)@md grid-col-span(7)@lg grid-row-span(2)@lg home-reveal-item" signal={$(workflowCards.mcp.signal)} title={$(workflowCards.mcp.title)} body={$(workflowCards.mcp.body)}>
-              <McpHub />
-            </HomeBentoCard>
-            <HomeBentoCard className="grid-col-span(5)@lg home-reveal-item" signal={$(workflowCards.impact.signal)} title={$(workflowCards.impact.title)} body={$(workflowCards.impact.body)}>
-              <ImpactGraph />
-            </HomeBentoCard>
-            <HomeBentoCard className="grid-col-span(5)@lg home-reveal-item" signal={$(workflowCards.frameworks.signal)} title={$(workflowCards.frameworks.title)} body={$(workflowCards.frameworks.body)}>
+            <HomeBentoCard className="grid-col-span(2)@md grid-col-span(7)@lg home-reveal-item" title={$(workflowCards.frameworks.title)} body={$(workflowCards.frameworks.body)}>
               <FrameworkMarquee />
             </HomeBentoCard>
-            <HomeBentoCard className="grid-col-span(4)@lg home-reveal-item" signal={$(workflowCards.workspaces.signal)} title={$(workflowCards.workspaces.title)} body={$(workflowCards.workspaces.body)}>
+            <HomeBentoCard className="grid-col-span(2)@md grid-col-span(5)@lg home-reveal-item" title={$(workflowCards.impact.title)} body={$(workflowCards.impact.body)}>
+              <ImpactGraph />
+            </HomeBentoCard>
+            <HomeBentoCard className="grid-col-span(5)@lg home-reveal-item" title={$(workflowCards.workspaces.title)} body={$(workflowCards.workspaces.body)}>
               <WorkspaceTree />
             </HomeBentoCard>
-            <HomeBentoCard className="grid-col-span(4)@lg home-reveal-item" signal={$(workflowCards.routes.signal)} title={$(workflowCards.routes.title)} body={$(workflowCards.routes.body)}>
+            <HomeBentoCard className="grid-col-span(7)@lg home-reveal-item" title={$(workflowCards.routes.title)} body={$(workflowCards.routes.body)}>
               <RouteStyles />
-            </HomeBentoCard>
-            <HomeBentoCard className="grid-col-span(4)@lg home-reveal-item" signal={$(workflowCards.policy.signal)} title={$(workflowCards.policy.title)} body={$(workflowCards.policy.body)}>
-              <PolicySurfaces />
             </HomeBentoCard>
           </HomeBentoGrid>
         </HomeBentoFrame>
@@ -89,72 +86,29 @@ export default function WorkflowSection() {
   )
 }
 
-/** Clients orbit the server on a tilted plane; their faces counter-rotate so they always read upright. */
-function McpHub() {
-  const $ = useTranslation()
-  return (
-    <div className="home-bento-visual home-mcp">
-      <p aria-hidden="true" className="home-annotation home-mcp-note">{$('Local stdio MCP clients')}</p>
-      <div className="home-mcp-stage">
-        <div className="home-mcp-orbit">
-          <span aria-hidden="true" className="home-mcp-ring" />
-          <span aria-hidden="true" className="home-mcp-ring home-mcp-ring-inner" />
-          <ul aria-label={$('MCP clients')} className="home-mcp-spin">
-            {mcpClients.map(({ color, name, Logo }, index) => (
-              <li className="home-mcp-slot" key={name} style={{ '--home-orbit-angle': index * 360 / mcpClients.length } as CSSProperties}>
-                <span aria-hidden="true" className="home-mcp-spoke" />
-                <span className="home-mcp-face">
-                  <span className="home-mcp-client-logo" style={color ? { '--home-brand': color } as CSSProperties : undefined}>
-                    <Logo aria-hidden="true" height={22} width={22} />
-                  </span>
-                  <span className="home-mcp-client-name">{name}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div className="home-mcp-core">
-            <MasterCSSLogo aria-hidden="true" height={34} width={34} />
-            <span className="font-2xs font-semibold fg-text-strong">@master/css-mcp</span>
-            <span className="home-status home-status-live">stdio</span>
-          </div>
-        </div>
-      </div>
-      <div className="home-mcp-footer">
-        <div className="home-marquee" style={{ '--home-marquee-duration': '36s' } as CSSProperties}>
-          <div className="home-marquee-track">
-            {[0, 1].map((copy) => mcpToolNames.map((tool) => (
-              <code aria-hidden={copy ? 'true' : undefined} className="home-chip" key={`${copy}-${tool}`}>{tool}</code>
-            )))}
-          </div>
-        </div>
-        <code className="home-terminal-line"><span aria-hidden="true" className="fg-text-muted">$</span> {mcpCommand}</code>
-      </div>
-    </div>
-  )
-}
-
 function ImpactGraph() {
   const $ = useTranslation()
   const point = (index: number) => ({ x: impactColumnX[impactNodes[index][0]], y: impactNodes[index][1] })
   return (
     <div className="home-bento-visual home-impact">
+      <p aria-hidden="true" className="home-annotation home-impact-hint">{$('Point at a node to trace it')}</p>
       <div className="home-impact-stage">
         <svg aria-hidden="true" className="home-impact-wires" preserveAspectRatio="none" viewBox="0 0 100 100">
-          {impactEdges.map(([from, to]) => {
+          {impactEdges.map(([from, to], index) => {
             const a = point(from)
             const b = point(to)
             const middle = (a.x + b.x) / 2
-            return <path className="home-impact-wire" d={`M${a.x} ${a.y} C ${middle} ${a.y}, ${middle} ${b.y}, ${b.x} ${b.y}`} key={`${from}-${to}`} style={{ animationDelay: `${impactNodes[from][0] * 0.55}s` }} />
+            return <path className="home-impact-wire" d={`M${a.x} ${a.y} C ${middle} ${a.y}, ${middle} ${b.y}, ${b.x} ${b.y}`} data-trace={impactEdgeTraces[index]} key={`${from}-${to}`} style={{ animationDelay: `${impactNodes[from][0] * 0.55}s` }} />
           })}
         </svg>
-        {impactNodes.map(([column, y, label, kind]) => (
-          <span className={clsx('home-impact-node', `home-impact-node-${kind}`)} key={label} style={{ left: `${impactColumnX[column]}%`, top: `${y}%`, animationDelay: `${column * 0.55}s` }}>
+        {impactNodes.map(([column, y, label, kind], index) => (
+          <span className={clsx('home-impact-node', `home-impact-node-${kind}`)} data-node={index} data-trace={impactNodeTraces[index]} key={label} style={{ left: `${impactColumnX[column]}%`, top: `${y}%`, animationDelay: `${column * 0.55}s` }}>
             {label}
           </span>
         ))}
       </div>
       <div className="home-impact-legend">
-        {[$('Definition'), $('Utilities'), $('Consumers'), $('Output')].map((label) => <span key={label}>{label}</span>)}
+        {[$('Definition'), $('Utilities'), $('Consumers'), $('Output')].map((label, index) => <span key={label} style={{ left: `${impactColumnX[index]}%` }}>{label}</span>)}
       </div>
       <code className="home-terminal-line"><span aria-hidden="true" className="fg-text-muted">$</span> {impactCommand}</code>
     </div>
@@ -163,11 +117,11 @@ function ImpactGraph() {
 
 function FrameworkMarquee() {
   const frameworks = frameworkKeys.map((key) => brands[key] as { name: string, src: Logo, className?: string })
-  const rows = [frameworks.slice(0, 8), frameworks.slice(8)]
+  const rows = [frameworks.slice(0, 6), frameworks.slice(6, 11), frameworks.slice(11)]
   return (
     <div className="home-bento-visual home-frameworks">
       {rows.map((row, rowIndex) => (
-        <div className={clsx('home-marquee', rowIndex && 'home-marquee-reverse')} key={rowIndex} style={{ '--home-marquee-duration': '28s' } as CSSProperties}>
+        <div className={clsx('home-marquee', rowIndex % 2 && 'home-marquee-reverse')} key={rowIndex} style={{ '--home-marquee-duration': `${30 + rowIndex * 4}s` } as CSSProperties}>
           <div className="home-marquee-track">
             {[0, 1].map((copy) => row.map(({ name, src: Logo, className }) => (
               <span aria-hidden={copy ? 'true' : undefined} className="home-framework" key={`${copy}-${name}`}>
@@ -218,27 +172,6 @@ function RouteStyles() {
           <code className="home-chip">{stylesheet}</code>
         </div>
       ))}
-    </div>
-  )
-}
-
-function PolicySurfaces() {
-  const $ = useTranslation()
-  const surfaces = ['ESLint', 'CLI', 'MCP']
-  return (
-    <div aria-hidden="true" className="home-bento-visual home-policy">
-      <code className="home-chip home-policy-source">recommended</code>
-      <div className="home-policy-surfaces">
-        {surfaces.map((surface, index) => (
-          <span className="home-policy-surface" key={surface} style={{ animationDelay: `${index * 0.6}s` }}>
-            <IconCircleCheck size={14} stroke={2} />
-            {surface}
-          </span>
-        ))}
-      </div>
-      <div className="home-policy-rules">
-        {['sort-classes', 'no-invalid-classes', 'no-conflicting-classes', 'prefer-canonical-classes'].map((rule) => <code key={rule}>{rule}</code>)}
-      </div>
     </div>
   )
 }

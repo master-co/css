@@ -10,6 +10,33 @@ The homepage explains a precise tool, so it should look precise and stay quiet: 
 4. **Figures explain mechanisms.** Every illustration shows something Master CSS actually does: classes becoming rules, layers ordering them, rules flowing to a delivery target. No ornamental art.
 5. **Motion shows cause and effect.** Things move because data moves or state changes. Ambient motion is slow; everything stops for reduced motion.
 6. **Truthful samples.** Code, diagnostics, completions and numbers come from the engine, linter, language service or committed benchmarks, and tests keep them that way.
+7. **One left rail.** The hero copy, every section header and every figure hang on the content edge. Only the closing panel centers.
+8. **One idea per figure.** A section shows one demo, or a few cards that each show one thing. When several samples make the same point, put them behind tabs in one figure instead of repeating the frame.
+
+## Page structure
+
+The page reads as a sequence, each section answering the next question a reader has:
+
+| # | Section | Question | Figure |
+| --- | --- | --- | --- |
+| — | Hero | What is it? | Composer: classes typed, CSS generated, lint problem, fix; then editable on the page's runtime |
+| 01 | Design system | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
+| 02 | Editor | Can I read it? | Four editor cards |
+| 03 | Rendering | How does CSS reach the browser? | Flow diagram and mode cards |
+| 04 | CSS size | What does it cost? | Bar chart from the benchmark snapshot |
+| 05 | Lint | How is it checked? | Rule explorer: tabs beside one editor |
+| 06 | AI agents | Can agents use it safely? | Agent session, MCP clients, tool list |
+| 07 | Workflow | Does it fit my stack? | Frameworks, impact graph, monorepo, routes |
+| — | Call to action | How do I start? | Dark panel over the class matrix |
+
+Figures alternate in weight (colorful bento, quiet cards, diagram, chart, editor, session, logos) so no two neighbours look alike.
+
+## Rhythm
+
+- Sections are `--home-section-space` apart (80 → 144px) and every figure starts `--home-header-space` (40 → 60px) below its header.
+- A section header is a single stack on the left rail, never two columns: eyebrow, title (`max-width: 24ch`, balanced), lead (`max-width: 38rem`), then a text link to the guide that goes deeper. Every numbered section has one, so the reader always knows where to read next.
+- Drafting rails run 20px outside the content edges from `md`, so text and frames sit inside a ruled column instead of touching the line. In the hero they start below the fixed header and fade in.
+- Inside cards: 24px padding on phones, 28px from `sm`; the title sits 6px above its body; the figure starts a padding-width below the body and is pushed to the card's bottom so figures in a row share a baseline. A figure that cannot fill its card (a list, a marquee) grows to fill it instead of leaving a gap.
 
 ## Surfaces
 
@@ -24,7 +51,7 @@ From the page outward. Each home token aliases a role; light step first, dark se
 | `--home-float` | `surface-floating` | white / 80 | Popovers and menus | `--home-elevation-2` |
 | `--home-ink` | `surface-ink` (site) | 90 / 5 | The primary action and the selected icon | Flat, 1px inner light |
 
-Light mode stays clean and white: the ground is about `#f7f7f7`, the shell about `#f1f1f1` and sheets white, so structure comes from contours, not dark grounds. Text aliases `text-strong`, `text-body`, `text-muted` and the site's `text-subtle` (zinc 40 / 60); lines alias the site's `line-contour` (an 8.5% dark contour), `line-divider` and a 55% mix of `line-control`.
+Light mode stays clean and white: the ground is about `#f7f7f7`, the shell about `#f1f1f1` and sheets white, so structure comes from contours, not dark grounds. Text aliases `text-strong`, `text-body` and `text-muted`; `--home-text-faint` mixes 72% `text-muted` into the site's `text-subtle`, so annotations stay quiet but still read at 4.5:1 on the ground and on sheets in both schemes. Lines alias the site's `line-contour` (an 8.5% dark contour), `line-divider` and a 55% mix of `line-control`.
 
 ## Shell, inset and radii
 
@@ -56,7 +83,7 @@ Only elements that float over the character matrix use `.home-glass`: the announ
 ## Lines, guides and text
 
 - `--home-hairline` separates, `--home-rule` divides, `--home-rule-strong` marks the selected item.
-- Drafting guides: from `md`, each section draws rails on the content edges, a rule across its top and a cross where they meet (`--home-guide`). They sit behind content.
+- Drafting guides: from `md`, each section draws rails 20px outside the content edges (`--home-rail`), a rule across its top and a cross where they meet (`--home-guide`). They sit behind content.
 - `--home-text` is for display type, titles and data; `--home-text-body` for code; `--home-text-quiet` for prose; `--home-text-faint` for annotations.
 - Code samples pull Shiki's colors toward the body text so they read as structure. Status tones (`.home-tone-*`) are low-chroma too.
 
@@ -64,32 +91,57 @@ Only elements that float over the character matrix use `.home-glass`: the announ
 
 The page labels itself with a few markers, and only these:
 
-- **Section marker** (`.home-marker`): index, name and a rule that draws in. Every section starts with one, numbered in reading order.
+- **Section eyebrow** (`.home-eyebrow`): index, a short rule that draws in, and the section name. Every numbered section starts with one; the hero and the closing panel have none.
 - **Status marker** (`.home-status`): a dot and a word. `-live` uses the signal and is the only pulsing element in its figure.
-- **Annotation marker** (`.home-annotation`, `.home-workflow-signal`): mono caps that name parts of a figure or a card.
+- **Annotation marker** (`.home-annotation`): mono caps at `--home-label` that name parts of a figure. Cards carry no kicker above their title.
 - **Tag** (`.home-tag`): mono caps in a hairline box for a state such as Default.
 - **Units** in figures drop to mono at caption size, like a dimension on a drawing.
 
 ## Type scale
 
-| Role | Size | Notes |
-| --- | --- | --- |
-| Display | `--home-display` | Regular weight, tracking `-0.05em`; the second line drops to the quiet gray |
-| Section title | `--home-title` | Regular weight, balanced wrapping, at most two lines |
-| Lead | `--home-lead` | Quiet gray, pretty wrapping |
-| Card title | 19px | Medium weight, tracking `-0.02em` |
-| Body and captions | 14px, `--text-xs` | Quiet gray |
-| Code and data | `--home-mono`, 11–13px | Tabular numbers |
+One scale, set in `../design.css`. Two sizes are fluid; everything else is fixed.
+
+| Role | Token | Size | Weight and treatment |
+| --- | --- | --- | --- |
+| Display | `--home-display` | 42 → 88px | Medium, tracking `-0.05em`, line height 1; the second line drops to the faint gray |
+| Section title | `--home-title` | 32 → 48px | Medium, tracking `-0.04em`, balanced, at most two lines |
+| Lead | `--home-lead` | 17 → 19px | Regular, quiet gray, line height 1.6 |
+| Card title | `--home-card-title` | 18px | Medium, tracking `-0.015em` |
+| Body | `--home-body` | 15px | Regular, quiet gray, line height 1.6 |
+| Caption | `--home-caption` | 13px | Regular, quiet gray |
+| Label | `--home-label` | 11px | Mono caps, the eyebrow and annotations |
+| Code | `--home-code` | 13px | Mono, tabular numbers |
+
+Han text keeps its own tracking: under `:lang(zh)`, display and titles tighten only to `-0.015em`. Titles also use `word-break: keep-all`, so they break only at spaces and punctuation; a long Chinese title marks its phrase boundaries with `\u200b` in `public/dictionaries/tw.json` so it can still wrap between phrases on a phone.
 
 ## Copy
 
-Short, plain sentences. Name what the reader gets, then stop. No claims the samples cannot back up.
+Plain and specific, the way the docs would say it. Say what the thing is or does, then stop: "The markup-driven CSS language and framework", "Lint classes against your project". No superlatives, no slogans, no claims the samples cannot back up. Eyebrows are plain nouns (Design system, Editor, Rendering, CSS size, Lint, AI agents, Workflow).
 
 ## Data
 
 - Charts are gray. Bars, gridlines and ticks use text and rule tokens; the Master CSS row alone uses the signal.
 - Third-party logos and brand icons keep their own colors; the gray system governs surfaces, lines and text, not other people's marks.
 - Every figure that shows a number names its source and date, such as the benchmark snapshot, and the tests read the same file.
+
+## Windows and wells
+
+- An **editor window** (the hero composer, the lint explorer, the agent session) has a bar: three dots, a file tab and a status on the right. It is the only place window chrome appears.
+- A **code well** inside a card is just code in the well, with no bar. Docs code-block borders and fills are reset inside home figures.
+- The **dot grid** marks a rendered preview, a canvas where markup becomes UI: the composer preview, the theme split, the gallery. Diagrams, palettes and code never sit on it.
+- Problems are marked in the code with the word-mark directives the docs use (`@ERROR`, `@WARN`, `@MARK`), so the underline points at exactly what the rule reports; tests check the mark starts at the reported column.
+
+## The live composer
+
+The hero composer is a demo until the reader presses **Edit classes**. Then the class list becomes a one-line field and the page's own Master CSS runtime (`globalThis.masterCSSRuntime`, present because the site renders progressively) generates what they type: the preview button takes the classes, the panel lists each class's rule, and a class that generates nothing is marked in the warn tone and counted in the bar, where a live signal replaces the step list. Typing must pause for 300ms before the list reaches the runtime, so half-typed states such as `:ho` never become rules. The preview contains layout and paint while editing, so even `position:fixed` stays inside it. **Replay** returns to the demo. Pages without a runtime keep the composer read-only.
+
+## Figures under the pointer
+
+Looping figures hand over to the reader: pointing at a card holds its figure in the revealed state (the hover card, the completion menu, the color picker), and the focused-highlighting loop stops where it is. In Hover inspection every class in the sample is a target, and the card shows the rule the engine generated for it at build time. Dragging the theme preview's divider tints the token value in use in the card beside it. In Trace a change, pointing at a node keeps its dependencies and dependents lit and dims the rest, with pure CSS (`:has()` over `data-trace` word lists computed from the graph).
+
+## Tours
+
+A figure with several states tours them on its own while it is in view: the lint explorer steps through its rules, the rendering section through its modes. A hairline on the chosen item fills toward the next one. Pointer or focus inside the figure pauses the tour; choosing an item ends it. Under reduced motion there is no tour and the first state stays.
 
 ## Stable figures
 
@@ -99,7 +151,8 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 - Easing: `--home-ease` for arrivals and responses, `--home-ease-inout` for loops.
 - Durations: `--home-quick` (hover, press), `--home-base` (state changes), `--home-slow` (reveals). Ambient loops run 8 s or longer.
-- Sections and cards reveal on scroll with view timelines. Interactive figures pause when off screen.
+- The hero arrives in reading order on load: pill, both display lines, lead, actions, then the stage, each rising 20px out of a 6px blur.
+- Below the hero, every header line and card rises as it scrolls in on a view timeline, so the stagger comes from position, not timers. Interactive figures pause when off screen.
 - Under `prefers-reduced-motion: reduce`, loops stop and figures show their finished state.
 - Write animations with longhand properties when a value uses a route variable; a variable inside the `animation` shorthand makes the build keep every preset keyframe.
 
@@ -109,12 +162,12 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 - The hero stage tilts back and flattens as it scrolls into place; its panes sit at different depths.
 - The cascade layer figure explodes `@layer theme, base, defaults, components, utilities` into stacked planes.
-- The palette matrix tilts into an isometric field and flattens on hover so it can be read.
-- The MCP orbit rotates clients around the server on a tilted plane; clients dim as they pass behind it.
+- The palette matrix tilts into an isometric field and flattens on hover so it can be read; below `md` it is a flat, fluid grid.
+- The MCP orbit rotates clients around the server on a tilted plane; clients dim as they pass behind it. The radius follows the card's width, and narrow cards tilt less and drop the client names.
 - The call to action closes on a grid floor that recedes to a horizon and drifts slowly toward the reader.
 
 Perspective is `--home-perspective`. A plane that carries content to read, like the hero stage, tilts less than 20° and settles flat. Diagram planes may tilt further when they only carry short labels, and anything longer turns to face the reader.
 
 ## Matrix
 
-The character matrix (`GlyphField`) is written in real classes from `ctaClassRows`, which the tests lint. It appears twice, behind the hero and behind the call to action, and always clears an oval behind the copy. Cells sit at 4% ink; a soft light follows the pointer or drifts when idle, and only cells decoding inside that light take the signal color.
+The character matrix (`GlyphField`) is written in real classes from `ctaClassRows`, which the tests lint. It appears twice: on the right of the hero, fading toward the copy and hidden on narrow screens, and behind the call to action, where it clears an oval behind the copy. Cells sit at 4% ink; a soft light follows the pointer or drifts when idle, and only cells decoding inside that light take the signal color.

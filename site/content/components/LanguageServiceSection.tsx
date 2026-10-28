@@ -2,11 +2,14 @@ import './editor-tiles.css'
 import type { CSSProperties } from 'react'
 import { createRenderSessionSync } from '@master/css/node'
 import type { MasterCSSShikiOptions } from '@master/css-language-service/shiki'
+import { IconArrowRight } from '@tabler/icons-react'
 import clsx from 'clsx'
+import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import preset from '~/site/utils/preset-manifest'
 import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
+import HoverInspection, { type HoverInspectionToken } from './HoverInspection'
 import { activeSyntaxHighlightingCode, colorToolClasses, homeSections, hoverInspectionClass, hoverInspectionLines, languageServiceCards, manifestSuggestionItems, manifestSuggestionsCode, manifestSuggestionsPrefix, manifestSuggestionsTyped, type LanguageServiceCardContent } from './home-content'
 
 type HastNode = HastText | HastElement
@@ -58,13 +61,18 @@ const languageServiceGridClassNames = {
 export default function LanguageServiceSection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.languageService} className="home-section home-section-reveal">
+    <section id={homeSections.languageService} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
-          index="05"
-          label={$('Read')}
+          index="02"
+          label={$('Editor')}
           title={$('Dense class strings, still readable.')}
-          body={$('Completions from your manifest, generated CSS on hover, color swatches and focused highlighting.')} />
+          body={$('The language service completes classes from your project manifest, shows the CSS behind each one on hover, and marks colors in place.')}>
+          <Link className="home-section-link" href="/guide/language-service">
+            {$('Explore the language service')}
+            <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
+          </Link>
+        </HomeSectionHeader>
         <HomeBentoFrame>
           <HomeBentoGrid className="grid-cols(1) grid-cols(2)@md grid-cols(12)@lg">
             {languageServiceCards.map((card) => (
@@ -73,13 +81,13 @@ export default function LanguageServiceSection() {
                 {card.visual === 'color-tools' && <ColorToolsPreview />}
                 {card.visual === 'manifest-aware-suggestions' && (
                   <div aria-hidden="true" className="home-bento-visual home-manifest-suggestions">
-                    <HomeCodeWindow className="home-manifest-suggestions-window" lang="html" masterCSS={manifestSuggestionsShikiOptions} preClassName="height:100%" variant="embedded">
+                    <HomeCodeWindow className="home-manifest-suggestions-window" lang="html" masterCSS={manifestSuggestionsShikiOptions} preClassName="height:100%">
                       {manifestSuggestionsCode}
                     </HomeCodeWindow>
                   </div>
                 )}
                 {card.visual === 'active-syntax-highlighting' && (
-                  <HomeCodeWindow className="h-2xs home-active-syntax home-bento-visual" lang="html" preClassName="height:100%" variant="embedded">
+                  <HomeCodeWindow className="h-2xs home-active-syntax home-bento-visual" lang="html" preClassName="height:100%">
                     {activeSyntaxHighlightingCode}
                   </HomeCodeWindow>
                 )}
@@ -92,51 +100,32 @@ export default function LanguageServiceSection() {
   )
 }
 
-/** A pointer hovers a class and the editor shows the CSS it generates. */
+/** Every class in the sample, with the CSS the engine generates for it, for the hover card. */
 function HoverInspectionPreview() {
-  const $ = useTranslation()
   const engine = createRenderSessionSync({ manifest: preset })
-  let css: string
   try {
-    css = formatRule(engine.ensureClassRules([hoverInspectionClass]).classRules[hoverInspectionClass][0].text)
+    const tokens = hoverInspectionLines.flatMap((line, index) => {
+      const value = line.match(/class="([^"]*)"/)
+      if (!value) return []
+      const valueStart = line.indexOf(value[0]) + 'class="'.length
+      let cursor = 0
+      return value[1].split(' ').map((className): HoverInspectionToken => {
+        const start = value[1].indexOf(className, cursor)
+        cursor = start + className.length
+        return { className, line: index, start: valueStart + start, css: '' }
+      })
+    })
+    const { classRules } = engine.ensureClassRules(tokens.map((token) => token.className))
+    return <HoverInspection defaultClassName={hoverInspectionClass} lines={hoverInspectionLines} tokens={tokens.map((token) => ({ ...token, css: formatRule(classRules[token.className][0].text) }))} />
   } finally {
     engine.dispose()
   }
-  const [first, hovered, last] = hoverInspectionLines
-  const tokenStart = hovered.indexOf(hoverInspectionClass)
-  return (
-    <div aria-hidden="true" className="home-bento-visual home-hover-inspection" style={{ '--home-token-start': `${tokenStart}ch`, '--home-token-length': `${hoverInspectionClass.length}ch` } as CSSProperties}>
-      <div className="home-code-window-chrome">
-        <span className="home-code-window-dot" />
-        <span className="home-code-window-dot" />
-        <span className="home-code-window-dot" />
-      </div>
-      <div className="home-hover-code">
-        <MarkupLine line={first} />
-        <MarkupLine line={hovered} />
-        <MarkupLine line={last} />
-        <span className="home-hover-token" />
-        <div className="home-hover-card">
-          <p className="home-hover-card-title">{$('Generated CSS')}</p>
-          <pre className="home-hover-card-css">{css}</pre>
-        </div>
-        <svg className="home-hover-cursor" viewBox="0 0 24 24" width="22" height="22">
-          <path d="M5 3l14 7.5-6.2 1.6L10 18.5z" />
-        </svg>
-      </div>
-    </div>
-  )
 }
 
 /** Swatches beside color classes, with the color picker opening on the first. */
 function ColorToolsPreview() {
   return (
     <div aria-hidden="true" className="home-bento-visual home-color-tools">
-      <div className="home-code-window-chrome">
-        <span className="home-code-window-dot" />
-        <span className="home-code-window-dot" />
-        <span className="home-code-window-dot" />
-      </div>
       <div className="home-color-tools-body">
         <div className="home-color-tools-lines">
           {colorToolClasses.map((item) => (
@@ -158,18 +147,6 @@ function ColorToolsPreview() {
           <code className="home-color-picker-value">{colorToolClasses[0].color}</code>
         </div>
       </div>
-    </div>
-  )
-}
-
-/** Markup highlighted by hand, so the hover overlay can align to its characters. */
-function MarkupLine({ line }: { line: string }) {
-  const match = line.match(/^(\s*)<(\w+) class="([^"]*)">(.*)$/)
-  if (!match) return <div className="home-hover-line"><span className="home-code-tag">{line}</span></div>
-  const closing = match[4].match(/<\/\w+>$/)?.[0]
-  return (
-    <div className="home-hover-line">
-      {match[1]}<span className="home-code-tag">&lt;{match[2]}</span> <span className="home-code-attr">class</span>=<span className="home-code-string">&quot;{match[3]}&quot;</span><span className="home-code-tag">&gt;</span>{closing ? match[4].slice(0, -closing.length) : match[4]}{closing && <span className="home-code-tag">{closing}</span>}
     </div>
   )
 }

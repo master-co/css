@@ -7,9 +7,6 @@
     padding: var(--spacing-lg);
     border-radius: var(--home-radius-sheet);
     background-color: var(--home-sheet);
-    background-image: radial-gradient(var(--home-rule) 1px, transparent 1px);
-    background-size: 16px 16px;
-    background-position: 8px 8px;
     box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
 
     @media (--md) {
@@ -76,13 +73,6 @@
   }
 
   .home-flow-column-label {
-    margin: 0;
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--tracking-widest);
-    text-transform: uppercase;
-    color: var(--home-text-quiet);
-
     @media (--md) {
       position: absolute;
       top: 5%;
@@ -251,7 +241,7 @@
     gap: var(--home-gap);
     margin-top: var(--home-gap);
 
-    @media (--lg) {
+    @media (--md) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
@@ -295,6 +285,19 @@
     font-size: 0.875rem;
   }
 
+  /* While the section tours the modes, a hairline along the chosen card's top edge fills toward the next one. */
+  .home-delivery-progress {
+    position: absolute;
+    top: 0;
+    right: var(--home-radius-sheet);
+    left: var(--home-radius-sheet);
+    display: none;
+    height: 1px;
+    background-color: var(--home-rule-strong);
+    transform-origin: left;
+    scale: var(--home-delivery-progress, 0) 1;
+  }
+
   .home-delivery-icon {
     display: grid;
     place-content: center;
@@ -335,10 +338,31 @@
     background-color: var(--home-sheet);
     box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
 
-    .home-delivery-icon {
+    /* While the section tours the modes, a hairline along the chosen card's top edge fills toward the next one. */
+  .home-delivery-progress {
+    position: absolute;
+    top: 0;
+    right: var(--home-radius-sheet);
+    left: var(--home-radius-sheet);
+    display: none;
+    height: 1px;
+    background-color: var(--home-rule-strong);
+    transform-origin: left;
+    scale: var(--home-delivery-progress, 0) 1;
+  }
+
+  .home-delivery-icon {
       color: var(--home-text-inverse);
       background-color: var(--home-ink);
       box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--home-contact);
+    }
+  }
+
+  .home-delivery[data-touring]:has(#home-delivery-static:checked) .home-delivery-card[data-mode='static'],
+  .home-delivery[data-touring]:has(#home-delivery-progressive:checked) .home-delivery-card[data-mode='progressive'],
+  .home-delivery[data-touring]:has(#home-delivery-runtime:checked) .home-delivery-card[data-mode='runtime'] {
+    .home-delivery-progress {
+      display: block;
     }
   }
 

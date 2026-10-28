@@ -1,9 +1,8 @@
 import './hero.css'
-import { IconArrowRight, IconCode } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 import { createRenderSessionSync } from '@master/css/node'
 import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
 import preset from '~/site/utils/preset-manifest'
 import CopyCommand from './CopyCommand'
 import GlyphField from './GlyphField'
@@ -16,39 +15,33 @@ export default function HeroSection() {
   return (
     <section data-glyph-host id={homeSections.hero} className="position:relative overflow:hidden isolation:isolate home-hero">
       <GlyphField className="home-hero-field" lines={glyphFieldLines} />
-      <div aria-hidden="true" className="home-hero-veil" />
       <div className="position:relative app-wrapper home-section-wrap">
-        <div className="display:flex flex-direction:column align-items:center max-w-6xl margin-inline:auto text-align:center home-rise">
-          <Link className="home-glass home-hero-pill" href="/guide/mcp-server">
+        <div className="home-hero-copy">
+          <Link className="home-enter home-glass home-hero-pill" href="/guide/mcp-server">
             <span className="home-hero-pill-badge">{$('New')}</span>
             {$('An MCP server for your AI agents')}
             <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />
           </Link>
           <h1 className="home-display">
-            <span className="display:block">{$('Maintainable styles,')}</span>
-            <span className="display:block home-display-quiet">{$('right in markup.')}</span>
+            <span className="home-display-line home-enter">{$('The markup-driven CSS')}</span>{' '}
+            <span className="home-display-line home-display-quiet home-enter">{$('language and framework')}</span>
           </h1>
-          <p className="home-hero-lead">
-            {$('Write native CSS and design tokens as class names. Master CSS checks them, shows what each change affects, and generates CSS only for the classes in your code.')}
+          <p className="home-enter home-hero-lead">
+            {$('Write CSS and design tokens as class names that people can read and AI agents can check. Master CSS generates only the CSS your pages use.')}
           </p>
-          <div className="display:flex flex-wrap:wrap justify-content:center gap-sm mt-xl">
+          <div className="home-enter home-hero-actions">
             <HomeAction href="/guide/introduction" variant="primary">
               {$('Get started')}
               <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
             </HomeAction>
-            <HomeAction href="/guide/syntax-tutorial" variant="secondary">
-              <IconCode aria-hidden="true" size={16} stroke={1.75} />
-              {$('Syntax tutorial')}
-            </HomeAction>
+            <CopyCommand command={installCommand} />
           </div>
-          <CopyCommand className="mt-lg" command={installCommand} />
         </div>
-        <div className="home-rise home-rise-delayed home-stage">
+        <div className="home-enter home-stage">
           <div className="home-stage-tilt">
             <HeroComposer problem={heroComposerProblem} rules={createComposerRules()} sortedTokens={[...heroComposerSortedTokens]} />
           </div>
         </div>
-        <HomeHighlights />
       </div>
     </section>
   )
@@ -75,31 +68,4 @@ function createComposerRules(): HeroComposerRule[] {
   } finally {
     engine.dispose()
   }
-}
-
-function HomeHighlights() {
-  const $ = useTranslation()
-  const brotli = getHomePageCSSSize().find((mode) => mode.id === 'brotli')!
-  const master = brotli.rows.find((row) => row.isMasterCSS)!
-  const tailwind = brotli.rows.find((row) => row.name === 'Tailwind CSS')!
-  const highlights = [
-    { value: (master.bytes / 1000).toFixed(1), unit: 'kB', label: $('of CSS on the Master CSS docs page, Brotli') },
-    // Floored so the headline never rounds up past the measured ratio.
-    { value: String(Math.floor(tailwind.ratio)), unit: '×', label: $('less CSS than the Tailwind CSS docs page') },
-    { value: '0', unit: 'kB', label: $('of runtime with the default static setup') },
-    { value: '1', unit: '', label: $('set of Rust semantics, matched byte for byte in the browser') }
-  ]
-  return (
-    <ul className="home-highlights">
-      {highlights.map((highlight) => (
-        <li className="home-highlight" key={highlight.label}>
-          <strong className="home-highlight-value">
-            {highlight.value}
-            {highlight.unit && <span className={highlight.unit === '×' ? 'home-highlight-sign' : 'home-highlight-unit'}>{highlight.unit}</span>}
-          </strong>
-          <span className="home-highlight-label">{highlight.label}</span>
-        </li>
-      ))}
-    </ul>
-  )
 }

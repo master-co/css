@@ -12,7 +12,7 @@ import { Linter } from 'eslint'
 import snapshot from '../../../benchmarks/docs-page-css-size/snapshot.json'
 import { getHomePageCSSSize } from '../../utils/home-page-css-size'
 import preset from '../../utils/preset-manifest'
-import { activeSyntaxHighlightingCode, agentDiagnosticCards, agentSession, colorToolClasses, ctaClassRows, deliveryFlowPackets, deliveryFlowSources, heroComposerProblem, heroComposerSortedTokens, heroComposerTokens, hoverInspectionLines, manifestSuggestionItems, manifestSuggestionsPrefix, manifestSuggestionsTyped, cascadeLayers, themeVariablesCode } from './home-content'
+import { activeSyntaxHighlightingCode, agentSession, colorToolClasses, ctaClassRows, deliveryFlowPackets, deliveryFlowSources, heroComposerProblem, heroComposerSortedTokens, heroComposerTokens, hoverInspectionLines, lintRules, manifestSuggestionItems, manifestSuggestionsPrefix, manifestSuggestionsTyped, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })
 const recommendedConfig: Linter.Config[] = [...masterCSS, {
@@ -49,23 +49,34 @@ function createDocument(text: string) {
   }
 }
 
-test('code diagnostic cards show what the lint rules report', () => {
-  for (const card of agentDiagnosticCards) {
-    if (!card.problem.source.startsWith('@master/css/')) continue
-    const { messages, fixed } = lintSample(card.code, strictConfig)
+test('lint rule samples show what the lint rules report', () => {
+  for (const rule of lintRules) {
+    if (!rule.problem.source.startsWith('@master/css/')) continue
+    const { messages, fixed } = lintSample(rule.code, strictConfig)
     assert.deepEqual(messages.map((message) => ({
-      location: `home.html:${message.line - 1}:${message.column}`,
+      location: `${rule.file}:${message.line - 1}:${message.column}`,
       message: message.message,
       severity: message.severity === 2 ? 'error' : 'warning',
       source: message.ruleId
-    })), [card.problem], card.title)
-    assert.equal(fixed, (card.fixPreviewCode ?? card.code).trim(), card.title)
+    })), [rule.problem], rule.title)
+    assert.equal(fixed, (rule.fixPreviewCode ?? rule.code).trim(), rule.title)
   }
 })
 
-test('the fix preview card previews the class order fix', () => {
-  const classOrder = agentDiagnosticCards.find((card) => card.title === 'Class order')!
-  const preview = agentDiagnosticCards.find((card) => card.title === 'Safe fix preview')!
+test('lint rule marks point at what the rules report and fix', () => {
+  for (const rule of lintRules) {
+    if (rule.mark) {
+      const [, line, column] = rule.problem.location.split(':').map(Number)
+      assert.equal(rule.code.trim().split('\n')[line - 1].indexOf(rule.mark) + 1, column, rule.title)
+    }
+    if (rule.fixMark) assert.ok(rule.fixPreviewCode?.includes(rule.fixMark), rule.title)
+  }
+})
+
+test('the fix preview rule previews the class order fix', () => {
+  const classOrder = lintRules.find((rule) => rule.title === 'Class order')!
+  const preview = lintRules.find((rule) => rule.title === 'Fix previews')!
+  assert.equal(preview.file, classOrder.file)
   const [before] = classOrder.code.trim().split('\n')
   const [after] = classOrder.fixPreviewCode!.trim().split('\n')
   assert.deepEqual(preview.code.trim().split('\n').slice(0, 2), [`${before} <!-- [!code --] -->`, `${after} <!-- [!code ++] -->`])

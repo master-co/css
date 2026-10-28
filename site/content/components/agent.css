@@ -4,7 +4,7 @@
     min-height: 26rem;
     text-align: left;
 
-    @media (--lg) {
+    @media (--md) {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     }
   }
@@ -17,7 +17,7 @@
     border-bottom: 1px solid var(--home-hairline);
     background-color: var(--home-ground);
 
-    @media (--lg) {
+    @media (--md) {
       border-right: 1px solid var(--home-hairline);
       border-bottom: 0;
     }
@@ -106,6 +106,7 @@
 
   .home-agent-code {
     flex: auto;
+    overflow-x: auto;
     /* Room for the fix diff, the longest view, so the session never changes height. */
     min-height: calc(1.85em * 7 + var(--spacing-md) * 2);
     padding-block: var(--spacing-md);
@@ -118,7 +119,8 @@
 
   .home-agent-line {
     display: flex;
-    overflow: hidden;
+    width: max-content;
+    min-width: 100%;
     padding-inline: var(--spacing-sm) var(--spacing-md);
     white-space: pre;
     animation: home-agent-line 0.3s var(--easing-smooth);
@@ -174,10 +176,10 @@
     margin: 0;
     padding: var(--spacing-xs) var(--spacing-lg);
     font-family: var(--home-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.12em;
+    font-size: var(--home-label);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--home-text-quiet);
+    color: var(--home-text-faint);
   }
 
   .home-agent-problems-count {
@@ -225,9 +227,224 @@
     }
   }
 
+  .home-mcp {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    position: relative;
+    min-height: 30rem;
+  }
+
+  /* The orbit plane tilts back; the spin turns it, and each face turns the other way to stay upright. */
+  /* The orbit scales with its card: the radius leaves room for a client face on either side. */
+  .home-mcp {
+    container-type: inline-size;
+  }
+
+  .home-mcp-stage {
+    --home-orbit-radius: min(16rem, calc(50cqw - 3.5rem));
+    --home-orbit-tilt: 64deg;
+    --home-mcp-core: 8.5rem;
+    position: relative;
+    display: grid;
+    flex: auto;
+    place-items: center;
+    min-height: 22rem;
+    overflow: hidden;
+    perspective: var(--home-perspective);
+    background-image: radial-gradient(ellipse 50% 40% at 50% 52%, light-dark(rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.03)), transparent 70%);
+
+    @media (--lg) {
+      --home-orbit-tilt: 60deg;
+    }
+
+    /* In a narrow card the plane tilts less and the server shrinks, so clients clear it in front and behind. */
+    @container (width < 30rem) {
+      --home-orbit-radius: calc(50cqw - 2.25rem);
+      --home-orbit-tilt: 48deg;
+      --home-mcp-core: 7rem;
+    }
+  }
+
+  .home-mcp-orbit {
+    position: relative;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--home-orbit-tilt));
+  }
+
+  .home-mcp-ring {
+    position: absolute;
+    top: calc(var(--home-orbit-radius) * -1);
+    left: calc(var(--home-orbit-radius) * -1);
+    width: calc(var(--home-orbit-radius) * 2);
+    height: calc(var(--home-orbit-radius) * 2);
+    border: 1px solid var(--home-rule);
+    border-radius: 50%;
+  }
+
+  .home-mcp-ring-inner {
+    inset: calc(var(--home-orbit-radius) * -0.5);
+    width: var(--home-orbit-radius);
+    height: var(--home-orbit-radius);
+    border-style: dashed;
+    border-color: var(--home-hairline);
+  }
+
+  .home-mcp-spin {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+    animation: home-mcp-spin 72s linear infinite;
+  }
+
+  .home-mcp-slot {
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: rotateZ(calc(var(--home-orbit-angle) * 1deg));
+  }
+
+  /* Each client's request travels the spoke toward the server. */
+  .home-mcp-spoke {
+    position: absolute;
+    top: -0.5px;
+    left: 0;
+    width: var(--home-orbit-radius);
+    height: 1px;
+    background-image: repeating-linear-gradient(90deg, var(--home-rule-strong) 0 3px, transparent 3px 9px);
+    background-size: 9px 1px;
+    opacity: 0.55;
+    animation: home-mcp-request 1.2s linear infinite;
+  }
+
+  .home-mcp-face {
+    position: absolute;
+    left: var(--home-orbit-radius);
+    display: grid;
+    justify-items: center;
+    gap: var(--spacing-3xs);
+    width: 6rem;
+    margin-left: -3rem;
+    top: -1.625rem;
+    transform-origin: 50% 1.625rem;
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+    /* The depth fade runs on the same clock, offset by the slot's angle, so clients dim as they pass behind the server. */
+    animation-name: home-mcp-face, home-mcp-depth;
+    animation-duration: 72s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-delay: 0s, calc(var(--home-orbit-angle) * -0.2s);
+  }
+
+  .home-mcp-client-logo {
+    display: grid;
+    place-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: var(--radius-2xl);
+    outline: 1px solid var(--home-hairline);
+    color: var(--home-brand, var(--home-text));
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-1);
+    transition: outline-color var(--home-slow) var(--home-ease);
+
+    .home-mcp-face:hover & {
+      outline-color: var(--home-rule);
+    }
+  }
+
+  .home-mcp-client-name {
+    font-size: 0.6875rem;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+
+    @container (width < 30rem) {
+      display: none;
+    }
+  }
+
+  .home-mcp:hover :is(.home-mcp-spin, .home-mcp-face) {
+    animation-play-state: paused;
+  }
+
+  /* The server stands upright at the center of the plane. */
+  .home-mcp-core {
+    position: absolute;
+    top: calc(var(--home-mcp-core) / -2);
+    left: calc(var(--home-mcp-core) / -2);
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 0.25rem;
+    width: var(--home-mcp-core);
+    height: var(--home-mcp-core);
+    border-radius: var(--radius-pill);
+    outline: 1px solid var(--home-rule);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-elevation-2);
+    transform-origin: 50% 50%;
+    transform: rotateX(calc(var(--home-orbit-tilt) * -1)) translateZ(1px);
+  }
+
+  .home-mcp-command {
+    margin: 0 var(--spacing-md) var(--spacing-md);
+  }
+
+  /* An agent's calls, in order: each tool lights up in turn. */
+  /* The list fills the card, so its rows line up with the orbit beside it. */
+  .home-mcp-tools {
+    container-type: inline-size;
+    display: grid;
+    flex: auto;
+    align-content: space-evenly;
+    margin-top: 0;
+    padding: var(--spacing-xs);
+    list-style: none;
+  }
+
+  .home-mcp-tool {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.5625rem var(--spacing-sm);
+    border-radius: var(--radius-lg);
+    animation-name: home-mcp-tool;
+    animation-duration: var(--home-tool-cycle);
+    animation-timing-function: var(--home-ease);
+    animation-iteration-count: infinite;
+
+    /* Name and description side by side once the card has room for both. */
+    @container (width >= 30rem) {
+      grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+      align-items: baseline;
+      gap: var(--spacing-md);
+    }
+  }
+
+  .home-mcp-tool-name {
+    overflow: hidden;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text);
+  }
+
+  .home-mcp-tool-body {
+    font-size: var(--home-caption);
+    line-height: 1.45;
+    color: var(--home-text-quiet);
+  }
+
   @media (--motion-reduce) {
     .home-agent-line,
-    .home-agent-line-fixed {
+    .home-agent-line-fixed,
+    .home-mcp-spin,
+    .home-mcp-face,
+    .home-mcp-spoke,
+    .home-mcp-tool {
       animation: none;
     }
   }
@@ -241,6 +458,57 @@
 
 @keyframes home-agent-fixed {
   to {
+    background-color: transparent;
+  }
+}
+
+@keyframes home-mcp-spin {
+  to {
+    rotate: z 1turn;
+  }
+}
+
+/* Orbit angle 90° faces the reader and 270° sits behind the server. */
+@keyframes home-mcp-depth {
+  0%, 50%, 100% {
+    opacity: 0.8;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.38;
+  }
+}
+
+@keyframes home-mcp-face {
+  from {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+
+  to {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg - 360deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+}
+
+@keyframes home-mcp-request {
+  to {
+    background-position: -9px 0;
+  }
+}
+
+@keyframes home-mcp-tool {
+  0%, 1.5% {
+    background-color: transparent;
+  }
+
+  3%, 9% {
+    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
+  }
+
+  12%, 100% {
     background-color: transparent;
   }
 }

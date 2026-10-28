@@ -1,0 +1,226 @@
+@layer components {
+  /* Rules on the shell beside one editor; the chosen rule is a raised sheet, the rest stay flush with the shell. */
+  .home-lint {
+    display: grid;
+    gap: var(--home-gap);
+
+    @media (--md) {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+  }
+
+  .home-lint-aside {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-lint-rules {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+  }
+
+  .home-lint-rule {
+    position: relative;
+    display: grid;
+    padding: 0.875rem 1rem;
+    border-radius: var(--home-radius-sheet);
+    text-align: left;
+    color: var(--home-text-quiet);
+    cursor: pointer;
+    transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+
+    @media (--sm) {
+      padding-inline: 1.25rem;
+    }
+
+    &:hover {
+      background-color: color-mix(in oklab, var(--home-sheet) 45%, transparent);
+    }
+
+    &[aria-selected='true'] {
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-lint-rule-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+
+  .home-lint-rule-title {
+    font-size: var(--home-body);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: -0.01em;
+    transition: color var(--home-base) var(--home-ease);
+
+    [aria-selected='true'] & {
+      color: var(--home-text);
+    }
+  }
+
+  /* The chosen rule opens to its description; the rows animate their height from content. */
+  .home-lint-rule-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--home-base) var(--home-ease);
+
+    [aria-selected='true'] & {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  .home-lint-rule-body {
+    overflow: hidden;
+    min-height: 0;
+    font-size: var(--home-caption);
+    line-height: 1.55;
+    color: var(--home-text-quiet);
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease);
+
+    [aria-selected='true'] & {
+      opacity: 1;
+    }
+  }
+
+  /* While the explorer tours the rules, a hairline under the chosen rule fills toward the next one. */
+  .home-lint-rule-text {
+    display: block;
+    padding-top: 0.25rem;
+  }
+
+  .home-lint-rule-progress {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.4375rem;
+    left: 1rem;
+    display: none;
+    height: 1px;
+    background-color: var(--home-rule-strong);
+    transform-origin: left;
+    scale: var(--home-lint-progress, 0) 1;
+
+    @media (--sm) {
+      right: 1.25rem;
+      left: 1.25rem;
+    }
+
+    [data-touring] & {
+      display: block;
+    }
+  }
+
+  .home-lint-editor {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+  }
+
+  /* Every sample shares one cell, so the editor keeps the height of the longest one. */
+  .home-lint-code {
+    display: grid;
+    flex: auto;
+    align-items: center;
+    min-height: 9rem;
+    container-type: inline-size;
+    background-color: var(--home-well);
+    box-shadow: var(--home-groove);
+  }
+
+  /* Narrow editors wrap long class lists instead of cutting them off. */
+  @container (width < 34rem) {
+    .home-lint-window .code-block {
+      width: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  .home-lint-window {
+    grid-area: 1 / 1;
+    min-width: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease), visibility 0s var(--home-base);
+
+    &[data-active] {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity var(--home-base) var(--home-ease);
+    }
+  }
+
+  /* The fixed source replaces the original in place. */
+  .home-lint-editor[data-fixed] {
+    .home-code-window-source {
+      opacity: 0;
+    }
+
+    .home-code-window-fix {
+      opacity: 1;
+    }
+  }
+
+  .home-lint-problems {
+    display: grid;
+    align-content: start;
+    gap: var(--spacing-sm);
+    min-height: 7.5rem;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--home-hairline);
+
+    @media (--sm) {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+
+  .home-lint-problem {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    animation: home-lint-problem 0.4s var(--home-ease) both;
+  }
+
+  .home-lint-surfaces {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: auto 0 0;
+    padding: var(--spacing-md) 1rem var(--spacing-xs);
+
+    @media (--sm) {
+      padding-inline: 1.25rem;
+    }
+
+    & > .home-annotation {
+      margin-right: var(--spacing-3xs);
+    }
+  }
+
+  @media (--motion-reduce) {
+    .home-lint-problem {
+      animation: none;
+    }
+  }
+}
+
+@keyframes home-lint-problem {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}

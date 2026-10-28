@@ -11,7 +11,7 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    padding: var(--spacing-4xl) var(--spacing-md) calc(var(--spacing-4xl) + var(--spacing-lg));
+    padding: var(--spacing-4xl) var(--spacing-md) calc(var(--spacing-4xl) + var(--spacing-md));
     border-radius: var(--home-radius-sheet);
     outline: 1px solid var(--home-hairline);
     color-scheme: dark;
@@ -22,7 +22,7 @@
     box-shadow: var(--home-edge), var(--home-contact);
 
     @media (--md) {
-      padding-block: var(--spacing-5xl) calc(var(--spacing-5xl) + var(--spacing-2xl));
+      padding-block: var(--spacing-5xl) calc(var(--spacing-5xl) + var(--spacing-lg));
     }
   }
 
@@ -84,32 +84,13 @@
     text-align: center;
   }
 
-  /* Centered, the section marker draws its rule out to both sides. */
-  .home-cta-marker {
-    align-self: stretch;
-    justify-content: center;
-
-    &::before {
-      flex: auto;
-      max-width: 6rem;
-      height: 1px;
-      background: linear-gradient(270deg, var(--home-rule), transparent);
-      transform-origin: right;
-      content: '';
-    }
-
-    &::after {
-      max-width: 6rem;
-    }
-  }
-
   .home-cta-title {
-    max-width: 20ch;
-    margin: var(--spacing-xl) 0 0;
-    font-size: calc(var(--home-title) * 1.1);
-    font-weight: var(--font-weight-regular);
-    line-height: 1.04;
-    letter-spacing: -0.04em;
+    max-width: 22ch;
+    margin: 0;
+    font-size: calc(var(--home-title) * 1.12);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.06;
+    letter-spacing: -0.045em;
     color: var(--home-text);
     text-wrap: balance;
   }
@@ -134,16 +115,6 @@
       animation-duration: 9s;
       animation-timing-function: linear;
       animation-iteration-count: infinite;
-    }
-
-    @supports (animation-timeline: view()) {
-      .home-cta-marker::before {
-        animation-name: home-marker-rule;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 20% entry 80%;
-      }
     }
   }
 }

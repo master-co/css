@@ -41,14 +41,20 @@ export interface DeliveryModeContent {
   default?: boolean
 }
 
-export interface AgentDiagnosticCardContent {
+export interface LintRuleContent {
   title: string
   body: string
+  /** A short state beside the rule: what kind of check it is. */
+  tag: 'Error' | 'Autofix' | 'Opt-in' | 'MCP'
+  file: string
   code: string
-  /** Rendered while the card is hovered: the source after an autofix. */
+  /** The text the problem points at, underlined in the sample; `fixMark` marks what the fix changed. */
+  mark?: string
+  fixMark?: string
+  /** The source after the fix the rule offers, and what the fix did. */
   fixPreviewCode?: string
+  fix?: string
   problem: HomeCodeWindowProblem
-  problemsLabel: 'Problems' | 'Preview'
 }
 
 export interface LanguageServiceCardContent {
@@ -60,16 +66,22 @@ export interface LanguageServiceCardContent {
 export interface WorkflowCardContent {
   title: string
   body: string
-  signal: string
 }
 
+export interface McpToolContent {
+  name: string
+  body: string
+}
+
+/** Section anchors in page order. */
 export const homeSections = {
   hero: 'hero',
   designSystem: 'design-system',
+  languageService: 'language-service',
   deliveryModes: 'delivery-modes',
   cssCost: 'css-cost',
   codeDiagnostics: 'code-diagnostics',
-  languageService: 'language-service',
+  agents: 'ai-agents',
   developmentWorkflow: 'development-workflow',
   getStarted: 'get-started'
 } as const
@@ -150,13 +162,13 @@ export const designSystemRows = [
     gridClassName: 'grid-cols(1) grid-cols(2)@md',
     tiles: [
       {
-        title: 'Modes without forks',
-        body: 'Light, dark and custom modes switch through the same tokens. The markup stays the same.',
+        title: 'Light and dark, same markup',
+        body: 'Modes swap token values, not class names. Drag the divider to see which value is in use.',
         visual: 'theme-modes'
       },
       {
         title: 'Tokens, defined once',
-        body: 'Set color, spacing, radius and type once. Utilities, components and modes all read from them.',
+        body: 'Set color, spacing, radius and type in @theme. Utilities, components and modes all read from them.',
         visual: 'theme-variables'
       }
     ]
@@ -179,7 +191,7 @@ export const designSystemRows = [
       },
       {
         title: 'Native CSS, in predictable layers',
-        body: 'Write components in native CSS with mixins and nesting. Utilities sit in a later layer, so a class in markup wins without !important.',
+        body: 'Write components in native CSS with mixins and nesting. Utilities come in a later layer, so a class in markup wins without !important.',
         visual: 'cascade-layers'
       }
     ]
@@ -228,26 +240,32 @@ export const deliveryFlowSources = [
  * Each sample reproduces what `@master/eslint-config-css` reports for the
  * code shown; `home-content.test.ts` lints them to keep it so.
  */
-export const agentDiagnosticCards = [
+export const lintRules: readonly LintRuleContent[] = [
   {
     title: 'Invalid classes',
-    body: 'Catch classes that parse but produce invalid CSS.',
+    body: 'Classes that parse but produce invalid CSS.',
+    tag: 'Error',
+    file: 'button.html',
+    mark: 'color:12px',
     code: `
 <button class="display:inline-flex color:12px">
   Save changes
 </button>
 `,
     problem: {
-      location: 'home.html:1:36',
+      location: 'button.html:1:36',
       message: 'Class "color:12px" emits invalid CSS: Invalid CSS value: color:12px.',
       severity: 'error',
       source: '@master/css/no-invalid-classes'
-    },
-    problemsLabel: 'Problems'
+    }
   },
   {
     title: 'Class order',
-    body: 'Sort classes into a stable order and drop duplicates, so diffs stay small.',
+    body: 'One stable order and no duplicates, so diffs stay small.',
+    tag: 'Autofix',
+    file: 'card.html',
+    mark: 'bg-white font-md display:flex px-md position:relative',
+    fixMark: 'position:relative display:flex px-md font-md bg-white',
     code: `
 <article class="bg-white font-md display:flex px-md position:relative">
   Preview card
@@ -258,17 +276,20 @@ export const agentDiagnosticCards = [
   Preview card
 </article>
 `,
+    fix: 'Sorted the classes into the expected order.',
     problem: {
-      location: 'home.html:1:17',
+      location: 'card.html:1:17',
       message: 'Sort classes into the expected order: "position:relative display:flex px-md font-md bg-white".',
       severity: 'warning',
       source: '@master/css/sort-classes'
-    },
-    problemsLabel: 'Problems'
+    }
   },
   {
     title: 'Conflicting classes',
-    body: 'Find classes that set the same property in the same variant scope.',
+    body: 'Two classes that set the same property in the same state.',
+    tag: 'Autofix',
+    file: 'settings.html',
+    mark: 'm-md',
     code: `
 <section class="display:grid gap-md m-md m-sm">
   Settings
@@ -279,63 +300,71 @@ export const agentDiagnosticCards = [
   Settings
 </section>
 `,
+    fix: 'Removed "m-md", which "m-sm" overrides.',
     problem: {
-      location: 'home.html:1:37',
+      location: 'settings.html:1:37',
       message: 'Remove class "m-md"; it is overridden by class "m-sm" in generated CSS.',
       severity: 'warning',
       source: '@master/css/no-conflicting-classes'
-    },
-    problemsLabel: 'Problems'
+    }
   },
   {
     title: 'Strict vocabulary',
-    body: 'Opt in to reject classes and tokens your project manifest does not generate.',
+    body: 'Reject classes and tokens your project manifest does not generate.',
+    tag: 'Opt-in',
+    file: 'upgrade.html',
+    mark: 'fg-brand-tone',
     code: `
 <button class="px-md fg-brand-tone">
   Upgrade plan
 </button>
 `,
     problem: {
-      location: 'home.html:1:22',
+      location: 'upgrade.html:1:22',
       message: 'Unknown or unsupported token for fg-: brand-tone; named tokens require a registered token, a supported sign, and a color-only opacity modifier',
       severity: 'error',
       source: '@master/css/no-invalid-classes'
-    },
-    problemsLabel: 'Problems'
+    }
   },
   {
     title: 'Theme tokens',
-    body: 'Opt in to require project tokens for token-backed properties, with an allowlist for raw values.',
+    body: 'Require project tokens where one exists, with an allowlist for raw values.',
+    tag: 'Opt-in',
+    file: 'alert.html',
+    mark: 'color:#dc2626',
     code: `
 <p class="color:#dc2626">
   Destructive action
 </p>
 `,
     problem: {
-      location: 'home.html:1:11',
+      location: 'alert.html:1:11',
       message: 'Raw value "#dc2626" is not approved for class "color:#dc2626". Use a token or allow the value explicitly.',
       severity: 'warning',
       source: '@master/css/no-unapproved-raw-values'
-    },
-    problemsLabel: 'Problems'
+    }
   },
   {
-    title: 'Safe fix preview',
-    body: 'Fixes come back as a diff with a confirmation token, before anything is written.',
+    title: 'Fix previews',
+    body: 'Agents get fixes as a diff with a confirmation token, before any file is written.',
+    tag: 'MCP',
+    file: 'card.html',
     code: `
 <article class="bg-white font-md display:flex px-md position:relative"> <!-- [!code --] -->
 <article class="position:relative display:flex px-md font-md bg-white"> <!-- [!code ++] -->
   Preview card
 `,
     problem: {
-      location: 'home.html',
+      location: 'card.html',
       message: '1 file changed. Pass the confirmToken to mastercss_apply_preview within 5 minutes.',
       severity: 'info',
       source: 'mastercss_preview_fixes'
-    },
-    problemsLabel: 'Preview'
+    }
   }
-] satisfies readonly AgentDiagnosticCardContent[]
+]
+
+/** Where the same lint rules run. */
+export const lintSurfaces = ['ESLint', 'CLI', 'MCP server'] as const
 
 /** The draft an agent checks, with what `@master/eslint-config-css` reports and fixes in it. */
 export const agentSession = {
@@ -445,49 +474,36 @@ export const manifestSuggestionItems = [
 ] as const satisfies readonly { label: string, detail?: string }[]
 
 export const workflowCards = {
-  mcp: {
-    title: 'AI agents over MCP',
-    body: 'Agents get your manifest, scanner and lint rules. They inspect classes, lint their changes and preview fixes as diffs.',
-    signal: 'MCP server'
+  frameworks: {
+    title: 'Framework integrations',
+    body: 'Vite, Astro, Next.js, Nuxt, SvelteKit, webpack and more, on the same project manifest and rendering modes.'
   },
   impact: {
     title: 'Trace a change',
-    body: 'Snapshot the project, change a token or recipe, and see the definitions, consumers and rules it touches.',
-    signal: 'Impact report'
-  },
-  frameworks: {
-    title: 'Your framework, your build',
-    body: 'Vite, Astro, Next.js, Nuxt, SvelteKit, webpack and more, on the same project manifest and rendering modes.',
-    signal: 'Integrations'
+    body: 'Snapshot the project, change a token or recipe, and see the definitions, consumers and rules it touches.'
   },
   workspaces: {
     title: 'Monorepo-aware',
-    body: 'Completions, hover, colors and directive diagnostics follow the nearest Master CSS project.',
-    signal: 'Nearest manifest'
+    body: 'Completions, hover, colors and diagnostics follow the nearest Master CSS project.'
   },
   routes: {
     title: 'Route-level styles',
-    body: 'Route stylesheets use shared tokens, mixins and custom media without copying global rules.',
-    signal: 'Route boundary'
-  },
-  policy: {
-    title: 'One set of lint rules',
-    body: 'ESLint, the CLI and the MCP server share each rule and its fixes. Options in eslint.config.js apply to ESLint.',
-    signal: 'Shared rules'
+    body: 'Route stylesheets use shared tokens, mixins and custom media without copying global rules.'
   }
 } satisfies Record<string, WorkflowCardContent>
 
-/** Project tools from the Master CSS MCP server, shown as the agent tool surface. */
-export const mcpToolNames = [
-  'mastercss_scan_project',
-  'mastercss_inspect_class',
-  'mastercss_trace_class',
-  'mastercss_manifest_query',
-  'mastercss_lint_project',
-  'mastercss_render_css',
-  'mastercss_css_compare',
-  'mastercss_preview_fixes'
-] as const
+/** Project tools from the Master CSS MCP server, in the order an agent typically calls them. */
+export const mcpTools = [
+  { name: 'mastercss_scan_project', body: 'Scan sources and stylesheet entries' },
+  { name: 'mastercss_manifest_query', body: 'Look up tokens, utilities, mixins and media' },
+  { name: 'mastercss_inspect_class', body: 'Show the rules and CSS behind a class' },
+  { name: 'mastercss_trace_class', body: 'Follow a class from source to output' },
+  { name: 'mastercss_render_css', body: 'Render CSS for markup or a class list' },
+  { name: 'mastercss_lint_project', body: 'Lint classes and propose fixes' },
+  { name: 'mastercss_css_compare', body: 'Compare output before and after a change' },
+  { name: 'mastercss_preview_fixes', body: 'Return fixes as a diff with a token' },
+  { name: 'mastercss_apply_preview', body: 'Apply a confirmed preview' }
+] satisfies readonly McpToolContent[]
 
 export const mcpCommand = 'npx -y @master/css-mcp@rc --root /path/to/project'
 

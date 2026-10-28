@@ -1,5 +1,5 @@
 import './cta.css'
-import { IconArrowRight, IconBrandGithub, IconCode } from '@tabler/icons-react'
+import { IconArrowRight, IconCode } from '@tabler/icons-react'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import CopyCommand from './CopyCommand'
 import GlyphField from './GlyphField'
@@ -10,7 +10,7 @@ import { glyphFieldLines, homeSections, installCommand } from './home-content'
 export default function CTASection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.getStarted} className="home-section home-section-reveal">
+    <section id={homeSections.getStarted} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <div className="home-cta-frame">
           <div className="home-cta" data-glyph-host>
@@ -19,10 +19,9 @@ export default function CTASection() {
               <div className="home-cta-floor" />
             </div>
             <div className="home-cta-body">
-              <p className="home-cta-marker home-marker"><span className="home-marker-index">07</span>{$('Start')}</p>
               <h2 className="home-cta-title">
-                <span className="display:block">{$('Start with a class.')}</span>
-                <span className="display:block home-cta-title-quiet">{$('Grow a design system.')}</span>
+                <span className="display:block">{$('Start with one class string,')}</span>{' '}
+                <span className="display:block home-cta-title-quiet">{$('then grow into a design system.')}</span>
               </h2>
               <p className="home-cta-lead">{$('Add Master CSS to your framework, style in markup, and move shared decisions into tokens as the design settles.')}</p>
               <div className="display:flex flex-wrap:wrap justify-content:center gap-sm mt-xl">
@@ -33,10 +32,6 @@ export default function CTASection() {
                 <HomeAction href="/guide/syntax-tutorial" variant="secondary">
                   <IconCode aria-hidden="true" size={16} stroke={1.75} />
                   {$('Syntax tutorial')}
-                </HomeAction>
-                <HomeAction href="https://github.com/master-co/css" variant="secondary">
-                  <IconBrandGithub aria-hidden="true" size={16} stroke={1.75} />
-                  GitHub
                 </HomeAction>
               </div>
               <CopyCommand className="mt-lg" command={installCommand} />

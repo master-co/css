@@ -12,6 +12,10 @@ const maxSplit = 100
 const surfaceClassName = 'outline-width:1px outline-style:solid outline-line-subtle bg-surface-raised'
 const iconButtonClassName = 'display:grid place-content:center width:2.25rem height:2.25rem r-xl'
 
+/** The light and dark values of `--color-surface-base` in the token sample beside the preview. */
+const lightTokenValue = 'var(--color-zinc-0)'
+const darkTokenValue = 'var(--color-zinc-95)'
+
 /** Split positions the first sweep passes through, as [time, split] keyframes in milliseconds. */
 const sweep = [[0, 50], [900, 18], [2100, 82], [2900, 50]] as const
 
@@ -36,6 +40,23 @@ export default function ThemeModesPreview({ className }: { className?: string })
   const interactedRef = useRef(false)
   const { ref, inView } = useInView({ threshold: 0.6, triggerOnce: true })
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
+  const tokenLinesRef = useRef<{ light?: HTMLElement, dark?: HTMLElement }>({})
+
+  // The token card beside this one declares the two values; find their lines once.
+  useEffect(() => {
+    const lines = [...frameRef.current?.closest('.home-bento-grid')?.querySelectorAll<HTMLElement>('.home-tokens-code .line') ?? []]
+    tokenLinesRef.current = {
+      light: lines.find((line) => line.textContent?.includes(lightTokenValue)),
+      dark: lines.find((line) => line.textContent?.includes(darkTokenValue))
+    }
+  }, [])
+
+  // Each value lights up as much as its mode fills the preview, so dragging shows which value is in use.
+  useEffect(() => {
+    const { light, dark } = tokenLinesRef.current
+    light?.style.setProperty('--home-token-share', (split / 100).toFixed(3))
+    dark?.style.setProperty('--home-token-share', (1 - split / 100).toFixed(3))
+  }, [split])
 
   // Sweep once when the preview first comes into view, unless someone already moved it.
   useEffect(() => {
@@ -91,7 +112,7 @@ export default function ThemeModesPreview({ className }: { className?: string })
         aria-valuemax={maxSplit}
         aria-valuemin={minSplit}
         aria-valuenow={Math.round(split)}
-        className="position:absolute inset:0 overflow:hidden user-select:none touch-action:none"
+        className="position:absolute inset:0 overflow:hidden user-select:none touch-action:none outline-color:var(--home-ink):focus-visible outline-offset:-2px:focus-visible outline-style:solid:focus-visible outline-width:2px:focus-visible"
         onKeyDown={handleKeyDown}
         onPointerCancel={handlePointerUp}
         onPointerDown={handlePointerDown}

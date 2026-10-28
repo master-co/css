@@ -80,6 +80,9 @@ export default function AgentSession({ code, file, fixedCode, problems }: {
             )
           })}
         </ol>
+        <Message icon={<IconSparkles size={14} stroke={1.75} />} show={step >= 9} tone="agent">
+          {$('Applied the preview. The plan card now passes lint with no problems.')}
+        </Message>
       </div>
 
       <div className="home-agent-editor">

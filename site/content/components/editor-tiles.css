@@ -18,10 +18,10 @@
     white-space: pre;
   }
 
-  /* The hovered token sits on the second line, measured in characters of the monospace font. */
+  /* The inspected class is placed by its line and column, measured in characters of the monospace font. */
   .home-hover-token {
     position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line));
+    top: calc(var(--home-code-inset) + var(--home-code-line) * var(--home-token-line));
     left: calc(var(--home-code-inset) + var(--home-token-start));
     width: var(--home-token-length);
     height: var(--home-code-line);
@@ -34,7 +34,7 @@
 
   .home-hover-card {
     position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line) * 2 + 0.5rem);
+    top: calc(var(--home-code-inset) + var(--home-code-line) * (var(--home-token-line) + 1) + 0.5rem);
     left: clamp(var(--home-code-inset), calc(var(--home-code-inset) + var(--home-token-start) - 2rem), calc(100% - 22rem));
     z-index: 2;
     width: max-content;
@@ -49,14 +49,32 @@
     animation: home-hover-card 7s var(--easing-crisp) infinite;
   }
 
+  /* Pointing at another class slides the highlight and the card over to it. */
+  .home-hover-inspection[data-inspecting] {
+    .home-hover-token,
+    .home-hover-card {
+      transition: top var(--home-base) var(--home-ease), left var(--home-base) var(--home-ease), width var(--home-base) var(--home-ease);
+    }
+  }
+
+  .home-hover-class {
+    cursor: default;
+  }
+
+  /* The overlays only show; the classes under them stay the pointer's targets. */
+  .home-hover-token,
+  .home-hover-card,
+  .home-hover-cursor {
+    pointer-events: none;
+  }
+
   .home-hover-card-title {
-    margin: 0 0 var(--spacing-3xs);
-    font-family: var(--font-family-sans);
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--tracking-widest);
+    margin: 0 0 var(--spacing-xs);
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--home-text-quiet);
+    color: var(--home-text-faint);
   }
 
   .home-hover-card-css {
@@ -69,7 +87,7 @@
 
   .home-hover-cursor {
     position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line) * 1.55);
+    top: calc(var(--home-code-inset) + var(--home-code-line) * (var(--home-token-line) + 0.55));
     left: calc(var(--home-code-inset) + var(--home-token-start) + var(--home-token-length) * 0.55);
     z-index: 3;
     fill: var(--home-text);
@@ -173,6 +191,30 @@
     font-family: var(--home-mono);
     font-size: 0.6875rem;
     color: var(--home-text);
+  }
+
+  /* Pointing at a card holds its figure in the revealed state, so it can be read at the reader's pace. */
+  .home-bento-card:hover {
+    .home-hover-token,
+    .home-hover-card,
+    .home-color-picker,
+    .home-color-picker-handle {
+      animation: none;
+      opacity: 1;
+      translate: none;
+      scale: none;
+    }
+
+    /* The reader's own pointer stands in for the drawn one. */
+    .home-hover-cursor {
+      animation: none;
+      opacity: 0;
+    }
+
+    .home-color-tools-line:first-child .home-color-swatch {
+      animation: none;
+      box-shadow: 0 0 0 2px var(--home-ground), 0 0 0 3px var(--home-text-quiet);
+    }
   }
 
   @media (--motion-reduce) {

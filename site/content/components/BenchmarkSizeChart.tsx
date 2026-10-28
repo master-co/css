@@ -24,6 +24,7 @@ const chartEasing = 'cubic-bezier(.22,1,.36,1)'
 const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
+const axisHeadroom = 1.25
 const chartGridStyle = { gridTemplateColumns: 'minmax(5.25rem, 6.5rem) minmax(0, 1fr)' }
 
 /** Page CSS sizes as bars that grow from a shared start once the chart scrolls into view. */
@@ -216,7 +217,8 @@ interface BenchmarkAxisTick {
 function createBenchmarkAxis(maxBytes: number) {
   const maxKilobytes = Math.max(1, maxBytes / 1000)
   const step = getNiceAxisStep(maxKilobytes / axisTickTarget)
-  const axisMaxKilobytes = (Math.ceil(maxKilobytes / step) + 1) * step
+  // Leave about a fifth of the axis past the longest bar for its value and ratio, and no more.
+  const axisMaxKilobytes = Math.ceil(maxKilobytes * axisHeadroom / step) * step
   const ticks: BenchmarkAxisTick[] = []
   for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
     ticks.push({ label: `${formatAxisNumber(valueKilobytes)} kB`, percent: toPercent(valueKilobytes, axisMaxKilobytes) })

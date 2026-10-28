@@ -3,6 +3,7 @@ import { IconArrowRight, IconBolt, IconBrowser, IconFileCode, IconServer, IconSt
 import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import brands from '~/site/docs-shell/data/brands'
+import DeliveryTour from './DeliveryTour'
 import { HomeBentoFrame, HomeSectionHeader } from './HomeBento'
 import { deliveryFlowPackets, deliveryFlowSources, deliveryModes, homeSections, type DeliveryModeId } from './home-content'
 
@@ -28,19 +29,20 @@ const outputPath = (y: number) => `M732 240 C 832 240, 832 ${y}, 928 ${y}`
 export default function DeliveryModesSection() {
   const $ = useTranslation()
   return (
-    <section id={homeSections.deliveryModes} className="home-delivery home-section home-section-reveal">
+    <section id={homeSections.deliveryModes} className="home-delivery home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
-          index="02"
-          label={$('Deliver')}
-          title={$('One syntax, from build to browser.')}
+          index="03"
+          label={$('Rendering')}
+          title={$('One syntax. Every delivery path.')}
           body={$('Static CSS by default. Pre-render it into HTML, hydrate it progressively, or generate it in the browser. Your classes stay the same.')}>
-          <Link className="mt-lg home-section-link" href="/guide/rendering-modes">
+          <Link className="home-section-link" href="/guide/rendering-modes">
             {$('Compare rendering modes')}
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
 
+        <DeliveryTour sectionId={homeSections.deliveryModes} />
         {deliveryModes.map((mode) => (
           <input aria-labelledby={`home-delivery-${mode.id}-title`} className="sr-only" defaultChecked={'default' in mode && mode.default} id={`home-delivery-${mode.id}`} key={mode.id} name="home-delivery-mode" type="radio" value={mode.id} />
         ))}
@@ -81,7 +83,7 @@ export default function DeliveryModesSection() {
             </svg>
 
             <div className="home-flow-column home-flow-sources">
-              <p className="home-flow-column-label">{$('Sources')}</p>
+              <p className="home-annotation home-flow-column-label">{$('Sources')}</p>
               {deliveryFlowSources.map((source) => (
                 <div className="home-flow-node home-flow-source" key={source.file}>
                   <span className="home-flow-file">{source.file}</span>
@@ -101,7 +103,7 @@ export default function DeliveryModesSection() {
                 <MasterCSSLogo aria-hidden="true" className="flex:none" height={36} width={36} />
                 <span>
                   <span className="display:block text-md font-semibold fg-text-strong">{$('Master CSS engine')}</span>
-                  <span className="display:block font-2xs fg-text-muted">{$('One set of Rust semantics')}</span>
+                  <span className="display:block font-2xs fg-text-muted">{$('Same CSS in every mode')}</span>
                 </span>
               </span>
               <ol className="home-flow-steps">
@@ -110,12 +112,12 @@ export default function DeliveryModesSection() {
             </div>
 
             <div className="home-flow-column home-flow-outputs">
-              <p className="home-flow-column-label">{$('Delivered')}</p>
+              <p className="home-annotation home-flow-column-label">{$('Delivered')}</p>
               {deliveryModes.map((mode) => {
                 const Icon = stageIcons[mode.id]
                 return (
                   <div className="home-flow-node home-flow-output" data-mode={mode.id} key={mode.id}>
-                    <span className="display:flex align-items:center gap-2xs font-2xs font-semibold tracking-wider text-transform:uppercase fg-text-muted">
+                    <span className="display:flex align-items:center gap-2xs home-annotation">
                       <Icon aria-hidden="true" size={14} stroke={1.75} />
                       {$(mode.stage)}
                     </span>
@@ -141,10 +143,11 @@ export default function DeliveryModesSection() {
                   </span>
                   <span className="home-delivery-title" id={`home-delivery-${mode.id}-title`}>{$(mode.title)}</span>
                   <span className="home-delivery-body">{$(mode.body)}</span>
-                  <Link className="home-delivery-link home-section-link" href={mode.href}>
+                  <Link aria-label={`${$('How it works')}: ${$(mode.title)}`} className="home-delivery-link home-section-link" href={mode.href}>
                     {$('How it works')}
                     <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />
                   </Link>
+                  <span aria-hidden="true" className="home-delivery-progress" />
                 </label>
               )
             })}

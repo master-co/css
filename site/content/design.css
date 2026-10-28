@@ -25,7 +25,8 @@
     --home-text: var(--color-text-strong);
     --home-text-body: var(--color-text-body);
     --home-text-quiet: var(--color-text-muted);
-    --home-text-faint: var(--color-text-subtle);
+    /* Faint still reads at 4.5:1 on the ground and on sheets: it labels figures, it never hides them. */
+    --home-text-faint: color-mix(in oklab, var(--color-text-muted) 72%, var(--color-text-subtle));
     --home-text-inverse: var(--color-text-inverse);
 
     /* Signal: the one accent, reserved for the primary action and a live state. */
@@ -71,11 +72,20 @@
     --home-base: 280ms;
     --home-slow: 640ms;
 
-    /* Type: display and section titles scale fluidly; everything else stays fixed and readable. */
-    --home-display: clamp(3rem, 1.4rem + 4.8vw, 6.5rem);
-    --home-title: clamp(2rem, 1.35rem + 1.9vw, 3.25rem);
-    --home-lead: clamp(1.0625rem, 0.98rem + 0.28vw, 1.25rem);
+    /* Type: one scale. Display and section titles scale with the viewport; everything else is fixed. */
+    --home-display: clamp(2.625rem, 1.15rem + 5.3vw, 5.5rem);
+    --home-title: clamp(2rem, 1.45rem + 1.7vw, 3rem);
+    --home-lead: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+    --home-card-title: 1.125rem;
+    --home-body: 0.9375rem;
+    --home-caption: 0.8125rem;
+    --home-label: 0.6875rem;
+    --home-code: 0.8125rem;
     --home-mono: var(--font-family-mono);
+
+    /* Rhythm: sections breathe the same amount, and every figure sits the same distance below its header. */
+    --home-section-space: clamp(5rem, 2.6rem + 6.4vw, 9rem);
+    --home-header-space: clamp(2.5rem, 1.9rem + 1.8vw, 3.75rem);
 
     /* Depth for the 3D stages. */
     --home-perspective: 1800px;
@@ -143,47 +153,58 @@
     box-shadow: var(--home-groove);
   }
 
+  /*
+   * Han characters already sit on square bodies; display tracking that tightens Latin would make them touch.
+   * Titles break only at spaces and punctuation so a word never splits, unless a line would overflow.
+   */
+  .home-page:lang(zh) :is(.home-display, .home-section-heading, .home-cta-title) {
+    letter-spacing: -0.015em;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .home-page:lang(zh) .home-section-heading {
+    max-width: 16em;
+  }
+
   .home-page ::selection {
     color: inherit;
     background-color: color-mix(in oklab, var(--home-signal) 42%, transparent);
   }
 
-  /* Markers: how the page labels itself. */
+  /* Labels: how the page names its parts. One eyebrow per section, one annotation style inside figures. */
 
-  /* Section marker: an index, a name and a rule that draws in as the section arrives. */
-  .home-marker {
+  /* Section eyebrow: an index, a short rule that draws in as the section arrives, and a plain name. */
+  .home-eyebrow {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.625rem;
     margin: 0;
     font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
+    font-size: var(--home-label);
+    line-height: 1;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--home-text-quiet);
+    color: var(--home-text-body);
 
-    &::after {
-      flex: auto;
-      max-width: 12rem;
+    &::before {
+      order: 1;
+      width: 1.5rem;
       height: 1px;
-      background: linear-gradient(90deg, var(--home-rule), transparent);
+      background-color: var(--home-rule-strong);
       transform-origin: left;
       content: '';
     }
+
+    & > :not(.home-eyebrow-index) {
+      order: 2;
+    }
   }
 
-  .home-marker-index {
-    display: inline-grid;
-    place-content: center;
-    min-width: 1.75rem;
-    height: 1.25rem;
-    padding-inline: 0.25rem;
-    border-radius: var(--home-radius-chip);
+  .home-eyebrow-index {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.04em;
-    color: var(--home-text);
-    background-color: var(--home-sheet);
-    box-shadow: inset 0 0 0 1px var(--home-hairline), var(--home-edge);
+    color: var(--home-text-faint);
   }
 
   /* Status marker: a dot that names a state; live pulses, the rest stay still. */
@@ -210,31 +231,18 @@
 
   /* Annotation marker: a mono caption that labels part of a figure. */
   .home-annotation {
+    margin: 0;
     font-family: var(--home-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.12em;
+    font-size: var(--home-label);
+    line-height: 1.4;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--home-text-faint);
   }
 
-  /* Paper grain over large quiet fields; kept below visibility at a glance. */
-  .home-grain {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.32;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: multiply;
-
-    @apply --site-dark {
-      opacity: 0.5;
-      mix-blend-mode: screen;
-    }
-  }
-
   @media (--motion-safe) {
     @supports (animation-timeline: view()) {
-      .home-marker::after {
+      .home-eyebrow::before {
         animation-name: home-marker-rule;
         animation-timing-function: linear;
         animation-fill-mode: both;

@@ -185,11 +185,12 @@ export default function ArtGalleryPreview({ className }: { className?: string })
 
   return (
     <div className={className}>
+      <p aria-hidden="true" className="home-annotation home-gallery-hint">{$('Open a photo')}</p>
       <div className="grid-cols(12) grid-template-rows:repeat(2,minmax(0,1fr)) gap-xs height:100% p-lg p-xl@md home-dot-grid">
         {artworks.map((artwork) => (
           <button
             aria-label={`${$('Open artwork')}: ${$(artwork.title)}`}
-            className="position:relative overflow:hidden min-width:0 outline-line-subtle outline-style:solid outline-width:1px bg-surface-base transition-normal transition-smooth transition-property:background-color cursor:pointer bg-surface-raised:hover"
+            className="position:relative overflow:hidden min-width:0 outline-line-subtle outline-style:solid outline-width:1px bg-surface-base transition-normal transition-smooth transition-property:background-color cursor:pointer bg-surface-raised:hover outline-color:var(--home-ink):focus-visible outline-offset:2px:focus-visible outline-width:2px:focus-visible"
             key={artwork.id}
             onClick={() => openArtwork(artwork.id)}
             style={artwork.placement}
