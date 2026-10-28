@@ -1,5 +1,5 @@
 import './design-system.css'
-import { Fragment, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, type CSSProperties } from 'react'
 import { createRenderSessionSync } from '@master/css/node'
 import { IconArrowRight, IconCheck } from '@tabler/icons-react'
 import clsx from 'clsx'
@@ -10,13 +10,22 @@ import { getColor } from '~/site/docs-shell/data/color-palette'
 import preset from '~/site/utils/preset-manifest'
 import ArtGalleryPreview from './ArtGalleryPreview'
 import { PaletteExplorer } from './DesignSystemFigures'
-import { HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
+import type { HomeIllustrationId } from './HomeIllustration'
 import ThemeModesPreview from './ThemeModesPreview'
 import { cascadeProbe, designSystemGuides } from './design-system-content'
 import { cascadeLayers, designSystemPalette, designSystemTiles, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemTileContent } from './home-content'
 
 type DesignSystemVisual = DesignSystemTileContent['visual'] | 'p3-palette'
+
+const tileIcons = {
+  'theme-modes': 'design-theme-modes',
+  'theme-variables': 'design-theme-tokens',
+  'art-gallery': 'design-layout-motion',
+  'cascade-layers': 'design-cascade-layers',
+  'p3-palette': 'design-p3-gamut'
+} satisfies Record<DesignSystemVisual, HomeIllustrationId>
 
 const p3PaletteGridStyle = {
   '--home-palette-columns': p3PaletteColorNames.length,
@@ -36,6 +45,7 @@ export default function DesignSystemSection() {
     <section id={homeSections.designSystem} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-design-system"
           index="01"
           label={$('Design system')}
           title={$('Build modern interfaces from one class vocabulary.')}
@@ -45,11 +55,12 @@ export default function DesignSystemSection() {
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-        {/* One bento grid: themes, then primitives, then the palette across the full width as the last card. */}
+        {/* Themes first, the full-width palette in the middle, then layout and layers side by side. */}
         <HomeBentoFrame>
           <HomeBentoGrid className="grid-cols(1) grid-cols(6)@md home-ds-row">
-            {designSystemTiles.map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
+            {designSystemTiles.slice(0, 2).map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
             <P3Palette body={$(designSystemPalette.body)} title={$(designSystemPalette.title)} />
+            {designSystemTiles.slice(2).map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
           </HomeBentoGrid>
         </HomeBentoFrame>
       </div>
@@ -57,40 +68,20 @@ export default function DesignSystemSection() {
   )
 }
 
-/** A short title and line, then a quiet link to the guide that covers the figure. */
-function DesignSystemCaption({ body, title, visual }: { body: string, title: string, visual: DesignSystemVisual }) {
-  const $ = useTranslation()
-  return (
-    <>
-      <h3 className="home-bento-card-title">{title}</h3>
-      <p className="home-bento-card-body">{body}</p>
-      <Link aria-label={`${$('See details')}: ${title}`} className="home-ds-link home-section-link" href={designSystemGuides[visual]}>
-        {$('See details')}
-        <IconArrowRight aria-hidden="true" size={15} stroke={1.75} />
-      </Link>
-    </>
-  )
-}
-
-/** The bento card markup, with the guide link inside its header. */
-function DesignSystemCard({ children, className, header }: { children: ReactNode, className?: string, header: ReactNode }) {
-  return (
-    <article className={clsx('home-bento-card', className)}>
-      <div className="home-bento-card-header">{header}</div>
-      {children}
-    </article>
-  )
-}
-
 function DesignSystemTile({ tile }: { tile: DesignSystemTileContent }) {
   const $ = useTranslation()
   return (
-    <DesignSystemCard className={clsx('home-reveal-item', tile.gridColumnClassName)} header={<DesignSystemCaption body={$(tile.body)} title={$(tile.title)} visual={tile.visual} />}>
+    <HomeBentoCard
+      body={$(tile.body)}
+      className={clsx('home-reveal-item', tile.gridColumnClassName)}
+      href={designSystemGuides[tile.visual]}
+      icon={tileIcons[tile.visual]}
+      title={$(tile.title)}>
       {tile.visual === 'theme-modes' && <ThemeModesPreview className="h-md home-bento-visual" />}
       {tile.visual === 'art-gallery' && <ArtGalleryPreview className="home-bento-visual home-gallery" />}
       {tile.visual === 'theme-variables' && <ThemeTokens />}
       {tile.visual === 'cascade-layers' && <CascadeLayers />}
-    </DesignSystemCard>
+    </HomeBentoCard>
   )
 }
 
@@ -153,19 +144,23 @@ function CascadeLayers() {
   )
 }
 
-/** The P3 palette as the grid's last, full-width card: its caption and the readout share the header, the field sits in the well. */
+/** The full-width middle card uses the same header as its neighbors; the readout stays inside the field. */
 function P3Palette({ body, title }: { body: string, title: string }) {
   const $ = useTranslation()
   return (
-    <article className="grid-col-span(6)@md home-bento-card home-ds-palette home-reveal-item">
+    <HomeBentoCard
+      body={body}
+      className="grid-col-span(6)@md home-ds-palette home-reveal-item"
+      href={designSystemGuides['p3-palette']}
+      icon={tileIcons['p3-palette']}
+      title={title}>
       <PaletteExplorer
-        caption={<div className="home-bento-card-header"><DesignSystemCaption body={body} title={title} visual="p3-palette" /></div>}
         columns={p3PaletteColorNames.length}
         label={$('P3 palette tiers from 100 through 0')}
         mark={<p className="home-annotation home-palette-mark">↑ {$('Height: chroma')}</p>}>
         <P3PaletteField />
       </PaletteExplorer>
-    </article>
+    </HomeBentoCard>
   )
 }
 

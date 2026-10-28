@@ -25,6 +25,7 @@ export default function BenchmarkSection() {
     <section id={homeSections.cssCost} className="position:relative home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-css-size"
           index="04"
           label={$('CSS size')}
           title={$('Only the CSS a page uses.')}

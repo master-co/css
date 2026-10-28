@@ -4,7 +4,8 @@ import { IconArrowRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-import { HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
+import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
+import type { HomeIllustrationId } from './HomeIllustration'
 import { homeSections, workflowCards } from './home-content'
 import { workflowGuides } from './workflow-content'
 import { WorkflowTours } from './WorkflowFigures'
@@ -15,26 +16,26 @@ import WorkflowTrace from './WorkflowTrace'
 
 type WorkflowCardKey = keyof typeof workflowGuides
 
-/**
- * A bento card whose header carries the title, one line and a quiet link to the guide that goes
- * deeper, the way the Design system cards do; the drawing follows. The link's accessible name carries
- * the card's title.
- */
+const cardIcons = {
+  frameworks: 'workflow-integrations',
+  workspaces: 'workflow-monorepo',
+  routes: 'workflow-route-styles',
+  impact: 'workflow-trace-change'
+} satisfies Record<WorkflowCardKey, HomeIllustrationId>
+
+/** Shared bento header with its guide linked directly from the title. */
 function WorkflowCard({ card, children, className }: { card: WorkflowCardKey, children: ReactNode, className?: string }) {
   const $ = useTranslation()
   const title = $(workflowCards[card].title)
   return (
-    <article className={clsx('home-bento-card home-reveal-item', className)}>
-      <div className="home-bento-card-header">
-        <h3 className="home-bento-card-title">{title}</h3>
-        <p className="home-bento-card-body">{$(workflowCards[card].body)}</p>
-        <Link aria-label={`${$('See details')}: ${title}`} className="home-section-link home-wf-details" href={workflowGuides[card]}>
-          {$('See details')}
-          <IconArrowRight aria-hidden="true" size={15} stroke={1.75} />
-        </Link>
-      </div>
+    <HomeBentoCard
+      body={$(workflowCards[card].body)}
+      className={clsx('home-reveal-item', className)}
+      href={workflowGuides[card]}
+      icon={cardIcons[card]}
+      title={title}>
       {children}
-    </article>
+    </HomeBentoCard>
   )
 }
 
@@ -49,6 +50,7 @@ export default function WorkflowSection() {
     <section id={homeSections.developmentWorkflow} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-workflow"
           index="07"
           label={$('Workflow')}
           title={$('Works with your framework and build.')}

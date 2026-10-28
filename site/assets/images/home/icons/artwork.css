@@ -1,0 +1,4 @@
+@layer components {
+  /* Neutralize the rendered glass's blue cast to sit with the site's zinc palette. */
+  .home-icon-artwork { filter: grayscale(1); }
+}

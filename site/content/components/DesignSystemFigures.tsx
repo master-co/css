@@ -19,7 +19,7 @@ interface PaletteSwatch {
  * field with the arrow keys names its class and preset value. Swatches are server-rendered options
  * that carry their data as attributes, so this island only listens and marks the active one.
  */
-export function PaletteExplorer({ caption, children, columns, label, mark }: { caption: ReactNode, children: ReactNode, columns: number, label: string, mark: ReactNode }) {
+export function PaletteExplorer({ children, columns, label, mark }: { children: ReactNode, columns: number, label: string, mark: ReactNode }) {
   const stageRef = useRef<HTMLDivElement>(null)
   const activeRef = useRef<HTMLElement | null>(null)
   const [swatch, setSwatch] = useState<PaletteSwatch>()
@@ -71,7 +71,6 @@ export function PaletteExplorer({ caption, children, columns, label, mark }: { c
 
   return (
     <div className="home-palette-stage" data-active={swatch ? '' : undefined}>
-      {caption}
       <div
         aria-activedescendant={swatch?.id}
         aria-label={label}

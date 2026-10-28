@@ -869,12 +869,17 @@
   }
 
   .home-delivery-mode {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'title icon' 'body body';
+    align-content: start;
+    column-gap: var(--spacing-lg);
     grid-area: 1 / 1;
     align-items: flex-start;
     visibility: hidden;
   }
+
+  .home-delivery-mode > .home-illustration { grid-area: icon; }
 
   .home-delivery:has(#home-delivery-static:checked) .home-delivery-mode[data-mode='static'],
   .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-mode[data-mode='progressive'],
@@ -883,6 +888,8 @@
   }
 
   .home-delivery-mode-title {
+    grid-area: title;
+    align-self: center;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -906,16 +913,13 @@
   }
 
   .home-delivery-mode-body {
+    grid-area: body;
     max-width: 38rem;
     margin: 0.75rem 0 0;
     font-size: var(--home-body);
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
-  }
-
-  .home-delivery-mode-link {
-    margin-top: 1rem;
   }
 
   /* Flights: glyphs and files travel over the stage on their own layer, in perspective. */

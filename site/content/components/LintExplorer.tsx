@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react'
-import { IconAlertTriangle, IconBrandHtml5, IconBulb, IconCircleCheck, IconCircleX, IconColorSwatch, IconFileDiff, IconInfoCircle, IconLayersIntersect, IconPlugConnected, IconRotateClockwise, IconSortAscending, IconSquareX, IconTerminal2, IconVocabulary } from '@tabler/icons-react'
+import { IconAlertTriangle, IconBrandHtml5, IconBulb, IconCircleCheck, IconCircleX, IconInfoCircle, IconPlugConnected, IconRotateClockwise, IconTerminal2 } from '@tabler/icons-react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import clsx from 'clsx'
@@ -35,23 +35,13 @@ const tourDuration = { fix: 8600, report: 6600 }
 
 type Glyph = ComponentType<{ 'aria-hidden'?: boolean | 'true', className?: string, size?: number, stroke?: number }>
 
-/** One glyph per rule, drawn in the same stroke, for what it catches. */
-const ruleGlyphs: Record<string, Glyph> = {
-  'Invalid classes': IconSquareX,
-  'Class order': IconSortAscending,
-  'Conflicting classes': IconLayersIntersect,
-  'Strict vocabulary': IconVocabulary,
-  'Theme tokens': IconColorSwatch,
-  'Fix previews': IconFileDiff
-}
-
 const severityIcons = {
   error: { Icon: IconCircleX, tone: 'home-tone-error' },
   info: { Icon: IconInfoCircle, tone: 'home-tone-info' },
   warning: { Icon: IconAlertTriangle, tone: 'home-tone-warn' }
 }
 
-export default function LintExplorer({ rules }: { rules: LintExplorerRule[] }) {
+export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rules: LintExplorerRule[] }) {
   const $ = useTranslation()
   const [active, setActive] = useState(0)
   // The server renders the clean source; in view, the check plays from there.
@@ -252,7 +242,7 @@ export default function LintExplorer({ rules }: { rules: LintExplorerRule[] }) {
               role="tab"
               tabIndex={index === active ? 0 : -1}
               type="button">
-              <RuleGlyph title={item.title} />
+              <span aria-hidden="true" className="home-lint-rule-glyph">{icons[index]}</span>
               <span className="home-lint-rule-title">{$(item.title)}</span>
               {index === active && <span aria-hidden="true" className="home-lint-rule-progress" ref={progressRef} />}
             </button>
@@ -368,15 +358,6 @@ export default function LintExplorer({ rules }: { rules: LintExplorerRule[] }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function RuleGlyph({ title }: { title: string }) {
-  const Glyph = ruleGlyphs[title] ?? IconSquareX
-  return (
-    <span aria-hidden="true" className="home-lint-rule-glyph">
-      <Glyph aria-hidden="true" size={15} stroke={1.6} />
-    </span>
   )
 }
 

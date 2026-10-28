@@ -67,7 +67,7 @@ interface Scene {
   frame: (time: number, reset: boolean) => Frame
 }
 
-export default function EditorFigures({ features, model }: { features: readonly EditorFeature[], model: EditorModel }) {
+export default function EditorFigures({ features, icons, model }: { features: readonly EditorFeature[], icons: ReactNode[], model: EditorModel }) {
   const $ = useTranslation()
   const descriptionId = useId()
   const geometry = useMemo(() => measure(model), [model])
@@ -259,6 +259,7 @@ export default function EditorFigures({ features, model }: { features: readonly 
         {features.map((feature, index) => (
           <button
             key={feature.id}
+            aria-label={$(feature.title)}
             aria-describedby={`${descriptionId}-${index}`}
             aria-pressed={index === sceneIndex}
             className="home-editor-chapter"
@@ -267,7 +268,10 @@ export default function EditorFigures({ features, model }: { features: readonly 
             onClick={() => choose(index)}
             type="button">
             <span aria-hidden="true" className="home-editor-chapter-track"><span className="home-editor-chapter-progress" /></span>
-            <span className="home-editor-chapter-title">{$(feature.title)}</span>
+            <span className="home-editor-chapter-heading">
+              <span className="home-editor-chapter-title">{$(feature.title)}</span>
+              {icons[index]}
+            </span>
             <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
           </button>
         ))}
@@ -276,6 +280,7 @@ export default function EditorFigures({ features, model }: { features: readonly 
         {features.map((feature, index) => (
           <div key={feature.id} className="home-editor-caption-item" data-active={index === sceneIndex ? '' : undefined}>
             <p className="home-editor-caption-title">{$(feature.title)}</p>
+            {icons[index]}
             <p className="home-editor-caption-body">{$(feature.body)}</p>
           </div>
         ))}

@@ -32,12 +32,6 @@
     }
   }
 
-  /* A quiet link to the guide that goes deeper, under the card's line, as in the Design system cards. */
-  .home-wf-details {
-    align-self: flex-start;
-    margin-top: 1rem;
-  }
-
   /* ── Frameworks: three plates, one manifest ─────────────────────────────── */
 
   .home-wf-stage-figure {

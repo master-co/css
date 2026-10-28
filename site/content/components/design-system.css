@@ -43,13 +43,6 @@
     margin-top: 0;
   }
 
-  /* A quiet link to the guide under each line of copy; the shared header track keeps the figures aligned. */
-  .home-ds-link {
-    align-self: flex-start;
-    justify-self: start;
-    margin-top: 1rem;
-  }
-
   /*
    * Light and dark: one markup rendered twice on an artboard, the light copy clipped to the left of the split
    * and the dark copy to the right. Only the `light` or `dark` class on each copy's root differs. The class
@@ -322,8 +315,8 @@
   }
 
   /*
-   * P3 palette, the grid's last card across the full width. Its caption and the readout share the header,
-   * and the field stands in the well below: extruded bars as tall as their chroma, flattening into a table
+   * P3 palette, the grid's middle card across the full width. The field and readout sit below its shared
+   * bento header: extruded bars as tall as their chroma, flattening into a table
    * under the pointer or the keyboard.
    */
   .home-ds-row > .home-ds-palette {

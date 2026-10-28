@@ -28,6 +28,26 @@
   .hir-specimens > figure { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-sm); padding: var(--spacing-lg) var(--spacing-sm); min-height: 11rem; }
   .hir-specimens figcaption { max-width: 18ch; min-height: 2.8em; color: var(--color-text-muted); text-align: center; font-size: .6875rem; line-height: 1.4; }
   .hir-specimens > figure:nth-child(even) { background: var(--color-surface-base); }
+  .hir-material-study { margin-top: 4rem; padding-top: var(--spacing-xl); border-top: 1px solid var(--hir-line); }
+  .hir-material-study h2 { margin-top: var(--spacing-md); max-width: 28ch; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 500; letter-spacing: -.04em; line-height: 1.15; }
+  .hir-material-intro { max-width: 44rem; margin-top: var(--spacing-md) !important; color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
+  .hir-material-theme { margin-top: var(--spacing-lg); padding: var(--spacing-lg); border: 1px solid var(--hir-line); border-radius: var(--radius-xl); }
+  .hir-material-label { opacity: .6; font-size: .75rem; }
+  .hir-material-pair { display: grid; gap: var(--spacing-lg); margin-top: var(--spacing-md); }
+  .hir-material-option > p { margin-bottom: var(--spacing-sm); font-family: var(--font-family-mono); font-size: .6875rem; opacity: .6; }
+  .hir-material-card { display: flex; align-items: center; gap: var(--spacing-md); min-height: 13rem; padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, currentColor 8%, transparent); }
+  .hir-light .hir-material-card { background: white; }
+  .hir-dark .hir-material-card { background: var(--color-zinc-90); }
+  .hir-material-card > :is(svg, img) { flex: none; }
+  .hir-material-card > div { min-width: 0; }
+  .hir-material-card h3 { font-size: 1.125rem; line-height: 1.35; font-weight: 550; letter-spacing: -.015em; }
+  .hir-material-card p { margin-top: .375rem; opacity: .65; font-size: .9375rem; line-height: 1.6; }
+  .hir-material-sizes { display: flex; flex-wrap: wrap; align-items: end; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+  .hir-material-sizes figure { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs); }
+  .hir-material-sizes figcaption { opacity: .55; font-size: .625rem; }
+  .hir-material-study img { display: block; object-fit: contain; }
+  @media (min-width: 64rem) { .hir-material-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 39.999rem) { .hir-material-theme { padding: var(--spacing-sm); } .hir-material-card { flex-direction: column; align-items: start; } }
   .hir-toolbar { margin-top: var(--spacing-2xl); padding-block: var(--spacing-md); font-size: .8125rem; }
   .hir-appearance { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-text-muted); font-size: .75rem; }
   .hir-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-width: 3.5rem; min-height: 2.75rem; border: 1px solid var(--hir-line); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
@@ -70,15 +90,13 @@
   .hir-size-row figure { display: flex; flex-direction: column; align-items: center; }
   .hir-size-row figcaption { margin-top: .25rem; font-family: var(--font-family-mono); font-size: .5625rem; opacity: .7; }
   .hir-compact-filename { display: block; padding: var(--spacing-sm); font-size: .625rem; overflow-wrap: anywhere; }
+  .hir-construction-view { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 17rem; padding: var(--spacing-sm); color: var(--color-text-strong); background-color: var(--color-surface-raised); background-image: repeating-conic-gradient(var(--color-surface-base) 0% 25%, transparent 0% 50%); background-size: 1.5rem 1.5rem; }
+  .hir-construction-compact { min-height: 11rem; border-top: 1px solid var(--hir-line); }
+  .hir-construction-compact > span { color: var(--color-text-muted); font-size: .625rem; }
   .hir-placement-grid { display: grid; gap: var(--spacing-sm); padding: var(--spacing-sm); border-radius: var(--radius-2xl); background: var(--color-surface-base); }
   .hir-placement-card { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-md); padding: var(--spacing-lg); border-radius: var(--radius-xl); background: var(--color-surface-raised); }
   .hir-placement-card > div { flex: 1 1 12rem; }
-  .hir-placement-card h3 { font-size: 1.125rem; line-height: 1.45; font-weight: 550; letter-spacing: -.02em; }
   .hir-placement-card p { margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
-  .hir-tool-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); margin-top: var(--spacing-lg); border-block: 1px solid var(--hir-line); padding: var(--spacing-md); }
-  .hir-tool-row strong { display: block; font-size: .8125rem; font-weight: 550; }
-  .hir-tool-row code { display: block; margin-top: .25rem; color: var(--color-text-muted); font-size: .625rem; overflow-wrap: anywhere; }
-  .hir-tool-row > span { margin-left: auto; color: var(--color-text-muted); font-size: .6875rem; }
   .hir-handoff { padding-top: var(--spacing-xl); border-top: 1px solid var(--hir-line); }
   .hir-handoff-grid { display: grid; gap: var(--spacing-xl); }
   .hir-handoff h3 { margin-bottom: var(--spacing-sm); font-size: .9375rem; font-weight: 550; }
@@ -107,5 +125,31 @@
   @media print {
     .hir-toolbar, .hir-index, .hir-topline, .hir-footer { display: none; }
     .hir-card { break-inside: avoid; }
+  }
+}
+
+@layer components {
+  .hir-artwork { display: inline-block; position: relative; flex: none; }
+  .hir-artwork img { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hir-artwork .hir-artwork-dark { display: none; }
+  .dark .hir-artwork .hir-artwork-light { display: none; }
+  .dark .hir-artwork .hir-artwork-dark { display: block; }
+  .hir-pair img, .hir-size-row img { display: block; flex: none; object-fit: contain; }
+  .hir-construction-view > span:not(.hir-artwork) { max-width: 100%; overflow-wrap: anywhere; font-size: .625rem; color: var(--color-text-muted); }
+  .hir-context-section { margin-top: var(--spacing-2xl); }
+  .hir-context-header { display: flex; align-items: center; gap: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
+  .hir-context-header > div { min-width: 0; }
+  .hir-context-header p { color: var(--color-text-muted); font-size: .75rem; margin-bottom: var(--spacing-xs); }
+  .hir-context-header h3 { max-width: 27ch; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -.04em; font-weight: 500; }
+  .hir-context-section .hir-placement-grid:empty { display: none; }
+  .hir-placement-card h4 { margin: 0; font-size: 1.125rem; line-height: 1.4; font-weight: 550; letter-spacing: -.015em; overflow-wrap: anywhere; }
+  .hir-placement-compact { align-items: start; gap: var(--spacing-sm); }
+  .hir-placement-compact > div { min-width: 0; flex-basis: 10rem; }
+  .hir-placement-compact h4 { font-size: .875rem; }
+  .hir-placement-compact p { font-size: .8125rem; }
+  @media (max-width: 39.999rem) {
+    .hir-context-header { align-items: start; gap: var(--spacing-sm); }
+    .hir-context-header h3 { font-size: 1.375rem; }
+    .hir-placement-card { padding: var(--spacing-md); }
   }
 }

@@ -417,14 +417,17 @@
     display: grid;
     flex: none;
     place-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
     color: var(--home-text-quiet);
 
     [data-expanded] & {
       color: var(--home-text);
     }
   }
+
+  .home-agent-call-icon .home-compact-icon,
+  .home-agent-call-icon .home-compact-icon svg { width: 1.5rem; height: 1.5rem; }
 
   .home-agent-call-name {
     min-width: 0;

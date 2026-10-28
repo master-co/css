@@ -6,6 +6,7 @@ import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import DeliveryFigures from './DeliveryFigures'
 import DeliveryStage from './DeliveryStage'
 import { HomeSectionHeader } from './HomeBento'
+import HomeIllustration, { type HomeIllustrationId } from './HomeIllustration'
 import { deliveryModes, homeSections, type DeliveryModeId } from './home-content'
 
 /** Short names for the mode switch. */
@@ -15,12 +16,19 @@ const modeNames = {
   runtime: 'Runtime'
 } satisfies Record<DeliveryModeId, string>
 
+const modeIcons = {
+  static: 'render-static',
+  progressive: 'render-progressive',
+  runtime: 'render-runtime'
+} satisfies Record<DeliveryModeId, HomeIllustrationId>
+
 export default function DeliveryModesSection() {
   const $ = useTranslation()
   return (
     <section id={homeSections.deliveryModes} className="home-delivery home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-rendering"
           index="03"
           label={$('Rendering')}
           title={$('One syntax. Every delivery path.')}
@@ -59,15 +67,12 @@ export default function DeliveryModesSection() {
               <div className="home-delivery-about">
                 {deliveryModes.map((mode) => (
                   <div className="home-delivery-mode" data-mode={mode.id} key={mode.id}>
+                    <HomeIllustration icon={modeIcons[mode.id]} />
                     <p className="home-delivery-mode-title">
-                      <span id={`home-delivery-${mode.id}-title`}>{$(mode.title)}</span>
+                      <Link className="home-heading-link" href={mode.href} id={`home-delivery-${mode.id}-title`}>{$(mode.title)}</Link>
                       {'default' in mode && mode.default && <span className="home-delivery-mode-default">{$('Default')}</span>}
                     </p>
                     <p className="home-delivery-mode-body">{$(mode.body)}</p>
-                    <Link aria-label={`${$('How it works')}: ${$(mode.title)}`} className="home-delivery-mode-link home-section-link" href={mode.href}>
-                      {$('How it works')}
-                      <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />
-                    </Link>
                   </div>
                 ))}
               </div>

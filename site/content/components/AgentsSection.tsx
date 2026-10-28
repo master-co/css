@@ -9,6 +9,7 @@ import preset from '~/site/utils/preset-manifest'
 import AgentSession, { type AgentSessionProps } from './AgentSession'
 import { agentSessionCalls } from './agents-content'
 import { HomeSectionHeader } from './HomeBento'
+import HomeCompactIcon from './HomeCompactIcon'
 import { agentSession, glyphFieldLines, homeSections } from './home-content'
 
 export default function AgentsSection() {
@@ -17,6 +18,7 @@ export default function AgentsSection() {
     <section id={homeSections.agents} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-ai-agents"
           index="06"
           label={$('AI agents')}
           title={$('Agents check their own changes.')}
@@ -30,6 +32,14 @@ export default function AgentsSection() {
         <AgentSession
           {...agentSession}
           {...sessionFacts()}
+          toolIcons={{
+            manifest: <HomeCompactIcon icon="mcp-manifest-query" />,
+            inspect: <HomeCompactIcon icon="mcp-inspect-class" />,
+            lint: <HomeCompactIcon icon="mcp-lint-project" />,
+            preview: <HomeCompactIcon icon="mcp-preview-fixes" />,
+            apply: <HomeCompactIcon icon="mcp-apply-preview" />,
+            relint: <HomeCompactIcon icon="mcp-lint-project" />
+          }}
           classRows={glyphFieldLines} />
       </div>
     </section>

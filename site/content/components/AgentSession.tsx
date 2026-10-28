@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { IconAlertTriangle, IconBook2, IconChecklist, IconCircleCheck, IconDeviceFloppy, IconFileCode, IconFileDiff, IconLoader2, IconPencil, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconSparkles, IconUser, IconZoomCode, type Icon } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCircleCheck, IconFileCode, IconLoader2, IconPencil, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconSparkles, IconUser } from '@tabler/icons-react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import clsx from 'clsx'
@@ -54,17 +54,9 @@ type Mode = 'chosen' | 'paused' | 'tour'
 /** Every inline icon in the window shares one size and stroke, so rows line up and read alike. */
 const icon = { size: 14, stroke: 1.75 } as const
 
-/** Each tool keeps one icon wherever it appears. */
-const callIcons: Record<AgentSessionCallId, Icon> = {
-  manifest: IconBook2,
-  inspect: IconZoomCode,
-  lint: IconChecklist,
-  preview: IconFileDiff,
-  apply: IconDeviceFloppy,
-  relint: IconChecklist
-}
-
 export interface AgentSessionProps {
+  /** Decorative SVG slots rendered on the server. */
+  toolIcons: Record<AgentSessionCallId, ReactNode>
   code: string
   file: string
   fixedCode: string
@@ -92,7 +84,7 @@ export interface AgentSessionInspection {
  * token and applies it after the server checks the file has not changed. The transcript, the file
  * and the server's output play in step; the step bar pauses the session or opens any step.
  */
-export default function AgentSession({ classRows, code, file, fixedCode, inspection, problems, tokens }: AgentSessionProps) {
+export default function AgentSession({ classRows, code, file, fixedCode, inspection, problems, tokens, toolIcons }: AgentSessionProps) {
   const $ = useTranslation()
   // The server renders the finished session. Once the page can play it, the tour starts on a frame
   // that already has a conversation, a file and a result in it (firstBeat); later loops start from the prompt.
@@ -258,6 +250,7 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
                   {entry.kind === 'call'
                     ? <CallCard
                       expanded={entry === lastCall}
+                      artwork={toolIcons[entry.id]}
                       id={entry.id}
                       result={beat >= entry.done ? results[entry.id] : undefined} />
                     : entry.kind === 'edit'
@@ -522,17 +515,17 @@ function EditRow({ file, label, lines }: { file: string, label: string, lines: n
 }
 
 /** A `tools/call` request to the MCP server and, once it returns, its result. */
-function CallCard({ expanded, id, result }: {
+function CallCard({ artwork, expanded, id, result }: {
+  artwork: ReactNode
   expanded: boolean
   id: AgentSessionCallId
   result?: { summary: string, response: ReactNode, tone: 'ok' | 'warn' }
 }) {
   const call = agentSessionCalls[id]
-  const ToolIcon = callIcons[id]
   return (
     <div className="home-agent-call" data-expanded={expanded ? '' : undefined} data-state={result ? 'done' : 'running'}>
       <div className="home-agent-call-header">
-        <span aria-hidden="true" className="home-agent-call-icon"><ToolIcon {...icon} /></span>
+        <span aria-hidden="true" className="home-agent-call-icon">{artwork}</span>
         <code className="home-agent-call-name">{call.name}</code>
         {/* A settled call keeps its result as one word; an open call shows the result in full below instead. */}
         {result && <span className={clsx('home-agent-call-summary', result.tone === 'warn' && 'home-tone-warn')}>{result.summary}</span>}

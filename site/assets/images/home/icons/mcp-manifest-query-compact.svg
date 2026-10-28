@@ -1,5 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M24 17v-3q0-2-2-2H6q-2 0-2 2v11q0 2 2 2h11M8 11V6q0-1 1-1h10q1 0 1 1v5M4 18h13m-6-3h5M8 23h5" />
-  <circle cx="23" cy="23" r="4" />
-  <path d="m26 26 3 3" />
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M16.84 5.14 L24.54 9.08 C25.36 9.5 25.36 10.18 24.54 10.6 L20.12 12.86 C19.3 13.28 17.98 13.28 17.16 12.86 L9.46 8.92 C8.64 8.5 8.64 7.82 9.46 7.4 L13.88 5.14 C14.7 4.72 16.02 4.72 16.84 5.14 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M16.84 5.14 L24.54 9.08 C25.36 9.5 25.36 10.18 24.54 10.6 L20.12 12.86 C19.3 13.28 17.98 13.28 17.16 12.86 L9.46 8.92 C8.64 8.5 8.64 7.82 9.46 7.4 L13.88 5.14 C14.7 4.72 16.02 4.72 16.84 5.14 Z" stroke-opacity="0.72" />
+  <path d="M14.54 7.74 L19.46 10.26" stroke-width="1.25" stroke-opacity="0.65" />
+  <path d="M13.84 10.14 L21.54 14.08 C22.36 14.5 22.36 15.18 21.54 15.6 L17.12 17.86 C16.3 18.28 14.98 18.28 14.16 17.86 L6.46 13.92 C5.64 13.5 5.64 12.82 6.46 12.4 L10.88 10.14 C11.7 9.72 13.02 9.72 13.84 10.14 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M13.84 10.14 L21.54 14.08 C22.36 14.5 22.36 15.18 21.54 15.6 L17.12 17.86 C16.3 18.28 14.98 18.28 14.16 17.86 L6.46 13.92 C5.64 13.5 5.64 12.82 6.46 12.4 L10.88 10.14 C11.7 9.72 13.02 9.72 13.84 10.14 Z" stroke-opacity="0.72" />
+  <path d="M11.54 12.74 L16.46 15.26" stroke-width="1.25" stroke-opacity="0.65" />
+  <path d="M10.84 15.14 L18.54 19.08 C19.36 19.5 19.36 20.18 18.54 20.6 L14.12 22.86 C13.3 23.28 11.98 23.28 11.16 22.86 L3.46 18.92 C2.64 18.5 2.64 17.82 3.46 17.4 L7.88 15.14 C8.7 14.72 10.02 14.72 10.84 15.14 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M10.84 15.14 L18.54 19.08 C19.36 19.5 19.36 20.18 18.54 20.6 L14.12 22.86 C13.3 23.28 11.98 23.28 11.16 22.86 L3.46 18.92 C2.64 18.5 2.64 17.82 3.46 17.4 L7.88 15.14 C8.7 14.72 10.02 14.72 10.84 15.14 Z" stroke-opacity="0.72" />
+  <path d="M8.54 17.74 L13.46 20.26" stroke-width="1.25" stroke-opacity="0.65" />
+  <path d="M28 24 C28 26.21 26.21 28 24 28 C21.79 28 20 26.21 20 24 C20 21.79 21.79 20 24 20 C26.21 20 28 21.79 28 24 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M28 24 C28 26.21 26.21 28 24 28 C21.79 28 20 26.21 20 24 C20 21.79 21.79 20 24 20 C26.21 20 28 21.79 28 24 Z" stroke-opacity="0.85" />
+  <path d="M27 27 L30 30" stroke-width="1.25" stroke-opacity="0.84" />
 </svg>

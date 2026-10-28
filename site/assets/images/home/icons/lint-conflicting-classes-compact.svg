@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-  <rect x="3" y="6" width="7" height="6" rx="1.4" />
-  <rect x="3" y="22" width="7" height="6" rx="1.4" />
-  <rect x="23" y="12" width="6" height="10" rx="1.4" />
-  <path d="M10 9h4q3 0 3 3v2q0 3 3 3h3M10 25h4q3 0 3-3v-2q0-3 3-3M26 14.5v3.5" />
-  <circle cx="26" cy="20" r="0.55" fill="currentColor" stroke="none" />
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M10 8 L14 8 Q16 8 16 10 L16 13 Q16 16 19 16 L22 16 M10 24 L14 24 Q16 24 16 22 L16 19 Q16 16 19 16" stroke-width="1.25" stroke-opacity="0.65" />
+  <path d="M4.4 5 L8.6 5 C9.37 5 10 5.63 10 6.4 L10 9.6 C10 10.37 9.37 11 8.6 11 L4.4 11 C3.63 11 3 10.37 3 9.6 L3 6.4 C3 5.63 3.63 5 4.4 5 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M4.4 5 L8.6 5 C9.37 5 10 5.63 10 6.4 L10 9.6 C10 10.37 9.37 11 8.6 11 L4.4 11 C3.63 11 3 10.37 3 9.6 L3 6.4 C3 5.63 3.63 5 4.4 5 Z" stroke-opacity="0.72" />
+  <path d="M4.4 21 L8.6 21 C9.37 21 10 21.63 10 22.4 L10 25.6 C10 26.37 9.37 27 8.6 27 L4.4 27 C3.63 27 3 26.37 3 25.6 L3 22.4 C3 21.63 3.63 21 4.4 21 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M4.4 21 L8.6 21 C9.37 21 10 21.63 10 22.4 L10 25.6 C10 26.37 9.37 27 8.6 27 L4.4 27 C3.63 27 3 26.37 3 25.6 L3 22.4 C3 21.63 3.63 21 4.4 21 Z" stroke-opacity="0.72" />
+  <path d="M24.5 11 L27.5 11 C28.33 11 29 11.67 29 12.5 L29 19.5 C29 20.33 28.33 21 27.5 21 L24.5 21 C23.67 21 23 20.33 23 19.5 L23 12.5 C23 11.67 23.67 11 24.5 11 Z" fill="currentColor" fill-opacity="0.04" stroke="none" />
+  <path d="M24.5 11 L27.5 11 C28.33 11 29 11.67 29 12.5 L29 19.5 C29 20.33 28.33 21 27.5 21 L24.5 21 C23.67 21 23 20.33 23 19.5 L23 12.5 C23 11.67 23.67 11 24.5 11 Z" stroke-opacity="0.72" />
+  <path d="M26 13.5 L26 16.5" stroke-width="1.25" stroke-opacity="0.84" />
+  <path d="M26.65 19 C26.65 19.36 26.36 19.65 26 19.65 C25.64 19.65 25.35 19.36 25.35 19 C25.35 18.64 25.64 18.35 26 18.35 C26.36 18.35 26.65 18.64 26.65 19 Z" fill="currentColor" fill-opacity="0.85" stroke="none" />
 </svg>

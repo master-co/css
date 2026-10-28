@@ -6,7 +6,15 @@ import EditorFigures from './EditorFigures'
 import { editorFeatures } from './editor-content'
 import { getEditorModel } from './editor-document'
 import { HomeSectionHeader } from './HomeBento'
+import HomeIllustration, { type HomeIllustrationId } from './HomeIllustration'
 import { homeSections } from './home-content'
+
+const featureIcons = {
+  complete: 'editor-manifest-completions',
+  hover: 'editor-hover-inspection',
+  highlight: 'editor-focused-highlighting',
+  color: 'editor-color-tools'
+} satisfies Record<typeof editorFeatures[number]['id'], HomeIllustrationId>
 
 /**
  * One file in one editor. A caret and a pointer walk through the language service features in
@@ -18,6 +26,7 @@ export default function LanguageServiceSection() {
     <section id={homeSections.languageService} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-editor"
           index="02"
           label={$('Editor')}
           title={$('Dense class strings, still readable.')}
@@ -27,7 +36,7 @@ export default function LanguageServiceSection() {
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-        <EditorFigures features={editorFeatures} model={getEditorModel()} />
+        <EditorFigures features={editorFeatures} icons={editorFeatures.map(feature => <HomeIllustration icon={featureIcons[feature.id]} key={feature.id} />)} model={getEditorModel()} />
       </div>
     </section>
   )

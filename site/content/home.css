@@ -121,6 +121,55 @@
     margin-bottom: var(--home-header-space);
   }
 
+  .home-illustration {
+    --home-illustration-size: 4rem;
+    position: relative;
+    display: block;
+    flex: none;
+    width: var(--home-illustration-size);
+    height: var(--home-illustration-size);
+    pointer-events: none;
+  }
+
+  .home-illustration img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .home-illustration .home-illustration-dark { display: none; }
+  .dark .home-illustration .home-illustration-light { display: none; }
+  .dark .home-illustration .home-illustration-dark { display: block; }
+
+  .home-compact-icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--home-text-body);
+    pointer-events: none;
+  }
+
+  .home-compact-icon svg { flex: none; }
+
+  .home-section-caption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-inline-start: -0.4rem;
+
+    @media (--md) {
+      margin-inline-start: -0.5rem;
+
+      .home-illustration { --home-illustration-size: 5rem; }
+    }
+  }
+
   .home-section-heading {
     max-width: 22ch;
     margin: 1.5rem 0 0;
@@ -322,11 +371,11 @@
     }
   }
 
-  /* Card headers breathe: a title at the card scale, then a full-size body, well clear of the figure. */
+  /* The title and description stay together, with a separate illustration to their right. */
   .home-bento-card-header {
-    display: flex;
-    flex-direction: column;
-    padding: 1.75rem 1.75rem 2rem;
+    /* Contain the header only: size containment on the subgrid card collapses auto-height code panes. */
+    container: home-card / inline-size;
+    padding: 1.75rem 1.5rem 2rem;
 
     @media (--sm) {
       padding: 2.25rem 2.25rem 2.5rem;
@@ -337,7 +386,31 @@
     }
   }
 
+  .home-bento-card-caption {
+    display: grid;
+    grid-template-columns: minmax(0, 44ch) 7rem;
+    align-items: start;
+    align-content: start;
+    column-gap: 1.5rem;
+  }
+
+  .home-bento-card-copy { min-width: 0; }
+
+  .home-bento-card-caption > .home-illustration {
+    --home-illustration-size: 7rem;
+    align-self: center;
+  }
+
+  @container home-card (width >= 22rem) {
+    .home-bento-card-caption { column-gap: 2rem; }
+  }
+
+  @container home-card (width >= 28rem) {
+    .home-bento-card-caption { column-gap: 3rem; }
+  }
+
   .home-bento-card-title {
+    min-width: 0;
     margin: 0;
     font-size: var(--home-card-title);
     font-weight: var(--font-weight-regular);
@@ -348,12 +421,28 @@
   }
 
   .home-bento-card-body {
+    min-width: 0;
     max-width: 44ch;
     margin: 0.75rem 0 0;
     font-size: var(--home-body);
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
+  }
+
+  .home-heading-link {
+    color: inherit;
+    text-decoration: none;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
+    &:hover { text-decoration-line: underline; }
+
+    &:focus-visible {
+      border-radius: var(--radius-sm);
+      outline: 2px solid var(--home-ink);
+      outline-offset: 4px;
+    }
   }
 
   /*

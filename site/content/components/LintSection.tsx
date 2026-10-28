@@ -3,9 +3,19 @@ import { IconArrowRight } from '@tabler/icons-react'
 import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { HomeBentoFrame, HomeSectionHeader } from './HomeBento'
+import HomeCompactIcon, { type HomeCompactIconId } from './HomeCompactIcon'
 import LintExplorer from './LintExplorer'
 import { homeSections, lintRules } from './home-content'
 import { lintRuleReach } from './lint-content'
+
+const ruleIcons: Record<string, HomeCompactIconId> = {
+  'Invalid classes': 'lint-invalid-classes',
+  'Class order': 'lint-class-order',
+  'Conflicting classes': 'lint-conflicting-classes',
+  'Strict vocabulary': 'lint-strict-vocabulary',
+  'Theme tokens': 'lint-theme-tokens',
+  'Fix previews': 'lint-fix-previews'
+}
 
 export default function LintSection() {
   const $ = useTranslation()
@@ -13,6 +23,7 @@ export default function LintSection() {
     <section id={homeSections.codeDiagnostics} className="home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
+          icon="section-lint"
           index="05"
           label={$('Lint')}
           title={$('Lint classes against your project.')}
@@ -24,6 +35,7 @@ export default function LintSection() {
         </HomeSectionHeader>
         <HomeBentoFrame className="home-lint-frame home-marks home-reveal-item">
           <LintExplorer
+            icons={lintRules.map(rule => <HomeCompactIcon icon={ruleIcons[rule.title]} key={rule.title} />)}
             rules={lintRules.map((rule) => ({
               title: rule.title,
               file: rule.file,

@@ -98,7 +98,7 @@ export const p3PaletteColorNames = [...colorNames].reverse()
 
 export const p3PaletteTiers = [...COLOR_LEVELS].reverse()
 
-/** The design system's cards, in one bento grid of six columns: themes on the first row, primitives on the second. */
+/** Paired half-width cards: themes first and primitives last, with the full-width palette between them. */
 export const designSystemTiles = [
   {
     title: 'Light and dark, same markup',
@@ -115,18 +115,18 @@ export const designSystemTiles = [
   {
     title: 'Layout and motion, together',
     body: 'Grid spans, responsive layouts, animation and view transitions, written right beside the markup they style.',
-    gridColumnClassName: 'grid-col-span(4)@md',
+    gridColumnClassName: 'grid-col-span(3)@md',
     visual: 'art-gallery'
   },
   {
     title: 'Native CSS layers',
     body: 'Utilities sit in a later layer than components, so a class in markup wins without !important.',
-    gridColumnClassName: 'grid-col-span(2)@md',
+    gridColumnClassName: 'grid-col-span(3)@md',
     visual: 'cascade-layers'
   }
 ] satisfies readonly DesignSystemTileContent[]
 
-/** The P3 palette closes the section, open on the page ground below the cards. */
+/** The full-width P3 palette sits between the two pairs of cards. */
 export const designSystemPalette = {
   title: 'Wide-gamut color',
   body: 'P3 palettes on a predictable tier scale, from deep anchors to bright accents beyond sRGB.'
