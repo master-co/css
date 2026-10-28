@@ -293,8 +293,8 @@
     line-height: 1.75;
     white-space: pre-wrap;
     overflow-wrap: break-word;
-    color: var(--home-text-body);
-    background-color: var(--home-well);
+    color: var(--color-code-text);
+    background-color: var(--color-code-surface);
     box-shadow: var(--home-groove);
   }
 
@@ -310,7 +310,7 @@
   }
 
   .home-composer-classes-problem {
-    text-decoration-color: color-mix(in oklab, var(--home-warn) 80%, transparent);
+    text-decoration-color: var(--color-code-warning);
   }
 
   .home-composer-classes-fixed {
@@ -404,15 +404,15 @@
   }
 
   .home-composer-at-rule {
-    color: var(--home-text-faint);
+    color: var(--color-code-keyword);
   }
 
   .home-composer-rule.home-composer-rule-missing {
-    color: var(--home-warn);
+    color: var(--color-code-warning);
   }
 
   .home-composer-rule-note {
-    color: var(--home-text-faint);
+    color: var(--color-code-comment);
   }
 
   /* Pointing at a class marks it and lifts its rule in the generated CSS below. */
@@ -422,8 +422,7 @@
   }
 
   .home-composer-token-inspected {
-    color: var(--home-text);
-    background-color: color-mix(in oklab, var(--home-text) 8%, transparent);
+    background-color: var(--color-code-active);
   }
 
   .home-composer-caret {
@@ -440,6 +439,7 @@
     min-height: 9.25rem;
     padding: var(--spacing-md) var(--spacing-lg);
     border-top: 1px solid var(--home-hairline);
+    background-color: var(--color-code-surface);
   }
 
   .home-composer-rules {
@@ -457,7 +457,7 @@
     line-height: 1.75;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--home-text-quiet);
+    color: var(--color-code-punctuation);
     animation-name: home-composer-rule;
     animation-duration: 0.35s;
     animation-timing-function: var(--home-ease);
@@ -465,7 +465,7 @@
   }
 
   .home-composer-rule-latest {
-    background-color: color-mix(in oklab, var(--home-text) 6%, transparent);
+    background-color: var(--color-code-active);
   }
 
   .home-composer-selector {

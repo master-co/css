@@ -1,6 +1,7 @@
 import { createHighlighterCore, type LanguageRegistration } from 'shiki/core'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import masterCSSTextMateGrammar from '@master/css-language-service/syntaxes/master-css.tmLanguage.json' with { type: 'json' }
+import syntaxTheme from './syntax-theme'
 
 const masterCSSShikiLanguage: LanguageRegistration = {
   ...(masterCSSTextMateGrammar as unknown as LanguageRegistration),
@@ -36,15 +37,9 @@ export default function createHighlighter() {
       import('@shikijs/langs/php'),
       masterCSSShikiLanguage
     ],
-    themes: [
-      import('@shikijs/themes/dracula'),
-      import('@shikijs/themes/min-light')
-    ],
+    themes: [syntaxTheme],
     engine: createJavaScriptRegexEngine(),
   })
 }
 
-export const themes = {
-  dark: 'dracula',
-  light: 'min-light'
-}
+export const theme = syntaxTheme.name

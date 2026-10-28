@@ -1,0 +1,86 @@
+The shared code window keeps source text, tab names and copy feedback together. Switch tabs with arrow keys; the selected insert keeps a stable width.
+
+### Block code
+```html
+<!-- A readable card in either appearance -->
+<article class="p-lg r-lg bg-surface-raised">
+  <h2 class="text-2xl fg-text-strong">A place for ideas</h2>
+  <a class="fg-text-blue:hover@sm" href="/guide">Explore the guide</a>
+</article>
+```
+
+### CSS and Master CSS directives
+```css
+/* Shared tokens and native CSS use the same palette. */
+@theme {
+  --color-brand: #3764a5;
+  --spacing-card: 1.5rem;
+}
+
+@utility card {
+  padding: var(--spacing-card);
+  color: var(--color-brand);
+}
+
+.card:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+@safelist "p-lg fg-text-blue:hover@sm";
+```
+
+### Inline code
+- js -> `js const foo = 'bar'`
+- ts -> `ts const options: Options = {}`
+- css -> `css body { background: red; }`
+- mcss -> `mcss text-align:center`
+- Unlabelled -> `collection.html`
+
+### Plain text
+```text
+app/
+  globals.css
+  components/
+    Card.tsx
+```
+
+### Code lines added and removed
+```ts
+console.log('hewwo') // [!code --]
+console.log('hello') // [!code ++]
+console.log('goodbye')
+```
+
+### Code line highlight
+```ts
+console.log('hewwo')
+console.log('hello') // [!code highlight]
+console.log('goodbye')
+```
+
+### Code line focus
+```ts
+console.log('hewwo')
+console.log('hello') // [!code focus]
+console.log('goodbye')
+```
+
+### Code mark words
+```ts
+// @MARK bar
+const foo = 'bar'
+```
+
+### Warning and error marks
+```html
+<!-- @WARN font-size:12px -->
+<p class="font-size:12px">Review the text size.</p>
+```
+
+```html
+<!-- @ERROR unknown-utility -->
+<p class="unknown-utility">Check the class name.</p>
+```
+
+---

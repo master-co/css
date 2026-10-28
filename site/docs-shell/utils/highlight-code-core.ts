@@ -15,7 +15,7 @@ import { dedent } from 'ts-dedent'
 import { beautifyCSS } from '../utils/beautify-css'
 import beautifyJS from '../utils/beautify-js'
 import { beautifyHTML } from '../utils/beautify-html'
-import createHighlighter, { themes } from './create-highlighter'
+import createHighlighter, { theme } from './create-highlighter'
 import transformerNotationWordMark from './transformer-notation-word-mark'
 import { defu } from 'defu'
 
@@ -50,7 +50,6 @@ export default async function highlightCode(code: string, options: Options) {
     inline: false,
     beautify: false,
     dedent: true,
-    defaultColor: false,
     mergeWhitespaces: false
   } as Options) as Options
   const transformers: ShikiTransformer[] = []
@@ -127,7 +126,7 @@ export default async function highlightCode(code: string, options: Options) {
   const hast = (await highlighterPromise).codeToHast(normalizedCode, {
     ...options,
     lang: shikiLang,
-    themes,
+    theme,
     transformers,
   })
   return hast

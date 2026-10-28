@@ -38,12 +38,12 @@
     --home-error: light-dark(oklch(0.56 0.17 25), oklch(0.72 0.15 25));
     --home-info: light-dark(oklch(0.55 0.1 250), oklch(0.76 0.09 250));
 
-    /* Code: low-chroma hues so samples read as structure, not decoration. */
-    --home-code-tag: light-dark(var(--color-zinc-50), var(--color-zinc-40));
-    --home-code-attr: light-dark(oklch(0.52 0.09 300), oklch(0.76 0.08 300));
-    --home-code-string: light-dark(oklch(0.5 0.1 150), oklch(0.78 0.09 150));
-    --home-code-property: light-dark(oklch(0.5 0.09 250), oklch(0.78 0.08 250));
-    --home-code-selector: light-dark(oklch(0.56 0.1 70), oklch(0.82 0.1 85));
+    /* Code shares the documentation palette, including the hand-rendered editor figures. */
+    --home-code-tag: var(--color-code-function);
+    --home-code-attr: var(--color-code-property);
+    --home-code-string: var(--color-code-string);
+    --home-code-property: var(--color-code-property);
+    --home-code-selector: var(--color-code-function);
 
     /* Light: a single source above. Raised surfaces catch a 1px line of it on their top edge and sit on a contact shadow. */
     --home-edge: var(--shadow-edge);

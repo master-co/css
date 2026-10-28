@@ -320,13 +320,14 @@
     box-shadow: inset 0 0 0 1px var(--home-rule);
   }
 
-  /* Code sits straight in its well: the docs block border, fill and radius stay out of figures. */
+  /* Code shares the site palette; the figure owns its border and radius. */
   .home-code-window {
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     tab-size: 2;
+    background-color: var(--color-code-surface);
 
     .code {
       border: 0;
@@ -342,9 +343,10 @@
     }
   }
 
-  /* Shiki's palettes, pulled toward the body text so every sample reads as structure rather than decoration. */
-  .home-page .shiki span[style] {
-    color: light-dark(color-mix(in oklab, var(--shiki-light) 56%, #3a3a3a), color-mix(in oklab, var(--shiki-dark) 56%, #cfcfcf));
+  .home-page :is(.home-composer-markup, .home-composer-css, .home-agent-code, .home-hover-code, .home-color-tools-lines)::selection,
+  .home-page :is(.home-composer-markup, .home-composer-css, .home-agent-code, .home-hover-code, .home-color-tools-lines) ::selection {
+    color: var(--color-code-text);
+    background-color: var(--color-code-selection);
   }
 
   .home-code-window-has-fix {
@@ -577,7 +579,7 @@
   }
 
   .home-code-string {
-    color: var(--home-ok);
+    color: var(--home-code-string);
   }
 
   .home-spin {
@@ -605,7 +607,7 @@
       position: absolute;
       inset: -0.12rem -100cqw -0.08rem;
       z-index: -1;
-      background: color-mix(in oklab, var(--home-text) 5%, transparent);
+      background: var(--color-code-active);
       content: '';
       pointer-events: none;
     }
@@ -731,7 +733,7 @@
       inset: -0.12rem -100cqw -0.08rem;
       z-index: -1;
       visibility: hidden;
-      background: color-mix(in oklab, var(--home-text) 5%, transparent);
+      background: var(--color-code-active);
       opacity: 0;
       content: '';
       pointer-events: none;

@@ -1,0 +1,18 @@
+@layer components {
+  .ds-component-page > .ds-appearance { width: fit-content; margin-top: 1.5rem; }
+  .ds-component-page { width: min(100%, 74rem); margin: 0 auto; padding: 6rem 1.25rem 5rem; color: var(--color-text-body); }
+  .ds-review-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-bottom: 2rem; color: var(--color-text-muted); font-size: .8125rem; }
+  .ds-review-navigation a { color: inherit; text-decoration: none; }
+  .ds-review-navigation a:hover { color: var(--color-text-strong); }
+  .ds-review-navigation a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; border-radius: var(--radius-xs); }
+  .ds-component-page > h1 { margin: 0; font-size: clamp(2rem, 3.2vw, 2.75rem); font-weight: 550; line-height: 1.2; letter-spacing: -.035em; color: var(--color-text-strong); }
+  .ds-component-page > h1, .ds-review-navigation, .ds-component-page > section > [class$="sectionHeading"] { overflow-wrap: anywhere; }
+  .ds-component-page > section > [class$="sectionHeading"] > * { min-width: 0; max-width: 100%; }
+  .ds-component-page > p:first-of-type { max-width: 65ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.75; }
+  .ds-component-page > section { margin-top: 3rem; }
+  .ds-component-page > section > h2, .ds-component-page > section > [class$="sectionHeading"] h2 { margin: 0 0 .75rem; color: var(--color-text-strong); font-size: 1.25rem; font-weight: 550; line-height: 1.4; letter-spacing: -.02em; }
+  .ds-component-api { max-width: 48rem; margin-inline: auto; padding-top: 2rem; border-top: 1px solid var(--color-line-divider); }
+  .ds-component-api :is(h2, h3) { margin-top: 2rem; }
+  .ds-component-api .code, .ds-component-api .codeTabs { margin-inline: 0; }
+  .ds-component-api > :first-child { margin-top: 0; }
+}

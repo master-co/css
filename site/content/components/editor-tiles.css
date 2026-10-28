@@ -3,6 +3,7 @@
     --home-code-line: 1.75rem;
     --home-code-inset: var(--spacing-lg);
     min-height: 19rem;
+    background-color: var(--color-code-surface);
   }
 
   .home-hover-code {
@@ -11,7 +12,7 @@
     font-family: var(--home-mono);
     font-size: 0.8125rem;
     line-height: var(--home-code-line);
-    color: var(--home-text-body);
+    color: var(--color-code-text);
   }
 
   .home-hover-line {
@@ -26,7 +27,7 @@
     width: var(--home-token-length);
     height: var(--home-code-line);
     border-radius: var(--radius-sm);
-    background-color: color-mix(in oklab, var(--home-text) 8%, transparent);
+    background-color: var(--color-code-active);
     outline: 1px solid var(--home-rule);
     opacity: 0;
     animation: home-hover-token 7s var(--easing-smooth) infinite;
@@ -74,7 +75,7 @@
     font-size: var(--home-label);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--home-text-faint);
+    color: var(--color-code-comment);
   }
 
   .home-hover-card-css {
@@ -82,7 +83,7 @@
     margin: 0;
     font-size: 0.75rem;
     line-height: 1.6;
-    color: var(--home-text);
+    color: var(--color-code-text);
   }
 
   .home-hover-cursor {
@@ -100,6 +101,7 @@
 
   .home-color-tools {
     min-height: 19rem;
+    background-color: var(--color-code-surface);
   }
 
   .home-color-tools-body {
@@ -118,7 +120,7 @@
     font-size: 0.8125rem;
     line-height: 2;
     white-space: nowrap;
-    color: var(--home-text-body);
+    color: var(--color-code-text);
   }
 
   .home-color-tools-line:first-child .home-color-swatch {

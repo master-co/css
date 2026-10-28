@@ -113,8 +113,8 @@
     font-family: var(--home-mono);
     font-size: 0.8125rem;
     line-height: 1.85;
-    color: var(--home-text-body);
-    background-color: var(--home-well);
+    color: var(--color-code-text);
+    background-color: var(--color-code-surface);
   }
 
   .home-agent-line {
@@ -129,28 +129,28 @@
   .home-agent-line-sign {
     flex: none;
     width: 2ch;
-    color: var(--home-text-quiet);
+    color: var(--color-code-comment);
   }
 
   .home-agent-line-problem .home-agent-classes {
-    text-decoration: underline wavy color-mix(in oklab, var(--home-warn) 80%, transparent);
+    text-decoration: underline wavy var(--color-code-warning);
     text-underline-offset: 5px;
   }
 
   .home-agent-line-removed {
-    background-color: color-mix(in oklab, var(--home-error) 7%, transparent);
+    background-color: var(--color-code-removed);
 
     .home-agent-line-sign {
-      color: var(--home-error);
+      color: var(--color-code-danger);
     }
   }
 
   .home-agent-line-added,
   .home-agent-line-fixed {
-    background-color: color-mix(in oklab, var(--home-ok) 8%, transparent);
+    background-color: var(--color-code-added);
 
     .home-agent-line-sign {
-      color: var(--home-ok);
+      color: var(--color-code-success);
     }
   }
 

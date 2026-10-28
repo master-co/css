@@ -27,7 +27,7 @@
     overflow: auto;
     padding: 1rem 0;
     white-space: nowrap;
-    background-color: var(--color-surface-canvas);
+    background-color: var(--color-code-surface);
     line-height: 20px;
     counter-reset: line;
     hyphens: none;
@@ -42,7 +42,7 @@
     }
 
     .silence {
-      color: var(--color-text-muted)!important;
+      color: var(--color-code-comment)!important;
       contain: strict;
     }
 
@@ -51,12 +51,13 @@
     }
 
     .silence * {
-      color: var(--color-text-muted)!important;
+      color: var(--color-code-comment)!important;
     }
   }
 
   .code-block {
     display: block;
+    color: var(--color-code-text);
     white-space: pre;
     font-weight: var(--font-weight-regular);
     font-size: inherit;
@@ -74,13 +75,15 @@
 
   .code-bar {
     display: flex;
-    background-color: var(--color-surface-canvas);
+    background-color: var(--color-code-surface);
     font-size: var(--font-size-xs);
   }
 
   .code-line-add {
     display: block;
-    color: var(--color-text-success);
+    color: var(--color-code-text);
+    background-color: var(--color-code-added);
+    border-left-color: var(--color-code-success);
     border-left-width: 2px;
     padding-left: calc(1.25rem - 2px);
 
@@ -89,21 +92,15 @@
     }
 
     &::before {
-      color: var(--color-text-success)!important;
-    }
-
-    @apply --site-light {
-      background-color: var(--color-beryl-0);
-    }
-
-    @apply --site-dark {
-      background-color: color-mix(in oklab,var(--color-beryl-50) 10%,transparent);
+      color: var(--color-code-success)!important;
     }
   }
 
   .code-line-remove {
     display: block;
-    color: var(--color-text-danger);
+    color: var(--color-code-text);
+    background-color: var(--color-code-removed);
+    border-left-color: var(--color-code-danger);
     border-left-width: 2px;
     padding-left: calc(1.25rem - 2px);
 
@@ -112,28 +109,13 @@
     }
 
     &::before {
-      color: var(--color-text-danger)!important;
-    }
-
-    @apply --site-light {
-      background-color: var(--color-crimson-0);
-    }
-
-    @apply --site-dark {
-      background-color: color-mix(in oklab,var(--color-crimson-50) 10%,transparent);
+      color: var(--color-code-danger)!important;
     }
   }
 
   .code-line-active {
     display: block;
-
-    @apply --site-dark {
-      background-color: var(--color-zinc-80);
-    }
-
-    @apply --site-light {
-      background-color: var(--color-zinc-5);
-    }
+    background-color: var(--color-code-active);
   }
 
   .line {
@@ -143,7 +125,7 @@
     &:not(:only-child):before {
       display: inline-block;
       text-align: right;
-      color: var(--color-text-muted);
+      color: var(--color-code-comment);
       padding-right: var(--spacing-md);
       font-size: 80%;
       margin-left: -5px;
@@ -155,6 +137,7 @@
 
   .mark {
     border-radius: var(--radius-sm);
+    background-color: var(--color-code-mark);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
     margin: -2px 0;
@@ -169,27 +152,18 @@
       border-bottom-left-radius: 0px;
       border-top-left-radius: 0px;
     }
-
-    @apply --site-dark {
-      color: var(--shiki-dark);
-    }
-
-    @apply --site-light {
-      background-color: var(--color-zinc-10);
-      color: var(--shiki-light);
-    }
   }
 
   .code-mark-warn {
-    -webkit-text-decoration: underline var(--color-text-yellow) wavy 1px;
-    text-decoration: underline var(--color-text-yellow) wavy 1px;
+    -webkit-text-decoration: underline var(--color-code-warning) wavy 1px;
+    text-decoration: underline var(--color-code-warning) wavy 1px;
     background-color: transparent!important;
     text-underline-offset: 2px;
   }
 
   .code-mark-error {
-    -webkit-text-decoration: underline var(--color-text-red) wavy 1px;
-    text-decoration: underline var(--color-text-red) wavy 1px;
+    -webkit-text-decoration: underline var(--color-code-danger) wavy 1px;
+    text-decoration: underline var(--color-code-danger) wavy 1px;
     background-color: transparent!important;
     text-underline-offset: 2px;
   }
@@ -205,7 +179,7 @@
 }
 
 @layer components {
-  /* Code sits in a soft well: a 1px contour, the canvas surface and a 12px radius. */
+  /* Code shares a dedicated surface inside the existing contour and radius. */
   .code, .codeTabs {
     min-width: 0;
     border: 1px solid var(--color-line-contour);
@@ -253,20 +227,4 @@
   .code-copy-status:not([data-error]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
   .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-divider); border-radius: var(--radius-md); background: var(--color-surface-raised); box-shadow: var(--shadow-floating); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
-}
-
-@layer defaults {
-  .shiki {
-    @apply --site-dark {
-      span {
-        color: var(--shiki-dark);
-      }
-    }
-
-    @apply --site-light {
-      span {
-        color: var(--shiki-light);
-      }
-    }
-  }
 }

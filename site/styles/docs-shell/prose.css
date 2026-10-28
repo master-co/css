@@ -1,9 +1,7 @@
 @layer defaults {
   .prose {
-    @apply --site-light {
-      :is(p, li, table) code {
-        background-color: var(--color-neutral-0);
-      }
+    :is(p, li, table) code:not(.code-block) {
+      background-color: var(--color-code-inline);
     }
 
     @apply --site-dark {

@@ -23,7 +23,7 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })
 
-test('highlightCode keeps directive and query colors aligned with native CSS in both themes', async () => {
+test('highlightCode keeps directive and query colors aligned with native CSS in the adaptive palette', async () => {
   const source = [
     '@import "base.css";',
     `@theme {
