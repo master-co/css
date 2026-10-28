@@ -1,454 +1,994 @@
 @layer components {
-  /* Stacked on small screens; from md the nodes sit on the SVG's 1200 × 480 coordinates. */
-  .home-flow {
+  /*
+   * Rendering: an open drawing on the page ground, then one control area. Three stations (build,
+   * server, browser) and two rows: the page's markup on top, quiet and the same in every mode, and
+   * its CSS below, the subject. Generation runs down a column through the engine; delivery runs
+   * across. `--home-delivery-t` (0 → 4) on the figure is the moment on the timeline; the station the
+   * moment is at is drawn as sheets, the others recede to outlines.
+   */
+  .home-delivery-figure {
+    container: home-delivery / inline-size;
+  }
+
+  .home-delivery-layout {
+    --home-delivery-gap: 0.75rem;
+    --home-delivery-line: 1.125rem;
+    --home-delivery-code: 0.6875rem;
+    --home-delivery-pad: 0.875rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--home-delivery-gap);
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-layout {
+      --home-delivery-gap: 2rem;
+    }
+  }
+
+  @container home-delivery (width >= 68rem) {
+    .home-delivery-layout {
+      --home-delivery-gap: 3rem;
+      --home-delivery-pad: 1rem;
+    }
+  }
+
+  /*
+   * From 52rem the drawing comes first and the controls follow. Narrower, the controls come first
+   * (mode, then player) and one station follows, so the space it reserves for its tallest state
+   * falls before the mode text rather than inside the figure. The artboard carries the standard
+   * corner marks; a little top padding keeps the station names clear of them.
+   */
+  .home-delivery-drawing {
     position: relative;
     display: grid;
-    gap: var(--spacing-xl);
-    padding: var(--spacing-lg);
-    border-radius: var(--home-radius-sheet);
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    grid-column: 1 / -1;
+    grid-row: 3;
+    grid-template-columns: subgrid;
+    margin-top: 2.25rem;
+    padding-top: 0.75rem;
+  }
 
-    @media (--md) {
-      display: block;
-      aspect-ratio: 1200 / 480;
-      padding: 0;
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-drawing {
+      grid-row: 1;
+      margin-top: 0;
     }
   }
 
-  .home-flow-wires {
-    display: none;
-
-    @media (--md) {
-      position: absolute;
-      inset: 0;
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-  }
-
-  .home-flow-wire {
-    fill: none;
-    stroke: var(--home-rule);
-    stroke-width: 2;
-    stroke-dasharray: 6 8;
-    animation: home-flow-dash 1.4s linear infinite;
-  }
-
-  .home-flow-output-wire {
-    opacity: 0.35;
-    transition: opacity var(--duration-slow) var(--easing-smooth), stroke var(--duration-slow) var(--easing-smooth);
-  }
-
-  .home-flow-packet {
-    & rect {
-      fill: var(--home-sheet);
-      stroke: var(--home-rule);
-    }
-
-    & text {
-      font-family: var(--home-mono);
-      font-size: 13px;
-      fill: var(--home-text);
-    }
-  }
-
-  .home-flow-pulse {
-    display: none;
-    fill: var(--home-text);
-  }
-
-  .home-flow-column {
+  .home-delivery-board {
     display: grid;
-    gap: var(--spacing-sm);
-
-    @media (--md) {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      display: block;
-    }
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
   }
 
-  .home-flow-column-label {
-    @media (--md) {
-      position: absolute;
-      top: 5%;
-      left: 0;
-    }
-  }
-
-  .home-flow-sources {
-    @media (--md) {
-      left: 2%;
-      width: 17.4%;
-    }
-  }
-
-  .home-flow-outputs {
-    @media (--md) {
-      left: 77.4%;
-      width: 20.6%;
-    }
-  }
-
-  .home-flow-node {
+  /*
+   * Below 52rem one station shows at a time: the one the timeline is at. The switch is a cut, not a
+   * crossfade: the old station leaves before the new one arrives, so two never overlap.
+   */
+  .home-delivery-station {
     display: grid;
-    gap: var(--spacing-3xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    outline: 1px solid var(--home-hairline);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-elevation-1);
-
-    @media (--md) {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      translate: 0 -50%;
-    }
-
-    &:nth-of-type(1) {
-      @media (--md) {
-        top: 22.9%;
-      }
-    }
-
-    &:nth-of-type(2) {
-      @media (--md) {
-        top: 50%;
-      }
-    }
-
-    &:nth-of-type(3) {
-      @media (--md) {
-        top: 77.1%;
-      }
-    }
+    grid-area: 1 / 1 / auto / -1;
+    grid-template-rows: auto auto auto auto;
+    min-width: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-quick) var(--home-ease), visibility 0s linear var(--home-quick);
   }
 
-  .home-flow-file {
-    font-size: 0.75rem;
-    font-weight: var(--font-weight-semibold);
+  .home-delivery-stage[data-moment='0'] .home-delivery-station[data-station='build'],
+  .home-delivery-stage[data-moment='1'] .home-delivery-station[data-station='server'],
+  .home-delivery-stage:is([data-moment='2'], [data-moment='3']) .home-delivery-station[data-station='browser'] {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity var(--home-base) var(--home-ease) var(--home-quick), visibility 0s linear var(--home-quick);
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-board {
+      grid-template-rows: auto auto auto auto;
+    }
+
+    .home-delivery-board .home-delivery-station {
+      grid-row: 1 / span 4;
+      grid-template-rows: subgrid;
+      visibility: visible;
+      opacity: 1;
+      transition: opacity var(--home-slow) var(--home-ease);
+    }
+
+    .home-delivery-station[data-station='build'] {
+      grid-column: 1;
+    }
+
+    .home-delivery-station[data-station='server'] {
+      grid-column: 2;
+    }
+
+    .home-delivery-station[data-station='browser'] {
+      grid-column: 3;
+    }
+
+  }
+
+  /*
+   * Focus: the station the moment is at is drawn in full, its CSS as a raised sheet; the others
+   * recede to outlines with faint content, so each moment has one path to read.
+   */
+  .home-delivery-station {
+    --home-delivery-fill: var(--home-ground);
+    --home-delivery-lift: 0 0 transparent;
+    --home-delivery-dim: 0.4;
+  }
+
+  .home-delivery-stage[data-moment='0'] .home-delivery-station[data-station='build'],
+  .home-delivery-stage[data-moment='1'] .home-delivery-station[data-station='server'],
+  .home-delivery-stage:is([data-moment='2'], [data-moment='3']) .home-delivery-station[data-station='browser'] {
+    --home-delivery-fill: var(--home-sheet);
+    --home-delivery-lift: var(--home-elevation-1);
+    --home-delivery-dim: 1;
+  }
+
+  :is(.home-delivery-lines, .home-delivery-window-page, .home-delivery-gutter) {
+    opacity: var(--home-delivery-dim);
+    transition: opacity var(--home-base) var(--home-ease);
+  }
+
+  /* Every row is placed by name. */
+  .home-delivery-station > .home-delivery-station-label {
+    grid-area: 1 / 1;
+  }
+
+  .home-delivery-station > .home-delivery-markup {
+    grid-area: 2 / 1;
+  }
+
+  .home-delivery-station > .home-delivery-gutter {
+    grid-area: 3 / 1;
+  }
+
+  .home-delivery-station > .home-delivery-css {
+    grid-area: 4 / 1;
+  }
+
+  /* Station names: where CSS can be produced. The station the timeline is at reads in full. */
+  .home-delivery-station-label {
+    margin: 0 0 1rem;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--home-text-faint);
+    transition: color var(--home-base) var(--home-ease);
+  }
+
+  .home-delivery-stage[data-moment='0'] [data-station='build'] .home-delivery-station-label,
+  .home-delivery-stage[data-moment='1'] [data-station='server'] .home-delivery-station-label,
+  .home-delivery-stage:is([data-moment='2'], [data-moment='3']) [data-station='browser'] .home-delivery-station-label {
     color: var(--home-text);
   }
 
-  .home-flow-code {
-    overflow: hidden;
+  /* Markup row: panels of one height, so the engine's line meets each one's edge. */
+  .home-delivery-markup {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    gap: 0.625rem;
+  }
+
+  /*
+   * CSS row: each mode's panel stacks with the others, so the tallest reserves the space; each grows
+   * with its lines. The reserved space a panel does not fill is hatched: the room a station keeps for
+   * CSS it does not hold at this moment. It is the only hatch in the figure.
+   */
+  .home-delivery-css {
+    position: relative;
+    display: grid;
+    align-items: start;
+
+    &::before {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--home-radius-well);
+      background-image: var(--home-hatch);
+      background-size: var(--home-hatch-size) var(--home-hatch-size);
+      content: '';
+    }
+  }
+
+  .home-delivery-variant {
+    grid-area: 1 / 1;
+    min-width: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease), visibility 0s linear var(--home-base);
+  }
+
+  .home-delivery-css > .home-delivery-variant {
+    display: grid;
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-delivery-variant[data-mode~='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-variant[data-mode~='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-variant[data-mode~='runtime'] {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+
+  /* Panels: a sheet on the ground with one hairline. Its surface is drawn to the lines that exist. */
+  .home-delivery-panel {
+    position: relative;
+    align-self: start;
+    min-width: 0;
+    padding: var(--home-delivery-pad) var(--home-delivery-pad) calc(var(--home-delivery-pad) - 0.125rem);
+
+    &::before {
+      position: absolute;
+      inset: 0 0 auto;
+      height: calc(var(--home-delivery-pad) * 2 - 0.125rem + var(--home-delivery-head, 1.5rem) + var(--shown) * var(--home-delivery-line));
+      border-radius: var(--home-radius-well);
+      background-color: var(--home-delivery-fill);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-delivery-lift);
+      opacity: var(--head-on);
+      transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+      content: '';
+    }
+  }
+
+  /* The markup row is context, the same in every mode: a flat sheet at most, never raised. */
+  .home-delivery-markup .home-delivery-panel::before {
+    box-shadow: 0 0 0 1px var(--home-hairline);
+  }
+
+  /* A panel without a name: its first line is enough to say what it is. */
+  .home-delivery-panel-bare {
+    --home-delivery-head: 0rem;
+  }
+
+  .home-delivery-panel-fill {
+    align-self: stretch;
+
+    &::before {
+      height: 100%;
+    }
+  }
+
+  /* A second file inside a panel is named the way the panel is. */
+  .home-delivery-file {
+    font-size: var(--home-label);
+    letter-spacing: 0.02em;
+    color: var(--home-text-faint);
+  }
+
+  .home-delivery-panel-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 1rem;
+    margin-bottom: 0.5rem;
     font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    text-overflow: ellipsis;
+    font-size: var(--home-label);
+    letter-spacing: 0.02em;
     white-space: nowrap;
+    /* Time decides whether the name exists; focus only fades its ink. */
+    color: color-mix(in oklab, var(--home-text-faint) calc(var(--home-delivery-dim) * 100%), transparent);
+    opacity: var(--head-on);
+    transition: color var(--home-base) var(--home-ease);
+  }
+
+  /*
+   * Lines keep their order: each sits below the lines already present (`--y`), so a rule inserted
+   * between two others pushes the rest down. A new line first makes room, then fades in.
+   */
+  .home-delivery-lines {
+    position: relative;
+    height: calc(var(--n) * var(--home-delivery-line));
+    font-family: var(--home-mono);
+    font-size: var(--home-delivery-code);
+    color: var(--home-text-body);
+  }
+
+  .home-delivery-line {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    overflow: hidden;
+    height: var(--home-delivery-line);
+    line-height: var(--home-delivery-line);
+    white-space: pre;
+    text-overflow: ellipsis;
+    opacity: clamp(0, var(--p) * 2 - 1, 1);
+    translate: 0 calc(var(--y) * var(--home-delivery-line));
+  }
+
+  /* The rule a late class needs is marked as the class applies: already loaded, or just written. */
+  .home-delivery-line-flash {
+    margin-inline: -0.375rem;
+    padding-inline: 0.375rem;
+    border-radius: var(--home-radius-chip);
+    background-color: color-mix(in oklab, var(--home-text) calc(var(--flash, 0) * 9%), transparent);
+  }
+
+  .home-delivery-code-tag {
+    color: var(--home-code-tag);
+  }
+
+  .home-delivery-code-attr,
+  .home-delivery-code-at {
+    color: var(--home-code-attr);
+  }
+
+  .home-delivery-code-string {
     color: var(--home-code-string);
   }
 
-  .home-flow-entry {
+  .home-delivery-code-selector {
+    color: var(--home-code-selector);
+  }
+
+  .home-delivery-code-property {
+    color: var(--home-code-property);
+  }
+
+  .home-delivery-bytes {
+    letter-spacing: 0.04em;
+    color: var(--home-text-faint);
+  }
+
+  /* A class the engine is reading is marked while its glyphs leave. */
+  .home-delivery-token {
+    border-radius: 0.1875rem;
+    transition: background-color var(--home-base) var(--home-ease), color var(--home-base) var(--home-ease);
+
+    &[data-hot] {
+      color: var(--home-text);
+      background-color: color-mix(in oklab, var(--home-text) 10%, transparent);
+    }
+  }
+
+  /* Anything with `--at` appears once the timeline passes it. */
+  .home-delivery-timed {
+    --on: clamp(0, (var(--home-delivery-t) - var(--at)) * 10, 1);
+    opacity: var(--on);
+  }
+
+  /*
+   * Wires between stations appear when something first travels them: markup always travels the same
+   * way; CSS travels only where the mode delivers it. `--wire-at` is that moment, per cell.
+   */
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-station:not([data-station='browser']) > :is(.home-delivery-markup, .home-delivery-css)::after {
+      position: absolute;
+      top: calc(var(--home-delivery-pad) + 0.5rem - 3.5px);
+      left: 100%;
+      width: var(--home-delivery-gap);
+      height: 7px;
+      background:
+        linear-gradient(var(--home-rule-strong), var(--home-rule-strong)) 0.375rem 50% / calc(100% - 0.75rem - 3px) 1px no-repeat,
+        conic-gradient(from 225deg at 100% 50%, var(--home-rule-strong) 0 90deg, transparent 0) calc(100% - 0.375rem) 50% / 4px 7px no-repeat;
+      opacity: clamp(0, (var(--home-delivery-t) - var(--wire-at, 9)) * 10, 1);
+      content: '';
+    }
+
+    .home-delivery-station[data-station='build'] > .home-delivery-markup {
+      --wire-at: 0.96;
+    }
+
+    .home-delivery-station[data-station='server'] > .home-delivery-markup {
+      --wire-at: 1.96;
+    }
+
+    .home-delivery:has(#home-delivery-static:checked) .home-delivery-station[data-station='build'] > .home-delivery-css {
+      --wire-at: 1.4;
+    }
+
+    .home-delivery:has(#home-delivery-static:checked) .home-delivery-station[data-station='server'] > .home-delivery-css,
+    .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-station[data-station='server'] > .home-delivery-css {
+      --wire-at: 2.12;
+    }
+  }
+
+  /* Gutter: the engine sits here only in the station where the mode generates CSS. */
+  .home-delivery-gutter {
+    position: relative;
     display: grid;
-    justify-items: center;
-    gap: var(--spacing-4xs);
-    justify-self: center;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-lg);
-    outline: 1px dashed var(--home-rule-strong);
-    background-color: var(--home-sheet);
+    place-items: center;
+    height: 5rem;
+  }
 
-    @media (--md) {
-      position: absolute;
-      top: 13.3%;
-      left: 50%;
-      translate: -50% -50%;
+  /*
+   * One station at a time: where the mode runs no engine, the CSS panel sits 12px under the markup
+   * panel instead of across an empty engine row. It moves by transform, so the station keeps its
+   * height and the freed space falls below the panel, part of the room the figure reserves.
+   */
+  @container home-delivery (width < 52rem) {
+    .home-delivery-station > .home-delivery-css {
+      translate: 0 calc(0.75rem - 5rem);
+    }
+
+    .home-delivery:has(#home-delivery-static:checked) .home-delivery-station[data-station='build'] > .home-delivery-css,
+    .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-station:is([data-station='server'], [data-station='browser']) > .home-delivery-css,
+    .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-station[data-station='browser'] > .home-delivery-css {
+      translate: none;
     }
   }
 
-  .home-flow-engine {
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-gutter {
+      height: 5.5rem;
+    }
+  }
+
+  .home-delivery-gutter > .home-delivery-variant {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-2xl);
-    outline: 1px solid var(--home-rule);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-elevation-2);
-
-    @media (--md) {
-      position: absolute;
-      top: 35%;
-      left: 39%;
-      width: 22%;
-      height: 30%;
-      padding: var(--spacing-sm);
-    }
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    width: 100%;
   }
 
-  .home-flow-steps {
+  /* The engine's flow line runs from the markup down into the CSS it writes, and ends in an arrowhead. */
+  .home-delivery-engine {
     position: relative;
-    display: flex;
-    gap: var(--spacing-3xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    & li {
-      padding: var(--spacing-4xs) var(--spacing-xs);
-      border-radius: var(--radius-pill);
-      font-size: 0.6875rem;
-      font-weight: var(--font-weight-medium);
-      color: var(--home-text-quiet);
-      background-color: var(--home-well);
-      animation: home-flow-step 3.6s var(--easing-smooth) infinite;
-    }
-
-    & li:nth-child(2) {
-      animation-delay: 1.2s;
-    }
-
-    & li:nth-child(3) {
-      animation-delay: 2.4s;
-    }
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    width: 100%;
+    background:
+      conic-gradient(from 315deg at 50% 100%, var(--home-rule-strong) 0 90deg, transparent 0) 50% calc(100% - 0.375rem) / 7px 4px no-repeat,
+      linear-gradient(var(--home-rule-strong), var(--home-rule-strong)) 50% 0 / 1px calc(100% - 0.375rem) no-repeat;
   }
 
-  .home-flow-engine-ring {
+  /* While the engine writes, a beam runs down its station: markup in at the top, rules out below. */
+  .home-delivery-engine::before,
+  .home-delivery-engine::after {
     position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    outline: 1px solid var(--home-rule-strong);
-    opacity: 0;
-    animation: home-flow-ring 3.6s var(--easing-smooth) infinite;
+    inset-block: 0;
+    left: 50%;
+    translate: -50% 0;
+    opacity: var(--glow, 0);
+    pointer-events: none;
+    content: '';
   }
 
-  .home-flow-artifact {
-    padding: 0 var(--spacing-3xs);
-    border-radius: var(--radius-sm);
+  .home-delivery-engine::before {
+    width: 0.75rem;
+    background: linear-gradient(transparent, var(--home-signal-glow) 25%, var(--home-signal-glow) 75%, transparent);
+    filter: blur(4px);
+  }
+
+  .home-delivery-engine::after {
+    width: 1px;
+    background: repeating-linear-gradient(var(--home-signal) 0 0.375rem, transparent 0.375rem 0.75rem) 0 0 / 1px 0.75rem;
+  }
+
+  /* The engine is a portal seen from above: an outer rim, a recessed floor and an inner rim, lit only while it writes. */
+  .home-delivery-engine-ring {
+    --glow-on: var(--glow, 0);
+    position: relative;
+    z-index: 1;
+    width: 6.5rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side, color-mix(in oklab, var(--home-signal) calc(var(--glow-on) * 45%), transparent), transparent 90%),
+      radial-gradient(50% 50% at 50% 38%, var(--home-well), var(--home-sheet));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--home-signal) calc(var(--glow-on) * 100%), var(--home-rule-strong)),
+      inset 0 0 0 0.3125rem var(--home-sheet),
+      inset 0 0 0 calc(0.3125rem + 1px) var(--home-hairline),
+      inset 0 0.375rem 0.5rem -0.125rem var(--home-shade-far),
+      0 0 0 calc(var(--glow-on) * 0.375rem) var(--home-signal-glow);
+  }
+
+  /* The mark rests in gray and takes its gold only while the engine writes. */
+  .home-delivery-engine-logo {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    translate: -50% -82%;
+    opacity: calc(0.7 + var(--glow, 0) * 0.3);
+    filter: grayscale(calc(1 - var(--glow, 0)));
+  }
+
+  /* One word, in mono, beside the ring: the state a progressive page's engine is in. */
+  .home-delivery-engine-state {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 4.375rem);
+    display: grid;
+    translate: 0 -50%;
     font-family: var(--home-mono);
     font-size: 0.6875rem;
-    color: var(--home-text);
+    line-height: 1.3;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+
+    & code {
+      grid-area: 1 / 1;
+      opacity: var(--on);
+    }
+  }
+
+  /* A deferred engine's line is dashed and its mark dim until it loads. */
+  .home-delivery-engine[data-deferred] {
+    background:
+      conic-gradient(from 315deg at 50% 100%, var(--home-rule-strong) 0 90deg, transparent 0) 50% calc(100% - 0.375rem) / 7px 4px no-repeat,
+      linear-gradient(color-mix(in oklab, var(--home-rule-strong) calc((1 - var(--deferred)) * 100%), transparent) 0 0) 50% 0 / 1px calc(100% - 0.375rem) no-repeat,
+      repeating-linear-gradient(color-mix(in oklab, var(--home-rule-strong) calc(var(--deferred) * 100%), transparent) 0 3px, transparent 3px 6px) 50% 0 / 1px calc(100% - 0.375rem) no-repeat;
+  }
+
+  /* Until it loads, a deferred engine is a dashed rim with nothing inside. */
+  .home-delivery-engine[data-deferred] .home-delivery-engine-ring {
+    background:
+      radial-gradient(closest-side, color-mix(in oklab, var(--home-signal) calc(var(--glow-on) * 45%), transparent), transparent 90%),
+      color-mix(in oklab, var(--home-sheet) calc((1 - var(--deferred)) * 100%), transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--home-signal) calc(var(--glow-on) * 100%), color-mix(in oklab, var(--home-rule-strong) calc((1 - var(--deferred)) * 100%), transparent)),
+      inset 0 0 0 0.3125rem color-mix(in oklab, var(--home-sheet) calc((1 - var(--deferred)) * 100%), transparent),
+      inset 0 0 0 calc(0.3125rem + 1px) color-mix(in oklab, var(--home-hairline) calc((1 - var(--deferred)) * 100%), transparent),
+      0 0 0 calc(var(--glow-on) * 0.375rem) var(--home-signal-glow);
+    outline: 1px dashed color-mix(in oklab, var(--home-rule-strong) calc(var(--deferred) * 100%), transparent);
+    outline-offset: -1px;
+  }
+
+  .home-delivery-engine[data-deferred] .home-delivery-engine-logo {
+    opacity: calc(0.7 - var(--deferred) * 0.4 + var(--glow, 0) * 0.3);
+  }
+
+  /* Browser: a window whose page is painted by whichever rules exist at this moment. */
+  .home-delivery-window {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-self: stretch;
+    min-height: 12.5rem;
+    overflow: hidden;
+    border-radius: var(--home-radius-well);
+    background-color: var(--home-delivery-fill);
+    box-shadow: 0 0 0 1px var(--home-hairline);
+    transition: background-color var(--home-base) var(--home-ease);
+    /* The page inside restyles from unstyled to styled; its size never reaches the row. */
+    contain: size;
+  }
+
+  .home-delivery-window-bar {
+    display: grid;
+    place-items: center;
+    height: 1.75rem;
+    box-shadow: inset 0 -1px 0 var(--home-hairline);
+  }
+
+  /* The address field is only a shape: the station is already named. */
+  .home-delivery-window-address {
+    width: min(100% - 2rem, 8.5rem);
+    height: 0.875rem;
+    border-radius: var(--radius-pill);
     background-color: var(--home-well);
   }
 
-  .home-flow-output {
-    opacity: 0.5;
-    transition: opacity var(--duration-slow) var(--easing-smooth), outline-color var(--duration-slow) var(--easing-smooth), box-shadow var(--duration-slow) var(--easing-smooth);
-  }
-
-  /* The modes sit on the shell like a segmented control: the chosen one is a raised sheet, the others stay flush with the track. */
-  .home-delivery-modes {
+  .home-delivery-window-page {
     display: grid;
-    gap: var(--home-gap);
-    margin-top: var(--home-gap);
+    min-height: 0;
+    padding: 0.75rem 1rem;
 
-    @media (--md) {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    & > .home-delivery-variant {
+      display: grid;
+      place-items: center;
     }
   }
 
-  .home-delivery-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
-    border-radius: var(--home-radius-sheet);
-    cursor: pointer;
-    transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
-
-    &:hover {
-      background-color: color-mix(in oklab, var(--home-sheet) 45%, transparent);
-    }
+  .home-delivery-page {
+    --h-gap: calc(var(--h-gapmd) * 0.75rem);
+    --h-flex: var(--h-displayflex);
+    display: grid;
+    justify-items: center;
+    width: 100%;
   }
 
-  .home-delivery-title {
-    display: block;
-    margin-top: var(--spacing-lg);
-    font-size: 1.0625rem;
-    font-weight: var(--font-weight-medium);
-    letter-spacing: -0.015em;
+  .home-delivery-page-card {
+    display: grid;
+    gap: calc(0.375rem + var(--h-plg) * 0.25rem);
+    width: 100%;
+    max-width: 13rem;
+    padding: calc(var(--h-plg) * 0.875rem);
+    border-radius: calc(var(--h-rxl) * 0.625rem);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--home-hairline) calc(var(--h-shadowlg) * 100%), transparent),
+      0 4px 8px -4px color-mix(in oklab, var(--home-shade-near) calc(var(--h-shadowlg) * 100%), transparent),
+      0 14px 28px -10px color-mix(in oklab, var(--home-shade-far) calc(var(--h-shadowlg) * 100%), transparent);
+    opacity: var(--h-page);
+  }
+
+  .home-delivery-page-card,
+  .home-delivery-page-title,
+  .home-delivery-page-plans,
+  .home-delivery-page-plan {
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color var(--home-base) var(--home-ease);
+  }
+
+  /* The runtime reads an element's classes as its glyphs leave. */
+  :is(.home-delivery-page-card, .home-delivery-page-title, .home-delivery-page-plans, .home-delivery-page-plan)[data-hot] {
+    outline-color: var(--home-rule-strong);
+  }
+
+  .home-delivery-page-title {
+    font-size: calc(1.0625rem - var(--h-fontsm) * 0.25rem);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
     color: var(--home-text);
   }
 
-  .home-delivery-body {
-    display: block;
-    margin-top: var(--spacing-xs);
-    font-size: 0.875rem;
-    line-height: 1.55;
+  /* The list reads top to bottom until `display:flex` lays it in a row and `gap-md` opens it up. */
+  .home-delivery-page-plans {
+    position: relative;
+    height: calc((1 - var(--h-flex)) * 3 * 1.25rem + var(--h-flex) * 1.25rem);
+    font-size: 0.75rem;
+    color: var(--home-text-body);
+  }
+
+  .home-delivery-page-plan {
+    position: absolute;
+    top: calc((1 - var(--h-flex)) * var(--i) * 1.25rem);
+    left: calc(var(--h-flex) * var(--i) * (2.25rem + var(--h-gap)));
+    display: flex;
+    align-items: center;
+    height: 1.25rem;
+    padding-inline: 0.25rem;
+    margin-inline-start: -0.25rem;
+  }
+
+  .home-delivery-page-plan-late {
+    /* The sample class is bg-yellow, so it paints the preset's yellow, not the page's signal. */
+    color: color-mix(in oklab, var(--color-on-yellow) calc(var(--h-bgyellow) * 100%), var(--home-text-body));
+    background-color: color-mix(in oklab, var(--color-yellow) calc(var(--h-bgyellow) * 100%), transparent);
+  }
+
+  /* app.js adds the class: a tag hangs below the plan until its rule paints it. */
+  .home-delivery-page-added {
+    position: absolute;
+    top: calc(100% + 0.375rem);
+    left: 50%;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--home-radius-chip);
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+    opacity: var(--h-added);
+    translate: -50% calc((1 - var(--h-added)) * -0.25rem);
+    pointer-events: none;
+  }
+
+  /*
+   * Controls: one area for the mode, the moment and what the chosen mode is. From 52rem it sits
+   * under the drawing on the same columns: the mode switch under the build, the player across the
+   * server and browser, and the chosen mode's description below the switch.
+   */
+  .home-delivery-controls {
+    display: contents;
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-controls {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      grid-template-columns: subgrid;
+      align-items: end;
+      row-gap: 2.5rem;
+      margin-top: 3.5rem;
+    }
+  }
+
+  /* The mode switch is the page's segmented control, its options labels for the radios. */
+  .home-delivery-switch {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: auto;
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-switch {
+      display: inline-flex;
+      grid-column: 1;
+      justify-self: start;
+    }
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-delivery-switch [data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-switch [data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-switch [data-mode='runtime'] {
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact);
+  }
+
+  .home-delivery:has(#home-delivery-static:focus-visible) .home-delivery-switch [data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:focus-visible) .home-delivery-switch [data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:focus-visible) .home-delivery-switch [data-mode='runtime'] {
+    outline: 2px solid var(--home-ink);
+    outline-offset: 1px;
+  }
+
+  /* Player: play, then four equal moments. Their names are the only words the timeline needs. */
+  .home-delivery-player {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    align-items: end;
+    column-gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-player {
+      grid-column: 2 / -1;
+      grid-row: 1;
+      margin-top: 0;
+    }
+  }
+
+  .home-delivery-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 0.5rem;
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-timeline {
+      column-gap: 0.75rem;
+    }
+  }
+
+  .home-delivery-moment {
+    display: grid;
+    gap: 0.625rem;
+    min-width: 0;
+    padding: 0.25rem 0 0.75rem;
+    border: 0;
+    border-radius: var(--home-radius-chip);
+    font-size: var(--home-caption);
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+    background-color: transparent;
+    cursor: pointer;
+    transition: color var(--home-base) var(--home-ease);
+
+    &:hover,
+    &[aria-pressed='true'] {
+      color: var(--home-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-delivery-moment-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .home-delivery-moment-track {
+    position: relative;
+    height: 1px;
+    background-color: var(--home-rule);
+  }
+
+  .home-delivery-moment-fill {
+    position: absolute;
+    inset: 0;
+    background-color: var(--home-text);
+    transform-origin: left;
+    scale: clamp(0, var(--home-delivery-t) - var(--i), 1) 1;
+  }
+
+  /* The playhead rides the end of the moment in progress. */
+  .home-delivery-moment[aria-pressed='true'] .home-delivery-moment-track::after {
+    position: absolute;
+    top: -3px;
+    left: calc(clamp(0, var(--home-delivery-t) - var(--i), 1) * 100% - 3.5px);
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-pill);
+    background-color: var(--home-text);
+    box-shadow: 0 0 0 3px var(--home-ground);
+    content: '';
+  }
+
+  .home-delivery-play {
+    display: grid;
+    place-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.25rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    color: var(--home-text-quiet);
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--home-rule);
+    cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
+
+    &:hover {
+      color: var(--home-text);
+      box-shadow: inset 0 0 0 1px var(--home-rule-strong);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+
+    /* Before hydration and under reduced motion the button is absent but keeps its place. */
+    &[hidden] {
+      display: grid;
+      visibility: hidden;
+    }
+
+    & svg {
+      grid-area: 1 / 1;
+    }
+
+    &:not([data-playback='playing']) [data-icon='playing'],
+    &:not([data-playback='paused']) [data-icon='paused'],
+    &:not([data-playback='ended']) [data-icon='ended'] {
+      visibility: hidden;
+    }
+  }
+
+  /* The chosen mode, in words: every mode's text shares one cell, so the longest reserves the space. */
+  .home-delivery-about {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin-top: 2.25rem;
+  }
+
+  @container home-delivery (width >= 52rem) {
+    .home-delivery-about {
+      grid-column: 1 / span 2;
+      grid-row: 2;
+      margin-top: 0;
+    }
+  }
+
+  .home-delivery-mode {
+    display: flex;
+    flex-direction: column;
+    grid-area: 1 / 1;
+    align-items: flex-start;
+    visibility: hidden;
+  }
+
+  .home-delivery:has(#home-delivery-static:checked) .home-delivery-mode[data-mode='static'],
+  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-mode[data-mode='progressive'],
+  .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-mode[data-mode='runtime'] {
+    visibility: visible;
+  }
+
+  .home-delivery-mode-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.75rem;
+    margin: 0;
+    font-size: var(--home-card-title);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+    color: var(--home-text);
+  }
+
+  /* The default is marked in the title's line, as quiet mono text rather than a box. */
+  .home-delivery-mode-default {
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--home-text-faint);
+  }
+
+  .home-delivery-mode-body {
+    max-width: 38rem;
+    margin: 0.75rem 0 0;
+    font-size: var(--home-body);
+    line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
   }
 
-  /* Links share a baseline across the three modes, whatever the length of the copy above. */
-  .home-delivery-link {
-    margin-top: auto;
-    padding-top: var(--spacing-lg);
-    font-size: 0.875rem;
+  .home-delivery-mode-link {
+    margin-top: 1rem;
   }
 
-  /* While the section tours the modes, a hairline along the chosen card's top edge fills toward the next one. */
-  .home-delivery-progress {
+  /* Flights: glyphs and files travel over the stage on their own layer, in perspective. */
+  .home-delivery-flights {
+    position: absolute;
+    inset: -1.5rem;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+    perspective: 900px;
+  }
+
+  .home-delivery-flights > [data-flight='glyph'] {
     position: absolute;
     top: 0;
-    right: var(--home-radius-sheet);
-    left: var(--home-radius-sheet);
-    display: none;
-    height: 1px;
-    background-color: var(--home-rule-strong);
-    transform-origin: left;
-    scale: var(--home-delivery-progress, 0) 1;
+    left: 0;
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    color: var(--home-text-body);
+    will-change: transform, opacity;
   }
 
-  .home-delivery-icon {
-    display: grid;
-    place-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: var(--home-radius-control);
-    color: var(--home-text-quiet);
-    background-color: color-mix(in oklab, var(--home-sheet) 60%, transparent);
-    box-shadow: inset 0 0 0 1px var(--home-hairline);
-    transition: background-color var(--home-base) var(--home-ease), color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+  .home-delivery-flights > [data-flight='ripple'] {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--home-signal), 0 0 0.75rem var(--home-signal-glow);
+    pointer-events: none;
   }
 
-  /* The checked radio before the diagram lights its lane, its output and its card. */
-  .home-delivery:has(#home-delivery-static:checked) .home-flow-output-wire[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-output-wire[data-mode='progressive'],
-  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-output-wire[data-mode='runtime'] {
-    opacity: 1;
-    stroke: var(--home-text-quiet);
-  }
-
-  .home-delivery:has(#home-delivery-static:checked) .home-flow-pulse[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-pulse[data-mode='progressive'],
-  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-pulse[data-mode='runtime'] {
-    display: inline;
-  }
-
-  .home-delivery:has(#home-delivery-static:checked) .home-flow-output[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-flow-output[data-mode='progressive'],
-  .home-delivery:has(#home-delivery-runtime:checked) .home-flow-output[data-mode='runtime'] {
-    opacity: 1;
-    outline-color: var(--home-rule-strong);
-    box-shadow: var(--home-elevation-2);
-  }
-
-  .home-delivery:has(#home-delivery-static:checked) .home-delivery-card[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-card[data-mode='progressive'],
-  .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-card[data-mode='runtime'] {
+  .home-delivery-flights > [data-flight='packet'] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.1875rem 0.5rem;
+    border-radius: var(--home-radius-chip);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--home-text);
     background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
-
-    /* While the section tours the modes, a hairline along the chosen card's top edge fills toward the next one. */
-  .home-delivery-progress {
-    position: absolute;
-    top: 0;
-    right: var(--home-radius-sheet);
-    left: var(--home-radius-sheet);
-    display: none;
-    height: 1px;
-    background-color: var(--home-rule-strong);
-    transform-origin: left;
-    scale: var(--home-delivery-progress, 0) 1;
+    box-shadow: 0 0 0 1px var(--home-rule), var(--home-elevation-1);
+    will-change: transform, opacity;
   }
 
-  .home-delivery-icon {
-      color: var(--home-text-inverse);
-      background-color: var(--home-ink);
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--home-contact);
-    }
-  }
-
-  .home-delivery[data-touring]:has(#home-delivery-static:checked) .home-delivery-card[data-mode='static'],
-  .home-delivery[data-touring]:has(#home-delivery-progressive:checked) .home-delivery-card[data-mode='progressive'],
-  .home-delivery[data-touring]:has(#home-delivery-runtime:checked) .home-delivery-card[data-mode='runtime'] {
-    .home-delivery-progress {
-      display: block;
-    }
-  }
-
-  .home-delivery:has(#home-delivery-static:focus-visible) .home-delivery-card[data-mode='static'],
-  .home-delivery:has(#home-delivery-progressive:focus-visible) .home-delivery-card[data-mode='progressive'],
-  .home-delivery:has(#home-delivery-runtime:focus-visible) .home-delivery-card[data-mode='runtime'] {
-    outline: 2px solid var(--home-ink);
-    outline-offset: 2px;
-  }
-
-  /* On small screens the inactive outputs step back so the chosen path reads top to bottom. */
-  @media (width < 64rem) {
-    .home-flow-sources {
-      grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    }
-
-    .home-flow-column-label {
-      grid-column: 1 / -1;
-    }
-
-    .home-flow-entry::after,
-    .home-flow-engine::after {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      width: 2px;
-      height: var(--spacing-xl);
-      background-image: linear-gradient(var(--home-rule-strong) 50%, transparent 50%);
-      background-size: 2px 10px;
-      content: '';
-      animation: home-flow-drop 0.8s linear infinite;
-    }
-
-    .home-flow-entry {
-      position: relative;
+  @media (--motion-safe) {
+    .home-delivery-stage[data-playing][data-visible] .home-delivery-engine::after {
+      animation-name: home-delivery-beam;
+      animation-duration: 0.6s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
     }
   }
 
   @media (--motion-reduce) {
-    .home-flow-wire,
-    .home-flow-engine-ring,
-    .home-flow-steps li,
-    .home-flow-entry::after,
-    .home-flow-engine::after {
-      animation: none;
+    .home-delivery-station,
+    .home-delivery-board .home-delivery-station,
+    .home-delivery-variant,
+    .home-delivery-moment,
+    .home-delivery-token,
+    .home-delivery-panel::before,
+    .home-delivery-window,
+    .home-delivery-panel-head,
+    :is(.home-delivery-lines, .home-delivery-window-page, .home-delivery-gutter) {
+      transition: none;
     }
-
-    .home-flow-packet,
-    .home-flow-pulse {
-      visibility: hidden;
-    }
   }
 }
 
-@keyframes home-flow-dash {
+@keyframes home-delivery-beam {
   to {
-    stroke-dashoffset: -28;
-  }
-}
-
-@keyframes home-flow-ring {
-  0% {
-    opacity: 0.6;
-    scale: 1;
-  }
-
-  100% {
-    opacity: 0;
-    scale: 1.06;
-  }
-}
-
-@keyframes home-flow-step {
-  0%, 40%, 100% {
-    color: var(--home-text-quiet);
-    background-color: var(--home-well);
-  }
-
-  8%, 30% {
-    color: var(--home-text-inverse);
-    background-color: var(--home-ink);
-  }
-}
-
-@keyframes home-flow-drop {
-  to {
-    background-position: 0 10px;
+    background-position: 0 0.75rem;
   }
 }

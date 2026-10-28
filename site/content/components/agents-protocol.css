@@ -1,0 +1,510 @@
+@layer components {
+  /*
+   * A quiet accent under the session window: the server its calls reach. A wide, low ellipse centered
+   * under the window, set apart by a little ground that a beam bridges; the floor fades into the
+   * page. The project lies on the floor in a pool of light, ringed by a frosted, hatched rim and a dial
+   * of even 1px ticks; the server stands at the center and the clients that can start it stand on the
+   * ring, all in liquid glass. Each call drops down the beam in gold, the server's contour and
+   * the light under it warm, a wave lights the classes it reads, and the result climbs back in ink.
+   * Gold appears only while a call is in flight.
+   */
+  .home-mcp {
+    --home-mcp-gap: clamp(3rem, 1.5rem + 3.5vw, 5.5rem);
+    container: home-mcp / inline-size;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    margin-top: var(--home-mcp-gap);
+  }
+
+  .home-mcp-stage {
+    /* A wide, low ellipse: the ring spans most of the column and the tilt keeps it flat. */
+    --home-orbit-radius: min(28rem, calc(50cqw - 4rem));
+    --home-orbit-tilt: 73deg;
+    --home-mcp-logo: 3.25rem;
+    --home-mcp-core: 4.75rem;
+    --home-mcp-lift: 0rem;
+    --home-mcp-spoke-start: 3rem;
+    --home-mcp-spoke: calc(var(--home-orbit-radius) - var(--home-mcp-spoke-start) - 1.5rem);
+    --home-mcp-floor: min(calc(var(--home-orbit-radius) * 2 + 10rem), 100cqw);
+    --home-mcp-dial: calc(var(--home-orbit-radius) * 2 + 3.5rem);
+    --home-mcp-light: light-dark(color-mix(in oklab, var(--home-float) 95%, transparent), color-mix(in oklab, var(--home-float) 12%, transparent));
+    /* Liquid glass: a bright rim where the light catches the top-left edge, and a softer sheen across the face. */
+    --home-mcp-specular: light-dark(color-mix(in oklab, var(--home-float) 95%, transparent), color-mix(in oklab, var(--home-text) 24%, transparent));
+    --home-mcp-sheen: light-dark(color-mix(in oklab, var(--home-float) 70%, transparent), color-mix(in oklab, var(--home-text) 9%, transparent));
+    /* The glass's thickness at its lower edge: a shade on a light page, gathered light on a dark one. */
+    --home-mcp-depth: light-dark(var(--home-shade-near), color-mix(in oklab, var(--home-text) 8%, transparent));
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: clamp(17rem, 26cqw + 7rem, 28rem);
+    /* A longer lens than the page's other stages, so the near side of a wide ring does not swell. */
+    perspective: calc(var(--home-perspective) * 1.5);
+    perspective-origin: 50% 10%;
+
+    /* A narrow figure tilts less and shrinks the tiles, so the faces behind clear the server. */
+    @container home-mcp (width < 30rem) {
+      --home-orbit-radius: calc(50cqw - 2rem);
+      --home-orbit-tilt: 58deg;
+      --home-mcp-logo: 2.375rem;
+      --home-mcp-core: 3.5rem;
+      --home-mcp-spoke-start: 2.25rem;
+      height: 16rem;
+    }
+  }
+
+  /* Artboard marks at the corners of the figure's field, on the same column edges as the window above. */
+  .home-mcp-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* The beam: from the window's bottom edge across the ground to the server, behind the scene. */
+  .home-mcp-beam {
+    position: absolute;
+    top: calc(var(--home-mcp-gap) * -1);
+    left: calc(50% - 0.5px);
+    z-index: 0;
+    width: 1px;
+    height: calc(var(--home-mcp-gap) + 50% + var(--home-mcp-lift) - var(--home-mcp-core));
+    background-image: linear-gradient(var(--home-rule-strong), var(--home-rule));
+
+    /* Where the beam leaves the window: a port on its lower edge. */
+    &::before {
+      position: absolute;
+      top: -3px;
+      left: -2.5px;
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-rule-strong);
+      content: '';
+    }
+  }
+
+  /* A message on the beam: a head and a tail pointing back the way it came. */
+  .home-mcp-beam-packet {
+    position: absolute;
+    left: -1px;
+    width: 3px;
+    height: 2.5rem;
+    border-radius: var(--radius-pill);
+    opacity: 0;
+
+    &::after {
+      position: absolute;
+      left: -2.5px;
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-pill);
+      content: '';
+    }
+  }
+
+  /* The request falls in gold, the tail above it; the result rises in ink, the tail below it. */
+  .home-mcp-beam-request {
+    top: -2.5rem;
+    background-image: linear-gradient(transparent, var(--home-signal));
+
+    &::after {
+      bottom: -4px;
+      background-color: var(--home-signal);
+      box-shadow: 0 0 10px 2px var(--home-signal-glow);
+    }
+  }
+
+  .home-mcp-beam-response {
+    top: 100%;
+    background-image: linear-gradient(var(--home-text), transparent);
+
+    &::after {
+      top: -4px;
+      background-color: var(--home-text);
+    }
+  }
+
+  .home-mcp-plane {
+    position: relative;
+    z-index: 1;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    translate: 0 var(--home-mcp-lift);
+    transform: rotateX(var(--home-orbit-tilt));
+  }
+
+  /* The floor: the project's classes, faint, in a pool of light that fades into the page at the rim. */
+  .home-mcp-floor {
+    position: absolute;
+    top: calc(var(--home-mcp-floor) / -2);
+    left: calc(var(--home-mcp-floor) / -2);
+    width: var(--home-mcp-floor);
+    height: var(--home-mcp-floor);
+    overflow: hidden;
+    border-radius: 50%;
+    background-image:
+      radial-gradient(closest-side, var(--home-mcp-light), transparent 62%),
+      radial-gradient(closest-side, transparent 50%, var(--home-shade-near) 82%, transparent 100%);
+    mask-image: radial-gradient(closest-side, black 36%, transparent 100%);
+  }
+
+  .home-mcp-floor-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    line-height: 1.375rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    color: color-mix(in oklab, var(--home-text) 5%, transparent);
+    user-select: none;
+
+    /* A narrow floor keeps only the light; the classes show only as the wave reads them. */
+    @container home-mcp (width < 30rem) {
+      color: transparent;
+    }
+  }
+
+  /* The wave: the same classes in full ink, revealed by a ring that spreads from the server. */
+  .home-mcp-wave {
+    color: color-mix(in oklab, var(--home-text) 42%, transparent);
+    mask-image: radial-gradient(closest-side, transparent 72%, black 88%, transparent 100%);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 0% 0%;
+  }
+
+  /* While the server answers, the light under it warms to the signal for a moment. */
+  .home-mcp-glow {
+    position: absolute;
+    top: calc(var(--home-orbit-radius) * -0.7);
+    left: calc(var(--home-orbit-radius) * -0.7);
+    width: calc(var(--home-orbit-radius) * 1.4);
+    height: calc(var(--home-orbit-radius) * 1.4);
+    border-radius: 50%;
+    background-image: radial-gradient(closest-side, color-mix(in oklab, var(--home-signal) 18%, transparent), transparent);
+    opacity: 0;
+  }
+
+  /* The rim: a hatched band between the ring and the dial; a coarser tile keeps the stripes clear on the tilted floor. */
+  .home-mcp-rim {
+    position: absolute;
+    background-color: color-mix(in oklab, var(--home-sheet) 22%, transparent);
+    background-size: 14px 14px;
+    backdrop-filter: blur(1.5px);
+    top: calc(var(--home-mcp-dial) / -2);
+    left: calc(var(--home-mcp-dial) / -2);
+    width: var(--home-mcp-dial);
+    height: var(--home-mcp-dial);
+    border-radius: 50%;
+    mask-image: radial-gradient(closest-side, transparent var(--home-orbit-radius), black var(--home-orbit-radius), black calc(var(--home-orbit-radius) + 1.25rem), transparent calc(var(--home-orbit-radius) + 1.25rem));
+  }
+
+  /* The dial: evenly spaced 1px ticks of one length, drawn flat along the ring's projected outline. */
+  .home-mcp-dial {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--home-rule-strong);
+    stroke-width: 5px;
+  }
+
+  .home-mcp-ring {
+    position: absolute;
+    top: calc(var(--home-orbit-radius) * -1);
+    left: calc(var(--home-orbit-radius) * -1);
+    width: calc(var(--home-orbit-radius) * 2);
+    height: calc(var(--home-orbit-radius) * 2);
+    border: 1px solid var(--home-rule);
+    border-radius: 50%;
+  }
+
+  .home-mcp-spin {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+  }
+
+  .home-mcp-slot {
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: rotateZ(calc(var(--home-orbit-angle) * 1deg));
+  }
+
+  /* Each client's line to the server. */
+  .home-mcp-spoke {
+    position: absolute;
+    top: -0.5px;
+    left: var(--home-mcp-spoke-start);
+    width: var(--home-mcp-spoke);
+    height: 1px;
+    background-image: repeating-linear-gradient(90deg, var(--home-rule) 0 3px, transparent 3px 8px);
+  }
+
+  /* Each standing tile casts a soft contact shadow on the floor under it. */
+  .home-mcp-foot {
+    --home-mcp-foot: calc(var(--home-mcp-logo) * 1.5);
+    position: absolute;
+    top: calc(var(--home-mcp-foot) / -2);
+    left: calc(var(--home-orbit-radius) - var(--home-mcp-foot) / 2);
+    width: var(--home-mcp-foot);
+    height: var(--home-mcp-foot);
+    border-radius: 50%;
+    background-image: radial-gradient(closest-side, var(--home-shade-near), transparent);
+  }
+
+  .home-mcp-core-foot {
+    --home-mcp-foot: calc(var(--home-mcp-core) * 1.8);
+    left: calc(var(--home-mcp-foot) / -2);
+  }
+
+  /* Clients stand on the ring and turn against the spin, so they always face the reader. */
+  .home-mcp-face {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--home-orbit-radius) - var(--home-mcp-logo) / 2);
+    width: var(--home-mcp-logo);
+    transform-origin: 50% 100%;
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+
+  /*
+   * Client tiles are liquid glass: a thin tint over the floor, which shows through; a sheen across
+   * the upper face; light gathering at the lower edge; and one 1px rim whose light turns with the
+   * edge, bright where it catches the light at the top left and shaded at the bottom right. The rim is
+   * the tile's only line; a soft shadow sets it on the floor.
+   */
+  .home-mcp-glass {
+    position: relative;
+    background-color: color-mix(in oklab, var(--home-sheet) 58%, transparent);
+    background-image:
+      linear-gradient(160deg, var(--home-mcp-sheen), transparent 46%),
+      radial-gradient(130% 60% at 50% 120%, var(--home-mcp-depth), transparent 72%);
+    box-shadow: var(--home-elevation-1);
+    backdrop-filter: blur(10px) saturate(1.7);
+
+    &::before {
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      background-image: linear-gradient(135deg, var(--home-mcp-specular), var(--home-hairline) 42%, var(--home-hairline) 64%, var(--home-rule-strong));
+      mask-image: linear-gradient(black, black), linear-gradient(black, black);
+      mask-clip: content-box, border-box;
+      mask-composite: exclude;
+      pointer-events: none;
+      content: '';
+    }
+
+    & svg {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .home-mcp-client-logo {
+    display: grid;
+    place-content: center;
+    width: var(--home-mcp-logo);
+    height: var(--home-mcp-logo);
+    border-radius: calc(var(--home-mcp-logo) * 0.32);
+    color: var(--home-brand, var(--home-text));
+
+    & svg {
+      width: calc(var(--home-mcp-logo) * 0.46);
+      height: calc(var(--home-mcp-logo) * 0.46);
+    }
+  }
+
+  /* The server stands at the center of the plane, upright: the mark alone, lit from above. */
+  .home-mcp-core {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--home-mcp-core) / -2);
+    width: var(--home-mcp-core);
+    transform-origin: 50% 100%;
+    transform: rotateX(calc(var(--home-orbit-tilt) * -1)) translateZ(1px);
+  }
+
+  /* The server is the same glass, a little denser. While a call is in flight its glass warms and a gold light gathers around it. */
+  .home-mcp-core-face {
+    display: grid;
+    place-content: center;
+    height: var(--home-mcp-core);
+    border-radius: calc(var(--home-mcp-core) * 0.3);
+    transition: box-shadow var(--home-base) var(--home-ease);
+
+    &.home-mcp-glass {
+      background-color: color-mix(in oklab, var(--home-sheet) 72%, transparent);
+      box-shadow: var(--home-elevation-2);
+    }
+
+    /* Live: the rim itself turns gold (still one line) and a gold light gathers around the glass. */
+    [data-live] &.home-mcp-glass {
+      box-shadow: var(--home-elevation-2), 0 0 30px 4px var(--home-signal-glow);
+
+      &::before {
+        background-image: linear-gradient(135deg, var(--home-mcp-specular), var(--home-signal) 40%, var(--home-signal));
+      }
+    }
+
+    & svg {
+      width: calc(var(--home-mcp-core) * 0.46);
+      height: calc(var(--home-mcp-core) * 0.46);
+    }
+  }
+
+  @media (--motion-safe) {
+    .home-mcp-spin {
+      animation: home-mcp-spin 140s linear infinite;
+    }
+
+    /* The depth fade runs on the spin's clock, offset by the slot's angle: clients dim as they pass behind the server. */
+    .home-mcp-face {
+      animation-name: home-mcp-face, home-mcp-depth;
+      animation-duration: 140s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-delay: 0s, calc(var(--home-orbit-angle) * -0.3889s);
+    }
+
+    /* The orbit holds still under the pointer, and off screen. */
+    :is(.home-mcp-stage:hover, [data-paused] .home-mcp-stage) :is(.home-mcp-spin, .home-mcp-face) {
+      animation-play-state: paused;
+    }
+
+    /* One call takes 1.6s: down the beam, the server answers, back up as the result lands in the window. */
+    .home-mcp-beam-request {
+      animation: home-mcp-request 1.6s var(--home-ease-inout) both;
+    }
+
+    .home-mcp-beam-response {
+      animation: home-mcp-response 1.6s var(--home-ease-inout) both;
+    }
+
+    .home-mcp-wave {
+      animation: home-mcp-wave 1.2s 0.4s cubic-bezier(0.2, 0.6, 0.3, 1) both;
+    }
+
+    .home-mcp-glow {
+      animation: home-mcp-glow 1.6s var(--home-ease) both;
+    }
+  }
+}
+
+@keyframes home-mcp-spin {
+  to {
+    rotate: z 1turn;
+  }
+}
+
+@keyframes home-mcp-face {
+  from {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+
+  to {
+    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg - 360deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+  }
+}
+
+/* Orbit angle 90° faces the reader and 270° stands behind the server. */
+@keyframes home-mcp-depth {
+  0%, 50%, 100% {
+    opacity: 0.82;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.4;
+  }
+}
+
+/* The request leaves the window and reaches the server a quarter of the way into the call. */
+@keyframes home-mcp-request {
+  0% {
+    top: -2.5rem;
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  24% {
+    top: calc(100% - 2.5rem);
+    opacity: 1;
+  }
+
+  30%, 100% {
+    top: calc(100% - 2.5rem);
+    opacity: 0;
+  }
+}
+
+@keyframes home-mcp-response {
+  0%, 58% {
+    top: 100%;
+    opacity: 0;
+  }
+
+  64% {
+    opacity: 1;
+  }
+
+  84% {
+    top: 0;
+    opacity: 1;
+  }
+
+  90%, 100% {
+    top: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes home-mcp-wave {
+  from {
+    mask-size: 8% 8%;
+    opacity: 1;
+  }
+
+  to {
+    mask-size: 160% 160%;
+    opacity: 0;
+  }
+}
+
+@keyframes home-mcp-glow {
+  0%, 22% {
+    opacity: 0;
+  }
+
+  34% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

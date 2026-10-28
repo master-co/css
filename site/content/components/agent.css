@@ -1,429 +1,434 @@
 @layer components {
+  /*
+   * The agent session is a tool window standing on the page, in front of the figure tucked under its
+   * lower edge: a transcript, the file the agent edits, the server's output docked under it, and a
+   * step bar. The window is one sheet with one contour outside it and a top light drawn over its
+   * panes; every seam inside is a single 1px line. One inset aligns every pane, bar and row. A narrow
+   * window keeps the same panes in one cell and shows one at a time, so it is short and never resizes.
+   */
   .home-agent {
-    display: grid;
-    min-height: 26rem;
+    --home-agent-inset: 1.25rem;
+    container: home-agent / inline-size;
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--home-radius-sheet);
     text-align: left;
+    background-color: var(--home-sheet);
+    /* One contour outside the box, so no pane covers it; light from above is drawn over the panes. */
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-3);
 
-    @media (--md) {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      border-radius: inherit;
+      box-shadow: var(--home-edge);
+      pointer-events: none;
+      content: '';
     }
   }
 
+  .home-agent-window {
+    --home-agent-chrome: color-mix(in oklab, var(--home-sheet) 50%, var(--home-well));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'tabs' 'pane' 'steps';
+
+    @container home-agent (width >= 46rem) {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto auto 1fr auto;
+      grid-template-areas: 'bar-chat bar-file' 'chat code' 'chat output' 'steps steps';
+    }
+  }
+
+  /* Window chrome: one row across both panes, split by the same line that splits the panes. */
+  .home-agent-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    height: 3rem;
+    padding-inline: var(--home-agent-inset);
+    border-bottom: 1px solid var(--home-hairline);
+    background-color: var(--home-agent-chrome);
+    /* Top-lit: the chrome is a touch brighter where the light falls. */
+    background-image: linear-gradient(light-dark(color-mix(in oklab, var(--home-float) 70%, transparent), color-mix(in oklab, var(--home-float) 12%, transparent)), transparent);
+  }
+
+  .home-agent-bar-chat {
+    grid-area: bar-chat;
+  }
+
+  .home-agent-bar-file {
+    grid-area: bar-file;
+  }
+
+  /* Wide windows label each pane in the chrome; narrow ones swap that for the pane tabs. */
+  .home-agent-bar-chat,
+  .home-agent-bar-file {
+    display: none;
+
+    @container home-agent (width >= 46rem) {
+      display: flex;
+    }
+  }
+
+  /* Narrow windows keep the same chrome: traffic lights, then folder tabs for the three panes. */
+  .home-agent-tabs {
+    grid-area: tabs;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+    padding-inline: var(--home-agent-inset) var(--spacing-xs);
+
+    & > .home-agent-dots {
+      flex: none;
+      align-self: center;
+    }
+
+    @container home-agent (width >= 46rem) {
+      display: none;
+    }
+  }
+
+  .home-agent-tab-list {
+    display: flex;
+    align-items: flex-end;
+    min-width: 0;
+  }
+
+  /*
+   * A folder tab, like the open file's on a wide window. The chosen tab is cut from the pane below,
+   * so its bottom edge opens into it and the chrome's line stays one line; the others are plain labels.
+   */
+  .home-agent-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-3xs);
+    min-width: 0;
+    height: 2.375rem;
+    margin-bottom: -1px;
+    padding: 0 0.625rem;
+    border: 1px solid transparent;
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+    background-color: transparent;
+    cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease);
+
+    &:nth-child(2) {
+      flex: 0 1 auto;
+      font-family: var(--home-mono);
+      font-size: 0.75rem;
+    }
+
+    &:hover {
+      color: var(--home-text);
+    }
+
+    &[aria-pressed='true'] {
+      z-index: 1;
+      border-color: var(--home-hairline);
+      color: var(--home-text);
+      background-color: var(--home-sheet);
+      box-shadow: var(--home-edge);
+    }
+
+    /* The session pane is the canvas, so its tab is too. */
+    &:first-child[aria-pressed='true'] {
+      background-color: var(--home-well);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: -2px;
+    }
+
+    & svg {
+      flex: none;
+    }
+  }
+
+  .home-agent-dots {
+    display: flex;
+    gap: 0.375rem;
+    margin-right: var(--spacing-2xs);
+
+    /* Embossed: lit from above, a contour below. */
+    & > span {
+      width: 0.6875rem;
+      height: 0.6875rem;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-rule);
+      background-image: linear-gradient(light-dark(color-mix(in oklab, var(--home-float) 45%, transparent), color-mix(in oklab, var(--home-float) 20%, transparent)), transparent);
+      box-shadow: inset 0 0 0 0.5px var(--home-hairline), 0 1px 0 light-dark(color-mix(in oklab, var(--home-float) 85%, transparent), color-mix(in oklab, var(--home-float) 8%, transparent));
+    }
+  }
+
+  /* The server the session talks to; its dot is live only while a call is in flight. */
+  .home-agent-server {
+    margin-left: auto;
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    white-space: nowrap;
+
+    &::before {
+      transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+    }
+  }
+
+  /* The open file: a tab cut from the editor's sheet, so its bottom edge opens into the code; its icon sits on the inset. */
+  .home-agent-bar-file {
+    align-items: flex-end;
+    padding-inline: calc(var(--home-agent-inset) - 0.75rem - 1px);
+  }
+
+  .home-agent-file-tab {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    height: 2.375rem;
+    margin-bottom: -1px;
+    padding-inline: 0.75rem 0.875rem;
+    border: 1px solid var(--home-hairline);
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    box-shadow: var(--home-edge);
+  }
+
+  .home-agent-file-icon {
+    flex: none;
+    color: var(--home-text-quiet);
+  }
+
+  /* The file's state as a mark only; its tone class colors it. */
+  .home-agent-file-status {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /*
+   * Panes. Wide: the transcript on the left, the file over the output on the right. Narrow: all
+   * three share one cell, sized by the tallest, and only the active one shows.
+   */
+  .home-agent-pane {
+    grid-area: pane;
+    min-width: 0;
+
+    /* The leaving pane fades out before the next fades in, so two panes never show through each other. */
+    @container home-agent (width < 46rem) {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity var(--home-quick) var(--home-ease), visibility 0s linear var(--home-quick);
+
+      &[data-active] {
+        visibility: visible;
+        opacity: 1;
+        transition: opacity var(--home-base) var(--home-ease) var(--home-quick), visibility 0s;
+      }
+    }
+  }
+
+  /* Transcript: the newest entry sits at the bottom and older ones rise out under a fade, like a chat. */
   .home-agent-chat {
+    position: relative;
+    min-height: 20rem;
+    background-color: var(--home-well);
+
+    @container home-agent (width >= 46rem) {
+      grid-area: chat;
+      min-height: 0;
+    }
+  }
+
+  .home-agent-log {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--home-hairline);
-    background-color: var(--home-ground);
+    justify-content: flex-end;
+    /* Each entry's bleed (below) cancels its own padding, so this is the space the reader sees. */
+    gap: 0.625rem;
+    overflow: hidden;
+    margin: 0;
+    padding: 2rem var(--home-agent-inset) var(--home-agent-inset);
+    list-style: none;
+    mask-image: linear-gradient(transparent, black 4.5rem);
+    transition: opacity 0.5s var(--home-ease);
+  }
 
-    @media (--md) {
-      border-right: 1px solid var(--home-hairline);
-      border-bottom: 0;
-    }
+  /*
+   * An entry grows from nothing, so the ones above it slide up instead of jumping. It bleeds 0.875rem
+   * on every side so the clip that hides it while it grows never cuts a card's ring, bleed or shadow.
+   */
+  .home-agent-entry {
+    display: grid;
+    grid-template-rows: 1fr;
+    margin: -0.875rem;
+  }
+
+  .home-agent-entry-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.875rem;
+  }
+
+  /*
+   * Turns. The agent speaks beside its avatar and everything it does in that turn (calls, edits)
+   * hangs under its text at the same indent; the reader's messages sit on the right. A new
+   * speaker opens a turn with more room above it.
+   */
+  .home-agent-log {
+    --home-agent-indent: 2.25rem;
+  }
+
+  .home-agent-entry-inner[data-turn] {
+    padding-top: 1.25rem;
   }
 
   .home-agent-message {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-xs);
-    opacity: 0;
-    translate: 0 8px;
-    transition: opacity var(--duration-slow) var(--easing-smooth), translate var(--duration-slow) var(--easing-crisp);
+    gap: 0.75rem;
 
     & p {
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-xl);
-      font-size: var(--text-sm);
-      line-height: var(--text-sm--line-height);
+      min-width: 0;
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--home-text-body);
+      text-wrap: pretty;
+    }
+  }
+
+  .home-agent-message-user {
+    flex-direction: row-reverse;
+
+    & p {
+      max-width: 82%;
+      padding: 0.5rem 0.875rem;
+      border-radius: var(--radius-2xl) var(--radius-sm) var(--radius-2xl) var(--radius-2xl);
       color: var(--home-text);
-      background-color: var(--home-well);
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
     }
   }
 
-  .home-agent-message-user p {
-    background-color: var(--home-sheet);
-    box-shadow: inset 0 0 0 1px var(--home-hairline);
-  }
-
-  .home-agent-message-shown {
-    opacity: 1;
-    translate: 0 0;
-  }
-
+  /* Avatars: the agent in ink, the reader in the sheet's quiet tone. */
   .home-agent-avatar {
-    display: grid;
-    flex: none;
-    place-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-top: 2px;
-    border-radius: var(--radius-pill);
-    color: var(--home-text);
-    background-color: var(--home-well);
-
-    .home-agent-message-agent & {
-      color: var(--home-text-inverse);
-      background-color: var(--home-ink);
-    }
-  }
-
-  .home-agent-tool {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    outline: 1px solid var(--home-hairline);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-edge);
-    opacity: 0.4;
-    transition: opacity var(--duration-slow) var(--easing-smooth), outline-color var(--duration-slow) var(--easing-smooth);
-  }
-
-  .home-agent-tool-shown {
-    opacity: 1;
-    outline-color: var(--home-rule);
-  }
-
-  .home-agent-tool-icon {
     display: grid;
     flex: none;
     place-content: center;
     width: 1.5rem;
     height: 1.5rem;
-    border-radius: var(--radius-md);
+    margin-top: 0.0625rem;
+    border-radius: var(--radius-pill);
     color: var(--home-text-quiet);
-    background-color: var(--home-well);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-edge);
+
+    .home-agent-message-agent & {
+      color: var(--home-text-inverse);
+      background-color: var(--home-ink);
+      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-float) 18%, transparent);
+    }
+
+    .home-agent-message-user & {
+      margin-top: 0.375rem;
+    }
   }
 
-  .home-agent-editor {
+  .home-agent-edit {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: 2rem;
+    margin-left: var(--home-agent-indent);
+    font-size: var(--home-caption);
+    color: var(--home-text-quiet);
+
+    & code {
+      font-family: var(--home-mono);
+      font-size: 0.75rem;
+      color: var(--home-text-body);
+    }
+  }
+
+  /* The same 1.25rem icon column as a call's tool icon, so the pencil lines up with them. */
+  .home-agent-edit-icon {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--home-text-quiet);
+  }
+
+  .home-agent-edit-count {
+    margin-left: auto;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+  }
+
+  /*
+   * A tool call, in the agent's turn. Finished calls settle into one quiet line; the latest opens
+   * into a sheet with its request and result. The sheet bleeds past the column, so its text never
+   * moves: the tool's icon, its name, a one-word result, and a status glyph at the end.
+   */
+  .home-agent-call {
+    position: relative;
+    margin-left: calc(var(--home-agent-indent) - var(--spacing-sm));
+    margin-right: calc(var(--spacing-sm) * -1);
+    border-radius: var(--radius-xl);
+    transition: background-color var(--home-slow) var(--home-ease), box-shadow var(--home-slow) var(--home-ease);
+
+    &[data-expanded] {
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    }
+  }
+
+  .home-agent-call-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: 2rem;
+    padding-inline: var(--spacing-sm);
+    transition: min-height var(--home-slow) var(--home-ease);
+
+    [data-expanded] > & {
+      min-height: 2.75rem;
+    }
+  }
+
+  .home-agent-call-icon {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--home-text-quiet);
+
+    [data-expanded] & {
+      color: var(--home-text);
+    }
+  }
+
+  .home-agent-call-name {
     min-width: 0;
-    background-color: var(--home-sheet);
-  }
-
-  .home-agent-code {
-    flex: auto;
-    overflow-x: auto;
-    /* Room for the fix diff, the longest view, so the session never changes height. */
-    min-height: calc(1.85em * 7 + var(--spacing-md) * 2);
-    padding-block: var(--spacing-md);
-    font-family: var(--home-mono);
-    font-size: 0.8125rem;
-    line-height: 1.85;
-    color: var(--home-text-body);
-    background-color: var(--home-well);
-  }
-
-  .home-agent-line {
-    display: flex;
-    width: max-content;
-    min-width: 100%;
-    padding-inline: var(--spacing-sm) var(--spacing-md);
-    white-space: pre;
-    animation: home-agent-line 0.3s var(--easing-smooth);
-  }
-
-  .home-agent-line-sign {
-    flex: none;
-    width: 2ch;
-    color: var(--home-text-quiet);
-  }
-
-  .home-agent-line-problem .home-agent-classes {
-    text-decoration: underline wavy color-mix(in oklab, var(--home-warn) 80%, transparent);
-    text-underline-offset: 5px;
-  }
-
-  .home-agent-line-removed {
-    background-color: color-mix(in oklab, var(--home-error) 7%, transparent);
-
-    .home-agent-line-sign {
-      color: var(--home-error);
-    }
-  }
-
-  .home-agent-line-added,
-  .home-agent-line-fixed {
-    background-color: color-mix(in oklab, var(--home-ok) 8%, transparent);
-
-    .home-agent-line-sign {
-      color: var(--home-ok);
-    }
-  }
-
-  .home-agent-line-fixed {
-    animation: home-agent-fixed 2.4s var(--easing-smooth) both;
-  }
-
-  /* The problems panel is always docked, like an editor's, so the code above never shifts. */
-  .home-agent-problems {
-    display: flex;
-    flex-direction: column;
-    flex: none;
-    overflow: hidden;
-    height: 14.5rem;
-    border-top: 1px solid var(--home-hairline);
-    background-color: var(--home-sheet);
-  }
-
-  .home-agent-problems-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin: 0;
-    padding: var(--spacing-xs) var(--spacing-lg);
-    font-family: var(--home-mono);
-    font-size: var(--home-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--home-text-faint);
-  }
-
-  .home-agent-problems-count {
-    display: inline-grid;
-    place-content: center;
-    min-width: 1.125rem;
-    height: 1.125rem;
-    padding-inline: 0.25rem;
-    border-radius: var(--radius-pill);
-    font-size: 0.625rem;
-    letter-spacing: 0;
-    font-variant-numeric: tabular-nums;
-    color: var(--home-text);
-    background-color: var(--home-well);
-  }
-
-  .home-agent-problems-list {
-    display: grid;
-    gap: var(--spacing-xs);
-    padding-bottom: var(--spacing-sm);
-    transition: opacity var(--home-base) var(--home-ease);
-  }
-
-  /* While the fix preview is open, the problems it resolves step back. */
-  .home-agent-problems-list-fixing {
-    opacity: 0.42;
-  }
-
-  .home-agent-problem-icon {
-    color: var(--home-warn);
-  }
-
-  .home-agent-problems-empty {
-    display: flex;
-    flex: auto;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    margin: 0;
-    font-size: var(--font-size-xs);
-    color: var(--home-text-faint);
-
-    & svg {
-      color: var(--home-ok);
-    }
-  }
-
-  .home-mcp {
-    display: flex;
-    flex-direction: column;
-    flex: auto;
-    position: relative;
-    min-height: 30rem;
-  }
-
-  /* The orbit plane tilts back; the spin turns it, and each face turns the other way to stay upright. */
-  /* The orbit scales with its card: the radius leaves room for a client face on either side. */
-  .home-mcp {
-    container-type: inline-size;
-  }
-
-  .home-mcp-stage {
-    --home-orbit-radius: min(16rem, calc(50cqw - 3.5rem));
-    --home-orbit-tilt: 64deg;
-    --home-mcp-core: 8.5rem;
-    position: relative;
-    display: grid;
-    flex: auto;
-    place-items: center;
-    min-height: 22rem;
-    overflow: hidden;
-    perspective: var(--home-perspective);
-    background-image: radial-gradient(ellipse 50% 40% at 50% 52%, light-dark(rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.03)), transparent 70%);
-
-    @media (--lg) {
-      --home-orbit-tilt: 60deg;
-    }
-
-    /* In a narrow card the plane tilts less and the server shrinks, so clients clear it in front and behind. */
-    @container (width < 30rem) {
-      --home-orbit-radius: calc(50cqw - 2.25rem);
-      --home-orbit-tilt: 48deg;
-      --home-mcp-core: 7rem;
-    }
-  }
-
-  .home-mcp-orbit {
-    position: relative;
-    width: 0;
-    height: 0;
-    transform-style: preserve-3d;
-    transform: rotateX(var(--home-orbit-tilt));
-  }
-
-  .home-mcp-ring {
-    position: absolute;
-    top: calc(var(--home-orbit-radius) * -1);
-    left: calc(var(--home-orbit-radius) * -1);
-    width: calc(var(--home-orbit-radius) * 2);
-    height: calc(var(--home-orbit-radius) * 2);
-    border: 1px solid var(--home-rule);
-    border-radius: 50%;
-  }
-
-  .home-mcp-ring-inner {
-    inset: calc(var(--home-orbit-radius) * -0.5);
-    width: var(--home-orbit-radius);
-    height: var(--home-orbit-radius);
-    border-style: dashed;
-    border-color: var(--home-hairline);
-  }
-
-  .home-mcp-spin {
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    transform-style: preserve-3d;
-    animation: home-mcp-spin 72s linear infinite;
-  }
-
-  .home-mcp-slot {
-    position: absolute;
-    transform-style: preserve-3d;
-    transform: rotateZ(calc(var(--home-orbit-angle) * 1deg));
-  }
-
-  /* Each client's request travels the spoke toward the server. */
-  .home-mcp-spoke {
-    position: absolute;
-    top: -0.5px;
-    left: 0;
-    width: var(--home-orbit-radius);
-    height: 1px;
-    background-image: repeating-linear-gradient(90deg, var(--home-rule-strong) 0 3px, transparent 3px 9px);
-    background-size: 9px 1px;
-    opacity: 0.55;
-    animation: home-mcp-request 1.2s linear infinite;
-  }
-
-  .home-mcp-face {
-    position: absolute;
-    left: var(--home-orbit-radius);
-    display: grid;
-    justify-items: center;
-    gap: var(--spacing-3xs);
-    width: 6rem;
-    margin-left: -3rem;
-    top: -1.625rem;
-    transform-origin: 50% 1.625rem;
-    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
-    /* The depth fade runs on the same clock, offset by the slot's angle, so clients dim as they pass behind the server. */
-    animation-name: home-mcp-face, home-mcp-depth;
-    animation-duration: 72s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-delay: 0s, calc(var(--home-orbit-angle) * -0.2s);
-  }
-
-  .home-mcp-client-logo {
-    display: grid;
-    place-content: center;
-    width: 3.25rem;
-    height: 3.25rem;
-    border-radius: var(--radius-2xl);
-    outline: 1px solid var(--home-hairline);
-    color: var(--home-brand, var(--home-text));
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-elevation-1);
-    transition: outline-color var(--home-slow) var(--home-ease);
-
-    .home-mcp-face:hover & {
-      outline-color: var(--home-rule);
-    }
-  }
-
-  .home-mcp-client-name {
-    font-size: 0.6875rem;
-    white-space: nowrap;
-    color: var(--home-text-quiet);
-
-    @container (width < 30rem) {
-      display: none;
-    }
-  }
-
-  .home-mcp:hover :is(.home-mcp-spin, .home-mcp-face) {
-    animation-play-state: paused;
-  }
-
-  /* The server stands upright at the center of the plane. */
-  .home-mcp-core {
-    position: absolute;
-    top: calc(var(--home-mcp-core) / -2);
-    left: calc(var(--home-mcp-core) / -2);
-    display: grid;
-    place-items: center;
-    align-content: center;
-    gap: 0.25rem;
-    width: var(--home-mcp-core);
-    height: var(--home-mcp-core);
-    border-radius: var(--radius-pill);
-    outline: 1px solid var(--home-rule);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-elevation-2);
-    transform-origin: 50% 50%;
-    transform: rotateX(calc(var(--home-orbit-tilt) * -1)) translateZ(1px);
-  }
-
-  .home-mcp-command {
-    margin: 0 var(--spacing-md) var(--spacing-md);
-  }
-
-  /* An agent's calls, in order: each tool lights up in turn. */
-  /* The list fills the card, so its rows line up with the orbit beside it. */
-  .home-mcp-tools {
-    container-type: inline-size;
-    display: grid;
-    flex: auto;
-    align-content: space-evenly;
-    margin-top: 0;
-    padding: var(--spacing-xs);
-    list-style: none;
-  }
-
-  .home-mcp-tool {
-    display: grid;
-    gap: 0.125rem;
-    padding: 0.5625rem var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    animation-name: home-mcp-tool;
-    animation-duration: var(--home-tool-cycle);
-    animation-timing-function: var(--home-ease);
-    animation-iteration-count: infinite;
-
-    /* Name and description side by side once the card has room for both. */
-    @container (width >= 30rem) {
-      grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
-      align-items: baseline;
-      gap: var(--spacing-md);
-    }
-  }
-
-  .home-mcp-tool-name {
+    margin-right: auto;
     overflow: hidden;
     font-family: var(--home-mono);
     font-size: 0.75rem;
@@ -432,83 +437,944 @@
     color: var(--home-text);
   }
 
-  .home-mcp-tool-body {
-    font-size: var(--home-caption);
-    line-height: 1.45;
+  .home-agent-call-summary {
+    flex: none;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+    transition: opacity var(--home-base) var(--home-ease);
+
+    [data-expanded] & {
+      opacity: 0;
+    }
+
+    /* A narrow window keeps the full tool name; the status glyph alone carries the result. */
+    @container home-agent (width < 30rem) {
+      display: none;
+    }
+  }
+
+  .home-agent-call-status {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 1rem;
+    height: 1rem;
     color: var(--home-text-quiet);
   }
 
+  .home-agent-call-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--home-slow) var(--home-ease);
+
+    .home-agent-call[data-expanded] > & {
+      grid-template-rows: 1fr;
+    }
+
+    /* Folding waits for the fade, so the text is gone before the card closes. */
+    .home-agent-call:not([data-expanded]) > & {
+      transition-delay: var(--home-quick);
+    }
+  }
+
+  .home-agent-call-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /*
+   * The request and result. A call that settles fades them out first and only then folds them away,
+   * so its text never reads over the next row while the card closes.
+   */
+  .home-agent-call-detail {
+    display: grid;
+    gap: 0.125rem;
+    margin-inline: var(--spacing-sm);
+    padding: var(--spacing-xs) 0 var(--spacing-sm);
+    border-top: 1px solid var(--home-hairline);
+    opacity: 0;
+    transition: opacity var(--home-quick) var(--home-ease);
+
+    [data-expanded] & {
+      opacity: 1;
+      transition-duration: var(--home-base);
+      transition-delay: var(--home-quick);
+    }
+  }
+
+  .home-agent-call-line {
+    display: flex;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+    color: var(--home-text-body);
+  }
+
+  .home-agent-call-arrow {
+    flex: none;
+    width: 1.25rem;
+    text-align: center;
+    color: var(--home-text-faint);
+  }
+
+  .home-agent-json {
+    color: var(--home-text-quiet);
+  }
+
+  .home-agent-json-key {
+    color: var(--home-code-property);
+  }
+
+  .home-agent-json-string {
+    color: var(--home-code-string);
+  }
+
+  .home-agent-pending {
+    display: inline-flex;
+    gap: 0.25rem;
+    height: 1.65em;
+    align-items: center;
+
+    & > span {
+      width: 0.25rem;
+      height: 0.25rem;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-text-faint);
+    }
+  }
+
+  /* File: the code, holding the space of its largest state (the diff). */
+  .home-agent-code {
+    container: home-agent-file / inline-size;
+    background-color: var(--home-sheet);
+
+    @container home-agent (width >= 46rem) {
+      grid-area: code;
+    }
+  }
+
+  @container home-agent (width >= 46rem) {
+    .home-agent-bar-file,
+    .home-agent-code,
+    .home-agent-panel {
+      border-left: 1px solid var(--home-hairline);
+    }
+  }
+
+  .home-agent-code-stack {
+    display: grid;
+    padding-block: var(--home-agent-inset);
+    font-family: var(--home-mono);
+    font-size: var(--home-code);
+    line-height: 1.85;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text-body);
+
+    /* A mid-size pane keeps the longest line on one row at a slightly smaller size. */
+    @container home-agent-file (width < 38rem) {
+      font-size: 0.75rem;
+    }
+
+    /* A phone wraps every line; the smaller size keeps the longest diff to two rows a line. */
+    @container home-agent-file (width < 30rem) {
+      padding-block: var(--spacing-md);
+      font-size: 0.75rem;
+      line-height: 1.7;
+    }
+  }
+
+  /*
+   * Every state is laid out in the same cell, so the tallest one sets the height and nothing below
+   * moves. The leaving state fades out completely before the next fades in, so two never read at once.
+   */
+  .home-agent-code-view,
+  .home-agent-panel-view {
+    position: relative;
+    grid-area: 1 / 1;
+    min-width: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--home-quick) var(--home-ease), visibility 0s linear var(--home-quick);
+
+    &[data-active] {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity var(--home-base) var(--home-ease) var(--home-quick), visibility 0s;
+    }
+  }
+
+  /* Every line starts on the window's inset, so the gutter lines up with the file tab's icon above it. */
+  .home-agent-line {
+    display: flex;
+    padding-inline: var(--home-agent-inset);
+  }
+
+  .home-agent-gutter {
+    flex: none;
+    width: 2ch;
+    text-align: right;
+    color: var(--home-text-faint);
+  }
+
+  .home-agent-sign {
+    flex: none;
+    width: 3ch;
+    text-align: center;
+    color: var(--home-text-faint);
+  }
+
+  .home-agent-text {
+    min-width: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* A wrapped line breaks between classes, never inside one at its hyphen. */
+  .home-agent-class,
+  .home-agent-word {
+    white-space: nowrap;
+  }
+
+  /* The card as it was before the agent styled it: the same markup without class attributes. */
+  [data-draft='plain'] .home-agent-attr {
+    display: none;
+  }
+
+  .home-agent-squiggle {
+    text-decoration: underline wavy transparent;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 5px;
+    transition: text-decoration-color var(--home-slow) var(--home-ease);
+
+    [data-draft='problems'] & {
+      text-decoration-color: color-mix(in oklab, var(--home-warn) 85%, transparent);
+    }
+  }
+
+  .home-agent-conflict,
+  .home-agent-inspected,
+  .home-agent-removed-class {
+    border-radius: 3px;
+    transition: background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+  }
+
+  [data-draft='problems'] .home-agent-conflict {
+    background-color: color-mix(in oklab, var(--home-warn) 16%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--home-warn) 16%, transparent);
+  }
+
+  [data-draft='inspect'] .home-agent-inspected {
+    background-color: color-mix(in oklab, var(--home-info) 14%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--home-info) 14%, transparent);
+  }
+
+  .home-agent-removed-class {
+    background-color: color-mix(in oklab, var(--home-error) 16%, transparent);
+    text-decoration: line-through color-mix(in oklab, var(--home-error) 70%, transparent);
+  }
+
+  /* A diff line: its gutter carries the stronger tint, the code a lighter one. */
+  .home-agent-line-removed,
+  .home-agent-line-added {
+    --home-agent-gutter-end: calc(var(--home-agent-inset) + 5ch);
+    background-image: linear-gradient(90deg, var(--home-agent-diff-gutter) 0 var(--home-agent-gutter-end), var(--home-agent-diff) var(--home-agent-gutter-end));
+  }
+
+  .home-agent-line-removed {
+    --home-agent-diff-gutter: color-mix(in oklab, var(--home-error) 15%, transparent);
+    --home-agent-diff: color-mix(in oklab, var(--home-error) 6%, transparent);
+
+    & :is(.home-agent-sign, .home-agent-gutter) {
+      color: var(--home-error);
+    }
+  }
+
+  .home-agent-line-added {
+    --home-agent-diff-gutter: color-mix(in oklab, var(--home-ok) 17%, transparent);
+    --home-agent-diff: color-mix(in oklab, var(--home-ok) 7%, transparent);
+
+    & :is(.home-agent-sign, .home-agent-gutter) {
+      color: var(--home-ok);
+    }
+  }
+
+  /*
+   * The inspected class shows the rule the engine generates for it, the way an editor hover does. It
+   * docks in the room the diff reserves under the code, so it never covers a line of the file.
+   */
+  .home-agent-hover {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--home-agent-inset) + 17ch);
+    z-index: 2;
+    display: grid;
+    gap: var(--spacing-2xs);
+    max-width: calc(100% - var(--home-agent-inset) - 17ch);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    background-color: var(--home-float);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-2);
+    opacity: 0;
+    translate: 0 6px;
+    transition: opacity var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);
+
+    [data-draft='inspect'] & {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    /* A narrow file wraps its lines; the card spans the inset instead. */
+    @container home-agent-file (width < 40rem) {
+      left: var(--home-agent-inset);
+      max-width: calc(100% - var(--home-agent-inset) * 2);
+    }
+  }
+
+  .home-agent-rule {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: var(--home-mono);
+    font-size: inherit;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: var(--home-text-body);
+    background-color: transparent;
+  }
+
+  .home-agent-rule-selector {
+    color: var(--home-code-selector);
+  }
+
+  .home-agent-rule-property {
+    color: var(--home-code-property);
+  }
+
+  /* Output: what the last tool call returned, docked under the code like an editor panel. */
+  .home-agent-panel {
+    container: home-agent-file / inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--home-sheet);
+
+    @container home-agent (width >= 46rem) {
+      grid-area: output;
+      border-top: 1px solid var(--home-hairline);
+    }
+  }
+
+  .home-agent-panel-signal {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 30%;
+    height: 1px;
+    background-image: linear-gradient(90deg, transparent, var(--home-signal), transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .home-agent-panel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    padding: var(--home-agent-inset) var(--home-agent-inset) 0;
+  }
+
+  .home-agent-panel-tool {
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+  }
+
+  .home-agent-panel-body {
+    display: grid;
+    flex: auto;
+    padding: 0.875rem var(--home-agent-inset) var(--home-agent-inset);
+  }
+
+  /* Before the first result: a reserved slot, hatched inside one faint contour. */
+  .home-agent-panel-idle {
+    border-radius: var(--home-radius-well);
+    box-shadow: inset 0 0 0 1px var(--home-guide);
+  }
+
+  /* The spacing scale the manifest query returned, as a specimen: each bar is the token's value. */
+  .home-agent-tokens {
+    display: grid;
+    gap: 0.125rem var(--spacing-xl);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @container home-agent-file (width >= 32rem) {
+      grid-template-rows: repeat(6, auto);
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+
+  .home-agent-token {
+    display: grid;
+    grid-template-columns: 6.5rem 4rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.75rem;
+    line-height: 1.75;
+
+    & code {
+      font-family: var(--home-mono);
+      color: var(--home-text-body);
+    }
+  }
+
+  .home-agent-token-value {
+    font-family: var(--home-mono);
+    color: var(--home-text-faint);
+  }
+
+  .home-agent-token-bar {
+    justify-self: start;
+    width: max(2px, calc(var(--home-agent-token) * 100%));
+    height: 0.375rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--home-rule-strong);
+    transform-origin: left;
+  }
+
+  .home-agent-problems {
+    display: grid;
+    align-content: start;
+    gap: var(--spacing-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A problem: the warning in the same 14px glyph as everywhere in the window, centred on the message's first line. */
+  .home-agent-problem {
+    display: flex;
+    gap: 0.625rem;
+
+    & svg {
+      flex: none;
+      margin-top: 0.21875rem;
+    }
+  }
+
+  /* Messages wrap in full, as the linter wrote them; nothing is clipped under the meta line. */
+  .home-agent-problem-message {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--home-text);
+    text-wrap: pretty;
+
+    @container home-agent-file (width < 30rem) {
+      font-size: 0.8125rem;
+    }
+  }
+
+  .home-agent-problem-meta {
+    display: block;
+    overflow: hidden;
+    margin-top: 0.125rem;
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+  }
+
+  /* Facts from the preview and the apply step: a label column and a value column. */
+  .home-agent-facts {
+    display: grid;
+    align-content: start;
+    gap: var(--spacing-sm);
+    margin: 0;
+
+    & > div {
+      display: grid;
+      gap: 0.125rem var(--spacing-md);
+
+      @container home-agent-file (width >= 30rem) {
+        grid-template-columns: 9.5rem minmax(0, 1fr);
+        align-items: baseline;
+      }
+    }
+
+    & dt {
+      font-size: var(--home-caption);
+      color: var(--home-text-quiet);
+    }
+
+    & dd {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--spacing-3xs) var(--spacing-sm);
+      min-width: 0;
+      margin: 0;
+      font-size: var(--home-caption);
+      color: var(--home-text);
+    }
+
+    & code {
+      font-family: var(--home-mono);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .home-agent-diffstat {
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+  }
+
+  .home-agent-token-chip {
+    padding: 0.0625rem var(--spacing-2xs);
+    border-radius: var(--home-radius-chip);
+    color: var(--home-text);
+    background-color: var(--home-well);
+    box-shadow: inset 0 0 0 1px var(--home-hairline);
+  }
+
+  .home-agent-fact-note {
+    font-size: 0.75rem;
+    color: var(--home-text-faint);
+  }
+
+  .home-agent-hash {
+    display: inline-block;
+    min-width: 13ch;
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
+    border-radius: var(--radius-sm);
+    color: var(--home-text);
+  }
+
+  [data-hashing] .home-agent-hash-live {
+    color: var(--home-text-faint);
+  }
+
+  /* The match seal: it lands in gold at the moment the digests agree, then settles to the ok tone. */
+  .home-agent-match {
+    display: inline-grid;
+    place-content: center;
+    align-self: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    /* The seal sits in the row without making it taller. */
+    margin-block: -0.25rem;
+    border-radius: var(--radius-pill);
+    color: var(--home-ok);
+    opacity: 0;
+    scale: 0.9;
+    transition: opacity var(--home-base) var(--home-ease), scale var(--home-base) var(--home-ease);
+  }
+
+  .home-agent-match-shown {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .home-agent-fact-later {
+    opacity: 0;
+    transition: opacity var(--home-slow) var(--home-ease);
+  }
+
+  .home-agent-fact-shown {
+    opacity: 1;
+  }
+
+  /* Step bar: the session's five calls as chapters. The current one fills toward the next. */
+  .home-agent-steps {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    grid-area: steps;
+    padding: var(--spacing-xs) calc(var(--home-agent-inset) - var(--spacing-xs)) var(--spacing-xs) var(--home-agent-inset);
+    border-top: 1px solid var(--home-hairline);
+    background-color: var(--home-agent-chrome);
+  }
+
+  .home-agent-play {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    cursor: pointer;
+    transition: box-shadow var(--home-quick) var(--home-ease);
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
+    }
+
+    &:active {
+      box-shadow: 0 0 0 1px var(--home-rule), var(--home-pressed);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-agent-step-list {
+    display: flex;
+    flex: auto;
+    gap: var(--spacing-3xs);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    /* A narrow window sizes each step to its word, so all five names fit. */
+    @container home-agent (width < 34rem) {
+      & > li {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  .home-agent-step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'label' 'track';
+    align-items: baseline;
+    gap: var(--spacing-2xs);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+    border: 0;
+    border-radius: var(--radius-lg);
+    font-size: var(--home-caption);
+
+    @container home-agent (width < 34rem) {
+      padding-inline: 0.3125rem;
+      font-size: 0.75rem;
+    }
+    text-align: left;
+    color: var(--home-text-faint);
+    background-color: transparent;
+    cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease);
+
+    &:hover,
+    &[aria-current] {
+      color: var(--home-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-agent-step-name {
+    grid-area: label;
+    white-space: nowrap;
+  }
+
+  .home-agent-step-track {
+    position: relative;
+    grid-area: track;
+    overflow: hidden;
+    height: 1px;
+    background-color: var(--home-rule);
+
+    [data-state='done'] > & {
+      background-color: var(--home-rule-strong);
+    }
+  }
+
+  .home-agent-step-fill {
+    position: absolute;
+    inset: 0;
+    background-color: var(--home-text);
+    transform-origin: left;
+    animation-name: home-agent-step;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+  }
+
+  [data-state='done'] > .home-agent-step-track::after {
+    position: absolute;
+    inset: 0;
+    background-color: var(--home-text-quiet);
+    content: '';
+  }
+
+  [data-state='done'][aria-current] > .home-agent-step-track::after {
+    background-color: var(--home-text);
+  }
+
+  /* Before the loop starts again, the session fades out instead of snapping back to empty. */
+  [data-outro] :is(.home-agent-log, .home-agent-code-stack, .home-agent-panel-body) {
+    opacity: 0;
+  }
+
+  .home-agent-code-stack,
+  .home-agent-panel-body {
+    transition: opacity 0.5s var(--home-ease);
+  }
+
+  @media (--motion-safe) {
+    .home-agent-entry {
+      animation-name: home-agent-entry;
+      animation-duration: 0.55s;
+      animation-timing-function: var(--home-ease);
+      animation-fill-mode: both;
+    }
+
+    .home-agent-word {
+      animation-name: home-agent-word;
+      animation-duration: 0.5s;
+      animation-timing-function: var(--home-ease);
+      animation-delay: calc(var(--home-agent-word) * 45ms);
+      animation-fill-mode: both;
+    }
+
+    /* While a call is in flight, its request runs along the card's top edge toward the server. */
+    .home-agent-call[data-state='running']::before {
+      position: absolute;
+      top: -1px;
+      left: 0.75rem;
+      right: 0.75rem;
+      height: 1px;
+      background-image: linear-gradient(90deg, transparent, var(--home-signal), transparent);
+      background-size: 40% 100%;
+      background-repeat: no-repeat;
+      animation: home-agent-request 0.9s var(--home-ease-inout) infinite;
+      content: '';
+    }
+
+    .home-agent-panel-signal {
+      animation: home-agent-arrive 1s var(--home-ease-inout) both;
+    }
+
+    [data-matched] .home-agent-hash {
+      animation: home-agent-matched 2.6s var(--home-ease) both;
+    }
+
+    .home-agent-match-shown {
+      animation: home-agent-seal 2.6s var(--home-ease) both;
+    }
+
+    .home-agent-pending > span {
+      animation: home-agent-pending 1s var(--home-ease-inout) infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+    }
+
+    /* The agent types each class attribute into the card, a line at a time; the rest of the line makes room. */
+    [data-draft='typing'] .home-agent-attr {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: top;
+      white-space: pre;
+      animation-name: home-agent-type;
+      animation-duration: 0.8s;
+      animation-timing-function: steps(32, end);
+      animation-delay: calc(var(--home-agent-index) * 0.6s);
+      animation-fill-mode: both;
+
+      /* A phone wraps the line instead, so the attribute fades in where it will sit. */
+      @container home-agent-file (width < 40rem) {
+        display: inline;
+        animation-name: home-agent-entry-fade;
+        animation-timing-function: var(--home-ease);
+      }
+    }
+
+    .home-agent-code-view[data-active] .home-agent-line-changed {
+      animation: home-agent-changed 2.6s var(--home-ease) both;
+    }
+
+    .home-agent-panel-view[data-active] .home-agent-token-bar {
+      animation: home-agent-bar 0.7s var(--home-ease) both;
+    }
+
+    .home-agent-panel-view[data-active] .home-agent-problem {
+      animation: home-agent-entry-fade 0.4s var(--home-ease) both;
+
+      &:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+
+      &:nth-child(4) {
+        animation-delay: 0.24s;
+      }
+    }
+  }
+
   @media (--motion-reduce) {
-    .home-agent-line,
-    .home-agent-line-fixed,
-    .home-mcp-spin,
-    .home-mcp-face,
-    .home-mcp-spoke,
-    .home-mcp-tool {
-      animation: none;
+    .home-agent-log,
+    .home-agent-code-stack,
+    .home-agent-pane,
+    .home-agent-panel-body,
+    .home-agent-code-view,
+    .home-agent-panel-view,
+    .home-agent-call-body,
+    .home-agent-hover {
+      transition: none;
     }
   }
 }
 
-@keyframes home-agent-line {
+@keyframes home-agent-entry {
   from {
+    grid-template-rows: 0fr;
     opacity: 0;
   }
 }
 
-@keyframes home-agent-fixed {
-  to {
-    background-color: transparent;
+@keyframes home-agent-entry-fade {
+  from {
+    opacity: 0;
+    translate: 0 4px;
   }
 }
 
-@keyframes home-mcp-spin {
-  to {
-    rotate: z 1turn;
+@keyframes home-agent-word {
+  from {
+    opacity: 0;
+    filter: blur(3px);
   }
 }
 
-/* Orbit angle 90° faces the reader and 270° sits behind the server. */
-@keyframes home-mcp-depth {
-  0%, 50%, 100% {
-    opacity: 0.8;
+@keyframes home-agent-request {
+  from {
+    background-position: -60% 0;
   }
 
-  25% {
+  to {
+    background-position: 160% 0;
+  }
+}
+
+@keyframes home-agent-arrive {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+
+  15%, 80% {
     opacity: 1;
   }
 
-  75% {
-    opacity: 0.38;
+  100% {
+    translate: 233.33% 0;
+    opacity: 0;
   }
 }
 
-@keyframes home-mcp-face {
+/* The digest on disk equals the one the preview was made from: both read in the ok tone, then settle. */
+/* Both digests catch the gold at once, then let it go. */
+@keyframes home-agent-matched {
+  0%, 35% {
+    background-color: color-mix(in oklab, var(--home-signal) 26%, transparent);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes home-agent-seal {
+  0% {
+    color: var(--home-signal);
+    scale: 0.5;
+    box-shadow: 0 0 0 0 transparent;
+  }
+
+  18% {
+    color: var(--home-signal);
+    scale: 1.12;
+    box-shadow: 0 0 16px 3px var(--home-signal-glow);
+  }
+
+  50% {
+    color: var(--home-signal);
+    scale: 1;
+    box-shadow: 0 0 16px 3px transparent;
+  }
+
+  100% {
+    color: var(--home-ok);
+    scale: 1;
+    box-shadow: 0 0 16px 3px transparent;
+  }
+}
+
+@keyframes home-agent-pending {
+  0%, 100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes home-agent-type {
   from {
-    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+    max-width: 0;
   }
 
   to {
-    transform: rotateZ(calc(var(--home-orbit-angle) * -1deg - 360deg)) rotateX(calc(var(--home-orbit-tilt) * -1));
+    max-width: 64ch;
   }
 }
 
-@keyframes home-mcp-request {
-  to {
-    background-position: -9px 0;
+@keyframes home-agent-changed {
+  0%, 30% {
+    background-color: color-mix(in oklab, var(--home-ok) 12%, transparent);
+  }
+
+  100% {
+    background-color: transparent;
   }
 }
 
-@keyframes home-mcp-tool {
-  0%, 1.5% {
-    background-color: transparent;
+@keyframes home-agent-bar {
+  from {
+    scale: 0 1;
   }
+}
 
-  3%, 9% {
-    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
-  }
-
-  12%, 100% {
-    background-color: transparent;
+@keyframes home-agent-step {
+  from {
+    scale: 0 1;
   }
 }

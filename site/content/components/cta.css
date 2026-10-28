@@ -1,126 +1,58 @@
 @layer components {
-  /* The same shell as the hero stage: a light tray 8px around the dark panel. */
-  .home-cta-frame {
-    padding: var(--home-gap);
-    border-radius: var(--home-radius-tray);
-    background-color: var(--home-tray);
-  }
-
-  /* The closing stage is always dark, so the page ends on the same matrix it opened with, lit from above. */
+  /*
+   * The close is a quiet framed band on the page ground: the two-line invitation, then the two ways in
+   * under it, in one hairline frame.
+   */
   .home-cta {
     position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    padding: var(--spacing-4xl) var(--spacing-md) calc(var(--spacing-4xl) + var(--spacing-md));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: var(--spacing-2xl);
+    padding: clamp(3rem, 1.5rem + 5vw, 6rem) clamp(1.75rem, 0.5rem + 5vw, 6rem);
     border-radius: var(--home-radius-sheet);
-    outline: 1px solid var(--home-hairline);
-    color-scheme: dark;
-    color: var(--home-text);
-    background:
-      radial-gradient(ellipse 60% 48% at 50% -8%, rgb(255 255 255 / 0.09), transparent 70%),
-      color-mix(in oklab, var(--home-ground) 82%, black);
-    box-shadow: var(--home-edge), var(--home-contact);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
 
-    @media (--md) {
-      padding-block: var(--spacing-5xl) calc(var(--spacing-5xl) + var(--spacing-lg));
+    /* On phones the band gives its width to the command, which must fit on one line. */
+    @media (width < 30rem) {
+      padding-inline: 1.25rem;
     }
   }
 
-  .home-cta-field {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    color: var(--home-text);
-    /* Clear an oval behind the copy and let the matrix settle into the floor. */
-    mask-image:
-      linear-gradient(transparent 0, black 22%, black 55%, transparent 92%),
-      radial-gradient(ellipse 42% 40% at 50% 46%, transparent 55%, black 100%);
-    mask-composite: intersect;
-
-    @media (width < 48rem) {
-      opacity: 0.7;
-      mask-image:
-        linear-gradient(transparent 0, black 18%, black 45%, transparent 85%),
-        radial-gradient(ellipse 90% 40% at 50% 46%, transparent 62%, black 100%);
+  /* The narrowest phones set the command a step smaller rather than cut it. */
+  .home-cta .home-command {
+    @media (width < 24rem) {
+      gap: var(--spacing-xs);
+      font-size: 0.8125rem;
     }
-  }
-
-  /* A grid plane recedes to a horizon below the actions and drifts slowly toward the reader. */
-  .home-cta-horizon {
-    position: absolute;
-    inset: auto 0 0;
-    z-index: -1;
-    height: 46%;
-    perspective: 32rem;
-    perspective-origin: 50% 0;
-    pointer-events: none;
-    mask-image: linear-gradient(transparent, black 45%);
-  }
-
-  .home-cta-floor {
-    --home-floor-cell: 3rem;
-    position: absolute;
-    inset: 0 -50% -40%;
-    background-image:
-      linear-gradient(90deg, var(--home-rule) 1px, transparent 1px),
-      linear-gradient(var(--home-rule) 1px, transparent 1px);
-    background-size: var(--home-floor-cell) var(--home-floor-cell);
-    background-position: center top;
-    transform: rotateX(68deg);
-    transform-origin: 50% 0;
-    opacity: 0.55;
-    mask-image: radial-gradient(ellipse 50% 90% at 50% 0, black, transparent);
-  }
-
-  .home-cta-body {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 48rem;
-    margin-inline: auto;
-    text-align: center;
   }
 
   .home-cta-title {
-    max-width: 22ch;
+    position: relative;
+    z-index: 1;
+    max-width: 20em;
     margin: 0;
-    font-size: calc(var(--home-title) * 1.12);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.06;
-    letter-spacing: -0.045em;
+    font-size: var(--home-title);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
-  /* The second line steps back, as in the hero. */
-  .home-cta-title-quiet {
-    color: var(--home-text-quiet);
-  }
+  .home-cta-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
 
-  .home-cta-lead {
-    max-width: 44ch;
-    margin: var(--spacing-lg) 0 0;
-    font-size: var(--home-lead);
-    line-height: 1.6;
-    color: var(--home-text-quiet);
-    text-wrap: pretty;
-  }
-
-  @media (--motion-safe) {
-    .home-cta-floor {
-      animation-name: home-cta-floor;
-      animation-duration: 9s;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
+    /* Stacked on phones, both take one width. */
+    @media (width < 40rem) {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
     }
-  }
-}
-
-@keyframes home-cta-floor {
-  to {
-    background-position: center var(--home-floor-cell);
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import clsx from 'clsx'
@@ -9,7 +9,8 @@ import HomeSegmentedControl from './HomeSegmentedControl'
 
 export interface BenchmarkSizeChartLabels {
   caption: string
-  largerSuffix: string
+  /** The snapshot date, kept on one line after the caption. */
+  date: string
   modeLabels: Record<HomePageCSSSizeModeId, string>
   modeSelectorLabel: string
 }
@@ -24,8 +25,9 @@ const chartEasing = 'cubic-bezier(.22,1,.36,1)'
 const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
-const axisHeadroom = 1.25
-const chartGridStyle = { gridTemplateColumns: 'minmax(5.25rem, 6.5rem) minmax(0, 1fr)' }
+const axisHeadroom = 1.45
+/** The texture inside every bar: plain CSS text, streaming slowly, its length the page's share. */
+const barTexture = 'display:flex;gap:1rem;padding:0 1.5rem;color:var(--text);border-radius:.5rem;margin:0 auto;line-height:1.5;font:inherit;'.repeat(4)
 
 /** Page CSS sizes as bars that grow from a shared start once the chart scrolls into view. */
 export default function BenchmarkSizeChart({ brands, labels, modes }: {
@@ -39,15 +41,14 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
   return (
-    <div className="position:relative" ref={ref}>
-      <div className="display:flex flex-direction:column gap-lg">
-        <div className="display:flex flex-wrap:wrap align-items:center justify-content:space-between gap-sm">
-          <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
-          <span className="home-annotation">{labels.caption}</span>
-        </div>
-        {/* Remounting per mode replays the bars from the shared start. */}
-        <BenchmarkRows brands={brands} key={activeMode.id} labels={labels} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
+    <div className="home-bench-layout" ref={ref}>
+      {/* The measure on the left, the source on the right; the Master CSS bar carries the headline number. */}
+      <div className="home-bench-summary">
+        <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
+        <p className="home-annotation home-bench-caption">{labels.caption} <span className="white-space:nowrap">· {labels.date}</span></p>
       </div>
+      {/* Remounting per mode replays the bars from the shared start. */}
+      <BenchmarkRows brands={brands} key={activeMode.id} labels={labels} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
     </div>
   )
 }
@@ -61,7 +62,21 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
 }) {
   const [played, setPlayed] = useState(false)
   const rowsRef = useRef<HTMLDivElement>(null)
-  const axis = useMemo(() => createBenchmarkAxis(mode.maxBytes), [mode.maxBytes])
+  // A narrow chart needs more of its axis past the longest bar for that bar's value and labels only
+  // the ends of its axis; a compact one spaces its ticks wider.
+  const [width, setWidth] = useState(Infinity)
+  useEffect(() => {
+    const rows = rowsRef.current
+    if (!rows) return
+    const resize = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width))
+    resize.observe(rows)
+    return () => resize.disconnect()
+  }, [])
+  const narrow = width < 320
+  const ticks = width < 640 ? 2 : axisTickTarget
+  // Room past the longest bar for its value: a fixed label needs a larger share of a narrower axis.
+  const headroom = narrow ? 2.1 : width < 900 ? axisHeadroom : 1.2
+  const axis = useMemo(() => createBenchmarkAxis(mode.maxBytes, headroom, ticks), [mode.maxBytes, headroom, ticks])
   const barDuration = Math.max(1.2, chartAnimationDuration - (mode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
 
   useEffect(() => {
@@ -74,8 +89,7 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
   const settled = reduceMotion || played
   return (
     <div className="position:relative" ref={rowsRef}>
-      <div aria-hidden="true" className="position:absolute bottom:1.5rem left:0 right:0 top:0 display:grid gap-sm pointer-events:none" style={chartGridStyle}>
-        <span />
+      <div aria-hidden="true" className="position:absolute bottom:1.5rem left:0 right:0 top:0 display:grid pointer-events:none">
         <div className="position:relative">
           {axis.ticks.map((tick) => (
             <span className="home-bench-gridline" key={tick.label} style={{ left: `${tick.percent}%` }} />
@@ -99,20 +113,17 @@ function BenchmarkRows({ brands, labels, mode, reduceMotion, visible }: {
         ))}
       </div>
 
-      <div className="display:grid gap-sm mt-xs" style={chartGridStyle}>
-        <span />
+      {/* The axis is a ruler: a baseline with four ticks per labelled step, and labels under the major ones. */}
+      <div className="display:grid mt-xs home-bench-axis" style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
         <div className="position:relative height:1.25rem width:100%">
-          {axis.ticks.map((tick, index) => {
-            const compactTick = index === 0 || index === Math.floor((axis.ticks.length - 1) / 2) || index === axis.ticks.length - 1
-            return (
-              <span
-                className={clsx('position:absolute top:0 white-space:nowrap home-bench-tick', !compactTick && 'display:none@media((width<64rem))')}
-                key={tick.label}
-                style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
-                {tick.label}
-              </span>
-            )
-          })}
+          {axis.ticks.map((tick, index) => (
+            <span
+              className={clsx('position:absolute top:0 white-space:nowrap home-bench-tick', narrow && index > 0 && index < axis.ticks.length - 1 && 'visibility:hidden')}
+              key={tick.label}
+              style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
+              {tick.label}
+            </span>
+          ))}
         </div>
       </div>
     </div>
@@ -138,17 +149,20 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played,
     transitionTimingFunction: chartEasing
   }
   return (
-    <div className={clsx('display:grid align-items:center gap-sm min-height:2.75rem home-bench-row', row.isMasterCSS && 'home-bench-row-signal')} style={chartGridStyle}>
-      <span className="display:block overflow:hidden min-width:0 text-overflow:ellipsis white-space:nowrap home-bench-name">{row.name}</span>
-      <div className="position:relative height:2.75rem min-width:0">
+    // The brand mark beside the bar names the row; the name itself is for screen readers.
+    <div className={clsx('display:grid align-items:center min-height:2.75rem home-bench-row', row.isMasterCSS && 'home-bench-row-signal')}>
+      <span className="sr-only">{row.name}</span>
+      <div className="position:relative height:2.75rem min-width:0 home-bench-track">
         <div
           className="position:absolute left:0 top:50% min-width:1px translate:0|-50% transition-property:width home-bench-bar"
-          style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }} />
+          style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }}>
+          <span aria-hidden="true" className="home-bench-bar-text">{barTexture}</span>
+        </div>
         <span
           className="position:absolute top:50% z-index:1 display:inline-flex align-items:center gap-2xs white-space:nowrap translate:0|-50% transition-property:left pointer-events:none gap-sm@md"
           style={{ ...transition, left: settled ? `${rowPercent}%` : `min(${startPercent}, calc(100% - 5.25rem))` }}>
           {brand?.icon && <span className="display:inline-flex flex:none ml-xs ml-sm@md home-bench-icon">{brand.icon}</span>}
-          <span className="display:inline-flex align-items:baseline gap-2xs gap-xs@md">
+          <span className="display:inline-flex align-items:baseline gap-2xs gap-xs@md home-bench-label">
             <CountdownKilobytes
               active={played}
               barDuration={barDuration}
@@ -161,7 +175,7 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, labels, played,
               <span
                 className={clsx('transition-property:opacity,translate display:none@media((width<64rem)) home-bench-ratio', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
                 style={{ transitionDelay: `${reduceMotion ? 0 : delay + barDuration}s`, transitionDuration: `${ratioFadeDuration}s`, transitionTimingFunction: chartEasing }}>
-                {`${row.ratio.toFixed(1)}${labels.largerSuffix}`}
+                {`${row.ratio.toFixed(1)}×`}
               </span>
             )}
           </span>
@@ -214,15 +228,17 @@ interface BenchmarkAxisTick {
   percent: number
 }
 
-function createBenchmarkAxis(maxBytes: number) {
+function createBenchmarkAxis(maxBytes: number, headroom: number, tickTarget: number) {
   const maxKilobytes = Math.max(1, maxBytes / 1000)
-  const step = getNiceAxisStep(maxKilobytes / axisTickTarget)
-  // Leave about a fifth of the axis past the longest bar for its value and ratio, and no more.
-  const axisMaxKilobytes = Math.ceil(maxKilobytes * axisHeadroom / step) * step
+  const step = getNiceAxisStep(maxKilobytes / tickTarget)
+  // Leave room past the longest bar for its value and ratio, which sit beside the bar.
+  const axisMaxKilobytes = Math.ceil(maxKilobytes * headroom / step) * step
   const ticks: BenchmarkAxisTick[] = []
   for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
-    ticks.push({ label: `${formatAxisNumber(valueKilobytes)} kB`, percent: toPercent(valueKilobytes, axisMaxKilobytes) })
+    ticks.push({ label: formatAxisNumber(valueKilobytes), percent: toPercent(valueKilobytes, axisMaxKilobytes) })
   }
+  // Only the last tick carries the unit, so narrow axes keep their labels apart.
+  ticks[ticks.length - 1].label += ' kB'
   return { maxBytes: axisMaxKilobytes * 1000, ticks }
 }
 

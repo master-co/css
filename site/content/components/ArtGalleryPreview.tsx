@@ -1,11 +1,12 @@
 'use client'
 
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { createPortal, flushSync } from 'react-dom'
 import { IconX } from '@tabler/icons-react'
 import clsx from 'clsx'
 import Image, { type StaticImage } from '~/site/docs-shell/components/Image'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
+import { galleryPlacements } from './design-system-content'
 import galleryLoungeImage from '~/site/assets/images/home/nordic-gallery-lounge.png'
 import openLivingImage from '~/site/assets/images/home/nordic-open-living.png'
 import readingCornerImage from '~/site/assets/images/home/nordic-reading-corner.png'
@@ -16,240 +17,211 @@ interface Artwork {
   title: string
   image: StaticImage
   imageAlt: string
-  placement: CSSProperties
 }
 
-interface FrameRect {
-  height: number
-  left: number
-  top: number
-  width: number
-}
-
-interface ImageAnimation {
-  active: boolean
-  artworkId: string
-  from: FrameRect
-  phase: 'opening' | 'closing'
-  to: FrameRect
-}
-
-const imageTransitionDuration = 480
-const imageTransitionEasing = 'cubic-bezier(.2,0,0,1)'
-const imageFrameTransition = ['height', 'left', 'top', 'width']
-  .map((property) => `${property} ${imageTransitionDuration}ms ${imageTransitionEasing}`)
-  .join(',')
+/** The one name the open photo carries, in the grid before it opens and in the dialog while it is open. */
+const viewTransitionName = 'home-gallery-photo'
 
 const artworks = [
   {
     id: 'reading-corner',
-    title: 'Container Queries',
+    title: 'Reading corner',
     image: readingCornerImage,
-    imageAlt: 'Nordic reading corner with armchair, shelves, and filtered window light',
-    placement: { gridColumn: '1 / 5', gridRow: '1 / 3' }
+    imageAlt: 'Nordic reading corner with armchair, shelves, and filtered window light'
   },
   {
     id: 'shelf-room',
-    title: 'CSS Variables',
+    title: 'Shelf room',
     image: shelfRoomImage,
-    imageAlt: 'Nordic open-plan room with sofa, round table, and built-in wooden shelving',
-    placement: { gridColumn: '5 / 13', gridRow: '1' }
+    imageAlt: 'Nordic open-plan room with sofa, round table, and built-in wooden shelving'
   },
   {
     id: 'open-living',
-    title: 'Cascade Layers',
+    title: 'Open living room',
     image: openLivingImage,
-    imageAlt: 'Bright Nordic living room with light wood flooring and white seating',
-    placement: { gridColumn: '5 / 9', gridRow: '2' }
+    imageAlt: 'Bright Nordic living room with light wood flooring and white seating'
   },
   {
     id: 'gallery-lounge',
-    title: 'Motion Tokens',
+    title: 'Gallery lounge',
     image: galleryLoungeImage,
-    imageAlt: 'Nordic living room with framed wall art, lounge chairs, and a cream sofa',
-    placement: { gridColumn: '9 / 13', gridRow: '2' }
+    imageAlt: 'Nordic living room with framed wall art, lounge chairs, and a cream sofa'
   }
 ] satisfies readonly Artwork[]
 
-function getFrameRect(element: Element): FrameRect {
-  const { height, left, top, width } = element.getBoundingClientRect()
-  return { height, left, top, width }
-}
-
-function getModalImageFrameRect(aspectRatio: number): FrameRect {
-  const width = Math.min(window.innerWidth * (aspectRatio >= 1 ? 0.92 : 0.78), window.innerHeight * 0.82 * aspectRatio)
-  const height = width / aspectRatio
-  return { height, left: (window.innerWidth - width) / 2, top: (window.innerHeight - height) / 2, width }
-}
+const placements: Record<string, string> = Object.fromEntries(galleryPlacements.map((placement) => [placement.id, placement.className]))
+const gridColumns = 12
 
 function getModalImageFrameStyle(aspectRatio: number): CSSProperties {
   return {
     aspectRatio,
-    width: `min(${aspectRatio >= 1 ? '92vw' : '78vw'},calc(82dvh*${aspectRatio}))`
+    width: `min(${aspectRatio >= 1 ? '92vw' : '78vw'},calc(82dvh*${aspectRatio}))`,
+    viewTransitionName
   }
 }
 
-/** A grid of artworks whose images expand into a modal from their grid position. */
+/**
+ * Runs a DOM update as a view transition, so the named photo moves between the grid and the dialog.
+ * Without the API, or with reduced motion, the update happens at once.
+ */
+function transition(update: () => void) {
+  if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    update()
+    return Promise.resolve()
+  }
+  return document.startViewTransition(() => flushSync(update)).finished
+}
+
+/** A grid of photos placed by span classes; each opens into a dialog with a view transition. */
 export default function ArtGalleryPreview({ className }: { className?: string }) {
   const $ = useTranslation()
   const [modalArtworkId, setModalArtworkId] = useState<string>()
   const [modalFrameAspectRatio, setModalFrameAspectRatio] = useState(1.6)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [imageAnimation, setImageAnimation] = useState<ImageAnimation>()
-  const [hiddenGridArtworkId, setHiddenGridArtworkId] = useState<string>()
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
-  const animationFrameRef = useRef<number | undefined>(undefined)
-  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const artworkFrameRefs = useRef<Record<string, HTMLElement | null>>({})
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const restoreFocusRef = useRef(false)
+  const guidesRef = useRef<HTMLDivElement>(null)
+  const [selected, setSelected] = useState<{ id: string, columns: number[] }>()
   const modalArtwork = artworks.find((artwork) => artwork.id === modalArtworkId)
-  const animatedArtwork = imageAnimation ? artworks.find((artwork) => artwork.id === imageAnimation.artworkId) : undefined
-  const modalActive = Boolean(modalArtwork || hiddenGridArtworkId || imageAnimation)
 
-  const clearAnimationTimers = useCallback(() => {
-    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
-    if (animationTimeoutRef.current) clearTimeout(animationTimeoutRef.current)
+  // The photo in hand selects the columns it spans, read from where the guides actually fall.
+  const select = useCallback((id: string, photo: HTMLElement) => {
+    const { left, right } = photo.getBoundingClientRect()
+    const columns = [...guidesRef.current?.children ?? []].flatMap((guide, index) => {
+      const rect = guide.getBoundingClientRect()
+      return rect.left >= left - 1 && rect.right <= right + 1 ? [index] : []
+    })
+    setSelected({ id, columns })
   }, [])
 
-  const animateImage = useCallback((animation: Omit<ImageAnimation, 'active'>, onFinish?: () => void) => {
-    clearAnimationTimers()
-    setImageAnimation({ ...animation, active: false })
-    const isCurrent = (current?: ImageAnimation) => current?.artworkId === animation.artworkId && current.phase === animation.phase
-    animationFrameRef.current = requestAnimationFrame(() => {
-      setImageAnimation((current) => isCurrent(current) ? { ...current!, active: true } : current)
-    })
-    animationTimeoutRef.current = setTimeout(() => {
-      setImageAnimation((current) => isCurrent(current) ? undefined : current)
-      onFinish?.()
-    }, imageTransitionDuration + 80)
-  }, [clearAnimationTimers])
+  const deselect = useCallback(() => setSelected(undefined), [])
 
   const openArtwork = useCallback((artworkId: string) => {
-    const sourceFrame = artworkFrameRefs.current[artworkId]
-    if (!sourceFrame) return
-    const from = getFrameRect(sourceFrame)
-    const aspectRatio = from.width / from.height
+    const frame = artworkFrameRefs.current[artworkId]
+    if (!frame) return
+    const { width, height } = frame.getBoundingClientRect()
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    setModalFrameAspectRatio(aspectRatio)
-    setHiddenGridArtworkId(artworkId)
-    setModalArtworkId(artworkId)
-    setModalVisible(true)
-    animateImage({ artworkId, from, phase: 'opening', to: getModalImageFrameRect(aspectRatio) })
-  }, [animateImage])
+    // The grid photo carries the name into the old snapshot; the dialog photo takes it over in the new one.
+    frame.style.viewTransitionName = viewTransitionName
+    transition(() => {
+      frame.style.viewTransitionName = ''
+      setModalFrameAspectRatio(width / height)
+      setModalArtworkId(artworkId)
+    })
+  }, [])
 
   const closeArtwork = useCallback(() => {
     if (!modalArtworkId) return
-    const artworkId = modalArtworkId
-    const sourceFrame = artworkFrameRefs.current[artworkId]
-    if (!sourceFrame) return
+    const frame = artworkFrameRefs.current[modalArtworkId]
     restoreFocusRef.current = true
-    setModalVisible(false)
-    setModalArtworkId(undefined)
-    animateImage(
-      { artworkId, from: getModalImageFrameRect(modalFrameAspectRatio), phase: 'closing', to: getFrameRect(sourceFrame) },
-      () => setHiddenGridArtworkId(undefined)
-    )
-  }, [animateImage, modalArtworkId, modalFrameAspectRatio])
+    transition(() => {
+      setModalArtworkId(undefined)
+      if (frame) frame.style.viewTransitionName = viewTransitionName
+    }).finally(() => {
+      if (frame) frame.style.viewTransitionName = ''
+    })
+  }, [modalArtworkId])
 
   useEffect(() => {
     setPortalTarget(document.body)
-    return clearAnimationTimers
-  }, [clearAnimationTimers])
+  }, [])
+
+  // A photo still on its way fades in over its placeholder tone when it arrives; one already loaded stays as it is.
+  useEffect(() => {
+    const cleanups = Object.values(artworkFrameRefs.current).map((frame) => {
+      const image = frame?.querySelector('img')
+      if (!frame || !image || image.complete) return undefined
+      frame.dataset.pending = ''
+      const settle = () => delete frame.dataset.pending
+      image.addEventListener('load', settle, { once: true })
+      image.addEventListener('error', settle, { once: true })
+      return () => {
+        image.removeEventListener('load', settle)
+        image.removeEventListener('error', settle)
+      }
+    })
+    return () => cleanups.forEach((cleanup) => cleanup?.())
+  }, [])
 
   useEffect(() => {
-    if (modalArtwork || hiddenGridArtworkId || !restoreFocusRef.current) return
+    if (modalArtwork || !restoreFocusRef.current) return
     restoreFocusRef.current = false
-    previousFocusRef.current?.focus()
-  }, [hiddenGridArtworkId, modalArtwork])
-
-  useEffect(() => {
-    if (!modalActive) return
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [modalActive])
+    previousFocusRef.current?.focus({ preventScroll: true })
+  }, [modalArtwork])
 
   useEffect(() => {
     if (!modalArtwork) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     closeButtonRef.current?.focus()
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') closeArtwork()
     }
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [closeArtwork, modalArtwork])
 
   return (
-    <div className={className}>
-      <p aria-hidden="true" className="home-annotation home-gallery-hint">{$('Open a photo')}</p>
-      <div className="grid-cols(12) grid-template-rows:repeat(2,minmax(0,1fr)) gap-xs height:100% p-lg p-xl@md home-dot-grid">
+    <div className={clsx(className, 'home-hatch')}>
+      {/* The 12-column layout grid behind the photos: columns as quiet bands, gutters left hatched. */}
+      <div aria-hidden="true" className="home-gallery-grid home-gallery-guides" ref={guidesRef}>
+        {Array.from({ length: gridColumns }, (_, index) => <span data-active={selected?.columns.includes(index) || undefined} key={index} />)}
+      </div>
+      <div className="home-gallery-grid">
         {artworks.map((artwork) => (
           <button
-            aria-label={`${$('Open artwork')}: ${$(artwork.title)}`}
-            className="position:relative overflow:hidden min-width:0 outline-line-subtle outline-style:solid outline-width:1px bg-surface-base transition-normal transition-smooth transition-property:background-color cursor:pointer bg-surface-raised:hover outline-color:var(--home-ink):focus-visible outline-offset:2px:focus-visible outline-width:2px:focus-visible"
+            aria-label={`${$('Open photo')}: ${$(artwork.title)}`}
+            className={clsx('home-gallery-photo', placements[artwork.id])}
+            data-selected={selected?.id === artwork.id || undefined}
             key={artwork.id}
+            onBlur={deselect}
             onClick={() => openArtwork(artwork.id)}
-            style={artwork.placement}
+            onFocus={(event) => select(artwork.id, event.currentTarget)}
+            onPointerEnter={(event) => select(artwork.id, event.currentTarget)}
+            onPointerLeave={deselect}
             type="button">
             <span
-              className={clsx('position:relative display:block overflow:hidden height:100% width:100%', hiddenGridArtworkId === artwork.id && 'visibility:hidden')}
+              className={clsx('home-gallery-frame', modalArtworkId === artwork.id && 'visibility:hidden')}
               ref={(node) => {
                 artworkFrameRefs.current[artwork.id] = node
               }}>
-              <Image alt={$(artwork.imageAlt)} className="object-fit:cover object-position:center" fill sizes="(min-width: 64rem) 34vw, 50vw" src={artwork.image} />
+              {/* Four small photos load with the page at low priority, so a cell is rarely empty when the card scrolls in. */}
+              <Image alt={$(artwork.imageAlt)} className="object-fit:cover object-position:center" fetchPriority="low" fill loading="eager" sizes="(min-width: 64rem) 34vw, 50vw" src={artwork.image} />
+            </span>
+            <span aria-hidden="true" className="home-gallery-classes">
+              {placements[artwork.id].split(' ').map((name) => <code key={name}>{name}</code>)}
             </span>
           </button>
         ))}
       </div>
 
-      {portalTarget && createPortal(
+      {portalTarget && modalArtwork && createPortal(
         <div
-          aria-hidden={modalArtwork ? undefined : 'true'}
-          aria-label={modalArtwork ? $(modalArtwork.imageAlt) : undefined}
-          aria-modal={modalArtwork ? 'true' : undefined}
-          className={clsx('position:fixed inset:0 z-index:2147483647', modalVisible ? 'pointer-events:auto' : 'pointer-events:none')}
+          aria-label={$(modalArtwork.imageAlt)}
+          aria-modal="true"
+          className="home-gallery-dialog"
           onPointerDown={(event) => {
-            if (modalArtwork && event.target instanceof Element && !event.target.closest('[data-home-art-modal-content]')) closeArtwork()
+            if (event.target instanceof Element && !event.target.closest('[data-home-art-modal-content]')) closeArtwork()
           }}
-          role={modalArtwork ? 'dialog' : undefined}>
-          <div
-            aria-hidden="true"
-            className={clsx(
-              'position:absolute inset:0 bg-black/0.56 transition-crisp transition-duration:480ms transition-property:opacity,backdrop-filter',
-              modalVisible ? 'opacity:1 backdrop-filter:blur(16px)' : 'opacity:0 backdrop-filter:blur(0px)'
-            )} />
-          {modalArtwork && <>
-            <button
-              aria-label={$('Close artwork')}
-              className="position:absolute right-md top-md z-index:2 display:grid place-content:center height:2.25rem width:2.25rem r-xl outline-line-subtle outline-style:solid outline-width:1px bg-surface-floating transition-normal transition-smooth transition-property:background-color bg-surface-raised:hover"
-              data-home-art-modal-content=""
-              onClick={closeArtwork}
-              ref={closeButtonRef}
-              type="button">
-              <IconX aria-hidden="true" size={16} stroke={1.75} />
-            </button>
-            <div
-              className={clsx('position:fixed left:50% top:50% overflow:hidden bg-black shadow-2xl translate:-50%|-50%', imageAnimation?.artworkId === modalArtwork.id && imageAnimation.phase === 'opening' && 'opacity:0')}
-              data-home-art-modal-content=""
-              style={getModalImageFrameStyle(modalFrameAspectRatio)}>
-              <Image alt={$(modalArtwork.imageAlt)} className="object-fit:cover object-position:center" fill sizes="92vw" src={modalArtwork.image} />
-            </div>
-          </>}
-          {animatedArtwork && imageAnimation && (
-            <div
-              aria-hidden="true"
-              className="position:fixed z-index:3 overflow:hidden bg-black shadow-2xl pointer-events:none"
-              style={{
-                ...(imageAnimation.active ? imageAnimation.to : imageAnimation.from),
-                transition: imageAnimation.active ? imageFrameTransition : 'none'
-              }}>
-              <Image alt="" className="object-fit:cover object-position:center" fill sizes="92vw" src={animatedArtwork.image} />
-            </div>
-          )}
+          role="dialog">
+          <div aria-hidden="true" className="home-gallery-backdrop" />
+          <button
+            aria-label={$('Close photo')}
+            className="home-gallery-close"
+            data-home-art-modal-content=""
+            onClick={closeArtwork}
+            ref={closeButtonRef}
+            type="button">
+            <IconX aria-hidden="true" size={16} stroke={1.75} />
+          </button>
+          <figure className="home-gallery-view" data-home-art-modal-content="" style={getModalImageFrameStyle(modalFrameAspectRatio)}>
+            <Image alt={$(modalArtwork.imageAlt)} className="object-fit:cover object-position:center" fill sizes="92vw" src={modalArtwork.image} />
+          </figure>
         </div>,
         portalTarget
       )}

@@ -1,21 +1,20 @@
 import './design.css'
 import './home.css'
 import DocHeader from '~/site/docs-shell/components/DocHeader'
-import Footer from '~/site/docs-shell/components/Footer'
-import { footerProps } from '~/site/navigation'
 import AgentsSection from './components/AgentsSection'
 import BenchmarkSection from './components/BenchmarkSection'
 import CTASection from './components/CTASection'
 import DeliveryModesSection from './components/DeliveryModesSection'
 import DesignSystemSection from './components/DesignSystemSection'
 import HeroSection from './components/HeroSection'
+import HomeFooter from './components/HomeFooter'
 import LanguageServiceSection from './components/LanguageServiceSection'
 import LintSection from './components/LintSection'
 import WorkflowSection from './components/WorkflowSection'
 
 export default function Page() {
   return <>
-    <DocHeader stickable />
+    <DocHeader className="home-header" stickable />
     <main className="overflow:hidden home-page">
       <HeroSection />
       <DesignSystemSection />
@@ -27,11 +26,11 @@ export default function Page() {
       <WorkflowSection />
       <CTASection />
     </main>
-    <Footer {...footerProps} className="app-wrapper" />
+    <HomeFooter />
   </>
 }
 
 export const metadata = {
-  title: { absolute: 'Master CSS - The markup-driven CSS language and framework' },
-  description: 'Write CSS and design tokens as class names that people can read and AI agents can check. Master CSS generates only the CSS your pages use.'
+  title: { absolute: 'Master CSS - A markup-driven CSS orchestration language for developers and AI agents' },
+  description: 'Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.'
 }

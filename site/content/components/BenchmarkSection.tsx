@@ -7,7 +7,7 @@ import brands from '~/site/docs-shell/data/brands'
 import { getHomePageCSSSize } from '~/site/utils/home-page-css-size'
 import snapshot from '../../../benchmarks/docs-page-css-size/snapshot.json'
 import BenchmarkSizeChart, { type BenchmarkBrand } from './BenchmarkSizeChart'
-import { HomeBentoFrame, HomeSectionHeader } from './HomeBento'
+import { HomeSectionHeader } from './HomeBento'
 import { homeSections } from './home-content'
 
 export default function BenchmarkSection() {
@@ -28,25 +28,23 @@ export default function BenchmarkSection() {
           index="04"
           label={$('CSS size')}
           title={$('Only the CSS a page uses.')}
-          body={$('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships the rules a page uses, not a whole framework.')}>
+          body={$('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships only the rules a page uses.')}>
           <Link className="home-section-link" href="/guide/benchmarks#page-css-size">
             {$('View benchmark details')}
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-        <HomeBentoFrame>
-          <div className="home-bench">
+          <div className="home-bench home-marks">
             <BenchmarkSizeChart
               brands={chartBrands}
               labels={{
-                caption: `${$('CSS per documentation page')} · ${snapshot.generatedAt.slice(0, 10)}`,
-                largerSuffix: $('× larger'),
+                caption: $('CSS per documentation page'),
+                date: snapshot.generatedAt.slice(0, 10),
                 modeLabels: { brotli: $('Brotli'), raw: $('Raw') },
                 modeSelectorLabel: $('CSS size mode')
               }}
               modes={modes} />
           </div>
-        </HomeBentoFrame>
       </div>
     </section>
   )

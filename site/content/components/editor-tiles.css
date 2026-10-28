@@ -1,332 +1,941 @@
+/*
+ * The Editor section: one editor window standing on the page ground, open captions under it.
+ * Positions inside the editor are character cells and lines, so the caret, the drawn pointer and
+ * every overlay are placed from the same two lengths. They are registered so they resolve once,
+ * on the editor body, and reach the overlays (set in other fonts) as pixels.
+ */
+@property --editor-ch {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --editor-shift {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
 @layer components {
-  .home-hover-inspection {
-    --home-code-line: 1.75rem;
-    --home-code-inset: var(--spacing-lg);
-    min-height: 19rem;
+  /* No shell: the window stands on the page ground, and the captions read as open columns below it. */
+  .home-editor-stage {
+    /* Class strings at rest: the string color, pulled toward the quiet text. */
+    --editor-string: color-mix(in oklab, var(--home-code-string) 70%, var(--home-text-faint));
+    /* Code behind a floating pane: one neutral gray, at least 3:1 on the window in either scheme. */
+    --editor-dim: color-mix(in oklab, var(--home-text-faint) 84%, var(--home-sheet));
+    display: grid;
+    gap: clamp(2rem, 1rem + 2.5vw, 3.5rem);
+    container: home-editor-stage / inline-size;
   }
 
-  .home-hover-code {
+  /* The window is one object: a single contour, a contact shadow and a long soft one under it. */
+  /* Holds the window and the artboard marks at its corners, outside the window's clip. */
+  .home-editor-frame {
     position: relative;
-    padding: var(--home-code-inset);
-    font-family: var(--home-mono);
-    font-size: 0.8125rem;
-    line-height: var(--home-code-line);
-    color: var(--home-text-body);
   }
 
-  .home-hover-line {
-    white-space: pre;
+  .home-editor-window {
+    position: relative;
+    overflow: clip;
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      var(--home-contact),
+      0 14px 28px -20px var(--home-shade-near),
+      0 40px 80px -48px var(--home-shade-far);
+    container-type: inline-size;
+    /* A figure, not a document: dragging in it never starts a text selection. */
+    user-select: none;
   }
 
-  /* The inspected class is placed by its line and column, measured in characters of the monospace font. */
-  .home-hover-token {
-    position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line) * var(--home-token-line));
-    left: calc(var(--home-code-inset) + var(--home-token-start));
-    width: var(--home-token-length);
-    height: var(--home-code-line);
-    border-radius: var(--radius-sm);
-    background-color: color-mix(in oklab, var(--home-text) 8%, transparent);
-    outline: 1px solid var(--home-rule);
-    opacity: 0;
-    animation: home-hover-token 7s var(--easing-smooth) infinite;
+  /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
+  .home-editor-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    height: 2.75rem;
+    padding-inline: 1rem var(--spacing-md);
+    background-color: color-mix(in oklab, var(--home-ground) 62%, var(--home-sheet));
+    /* Light from above: the bar is a shade brighter at its top edge. */
+    background-image: linear-gradient(color-mix(in oklab, var(--home-sheet) 55%, transparent), transparent 80%);
+    /* A line of light along the top edge, and the one divider under the bar. */
+    box-shadow: inset 0 1px 0 var(--home-highlight), inset 0 -1px 0 var(--home-hairline);
   }
 
-  .home-hover-card {
-    position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line) * (var(--home-token-line) + 1) + 0.5rem);
-    left: clamp(var(--home-code-inset), calc(var(--home-code-inset) + var(--home-token-start) - 2rem), calc(100% - 22rem));
-    z-index: 2;
-    width: max-content;
-    max-width: calc(100% - var(--home-code-inset) * 2);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-lg);
-    outline: 1px solid var(--home-hairline);
-    background-color: var(--home-float);
-    box-shadow: var(--home-elevation-2);
-    opacity: 0;
-    translate: 0 6px;
-    animation: home-hover-card 7s var(--easing-crisp) infinite;
-  }
+  .home-editor-dots {
+    display: flex;
+    align-self: center;
+    gap: 0.4375rem;
+    margin-right: 0.25rem;
 
-  /* Pointing at another class slides the highlight and the card over to it. */
-  .home-hover-inspection[data-inspecting] {
-    .home-hover-token,
-    .home-hover-card {
-      transition: top var(--home-base) var(--home-ease), left var(--home-base) var(--home-ease), width var(--home-base) var(--home-ease);
+    & > span {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: var(--radius-pill);
+      background-color: var(--home-rule);
     }
   }
 
-  .home-hover-class {
-    cursor: default;
+  .home-editor-tab {
+    overflow: hidden;
+    min-width: 0;
+    height: 2.125rem;
+    padding-inline: 0.875rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 2.125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text);
+    background-color: var(--home-sheet);
+    /* Top and sides only: the open tab continues into the code below. */
+    box-shadow: inset 1px 0 0 var(--home-hairline), inset -1px 0 0 var(--home-hairline), inset 0 1px 0 var(--home-hairline);
   }
 
-  /* The overlays only show; the classes under them stay the pointer's targets. */
-  .home-hover-token,
-  .home-hover-card,
-  .home-hover-cursor {
-    pointer-events: none;
-  }
-
-  .home-hover-card-title {
-    margin: 0 0 var(--spacing-xs);
+  .home-editor-status {
+    flex: none;
+    align-self: center;
+    margin-left: auto;
     font-family: var(--home-mono);
     font-size: var(--home-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
     color: var(--home-text-faint);
   }
 
-  .home-hover-card-css {
-    overflow: hidden;
-    margin: 0;
-    font-size: 0.75rem;
-    line-height: 1.6;
-    color: var(--home-text);
-  }
+  .home-editor-body {
+    --editor-ch: 1ch;
+    --editor-row: 1.375rem;
+    --editor-css-line: 1.0625rem;
+    --editor-pad-y: 1.25rem;
+    --editor-pad-x: 1rem;
+    --editor-fade: 2.5rem;
+    --editor-gutter: calc(var(--editor-ch) * 2 + 2.25rem);
+    --editor-x0: calc(var(--editor-gutter) + var(--editor-pad-x));
+    /* Scroll sideways only as far as it takes to keep the focus in view; panes slide to fit on their own. */
+    --editor-shift: min(0px, 100cqw - var(--editor-x0) - var(--editor-pad-x) - (var(--editor-focus-column) + 2) * var(--editor-ch));
+    position: relative;
+    display: flex;
+    height: calc(var(--editor-lines) * var(--editor-row) + var(--editor-pad-y) * 2);
+    font-family: var(--home-mono);
+    font-size: 0.8125rem;
+    font-variant-ligatures: none;
+    line-height: var(--editor-row);
+    color: var(--home-text-body);
+    transition: --editor-shift 0.5s var(--home-ease);
 
-  .home-hover-cursor {
-    position: absolute;
-    top: calc(var(--home-code-inset) + var(--home-code-line) * (var(--home-token-line) + 0.55));
-    left: calc(var(--home-code-inset) + var(--home-token-start) + var(--home-token-length) * 0.55);
-    z-index: 3;
-    fill: var(--home-text);
-    stroke: var(--home-ground);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
-    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
-    animation: home-hover-cursor 7s var(--easing-crisp) infinite;
-  }
+    /* A wide window sets the code a size up; a phone a size down, with a longer fade at the edge. */
+    @container (width >= 64rem) {
+      --editor-row: 1.5rem;
+      --editor-css-line: 1.125rem;
+      --editor-pad-y: 1.5rem;
+      --editor-pad-x: 1.25rem;
+      --editor-gutter: calc(var(--editor-ch) * 2 + 2.5rem);
+      font-size: 0.875rem;
+    }
 
-  .home-color-tools {
-    min-height: 19rem;
-  }
+    /* Where the longest lines run past the window, they fade over a wider band, so no glyph reads as cut. */
+    @container (width < 80rem) {
+      --editor-fade: 4.5rem;
+    }
 
-  .home-color-tools-body {
-    display: grid;
-    gap: var(--spacing-lg);
-    align-items: center;
-    padding: var(--spacing-lg);
-
-    @media (--sm) {
-      grid-template-columns: minmax(0, 1fr) auto;
+    @container (width < 40rem) {
+      --editor-row: 1.25rem;
+      --editor-css-line: 1rem;
+      --editor-pad-y: 1rem;
+      --editor-pad-x: 0.75rem;
+      --editor-fade: 4.5rem;
+      --editor-gutter: calc(var(--editor-ch) * 2 + 1.25rem);
+      font-size: 0.75rem;
     }
   }
 
-  .home-color-tools-lines {
-    font-family: var(--home-mono);
-    font-size: 0.8125rem;
-    line-height: 2;
-    white-space: nowrap;
+  .home-editor-gutter {
+    flex: none;
+    width: var(--editor-gutter);
+    padding: var(--editor-pad-y) 0.75rem 0 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in oklab, var(--home-text-faint) 70%, transparent);
+    user-select: none;
+
+    & > span {
+      display: block;
+      height: var(--editor-row);
+      transition: color var(--home-quick) var(--home-ease);
+    }
+
+    & > [data-current] {
+      color: var(--home-text);
+    }
+  }
+
+  /* Long lines fade at the right edge instead of being cut, and at the left once the code scrolls. */
+  .home-editor-viewport {
+    position: relative;
+    flex: auto;
+    min-width: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, black clamp(0px, var(--editor-shift) * -1, 1.5rem), black calc(100% - var(--editor-fade)), transparent calc(100% - 0.25rem));
+  }
+
+  .home-editor-current-line {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(var(--editor-pad-y) + var(--editor-caret-line) * var(--editor-row));
+    height: var(--editor-row);
+    background-color: color-mix(in oklab, var(--home-text) 4%, transparent);
+    transition: top 0.18s var(--home-ease);
+  }
+
+  .home-editor-plane {
+    position: relative;
+    isolation: isolate;
+    width: max-content;
+    min-width: 100%;
+    padding: var(--editor-pad-y) var(--editor-pad-x);
+    translate: var(--editor-shift) 0;
+  }
+
+  .home-editor-line {
+    height: var(--editor-row);
+    white-space: pre;
+  }
+
+  /*
+   * While a pane floats over the code, the code plane recedes behind it: every other line turns one
+   * neutral gray and its swatches fade, and the lit line stays in front.
+   */
+  .home-editor-body[data-pane] .home-editor-line:not([data-lit]) {
+    & :is([data-tone], .home-editor-classes, .home-editor-classes [data-role]) {
+      color: var(--editor-dim);
+    }
+
+    & .home-editor-swatch {
+      opacity: 0.35;
+    }
+  }
+
+  .home-editor-line [data-tone] {
+    transition: color var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-swatch {
+    transition: opacity var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-line [data-tone='tag'] {
+    color: var(--home-code-tag);
+  }
+
+  .home-editor-line [data-tone='attr'] {
+    color: var(--home-code-attr);
+  }
+
+  .home-editor-line [data-tone='punct'] {
+    color: var(--home-text-faint);
+  }
+
+  .home-editor-line [data-tone='string'] {
+    color: var(--editor-string);
+  }
+
+  .home-editor-line [data-tone='text'] {
     color: var(--home-text-body);
   }
 
-  .home-color-tools-line:first-child .home-color-swatch {
-    animation: home-color-select 6s var(--easing-smooth) infinite;
+  /* A class string is calm until the caret enters it; then each part takes its role's color. */
+  .home-editor-classes {
+    color: var(--editor-string);
+
+    & [data-role] {
+      transition: color 0.32s var(--home-ease);
+    }
   }
 
-  .home-color-swatch {
+  :is(.home-editor-classes[data-lit], .home-editor-hover-css, .home-editor-typed) {
+    color: var(--home-text);
+
+    & [data-role='utility'] {
+      color: var(--home-text);
+    }
+
+    & [data-role='property'] {
+      color: var(--home-code-property);
+    }
+
+    & [data-role='value'] {
+      color: var(--home-text-body);
+    }
+
+    & :is([data-role='number'], [data-role='base']) {
+      color: var(--home-code-string);
+    }
+
+    & [data-role='selector'] {
+      color: var(--home-code-selector);
+    }
+
+    & [data-role='query'] {
+      color: var(--home-code-attr);
+    }
+
+    & [data-role='punct'] {
+      color: var(--home-text-faint);
+    }
+  }
+
+  .home-editor-class {
+    cursor: text;
+  }
+
+  /* A color decoration: two character cells, a swatch with one hairline, a checker under translucent colors. */
+  .home-editor-swatch {
+    position: relative;
     display: inline-block;
-    width: 0.75rem;
-    height: 0.75rem;
-    margin-inline: 0.15rem 0.35rem;
-    border-radius: 3px;
-    outline: 1px solid var(--home-rule);
-    vertical-align: -0.1em;
+    width: calc(var(--editor-ch) * 2);
+    height: 1em;
+    vertical-align: -0.12em;
+
+    &::before {
+      position: absolute;
+      top: 0.08em;
+      left: 0.12em;
+      width: 0.84em;
+      height: 0.84em;
+      border-radius: 0.1875rem;
+      background:
+        linear-gradient(var(--editor-swatch), var(--editor-swatch)),
+        repeating-conic-gradient(light-dark(#d9d9d9, #555) 0 25%, light-dark(#fff, #333) 0 50%) 0 0 / 0.42em 0.42em;
+      box-shadow: inset 0 0 0 1px light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.16));
+      content: '';
+    }
   }
 
-  .home-color-picker {
-    display: grid;
-    gap: var(--spacing-xs);
-    width: 13rem;
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-lg);
-    outline: 1px solid var(--home-hairline);
+  .home-editor-swatch[data-editable] {
+    cursor: pointer;
+  }
+
+  .home-editor-caret {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--editor-pad-y) + var(--editor-caret-line) * var(--editor-row) + (var(--editor-row) - 1.3em) / 2);
+    left: calc(var(--editor-pad-x) + var(--editor-caret-column) * var(--editor-ch) - 1px);
+    width: 2px;
+    height: 1.3em;
+    border-radius: 1px;
+    background-color: var(--home-text);
+    transition: left 0.11s var(--home-ease), top 0.16s var(--home-ease);
+    animation-name: home-manifest-suggestions-caret-blink;
+    animation-duration: 1.1s;
+    animation-timing-function: steps(1, end);
+    animation-iteration-count: infinite;
+
+    &[data-moving] {
+      animation-name: none;
+    }
+  }
+
+  .home-editor-selection,
+  .home-editor-hover-range {
+    position: absolute;
+    z-index: -1;
+    top: calc(var(--editor-pad-y) + var(--editor-anchor-line) * var(--editor-row) + 0.125rem);
+    left: calc(var(--editor-pad-x) + var(--editor-from) * var(--editor-ch));
+    width: calc((var(--editor-to) - var(--editor-from)) * var(--editor-ch));
+    height: calc(var(--editor-row) - 0.25rem);
+    border-radius: 0.1875rem;
+  }
+
+  .home-editor-selection {
+    background-color: color-mix(in oklab, var(--home-info) 24%, transparent);
+  }
+
+  /* The lit class string sits on a faint wash of the signal: the one live state in the figure. */
+  .home-editor-context {
+    position: absolute;
+    z-index: -2;
+    top: calc(var(--editor-pad-y) + var(--editor-anchor-line) * var(--editor-row) + 0.0625rem);
+    left: calc(var(--editor-pad-x) + var(--editor-from) * var(--editor-ch) - 0.25rem);
+    width: calc((var(--editor-to) - var(--editor-from)) * var(--editor-ch) + 0.5rem);
+    height: calc(var(--editor-row) - 0.125rem);
+    border-radius: 0.3125rem;
+    background-color: light-dark(color-mix(in oklab, var(--home-signal) 18%, transparent), color-mix(in oklab, var(--home-signal) 12%, transparent));
+    opacity: 0;
+    transition: top 0.3s var(--home-ease), left 0.3s var(--home-ease), width 0.3s var(--home-ease), opacity 0.2s var(--home-ease);
+
+    &[data-visible] {
+      opacity: 1;
+    }
+  }
+
+  .home-editor-hover-range {
+    background-color: color-mix(in oklab, var(--home-text) 8%, transparent);
+  }
+
+  /* Overlays float over the code and never catch the pointer, except the picker the reader can drag. */
+  .home-editor-overlays {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* Each overlay is placed from the cell it points at: a line and a visual column, scrolled with the code. */
+  :is(.home-editor-pane, .home-editor-suggest, .home-editor-pointer) {
+    --editor-anchor-x: calc(var(--editor-x0) + var(--editor-anchor-column) * var(--editor-ch) + var(--editor-shift));
+    --editor-anchor-top: calc(var(--editor-pad-y) + var(--editor-anchor-line) * var(--editor-row));
+    /* The picker opens on the line above its swatch, as tall as whole lines, and slides left when the window is too narrow. */
+    --editor-picker-box: round(up, var(--editor-picker-height), var(--editor-row));
+    --editor-picker-x: clamp(0.5rem, var(--editor-anchor-x) - var(--editor-picker-left), 100cqw - var(--editor-picker-width) - 0.5rem);
+    --editor-picker-y: calc(var(--editor-anchor-top) - var(--editor-picker-box));
+  }
+
+  /*
+   * Panes unfold from the line they describe: hinged on the edge that faces it, they swing up
+   * out of the code plane and settle flat. Their edges fall between lines of code, never through
+   * a glyph, and a soft shadow lifts them off the code. One hairline, nothing stacked.
+   */
+  .home-editor-pane {
+    position: absolute;
+    border-radius: var(--home-radius-control);
     background-color: var(--home-float);
-    box-shadow: var(--home-elevation-2);
-    transform-origin: left top;
-    animation: home-color-picker 6s var(--easing-crisp) infinite;
+    box-shadow:
+      0 0 0 1px var(--home-rule),
+      0 1px 3px var(--home-shade-near),
+      0 10px 24px -8px var(--home-shade-near),
+      0 22px 48px -20px var(--home-shade-far);
+    opacity: 0;
+    visibility: hidden;
+    transform: perspective(60rem) rotateX(-16deg) translateY(-0.375rem) scale(0.98);
+    transform-origin: 1.5rem 0;
+    transition:
+      opacity 0.18s var(--home-ease),
+      transform 0.42s var(--home-ease),
+      visibility 0s linear 0.42s,
+      left var(--home-base) var(--home-ease),
+      top var(--home-base) var(--home-ease),
+      bottom var(--home-base) var(--home-ease);
   }
 
-  .home-color-picker-plane {
-    position: relative;
-    height: 7rem;
-    border-radius: var(--radius-md);
-    background: linear-gradient(to top, black, transparent), linear-gradient(to right, white, var(--home-picker-color));
+  :is(.home-editor-pane[data-open], .home-editor-suggest[data-open] > .home-editor-suggest-list, .home-editor-suggest[data-open] > .home-editor-suggest-docs[data-open]) {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
   }
 
-  .home-color-picker-handle {
-    position: absolute;
-    top: 30%;
-    left: 78%;
-    width: 0.875rem;
-    height: 0.875rem;
-    border-radius: var(--radius-pill);
-    outline: 2px solid white;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
-    translate: -50% -50%;
-    animation: home-color-handle 6s var(--easing-smooth) infinite;
+  .home-editor-pane:is([data-above], .home-editor-picker) {
+    transform: perspective(60rem) rotateX(16deg) translateY(0.375rem) scale(0.98);
+    transform-origin: 1.5rem 100%;
   }
 
-  .home-color-picker-hue {
-    position: relative;
-    height: 0.625rem;
-    border-radius: var(--radius-pill);
-    background: linear-gradient(90deg, oklch(65% 0.25 30), oklch(85% 0.2 100), oklch(80% 0.25 145), oklch(80% 0.15 200), oklch(55% 0.26 265), oklch(60% 0.28 330), oklch(65% 0.25 30));
+  .home-editor-hover-card {
+    --editor-card-width: min(28rem, 100cqw - 1rem);
+
+    @container (width >= 64rem) {
+      --editor-card-width: 30rem;
+    }
+
+    /* Padding, the token line and the rule, rounded up to whole lines and kept within the lines it has room for. */
+    --editor-card-height: calc(1.5rem + var(--editor-card-tokens) * 1.625rem + var(--editor-card-lines) * var(--editor-css-line));
+    top: calc(var(--editor-anchor-top) + var(--editor-row));
+    left: clamp(0.5rem, var(--editor-anchor-x) - 0.75rem, 100cqw - var(--editor-card-width) - 0.5rem);
+    display: flex;
+    width: var(--editor-card-width);
+    height: min(round(up, var(--editor-card-height), var(--editor-row)), var(--editor-room-rows) * var(--editor-row));
+
+    &[data-above] {
+      top: auto;
+      bottom: calc(100% - var(--editor-anchor-top));
+    }
   }
 
-  .home-color-picker-hue-handle {
-    position: absolute;
-    top: 50%;
-    left: 74%;
-    width: 0.875rem;
-    height: 0.875rem;
-    border-radius: var(--radius-pill);
-    outline: 2px solid white;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
-    translate: -50% -50%;
+  /* A long rule fades at the edges of the card, like a hover that scrolls; the pane keeps its hairline. */
+  .home-editor-hover-content {
+    flex: auto;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0.75rem 0.875rem;
+    mask-image: linear-gradient(black calc(100% - 0.75rem), transparent), linear-gradient(90deg, black calc(100% - 0.875rem), transparent);
+    mask-composite: intersect;
   }
 
-  .home-color-picker-value {
+  .home-editor-hover-tokens {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-family-sans);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--home-text-quiet);
+
+    & code {
+      margin-left: 0.25rem;
+      padding: 0.0625rem 0.3125rem;
+      border-radius: var(--home-radius-chip);
+      font-family: var(--home-mono);
+      font-size: 0.6875rem;
+      color: var(--home-text);
+      background-color: var(--home-well);
+    }
+  }
+
+  .home-editor-hover-css {
+    margin: 0;
     font-family: var(--home-mono);
+    font-size: 0.71875rem;
+    line-height: var(--editor-css-line);
+    white-space: pre;
+
+    @container (width >= 64rem) {
+      font-size: 0.78125rem;
+    }
+
+    @container (width < 40rem) {
+      font-size: 0.6875rem;
+    }
+  }
+
+  .home-editor-css-line {
+    display: block;
+    min-height: 1lh;
+  }
+
+  /* Glyphs from the class matrix, in the signal, just ahead of the rule as it decodes. */
+  .home-editor-decoding {
+    color: color-mix(in oklab, var(--home-signal) 70%, var(--home-text-faint));
+  }
+
+  /* The completion menu sits on the line under the typed word, its labels aligned with the text, one item per line. */
+  .home-editor-suggest {
+    --editor-suggest-width: min(20rem, 100cqw - 1rem);
+
+    /* Without room for the docs pane, the focused row carries the detail, so the menu widens to show it whole. */
+    @container (40rem <= width < 56rem) {
+      --editor-suggest-width: min(23.5rem, 100cqw - 1rem);
+    }
+
+    position: absolute;
+    top: calc(var(--editor-anchor-top) + var(--editor-row));
+    left: clamp(0.5rem, var(--editor-anchor-x) - 1.875rem, 100cqw - var(--editor-suggest-width) - 0.5rem);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    transition: left var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-suggest-list,
+  .home-editor-suggest-docs {
+    position: relative;
+  }
+
+  .home-editor-suggest-list {
+    width: var(--editor-suggest-width);
+    /* Half a line above and below the items keeps the menu exactly whole lines tall. */
+    height: calc((var(--editor-suggest-rows) + 1) * var(--editor-row));
+    overflow: hidden;
+    padding: calc(var(--editor-row) / 2) 0.25rem;
+    transition:
+      opacity 0.18s var(--home-ease),
+      transform 0.42s var(--home-ease),
+      visibility 0s linear 0.42s,
+      height var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-suggest-item {
+    display: grid;
+    grid-template-columns: 1rem auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+    height: var(--editor-row);
+    padding-inline: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    white-space: nowrap;
+    color: var(--home-text-body);
+
+    & b {
+      font-weight: var(--font-weight-semibold);
+      color: var(--home-code-property);
+    }
+  }
+
+  .home-editor-suggest-item[data-focused] {
+    color: var(--home-text);
+    background-color: color-mix(in oklab, var(--home-text) 7%, transparent);
+  }
+
+  .home-editor-suggest-icon {
+    color: var(--home-code-attr);
+  }
+
+  .home-editor-suggest-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* The focused item's detail shows whole in its row when there is no room for the docs pane beside the menu. */
+  .home-editor-suggest-detail {
+    display: none;
+    text-align: right;
     font-size: 0.6875rem;
+    color: var(--home-text-faint);
+
+    @container (40rem <= width < 56rem) {
+      display: block;
+    }
+  }
+
+  .home-editor-suggest-scroll {
+    position: absolute;
+    top: calc(var(--editor-row) / 2);
+    right: 0.125rem;
+    width: 0.1875rem;
+    height: calc(var(--editor-suggest-thumb) * (100% - var(--editor-row)));
+    border-radius: var(--radius-pill);
+    background-color: var(--home-rule);
+  }
+
+  /* The docs pane: four lines tall, the token, its scope and its value, broken only at spaces. */
+  .home-editor-suggest-docs {
+    width: 22rem;
+    height: calc(var(--editor-row) * 4);
+    padding: calc(var(--editor-row) / 2) 0.875rem;
+    font-size: 0.6875rem;
+    line-height: calc(var(--editor-row) * 0.75);
+
+    @container (width < 56rem) {
+      display: none;
+    }
+
+    & p {
+      margin: 0;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+  }
+
+  .home-editor-suggest-docs-token {
     color: var(--home-text);
   }
 
-  /* Pointing at a card holds its figure in the revealed state, so it can be read at the reader's pace. */
-  .home-bento-card:hover {
-    .home-hover-token,
-    .home-hover-card,
-    .home-color-picker,
-    .home-color-picker-handle {
-      animation: none;
+  .home-editor-suggest-docs-scope {
+    color: var(--home-text-faint);
+  }
+
+  .home-editor-suggest-docs-value {
+    color: var(--home-text-body);
+  }
+
+  .home-editor-nowrap {
+    white-space: nowrap;
+  }
+
+  /* The editor's color picker: the new color and the original to return to, a plane, a hue and an alpha strip. */
+  .home-editor-picker {
+    top: var(--editor-picker-y);
+    left: var(--editor-picker-x);
+    display: flex;
+    flex-direction: column;
+    width: var(--editor-picker-width);
+    height: var(--editor-picker-box);
+    overflow: hidden;
+
+    &[data-open] {
+      pointer-events: auto;
+    }
+  }
+
+  /* The header takes whatever height rounding the picker to whole lines adds. */
+  .home-editor-picker-header {
+    display: flex;
+    flex: auto;
+  }
+
+  .home-editor-picker-new {
+    display: grid;
+    flex: auto;
+    place-items: center;
+    font-size: 0.6875rem;
+    color: rgb(0 0 0 / 0.78);
+
+    &[data-dark] {
+      color: rgb(255 255 255 / 0.92);
+    }
+  }
+
+  .home-editor-picker-original {
+    flex: none;
+    width: 2.75rem;
+    cursor: pointer;
+  }
+
+  .home-editor-picker-body {
+    display: flex;
+    flex: none;
+  }
+
+  .home-editor-picker-plane,
+  .home-editor-picker-strip {
+    position: relative;
+    flex: none;
+    border-radius: 0.25rem;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  .home-editor-picker-plane {
+    background:
+      linear-gradient(to top, black, transparent),
+      linear-gradient(to right, white, hsl(calc(var(--editor-picker-hue) * 1deg) 100% 50%));
+  }
+
+  .home-editor-picker-handle {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 0 2px white, 0 1px 4px rgb(0 0 0 / 0.45);
+    translate: -50% -50%;
+  }
+
+  .home-editor-picker-strip > span {
+    position: absolute;
+    inset-inline: -0.1875rem;
+    height: 0.25rem;
+    border-radius: 0.125rem;
+    background-color: white;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+    translate: 0 -50%;
+  }
+
+  .home-editor-picker-hue {
+    background: linear-gradient(red, #ff0, lime, cyan, blue, #f0f, red);
+  }
+
+  .home-editor-picker-alpha {
+    background:
+      linear-gradient(var(--editor-picker-color), transparent),
+      repeating-conic-gradient(#ccc 0 25%, white 0 50%) 0 0 / 0.5rem 0.5rem;
+    cursor: default;
+  }
+
+  /* The demo's pointer glides on a curve: across and down on different easings. */
+  .home-editor-pointer {
+    position: absolute;
+    z-index: 4;
+    top: calc(var(--editor-anchor-top) + var(--editor-pointer-rows) * var(--editor-row) + var(--editor-pointer-dy));
+    left: calc(var(--editor-anchor-x) + var(--editor-pointer-dx));
+    fill: var(--home-text);
+    stroke: var(--home-sheet);
+    stroke-width: 1.25;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.28));
+    opacity: 0;
+    translate: -4px -2.5px;
+    transform-origin: 4px 2.5px;
+    transition: left 0.76s cubic-bezier(0.45, 0.05, 0.25, 1), top 0.76s cubic-bezier(0.6, 0, 0.3, 1), opacity 0.2s var(--home-ease), scale var(--home-quick) var(--home-ease);
+
+    &[data-visible] {
       opacity: 1;
-      translate: none;
-      scale: none;
     }
 
-    /* The reader's own pointer stands in for the drawn one. */
-    .home-hover-cursor {
-      animation: none;
+    &[data-instant] {
+      transition: opacity 0.2s var(--home-ease), scale var(--home-quick) var(--home-ease);
+    }
+
+    &[data-picker] {
+      left: calc(var(--editor-picker-x) + var(--editor-pointer-dx));
+    }
+
+    &[data-picker='top'] {
+      top: calc(var(--editor-picker-y) + var(--editor-pointer-dy));
+    }
+
+    /* The picker's bottom edge is the swatch line's top. */
+    &[data-picker='bottom'] {
+      top: calc(var(--editor-anchor-top) + var(--editor-pointer-dy));
+    }
+
+    &[data-pressed] {
+      scale: 0.86;
+    }
+  }
+
+  /*
+   * Captions: a title and one line per feature under the window. The chosen title reads in full
+   * strength and its hairline fills toward the next while the tour runs.
+   */
+  .home-editor-chapters {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem clamp(1.5rem, 0.5rem + 2vw, 2.5rem);
+
+    /* Two by two until all four titles fit on one line each. */
+    @container home-editor-stage (width < 64rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .home-editor-chapter {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    /* Padding the hairline does not reach, so the focus ring clears the text. */
+    margin-inline: -0.75rem;
+    padding: 1.5rem 0.75rem 0.75rem;
+    border: 0;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: none;
+    cursor: pointer;
+
+    &:focus-visible {
+      border-radius: var(--radius-sm);
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-editor-chapter-track {
+    position: absolute;
+    inset: 0 0.75rem auto;
+    overflow: hidden;
+    height: 1px;
+    background-color: var(--home-rule);
+  }
+
+  .home-editor-chapter-progress {
+    position: absolute;
+    inset: 0;
+    background-color: var(--home-text);
+    transform-origin: left;
+    scale: 0 1;
+  }
+
+  .home-editor-chapter[aria-pressed='true'] .home-editor-chapter-progress {
+    scale: var(--editor-progress, 0) 1;
+  }
+
+  .home-editor-chapter-title {
+    font-size: var(--home-card-title);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+    color: var(--home-text-quiet);
+    text-wrap: balance;
+    transition: color var(--home-base) var(--home-ease);
+  }
+
+  .home-editor-chapter-body {
+    max-width: 40ch;
+    font-size: var(--home-body);
+    line-height: 1.6;
+    color: var(--home-text-quiet);
+    text-wrap: pretty;
+  }
+
+  .home-editor-chapter:is([aria-pressed='true'], :hover) .home-editor-chapter-title {
+    color: var(--home-text);
+  }
+
+  /* On a phone the captions become four hairlines, and the chosen title reads below them. */
+  .home-editor-caption {
+    display: none;
+  }
+
+  @container home-editor-stage (width < 40rem) {
+    .home-editor-chapters {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--spacing-xs);
+    }
+
+    .home-editor-chapter {
+      height: 1.75rem;
+      margin-inline: 0;
+      padding: 0;
+    }
+
+    .home-editor-chapter-track {
+      inset: 50% 0 auto;
+    }
+
+    /* Like a row of stories: the features already shown stay filled. */
+    .home-editor-chapter[data-done] .home-editor-chapter-progress {
+      scale: 1 1;
+    }
+
+    .home-editor-chapter-title,
+    .home-editor-chapter-body {
+      position: absolute;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .home-editor-caption {
+      display: grid;
+      margin-top: -1rem;
+    }
+
+    .home-editor-caption-item {
+      grid-area: 1 / 1;
+      visibility: hidden;
       opacity: 0;
+      transition: opacity var(--home-base) var(--home-ease), visibility 0s linear var(--home-base);
+
+      &[data-active] {
+        visibility: visible;
+        opacity: 1;
+        transition-delay: 0s;
+      }
     }
 
-    .home-color-tools-line:first-child .home-color-swatch {
-      animation: none;
-      box-shadow: 0 0 0 2px var(--home-ground), 0 0 0 3px var(--home-text-quiet);
+    .home-editor-caption-title {
+      margin: 0;
+      font-size: var(--home-card-title);
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+      color: var(--home-text);
+    }
+
+    .home-editor-caption-body {
+      margin: 0.75rem 0 0;
+      font-size: var(--home-body);
+      line-height: 1.6;
+      color: var(--home-text-quiet);
     }
   }
 
   @media (--motion-reduce) {
-    .home-hover-token,
-    .home-hover-card,
-    .home-hover-cursor,
-    .home-color-picker,
-    .home-color-picker-handle,
-    .home-color-tools-line:first-child .home-color-swatch {
-      animation: none;
-      opacity: 1;
-      translate: none;
+    .home-editor-body,
+    .home-editor-current-line,
+    .home-editor-line [data-tone],
+    .home-editor-swatch,
+    .home-editor-context,
+    .home-editor-caret,
+    .home-editor-classes [data-role],
+    .home-editor-pane,
+    .home-editor-suggest,
+    .home-editor-suggest-list,
+    .home-editor-pointer,
+    .home-editor-caption-item {
+      transition: none;
     }
 
-    .home-hover-cursor {
-      translate: 0 0;
+    .home-editor-caret {
+      animation-name: none;
     }
   }
 }
 
-@keyframes home-hover-cursor {
-  0%, 8% {
-    opacity: 0;
-    translate: 6rem 4rem;
-  }
-
-  14% {
-    opacity: 1;
-  }
-
-  30%, 78% {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  92%, 100% {
-    opacity: 0;
-    translate: 4rem 3rem;
-  }
-}
-
-@keyframes home-hover-token {
-  0%, 30% {
-    opacity: 0;
-  }
-
-  34%, 80% {
-    opacity: 1;
-  }
-
-  86%, 100% {
-    opacity: 0;
-  }
-}
-
-@keyframes home-hover-card {
-  0%, 36% {
-    opacity: 0;
-    translate: 0 6px;
-  }
-
-  42%, 80% {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  86%, 100% {
-    opacity: 0;
-    translate: 0 6px;
-  }
-}
-
-@keyframes home-color-select {
-  0%, 10%, 85%, 100% {
-    box-shadow: none;
-  }
-
-  18%, 78% {
-    box-shadow: 0 0 0 2px var(--home-ground), 0 0 0 3px var(--home-text-quiet);
-  }
-}
-
-@keyframes home-color-picker {
-  0%, 14% {
-    opacity: 0;
-    scale: 0.92;
-  }
-
-  22%, 82% {
-    opacity: 1;
-    scale: 1;
-  }
-
-  90%, 100% {
-    opacity: 0;
-    scale: 0.96;
-  }
-}
-
-@keyframes home-color-handle {
-  0%, 30% {
-    top: 30%;
-    left: 78%;
-  }
-
-  55% {
-    top: 22%;
-    left: 88%;
-  }
-
-  75%, 100% {
-    top: 30%;
-    left: 78%;
-  }
+@keyframes home-manifest-suggestions-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }

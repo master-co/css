@@ -16,17 +16,36 @@
     padding-block: var(--home-section-space);
   }
 
-  /* Drafting guides: rails 20px outside the content edges, a rule between sections and a cross where they meet. */
+  /*
+   * Drafting guides: rails 20px outside the content edges, a rule between sections and a cross where
+   * they meet. Outside each rail a ruler ticks every 16px, longer every 128px, starting at the section's
+   * top so its first long tick meets the cross. Tick colors are opaque mixes, so a long tick drawn over
+   * a short one reads as one line.
+   */
   @media (--md) {
     :is(.home-hero, .home-section)::after {
+      --home-tick: color-mix(in oklab, var(--home-text) 9%, var(--home-ground));
+      --home-tick-major: color-mix(in oklab, var(--home-text) 20%, var(--home-ground));
       position: absolute;
       inset-block: 0;
-      left: var(--home-rail);
-      right: var(--home-rail);
+      left: calc(var(--home-rail) - 0.75rem);
+      right: calc(var(--home-rail) - 0.75rem);
       z-index: -1;
-      border-inline: 1px solid var(--home-guide);
+      background:
+        linear-gradient(var(--home-guide), var(--home-guide)) left 0.75rem top 0 / 1px 100% no-repeat,
+        linear-gradient(var(--home-guide), var(--home-guide)) right 0.75rem top 0 / 1px 100% no-repeat;
       pointer-events: none;
       content: '';
+    }
+
+    .home-section::after {
+      background:
+        linear-gradient(var(--home-tick-major) 0 1px, transparent 1px) left 0 top 0 / 0.75rem 8rem repeat-y,
+        linear-gradient(var(--home-tick-major) 0 1px, transparent 1px) right 0 top 0 / 0.75rem 8rem repeat-y,
+        linear-gradient(var(--home-tick) 0 1px, transparent 1px) left 0.375rem top 0 / 0.375rem 1rem repeat-y,
+        linear-gradient(var(--home-tick) 0 1px, transparent 1px) right 0.375rem top 0 / 0.375rem 1rem repeat-y,
+        linear-gradient(var(--home-guide), var(--home-guide)) left 0.75rem top 0 / 1px 100% no-repeat,
+        linear-gradient(var(--home-guide), var(--home-guide)) right 0.75rem top 0 / 1px 100% no-repeat;
     }
 
     /* The fixed header (60px) sits over the top of the hero; the rails start below it. */
@@ -56,9 +75,42 @@
     }
   }
 
+  /* The homepage's header sits on the content column, so the logo and the last icon share the sections' edges. */
+  .home-header > * {
+    /* The sections' 80rem wrapper minus its 2.5rem gutters: where the column is wide enough to matter. */
+    max-width: 75rem;
+  }
+
   .home-section-wrap {
     position: relative;
     max-width: 80rem;
+  }
+
+  /* A hatched fill for reserved or inactive space inside a figure: an empty slot, a margin, a gap. */
+  .home-hatch {
+    background-image: var(--home-hatch);
+    background-size: var(--home-hatch-size) var(--home-hatch-size);
+  }
+
+  /*
+   * Artboard marks: four corner ticks just outside a box, the way a design tool marks a frame. For open
+   * figures that need an edge without a border. The box must be positioned.
+   */
+  .home-marks::before {
+    --home-tick: 0.5rem;
+    position: absolute;
+    inset: -0.375rem;
+    background:
+      linear-gradient(var(--home-mark), var(--home-mark)) 0 0 / var(--home-tick) 1px no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 0 0 / 1px var(--home-tick) no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 100% 0 / var(--home-tick) 1px no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 100% 0 / 1px var(--home-tick) no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 0 100% / var(--home-tick) 1px no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 0 100% / 1px var(--home-tick) no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 100% 100% / var(--home-tick) 1px no-repeat,
+      linear-gradient(var(--home-mark), var(--home-mark)) 100% 100% / 1px var(--home-tick) no-repeat;
+    pointer-events: none;
+    content: '';
   }
 
   /* Every section opens the same way, hung on the left rail: eyebrow, title, lead, an optional link. */
@@ -70,19 +122,19 @@
   }
 
   .home-section-heading {
-    max-width: 24ch;
-    margin: 1.375rem 0 0;
+    max-width: 22ch;
+    margin: 1.5rem 0 0;
     font-size: var(--home-title);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.06;
-    letter-spacing: -0.04em;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
   .home-section-body {
-    max-width: 38rem;
-    margin: 1.25rem 0 0;
+    max-width: 40rem;
+    margin: 1.5rem 0 0;
     font-size: var(--home-lead);
     line-height: 1.6;
     color: var(--home-text-quiet);
@@ -90,7 +142,7 @@
   }
 
   .home-section-header > .home-section-link {
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
   }
 
   .home-action {
@@ -111,7 +163,7 @@
   .home-action-primary {
     color: var(--home-text-inverse);
     background-color: var(--home-ink);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 0 0 1px var(--home-ink), var(--home-contact);
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), var(--home-contact);
 
     &:hover {
       background-color: color-mix(in oklab, var(--home-ink) 86%, var(--home-ground));
@@ -148,17 +200,30 @@
     }
   }
 
+  /* A quiet way into the guide: small, faint and plain, so it never competes with the figure it follows. */
   .home-section-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--home-text-quiet);
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--home-text-faint);
     text-decoration: none;
-    transition: color var(--duration-fast) var(--easing-smooth), gap var(--duration-normal) var(--easing-crisp);
+    transition: color var(--duration-fast) var(--easing-smooth);
+
+    /* Only the arrow moves, so the link never changes size under the pointer. */
+    & > svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      transition: translate var(--duration-normal) var(--easing-crisp);
+    }
 
     &:hover {
-      gap: var(--spacing-sm);
       color: var(--home-text);
+
+      & > svg {
+        translate: 3px 0;
+      }
     }
 
     &:focus-visible {
@@ -201,11 +266,6 @@
       animation-delay: 0.38s;
     }
 
-    .home-stage.home-enter {
-      animation-duration: 1.2s;
-      animation-delay: 0.5s;
-    }
-
     @supports (animation-timeline: view()) {
       /* Longhands: a timeline inside the `animation` shorthand is not yet supported by browsers. */
       .home-section-header > :not(.home-eyebrow),
@@ -231,16 +291,21 @@
     }
   }
 
-  /* Shell → sheet → well: a recessed shell wraps the cards with an 8px inset, and each card holds its figure in a well the same 8px in. */
+  /*
+   * Cards stand directly on the page ground: no shell around them, so every edge is the card's own 1px
+   * contour. A card may hold its figure in a well, 12px in, and nothing deeper.
+   */
   .home-bento-frame {
-    padding: var(--home-gap);
-    border-radius: var(--home-radius-tray);
-    background-color: var(--home-tray);
+    position: relative;
   }
 
   .home-bento-grid {
     display: grid;
     gap: var(--home-gap);
+
+    @media (--md) {
+      gap: 1rem;
+    }
   }
 
   .home-bento-card {
@@ -257,42 +322,61 @@
     }
   }
 
+  /* Card headers breathe: a title at the card scale, then a full-size body, well clear of the figure. */
   .home-bento-card-header {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 1.75rem 1.75rem 2rem;
 
     @media (--sm) {
-      padding: 1.75rem 1.75rem 2rem;
+      padding: 2.25rem 2.25rem 2.5rem;
+    }
+
+    @media (--lg) {
+      padding: 2.5rem 2.75rem 2.75rem;
     }
   }
 
   .home-bento-card-title {
     margin: 0;
     font-size: var(--home-card-title);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.35;
-    letter-spacing: -0.015em;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
     color: var(--home-text);
     text-wrap: balance;
   }
 
   .home-bento-card-body {
-    max-width: 46ch;
-    margin: 0.375rem 0 0;
+    max-width: 44ch;
+    margin: 0.75rem 0 0;
     font-size: var(--home-body);
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
   }
 
+  /*
+   * The well's contour is drawn above the figure, so a pane that fills the well never hides it and
+   * a pane's own edge never doubles it: every well reads as one 1px line.
+   */
   .home-bento-visual {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     margin: auto var(--home-gap) var(--home-gap);
     border-radius: var(--home-radius-well);
     background-color: var(--home-well);
-    box-shadow: var(--home-groove);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      border-radius: inherit;
+      box-shadow: var(--home-groove);
+      pointer-events: none;
+      content: '';
+    }
   }
 
   .home-bento-visual-top {
@@ -431,44 +515,74 @@
   }
 
   /* A recessed gray track holds a white selected segment that sits just above it. */
+  /*
+   * Segmented control: a soft pill track drawn with one 1px line, and a raised thumb that slides to the
+   * chosen option and takes its width. Until the thumb is measured, the chosen option paints its own.
+   */
   .home-segmented-control {
-    --home-segmented-control-padding: 4px;
-    --home-segmented-control-radius: 0.875rem;
+    --home-segment-pad: 3px;
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
-    gap: 2px;
     width: fit-content;
-    padding: var(--home-segmented-control-padding);
-    border-radius: var(--home-segmented-control-radius);
-    background-color: var(--home-tray);
-    box-shadow: var(--home-pressed), 0 1px 0 light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.04));
+    padding: var(--home-segment-pad);
+    border-radius: var(--radius-pill);
+    background-color: color-mix(in oklab, var(--home-text) 4%, var(--home-ground));
+    box-shadow: inset 0 0 0 1px var(--home-hairline);
+  }
+
+  .home-segmented-control-thumb {
+    position: absolute;
+    top: var(--home-segment-pad);
+    bottom: var(--home-segment-pad);
+    left: 0;
+    z-index: -1;
+    width: var(--home-segment-width, 0);
+    border-radius: var(--radius-pill);
+    background-color: var(--home-sheet);
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      0 1px 2px light-dark(oklch(18% 0 none / 0.06), oklch(0% 0 none / 0.4)),
+      0 3px 8px -3px light-dark(oklch(18% 0 none / 0.08), oklch(0% 0 none / 0.45)),
+      inset 0 1px 0 var(--home-highlight);
+    translate: var(--home-segment-x, 0) 0;
+    opacity: 0;
+
+    .home-segmented-control[data-ready] & {
+      opacity: 1;
+      transition: translate var(--home-base) var(--home-ease), width var(--home-base) var(--home-ease);
+    }
   }
 
   .home-segmented-control-option {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 2rem;
-    min-width: 3.5rem;
-    padding-inline: var(--spacing-md);
+    height: 1.875rem;
+    min-width: 3.75rem;
+    padding-inline: 0.875rem;
     border: 0;
-    border-radius: max(0px, calc(var(--home-segmented-control-radius) - var(--home-segmented-control-padding)));
-    font-size: var(--font-size-xs);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
     font-weight: var(--font-weight-medium);
     line-height: 1;
+    letter-spacing: -0.005em;
     white-space: nowrap;
     color: var(--home-text-quiet);
     background-color: transparent;
     cursor: pointer;
+    transition: color var(--home-quick) var(--home-ease);
 
-    &:hover {
+    &:hover,
+    &[aria-pressed='true'] {
       color: var(--home-text);
     }
 
-    &[aria-pressed='true'] {
-      color: var(--home-text);
+    /* Before the thumb is measured, the chosen option carries the raised look itself. */
+    .home-segmented-control:not([data-ready]) &[aria-pressed='true'] {
       background-color: var(--home-sheet);
-      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+      box-shadow: 0 0 0 1px var(--home-hairline);
     }
 
     &:focus-visible {
@@ -477,12 +591,18 @@
     }
   }
 
+  @media (--motion-reduce) {
+    .home-segmented-control-thumb {
+      transition: none !important;
+    }
+  }
+
   .home-chip {
     display: inline-flex;
     flex: none;
     align-items: center;
     padding: var(--spacing-4xs) var(--spacing-xs);
-    border-radius: var(--radius-md);
+    border-radius: var(--home-radius-chip);
     outline: 1px solid var(--home-hairline);
     font-family: var(--home-mono);
     font-size: 0.75rem;
@@ -535,16 +655,25 @@
     animation-direction: reverse;
   }
 
+  /* Same height and corner as an action beside it; the copy button nests inside with a concentric corner. */
   .home-command {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-sm);
+    box-sizing: border-box;
     max-width: 100%;
-    padding: var(--spacing-3xs) var(--spacing-3xs) var(--spacing-3xs) var(--spacing-md);
-    border-radius: var(--home-radius-sheet);
+    height: 2.75rem;
+    padding: 0 0.25rem 0 var(--spacing-md);
+    border-radius: var(--home-radius-control);
     font-family: var(--home-mono);
     font-size: 0.875rem;
     color: var(--home-text);
+  }
+
+  /* The command fills the field and reads from the left, so the copy button sits at the far edge. */
+  .home-command > code {
+    flex: auto;
+    text-align: left;
   }
 
   .home-command-copy {
@@ -553,7 +682,7 @@
     place-content: center;
     width: 2.25rem;
     height: 2.25rem;
-    border-radius: var(--home-radius-control);
+    border-radius: calc(var(--home-radius-control) - 0.25rem);
     color: var(--home-text-quiet);
     cursor: pointer;
     transition: color var(--duration-fast) var(--easing-smooth), background-color var(--duration-fast) var(--easing-smooth);
@@ -584,279 +713,12 @@
     animation: home-spin 0.9s linear infinite;
   }
 
-  .home-manifest-suggestions {
-    --home-manifest-suggestions-cycle: 8.8s;
-    position: relative;
-    height: 18rem;
-    container-type: inline-size;
-    isolation: isolate;
-
-    .home-manifest-suggestions-window,
-    .code-wrapper {
-      height: 100%;
-    }
-
-    .line:first-child {
-      position: relative;
-      z-index: 0;
-    }
-
-    .line:first-child::after {
-      position: absolute;
-      inset: -0.12rem -100cqw -0.08rem;
-      z-index: -1;
-      background: color-mix(in oklab, var(--home-text) 5%, transparent);
-      content: '';
-      pointer-events: none;
-    }
-  }
-
-  .home-manifest-suggestions-class-value {
-    position: relative;
-    z-index: 2;
-    display: inline-block;
-    vertical-align: top;
-
-    &::after {
-      position: absolute;
-      top: 0.15em;
-      left: var(--home-manifest-suggestions-prefix);
-      width: 2px;
-      height: 1.15em;
-      background: var(--home-text);
-      content: '';
-      animation-name: home-manifest-suggestions-caret, home-manifest-suggestions-caret-blink;
-      animation-duration: var(--home-manifest-suggestions-cycle), 1s;
-      animation-timing-function: steps(1, end);
-      animation-iteration-count: infinite;
-    }
-  }
-
-  .home-manifest-suggestions-typed {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    width: 0;
-    vertical-align: top;
-    white-space: nowrap;
-    font-variant-ligatures: none;
-    animation-name: home-manifest-suggestions-type;
-    animation-duration: var(--home-manifest-suggestions-cycle);
-    animation-timing-function: steps(1, end);
-    animation-iteration-count: infinite;
-  }
-
-  .home-manifest-suggestions-menu {
-    position: absolute;
-    top: 1.34em;
-    left: var(--home-manifest-suggestions-prefix);
-    z-index: 5;
-    display: block;
-    overflow: hidden;
-    /* Keep the menu inside the editor; it starts after the typed class name. */
-    width: min(28rem, calc(100cqw - 18rem));
-    max-height: 13.5rem;
-    border: 1px solid var(--home-rule);
-    border-radius: var(--radius-lg);
-    font: 13px/20px var(--home-mono);
-    letter-spacing: 0;
-    color: var(--home-text-body);
-    background-color: var(--home-float);
-    box-shadow: var(--home-elevation-2);
-    animation-name: home-manifest-suggestions-menu;
-    animation-duration: var(--home-manifest-suggestions-cycle);
-    animation-timing-function: steps(1, end);
-    animation-iteration-count: infinite;
-  }
-
-  .home-manifest-suggestions-items {
-    display: grid;
-    padding: 0;
-  }
-
-  .home-manifest-suggestions-item {
-    display: grid;
-    grid-template-columns: 1.1rem minmax(4rem, 1fr) auto;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 1.78rem;
-    padding: 0 0.58rem;
-  }
-
-  .home-manifest-suggestions-item-active {
-    background: color-mix(in oklab, var(--home-text) 7%, var(--home-ground));
-  }
-
-  .home-manifest-suggestions-item-icon {
-    display: block;
-    align-self: center;
-    justify-self: center;
-    width: 0.92rem;
-    height: 0.92rem;
-    color: var(--home-text-quiet);
-  }
-
-  .home-manifest-suggestions-item-label,
-  .home-manifest-suggestions-item-detail {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .home-manifest-suggestions-item-label {
-    color: var(--home-text);
-  }
-
-  .home-manifest-suggestions-item-detail {
-    text-align: right;
-    color: var(--home-text-quiet);
-  }
-
-  .home-active-syntax {
-    --home-active-syntax-cycle: 8s;
-
-    /* Long class strings run past the card; they fade out at the edge instead of being cut. */
-    .code-wrapper {
-      height: 100%;
-      mask-image: linear-gradient(90deg, black calc(100% - 3rem), transparent);
-    }
-
-    .line {
-      position: relative;
-      z-index: 0;
-    }
-
-    .line::after {
-      position: absolute;
-      inset: -0.12rem -100cqw -0.08rem;
-      z-index: -1;
-      visibility: hidden;
-      background: color-mix(in oklab, var(--home-text) 5%, transparent);
-      opacity: 0;
-      content: '';
-      pointer-events: none;
-    }
-
-    .line:nth-child(-n + 4)::after {
-      animation-name: home-active-syntax-line;
-      animation-duration: var(--home-active-syntax-cycle);
-      animation-timing-function: steps(1, end);
-      animation-iteration-count: infinite;
-      animation-delay: var(--home-active-syntax-delay, 0s);
-    }
-
-    .mcss-semantic {
-      position: relative;
-      animation-name: home-active-syntax-token;
-      animation-duration: var(--home-active-syntax-cycle);
-      animation-timing-function: steps(1, end);
-      animation-iteration-count: infinite;
-      animation-delay: var(--home-active-syntax-delay, 0s);
-    }
-
-    .line .mcss-semantic::before {
-      position: absolute;
-      top: 0.08em;
-      left: -2px;
-      display: block;
-      visibility: hidden;
-      width: 1px;
-      height: 1.05em;
-      background: var(--home-text);
-      opacity: 0;
-      content: '';
-      animation-name: home-active-syntax-caret, home-manifest-suggestions-caret-blink;
-      animation-duration: var(--home-active-syntax-cycle), 1s;
-      animation-timing-function: steps(1, end);
-      animation-iteration-count: infinite;
-      animation-delay: var(--home-active-syntax-delay, 0s), 0s;
-    }
-
-    .line .mcss-semantic ~ .mcss-semantic::before {
-      content: none;
-    }
-
-    .line:nth-child(1) {
-      --home-active-syntax-delay: 0s;
-    }
-
-    .line:nth-child(2) {
-      --home-active-syntax-delay: -6s;
-    }
-
-    .line:nth-child(3) {
-      --home-active-syntax-delay: -4s;
-    }
-
-    .line:nth-child(4) {
-      --home-active-syntax-delay: -2s;
-    }
-  }
-
-  @container (width <= 720px) {
-    .home-manifest-suggestions-menu {
-      max-height: 12.4rem;
-      line-height: 21px;
-    }
-
-    .home-manifest-suggestions-item {
-      grid-template-columns: 1.28rem minmax(0, 1fr);
-      min-height: 1.5rem;
-    }
-
-    .home-manifest-suggestions-item-detail {
-      display: none;
-    }
-  }
-
-  /* Too narrow to open beside the class: align the menu with the start of the code instead. */
-  @container (width <= 420px) {
-    .home-manifest-suggestions-menu {
-      width: min(15rem, calc(100cqw - 5rem));
-      margin-left: -15ch;
-    }
-  }
-
-  /* Pointing at a card holds its figure: the completion stays open and the highlight stops where it is. */
-  .home-bento-card:hover {
-    .home-manifest-suggestions-typed {
-      width: var(--home-manifest-suggestions-typed);
-      animation: none;
-    }
-
-    .home-manifest-suggestions-class-value::after,
-    .home-manifest-suggestions-menu {
-      left: calc(var(--home-manifest-suggestions-prefix) + var(--home-manifest-suggestions-typed));
-      visibility: visible;
-      opacity: 1;
-      animation: none;
-    }
-
-    .home-active-syntax .line::after,
-    .home-active-syntax .mcss-semantic,
-    .home-active-syntax .line .mcss-semantic::before {
-      animation-play-state: paused;
-    }
-  }
-
   @media (--motion-reduce) {
     .home-marquee-track,
     .home-spin {
       animation: none;
     }
 
-    .home-manifest-suggestions-typed {
-      width: var(--home-manifest-suggestions-typed);
-      animation: none;
-    }
-
-    .home-manifest-suggestions-class-value::after,
-    .home-manifest-suggestions-menu {
-      left: calc(var(--home-manifest-suggestions-prefix) + var(--home-manifest-suggestions-typed));
-      visibility: visible;
-      opacity: 1;
-      animation: none;
-    }
   }
 }
 
@@ -898,54 +760,4 @@
     translate: 0 0;
     filter: blur(0);
   }
-}
-
-@keyframes home-manifest-suggestions-type {
-  0%, 14% { width: 0; }
-  22% { width: 1ch; }
-  30% { width: 2ch; }
-  38% { width: 3ch; }
-  46% { width: 4ch; }
-  54%, 90% { width: 5ch; }
-  100% { width: 0; }
-}
-
-@keyframes home-manifest-suggestions-caret {
-  0%, 14% { left: var(--home-manifest-suggestions-prefix); visibility: visible; }
-  22% { left: calc(var(--home-manifest-suggestions-prefix) + 1ch); visibility: visible; }
-  30% { left: calc(var(--home-manifest-suggestions-prefix) + 2ch); visibility: visible; }
-  38% { left: calc(var(--home-manifest-suggestions-prefix) + 3ch); visibility: visible; }
-  46% { left: calc(var(--home-manifest-suggestions-prefix) + 4ch); visibility: visible; }
-  54%, 92% { left: calc(var(--home-manifest-suggestions-prefix) + 5ch); visibility: visible; }
-  93%, 100% { left: calc(var(--home-manifest-suggestions-prefix) + 5ch); visibility: hidden; }
-}
-
-@keyframes home-manifest-suggestions-caret-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-@keyframes home-manifest-suggestions-menu {
-  0%, 10% { left: var(--home-manifest-suggestions-prefix); opacity: 0; visibility: hidden; }
-  16% { left: var(--home-manifest-suggestions-prefix); opacity: 1; visibility: visible; }
-  22% { left: calc(var(--home-manifest-suggestions-prefix) + 1ch); opacity: 1; visibility: visible; }
-  30% { left: calc(var(--home-manifest-suggestions-prefix) + 2ch); opacity: 1; visibility: visible; }
-  38% { left: calc(var(--home-manifest-suggestions-prefix) + 3ch); opacity: 1; visibility: visible; }
-  46% { left: calc(var(--home-manifest-suggestions-prefix) + 4ch); opacity: 1; visibility: visible; }
-  54%, 90% { left: calc(var(--home-manifest-suggestions-prefix) + 5ch); opacity: 1; visibility: visible; }
-  91%, 100% { left: calc(var(--home-manifest-suggestions-prefix) + 5ch); opacity: 0; visibility: hidden; }
-}
-
-@keyframes home-active-syntax-token {
-  25%, 100% { color: currentColor; }
-}
-
-@keyframes home-active-syntax-line {
-  0%, 24.9% { opacity: 1; visibility: visible; }
-  25%, 100% { opacity: 0; visibility: hidden; }
-}
-
-@keyframes home-active-syntax-caret {
-  0%, 24.9% { visibility: visible; }
-  25%, 100% { visibility: hidden; }
 }

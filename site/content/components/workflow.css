@@ -1,17 +1,831 @@
+/*
+ * Workflow figures. Each card holds one drawing straight on the card, with no well: scopes are plates
+ * in one oblique projection (workflow-geometry.ts, depth recedes at 34.22deg), and a change is a gold
+ * signal that travels out from the project manifest. Threads are 1px rules that light when traced;
+ * the signal is the only gold in each figure. Inside a card there is one level of objects (chips,
+ * sheets, the ink manifest) and one raised state for the chosen one.
+ */
 @layer components {
-  .home-impact {
+  /* Cards in a row share a header track and a figure track, so their drawings start level. */
+  .home-wf-grid > .home-bento-card {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .home-wf-figure {
+    /* Plates: a step off the card in either scheme, lit from above. */
+    --home-wf-plate: light-dark(color-mix(in oklab, var(--home-sheet) 40%, var(--home-ground)), color-mix(in oklab, var(--home-sheet) 90%, white));
+    --home-wf-plate-front: light-dark(color-mix(in oklab, var(--home-tray) 70%, var(--home-hairline)), color-mix(in oklab, var(--home-sheet) 86%, black));
+    --home-wf-plate-side: light-dark(color-mix(in oklab, var(--home-tray) 45%, var(--home-hairline)), color-mix(in oklab, var(--home-sheet) 76%, black));
+    position: relative;
+    min-width: 0;
+    padding: 0 1.75rem 1.75rem;
+
+    @media (--sm) {
+      padding: 0 2.25rem 2.25rem;
+    }
+
+    @media (--lg) {
+      padding: 0 2.75rem 2.75rem;
+    }
+  }
+
+  /* A quiet link to the guide that goes deeper, under the card's line, as in the Design system cards. */
+  .home-wf-details {
+    align-self: flex-start;
+    margin-top: 1rem;
+  }
+
+  /* ── Frameworks: three plates, one manifest ─────────────────────────────── */
+
+  .home-wf-stage-figure {
+    container: home-wf-stage / inline-size;
+    display: grid;
+    align-content: start;
+  }
+
+  /* The stage keeps one set of chips; each carries coordinates for both layouts, and the figure picks one. */
+  .home-wf-stage {
+    --home-wf-units: var(--home-wf-wide-units);
+    --home-wf-u: calc(100cqi / var(--home-wf-units));
+    container-type: inline-size;
+    position: relative;
+    justify-self: center;
+    width: min(100%, 40rem);
+    aspect-ratio: var(--home-wf-wide-ratio);
+  }
+
+  .home-wf-stage-item {
+    position: absolute;
+    left: var(--home-wf-wide-x);
+    top: var(--home-wf-wide-y);
+  }
+
+  .home-wf-stage-narrow {
+    display: none;
+  }
+
+  @container home-wf-stage (width < 30rem) {
+    .home-wf-stage {
+      --home-wf-units: var(--home-wf-narrow-units);
+      aspect-ratio: var(--home-wf-narrow-ratio);
+    }
+
+    .home-wf-stage-item {
+      left: var(--home-wf-narrow-x);
+      top: var(--home-wf-narrow-y);
+    }
+
+    .home-wf-stage-wide,
+    .home-wf-stage .home-wf-stage-wide-only {
+      display: none;
+    }
+
+    .home-wf-stage-narrow {
+      display: block;
+    }
+  }
+
+  .home-wf-stage-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .home-wf-plate-top,
+  .home-wf-plate-front,
+  .home-wf-plate-side {
+    stroke: var(--home-hairline);
+    stroke-width: 1;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .home-wf-plate-near {
+    stop-color: var(--home-wf-plate);
+  }
+
+  .home-wf-plate-far {
+    stop-color: var(--home-wf-plate);
+    stop-opacity: 0.35;
+  }
+
+  /* Front faces darken toward the bottom, away from the light. */
+  .home-wf-front-top {
+    stop-color: color-mix(in oklab, var(--home-wf-plate-front) 70%, var(--home-wf-plate));
+  }
+
+  .home-wf-front-bottom {
+    stop-color: var(--home-wf-plate-front);
+  }
+
+  /* A soft band of light across each top face. */
+  .home-wf-plate-sheen {
+    stroke: none;
+  }
+
+  .home-wf-sheen-edge {
+    stop-color: rgb(255 255 255 / 0);
+  }
+
+  .home-wf-sheen-peak {
+    stop-color: var(--home-highlight);
+  }
+
+  .home-wf-plate-flank {
+    fill: none;
+    stroke: var(--home-highlight);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .home-wf-plate-side {
+    fill: var(--home-wf-plate-side);
+  }
+
+  /* Each plate floats: a soft shadow falls straight down from it. */
+  .home-wf-plate-shadow {
+    fill: light-dark(oklch(18% 0 none / 0.08), oklch(0% 0 none / 0.32));
+  }
+
+  /* The light catches the front edge of each top face. */
+  .home-wf-plate-rim {
+    fill: none;
+    stroke: var(--home-highlight);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Construction lines, as in an exploded drawing: each plate drops from its corners onto the one below. */
+  .home-wf-guide {
+    fill: none;
+    stroke: var(--home-rule);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .home-wf-thread {
+    stroke: var(--home-rule);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.75;
+    transition: stroke var(--home-base) var(--home-ease), opacity var(--home-base) var(--home-ease);
+
+    &[data-lit] {
+      stroke: var(--home-text-quiet);
+      opacity: 1;
+    }
+  }
+
+  /* The signal: a short gold head that climbs the traced path once, manifest first, with a blurred trail. */
+  .home-wf-signal,
+  .home-wf-signal-trail {
+    fill: none;
+    stroke: var(--home-signal);
+    stroke-linecap: round;
+    opacity: 0;
+  }
+
+  .home-wf-signal {
+    stroke-width: 0.1;
+    stroke-dasharray: 0.06 2;
+    stroke-dashoffset: 0.06;
+  }
+
+  .home-wf-signal-trail {
+    stroke-width: 0.26;
+    stroke-dasharray: 0.26 2;
+    stroke-dashoffset: 0.26;
+  }
+
+  /* Where the signal lands: a gold ring on the plate under the chosen logo. */
+  .home-wf-landing {
+    fill: var(--home-signal-glow);
+    stroke: var(--home-signal);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    transition: opacity var(--home-base) var(--home-ease);
+
+    &[data-lit] {
+      opacity: 1;
+    }
+  }
+
+  /*
+   * Objects stand on their plate: the bottom edge sits on the projected foot. Under the pointer they
+   * drift a little against the plates, the higher tiers more, so the stack reads in depth.
+   */
+  .home-wf-framework,
+  .home-wf-integration,
+  .home-wf-manifest {
+    --home-wf-depth: 1px;
+    translate: calc(-50% + var(--home-wf-px, 0) * var(--home-wf-depth)) calc(-100% + var(--home-wf-py, 0) * var(--home-wf-depth));
+    transition: translate 700ms var(--home-ease);
+  }
+
+  .home-wf-framework {
+    --home-wf-depth: 6px;
+  }
+
+  .home-wf-integration {
+    --home-wf-depth: 3px;
+  }
+
+  .home-wf-framework {
+    display: grid;
+    place-items: center;
+    width: calc(var(--home-wf-u) * 1.5);
+    height: calc(var(--home-wf-u) * 1.7);
+    border-radius: calc(var(--home-wf-u) * 0.3);
+    outline: none;
+
+    /* A contact shadow stays on the plate when the logo lifts off it. */
+    &::before {
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      bottom: calc(var(--home-wf-u) * -0.14);
+      height: calc(var(--home-wf-u) * 0.3);
+      border-radius: 50%;
+      background: radial-gradient(closest-side, light-dark(oklch(18% 0 none / 0.18), oklch(0% 0 none / 0.65)), transparent);
+      content: '';
+      transition: opacity var(--home-base) var(--home-ease), scale var(--home-base) var(--home-ease);
+    }
+
+    &[data-lit]::before {
+      opacity: 0.55;
+      scale: 0.8;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-wf-framework-logo {
+    width: 76%;
+    height: auto;
+    aspect-ratio: 1;
+    transition: translate var(--home-base) var(--home-ease);
+
+    [data-lit] > & {
+      translate: 0 calc(var(--home-wf-u) * -0.45);
+    }
+  }
+
+  .home-wf-integration {
+    display: inline-flex;
+    align-items: center;
+    height: calc(var(--home-wf-u) * 1.1);
+    padding-inline: clamp(0.375rem, var(--home-wf-u) * 0.42, 0.75rem);
+    border-radius: calc(var(--home-wf-u) * 0.3);
+    font-family: var(--home-mono);
+    font-size: clamp(0.625rem, var(--home-wf-u) * 0.4, 0.75rem);
+    white-space: nowrap;
+    color: var(--home-text-quiet);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline);
+    transition: color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+
+    &[data-lit] {
+      color: var(--home-text);
+      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
+    }
+  }
+
+  /* The manifest is the one ink object on the stage: the source every plate above reads. */
+  .home-wf-manifest {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: calc(var(--home-wf-u) * 0.12);
+    height: calc(var(--home-wf-u) * 2.1);
+    padding-inline: calc(var(--home-wf-u) * 0.7);
+    border-radius: calc(var(--home-wf-u) * 0.4);
+    white-space: nowrap;
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), var(--home-elevation-2);
+  }
+
+  .home-wf-manifest-name {
+    font-family: var(--home-mono);
+    font-size: clamp(0.75rem, var(--home-wf-u) * 0.46, 0.875rem);
+  }
+
+  /* ── Monorepo: two app plates over the repository, each lighting its own class ─ */
+
+  .home-wf-repo {
     container-type: inline-size;
     display: grid;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md);
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
   }
 
-  .home-impact-stage {
+  /* Like the stage, the drawing keeps a reading size on wide single-column cards. */
+  .home-wf-repo-stage {
+    --home-wf-u: calc(100cqi / var(--home-wf-units));
+    container-type: inline-size;
     position: relative;
-    height: 12rem;
+    justify-self: center;
+    width: min(100%, 30rem);
   }
 
-  .home-impact-wires {
+  .home-wf-repo-app {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    & > [data-wf-node] {
+      pointer-events: auto;
+    }
+  }
+
+  .home-wf-repo-chip,
+  .home-wf-repo-label {
+    position: absolute;
+    font-family: var(--home-mono);
+    white-space: nowrap;
+    transition: opacity var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+  }
+
+  .home-wf-repo-chip {
+    display: grid;
+    align-content: center;
+    padding-inline: calc(var(--home-wf-u) * 0.45);
+    border-radius: calc(var(--home-wf-u) * 0.3);
+    font-size: clamp(0.625rem, var(--home-wf-u) * 0.42, 0.75rem);
+    translate: -50% -100%;
+  }
+
+  /* Each app's CSS entry is ink, like every manifest source on the page; the shared one is a quiet sheet. */
+  .home-wf-repo-entry {
+    height: calc(var(--home-wf-u) * 1.25);
+    color: var(--home-text-inverse);
+    background-color: var(--home-ink);
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), var(--home-elevation-1);
+  }
+
+  .home-wf-repo-root {
+    height: calc(var(--home-wf-u) * 1.15);
+    color: var(--home-text-quiet);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+  }
+
+  .home-wf-repo-file {
+    gap: calc(var(--home-wf-u) * 0.12);
+    height: calc(var(--home-wf-u) * 1.9);
+    color: var(--home-text-body);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+  }
+
+  .home-wf-repo-file-name {
+    font-size: 0.9em;
+    color: var(--home-text-faint);
+  }
+
+  .home-wf-repo-class {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--home-text);
+  }
+
+  .home-wf-repo-swatch {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.1875rem;
+    background-color: var(--home-wf-primary);
+    box-shadow: inset 0 0 0 1px light-dark(oklch(0% 0 none / 0.12), oklch(100% 0 none / 0.16));
+  }
+
+  /* Plates are named under their front-left corner; the name is the only label the shapes need. */
+  .home-wf-repo-label {
+    font-size: var(--home-label);
+    color: var(--home-text-faint);
+  }
+
+  .home-wf-repo-import {
+    stroke: var(--home-rule);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+    vector-effect: non-scaling-stroke;
+    transition: stroke var(--home-base) var(--home-ease);
+  }
+
+  /* The class and its nearest entry: one 1px connector; the one in use carries a small gold point. */
+  .home-wf-repo-link {
+    stroke: var(--home-rule);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition: stroke var(--home-base) var(--home-ease);
+  }
+
+  .home-wf-repo-point {
+    fill: var(--home-signal);
+    opacity: 0;
+    scale: 0.4;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity var(--home-base) var(--home-ease), scale var(--home-base) var(--home-ease);
+  }
+
+  /* The pointer rests on the class the connector resolves. */
+  .home-wf-repo-cursor {
+    position: absolute;
+    right: -0.75rem;
+    bottom: -1rem;
+    fill: var(--home-ink);
+    stroke: var(--home-sheet);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 1px 1px light-dark(oklch(18% 0 none / 0.2), oklch(0% 0 none / 0.5)));
+    opacity: 0;
+    translate: 0.375rem 0.375rem;
+    transition: opacity var(--home-base) var(--home-ease), translate var(--home-slow) var(--home-ease);
+  }
+
+  /* The app in use lights up; the other keeps its plate and steps back. */
+  .home-wf-repo:not([data-active='0']) [data-scope='0'],
+  .home-wf-repo:not([data-active='1']) [data-scope='1'] {
+    .home-wf-repo-chip,
+    .home-wf-repo-label {
+      opacity: 0.6;
+    }
+  }
+
+  .home-wf-repo:is([data-active='0']) [data-scope='0'],
+  .home-wf-repo:is([data-active='1']) [data-scope='1'] {
+    .home-wf-repo-point,
+    .home-wf-repo-cursor {
+      opacity: 1;
+    }
+
+    .home-wf-repo-point {
+      scale: 1;
+    }
+
+    .home-wf-repo-link {
+      stroke: var(--home-text-quiet);
+    }
+
+    .home-wf-repo-cursor {
+      translate: 0 0;
+    }
+
+    .home-wf-repo-file {
+      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-2);
+    }
+
+    /* The entry is the beam's source: a faint halo of the app's color. */
+    .home-wf-repo-entry {
+      box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), var(--home-elevation-1), 0 0 1.25rem -0.25rem color-mix(in oklab, var(--home-wf-primary) 70%, transparent);
+    }
+
+    .home-wf-repo-label {
+      color: var(--home-text-quiet);
+    }
+
+    &.home-wf-repo-import {
+      stroke: var(--home-text-faint);
+    }
+  }
+
+  /* ── Routes: a deck of route sheets over the manifest plate ────────────── */
+
+  .home-wf-routes {
+    --home-wf-active: 0;
+    --home-wf-gap: 1.5rem;
+    container-type: inline-size;
+    display: grid;
+    align-content: start;
+
+    &:has([value='1']:checked) {
+      --home-wf-active: 1;
+    }
+
+    &:has([value='2']:checked) {
+      --home-wf-active: 2;
+    }
+  }
+
+  .home-wf-routes-drawing {
+    display: grid;
+    gap: var(--home-wf-gap);
+  }
+
+  /* The page's segmented control at a small size; the chosen radio's label carries the raised look. */
+  .home-wf-routes-tabs {
+    --home-segment-pad: 2px;
+  }
+
+  .home-wf-routes-tab.home-segmented-control-option {
+    position: relative;
+    height: 1.625rem;
+    min-width: 0;
+    padding-inline: 0.75rem;
+    font-size: 0.75rem;
+
+    &:has(:checked) {
+      color: var(--home-text);
+      background-color: var(--home-sheet);
+      box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 1px;
+    }
+  }
+
+  .home-wf-routes-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* Sheets recede up and to the right, the way depth does on the plates. */
+  .home-wf-routes-deck {
+    --home-wf-step-x: 0.75rem;
+    --home-wf-step-y: 0.625rem;
+    position: relative;
+    z-index: 1;
+    height: 10.5rem;
+    margin-top: calc(var(--home-wf-step-y) * 2);
+    margin-right: calc(var(--home-wf-step-x) * 2);
+
+    @container (width >= 24rem) {
+      --home-wf-step-x: 1.125rem;
+      --home-wf-step-y: 0.75rem;
+    }
+  }
+
+  /* The deck floats over the slab and casts a soft shadow onto it. */
+  .home-wf-routes-deck::before {
+    position: absolute;
+    left: 8%;
+    right: 4%;
+    bottom: calc(var(--home-wf-gap) * -0.85);
+    z-index: 0;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, light-dark(oklch(18% 0 none / 0.14), oklch(0% 0 none / 0.55)), transparent);
+    filter: blur(4px);
+    pointer-events: none;
+    content: '';
+  }
+
+  .home-wf-routes-sheet {
+    --home-wf-order: mod(calc(var(--home-wf-sheet) - var(--home-wf-active) + 3), 3);
+    position: absolute;
+    inset: 0;
+    z-index: calc(3 - var(--home-wf-order));
+    display: grid;
+    overflow: hidden;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    translate: calc(var(--home-wf-order) * var(--home-wf-step-x)) calc(var(--home-wf-order) * var(--home-wf-step-y) * -1);
+    scale: calc(1 - var(--home-wf-order) * 0.035);
+    transform-origin: 0 0;
+    transition: translate var(--home-slow) var(--home-ease), scale var(--home-slow) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+  }
+
+  .home-wf-routes-code {
+    display: grid;
+    align-content: start;
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    line-height: 1.65;
+    white-space: pre;
+    color: var(--home-text-body);
+    transition: opacity var(--home-base) var(--home-ease);
+
+    @container (width >= 24rem) {
+      font-size: 0.75rem;
+    }
+  }
+
+  .home-wf-routes-line {
+    min-height: 1.65em;
+  }
+
+  .home-wf-routes-ref {
+    color: var(--home-text);
+    text-decoration-line: underline;
+    text-decoration-color: var(--home-rule-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+  }
+
+  /* Only the front sheet is read; the ones behind are edges. */
+  .home-wf-routes:has([value='0']:checked) .home-wf-routes-sheet:not([data-sheet='0']),
+  .home-wf-routes:has([value='1']:checked) .home-wf-routes-sheet:not([data-sheet='1']),
+  .home-wf-routes:has([value='2']:checked) .home-wf-routes-sheet:not([data-sheet='2']) {
+    background-color: color-mix(in oklab, var(--home-sheet) 75%, transparent);
+    box-shadow: 0 0 0 1px var(--home-hairline), inset 0 1px 0 var(--home-highlight);
+    backdrop-filter: blur(3px);
+
+    .home-wf-routes-code {
+      opacity: 0;
+    }
+  }
+
+  /*
+   * The manifest slab: a shallow top face skewed to the section's angle (34.22deg, so depth shifts
+   * x by 1.47 times its height), a front edge that carries the file name like a nameplate, and a side
+   * face. The definitions stand on the top face in one row; a narrow card stacks them a step deeper each.
+   */
+  .home-wf-routes-floor {
+    --home-wf-face: 2.75rem;
+    --home-wf-edge: 1.125rem;
+    --home-wf-line: 1.125rem;
+    --home-wf-slant: 1.47;
+    position: relative;
+    height: calc(var(--home-wf-face) + var(--home-wf-edge));
+    margin-bottom: 0.75rem;
+
+    @container (width < 26rem) {
+      --home-wf-face: 6.5rem;
+    }
+  }
+
+  .home-wf-routes-slab,
+  .home-wf-routes-edge {
+    position: absolute;
+    left: 0;
+    width: calc(100% - var(--home-wf-face) * var(--home-wf-slant));
+  }
+
+  .home-wf-routes-slab {
+    top: 0;
+    height: var(--home-wf-face);
+    border-radius: 0.1875rem 0.1875rem 0 0;
+    background-image:
+      linear-gradient(100deg, transparent 20%, var(--home-highlight) 42%, transparent 64%),
+      linear-gradient(0deg, var(--home-wf-plate), color-mix(in oklab, var(--home-wf-plate) 40%, transparent));
+    /* The front edge catches the light inside the contour. */
+    box-shadow: inset 0 -1px 0 var(--home-highlight), inset 0 0 0 1px var(--home-hairline);
+    transform: skewX(-55.78deg);
+    transform-origin: 0 100%;
+
+    /* The side face drops from the top face's right edge, the same thickness as the front edge. */
+    &::after {
+      position: absolute;
+      top: 100%;
+      left: 100%;
+      width: calc(var(--home-wf-face) * var(--home-wf-slant));
+      height: var(--home-wf-edge);
+      background-color: var(--home-wf-plate-side);
+      box-shadow: inset 0 0 0 1px var(--home-hairline);
+      transform: skewX(55.78deg) skewY(-34.22deg);
+      transform-origin: 0 0;
+      content: '';
+    }
+  }
+
+  /* The front edge shares the top face's bottom line, so it draws only its own three sides. */
+  .home-wf-routes-edge {
+    top: var(--home-wf-face);
+    height: var(--home-wf-edge);
+    padding-left: 0.625rem;
+    font-family: var(--home-mono);
+    font-size: 0.625rem;
+    line-height: var(--home-wf-edge);
+    letter-spacing: 0.02em;
+    color: var(--home-text-faint);
+    background-image: linear-gradient(180deg, color-mix(in oklab, var(--home-wf-plate-front) 70%, var(--home-wf-plate)), var(--home-wf-plate-front));
+    box-shadow: inset 0 -1px 0 var(--home-hairline), inset 1px 0 0 var(--home-hairline), inset -1px 0 0 var(--home-hairline), 0 1.25rem 1.5rem -1rem light-dark(oklch(18% 0 none / 0.2), oklch(0% 0 none / 0.6));
+  }
+
+  .home-wf-routes-defs {
+    position: absolute;
+    bottom: calc(var(--home-wf-edge) + (var(--home-wf-face) - var(--home-wf-line)) / 2);
+    left: calc(var(--home-wf-face) / 2 * var(--home-wf-slant) + 0.375rem);
+    display: flex;
+    gap: 1rem;
+
+    @container (width < 26rem) {
+      inset: auto 0 var(--home-wf-edge);
+      display: block;
+      height: var(--home-wf-face);
+    }
+  }
+
+  .home-wf-routes-def {
+    /* From the top of this name up to the bottom of the deck. */
+    --home-wf-rise: calc(var(--home-wf-gap) + (var(--home-wf-face) - var(--home-wf-line)) / 2);
+    position: relative;
+    height: var(--home-wf-line);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    line-height: var(--home-wf-line);
+    white-space: nowrap;
+    color: var(--home-text-faint);
+    transition: color var(--home-base) var(--home-ease);
+
+    @container (width >= 24rem) {
+      font-size: 0.75rem;
+    }
+
+    /* Narrow: one name per row, each a step deeper on the slab, up and to the right. */
+    @container (width < 26rem) {
+      --home-wf-depth: calc(0.75rem + var(--home-wf-row) * 1.5rem);
+      --home-wf-rise: calc(var(--home-wf-gap) + var(--home-wf-face) - var(--home-wf-depth) - var(--home-wf-line));
+      position: absolute;
+      bottom: var(--home-wf-depth);
+      left: calc((var(--home-wf-depth) + var(--home-wf-line) / 2) * var(--home-wf-slant) + 0.25rem);
+    }
+
+    /* A riser from each definition the chosen sheet uses, up into the sheet; the signal travels it once. */
+    &::before,
+    &::after {
+      position: absolute;
+      bottom: 100%;
+      left: 0.3125rem;
+      pointer-events: none;
+      content: '';
+    }
+
+    &::before {
+      width: 1px;
+      height: var(--home-wf-rise);
+      background-color: var(--home-text-faint);
+      opacity: 0;
+      transition: opacity var(--home-base) var(--home-ease);
+    }
+
+    /* The signal: a gold head with a fading tail below it, glowing as it rises. */
+    &::after {
+      width: 3px;
+      height: 1.375rem;
+      margin-bottom: -1.375rem;
+      margin-left: -1px;
+      border-radius: var(--radius-pill);
+      background-image: linear-gradient(0deg, transparent, color-mix(in oklab, var(--home-signal) 45%, transparent) 55%, var(--home-signal));
+      box-shadow: 0 -0.25rem 0.5rem -0.125rem var(--home-signal-glow);
+      opacity: 0;
+    }
+  }
+
+  .home-wf-routes:has([value='0']:checked) .home-wf-routes-def[data-trace~='0'],
+  .home-wf-routes:has([value='1']:checked) .home-wf-routes-def[data-trace~='1'],
+  .home-wf-routes:has([value='2']:checked) .home-wf-routes-def[data-trace~='2'] {
+    color: var(--home-text);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  /* ── Trace a change: the report's columns as panes, the change as a signal ─ */
+
+  .home-wf-trace {
+    container: home-wf-trace / inline-size;
+    display: grid;
+    grid-template-rows: minmax(16.5rem, 1fr);
+  }
+
+  .home-wf-trace-stage {
+    position: relative;
+  }
+
+  /*
+   * Each column is an upright pane of glass seen at the section's oblique angle. It sits over the wires,
+   * so what passes behind it softens like refraction; a streak of light crosses it and its lit edge faces left.
+   */
+  .home-wf-trace-pane {
+    --home-wf-streak: var(--home-highlight);
+    position: absolute;
+    left: var(--home-wf-wide-x);
+    top: 3%;
+    bottom: 3%;
+    width: 3rem;
+    border-radius: 0.375rem;
+    background-image:
+      linear-gradient(170deg, transparent 18%, var(--home-wf-streak) 30%, transparent 40%, transparent 62%, color-mix(in oklab, var(--home-wf-streak) 50%, transparent) 70%, transparent 76%),
+      linear-gradient(90deg, color-mix(in oklab, var(--home-wf-plate) 95%, transparent), color-mix(in oklab, var(--home-wf-plate) 35%, transparent));
+    box-shadow: inset 1px 0 0 var(--home-highlight), inset 0 0 0 1px var(--home-hairline), 0.75rem 0.5rem 1.5rem -0.75rem light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
+    backdrop-filter: blur(2px) saturate(1.2);
+    /* One transform: the build drops a separate `translate` beside it. */
+    transform: translateX(-50%) skewY(-34.22deg);
+  }
+
+  .home-wf-trace-wires {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -19,302 +833,500 @@
     overflow: visible;
   }
 
-  .home-impact-wire {
+  .home-wf-trace-narrow {
+    display: none;
+  }
+
+  .home-wf-trace-wire {
     fill: none;
     stroke: var(--home-rule);
-    stroke-width: 1.5;
+    stroke-width: 1;
     vector-effect: non-scaling-stroke;
-    animation: home-impact-wire 4.4s var(--easing-smooth) infinite;
-  }
-
-  .home-impact-node {
-    position: absolute;
-    padding: var(--spacing-4xs) var(--spacing-xs);
-    border-radius: var(--radius-md);
-    outline: 1px solid var(--home-rule);
-    font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    white-space: nowrap;
-    color: var(--home-text-body);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-edge);
-    translate: -50% -50%;
-    animation: home-impact-node 4.4s var(--easing-smooth) infinite;
-  }
-
-  /* Pointing at a node traces it: what it depends on and what depends on it stay lit, the rest steps back. */
-  .home-impact-node {
-    cursor: default;
-    transition: opacity var(--home-quick) var(--home-ease), outline-color var(--home-quick) var(--home-ease);
-  }
-
-  .home-impact-wire {
     transition: opacity var(--home-quick) var(--home-ease), stroke var(--home-quick) var(--home-ease);
   }
 
-  .home-impact-stage:has(.home-impact-node:hover) {
-    .home-impact-wire,
-    .home-impact-node {
-      opacity: 0.28;
-      animation: none;
-    }
+  .home-wf-trace-signal,
+  .home-wf-trace-trail {
+    fill: none;
+    stroke: var(--home-signal);
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
   }
 
-  .home-impact-stage:has([data-node='0']:hover) [data-trace~='0'],
-  .home-impact-stage:has([data-node='1']:hover) [data-trace~='1'],
-  .home-impact-stage:has([data-node='2']:hover) [data-trace~='2'],
-  .home-impact-stage:has([data-node='3']:hover) [data-trace~='3'],
-  .home-impact-stage:has([data-node='4']:hover) [data-trace~='4'],
-  .home-impact-stage:has([data-node='5']:hover) [data-trace~='5'],
-  .home-impact-stage:has([data-node='6']:hover) [data-trace~='6'] {
-    opacity: 1;
-
-    &.home-impact-wire {
-      stroke: var(--home-text-quiet);
-    }
-
-    &.home-impact-node {
-      outline-color: var(--home-rule-strong);
-    }
+  .home-wf-trace-signal {
+    stroke-width: 2.5;
+    stroke-dasharray: 0.12 2;
+    stroke-dashoffset: 0.12;
   }
 
-  .home-impact-node-definition {
-    color: var(--home-text-inverse);
-    background-color: var(--home-ink);
-    animation: none;
+  /* A blurred trail, longer than the head, ends where the head begins. */
+  .home-wf-trace-trail {
+    stroke-width: 6;
+    stroke-dasharray: 0.42 2;
+    stroke-dashoffset: 0.42;
   }
 
-  .home-impact-node-output {
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .home-impact-hint {
-    @media (hover: none) {
-      display: none;
-    }
-  }
-
-  /* Each column label sits under its column of nodes; a narrow card has no room for them. */
-  .home-impact-legend {
-    position: relative;
-    height: 1rem;
-
-    @container (width < 26rem) {
-      display: none;
-    }
-
-    & > span {
-      position: absolute;
-      top: 0;
-      font-family: var(--home-mono);
-      font-size: var(--home-label);
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      text-transform: uppercase;
-      color: var(--home-text-faint);
-      translate: -50% 0;
-    }
-  }
-
-  /* The rows fill the card, however tall its neighbour makes it. */
-  .home-frameworks {
-    display: grid;
-    flex: auto;
-    align-content: center;
-    gap: var(--spacing-sm);
-    padding-block: var(--spacing-lg);
-  }
-
-  .home-framework {
+  .home-wf-trace-node {
+    position: absolute;
+    left: var(--home-wf-wide-x);
+    top: var(--home-wf-wide-y);
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    outline: 1px solid var(--home-hairline);
-    font-size: var(--text-sm);
-    white-space: nowrap;
-    color: var(--home-text);
-    background-color: var(--home-sheet);
-    box-shadow: var(--home-edge);
-  }
-
-  .home-workspace {
-    padding-block: var(--spacing-sm);
+    gap: 0.4375rem;
+    height: 1.875rem;
+    padding-inline: 0.6875rem;
+    border: 0;
+    border-radius: 0.5rem;
     font-family: var(--home-mono);
     font-size: 0.75rem;
-  }
-
-  .home-workspace-row {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding-block: var(--spacing-3xs);
-    padding-right: var(--spacing-sm);
-    color: var(--home-text-body);
-  }
-
-  .home-workspace-badge {
-    margin-left: auto;
-    padding: 0 var(--spacing-3xs);
-    border-radius: var(--radius-sm);
-    font-size: 0.625rem;
     white-space: nowrap;
+    color: var(--home-text-body);
+    background-color: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    translate: -50% -50%;
+    cursor: pointer;
+    transition: opacity var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease), color var(--home-quick) var(--home-ease);
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  .home-wf-trace-node-definition {
+    flex-direction: column;
+    align-items: start;
+    gap: 0.4375rem;
+    height: auto;
+    padding: 0.5625rem 0.75rem;
     color: var(--home-text-inverse);
     background-color: var(--home-ink);
-    opacity: 0;
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), var(--home-elevation-1);
   }
 
-  /* The highlight alternates between the two apps, each paired with its nearest manifest. */
-  .home-workspace-row-web,
-  .home-workspace-manifest-web {
-    animation: home-workspace-first 6s var(--easing-smooth) infinite;
-  }
-
-  .home-workspace-row-docs,
-  .home-workspace-manifest-docs {
-    animation: home-workspace-second 6s var(--easing-smooth) infinite;
-  }
-
-  .home-workspace-row-web .home-workspace-badge {
-    animation: home-workspace-badge-first 6s var(--easing-smooth) infinite;
-  }
-
-  .home-workspace-row-docs .home-workspace-badge {
-    animation: home-workspace-badge-second 6s var(--easing-smooth) infinite;
-  }
-
-  .home-routes {
-    display: grid;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-md);
-  }
-
-  .home-routes-shared {
-    justify-self: start;
-    margin-bottom: var(--spacing-3xs);
-    padding: var(--spacing-4xs) var(--spacing-xs);
-    border-radius: var(--radius-md);
-    outline: 1px dashed var(--home-rule-strong);
-    font-family: var(--home-mono);
-    font-size: 0.6875rem;
-    color: var(--home-text-quiet);
-  }
-
-  .home-routes-row {
+  .home-wf-trace-change {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-3xs) var(--spacing-xs);
-    border-radius: var(--radius-lg);
-    font-size: 0.75rem;
-    color: var(--home-text-quiet);
-    animation: home-routes-row 3.6s var(--easing-smooth) infinite;
+    gap: 0.375rem;
   }
 
-  .home-routes-arrow {
-    flex: auto;
+  .home-wf-trace-swatch {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.1875rem;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+  }
+
+  .home-wf-trace-arrow {
+    width: 0.875rem;
     height: 1px;
-    background-image: linear-gradient(90deg, var(--home-rule-strong) 50%, transparent 50%);
-    background-size: 8px 1px;
-    animation: home-routes-arrow 1s linear infinite;
+    background-color: currentColor;
+    opacity: 0.45;
   }
 
-  @media (--motion-reduce) {
-    .home-impact-wire,
-    .home-impact-node,
-    .home-workspace-row,
-    .home-workspace-badge,
-    .home-workspace-manifest-web,
-    .home-workspace-manifest-docs,
-    .home-routes-row,
-    .home-routes-arrow {
+  .home-wf-trace-dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--home-wf-after);
+  }
+
+  .home-wf-trace-node-output {
+    color: var(--home-text);
+  }
+
+  /* Files and outputs the change reaches carry an editor's modified mark. */
+  .home-wf-trace-node:is(.home-wf-trace-node-file, .home-wf-trace-node-output)::after {
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-left: 0.125rem;
+    border-radius: var(--radius-pill);
+    background-color: currentColor;
+    content: '';
+  }
+
+  /* Pointing at, focusing or pressing a node traces it: its dependencies and dependents stay lit. */
+  .home-wf-trace-stage:has(.home-wf-trace-node:is(:hover, :focus-visible, [aria-pressed='true'])) {
+    .home-wf-trace-wire,
+    .home-wf-trace-node {
+      opacity: 0.28;
+    }
+
+    .home-wf-trace-signal,
+    .home-wf-trace-trail,
+    .home-wf-trace-node,
+    .home-wf-trace-node::after,
+    .home-wf-trace-dot,
+    .home-wf-trace-swatch-after {
       animation: none;
+    }
+  }
+
+  .home-wf-trace-stage:has([data-node='0']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='0'],
+  .home-wf-trace-stage:has([data-node='1']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='1'],
+  .home-wf-trace-stage:has([data-node='2']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='2'],
+  .home-wf-trace-stage:has([data-node='3']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='3'],
+  .home-wf-trace-stage:has([data-node='4']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='4'],
+  .home-wf-trace-stage:has([data-node='5']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='5'],
+  .home-wf-trace-stage:has([data-node='6']:is(:hover, :focus-visible, [aria-pressed='true'])) [data-trace~='6'] {
+    &.home-wf-trace-wire {
+      stroke: var(--home-text-quiet);
+      opacity: 1;
+    }
+
+    &.home-wf-trace-node {
+      opacity: 1;
+    }
+
+    &.home-wf-trace-node:not(.home-wf-trace-node-definition) {
+      color: var(--home-text);
+      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
+    }
+  }
+
+  /* Narrow cards stack the report's columns from top to bottom. */
+  @container home-wf-trace (width < 28rem) {
+    .home-wf-trace-stage {
+      min-height: 23rem;
+    }
+
+    /* Skewed tiers cannot hold three files across a phone; the flow downwards carries the tiers instead. */
+    .home-wf-trace-pane {
+      display: none;
+    }
+
+    .home-wf-trace-node {
+      left: var(--home-wf-narrow-x);
+      top: var(--home-wf-narrow-y);
+      height: 1.75rem;
+      padding-inline: 0.5625rem;
+      font-size: 0.6875rem;
+    }
+
+    .home-wf-trace-node-definition {
+      height: auto;
+    }
+
+    .home-wf-trace-wide {
+      display: none;
+    }
+
+    .home-wf-trace-narrow {
+      display: block;
+    }
+  }
+
+  @media (--motion-safe) {
+    [data-lit] > .home-wf-signal,
+    [data-lit] > .home-wf-signal-trail {
+      animation-duration: 1.3s;
+      animation-timing-function: var(--home-ease-inout);
+      animation-fill-mode: both;
+    }
+
+    [data-lit] > .home-wf-signal {
+      animation-name: home-wf-signal;
+    }
+
+    [data-lit] > .home-wf-signal-trail {
+      animation-name: home-wf-signal-trail;
+    }
+
+    /* While the stage tours, a logo lifts and its landing glows when the signal reaches it. */
+    [data-wf-touring] .home-wf-framework[data-lit] > .home-wf-framework-logo,
+    [data-wf-touring] .home-wf-framework[data-lit]::before,
+    [data-wf-touring] .home-wf-landing[data-lit] {
+      transition-delay: 1.1s;
+    }
+
+    [data-wf-touring] .home-wf-integration[data-lit] {
+      transition-delay: 0.45s;
+    }
+
+    /* Monorepo: the gold point settles on the connection once the pointer has moved to it. */
+    .home-wf-repo[data-wf-touring] .home-wf-repo-point {
+      transition-delay: 0.6s;
+    }
+
+    /* Routes: each definition the chosen sheet uses sends one signal up into it. */
+    .home-wf-routes:has([value='0']:checked) .home-wf-routes-def[data-trace~='0'],
+    .home-wf-routes:has([value='1']:checked) .home-wf-routes-def[data-trace~='1'],
+    .home-wf-routes:has([value='2']:checked) .home-wf-routes-def[data-trace~='2'] {
+      &::after {
+        animation-name: home-wf-rise;
+        animation-duration: 0.9s;
+        animation-delay: 0.15s;
+        animation-timing-function: var(--home-ease-inout);
+        animation-fill-mode: both;
+      }
+    }
+
+    /* Trace: the token changes, and the change crosses one column of the report at a time. */
+    .home-wf-trace-signal,
+    .home-wf-trace-trail,
+    .home-wf-trace-node:not(.home-wf-trace-node-definition),
+    .home-wf-trace-dot,
+    .home-wf-trace-node-definition,
+    .home-wf-trace-swatch-after {
+      animation-duration: 8.4s;
+      animation-delay: calc(var(--home-wf-hop, 0) * 0.8s + 0.4s);
+      animation-timing-function: var(--home-ease);
+      animation-iteration-count: infinite;
+      animation-fill-mode: both;
+    }
+
+    .home-wf-trace-signal {
+      animation-name: home-wf-trace-signal;
+      animation-timing-function: var(--home-ease-inout);
+    }
+
+    .home-wf-trace-trail {
+      animation-name: home-wf-trace-trail;
+      animation-timing-function: var(--home-ease-inout);
+    }
+
+    .home-wf-trace-node:not(.home-wf-trace-node-definition) {
+      animation-name: home-wf-trace-receive;
+    }
+
+    .home-wf-trace-dot {
+      --home-wf-hop: 1;
+      animation-name: home-wf-trace-dot;
+    }
+
+    .home-wf-trace-node-definition {
+      animation-name: home-wf-trace-live;
+    }
+
+    .home-wf-trace-node:is(.home-wf-trace-node-file, .home-wf-trace-node-output)::after {
+      animation-name: home-wf-trace-mark;
+      animation-duration: 8.4s;
+      animation-delay: calc(var(--home-wf-hop, 0) * 0.8s + 0.4s);
+      animation-timing-function: var(--home-ease);
+      animation-iteration-count: infinite;
+      animation-fill-mode: both;
+    }
+
+    .home-wf-trace-swatch-after {
+      animation-name: home-wf-trace-swatch;
+    }
+
+    [data-wf-offscreen] :is(.home-wf-trace-signal, .home-wf-trace-trail, .home-wf-trace-node, .home-wf-trace-node::after, .home-wf-trace-dot, .home-wf-trace-swatch-after) {
+      animation-play-state: paused;
     }
   }
 }
 
-@keyframes home-impact-node {
-  0%, 8% {
-    outline-color: var(--home-rule);
-  }
-
-  14%, 34% {
-    outline-color: var(--home-rule-strong);
-  }
-
-  46%, 100% {
-    outline-color: var(--home-rule);
+/* Under reduced motion nothing travels: states still change, but by fading in place. */
+@media (--motion-reduce) {
+  .home-wf-framework-logo,
+  .home-wf-routes-sheet,
+  .home-wf-repo-cursor {
+    transition-property: opacity, color, background-color, box-shadow;
   }
 }
 
-@keyframes home-impact-wire {
-  0%, 6% {
-    stroke: var(--home-rule);
+@keyframes home-wf-signal {
+  0% {
+    stroke-dashoffset: 0.06;
+    opacity: 0;
   }
 
-  14%, 34% {
-    stroke: var(--home-text-quiet);
-  }
-
-  46%, 100% {
-    stroke: var(--home-rule);
-  }
-}
-
-@keyframes home-workspace-first {
-  0%, 45% {
-    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
-  }
-
-  50%, 100% {
-    background-color: transparent;
-  }
-}
-
-@keyframes home-workspace-second {
-  0%, 45% {
-    background-color: transparent;
-  }
-
-  50%, 95% {
-    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
-  }
-}
-
-@keyframes home-workspace-badge-first {
-  0%, 45% {
+  8%,
+  92% {
     opacity: 1;
   }
 
-  50%, 100% {
+  100% {
+    stroke-dashoffset: -1;
     opacity: 0;
   }
 }
 
-@keyframes home-workspace-badge-second {
-  0%, 45% {
+/* The trail ends where the head begins: its offset leads the head's by the difference in length. */
+@keyframes home-wf-signal-trail {
+  0% {
+    stroke-dashoffset: 0.26;
     opacity: 0;
   }
 
-  50%, 95% {
-    opacity: 1;
+  10%,
+  85% {
+    opacity: 0.55;
+  }
+
+  100% {
+    stroke-dashoffset: -0.8;
+    opacity: 0;
   }
 }
 
-@keyframes home-routes-row {
-  0%, 30% {
+@keyframes home-wf-climb {
+  0% {
+    stroke-dashoffset: 0.16;
+    opacity: 0;
+  }
+
+  10%,
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+
+@keyframes home-wf-rise {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  15%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--home-wf-rise));
+  }
+}
+
+@keyframes home-wf-trace-signal {
+  0% {
+    stroke-dashoffset: 0.12;
+    opacity: 0;
+  }
+
+  1%,
+  9% {
+    opacity: 1;
+  }
+
+  9.5% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+
+@keyframes home-wf-trace-receive {
+  0% {
+    color: var(--home-text-body);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+  }
+
+  3%,
+  55% {
     color: var(--home-text);
-    background-color: color-mix(in oklab, var(--home-text) 5%, transparent);
+    box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-2);
   }
 
-  34%, 100% {
-    background-color: transparent;
+  62%,
+  100% {
+    color: var(--home-text-body);
+    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
   }
 }
 
-@keyframes home-routes-arrow {
-  to {
-    background-position: 8px 0;
+@keyframes home-wf-trace-dot {
+  0% {
+    background-color: var(--home-wf-before);
+  }
+
+  3%,
+  55% {
+    background-color: var(--home-wf-after);
+  }
+
+  62%,
+  100% {
+    background-color: var(--home-wf-before);
+  }
+}
+
+@keyframes home-wf-trace-live {
+  0%,
+  100% {
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), 0 0 0 1px transparent, var(--home-elevation-1);
+  }
+
+  4% {
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), 0 0 0 5px var(--home-signal-glow), var(--home-elevation-1);
+  }
+
+  16% {
+    box-shadow: inset 0 1px 0 var(--home-highlight-ink), 0 0 0 1px var(--home-ink), 0 0 0 1px transparent, var(--home-elevation-1);
+  }
+}
+
+@keyframes home-wf-trace-swatch {
+  0%,
+  62%,
+  100% {
+    opacity: 0.25;
+    scale: 1;
+  }
+
+  4% {
+    opacity: 1;
+    scale: 1.3;
+  }
+
+  10%,
+  55% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes home-wf-trace-mark {
+  0%,
+  62%,
+  100% {
+    opacity: 0;
+    scale: 0.4;
+  }
+
+  4% {
+    opacity: 1;
+    scale: 1.4;
+  }
+
+  10%,
+  55% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes home-wf-trace-trail {
+  0% {
+    stroke-dashoffset: 0.42;
+    opacity: 0;
+  }
+
+  1.5%,
+  8% {
+    opacity: 0.5;
+  }
+
+  9.5% {
+    stroke-dashoffset: -0.7;
+    opacity: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -0.7;
+    opacity: 0;
   }
 }
