@@ -6,8 +6,10 @@
 }
 
 @layer base {
-  body {
-    font-weight: 350;
+  html[lang="en"] {
+    body {
+      font-weight: 350;
+    }
   }
 }
 
