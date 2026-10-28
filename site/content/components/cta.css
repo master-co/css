@@ -40,7 +40,8 @@
     z-index: 1;
     max-width: 20em;
     margin: 0;
-    font-size: var(--home-title);
+    /* Held at 3.5rem, so on the 100rem column its two lines still fit beside the actions. */
+    font-size: min(var(--home-title), 3.5rem);
     font-weight: var(--font-weight-regular);
     line-height: 1.08;
     letter-spacing: -0.04em;

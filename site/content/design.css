@@ -79,7 +79,7 @@
 
     /* Type: one scale. Display and section titles scale with the viewport; everything else is fixed. */
     --home-display: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
-    --home-title: clamp(2.25rem, 1.55rem + 2.1vw, 3.5rem);
+    --home-title: clamp(2.25rem, 1.55rem + 2.1vw, 4rem);
     --home-lead: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
     --home-card-title: 1.5rem;
     --home-body: 1rem;

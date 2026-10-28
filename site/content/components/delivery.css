@@ -33,6 +33,16 @@
     }
   }
 
+  /* The 100rem column: the code a size up, so each station reads at the drawing's scale. */
+  @container home-delivery (width >= 90rem) {
+    .home-delivery-layout {
+      --home-delivery-gap: 3.5rem;
+      --home-delivery-line: 1.3125rem;
+      --home-delivery-code: 0.8125rem;
+      --home-delivery-pad: 1.25rem;
+    }
+  }
+
   /*
    * From 52rem the drawing comes first and the controls follow. Narrower, the controls come first
    * (mode, then player) and one station follows, so the space it reserves for its tallest state
@@ -587,6 +597,11 @@
     display: grid;
     justify-items: center;
     width: 100%;
+
+    /* The 100rem column's wider window: the page set a step larger, matching the code beside it. */
+    @container home-delivery (width >= 90rem) {
+      zoom: 1.2;
+    }
   }
 
   .home-delivery-page-card {

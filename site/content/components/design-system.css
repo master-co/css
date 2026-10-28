@@ -72,6 +72,11 @@
     @container (width < 22rem) {
       width: calc(100% - 3rem);
     }
+
+    /* The 100rem column's half-width well: the same screen, set a step larger. */
+    @container (width >= 40rem) {
+      zoom: 1.16;
+    }
   }
 
   .home-theme-labels {
@@ -226,6 +231,11 @@
     /* Alone in its row, the pane is as tall as its code. */
     @media (width < 64rem) {
       height: auto;
+    }
+
+    /* Level with the theme preview's taller well beside it. */
+    @media (--xl) {
+      height: 30rem;
     }
   }
 
@@ -1049,6 +1059,19 @@
       --home-layer-width: 13rem;
       --home-layer-depth: 7.5rem;
       --home-layers-x: 42%;
+    }
+  }
+
+  /* The 100rem column's half-width well: larger slabs, opened a little further. */
+  @container (width >= 40rem) {
+    .home-layers-scene {
+      --home-layer-width: 15.5rem;
+      --home-layer-depth: 9rem;
+      --home-layer-gap: 4.25rem;
+
+      .home-bento-card:hover & {
+        --home-layer-gap: 5rem;
+      }
     }
   }
 

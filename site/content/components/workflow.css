@@ -47,7 +47,8 @@
     container-type: inline-size;
     position: relative;
     justify-self: center;
-    width: min(100%, 40rem);
+    /* Fills the frameworks card up to the 100rem column's 7-of-12 span. */
+    width: min(100%, 52rem);
     aspect-ratio: var(--home-wf-wide-ratio);
   }
 
@@ -330,7 +331,7 @@
     container-type: inline-size;
     position: relative;
     justify-self: center;
-    width: min(100%, 30rem);
+    width: min(100%, 36rem);
   }
 
   .home-wf-repo-app {
@@ -565,6 +566,13 @@
       --home-wf-step-x: 1.125rem;
       --home-wf-step-y: 0.75rem;
     }
+
+    /* The 100rem column's 5-of-12 card: a deeper deck for the larger code. */
+    @container (width >= 32rem) {
+      --home-wf-step-x: 1.5rem;
+      --home-wf-step-y: 1rem;
+      height: 12.5rem;
+    }
   }
 
   /* The deck floats over the slab and casts a soft shadow onto it. */
@@ -611,6 +619,10 @@
 
     @container (width >= 24rem) {
       font-size: 0.75rem;
+    }
+
+    @container (width >= 32rem) {
+      font-size: 0.8125rem;
     }
   }
 

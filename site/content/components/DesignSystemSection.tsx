@@ -77,7 +77,7 @@ function DesignSystemTile({ tile }: { tile: DesignSystemTileContent }) {
       href={designSystemGuides[tile.visual]}
       icon={tileIcons[tile.visual]}
       title={$(tile.title)}>
-      {tile.visual === 'theme-modes' && <ThemeModesPreview className="h-md home-bento-visual" />}
+      {tile.visual === 'theme-modes' && <ThemeModesPreview className="h-md height:30rem@xl home-bento-visual" />}
       {tile.visual === 'art-gallery' && <ArtGalleryPreview className="home-bento-visual home-gallery" />}
       {tile.visual === 'theme-variables' && <ThemeTokens />}
       {tile.visual === 'cascade-layers' && <CascadeLayers />}
