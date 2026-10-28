@@ -16,7 +16,7 @@ function TokenScene({ namespace, tokens, title, compare = false }: { namespace: 
   </Demo>
 }
 
-export default function FoundationTokensView({ namespace, keys, source }: { namespace: string; keys?: string[]; source?: React.ReactNode }) {
+export default function FoundationTokensView({ namespace, keys, source, presentation = 'reference' }: { namespace: string; keys?: string[]; source?: React.ReactNode; presentation?: 'guide' | 'reference' }) {
   if (namespace === 'breakpoints') return <ThemeNumberVariableTable namespace="breakpoint" />
   const tokens = specimenTokens(namespace, keys)
   if (namespace === 'color') {
@@ -38,8 +38,8 @@ export default function FoundationTokensView({ namespace, keys, source }: { name
     </div>
   }
   return <div data-foundation-tokens={namespace} data-token-keys={tokens.map(token => token.key).join(' ')}>
-    {namespace === 'spacing' ? <><ThemeNumberVariableTable namespace="spacing" keys={keys} representation="spacing" /><p className="demo-caption">{specimenCaption.spacing}</p></>
-      : <TokenScene namespace={namespace} tokens={tokens} title={namespace === 'shadow' ? 'Shadow scale' : namespace === 'radius' ? 'Corner radius scale' : namespace.replaceAll('-', ' ')} compare={namespace.startsWith('color-') || namespace === 'shadow'} />}
+    {namespace === 'spacing' ? <><ThemeNumberVariableTable namespace="spacing" keys={keys} representation="spacing" referenceUnits={presentation !== 'guide'} /><p className="demo-caption">{presentation === 'guide' ? 'The striped area is the actual gap between two equal blocks.' : specimenCaption.spacing}</p></>
+      : <TokenScene namespace={namespace} tokens={tokens} title={namespace === 'shadow' ? 'Shadow scale' : namespace === 'radius' ? 'Corner radius scale' : namespace.replaceAll('-', ' ')} compare={namespace.startsWith('color-') || (namespace === 'shadow' && presentation === 'reference')} />}
     {namespace === 'container' && <ThemeNumberVariableTable namespace="container" keys={keys} />}
     {source}
   </div>

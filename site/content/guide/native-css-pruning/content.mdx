@@ -42,26 +42,7 @@ Use [Scanning latent classes](/guide/scanning-latent-classes) for the source sca
 ## Explicit pruning
 Import `@master/css` from the CSS entry that should receive generated Master CSS. Native class selector rules remain intact unless this file declares `@prune native;` or the integration explicitly enables `pruneNativeCSS: true`. The integration option applies only to project-owned sources.
 
-```css name=src/app.css
-@prune native;
-@import "@master/css";
-
-.app-shell {
-  min-height: 100dvh;
-}
-
-.debug-outline {
-  outline: 1px solid red;
-}
-```
-
-The Master import is replaced by generated CSS. It is not emitted as a browser-facing package import by the integration.
-
-```css name=output.css
-.app-shell {
-  min-height: 100dvh;
-}
-```
+The integration replaces the Master import with generated CSS; the browser does not receive the package import.
 
 Use `@preserve native;` when the stylesheet contains class names that are intentionally invisible to the scanner.
 
@@ -120,16 +101,12 @@ Resolved CSS imports retain their own source boundaries. Each file opts in with 
 }
 ```
 
-```tsx name=src/App.tsx
-export function App() {
-  return (
-    <main className="page">
-      <article className="card">
-        <button className="button">Save</button>
-      </article>
-    </main>
-  )
-}
+```html name=src/index.html
+<main class="page">
+  <article class="card">
+    <button class="button">Save</button>
+  </article>
+</main>
 ```
 
 The compiled native CSS keeps `.page`, `.card`, and `.button`, then removes `.unused-card` and `.unused-button`.
@@ -188,9 +165,9 @@ app/b/b.css
 }
 ```
 
-If `app/a/page.tsx` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.b-page` and `.only-used-in-b`.
+If `app/a/page.html` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.b-page` and `.only-used-in-b`.
 
-If `app/b/page.tsx` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
+If `app/b/page.html` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
 
 The same imported file can therefore be pruned differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root only when that direct import enters the Master CSS pipeline.
 
@@ -201,18 +178,18 @@ By default, a pruned stylesheet uses the global scanner scope. Add `@source`, `@
 
 ```txt
 app/a/a.css
-  -> scans app/a/page.tsx
+  -> scans app/a/page.html
   -> imports ../shared.css
 
 app/b/b.css
-  -> scans app/b/page.tsx
+  -> scans app/b/page.html
   -> imports ../shared.css
 ```
 
 ```css name=app/a/a.css
 @prune native;
 @import "@master/css";
-@source "./page.tsx";
+@source "./page.html";
 @import "../shared.css";
 
 .a-card {
@@ -227,7 +204,7 @@ app/b/b.css
 ```css name=app/b/b.css
 @prune native;
 @import "@master/css";
-@source "./page.tsx";
+@source "./page.html";
 @import "../shared.css";
 
 .a-card {
@@ -253,18 +230,14 @@ app/b/b.css
 }
 ```
 
-`./page.tsx` is resolved relative to the CSS file that declared it. The directives in `shared.css` are merged into whichever root imports it, so `shared-card` is included for both roots and `debug-*` is blocked for both roots.
+`./page.html` is resolved relative to the CSS file that declared it. The directives in `shared.css` are merged into whichever root imports it, so `shared-card` is included for both roots and `debug-*` is blocked for both roots.
 
-```tsx name=app/a/page.tsx
-export default function Page() {
-  return <article className="a-card shared-card">A</article>
-}
+```html name=app/a/page.html
+<article class="a-card shared-card">A</article>
 ```
 
-```tsx name=app/b/page.tsx
-export default function Page() {
-  return <article className="b-card shared-card">B</article>
-}
+```html name=app/b/page.html
+<article class="b-card shared-card">B</article>
 ```
 
 The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@blocklist "debug-*";` directive belongs to each root scope.
@@ -273,8 +246,8 @@ If a root must scan a file, make sure no `@source not` pattern removes it.
 
 ```css name=app/a/a.css
 @import "@master/css";
-@source "./**/*.tsx";
-@source not "./**/*.stories.tsx";
+@source "./pages/*.html";
+@source not "./pages/preview.html";
 ```
 
 ---
@@ -341,7 +314,7 @@ Pruned native CSS can reference variables and keyframes from the project CSS ent
 ```css name=index.css
 @theme {
   --color-primary: #175cff;
- }
+}
 
 @keyframes fade-in {
   from {

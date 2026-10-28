@@ -1,14 +1,19 @@
 import Class2CSS from '~/site/components/Class2CSS'
 import { FoundationElevationState } from '~/site/components/demo/FoundationPaint'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
-import { SurfaceElevationDemo } from './components/ShadowTokens'
+import { FoundationElevation } from '~/site/components/demo/FoundationPaint'
 
 ## Overview [sr-only]
-Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
+Use `shadow-<token>` to lift a surface from its background. Compare the six preset levels on the same surface; each shadow has room to spread beyond the card.
 
-Master CSS maps elevation to the `shadow` namespace. Use `shadow-*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset uses `light-dark()` in each shadow color: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
+<FoundationTokens namespace="shadow" keys={["xs", "sm", "md", "lg", "xl", "2xl"]} />
 
+```html
+<article class="bg-surface-raised r-lg shadow-sm">Card</article>
+<div class="bg-surface-floating r-lg shadow-lg">Floating panel</div>
+```
 
+The colors inside each shadow adapt to the element's color scheme. The preset keeps the same offsets and blur in light and dark modes. Use the preview's theme control to compare them.
 
 ---
 
@@ -17,8 +22,6 @@ Start with the surface relationship, then choose the lowest token that makes tha
 
 Try `shadow-sm` for a card and `shadow-lg` for a floating surface, then compare them against the actual background. These are design suggestions, not fixed token semantics.
 
-<FoundationTokens namespace="shadow" keys={["sm", "lg"]} />
-
 See the complete [values and consumers](/reference/tokens/shadow) in Reference.
 
 The role of each token should stay stable across modes. Custom light and dark recipes can vary geometry as well as color, but `shadow-sm` should still mean a standard raised surface in both modes.
@@ -26,9 +29,9 @@ The role of each token should stay stable across modes. Custom light and dark re
 ---
 
 ## Pair elevation with color roles
-Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and radius tokens so depth reads correctly in light and dark themes.
+Elevation needs a visible ground. Pair shadows with `bg-surface-*`, `fg-text-*`, and radius tokens so depth reads correctly in light and dark themes.
 
-<SurfaceElevationDemo />
+<FoundationElevation />
 
 ```html
 <!-- @MARK shadow-lg -->
@@ -94,37 +97,21 @@ Keep state changes small. Moving from `shadow-sm` to `shadow-md` is usually enou
 ---
 
 ## Customize mode-aware shadows
-Override the same `shadow-*` keys with `light-dark()` colors for manual and nested schemes. Native media queries are useful when a custom recipe intentionally follows only the system preference, as below. Keep the token names size-based and mode-neutral so the markup does not fork by theme.
+Override a `shadow-*` token with your own recipe. Use `light-dark()` for each shadow color so manual themes and nested color schemes work too.
 
 ```css name=index.css
 @theme {
-  --shadow-sm:0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
-  --shadow-lg:0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
+  --shadow-card:
+    0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)),
+    0 4px 12px -2px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .4));
 }
-
-@media (prefers-color-scheme: light) {
-  :root, :host {
-  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
-  --shadow-lg: 0 0 0 1px oklch(0% 0 none / .06), 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root, :host {
-  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .05), 0 2px 8px -4px oklch(0% 0 none / .36);
-  --shadow-lg: 0 0 0 1px oklch(100% 0 none / .07), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
-  }
-}
-
 ```
 
 ```html
-<!-- @MARK shadow-sm --><!-- @MARK shadow-lg -->
-<article class="shadow-sm">...</article>
-<div class="shadow-lg">...</div>
+<article class="bg-surface-raised r-lg shadow-card">...</article>
 ```
 
-Promote repeated raw shadows into the scale. Keep one-off art direction in local markup or component CSS until it proves reusable. If a one-off shadow must differ by mode, prefer promoting it to a token instead of duplicating conditional raw values in markup.
+Keep the name independent of the active mode. A custom recipe may change geometry as well as color, but its role should remain consistent. Keep one-off art direction in local CSS until it needs a reusable token.
 
 ---
 
@@ -149,36 +136,6 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 </main>
 ```
 
-(x) Raw shadows become repeated product decisions without a name.
+Promote a repeated shadow into a named token rather than copying the raw value into every card. Keep the page canvas flat and elevate only the surfaces that need separation.
 
-```html
-<article class="box-shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</article>
-<aside class="box-shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</aside>
-```
-
-(o) Repeated decisions override a shadow scale token.
-
-```css name=index.css
-@theme {
-  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
-}
-
-@media (prefers-color-scheme: light) {
-  :root, :host {
-  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root, :host {
-  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
-  }
-}
-
-```
-
-```html
-<aside class="shadow-sm">...</aside>
-```
-
-The default six shadows keep the same geometry in both schemes and switch only their colors. `data-theme` and direct `color-scheme` changes update them without recompilation; see [Colors](/guide/colors#native-color-scheme-and-manual-themes).
+The preset shadows follow manual and nested schemes without recompilation; see [Colors](/guide/colors#native-color-scheme-and-manual-themes).

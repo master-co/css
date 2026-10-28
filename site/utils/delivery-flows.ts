@@ -3,7 +3,7 @@ export const deliveryFlows = {
     title: 'Runtime delivery',
     steps: [
       { title: 'Observe', description: 'Read connected elements and receive DOM class changes.' },
-      { title: 'Ensure', description: 'Interpret complete classes with the project manifest.' },
+      { title: 'Ensure', description: 'Execute complete classes with the compiled project program.' },
       { title: 'Update', description: 'Insert or reuse native CSS rules in the runtime stylesheet.' }
     ],
     caption: 'DOM usage and cached CSS rules have separate lifecycles.'
@@ -15,7 +15,7 @@ export const deliveryFlows = {
       { title: 'Paint', description: 'Deliver the initial CSS in the HTML for the first screen.' },
       { title: 'Continue', description: 'Hydrate matching rules, then observe new DOM classes.' }
     ],
-    caption: 'The page hydration manifest describes existing rules; the project manifest defines class meaning.'
+    caption: 'The page hydration manifest describes existing rules; the compiled project program supplies class definitions.'
   },
   hydration: {
     title: 'CSS hydration',

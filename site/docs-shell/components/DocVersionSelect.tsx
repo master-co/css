@@ -10,7 +10,7 @@ export default function DocVersionSelect() {
   }, [])
   return (
     <select name="version" defaultValue={import.meta.env.PUBLIC_URL}
-      className="position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer"
+      className="position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer doc-preference-select"
       onChange={navigate}>
       <option value={import.meta.env.PUBLIC_URL}>v{import.meta.env.PUBLIC_VERSION}</option>
       {app.versions.map(({ name, href }) => <option key={href} value={href}>{name}</option>)}

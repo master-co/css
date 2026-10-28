@@ -1,10 +1,9 @@
-import ResourceWaterfall from './components/ResourceWaterfall'
+import ResourceWaterfall from '~/site/components/demo/ResourceWaterfall'
 
----
+Preload a resource only when the first screen needs it and normal discovery starts it too late. Static pages use ordinary CSS delivery. Runtime-only pages need their engine and program before generating styles; progressive pages already have the first screen's CSS.
 
 ## Preload runtime engine
-Without preload hints, the CDN runtime script and its default program can be discovered too late.
-Runtime rendering may experience delays in downloading and initializing until the first contentful paint if [runtime-critical resources](/guide/rendering-modes#runtime-rendering) are discovered late.
+For the CDN runtime-only setup, preload the script and default program so both requests can start during HTML parsing.
 
 Conceptual request waterfall for the CDN runtime script and default program. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
 <ResourceWaterfall />
@@ -26,7 +25,6 @@ Preload the CDN runtime with `as="script"`. When its engine starts, the CDN runt
 ```
 With these preload hints in place, the runtime script and default program requests start during document parsing and download in parallel with the stylesheet. The parser and runtime later reuse the preloaded responses instead of waiting on new requests.
 
-You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
 
 ---
 
@@ -67,7 +65,6 @@ On a progressive page, the critical CSS is already in `style#master-css`. The ru
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- @MARK defer -->
   <script type="module" src="/main.js"></script>
 </head>
 </html>
@@ -103,11 +100,8 @@ This is different from runtime project programs. A runtime-only page needs its p
 
 ---
 
-## Benefits
-Preloading critical assets can improve the following metrics:
+## Verify the request waterfall \{#benefits\}
 
-1. **First Contentful Paint (FCP)**: Preloading critical assets helps accelerate the loading of essential scripts, such as JavaScript, resulting in faster FCP. This means that the main content of the webpage can be displayed more quickly in the user's browser, enhancing their perception and experience.
-2. **First Meaningful Paint (FMP)**: By preloading critical scripts, the browser can start parsing and rendering the script earlier, leading to faster FMP. This allows users to see meaningful content more rapidly, improving the visual presentation of the page.
-3. **Time to Interactive (TTI)**: Preloading critical scripts reduces waiting time for users, resulting in a faster Time to Interactive. When the critical script has been downloaded and is ready, users can interact with the webpage more quickly, providing a better user experience.
+Compare a cold load with and without the hint in browser DevTools. Check that the critical request starts earlier and the later consumer reuses it. Match the URL, resource type and credentials mode; an unused preload can compete with resources the page actually needs.
 
-Preloading critical scripts enhances the download and execution speed of the scripts, thereby improving metrics such as First Contentful Paint, First Meaningful Paint, and Time to Interactive.
+Use [Rendering modes](/guide/rendering-modes) to choose delivery first. A preload changes request discovery; it does not reduce the asset's parsing or execution work.

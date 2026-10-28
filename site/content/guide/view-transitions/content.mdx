@@ -1,6 +1,5 @@
 import Class2CSS from '~/site/components/Class2CSS'
-import ViewTransitionDemo from './components/ViewTransitionDemo'
-import ArticleTransitionDemo from './components/ArticleTransitionDemo'
+import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
 
 ## Overview [sr-only]
 The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) creates animated transitions between two visual states. It can handle same-document updates in an SPA and same-origin navigation between documents in an MPA.
@@ -8,7 +7,7 @@ The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_
 In a same-document transition, call `document.startViewTransition()` and update the DOM inside its callback. The browser snapshots the old state, runs the update, snapshots the new state, then animates the old and new snapshots. Without custom CSS, the default transition is a smooth cross-fade.
 
 (click) Select a view to run a same-document transition.
-<ViewTransitionDemo />
+<DemoViewTransition example="views" />
 
 ```js name=transition.js
 const update = () => {
@@ -26,7 +25,7 @@ The demo uses Master CSS classes to name the snapshots that should transition in
 
 ```html
 <section class="view-transition-name:panel">
-  <h3 class="view-transition-name:title">Product detail</h3>
+  <h3 data-current-view class="view-transition-name:title">Product detail</h3>
 </section>
 ```
 
@@ -52,74 +51,93 @@ Master CSS keeps the CSS side concise by expressing `view-transition-name`, `vie
 ## Article list to detail
 A common use case is moving from an article feed to an article detail page. The selected article's image, title, and date can keep the same `view-transition-name` in both layouts, while the surrounding card grid and detail content change normally. This demo also uses `view-transition-class` so the transition timing applies only to article snapshots.
 
-(click) Click Read More, then return to the article list.
-<ArticleTransitionDemo />
+(click) Open an article, then return to the collection. Keyboard focus follows the selected article and returns to its button.
+<DemoViewTransition example="articles" />
 
 In the list view, every article gets unique names for its shared elements:
 
-```html
-<article>
-  <img
-    alt="A mountain ridge under soft light"
-    class="view-transition-class:article view-transition-name:article-image"
-    src="/images/article-aurora.jpg"
-  />
-  <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
-  <h3 class="view-transition-class:article view-transition-name:article-title">
-    Designing transitions that preserve context
-  </h3>
-  <p>...</p>
-  <button>Read More</button>
-</article>
+```html name=article-list.html
+<section data-articles>
+  <article>
+    <img
+      alt="A mountain ridge under soft light"
+      class="view-transition-class:article view-transition-name:article-aurora-image"
+      src="/images/article-aurora.jpg"
+    />
+    <time class="view-transition-class:article view-transition-name:article-aurora-date">May 12, 2026</time>
+    <h3 class="view-transition-class:article view-transition-name:article-aurora-title">
+      Designing transitions that preserve context
+    </h3>
+    <p>Keep the selected image and heading connected to their destination.</p>
+    <button type="button" data-read-more>Read article</button>
+  </article>
+</section>
 ```
 
-In the detail view, render the same image, date, and title with the same names:
+Keep the detail markup in a template. Its matching image, date and heading use the same names; the template stays outside the rendered list until it is selected:
 
-```html
-<article>
-  <img
-    alt="A mountain ridge under soft light"
-    class="view-transition-class:article view-transition-name:article-image"
-    src="/images/article-aurora.jpg"
-  />
-  <time class="view-transition-class:article view-transition-name:article-date">May 12, 2026</time>
-  <h1 class="view-transition-class:article view-transition-name:article-title">
-    Designing transitions that preserve context
-  </h1>
-  <p>...</p>
-</article>
+```html name=article-detail.html
+<template id="article-detail">
+  <article>
+    <img
+      alt="A mountain ridge under soft light"
+      class="view-transition-class:article view-transition-name:article-aurora-image"
+      src="/images/article-aurora.jpg"
+    />
+    <time class="view-transition-class:article view-transition-name:article-aurora-date">May 12, 2026</time>
+    <h1 tabindex="-1" class="view-transition-class:article view-transition-name:article-aurora-title">
+      Designing transitions that preserve context
+    </h1>
+    <p>The image, date and heading keep their snapshot names.</p>
+    <button type="button" data-back>Back to collection</button>
+  </article>
+</template>
 ```
 
-The state update can stay framework-free. Replace the list with the detail markup inside `startViewTransition()`:
+Place the list and template in the same document, then replace the list contents inside `startViewTransition()`. Restore focus after each update so keyboard readers can continue from the new view:
 
-```js
+```js name=article-transition.js
 const root = document.querySelector('[data-articles]')
-const detailTemplate = document.querySelector('#article-detail')
+const detail = document.querySelector('#article-detail')
+const list = root.cloneNode(true)
 
-document.querySelector('[data-read-more]').addEventListener('click', () => {
-  const update = () => {
-    root.replaceChildren(detailTemplate.content.cloneNode(true))
-  }
-
-  if (!document.startViewTransition) {
+function changeView(update) {
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!document.startViewTransition || reduceMotion) {
     update()
   } else {
-    document.startViewTransition(update)
+    const transition = document.startViewTransition(update)
+    // Rapid input may skip the animation; the DOM update still completes.
+    transition.ready.catch(() => {})
+  }
+}
+
+root.addEventListener('click', (event) => {
+  if (event.target.closest('[data-read-more]')) {
+    changeView(() => {
+      root.replaceChildren(detail.content.cloneNode(true))
+      root.querySelector('h1').focus()
+    })
+  } else if (event.target.closest('[data-back]')) {
+    changeView(() => {
+      root.replaceChildren(...list.cloneNode(true).childNodes)
+      root.querySelector('[data-read-more]').focus()
+    })
   }
 })
 ```
 
 <Class2CSS>
   {[
-      'view-transition-name:article-image',
-      'view-transition-name:article-date',
-      'view-transition-name:article-title',
+      'view-transition-name:article-aurora-image',
+      'view-transition-name:article-aurora-date',
+      'view-transition-name:article-aurora-title',
       'view-transition-class:article',
       'animation-duration:.52s::view-transition-group(.article)'
     ]}
 </Class2CSS>
 
-(i) Only one rendered element can use the same `view-transition-name` at a time. The list uses article-specific names such as `article-aurora-image`, `article-studio-image`, and `article-coast-image` so the selected card can match the detail page without colliding with other cards.
+(i) Only one rendered element can use the same `view-transition-name` at a time. The list uses article-specific names such as `article-aurora-image` and `article-studio-image` so the selected card can match the detail page without colliding with other cards.
 
 ---
 

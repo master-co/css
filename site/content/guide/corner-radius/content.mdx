@@ -6,26 +6,28 @@ import { FoundationShapes } from '~/site/components/demo/FoundationExamples'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 
 ## Overview [sr-only]
-Corner radius defines the shape language of surfaces, controls, media, and badges. It tells users whether an element is dense and precise, soft and spacious, pill-shaped, or circular.
+Use `r-<token>` to round an element's corners. Compare the same outline at each radius, then choose a consistent scale for controls, cards and larger surfaces.
 
-Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r-sm`, `r-lg`, and `r-2xl` for shared UI curvature instead of repeating raw values across markup. Use `r-pill` for a pill, and combine it with explicit dimensions and `aspect-ratio:1/1` for a circle.
+<FoundationTokens namespace="radius" keys={["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "pill"]} />
 
-
+```html
+<div class="r-sm">Small radius</div>
+<div class="r-lg">Larger radius</div>
+<div class="r-2xl">Soft panel</div>
+```
 
 ---
-
-<DemoConfiguredExample name="nested-radius" title="Related shapes, one composition" source="" theme previewFirst
-  html={'<article class="width:100% max-w-sm margin-inline:auto p-lg r-2xl bg-surface-raised shadow-sm"><div class="p-lg r-lg bg-blue-5 fg-blue-80"><p class="margin:0 text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="margin:0 text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="display:grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
-  caption="The outer card uses r-2xl, its inset panel r-lg, and the input r-md. The pill action is a separate shape choice. The preview does not save data." />
 
 ## Choose a radius token
 Start with the role of the element, then choose the smallest radius that communicates that role. Radius should reinforce hierarchy and interaction density instead of becoming decoration.
 
-<FoundationTokens namespace="radius" keys={["md", "lg", "2xl"]} />
-
 See the complete [values and consumers](/reference/tokens/radius) in Reference.
 
-Use related tokens for related surfaces. A card, its nested media, and an action group can share the same radius or step down one level for nested elements.
+Use related tokens for related surfaces. A card, its nested media, and an action group can share a radius or use a smaller inner radius. For a constant inset, choose the inner radius from the outer radius minus that inset rather than increasing it.
+
+<DemoConfiguredExample name="nested-radius" title="Related shapes, one composition" source="" theme previewFirst code={false}
+  html={'<article class="width:100% max-w-sm margin-inline:auto p-lg r-2xl bg-surface-raised shadow-sm"><div class="p-lg r-lg bg-surface-inset fg-text-body"><p class="margin:0 text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="margin:0 text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="display:grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
+  caption="The outer card uses r-2xl, its inset panel r-lg, and the input r-md. The pill action is a separate shape choice. This preview does not save data." />
 
 ---
 
@@ -107,8 +109,7 @@ Override radius variables when your product needs sharper controls, softer panel
   --radius-crisp: 0.25rem;
   --radius-card: 0.75rem;
   --radius-panel: 1.25rem;
- }
-
+}
 ```
 
 ```html
@@ -147,8 +148,7 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 @theme {
   --radius-1: 0.25rem;
   --radius-2: 0.5rem;
- }
-
+}
 ```
 
 (o) Name tokens by scale or role.
@@ -157,6 +157,5 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 @theme {
   --radius-sm: 0.25rem;
   --radius-card: 0.75rem;
- }
-
+}
 ```

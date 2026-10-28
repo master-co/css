@@ -12,7 +12,7 @@ export default function LanguageSelect({ className, children, ...props }: { clas
   const i18n = useI18n()
   return (
     <>
-      <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer', className)}
+      <select {...props} className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer doc-preference-select', className)}
         onChange={(event: any) => {
           const newLocale = event.target.value
           const splits = pathname.split('/')

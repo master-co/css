@@ -23,11 +23,11 @@ export function tokenAdvice(namespace: string, key: string) {
   return descriptions[namespace]?.[key] ?? (namespace === 'color-text' ? `Mode-aware ${key} foreground text.` : namespace === 'color' ? `${key} color; inspect the authored value and scope below.` : '')
 }
 export const specimenCaption: Record<string, string> = {
-  color: 'Fixed steps keep their colors across modes. Hue aliases and special values are shown separately. Copy either the original CSS value or its variable reference.',
+  color: 'Numbered palette steps keep their colors across light and dark modes. Choose a swatch to copy its original CSS value or variable reference.',
   'color-surface': 'Compare complete surfaces in light and dark. Inverse surfaces use inverse text. Role descriptions are design guidance, not component restrictions.',
   'color-line': 'Each token paints a boundary, with identical line width in both modes. Divider and subtle are decorative; control is intended for required boundaries.',
   'color-text': 'Each token paints real text, on its intended surface, in both modes. Check contrast in your actual composition.',
-  radius: 'Identical shapes reveal each radius. The pill token rounds a wide control and makes an equal-sided control circular.',
+  radius: 'The highlighted corner shows the radius on equal-sized shapes. The pill token rounds a wide control and makes an equal-sided control circular.',
   shadow: 'The same raised surface, radius and padding at every level. The full shadow has room to spread. Suggested uses are design guidance.',
   spacing: 'Pink stripes show the actual gap between equal blocks. Pixel equivalents assume a 16px root; authored rem values follow the root font size.',
   container: 'Bars show relative width caps on one shared scale. Exact values remain in the table; changing a size token does not change a container-query threshold.',
@@ -42,7 +42,9 @@ export const specimenCaption: Record<string, string> = {
   easing: 'All markers travel the same path over one second; only timing changes. Overshoot and rewind may pass the endpoints. Reduced motion keeps them still.',
   order: 'Compare each preset order token on the middle item. Visual arrangement changes; DOM, reading and keyboard order stay 1, 2, 3.',
 }
-const label = (namespace: string, token: FoundationToken) => `<div data-ui="label"><code>${escape(tokenClass(namespace, token.key))}</code> · <code>--${escape(token.name)}</code>${['shadow', 'color', 'color-line', 'color-surface', 'color-text'].includes(namespace) ? '' : ` · ${escape(defaultValue(token))}`}</div>`
+const label = (namespace: string, token: FoundationToken) => namespace === 'shadow'
+  ? `<div data-ui="label"><code>${escape(tokenClass(namespace, token.key))}</code><span class="sr-only"> · --${escape(token.name)}</span></div>`
+  : `<div data-ui="label"><code>${escape(tokenClass(namespace, token.key))}</code> · <code>--${escape(token.name)}</code>${['color', 'color-line', 'color-surface', 'color-text'].includes(namespace) ? '' : ` · ${escape(defaultValue(token))}`}</div>`
 const paragraph = 'Good typography makes room for the reader. A comfortable measure and a steady rhythm help the eye move from one line to the next, keeping the focus on the ideas rather than the interface.'
 
 /** Site-authored presentation only. Classes and var() references are resolved by the public compiler. */
@@ -51,6 +53,7 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
   const caption = specimenCaption[namespace]
   const scene: DemoScene = { html: '', caption, sizing: 'content', bodyClass: 'bg-surface-base fg-text-body', css: '' }
   if (namespace === 'color') {
+    if (tokens.every(token => !/-\d+$/.test(token.key))) scene.caption = 'General hue aliases keep a fixed swatch in both modes. Native values such as currentColor and transparent keep their CSS meaning.'
     scene.html = `<div data-foundation="colors">${tokens.map(token => `<section>${label(namespace, token)}<div data-color-swatch class="bg-${token.key}" aria-label="${escape(token.key)} swatch"></div><p data-ui="label">${escape(defaultValue(token))}</p></section>`).join('')}</div>`
     scene.css = '[data-foundation="colors"] { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); gap:24px; } [data-color-swatch] { height:64px; border-radius:var(--radius-sm); outline:1px solid var(--color-line-divider); outline-offset:-1px; }'
   } else if (namespace.startsWith('color-')) {
@@ -67,11 +70,11 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
     }).join('')}</div>`
     scene.css = '[data-foundation="roles"] { display:grid; gap:24px; }'
   } else if (namespace === 'radius') {
-    scene.html = `<div data-foundation="radius">${tokens.map(token => `<section>${label(namespace, token)}<div data-radius-shape class="r-${token.key} bg-surface-raised shadow-sm"><span class="fg-text-muted text-sm">${token.key}</span></div>${token.key === 'pill' ? '<div data-radius-circle class="r-pill bg-surface-raised shadow-sm" aria-label="Equal width and height form a circle">+</div>' : ''}</section>`).join('')}</div>`
-    scene.css = '[data-foundation="radius"] { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); gap:32px; } [data-radius-shape] { display:grid; place-items:center; height:96px; width:128px; max-width:100%; } [data-radius-circle] { display:grid; place-items:center; width:48px; height:48px; margin-top:16px; font-size:24px; }'
+    scene.html = `<div data-foundation="radius">${tokens.map(token => `<section><div data-ui="label"><code>r-${escape(token.key)}</code></div><div data-radius-shape class="r-${token.key}"${token.key === 'pill' ? ' data-pill' : ''}></div><div data-ui="label">${token.key === 'pill' ? 'Fully rounded' : `<code>${escape(defaultValue(token))}</code>`}</div><span class="sr-only">--${escape(token.name)}</span></section>`).join('')}${tokens.some(token => token.key === 'pill') ? '<section><div data-ui="label">Circle</div><div data-radius-shape data-radius-circle class="r-pill"></div><div data-ui="label">Equal sides + r-pill</div></section>' : ''}</div>`
+    scene.css = 'body { padding:32px 24px; } [data-foundation="radius"] { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px 20px; } @media (min-width:528px) { [data-foundation="radius"] { grid-template-columns:repeat(5,minmax(0,1fr)); } } [data-foundation="radius"] section { display:grid; align-content:start; justify-items:start; gap:12px; } [data-foundation="radius"] [data-ui="label"] { margin:0; font-size:12px; } [data-radius-shape] { position:relative; width:76px; height:76px; border:4px solid var(--color-line-divider); } [data-radius-shape]::after { content:""; position:absolute; inset:-4px; border:4px solid var(--color-text-pink); border-radius:inherit; mask-image:conic-gradient(black 0deg 90deg,transparent 90deg 360deg); } [data-radius-shape][data-pill] { height:38px; } [data-radius-shape]:is([data-pill],[data-radius-circle])::after { mask-image:none; }'
   } else if (namespace === 'shadow') {
     scene.html = `<div data-foundation="shadow">${tokens.map(token => `<section>${label(namespace, token)}<article data-shadow-card class="p-lg r-lg bg-surface-raised shadow-${token.key}"><div class="text-md font-medium fg-text-strong">${escape(getShadowRows().find(row => row.key === token.key)?.role ?? token.key)}</div><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">${escape(getShadowRows().find(row => row.key === token.key)?.description ?? '')}</p></article></section>`).join('')}</div>`
-    scene.css = 'body { padding:32px 24px 64px; } [data-foundation="shadow"] { display:grid; gap:48px; } [data-shadow-card] { min-height:128px; }'
+    scene.css = 'body { padding:32px 32px 64px; } [data-foundation="shadow"] { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,192px),1fr)); gap:48px 40px; } [data-shadow-card] { min-height:144px; } [data-foundation="shadow"] [data-ui="label"] { font-size:12px; }'
   } else if (['font-family', 'font-size', 'font-weight', 'text', 'leading', 'tracking'].includes(namespace)) {
     scene.html = `<div data-foundation="typography">${tokens.map(token => {
       const utility = tokenClass(namespace, token.key)

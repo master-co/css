@@ -1,6 +1,6 @@
 import Link from '~/site/docs-shell/components/Link'
 import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
-import GuideResourceWaterfall from '~/site/content/guide/preload-critical-resources/components/ResourceWaterfall'
+import GuideResourceWaterfall from '~/site/components/demo/ResourceWaterfall'
 import DemoWaterfall from '~/site/components/demo/DemoWaterfall'
 import { resourceWaterfalls } from '~/site/utils/first-paint-examples'
 import './page.css'
@@ -46,7 +46,7 @@ export default function Page() {
         <Link href="/guide/preload-critical-resources#preload-runtime-engine">Open /guide/preload-critical-resources</Link>
       </div>
       <div className="review-waterfall-realGuide"><GuideResourceWaterfall /></div>
-      <p className="review-waterfall-optionNote">The generic Design System diagram describes order only. The Guide retains its richer, lesson-specific visual and accompanying text.</p>
+      <p className="review-waterfall-optionNote">Guide and Design System share the request-order diagram and its source data. The first-paint marker is illustrative.</p>
     </section>
   </main>
 }

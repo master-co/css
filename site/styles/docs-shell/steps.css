@@ -1,0 +1,54 @@
+@layer components {
+  .step-section {
+    container-type: inline-size;
+    counter-reset: installation-step;
+    margin-block: var(--spacing-xl);
+  }
+
+  .doc-install-step {
+    position: relative;
+    min-width: 0;
+    margin-inline-start: .75rem;
+    padding: 0 0 var(--spacing-xl) 1.75rem;
+    border-inline-start: 1px solid var(--color-line-divider);
+    counter-increment: installation-step;
+  }
+
+  .doc-install-step:last-child { padding-bottom: 0; }
+  .doc-install-step[data-columns] { display: grid; gap: var(--spacing-md) var(--spacing-xl); }
+  .doc-install-step-text, .doc-install-step-body { min-width: 0; }
+  .doc-install-step :is(h2, h3, h4) {
+    position: static;
+    margin: 0 0 var(--spacing-xs);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.5;
+  }
+
+  .doc-install-step .doc-heading-icon { display: none; }
+  .doc-install-step :is(p, li) { font-size: var(--font-size-sm); }
+  .doc-install-step :is(.code, .codeTabs) { margin-inline: 0; }
+  .doc-install-step :is(.code, .codeTabs, p):first-child { margin-top: 0; }
+  .doc-install-step :is(.code, .codeTabs, p):last-child { margin-bottom: 0; }
+
+  .doc-install-step-number {
+    position: absolute;
+    inset-inline-start: -.75rem;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    font: 500 var(--font-size-xs)/1 var(--font-family-mono);
+  }
+
+  .doc-install-step-number::before { content: counter(installation-step); }
+  .doc-install-step-end { display: none; }
+
+  @container (min-width: 38rem) {
+    .doc-install-step[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  }
+}

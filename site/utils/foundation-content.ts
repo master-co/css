@@ -1,6 +1,8 @@
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { sizingRoles } from '../common/foundation-data/sizing/scale-data'
+import { paletteKeys } from '../common/foundation-data/tokens'
+import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
 
 export const foundationGuideSlugs = [
   'spacing', 'sizing', 'breakpoints', 'containers', 'corner-radius', 'responsive-design',
@@ -21,6 +23,7 @@ const visualComponents = new Set([
   'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo'
 ])
 function foundationComponent(_slug: string, name: string, _attributes: Record<string, unknown>) {
+  if (name === 'FoundationPalette') return selectedSpecimensMarkdown('color', paletteKeys)
   if (visualComponents.has(name)) return ''
   if (name === 'SizingRoleTable') return sizingRoles.map(row => `- \`${row.utility}\` — ${row.role}. ${row.description}`).join('\n')
 }

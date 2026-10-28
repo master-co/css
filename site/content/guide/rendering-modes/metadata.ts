@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Rendering Modes',
-  description: 'Understand how the rendering modes of Master CSS work and enhance your website\'s performance.',
+  description: 'Choose static CSS, runtime generation or progressive delivery for the classes your application uses.',
   category: 'Fundamentals',
   fileURL: import.meta.url
 })

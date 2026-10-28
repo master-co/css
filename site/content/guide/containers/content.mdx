@@ -4,13 +4,6 @@ import { FoundationContainerGrid } from '~/site/components/demo/FoundationExampl
 ## Overview [sr-only]
 A reusable card should adapt to the space its parent gives it. Create an ancestor query container, then change the card's layout when its content has room for a second column. Use [Breakpoints](/guide/breakpoints) for viewport-wide decisions.
 
-Container queries use explicit native thresholds. Changing `--container-md` does not change `(width>=28rem)`; container tokens only supply sizing declarations. See [Sizing](/guide/sizing#use-container-tokens) for width caps and [conditions](/reference/rules/conditions#containersize) for the complete query contract.
-
-<a id="define-container-variables"></a>
-<a id="namespace-for-container-values"></a>
-<a id="use-container-values-in-sizing-utilities"></a>
-For size names, values and consumers, use the [container token reference](/reference/tokens/container).
-
 ## Create a query container
 Add `container-type:inline-size` to an ancestor whose inline size comes from the surrounding layout. Then apply full `@container((width>=28rem))` queries to its descendants. A size query cannot select the element itself as its query container.
 
@@ -23,13 +16,21 @@ Add `container-type:inline-size` to an ancestor whose inline size comes from the
 </section>
 ```
 
+<FoundationContainerGrid />
+
 <Class2CSS>
   {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
 </Class2CSS>
 
-<FoundationContainerGrid />
-
 Container queries make components portable. The same card can be stacked in a sidebar and split into columns in a wide content region without knowing the viewport width.
+
+Container queries use explicit native thresholds. Changing `--container-md` does not change `(width>=28rem)`; container tokens only supply sizing declarations. See [Sizing](/guide/sizing#use-container-tokens) for width caps and [conditions](/reference/rules/conditions#containersize) for the complete query contract.
+
+<a id="define-container-variables"></a>
+<a id="namespace-for-container-values"></a>
+<a id="use-container-values-in-sizing-utilities"></a>
+For size names, values and consumers, use the [container token reference](/reference/tokens/container).
+
 
 ---
 
@@ -50,7 +51,7 @@ Use native CSS range and logical operators when a component needs a bounded rang
   {['display:none@container((24rem<=width<=28rem))']}
 </Class2CSS>
 
-For repeated conditions, define `@mixin --card-wide { @container (width>=28rem) { @contents; } }` and use `@apply(--card-wide)`. Container names are explicit inside the full query; an unknown `@name` never becomes a container query.
+Keep a one-off threshold beside the class that uses it. Share a repeated condition with a [mixin wrapper](/reference/directives/definitions#contents). A container name belongs inside the full query; an unknown `@name` does not select a container.
 
 ---
 

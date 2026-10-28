@@ -1,36 +1,32 @@
 import FOUCSvg from '~/site/public/fouc.svg'
 
-Upon accessing the page, the browser starts rendering the document. However, the page styles may not be loaded yet, causing a [FOUC (flash of unstyled content)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content).
+A flash of unstyled content happens when the browser paints markup before its styles arrive. Deliver the first screen's CSS with the page whenever possible. The default static setup and server pre-rendering let the browser load styles before painting.
+
 <figure>
   <FOUCSvg className="height:auto aspect-ratio:16/9 bg-surface-raised" />
   <figcaption>A simulated example of FOUC. At left is the front page without styles. At right is the same page with styles applied. ( [web.dev](https://web.dev/preload-scanner) )</figcaption>
 </figure>
 
-The unstyled state can occur in a flash if the browser doesn't block rendering while a stylesheet is downloaded and processed.
+## Prevent premature rendering
 
-### Prevent premature rendering
-When you [pre-render](/guide/rendering-modes#progressive-rendering) the page, the required styles will be included during the page load. FOUC occurs when using only [runtime rendering](/guide/rendering-modes#runtime-rendering).
+Runtime-only pages generate their initial rules in the browser. If you use that mode, add `hidden` to the root element so the page waits for runtime initialization:
 
-(o) Add `html <html hidden>` to avoid FOUC.
 ```html
-<!-- @MARK display:none -->
-<html hidden>…</html>
+<html lang="en" hidden>
+  <!-- Load the stylesheet and runtime using your integration's setup. -->
+</html>
 ```
-Once the style is injected, the engine will remove the above and notify the browser that the page can be displayed.
 
-The initialization is typically completed within milliseconds, and you don't need to worry about the impact of `hidden` as it's instantaneous.
+The runtime removes `hidden` after startup; its startup error path also unhides the root. If JavaScript does not run at all, it cannot reveal the page. Use static or pre-rendered CSS for content that should be readable without JavaScript.
 
-By [preloading critical resources](/guide/preload-critical-resources), there will be a bonus effect.
+Progressive pages already contain the first screen's CSS and should stay visible. Follow the [installation guide](/guide/installation) for the framework's default setup, and use [Rendering modes](/guide/rendering-modes) when choosing runtime delivery.
+
+For a runtime-only page, [preloading its critical resources](/guide/preload-critical-resources) can start the required requests earlier.
 
 ---
 
-## Benefits
-By avoiding rendering unstyled content, the browser enhances performance and improves related metrics:
+## Check the first paint \{#benefits\}
 
-1. **Time to Interactive (TTI)**: TTI refers to the time at which users can interact with the web page. When FOUC is resolved and the web content is styled quickly, it accelerates the interactivity of the web page, thus improving TTI.
-2. **First Input Delay (FID)**: FID measures the delay in user interaction with the web page for the first time. When FOUC is resolved, users can start interacting with the web page more quickly, reducing FID.
-3. **Bounce Rate**: Bounce Rate represents the percentage of users who leave the website after viewing only one page. When a web page experiences FOUC, users may quickly leave due to a poor experience. Resolving FOUC can reduce the bounce rate and improve user retention.
-4. **User Engagement**: Resolving FOUC allows users to browse and read web page content more quickly, increasing user engagement and involvement.
-5. **Conversion Rate**: Conversion Rate refers to the percentage of users who complete desired actions such as making a purchase, subscribing, filling out a form, etc. When FOUC issues are resolved and user experience is improved, it can enhance the conversion rate.
+Test a cold page load with network and CPU throttling. Confirm that styles are available when content first appears, then check startup failure and disabled-JavaScript behavior for the chosen rendering mode.
 
-In summary, resolving FOUC issues promotes better user interaction with the website, improves user engagement and experience, and positively impacts website performance and business metrics.
+Preventing an unstyled flash improves visual continuity. Measure loading and interaction performance separately; hiding the page does not by itself make it load faster.

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Preventing flash of unstyled content',
-  description: 'Improve the page loading experience and ensure seamless rendering of content.',
+  description: 'Keep the first screen styled, and choose when runtime-only pages become visible.',
   category: 'Build & Delivery',
   other: {
     subject: 'Unstyled Content'

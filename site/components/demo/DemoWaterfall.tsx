@@ -16,13 +16,15 @@ export interface DemoWaterfallProps {
   description: string
   rows: readonly DemoWaterfallRow[]
   caption?: string
+  marker?: { label: string; position: number }
 }
 
 /** A conceptual discovery diagram. Keep measured performance in benchmark charts. */
-export default function DemoWaterfall({ title, description, rows, caption = 'Illustrative order · no time scale' }: DemoWaterfallProps) {
+export default function DemoWaterfall({ title, description, rows, marker, caption = 'Illustrative order · no time scale' }: DemoWaterfallProps) {
+  if (marker && (!Number.isFinite(marker.position) || marker.position < 0 || marker.position > 100)) throw new Error('Invalid waterfall marker')
   return <figure className="demo-waterfall" aria-label={title}>
     <Demo title={title} description={description} caption={caption} background="plain" padding="md">
-      <div className="demo-waterfall-axis" aria-hidden="true"><span>Earlier</span><span>Later</span></div>
+      <div className="demo-waterfall-axis" aria-hidden="true"><span>Earlier</span><span>Later</span>{marker && <span className="demo-waterfall-marker-label" style={{ left: `${marker.position}%` }}>{marker.label}</span>}</div>
       {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics with list-style:none. */}
       <ul role="list" className="demo-waterfall-rows">
         {rows.map(({ label, start, end, tone = 'blue' }) => {
@@ -31,6 +33,7 @@ export default function DemoWaterfall({ title, description, rows, caption = 'Ill
             <span className="demo-waterfall-label">{label}</span>
             <span className="demo-waterfall-track" aria-hidden="true">
               <span className="demo-waterfall-bar" data-tone={tone} style={{ left: `${start}%`, width: `${end - start}%` }} />
+              {marker && <span className="demo-waterfall-marker" style={{ left: `${marker.position}%` }} />}
             </span>
           </li>
         })}

@@ -319,9 +319,9 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
   assert.ok(extractSearchNodesFromMdx(typography.searchMarkdown).some(node => node.id === 'without-vs-with-text-token'))
 })
 
-test('foundation exports use the same explicit token subsets as HTML', async () => {
+test('foundation exports preserve the visual comparisons and explicit token selections in HTML', async () => {
   const { selectedSpecimensMarkdown } = await import('../common/foundation-data/specimen-content')
-  const { namespaceTokens } = await import('../common/foundation-data/tokens')
+  const { paletteKeys } = await import('../common/foundation-data/tokens')
   const root = fileURLToPath(new URL('../', import.meta.url))
   for (const slug of foundationGuideSlugs) {
     const source = await readFile(`${root}/content/guide/${slug}/content.mdx`, 'utf8')
@@ -329,18 +329,18 @@ test('foundation exports use the same explicit token subsets as HTML', async () 
     for (const match of source.matchAll(/<FoundationTokens namespace="([^"]+)" keys={([^}]+)} \/>/g)) {
       const keys = JSON.parse(match[2])
       assert.ok(body.includes(portableMarkdown(selectedSpecimensMarkdown(match[1], keys))), `${slug}: ${match[1]}`)
-      assert.ok(keys.length < namespaceTokens(match[1]).length || keys.length <= 2, `${slug}: complete catalog`)
     }
     assert.doesNotMatch(source, /<FoundationTokens\b(?![^>]*\bkeys=)/, `${slug}: specimens require an explicit selection`)
   }
   const colors = (await foundationGuideContent(root, 'colors')).markdown
-  assert.ok(!colors.includes('--color-red-90'))
+  assert.ok(colors.includes(portableMarkdown(selectedSpecimensMarkdown('color', paletteKeys))))
+  for (const key of paletteKeys) assert.ok(colors.includes(`--color-${key}`), key)
   const typography = (await foundationGuideContent(root, 'typography')).markdown
   for (const name of ['BodyText', 'Headings', 'PageTitles']) {
     const included = await extractReferenceMdx(`${root}/content/guide/typography/components/${name}.mdx`)
     assert.ok(typography.includes(portableMarkdown(included.markdown)), name)
   }
-  assert.match(typography, /Future-proof infrastructure/)
+  assert.match(typography, /Readable product copy/)
 })
 
 test('foundation extraction fails on missing adapters and recursive includes without executing JSX', async () => {

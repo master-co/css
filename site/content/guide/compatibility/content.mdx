@@ -11,16 +11,16 @@ The default stylesheet uses native [CSS cascade layers](https://developer.mozill
 @layer theme, base, defaults, components, utilities;
 ```
 
-That means Master CSS works best in projects that target browsers with cascade layer support. If your project must support older browsers, treat `@layer` support as the main compatibility boundary and test the generated CSS against your browser matrix.
+The preset also uses OKLCH palette values and `light-dark()` for adaptive colors and shadows. Check these features together when choosing browser targets; cascade layer support alone does not cover the whole preset. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for the color-scheme baseline.
 
 ---
 
 ## Browser support
 The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
 
-For example, `bg-red` depends on normal `background-color` support, while `backdrop-filter:blur(16px)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
+For example, `background-color:red` uses a native named color, `bg-red` also needs support for its preset OKLCH value, and `bg-surface-raised` uses `light-dark()`. `backdrop-filter:blur(16px)` needs the filter feature itself. Check the complete generated declaration in [Can I use](https://caniuse.com/) or MDN.
 
-Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `interpolate-size:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
+A class must use valid syntax and values before it can generate a rule. That validation does not prove that a target browser implements the resulting CSS. Inspect the output and use a feature query or a native fallback when a feature is optional.
 
 Use this rule of thumb:
 
@@ -95,7 +95,7 @@ Complete CSS properties such as `margin:1rem` keep their native value semantics.
 
 This preserves the expected syntax model:
 
-- `margin-top:1rem` uses a curated alias and emits `margin-top:1rem`.
+- `margin-top:1rem` uses the full native property name and emits `margin-top:1rem`.
 - `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
@@ -195,16 +195,16 @@ Use Master CSS classes in markup for styling that should be generated, validated
 <button class="height:40px px-md r-md bg-blue">Save</button>
 ```
 
-When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#default-pruning).
+When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#explicit-pruning).
 
 ---
 
 ## Checklist
 - Check browser support for the generated CSS feature, not just the Master CSS class.
-- Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
+- Check cascade layers, OKLCH and `light-dark()` when using the default preset.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use native declaration syntax for valid CSS declarations; use separate classes for combinations, or `@utility` for reusable class recipes and ordered declarations.
 - Use named utilities for tokens and direct declarations for explicit CSS values. Colon values retain native CSS value semantics.
-- Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
+- Test experimental declarations in the browsers and rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

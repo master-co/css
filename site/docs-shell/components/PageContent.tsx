@@ -20,7 +20,7 @@ export default function PageContent({ metadata }: any) {
   const $ = useTranslation()
 
   return (
-    <aside ref={ref} className="position:sticky top:0 overflow-y:auto flex-grow:0 flex-shrink:0 flex-basis:auto height:100dvh width:calc(252/16*1rem) pb-2xl padding-top:8.75rem b-line-subtle:not(.top) display:none@media(print) display:none@media((width<80rem)) border-left-width:1px@media((width<80rem)) border-left-style:solid@media((width<80rem)) border-left-color:transparent@media((width<80rem)) bg-surface-raised/.8@media((width<80rem)) backdrop-filter:blur(25px)@media((width<80rem)) scrollbar scrollbar-concealed">
+    <aside ref={ref} className="position:sticky top:0 overflow-y:auto flex-basis:auto flex-grow:0 flex-shrink:0 height:100dvh width:calc(252/16*1rem) pb-2xl padding-top:8.75rem b-line-subtle:not(.top) display:none@media(print) display:none@media((width<80rem)) border-left-color:transparent@media((width<80rem)) border-left-style:solid@media((width<80rem)) border-left-width:1px@media((width<80rem)) bg-surface-raised/.8@media((width<80rem)) backdrop-filter:blur(25px)@media((width<80rem)) doc-page-contents scrollbar scrollbar-concealed">
       <div className="display:flex align-items:center mb-md">
         <ContentsSvg width="14" height="14" className="margin-block:-1px margin-left:-0.125rem" fill="currentColor" />
         <span className=" ml-3xs font-xs">{$('On this page')}</span>
@@ -41,7 +41,7 @@ export default function PageContent({ metadata }: any) {
           }
         </div>
       }
-      <ul className='pl-md border-left-width:1px border-left-style:solid bl-line-subtle'>
+      <ul className='pl-md bl-line-subtle border-left-style:solid border-left-width:1px'>
         {
           pageContent.map((eachPageContentNav: any) => {
             return <li key={eachPageContentNav.id}>

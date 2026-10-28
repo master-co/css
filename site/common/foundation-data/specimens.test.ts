@@ -19,7 +19,7 @@ test('every non-palette preset specimen compiles against the public engine, with
     assert.ok(configuredExampleCSS(scene.css ?? '', configuredMarkupClasses(scene.html)).length > 0)
   }
 })
-test('palette retains all 22 complete fixed hue rows and separates aliases', () => {
+test('palette retains all 23 complete fixed hue rows, including the interface neutral, and separates aliases', () => {
   const groups = new Map<string, number[]>()
   for (const token of namespaceTokens('color')) {
     const match = token.key.match(/^(.+)-(\d+)$/)
@@ -27,7 +27,8 @@ test('palette retains all 22 complete fixed hue rows and separates aliases', () 
     assert.match(defaultValue(token), /^oklch\(/)
     groups.set(match[1], [...groups.get(match[1]) ?? [], Number(match[2])])
   }
-  assert.equal(groups.size, 22)
+  assert.equal(groups.size, 23)
+  assert.ok(groups.has('zinc'))
   for (const steps of groups.values()) assert.deepEqual(steps, [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100])
 })
 test('selected Guide specimens and portable output preserve the same facts and meaningful comparison', () => {
@@ -38,6 +39,8 @@ test('selected Guide specimens and portable output preserve the same facts and m
   assert.match(output, /Detached overlay/)
   assert.doesNotMatch(output, /--shadow-2xl/)
   assert.throws(() => specimenTokens('radius', ['imaginary']))
+  assert.doesNotMatch(selectedSpecimensMarkdown('color', ['yellow']), /[Cc]opy/)
+  assert.match(selectedSpecimensMarkdown('color', ['yellow']), /fixed swatch/)
 })
 test('text, line, leading and order specimens show their actual effect', () => {
   assert.match(foundationScene('color-text', ['body']).html, /data-role-preview="text"[^>]+fg-text-body/)

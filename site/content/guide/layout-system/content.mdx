@@ -162,39 +162,43 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-  <article className="display:flex container-type:inline-size flex-direction:column gap-md width:100% p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised shadow-xs flex-direction:row@container((width>=18rem))">
-    <div className="display:grid place-content:center width:100% aspect-ratio:4/3 r-md bg-blue-60/.12 flex:0@container((width>=18rem)) width:9rem@container((width>=18rem))">
-      <div className="grid-cols(3) gap-2xs width:5rem">
-        <div className="height:1.25rem r-sm bg-blue-60/.25"></div>
-        <div className="height:1.25rem r-sm bg-blue-60/.35"></div>
-        <div className="height:1.25rem r-sm bg-blue-60/.2"></div>
-        <div className="height:1.25rem r-sm bg-blue-60/.2"></div>
-        <div className="height:1.25rem r-sm bg-blue-60/.45"></div>
-        <div className="height:1.25rem r-sm bg-blue-60/.3"></div>
+  <div className="container-type:inline-size width:100%">
+    <article className="display:flex flex-direction:column gap-md width:100% p-md b-line-divider r-lg border-style:solid border-width:1px bg-surface-raised shadow-xs flex-direction:row@container((width>=18rem))">
+      <div className="display:grid place-content:center width:100% aspect-ratio:4/3 r-md bg-blue-60/.12 flex-shrink:0@container((width>=18rem)) width:9rem@container((width>=18rem))">
+        <div className="grid-cols(3) gap-2xs width:5rem">
+          <div className="height:1.25rem r-sm bg-blue-60/.25"></div>
+          <div className="height:1.25rem r-sm bg-blue-60/.35"></div>
+          <div className="height:1.25rem r-sm bg-blue-60/.2"></div>
+          <div className="height:1.25rem r-sm bg-blue-60/.2"></div>
+          <div className="height:1.25rem r-sm bg-blue-60/.45"></div>
+          <div className="height:1.25rem r-sm bg-blue-60/.3"></div>
+        </div>
       </div>
-    </div>
-    <div className="flex:1 min-width:0">
-      <DemoLabel>Flex media object</DemoLabel>
-      <div className="font-semibold fg-text-neutral">Quarterly planning</div>
-      <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
-      <div className="display:flex flex-wrap:wrap gap-xs mt-md">
-        <span className="py-2xs px-xs r-sm text-xs bg-blue-60/.12 fg-blue-60">Roadmap</span>
-        <span className="py-2xs px-xs r-sm text-xs bg-green/.12 fg-text-green">Ready</span>
+      <div className="flex:1 min-width:0">
+        <DemoLabel>Flex media object</DemoLabel>
+        <div className="font-semibold fg-text-neutral">Quarterly planning</div>
+        <p className="mt-xs margin-bottom:0 margin-inline:0 text-sm fg-text-gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+        <div className="display:flex flex-wrap:wrap gap-xs mt-md">
+          <span className="py-2xs px-xs r-sm text-xs bg-blue-60/.12 fg-blue-60">Roadmap</span>
+          <span className="py-2xs px-xs r-sm text-xs bg-green/.12 fg-text-green">Ready</span>
+        </div>
       </div>
-    </div>
-  </article>
+    </article>
+  </div>
 </Demo>
 
 ```html
 <!-- @MARK container-type:inline-size --><!-- @MARK width:100% --><!-- @MARK display:flex --><!-- @MARK flex-direction:column --><!-- @MARK flex-direction:row@container((width>=18rem)) -->
-<article class="display:flex container-type:inline-size flex-direction:column gap-md width:100% flex-direction:row@container((width>=18rem))">
-  <img class="width:100% flex:0@container((width>=18rem)) width:9rem@container((width>=18rem))" alt="" />
-  <div class="flex:1 min-width:0">...</div>
-</article>
+<div class="container-type:inline-size">
+  <article class="display:flex flex-direction:column gap-md width:100% flex-direction:row@container((width>=18rem))">
+    <img class="width:100% flex-shrink:0@container((width>=18rem)) width:9rem@container((width>=18rem))" alt="" />
+    <div class="flex:1 min-width:0">...</div>
+  </article>
+</div>
 ```
 
 <Class2CSS>
-  {['container-type:inline-size', 'display:flex', 'flex-direction:column', 'flex-direction:row@container((width>=18rem))', 'gap-md', 'width:100%', 'width:9rem@container((width>=18rem))', 'flex:0@container((width>=18rem))', 'min-width:0', 'flex:1']}
+  {['container-type:inline-size', 'display:flex', 'flex-direction:column', 'flex-direction:row@container((width>=18rem))', 'gap-md', 'width:100%', 'width:9rem@container((width>=18rem))', 'flex-shrink:0@container((width>=18rem))', 'min-width:0', 'flex:1']}
 </Class2CSS>
 
 `min-width:0` is important for flexible text regions. It allows long content to shrink inside a flex or grid item instead of forcing the whole layout wider than the container.
@@ -204,7 +208,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 ## Use container queries for components
 Viewport breakpoints are a good fit for page-level layout. Container queries are a better fit for reusable components because the same component can appear in a narrow sidebar, a modal, or a wide content column.
 
-Add `container-type:inline-size` to the component boundary, then use `@container(<size>)` on descendants.
+Add `container-type:inline-size` to the component boundary, then use `@container((width>=18rem))` on descendants.
 
 ```html
 <section class="container-type:inline-size">
@@ -280,7 +284,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ```html
 <!-- @MARK flex-direction:row@2xs --><!-- @MARK width:8rem@2xs --><!-- @MARK min-width:0 -->
 <article class="display:flex flex-direction:column gap-md flex-direction:row@2xs">
-  <img class="width:100% flex:0@2xs width:8rem@2xs" alt="" />
+  <img class="width:100% flex-shrink:0@2xs width:8rem@2xs" alt="" />
   <div class="min-width:0">...</div>
 </article>
 ```
@@ -330,7 +334,7 @@ Use Grid when children need to share a column system. Use Flexbox when children 
 ## Summary
 Build layout systems from stable foundations:
 
-* Use breakpoint tokens for viewport decisions and container tokens for wrapper decisions.
+* Use named custom media for viewport decisions and container tokens for wrapper width caps.
 * Use spacing tokens for gutters, outer margins, and section rhythm.
 * Use `grid-cols(*)` and placement utilities for page regions and galleries.
 * Use `flex`, direction, wrapping, and `flex:*` for one-axis component layout.

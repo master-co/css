@@ -1,23 +1,39 @@
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
 ## Give a repeated value a project name
 
 CSS custom properties let multiple declarations share a value. A Master CSS theme makes those values available to token-aware classes. Start with one spacing token and the class that consumes it:
 
-<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
+<DemoConfiguredExample name="shared-spacing-value" title="Give a repeated value a name" source={`@theme {
+  --spacing-card: 1.5rem;
+}`} html={'<article class="p-card r-lg bg-surface-raised fg-text-body"><h2 class="margin:0 text-lg font-semibold">Collection notes</h2><p class="mt-sm margin-bottom:0 text-sm fg-text-muted">The card padding comes from --spacing-card.</p></article>'} theme previewFirst caption="p-card generates padding:var(--spacing-card). The browser resolves that custom property on the card." />
 
 This example compiles the theme with the current preset before generating the class. Change the theme value when every consumer should change together; choose a local value when the change belongs to one element.
 
 ## Add modes after the shared value works
 
-1. Check the [namespace's consumers](/reference/tokens/spacing#consumers) before naming a token.
-2. Verify the emitted variable and the declaration that references it.
-3. Add alternate mode values where the design requires them.
-4. Test the project's explicit mode activation and inherited CSS variables.
+A color can keep the same name while following the element's color scheme:
 
-The [Variables & modes reference](/reference/rules/modes) owns the native cascade, theme activation and unconditional declarations.
+```css
+@theme {
+  --color-surface-notes: light-dark(#f4f4f5, #27272a);
+}
+```
 
-## Look up a rule
+```html
+<section data-theme="dark" class="p-card bg-surface-notes fg-text-body">
+  Dark notes
+  <article data-theme="light" class="p-card bg-surface-notes fg-text-body">A light region inside</article>
+</section>
+```
+
+The preset enables native `color-scheme: light dark`; `data-theme` makes a local choice. The same `bg-surface-notes` class adapts in both regions. A nested region inherits its parent's values unless it explicitly overrides them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for system, manual and nested themes.
+
+Check the [namespace's consumers](/reference/tokens/spacing#consumers) when naming a token, and inspect the generated declaration before adding more scopes. The [Variables & modes reference](/reference/rules/modes) covers declaration scope, alias resolution and delivery.
+
+<a id="look-up-a-rule"></a>
+<DocumentDisclosure title="Reference sections">
 
 - <a id="overview"></a> [Overview](/reference/rules/modes#overview)
 - <a id="variable-lifecycle"></a> [Variable lifecycle](/reference/rules/modes#variable-lifecycle)
@@ -32,6 +48,8 @@ The [Variables & modes reference](/reference/rules/modes) owns the native cascad
 - <a id="system-preference-with-a-manual-override"></a> [System preference with a manual override](/reference/rules/modes#system-preference-with-a-manual-override)
 - <a id="local-themes-and-overlap"></a> [Local themes and overlap](/reference/rules/modes#local-themes-and-overlap)
 - <a id="shadow-dom"></a> [Shadow DOM](/reference/rules/modes#shadow-dom)
+
+</DocumentDisclosure>
 
 <a id="project-settings"></a>
 Use native selectors to scope styles, explicit CSS units for lengths and the per-class `!` modifier when importance is required.

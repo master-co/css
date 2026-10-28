@@ -168,6 +168,10 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         if (!Array.isArray(entries) || entries.some(entry => !['title', 'href', 'description'].every(key => typeof entry[key as keyof typeof entry] === 'string'))) throw new Error('DocumentChoices requires literal titles, links and descriptions')
         return entries.map(entry => `- [${entry.title}](${entry.href}) — ${entry.description}`).join('\n')
       }
+      if (name === 'DocumentDisclosure') {
+        if (typeof attrs.title !== 'string') throw new Error('DocumentDisclosure requires a literal title')
+        return `**${attrs.title}**\n\n${(await Promise.all((node.children ?? []).map(render))).join('\n\n')}`
+      }
       if (name === 'DocumentOptionEntry') {
         if (typeof attrs.name !== 'string') throw new Error('DocumentOptionEntry requires a literal name')
         return `**\`${attrs.name}\`**\n\n${(await Promise.all((node.children ?? []).map(render))).join('\n\n')}`

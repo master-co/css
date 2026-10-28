@@ -1,6 +1,9 @@
 @layer components {
   .demo-waterfall { container: demo-waterfall / inline-size; margin: 0; }
-  .demo-waterfall-axis { display: flex; justify-content: space-between; margin-left: 9.5rem; padding-bottom: .625rem; border-bottom: 1px solid var(--color-demo-line); color: var(--color-demo-muted); font: 550 .75rem/1.5 var(--font-family-mono); }
+  .demo-waterfall-axis { position: relative; display: flex; justify-content: space-between; margin-left: 9.5rem; padding-bottom: .625rem; border-bottom: 1px solid var(--color-demo-line); color: var(--color-demo-muted); font: 550 .75rem/1.5 var(--font-family-mono); }
+  .demo-waterfall-axis:has(.demo-waterfall-marker-label) { padding-bottom: 2rem; }
+  .demo-waterfall-marker-label { position: absolute; bottom: .25rem; transform: translateX(-50%); color: var(--color-text-orange); font-weight: 600; }
+  .demo-waterfall-marker { position: absolute; inset-block: 0; border-left: 1px dashed var(--color-text-orange); }
   .demo-waterfall .demo-waterfall-rows { display: grid; gap: var(--spacing-sm); list-style: none; margin: .75rem 0 0; padding: 0; }
   .demo-waterfall-rows li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); align-items: center; gap: var(--spacing-md); margin: 0; padding: 0; }
   .demo-waterfall-label { color: var(--color-demo-text); font: 550 .75rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }

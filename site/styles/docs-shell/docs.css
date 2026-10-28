@@ -1,4 +1,10 @@
 @layer components {
+  .doc-main { container: docs-main / inline-size; }
+
+  @container docs-main (width < 48rem) {
+    .doc-page-contents { display: none; }
+  }
+
   .doc-card {
     padding: var(--spacing-xl);
     background-color: var(--color-surface-raised);

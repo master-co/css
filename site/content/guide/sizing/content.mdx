@@ -1,37 +1,19 @@
 import Class2CSS from '~/site/components/Class2CSS'
-import Demo from '~/site/components/demo/Demo'
+import { FoundationSizing, FoundationAxes, FoundationShrink } from '~/site/components/demo/FoundationExamples'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
-import { DemoLabel } from '~/site/components/demo/primitives'
 import { SizingRoleTable } from './components/XScale'
 
 ## Overview [sr-only]
-Sizing describes the space an element should claim, the limits it should respect, and the boundary where that decision changes. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
+Use `width:*` and `height:*` for native dimensions, and `min-*` or `max-*` to constrain them. Let a page wrapper fill its available space, then cap its width. Give measured objects such as avatars their own dimensions.
 
-Master CSS keeps sizing decisions close to the element that owns them. Use `width:*` and `height:*` for one axis, explicit width and height declarations when both axes intentionally match, `min-*` and `max-*` for constraints, container tokens for shared layout surfaces, and responsive variants when the size changes by viewport or container.
+<FoundationSizing />
 
-<Demo>
-  <div className="container-type:inline-size width:100%">
-    <div className="grid-cols(1) display:grid gap-md width:100% grid-cols(2)@container((width>=18rem))">
-      <section className="min-width:0 p-lg r-lg bg-surface-raised shadow-xs">
-        <DemoLabel>Fluid wrapper</DemoLabel>
-        <div className="width:100% max-w-3xs margin-inline:auto">
-          <div className="height:2.5rem r-lg bg-blue-60/.15"></div>
-          <div className="height:1rem width:75% mt-sm r-sm bg-blue-60/.1"></div>
-        </div>
-      </section>
-      <section className="min-width:0 p-lg r-lg bg-surface-raised shadow-xs">
-        <DemoLabel>Measured object</DemoLabel>
-        <div className="display:flex align-items:center gap-md">
-          <div className="height:3rem width:3rem aspect-ratio:1/1 border-radius:50% bg-blue-60/.15"></div>
-          <div className="flex:1 min-width:0">
-            <div className="height:1rem width:100% max-width:7rem r-sm bg-blue-60/.16"></div>
-            <div className="height:0.75rem width:calc(100%/3*2) mt-xs r-sm bg-blue-60/.1"></div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-</Demo>
+```html
+<article class="width:100% max-w-sm">
+  <img class="width:3rem height:3rem r-pill" alt="" />
+  <p>Fluid content, measured avatar.</p>
+</article>
+```
 
 ---
 
@@ -133,20 +115,9 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
 ---
 
 ## Pair axes deliberately
-`width:* height:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
+Set both dimensions when an element should be square. For a fluid rectangle, let one axis follow its container.
 
-<Demo>
-  <div className="display:flex align-items:center gap-lg width:100%">
-    <div className="flex:0">
-      <DemoLabel>width:3.5rem height:3.5rem</DemoLabel>
-      <div className="display:grid place-content:center height:3.5rem width:3.5rem r-lg font-medium bg-blue-60/.15">A</div>
-    </div>
-    <div className="flex:1 min-width:0">
-      <DemoLabel>width:100% height:3.5rem</DemoLabel>
-      <div className="display:grid place-content:center height:3.5rem width:100% r-lg font-medium bg-blue-60/.15">Banner</div>
-    </div>
-  </div>
-</Demo>
+<FoundationAxes />
 
 ```html
 <!-- @MARK width:3.5rem height:3.5rem -->
@@ -160,7 +131,7 @@ Use explicit native lengths for component geometry such as icons, avatars, handl
   {['width:3.5rem height:3.5rem', 'width:100%', 'height:3.5rem']}
 </Class2CSS>
 
-When an element should keep a non-square ratio, use [aspect ratio](/guide/sizing#pair-axes-deliberately) with a width instead of locking both dimensions.
+For a fixed proportion, set `aspect-ratio` with one dimension. The other dimension follows it:
 
 ```html
 <!-- @MARK width:100% --><!-- @MARK aspect-ratio:16/9 -->
@@ -172,29 +143,18 @@ When an element should keep a non-square ratio, use [aspect ratio](/guide/sizing
 ## Constrain instead of forcing
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
-<Demo>
-  <div className="width:100% max-w-sm margin-inline:auto p-lg r-lg bg-surface-raised shadow-xs">
-    <DemoLabel>min-width:0 max-width:24rem</DemoLabel>
-    <div className="display:flex gap-md">
-      <div className="flex:0 height:2.5rem width:2.5rem r-lg bg-blue-60/.15"></div>
-      <div className="flex:1 min-width:0">
-        <div className="font-medium fg-text-strong">Shrinkable content</div>
-        <div className="overflow:hidden text-sm text-overflow:ellipsis white-space:nowrap fg-text-muted">Long text can shrink inside the row without forcing the wrapper wider.</div>
-      </div>
-    </div>
-  </div>
-</Demo>
+<FoundationShrink />
 
 ```html
 <!-- @MARK display:flex --><!-- @MARK min-width:0 --><!-- @MARK max-width:24rem -->
 <article class="display:flex gap-md max-w-sm">
-  <img class="flex:0 width:2.5rem height:2.5rem" alt="" />
+  <img class="flex-shrink:0 width:2.5rem height:2.5rem" alt="" />
   <div class="min-width:0">Long content...</div>
 </article>
 ```
 
 <Class2CSS>
-  {['display:flex', 'gap-md', 'max-width:24rem', 'width:2.5rem height:2.5rem', 'flex:0', 'min-width:0']}
+  {['display:flex', 'gap-md', 'max-width:24rem', 'width:2.5rem height:2.5rem', 'flex-shrink:0', 'min-width:0']}
 </Class2CSS>
 
 In flex and grid layouts, `min-width:0` is the common fix for text or media that refuses to shrink. Without it, intrinsic content can force a row wider than its container even when the parent has a max width.
@@ -232,8 +192,7 @@ When a dimension becomes part of the product language, add a named container var
   --container-sidebar: 17.5rem;
   --container-measure: 72ch;
   --container-panel: clamp(18rem, 50vw, 42rem);
- }
-
+}
 ```
 
 ```html
@@ -266,7 +225,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 <button class="height:3rem width:2.5rem">...</button>
 ```
 
-(o) The component uses one sizing decision.
+(o) Both dimensions describe the same intended square.
 
 ```html
 <button class="width:2.5rem height:2.5rem">...</button>

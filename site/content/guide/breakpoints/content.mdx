@@ -12,6 +12,25 @@ See all preset names and exact conditions in [Breakpoints Reference](/reference/
 
 ---
 
+## Use breakpoint variants
+
+Append `@<breakpoint>` to a utility when that declaration should start at a viewport threshold.
+
+```html
+<!-- @MARK font-2xl --><!-- @MARK font-3xl@md -->
+<h1 class="font-2xl font-3xl@md">Build for the current viewport</h1>
+```
+
+<FoundationBreakpoint />
+
+<Class2CSS>
+  {['font-2xl', 'font-3xl@md']}
+</Class2CSS>
+
+Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.
+
+---
+
 ## Define named media queries
 Custom media definitions belong in your project CSS entry. Keep them product-wide and stable; they are part of the layout language shared by docs, components, designers, and tests.
 
@@ -25,34 +44,16 @@ Use native media query syntax and explicit units. Generated queries preserve the
 
 ---
 
-## Use breakpoint variants
-
-<FoundationBreakpoint />
-Append `@<breakpoint>` to a utility when that declaration should start at a viewport threshold.
-
-```html
-<!-- @MARK font-2xl --><!-- @MARK font-3xl@md -->
-<h1 class="font-2xl font-3xl@md">Build for the current viewport</h1>
-```
-
-<Class2CSS>
-  {['font-2xl', 'font-3xl@md']}
-</Class2CSS>
-
-Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.
-
----
-
 ## Breakpoint scale
 Use the scale as design vocabulary, not as device names. A token such as `md` should mean "the medium page layout starts here", not "iPad" or "desktop".
 
-Choose the first threshold where the content no longer fits, then test immediately below and above it. The following grid uses `sm` and `md`; their actual preset conditions appear in the generated CSS.
+Choose the first threshold where the content no longer fits, then test immediately below and above it. The grid below uses `sm` and `md`; their actual preset conditions appear in the generated CSS.
 
 The exact values can differ by product. The important part is that the tokens stay semantically consistent: smaller tokens unlock compact layout changes, larger tokens unlock wider page structures.
 
 ---
 
-## Manifest changes around decisions
+## Choose breakpoints around content \{#manifest-changes-around-decisions\}
 A breakpoint should exist because something meaningful changes. Avoid adding thresholds only because a popular device width exists.
 
 | Decision | Good breakpoint use | Better handled elsewhere |
@@ -110,10 +111,6 @@ Here `@sm`, `@md`, and `@lg` come from custom media definitions. The `4xl`, `5xl
 (x) Breakpoints are named after devices.
 
 ```css
-@theme {
-
-}
-
 @custom-media --iphone (width >= 24.375rem);
 @custom-media --ipad (width >= 51.25rem);
 ```
@@ -121,10 +118,6 @@ Here `@sm`, `@md`, and `@lg` come from custom media definitions. The `4xl`, `5xl
 (o) Breakpoints are named after layout thresholds.
 
 ```css
-@theme {
-
-}
-
 @custom-media --xs (width >= 40rem);
 @custom-media --sm (width >= 48rem);
 @custom-media --md (width >= 64rem);

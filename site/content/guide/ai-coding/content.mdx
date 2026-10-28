@@ -1,10 +1,8 @@
-AI coding works best when the agent can see the same styling system your team uses: the framework, the CSS entry, the theme tokens, the reusable component vocabulary, and the checks that keep class strings valid.
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 
-Master CSS gives people and agents the same project vocabulary and Rust-backed checks. Local declarations, named tokens and static recipes can be traced to generated CSS. Evaluate the result through subsequent changes, review and browser checks; class length and first-draft speed do not establish maintainability.
+Give your coding agent the same styling context you use: the CSS entry, theme tokens, component classes and nearby UI patterns. Let it inspect the project before asking for a change.
 
-Use AI to move faster through routine styling decisions, generate first drafts, compare alternatives, and review class strings. Keep decisions about semantics, shared tokens, reusable components, and visual quality with the person reviewing the change.
-
-Popular local coding agents include [Codex App](https://openai.com/codex/), [Claude Code](https://code.claude.com/docs/en/setup), [Cursor](https://cursor.com/download), and [Windsurf / Devin Desktop](https://devin.ai/download). Use a local agent that can inspect your repository, edit files in small batches, and run the project's own checks.
+Use the project's lint and build commands to check its output, then review the result in a browser. A short class list or a quick first draft does not tell you whether the next change will be easy.
 
 ---
 
@@ -108,14 +106,14 @@ Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, 
 
 Keep complex selectors and container relationships in native CSS. Use `@custom-media` for shared media conditions and static mixins only for meaningful parameterized combinations. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
 
-The shared CLI/editor/MCP workflow fixtures check tool consistency. They do not measure model generation accuracy.
-
-Use MCP for project-aware AI tool calls. When an agent cannot use MCP, fall back to the CLI JSON commands in the review workflow below.
+When an agent cannot use MCP, use the CLI JSON commands in the review workflow below.
 
 ---
 
 ## Add project agent rules
 For recurring work, add a short Master CSS rules block to the project's agent instructions, such as `AGENTS.md`, Claude instructions, Cursor rules, or Copilot instructions.
+
+<DocumentDisclosure title="Example agent instructions">
 
 ```text name=AGENTS.md
 When editing Master CSS:
@@ -131,6 +129,8 @@ When editing Master CSS:
 - Preserve semantic HTML, accessibility attributes, and behavior.
 - Run the relevant formatter, lint, type-check, test, or build command before reporting completion.
 ```
+
+</DocumentDisclosure>
 
 Keep project-specific commands in the same file so the agent does not have to infer how validation works.
 
@@ -156,14 +156,6 @@ Readable Master CSS usually follows these habits:
 Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
 
 When a class list becomes hard to scan, ask the agent whether the problem is repetition, missing tokens, or a real component abstraction.
-
-```text name=prompt
-Review this component's Master CSS classes for readability.
-
-Look for invalid syntax, conflicting declarations, repeated raw values that should become tokens, over-specific one-off styling, missing responsive or dark-mode states, and class strings that should be split into a component class.
-
-Do not rewrite working markup only to make it shorter. Explain each recommended change.
-```
 
 ---
 
@@ -222,6 +214,53 @@ For dynamic values, prefer stable classes plus CSS variables or inline styles at
 
 ---
 
+## Named tokens and native values
+
+Use existing token names and inspect generated CSS before accepting unfamiliar syntax.
+
+<DocumentDisclosure title="Token and condition syntax checks">
+Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Use native CSS units for lengths and resolution descriptors in `image-set()`. Do not invent numeric names such as `p-4` unless the project defines that token.
+
+For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `font-family:var(--font-family-brand)` or `font-size:var(--font-size-brand)`. Check compiler diagnostics and generated declarations.
+
+Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
+
+Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
+
+</DocumentDisclosure>
+
+---
+
+## Review the second change
+
+Before changing shared definitions, save a project snapshot. The next inspection can compare it with the current project even when markup has not changed:
+
+```bash name=Terminal
+npx @master/css-cli inspect --snapshot > before.json
+npx @master/css-cli inspect --compare before.json > impact.json
+```
+
+Run the second command after editing. Review changed definitions, known consumers, generated rules, native stylesheet references and output delivery in `impact.json`. Read the coverage limits, then check affected layouts and states in the browser. In MCP, use `mastercss_scan_project` with `includeSnapshot: true` and pass both snapshots to `mastercss_css_compare`.
+
+<DocumentDisclosure title="Compare maintenance workflows">
+
+Evaluate maintenance with repeatable tasks, using the same requirements, model version and resource limits for native CSS, current Master CSS, and the candidate change. Include a markup framework baseline when useful.
+
+| Second change | Evidence to collect |
+| --- | --- |
+| Change brand color while retaining an equal information color | Only consumers of the intended role change. |
+| Put one card in a main region and a sidebar | The card responds to its container. |
+| Restyle a button | Applicable focus-visible, disabled, dark and reduced-motion states still work. |
+| Change a token or recipe | Known consumers appear in the impact report; unknown scope is disclosed. |
+| Introduce changing progress or coordinates | Stable classes and custom properties handle dynamic values. |
+| Mix native, vendor and Master CSS | Cascade, import boundaries, declaration order, duplicates and resource URLs are retained. |
+
+Record first-edit time, second-edit time, human review, corrections, verification time and unresolved failures. Repeat trials; one successful output is not evidence of a general advantage. The repository's compiler and browser fixtures establish mechanical correctness, not a measured reduction in team maintenance time.
+
+</DocumentDisclosure>
+
+---
+
 ## Prompt templates
 ### Feature styling
 ```text name=prompt
@@ -261,42 +300,3 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 - Use [Code linting](/guide/code-linting) for validation and class sorting.
 - Use [Style declarations](/reference/rules/declarations) when you need syntax details.
 - Use [Theme Tokens](/guide/theme) and [Global Styles](/guide/global-styles#shared-vocabulary) when AI suggestions reveal repeated product vocabulary.
-
-
-## Named tokens and native values
-
-
-Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Use native CSS units for lengths and resolution descriptors in `image-set()`. Do not invent numeric names such as `p-4` unless the project defines that token.
-
-For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `font-family:var(--font-family-brand)` or `font-size:var(--font-size-brand)`. Check compiler diagnostics and generated declarations.
-
-Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
-
-
-
-Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
-
-
-## Review the second change
-
-Before changing shared definitions, save a project snapshot. The next inspection can compare it with the current project even when markup has not changed:
-
-```bash name=Terminal
-npx @master/css-cli inspect --snapshot > before.json
-npx @master/css-cli inspect --compare before.json > impact.json
-```
-
-Run the second command after editing. Review changed definitions, known consumers, generated rules, native stylesheet references and output delivery in `impact.json`. Read the coverage limits, then check affected layouts and states in the browser. In MCP, use `mastercss_scan_project` with `includeSnapshot: true` and pass both snapshots to `mastercss_css_compare`.
-
-Evaluate maintenance with repeatable tasks, using the same requirements, model version and resource limits for native CSS, current Master CSS, and the candidate change. Include a markup framework baseline when useful.
-
-| Second change | Evidence to collect |
-| --- | --- |
-| Change brand color while retaining an equal information color | Only consumers of the intended role change. |
-| Put one card in a main region and a sidebar | The card responds to its container. |
-| Restyle a button | Applicable focus-visible, disabled, dark and reduced-motion states still work. |
-| Change a token or recipe | Known consumers appear in the impact report; unknown scope is disclosed. |
-| Introduce changing progress or coordinates | Stable classes and custom properties handle dynamic values. |
-| Mix native, vendor and Master CSS | Cascade, import boundaries, declaration order, duplicates and resource URLs are retained. |
-
-Record first-edit time, second-edit time, human review, corrections, verification time and unresolved failures. Repeat trials; one successful output is not evidence of a general advantage. The repository's compiler and browser fixtures establish mechanical correctness, not a measured reduction in team maintenance time.

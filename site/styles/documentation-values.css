@@ -79,6 +79,11 @@
   .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody td):nth-child(3) { width: 13%; }
   .doc-number-variable-table[data-representation="spacing"] tbody th { color: var(--color-text-strong); font-weight: 500; }
   .doc-number-variable-table[data-representation="spacing"] code { white-space: normal; overflow-wrap: anywhere; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] table { min-width: 0; table-layout: auto; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td) { padding-inline: .5rem; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):first-child { width: 40%; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):nth-child(2) { width: 25%; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):nth-child(3) { width: 35%; }
   .doc-code-table :is(th, td) { contain: none; vertical-align: top; }
   .doc-code-table tbody th { width: 1%; font-weight: var(--font-weight-regular); }
   .doc-code-table tbody th code { white-space: nowrap; }

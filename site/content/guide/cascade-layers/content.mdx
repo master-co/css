@@ -1,12 +1,25 @@
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
 ## Override a component locally
 
 CSS cascade layers give groups of declarations an order before selector specificity is compared. Keep reusable component styling in the components layer, then apply a utility when one instance needs a different value:
 
-<ConfiguredExample source={'@layer components { .btn { display: inline-flex; } }'} classes={['btn', 'display:flex']} />
+<DemoConfiguredExample name="layer-local-override" title="A shared component, a local adjustment" source={`@layer components {
+  .collection-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-raised);
+  }
+}`} html={'<div class="display:grid gap-lg"><article class="collection-card"><h2 class="margin:0 text-lg font-semibold">Component padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">The component supplies 1.5rem.</p></article><article class="collection-card p-sm"><h2 class="margin:0 text-lg font-semibold">Local utility padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">p-sm overrides the padding on this instance.</p></article></div>'} theme previewFirst caption="Both cards share the same component class. Only the second adds p-sm; its utility declaration wins over normal component-layer padding." />
 
-With the base layer order loaded, the normal `display` declaration in utilities takes precedence over the component declaration. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
+The preset establishes this order for normal declarations:
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+The `padding` utility takes precedence over the component declaration, regardless of where the class appears in the HTML attribute. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
 
 ## Diagnose a competing declaration
 
@@ -17,7 +30,8 @@ With the base layer order loaded, the normal `display` declaration in utilities 
 
 Load the base stylesheet through the normal Master CSS entry. Generated rules contain their layer blocks; they do not add the base layer statement themselves.
 
-## Look up a rule
+<a id="look-up-a-rule"></a>
+<DocumentDisclosure title="Reference sections">
 
 - <a id="how-layers-control-the-cascade"></a> [How layers control the cascade](/reference/rules/layers#how-layers-control-the-cascade)
 - <a id="priority-matrix"></a> [Priority within and between layers](/reference/rules/layers#priority-matrix)
@@ -34,3 +48,5 @@ Load the base stylesheet through the normal Master CSS entry. Generated rules co
 - <a id="summary"></a> [Summary](/reference/rules/layers#summary)
 - <a id="writing-regular-css"></a> [Writing regular CSS](/reference/rules/layers#writing-regular-css)
 - <a id="layer-checklist"></a> [Layer checklist](/reference/rules/layers#layer-checklist)
+
+</DocumentDisclosure>

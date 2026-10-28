@@ -5,14 +5,14 @@ export const authoringSource = `@theme {
   --color-text-action: var(--color-brand);
   --spacing-action-x: 1rem;
   --radius-action: 0.5rem;
- }
+}
 
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);
 
 @utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
 
 @layer components {
   .btn {

@@ -1,34 +1,31 @@
 import { FoundationColorRoles } from '~/site/components/demo/FoundationPaint'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
-import { BaseHueDemo, LineRolesDemo, SurfacesDemo, TextHueDemo, TextRolesDemo } from './components/PresetThemeColors'
+import FoundationPalette from '~/site/components/demo/foundations/FoundationPalette'
 
 ## Overview [sr-only]
 
-Master CSS color tokens cover fixed palette steps, preset UI roles, and fixed hue aliases and adaptive text aliases. Use palette steps when you need an exact swatch. Use preset roles for the repeated color decisions that define application structure, text hierarchy, and light or dark mode behavior.
+Use a fixed palette color when you want a particular swatch. Use adaptive surface, line and text roles when the same interface needs to work in light and dark modes.
 
 ---
 
 ## Default color palette
-The preset defines fixed color families using OKLCH. Each family has steps `0`, `5`, `10` through `90` in tens, `95`, and `100`. These are palette names, not percentages or opacity values.
+The preset palette uses OKLCH, from light `0` to dark `100`. Select a swatch to copy its color or CSS variable. Step names are not opacity percentages.
 
-Browse and copy the complete [palette and adaptive aliases](/reference/tokens/color) in Reference. In this guide, select a base surface, readable foreground and one accent before adding more roles.
+<FoundationPalette />
 
-Choose palette steps directly for swatches, illustrations, brand accents, and status-color foundations. For page backgrounds, surfaces, lines, and text hierarchy, use preset roles so the same markup can adapt across modes.
-
-`zinc` is the interface neutral: a gray with a faint cool, metallic cast whose light steps sit closer together for surfaces. The preset's surface, line and text roles are built from it, so `bg-zinc-5` and `bg-surface-inset` match in light mode.
+Use palette steps for illustrations, brand accents, and other fixed colors:
 
 ```html
 <!-- @MARK bg-blue-5 --><!-- @MARK fg-blue-60 -->
-<div class="bg-blue-5 fg-blue-60">…</div>
+<div class="bg-blue-5 fg-blue-60">A fixed blue surface</div>
 ```
 
-<FoundationTokens namespace="color" keys={["blue-0", "blue-5", "blue-10", "blue-20", "blue-30", "blue-40", "blue-50", "blue-60", "blue-70", "blue-80", "blue-90", "blue-95", "blue-100", "zinc-0", "zinc-5", "zinc-10", "zinc-20", "zinc-30", "zinc-40", "zinc-50", "zinc-60", "zinc-70", "zinc-80", "zinc-90", "zinc-95", "zinc-100", "red-0", "red-5", "red-10", "red-20", "red-30", "red-40", "red-50", "red-60", "red-70", "red-80", "red-90", "red-95", "red-100"]} />
+`zinc` is the interface neutral, with a faint cool cast. The preset's adaptive roles use this family; use those roles for page backgrounds, boundaries and readable text. See the [color reference](/reference/tokens/color) for all values and consumers.
 
 ---
 
 ## Choose a color token
 
-<FoundationColorRoles />
 Start with the kind of decision you are making. Most app chrome should use roles first, then reach for palette steps or hue aliases when the color itself is the point.
 
 | Decision | Use | Examples |
@@ -37,6 +34,8 @@ Start with the kind of decision you are making. Most app chrome should use roles
 | App structure and hierarchy | Preset roles | `bg-surface-base`, `bg-surface-raised`, `b-line-divider`, `fg-text-body` |
 | Fixed hue swatch | Hue aliases | `bg-blue`, `fg-blue` |
 | Adaptive readable foreground | Text hue aliases | `fg-text-blue`, `fg-text-red` |
+
+<FoundationColorRoles />
 
 ```html
 <!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK border-width:1px border-style:solid b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
@@ -52,11 +51,10 @@ Start with the kind of decision you are making. Most app chrome should use roles
 ---
 
 ## Namespaces for color
-Color utilities use focused namespaces so role names stay short in markup. Use `b-line-divider` for decorative dividers, `b-line-control` for required control boundaries, `bg-surface-inset` for recessed areas, and `fg-text-muted` for secondary text.
 
-`bg-`, `fg-` and `b-` read the canonical color namespace. A role suffix such as `surface-raised` selects `--color-surface-raised`; it does not create another family. See [all color consumers](/reference/tokens/color#consumers).
+`bg-`, `fg-` and `b-` read the color namespace. Include the role in the key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-control` reads `--color-line-control`. Set the border width and style separately.
 
-Use the narrow role namespace first when the color describes structure, line work, or text hierarchy. Use the general color namespace when the hue or swatch itself is the decision.
+See [all color consumers](/reference/tokens/color#consumers) for the complete property mappings.
 
 ---
 
@@ -66,14 +64,15 @@ Preset roles describe the job a color performs in the interface. Their values ar
 ### Surfaces
 Surface tokens are for the page background, raised panels, floating layers, and inverse blocks. Use `bg-surface-base` for the root canvas and `bg-surface-*` for every surface role.
 
-<FoundationTokens namespace="color-surface" keys={["base", "raised"]} />
+<FoundationTokens namespace="color-surface" keys={["inset", "raised"]} />
 
 See the complete [values and consumers](/reference/tokens/color-surface) in Reference.
-<SurfacesDemo />
 
 ```html
-<!-- @MARK bg-surface-base -->
-<section class="bg-surface-base"></section>
+<!-- @MARK bg-surface-inset --><!-- @MARK bg-surface-raised -->
+<section class="bg-surface-inset">
+  <article class="bg-surface-raised">Raised content</article>
+</section>
 ```
 
 ### Line roles
@@ -82,11 +81,11 @@ Line tokens are for borders, dividers, outlines, and strokes. `divider` and `sub
 <FoundationTokens namespace="color-line" keys={["divider", "control"]} />
 
 See the complete [values and consumers](/reference/tokens/color-line) in Reference.
-<LineRolesDemo />
 
 ```html
-<!-- @MARK border-width:1.25rem border-style:solid b-line-divider -->
-<div class="border-width:1.25rem border-style:solid b-line-divider"></div>
+<!-- @MARK border-width:1px border-style:solid b-line-control -->
+<input aria-label="Collection name"
+  class="border-width:1px border-style:solid b-line-control" />
 ```
 
 ### Text roles
@@ -95,7 +94,6 @@ Text roles are for foreground hierarchy and interaction states. Prefer these rol
 <FoundationTokens namespace="color-text" keys={["body", "muted"]} />
 
 See the complete [values and consumers](/reference/tokens/color-text) in Reference.
-<TextRolesDemo />
 
 ```html
 <!-- @MARK fg-text-body --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-disabled --><!-- @MARK fg-text-link --><!-- @MARK fg-text-link-hover --><!-- @MARK fg-text-inverse -->
@@ -111,7 +109,7 @@ See the complete [values and consumers](/reference/tokens/color-text) in Referen
 ---
 
 ## Fixed and adaptive hue aliases \{#mode-aware-hue-aliases\}
-The 22 general hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
+General hue aliases are fixed swatches. Only the text aliases select light and dark foreground values. Use them when the hue itself matters; use roles when the color is describing structure or text hierarchy.
 
 ### Base hue aliases
 Base hue aliases use the same value in every scheme. They are accents and swatches, with no text contrast guarantee.
@@ -119,7 +117,6 @@ Base hue aliases use the same value in every scheme. They are accents and swatch
 <FoundationTokens namespace="color" keys={["yellow"]} />
 
 See the complete [values and consumers](/reference/tokens/color) in Reference.
-<BaseHueDemo />
 
 ```html
 <!-- @MARK bg-yellow -->
@@ -137,7 +134,6 @@ Text hue aliases choose foreground-oriented palette steps for light and dark mod
 <FoundationTokens namespace="color-text" keys={["yellow"]} />
 
 See the complete [values and consumers](/reference/tokens/color-text) in Reference.
-<TextHueDemo />
 
 ```html
 <!-- @MARK fg-text-yellow -->
@@ -167,10 +163,11 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 
 Use `light-dark()` for color pairs. Both token dependencies stay in generated CSS; the browser selects the color on the consuming element. A local override of a referenced primitive does not retroactively recompute a custom-property alias inherited from an ancestor: redeclare the role in that local scope when needed.
 
+---
 
 ## Native color scheme and manual themes
 
-The preset sets `:root { color-scheme: light dark; }`. Its 45 adaptive semantic colors and six shadows use native [`light-dark()`](https://www.w3.org/TR/css-color-5/#light-dark). The browser follows the system preference until an element selects a scheme. Native controls follow [`color-scheme`](https://www.w3.org/TR/css-color-adjust-1/#color-scheme-prop) too.
+The preset sets `:root { color-scheme: light dark; }`. Its adaptive surface, line and text colors, along with the six shadows, use native [`light-dark()`](https://www.w3.org/TR/css-color-5/#light-dark). The browser follows the system preference until an element selects a scheme. Native controls follow [`color-scheme`](https://www.w3.org/TR/css-color-adjust-1/#color-scheme-prop) too.
 
 ```html
 <html data-theme="dark">
@@ -197,11 +194,9 @@ With no root attribute, CSS follows system changes automatically. Persist the ch
 Brand values can use the same native selectors:
 
 ```css
-@theme {
+[data-theme="ocean"], :host([data-theme="ocean"]) {
+  --color-surface-base: light-dark(#eff6ff, #082f49);
 }
-  [data-theme="ocean"], :host([data-theme="ocean"]) {
-    --color-surface-base: light-dark(#eff6ff, #082f49);
-  }
 ```
 
 The ocean token remains adaptive to the inherited color scheme. To make ocean always dark, add a native `[data-theme="ocean"], :host([data-theme="ocean"]) { color-scheme: dark; }` rule. A nested light region changes the scheme but still inherits the ocean token; it does not reset every token to the default brand. If brand and scheme vary independently, use `[data-brand="ocean"]` for the brand and `data-theme="light"` or `data-theme="dark"` for the scheme. Restore a complete brand by explicitly redeclaring its role tokens at that boundary.
@@ -219,6 +214,8 @@ The preset `@light` and `@dark` class suffixes still mean **system preference me
 This selector also matches inside nested light regions; it is an explicit application selector, not a test of the browser's used color scheme. Prefer adaptive tokens for nested themes.
 
 Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset does not ship a parallel media-query fallback for older browsers. See [Chrome 123](https://developer.chrome.com/blog/new-in-chrome-123), [Firefox 120](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/120), and [Safari 17.5](https://webkit.org/blog/15383/webkit-features-in-safari-17-5/).
+
+---
 
 ## Contrast
 

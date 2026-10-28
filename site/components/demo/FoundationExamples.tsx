@@ -6,7 +6,7 @@ import { DemoComparison, DemoItem, DemoLabel, DemoMedia, DemoSurface } from './p
 
 /** The query boundary is an ancestor; it never queries its own width. */
 export function FoundationMedia() {
-  return <Demo title="A component follows its container" padding="none" data-foundation="media" caption="Below md the media stacks. At md it keeps a 9rem width beside flexible text.">
+  return <Demo title="A component follows its container" padding="none" data-foundation="media" caption="Below 28rem of container width, the media stacks. At 28rem it keeps a 9rem width beside flexible text.">
     <DemoContainer title="Media object">
       <div className="container-type:inline-size">
         <article className="display:flex flex-direction:column align-items:start gap-md p-md flex-direction:row@container((width>=28rem)) demo-surface">

@@ -1,17 +1,7 @@
 ## Overview [sr-only]
-Code linting is the enforceable layer of a team's Master CSS authoring policy. It validates class strings where they are authored: markup attributes, framework templates, JavaScript utility calls, and configured class declarations. The ESLint integration resolves the active project manifest, then checks each class against Master CSS syntax, generated CSS declarations, and team policy.
+Catch invalid classes, conflicting declarations and inconsistent syntax as you edit. The ESLint integration uses your project's theme and custom definitions, so diagnostics reflect the classes your project can generate.
 
-Use the [installation integrations](/guide/installation/integrations) to add the recommended config to a project. Use [Visual Studio Code setup](/guide/installation/vscode) when you want the VS Code ESLint extension to surface class policy diagnostics and apply sort-on-save.
-
-The Master CSS VS Code extension and the VS Code ESLint extension are complementary. Master CSS provides completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint provides `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, and opt-in raw-value policy diagnostics, so the Master CSS extension does not duplicate these warnings by default.
-
-For scripts, CI probes, and other tools that need machine-readable Master CSS diagnostics without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
-
-With no source paths, the CLI uses the scanner's source policy: it skips generated output directories and files excluded by project or workspace `.gitignore` rules. Pass a path or glob explicitly when you need to lint an ignored build artifact.
-
-When an AI client supports tool calls, the [Master CSS MCP server](/guide/mcp-server) can run the same lint policy through `mastercss_lint_project` and preview safe fixes. ESLint should still remain the default human development and CI lint workflow for JavaScript and framework projects.
-
-Use `npx @master/css-cli inspect --format json` when the tool needs scanner state, stylesheet entry metadata, generated CSS size, or explicit missing CSS checks. `inspect` is not a replacement for lint policy rules such as class sorting, canonical classes, conflicts, or raw-value policy.
+Start with the recommended config below, or use the [installation integrations](/guide/installation/integrations) to add it with your framework setup.
 
 ---
 
@@ -183,17 +173,6 @@ export default defineConfig([
 ---
 
 ## Team policy
-Use the recommended config for most projects:
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS
-])
-```
-
 Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
 
 ```js name=eslint.config.js
@@ -259,6 +238,11 @@ To regulate selected native properties, set `requireProperties: ['color', 'backg
 
 The shared diagnostic identifies `no-unapproved-raw-values`, the applicable property scope and canonical token families in its `data`. The rule has no autofix: matching a token's current value cannot establish whether `brand`, `information` or another role is appropriate. This policy checks vocabulary use, not visual or design correctness.
 
+---
+
+## Editor feedback
+The Master CSS extension provides completions, hover previews, color tools, highlighting and directive diagnostics. The VS Code ESLint extension adds class sorting, canonical syntax, conflict checks and invalid-class diagnostics. Use both when you want those checks while editing; the Master CSS extension avoids duplicating ESLint's class warnings by default.
+
 Use editor sort-on-save for low-friction cleanup:
 
 ```json name=.vscode/settings.json
@@ -270,6 +254,21 @@ Use editor sort-on-save for low-friction cleanup:
 ```
 
 See [Visual Studio Code setup](/guide/installation/vscode) for the full editor flow.
+
+---
+
+## Lint from scripts and AI tools
+Keep `eslint .` as the normal development and CI command for JavaScript and framework projects. When a script needs machine-readable diagnostics without loading an ESLint parser, use the CLI:
+
+```bash name=Terminal
+npx @master/css-cli lint --format json
+```
+
+With no source paths, the CLI follows the scanner's source policy: generated output and files excluded by project or workspace `.gitignore` rules are skipped. Pass a path or glob explicitly to lint an ignored build artifact.
+
+The [Master CSS MCP server](/guide/mcp-server) exposes the same policy through `mastercss_lint_project` and can preview safe fixes.
+
+Use `npx @master/css-cli inspect --format json` for scanner state, stylesheet entries, generated CSS size and missing-CSS checks. Use lint for class sorting, canonical classes, conflicts and raw-value policy.
 
 ---
 

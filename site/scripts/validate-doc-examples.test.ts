@@ -293,6 +293,10 @@ test('docs runtime examples use the public runtime state and rule API signatures
       if (isValidRuntimeRuleCall(call.arguments)) continue
       failures.push(`${formatFileLine(file, lineAt(content, call.index))} | ${call.name} expects one class-name array`)
     }
+    for (const call of content.matchAll(/MasterCSSRuntime\.start\(\{([\s\S]*?)\}\)/g)) {
+      if (!/\bmanifest\s*[:,}]/.test(call[1])) continue
+      failures.push(`${formatFileLine(file, lineAt(content, call.index))} | browser runtime startup requires a compiled program`)
+    }
   }
 
   assert.deepEqual(failures, [])

@@ -8,6 +8,9 @@ export const foundationFamilies = tokenFamilies
 export function namespaceTokens(namespace: string) {
   return foundationTokens.filter(token => token.namespace === namespace)
 }
+
+/** The Guide's visual palette and its portable export use the same fixed steps. */
+export const paletteKeys = namespaceTokens('color').filter(token => /^.+-\d+$/.test(token.key)).map(token => token.key)
 export function namespaceFamilies(namespace: string) {
   return foundationFamilies.filter(family => family.namespaces.includes(namespace.startsWith('color-') ? 'color' : namespace))
 }

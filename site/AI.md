@@ -113,20 +113,27 @@ The 2026-09-29 content decision keeps Design Foundations in Guide and makes Refe
 | Complete token names, values, scopes, modes and dependencies | Token Reference | Select the keys needed for the current example |
 | Complete canonical prefix / property / namespace mappings | Family index and namespace Reference | Explain the example's mappings and link to the full index |
 | Mixin parameters, output, defaults and restrictions | Recipe or directive Reference | Apply the recipe to a concrete task |
-| Complete palettes, type specimens and shadow/radius scales | Reference | Compare selected specimens in a real design |
+| Visual palettes, type specimens and shadow/radius scales | Shared presentation | Keep a useful comparison beside the lesson; Reference also provides full lookup data |
 | Choosing, combining and customizing tokens | Design Foundations Guide | Explain tradeoffs with working examples |
 | Component, page and responsive compositions | Guide | Keep the complete task and its demo together |
 | Grammar, exceptions and failure conditions | Syntax Reference | Explain the constraints needed to complete the task |
 
-Interactivity does not determine ownership: a browsable complete palette belongs in Reference; a card comparing surface, line and text roles belongs in Guide. Guide examples must remain self-contained, including necessary values, short comparisons and generated CSS. Reference needs a purpose, a minimal example and useful visual specimens as well as complete data. Do not duplicate complete catalogs in Guide, including through hidden disclosures or search/Markdown exports.
+Interactivity does not determine ownership. Guide must keep the visual comparisons readers need to understand a subject: a complete color palette or radius/shadow scale may be more useful than an arbitrary small selection. Render these from shared preset facts and keep the same facts in search/Markdown exports. Reference owns exhaustive value, scope, dependency and consumer tables. Guide examples remain self-contained, with practical markup and inspectable generated CSS; avoid repeating the same lesson in multiple previews or sending readers to Reference before they can see the result.
+
+### Guide reading flow
+
+- Start with the reader's task and its result. For visual subjects, show the comparison beside the lesson; for setup subjects, reach the working configuration before listing every tool or diagnostic field.
+- Keep the main example, its explanation and its code together. Place independent compiler options, machine-readable contracts and contributor details after the ordinary workflow.
+- Use native disclosures for long secondary examples or lookup indexes when they improve reading. Preserve useful content, stable anchors and search/Markdown output; keep the first working task visible.
+- Verify hierarchy, line wrapping and controls in the actual documentation column, including mobile and enlarged text. Do not shrink headings or body text to make dense content fit.
 
 ### Preserve visual teaching and lookup quality
 
-A documentation migration moves content, visual specimens and interactions together. Before deleting an original presentation, its public replacement must pass visual and functional comparison. Keeping a component only in the Design System gallery does not preserve the documentation experience. Use `fef197a78` as the visual baseline for this restoration; the unified `components/demo/` primitives remain the implementation owner.
+A documentation migration moves content, visual specimens and interactions together. Before deleting an original presentation, its public replacement must pass visual and functional comparison. Keeping a component only in the Design System gallery does not preserve the documentation experience. Use the task's approved visual reference; `fef197a78` records the original 2026-09-29 restoration baseline. The unified `components/demo/` primitives remain the implementation owner.
 
-Reference lookup needs carefully designed palettes, scales, specimens and comparisons. Use subject-specific rendering: text roles paint text, line roles paint boundaries, leading uses paragraphs, and shadow specimens leave room for the full shadow in both modes. Do not default every namespace to the same clipped tile grid. Guide may keep rich, self-contained teaching scenes and meaningful selections without a two-or-three-item limit; only the complete catalog belongs in Reference.
+Reference lookup needs carefully designed palettes, scales, specimens and comparisons. Use subject-specific rendering: text roles paint text, line roles paint boundaries, leading uses paragraphs, and shadow specimens leave room for the full shadow in both modes. Do not default every namespace to the same clipped tile grid. Guide keeps the visual comparisons needed to make a design decision; Reference adds exhaustive lookup facts and consumers. Do not impose an arbitrary specimen count on a lesson.
 
-`FoundationTokens` selects shared facts by explicit keys in Guide and complete namespace in Reference. `common/foundation-data/specimens.ts` and `recipe-specimens.ts` own site-only presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
+`FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; Reference renders complete namespaces through the same views. `common/foundation-data/specimens.ts` and `recipe-specimens.ts` own site-only presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
 
 For a visual migration, record old → new destinations and compare complete sections at 390, 768 and 1280px in light and dark. Verify actual effects, native keyboard focus, clipboard success/failure, paused motion, reduced motion, responsive controls and anchors. A compiling page without overflow is not sufficient evidence of visual quality. See the [restoration inventory](../.ai/reports/foundation-visual-restoration.md).
 
@@ -139,7 +146,7 @@ For a visual migration, record old → new destinations and compare complete sec
 - Existing demos, another framework's page list, CSS property coverage and anticipated SEO exposure do not independently justify a page. The documentation catalog is not a browser or engine support whitelist.
 - A new Guide must serve a concrete task with an executable example and a verifiable result. Existing and new pages follow the same admission rules; retain content for its present purpose rather than prior production effort.
 
-Keep all ten Design Foundations guides and narrow them to the tasks in the inventory. Complete scales and consumer tables move to Reference. Keep `/guide/containers`, with the title **Container queries**; place width-cap design choices in Sizing. Responsive Design owns the overall viewport/container strategy, and Layout System owns cross-foundation composition. Keep useful short teaching pages concise after moving their catalogs.
+Keep all ten Design Foundations guides focused on their practical tasks. Complete lookup tables and consumer mappings live in Reference; visual scales may also appear beside the Guide lesson when the comparison itself teaches the subject. Keep `/guide/containers`, with the title **Container queries**; place width-cap design choices in Sizing. Responsive Design owns the overall viewport/container strategy, and Layout System owns cross-foundation composition.
 
 Merge `/reference/tokens/containers` into the appropriate destinations: size values and consumers in `tokens/container`, query contracts in `rules/conditions`, and component adaptation in `/guide/containers`. Explicit container-query thresholds do not consume or track theme tokens. Preset breakpoints come from custom media, not theme custom properties. Keep color role lookup groups without implying alternate token prefixes or independent family resolution.
 
@@ -209,7 +216,7 @@ Follow the public Design Tokens policy when writing site code, demos, and exampl
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.
 
-For numeric theme variable tables, read values from `site/utils/theme-variables` or a narrow derived helper. Complete scales belong in Reference; Guide may render the explicit subset needed for its task. Render token, value and reference-unit columns using the existing table primitives, and label display conversions as reference values rather than compiler semantics. Keep value tables separate from generated CSS examples.
+For numeric theme variable tables, read values from `site/utils/theme-variables` or a narrow derived helper. Reference owns complete numeric lookup tables; Guide keeps the values or comparisons its lesson needs. Use the existing table primitives and label display conversions as reference values rather than compiler semantics. Guide may omit optional reference-unit conversions to keep a visual comparison readable on small screens. Keep value tables separate from generated CSS examples. Breakpoints show custom-media names, never invented theme-variable names.
 
 Complete namespace-consumer tables belong in Reference. Use canonical keys from `site/utils/manifest-utilities` and build-time `tokenFamilies()` metadata, including registered families without preset values. Guide may select relevant rows and link to the complete table. Keep grouping labels curated and reader-facing; never imply unsupported consumers, alternate spellings or a token dependency in an explicit native query. Value tables explain available values; consumer tables explain the properties and families using them.
 

@@ -1,4 +1,4 @@
-import { foundationScene, specimenCaption, specimenTokens, tokenAdvice } from './specimens'
+import { foundationScene, specimenTokens, tokenAdvice } from './specimens'
 import { configuredMarkupMarkdown } from '../../reference/configured-example'
 
 export function specimenFactsMarkdown(namespace: string, keys?: string[]) {
@@ -6,5 +6,5 @@ export function specimenFactsMarkdown(namespace: string, keys?: string[]) {
 }
 export function selectedSpecimensMarkdown(namespace: string, keys: string[]) {
   const scene = foundationScene(namespace, keys)
-  return `${specimenCaption[namespace]}\n\n${specimenFactsMarkdown(namespace, keys)}${scene.html && namespace !== 'color' ? `\n\n${configuredMarkupMarkdown(scene.css ?? '', scene.html)}` : ''}`
+  return `${scene.caption}\n\n${specimenFactsMarkdown(namespace, keys)}${scene.html && namespace !== 'color' ? `\n\n${configuredMarkupMarkdown(scene.css ?? '', scene.html)}` : ''}`
 }

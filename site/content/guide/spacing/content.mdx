@@ -4,38 +4,20 @@ import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 
 ## Overview [sr-only]
-Spacing controls the rhythm inside components, between related elements, and across page sections. Master CSS maps the default spacing scale to `spacing` variables, so padding, margin, gap, and inset can share the same design language.
+Use `p-`, `m-` and `gap-` with the same spacing tokens to give a layout a consistent rhythm. Padding creates room inside an element, margin separates it from its neighbors, and gap separates children in a grid or flex layout.
 
-<FoundationTokens namespace="spacing" keys={["sm", "md", "lg"]} />
-
-See the complete [values and consumers](/reference/tokens/spacing) in Reference.
-
-Use the scale by relationship:
-
-* `4xs` to `2xs` for micro spacing between icons, tags, compact controls, and inline text.
-* `xs` to `sm` for form fields, list rows, toolbar controls, and tight component groups.
-* `md` as the default component rhythm.
-* `lg` to `xl` for card padding, grouped content, and larger component separation.
-* `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
-
-<Demo>
-  <div className="grid-cols(2) gap-md width:100% p-md r-md background:var(--stripe-pink) grid-cols(5)@sm">
+<Demo title="Padding around the group, gap between items" caption="The striped area shows p-md around the grid and gap-md between its children.">
+  <div className="grid-cols(2) gap-md width:100% p-md r-md background:var(--stripe-pink)">
     <div className='app-box'>1</div>
     <div className='app-box'>2</div>
     <div className='app-box'>3</div>
     <div className='app-box'>4</div>
-    <div className='app-box'>5</div>
-    <div className='app-box'>6</div>
-    <div className='app-box'>7</div>
-    <div className='app-box'>8</div>
-    <div className='app-box'>9</div>
-    <div className='app-box'>10</div>
   </div>
 </Demo>
 
 ```html
 <!-- @MARK gap-md --><!-- @MARK p-md -->
-<div class="grid-cols(4) gap-md p-md">
+<div class="grid-cols(2) gap-md p-md">
   <div>1</div>
   <div>2</div>
   ...
@@ -43,8 +25,16 @@ Use the scale by relationship:
 ```
 
 <Class2CSS>
-  {['grid-cols(4)', 'gap-md', 'p-md']}
+  {['grid-cols(2)', 'gap-md', 'p-md']}
 </Class2CSS>
+
+## Choose a spacing token
+
+Start with `gap-md` between related fields, then use a smaller step within each field and a larger step between sections. Compare the actual distances below.
+
+<FoundationTokens namespace="spacing" keys={["xs", "sm", "md", "lg", "xl"]} />
+
+Use the [complete spacing reference](/reference/tokens/spacing) for every value and property mapping.
 
 ---
 
@@ -55,12 +45,10 @@ Use a small gap between a label and its input, a medium gap between fields, and 
   html={'<form class="width:100% max-w-sm margin-inline:auto p-lg r-lg bg-surface-raised shadow-sm"><h2 class="margin:0 text-xl font-semibold">Collection details</h2><p class="mt-xs mb-lg text-sm fg-text-muted">Give your next project a place to begin.</p><div class="display:grid gap-md"><label class="display:grid gap-sm text-sm">Name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><label class="display:grid gap-sm text-sm">Description<textarea class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" rows="3">Places, textures, and quiet details.</textarea></label></div><button type="button" class="mt-lg px-md py-sm r-md bg-surface-inverse fg-text-inverse">Save details</button></form>'}
   caption="gap-sm connects each label to its input; gap-md separates fields; mt-lg gives the action its own space. This preview does not submit data." />
 
-## Namespace for spacing
-The `spacing` variable namespace is shared across padding, margin, gap, inset, scroll spacing, and similar layout rules.
-
+## Customize spacing \{#namespace-for-spacing\}
 `p-`, `m-` and `gap-` read the same spacing tokens. `px-` sets `padding-inline`, and `py-` sets `padding-block`; these follow the writing mode. See the [complete family mappings](/reference/tokens/families).
 
-This lets spacing-related utilities use `md`, `lg`, or project token names without the `spacing-` prefix.
+Add a named token when the same distance becomes a repeated design decision:
 
 ```css name=index.css
 @theme {
@@ -68,8 +56,7 @@ This lets spacing-related utilities use `md`, `lg`, or project token names witho
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-wide: 6rem;
- }
-
+}
 ```
 
 Apply the custom spacing tokens in your markup:
@@ -77,13 +64,13 @@ Apply the custom spacing tokens in your markup:
 ```html
 <!-- @MARK mt-md --><!-- @MARK p-sm --><!-- @MARK gap-lg --><!-- @MARK py-wide -->
 <section class="py-wide">
-  <div class="gap-lg mt-md p-sm">...</div>
+  <div class="display:grid gap-lg mt-md p-sm">...</div>
 </section>
 ```
 
 ---
 
-## Using explicit lengths
+## Use explicit lengths \{#using-explicit-lengths\}
 Use native CSS units for local geometry that does not need a named token. `rem` lengths follow the browser’s root font size; `px` lengths retain their CSS pixel value.
 
 ```html
@@ -113,38 +100,23 @@ Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a va
 
 ---
 
-## Common mistakes
-### Do not use numeric keys as tokens
-(x) Avoid defining spacing tokens with numeric keys.
+## Name shared spacing clearly \{#common-mistakes\}
+
+<a id="do-not-use-numeric-keys-as-tokens"></a>
+Prefer names such as `sm`, `compact` or `section` over numeric token keys. This makes a shared design choice easier to distinguish from a measured length such as `padding:1px`.
 
 ```css name=index.css
 @theme {
-  --spacing-1: 0.25rem; /* [!code --] */
-  --spacing-2: 0.5rem; /* [!code --] */
- }
-
+  --spacing-compact: 0.75rem;
+  --spacing-section: 6rem;
+}
 ```
 
-Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `padding:1px` for a 1px value or `padding:0.25rem` for a root-relative length.
-
-(o) Use descriptive scale or role keys.
-
-```css name=index.css
-@theme {
-  --spacing-sm: 0.75rem;
-  --spacing-compact: 1.25rem;
-  --spacing-relaxed: 6rem;
- }
-
+```html
+<section class="py-section">
+  <div class="display:flex gap-compact">...</div>
+</section>
 ```
 
----
-
-## Summary
-
-Master CSS provides a unified system for defining spacing:
-
-* Use named spacing tokens for shared rhythm.
-* Use explicit native lengths for measured local geometry.
-* Use `0`, `1px`, or explicit pixel units for resets and exact pixel adjustments.
-* Avoid numeric token keys so markup stays clear.
+<a id="summary"></a>
+Use named tokens for repeated rhythm and explicit lengths for local geometry. Keep a small set of relationships consistent across a page.

@@ -3,6 +3,7 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 import StylesheetExample from '~/site/components/StylesheetExample'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import TokenValues from '~/site/reference/TokenValues'
+import Demo from '~/site/components/demo/Demo'
 
 Master CSS turns complete class names into CSS. A class can express one declaration, select a named token, or call a reusable recipe. Native selectors decide which elements receive the style; conditions decide when it applies. The browser still resolves variables, inheritance and the cascade.
 
@@ -21,6 +22,10 @@ Suppose a link should turn blue when hovered, but only at a larger viewport:
 ```html
 <a href="/collection" class="fg-blue-60:hover@sm">View collection</a>
 ```
+
+<Demo title="One class, one conditional color" caption="Hover the link when the page matches sm. Its destination continues to the interaction lesson below.">
+  <a className="text-decoration:underline fg-blue-60:hover@sm" href="#states">View collection</a>
+</Demo>
 
 Read the class from left to right:
 

@@ -7,6 +7,16 @@ Use motion to explain a state change or show progress. Choose a short duration f
 
 <FoundationMotion />
 
+Start with one named animation and make the entrance finite:
+
+```html
+<div class="animate-fade@motion-safe animation-iteration-count:1@motion-safe">Collection saved</div>
+```
+
+<Class2CSS>{['animate-fade@motion-safe', 'animation-iteration-count:1@motion-safe']}</Class2CSS>
+
+---
+
 ## Choose motion tokens
 ### Animation tokens
 Each `--animate-*` token contains a complete native `animation` shorthand. The matching `animate-*` class emits one declaration, such as `animation: var(--animate-fade)`.
@@ -52,8 +62,9 @@ Token classes follow the general declaration order. At the same layer and condit
 
 ## Transition properties
 
-<FoundationTransition />
 Select the property, duration and timing function independently. A transition runs when the selected property's value changes.
+
+<FoundationTransition />
 
 ```html
 <button class="opacity:.7 opacity:1:hover transition-property:opacity transition-fast transition-smooth">Save</button>
@@ -72,8 +83,9 @@ Use `@motion-safe` so nonessential motion only runs when the user has not reques
 
 ## Customize motion tokens
 
-<FoundationDialog />
 Store the keyframe name and playback settings together in one shorthand token. Duration and easing tokens can be referenced with `var()`. Omitted fields use native CSS defaults; this entrance runs once and keeps both fill states.
+
+<FoundationDialog />
 
 ```css name=index.css
 @prune native;

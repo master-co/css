@@ -1,11 +1,5 @@
 @layer defaults {
   .prose {
-    h2:has(+:is(h3, section)) {
-      color: var(--color-text-body);
-      font-size: var(--font-size-sm);
-      letter-spacing: var(--tracking-wide);
-    }
-
     @apply --site-light {
       :is(p, li, table) code {
         background-color: var(--color-neutral-0);
@@ -18,12 +12,8 @@
       }
     }
 
-    :is(p) {
+    :is(p, li) {
       font-size: var(--font-size-md);
-    }
-
-    :is(li) {
-      font-size: var(--font-size-sm);
     }
 
     :is(p, li) {
@@ -40,6 +30,10 @@
       max-width: 52.125rem;
     }
 
+    :is(p, li, td, th, h2, h3, h4, summary) code:not(.code-block) {
+      overflow-wrap: anywhere;
+    }
+
     :is(h2)+*>h3:first-child {
       margin-top: 1em;
     }
@@ -54,6 +48,12 @@
 
     :is(h2, h3):is(:hover, :target)>.doc-heading-icon {
       visibility: visible;
+    }
+
+    :is(h2, h3):focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: .25rem;
+      border-radius: var(--radius-xs);
     }
 
     :is(h2, h3) {
