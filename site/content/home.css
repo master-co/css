@@ -140,6 +140,15 @@
     object-fit: contain;
   }
 
+  /*
+   * Beside a title or a title and description, the illustration centers on the text and gives back its
+   * height with negative margins, so the text alone sets the row's height and the drawing overhangs it.
+   */
+  .home-illustration-hung {
+    align-self: center;
+    margin-block: calc(var(--home-illustration-size) / -2);
+  }
+
   .home-illustration .home-illustration-dark { display: none; }
   .dark .home-illustration .home-illustration-light { display: none; }
   .dark .home-illustration .home-illustration-dark { display: block; }
@@ -400,7 +409,6 @@
 
   .home-bento-card-caption > .home-illustration {
     --home-illustration-size: 7rem;
-    align-self: center;
   }
 
   @container home-card (width >= 22rem) {

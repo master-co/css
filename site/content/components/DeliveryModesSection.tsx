@@ -67,7 +67,7 @@ export default function DeliveryModesSection() {
               <div className="home-delivery-about">
                 {deliveryModes.map((mode) => (
                   <div className="home-delivery-mode" data-mode={mode.id} key={mode.id}>
-                    <HomeIllustration icon={modeIcons[mode.id]} />
+                    <HomeIllustration className="home-illustration-hung" icon={modeIcons[mode.id]} />
                     <p className="home-delivery-mode-title">
                       <Link className="home-heading-link" href={mode.href} id={`home-delivery-${mode.id}-title`}>{$(mode.title)}</Link>
                       {'default' in mode && mode.default && <span className="home-delivery-mode-default">{$('Default')}</span>}

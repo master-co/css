@@ -21,7 +21,7 @@ export function HomeBentoCard({ body, children, className, href, icon, title }: 
             <h3 className="home-bento-card-title"><Link className="home-heading-link" href={href}>{title}</Link></h3>
             <p className="home-bento-card-body">{body}</p>
           </div>
-          <HomeIllustration icon={icon} size={112} />
+          <HomeIllustration className="home-illustration-hung" icon={icon} size={112} />
         </div>
       </div>
       {children}

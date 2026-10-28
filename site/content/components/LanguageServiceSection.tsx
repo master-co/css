@@ -36,7 +36,7 @@ export default function LanguageServiceSection() {
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-        <EditorFigures features={editorFeatures} icons={editorFeatures.map(feature => <HomeIllustration icon={featureIcons[feature.id]} key={feature.id} />)} model={getEditorModel()} />
+        <EditorFigures features={editorFeatures} icons={editorFeatures.map(feature => <HomeIllustration className="home-illustration-hung" icon={featureIcons[feature.id]} key={feature.id} />)} model={getEditorModel()} />
       </div>
     </section>
   )
