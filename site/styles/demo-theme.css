@@ -1,27 +1,27 @@
 @theme {
-  --demo-radius: var(--radius-md);
+  --demo-radius: var(--radius-xl);
   --demo-grid-size: 1.25rem;
 }
 
 @theme {
-  --color-demo-canvas: var(--color-surface-base);
+  --color-demo-canvas: var(--color-surface-canvas);
   --color-demo-surface: var(--color-surface-raised);
-  --color-demo-line: var(--color-line-subtle);
+  --color-demo-line: var(--color-line-contour);
   --color-demo-grid: color-mix(in oklab, var(--color-zinc-50) 9%, transparent);
   --color-demo-text: var(--color-text-body);
   --color-demo-muted: var(--color-text-muted);
-  --color-demo-blue: var(--color-blue-60);
-  --color-demo-violet: var(--color-violet-60);
-  --color-demo-amber: var(--color-amber-60);
+  --color-demo-blue: light-dark(var(--color-blue-60), var(--color-blue-40));
+  --color-demo-violet: light-dark(var(--color-violet-60), var(--color-violet-40));
+  --color-demo-amber: light-dark(var(--color-amber-60), var(--color-amber-40));
   --color-demo-neutral: var(--color-zinc-50);
-  --color-demo-on-solid: var(--color-white);
+  --color-demo-on-solid: light-dark(var(--color-white), var(--color-black));
 }
 
 @layer defaults {
   .light {
-    --color-demo-canvas: var(--color-surface-base);
+    --color-demo-canvas: var(--color-surface-canvas);
     --color-demo-surface: var(--color-surface-raised);
-    --color-demo-line: var(--color-line-subtle);
+    --color-demo-line: var(--color-line-contour);
     --color-demo-grid: color-mix(in oklab, var(--color-zinc-50) 9%, transparent);
     --color-demo-text: var(--color-text-body);
     --color-demo-muted: var(--color-text-muted);
@@ -35,9 +35,9 @@
 
 @layer defaults {
   .dark {
-    --color-demo-canvas: var(--color-surface-base);
+    --color-demo-canvas: var(--color-surface-canvas);
     --color-demo-surface: var(--color-surface-raised);
-    --color-demo-line: var(--color-line-subtle);
+    --color-demo-line: var(--color-line-contour);
     --color-demo-grid: color-mix(in oklab, var(--color-zinc-50) 12%, transparent);
     --color-demo-text: var(--color-text-body);
     --color-demo-muted: var(--color-text-muted);

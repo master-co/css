@@ -1,0 +1,10 @@
+`NamespaceUtilityTable` connects a token namespace to the utility keys that accept it. When groups have descriptions, the table keeps the original Guide's separate Group, Utility keys and Description columns. The refined shared style uses quiet separators and a consistent reading rhythm. On narrow screens the table scrolls inside its own keyboard-focusable region; the page width stays fixed.
+
+```tsx
+<NamespaceUtilityTable groups={[
+  { label: 'Surfaces', namespace: 'color-surface',
+    keys: ['surface'], description: 'Panels, cards and overlays.' }
+]} />
+```
+
+Provide reader-facing group names and source keys from the manifest; `namespace` or `namespaces` filters unsupported keys. With no descriptions the table uses two columns. The table is a document aid, outside the measured layout of a demo. See its actual uses in [Colors](/guide/colors#namespaces-for-color), [Spacing](/guide/spacing#namespace-for-spacing) and [Typography](/guide/typography), and the [utility table review](/design-system/review/utility-table).

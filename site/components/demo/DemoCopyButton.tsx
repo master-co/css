@@ -2,16 +2,21 @@
 
 import '~/site/styles/demo-colors.css'
 import '~/site/styles/demo.css'
-import { createContext, useContext, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { IconCopy } from '@tabler/icons-react'
 
 const CopyFeedback = createContext<((message: string) => void) | null>(null)
 
 export function DemoCopyGroup({ children, instruction = 'Select a swatch to copy its variable.' }: { children: ReactNode, instruction?: string }) {
-  const [status, setStatus] = useState(instruction)
-  return <CopyFeedback.Provider value={setStatus}>
+  const [result, setResult] = useState<{ instruction: string, message: string }>()
+  const status = result?.instruction === instruction ? result.message : instruction
+  const report = useCallback((message: string) => setResult({ instruction, message }), [instruction])
+  return <CopyFeedback.Provider value={report}>
     <div className="demo-copy-group">
-      <div className="demo-copy-feedback" role="status">{status}</div>
+      <div className="demo-copy-feedback">
+        <span className="demo-copy-reserve" aria-hidden="true">{instruction}</span>
+        <span role="status">{status}</span>
+      </div>
       {children}
     </div>
   </CopyFeedback.Provider>
@@ -24,7 +29,7 @@ interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' 
 }
 
 /** The visible status describes the actual clipboard result, including denial. */
-export default function DemoCopyButton({ value, label, icon = <IconCopy size={15} stroke={1.6} aria-hidden="true" />, children, className, ...props }: Props) {
+export default function DemoCopyButton({ value, label, icon = <IconCopy size={15} stroke={1.8} aria-hidden="true" />, children, className, ...props }: Props) {
   const notify = useContext(CopyFeedback)
   const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
@@ -37,7 +42,7 @@ export default function DemoCopyButton({ value, label, icon = <IconCopy size={15
       await navigator.clipboard.writeText(value)
       report(`Copied ${value}`)
     } catch {
-      report(`Copy unavailable. Select this value: ${value}`)
+      report(`Copy unavailable: ${value}`)
     } finally { setBusy(false) }
   }
   return <span className="demo-copy">

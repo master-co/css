@@ -410,7 +410,7 @@ test('current public documents keep historical teaching in Migration Guide', asy
   for (const page of pages) {
     const url = page.url.replace(/^\/(en|tw)(?=\/)/, '')
     if (/^\/guide\/migration(?:\/|$)/.test(url)) continue
-    const navigation = ['/guide', '/reference', '/design-system'].includes(url)
+    const navigation = ['/guide', '/reference', '/design-system', '/design-system/review/documents'].includes(url)
     failures.push(...documentationHygieneIssues(page.body, navigation, url === '/guide/mcp-server').map(issue => `${url}: ${issue}`))
   }
   const { default: glob } = await import('fast-glob')
@@ -545,7 +545,7 @@ test('installation steps retain complete commands, stable headings and navigatio
     const normalizeFence = (value: string) => value.replace(/<!--\s*@MARK[\s\S]*?-->/g, '').split('\n').map(line => line.trim()).join('\n').trim()
     const exportedFences = deliveryFences(content.markdown).map(fence => normalizeFence(fence.text))
     for (const fence of deliveryFences(source)) assert.ok(exportedFences.includes(normalizeFence(fence.text)), `${slug}: ${fence.name}`)
-    assert.doesNotMatch(content.markdown, /<(?:DocumentStep|DocumentChoice|InstallationGuides|DemoConfiguredExample)|MCSS_EXPRESSION/)
+    assert.doesNotMatch(content.markdown, /<(?:Step(?:Section|L|R|Num|End)?\b|DocumentChoice|InstallationGuides|DemoConfiguredExample)|MCSS_EXPRESSION/)
     if (slug === 'integrations') assert.ok(content.markdown.includes(installationGuidesMarkdown()))
     const url = `/guide/installation${slug ? `/${slug}` : ''}`
     for (const heading of previous[url]) {

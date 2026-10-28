@@ -1,0 +1,42 @@
+import DocumentOptions, { DocumentOptionEntry, DocumentOptionList } from '~/site/components/DocumentOptions'
+import StylesheetExample from '~/site/components/StylesheetExample'
+
+Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The server compiles the literal source with the current preset and displays the complete result, including required variables and keyframes. The pair reuses `DocumentCodeExample`, including keyboard copy, visible focus and clipboard feedback. It does not execute a visual effect in the page.
+
+<div data-stylesheet-gallery>
+<StylesheetExample
+  title="A token used by a native rule"
+  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n.card {\n  background-color: var(--color-brand);\n}"}
+/>
+
+<StylesheetExample
+  title="A safelisted token"
+  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n@safelist \"bg-brand\";"}
+/>
+
+<StylesheetExample
+  title="A resource without a matching class"
+  source={"@layer theme { :root, :host {\n  --color-brand: #4f46e5;\n\n  \n} }\n@keyframes fade-in {\n    to { opacity: 1; }\n  }\n"}
+/>
+
+<DocumentOptionList label="Example settings">
+  <DocumentOptionEntry name="selector">
+
+    An explicit native selector inside [Theme declarations](/reference/directives/theme).
+
+  </DocumentOptionEntry>
+</DocumentOptionList>
+</div>
+
+```tsx
+<StylesheetExample
+  title="A safelisted color token"
+  source={"@theme { --color-brand: #4f46e5;  }\n\n@safelist \"bg-brand\";"}
+/>
+```
+
+The component accepts a title and standalone CSS source. Use a fixture-backed example for imports, references or assets that need multiple files. Keep the compiler on the server, retain every source and result line in portable Markdown, and allow code to scroll within its own block. A build error must surface during documentation checks.
+
+The token, safelist and native resource examples above share one presentation. `DocumentOptions` also accepts inline code and links in its description; its name and optional default stay separate. Both components belong outside measured demo layouts.
+
+See [Theme and variants](/reference/directives/theme), [Managed definitions](/reference/directives/definitions) and [Conditional blocks](/reference/directives/variant) for working uses.

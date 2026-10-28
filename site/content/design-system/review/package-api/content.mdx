@@ -1,0 +1,38 @@
+import DocumentAPIIndex from '~/site/components/DocumentAPIIndex'
+import DocumentDeclaration from '~/site/components/DocumentDeclaration'
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import PackageDeclarationExample from '~/site/components/PackageDeclarationExample'
+
+`DocumentAPIIndex` keeps import paths and export names together with their purpose. It is a server-rendered navigation list: identifiers wrap at path separators and word boundaries without changing copied text, and each destination is a normal keyboard-accessible link. Use the compact variant for a list of symbols inside `DocumentDisclosure`.
+
+<div data-package-gallery="">
+<DocumentAPIIndex label="Example import paths" entries={[
+  { name: '@master/css', href: '/reference/packages/css', description: 'Engine sessions and class rendering.' },
+  { name: '@master/css-compiler/stylesheet/browser', href: '/reference/packages/css-compiler', description: 'Browser compilation from supplied source and a base manifest.' }
+]} />
+
+<DocumentDisclosure title="Example exports" open>
+<DocumentAPIIndex compact label="Example exports" entries={[
+  { name: 'MasterCSSCompileManifestFileDeliveryOptions', href: '/reference/packages/css-compiler', description: 'Interface' },
+  { name: 'createEngine', href: '/reference/packages/css', description: 'Function' }
+]} />
+</DocumentDisclosure>
+
+<DocumentDeclaration label="Short declaration">{'export declare function createEngine(\n  options: MasterCSSEngineOptions\n): Promise<MasterCSSEngine>;'}</DocumentDeclaration>
+
+<DocumentDeclaration label="Options declaration">{'export interface MasterCSSCompileOptions {\n  readonly classes?: readonly string[];\n  readonly from?: string;\n  readonly preserveNativeCSS?: boolean;\n  readonly preserveNativeSource?: boolean;\n  readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void;\n}'}</DocumentDeclaration>
+
+<PackageDeclarationExample identifier="@master/css-compiler/diagnostics#MasterCSSInspectionReport" />
+</div>
+
+`DocumentDeclaration` reuses server syntax highlighting and the shared keyboard copy control. Declarations above 40 lines use a native disclosure; their full text stays in the document and portable exports. Long code lines scroll inside the code block. The component does not compile or execute TypeScript. Copy controls become available after client initialization; reading and native disclosures work before it.
+
+```tsx
+<DocumentAPIIndex label="Import paths" entries={[
+  { name: '@master/css', href: '/reference/packages/css',
+    description: 'Engine sessions and class rendering.' }
+]} />
+<DocumentDeclaration label="Engine factory">{declaration}</DocumentDeclaration>
+```
+
+Keep these reading components outside demo geometry. Package pages derive declarations from TypeScript emission and retain public overloads, types, stable anchors and constructor restrictions. See [Compiler](/reference/packages/css-compiler), [Runtime](/reference/packages/css-runtime) and [Tooling](/reference/packages/css-tooling) for complete examples.

@@ -1,5 +1,5 @@
 export { default as Demo } from './Demo'
-export type { DemoProps, DemoBackground, DemoPadding } from './Demo'
+export type { DemoProps, DemoBackground, DemoPadding, DemoFrame } from './Demo'
 export * from './primitives'
 export { default as DemoMeasure } from './DemoMeasure'
 export { default as DemoMotion } from './DemoMotion'

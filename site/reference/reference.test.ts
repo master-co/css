@@ -19,7 +19,7 @@ import legacyAnchors from './legacy-anchors.json' with { type: 'json' }
 import { collectCSSVariableReferences } from '../scripts/css-variable-references'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
-import { compileManifestSync } from '@master/css-compiler/node'
+import { compileManifestFileSync } from '@master/css-compiler/node'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
@@ -39,8 +39,7 @@ before(async () => {
 })
 
 test('Reference and shared search styles use defined site theme variables', async () => {
-  const theme = await readFile(path.join(root, 'styles/docs-shell/theme.css'), 'utf8')
-  const { manifest } = compileManifestSync(theme, { baseManifest: preset })
+  const { manifest } = compileManifestFileSync(path.join(root, 'styles/docs-shell/theme.css'), { baseManifest: preset })
   const names = new Set(flattenMasterCSSManifestVariables(manifest.variables).map(variable => variable.name))
   for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/documentation-values.css', 'styles/docs-shell/documentation-search.css']) {
     const css = await readFile(path.join(root, file), 'utf8')

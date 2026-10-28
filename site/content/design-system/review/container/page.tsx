@@ -1,16 +1,16 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import ResizeZone from '~/site/docs-shell/components/ResizeZone'
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import Demo from '~/site/components/demo/Demo'
 import DemoContainer from '~/site/components/demo/DemoContainer'
 import { DemoIFrame } from '~/site/components/demo/DemoBrowser'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo container review',
-  description: 'Current Demo container and practical examples.'
-}
+export { metadata }
 
 function QuerySpecimen() {
   return <section className="overflow:hidden container-type:inline-size width:100% r-lg border-width:1px border-style:solid b-line-divider bg-surface-raised">
@@ -23,26 +23,24 @@ function QuerySpecimen() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Framed container workspace',
-    note: 'A subtle specimen bed and clearer separation between canvas, width slider, Fit and live measurement improve scanning without changing the query boundary.',
-    preview: <Demo padding="none"><DemoContainer title="Query card"><QuerySpecimen /></DemoContainer></Demo>
+    number: '01', note: 'A subtle specimen bed and clearer separation between canvas, width slider, Fit and live measurement improve scanning without changing the query boundary.',
+    preview: <Demo padding="none" frame="none"><DemoContainer title="Query card"><QuerySpecimen /></DemoContainer></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-container-review">
-    <div className="review-container-kicker">Design system · Component review 27</div>
+  return <main className="ds-component-page review-container-review">
+    <ReviewNavigation />
     <h1>Demo container</h1>
     <p className="review-container-intro">A subtle specimen bed and clearer separation between canvas, width slider, Fit and live measurement improve scanning without changing the query boundary.</p>
 
-    <label htmlFor="container-review-theme" className="review-container-themeControl"><span>Preview theme</span><span className="review-container-themeSelect">Light · Dark · System<ThemeSelect id="container-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="container-options">
       <h2 id="container-options">Change the query boundary</h2>
 
       <div className="review-container-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-container-option" key={number}>
-          <div className="review-container-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-container-option" key={number}>
           <div className="review-container-optionPreview">{preview}</div>
           <p className="review-container-optionNote">{note}</p>
         </article>)}
@@ -57,5 +55,6 @@ export default function Page() {
       <div className="review-container-realGuide"><ResizeZone width="100%" originX="center" showRuler><DemoIFrame src="/examples/responsive-gallery" height={360} /></ResizeZone></div>
       <p className="review-container-optionNote">The Guide iframe demonstrates viewport changes. The shared container control above changes only a wrapper, so the page viewport remains fixed.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

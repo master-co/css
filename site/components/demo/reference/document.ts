@@ -9,11 +9,14 @@ import type { DemoScene, ReferenceDemoSection } from './types'
 const siteRoot = path.basename(process.cwd()) === 'site' ? process.cwd() : path.join(process.cwd(), 'site')
 const tokenFile = path.join(siteRoot, 'styles/demo-theme.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
+const materialFile = path.join(siteRoot, 'styles/docs-shell/materials.css')
+let materials = readFileSync(materialFile, 'utf8')
 let tokens = readFileSync(tokenFile, 'utf8')
 const frameCSS = readFileSync(frameFile, 'utf8')
-let shared = compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${tokens}`, { baseManifest: preset }).manifest
+const sharedManifest = () => compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${materials}\n${tokens}`, { baseManifest: preset }).manifest
+let shared = sharedManifest()
 
-export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
+export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, initialTheme?: 'light' | 'dark') {
   // A srcdoc inherits the host URL as its base. Keep native fragment navigation
   // inside this preview without changing the base for images, fonts or links.
   const html = scene.html.replace(/(<a\b[^>]*?\bhref=)(["'])#([^"']*)\2/g, '$1$2about:srcdoc#$3$2')
@@ -21,9 +24,11 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
   const developing = process.env.NODE_ENV === 'development'
   if (developing) {
     const nextTokens = readFileSync(tokenFile, 'utf8')
-    if (nextTokens !== tokens) {
+    const nextMaterials = readFileSync(materialFile, 'utf8')
+    if (nextTokens !== tokens || nextMaterials !== materials) {
       tokens = nextTokens
-      shared = compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${tokens}`, { baseManifest: preset }).manifest
+      materials = nextMaterials
+      shared = sharedManifest()
     }
   }
   const configuration = [section.css, scene.css].filter(Boolean).join('\n')
@@ -39,6 +44,6 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
     const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value) && !compiled?.nativeClassNames.includes(value))
     if (invalid.length) throw new Error(`${section.page}#${section.id}: invalid demo classes ${invalid.join(', ')}`)
     const css = `${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.css ?? ''}\n${rendered.cssText}`
-    return `<!doctype html><html lang="en" class="light"${scene.motion ? ' data-demo-paused' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${scene.head ?? ''}<style>@layer theme,base,defaults,components,utilities;${css.replaceAll('</style', '<\\/style')}</style></head><body${scene.bodyClass ? ` class="${escape(scene.bodyClass)}"` : ''}>${html}</body></html>`
+    return `<!doctype html><html lang="en"${initialTheme ? ` class="${initialTheme}"` : ''}${scene.motion ? ' data-demo-paused' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${scene.head ?? ''}<style>@layer theme,base,defaults,components,utilities;${css.replaceAll('</style', '<\\/style')}</style></head><body${scene.bodyClass ? ` class="${escape(scene.bodyClass)}"` : ''}>${html}</body></html>`
   } finally { engine.dispose() }
 }

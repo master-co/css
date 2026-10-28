@@ -61,17 +61,37 @@ test('native demo rules retain theme variables used without utility classes', ()
   assert.match(document, /--radius-md:/)
 })
 
+test('isolated documents include the shared material values referenced by demo tokens', () => {
+  const html = '<div class="bg-demo-canvas border-width:1px border-style:solid b-demo-line">Preview</div>'
+  const document = demoDocument({ page: 'materials', id: 'surface', title: 'Shared materials', html: [html], css: '', classes: [], classLists: [], highlighted: [] }, { html, caption: 'A single shared source' })
+  assert.match(document, /--color-demo-canvas:var\(--color-surface-canvas\)/)
+  assert.match(document, /--color-surface-canvas:light-dark\(/)
+  assert.match(document, /--color-line-contour:light-dark\(/)
+  assert.match(document, /--color-zinc-95:/)
+})
+
+test('initial document schemes work before client controls initialize', () => {
+  const html = '<div class="bg-demo-canvas fg-demo-blue">Theme specimen</div>'
+  const section = { page: 'materials', id: 'scheme', title: 'Document scheme', html: [html], css: '', classes: [], classLists: [], highlighted: [] }
+  const scene = { html, caption: 'Native schemes remain readable without JavaScript' }
+  const automatic = demoDocument(section, scene)
+  assert.doesNotMatch(automatic, /<html[^>]*class="light"/)
+  assert.match(automatic, /--color-demo-blue:light-dark\(var\(--color-blue-60\), ?var\(--color-blue-40\)\)/)
+  assert.match(demoDocument(section, scene, 'light'), /<html[^>]*class="light"/)
+  assert.match(demoDocument(section, scene, 'dark'), /<html[^>]*class="dark"/)
+})
+
 test('new demo tokens are defined and specimens do not force layout on demo items', async () => {
   const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
   const theme = await readFile(new URL('../../../styles/demo-theme.css', import.meta.url), 'utf8')
   const itemRule = css.match(/:where\(\.demo-item\)\s*\{([^}]+)\}/)![1]
   assert.doesNotMatch(itemRule, /(?:display|position|contain|overflow|width|height|padding)\s*:/)
   for (const token of ['canvas', 'surface', 'line', 'grid', 'text', 'muted', 'blue', 'violet', 'amber', 'neutral']) {
-    assert.equal([...theme.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 2, token)
+    assert.equal([...theme.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 3, `${token}: fallback, light and dark values`)
   }
 })
 
-test('default canvas stripe uses a defined theme image at the intended scale', async () => {
+test('the opt-in canvas stripe uses a defined theme image at the intended scale', async () => {
   const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
   const theme = await readFile(new URL('../../../styles/docs-shell/theme.css', import.meta.url), 'utf8')
   const stripe = css.match(/\.demo-canvas\[data-background="stripes"\]\s*\{([^}]+)\}/)?.[1]
@@ -79,6 +99,6 @@ test('default canvas stripe uses a defined theme image at the intended scale', a
   assert.match(stripe, /background-image:\s*var\(--stripe-image\)/)
   assert.match(stripe, /background-position:\s*0 0/)
   assert.match(stripe, /background-size:\s*7\.5px 7\.5px/)
-  assert.equal([...theme.matchAll(/--stripe-image:/g)].length, 2)
+  assert.equal([...theme.matchAll(/--stripe-image:/g)].length, 3)
   assert.doesNotMatch(css, /var\(--stripe\)/)
 })

@@ -7,7 +7,7 @@ import DemoViewport from './DemoViewport'
 
 /** Site-owned example pages share the same keyboard-accessible viewport controls. */
 export function DemoPageViewport({ src, title, height = 420 }: { src: string, title: string, height?: number }) {
-  return <Demo title={title} padding="none" background="plain" caption="Adjust the iframe viewport. Scroll inside the preview to see all content.">
+  return <Demo title={title} padding="none" background="plain" frame="none" caption="Adjust the iframe viewport. Scroll inside the preview to see all content.">
     <DemoViewport src={src} title={title} height={height} responsive theme />
   </Demo>
 }

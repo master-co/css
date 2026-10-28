@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-28",
+  "status": "Verified: reviewed CSS contract and scoped validation pass; known pre-existing issues and browser limitations remain listed",
+  "designReference": "https://aron.tw/en/blog/layered-neutral-interfaces",
+  "scope": "Site-only shared Demo and document presentation, Guide/Reference consumers, curated Design System overview, complete review pages and authoring guidance.",
+  "intentionalChanges": [
+    "Demo defaults to plain; frame default/none is an internal site API. Canvas className, style, padding and measured subject geometry remain owned by the caller.",
+    "Existing material token values moved to one shared source. Pressed and floating contact shadows split from their contour without changing their resolved composite values.",
+    "Radius-xl12px content surfaces; nested panel radius follows shell inset and real border thickness. No added clipping on measured examples.",
+    "Stable control border boxes, text starts and icon slots; selected/pressed/disabled states use fill and contact shadow. Native select picker retained with consistent WebKit geometry.",
+    "Code toolbar and copy targets, table alignment and short seams, file-tree/flow/prompt insets, native disclosure and tab fallback presentation.",
+    "Curated wide overview with one workbench iframe; complete original119 iframe bodies remain in detail/authoring collections. Search and portable Markdown include authored documentation.",
+    "Guide/Reference consumers retain full palette/radius/shadow inventories, actual token/CSS data and pink spacing patterns.",
+    "Code frame radius is now a local inherited property; full-bleed mobile toolbar copy corners resolve to0px and rounded windows retain11px inner corners."
+  ],
+  "publicPackageBehavior": "Engine, preset source and published package APIs are unchanged by this task.",
+  "cssReview": {
+    "candidate": "candidate-fortysix",
+    "reviewedCaptureSha256": "3089be10467abbcf7991729b04ddf3e74c7c347bd09421084662c5be5fbb83f4",
+    "baselineCommit": "707876305",
+    "latestConcurrentHead": "69a73d1b6",
+    "preExistingSnapshotDrift": {
+      "name": "pre-existing-snapshot-drift",
+      "from": "approved",
+      "to": "initial",
+      "routes": {
+        "added": 0,
+        "removed": 0,
+        "changed": 430,
+        "unchanged": 0
+      },
+      "removedExactSegments": 359,
+      "addedExactSegments": 330
+    },
+    "semanticEvidence": {
+      "versionUnchanged": true,
+      "languageVersionUnchanged": true,
+      "utilitiesByteEqual": true,
+      "customMediaByteEqual": true,
+      "keyframeBodiesEqual": true,
+      "mixinBodiesEqual": true,
+      "presetSourceDiffSinceInitialCommit": ""
+    },
+    "concurrentChanges": {
+      "syntaxTheme": "d80cd5d60 introduced18 static code-color variables and homepage syntax selectors; source and output preserved.",
+      "homeIcons": "1a222e960 and96fc17cfe introduced/refined homepage icons and a dedicated review route; source preserved.",
+      "buildAndTooling": "Concurrent Vite/native/development commits are outside this presentation change; no working-tree package edits from this task.",
+      "latestSyntaxTheme": "69a73d1b6 adjusts code-color values, the code surface and supporting prose. Fresh build46 preserves it; focused browser and contrast checks are separate from the completed broad matrix."
+    },
+    "approval": "Reviewed presentation changes accepted after completed browser QA. Existing drift and concurrent changes are recorded separately."
+  },
+  "browserCoverage": {
+    "browsers": [
+      "Chromium",
+      "WebKit"
+    ],
+    "widths": [
+      320,
+      390,
+      768,
+      1280,
+      1440
+    ],
+    "schemes": [
+      "light",
+      "dark"
+    ],
+    "modes": [
+      "normal",
+      "200% text",
+      "JavaScript disabled",
+      "reduced motion"
+    ],
+    "interactionChecks": [
+      "native keyboard navigation and focus",
+      "selected, pressed and disabled control geometry",
+      "actual clipboard success and failure",
+      "actual viewport resizing and Fit",
+      "native disclosures and print fallback"
+    ],
+    "broadMatrix": {
+      "contexts": 5744,
+      "passed": 5736,
+      "preExistingDuplicateIdFailures": 8,
+      "introducedFailures": 0,
+      "browsers": {
+        "chromium": 2872,
+        "webkit": 2872
+      },
+      "knownFailureKeys": [
+        "webkit-normal-390-light--guide-installation-vscode",
+        "webkit-normal-390-dark--guide-installation-vscode",
+        "webkit-normal-1280-light--guide-installation-vscode",
+        "webkit-normal-1280-dark--guide-installation-vscode",
+        "chromium-normal-390-light--guide-installation-vscode",
+        "chromium-normal-390-dark--guide-installation-vscode",
+        "chromium-normal-1280-light--guide-installation-vscode",
+        "chromium-normal-1280-dark--guide-installation-vscode"
+      ]
+    },
+    "focusedEvidence": {
+      "tableConsumers": "candidate-thirtyeight-*.jsonl:960 unique cases; all pass",
+      "tableGeometry": "table-final-candidate-thirtyeight.jsonl:240 cases; all pass",
+      "recipeNavigation": "recipe-links-candidate-fortyone*.jsonl:128 cases; all pass",
+      "search": "search-candidate-fortyone-chromium.jsonl and search-candidate-fortyone-keyboard-webkit.jsonl:80 cases; all pass",
+      "select": "select-final-candidate-fortythree*.jsonl:240 cases; all pass including root zoom and text-only zoom",
+      "contrast": "contrast-candidate-thirtyseven.jsonl:39,958 visible text nodes checked;0 flagged,0 unknown; scoped audit, not a full accessibility certification",
+      "iframeGeometry": "iframe-geometry-candidate-twelve.jsonl:2,300 cases; all pass",
+      "viewportControls": "viewport-controls candidate-thirtyone:2,700 cases; all pass; text-only responsive-control follow-up candidate-thirtyfour:180 cases; all pass",
+      "reducedMotion": "reduced-motion-candidate-fortyfour.json:8 contexts,24 behavior checks; all pass",
+      "staticIds": "static-id-audit-candidate-fortyfour.json:448 static pages;0 introduced duplicate-ID sets",
+      "codeFrame": "code-frame-proof-candidate-fortyfive.jsonl:640 contexts;3060 visible toolbar-copy geometry checks;0 failures. Native390px and1280px pressed states preserved.",
+      "latestContrast": "contrast-candidate-fortysix.jsonl:96 contexts;40,016 visible text nodes;0 flagged and0 unknown. This is a scoped audit, not a full accessibility certification.",
+      "finalTheme": "candidate-fortysix-*.jsonl:400 contexts across Chromium/WebKit, five widths, both schemes and normal/text200/no-JS/reduced modes; all pass."
+    }
+  },
+  "preservation": {
+    "originalIframeBodies": 119,
+    "matchedIframeBodies": 119,
+    "overviewIframesBefore": 119,
+    "overviewIframesAfter": 1,
+    "fullInventories": [
+      "palette",
+      "corner radius",
+      "shadow"
+    ],
+    "teachingGeometry": "Actual CSS/token values and spacing lesson pink patterns retained;2,300 iframe geometry checks passed."
+  },
+  "automatedChecks": {
+    "siteBuild": {
+      "routes": 448,
+      "publicAssets": 92,
+      "passed": true
+    },
+    "siteLint": {
+      "errors": 0,
+      "warnings": 102,
+      "unchangedBaselineWarnings": 100,
+      "concurrentHomeIconWarnings": 2,
+      "newWarningsInThisTask": 0
+    },
+    "typeCheck": {
+      "passed": true
+    },
+    "focusedDemoReferenceSegmentsAuthoringTests": {
+      "passed": 12
+    },
+    "referenceTests": {
+      "passed": 25
+    },
+    "markdownOutputTests": {
+      "passed": 33
+    },
+    "documentationExampleTests": {
+      "passed": 21
+    },
+    "syntaxTests": {
+      "passed": 14
+    },
+    "mdxImportTests": {
+      "passed": 2
+    },
+    "atomicClassTests": {
+      "passed": 3
+    },
+    "cssVariableReferenceTests": {
+      "passed": 2
+    },
+    "cssContract": {
+      "passed": true,
+      "routes": 448,
+      "deduplicatedDeliveryContracts": 148,
+      "exactCssSegments": 2846
+    },
+    "sourceBudget": {
+      "passed": true,
+      "files": 2487
+    }
+  },
+  "knownLimitations": [
+    "Firefox could not initialize a profile after three launch attempts; not counted as passed.",
+    "VSCode installation guide and homepage brand SVGs have duplicate IDs already present in the initial baseline; all448 final static pages have no introduced conflicts. The broader Guide/Reference browser matrix reports the VSCode page separately.",
+    "Two existing sponsor link fragments remain missing; no introduced broken site links.",
+    "WebKit keyboard tests follow native Option-Tab navigation on this machine. Original incorrect plain-Tab harness runs retained.",
+    "No-JavaScript checks validate readable content, native disclosures and code/tab fallbacks; they do not claim clipboard actions work without JavaScript."
+  ],
+  "deliveryCosts": {
+    "note": "delivery-proof-candidate-fortysix.json records unique fetched stylesheet bytes and local compression estimates. CSS delivery increases include concurrent static syntax tokens; no universal CSS-size reduction is claimed.",
+    "overviewHtml": {
+      "before": {
+        "htmlBytes": 5051012,
+        "gzipEstimate": 433660,
+        "brotliEstimate": 146830,
+        "iframeCount": 119
+      },
+      "after": {
+        "htmlBytes": 176687,
+        "gzipEstimate": 26938,
+        "brotliEstimate": 20188,
+        "iframeCount": 1
+      }
+    },
+    "warning": "HTML and CSS measurements are separate; compression values are local estimates. Do not infer a universal CSS or network transfer reduction."
+  },
+  "evidence": {
+    "directory": "/Users/aron/.codex/visualizations/2026/10/27/01a17ed9-dfd1-73f0-bd8f-d17b1b4ba8ef/design-system-neutral-refinement",
+    "visualReview": "review.html",
+    "designDecisions": "round-two-design-review.json",
+    "cssDecision": "css-qa-decision.json",
+    "expandedCssDiffs": "css-diff/candidate-fortysix",
+    "exactCssSegments": "css-review/candidate-fortysix",
+    "visualComparisons": "37 component families at390/1280px in both schemes, overview first screens, native selects and pressed code-toolbar corners"
+  },
+  "continuationTiming": {
+    "startedAt": "2026-10-28T07:14:30+00:00",
+    "completedAt": "2026-10-28T12:15:09.009084+00:00",
+    "elapsedSeconds": 18039,
+    "minimumHours": 5,
+    "minimumDurationMet": true
+  },
+  "commitScope": {
+    "preparedAt": "2026-10-28T12:41:13.809382+00:00",
+    "baseCommit": "69a73d1b61a94e381b5018555b1449ca8194555c",
+    "files": 240,
+    "excludedConcurrentWork": [
+      "site/assets/images/home/icons/",
+      "site/content/design-system/review/home-icons/",
+      "site/content/components/DESIGN.md",
+      "site/styles/docs-shell/syntax-theme.css"
+    ],
+    "isolatedBuild": {
+      "routes": 448,
+      "publicAssets": 92,
+      "passed": true
+    },
+    "isolatedLint": {
+      "errors": 0,
+      "warnings": 100
+    },
+    "isolatedTypeCheck": {
+      "passed": true
+    },
+    "cssReview": "commit-scope-css-review.json:only3 excluded home-icon construction rules differ; the other446 routes and project manifest match the reviewed build",
+    "snapshotCaptureSha256": "29cb4837e7798b8fd5dd2aa92111b32f81f022c1f5273920f9aed832e69e91b9",
+    "snapshotVerification": {
+      "passed": true,
+      "routes": 448,
+      "contracts": 148,
+      "segments": 2843
+    }
+  }
+}

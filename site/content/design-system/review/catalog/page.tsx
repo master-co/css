@@ -1,14 +1,14 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 
 import DemoCatalog from '~/site/components/demo/DemoCatalog'
 import DemoExample from '~/site/components/demo/DemoExample'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo catalog review',
-  description: 'Current Demo catalog and practical examples.'
-}
+export { metadata }
 
 function groups(prefix: string) {
   return [{
@@ -21,26 +21,24 @@ function groups(prefix: string) {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Sharper disclosure hierarchy',
-    note: 'The same native details gain clearer tap and focus areas, a distinct class marker, calmer open state and more comfortable preview inset.',
+    number: '01', note: 'The same native details gain clearer tap and focus areas, a distinct class marker, calmer open state and more comfortable preview inset.',
     preview: <DemoCatalog groups={groups('current-catalog')} />
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-catalog-review">
-    <div className="review-catalog-kicker">Design system · Component review 30</div>
+  return <main className="ds-component-page review-catalog-review">
+    <ReviewNavigation />
     <h1>Demo catalog</h1>
     <p className="review-catalog-intro">The same native details gain clearer tap and focus areas, a distinct class marker, calmer open state and more comfortable preview inset.</p>
 
-    <label htmlFor="catalog-review-theme" className="review-catalog-themeControl"><span>Preview theme</span><span className="review-catalog-themeSelect">Light · Dark · System<ThemeSelect id="catalog-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="catalog-options">
       <h2 id="catalog-options">Navigation treatments</h2>
 
       <div className="review-catalog-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-catalog-option" key={number}>
-          <div className="review-catalog-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-catalog-option" key={number}>
           <div className="review-catalog-optionPreview">{preview}</div>
           <p className="review-catalog-optionNote">{note}</p>
         </article>)}
@@ -55,5 +53,6 @@ export default function Page() {
       <div className="review-catalog-realGuide"><DemoExample page="clear" section="clearing-right-floats" /></div>
       <p className="review-catalog-optionNote">The disclosure and category links sit outside this specimen, so they do not become part of the float layout.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

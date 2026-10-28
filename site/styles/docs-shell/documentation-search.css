@@ -1,15 +1,20 @@
 @layer components {
   .documentation-search { position: fixed; inset: 0; display: flex; flex-direction: column; margin: min(14dvh, 8rem) auto auto; padding: 0; width: min(42.5rem, calc(100% - 2rem)); max-width: 100%; max-height: min(72dvh, 42rem); border: 0; border-radius: var(--radius-3xl); background: color-mix(in srgb, var(--color-surface-raised) 94%, transparent); color: var(--color-text-body); box-shadow: var(--shadow-floating), 0 32px 64px -32px light-dark(oklch(0% 0 none / .2), oklch(0% 0 none / .6)); backdrop-filter: blur(24px); overflow: hidden; }
   .documentation-search::backdrop { background: #0004; backdrop-filter: blur(3px); }
-  .documentation-search-input { display: flex; flex-shrink: 0; align-items: center; gap: .75rem; min-height: 4rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--color-line-subtle); }
+  .documentation-search-input { position: relative; display: flex; flex-shrink: 0; align-items: center; gap: .75rem; min-height: 4rem; padding: .75rem 1.25rem; }
+  .documentation-search-input::after, .documentation-search-footer::before { position: absolute; inset-inline: 1.25rem; height: 1px; background: var(--color-line-subtle); content: ''; }
+  .documentation-search-input::after { bottom: 0; }
+  .documentation-search-input:has(input:focus-visible)::after { height: 2px; background: var(--color-focus); }
+  .documentation-search-footer::before { top: 0; }
   .documentation-search-input > svg { flex-shrink: 0; color: var(--color-text-muted); }
   .documentation-search-input input { min-width: 0; flex: 1; background: transparent; border: 0; outline: none; padding: .5rem 0; font: inherit; font-size: 1rem; color: var(--color-text-strong); appearance: none; }
   .documentation-search-input input::placeholder { color: var(--color-text-muted); }
   .documentation-search-input input::-webkit-search-cancel-button { display: none; }
-  .documentation-search-input button { display: flex; flex-shrink: 0; align-items: center; justify-content: center; color: var(--color-text-muted); border-radius: .375rem; }
+  .documentation-search-input button { display: flex; flex-shrink: 0; align-items: center; justify-content: center; color: var(--color-text-muted); border-radius: var(--radius-lg); }
   .documentation-search-input button:hover { color: var(--color-text-strong); background: var(--color-surface-inset); }
+  .documentation-search-input button:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .documentation-search-clear { width: 1.75rem; height: 1.75rem; }
-  .documentation-search-close { padding: .25rem; }
+  .documentation-search-close { padding: .25rem; border-radius: calc(var(--radius-md) + .25rem); }
   .documentation-search-close span { display: none; }
   .documentation-search kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.375rem; height: 1.375rem; padding-inline: .3rem; border: 0; border-radius: var(--radius-md); font: inherit; font-size: .6875rem; line-height: 1; background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
   .documentation-search :is(button, a):focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
@@ -33,22 +38,28 @@
   .documentation-search mark { background: transparent; color: var(--color-text-strong); text-decoration: underline; text-decoration-color: var(--color-accent); text-underline-offset: .2em; }
   .documentation-search-suggestions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .375rem 1.25rem 1.5rem; }
   .documentation-search-suggestions > span { width: 100%; margin-block: .125rem .25rem; font-size: .8125rem; color: var(--color-text-body); }
-  .documentation-search-suggestions button { display: flex; align-items: center; gap: .75rem; border: 1px solid var(--color-line-control); border-radius: .5rem; padding: .5rem .625rem; background: var(--color-surface-base); font-size: .75rem; }
-  .documentation-search-suggestions button:hover { border-color: var(--color-line-control); color: var(--color-text-strong); }
+  .documentation-search-suggestions button { display: flex; align-items: center; gap: .75rem; min-height: 2.25rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); padding: .5rem .625rem; background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); font-size: .75rem; font-weight: 550; line-height: 1.4; }
+  .documentation-search-suggestions button:hover { background: var(--color-surface-base); color: var(--color-text-strong); }
+  .documentation-search-suggestions button:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .documentation-search-suggestions svg { color: var(--color-text-muted); }
   .documentation-search-empty { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 2rem 1.5rem 2.5rem; text-align: center; }
   .documentation-search-empty > svg { color: var(--color-text-muted); }
   .documentation-search-empty strong { color: var(--color-text-strong); font-size: .875rem; font-weight: 500; }
   .documentation-search-empty p { margin: 0; color: var(--color-text-muted); font-size: .8125rem; }
-  .documentation-search-footer { display: flex; flex-shrink: 0; align-items: center; gap: 1rem; padding: .75rem 1.25rem; border-top: 1px solid var(--color-line-control); color: var(--color-text-muted); font-size: .6875rem; }
+  .documentation-search-footer { position: relative; display: flex; flex-shrink: 0; align-items: center; gap: 1rem; padding: .75rem 1.25rem; color: var(--color-text-muted); font-size: .6875rem; }
   .documentation-search-footer > span { display: flex; align-items: center; gap: .25rem; }
   .documentation-search-footer > span:last-child { margin-left: auto; }
+  @media (pointer: coarse) {
+    .documentation-search-clear, .documentation-search-close { min-width: 2.75rem; min-height: 2.75rem; }
+    .documentation-search-suggestions button { min-height: 2.75rem; }
+  }
   @media (width < 48rem) {
     .documentation-search { margin: 0; width: 100%; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; background: var(--color-surface-raised); }
     .documentation-search-input { padding: .625rem 1rem; min-height: 3.75rem; }
-    .documentation-search-close { font-size: .8125rem; padding: .5rem .25rem; }
+    .documentation-search-input::after { inset-inline: 1rem; }
+    .documentation-search-close { font-size: .8125rem; padding: .5rem .25rem; border-radius: var(--radius-lg); }
     .documentation-search-close span { display: inline; }
-    .documentation-search-close kbd, .documentation-search-footer { display: none; }
+    .documentation-search-close kbd, .documentation-search-footer { position: relative; display: none; }
     .documentation-search-results { flex: 1; }
     .documentation-search-results a { padding-inline: .625rem; gap: .75rem; }
     .documentation-search-enter { display: none; }

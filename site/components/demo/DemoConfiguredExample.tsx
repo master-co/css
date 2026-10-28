@@ -36,7 +36,7 @@ export default function DemoConfiguredExample({ name, title, source, html, capti
     </>
   return <>
     {!previewFirst && sourceCode}
-    <Demo title={title} caption={caption} padding="none" background="plain" data-project-style={name}>
+    <Demo title={title} caption={caption} padding="none" background="plain" frame="none" data-project-style={name}>
       <DemoViewport title={title} document={document} theme={theme} responsive={responsive} widthPresets={widthPresets} motion={motion} sizing="content" />
     </Demo>
     {previewFirst && sourceCode}

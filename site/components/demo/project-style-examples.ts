@@ -7,15 +7,17 @@ export interface ProjectStyleExample {
   theme?: boolean
 }
 
+/** Authored configuration facts shared by the lesson and the design-system workbench. */
+export const projectTokenDefinitions = [
+  { name: '--color-brand', value: 'var(--color-text-link)' },
+  { name: '--spacing-card', value: '1.5rem' },
+  { name: '--radius-card', value: '.75rem' },
+] as const
+
 export const projectStyleExamples = {
   tokens: {
     title: 'A small project vocabulary',
-    source: `@theme {
-  --color-brand: var(--color-text-link);
-    --spacing-card: 1.5rem;
-    --radius-card: .75rem;
-}
-`,
+    source: `@theme {\n${projectTokenDefinitions.map(token => `  ${token.name}: ${token.value};`).join('\n')}\n}\n`,
     html: "<article class=\"p-card r-card border-width:1px border-style:solid b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"margin:0 font-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-semibold fg-text-strong\">Room for the details</h2>\n  <p class=\"margin:0 text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
     caption: 'p-card reads spacing, r-card reads radius, and fg-brand reads color. Each class retains a reference to its theme variable.',
     guide: '/guide/theme',

@@ -1,0 +1,9 @@
+`DemoScrollArea` establishes native overflow and a keyboard focus stop. A single contour and soft inset shadow mark its recessed, opaque surface. The component caps its height at 16rem; set an explicit width or smaller height for the lesson. It does not add a child or change how content is laid out inside the scrollport.
+
+```tsx
+<DemoScrollArea role="region" aria-label="Layer collection" className="height:10rem">
+  {/* Overflowing content */}
+</DemoScrollArea>
+```
+
+Give a named region when the collection needs a landmark, and keep the focus outline visible. The [overflow reference](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) uses real utility classes on its scrollports; the [scroll area review](/design-system/review/scroll) shows the current scroll boundary.

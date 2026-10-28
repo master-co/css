@@ -1,0 +1,44 @@
+Use `StepSection` for a setup sequence with authored headings and code. Each `Step` gets a decorative sequence number through `StepNum`. Keep the action in the heading and its expected result in the prose. Reading order stays in the document.
+
+```jsx
+import Code from '~/site/docs-shell/components/Code'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      <h3><StepNum />Connect the stylesheet</h3>
+      <p>Import the entry in your app.</p>
+    </StepL>
+    <StepR>
+      <Code lang="css">{"@import '@master/css';"}</Code>
+    </StepR>
+  </Step>
+</StepSection>
+```
+
+The components are server rendered. Supply native headings at the appropriate level and preserve their stable IDs. Numbering is decorative, not a replacement for headings or a progress indicator. The numbered rail and optional columns are the same treatment used in Guide. The 38rem container threshold controls the optional two-column layout; narrower columns stack in reading order, and code retains its own horizontal scroll. Place measured demos outside the step layout.
+
+Use the same sequence pattern across installations:
+
+- [Quick start](/guide/installation), [Vite](/guide/installation/vite), [CLI](/guide/installation/cli) and [VS Code](/guide/installation/vscode) pair each action with its result.
+- [Webpack](/guide/installation/webpack), [Rspack](/guide/installation/rspack) and [Rsbuild](/guide/installation/rsbuild) keep full configuration files readable.
+- [Astro](/guide/installation/astro) and [SvelteKit](/guide/installation/svelte) connect layouts with server hooks.
+- [Express](/guide/installation/express), [PHP](/guide/installation/php) and [Rails](/guide/installation/rails) connect independently built assets with complete server templates.
+- [Laravel](/guide/installation/laravel), [WordPress](/guide/installation/wordpress) and [Shopify](/guide/installation/shopify) preserve the host's asset helpers and layout hooks.
+- [ASP.NET Core](/guide/installation/aspnet-core) and [Blazor](/guide/installation/blazor) make asset-build, host-build and publication order explicit.
+
+Place a complete template before its appearance preview. `DemoConfiguredExample`
+uses literal source to keep displayed classes and rendered samples aligned; a
+preview does not run the host framework. Keep setup constraints in the lesson.
+
+### Installation mode navigation
+
+`InstallationModeTabs` reuses the site’s navigation treatment for sibling setup guides. Pass translated labels and canonical destinations. One matching link receives `aria-current="page"`. These are ordinary links with native keyboard behavior, not an in-page tab panel. The [Blazor installation guide](/guide/installation/blazor) starts with static rendering; runtime rendering has its own route.
+
+```jsx
+<InstallationModeTabs items={[
+  { href: '/guide/installation/blazor', label: 'Static Rendering' },
+  { href: '/guide/installation/blazor/runtime', label: 'Runtime Rendering' },
+]} />
+```

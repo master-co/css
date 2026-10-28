@@ -12,7 +12,8 @@ export interface DemoTokenRow {
 
 /** A document inventory, separate from any specimen's measured layout. */
 export default function DemoTokenTable({ rows, descriptionTitle = 'Role' }: { rows: DemoTokenRow[], descriptionTitle?: string }) {
-  return <figure><div className="doc-table"><table>
+  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Narrow token inventories need native keyboard scrolling.
+  return <figure><div className="doc-table" role="region" aria-label={`${descriptionTitle} token table`} tabIndex={0}><table>
     <thead><tr><th scope="col">Token / class</th><th scope="col" className="min-width:12rem">{descriptionTitle}</th></tr></thead>
     <tbody>{rows.map(({ token, utilities, value, description, preview }) => <tr key={token}>
       <td>

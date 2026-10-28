@@ -1,17 +1,17 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import { DemoSwatch } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo swatch review',
-  description: 'The current labeled Demo swatch and semantic role inventory.'
-}
+export { metadata }
 
 export default function Page() {
   return (
-    <main className="review-swatch-review">
-      <div className="review-swatch-kicker">Design system · Component review 05</div>
+    <main className="ds-component-page review-swatch-review">
+      <ReviewNavigation />
       <h1>Demo swatch</h1>
       <p className="review-swatch-intro">The shared swatch pairs a color chip with a visible semantic label and token. It is a static inventory tile; use a button when copying a value.</p>
 
@@ -19,7 +19,6 @@ export default function Page() {
         <h2 id="swatch-current">One blue specimen</h2>
         <div className="review-swatch-current">
           <article className="review-swatch-option">
-            <div className="review-swatch-optionHeading"><span>01</span><div><h3>Current swatch</h3><p>Shared inventory tile</p></div></div>
             <Demo><div className="review-swatch-swatchStage"><DemoSwatch label="Subject" value="--color-demo-blue" className="bg-demo-blue" /></div></Demo>
             <p className="review-swatch-optionNote">The token and semantic role share a restrained frame; the chip keeps a hairline edge.</p>
           </article>
@@ -50,6 +49,7 @@ export default function Page() {
         </div>
         <p className="review-swatch-optionNote">The shared tile names roles in Design System and scenario explanations. The Guide palette provides the separate copy action.</p>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

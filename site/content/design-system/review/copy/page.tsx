@@ -1,40 +1,38 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import ColorPalette from '~/site/docs-shell/components/ColorPalette'
 
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import Demo from '~/site/components/demo/Demo'
 import DemoCopyButton from '~/site/components/demo/DemoCopyButton'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo copy control review',
-  description: 'Current Demo copy button and practical examples.'
-}
+export { metadata }
 
 const token = 'var(--color-blue-60)'
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Tool-like copy control',
-    note: 'The same behavior gains an explicit copy icon, tighter type, a precise border and a more readable result line.',
+    number: '01', note: 'The same behavior gains an explicit copy icon, tighter type, a precise border and a more readable result line.',
     preview: <Demo><DemoCopyButton value={token} label="Copy blue token">Copy blue token</DemoCopyButton></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-copy-review">
-    <div className="review-copy-kicker">Design system · Component review 26</div>
+  return <main className="ds-component-page review-copy-review">
+    <ReviewNavigation />
     <h1>Demo copy button</h1>
     <p className="review-copy-intro">The same behavior gains an explicit copy icon, tighter type, a precise border and a more readable result line.</p>
 
-    <label htmlFor="copy-review-theme" className="review-copy-themeControl"><span>Preview theme</span><span className="review-copy-themeSelect">Light · Dark · System<ThemeSelect id="copy-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="copy-options">
       <h2 id="copy-options">Copy one color reference</h2>
 
       <div className="review-copy-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-copy-option" key={number}>
-          <div className="review-copy-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-copy-option" key={number}>
           <div className="review-copy-optionPreview">{preview}</div>
           <p className="review-copy-optionNote">{note}</p>
         </article>)}
@@ -49,5 +47,6 @@ export default function Page() {
       <div className="review-copy-guidePalette"><ColorPalette filterColors={['blue']} /></div>
       <p className="review-copy-optionNote">The Design System palette can copy variable references; the Guide palette continues to copy literal palette values.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

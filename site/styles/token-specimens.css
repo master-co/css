@@ -2,7 +2,6 @@
   [data-foundation-tokens="color"] .demo-copy-group { container-type:inline-size; }
   [data-foundation-tokens="color"] .demo-copy-feedback { position:sticky; top:4.5rem; z-index:1; margin-bottom:var(--spacing-sm); border-left:0; border-radius:var(--radius-sm); background:var(--color-surface-raised); box-shadow:0 1px 0 var(--color-line-subtle); font-family:var(--font-family-sans); font-weight:400; }
   .foundation-palette-controls { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem .75rem; margin-bottom:var(--spacing-lg); padding-inline:.75rem; font-size:.8125rem; }
-  .foundation-palette-controls select { padding:.4rem .6rem; border:1px solid var(--color-line-control); border-radius:var(--radius-sm); background:var(--color-surface-raised); color:var(--color-text-body); }
   .foundation-palette-skip:not(:focus) { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   .foundation-palette-skip:focus { display:block; width:fit-content; margin:0 .75rem var(--spacing-sm); padding:.5rem; outline:2px solid var(--color-text-link); outline-offset:2px; }
   .foundation-palette-scroll { padding:4px 3px 12px; }

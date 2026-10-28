@@ -1,0 +1,9 @@
+`DemoMeasure` observes the rendered content boundary and displays its width and height in pixels. The current annotation separates the name from the numeric readout, with a fine ruler spanning the observed wrapper. It updates when the available width or the content height changes; a requested CSS width can differ from the measured width inside a narrow column.
+
+```tsx
+<DemoMeasure label="Content bounds">
+  <DemoSurface className="p-md">Measured content</DemoSurface>
+</DemoMeasure>
+```
+
+Place the measurement wrapper outside the flex, grid or float parent being taught, so it does not become an extra layout item. The [width reference](/reference/tokens/container) reports the actual browser geometry for its examples. The [measure review](/design-system/review/measure) tests the current live width and height annotation.

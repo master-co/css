@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -5,10 +8,7 @@ import DemoExample from '~/site/components/demo/DemoExample'
 import { DemoLegend } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo legend review',
-  description: 'Current Demo legend and practical examples.'
-}
+export { metadata }
 
 const items = [
   { tone: 'blue', label: 'Subject border' },
@@ -24,15 +24,14 @@ function BorderSpecimens() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Readable annotation key',
-    note: 'Slightly larger monospace labels and precise bordered swatches improve scanning while keeping the key outside the scene.',
+    number: '01', note: 'Slightly larger monospace labels and precise bordered swatches improve scanning while keeping the key outside the scene.',
     preview: <Demo caption={<DemoLegend items={[...items]} />}><BorderSpecimens /></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-legend-review">
-    <div className="review-legend-kicker">Design system · Component review 09</div>
+  return <main className="ds-component-page review-legend-review">
+    <ReviewNavigation />
     <h1>Demo legend</h1>
     <p className="review-legend-intro">Slightly larger monospace labels and precise bordered swatches improve scanning while keeping the key outside the scene.</p>
 
@@ -40,8 +39,7 @@ export default function Page() {
       <h2 id="legend-options">Border color comparison</h2>
 
       <div className="review-legend-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-legend-option" key={number}>
-          <div className="review-legend-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-legend-option" key={number}>
           <div className="review-legend-optionPreview">{preview}</div>
           <p className="review-legend-optionNote">{note}</p>
         </article>)}
@@ -56,5 +54,6 @@ export default function Page() {
       <DemoExample page="border-color" section="set-border-color" />
       <p className="review-legend-optionNote">The Reference retains its own caption and code comments. A legend is useful when a scene repeats these roles, and its text must carry the meaning without relying on color alone.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

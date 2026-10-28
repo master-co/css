@@ -1,0 +1,8 @@
+`DemoSurface` keeps content legible on the neutral canvas with a fine border, the site's `radius-xl` corner and raised surface color. It adds no padding, dimensions, layout, clipping or shadow by default. An explicit radius utility takes precedence when the corner itself belongs to the lesson. Use `elevation="raised"` only when the lesson needs to show a floating layer; it adds the shared inner light and contact shadow without changing the content box.
+
+```tsx
+<DemoSurface className="p-md">A quiet content surface.</DemoSurface>
+<DemoSurface elevation="raised" className="p-md">A floating layer.</DemoSurface>
+```
+
+The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) keeps columns and padding inside the default surface; the [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.

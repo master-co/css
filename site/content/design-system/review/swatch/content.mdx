@@ -1,0 +1,9 @@
+`DemoSwatch` is a static inventory tile for semantic color roles. Its restrained frame keeps pale canvas and surface colors visible next to saturated subject and comparison colors. `label` is required; optional `value` names the token or value in a compact monospace line. An explicit utility class or `style` supplies the actual color.
+
+```tsx
+<DemoSwatch label="Subject" value="demo-blue" className="bg-demo-blue" />
+```
+
+The color patch is decorative when it has no children, while the visible label carries the meaning. This tile has no copy action or focus stop. The [colors guide](/guide/colors#default-color-palette) retains its original interactive palette for browsing and copying fixed color steps.
+
+The color face follows the outer frame's corner after subtracting its 1px border and 8px inset. Keep this frame geometry separate from the color being shown.

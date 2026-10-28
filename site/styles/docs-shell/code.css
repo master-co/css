@@ -181,9 +181,10 @@
 @layer components {
   /* Code shares a dedicated surface inside the existing contour and radius. */
   .code, .codeTabs {
+    --code-frame-radius: var(--radius-xl);
     min-width: 0;
     border: 1px solid var(--color-line-contour);
-    border-radius: var(--radius-xl);
+    border-radius: var(--code-frame-radius);
     overflow: hidden;
   }
   .code { position: relative; }
@@ -200,7 +201,7 @@
     border-bottom: 1px solid var(--color-line-subtle);
     border-radius: 0;
   }
-  .code-bar-tabs { display: flex; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .code-bar-tabs { display: flex; flex: 1; gap: 2px; min-width: 0; padding: 4px; overflow-x: auto; scrollbar-width: none; }
   .code-bar-tabs::-webkit-scrollbar { display: none; }
   .code-window-controls { position: relative; display: flex; flex: none; align-items: center; gap: .375rem; padding-inline: .75rem; }
   /* Seams inside the bar are single, inset lines with a 1px light beside them, never full-height borders. */
@@ -211,20 +212,37 @@
   .code-file-label, .code-tab { display: inline-flex; flex: none; align-items: center; min-width: 0; max-width: 250px; min-height: 2.25rem; gap: .375rem; padding-inline: .75rem; font: inherit; white-space: nowrap; }
   .code-file-label { flex: 1; overflow: hidden; color: var(--color-text-strong); }
   .code-file-label span, .code-tab span { overflow: hidden; text-overflow: ellipsis; }
-  .code-tab { position: relative; border: 0; background: transparent; color: var(--color-text-body); cursor: pointer; }
+  .code-tab { position: relative; min-height: 1.75rem; padding-inline: .625rem; border: 1px solid transparent; border-radius: calc(var(--radius-xl) - 1px - 4px); background: transparent; color: var(--color-text-body); font-weight: 550; cursor: pointer; }
   .code-tab:hover { color: var(--color-text-strong); background: var(--color-surface-raised); }
-  .code-tab[aria-selected="true"] { color: var(--color-text-strong); background: var(--color-surface-base); font-weight: 560; box-shadow: var(--shadow-edge); }
-  .code-tab:not([aria-selected="true"]) .code-tab-icon { display: none; }
+  .code-tab[aria-selected="true"] { border-color: var(--color-line-contour); color: var(--color-text-strong); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .code-tab:not([aria-selected="true"]) .code-tab-icon { visibility: hidden; }
+  .code-tab::after { display: none; }
+  .code-tab:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
+  .code-panel-label { display: none; }
   .code-tab-icon { flex: none; width: 14px; height: 14px; }
   .code-tab:focus-visible, .code-copy-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -3px; }
-  .code-bar-actions { position: relative; display: flex; flex: none; align-items: center; margin-inline-start: auto; }
+  .code-bar-actions { position: relative; display: flex; flex: none; align-items: stretch; margin-inline-start: auto; }
   .code-copy { position: relative; display: inline-flex; align-items: center; min-width: 0; }
   .code-copy-button { display: inline-grid; flex: none; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; background: transparent; color: var(--color-text-muted); cursor: pointer; }
   .code-copy-button:hover { color: var(--color-text-strong); background: var(--color-surface-raised); }
+  .code-copy-button:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
+  .code-bar-actions .code-copy-button { align-self: stretch; height: auto; min-height: 2.25rem; border-start-end-radius: max(0px, calc(var(--code-frame-radius) - 1px)); }
   .code-copy-button:not([data-copied]) [data-code-copy-done], .code-copy-button[data-copied] [data-code-copy-idle] { display: none; }
   .code-copy-corner { position: absolute; z-index: 1; top: .375rem; right: .375rem; border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
   .code-copy-corner .code-copy-button { width: 2rem; height: 2rem; border-radius: inherit; }
+  .code-copy-corner .code-copy-button:active { box-shadow: var(--shadow-pressed-contact); }
   .code-copy-status:not([data-error]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-  .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-divider); border-radius: var(--radius-md); background: var(--color-surface-raised); box-shadow: var(--shadow-floating); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
+  .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-floating-contact); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+  @media (pointer: coarse) {
+    .code-tab { min-height: 2.75rem; }
+    .code-copy-button, .code-copy-corner .code-copy-button { width: 2.75rem; height: 2.75rem; }
+    .code-bar-actions .code-copy-button { min-height: 2.75rem; }
+  }
+  @media (scripting: none), print {
+    [data-code-tabs] > .code[hidden] { display: flex !important; }
+    [data-code-tabs] > .code-bar { display: none; }
+    [data-code-tabs] .code-panel-label { display: block; padding: .625rem 1.25rem; border-block: 1px solid var(--color-line-subtle); background: var(--color-surface-raised); color: var(--color-text-strong); font-size: .75rem; }
+    .code-copy, .code-bar-actions { display: none; }
+  }
 }

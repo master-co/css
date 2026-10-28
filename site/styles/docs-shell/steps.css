@@ -39,8 +39,8 @@
     place-items: center;
     width: 1.5rem;
     height: 1.5rem;
-    border: 1px solid var(--color-line-divider);
-    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-line-contour);
+    border-radius: var(--radius-md);
     background: var(--color-surface-raised);
     font: 500 var(--font-size-xs)/1 var(--font-family-mono);
   }

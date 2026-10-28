@@ -1,0 +1,13 @@
+`DemoViewport` hosts a complete site-authored document in a real iframe. Its fine edge and quiet control deck preserve the viewport's actual width, height and content. A named preset, range slider or Fit changes the iframe width; `theme`, `motion` and `print` add only the controls needed by a lesson.
+
+```tsx
+<DemoViewport
+  title="Responsive specimen"
+  document={html}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 833 }, { label: 'At sm', width: 835 }]}
+  height={180}
+/>
+```
+
+Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A wide preset remains wide inside a narrow phone and scrolls within the stage. The [padding reference](/guide/spacing) responds to its iframe viewport, and the [viewport review](/design-system/review/viewport) shows the current framed viewport.

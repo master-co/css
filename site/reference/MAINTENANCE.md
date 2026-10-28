@@ -260,9 +260,10 @@ the Design System gallery instead of duplicating a long specimen.
 
 ### Installation sequences
 
-`DocumentSteps` and its heading, text and body primitives keep setup prose in the
-MDX document. Optional columns respond to the reading container; decorative numbers
-are hidden from assistive technology. Keep preview geometry outside these steps.
+The document shell's `StepSection`, `Step`, `StepL` and `StepR` keep setup prose
+and native headings in the MDX document. `Step` with `$row` responds to the reading
+container; `StepNum` is decorative and hidden from assistive technology. The
+Design System review uses these same Guide components. Keep preview geometry outside these steps.
 The strict extractor preserves each native heading and code block and omits only
 the decorative counter. `DocumentChoices` accepts literal string entries for both
 navigation and portable link lists; extraction never executes JSX expressions.

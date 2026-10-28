@@ -1,0 +1,27 @@
+import AgentFixExample from '~/site/components/AgentFixExample'
+import AgentPrompt from '~/site/components/AgentPrompt'
+import AgentStyleExample from '~/site/components/AgentStyleExample'
+import AgentWorkflow from '~/site/components/AgentWorkflow'
+
+Prompts are prose that readers copy into another tool. `DocumentPrompt` preserves the exact text, wraps long lines, and keeps the copy action visible without presenting an editable field or a simulated chat.
+
+<div data-agent-gallery>
+  <AgentPrompt name="feature" />
+  <AgentPrompt name="setup" />
+  <AgentWorkflow />
+  <AgentFixExample />
+  <AgentStyleExample code={false} />
+</div>
+
+```tsx
+<DocumentPrompt
+  title="Review a component"
+  text="Review this component's classes and keyboard behavior."
+/>
+```
+
+Use a short title describing the task. Keep paragraphs and lists in the text itself so clipboard and portable exports preserve the full instructions. Short tasks and longer setup prompts use the same layout; both wrap within the reading column. The body uses the reading font while preserving every line break and the exact copied text. Its title, inset seam and body share a 24px start. The server renders the text and only the copy button needs client state.
+
+Combine prompts with `DocumentOptions` for tool names, `DocumentFlow` for an ordered workflow, and `DocumentCodeExample` for verified before/after content. A workflow diagram does not execute a tool or imply that approval has been given. Keep prompts outside any measured demo geometry, and use ordinary code blocks when whitespace-sensitive source needs horizontal scrolling.
+
+See [AI Coding](/guide/ai-coding#give-the-agent-useful-context) for context, review, and project-rule recipes, and [MCP Server](/guide/mcp-server#safe-write-previews) for the actual preview/apply process. The button specimen reuses the guide's configuration, HTML, and generated CSS.

@@ -37,6 +37,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
   const playback = useRef<ReturnType<typeof demoPlayback> | null>(null)
   const [width, setWidth] = useState<number | undefined>(responsive ? widthPresets?.[0]?.width : undefined)
   const [fitWidth, setFitWidth] = useState(480)
+  const [minimumWidth, setMinimumWidth] = useState(240)
   const [dark, setDark] = useState<boolean | undefined>(initialTheme === undefined ? undefined : initialTheme === 'dark')
   const [isDark, setIsDark] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -132,6 +133,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
       if (sizing === 'content') setContentHeight(Math.max(96, Math.ceil(doc.body.getBoundingClientRect().height)))
       setMeasurement(`${Math.round(frame.clientWidth)} × ${Math.round(frame.clientHeight)} px`)
       setFitWidth(Math.round(frame.clientWidth))
+      setMinimumWidth(Math.min(240, frame.parentElement!.clientWidth, maxWidth))
       const target = doc.querySelector('[data-target]')
       if (target && inspect?.length) {
         const computed = view.getComputedStyle(target)
@@ -144,6 +146,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     const resizeObserver = new ResizeObserver(update)
     resizeObserver.observe(frame)
+    resizeObserver.observe(frame.parentElement!)
     if (sizing === 'content') resizeObserver.observe(doc.body)
     doc.querySelectorAll<HTMLElement>('[data-size-readout]').forEach(output => {
       const element = doc.getElementById(output.dataset.sizeReadout!)
@@ -226,7 +229,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
       disposeDragReadings?.()
       if (playback.current === controller) playback.current = null
     }
-  }, [dark, inspect, motion, sizing])
+  }, [dark, inspect, maxWidth, motion, sizing])
 
   useEffect(() => {
     load()
@@ -239,7 +242,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
     <div className="demo-viewport-frame">
       <div className="demo-viewport-shell">
         <iframe ref={ref} title={title} srcDoc={source} src={src} loading="lazy" data-ready={ready} data-sizing={sizing}
-          className="demo-viewport" style={{ width: width ? `${width}px` : '100%', height: sizing === 'content' ? contentHeight ?? height : height }} onLoad={load} />
+          className="demo-viewport" style={{ width: width ? `${width}px` : `min(100%, ${maxWidth}px)`, height: sizing === 'content' ? contentHeight ?? height : height }} onLoad={load} />
       </div>
       {(responsive || motion || print || theme || Boolean(inspect?.length)) && (
         <div className="demo-viewport-toolbar">
@@ -251,7 +254,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
               </span>}
               <span className="demo-viewport-width">
                 <label className="demo-label" htmlFor={widthId}>Viewport</label>
-                <input id={widthId} disabled={!ready} type="range" min="240" max={maxWidth} step="1" value={width ?? fitWidth} onChange={event => setWidth(Number(event.target.value))} />
+                <input id={widthId} disabled={!ready} type="range" min={minimumWidth} max={maxWidth} step="1" value={width ?? fitWidth} onChange={event => setWidth(Number(event.target.value))} />
                 <button type="button" disabled={!ready} className="demo-button" onClick={() => setWidth(undefined)}>Fit</button>
               </span>
             </>}

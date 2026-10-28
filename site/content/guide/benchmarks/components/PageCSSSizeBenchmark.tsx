@@ -1,9 +1,8 @@
 import snapshot from '~/site/../benchmarks/docs-page-css-size/snapshot.json'
 import brands from '~/site/docs-shell/data/brands'
-import Bar from '~/site/docs-shell/components/Bar'
-import Bars from '~/site/docs-shell/components/Bars'
 import Segments from '~/site/docs-shell/components/Segments'
 import Link from '~/site/docs-shell/components/Link'
+import { BenchmarkBars, type BenchmarkBarItem } from '~/site/components/benchmarks'
 
 import clsx from 'clsx'
 
@@ -11,8 +10,18 @@ const pages = snapshot.pages
 const masterCSSPage = pages.find((page) => page.name === 'Master CSS') || pages[0]
 
 const maxTotalRawBytes = Math.max(...pages.map((page) => page.css.total.rawBytes))
-const maxTotalBrotliBytes = Math.max(...pages.map((page) => page.css.total.brotliBytes))
-const detailClassName = 'min-width:0 overflow:hidden text-overflow:ellipsis white-space:nowrap font-2xs fg-text-muted'
+
+// Repeated tab panels must not share the internal IDs of an inline brand SVG.
+const brandImages: Record<string, string> = {
+  mastercss: '/images/logo.svg',
+  tailwindcss: '/images/tailwindcss.svg',
+  bootstrap: '/images/bootstrap.svg',
+  mui: '/images/mui.svg',
+  nextjs: '/images/frameworks/nextjs.svg',
+  angular: '/images/frameworks/angular.svg',
+  vuejs: '/images/frameworks/vuejs.svg',
+  react: '/images/frameworks/react.svg'
+}
 
 function formatKilobytes(bytes: number) {
   return (bytes / 1000).toFixed(1)
@@ -42,66 +51,29 @@ function formatMasterCSSBreakdown(kind: 'rawBytes' | 'brotliBytes') {
   ].filter(Boolean).join(' + ')
 }
 
+function items(kind: 'rawBytes' | 'brotliBytes'): BenchmarkBarItem[] {
+  return [...pages].sort((a, b) => a.css.total[kind] - b.css.total[kind]).map(page => {
+    const [brandKey, brand] = Object.entries(brands).find(([, brand]) => brand.name === page.name) ?? []
+    const image = brandKey && brandImages[brandKey]
+    return {
+      id: page.name,
+      label: page.name,
+      value: page.css.total[kind] / 1000,
+      valueLabel: `${formatKilobytes(page.css.total[kind])} kB`,
+      detail: page.name === 'Master CSS' ? formatMasterCSSBreakdown(kind) : `${formatRatio(page.css.total[kind], masterCSSPage.css.total[kind])}× Master CSS`,
+      color: page.name === 'Master CSS' ? 'blue' : 'neutral',
+    icon: image && <img src={image} alt="" width={20} height={20} className={clsx('flex:none height:20px width:20px margin-inline:0 object-fit:contain', brand?.className)} />
+    }
+  })
+}
+
 export default () => (
-  <figure>
-    <Segments>
-      {[
-        {
-          name: 'Raw',
-          content: (
-            <Bars>
-              {[...pages]
-                .sort((a, b) => a.css.total.rawBytes - b.css.total.rawBytes)
-                .map((page) => {
-                  const brand = Object.values(brands).find((brand) => brand.name === page.name)
-                  return (
-                    <Bar key={page.name}
-                      color={brand?.color}
-                      value={page.css.total.rawBytes / 1000}
-                      max={maxTotalRawBytes / 1000}
-                      width={'60%'}
-                      suffix='kB'
-                      animated
-                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('margin-inline:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='display:none@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.rawBytes, masterCSSPage.css.total.rawBytes)}x larger</div>}
-                      {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'display:none@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('rawBytes')} )</div>
-                      )}
-                    </Bar>
-                  )
-                })}
-            </Bars>
-          )
-        },
-        {
-          name: 'Brotli',
-          content: (
-            <Bars>
-              {[...pages]
-                .sort((a, b) => a.css.total.brotliBytes - b.css.total.brotliBytes)
-                .map((page) => {
-                  const brand = Object.values(brands).find((brand) => brand.name === page.name)
-                  return (
-                    <Bar key={page.name}
-                      color={brand?.color}
-                      value={page.css.total.brotliBytes / 1000}
-                      max={maxTotalBrotliBytes / 1000}
-                      width={maxTotalBrotliBytes / maxTotalRawBytes * 60 + '%'}
-                      suffix='kB'
-                      animated
-                      icon={brand?.src && <brand.src width={24} height={24} className={clsx('margin-inline:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='display:none@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.brotliBytes, masterCSSPage.css.total.brotliBytes)}x larger</div>}
-                      {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'display:none@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('brotliBytes')} )</div>
-                      )}
-                    </Bar>
-                  )
-                })}
-            </Bars>
-          )
-        }
-      ]}
-    </Segments>
+  <figure className="page-css-benchmark">
+    <Segments label="CSS transfer size">{[
+      { name: 'Raw', content: <BenchmarkBars items={items('rawBytes')} max={maxTotalRawBytes / 1000} unit="kB" /> },
+      { name: 'Brotli', content: <BenchmarkBars items={items('brotliBytes')} max={maxTotalRawBytes / 1000} unit="kB" /> }
+    ]}</Segments>
+    <p className="font-xs fg-text-muted">Both views use the same scale and the committed page snapshot.</p>
     <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json">total size</Link> of inline and external styles on popular documentation sites.</figcaption>
   </figure>
 )

@@ -14,6 +14,7 @@ import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-c
 import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from '../utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content'
+import { designSystemContent, designSystemRoutes } from '../utils/design-system-content'
 
 const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().PUBLIC_URL
@@ -214,6 +215,7 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
         : normalizeRoutePath(rel) === 'guide/benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'brand' ? (await brandContent(path.resolve(localeRoot, '..'))).markdown
+        : designSystemRoutes.includes(`/${normalizeRoutePath(rel)}`) ? (await designSystemContent(path.resolve(localeRoot, '..'), `/${normalizeRoutePath(rel)}`)).markdown
         : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug)).markdown
         : agent ? (await agentGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
         : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown

@@ -1,12 +1,12 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import { DemoItem } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo item review',
-  description: 'The current neutral Demo item and its explicit tone variants.'
-}
+export { metadata }
 
 function specimen() {
   return (
@@ -18,7 +18,7 @@ function specimen() {
 
 function spacingTiles() {
   return (
-    <div className="grid-cols(2) gap-md width:100% p-md r-md background-color:var(--stripe-pink) grid-cols(5)@sm">
+    <div className="grid-cols(2) gap-md width:100% p-md r-md background:var(--stripe-pink) grid-cols(5)@sm">
       {Array.from({ length: 10 }, (_, index) => <DemoItem key={index} className="review-item-spacingTile">{index + 1}</DemoItem>)}
     </div>
   )
@@ -26,16 +26,15 @@ function spacingTiles() {
 
 export default function Page() {
   return (
-    <main className="review-item-review">
-      <div className="review-item-kicker">Design system · Component review 02</div>
+    <main className="ds-component-page review-item-review">
+      <ReviewNavigation />
       <h1>Demo item</h1>
-      <p className="review-item-intro">A specimen should read clearly on the striped canvas without deciding the lesson&apos;s dimensions or layout. Neutral paint is the default; blue and violet are deliberate teaching tones.</p>
+      <p className="review-item-intro">A specimen should read clearly on the neutral canvas without deciding the lesson&apos;s dimensions or layout. Neutral paint is the default; blue and violet are deliberate teaching tones.</p>
 
       <section aria-labelledby="item-current">
         <h2 id="item-current">Default object</h2>
         <div className="review-item-current">
           <article className="review-item-option">
-            <div className="review-item-optionHeading"><span>01</span><div><h3>Current item</h3><p>Shared <code>DemoItem</code></p></div></div>
             <Demo>{specimen()}</Demo>
             <p className="review-item-optionNote">Neutral raised default, quieter tint, crisp edge, explicit tone.</p>
           </article>
@@ -71,6 +70,7 @@ export default function Page() {
         </div>
         <p className="review-item-optionNote">The grid, gap, padding and pink pattern remain the lesson&apos;s own classes.</p>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

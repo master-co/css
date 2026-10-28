@@ -12,7 +12,8 @@ export default function BenchmarkMetricTable(props: BenchmarkMetricTableProps) {
   const hasDetails = metrics.some((metric) => metric.detail)
 
   return (
-    <div className="doc-table">
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide metric tables.
+    <div className="doc-table" role="region" aria-label="Benchmark metrics" tabIndex={0}>
       <table>
         <thead>
           <tr>

@@ -1,0 +1,9 @@
+`DemoCopyButton` requires `value` and an accessible `label`. It also accepts native button props, optional `icon` and children.
+
+```tsx
+<DemoCopyButton value="var(--color-blue-60)" label="Copy the blue variable">
+  Copy variable
+</DemoCopyButton>
+```
+
+`DemoCopyGroup` groups feedback with `children` and an optional `instruction`. A failed clipboard write exposes the exact value for manual copying; success is announced only after the write completes.

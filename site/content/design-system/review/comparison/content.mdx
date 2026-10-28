@@ -1,0 +1,12 @@
+`DemoComparison` arranges direct children in responsive columns. The current layout gives each specimen a 17rem reading minimum and uses the site's large spacing step between columns. The specimens stack when there is not enough room for both; the wrapper adds no frame, padding, labels or paint. Give each child its own dimensions and utilities so the comparison shows the actual property under discussion.
+
+```tsx
+<Demo>
+  <DemoComparison>
+    <DemoSurface className="p-md">Before</DemoSurface>
+    <DemoSurface elevation="raised" className="p-md">After</DemoSurface>
+  </DemoComparison>
+</Demo>
+```
+
+The “Content specimens” and “Comparison” examples above use this layout. The [elevation guide](/guide/elevation) retains its original spacious comparison grid, while the [comparison review](/design-system/review/comparison) shows the current shared layout. Place comparison labels outside any measured flex, grid or float scene.

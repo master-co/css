@@ -1,15 +1,15 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import { BenchmarkMetricTable, BenchmarkMetrics, type BenchmarkMetric } from '~/site/components/benchmarks'
 
 import { StaticComparisonSummary } from '~/site/content/guide/benchmarks/components/StaticTailwindComparison'
 import './page.css'
 
-export const metadata = {
-  title: 'Benchmark metrics review',
-  description: 'Current Benchmark metrics and practical examples.'
-}
+export { metadata }
 
 const metrics: BenchmarkMetric[] = [
   { label: 'Fixture', value: 'dashboard', detail: 'Matched visual intent across variants' },
@@ -19,22 +19,21 @@ const metrics: BenchmarkMetric[] = [
 ]
 
 const options = [
-  { number: '01', title: 'Current', detail: 'Refined measurement rows', preview: <BenchmarkMetrics metrics={metrics} />, note: "The current shared style gives the row a calmer baseline, a more legible numeric value, and a clear detail line at narrow widths. It keeps native definition-list semantics." }
+  { number: '01', preview: <BenchmarkMetrics metrics={metrics} />, note: "The current shared style gives the row a calmer baseline, a more legible numeric value, and a clear detail line at narrow widths. It keeps native definition-list semantics." }
 ] as const
 
 export default function Page() {
-  return <main className="review-metrics-review">
-    <div className="review-metrics-kicker">Design system · Component review 21</div>
+  return <main className="ds-component-page review-metrics-review">
+    <ReviewNavigation />
     <h1>Benchmark metrics</h1>
     <p className="review-metrics-intro">The current shared style gives the row a calmer baseline, a more legible numeric value, and a clear detail line at narrow widths. It keeps native definition-list semantics.</p>
 
-    <label htmlFor="metrics-review-theme" className="review-metrics-themeControl"><span>Preview theme</span><span className="review-metrics-themeSelect">Light · Dark · System<ThemeSelect id="metrics-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="metrics-options">
       <h2 id="metrics-options">Metric treatments</h2>
 
-      <div className="review-metrics-options">{options.map(({ number, title, detail, preview, note }) => <article className="review-metrics-option" key={number}>
-        <div className="review-metrics-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+      <div className="review-metrics-options">{options.map(({ number, preview, note }) => <article className="review-metrics-option" key={number}>
         <div className="review-metrics-optionPreview">{preview}</div>
         <p className="review-metrics-optionNote">{note}</p>
       </article>)}</div>
@@ -45,5 +44,6 @@ export default function Page() {
       <div className="review-metrics-realUse"><StaticComparisonSummary /></div>
       <p className="review-metrics-optionNote">The current component affects only the optional compact summary list. Guide tables and their surrounding caveats remain intact.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

@@ -142,7 +142,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         }
         const css = deliveredCSS.join('\n')
         if (!css) { routes[route] = null; continue }
-        assertRouteStylesheetBoundary(route, css)
+        await assertRouteStylesheetBoundary(route, css)
         const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
         const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
         const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 5, languageVersion: 16, classNames: [], resourceOrder: { variables: [], keyframes: [] } }
@@ -203,14 +203,15 @@ function repositorySourceFiles(value: JSONValue): JSONValue {
     ]))
 }
 
-function assertRouteStylesheetBoundary(route: string, css: string) {
+async function assertRouteStylesheetBoundary(route: string, css: string) {
     if (/(?:^|[;{}])\s*@(compose|reference|light|dark|variant)\b/.test(css)) {
         throw new Error(`${route} delivers an uncompiled Master CSS directive.`)
     }
     const selectors = {
         reference: '.reference-document',
         benchmark: '.benchmark-bars',
-        demo: '.site-demo',
+        // Prose may mention .site-demo in an exclusion without loading Demo itself.
+        demo: /\.site-demo\s*\{/,
         button: '.btn{',
         review: '.review-asset-'
     }
@@ -219,25 +220,34 @@ function assertRouteStylesheetBoundary(route: string, css: string) {
         '/guide': { reference: false, benchmark: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/guide/benchmarks': { benchmark: true, reference: false },
-        '/design-system': { demo: true, benchmark: true, reference: false },
+        '/design-system': { demo: true, benchmark: false, reference: false },
         '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false },
         '/design-system/review/asset': { review: true, reference: false, benchmark: false }
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
-        if (css.includes(selectors[group as keyof typeof selectors]) !== present) {
+        const selector = selectors[group as keyof typeof selectors]
+        const included = typeof selector === 'string' ? css.includes(selector) : selector.test(css)
+        if (included !== present) {
             throw new Error(`${route} ${present ? 'is missing' : 'unexpectedly includes'} ${group} styles.`)
         }
     }
     const reviewRoute = route.match(/^\/design-system\/review\/([a-z-]+)$/)
-    if (reviewRoute && !css.includes(`.review-${reviewRoute[1]}-`)) {
-        throw new Error(`${route} is missing its page-local review styles.`)
+    if (reviewRoute) {
+        // The homepage illustration handoff has its own full-page shell.
+        if (reviewRoute[1] !== 'home-icons' && !css.includes('.ds-component-page')) {
+            throw new Error(`${route} is missing the shared component reference styles.`)
+        }
+        const pageSelector = reviewRoute[1] === 'home-icons' ? '.home-icon-review' : `.review-${reviewRoute[1]}-`
+        if (await exists(path.join(siteDir, 'content', route.slice(1), 'page.css')) && !css.includes(pageSelector)) {
+            throw new Error(`${route} is missing its page-local review styles.`)
+        }
     }
     const requiredVariables: Record<string, string[]> = {
         '/': ['--color-text-muted:', '--color-surface-inset:'],
         '/guide': ['--leading-md:', '--shadow-lg:'],
         '/reference': ['--color-blue:', '--leading-md:'],
         '/design-system': ['--color-demo-line:', '--leading-lg:'],
-        '/design-system/review/asset': ['--color-text-link:'],
+        '/design-system/review/asset': ['--color-line-contour:', '--shadow-contact:'],
         '/design-system/review/data-table': ['--color-line-divider:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
     }

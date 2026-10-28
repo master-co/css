@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -7,10 +10,7 @@ import { generatePresetCSS } from '~/site/common/generate-preset-css'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo viewport review',
-  description: 'Current Demo viewport and practical examples.'
-}
+export { metadata }
 
 const classes = ['p-md', 'p-lg@sm', 'fg-blue-60:hover', 'fg-blue-60:focus-visible']
 const breakpoint = getThemeNumericVariableEntries('breakpoint').find(entry => entry.key === 'sm')?.px
@@ -26,7 +26,7 @@ ${generatePresetCSS(classes)}
 </style></head><body><button type="button" class="${classes.join(' ')}">Save</button></body></html>`
 
 function Preview() {
-  return <Demo padding="none" background="plain">
+  return <Demo padding="none" frame="none" background="plain">
     <div className="review-viewport-currentPreview">
       <DemoViewport title="Responsive button" document={document}
         responsive widthPresets={widths} height={132} inspect={['padding']} />
@@ -36,24 +36,22 @@ function Preview() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Bounded specimen viewport',
-    note: 'A hairline around the frame and a quieter control deck distinguish the actual iframe width from the striped outer demo without changing that width.',
+    number: '01', note: 'A hairline around the frame and a quieter control deck distinguish the actual iframe width from its fitted surround without changing that width.',
     preview: <Preview />
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-viewport-review">
-    <div className="review-viewport-kicker">Design system · Component review 14</div>
+  return <main className="ds-component-page review-viewport-review">
+    <ReviewNavigation />
     <h1>Demo viewport</h1>
-    <p className="review-viewport-intro">A hairline around the frame and a quieter control deck distinguish the actual iframe width from the striped outer demo without changing that width.</p>
+    <p className="review-viewport-intro">A hairline around the frame and a quieter control deck distinguish the actual iframe width from its fitted surround without changing that width.</p>
 
     <section aria-labelledby="viewport-options">
       <h2 id="viewport-options">Responsive padding</h2>
 
       <div className="review-viewport-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-viewport-option" key={number}>
-          <div className="review-viewport-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-viewport-option" key={number}>
           <div className="review-viewport-optionPreview">{preview}</div>
           <p className="review-viewport-optionNote">{note}</p>
         </article>)}
@@ -68,5 +66,6 @@ export default function Page() {
       <DemoExample page="padding" section="apply-conditionally" />
       <p className="review-viewport-optionNote">The Reference keeps control of its teaching geometry. Viewport decoration must not make an outer container query look like a real media query.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

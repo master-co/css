@@ -1,12 +1,12 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import { DemoMedia, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo text review',
-  description: 'The current Demo text roles and layout-neutral body copy.'
-}
+export { metadata }
 
 const bodyCopy = 'Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.'
 
@@ -23,8 +23,8 @@ function FloatExample() {
 
 export default function Page() {
   return (
-    <main className="review-text-review">
-      <div className="review-text-kicker">Design system · Component review 04</div>
+    <main className="ds-component-page review-text-review">
+      <ReviewNavigation />
       <h1>Demo text</h1>
       <p className="review-text-intro">Shared text has body, lead and caption roles. Body copy keeps its inherited size and remains neutral inside measured layouts.</p>
 
@@ -32,7 +32,6 @@ export default function Page() {
         <h2 id="text-current">Default and display copy</h2>
         <div className="review-text-current">
           <article className="review-text-option">
-            <div className="review-text-optionHeading"><span>01</span><div><h3>Current text</h3><p>Explicit lead role</p></div></div>
             <Demo><div className="review-text-textStage"><DemoText variant="lead">Designing for consistency across every platform.</DemoText></div></Demo>
             <p className="review-text-optionNote">A measured type step, firmer weight and tighter rhythm without making every paragraph large.</p>
           </article>
@@ -61,6 +60,7 @@ export default function Page() {
         </div>
         <p className="review-text-optionNote">The paragraph inherits <code>font-sm</code>; lead and caption styles do not enter the float lesson.</p>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

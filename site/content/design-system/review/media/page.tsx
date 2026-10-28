@@ -1,12 +1,12 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import { DemoMedia, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo media review',
-  description: 'The shared Demo media and its text flow example.'
-}
+export { metadata }
 
 function FloatExample() {
   return (
@@ -21,8 +21,8 @@ function FloatExample() {
 
 export default function Page() {
   return (
-    <main className="review-media-review">
-      <div className="review-media-kicker">Design system · Component review 03</div>
+    <main className="ds-component-page review-media-review">
+      <ReviewNavigation />
       <h1>Demo media</h1>
       <p className="review-media-intro">Shared media keeps supplied images native and provides a quiet SVG illustration for layout and color lessons. The caller supplies dimensions, crop, float and accessibility text.</p>
 
@@ -30,7 +30,6 @@ export default function Page() {
         <h2 id="media-current">Default visual</h2>
         <div className="review-media-current">
           <article className="review-media-option">
-            <div className="review-media-optionHeading"><span>01</span><div><h3>Current media</h3><p>Shared SVG illustration</p></div></div>
             <Demo><div className="review-media-mediaStage"><DemoMedia className="review-media-mediaSpecimen" /></div></Demo>
             <p className="review-media-optionNote">Measured contour lines, quieter fills and a hairline edge within the same box.</p>
           </article>
@@ -60,6 +59,7 @@ export default function Page() {
         </div>
         <p className="review-media-optionNote">The image uses a real <code>float:left</code> class and a 112 × 70 displayed box. Its visual edge does not change text flow.</p>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

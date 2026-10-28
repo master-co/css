@@ -1,9 +1,6 @@
 import { DocumentCodeTable } from '~/site/components/DocumentValues'
+import { codeTableRecipeRows } from './catalog'
 
 export default function CodeTableRecipes() {
-  return <DocumentCodeTable label="Token" rows={[
-    { syntax: '@layer(components)', css: '@layer components' },
-    { syntax: '@motion-reduce', css: '@media (prefers-reduced-motion: reduce)' },
-    { syntax: '@supports(<feature>)', css: '@supports (<feature>)' },
-  ]} />
+  return <DocumentCodeTable label="Token" rows={codeTableRecipeRows} />
 }

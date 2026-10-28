@@ -1,0 +1,12 @@
+`DemoLegend` is a separate key for recurring color roles. Each item pairs a short name with a small bordered swatch, and the list wraps as space narrows. Its compact monospace text follows the shared label scale; the swatches are decorative, so the names carry the meaning. Place the legend in the demo caption or beside its description, outside the measured layout.
+
+```tsx
+<Demo caption={<DemoLegend items={[
+  { tone: 'blue', label: 'Subject border' },
+  { tone: 'violet', label: 'Comparison border' },
+]} />}>
+  {/* The lesson's two border specimens live here. */}
+</Demo>
+```
+
+Include only roles visible in the scene. The [border color reference](/reference/tokens/color) labels its blue and violet specimens directly; the [legend review](/design-system/review/legend) shows the current shared key.

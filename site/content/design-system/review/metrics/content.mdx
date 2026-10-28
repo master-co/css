@@ -1,0 +1,12 @@
+`BenchmarkMetrics` presents a short summary as a native definition list. Each metric supplies `label`, `value`, optional `detail`, and optional `tone`. Values use tabular numerals; supporting details move below the value in a narrow container.
+
+```tsx
+<BenchmarkMetrics metrics={[
+  { label: 'Median', value: '12.5 ms', detail: '3 illustrative samples' },
+  { label: 'Generated rules', value: '1,284' }
+]} />
+```
+
+Keep units in the value and explain the sample context beside the summary. A tone adds emphasis; it does not establish a measurement or a statistical conclusion. Use `BenchmarkMetricTable` when a complete comparison needs table headers and columns. Neither component changes the recorded data.
+
+See [all chart patterns](/design-system/review/chart-group#complete-chart-patterns) and the [measured benchmark fixtures](/guide/benchmarks).

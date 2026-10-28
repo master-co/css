@@ -12,8 +12,9 @@ export const variableNamespaceSources = [
   })),
 ]
 
-export function variableNamespaceSourcesMarkdown() {
-  return ['| Namespace | Consumers |', '| --- | --- |', ...variableNamespaceSources.map(({ namespace, consumers }) =>
+export function variableNamespaceSourcesMarkdown(namespaces?: readonly string[]) {
+  const rows = namespaces ? variableNamespaceSources.filter(row => namespaces.includes(row.namespace)) : variableNamespaceSources
+  return ['| Namespace | Consumers |', '| --- | --- |', ...rows.map(({ namespace, consumers }) =>
     `| \`${namespace}-*\` | ${consumers.map(key => `\`${key}\``).join(', ')} |`,
   )].join('\n')
 }

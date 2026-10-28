@@ -42,11 +42,11 @@ export default async function ArticleHeader(props: any) {
   return (
     <>
       <div className="display:flex flex-wrap:nowrap gap-xl flex-direction:column@media((width<37.5rem))">
-        <div className='flex:1'>
+        <div className='flex:1 min-width:0'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
+            'overflow-wrap:anywhere max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
             h1ClassName,
             {
               'font-4xl@md': metadata.type !== 'entity' && !toc

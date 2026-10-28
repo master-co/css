@@ -17,6 +17,7 @@ import { migrationGuideContent, migrationGuideSlugs } from './utils/migration-co
 import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
+import { designSystemContent, designSystemRoutes } from './utils/design-system-content'
 
 const searchPages = await generateSearchPages({ defaultLocale: i18n.defaultLocale, locales: i18n.locales, write: false })
 await generateReference(process.cwd(), searchPages, basePages)
@@ -48,6 +49,9 @@ for (const slug of installationGuideSlugs) {
 guideContentNodes.set('/guide/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await introductionContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/brand', extractSearchNodesFromMdx((await brandContent(process.cwd())).searchMarkdown))
+for (const route of designSystemRoutes) {
+  guideContentNodes.set(route, extractSearchNodesFromMdx((await designSystemContent(process.cwd(), route)).searchMarkdown))
+}
 for (const locale of ['en', 'tw']) {
   const searchFile = new URL(`./public/search/${locale}.json`, import.meta.url)
   const pages = searchPages[locale]

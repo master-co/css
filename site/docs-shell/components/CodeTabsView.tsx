@@ -34,6 +34,7 @@ export default function CodeTabsView(props: { children: CodeTab[], tabbarClassNa
           hidden={index !== 0}
           key={tab.name}
         >
+          <div className="code-panel-label">{tab.name}</div>
           {tab.highlightedCode}
         </div>
       ))}

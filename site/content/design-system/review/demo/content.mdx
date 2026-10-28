@@ -1,0 +1,20 @@
+import CanvasTreatments from './CanvasTreatments'
+
+`Demo` uses a plain neutral canvas by default. A single canvas boundary supplies responsive breathing room, while the example supplies its own layout and geometry. A title, description, controls, and caption appear only when the lesson needs them; controls remain outside the demonstrated layout.
+
+```tsx
+<Demo>
+  <div className="display:flex gap-sm">
+    <DemoItem className="p-md">01</DemoItem>
+    <DemoItem className="p-md">02</DemoItem>
+  </div>
+</Demo>
+```
+
+Use `padding="none"` for a scene with its own spacing. Add `frame="none"` when a viewport, code window or complete panel already supplies its boundary. `background="stripes"`, `"grid"`, `"dots"`, and `"checkerboard"` are opt-in when a lesson needs a measurement or transparency cue. Keep labels and controls outside a measured flex, grid or float parent. The [Spacing Guide](/guide/spacing) uses its pink inner stripe to explain padding and gap.
+
+### Purposeful backgrounds \{#background-choices\}
+
+Choose the background for the behavior being explained. Every treatment remains available; most examples use the plain surface.
+
+<CanvasTreatments />

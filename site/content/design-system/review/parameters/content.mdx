@@ -1,0 +1,42 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DocumentParameters from '~/site/components/DocumentParameters'
+
+Use `DocumentParameters` for API inputs whose identifiers, types, and explanations need the full reading width. Required and optional states use text; neither is a validation control. Nested paths retain their full names and state when their parent is needed.
+
+<div data-tool-contract-gallery>
+<DocumentParameters label="Required and optional parameters" parameters={[
+  { name: 'className', type: 'string', requirement: 'Required', description: 'One complete class, including any selector or condition suffix.' },
+  { name: 'mode', type: 'string', requirement: 'Optional', description: 'Use the active manifest’s default behavior when omitted.' }
+]} />
+
+<DocumentParameters label="Nested parameters" parameters={[
+  { name: 'range.start.character', type: 'integer', requirement: 'Required when parent is provided', description: 'Zero-based UTF-16 code-unit offset. Keep the full path visible so readers can build the correct request object.' }
+]} />
+
+<DocumentDisclosure title="Complete input schema">
+```json
+{
+  "type": "object",
+  "properties": { "className": { "type": "string", "minLength": 1 } },
+  "required": ["className"]
+}
+```
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Expanded supporting detail" open>
+Native disclosure keeps supporting content in the document and lets readers use the keyboard to open or close it. Essential instructions belong outside the disclosure.
+</DocumentDisclosure>
+</div>
+
+```tsx
+<DocumentParameters label="Parameters" parameters={[
+  { name: 'className', type: 'string', requirement: 'Required', description: 'One complete class.' }
+]} />
+<DocumentDisclosure title="Complete input schema">
+  <Code lang="json">{schema}</Code>
+</DocumentDisclosure>
+```
+
+Place both components in document flow, outside the layout being demonstrated. Use a plain sentence for an empty parameter list. Long code can scroll inside a disclosure; parameter descriptions wrap naturally. Keep the full contract in portable Markdown and search even when the page initially collapses it.
+
+Used by [class inspection](/reference/tools/mcp/mastercss_inspect_class), [directive formatting](/reference/tools/mcp/mastercss_preview_directive_format), and [CLI generation](/reference/tools/cli/generate).

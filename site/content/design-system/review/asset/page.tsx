@@ -1,14 +1,14 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import DemoAsset from '~/site/components/demo/DemoAsset'
 import DemoExample from '~/site/components/demo/DemoExample'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo asset review',
-  description: 'Current Demo asset and practical examples.'
-}
+export { metadata }
 
 const asset = {
   title: 'Logotype for dark backgrounds',
@@ -22,26 +22,24 @@ const asset = {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Clear asset and action hierarchy',
-    note: 'The same artwork keeps its transparent pixels in either page theme, with clearer metadata, a file-type tag and a stronger download target.',
+    number: '01', note: 'The same artwork keeps its transparent pixels in either page theme, with clearer metadata, a file-type tag and a stronger download target.',
     preview: <DemoAsset {...asset} />
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-asset-review">
-    <div className="review-asset-kicker">Design system · Component review 25</div>
+  return <main className="ds-component-page review-asset-review">
+    <ReviewNavigation />
     <h1>Demo asset</h1>
     <p className="review-asset-intro">The same artwork keeps its transparent pixels in either page theme, with clearer metadata, a file-type tag and a stronger download target.</p>
 
-    <label htmlFor="asset-review-theme" className="review-asset-themeControl"><span>Preview theme</span><span className="review-asset-themeSelect">Light · Dark · System<ThemeSelect id="asset-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="asset-options">
       <h2 id="asset-options">Dark-background logotype</h2>
 
       <div className="review-asset-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-asset-option" key={number}>
-          <div className="review-asset-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-asset-option" key={number}>
           <div className="review-asset-optionPreview">{preview}</div>
           <p className="review-asset-optionNote">{note}</p>
         </article>)}
@@ -65,5 +63,6 @@ export default function Page() {
       </div>
       <DemoExample page="background-image" section="add-a-background-image" />
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

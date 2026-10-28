@@ -139,7 +139,7 @@ export default function SearchDialog() {
           </li>)}
         </ol>
       </div>
-      <div className="documentation-search-footer" aria-hidden="true"><span><kbd><IconArrowUp size={12} /></kbd><kbd><IconArrowDown size={12} /></kbd>{tw ? '選擇' : 'Navigate'}</span><span><kbd><IconCornerDownLeft size={12} /></kbd>{tw ? '開啟' : 'Open'}</span><span>{tw ? 'Guide 與 Reference' : 'Guide & Reference'}</span></div>
+      <div className="documentation-search-footer" aria-hidden="true"><span><kbd><IconArrowUp size={12} /></kbd><kbd><IconArrowDown size={12} /></kbd>{tw ? '選擇' : 'Navigate'}</span><span><kbd><IconCornerDownLeft size={12} /></kbd>{tw ? '開啟' : 'Open'}</span><span>{tw ? '文件搜尋' : 'Documentation'}</span></div>
     </dialog>, document.body)}
   </>
 }

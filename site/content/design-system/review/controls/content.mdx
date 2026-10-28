@@ -1,0 +1,24 @@
+`DemoControls` is a fieldset with an accessible group name. Its plain default leaves mixed sliders, action buttons and print controls ungrouped. For a small set of exclusive choices, use `variant="segmented"`: the selected native button has a separate surface and keeps `aria-pressed`, while a visible focus outline supports keyboard use. Both appearances stay outside the layout being demonstrated.
+
+```tsx
+<DemoControls label="Cross-axis alignment" variant="segmented">
+  <button type="button" className="demo-button" aria-pressed={alignment === 'align-items:flex-start'}>Start</button>
+  <button type="button" className="demo-button" aria-pressed={alignment === 'align-items:center'}>Center</button>
+  <button type="button" className="demo-button" aria-pressed={alignment === 'align-items:flex-end'}>End</button>
+</DemoControls>
+```
+
+The [controls review](/design-system/review/controls) shows the current segmented controls; the [Syntax Tutorial viewport switch](/guide/syntax-tutorial#conditions) demonstrates a separate viewport task.
+
+### Related document views \{#document-views-interface\}
+
+Use the document shell's `Segments` when each choice reveals a related panel. It exposes native buttons with tab semantics: arrow keys select a neighboring view, Home and End reach the ends, and Tab moves into the selected panel. Selection changes the fill and shadow without changing the label's position.
+
+```tsx
+<Segments label="Document view example">{[
+  { name: 'Overview', content: <p>A short explanation stays beside the example.</p> },
+  { name: 'Details', content: <p>Supporting details remain available in the HTML, including when JavaScript is disabled.</p> }
+]}</Segments>
+```
+
+Every panel remains in the HTML. Without JavaScript, and when printing, all views appear with their labels. The [Benchmark guide](/guide/benchmarks#page-css-size) uses the same control for raw and compressed CSS sizes.

@@ -2,8 +2,11 @@
   /* A recessed track holds a raised selected segment: 4px inset, 16px track and 12px segment radii. */
   .segments {
     display: flex;
+    flex-wrap: wrap;
     gap: 2px;
     width: fit-content;
+    max-width: 100%;
+    margin-bottom: var(--spacing-sm);
     padding: 4px;
     border-radius: var(--radius-2xl);
     background-color: var(--color-surface-shell);
@@ -14,13 +17,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 1.875rem;
-    padding-inline: var(--spacing-sm);
-    border-radius: var(--radius-xl);
-    white-space: nowrap;
+    min-height: 2.25rem;
+    padding: .375rem var(--spacing-sm);
+    border: 1px solid transparent;
+    border-radius: calc(var(--radius-2xl) - 4px);
     font-size: var(--font-size-xs);
-    font-weight: 460;
-    line-height: 1.375rem;
+    font-weight: 550;
+    line-height: 1.4;
     color: var(--color-text-muted);
     transition: color .16s, background-color .16s, box-shadow .16s;
 
@@ -28,10 +31,28 @@
       color: var(--color-text-strong);
     }
 
-    &.active {
+    &[aria-selected="true"] {
+      border-color: var(--color-line-contour);
       background-color: var(--color-surface-raised);
-      box-shadow: var(--shadow-raised);
+      box-shadow: var(--shadow-edge), var(--shadow-contact);
       color: var(--color-text-strong);
     }
+
+    &:active {
+      background-color: var(--color-surface-shell);
+      box-shadow: var(--shadow-pressed-contact);
+    }
+  }
+  .segment-views, .segment-panel { min-width: 0; }
+  .segment-panel-label { display: none; }
+  .segment:focus-visible, .segment-panel:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+  .segment-panel { border-radius: var(--radius-xs); }
+  @media (pointer: coarse) { .segment { min-height: 2.75rem; } }
+  @media (prefers-reduced-motion: reduce) { .segment { transition: none; } }
+  @media (scripting: none), print {
+    .segment-views > .segments { display: none; }
+    .segment-panel[hidden] { display: block !important; }
+    .segment-panel + .segment-panel { margin-top: var(--spacing-xl); }
+    .segment-panel-label { display: block; margin-bottom: var(--spacing-md); color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: 550; }
   }
 }

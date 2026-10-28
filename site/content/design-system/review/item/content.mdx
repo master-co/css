@@ -1,0 +1,12 @@
+`DemoItem` starts as a neutral raised surface with a crisp border. Set `tone="blue"` to identify the subject or `tone="violet"` for a comparison. The optional `soft`, `solid`, `outline`, and `ghost` variants change paint only. The item has no implied width, height, padding, layout, position, or interactive behavior; the lesson supplies those explicitly.
+
+```tsx
+<Demo>
+  <div className="display:flex gap-sm">
+    <DemoItem className="p-md">Context</DemoItem>
+    <DemoItem tone="blue" className="p-md">Subject</DemoItem>
+  </div>
+</Demo>
+```
+
+The [order reference](/reference/tokens/order) marks the reordered item in blue. The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) uses the same explicit subject tone, while the [spacing guide](/guide/spacing) keeps its original object and pink inner stripe. `DemoItem` renders a noninteractive `div`; use a native button or link when a specimen performs an action.

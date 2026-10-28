@@ -1,12 +1,12 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import { DemoItem, DemoSurface, DemoText } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo surface review',
-  description: 'The current shared Demo surface and elevation option.'
-}
+export { metadata }
 
 function content() {
   return <><span className="review-surface-eyebrow">COLLECTION / 024</span><div className="review-surface-cardTitle">Field notes</div><p className="review-surface-cardCopy">A stable backdrop for the object and its supporting text.</p></>
@@ -28,8 +28,8 @@ function ReferenceExample() {
 
 export default function Page() {
   return (
-    <main className="review-surface-review">
-      <div className="review-surface-kicker">Design system · Component review 06</div>
+    <main className="ds-component-page review-surface-review">
+      <ReviewNavigation />
       <h1>Demo surface</h1>
       <p className="review-surface-intro">The shared surface provides a fine border by default and optional elevation. Padding and geometry remain owned by the example.</p>
 
@@ -37,9 +37,8 @@ export default function Page() {
         <h2 id="bg-surface-current">Basic content panel</h2>
         <div className="review-surface-current">
           <article className="review-surface-option">
-            <div className="review-surface-optionHeading"><span>01</span><div><h3>Current surface</h3><p>Shared <code>DemoSurface</code></p></div></div>
             <Demo><div className="review-surface-surfaceStage"><DemoSurface elevation="raised" className="p-md">{content()}</DemoSurface></div></Demo>
-            <p className="review-surface-optionNote">A precise edge, compact radius and opt-in shadow for a genuinely raised layer.</p>
+            <p className="review-surface-optionNote">A precise edge, a 12px default radius and an optional shadow for raised content.</p>
           </article>
         </div>
       </section>
@@ -65,6 +64,7 @@ export default function Page() {
           <div><span className="review-surface-useLabel">Shared surface</span><ReferenceExample /></div>
         </div>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

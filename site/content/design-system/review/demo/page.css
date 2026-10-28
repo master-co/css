@@ -1,15 +1,7 @@
-.review-demo-review { width: min(100%, 78rem); margin: 0 auto; padding: clamp(3.75rem, 5vw, 5rem) clamp(1.25rem, 4vw, 3rem) 7rem; color: var(--color-text-body); }
-.review-demo-kicker { color: var(--color-text-muted); font: 600 .6875rem/1.5 var(--font-family-mono); letter-spacing: .07em; text-transform: uppercase; }
-.review-demo-review h1 { margin: .55rem 0 0; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 570; line-height: 1.08; letter-spacing: -.035em; }
-.review-demo-intro { max-width: 65ch; margin: 1rem 0 0; color: var(--color-text-muted); font-size: 1rem; line-height: 1.65; }
-.review-demo-review section + section { margin-top: 4rem; }
-.review-demo-review h2 { margin: 0 0 1.35rem; font-size: 1.25rem; font-weight: 570; line-height: 1.3; letter-spacing: -.02em; }
 .review-demo-current { width: min(100%, 42rem); }
+.review-demo-treatments { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1.5rem; }
+.review-demo-treatments .site-demo { margin: 0; }
 .review-demo-option { min-width: 0; }
-.review-demo-optionHeading { display: flex; align-items: baseline; gap: .75rem; padding: 0 .25rem .9rem; border-bottom: 1px solid var(--color-line-subtle); }
-.review-demo-optionHeading > span { color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); }
-.review-demo-optionHeading h3 { margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
-.review-demo-optionHeading p { margin: .125rem 0 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.4; }
 .review-demo-optionNote { margin: .75rem .25rem 0; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
 .review-demo-objects { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .625rem; width: 100%; }
 .review-demo-objects > div { min-width: 3.25rem; min-height: 3.25rem; padding: .75rem; font: 500 .8125rem/1.5 var(--font-family-mono); }
@@ -19,9 +11,9 @@
 .review-demo-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
 .review-demo-sectionHeading h2 { margin-bottom: .25rem; }
 .review-demo-sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }
-.review-demo-sectionHeading a, .review-demo-optionalUsage .demo-header-controls a { color: var(--color-blue-60); font-size: .8125rem; text-decoration: none; }
+.review-demo-sectionHeading a, .review-demo-optionalUsage .demo-header-controls a { color: var(--color-text-blue); font-size: .8125rem; text-decoration: none; }
 .review-demo-sectionHeading a:hover, .review-demo-optionalUsage .demo-header-controls a:hover { text-decoration: underline; }
-.review-demo-sectionHeading a:focus-visible, .review-demo-optionalUsage .demo-header-controls a:focus-visible { outline: 2px solid var(--color-blue-60); outline-offset: 4px; border-radius: 2px; }
+.review-demo-sectionHeading a:focus-visible, .review-demo-optionalUsage .demo-header-controls a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; border-radius: 2px; }
 .review-demo-actualUsage { width: min(100%, 48rem); }
 .review-demo-optionalUsage { width: min(100%, 40rem); }
 @media (max-width: 70rem) { .review-demo-current .site-demo { min-height: 9rem; } .review-demo-current .site-demo { height: 9rem; } .review-demo-current .demo-canvas { min-height: calc(9rem - 2px); } }

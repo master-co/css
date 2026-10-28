@@ -1,65 +1,48 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
+import Code from '~/site/docs-shell/components/Code'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
-import { DocumentStep, DocumentStepBody, DocumentStepNumber, DocumentSteps, DocumentStepText } from '~/site/components/DocumentSteps'
 import './page.css'
 
-export const metadata = {
-  title: 'Document steps review',
-  description: 'Current Document steps and practical examples.'
-}
+export { metadata }
 
-function CodeExample({ children }: { children: string }) {
-  return <pre className="review-steps-code"><code>{children}</code></pre>
-}
-
-function GuideSequence({ full = false }: { full?: boolean }) {
+function GuideSequence() {
   return <StepSection>
-    <Step $row><StepL><h3><StepNum />Create a project</h3><p>Start from a Vite project when you do not have an app yet.</p></StepL><StepR><CodeExample>{'npm create vite@latest my-app\ncd my-app'}</CodeExample></StepR></Step>
-    <Step $row><StepL><h3><StepNum />Add Master CSS</h3><p>Run the installer from the project root.</p></StepL><StepR><CodeExample>npm create @master/css@rc -- --yes</CodeExample></StepR></Step>
-    {full && <Step $row><StepL><h3><StepNum />Run and style</h3><p>Start the dev server, then use Master CSS classes in your markup.</p></StepL><StepR><CodeExample>dev</CodeExample></StepR></Step>}
+    <Step $row>
+      <StepL><h3><StepNum />Create a project</h3><p>Start from a Vite project when you do not have an app yet.</p></StepL>
+      <StepR><Code lang="sh" copyable={false}>{'npm create vite@latest my-app\ncd my-app'}</Code></StepR>
+    </Step>
+    <Step $row>
+      <StepL><h3><StepNum />Add Master CSS</h3><p>Run the installer from the project root.</p></StepL>
+      <StepR><Code lang="sh" copyable={false}>npm create @master/css@rc -- --yes</Code></StepR>
+    </Step>
+    <Step $row>
+      <StepL><h3><StepNum />Run and style</h3><p>Start the dev server, then use Master CSS classes in your markup.</p></StepL>
+      <StepR><Code lang="sh" copyable={false}>npm run dev</Code></StepR>
+    </Step>
   </StepSection>
 }
 
-function SharedSequence() {
-  return <DocumentSteps>
-    <DocumentStep columns>
-      <DocumentStepText><h3><DocumentStepNumber />Create a project</h3><p>Start from a Vite project when you do not have an app yet.</p></DocumentStepText>
-      <DocumentStepBody><CodeExample>{'npm create vite@latest my-app\ncd my-app'}</CodeExample></DocumentStepBody>
-    </DocumentStep>
-    <DocumentStep columns>
-      <DocumentStepText><h3><DocumentStepNumber />Add Master CSS</h3><p>Run the installer from the project root.</p></DocumentStepText>
-      <DocumentStepBody><CodeExample>npm create @master/css@rc -- --yes</CodeExample></DocumentStepBody>
-    </DocumentStep>
-  </DocumentSteps>
-}
-
-const options = [
-  { number: '01', title: 'Current', detail: 'Refined continuous rail', className: 'review-steps-currentPreview', preview: <SharedSequence />, note: "The current shared style keeps the original Guide’s sequential line while using clearer headings, breathing room and a quieter number." }
-] as const
-
 export default function Page() {
-  return <main className="review-steps-review">
-    <div className="review-steps-kicker">Design system · Component review 17</div>
+  return <main className="ds-component-page review-steps-review">
+    <ReviewNavigation />
     <h1>Document steps</h1>
-    <p className="review-steps-intro">The current shared style keeps the original Guide’s sequential line while using clearer headings, breathing room and a quieter number.</p>
+    <p>Pair each action with its explanation and complete code. The numbered rail follows the reading order, and columns respond to the space available inside the document.</p>
 
     <section aria-labelledby="steps-options">
-      <h2 id="steps-options">Sequence treatments</h2>
-
-      <div className="review-steps-options">{options.map(({ number, title, detail, className, preview, note }) => <article className="review-steps-option" key={number}>
-        <div className="review-steps-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
-        <div className={`review-steps-optionPreview ${className}`}>{preview}</div>
-        <p className="review-steps-optionNote">{note}</p>
-      </article>)}</div>
+      <h2 id="steps-options">Installation sequence</h2>
+      <div className="review-steps-guideSequence"><GuideSequence /></div>
     </section>
 
     <section aria-labelledby="steps-real-use">
       <div className="review-steps-sectionHeading">
-        <div><h2 id="steps-real-use">Actual Guide use</h2><p>The installation page’s three-step sequence stays in its original structure.</p></div>
-        <Link href="/guide/installation">Open /guide/installation</Link>
+        <div><h2 id="steps-real-use">Used in Guide</h2><p>The installation guides use this same StepSection and code window.</p></div>
+        <Link href="/guide/installation">Open the installation guide</Link>
       </div>
-      <div className="review-steps-guideSequence review-steps-optionPreview"><GuideSequence full /></div>
-      <p className="review-steps-optionNote">The excerpt keeps the Guide’s action order and paired code. The live page also contains the complete explanation and next steps.</p>
+      <p className="review-steps-optionNote">Keep the complete explanation and expected result beside each action. The component supplies the sequence cue; the lesson supplies its content.</p>
     </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
   </main>
 }

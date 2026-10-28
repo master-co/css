@@ -1,27 +1,35 @@
 @layer components {
-  .demo-motion { display: grid; gap: 0; }
-  .demo-motion > :first-child { outline: 1px solid var(--color-line-divider); border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--color-demo-surface); }
-  .demo-motion > .demo-controls { padding: .75rem; border: 1px solid var(--color-line-divider); border-top: 1px solid var(--color-line-subtle); border-radius: 0 0 var(--radius-md) var(--radius-md); background: var(--color-surface-raised); }
-  .demo-motion > .demo-controls .demo-button { min-height: 2.25rem; padding-inline: .75rem; }
+  .demo-motion { display: grid; gap: .75rem; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
+  .demo-motion > :first-child { border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-demo-surface); }
+  .demo-motion > .demo-controls { padding: 0 .25rem .25rem; }
+  .demo-motion > .demo-controls .demo-button { min-height: var(--demo-control-height, 2.25rem); padding-inline: .75rem; }
   .demo-motion[data-playing="false"] * { animation-play-state: paused !important; }
-  .demo-viewport-frame { min-width: 0; padding: .75rem; background: var(--color-surface-inset); }
-  .demo-viewport-shell { max-width: 100%; overflow-x: auto; outline: 1px solid var(--color-line-divider); border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--color-demo-surface); }
-  .demo-container-shell { max-width: 100%; overflow-x: auto; padding: var(--spacing-lg); border-bottom: 1px solid var(--color-line-divider); background: var(--color-surface-inset); }
-  .site-demo .demo-viewport { display: block; width: 100%; max-width: none; border: 0; background: transparent; }
-  .demo-viewport-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: var(--spacing-xs) var(--spacing-md); border: 1px solid var(--color-line-divider); border-top: 1px solid var(--color-line-subtle); border-radius: 0 0 var(--radius-sm) var(--radius-sm); background: var(--color-surface-raised); }
+  .demo-viewport-frame, [data-demo-container] { min-width: 0; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
+  .demo-viewport-shell { max-width: 100%; overflow-x: auto; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-demo-surface); }
+  .demo-container-shell { max-width: 100%; overflow-x: auto; padding: var(--spacing-lg); border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-demo-canvas); }
+  .demo-viewport { display: block; width: 100%; max-width: none; border: 0; background: transparent; }
+  .demo-viewport-toolbar { container-type: inline-size; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; padding: .75rem .25rem .25rem; }
   [data-demo-container] .demo-viewport-toolbar { gap: .75rem 1.25rem; border: 0; }
   [data-demo-container] .demo-viewport-toolbar .demo-controls { gap: .5rem; }
-  [data-demo-container] .demo-viewport-toolbar .demo-button { min-height: 2.25rem; padding: .375rem .75rem; }
+  [data-demo-container] .demo-viewport-toolbar .demo-button { min-height: var(--demo-control-height, 2.25rem); padding: .375rem .75rem; }
   [data-demo-container] .demo-viewport-toolbar input[type="range"] { width: clamp(7rem, 24vw, 12rem); }
-  [data-demo-container] .demo-viewport-status { padding: .3rem .5rem; border: 1px solid var(--color-line-divider); border-radius: var(--radius-xs); background: var(--color-surface-base); font-size: .75rem; }
+  [data-demo-container] .demo-viewport-status { font-size: .75rem; }
   .demo-viewport-presets, .demo-viewport-width { display: inline-flex; align-items: center; gap: var(--spacing-xs); max-width: 100%; }
-  .demo-viewport-presets { flex-wrap: wrap; padding: .2rem; gap: .2rem; border: 1px solid var(--color-line-divider); border-radius: var(--radius-sm); background: var(--color-surface-inset); }
-  .demo-viewport-presets .demo-button { min-height: 2.1rem; border-color: transparent; background: transparent; }
-  .demo-viewport-presets .demo-button[aria-pressed="true"] { border-color: var(--color-line-divider); background: var(--color-surface-raised); box-shadow: var(--shadow-xs); }
-  .demo-viewport-width { min-height: 2.5rem; }
+  .demo-viewport-presets { flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: var(--radius-2xl); background: var(--color-surface-shell); box-shadow: var(--shadow-pressed); }
+  .demo-viewport-presets .demo-button { min-height: var(--demo-control-height, 2.25rem); border-color: transparent; border-radius: calc(var(--radius-2xl) - 4px); background: transparent; box-shadow: none; }
+  .demo-viewport-presets .demo-button[aria-pressed="true"] { border-color: var(--color-line-contour); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .demo-viewport-presets .demo-button:active:not(:disabled) { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
+  .demo-viewport-presets .demo-button:disabled { color: var(--color-text-disabled); box-shadow: none; }
+  .demo-viewport-width { display: grid; grid-template-columns: auto minmax(4rem, 7rem) auto; min-height: 2.5rem; }
+  .demo-viewport-width .demo-label { white-space: nowrap; }
   .demo-viewport-width input { min-width: 0; }
-  .demo-viewport-toolbar input[type="range"] { width: 7rem; accent-color: var(--color-demo-blue); }
-  .demo-viewport-status { margin-left: auto; color: var(--color-text-body); font: 600 .6875rem var(--font-family-mono); font-variant-numeric: tabular-nums; }
+  .demo-viewport-toolbar input[type="range"] { width: 7rem; accent-color: var(--color-accent); }
+  .demo-viewport-status { margin-left: auto; color: var(--color-text-muted); font: 500 .75rem/1.5 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+  @container (width < 18em) {
+    .demo-viewport-width { width: 100%; grid-template-columns: minmax(0, 1fr) auto; }
+    .demo-viewport-width > .demo-label { grid-column: 1 / -1; }
+    .demo-viewport-width input[type="range"] { width: 100%; }
+  }
   .demo-recipe { margin-block: var(--spacing-2xl); }
   .demo-recipe-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-sm); }
   .demo-recipe-heading h3 { margin: var(--spacing-3xs) 0 0; font-size: 1rem; }

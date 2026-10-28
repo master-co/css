@@ -23,7 +23,7 @@ export default function DemoAsset({ title, description, src, alt, width, height,
     <div className="demo-asset-footer">
       <span className="demo-asset-format">{format}</span>
       <a href={src} download aria-label={`Download ${title} (${format})`}>
-        <IconDownload size={15} stroke={1.5} aria-hidden="true" />
+        <IconDownload size={15} stroke={1.8} aria-hidden="true" />
         Download {format}
       </a>
     </div>

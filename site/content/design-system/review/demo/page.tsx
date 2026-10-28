@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import Demo from '~/site/components/demo/Demo'
 import DemoViewport from '~/site/components/demo/DemoViewport'
@@ -6,10 +9,7 @@ import { referenceScenes } from '~/site/components/demo/reference/scenes'
 import { demoDocument } from '~/site/components/demo/reference/document'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo canvas review',
-  description: 'The current shared Demo canvas and its optional framing.'
-}
+export { metadata }
 
 function specimen() {
   return (
@@ -27,18 +27,17 @@ export default async function Page() {
   const scene = referenceScenes.clear(source)
 
   return (
-    <main className="review-demo-review">
-      <div className="review-demo-kicker">Design system · Component review 01</div>
+    <main className="ds-component-page review-demo-review">
+      <ReviewNavigation />
       <h1>Demo canvas</h1>
-      <p className="review-demo-intro">The shared canvas uses a neutral diagonal stripe, thin border and quiet spacing. Titles and controls appear only when a lesson needs them.</p>
+      <p className="review-demo-intro">The shared canvas uses a plain neutral surface, a fine contour and quiet spacing. Titles and controls appear only when a lesson needs them.</p>
 
       <section aria-labelledby="canvas-current">
         <h2 id="canvas-current">Default canvas</h2>
         <div className="review-demo-current">
           <article className="review-demo-option">
-            <div className="review-demo-optionHeading"><span>01</span><div><h3>Current Demo</h3><p>Shared canvas</p></div></div>
             <Demo>{specimen()}</Demo>
-            <p className="review-demo-optionNote">Neutral stripe and space, with optional site-owned framing.</p>
+            <p className="review-demo-optionNote">A plain surface with optional, purpose-specific patterns.</p>
           </article>
         </div>
       </section>
@@ -49,7 +48,7 @@ export default async function Page() {
           <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/clear">Open https://developer.mozilla.org/en-US/docs/Web/CSS/clear</Link>
         </div>
         <div className="review-demo-actualUsage">
-          <Demo title={source.title} description="The title identifies this lesson's CSS subject." caption={scene.caption} padding="none">
+          <Demo title={source.title} description="The title identifies this lesson's CSS subject." caption={scene.caption} padding="none" frame="none">
             <DemoViewport title={`clear: ${source.title}`} document={demoDocument(source, scene)}
               responsive={scene.responsive ?? false} theme={scene.theme ?? false} print={false}
               motion={scene.motion} inspect={scene.inspect} height={scene.height}
@@ -67,6 +66,7 @@ export default async function Page() {
           </Demo>
         </div>
       </section>
+    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>
   )
 }

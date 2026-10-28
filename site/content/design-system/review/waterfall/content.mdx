@@ -1,0 +1,15 @@
+`DemoWaterfall` shows illustrative request order with a text description and labeled resource rows. It has no time axis, FCP marker or animated playback. Keep measured results in the benchmark components.
+
+```tsx
+<DemoWaterfall
+  title="A dependency discovered later"
+  description="The second request becomes known after the first resource loads."
+  rows={[
+    { label: 'Entry', start: 0, end: 40, tone: 'violet' },
+    { label: 'Dependency', start: 50, end: 90, tone: 'blue' }
+  ]}
+/>
+```
+
+Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/preload-critical-resources#preload-runtime-engine).
+The [waterfall review](/design-system/review/waterfall) shows the current request-order diagram.

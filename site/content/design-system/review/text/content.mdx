@@ -1,0 +1,9 @@
+`DemoText` renders a native paragraph. Its default `body` role inherits the surrounding font size and keeps the existing margin reset and 1.65 line height, so text-flow lessons retain their geometry. Opt into `variant="lead"` for prominent specimen copy or `variant="caption"` for a short note; these roles supply type treatment without becoming extra layout items.
+
+```tsx
+<DemoText variant="lead">A clear specimen heading.</DemoText>
+<DemoText>Explanatory copy inherits its container size.</DemoText>
+<DemoText variant="caption">Condition: narrow viewport.</DemoText>
+```
+
+Utilities on `className` can override these paint and typography defaults when the text property itself is under test. The [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) uses default body text beside an actual floated image. The [typography guide](/guide/typography) retains its original `DemoP` comparison for the lesson on the text scale.

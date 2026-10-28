@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -5,10 +8,7 @@ import { DemoComparison } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/content/guide/elevation/components/ShadowTokens'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo comparison review',
-  description: 'Current Demo comparison and practical examples.'
-}
+export { metadata }
 
 const specimens = [
   { key: 'sm', utility: 'shadow-sm', role: 'Standard surface', description: 'Cards, reusable panels, and quiet product surfaces.' },
@@ -27,15 +27,14 @@ function ShadowSpecimens() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Shared DemoComparison',
-    note: 'A 17rem reading minimum and larger gap keep both specimens clear before stacking.',
+    number: '01', note: 'A 17rem reading minimum and larger gap keep both specimens clear before stacking.',
     preview: <Demo><DemoComparison><ShadowSpecimens /></DemoComparison></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-comparison-review">
-    <div className="review-comparison-kicker">Design system · Component review 07</div>
+  return <main className="ds-component-page review-comparison-review">
+    <ReviewNavigation />
     <h1>Demo comparison</h1>
     <p className="review-comparison-intro">A 17rem reading minimum and larger gap keep both specimens clear before stacking.</p>
 
@@ -43,8 +42,7 @@ export default function Page() {
       <h2 id="comparison-options">Two elevation specimens</h2>
 
       <div className="review-comparison-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-comparison-option" key={number}>
-          <div className="review-comparison-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-comparison-option" key={number}>
           <div className="review-comparison-optionPreview">{preview}</div>
           <p className="review-comparison-optionNote">{note}</p>
         </article>)}
@@ -59,5 +57,6 @@ export default function Page() {
       <ShadowScaleDemo />
       <p className="review-comparison-optionNote">The shared layout is available for future comparisons. The existing Guide grid remains intact.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

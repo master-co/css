@@ -26,17 +26,17 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
 
         return (
           <div key={item.id} className="display:grid gap-sm">
-            <div className="display:flex align-items:baseline justify-content:space-between gap-sm">
+            <div className="display:flex flex-wrap:wrap align-items:baseline justify-content:space-between gap-sm">
               <div className="display:flex align-items:center gap-xs min-width:0">
                 {item.icon}
                 <span id={labelId} className="min-width:0 font-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="display:flex align-items:baseline gap-xs white-space:nowrap">
-                <strong id={valueId} className="font-sm font-weight:460 fg-text-strong">{totalLabel}</strong>
+              <div className="display:flex flex-wrap:wrap align-items:baseline gap-xs min-width:0">
+                <strong id={valueId} className="font-sm font-weight:460 white-space:nowrap fg-text-strong">{totalLabel}</strong>
                 {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
-            <div className="display:flex overflow:hidden height:12px r-xs bg-surface-inset" role="img" aria-labelledby={`${labelId} ${valueId}`}>
+            <div className="benchmark-meter benchmark-meter-stacked" role="img" aria-labelledby={`${labelId} ${valueId}`}>
               {item.segments.map((segment, index) => {
                 const percent = clampPercent(segment.value, total)
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]

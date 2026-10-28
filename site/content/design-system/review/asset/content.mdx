@@ -1,0 +1,14 @@
+`DemoAsset` pairs original artwork with a named surface and a native download link. Use it for logos, icons or exported diagrams; it is a presentation frame, not a measured CSS layout. Intrinsic image dimensions reserve the aspect ratio. The preview constrains images to the available width and a 6rem height without cropping. The image remains transparent over the chosen preview surface in either page theme.
+
+```tsx
+<DemoAsset
+  title="Master CSS mark"
+  description="Original SVG artwork."
+  src="/images/logo.svg"
+  alt="Master CSS gold mark"
+  width={104}
+  height={56}
+/>
+```
+
+Use `surface="light"` or `surface="dark"` to keep the preview background fixed across page themes. `surface="transparent"` uses a checkerboard. The footer stays outside the artwork and exposes the file format (`SVG` by default). Use same-origin URLs for native downloads and a descriptive title for each accessible download name. See the [Brand page](/brand#download-assets) for the light, dark and transparent variants together, and the [asset review](/design-system/review/asset) for the current preview frame.

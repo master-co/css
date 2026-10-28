@@ -4,6 +4,7 @@ import clsx from 'clsx'
 
 export type DemoBackground = 'stripes' | 'grid' | 'dots' | 'plain' | 'checkerboard'
 export type DemoPadding = 'none' | 'sm' | 'md' | 'lg'
+export type DemoFrame = 'default' | 'none'
 
 export interface DemoProps extends HTMLAttributes<HTMLDivElement> {
   title?: string
@@ -11,17 +12,19 @@ export interface DemoProps extends HTMLAttributes<HTMLDivElement> {
   caption?: ReactNode
   background?: DemoBackground
   padding?: DemoPadding
+  /** Omit the surrounding boundary when the content already owns its frame. */
+  frame?: DemoFrame
   controls?: ReactNode
   frameClassName?: string
 }
 
 /** className/style belong to the canvas; the chrome never joins the demonstrated layout. */
 export default function Demo({
-  title, description, caption, background = 'stripes', padding = 'lg', controls,
+  title, description, caption, background = 'plain', padding = 'lg', frame = 'default', controls,
   frameClassName, className, style, children, ...props
 }: DemoProps) {
   return (
-    <div {...props} className={clsx('site-demo', frameClassName)}>
+    <div {...props} className={clsx('site-demo', frameClassName)} data-frame={frame}>
       {(title || description || controls) && (
         <div className="demo-header">
           {(title || description) && <div>

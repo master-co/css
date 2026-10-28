@@ -1,0 +1,11 @@
+`DemoAxes` puts a labeled horizontal rule and vertical rule around one example. Its default main-axis arrow points right and its cross-axis arrow points down, matching a left-to-right row in horizontal writing. The rules are decorative; the text supplies the axis names. The current labels use a clear monospace scale and keep both rules outside the example's flex layout.
+
+```tsx
+<DemoAxes aria-label="Row layout: main axis rightward, cross axis downward">
+  <div className="display:flex gap-sm">{/* layout items */}</div>
+</DemoAxes>
+```
+
+Use this frame only when those physical directions match the specimen; reverse and vertical examples need annotations that follow their actual directions. The [flex direction reference](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction) shows the real row behavior, and the [axes review](/design-system/review/axes) shows the current annotation frame.
+
+The [composition with content bounds](/design-system/review/axes#axes-composition) combines `DemoAxes`, `DemoMeasure` and `DemoLegend`. The ruler observes the content wrapper; the axis rules and legend stay outside the measured layout. Narrow screens scroll the diagram horizontally without shrinking or changing the measured objects.

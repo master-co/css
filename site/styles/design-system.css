@@ -1,5 +1,84 @@
 @layer components {
+  .ds-overview { width: 100%; min-width: 0; max-width: 74rem; margin-inline: auto; padding: 6rem 1.25rem 5rem; }
+  .ds-overview-header { max-width: 48rem; margin-bottom: 2.5rem; }
+  .ds-overview-header h1 { margin-bottom: .75rem; }
+  .ds-overview-header p { color: var(--color-text-muted); font-size: 1rem; line-height: 1.7; }
+  .ds-overview > h2 { margin: 4rem 0 .75rem; font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 560; letter-spacing: -.025em; line-height: 1.3; }
+  .ds-overview > p { max-width: 43rem; margin: 0 0 1.75rem; color: var(--color-text-muted); font-size: 1rem; line-height: 1.75; }
+  .ds-overview .site-demo { margin-inline: 0; }
+  .ds-overview .code, .ds-overview .codeTabs { margin-inline: 0; }
+  .ds-overview :is(h2, h3) { scroll-margin-top: 6rem; }
+  .ds-overview :is(ul, li, figure) { margin-block: 0; }
+  .ds-eyebrow { display: inline-flex; align-items: center; gap: .5rem; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
+  .ds-workbench-heading { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+  .ds-workbench-heading > div:first-child { flex: 1 1 22rem; min-width: 0; }
+  .ds-workbench-heading h2 { margin: .375rem 0 0; font-size: 1.125rem; font-weight: 560; letter-spacing: -.015em; line-height: 1.4; }
+  .ds-workbench-grid { display: grid; gap: 1.5rem; align-items: start; }
+  .ds-workbench-preview { min-width: 0; }
+  .ds-workbench-preview > .doc-disclosure { margin: 1rem .25rem 0; }
+  .ds-appearance { display: flex; align-items: center; gap: .5rem; color: var(--color-text-muted); font-size: .75rem; }
+  .ds-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: .375rem; width: 3.5rem; height: 2.25rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-appearance svg { pointer-events: none; stroke: currentColor; }
+  .ds-appearance > span:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .ds-component-page > .ds-appearance { width: fit-content; margin-top: 1.5rem; }
+  .ds-appearance > span:has(:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+  @media (pointer: coarse) { .ds-appearance > span { height: 2.75rem; } }
+  .ds-token-panel { min-width: 0; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-panel-heading { display: flex; align-items: center; gap: .625rem; padding: 1.25rem 1.25rem 1rem; color: var(--color-text-muted); }
+  .ds-panel-heading h3 { margin: 0; color: var(--color-text-strong); font-size: .875rem; font-weight: 550; }
+  .ds-token-panel dl { margin: 0; padding: 0 1.25rem; }
+  .ds-token-panel dl > div { padding: .875rem 0; border-top: 1px solid var(--color-line-subtle); }
+  .ds-token-panel :is(dt, dd) { margin: 0; min-width: 0; }
+  .ds-token-panel dt code { color: var(--color-text-strong); }
+  .ds-token-panel dd { margin-top: .375rem; }
+  .ds-token-panel code { border: 0; padding: 0; background: none; font-size: .75rem; overflow-wrap: anywhere; }
+  .ds-token-panel p { margin: 1rem 1.25rem; color: var(--color-text-muted); font-size: .8125rem; line-height: 1.65; }
+  .ds-token-panel > a { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: 1rem 1.25rem; border-top: 1px solid var(--color-line-subtle); color: var(--color-text-strong); font-size: .8125rem; text-decoration: none; }
+  .ds-materials { display: grid; gap: 1.5rem 2rem; align-items: center; }
+  .ds-material-assembly { padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
+  .ds-material-sheet { padding: 1.5rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-material-sheet h3 { max-width: 24ch; margin: 1rem 0 .75rem; color: var(--color-text-strong); font-size: 1.375rem; font-weight: 550; letter-spacing: -.025em; line-height: 1.35; }
+  .ds-material-sheet p { margin: 0; max-width: 42ch; color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
+  .ds-material-pair { display: grid; gap: .75rem; margin-top: 1.5rem; padding: 1rem; border-radius: var(--radius-xl); background: var(--color-surface-canvas); }
+  .ds-material-example { padding: 1rem; }
+  .ds-material-example strong { display: block; margin-top: .5rem; color: var(--color-text-strong); font-size: .875rem; font-weight: 550; }
+  .ds-material-role { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1rem; padding: 1rem .25rem; }
+  .ds-material-role + .ds-material-role { border-top: 1px solid var(--color-line-subtle); }
+  .ds-material-role > span { width: 2.5rem; height: 2.5rem; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px var(--color-line-contour); }
+  .ds-material-canvas { background: var(--color-surface-canvas); }
+  .ds-material-shell { background: var(--color-surface-shell); }
+  .ds-material-surface { background: var(--color-surface-raised); }
+  .ds-material-role strong { display: block; color: var(--color-text-strong); font-size: .875rem; font-weight: 550; }
+  .ds-material-role code { display: block; margin-top: .25rem; border: 0; padding: 0; background: none; font-size: .6875rem; color: var(--color-text-muted); overflow-wrap: anywhere; }
+  .ds-material-role p { margin: .375rem 0 0; font-size: .8125rem; line-height: 1.6; color: var(--color-text-muted); }
+  .ds-control-footnote { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: .5rem .25rem; }
+  .ds-control-footnote > div { flex: 1 1 24rem; }
+  .ds-control-footnote .demo-copy { flex: 0 1 16rem; width: 16rem; max-width: 100%; }
+  .ds-control-footnote strong { color: var(--color-text-strong); font-size: .875rem; font-weight: 550; }
+  .ds-control-footnote p { max-width: 54ch; margin: .5rem 0 0; color: var(--color-text-muted); font-size: .8125rem; line-height: 1.65; }
+  .ds-document-patterns { display: grid; gap: 2rem; }
+  .ds-document-patterns > div { min-width: 0; }
+  .ds-note-heading { display: flex; align-items: center; gap: .625rem; padding: .75rem 0; border: 0; background: transparent; }
+  .ds-note-heading strong { font-weight: 550; }
+  .ds-note-dot { width: .375rem; height: .375rem; flex: none; border-radius: 50%; background: var(--color-text-muted); }
+  .ds-document-note > p { margin: .75rem 0; color: var(--color-text-muted); font-size: .875rem; line-height: 1.75; }
+  .ds-text-link { display: inline-flex; align-items: center; gap: .5rem; color: var(--color-text-strong); font-size: .8125rem; text-decoration: none; }
+  .ds-component-catalog { display: grid; gap: 2rem; margin-top: 2rem; }
+  .ds-component-group h3 { margin: 0 0 1rem; font-size: .875rem; font-weight: 550; color: var(--color-text-strong); }
+  .ds-component-group ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-line-divider); }
+  .ds-component-group li { margin: 0; padding: 0; scroll-margin-top: 6rem; }
+  .ds-component-group li + li { border-top: 1px solid var(--color-line-subtle); }
+  .ds-component-group a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .875rem 0; text-decoration: none; color: var(--color-text-body); }
+  .ds-component-group strong { display: block; font-size: .875rem; font-weight: 550; }
+  .ds-component-group a span { display: block; margin-top: .25rem; font-size: .75rem; line-height: 1.6; color: var(--color-text-muted); }
+  .ds-component-group svg { flex: none; color: var(--color-text-muted); }
+  .ds-component-group a > div { min-width: 0; overflow-wrap: anywhere; }
+  .ds-component-group a:hover { color: var(--color-text-strong); }
+  .ds-recipe-links { display: grid; gap: .5rem 2rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); margin-top: 1.5rem; }
+  .ds-recipe-links a { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 2.75rem; padding-block: .5rem; border-top: 1px solid var(--color-line-subtle); color: var(--color-text-muted); font-size: .8125rem; text-decoration: none; scroll-margin-top: 6rem; }
+  .ds-recipe-links a:hover { color: var(--color-text-strong); }
+  .ds-recipe-links a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; border-radius: var(--radius-xs); }
+  :is(.ds-component-group, .ds-token-panel, .ds-text-link) a:focus-visible, a.ds-text-link:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; border-radius: var(--radius-xs); }
   .ds-component-page { width: min(100%, 74rem); margin: 0 auto; padding: 6rem 1.25rem 5rem; color: var(--color-text-body); }
   .ds-review-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-bottom: 2rem; color: var(--color-text-muted); font-size: .8125rem; }
   .ds-review-navigation a { color: inherit; text-decoration: none; }
@@ -15,4 +94,16 @@
   .ds-component-api :is(h2, h3) { margin-top: 2rem; }
   .ds-component-api .code, .ds-component-api .codeTabs { margin-inline: 0; }
   .ds-component-api > :first-child { margin-top: 0; }
+  .ds-component-document { max-width: 48rem; margin: 1.5rem auto 0; }
+  .ds-component-document :is(.code, .codeTabs) { margin-inline: 0; }
+  @media (min-width: 48rem) {
+    .ds-overview, .ds-component-page { padding: 7rem 2rem 6rem; }
+    .ds-workbench-grid { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); }
+    .ds-materials { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+    .ds-material-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ds-document-patterns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ds-component-catalog { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ds-control-footnote .demo-copy { text-align: end; }
+    .ds-control-footnote .demo-copy-status { text-align: start; }
+  }
 }

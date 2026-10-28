@@ -1,5 +1,9 @@
 @layer components {
   .doc-main { container: docs-main / inline-size; }
+  /* These document footers also need to fit when only the text is enlarged. */
+  .doc-footer [data-footer-navigation] { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5em), 1fr)) !important; }
+  .doc-footer [data-footer-navigation] ul { min-width: 0; }
+  .doc-footer [data-footer-legal] { flex-wrap: wrap; }
 
   @container docs-main (width < 48rem) {
     .doc-page-contents { display: none; }
@@ -15,6 +19,10 @@
   .doc-table {
     border-bottom: 1px solid var(--color-line-subtle);
     overflow-x: auto;
+
+    th {
+      text-align: start;
+    }
 
     :is(tbody tr:last-child th, tbody tr:last-child td) {
       border-bottom-width: 0px!important;
@@ -40,6 +48,7 @@
       vertical-align: middle;
     }
   }
+  .doc-table:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 
   .doc-pure-list {
     list-style: none;

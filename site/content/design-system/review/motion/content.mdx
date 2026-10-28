@@ -1,0 +1,11 @@
+`DemoMotion` wraps an authored animation in a framed stage and places native Play/Pause and Replay buttons in a separate deck. It starts paused and uses the browser animation timeline: Pause preserves the current frame; Replay returns to the start before playing. The component also pauses when the operating system motion preference changes. Keep the movement, duration and easing in the specimen’s actual class or CSS.
+
+```tsx
+<DemoMotion>
+  <div className="display:grid place-items:center height:10rem">
+    <DemoItem className="width:4rem height:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem>
+  </div>
+</DemoMotion>
+```
+
+The stage adds no layout padding or dimensions, so set those in the example. The [animation play-state reference](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state) uses its own real checkbox and CSS condition; the [motion review](/design-system/review/motion) shows the current shared playback treatment.

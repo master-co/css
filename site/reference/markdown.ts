@@ -45,7 +45,7 @@ export interface MdxContentOptions {
 export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], stack: string[] = [], options: MdxContentOptions = {}) {
   if (stack.includes(file)) throw new Error(`Recursive document include: ${file}`)
   const expressions: Record<string, string> = {}
-  const source = (await readFile(file, 'utf8')).split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\{?<Demo\b[\s\S]*?<\/Demo>\}?/g, '').replace(/(<(?:Code|Class2CSS)\b[^>]*>)([\s\S]*?)(<\/(?:Code|Class2CSS)>)/g, (_, start, expression, end) => { const key = `MCSS_EXPRESSION_${Object.keys(expressions).length}`; expressions[key] = expression; return `${start}\n${key}\n${end}` })).join('')
+  const source = (await readFile(file, 'utf8')).split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\{?<Demo\b[\s\S]*?<\/Demo>\}?/g, '').replace(/(<(?:Code|Class2CSS|DocumentDeclaration)\b[^>]*>)([\s\S]*?)(<\/(?:Code|Class2CSS|DocumentDeclaration)>)/g, (_, start, expression, end) => { const key = `MCSS_EXPRESSION_${Object.keys(expressions).length}`; expressions[key] = expression; return `${start}\n${key}\n${end}` })).join('')
   const examples: ReferenceExample[] = []
   const notes: string[] = []
   const variables: Record<string, unknown> = {}
@@ -115,6 +115,31 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       const inner = (node.children ?? []).map(raw).join('\n')
       const adapted = options.component?.(name, attrs, file)
       if (adapted !== undefined) return adapted
+      if (['DocumentOptions', 'DocumentParameters'].includes(name)) {
+        const values = await expression(attrs[name === 'DocumentOptions' ? 'options' : 'parameters'].value) as { name: string, type?: string, requirement?: string, defaultValue?: string, description: string }[]
+        if (!Array.isArray(values) || values.some(value => typeof value.name !== 'string' || typeof value.description !== 'string')) throw new Error(`${name} requires literal names and descriptions`)
+        return values.map(value => `**\`${value.name}\`**${value.type ? ` — \`${value.type}\`` : ''}${value.requirement ? ` (${value.requirement})` : ''}\n\n${value.defaultValue !== undefined ? `Default: \`${value.defaultValue}\`. ` : ''}${value.description}`).join('\n\n')
+      }
+      if (name === 'DocumentAPIIndex') {
+        const values = await expression(attrs.entries.value) as { name: string, href: string, description: string }[]
+        if (!Array.isArray(values) || values.some(value => !['name', 'href', 'description'].every(key => typeof value[key as keyof typeof value] === 'string'))) throw new Error('DocumentAPIIndex requires literal entries')
+        return values.map(value => `- [\`${value.name}\`](${value.href}) — ${value.description}`).join('\n')
+      }
+      if (name === 'DocumentDeclaration') return `**${attrs.label}**\n\n\`\`\`typescript\n${await expression(inner)}\n\`\`\``
+      if (name === 'DocumentValueList') {
+        const values = await expression(attrs.rows.value) as { id: string, title: string, identifier?: string, values: { label: string, value: string }[] }[]
+        return values.map(value => `### ${value.title} {#${value.id}}\n\n${value.identifier ? `\`${value.identifier}\`\n\n` : ''}${value.values.map(pair => `${pair.label}: \`${pair.value}\``).join('\n\n')}`).join('\n\n')
+      }
+      if (name === 'DocumentFlow') {
+        const steps = await expression(attrs.steps.value) as { title: string, description: string }[]
+        return `**${attrs.title}**\n\n${steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`).join('\n')}${attrs.caption ? `\n\n${attrs.caption}` : ''}`
+      }
+      if (name === 'DocumentFileTree') {
+        type Entry = { name: string, description?: string, children?: Entry[] }
+        const entries = await expression(attrs.entries.value) as Entry[]
+        const lines = (items: Entry[], level = 0): string => items.map(item => `${'  '.repeat(level)}- \`${item.name}${item.children ? '/' : ''}\`${item.description ? ` — ${item.description}` : ''}${item.children?.length ? `\n${lines(item.children, level + 1)}` : ''}`).join('\n')
+        return `**${attrs.title}**\n\n${lines(entries)}${attrs.caption ? `\n\n${attrs.caption}` : ''}`
+      }
       if (name === 'Overview' && options.overview !== 'include') return syntaxMarkdown(rows)
       if (name === 'StylesheetExample') {
         const source = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value)
@@ -176,8 +201,8 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         if (typeof attrs.name !== 'string') throw new Error('DocumentOptionEntry requires a literal name')
         return `**\`${attrs.name}\`**\n\n${(await Promise.all((node.children ?? []).map(render))).join('\n\n')}`
       }
-      if (name === 'StepNum' || name === 'DocumentStepNumber') return ''
-      if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'StepEnd', 'CodeTabs', 'Tab', 'DocumentSteps', 'DocumentStep', 'DocumentStepText', 'DocumentStepBody'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
+      if (name === 'StepNum') return ''
+      if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'StepEnd', 'CodeTabs', 'Tab'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
       if (/^[A-Z]/.test(name)) {
         const imported = imports[name]
         const siteRoot = file.slice(0, file.lastIndexOf('/content/'))

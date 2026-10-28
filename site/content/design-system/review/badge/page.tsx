@@ -1,15 +1,15 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import Demo from '~/site/components/demo/Demo'
 import DemoExample from '~/site/components/demo/DemoExample'
 import { DemoBadge, DemoItem } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo badge review',
-  description: 'Current Demo badge and practical examples.'
-}
+export { metadata }
 
 const badges = [
   { label: 'Subject', tone: 'blue', variant: 'soft' },
@@ -29,26 +29,24 @@ function BadgeSpecimen() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Precise state annotation',
-    note: 'A smaller radius, balanced padding and tabular monospace type keep the chip crisp across tones and sizes.',
+    number: '01', note: 'A smaller radius, balanced padding and tabular monospace type keep the chip crisp across tones and sizes.',
     preview: <Demo><BadgeSpecimen /></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-badge-review">
-    <div className="review-badge-kicker">Design system · Component review 24</div>
+  return <main className="ds-component-page review-badge-review">
+    <ReviewNavigation />
     <h1>Demo badge</h1>
     <p className="review-badge-intro">A smaller radius, balanced padding and tabular monospace type keep the chip crisp across tones and sizes.</p>
 
-    <label htmlFor="badge-review-theme" className="review-badge-themeControl"><span>Preview theme</span><span className="review-badge-themeSelect">Light · Dark · System<ThemeSelect id="badge-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="badge-options">
       <h2 id="badge-options">State labels beside an object</h2>
 
       <div className="review-badge-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-badge-option" key={number}>
-          <div className="review-badge-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-badge-option" key={number}>
           <div className="review-badge-optionPreview">{preview}</div>
           <p className="review-badge-optionNote">{note}</p>
         </article>)}
@@ -74,5 +72,6 @@ export default function Page() {
       <DemoExample page="border-color" section="set-border-color" />
       <p className="review-badge-optionNote">The reference keeps its own teaching labels. A badge may name an adjacent category, but it must stay outside any measured border layout.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

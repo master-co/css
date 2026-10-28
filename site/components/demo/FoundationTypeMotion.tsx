@@ -7,7 +7,7 @@ import type { DemoScene, ReferenceDemoSection } from './reference/types'
 const section = (id: string, title: string): ReferenceDemoSection => ({ page: 'foundations', id, title, html: [], css: '', classes: [], classLists: [], highlighted: [] })
 
 function Specimen({ name, title, scene }: { name: string, title: string, scene: DemoScene }) {
-  return <Demo title={title} padding="none" background="plain" data-foundation-type-motion={name} caption={scene.caption}>
+  return <Demo title={title} padding="none" frame="none" background="plain" data-foundation-type-motion={name} caption={scene.caption}>
     <DemoViewport title={title} document={demoDocument(section(name, title), scene)} sizing={scene.sizing ?? 'content'} height={scene.height} motion={scene.motion} />
   </Demo>
 }

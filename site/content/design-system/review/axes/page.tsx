@@ -1,3 +1,7 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
+import AnnotationComposition from './AnnotationComposition'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -5,10 +9,7 @@ import DemoExample from '~/site/components/demo/DemoExample'
 import { DemoAxes, DemoItem, DemoSurface } from '~/site/components/demo'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo axes review',
-  description: 'Current Demo axes and practical examples.'
-}
+export { metadata }
 
 function Items() {
   return <DemoSurface className="review-axes-layout">
@@ -24,15 +25,14 @@ function CurrentAxes() {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Directional annotation frame',
-    note: 'An aligned pair of rules makes the two axes distinct. The line and arrow remain decorative; text names the directions.',
+    number: '01', note: 'An aligned pair of rules makes the two axes distinct. The line and arrow remain decorative; text names the directions.',
     preview: <Demo><CurrentAxes /></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-axes-review">
-    <div className="review-axes-kicker">Design system · Component review 11</div>
+  return <main className="ds-component-page review-axes-review">
+    <ReviewNavigation />
     <h1>Demo axes</h1>
     <p className="review-axes-intro">An aligned pair of rules makes the two axes distinct. The line and arrow remain decorative; text names the directions.</p>
 
@@ -40,12 +40,16 @@ export default function Page() {
       <h2 id="axes-options">Horizontal flex layout</h2>
 
       <div className="review-axes-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-axes-option" key={number}>
-          <div className="review-axes-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-axes-option" key={number}>
           <div className="review-axes-optionPreview">{preview}</div>
           <p className="review-axes-optionNote">{note}</p>
         </article>)}
       </div>
+    </section>
+
+    <section aria-labelledby="axes-composition">
+      <h2 id="axes-composition">Axes with content bounds</h2>
+      <AnnotationComposition />
     </section>
 
     <section aria-labelledby="axes-real-use">
@@ -56,5 +60,6 @@ export default function Page() {
       <DemoExample page="flex-direction" section="lay-out-items-in-a-row" />
       <p className="review-axes-optionNote">The Reference demo uses real <code>flex flex-row</code> classes. An arrow is only correct here because this specimen uses horizontal writing and left-to-right text.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

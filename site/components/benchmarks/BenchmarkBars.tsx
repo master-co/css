@@ -31,13 +31,13 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
 
         return (
           <div key={item.id} className="display:grid gap-sm">
-            <div className="display:flex align-items:baseline justify-content:space-between gap-sm">
+            <div className="display:flex flex-wrap:wrap align-items:baseline justify-content:space-between gap-sm">
               <div className="display:flex align-items:center gap-xs min-width:0">
                 {item.icon}
                 <span id={labelId} className="min-width:0 font-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="display:flex align-items:baseline gap-xs white-space:nowrap">
-                <strong id={valueId} className="font-sm font-weight:460 fg-text-strong">{valueLabel}</strong>
+              <div className="display:flex flex-wrap:wrap align-items:baseline gap-xs min-width:0">
+                <strong id={valueId} className="font-sm font-weight:460 white-space:nowrap fg-text-strong">{valueLabel}</strong>
                 {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
@@ -46,10 +46,10 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
               aria-valuemax={itemMax}
               aria-valuemin={0}
               aria-valuenow={item.value}
-              className="overflow:hidden height:10px r-xs bg-surface-inset"
+              className="benchmark-meter"
               role="meter">
               <div
-                className={clsx('height:100% r-xs', colorClasses.background)}
+                className={clsx('benchmark-meter-fill', colorClasses.background)}
                 style={{
                   width: `${percent}%`
                 }} />

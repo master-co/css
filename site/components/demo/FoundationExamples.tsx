@@ -6,7 +6,7 @@ import { DemoComparison, DemoItem, DemoLabel, DemoMedia, DemoSurface } from './p
 
 /** The query boundary is an ancestor; it never queries its own width. */
 export function FoundationMedia() {
-  return <Demo title="A component follows its container" padding="none" data-foundation="media" caption="Below 28rem of container width, the media stacks. At 28rem it keeps a 9rem width beside flexible text.">
+  return <Demo title="A component follows its container" padding="none" frame="none" data-foundation="media" caption="Below 28rem of container width, the media stacks. At 28rem it keeps a 9rem width beside flexible text.">
     <DemoContainer title="Media object">
       <div className="container-type:inline-size">
         <article className="display:flex flex-direction:column align-items:start gap-md p-md flex-direction:row@container((width>=28rem)) demo-surface">
@@ -24,7 +24,7 @@ export function FoundationMedia() {
 }
 
 export function FoundationContainerGrid() {
-  return <Demo title="One card, two available widths" padding="none" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
+  return <Demo title="One card, two available widths" padding="none" frame="none" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
     <DemoContainer title="Container grid">
       <section className="container-type:inline-size">
         <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container((width>=28rem)) demo-surface">
@@ -58,14 +58,14 @@ export function FoundationSizing() {
 export function FoundationAxes() {
   return <Demo title="Choose one axis or both" data-foundation="axes">
     <div className="display:flex align-items:end gap-md">
-      <div className="flex-shrink:0"><DemoLabel>width:3.5rem height:3.5rem</DemoLabel><DemoItem className="display:grid place-content:center height:3.5rem width:3.5rem mt-sm font-mono">FN</DemoItem></div>
-      <div className="flex:1 min-width:0"><DemoLabel>width:100% height:3.5rem</DemoLabel><DemoItem tone="violet" className="display:grid place-content:center height:3.5rem width:100% mt-sm text-sm">Collection</DemoItem></div>
+      <div className="flex-shrink:0 width:3.5rem"><DemoLabel>width:3.5rem height:3.5rem</DemoLabel><DemoItem className="display:grid place-content:center height:3.5rem width:3.5rem mt-sm font-mono">FN</DemoItem></div>
+      <div className="flex:1 min-width:0"><DemoLabel>width:100% height:3.5rem</DemoLabel><DemoItem tone="violet" className="display:grid place-content:center height:3.5rem width:100% mt-sm text-sm">Fluid</DemoItem></div>
     </div>
   </Demo>
 }
 
 export function FoundationShrink() {
-  return <Demo title="Keep long content within its cap" padding="none" data-foundation="shrink" caption="The row stops at sm. The flexible text region can shrink below its content width.">
+  return <Demo title="Keep long content within its cap" padding="none" frame="none" data-foundation="shrink" caption="The row stops at sm. The flexible text region can shrink below its content width.">
     <DemoContainer title="Shrinkable row">
       <article className="display:flex gap-md width:100% max-w-sm margin-inline:auto p-md demo-surface">
         <DemoItem className="display:grid flex-shrink:0 place-content:center height:2.5rem width:2.5rem text-sm font-mono">FN</DemoItem>

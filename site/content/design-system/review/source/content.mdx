@@ -1,0 +1,13 @@
+`BenchmarkSource` keeps a source link and recorded date beside a chart or table. Supply `generatedAt` as an ISO date string and `href` as the source URL. The optional `label` defaults to “Committed snapshot”. The printed date uses UTC and retains the complete timestamp in a native `time` element.
+
+```tsx
+<BenchmarkSource
+  generatedAt="2026-07-01T00:00:00Z"
+  href="/guide/benchmarks#data-sources"
+  label="Illustrative source date"
+/>
+```
+
+Use a real source when presenting measurements. A source footer supports the surrounding methodology and limitations; keep those explanations in the document. The component does not fetch data or infer when a run occurred.
+
+See the [complete chart patterns](/design-system/review/chart-group#complete-chart-patterns) and the Guide’s [committed data sources](/guide/benchmarks#data-sources).

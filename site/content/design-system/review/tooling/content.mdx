@@ -1,0 +1,55 @@
+import ToolingExample from '~/site/components/ToolingExample'
+import ToolingOptions from '~/site/components/ToolingOptions'
+
+Use a readable option list for long identifiers, and a labeled source/result pair when explaining a tool. These static examples are checked against the actual lint and language-service output with the default preset.
+
+<div data-tooling-gallery>
+  <ToolingOptions name="languageSettings" />
+  <ToolingOptions name="completions" />
+  <ToolingExample name="sort" />
+  <ToolingExample name="invalid" />
+  <ToolingExample name="hover" />
+</div>
+
+`DocumentOptions` keeps each identifier above its optional default and description. It uses native definition-list semantics; long names and values wrap without shrinking the prose into a narrow table cell. For prose authored directly in MDX, compose `DocumentOptionList` and `DocumentOptionEntry`; the paragraphs, links and inline code remain part of the portable document.
+
+```mdx
+<DocumentOptionList label="Component interfaces">
+  <DocumentOptionEntry name="DemoSurface">
+
+    **Interface:** `elevation`, native div props.
+
+    A bordered surface with no implicit layout or padding. Elevation is opt-in.
+
+  </DocumentOptionEntry>
+</DocumentOptionList>
+```
+
+Keep these document lists outside measured specimens. Each entry owns one term and its description; use ordinary paragraphs for separate interface details and layout constraints.
+
+```tsx
+<DocumentOptions label="Feature settings" options={[
+  {
+    name: 'masterCSS.suggestSyntax',
+    defaultValue: 'true',
+    description: 'Offer contextual completion items.'
+  }
+]} />
+```
+
+`DocumentCodeExample` reuses the shared syntax highlighter. Source-only examples may show an error or warning; paired examples can use different source and result languages. Each block has a keyboard-accessible copy button and clipboard feedback. It remains readable when copying is unavailable.
+
+```tsx
+<DocumentCodeExample
+  title="A stable class order"
+  language="mcss"
+  source="p-md flex"
+  result="flex p-md"
+  sourceLabel="Before sorting"
+  resultLabel="After sorting"
+/>
+```
+
+Use complete, verified strings. Code keeps its whitespace and may scroll inside its block; the option descriptions remain fluid. Neither component belongs inside a measured CSS lesson's flex or grid geometry. Keep the full text in the content export adapter.
+
+See [Code Linting](/guide/code-linting#linting-rules) for sorting, canonical forms, conflicts and diagnostic variants, and [Language Service](/guide/language-service#editor-features) for completion, hover and formatter output.

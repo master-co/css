@@ -1,0 +1,241 @@
+import CodeTableRecipes from '../../components/CodeTableRecipes'
+import NamespaceRecipes from '../../components/NamespaceRecipes'
+import DeliveryFlow from '~/site/components/DeliveryFlow'
+import DocumentChoices from '~/site/components/DocumentChoices'
+import DocumentComparison from '~/site/components/DocumentComparison'
+import DocumentFileTree from '~/site/components/DocumentFileTree'
+import DocumentFlow from '~/site/components/DocumentFlow'
+import DocumentValueExamples from '../../components/DocumentValueExamples'
+import MigrationGuides from '~/site/components/MigrationGuides'
+import PackageTree from '~/site/components/PackageTree'
+import DemoStyleComparison from '~/site/components/demo/DemoStyleComparison'
+import DemoWaterfall from '~/site/components/demo/DemoWaterfall'
+import FirstPaintComparison from '~/site/components/demo/FirstPaintComparison'
+import ResourceWaterfall from '~/site/components/demo/ResourceWaterfall'
+
+Use `DocumentValueList` for reference facts that need a stable anchor and readable
+values. It keeps a compact key/value arrangement when the content column has room,
+then stacks each entry on narrow screens. Long values wrap without hiding content.
+
+<DocumentValueExamples />
+
+```jsx
+<DocumentValueList rows={[
+  { id: 'duration-fast', title: 'fast', identifier: '--duration-fast',
+    values: [{ label: 'Default', value: '.15s' }] }
+]} />
+<DocumentKeyList keys={['animation-duration:', 'transition-duration:']} />
+```
+
+Each row uses a real heading and an ordinary anchor link. IDs must be unique within
+the page; `headingLevel={4}` supports an entry nested below an existing third-level
+heading. Values remain selectable text. Use `DemoTokenTable` for token roles with
+visual specimens, and the existing code renderer for complete source examples.
+Both document components are static and live outside measured demo layouts.
+
+### Namespace consumers
+
+Use `DocumentNamespaceTable` to map a namespace to its complete public consumers.
+Large rows show six keys initially; the native disclosure reveals the rest by
+mouse, touch, Enter or Space. All keys remain in the HTML and portable Markdown.
+This server component requires no client state and stays outside teaching geometry.
+
+<NamespaceRecipes />
+
+```jsx
+<DocumentNamespaceTable rows={[
+  { namespace: 'font-family', consumers: ['font:', 'font-family:'] }
+]} />
+<DocumentKeyList keys={consumerKeys} previewCount={6} />
+```
+
+`DocumentKeyList` shows every key by default. Set `previewCount` when a long lookup
+list would interrupt reading; keep essential instructions outside the disclosure.
+See the complete [namespace registry](/reference/rules/modes#default-namespace-sources).
+
+### Utility namespace table \{#utility-namespace-table\}
+
+`NamespaceUtilityTable` connects a token namespace to the utility keys that accept it. When groups have descriptions, the table keeps the original Guide's separate Group, Utility keys and Description columns. The refined shared style uses quiet separators and a consistent reading rhythm. On narrow screens the table scrolls inside its own keyboard-focusable region; the page width stays fixed.
+
+See the [complete utility table specimen](/design-system/review/utility-table).
+
+```tsx
+<NamespaceUtilityTable groups={[
+  { label: 'Surfaces', namespace: 'color-surface',
+    keys: ['surface'], description: 'Panels, cards and overlays.' }
+]} />
+```
+
+Provide reader-facing group names and source keys from the manifest; `namespace` or `namespaces` filters unsupported keys. With no descriptions the table uses two columns. The table is a document aid, outside the measured layout of a demo. See its actual uses in [Colors](/guide/colors#namespaces-for-color), [Spacing](/guide/spacing#namespace-for-spacing) and [Typography](/guide/typography), and the [utility table review](/design-system/review/utility-table).
+
+### Numeric token table \{#numeric-token-table\}
+
+`ThemeNumberVariableTable` reads numeric tokens and their units from the preset. The `spacing` representation uses the original Guide's pink diagonal field and raised objects to expose each actual gap. Its table has stable token and value columns, quiet row separators, and a keyboard-focusable scroll region on narrow screens.
+
+See the [complete spacing table specimen](/design-system/review/numeric-table).
+
+```tsx
+<ThemeNumberVariableTable namespace="spacing" representation="spacing" />
+```
+
+The `representation` prop is optional. [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) use the same data-driven table with descriptions, without the spacing specimen. Keep the native token value and reference unit visible in text, and place this inventory outside a measured layout demo. The [numeric table review](/design-system/review/numeric-table) shows the current shared table.
+
+### File structure
+Use `DocumentFileTree` for a static directory structure. Native nested lists preserve the hierarchy; monochrome icons are decorative. Entries can have a short description and nested children.
+
+<PackageTree name="monorepo" />
+
+```tsx
+<DocumentFileTree title="Stylesheet package" entries={[
+  { name: 'package.json' },
+  { name: 'master.css', description: 'Public CSS source' },
+  { name: 'assets', children: [], description: 'Optional assets' }
+]} />
+```
+
+<DocumentFileTree title="Stylesheet package" entries={[
+  { name: 'package.json' },
+  { name: 'master.css', description: 'Public CSS source' },
+  { name: 'assets', children: [], description: 'Optional assets' }
+]} />
+
+The optional `caption` belongs below the hierarchy. Keep descriptions short; they wrap below filenames in the reading column. Empty `children` marks an empty folder. This is a read-only list, so entries have no tab stops, expansion state or tree-widget keyboard behavior.
+
+Use the same entry data when exporting a plain-text tree. See [Monorepo](/guide/monorepo#one-project-one-workspace) and [Authoring Packages](/guide/authoring-packages#create-a-package) for complete examples.
+
+### Discovery waterfall
+
+`DemoWaterfall` shows illustrative request order with a text description and labeled resource rows. It has no time axis, FCP marker or animated playback. Keep measured results in the benchmark components.
+
+<ResourceWaterfall />
+
+```tsx
+<DemoWaterfall
+  title="A dependency discovered later"
+  description="The second request becomes known after the first resource loads."
+  rows={[
+    { label: 'Entry', start: 0, end: 40, tone: 'violet' },
+    { label: 'Dependency', start: 50, end: 90, tone: 'blue' }
+  ]}
+/>
+```
+
+<DemoWaterfall title="A dependency discovered later" description="The second request becomes known after the first resource loads." rows={[{ label: 'Entry', start: 0, end: 40, tone: 'violet' }, { label: 'Dependency', start: 50, end: 90, tone: 'blue' }]} caption="A compact two-resource diagram." />
+
+Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/preload-critical-resources#preload-runtime-engine).
+The [waterfall review](/design-system/review/waterfall) shows the current request-order diagram.
+
+### Before and after CSS
+
+`DemoStyleComparison` places identical, trusted HTML in two isolated browser documents. One uses native browser defaults; the other receives the supplied CSS. This makes the change in layout visible without flashing content or changing the surrounding page.
+
+<FirstPaintComparison />
+
+```tsx
+<DemoStyleComparison
+  html='<p class="message">Saved to your workspace.</p>'
+  css='.message { padding: 1rem; font: 500 1rem/1.5 system-ui; }'
+  height={160}
+/>
+```
+
+<DemoStyleComparison html={'<p class="message">Saved to your workspace.</p>'} css=".message { padding: 1rem; font: 500 1rem/1.5 system-ui; }" height={160} />
+
+The previews use the same fixed height, with native scrolling when needed. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/flash-of-unstyled-content).
+
+### Document flow
+
+`DocumentFlow` presents a short ordered process using real text and native list semantics. Numbered stages share the reading column on wide screens and stack when space is limited. It is a static explanation; the layout does not imply timings or an active step.
+
+<DeliveryFlow name="runtime" />
+
+```tsx
+<DocumentFlow
+  title="Publish a document"
+  steps={[
+    { title: 'Write', description: 'Prepare the source content.' },
+    { title: 'Publish', description: 'Deliver the reviewed output.' }
+  ]}
+/>
+```
+
+<DocumentFlow title="Publish a document" steps={[{ title: 'Write', description: 'Prepare the source content.' }, { title: 'Publish', description: 'Deliver the reviewed output.' }]} />
+
+Use two to four concise stages. An optional caption explains shared constraints below the stages. The component owns its grid, spacing and border; keep it outside any layout being measured. No controls, focus stops or animation are added.
+
+`DeliveryFlow` supplies shared, exportable recipes for [runtime and hydration](/guide/rendering-modes#runtime-rendering), [source scanning](/guide/scanning-latent-classes), [native pruning](/guide/native-css-pruning) and [route styles](/guide/route-level-styles). Their ordered text is included in search and Markdown.
+
+### Document choices
+
+Use `DocumentChoices` for a small set of related destinations inside a reading
+column. Every link has a title, a short description and an optional decorative
+icon. Rows have generous click targets, a visible keyboard outline and native
+list semantics. Keep the whole row as one link; do not nest controls inside it.
+
+<DocumentChoices label="Example guide choices" entries={[
+  { title: 'Theme Tokens', description: 'Name the values shared across a product.', href: '/guide/theme' },
+  { title: 'Cascade Layers', description: 'Understand which declarations take priority.', href: '/guide/cascade-layers' }
+]} />
+
+```tsx
+<DocumentChoices label="Related guides" entries={[
+  { title: 'Theme Tokens', description: 'Shared product values.', href: '/guide/theme' }
+]} />
+```
+
+`MigrationGuides` adds the existing brand artwork and reads the same six entries
+used by search and Markdown exports.
+Use `DocumentationIndex` for large catalogs that need categories and alphabetical
+navigation. These navigation components sit outside teaching layouts.
+
+<MigrationGuides />
+
+### Reading comparisons
+
+Wrap a two-column Markdown table in `DocumentComparison` when readers need to
+compare prose or class syntax within the document column. Both columns stay
+visible on narrow screens; long syntax wraps. Use lists for decisions that need
+several paragraphs, and code blocks for source that must preserve its formatting.
+This static wrapper keeps native table headers and does not add demo geometry.
+
+<DocumentComparison>
+
+| Master CSS class | Native CSS effect |
+| --- | --- |
+| `border-radius:.75rem` | Sets `border-radius: .75rem`. |
+| `width:var(--progress)` | Reads the runtime `--progress` custom property. |
+| `display:grid@dashboard` | Uses the project’s `@custom-media --dashboard` condition. |
+
+</DocumentComparison>
+
+```mdx
+<DocumentComparison>
+
+| Master CSS class | Native CSS effect |
+| --- | --- |
+| `border-radius:.75rem` | Sets `border-radius: .75rem`. |
+
+</DocumentComparison>
+```
+
+See [token family mappings](/reference/tokens/families) and
+[rendering choices](/guide/rendering-modes).
+
+### Syntax mappings
+
+Use `DocumentCodeTable` for short syntax tokens paired with their native CSS.
+Row headers keep each token intact; CSS wraps at natural spaces. Keep long generated
+rules in code blocks. The table is a static reading aid, outside demo geometry.
+
+<CodeTableRecipes />
+
+```jsx
+<DocumentCodeTable label="Token" rows={[
+  { syntax: '@layer(components)', css: '@layer components' },
+  { syntax: '@motion-reduce', css: '@media (prefers-reduced-motion: reduce)' }
+]} />
+```
+
+The default first-column label is “Syntax”. The [conditions reference](/reference/rules/conditions#common-condition-variants)
+uses this pattern for both named variants and arbitrary queries. Portable Markdown
+retains the original two-column table and every value.

@@ -1,0 +1,23 @@
+`DocumentationIndex` organizes a large catalog by section, category or letter. It powers the [Guide](/guide) and [Reference](/reference) entrances. Use complete descriptions for learning paths, and compact link lists for named API or utility lookups. Both views contain the same destinations.
+
+Provide a stable `id`, title, description, icon and `groups` for each section. Groups with multiple categories receive native anchor shortcuts; give each group its own stable `id` so shared URLs survive reordering. `showDescriptions` enables complete, wrapping summaries. The default uses compact links. `related` supplies a cross-link to the other catalog.
+
+```tsx
+<DocumentationIndex
+  name="guide"
+  sections={[{
+    id: 'learn', title: 'Learn',
+    description: 'Start with a working example.', Icon: IconBook,
+    groups: [{ entries: [{
+      id: 'intro', title: 'Introduction', category: 'Guide',
+      description: 'Write your first classes.',
+      url: '/guide/introduction',
+    }] }],
+  }]}
+  showDescriptions
+  related={{ href: '/reference', title: 'Reference',
+    description: 'Look up a utility.', Icon: IconBook }}
+/>
+```
+
+The catalog keeps the established card grid, with restrained icon boxes, clearer heading hierarchy and full mobile touch targets. It establishes its own container and column layout; place it in the reading column, outside measured demos. Category and A–Z controls are native buttons with pressed states. Letter and category shortcuts are real fragment links, including direct-entry URLs. Published catalogs omit `idPrefix` to retain their existing anchors; set distinct prefixes only when showing several catalogs on one review page. The complete category view is included in server-rendered HTML; A–Z switching requires JavaScript. The [index review](/design-system/review/documentation-index) shows the current catalog.

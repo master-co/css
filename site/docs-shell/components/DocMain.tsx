@@ -9,7 +9,7 @@ export default function DocMain({ footerProps, ...props }: any & { footerProps?:
       <div className='display:flex flex-wrap:nowrap justify-content:center width:100% max-width:80rem margin-inline:auto'>
         {props.children}
       </div>
-      {footerProps && <Footer {...footerProps} className={clsx('padding-left:5rem@sm', footerProps.className)} />}
+      {footerProps && <Footer {...footerProps} className={clsx('padding-left:5rem@sm doc-footer', footerProps.className)} />}
     </main>
   )
 }

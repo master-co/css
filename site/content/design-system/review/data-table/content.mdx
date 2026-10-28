@@ -1,0 +1,14 @@
+`BenchmarkDataTable` accepts a `title` and a complete native table as `children`. Its native disclosure keeps all rows in the server-rendered document. The inner, named scroll region is keyboard reachable and confines wide columns to the table.
+
+```tsx
+<BenchmarkDataTable title="All recorded measurements">
+  <table>
+    <thead><tr><th scope="col">Fixture</th><th scope="col">Median</th></tr></thead>
+    <tbody><tr><th scope="row">Illustrative fixture</th><td>12.5 ms</td></tr></tbody>
+  </table>
+</BenchmarkDataTable>
+```
+
+Keep row and column headers in the table, include units, and distinguish zero from missing data. Opening the disclosure uses native mouse, touch, Enter and Space behavior. The scroll region handles arrow keys consistently in WebKit; the disclosure and full table remain available without JavaScript. Print exposes the complete table.
+
+See [all chart patterns](/design-system/review/chart-group#complete-chart-patterns) and the [measured benchmark fixtures](/guide/benchmarks).

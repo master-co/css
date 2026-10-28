@@ -1,39 +1,37 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
-import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import AppearanceControl from '../../components/AppearanceControl'
 import GuideResourceWaterfall from '~/site/components/demo/ResourceWaterfall'
 import DemoWaterfall from '~/site/components/demo/DemoWaterfall'
 import { resourceWaterfalls } from '~/site/utils/first-paint-examples'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo waterfall review',
-  description: 'Current Demo waterfall and practical examples.'
-}
+export { metadata }
 
 const sample = resourceWaterfalls[0]
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Clearer row hierarchy',
-    note: 'The same diagram gives resource names and the order axis more presence, separates the axis from the tracks and increases the bar target height on narrow screens.',
+    number: '01', note: 'The same diagram gives resource names and the order axis more presence, separates the axis from the tracks and increases the bar target height on narrow screens.',
     preview: <DemoWaterfall {...sample} />
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-waterfall-review">
-    <div className="review-waterfall-kicker">Design system · Component review 29</div>
+  return <main className="ds-component-page review-waterfall-review">
+    <ReviewNavigation />
     <h1>Demo waterfall</h1>
     <p className="review-waterfall-intro">The same diagram gives resource names and the order axis more presence, separates the axis from the tracks and increases the bar target height on narrow screens.</p>
 
-    <label htmlFor="waterfall-review-theme" className="review-waterfall-themeControl"><span>Preview theme</span><span className="review-waterfall-themeSelect">Light · Dark · System<ThemeSelect id="waterfall-review-theme" aria-label="Preview theme" /></span></label>
+    <AppearanceControl label="Preview theme" />
 
     <section aria-labelledby="waterfall-options">
       <h2 id="waterfall-options">Request-order treatments</h2>
 
       <div className="review-waterfall-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-waterfall-option" key={number}>
-          <div className="review-waterfall-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-waterfall-option" key={number}>
           <div className="review-waterfall-optionPreview">{preview}</div>
           <p className="review-waterfall-optionNote">{note}</p>
         </article>)}
@@ -48,5 +46,6 @@ export default function Page() {
       <div className="review-waterfall-realGuide"><GuideResourceWaterfall /></div>
       <p className="review-waterfall-optionNote">Guide and Design System share the request-order diagram and its source data. The first-paint marker is illustrative.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

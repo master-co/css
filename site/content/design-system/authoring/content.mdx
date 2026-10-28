@@ -1,0 +1,489 @@
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import { DocumentOptionEntry, DocumentOptionList } from '~/site/components/DocumentOptions'
+import RecipeAppendix from '../components/RecipeAppendix'
+
+Keep the complete example, its source and its controls together. The shared UI supplies the surrounding presentation; the example owns every CSS prerequisite and measured relationship.
+
+## Import the shared components \{#authoring\}
+Import site primitives from `~/site/components/demo`. Import each component explicitly in MDX as well. Static primitives render on the server; measurements, playback and viewport controls add only the client behavior they need. In TSX, import `DemoThemeComparison`, `DemoPalette`, `DemoTokenTable` and foundation recipes directly from their matching files under `site/components/demo/`; these server helpers are registered separately from the client-compatible barrel.
+
+<DocumentOptionList label="Demo component interfaces">
+
+<DocumentOptionEntry name="Demo">
+
+**Interface:** `title`, `description`, `caption`, `controls`, `background`, `padding`, `frame`
+
+`className` and `style` apply to the canvas. `frameClassName` styles the outer wrapper. `frame="default"` gives the canvas one quiet boundary; use `frame="none"` when the composition already owns a frame.
+
+Use `padding="none"` when the child owns its own spacing. Canvas framing must not add layout, containment, clipping or dimensions to the measured subject.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoSurface">
+
+**Interface:** `elevation="none" | "raised"`, native div props
+
+A bordered surface with the `radius-xl` default (12px at the base size); no implicit layout, padding, clipping or shadow. Explicit radius utilities can override it. The raised option adds paint-only depth.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoItem">
+
+**Interface:** `tone`, `variant`, native div props
+
+Paint only. Add geometry and layout explicitly.
+The default tone is neutral; blue and violet are explicit teaching roles.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoComparison">
+
+**Interface:** Native div props
+
+Responsive comparison columns; each child is one specimen.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoText, DemoMedia, DemoSwatch">
+
+**Interface:** Text accepts `variant="body" | "lead" | "caption"` plus native paragraph props; media accepts SVG props or `src` and `alt`; swatches require `label` and accept optional `value`
+
+Reusable text, SVG artwork and labeled color samples.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoLabel, DemoLegend">
+
+**Interface:** Text; legend `items` with `label` and `tone`
+
+Annotations accompany the subject instead of joining its layout.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoMeasure">
+
+**Interface:** `label`, `children`
+
+Measures its content wrapper with `ResizeObserver`; the separate readout updates with width and height. Place it outside the demonstrated parent.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoAxes">
+
+**Interface:** `inline`, `block`, `children`
+
+Labels a rightward horizontal axis and downward vertical axis around the example. Use custom labels only when those physical directions still match the scene.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoControls">
+
+**Interface:** `label`, `variant="plain" | "segmented"`, `children`
+
+A labeled fieldset for native controls.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoScrollArea">
+
+**Interface:** Native div props
+
+Focusable region with bounded overflow.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoMotion">
+
+**Interface:** `children`
+
+Explicit play, pause and replay using browser animations.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoViewport">
+
+**Interface:** `title`, `document` or `src`, `responsive`, `widthPresets`, `theme`, `print`, `motion`, `initialTheme`, `inspect`, `height`, `maxWidth`, `sizing`
+
+An isolated iframe; width controls resize the actual viewport.
+
+`Fit` uses the available width up to `maxWidth`. The slider and its live reading describe that same physical viewport. `DemoContainer` applies the same limit to its local wrapper while the page viewport stays unchanged.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoThemeComparison">
+
+**Interface:** `name`, `title`, `html`, `css`, `caption`, `height`, `print`
+
+Compiles one trusted specimen into two independently themed, content-sized documents.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoPalette">
+
+**Interface:** Optional `families`
+
+Fixed preset color inventory with native clipboard actions.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoCopyButton">
+
+**Interface:** `value`, `label`, native button props
+
+Reports the actual clipboard result and retains keyboard focus.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoTokenTable">
+
+**Interface:** `rows`, optional `descriptionTitle`
+
+Two-column document inventory; long tokens scroll inside the table.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoContainer">
+
+**Interface:** `title`, `children`, `maxWidth`
+
+A measured wrapper with keyboard-accessible width controls; children own containment.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoPageViewport">
+
+**Interface:** `src`, `title`, `height`
+
+A trusted site example page in a real, scrollable viewport.
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+### Choose the smallest useful frame
+`background` accepts `plain` (default), `stripes`, `grid`, `dots`, or `checkerboard`. `padding` accepts `lg` (default), `md`, `sm`, or `none`. Use `none` for an embedded viewport, a full-bleed scene, or a composition with its own padding.
+
+### Fit the layers \{#fitted-surfaces\}
+
+Use an opaque content surface inside a close shell. A 24px shell with an 8px inset takes a panel with a 16px outer radius; its 1px border leaves a 15px inner face. A segmented track uses a 4px inset: a 16px track takes a 12px insert, whose bordered face has an 11px radius. Include border thickness when checking the curve.
+
+Give each join one contour. A borderless raised face can use `--shadow-raised`, which includes its contour. A face with its own border uses `--shadow-edge` and `--shadow-contact`; a bordered floating surface pairs the edge with `--shadow-floating-contact`. For a bordered control, `--shadow-pressed-contact` adds the soft inner shadow; a borderless track uses `--shadow-pressed`, which also supplies the contour. Fixed content stays opaque. Reserve translucent surfaces for floating tools that cross other content.
+
+Keep a control's border box, icon slot and label start steady through selection, pressing and copy feedback. Change fill and shadow for a pressed state. Allow controls and their labels to wrap when text grows, and keep keyboard focus visible.
+
+Keep select menus native. Pair `demo-select` with an `aria-hidden` chevron inside `demo-select-wrap`; the wrapper supplies the arrow slot without replacing the browser's picker or keyboard behavior. Use concise option labels and check that they remain fully visible at 200% text size.
+
+Inspect icons and range handles at their rendered size in both modes. A small handle needs a stronger edge than a large panel to remain visible against its track. If an asymmetric icon needs optical centering, adjust only the glyph inside its stable slot. A disabled control keeps its selected position but loses the active text and contact shadow.
+
+Client components can have an island host between the layout and the rendered control. Scope component classes without relying on a direct-child relationship across that boundary. Verify the rendered control before and after feedback appears.
+
+### Minimal compositions \{#minimal-compositions\}
+Every specimen below is available directly in MDX. The surrounding example owns geometry; these small compositions show where annotations and controls belong.
+
+```tsx
+<DemoSurface className="p-md">
+  <DemoLabel>Layer</DemoLabel>
+  <DemoText>Form follows function.</DemoText>
+</DemoSurface>
+
+<DemoComparison>
+  <DemoItem tone="neutral" className="p-md">Before</DemoItem>
+  <DemoItem tone="violet" variant="outline" className="p-md">After</DemoItem>
+</DemoComparison>
+
+<DemoMedia className="width:100%" />
+<DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
+<DemoSwatch label="Subject" className="bg-demo-blue" />
+
+<DemoAxes>
+  <DemoMeasure label="Container">
+    <div className="display:flex gap-sm">{/* measured layout */}</div>
+  </DemoMeasure>
+</DemoAxes>
+<DemoLegend items={[{ tone: 'blue', label: 'Subject' }]} />
+
+<DemoControls label="Alignment">
+  <button type="button" className="demo-button">Start</button>
+</DemoControls>
+<DemoScrollArea aria-label="Layers" className="height:10rem">
+  {/* overflowing content */}
+</DemoScrollArea>
+<DemoMotion>
+  <DemoItem className="width:4rem height:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite" />
+</DemoMotion>
+<DemoViewport title="Responsive layout" document={htmlDocument} responsive />
+```
+
+`DemoComparison` arranges direct children in responsive columns; use a native stacking parent when comparing vertically. `DemoScrollArea` intentionally establishes overflow. `DemoViewport` receives a complete HTML document with its own CSS, and supports native events, theme inspection and print preview. Its default upper limit is 1600px, so the preset `lg` breakpoint at 1280px is reachable. A narrow fitted viewport can be smaller than 240px; the slider reports that real width. Set `maxWidth` for a wider threshold when needed. Pass only trusted, site-authored documents; the iframe isolates layout and is not a security boundary. Set `initialTheme="light"` or `"dark"` to pin a specimen’s initial mode; omit it to follow the surrounding page. Controls become available after the preview is ready. Use the Reference recipes for compiled utility examples.
+
+### Named viewport widths \{#viewport-presets\}
+
+Use `widthPresets` with `responsive` to expose meaningful boundaries alongside the range control. The first preset sets the initial iframe width; Fit returns to the available canvas width. Derive breakpoint values from the project’s active theme. Every preset changes the actual viewport, including when it is wider than the phone displaying it.
+
+
+```tsx
+<DemoViewport
+  title="A breakpoint comparison"
+  document={htmlDocument}
+  responsive
+  widthPresets={[
+    { label: 'Below the boundary', width: breakpoint - 1 },
+    { label: 'Above the boundary', width: breakpoint + 1 },
+  ]}
+/>
+```
+
+Keep preset widths inside the range (240px through `maxWidth`) and use distinct, descriptive labels. Wide frames scroll inside the canvas; do not scale the specimen or rewrite the subject’s styles to imitate a media query. [Syntax Tutorial](/guide/syntax-tutorial#conditions) uses the preset `sm` boundary for padding and conditional hover behavior.
+
+### Keep behavior honest
+Do not put layout, containment, transforms or clipping on a subject merely to center its label. Those properties can change the behavior being taught. Place controls outside the scene, and use an iframe for viewport-dependent examples.
+
+### Size the canvas to the lesson
+Use `sizing="content"` for normal-flow comparisons that stack on small screens. The frame follows its document’s natural height as images load or text wraps, so the reader can see every specimen without a second vertical scroll area.
+
+Keep the default `sizing="viewport"` for fixed positioning, scrolling, viewport units and height-based conditions. In this mode, `height` defines the real viewport. Content sizing must not be used when the example’s height depends on the iframe’s own height.
+
+```tsx
+<DemoViewport title="Image fitting" document={comparisonDocument} sizing="content" />
+<DemoViewport title="Sticky navigation" document={scrollingDocument} height={300} />
+```
+
+### Make positioning and paint boundaries explicit
+Give a positioning example its containing block in the displayed HTML. Keep labels outside the tested layout; a label inserted into a flex row or text flow changes the lesson. Dashed outlines mark original slots and parent boundaries without adding border dimensions.
+
+Stacking examples need actual overlapping positioned boxes. Show both the child and its parent context when teaching z-index. For isolation, put the comparison backdrop outside the tested element so readers can see which pixels are excluded from blending.
+
+A clipping example should distinguish a scroll container from a clipping boundary. The viewport’s trusted specimen controls support `data-scroll-container="element-id"` with `data-scroll-edge="start"` or `"end"`; they call the element’s native `scrollTo()` method. Keep these controls outside the clipped element. Use ordinary DOM event listeners in standalone examples.
+
+### Expose real scroll geometry
+Keep a scrollport’s dimensions, overflow, track direction and snap candidates in the displayed HTML. The scroll recipes decorate that exact structure; they do not supply a missing track or scroll height through shared styles. Keep destination controls and position readings outside the scrollport.
+
+Use nested outer and inner scroll areas to compare chaining. A native position readout makes the result visible even when the platform hides its scrollbars. `data-scroll-readout="element-id"` reports actual offsets; `data-scroll-offset="target-id"` with `data-scrollport="container-id"` and `data-scroll-axis="x"` or `"y"` reports the target’s inset from the scrollport edge.
+
+A destination control with `data-scroll-to="target-id"` uses native `scrollIntoView()` with the target’s computed snap alignment. It preserves the surrounding document’s scroll position, including in browsers that ignore the nearest-container option. To demonstrate snap stops, use `data-scroll-by="container-id"` with `data-scroll-distance="600"`: a relative request can stop at an intermediate snap point, while direct endpoint navigation can pass it. Relative snap-stop requests are immediate so their destinations are easy to compare. Smooth-scroll recipes follow the system’s reduced-motion preference.
+
+### Measure flex sizing outside the layout
+Flex recipes use the complete displayed HTML for parents, items, bases, gaps and constraints. Decorative outlines add no padding, minimum size or flex behavior. Keep axis labels and measurements outside the tested container so they cannot become extra flex items.
+
+In a trusted iframe specimen, `data-size-readout="element-id"` reports the actual border-box size to one decimal place. A resize observer follows each measured element, including intrinsic sizes that change after a font loads. `data-layout-axis="container-id"` describes the computed main axis as inline or block, with reversal when applicable. The responsive iframe changes real media-query conditions.
+
+Distinguish a starting basis from the final size. Grow factors distribute positive free space; shrink factors are weighted by the inner flex basis. Put a padded label inside a measured item when the lesson needs a simple outer-size ratio. For direction and order examples, native buttons with `tabindex="0"` expose the source focus sequence without a custom keyboard handler or positive tab indices.
+
+### Distinguish alignment from distribution
+Alignment recipes use the same layout paint as flex sizing examples. Author complete parents, tracks, items, gaps and automatic-size constraints in the displayed HTML. The shared paint adds outlines and tone without supplying any of those prerequisites. Name each comparison and keep its labels and readings outside the tested container.
+
+Use `data-alignment-axis="container-id"` with `data-axis-kind="main"`, `"cross"` or `"both"` to describe the relevant logical axes from the computed layout. In Grid, main maps to inline and cross maps to block; in Flexbox they follow the current flex direction. `data-style-readout="element-id"` with `data-style-property="property-name"` reports the native computed value, including the resolved grid columns.
+
+`data-position-readout="item-id"` with `data-position-origin="container-id"` reports the item’s border-box offset from the container’s inner top-left corner. These are physical visible offsets, not a grid-area origin or unscrolled content coordinates. Negative values make unsafe alignment and actual scrolling visible. Pair offsets with dimensions, and explain which element or track is being aligned.
+
+Demonstrate stretching with an automatic-sized item and an explicitly sized sibling. For safe alignment, compare content that fits with actual overflowing content; make the scrollport focusable and give it an accessible name. Preserve the native overflow so readers can inspect which edges remain reachable.
+
+### Expose grid tracks and placement
+The Grid recipes render the complete authored parent and children. Define explicit tracks, implicit sizing, flow, gaps and item placement in that HTML. The shared frame adds paint and external readings; it must not create tracks, supply missing items or establish Grid on an incomplete parent.
+
+Use `data-style-readout` for `grid-template-columns`, `grid-template-rows` and `grid-auto-flow`, alongside the existing size and position readouts. The browser reports resolved track sizes, including implicit tracks. These readings do not distinguish explicit from implicit tracks on their own: explain that boundary in the example and name the relevant items. Line numbers count boundaries, so three explicit tracks have four lines.
+
+Add `data-round-pixels` to a style readout when fractional pixel values would overwhelm the annotation. It rounds displayed pixel lengths to one decimal place and retains the full computed value in the output’s title. The measured layout is unchanged. When the canvas already contains its property readings, use an empty `inspect` list to omit duplicate toolbar values.
+
+For dense packing, use spans that leave a real hole and later items small enough to fill it. Show source-order focus with native controls. For fractional tracks, make the available space definite when the lesson requires measured proportions. Keep track minimums separate from the content’s overflow treatment, and describe any deliberate clipping. Named-area examples must author both the area map and the track sizes; resizing changes actual iframe media queries.
+
+### Show constraints and content
+Sizing recipes render the complete displayed HTML, including the containing block, preferred dimensions, minimums, maximums and actual content. Measure the parent separately from the blue subject so a percentage has a visible reference. Give viewport-height examples a bounded iframe; a frame that grows with its content cannot demonstrate its own height units reliably. Enable viewport width controls for fluid wrappers even when there is no breakpoint.
+
+Use real words for intrinsic sizing and actual media with known source dimensions for ratio and fitting examples. Keep the same content and overflow policy in a comparison. A scrollable overflow value can remove an automatic Flex minimum; use non-scrollable clipping when the lesson needs to isolate the effect of a zero minimum. A maximum does not imply growth or clipping, and matching bounds do not guarantee a square.
+
+Spacing recipes keep labels and readings outside the tested layout. The neutral child exposes the content box inside blue padding; an outline marks the parent without adding a border. Compare content dimensions and physical insets using the existing size and position readouts. Author flow-root, Grid or Flex explicitly when required, and retain normal margin collapse when that is the lesson. Show inline/block behavior with a real writing-mode or direction change. Reserve space before external readings when a fixed-height specimen deliberately exposes visible overflow; keep that space outside the measured box.
+
+### Preserve type, glyphs and inheritance
+Typography recipes render the authored text, nesting, inline boxes and complete tables. Keep font size, weight, line height, spacing and alignment in the displayed HTML. Shared specimen paint adds a subtle outline and tone without changing those properties. Comparison names and computed readings sit outside the text context; they do not become extra line content or inherit the tested tracking.
+
+Use the same words and reading width when comparing treatments. A computed line height is not a glyph height, and a family list is only a requested stack. For numeric features, measure actual glyph runs with `data-size-readout` and verify that the selected font supports the requested alternate. Use a proportional face for tabular-digit comparisons; a monospace default would hide the change.
+
+`data-font-status="Family name"` reports the matching `FontFaceSet` entry as loaded, loading or unavailable. It does not infer success from `font-family`, claim that every character uses that face, or substitute a local font for a hosted resource. Whole-document specimens retain their stylesheet links and apply their authored body classes to the actual iframe body.
+
+For optional platform properties, `data-empty-value="Not exposed"` supplies a clear label when the computed value is empty. An empty `inspect` list suppresses property inspection and does not create a toolbar on its own.
+
+Let ordinary text previews grow with their content. Enable a real viewport control for fluid type formulas, even without a media query. Keep reset examples nested and baseline examples inline; a block placeholder cannot demonstrate `vertical-align`. Platform-specific rendering hints need visible support limitations, not a simulated pixel effect.
+
+### Preserve text flow and reading paths
+Text-flow recipes use the same type surfaces and external readings. Keep `lang`, `dir`, exact whitespace, nested writing contexts and complete overflow prerequisites in the displayed HTML. Never replace CJK or RTL content with an English placeholder, or insert visible annotation text into a whitespace-sensitive specimen.
+
+Compare identical text and constraints. Use a genuine min-content box to demonstrate intrinsic wrapping differences, and an authored, named scroll region for intentional overflow. Native range geometry belongs in validation; it must not override line breaks or substitute synthetic text.
+
+A truncation example needs a complete visible reading path when the hidden information matters. Use native disclosure controls with a descriptive summary, keep essential instructions visible, and verify keyboard focus and expansion. A tooltip alone is insufficient.
+
+Use `data-style-pseudo="::first-letter"` with a style readout when the taught property applies to a pseudo-element. The same measurement component reads that native computed style. Do not infer a rendering-quality or performance improvement from an accepted hint.
+
+### Isolate glyph paint
+
+```ts
+typeSpecimens(section, {
+  appearance: 'plain',
+  properties: ['text-decoration-line', 'text-decoration-style'],
+  measure: true,
+  caption: 'Compare the same words and font with two line styles.',
+})
+```
+
+
+Transparent text needs an authored visible paint source, such as a clipped gradient or a nonzero outline. Supply a solid fallback for print when backgrounds may be omitted. A plain specimen does not supply those prerequisites. Interactive subjects retain the shared keyboard focus ring.
+
+### Preserve lists and generated content
+Render the complete authored list, article and descendants. The plain text surface must not invent a counter name, reset value, marker, item or pseudo-element. Keep reading labels outside the authored article or list and report the property on the element that owns it. Native counter prefixes may remain unresolved `counter()` expressions in computed styles; inspect their rendered text instead of replacing them with scripted numbers.
+
+
+Keep essential link names and instructions in HTML. A generated indicator supplements the native anchor and can enter its accessible name. Test the actual pseudo-element and preserve keyboard focus. For platform-dependent syntax, show the browser’s real support branch and label an authored fallback clearly.
+
+```tsx
+<DemoExample page="counter-set" section="set-a-counter-on-one-item" />
+<DemoExample page="list-style-position" section="place-markers-inside-the-content-box" />
+```
+
+### Preserve background paint prerequisites
+Author the image source, box dimensions, position, size, repeat behavior and backing color in the visible HTML. The plain specimen adds no image, border, padding, clipping or blend mode to the subject. Keep labels and computed readings outside its painted area.
+
+
+For attachment, provide real overflowing content and a fixed-height iframe viewport. Test inner-panel and document scrolling independently; do not substitute transformed layers. Keep foreground text readable on its own opaque surface and describe platform-dependent fixed-background behavior in the exported prose.
+
+The recipes link to complete authored examples; copy their HTML and any accompanying theme declarations. Use the guarded text-fill pattern for gradient lettering so unsupported browsers and print retain a solid foreground.
+
+### Separate edge paint from layout
+Supply border width, style and color explicitly. Compare the same box dimensions and state the box-sizing model: borders occupy layout space, while outlines and shadows do not. Use writing-mode comparisons when teaching logical edges. A transparent border keeps its used width; a `none` or `hidden` style does not on an ordinary box.
+
+The plain specimen adds no border, outline, radius or shadow to the subject. Keep the live readings and labels outside it. Radius does not clip descendant content on its own; show the separate overflow rule when clipping is part of the example.
+
+
+Compile authored theme declarations with their examples. The shadow recipe enables the preview's theme control explicitly, so users can compare actual token values in both modes. Raw paint values remain literal unless the author supplies a theme-dependent token or condition.
+
+### Preserve source and fragment geometry
+
+Table specimens need adjacent semantic cells and explicit cell borders. Computed spacing alone does not prove a gap: collapsed tables ignore it. Keep captions and annotations outside the measured seams.
+
+For border images, use a loadable source with known dimensions and visible corner/edge patterns. Author its regular border, slices, image width and repeat behavior. Distinguish source coordinates from destination paint; native width and outset numbers are multipliers. Reserve actual layout space when outward paint needs room.
+
+Inline-fragment specimens keep one real inline element inside an explicitly sized container. Supply its text, line height, padding and decoration. Let native wrapping create the fragments, and compare standard/prefixed support without replacing the text with separate boxes.
+
+### Preserve media size and paint context
+
+Give image specimens a loadable source with known natural dimensions and an explicit content box. Keep fitting and positioning independent from annotations. A source with a visibly round feature makes stretching distinguishable from cropping.
+
+SVG specimens need real paths, a viewBox, viewport dimensions and explicit paint prerequisites. A computed stroke width does not report its final thickness after the viewBox transform. Keep non-scaling effects on the painted shape. Native controls provide state and accessible names for decorative icons; theme comparisons keep geometry constant.
+
+### Preserve paint context and interaction
+
+Filter examples need visible source detail and reserved room for paint outside the layout box. Use transparent artwork to distinguish an alpha-following drop shadow from a rectangular box shadow. Backdrop examples must include the actual background content and foreground panel, with explicit translucency and readable text.
+
+Keep clipping and masking geometry in the authored HTML. Clip boundaries change pointer hit testing; masks on CSS boxes leave it unchanged. Place annotations and essential controls outside effects that could hide them. A fading scroll region needs real overflow, a native accessible name, keyboard focus and a description that stays readable.
+
+Author blending groups and their complete backdrops explicitly. Use isolation only where the example calls for a bounded group. Whole-element opacity also fades descendants without disabling them; compare it with color alpha when only a surface should fade. Test native control behavior and restore appropriate paint in print.
+
+### Preserve native shape wrapping
+
+Shape specimens need a real float, explicit dimensions and adjacent inline content. Keep labels and measurements outside that formatting context. Author the painted shape separately: shape-outside changes wrapping without clipping or resizing the artwork. Name the reference box when margins could otherwise shift the shape’s coordinates.
+
+Shape-margin expands the wrap contour within the float’s margin box. Reserve ordinary margins when a larger contour needs room. For image thresholds, use a loaded source with known alpha values and preserve its painted appearance across comparisons. Gradients and transparent same-origin images make threshold behavior visible without substituting positioned text.
+
+### Preserve transform geometry and hints
+
+Keep the original layout slot and pivot guides outside the transformed element. Use actual native controls for hover, focus and pressed states. Report client bounds separately from layout dimensions: getBoundingClientRect includes transforms, and SVG strokes can paint beyond its reported rectangle.
+
+SVG examples need explicit viewBox, source coordinates and reference-box differences. For 3D scenes, author the perspective, transformed parent and translated child together. Do not add opacity, filters, isolation or clipping to that parent merely for decoration; grouping effects can flatten its descendants. Compare actual depth geometry as well as computed properties.
+
+Will-change specimens expose the declared hint and its lifetime. Keep their controls visible, prepare the hint before the demonstrated change when appropriate, and release it afterward. A computed hint does not establish a performance gain. Timed interactions use the motion preference; their native states remain inspectable without interpolation.
+
+### Preserve native transition timelines
+
+
+For comparisons, keep distance and endpoints explicit. Use actual CSS transitions, including their waiting interval and state-specific easing. Gate both duration and delay for reduced motion, retain an immediate print state, and let native transitions finish when preferences change. Playback controls should pause only demos that explicitly opt into them.
+
+### Preserve native animation phases
+
+Keep the ordinary value, starting keyframe and ending keyframe distinct when teaching fill. Declare duration, delay and count explicitly; use the same path when comparing timing or direction. Preserve complete SVGs and leave status text stationary.
+
+Playback controls operate on the browser’s actual CSS Animation objects. Retain finished one-shot timelines for replay, pause by default, and treat manual Play as an explicit motion preview. CSS play-state examples own their native checkbox and focus selectors instead; the toolbar must not override the property being taught. Their running rules require both screen media and the motion preference.
+
+A timeline readout reports elapsed timeline time and native progress; a property readout still reports the authored CSS value. Keyframe-level easing may override the element’s easing for an interval. Neither readout is a performance measurement.
+
+### Preserve native input and accessibility
+
+Keep complete native controls, their options, labels and descriptions in the displayed HTML. Appearance, accent, caret and cursor change presentation; they do not supply activation or disabled behavior. Use an actual checkbox, disclosure or form action to make the result observable. Independent comparison specimens scope IDs together with their `for`, ARIA and local-link references so names and descriptions remain connected.
+
+Pointer hit testing and keyboard access are separate. Preserve real overlay geometry and inherited child rules, and test both pointer input and keyboard activation. Observe native resize handles and text-selection gestures without setting dimensions or selections to manufacture the expected result.
+
+Use touch input to test `touch-action`; mouse dragging cannot reproduce gesture arbitration. Keep named scroll regions and keyboard access, and describe the platform limits of resize and vendor drag behavior. A native drag readout only observes `dragstart` and `dragend`; it never makes an element draggable or cancels its events. Every example that depends on a vendor property needs an explicit support note and a portable alternative where available.
+
+### Keep examples portable \{#keep-examples-portable\}
+`DemoExample` connects a utility page and section to its authored HTML and CSS snippets. The displayed structure should own every prerequisite needed to reproduce the behavior; shared recipes provide paint, annotations and controls. The Rust renderer compiles the actual utility classes. Keep the complete teaching explanation and framework-neutral example alongside the demo so Markdown and search exports remain useful. Wrap long HTML class attributes between complete utilities, keeping the taught property readable in the document column; never split an individual class across lines.
+
+```tsx
+<DemoExample
+  page="clear"
+  section="clearing-both-left-and-right-floats"
+/>
+```
+
+---
+
+
+## Configured examples \{#configured-examples\}
+
+
+Use `DemoConfiguredExample` when a preview needs project tokens or managed classes.
+The same configuration and literal HTML supply the live iframe, visible code and
+complete generated CSS. Each preview owns its stylesheet and cannot change the
+surrounding document's theme, component classes or cascade.
+
+
+
+```jsx
+<ProjectStyleExample name="tokens" />
+<ProjectStyleExample name="modes" />
+<ProjectStyleExample name="components" />
+<ProjectStyleExample name="layers" />
+```
+
+For a new lesson, supply its actual configuration and complete HTML:
+
+```jsx
+<DemoConfiguredExample name="project-spacing" title="A project spacing token"
+  source="@theme { --spacing-card: 1.5rem;  }"
+  html={'<article class="p-card">Collection details</article>'}
+  caption="p-card references --spacing-card." />
+```
+
+`theme` adds a real document-class switch; define explicit `.light` and `.dark` selectors outside `@theme` in the
+configuration when teaching that behavior. The default has no controls. `code={false}`
+is for a gallery specimen whose usage link leads to the complete source. These are
+server components; only the existing iframe controls hydrate. Use trusted site-authored
+HTML with literal classes. Content-sized previews suit ordinary document flow; use
+`DemoViewport` directly for bounded scrolling, fixed positioning or viewport geometry.
+
+`shadow` places the HTML and generated utility rules inside a real open shadow root.
+Foundation variables inherit from the iframe document. This variant previews styling;
+it does not load a framework or test runtime lifecycle. Keep that distinction in the
+caption and document runtime setup in the linked lesson.
+
+<DemoConfiguredExample name="shadow-root-gallery" title="A shadow-root specimen"
+  source="" html={'<button type="button" class="px-md py-sm r-sm bg-blue fg-white">Hello Lit</button>'}
+  caption="Generated utility CSS in an open shadow root; no framework runs in this preview."
+  shadow />
+
+```jsx
+<DemoConfiguredExample name="shadow-button" title="Shadow-root styling"
+  source="" html={'<button class="px-md py-sm bg-blue fg-white">Hello</button>'}
+  caption="Generated CSS inside a shadow root." shadow />
+```
+
+Used by [Lit installation](/guide/installation/lit). The same default preview also
+supports the rendered markup in [React](/guide/installation/react) and
+[Vue](/guide/installation/vuejs).
+
+For formal rules that need code without a live preview, `ConfiguredExample` accepts
+the same native-property support as the preview and includes complete generated CSS.
+
+
+## Working recipes \{#working-recipes\}
+
+Open the collection that matches the lesson. Each keeps its complete source and real browser behavior.
+
+<RecipeAppendix />

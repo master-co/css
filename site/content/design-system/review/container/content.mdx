@@ -1,0 +1,11 @@
+`DemoContainer` takes `title`, `children` and optional `maxWidth` (720 by default). Its native range changes the measured wrapper; Fit restores the available width.
+
+```tsx
+<DemoContainer title="Card width" maxWidth={720}>
+  <div className="container-type:inline-size">
+    <article className="p-md">The card owns its containment.</article>
+  </div>
+</DemoContainer>
+```
+
+The page viewport remains unchanged. Keep the query boundary and responsive descendants in the example.

@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -5,22 +8,18 @@ import DemoExample from '~/site/components/demo/DemoExample'
 import MeasureReviewStage from './MeasureReviewStage'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo measure review',
-  description: 'Current Demo measure and practical examples.'
-}
+export { metadata }
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Readable bounds annotation',
-    note: 'A separated name and numeric readout sit above a full-width fine ruler. ResizeObserver still measures the content wrapper.',
+    number: '01', note: 'A separated name and numeric readout sit above a full-width fine ruler. ResizeObserver still measures the content wrapper.',
     preview: <Demo><MeasureReviewStage /></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-measure-review">
-    <div className="review-measure-kicker">Design system · Component review 10</div>
+  return <main className="ds-component-page review-measure-review">
+    <ReviewNavigation />
     <h1>Demo measure</h1>
     <p className="review-measure-intro">A separated name and numeric readout sit above a full-width fine ruler. ResizeObserver still measures the content wrapper.</p>
 
@@ -28,8 +27,7 @@ export default function Page() {
       <h2 id="measure-options">Live content bounds</h2>
 
       <div className="review-measure-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-measure-option" key={number}>
-          <div className="review-measure-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-measure-option" key={number}>
           <div className="review-measure-optionPreview">{preview}</div>
           <p className="review-measure-optionNote">{note}</p>
         </article>)}
@@ -44,5 +42,6 @@ export default function Page() {
       <DemoExample page="width" section="set-a-fixed-or-fluid-width" />
       <p className="review-measure-optionNote">The Reference keeps its own true browser measurements. A shared annotation must report the box it observes rather than a requested CSS width.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

@@ -1,0 +1,40 @@
+import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
+
+
+Use `DemoFeatureSupport` beside a native CSS example to report the current
+browser's syntax support. It never changes the specimen's styles. Keep a usable
+fallback in the example; a positive result is not a visual conformance guarantee.
+The examples above report the current live status.
+
+
+```jsx
+<DemoFeatureSupport condition="(field-sizing: content)" />
+<ProjectStyleExample name="nativeField" />
+```
+
+Use the native examples in [Compatibility](/guide/compatibility) to inspect fallback behavior.
+The status starts with a neutral checking label during server rendering, then
+reports the browser's actual `CSS.supports()` result. Supported and unsupported
+states retain the same layout and textual explanation.
+
+`DemoViewTransition` provides two isolated interactive examples. The default is
+view selection; the article variant demonstrates matching snapshot names and
+focus restoration. Both use the existing iframe component and shared controls.
+
+<DemoViewTransition />
+<DemoViewTransition example="articles" />
+
+```jsx
+<DemoViewTransition />
+<DemoViewTransition example="articles" />
+```
+
+Each preview owns a document and a bounded scroll area. It cannot capture the
+documentation page's root snapshot. The scene uses unique element names, skips
+animations for reduced motion and retains an immediate update when the API is
+unavailable. These recipes demonstrate native platform behavior.
+See [View Transitions](/guide/view-transitions) for framework-neutral markup,
+generated CSS and platform constraints.
+
+
+See [configured examples](/design-system/authoring#configured-examples) for styling inside a real shadow root.

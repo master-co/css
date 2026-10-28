@@ -85,7 +85,7 @@ export async function benchmarkContent(siteRoot: string) {
       if (name === 'PageCSSSizeBenchmark') {
         return table(['Site', 'Raw CSS', 'Brotli CSS'], pageCssSnapshot.pages.map(page => [
           page.name, `${(page.css.total.rawBytes / 1000).toFixed(1)} kB`, `${(page.css.total.brotliBytes / 1000).toFixed(1)} kB`
-        ]))
+        ])) + '\nBoth views use the same scale and the committed page snapshot.\n'
       }
       const component = benchmarkContentComponents[name as keyof typeof benchmarkContentComponents]
       if (!component) return

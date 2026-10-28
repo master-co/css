@@ -41,7 +41,7 @@ const units = {
   roadmap: {},
   sponsor: {},
   brand: {},
-  'design-system': {},
+  'design-system': { categories: ['Overview', 'Design System', 'Components'] },
 }
 
 export default units

@@ -18,7 +18,7 @@ function Entries({ entries }: { entries: readonly DocumentFileEntry[] }) {
   return <ul role="list">
     {entries.map(entry => <li key={entry.name}>
       <div className="doc-file-row">
-        {entry.children ? <IconFolder size={16} stroke={1.5} aria-hidden="true" /> : <IconFile size={16} stroke={1.5} aria-hidden="true" />}
+        {entry.children ? <IconFolder size={16} stroke={1.8} aria-hidden="true" /> : <IconFile size={16} stroke={1.8} aria-hidden="true" />}
         <span className="doc-file-copy"><span className="doc-file-name">{entry.name}{entry.children ? '/' : ''}</span>{entry.description && <span className="doc-file-description">{entry.description}</span>}</span>
       </div>
       {!!entry.children?.length && <Entries entries={entry.children} />}

@@ -1,5 +1,9 @@
 @layer defaults {
   .prose {
+    :is(p, li, h1, h2, h3, h4, summary):not(:where(.site-demo *, [data-demo-container] *)) {
+      overflow-wrap: anywhere;
+    }
+
     :is(p, li, table) code:not(.code-block) {
       background-color: var(--color-code-inline);
     }
@@ -370,6 +374,7 @@
       .prose > .doc-code-example .code,
       .prose > .step-section > *
     ) {
+      --code-frame-radius: 0px;
       border-inline-width: 0;
       border-radius: 0;
     }

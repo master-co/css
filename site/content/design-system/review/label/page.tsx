@@ -1,3 +1,6 @@
+import metadata from './metadata'
+import ReviewNavigation from '../../components/ReviewNavigation'
+import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
@@ -5,10 +8,7 @@ import { DemoLabel, DemoSurface } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/content/guide/elevation/components/ShadowTokens'
 import './page.css'
 
-export const metadata = {
-  title: 'Demo label review',
-  description: 'Current Demo label and practical examples.'
-}
+export { metadata }
 
 function Specimen({ Label }: { Label: typeof DemoLabel }) {
   return <div className="review-label-specimens">
@@ -38,15 +38,14 @@ function Specimen({ Label }: { Label: typeof DemoLabel }) {
 
 const options = [
   {
-    number: '01', title: 'Current', detail: 'Readable annotation',
-    note: 'A slightly larger, weight-balanced mono label with tabular numerals and explicit wrapping; spacing remains with the scene.',
+    number: '01', note: 'A slightly larger, weight-balanced mono label with tabular numerals and explicit wrapping; spacing remains with the scene.',
     preview: <Demo><Specimen Label={DemoLabel} /></Demo>
   }
 ] as const
 
 export default function Page() {
-  return <main className="review-label-review">
-    <div className="review-label-kicker">Design system · Component review 08</div>
+  return <main className="ds-component-page review-label-review">
+    <ReviewNavigation />
     <h1>Demo label</h1>
     <p className="review-label-intro">A slightly larger, weight-balanced mono label with tabular numerals and explicit wrapping; spacing remains with the scene.</p>
 
@@ -54,8 +53,7 @@ export default function Page() {
       <h2 id="label-options">Class and metadata labels</h2>
 
       <div className="review-label-options">
-        {options.map(({ number, title, detail, note, preview }) => <article className="review-label-option" key={number}>
-          <div className="review-label-optionHeading"><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>
+        {options.map(({ number, note, preview }) => <article className="review-label-option" key={number}>
           <div className="review-label-optionPreview">{preview}</div>
           <p className="review-label-optionNote">{note}</p>
         </article>)}
@@ -70,5 +68,6 @@ export default function Page() {
       <ShadowScaleDemo />
       <p className="review-label-optionNote">The shared label changes text treatment only. The lesson continues to own its card geometry, alignment and spacing.</p>
     </section>
-  </main>
+  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
+    </main>
 }

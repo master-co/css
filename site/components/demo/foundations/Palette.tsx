@@ -1,6 +1,7 @@
 'use client'
 
 import { useId, useState } from 'react'
+import { IconChevronDown } from '@tabler/icons-react'
 import DemoCopyButton, { DemoCopyGroup } from '../DemoCopyButton'
 
 export interface PaletteGroup { family: string; colors: { name: string; step: number; value: string }[] }
@@ -10,7 +11,15 @@ export default function Palette({ groups }: { groups: PaletteGroup[] }) {
   const id = useId()
   const endId = useId()
   return <DemoCopyGroup instruction={format === 'value' ? 'Choose a swatch to copy its original CSS color value.' : 'Choose a swatch to copy its CSS variable reference.'}>
-    <div className="foundation-palette-controls"><label htmlFor={id}>Copy as</label><select id={id} value={format} onChange={event => setFormat(event.target.value)}><option value="value">Original CSS value</option><option value="variable">CSS variable</option></select></div>
+    <div className="foundation-palette-controls">
+      <label htmlFor={id}>Copy as</label>
+      <span className="demo-select-wrap">
+        <select id={id} className="demo-select" value={format} onChange={event => setFormat(event.target.value)}>
+          <option value="value">CSS value</option><option value="variable">CSS variable</option>
+        </select>
+        <IconChevronDown size={14} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+    </div>
     <a className="foundation-palette-skip" href={`#${endId}`}>Skip color swatches</a>
     <div className="foundation-palette-scroll">
       <div className="foundation-palette-matrix">
