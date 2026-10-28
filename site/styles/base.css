@@ -5,6 +5,12 @@
   --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
 }
 
+@layer base {
+  body {
+    font-weight: 350;
+  }
+}
+
 @layer defaults {
   .light {
     --color-yellow: var(--color-yellow-40);
