@@ -74,6 +74,7 @@ function DesignSystemTile({ tile }: { tile: DesignSystemTileContent }) {
     <HomeBentoCard
       body={$(tile.body)}
       className={clsx('home-reveal-item', tile.gridColumnClassName)}
+      hint={tile.visual === 'art-gallery' ? $('Click a photo to preview the transition.') : undefined}
       href={designSystemGuides[tile.visual]}
       icon={tileIcons[tile.visual]}
       title={$(tile.title)}>

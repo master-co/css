@@ -440,6 +440,13 @@
     text-wrap: pretty;
   }
 
+  .home-bento-card-hint {
+    margin: 0.75rem 0 0;
+    font-size: var(--home-caption);
+    line-height: 1.5;
+    color: var(--home-text-faint);
+  }
+
   .home-heading-link {
     color: inherit;
     text-decoration: none;
