@@ -38,89 +38,9 @@
     position: relative;
   }
 
-  .home-editor-window {
-    position: relative;
-    overflow: clip;
-    border-radius: var(--home-radius-sheet);
-    background-color: var(--home-sheet);
-    box-shadow:
-      0 0 0 1px var(--home-hairline),
-      var(--home-contact),
-      0 14px 28px -20px var(--home-shade-near),
-      0 40px 80px -48px var(--home-shade-far);
+  .home-editor-stage .home-editor-window {
     container-type: inline-size;
-    /* A figure, not a document: dragging in it never starts a text selection. */
     user-select: none;
-  }
-
-  /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
-  .home-editor-bar {
-    display: flex;
-    align-items: flex-end;
-    gap: var(--spacing-md);
-    height: 3rem;
-    padding-inline: clamp(0.875rem, 2cqw, 1.5rem);
-    background-color: color-mix(in oklab, var(--home-ground) 62%, var(--home-sheet));
-    /* Light from above: the bar is a shade brighter at its top edge. */
-    background-image: linear-gradient(color-mix(in oklab, var(--home-sheet) 55%, transparent), transparent 80%);
-    /* A line of light along the top edge, and the one divider under the bar. */
-    box-shadow: inset 0 1px 0 var(--home-highlight), inset 0 -1px 0 var(--home-hairline);
-  }
-
-  .home-editor-dots {
-    display: flex;
-    align-self: center;
-    gap: 0.4375rem;
-    margin-right: 0.25rem;
-
-    & > span {
-      width: 0.625rem;
-      height: 0.625rem;
-      border-radius: var(--radius-pill);
-      background: linear-gradient(var(--home-rule), var(--home-rule-strong));
-      box-shadow: inset 0 1px 1px var(--home-highlight), 0 1px 0 var(--home-highlight);
-    }
-  }
-
-  .home-editor-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    align-self: flex-end;
-    overflow: hidden;
-    min-width: 0;
-    height: 2.25rem;
-    padding-inline: var(--spacing-md);
-    border-radius: 0.5rem 0.5rem 0 0;
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: var(--home-text);
-    background-color: var(--home-sheet);
-    /* Top and sides only: the open tab continues into the code below. */
-    box-shadow: inset 1px 0 0 var(--home-hairline), inset -1px 0 0 var(--home-hairline), inset 0 1px 0 var(--home-hairline);
-
-    & svg {
-      flex: none;
-      color: var(--home-text-faint);
-    }
-  }
-
-  .home-editor-status {
-    flex: none;
-    align-self: center;
-    margin-left: auto;
-    font-family: var(--home-mono);
-    font-size: var(--home-label);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    color: var(--home-text-faint);
-
-    @container (width < 26rem) {
-      display: none;
-    }
   }
 
   .home-editor-body {

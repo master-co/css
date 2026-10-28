@@ -5,6 +5,7 @@ import { IconFileCode, IconPlayerPauseFilled, IconPlayerPlayFilled, IconVariable
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
+import { HomeEditorBar, HomeEditorLights, HomeEditorTab, HomeEditorWindow } from './HomeEditorWindow'
 import { filterCompletions, type EditorClass, type EditorFeature, type EditorModel, type EditorRole, type EditorSceneId } from './editor-content'
 
 /** A color decoration takes two character cells, so every column after it moves two to the right. */
@@ -228,12 +229,12 @@ export default function EditorFigures({ features, icons, model }: { features: re
         ))}
       </div>
       <div ref={inViewRef} className="home-editor-frame home-marks">
-        <div className="home-editor-window">
-          <div aria-hidden="true" className="home-editor-bar">
-            <span className="home-editor-dots"><span /><span /><span /></span>
-            <span className="home-editor-tab"><IconFileCode size={14} stroke={1.75} />{model.fileName}</span>
+        <HomeEditorWindow>
+          <HomeEditorBar aria-hidden="true">
+            <HomeEditorLights />
+            <HomeEditorTab><IconFileCode size={14} stroke={1.75} />{model.fileName}</HomeEditorTab>
             <span className="home-editor-status">{$('Ln {line}, Col {column}').replace('{line}', String(caretLine + 1)).replace('{column}', String(frame.caret[1] + 1))}</span>
-          </div>
+          </HomeEditorBar>
           <div
             aria-hidden="true"
             className="home-editor-body"
@@ -295,7 +296,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
               </button>
             )}
           </div>
-        </div>
+        </HomeEditorWindow>
       </div>
     </div>
   )

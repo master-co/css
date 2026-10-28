@@ -16,6 +16,7 @@ import { lintRuleReach } from './lint-content'
 import { deliveryLateClass, deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
 // The Design system section checks its gallery classes, token values and cascade probe against the engine.
 import './design-system-content.test'
+import './delivery-content.test'
 // The AI agents section checks its MCP samples against the server source and the tooling lint.
 import './agents-content.test'
 // The Editor section checks its file, swatches, completions and hovers against the language service.

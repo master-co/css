@@ -46,13 +46,24 @@ export default function DeliveryModesSection() {
         {/*
           The figure carries the timeline's state for everything inside it. The drawing comes first;
           under it one control area holds the mode choice, the player and the chosen mode's description.
-          On narrow screens the controls come first and one station follows.
+          On narrow screens the controls come first, followed by the code tabs and persistent preview.
         */}
         <div className="home-delivery-figure home-delivery-stage" data-moment="3" style={{ '--home-delivery-t': 4 } as CSSProperties}>
           <div className="home-delivery-layout">
             {/* The drawing is an artboard: corner marks frame it, the way a design tool marks a frame. */}
             <div className="home-delivery-drawing home-marks">
               <DeliveryStage />
+              <svg aria-hidden="true" className="home-delivery-routes">
+                <defs>
+                  <marker id="home-delivery-arrow" markerHeight="6" markerUnits="userSpaceOnUse" markerWidth="6" orient="auto" refX="5" refY="3">
+                    <path d="M0 0 5 3 0 6" fill="none" stroke="currentColor" strokeWidth="1" />
+                  </marker>
+                </defs>
+                <path data-route="input" />
+                <path data-route="rules" />
+                <path data-route="reference" />
+                <path data-route="paint" />
+              </svg>
               <div aria-hidden="true" className="home-delivery-flights" />
             </div>
 

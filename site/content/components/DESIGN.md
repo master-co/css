@@ -23,7 +23,7 @@ The page reads as a sequence, each section answering the next question a reader 
 | — | Hero | What is it? | The positioning line over a sheet of gold silk |
 | 01 | Design system | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
 | 02 | Editor | Can I read it? | One editor: completion, hover, focused highlighting and color picker in turn |
-| 03 | Rendering | How does CSS reach the browser? | Open drawing: three stations, one in focus per moment, the engine where the mode generates CSS, and one control area for mode and moment |
+| 03 | Rendering | How does CSS reach the browser? | A shared editor workbench: complete HTML → Master CSS → generated CSS → a live pricing preview |
 | 04 | CSS size | What does it cost? | Bar chart from the benchmark snapshot |
 | 05 | Lint | How is it checked? | Rule bench: rules beside an editor, with the CLI and MCP server reporting the same check |
 | 06 | AI agents | Can agents use it safely? | Agent session window, joined by a beam to a liquid-glass MCP server on a floor of classes |
@@ -179,14 +179,15 @@ Section 02 introduces four features in open columns above one editor window stan
 
 ## Rendering stage
 
-Section 03 is a technical drawing on an artboard carrying the standard corner marks, with a little top padding so the station names clear them: three named stations (Build, Server, Browser) on the page's three-column grid, and two rows, the page's markup on top and its CSS below.
+Section 03 is one split-view workbench using `HomeEditorWindow`, the same chrome as section 02. Complete HTML, the processing rail, generated CSS and a live preview read left to right from 72rem. Between 52rem and 72rem the preview fills the row below; smaller screens share one code viewport with native index.html/CSS tabs and keep the preview visible beneath it.
 
-- The station the timeline is at is drawn in full, its panels as sheets and its CSS raised; the other stations recede to ground-colored outlines with faint content, so each moment has one path to read.
-- Each CSS panel grows with its rules (minified, one per line, as the engine emits them) inside a slot sized for its tallest state, and the reserved space a panel does not fill is hatched: the figure's only hatch, so it always means room a station keeps for CSS it does not hold.
-- Hairline flow lines with arrowheads carry files between stations and run from the markup through the engine into the CSS it writes.
-- The engine, a portal ring with the Master CSS mark, appears only where the mode generates CSS and turns gold only while it writes; a progressive page's browser engine is a dashed rim, a dashed line and the word `deferred` until a class outside the hydration manifest loads it. One custom property, `--home-delivery-t`, drives the film; every element carries the moment it appears (`--at`).
-- One control area sits under the artboard on the same grid: the mode as the page's segmented control and the player's four equal moments on one baseline, then the chosen mode's title, sentence and guide link. Below 52rem the controls come first and one station follows, switching as a cut; where the mode runs no engine in that station, its CSS panel sits 12px under the markup panel and the reserved space falls below it.
-- The server renders the last moment, so the drawing reads without script and under reduced motion. Elements created in the browser carry data attributes, never new classes, so the page's pre-rendered CSS keeps its engine deferred.
+- All edits happen in Template. `index.html` includes doctype, html, head and body. Its head gains a stylesheet link, server-generated style with hydration metadata, or runtime-created style, according to the selected mode. A fine measured path links that reference to the CSS tab; the tab and link control can inspect the reference. Nonessential application markup is folded with an ellipsis.
+- The late `bg-amber-10` class expands beside the Pro plan. “Add a class” and the preview's “Select Pro” action replay that chapter. The corresponding rule is highlighted before the card receives its warm selected state, giving the data movement a visible destination.
+- CSS displays actual Rust-engine rules in stylesheet order. Static already contains the late rule; progressive starts with first-screen rules and adds the uncovered rule; runtime generates rules while the page appears. The preview runs those same rules in an isolated declarative shadow root, with real utility classes and independently timed CSSOM updates.
+- The Master CSS processor occupies the rail between Template and CSS. It names Compiler, Server or Runtime; progressive changes from Server to a deferred/loading/ready Runtime when the late class arrives. Readable class capsules enter the processor and CSS capsules travel toward the preview. Gold marks only active generation and the selected state.
+- On phones the processor sits between the two file tabs. Playback follows the relevant file; selecting a tab or focusing a code viewport pauses the tour and keeps that reading position. Code regions support keyboard focus and local scrolling. Wide previews show the introduction beside the plan; narrower previews retain the plan's hierarchy and supporting details.
+- Panes and the preview canvas reserve their largest state, so rules, class edits and mode changes do not shift the workbench. Controls follow the desktop figure; below 52rem they precede it. The pricing preview scrolls locally when necessary.
+- The server renders the completed state. Native mode and file radios work without JavaScript; playback and inspection enable after hydration. Reduced motion keeps the completed scene without autoplay. Pause, hidden tabs and leaving view stop both the clock and flights; resizing clears stale coordinates. Decorative flight elements use data attributes, never new classes.
 
 ## CSS size
 
