@@ -18,6 +18,13 @@
     @media (width < 30rem) {
       padding-inline: 1.25rem;
     }
+
+    /* On the full 100rem column the actions move beside the invitation, on its last line. */
+    @media (--2xl) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: var(--spacing-4xl);
+    }
   }
 
   /* The narrowest phones set the command a step smaller rather than cut it. */

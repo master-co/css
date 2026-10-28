@@ -2,7 +2,7 @@
   .home-page {
     /* Matches `.app-wrapper`, so the guides land just outside the content edges. */
     --home-gutter: 1.25rem;
-    --home-column: min(100%, 80rem);
+    --home-column: min(100%, 100rem);
     --home-rail: calc((100% - var(--home-column)) / 2 + var(--home-gutter) - 1.25rem);
 
     @media (--sm) {
@@ -77,13 +77,13 @@
 
   /* The homepage's header sits on the content column, so the logo and the last icon share the sections' edges. */
   .home-header > * {
-    /* The sections' 80rem wrapper minus its 2.5rem gutters: where the column is wide enough to matter. */
-    max-width: 75rem;
+    /* The sections' 100rem wrapper minus its 2.5rem gutters: where the column is wide enough to matter. */
+    max-width: 95rem;
   }
 
   .home-section-wrap {
     position: relative;
-    max-width: 80rem;
+    max-width: 100rem;
   }
 
   /* A hatched fill for reserved or inactive space inside a figure: an empty slot, a margin, a gap. */
@@ -389,6 +389,8 @@
   .home-bento-card-caption {
     display: grid;
     grid-template-columns: minmax(0, 44ch) 7rem;
+    /* In a wide card the copy keeps its measure and the illustration rides the card's right edge. */
+    justify-content: space-between;
     align-items: start;
     align-content: start;
     column-gap: 1.5rem;

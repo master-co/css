@@ -6,7 +6,7 @@
    */
   .home-footer {
     --home-gutter: 1.25rem;
-    --home-column: min(100%, 80rem);
+    --home-column: min(100%, 100rem);
     --home-rail: calc((100% - var(--home-column)) / 2 + var(--home-gutter) - 1.25rem);
     position: relative;
     isolation: isolate;
@@ -44,7 +44,7 @@
 
   .home-footer-wrap {
     position: relative;
-    max-width: 80rem;
+    max-width: 100rem;
   }
 
   /* One hairline sheet of cells: the brand, then a cell per link group. */
@@ -270,7 +270,7 @@
   .home-footer-mark {
     --home-footer-engrave: color-mix(in oklab, var(--home-text) 15%, transparent);
     margin: clamp(1rem, 0.5rem + 2vw, 2.5rem) auto 0;
-    font-size: min(15.5rem, 17.6vw);
+    font-size: min(19.5rem, 17.6vw);
     font-weight: var(--font-weight-medium);
     line-height: 0.74;
     letter-spacing: -0.055em;
