@@ -71,13 +71,20 @@
       bottom: 0;
       width: calc(var(--home-editor-tab-radius) + 1px);
       height: var(--home-editor-tab-radius);
-      background-image: radial-gradient(
-        circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
-        transparent calc(100% - 1px),
-        var(--home-editor-tab-line) calc(100% - 1px),
-        var(--home-editor-tab-line) 100%,
-        var(--home-editor-tab-fill) 100%
-      );
+      /* Blend each edge over half a pixel so the circular contour stays smooth at any pixel density. */
+      background-image:
+        radial-gradient(
+          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
+          transparent calc(100% - 1.25px),
+          var(--home-editor-tab-line) calc(100% - 0.75px),
+          var(--home-editor-tab-line) calc(100% - 0.25px),
+          transparent calc(100% + 0.25px)
+        ),
+        radial-gradient(
+          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
+          transparent calc(100% - 0.25px),
+          var(--home-editor-tab-fill) calc(100% + 0.25px)
+        );
       pointer-events: none;
       content: '';
     }
