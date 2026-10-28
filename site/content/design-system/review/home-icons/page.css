@@ -1,0 +1,111 @@
+@layer components {
+  .home-icon-review {
+    --hir-line: var(--color-line-divider);
+    width: 100%;
+    min-width: 0;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding: 6rem var(--spacing-md) var(--spacing-2xl);
+    color: var(--color-text-strong);
+  }
+  .home-icon-review * { box-sizing: border-box; }
+  .home-icon-review :is(h1, h2, h3, p, figure, dl, dd) { margin: 0; }
+  .home-icon-review svg { flex: none; max-width: none; }
+  .home-icon-review a { color: inherit; text-decoration: none; }
+  .home-icon-review a:hover { text-decoration: underline; text-underline-offset: .25em; }
+  .home-icon-review :is(a, summary, select):focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+  .home-icon-review :is(section, article) { scroll-margin-top: 6rem; }
+  .hir-topline, .hir-toolbar, .hir-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); }
+  .hir-topline { padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--hir-line); color: var(--color-text-muted); font-size: .75rem; }
+  .hir-topline > span, .hir-eyebrow, .hir-number, .hir-count, .hir-badge { font-family: var(--font-family-mono); }
+  .home-icon-review .hir-eyebrow { margin-top: var(--spacing-2xl); color: var(--color-text-muted); font-size: .6875rem; letter-spacing: .12em; text-transform: uppercase; }
+  .hir-intro h1 { margin-top: var(--spacing-md); font-size: clamp(2.5rem, 6vw, 4.75rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.06; }
+  .hir-intro h1 > span { color: var(--color-text-muted); }
+  .home-icon-review .hir-lead { max-width: 39rem; margin-top: var(--spacing-lg); color: var(--color-text-muted); font-size: 1rem; line-height: 1.75; }
+  .hir-facts { display: flex; flex-wrap: wrap; gap: var(--spacing-sm) var(--spacing-lg); margin-top: var(--spacing-lg); font-size: .75rem; color: var(--color-text-muted); }
+  .hir-facts strong { margin-right: .25rem; color: var(--color-text-strong); font-weight: 550; }
+  .hir-specimens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: var(--spacing-2xl); border: 1px solid var(--hir-line); border-radius: var(--radius-2xl); overflow: hidden; background: var(--color-surface-raised); }
+  .hir-specimens > figure { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-sm); padding: var(--spacing-lg) var(--spacing-sm); min-height: 11rem; }
+  .hir-specimens figcaption { max-width: 18ch; min-height: 2.8em; color: var(--color-text-muted); text-align: center; font-size: .6875rem; line-height: 1.4; }
+  .hir-specimens > figure:nth-child(even) { background: var(--color-surface-base); }
+  .hir-toolbar { margin-top: var(--spacing-2xl); padding-block: var(--spacing-md); font-size: .8125rem; }
+  .hir-appearance { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-text-muted); font-size: .75rem; }
+  .hir-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-width: 3.5rem; min-height: 2.75rem; border: 1px solid var(--hir-line); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+  .hir-appearance :is(svg, span > span) { pointer-events: none; }
+  .hir-appearance svg { stroke: currentColor; }
+  .hir-appearance > span:has(:focus-visible) { outline: 2px solid currentColor; outline-offset: 3px; }
+  .hir-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--hir-line); border-left: 1px solid var(--hir-line); }
+  .hir-index a { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md) var(--spacing-sm); border-right: 1px solid var(--hir-line); border-bottom: 1px solid var(--hir-line); font-size: .75rem; }
+  .hir-index a > span { color: var(--color-text-muted); font-family: var(--font-family-mono); font-size: .625rem; }
+  .hir-index a > span:last-child { margin-left: auto; }
+  .hir-group { margin-top: 4rem; }
+  .hir-group-heading { display: flex; align-items: baseline; gap: var(--spacing-md); padding-bottom: var(--spacing-lg); }
+  .hir-number { color: var(--color-text-muted); font-size: .6875rem; }
+  .hir-group-heading h2 { font-size: 1.375rem; line-height: 1.3; font-weight: 550; letter-spacing: -.025em; }
+  .hir-group-heading p { margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
+  .hir-count { display: none; margin-left: auto; color: var(--color-text-muted); font-size: .6875rem; white-space: nowrap; }
+  .hir-grid { display: grid; gap: var(--spacing-md); }
+  .hir-card { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--hir-line); border-radius: var(--radius-xl); background: var(--color-surface-raised); overflow: hidden; }
+  .hir-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hir-light { color-scheme: light; color: var(--color-zinc-90); background: var(--color-zinc-0); }
+  .hir-dark { color-scheme: dark; color: var(--color-zinc-10); background: var(--color-zinc-95); }
+  .hir-pair > div { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-sm); min-height: 9.5rem; padding: var(--spacing-md); }
+  .hir-pair > div > span { font-family: var(--font-family-mono); font-size: .5625rem; letter-spacing: .06em; text-transform: uppercase; opacity: .65; }
+  .hir-card-copy { display: flex; flex: 1; flex-direction: column; padding: var(--spacing-md); }
+  .hir-card-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-xs) var(--spacing-sm); }
+  .hir-card h3 { font-size: .875rem; font-weight: 550; line-height: 1.45; letter-spacing: -.01em; }
+  .hir-badge { font-size: .5625rem; white-space: nowrap; color: var(--color-text-muted); }
+  .hir-card-copy > p { margin-top: var(--spacing-xs); margin-bottom: var(--spacing-md); color: var(--color-text-muted); font-size: .75rem; line-height: 1.65; }
+  .home-icon-review code { font-family: var(--font-family-mono); font-size: .75em; }
+  .hir-card-copy > .hir-filename { margin-top: auto; margin-bottom: var(--spacing-sm); color: var(--color-text-body); font-size: .625rem; line-height: 1.7; overflow-wrap: anywhere; }
+  .hir-target { display: grid; gap: .25rem; border-top: 1px solid var(--hir-line); padding-top: var(--spacing-sm); font-size: .625rem; line-height: 1.65; }
+  .hir-target > div { display: grid; grid-template-columns: 3.75rem minmax(0, 1fr); gap: var(--spacing-xs); }
+  .hir-target dt { color: var(--color-text-muted); }
+  .hir-target dd { overflow-wrap: anywhere; }
+  .hir-size-details { border-top: 1px solid var(--hir-line); }
+  .hir-size-details summary { padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-size: .6875rem; color: var(--color-text-muted); }
+  .hir-size-details summary:hover { color: var(--color-text-strong); }
+  .hir-size-strip > p { padding: var(--spacing-xs) var(--spacing-sm); font-size: .625rem; color: var(--color-text-muted); }
+  .hir-size-row { display: flex; flex-wrap: wrap; align-items: end; justify-content: center; gap: var(--spacing-sm) var(--spacing-xs); padding: var(--spacing-sm) .25rem; }
+  .hir-size-row figure { display: flex; flex-direction: column; align-items: center; }
+  .hir-size-row figcaption { margin-top: .25rem; font-family: var(--font-family-mono); font-size: .5625rem; opacity: .7; }
+  .hir-compact-filename { display: block; padding: var(--spacing-sm); font-size: .625rem; overflow-wrap: anywhere; }
+  .hir-placement-grid { display: grid; gap: var(--spacing-sm); padding: var(--spacing-sm); border-radius: var(--radius-2xl); background: var(--color-surface-base); }
+  .hir-placement-card { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-md); padding: var(--spacing-lg); border-radius: var(--radius-xl); background: var(--color-surface-raised); }
+  .hir-placement-card > div { flex: 1 1 12rem; }
+  .hir-placement-card h3 { font-size: 1.125rem; line-height: 1.45; font-weight: 550; letter-spacing: -.02em; }
+  .hir-placement-card p { margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
+  .hir-tool-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-md); margin-top: var(--spacing-lg); border-block: 1px solid var(--hir-line); padding: var(--spacing-md); }
+  .hir-tool-row strong { display: block; font-size: .8125rem; font-weight: 550; }
+  .hir-tool-row code { display: block; margin-top: .25rem; color: var(--color-text-muted); font-size: .625rem; overflow-wrap: anywhere; }
+  .hir-tool-row > span { margin-left: auto; color: var(--color-text-muted); font-size: .6875rem; }
+  .hir-handoff { padding-top: var(--spacing-xl); border-top: 1px solid var(--hir-line); }
+  .hir-handoff-grid { display: grid; gap: var(--spacing-xl); }
+  .hir-handoff h3 { margin-bottom: var(--spacing-sm); font-size: .9375rem; font-weight: 550; }
+  .hir-handoff p { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.8; overflow-wrap: anywhere; }
+  .hir-handoff p + p { margin-top: var(--spacing-sm); }
+  .hir-handoff p + h3 { margin-top: var(--spacing-lg); }
+  .hir-examples { display: grid; gap: var(--spacing-md); align-content: start; min-width: 0; }
+  .hir-code-example { border: 1px solid var(--hir-line); border-radius: var(--radius-lg); overflow: hidden; }
+  .hir-code-example > figcaption { padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--hir-line); font-size: .6875rem; color: var(--color-text-muted); }
+  .hir-code-example pre { margin: 0; padding: var(--spacing-md); overflow-x: auto; background: var(--color-surface-base); }
+  .hir-code-example code { font-size: .6875rem; line-height: 1.8; }
+  .hir-footer { margin-top: var(--spacing-2xl); padding-top: var(--spacing-md); border-top: 1px solid var(--hir-line); color: var(--color-text-muted); font-size: .6875rem; }
+  @media (min-width: 40rem) {
+    .home-icon-review { padding-inline: var(--spacing-lg); }
+    .hir-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hir-specimens { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hir-index { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .hir-count { display: block; }
+  }
+  @media (min-width: 64rem) {
+    .home-icon-review { padding-top: 7rem; }
+    .hir-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hir-specimens { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .hir-placement-grid, .hir-handoff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media print {
+    .hir-toolbar, .hir-index, .hir-topline, .hir-footer { display: none; }
+    .hir-card { break-inside: avoid; }
+  }
+}
