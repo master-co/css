@@ -812,7 +812,7 @@
 
   /*
    * Each column is an upright pane of glass seen at the section's oblique angle. It sits over the wires,
-   * so what passes behind it softens like refraction; a streak of light crosses it and its lit edge faces left.
+   * so what passes behind it softens like refraction; a streak of light crosses it and its defined edge faces left.
    */
   .home-wf-trace-pane {
     --home-wf-streak: var(--home-highlight);
@@ -825,7 +825,8 @@
     background-image:
       linear-gradient(170deg, transparent 18%, var(--home-wf-streak) 30%, transparent 40%, transparent 62%, color-mix(in oklab, var(--home-wf-streak) 50%, transparent) 70%, transparent 76%),
       linear-gradient(90deg, color-mix(in oklab, var(--home-wf-plate) 95%, transparent), color-mix(in oklab, var(--home-wf-plate) 35%, transparent));
-    box-shadow: inset 1px 0 0 var(--home-highlight), inset 0 0 0 1px var(--home-hairline), 0.75rem 0.5rem 1.5rem -0.75rem light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
+    /* A neutral leading edge stays visible on light ground; dark glass keeps its highlight. */
+    box-shadow: inset 1px 0 0 light-dark(color-mix(in oklab, var(--home-rule) 35%, transparent), var(--home-highlight)), inset 0 0 0 1px var(--home-hairline), 0.75rem 0.5rem 1.5rem -0.75rem light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
     backdrop-filter: blur(2px) saturate(1.2);
     /* One transform: the build drops a separate `translate` beside it. */
     transform: translateX(-50%) skewY(-34.22deg);
