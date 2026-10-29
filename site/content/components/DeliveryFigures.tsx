@@ -5,9 +5,9 @@ import { IconPlayerPauseFilled, IconPlayerPlayFilled, IconRotate } from '@tabler
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { deliveryAdded, deliveryLateClass, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
 
-/** Milliseconds per moment while a mode plays, and the rest before the tour moves on. */
-const unit = 2100
-const rest = 2200
+/** Give each cause and result time to register, then hold the finished mode for comparison. */
+const unit = 4200
+const rest = 4800
 /** How far ahead of its moment, in timeline units, a flight leaves so it lands on time. */
 const rainLead = 0.32
 const carryLead = 0.36
@@ -232,7 +232,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       const source = scope && find(scope, `[data-glyph="${className}"]`)
       if (source) {
         source.dataset.hot = ''
-        later(() => delete source.dataset.hot, 700)
+        later(() => delete source.dataset.hot, unit / 3)
       }
       const duration = Math.max(140, (Number(line.dataset.at) - t) * unit)
       const inputTime = className === deliveryLateClass ? duration * .62 : Math.min(duration * .62, deliveryTiming[mode()].step * unit * .9)

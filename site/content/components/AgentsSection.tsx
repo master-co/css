@@ -32,6 +32,7 @@ export default function AgentsSection() {
         <AgentSession
           {...agentSession}
           {...sessionFacts()}
+          editIcon={<HomeCompactIcon icon="agent-edit-file" />}
           toolIcons={{
             manifest: <HomeCompactIcon icon="mcp-manifest-query" />,
             inspect: <HomeCompactIcon icon="mcp-inspect-class" />,

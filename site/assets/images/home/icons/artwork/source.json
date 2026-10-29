@@ -273,6 +273,31 @@
       "dark": "exec-0c099fc0-7ee4-493d-85fa-a2c0428a2742.png",
       "generationPrompt": "Use case: stylized-concept. Asset type: premium Master CSS homepage icon, transparent square, intended at 96 CSS pixels. The supplied image is STYLE AND MATERIAL REFERENCE ONLY, not the subject. Create a NEW distinct icon described below. Match its shallow isometric angle, ultra-thin nearly colorless liquid-glass planes, softly rounded corners, fine neutral gray outlines, tiny white edge glints, softly varying transparent faces and very restrained overlap shading. LIGHT UI variant for pure-white/zinc cards. Actual alpha transparency outside and through glass. Precise minimalist functional composition, centered optically, roughly 78–82% of canvas extent, generous margins. Code strokes are neutral gray. No text, letters, numbers, logos, bright colors, blue cast, rainbow, chunky extrusion, metallic bevel, bloom, opaque background or baked checkerboard. No crossing or intersecting geometry except deliberate transparent stacking. Subject: Apply preview: ONE broad transparent isometric target sheet below-left with THREE short gray code strokes. ONE small transparent fragment above-right contains a tiny check. A delicate curved elbow arrow points toward the target but ends before its edge. No overlapping arrowheads.",
       "refinementInstruction": "Remove ALL large gray shadow or extrusion bands beneath both sheets. Keep their faces, geometry and marks unchanged. They must be ultra-thin, almost zero thickness, with fine contours and only tiny close overlap shade. Make the connecting arrow a fine gray stroke."
+    },
+    {
+      "id": "agent-edit-file",
+      "date": "2026-10-30",
+      "tool": "Built-in image_gen.imagegen",
+      "light": "exec-0ba04cdb-8309-443d-97ce-80338f58245c.png",
+      "dark": "exec-4ab823c8-2868-4db6-b751-6a2d3d2a8042.png",
+      "generationPrompt": "Use case: stylized-concept. Asset type: Master CSS homepage inline agent Edit tool icon, LIGHT UI variant, transparent square. The supplied image is STYLE AND MATERIAL REFERENCE ONLY, not the subject. Create one original edit-file icon matching its shallow oblique/isometric camera, ultra-thin almost colorless glass, softly rounded corners, fine neutral zinc-gray contours, subdued tiny edge glints and gentle translucent faces. Subject: ONE thin rounded glass document plane with TWO short quiet gray code strokes, and ONE slim graphite-gray pencil floating diagonally above its lower-right area, its tip pointing toward a separate short edit stroke. Keep the pencil silhouette simple and clearly recognizable when the entire image is only 40 CSS pixels. The pencil is in front: interrupt document contours and code strokes behind it rather than allowing them to run through it. No cursor, second document, arrows, checkmark, badge, letters, text, numbers or logos. Main visible form occupies 78–82% of square extent, optically centered. Light-UI material for white and pale-zinc cards. Real alpha transparency around and through glass. No background rectangle, baked checkerboard, broad cast shadows, blue cast, rainbow refraction, glow, thick extrusion, metallic bevels, chunky plastic or opaque white plates. Quiet and precise; match the reference's softness and visual weight.",
+      "darkLightingPrompt": "Use case: lighting-weather. Image 1 is the EDIT TARGET: new transparent Master CSS edit-file icon. Image 2 is the APPROVED DARK MATERIAL REFERENCE ONLY. Create the dark-UI lighting variant of Image 1 for a zinc-black #202023 card. STRICT: preserve Image 1's EXACT square canvas, geometry, document and pencil positions, sizes, perspective, two long code strokes and one short edit stroke, pencil silhouette and all transparent background. Change ONLY lighting and ink brightness. Match Image 2: nearly colorless transparent smoky glass, restrained soft gray luminance, delicate subdued white edge highlights and pale zinc-gray code strokes and pencil contours. Broad faces remain smoky/translucent, not opaque white plates. Preserve real alpha outside and through glass. Keep pencil in front and its tip clear of the short edit stroke. No background rectangle, checkerboard, added glow, broad shadows, thick rims, bevels, text, symbols, colors or blue cast. Never move or enlarge objects.",
+      "usage": "40px agent Edit row; two themed transparent WebP exports",
+      "export": {
+        "format": "WebP",
+        "size": [
+          384,
+          384
+        ],
+        "quality": 0.96,
+        "sharedCrop": {
+          "left": 2,
+          "top": 41,
+          "width": 1273,
+          "height": 1273
+        },
+        "alpha": "Preserved; bounds threshold used for crop only"
+      }
     }
   ]
 }

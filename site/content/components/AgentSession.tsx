@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { IconAlertTriangle, IconCircleCheck, IconFileCode, IconLoader2, IconPencil, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconTerminal2 } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCircleCheck, IconFileCode, IconLoader2, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconTerminal2 } from '@tabler/icons-react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import clsx from 'clsx'
@@ -58,7 +58,8 @@ type Mode = 'chosen' | 'paused' | 'tour'
 const icon = { size: 14, stroke: 1.75 } as const
 
 export interface AgentSessionProps {
-  /** Decorative SVG slots rendered on the server. */
+  /** Decorative themed artwork slots rendered on the server. */
+  editIcon: ReactNode
   toolIcons: Record<AgentSessionCallId, ReactNode>
   code: string
   file: string
@@ -87,7 +88,7 @@ export interface AgentSessionInspection {
  * token and applies it after the server checks the file has not changed. The transcript, the file
  * and the server's output play in step; the step bar pauses the session or opens any step.
  */
-export default function AgentSession({ classRows, code, file, fixedCode, inspection, problems, tokens, toolIcons }: AgentSessionProps) {
+export default function AgentSession({ classRows, code, editIcon, file, fixedCode, inspection, problems, tokens, toolIcons }: AgentSessionProps) {
   const $ = useTranslation()
   // The server renders the finished session. Once the page can play it, the tour starts on a frame
   // that already has a conversation, a file and a result in it (firstBeat); later loops start from the prompt.
@@ -259,7 +260,7 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
                       id={entry.id}
                       result={beat >= entry.done ? results[entry.id] : undefined} />
                     : entry.kind === 'edit'
-                      ? <EditRow file={file} label={$('Edit')} lines={styled} />
+                      ? <EditRow artwork={editIcon} file={file} label={$('Edit')} lines={styled} />
                       : <Message tone={entry.kind}><Stream text={entry.text} /></Message>}
                 </div>
               </li>
@@ -510,10 +511,10 @@ function Stream({ text }: { text: string }) {
 }
 
 /** The agent styles the card with its own edit tool; the MCP server never writes without a preview. */
-function EditRow({ file, label, lines }: { file: string, label: string, lines: number }) {
+function EditRow({ artwork, file, label, lines }: { artwork: ReactNode, file: string, label: string, lines: number }) {
   return (
     <div className="home-agent-edit">
-      <span aria-hidden="true" className="home-agent-edit-icon"><IconPencil {...icon} /></span>
+      <span aria-hidden="true" className="home-agent-edit-icon">{artwork}</span>
       <span>{label}</span>
       <code>{file}</code>
       <span className="home-agent-edit-count"><Diffstat added={lines} removed={lines} /></span>

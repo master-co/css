@@ -394,13 +394,13 @@
     }
   }
 
-  /* The same 1.25rem icon column as a call's tool icon, so the pencil lines up with them. */
+  /* The edit shares the tool calls' 40px artwork column and text alignment. */
   .home-agent-edit-icon {
     display: grid;
     flex: none;
     place-content: center;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
     color: var(--home-text-quiet);
   }
 
@@ -458,7 +458,8 @@
     }
   }
 
-  .home-agent-call-icon .home-compact-icon { --home-illustration-size: 2.5rem; }
+  .home-agent-call-icon .home-compact-icon,
+  .home-agent-edit-icon .home-compact-icon { --home-illustration-size: 2.5rem; }
 
   .home-agent-call-name {
     min-width: 0;

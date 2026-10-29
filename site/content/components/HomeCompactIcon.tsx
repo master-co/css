@@ -1,6 +1,6 @@
 import HomeIllustration, { type HomeIllustrationId } from './HomeIllustration'
 
-export type HomeCompactIconId = Extract<HomeIllustrationId, `lint-${string}` | `mcp-${string}`>
+export type HomeCompactIconId = Extract<HomeIllustrationId, `lint-${string}` | `mcp-${string}` | 'agent-edit-file'>
 
 /** The same themed glass artwork in list-sized slots; rendered on the server. */
 export default function HomeCompactIcon({ icon }: { icon: HomeCompactIconId }) {

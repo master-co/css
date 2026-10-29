@@ -81,6 +81,8 @@ import artwork39Light from './artwork/mcp-preview-fixes-light.webp'
 import artwork39Dark from './artwork/mcp-preview-fixes-dark.webp'
 import artwork40Light from './artwork/mcp-apply-preview-light.webp'
 import artwork40Dark from './artwork/mcp-apply-preview-dark.webp'
+import agentEditFileLight from './artwork/agent-edit-file-light.webp'
+import agentEditFileDark from './artwork/agent-edit-file-dark.webp'
 
 /** Static 384px assets; each lighting pair shares its optical crop. */
 export const homeIconArtwork = {
@@ -125,4 +127,5 @@ export const homeIconArtwork = {
   'mcp-css-compare': { light: artwork38Light, dark: artwork38Dark },
   'mcp-preview-fixes': { light: artwork39Light, dark: artwork39Dark },
   'mcp-apply-preview': { light: artwork40Light, dark: artwork40Dark },
+  'agent-edit-file': { light: agentEditFileLight, dark: agentEditFileDark },
 } as const satisfies Record<string, { light: StaticImage, dark: StaticImage }>
