@@ -113,7 +113,10 @@ export async function getRuntimeLoaderURL() {
       logLevel: 'error',
       plugins: [runtimeProgramCompiler],
       root: packageRoot,
+      // This source server must never navigate test pages during dependency discovery.
+      optimizeDeps: { noDiscovery: true },
       server: {
+        hmr: false,
         cors: true,
         host: '127.0.0.1',
         port: 0

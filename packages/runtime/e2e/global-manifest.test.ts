@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import { createServer } from 'node:http'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -83,52 +84,48 @@ test('uses the preloaded default program', async ({ page }) => {
   let defaultProgramRequests = 0
   let presetCSSRequests = 0
   const consoleMessages: string[] = []
-
-  await routeRuntimeAssets(page, {
-    onDefaultProgramRequest: () => {
-      defaultProgramRequests++
-    }
+  let assetBase = ''
+  page.on('console', message => {
+    if (message.type() === 'warning' || message.type() === 'error') consoleMessages.push(message.text())
   })
-  page.on('console', (message) => {
-    if (message.type() === 'warning' || message.type() === 'error') {
-      consoleMessages.push(message.text())
-    }
+  // Playwright routing disables HTTP caching. Serve real responses so this test
+  // observes browser preload reuse rather than interception-specific behavior.
+  const assets = new Map([
+    ['/global.min.js', { type: 'text/javascript', body: readFileSync(resolve(__dirname, '../dist/global.min.js')) }],
+    ['/default-program.bin', { type: 'application/octet-stream', body: readFileSync(resolve(__dirname, '../dist/default-program.bin')) }],
+    ['/base.css', { type: 'text/css', body: readFileSync(resolve(__dirname, '../../preset/src/base.css')) }]
+  ])
+  const server = createServer((request, response) => {
+    if (request.url === '/default-program.bin') defaultProgramRequests++
+    if (request.url === '/base.css') presetCSSRequests++
+    const asset = assets.get(request.url ?? '')
+    response.writeHead(200, { 'content-type': asset?.type ?? 'text/html', 'cache-control': 'public, max-age=3600', 'access-control-allow-origin': '*' })
+    response.end(asset?.body ?? `<!doctype html><html hidden><head>
+      <link rel="preload" as="style" href="${assetBase}/base.css">
+      <link rel="preload" as="fetch" crossorigin href="${assetBase}/default-program.bin">
+      <link rel="stylesheet" href="${assetBase}/base.css">
+      <script src="${assetBase}/global.min.js"></script>
+      </head><body><h1 class="font-size:40px">Hello</h1></body></html>`)
   })
-  await page.route(PRESET_BASE_CSS_URL, route => {
-    presetCSSRequests++
-    route.fulfill({
-      contentType: 'text/css',
-      headers: { 'access-control-allow-origin': '*' },
-      body: readFileSync(resolve(__dirname, '../../preset/src/base.css'), 'utf8')
-    })
-  })
-
-  await page.route(`${RUNTIME_ASSET_BASE_URL}/`, (route) => route.fulfill({
-    contentType: 'text/html',
-    body: `
-      <!doctype html>
-      <html hidden>
-      <head>
-        <link rel="preload" as="style" href="${PRESET_BASE_CSS_URL}">
-        <link rel="preload" as="fetch" crossorigin href="${DEFAULT_PROGRAM_URL}">
-        <link rel="stylesheet" href="${PRESET_BASE_CSS_URL}">
-        <script src="${RUNTIME_SCRIPT_URL}"></script>
-      </head>
-      <body><h1 class="font-size:40px">Hello</h1></body>
-      </html>
-    `
-  }))
-  await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
-  await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
-
-  expect(defaultProgramRequests).toBe(1)
-  expect(presetCSSRequests).toBe(1)
-  expect(consoleMessages).toEqual([])
-  expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
-  expect(await page.evaluate(() => {
-    globalThis.masterCSSRuntime!.ensureClassRules(['font-bold'])
-    return globalThis.masterCSSRuntime!.snapshot().cssText
-  })).toContain('--font-weight-bold:700')
+  try {
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+    const address = server.address()
+    if (!address || typeof address === 'string') throw new Error('Missing preload fixture server address')
+    assetBase = `http://localhost:${address.port}`
+    await page.goto(`http://127.0.0.1:${address.port}/`)
+    await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
+    expect(defaultProgramRequests).toBe(1)
+    expect(presetCSSRequests).toBe(1)
+    expect(consoleMessages).toEqual([])
+    expect(await page.locator('h1').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
+    expect(await page.evaluate(() => {
+      globalThis.masterCSSRuntime!.ensureClassRules(['font-bold'])
+      return globalThis.masterCSSRuntime!.snapshot().cssText
+    })).toContain('--font-weight-bold:700')
+  } finally {
+    server.closeAllConnections()
+    await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()))
+  }
 })
 
 test('ignores global manifest override', async ({ page }) => {

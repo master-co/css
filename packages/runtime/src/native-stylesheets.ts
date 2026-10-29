@@ -86,13 +86,15 @@ export default class NativeStylesheets {
       style.title = link.title
       style.nonce = link.nonce
       style.textContent = css
-      style.addEventListener('load', this.changed)
-      link.before(style)
-      if (!style.sheet) {
-        style.remove()
-        throw new Error('The document blocked its owned Master CSS stylesheet')
+      const activate = () => {
+        if (this.disposed || this.attached.get(link) !== state || !style.sheet) return
+        style.sheet.disabled = state.disabled
+        link.disabled = true
+        this.changed()
       }
-      style.sheet.disabled = state.disabled
+      // Gecko exposes sheets with @import only after their imports have loaded.
+      // Keep the original link active until the owned replacement is usable.
+      style.addEventListener('load', activate)
       style.addEventListener('error', () => {
         if (state.style !== style) return
         style.remove()
@@ -103,9 +105,9 @@ export default class NativeStylesheets {
       previous?.style?.remove()
       state.style = style
       state.assetHref = href
-      link.disabled = true
+      link.before(style)
       this.collectAssets()
-      this.changed()
+      activate()
     }).catch(error => { if (!this.disposed && owned.active) console.error(error) })
   }
 

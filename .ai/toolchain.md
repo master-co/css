@@ -57,6 +57,10 @@ also explicitly use Node:
 Do not globally alias `node` to Bun. Package scripts select Bun explicitly;
 new Node exceptions need a concrete failing command and a documented reason.
 
+Runtime `e2e` forwards Playwright arguments through `scripts/test-browsers.mjs`.
+On macOS it uses a temporary Firefox application descriptor to isolate Gecko's
+application data; personal browser profiles and installed browser files are untouched.
+
 ## Publication
 
 The private workspace release adapter reuses the existing release library's public

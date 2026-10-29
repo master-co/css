@@ -8,7 +8,7 @@
     "build": "bun --bun tsdown",
     "bench": "node scripts/benchmark-runtime.js",
     "dev": "bun --bun tsdown --watch",
-    "e2e": "bun --bun playwright test",
+    "e2e": "bun scripts/test-browsers.mjs",
     "e2e:watch": "nodemon -e js,ts,html,css --watch dist --watch e2e --watch tests --exec bun --bun playwright test",
     "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
     "lint": "bun --bun eslint"
