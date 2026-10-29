@@ -1,5 +1,5 @@
 import * as React from 'react'
-import snapshot from '~/site/../benchmarks/master-delivery-modes/snapshot.json'
+import snapshot from '~/site/.generated/benchmarks/master-delivery-modes.json'
 import {
   BenchmarkBars,
   BenchmarkMetricTable,

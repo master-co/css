@@ -255,8 +255,9 @@ keyboard copying. Copy controls stay disabled until their event handlers are rea
 `DocumentIdentifier` adds native word-break opportunities at identifier boundaries
 without inserting copied characters. The page TOC lists entrypoints; each large entry has its own
 symbol index. Full declarations, indexes and stable anchors remain in search and
-portable Markdown. `PackageDeclarationExample` reads the generated contract for
-the Design System gallery instead of duplicating a long specimen.
+portable Markdown. `PackageDeclarationExample` resolves the identifier's package
+through the route index and loads only that package's generated document for the
+Design System gallery, instead of importing the complete Reference catalog.
 
 ### Installation sequences
 

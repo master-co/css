@@ -1,4 +1,4 @@
-import snapshot from '~/site/../benchmarks/docs-page-css-size/snapshot.json'
+import snapshot from '~/site/.generated/benchmarks/docs-page-css-size.json'
 import brands from '~/site/docs-shell/data/brands'
 import Segments from '~/site/docs-shell/components/Segments'
 import Link from '~/site/docs-shell/components/Link'

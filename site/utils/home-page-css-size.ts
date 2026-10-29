@@ -1,4 +1,4 @@
-import snapshot from '~/site/../benchmarks/docs-page-css-size/snapshot.json'
+import snapshot from '~/site/.generated/benchmarks/docs-page-css-size.json'
 
 type CSSSizeKind = 'brotliBytes' | 'rawBytes'
 

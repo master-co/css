@@ -1,13 +1,7 @@
 import ReferencePage, { loadReferenceRoute, referenceMetadata } from '~/site/reference/ReferencePage'
 import RecipeSpecimen from '~/site/reference/RecipeSpecimen'
-import { routeIndex } from '~/site/reference/route-index'
-
 
 type Props = { params: { locale: string; entry: string } }
-
-export function generateStaticParams() {
-  return routeIndex.filter(doc => doc.kind === 'utility').map(doc => ({ entry: doc.id }))
-}
 
 export async function generateMetadata({ params }: Props) {
   const { entry, locale } = params
