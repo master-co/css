@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "display:inline-flex align-items:center justify-content:center outline-style:none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:opacity-50 disabled:pointer-events-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 font-medium gap-2 rounded-md text-sm transition-[color,box-shadow] whitespace-nowrap",
+  "display:inline-flex align-items:center justify-content:center outline-style:none text-sm font-medium aria-invalid:ring-destructive/20 disabled:pointer-events-none focus-visible:ring-ring/50 dark:aria-invalid:ring-destructive/40 focus-visible:ring-[3px] [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 gap-2 rounded-md transition-[color,box-shadow] whitespace-nowrap",
   {
     variants: {
       variant: {
         default:
-          "bg-primary hover:bg-primary/90 shadow-xs text-primary-foreground",
+          "bg-primary shadow-xs hover:bg-primary/90 text-primary-foreground",
         destructive:
-          "bg-destructive dark:focus-visible:ring-destructive/40 focus-visible:ring-destructive/20 hover:bg-destructive/90 shadow-xs text-white",
+          "shadow-xs focus-visible:ring-destructive/20 hover:bg-destructive/90 dark:focus-visible:ring-destructive/40 bg-destructive text-white",
         outline:
-          "bg-background border border-input hover:bg-accent hover:text-accent-foreground shadow-xs",
+          "shadow-xs hover:text-accent-foreground bg-background border border-input",
         secondary:
-          "bg-secondary hover:bg-secondary/80 shadow-xs text-secondary-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "shadow-xs hover:bg-secondary/80 bg-secondary text-secondary-foreground",
+        ghost: "hover:text-accent-foreground",
         link: "hover:underline text-primary underline-offset-4",
       },
       size: {

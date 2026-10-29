@@ -49,7 +49,7 @@ export function ShadowScaleDemo() {
             <div className={`bg-surface-raised r-lg p-lg ${utility}`} key={key}>
               <DemoLabel>{utility}</DemoLabel>
               <div className="font-medium fg-text-strong">{role}</div>
-              <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">{description}</p>
+              <p className="mt-xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">{description}</p>
             </div>
           ))}
         </div>
@@ -62,14 +62,14 @@ function SurfaceStack() {
   return (
     <div className="p-lg r-lg bg-surface-raised shadow-lg">
       <div className="text-lg font-medium fg-text-strong">Raised surface</div>
-      <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">Cards use a large shadow on a raised surface.</p>
+      <p className="mt-xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">Cards use a large shadow on a raised surface.</p>
     </div>
   )
 }
 
 export function SurfaceElevationDemo() {
   return (
-    <Demo padding="none" className="display:flex flex-wrap:wrap container-type:inline-size">
+    <Demo padding="none" className="display:flex container-type:inline-size flex-wrap:wrap">
       <DemoLight>
         <SurfaceStack />
       </DemoLight>

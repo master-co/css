@@ -6,7 +6,7 @@ export default function Aa(props: any) {
     props.className,
     {
       'background-image:var(--tiny-image) background-position:center': props.className.includes('-webkit-text-fill-color:transparent'),
-      '-webkit-text-stroke-width:1px -webkit-text-stroke-color:currentColor': props.className.includes('fg-text-inverse')
+      '-webkit-text-stroke-color:currentColor -webkit-text-stroke-width:1px': props.className.includes('fg-text-inverse')
     }
   )} style={{ paintOrder: props.className.includes('fg-text-inverse') ? 'stroke fill' : undefined }}>Aa</span>
 }

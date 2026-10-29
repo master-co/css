@@ -9,7 +9,7 @@ function DemoMode({ mode, children }: { mode: 'light' | 'dark', children: ReactN
       {dark
         ? <IconMoon className="position:absolute right-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />
         : <IconSun className="position:absolute left-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />}
-      <div className="demo-mode-preview py-2xl">
+      <div className="py-2xl demo-mode-preview">
         {children}
       </div>
     </div>

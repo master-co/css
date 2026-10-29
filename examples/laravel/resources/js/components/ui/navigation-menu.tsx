@@ -59,7 +59,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  "display:inline-flex align-items:center justify-content:center bg-background dark:outline-ring/40 dark:ring-ring/20 data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground data-[state=open]:bg-accent/50 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-1 focus-visible:ring-4 focus:bg-accent focus:text-accent-foreground font-medium group h-9 hover:bg-accent hover:text-accent-foreground outline-ring/50 px-4 py-2 ring-ring/10 rounded-md text-sm transition-[color,box-shadow] w-max"
+  "display:inline-flex align-items:center justify-content:center text-sm font-medium dark:ring-ring/20 disabled:pointer-events-none focus-visible:ring-4 focus:text-accent-foreground hover:text-accent-foreground bg-background data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground data-[state=open]:bg-accent/50 group h-9 outline-ring/50 px-4 py-2 ring-ring/10 rounded-md transition-[color,box-shadow] w-max"
 )
 
 function NavigationMenuTrigger({
@@ -150,7 +150,7 @@ function NavigationMenuIndicator({
       )}
       {...props}
     >
-      <div className="bg-border h-2 relative rotate-45 rounded-tl-sm shadow-md top-[60%] w-2" />
+      <div className="shadow-md bg-border h-2 relative rotate-45 rounded-tl-sm top-[60%] w-2" />
     </NavigationMenuPrimitive.Indicator>
   )
 }

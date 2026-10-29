@@ -17,8 +17,8 @@ const items = [
 
 function BorderSpecimens() {
   return <div className="review-legend-specimens">
-    <div className={`border-width:2px border-style:solid b-blue bg-surface-raised review-legend-specimen`}>Subject</div>
-    <div className={`border-width:2px border-style:solid b-violet bg-surface-raised review-legend-specimen`}>Comparison</div>
+    <div className={`b-blue border-style:solid border-width:2px bg-surface-raised review-legend-specimen`}>Subject</div>
+    <div className={`b-violet border-style:solid border-width:2px bg-surface-raised review-legend-specimen`}>Comparison</div>
   </div>
 }
 

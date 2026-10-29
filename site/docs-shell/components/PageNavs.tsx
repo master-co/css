@@ -12,7 +12,7 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   let prevDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex - 1]
   let nextDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex + 1]
   const Nav = ({ definedMetadata, navigatorIconClass }: any) =>
-    <Link href={definedMetadata.pathname} className="flex-grow:1 flex-shrink:1 flex-basis:100% flex-direction:column justify-content:start! r-sm flex-grow:1@sm flex-shrink:1@sm flex-basis:50%@sm">
+    <Link href={definedMetadata.pathname} className="flex-basis:100% flex-direction:column flex-grow:1 flex-shrink:1 justify-content:start! r-sm flex-basis:50%@sm flex-grow:1@sm flex-shrink:1@sm">
       <div className='display:flex align-items:center'>
         <IconChevronLeft className={clsx('height:14px width:14px stroke-text-muted vertical-align:middle', navigatorIconClass)} />
         <span className="font-xs fg-text-muted">{$(definedMetadata.category)}</span>

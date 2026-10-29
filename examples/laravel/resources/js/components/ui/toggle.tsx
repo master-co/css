@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const toggleVariants = cva(
-  "display:inline-flex align-items:center justify-content:center outline-style:none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 font-medium gap-2 hover:bg-muted hover:text-muted-foreground rounded-md text-sm transition-[color,box-shadow]",
+  "display:inline-flex align-items:center justify-content:center outline-style:none text-sm font-medium aria-invalid:ring-destructive/20 disabled:pointer-events-none focus-visible:ring-ring/50 hover:text-muted-foreground dark:aria-invalid:ring-destructive/40 focus-visible:ring-[3px] [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground gap-2 rounded-md transition-[color,box-shadow]",
   {
     variants: {
       variant: {
         default: "bg-transparent",
         outline:
-          "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground shadow-xs",
+          "shadow-xs hover:text-accent-foreground bg-transparent border border-input",
       },
       size: {
         default: "h-9 min-w-9 px-2",

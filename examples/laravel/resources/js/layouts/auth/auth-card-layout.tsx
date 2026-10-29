@@ -13,11 +13,11 @@ export default function AuthCardLayout({
   description?: string;
 }>) {
   return (
-    <div className="display:flex flex-direction:column align-items:center justify-content:center bg-muted gap-6 md:p-10 min-h-svh p-6">
-      <div className="display:flex flex-direction:column gap-6 max-w-md w-full">
+    <div className="display:flex flex-direction:column align-items:center justify-content:center md:p-10 bg-muted gap-6 min-h-svh p-6">
+      <div className="display:flex flex-direction:column max-w-md gap-6 w-full">
         <Link href={route('home')} className="display:flex align-items:center align-self:center font-medium gap-2">
           <div className="display:flex align-items:center justify-content:center h-9 w-9">
-            <AppLogoIcon className="dark:text-white fill-current size-9 text-black" />
+            <AppLogoIcon className="fill-current dark:text-white size-9 text-black" />
           </div>
         </Link>
 

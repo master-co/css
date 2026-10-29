@@ -9,13 +9,13 @@ export function UserInfo({ user, showEmail = false }: { user: User; showEmail?: 
     <>
       <Avatar className="h-8 overflow-hidden rounded-full w-8">
         <AvatarImage src={user.avatar} alt={user.name} />
-        <AvatarFallback className="bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-lg text-black">
+        <AvatarFallback className="dark:text-white bg-neutral-200 rounded-lg text-black">
           {getInitials(user.name)}
         </AvatarFallback>
       </Avatar>
-      <div className="display:grid text-align:left flex-1 leading-tight text-sm">
+      <div className="display:grid text-sm text-align:left flex-1 leading-tight">
         <span className="font-medium truncate">{user.name}</span>
-        {showEmail && <span className="text-muted-foreground text-xs truncate">{user.email}</span>}
+        {showEmail && <span className="text-xs text-muted-foreground truncate">{user.email}</span>}
       </div>
     </>
   );

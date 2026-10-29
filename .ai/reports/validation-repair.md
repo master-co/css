@@ -1,6 +1,7 @@
 # Repository Validation Repair
 
 Follow-up to the Bun migration committed as `7e45084f2`, requested on 2026-10-29.
+The subsequent zero-warning cleanup is recorded in [Lint Warning Cleanup](#lint-warning-cleanup).
 
 ## Repairs
 
@@ -90,5 +91,38 @@ Screenshots and exact build-comparison evidence are retained for this session un
 The root `bun run check` and `bun run e2e` commands pass after the snapshot update.
 The site script matrix includes every defined `test:*` script, with no ignored or
 permitted failures. Frozen Bun installation preserves the lockfile and workspace
-package manifests. These results were verified locally on macOS arm64; existing
-lint warnings and upstream deprecation notices remain non-failing diagnostics.
+package manifests. These results were verified locally on macOS arm64; at that
+checkpoint, existing lint warnings and upstream deprecation notices remained
+non-failing diagnostics. The follow-up below removes the ESLint warnings.
+
+## Lint Warning Cleanup
+
+The next requested cleanup resolves 205 ESLint warnings without disabling rules:
+185 class-order warnings, 19 conflicting-class warnings in the Laravel example,
+and one unused request parameter in the Next example. Sorting preserves each
+class multiset. The Laravel conflict fixes remove 42 overridden occurrences of
+24 legacy Tailwind-style names from 19 lists; their variant prefixes were being
+emitted as unsupported native properties in this Master CSS-only entry. These
+removals do not migrate the remaining example vocabulary or add Tailwind styling.
+
+The Laravel client/SSR build and types pass. Comparing complete built stylesheets
+before/after in Chromium and WebKit produces identical valid CSSOM, including
+selectors, declaration values/order and nested rules; only empty unsupported
+rules are omitted for this comparison. The Next production build passes with
+the same API response. Reading the version selector URL once before JSX also
+removes two unsupported `MetaProperty` messages from the accessibility lint tool.
+
+### Snapshot Review
+
+All 448 site routes, 148 delivery contracts, 3,275 exact CSS segments and the
+project manifest remain. The complete CSS segment catalog is byte-identical.
+Only `/design-system/review/numeric-table` and its `/tw` counterpart change their
+hydration class order and hash. Their class multisets, hydration byte counts,
+CSS bytes/hashes/segment order and variable/keyframe resource order are unchanged.
+This is the expected metadata consequence of sorting native class names; the
+snapshot keeps its exact-order assertion and records the reviewed order.
+
+The final checks pass: all 34 package/example lint tasks plus uncached site lint
+with `--max-warnings=0`; root `bun run check` (114 tasks); site build (448 pages,
+92 referenced assets), type checking and all 13 site test scripts. No lint rule,
+diagnostic severity, assertion or CSS snapshot comparison is weakened.

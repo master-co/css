@@ -36,8 +36,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     <div className="px-4 py-6">
       <Heading title="Settings" description="Manage your profile and account settings" />
 
-      <div className="display:flex flex-direction:column lg:flex-row lg:space-x-12 lg:space-y-0 space-y-8">
-        <aside className="lg:w-48 max-w-xl w-full">
+      <div className="display:flex flex-direction:column lg:space-y-0 space-y-8">
+        <aside className="max-w-xl lg:w-48 w-full">
           <nav className="display:flex flex-direction:column space-x-0 space-y-1">
             {sidebarNavItems.map((item, index) => (
               <Button
@@ -59,7 +59,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
         <Separator className="md:hidden my-6" />
 
-        <div className="flex-1 md:max-w-2xl">
+        <div className="md:max-w-2xl flex-1">
           <section className="max-w-xl space-y-12">{children}</section>
         </div>
       </div>

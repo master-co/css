@@ -205,7 +205,7 @@ function Sidebar({
 
   return (
     <div
-      className="display:none group md:block peer text-sidebar-foreground"
+      className="display:none md:block group peer text-sidebar-foreground"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -469,18 +469,18 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "display:flex align-items:center text-align:left [&>span:last-child]:truncate [&>svg]:shrink-0 [&>svg]:size-4 active:bg-sidebar-accent active:text-sidebar-accent-foreground aria-disabled:opacity-50 aria-disabled:pointer-events-none data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground disabled:opacity-50 disabled:pointer-events-none focus-visible:ring-2 gap-2 group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:size-8! group-has-data-[sidebar=menu-action]/menu-item:pr-8 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground overflow-hidden p-2 peer/menu-button ring-sidebar-ring rounded-md text-sm transition-[width,height,padding] w-full",
+  "display:flex align-items:center text-sm text-align:left active:text-sidebar-accent-foreground aria-disabled:pointer-events-none disabled:pointer-events-none focus-visible:ring-2 hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:shrink-0 [&>svg]:size-4 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground gap-2 group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:size-8! group-has-data-[sidebar=menu-action]/menu-item:pr-8 overflow-hidden p-2 peer/menu-button ring-sidebar-ring rounded-md transition-[width,height,padding] w-full",
   {
     variants: {
       variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        default: "hover:text-sidebar-accent-foreground",
         outline:
-          "bg-background hover:bg-sidebar-accent hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))] hover:text-sidebar-accent-foreground shadow-[0_0_0_1px_hsl(var(--sidebar-border))]",
+          "hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))] bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))]",
       },
       size: {
-        default: "h-8 text-sm",
-        sm: "h-7 text-xs",
-        lg: "group-data-[collapsible=icon]:p-0! h-12 text-sm",
+        default: "text-sm h-8",
+        sm: "text-xs h-7",
+        lg: "text-sm group-data-[collapsible=icon]:p-0! h-12",
       },
     },
     defaultVariants: {

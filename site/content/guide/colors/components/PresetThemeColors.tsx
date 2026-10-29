@@ -17,7 +17,7 @@ export function SurfacesDemo() {
 export function LineRolesDemo() {
   function renderPreview() {
     return (
-      <div className="height:6rem width:6rem r-sm border-width:1.25rem border-style:solid b-line-divider"></div>
+      <div className="height:6rem width:6rem b-line-divider r-sm border-style:solid border-width:1.25rem"></div>
     )
   }
 
@@ -65,7 +65,7 @@ export function TextRolesDemo() {
         <button className="text-sm fg-text-disabled" disabled>Archived export unavailable</button>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a className="text-decoration:underline fg-text-link fg-text-link-hover:hover" href="#">Open report</a>
-        <div className="width:fit-content margin-inline:auto mt-sm py-xs px-sm r-sm bg-surface-inverse fg-text-inverse">Private note</div>
+        <div className="width:fit-content mt-sm margin-inline:auto py-xs px-sm r-sm bg-surface-inverse fg-text-inverse">Private note</div>
       </div>
     )
   }

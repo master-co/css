@@ -8,7 +8,7 @@ export default function Tabs(props: any) {
     <nav className={clsx('overflow-x:auto overflow-y:hidden display:none::-webkit-scrollbar', props.className)}>
       {/* width:fit-content min-width:100% 用於觸發 ResizeObserver */}
       <div className={clsx(
-        'display:flex gap-xl width:fit-content min-width:100% border-bottom-width:1px border-bottom-style:solid bb-line-subtle',
+        'display:flex gap-xl width:fit-content min-width:100% bb-line-subtle border-bottom-style:solid border-bottom-width:1px',
         props.contentClassName
       )}>
         {props.children}
@@ -23,7 +23,7 @@ export function Tab(props: any) {
     <Link {...props}
       className={clsx(
         // Each state owns the bottom color: a token longhand does not override a native block shorthand.
-        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-width:2px border-block-style:solid border-top-color:transparent font-weight:460 white-space:nowrap app-nav',
+        'display:flex align-items:center justify-content:center height:48px margin-bottom:-1px border-block-style:solid border-block-width:2px border-top-color:transparent font-weight:460 white-space:nowrap app-nav',
         {
           'font-xs!': size === 'sm',
           'font-sm!': !size

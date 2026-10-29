@@ -15,7 +15,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
   return (
     <>
       <DropdownMenuLabel className="font-normal p-0">
-        <div className="display:flex align-items:center text-align:left gap-2 px-1 py-1.5 text-sm">
+        <div className="display:flex align-items:center text-sm text-align:left gap-2 px-1 py-1.5">
           <UserInfo user={user} showEmail={true} />
         </div>
       </DropdownMenuLabel>

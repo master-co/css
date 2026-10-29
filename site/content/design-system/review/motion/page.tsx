@@ -14,7 +14,7 @@ export { metadata }
 function Preview() {
   return <Demo padding="none" frame="none"><div className="review-motion-currentPreview">
     <DemoMotion><div className="review-motion-scene">
-      <DemoItem tone="blue" className="display:grid place-content:center height:4rem width:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite">↗</DemoItem>
+      <DemoItem tone="blue" className="display:grid place-content:center height:4rem width:4rem animation-duration:2s animation-iteration-count:infinite animation-name:rotate animation-timing-function:linear">↗</DemoItem>
     </div></DemoMotion>
   </div></Demo>
 }

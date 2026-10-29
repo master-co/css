@@ -49,7 +49,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
   return (
     <>
       <div className="border-b border-sidebar-border/80">
-        <div className="display:flex align-items:center h-16 md:max-w-7xl mx-auto px-4">
+        <div className="display:flex align-items:center md:max-w-7xl h-16 mx-auto px-4">
           {/* Mobile Menu */}
           <div className="lg:hidden">
             <Sheet>
@@ -61,10 +61,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               <SheetContent side="left" className="display:flex flex-direction:column align-items:stretch justify-content:space-between bg-sidebar h-full w-64">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <SheetHeader className="display:flex justify-content:start text-align:left">
-                  <AppLogoIcon className="dark:text-white fill-current h-6 text-black w-6" />
+                  <AppLogoIcon className="fill-current dark:text-white h-6 text-black w-6" />
                 </SheetHeader>
                 <div className="display:flex flex-direction:column flex-1 h-full p-4 space-y-4">
-                  <div className="display:flex flex-direction:column justify-content:space-between h-full text-sm">
+                  <div className="display:flex flex-direction:column justify-content:space-between text-sm h-full">
                     <div className="display:flex flex-direction:column space-y-4">
                       {mainNavItems.map((item) => (
                         <Link key={item.title} href={item.href} className="display:flex align-items:center font-medium space-x-2">
@@ -99,7 +99,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="display:none align-items:center h-full lg:flex ml-6 space-x-6">
+          <div className="display:none align-items:center lg:flex h-full ml-6 space-x-6">
             <NavigationMenu className="display:flex align-items:stretch h-full">
               <NavigationMenuList className="display:flex align-items:stretch h-full space-x-2">
                 {mainNavItems.map((item, index) => (
@@ -116,7 +116,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                       {item.title}
                     </Link>
                     {page.url === item.href && (
-                      <div className="absolute bg-black bottom-0 dark:bg-white h-0.5 left-0 translate-y-px w-full"></div>
+                      <div className="bg-black dark:bg-white absolute bottom-0 h-0.5 left-0 translate-y-px w-full"></div>
                     )}
                   </NavigationMenuItem>
                 ))}
@@ -127,7 +127,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
           <div className="display:flex align-items:center ml-auto space-x-2">
             <div className="display:flex align-items:center relative space-x-1">
               <Button variant="ghost" size="icon" className="cursor-pointer group h-9 w-9">
-                <Search className="!size-5 group-hover:opacity-100 opacity-80" />
+                <Search className="group-hover:opacity-100 !size-5 opacity-80" />
               </Button>
               <div className="display:none lg:flex">
                 {rightNavItems.map((item) => (
@@ -138,7 +138,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                           href={item.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="display:inline-flex align-items:center justify-content:center bg-transparent disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium group h-9 hover:bg-accent hover:text-accent-foreground ml-1 p-0 ring-offset-background rounded-md text-accent-foreground text-sm transition-colors w-9"
+                          className="display:inline-flex align-items:center justify-content:center text-sm font-medium disabled:pointer-events-none focus-visible:ring-ring hover:text-accent-foreground bg-transparent group h-9 ml-1 p-0 ring-offset-background rounded-md text-accent-foreground transition-colors w-9"
                         >
                           <span className="sr-only">{item.title}</span>
                           {item.icon && <Icon iconNode={item.icon} className="group-hover:opacity-100 opacity-80 size-5" />}
@@ -157,7 +157,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 <Button variant="ghost" className="p-1 rounded-full size-10">
                   <Avatar className="overflow-hidden rounded-full size-8">
                     <AvatarImage src={auth.user.avatar} alt={auth.user.name} />
-                    <AvatarFallback className="bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-lg text-black">
+                    <AvatarFallback className="dark:text-white bg-neutral-200 rounded-lg text-black">
                       {getInitials(auth.user.name)}
                     </AvatarFallback>
                   </Avatar>
@@ -172,7 +172,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
       </div>
       {breadcrumbs.length > 1 && (
         <div className="display:flex border-b border-sidebar-border/70 w-full">
-          <div className="display:flex align-items:center justify-content:start h-12 md:max-w-7xl mx-auto px-4 text-500 w-full">
+          <div className="display:flex align-items:center justify-content:start md:max-w-7xl h-12 mx-auto px-4 text-500 w-full">
             <Breadcrumbs breadcrumbs={breadcrumbs} />
           </div>
         </div>

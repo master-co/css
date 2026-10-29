@@ -4,7 +4,7 @@ import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
   return (
-    <header className="display:flex align-items:center border-b border-sidebar-border/50 ease-linear gap-2 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 h-16 md:px-4 px-6 shrink-0 transition-[width,height]">
+    <header className="display:flex align-items:center md:px-4 border-b border-sidebar-border/50 ease-linear gap-2 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 h-16 px-6 shrink-0 transition-[width,height]">
       <div className="display:flex align-items:center gap-2">
         <SidebarTrigger className="-ml-1" />
         <Breadcrumbs breadcrumbs={breadcrumbs} />

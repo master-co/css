@@ -53,7 +53,7 @@ export default function ArticleTransitionScene() {
         className={clsx(selected.imageTransition, shared, 'display:block height:auto width:100% aspect-ratio:16/9 object-fit:cover')} />
       <div className="p-lg">
         <time dateTime={selected.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(selected.dateTransition, shared, 'text-xs fg-text-muted')}>{selected.date}</time>
-        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-semibold outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible outline-offset-4xs:focus-visible')}>{selected.title}</h1>
+        <h1 ref={heading} tabIndex={-1} className={clsx(selected.titleTransition, shared, 'mt-sm margin-bottom:0 text-2xl font-semibold outline-blue:focus-visible outline-offset-4xs:focus-visible outline-style:solid:focus-visible outline-width:2px:focus-visible')}>{selected.title}</h1>
         <p className="mt-md margin-bottom:0 text-sm fg-text-muted">{selected.description} The image, title and date keep their names in both views. Each snapshot can move to its new bounds while surrounding content fades.</p>
         <button type="button" className="mt-lg demo-button" onClick={() => run(() => setSelectedId(undefined), () => buttons.current.get(selected.id) ?? null)}>
           <IconArrowLeft size={14} aria-hidden="true" />Back to collection
@@ -63,7 +63,7 @@ export default function ArticleTransitionScene() {
       {articles.map(article => <DemoSurface key={article.id} className="display:flex overflow:hidden flex-direction:column">
         <Image alt={article.imageAlt} src={article.image} placeholder="blur" sizes="(max-width: 480px) 100vw, 300px"
           className={clsx(article.imageTransition, shared, 'display:block height:auto width:100% aspect-ratio:16/10 object-fit:cover')} />
-        <article className="display:flex flex:1 flex-direction:column p-md">
+        <article className="display:flex flex-direction:column flex:1 p-md">
           <time dateTime={article.id === 'aurora' ? '2026-05-12' : '2026-05-09'} className={clsx(article.dateTransition, shared, 'text-xs fg-text-muted')}>{article.date}</time>
           <h2 className={clsx(article.titleTransition, shared, 'mt-xs margin-bottom:0 text-lg font-semibold')}>{article.title}</h2>
           <p className="mb-md mt-sm text-sm fg-text-muted">{article.description}</p>

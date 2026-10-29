@@ -13,8 +13,8 @@ export function FoundationMedia() {
           <DemoMedia className="width:100% aspect-ratio:4/3 r-sm fg-demo-blue flex-shrink:0@container((width>=28rem)) width:9rem@container((width>=28rem))" aria-label="Blue mountain illustration" />
           <div className="flex:1 min-width:0">
             <DemoLabel>Collection / 024</DemoLabel>
-            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-semibold">Field notes</h3>
-            <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">A small archive of places, textures and quiet details from the trail.</p>
+            <h3 className="mt-xs margin-bottom:0 margin-inline:0 text-md font-semibold">Field notes</h3>
+            <p className="mt-xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">A small archive of places, textures and quiet details from the trail.</p>
             <div className="display:flex flex-wrap:wrap gap-sm mt-md"><DemoLabel>12 images</DemoLabel><DemoLabel>Updated today</DemoLabel></div>
           </div>
         </article>
@@ -31,8 +31,8 @@ export function FoundationContainerGrid() {
           <DemoMedia className="width:100% aspect-ratio:3/2 r-sm fg-demo-blue" aria-label="Blue mountain illustration" />
           <div className="min-width:0">
             <DemoLabel>Asset library</DemoLabel>
-            <h3 className="margin-inline:0 mt-xs margin-bottom:0 text-md font-semibold">Space to compose</h3>
-            <p className="margin-inline:0 mt-xs margin-bottom:0 text-sm fg-text-muted">A single column stays readable in a sidebar. A wider container gives the image its own track.</p>
+            <h3 className="mt-xs margin-bottom:0 margin-inline:0 text-md font-semibold">Space to compose</h3>
+            <p className="mt-xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">A single column stays readable in a sidebar. A wider container gives the image its own track.</p>
           </div>
         </article>
       </section>
@@ -48,7 +48,7 @@ export function FoundationSizing() {
         <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">
           <div className="text-sm font-semibold">Field notes</div>
-          <p className="margin-inline:0 mt-2xs margin-bottom:0 text-sm fg-text-muted">Measured avatar. Flexible content.</p>
+          <p className="mt-2xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">Measured avatar. Flexible content.</p>
         </div>
       </div>
     </DemoSurface>
@@ -71,7 +71,7 @@ export function FoundationShrink() {
         <DemoItem className="display:grid flex-shrink:0 place-content:center height:2.5rem width:2.5rem text-sm font-mono">FN</DemoItem>
         <div className="flex:1 min-width:0">
           <div className="text-sm font-semibold">Project archive</div>
-          <p className="overflow:hidden margin-inline:0 mt-2xs margin-bottom:0 text-sm text-overflow:ellipsis white-space:nowrap fg-text-muted">field-notes-autumn-collection-final-v03.fig</p>
+          <p className="overflow:hidden mt-2xs margin-bottom:0 margin-inline:0 text-sm text-overflow:ellipsis white-space:nowrap fg-text-muted">field-notes-autumn-collection-final-v03.fig</p>
         </div>
       </article>
     </DemoContainer>
@@ -91,8 +91,8 @@ export function FoundationRadius() {
 export function FoundationShapes() {
   return <Demo title="Content-sized pill and width-led circle" data-foundation="shapes" caption="These links share a destination. Their shape is independent of their native navigation behavior.">
     <div className="display:flex flex-wrap:wrap align-items:end gap-lg">
-      <div><DemoLabel>r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md r-pill border-width:1px border-style:solid b-line-divider text-sm text-decoration:none bg-demo-surface fg-text-body">Pills and circles</a></div></div>
-      <div><DemoLabel>width:48px aspect-ratio:1/1 r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" className="display:inline-flex align-items:center justify-content:center width:48px aspect-ratio:1/1 r-pill border-width:1px border-style:solid b-line-divider bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
+      <div><DemoLabel>r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" className="display:inline-flex align-items:center justify-content:center min-height:44px py-sm px-md b-line-divider r-pill border-style:solid border-width:1px text-sm text-decoration:none bg-demo-surface fg-text-body">Pills and circles</a></div></div>
+      <div><DemoLabel>width:48px aspect-ratio:1/1 r-pill</DemoLabel><div className="mt-sm"><a href="#use-shape-shortcuts" aria-label="Pills and circles" className="display:inline-flex align-items:center justify-content:center width:48px aspect-ratio:1/1 b-line-divider r-pill border-style:solid border-width:1px bg-demo-surface fg-text-blue"><IconArrowUp size={20} aria-hidden="true" /></a></div></div>
     </div>
   </Demo>
 }

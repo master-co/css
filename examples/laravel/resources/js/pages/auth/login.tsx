@@ -61,7 +61,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <div className="display:flex align-items:center">
               <Label htmlFor="password">Password</Label>
               {canResetPassword && (
-                <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
+                <TextLink href={route('password.request')} className="text-sm ml-auto" tabIndex={5}>
                   Forgot password?
                 </TextLink>
               )}
@@ -96,7 +96,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
           </Button>
         </div>
 
-        <div className="text-align:center text-muted-foreground text-sm">
+        <div className="text-sm text-align:center text-muted-foreground">
           Don't have an account?{' '}
           <TextLink href={route('register')} tabIndex={5}>
             Sign up
@@ -104,7 +104,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         </div>
       </form>
 
-      {status && <div className="text-center font-medium mb-4 text-green-600 text-sm">{status}</div>}
+      {status && <div className="text-sm font-medium mb-4 text-center text-green-600">{status}</div>}
     </AuthLayout>
   );
 }

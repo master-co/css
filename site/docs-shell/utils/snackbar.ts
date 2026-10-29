@@ -9,7 +9,7 @@ export async function snackbar(text: string, { placement }: any = {}) {
   }
   const element = document.createElement('div')
   element.className = clsx(
-    'position:fixed left:0 right:0 z-index:1060 width:fit-content margin:auto padding-top:var(--spacing-sm) padding-right:var(--spacing-md) padding-bottom:var(--spacing-sm) padding-left:var(--spacing-md) r-lg outline-width:1px outline-style:solid outline-line-subtle font-xs background-color:var(--color-float) fg-text-strong cursor:pointer',
+    'position:fixed left:0 right:0 z-index:1060 width:fit-content margin:auto padding-bottom:var(--spacing-sm) padding-left:var(--spacing-md) padding-right:var(--spacing-md) padding-top:var(--spacing-sm) r-lg outline-line-subtle outline-style:solid outline-width:1px font-xs background-color:var(--color-float) fg-text-strong cursor:pointer',
     {
       'top:20px': placement === 'top',
       'bottom:20px': !placement

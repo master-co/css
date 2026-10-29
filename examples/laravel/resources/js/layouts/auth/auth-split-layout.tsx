@@ -12,10 +12,10 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
   const { name, quote } = usePage<SharedData>().props;
 
   return (
-    <div className="display:grid flex-direction:column align-items:center justify-content:center h-dvh lg:grid-cols-2 lg:max-w-none lg:px-0 px-8 relative sm:px-0">
-      <div className="display:none flex-direction:column bg-muted dark:border-r h-full lg:flex p-10 relative text-white">
+    <div className="display:grid flex-direction:column align-items:center justify-content:center lg:px-0 sm:px-0 h-dvh px-8 relative">
+      <div className="display:none flex-direction:column dark:border-r lg:flex bg-muted h-full p-10 relative text-white">
         <div className="absolute bg-zinc-900 inset-0" />
-        <Link href={route('home')} className="display:flex align-items:center font-medium relative text-lg z-20">
+        <Link href={route('home')} className="display:flex align-items:center text-lg font-medium relative z-20">
           <AppLogoIcon className="fill-current mr-2 size-8 text-white" />
           {name}
         </Link>
@@ -23,19 +23,19 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
           <div className="mt-auto relative z-20">
             <blockquote className="space-y-2">
               <p className="text-lg">&ldquo;{quote.message}&rdquo;</p>
-              <footer className="text-300 text-sm">{quote.author}</footer>
+              <footer className="text-sm text-300">{quote.author}</footer>
             </blockquote>
           </div>
         )}
       </div>
       <div className="lg:p-8 w-full">
-        <div className="display:flex flex-direction:column justify-content:center mx-auto sm:w-[350px] space-y-6 w-full">
+        <div className="display:flex flex-direction:column justify-content:center sm:w-[350px] mx-auto space-y-6 w-full">
           <Link href={route('home')} className="display:flex align-items:center justify-content:center lg:hidden relative z-20">
-            <AppLogoIcon className="fill-current h-10 sm:h-12 text-black" />
+            <AppLogoIcon className="fill-current sm:h-12 h-10 text-black" />
           </Link>
-          <div className="display:flex flex-direction:column align-items:start text-align:left gap-2 sm:items-center sm:text-center">
-            <h1 className="font-medium text-xl">{title}</h1>
-            <p className="text-wrap:balance text-muted-foreground text-sm">{description}</p>
+          <div className="display:flex flex-direction:column align-items:start text-align:left sm:text-center gap-2">
+            <h1 className="text-xl font-medium">{title}</h1>
+            <p className="text-sm text-wrap:balance text-muted-foreground">{description}</p>
           </div>
           {children}
         </div>
