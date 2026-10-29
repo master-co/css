@@ -12,9 +12,10 @@ let browser
 before(async () => { await mkdir(output, { recursive: true }); browser = await ({ chromium, webkit })[browserName].launch() })
 after(async () => { await browser?.close() })
 
-async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'reduce', js = true, density = 1, textSize, denyCopy = false } = {}) {
+async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'reduce', js = true, density = 1, textSize, denyCopy = false, pendingCopy = false } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 1000 }, colorScheme: scheme, reducedMotion: motion, javaScriptEnabled: js, deviceScaleFactor: density })
   if (denyCopy) await context.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new Error('Denied') } } }))
+  if (pendingCopy) await context.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => { window.__brandCopyCalls = (window.__brandCopyCalls ?? 0) + 1; return new Promise(resolve => { window.__completeBrandCopy = resolve }) } } }))
   const page = await context.newPage()
   const errors = []
   page.on('pageerror', error => errors.push(error.message))
@@ -109,16 +110,22 @@ test(`${browserName}: native radios, range, disclosure and failed clipboard keep
 })
 
 test(`${browserName}: minimum logo examples keep their actual dimensions and source proportions`, { timeout: 60000 }, async () => {
-  const { context, page } = await open()
+  const { context, page } = await open({ width: 320 })
   try {
     const examples = page.locator('.brand-logo-minimums')
     await examples.scrollIntoViewIfNeeded()
+    assert.equal(await examples.locator('img:visible').count(), 2, 'one mark and one theme-appropriate lockup')
     const mark = await examples.locator('img[src="/images/logo.svg"]').boundingBox()
     const lockup = await examples.locator('img:visible').last().boundingBox()
     assert.equal(mark.height, 16)
     assert.equal(lockup.width, 160)
     assert.ok(Math.abs(mark.width / mark.height - 103.81 / 56.36) < .001)
     assert.ok(Math.abs(lockup.width / lockup.height - 460 / 55) < .01)
+    await page.getByRole('combobox', { name: 'Brand appearance' }).selectOption('dark')
+    await page.waitForFunction(() => document.documentElement.classList.contains('dark'))
+    assert.equal(await examples.locator('img:visible').count(), 2)
+    assert.equal(await examples.locator('img.brand-logo-dark').isVisible(), true)
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false)
     await page.screenshot({ path: new URL('minimum-logo-sizes.png', output).pathname })
   } finally { await context.close() }
 })
@@ -174,7 +181,27 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
   }
 })
 
-if (browserName === 'chromium') test('chromium: copying writes the exact CSS variable', { timeout: 60000 }, async () => {
+test(`${browserName}: a pending clipboard request is visible and repeat activation does not duplicate it`, { timeout: 60000 }, async () => {
+  const { context, page } = await open({ pendingCopy: true })
+  try {
+    const color = page.locator('.brand-color').first()
+    const button = color.getByRole('button')
+    const height = (await color.boundingBox()).height
+    await button.focus(); await button.press('Enter')
+    await color.getByRole('status').filter({ hasText: 'Copying…' }).waitFor()
+    assert.equal(await button.getAttribute('aria-busy'), 'true')
+    await button.press('Enter')
+    assert.equal(await page.evaluate(() => window.__brandCopyCalls), 1)
+    await page.evaluate(() => window.__completeBrandCopy())
+    await page.waitForFunction(() => document.querySelector('.brand-color [role="status"]').textContent === 'Copied')
+    assert.equal(await button.getAttribute('aria-busy'), 'false')
+    assert.equal((await color.boundingBox()).height, height)
+  } finally { await context.close() }
+})
+
+// Playwright WebKit cannot grant clipboard permissions; its OS write may remain pending.
+// Real browser success is verified in Chromium; both engines exercise denial and pending feedback.
+if (browserName === 'chromium') test('chromium: copying writes the exact CSS variable through the native clipboard API', { timeout: 60000 }, async () => {
   const { context, page } = await open()
   try {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])

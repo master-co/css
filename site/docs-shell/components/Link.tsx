@@ -32,7 +32,7 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   const canonicalHref = useMemo(() => canonicalizeDefaultLocalePathname(href, i18n.defaultLocale), [href, i18n.defaultLocale])
 
   const onClick = useCallback<MouseEventHandler>((event) => {
-    if (isHash) {
+    if (isHash && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
       event.preventDefault()
       anchor(href.slice(1), { offset: 110 })
     }

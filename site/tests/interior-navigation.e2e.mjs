@@ -92,6 +92,28 @@ test(`${browserName}: language changes retain a document query and semantic anch
   } finally { await context.close() }
 })
 
+test(`${browserName}: a contents jump creates one history entry and modified clicks keep native navigation`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/introduction?source=brand', { width: 1440 })
+  try {
+    const original = page.url()
+    const history = await page.evaluate(() => window.history.length)
+    const link = page.locator('.doc-page-contents a[href^="#"]').nth(1)
+    const hash = await link.getAttribute('href')
+    await link.click()
+    assert.equal(await page.evaluate(() => window.history.length), history + 1)
+    assert.equal(new URL(page.url()).search, '?source=brand')
+    assert.equal(new URL(page.url()).hash, hash)
+    await page.goBack()
+    assert.equal(page.url(), original, 'one Back returns to the document before the jump')
+    // Headless browser chrome need not open a tab; the application must leave its native default alone.
+    await page.evaluate(() => document.addEventListener('click', event => { window.__contentsModifiedClick = { modified: event.metaKey || event.ctrlKey, prevented: event.defaultPrevented } }, { once: true }))
+    await link.click({ modifiers: ['ControlOrMeta'] })
+    assert.deepEqual(await page.evaluate(() => window.__contentsModifiedClick), { modified: true, prevented: false })
+    assert.equal(page.url(), original)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
 test(`${browserName}: enlarged navigation and contents disclosure retain local boundaries`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/tw/guide/typography', { width: 320 })
   try {
@@ -175,6 +197,8 @@ test(`${browserName}: sponsor platform links remain available without JavaScript
   try {
     assert.equal(await page.locator('.sponsor-static-links a').count(), 16)
     assert.equal(await page.locator('.sponsor-static-links').first().isVisible(), true)
+    assert.equal(await page.locator('.sponsor-tier:visible').count(), 0, 'enhancement-only buttons yield to real platform links')
+    assert.equal(await page.locator('.sponsor-static-tier .sponsor-tier-amount').count(), 8, 'the static view retains each amount or flexible option')
     await noOverflow(page)
   } finally { await context.close() }
 })

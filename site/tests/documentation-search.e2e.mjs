@@ -126,3 +126,29 @@ test(`${browserName}: 200% text and pointer dismissal preserve the page position
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
+
+for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: 320px with 200% text keeps the query visible`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open({ width: 320, locale })
+  try {
+    await page.addStyleTag({ content: 'html{font-size:32px!important}' })
+    await page.keyboard.press('ControlOrMeta+k')
+    const dialog = page.getByRole('dialog')
+    const input = dialog.getByRole('combobox')
+    await input.fill('padding')
+    await dialog.getByRole('option').first().waitFor()
+    assert.ok((await input.boundingBox()).width >= 128, 'the typed query retains usable space beside the clear action')
+    const clear = dialog.getByRole('button', { name: locale === 'tw' ? '清除搜尋' : 'Clear search' })
+    const close = dialog.getByRole('button', { name: locale === 'tw' ? '關閉搜尋' : 'Close search' })
+    assert.ok((await close.boundingBox()).y > (await input.boundingBox()).y, 'the secondary close action uses the next row')
+    await page.screenshot({ path: new URL(`320-${locale}-enlarged-query.png`, output).pathname })
+    await clear.click()
+    assert.equal(await input.inputValue(), '')
+    assert.equal(await input.evaluate(element => element === document.activeElement), true)
+    const dimensions = await dialog.evaluate(element => ({ width: element.clientWidth, content: element.scrollWidth }))
+    assert.ok(dimensions.content <= dimensions.width + 1)
+    await page.screenshot({ path: new URL(`320-${locale}-enlarged.png`, output).pathname })
+    await close.click()
+    assert.equal(await dialog.count(), 0)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})

@@ -38,7 +38,7 @@ export function brandComponentMarkdown(name: string) {
     'At a 16px root, a fitted shell has an 8px inset. A 24px shell radius surrounds a 16px panel; include a physical border in the inner-face measurement.',
     'Flat: one clear boundary. Raised: a short contact shadow. Floating: more distance for menus and dialogs. Glass: local to floating tools with a real backdrop.'
   ].join('\n\n')
-  if (name === 'BrandControls') return 'Native List and Grid radios change the specimen layout. A range changes its content inset from 12px to 32px. Copy token writes `var(--color-surface-raised)` and reports success or failure; Unavailable is disabled. Selection persists, pressing acknowledges an action, and a focus ring follows the keyboard. Labels and control geometry remain stable.'
+  if (name === 'BrandControls') return 'Native List and Grid radios change the specimen layout. A range changes its content inset from 12px to 32px. Copy token writes the displayed `var(--color-surface-raised)` and reports a pending request, then success or failure; Unavailable is disabled. Selection persists, pressing acknowledges an action, and a focus ring follows the keyboard. Labels and control geometry remain stable.'
   if (name === 'BrandMotion') return table(['Duration token', 'Value'], brandTiming().map(entry => [`\`${entry.token}\``, `\`${entry.value}\``]))
   if (name === 'BrandApplications') return [
     '### Documentation',

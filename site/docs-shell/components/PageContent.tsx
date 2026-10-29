@@ -2,7 +2,6 @@
 
 import '~/site/styles/docs-shell/scrollbar.css'
 import ContentsSvg from '../../public/images/contents.svg'
-import { anchor } from '../utils/anchor'
 import Link from './Link'
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
@@ -105,11 +104,7 @@ function PageContentNav({ children, id, level, activeTransitionsReady, currentId
     'active': active || currentParentId === id,
     'min-height:32px': level === 2,
     'min-height:24px font-xs': level === 3,
-  })}
-    onClick={(event: any) => {
-      event.preventDefault()
-      anchor(id, { offset: 109 })
-    }}>
+  })}>
     <div className={clsx({
       'min-height:32px py-4xs': level === 2,
       'margin-left:1em padding-block:1px padding-left:1em text-indent:-1em': level === 3

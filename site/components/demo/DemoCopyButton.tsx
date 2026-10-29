@@ -39,6 +39,7 @@ export default function DemoCopyButton({ value, label, icon = <IconCopy size={15
   async function copy() {
     if (busy) return
     setBusy(true)
+    report('Copying…')
     try {
       if (!window.isSecureContext || !navigator.clipboard?.writeText) throw new Error('Clipboard unavailable')
       await navigator.clipboard.writeText(value)

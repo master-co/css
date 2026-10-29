@@ -26,6 +26,6 @@ export default function TierCards({ tiers, onSelect, label }: { tiers: SponsorTi
   const tw = useLocale() === 'tw'
   return <>
     <div className="sponsor-tier-grid" role="group" aria-label={label}>{tiers.map(tier => <button key={tier.name} type="button" className="sponsor-tier" aria-haspopup="dialog" onClick={event => { event.currentTarget.focus({ preventScroll: true }); onSelect(tier) }}><TierSummary tier={tier} /></button>)}</div>
-    <noscript><ul className="sponsor-static-links">{tiers.map(tier => <li key={tier.name}><strong>{tierDisplayName(tier.name)}</strong><Link href={tier.openCollectiveUrl}>Open Collective</Link><Link href={tier.githubSponsorUrl}>GitHub Sponsors</Link></li>)}</ul><p>{tw ? '選擇平台以繼續。' : 'Choose a platform to continue.'}</p></noscript>
+    <noscript><p>{tw ? '選擇平台以繼續。' : 'Choose a platform to continue.'}</p><ul className="sponsor-static-links">{tiers.map(tier => <li key={tier.name}><div className="sponsor-static-tier"><TierSummary tier={tier} /></div><div className="sponsor-static-platforms"><Link href={tier.openCollectiveUrl}>Open Collective</Link><Link href={tier.githubSponsorUrl}>GitHub Sponsors</Link></div></li>)}</ul></noscript>
   </>
 }

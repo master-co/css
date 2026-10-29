@@ -74,9 +74,9 @@
   .brand-lockup-space::before { top: 0; }
   .brand-lockup-space::after { bottom: 0; }
   .brand-lockup-space img { display: block; width: calc(460 / 487.5 * 100%); height: auto; margin: 0; }
-  .brand-lockup-space .brand-logo-dark { display: none; }
-  .dark .brand-lockup-space .brand-logo-light { display: none; }
-  .dark .brand-lockup-space .brand-logo-dark { display: block; }
+  .brand-page .brand-logo-dark { display: none; }
+  .dark .brand-page .brand-logo-light { display: none; }
+  .dark .brand-page .brand-logo-dark { display: block; }
   .brand-lockup-clearance { position: absolute; left: -.75rem; top: -.75rem; padding-inline: .25rem; background: var(--brand-sheet); color: var(--brand-gold-ink); font: .75rem/1.4 var(--font-family-mono); }
   .brand-logo-equation { justify-self: end; color: var(--brand-quiet); font: .6875rem/1.5 var(--font-family-mono); }
   .brand-logo-rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-xl); margin: var(--spacing-xl) 0; }
