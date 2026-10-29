@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config'
 import config from '../../shared/vitest.config'
 
 const runsE2E = process.env.npm_lifecycle_event === 'e2e'
+  || process.argv.some(argument => argument.endsWith('-e2e.test.ts'))
 
 export default defineConfig({
   ...config,

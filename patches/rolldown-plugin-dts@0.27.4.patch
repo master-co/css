@@ -1,0 +1,44 @@
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index cbc7b9501052b8f446abd64403247f615ad578c8..79d555122cec7b24920f62fea05a3850924a7f2e 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -221,6 +221,8 @@ interface Options extends GeneralOptions, TscOptions {
+   tsgo?: boolean | TsgoOptions;
+ }
+ interface TsgoOptions {
++  /** Common root of all emitted workspace sources, including imported files. */
++  rootDir?: string;
+   /**
+    * Custom path to the `tsgo` binary.
+    */
+diff --git a/dist/index.mjs b/dist/index.mjs
+index b778789ce5b6fedaa486aa086c8a367fb8932efe..2ceb4905ca279286cf296cbaad1542157b58fcfa 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -783,7 +783,7 @@ function isTS7Installed() {
+ }
+ const spawnAsync = (...args) => new Promise((resolve, reject) => {
+ 	const child = spawn(...args);
+-	child.on("close", () => resolve());
++	child.on("close", (code, signal) => code === 0 ? resolve() : reject(new Error(`TypeScript declaration generation failed (${signal ?? code}).`)));
+ 	child.on("error", (error) => reject(error));
+ });
+ async function getTsgoPathFromNodeModules() {
+@@ -812,6 +812,8 @@ async function runTsgo(rootDir, tsconfig, sourcemap, tsgoPath) {
+ 		...tsconfig ? ["-p", tsconfig] : [],
+ 		"--outDir",
+ 		tsgoDist,
++		"--declarationDir",
++		tsgoDist,
+ 		"--rootDir",
+ 		rootDir,
+ 		"--noCheck",
+@@ -856,7 +858,7 @@ function createGeneratePlugin({ generator, entry, tsconfig, tsconfigRaw, build,
+ 	let tscModule;
+ 	let tscContext;
+ 	let tsgoContext;
+-	const rootDir = tsconfig ? path.dirname(tsconfig) : cwd;
++	const rootDir = tsgo.rootDir || (tsconfig ? path.dirname(tsconfig) : cwd);
+ 	return {
+ 		name: "rolldown-plugin-dts:generate",
+ 		async buildStart(options) {

@@ -56,10 +56,10 @@
 For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
-pnpm --filter @master/css-preset test
-pnpm --filter @master/css-preset lint
-pnpm --filter @master/css-preset type-check
-pnpm --filter @master/css-preset build
+bun run --filter @master/css-preset test
+bun run --filter @master/css-preset lint
+bun run --filter @master/css-preset type-check
+bun run --filter @master/css-preset build
 ```
 
 ## Utility And Token Ownership
@@ -89,5 +89,5 @@ The preset contains 119 direct-value utilities and seven other recipes. `r-pill`
 The preset `@utility animate-(--animate)` pattern defines the direct-value family for `animation`, using the `animate` namespace. Each `--animate-name` token contains a complete native shorthand. Preset values include their duration and infinite repetition; custom values use native CSS defaults. The utility forwards the shorthand unchanged; there is no companion-setting mechanism. Use full-property declarations such as `animation-duration:var(--duration-fast)` for overrides; token longhands follow the general order and may be reset by the shorthand. Engine declarations have no shorthand priority or value inference.
 
 Browser regression for base-style decisions is separate from unit tests:
-`pnpm --filter @master/css-preset exec vitest run --config vitest.e2e.config.ts`.
+`bun run --filter @master/css-preset vitest run --config vitest.e2e.config.ts`.
 It requires Playwright Chromium, Firefox and WebKit and checks both defaults and explicit opt-in classes.

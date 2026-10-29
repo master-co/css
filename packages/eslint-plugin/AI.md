@@ -62,10 +62,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/eslint-plugin-css lint
-pnpm --filter @master/eslint-plugin-css type-check
-pnpm --filter @master/eslint-plugin-css build
+bun run --filter @master/eslint-plugin-css test
+bun run --filter @master/eslint-plugin-css lint
+bun run --filter @master/eslint-plugin-css type-check
+bun run --filter @master/eslint-plugin-css build
 ```
 
 Use or extend `tests/*.test.ts` and issue fixtures for rule behavior changes.

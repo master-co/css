@@ -58,10 +58,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-webpack test
-pnpm --filter @master/css-webpack lint
-pnpm --filter @master/css-webpack type-check
-pnpm --filter @master/css-webpack build
+bun run --filter @master/css-webpack test
+bun run --filter @master/css-webpack lint
+bun run --filter @master/css-webpack type-check
+bun run --filter @master/css-webpack build
 ```
 
 Run the Webpack example build when plugin behavior changes.

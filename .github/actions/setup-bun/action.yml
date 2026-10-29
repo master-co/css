@@ -1,0 +1,55 @@
+name: Setup Bun workspace
+description: Configure Bun and Node.js, then install dependencies.
+inputs:
+  node-version:
+    description: Node.js version to install.
+    default: "24"
+  install:
+    description: Whether to install workspace dependencies.
+    default: "true"
+  frozen-lockfile:
+    description: Whether to install with --frozen-lockfile.
+    default: "true"
+  ignore-scripts:
+    description: Whether to install with --ignore-scripts.
+    default: "false"
+  all-platforms:
+    description: Install optional packages for every release platform.
+    default: "false"
+  turbo-cache:
+    description: Whether to restore and save the local Turbo cache.
+    default: "true"
+  turbo-cache-scope:
+    description: Scope used to isolate Turbo caches by workload.
+    default: "default"
+runs:
+  using: composite
+  steps:
+    # Node is retained for TS7's synchronous API, publishing, and consumer checks.
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: "1.4.4"
+    - if: ${{ inputs.install == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-${{ hashFiles('bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-
+    - if: ${{ inputs.turbo-cache == 'true' }}
+      uses: actions/cache/restore@v6
+      with:
+        path: .turbo/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
+          ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-${{ inputs.turbo-cache-scope }}-
+    - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
+      shell: bash
+      run: bun install --frozen-lockfile --prefer-offline ${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }} ${{ inputs.all-platforms == 'true' && '--os=* --cpu=* --libc=*' || '' }}
+    - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile != 'true' }}
+      shell: bash
+      run: bun install --prefer-offline ${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }} ${{ inputs.all-platforms == 'true' && '--os=* --cpu=* --libc=*' || '' }}

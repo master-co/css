@@ -1,5 +1,6 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
@@ -10,15 +11,7 @@ import { deliveryFences } from './delivery-examples'
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const nextInstallationModes = ['progressive', 'runtime', 'static'] as const
 export type NextInstallationMode = typeof nextInstallationModes[number]
-function dependency(name: string) {
-  if (name === 'next') return realpathSync(join(repository, 'site/node_modules/next'))
-  if (name.startsWith('@master/')) return realpathSync(join(repository, 'node_modules', name))
-  const store = join(repository, 'node_modules/.pnpm')
-  const version = name === 'typescript' ? '6.' : ''
-  const entry = readdirSync(store).find(entry => entry.startsWith(name.replace('/', '+') + '@' + version))
-  assert.ok(entry, `Missing installed dependency: ${name}`)
-  return join(store, entry, 'node_modules', name)
-}
+const dependency = (name: string) => workspaceDependency(name, new URL('../../packages/next/package.json', import.meta.url))
 
 /** The scratch app stays under the workspace so Turbopack can resolve linked
  * packages within its filesystem boundary. Only fixture worker count is added

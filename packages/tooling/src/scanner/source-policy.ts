@@ -13,6 +13,14 @@ const neverInputs = ['**/.git/**', '**/.hg/**', '**/.svn/**', '**/.master/**']
 const posix = (value: string) => value.split(sep).join('/')
 const inside = (root: string, file: string) => { const path = relative(root, file); return !isAbsolute(path) && path !== '..' && !path.startsWith(`..${sep}`) }
 
+function isWorkspace(directory: string) {
+  if (existsSync(resolve(directory, 'pnpm-workspace.yaml'))) return true
+  try {
+    const { workspaces } = JSON.parse(readFileSync(resolve(directory, 'package.json'), 'utf8'))
+    return Array.isArray(workspaces) || Array.isArray(workspaces?.packages)
+  } catch { return false }
+}
+
 /** Shared Node input boundary. No global Git configuration or ignore file is read. */
 export class SourcePolicy {
   readonly dependencies = new Set<string>()
@@ -21,7 +29,7 @@ export class SourcePolicy {
   constructor(readonly projectDir: string, readonly options: SourcePolicyOptions = {}) {
     this.root = resolve(projectDir)
     for (let directory = resolve(projectDir); ; directory = dirname(directory)) {
-      if (existsSync(resolve(directory, '.git')) || existsSync(resolve(directory, 'pnpm-workspace.yaml'))) this.root = directory
+      if (existsSync(resolve(directory, '.git')) || isWorkspace(directory)) this.root = directory
       const parent = dirname(directory)
       if (parent === directory) break
     }

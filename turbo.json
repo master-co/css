@@ -7,8 +7,10 @@
     "RUSTUP_HOME"
   ],
   "globalDependencies": [
-    "pnpm-lock.yaml",
-    "pnpm-workspace.yaml",
+    "bun.lock",
+    "bunfig.toml",
+    "scripts/toolchain-policy.mjs",
+    "scripts/isolate-tooling-typescript.mjs",
     "tsconfig.json"
   ],
   "tasks": {
@@ -38,7 +40,9 @@
         "!tests/**",
         "!e2e/**",
         "!**/*.md",
-        "$TURBO_ROOT$/shared/tsdown-package.config.ts"
+        "$TURBO_ROOT$/shared/tsdown-package.config.ts",
+        "$TURBO_ROOT$/scripts/typescript-api.mjs",
+        "$TURBO_ROOT$/scripts/typescript-declarations.mjs"
       ],
       "outputs": [
         "dist/**",

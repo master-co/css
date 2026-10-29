@@ -5,13 +5,13 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "dev:build": "pnpm --dir playground build",
-    "e2e": "vitest run tests/*-e2e.test.ts --no-file-parallelism",
-    "lint": "eslint",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest run"
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "dev:build": "bun run --cwd playground build",
+    "e2e": "node ../../node_modules/vitest/vitest.mjs run tests/*-e2e.test.ts --no-file-parallelism",
+    "lint": "bun --bun eslint",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
   },
   "license": "MIT",
   "description": "Next.js integration for Master CSS",

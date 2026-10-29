@@ -4,11 +4,11 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "bun ../../node_modules/astro/bin/astro.mjs dev",
+    "start": "bun ../../node_modules/astro/bin/astro.mjs dev",
+    "build": "bun ../../node_modules/astro/bin/astro.mjs build",
+    "preview": "bun ../../node_modules/astro/bin/astro.mjs preview",
+    "astro": "bun ../../node_modules/astro/bin/astro.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

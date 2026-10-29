@@ -35,7 +35,7 @@ const utilityKeys = [
 
 if (!existsSync(globalBundleFile) || !existsSync(defaultProgramFile)) {
   console.error('Runtime benchmark requires built runtime global artifacts.')
-  console.error('Run `pnpm --filter @master/css-runtime build` first.')
+  console.error('Run `bun run --filter @master/css-runtime build` first.')
   process.exit(1)
 }
 

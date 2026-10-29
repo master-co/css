@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -11,13 +12,7 @@ import { deliveryFences } from './delivery-examples'
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const frameworkInstallationRoutes = ['/react', '/react/static-rendering', '/vuejs', '/vuejs/static-rendering', '/lit'] as const
 
-function dependency(name: string) {
-  const store = join(repository, 'node_modules/.pnpm')
-  const prefix = name.replace('/', '+') + '@'
-  const match = readdirSync(store).find(value => value.startsWith(prefix))
-  assert.ok(match, `Existing workspace dependency required: ${name}`)
-  return join(store, match, 'node_modules', name)
-}
+const dependency = workspaceDependency
 
 /** Build the actual authored component through the public installer and Vite plugin. */
 export function frameworkInstallationFixture(route: typeof frameworkInstallationRoutes[number]) {

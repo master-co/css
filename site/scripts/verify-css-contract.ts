@@ -71,7 +71,7 @@ if (!expected) {
     console.error(summary('No approved site CSS contract snapshot exists', actual))
     console.error(
         'Review the generated CSS diff and browser QA, then run '
-        + '`pnpm --filter site update:css-contract -- --qa-reference "<approval>"`.'
+        + '`bun run --filter site update:css-contract -- --qa-reference "<approval>"`.'
     )
     process.exitCode = 1
 } else {
@@ -96,7 +96,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         }
     }
     if (!await exists(outDir)) {
-        throw new Error(`Missing ${outDir}. Run \`pnpm build:site\` first.`)
+        throw new Error(`Missing ${outDir}. Run \`bun run build:site\` first.`)
     }
 
     const files = await listFiles(outDir)

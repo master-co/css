@@ -61,10 +61,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-astro test
-pnpm --filter @master/css-astro lint
-pnpm --filter @master/css-astro type-check
-pnpm --filter @master/css-astro build
+bun run --filter @master/css-astro test
+bun run --filter @master/css-astro lint
+bun run --filter @master/css-astro type-check
+bun run --filter @master/css-astro build
 ```
 
 Validate with an Astro example when Astro rendering behavior changes.

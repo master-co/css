@@ -5,10 +5,10 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
-    "lint": "eslint",
-    "test": "vitest run"
+    "build": "bun --bun tsdown",
+    "dev": "bun --bun tsdown --watch",
+    "lint": "bun --bun eslint",
+    "test": "bun --bun vitest run"
   },
   "license": "MIT",
   "description": "Svelte CLI add-on for Master CSS",

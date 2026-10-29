@@ -3,13 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "build:ssr": "vite build && vite build --ssr",
-    "dev": "vite",
+    "build": "bun --bun vite build",
+    "build:ssr": "bun --bun vite build && bun --bun vite build --ssr",
+    "dev": "bun --bun vite",
     "format": "prettier --write resources/",
     "format:check": "prettier --check resources/",
-    "lint": "eslint . --fix",
-    "types": "tsc --noEmit"
+    "lint": "bun --bun eslint . --fix",
+    "types": "bun --bun tsc --noEmit"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.1",

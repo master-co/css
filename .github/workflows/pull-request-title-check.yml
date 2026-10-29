@@ -20,10 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       # Only commitlint runs here, so skip husky and every package postinstall.
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           turbo-cache: "false"
           ignore-scripts: "true"
-      - run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+      - run: printf '%s\n' "$PR_TITLE" | bun run commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}

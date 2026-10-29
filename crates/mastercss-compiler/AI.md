@@ -26,5 +26,5 @@ Master-generated declarations. Native custom properties do not register tokens.
 ```sh
 cargo test -p mastercss-compiler
 cargo clippy -p mastercss-compiler --all-targets --all-features -- -D warnings
-pnpm --filter @master/css-compiler test
+bun run --filter @master/css-compiler test
 ```

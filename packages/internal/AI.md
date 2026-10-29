@@ -87,8 +87,8 @@ declarations.
 ## Validation
 
 ```sh
-pnpm --filter @master/css-internal test
-pnpm --filter @master/css-internal lint
-pnpm --filter @master/css-internal type-check
-pnpm --filter @master/css-internal build
+bun run --filter @master/css-internal test
+bun run --filter @master/css-internal lint
+bun run --filter @master/css-internal type-check
+bun run --filter @master/css-internal build
 ```

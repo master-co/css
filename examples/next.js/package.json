@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "bun --bun eslint ."
   },
   "dependencies": {
     "@master/css": "workspace:^",

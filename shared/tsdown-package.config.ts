@@ -1,4 +1,4 @@
-import '../scripts/typescript-tooling-compat.mjs'
+import { nativeDeclarationOptions } from '../scripts/typescript-declarations.mjs'
 import { readFileSync } from 'node:fs'
 import { extname, resolve } from 'node:path'
 import { defineConfig, type TsdownInputOption, type TsdownPlugin } from 'tsdown'
@@ -120,7 +120,6 @@ export default defineConfig({
     externalVirtualModules,
     ...(packageJSON.name === '@master/css-language-service' ? [externalLanguageSyntaxJSON] : [])
   ],
-  // TS7 emits imported files outside rootDir beside their source, escaping its
-  // temporary outDir. The compatible compiler API emits declarations in memory.
-  dts: packageJSON.types || hasExportTypes(packageJSON.exports) ? { generator: 'tsc' } : false
+  // A common source root keeps cross-package declarations inside the temporary output.
+  dts: packageJSON.types || hasExportTypes(packageJSON.exports) ? nativeDeclarationOptions(resolve(packageRoot, 'tsconfig.prod.json')) : false
 })

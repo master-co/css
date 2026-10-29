@@ -39,7 +39,7 @@ Those changes still sit in the caution zone. The implementation must identify th
 
 ## Do Not Modify Unless Explicitly Requested
 
-- `pnpm-lock.yaml`
+- `bun.lock`
 - Package names
 - Package manager config
 - Release config and release workflows

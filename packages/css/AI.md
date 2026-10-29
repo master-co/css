@@ -63,10 +63,10 @@ compatibility subpaths.
 ## Validation
 
 ```sh
-pnpm --filter @master/css test
-pnpm --filter @master/css lint
-pnpm --filter @master/css type-check
-pnpm --filter @master/css build
+bun run --filter @master/css test
+bun run --filter @master/css lint
+bun run --filter @master/css type-check
+bun run --filter @master/css build
 ```
 
 Run Rust engine parity and downstream runtime/server checks for semantic or output

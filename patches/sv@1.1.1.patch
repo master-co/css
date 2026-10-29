@@ -1,0 +1,40 @@
+diff --git a/dist/src/testing.mjs b/dist/src/testing.mjs
+index 3ed0cb6d3d60d225977fda1685ff48a91a46fc94..ea1abbb1f8e39be484275a9ca7239898c775f02c 100644
+--- a/dist/src/testing.mjs
++++ b/dist/src/testing.mjs
+@@ -810,10 +810,11 @@ function createSetupTest(vitest, playwright) {
+ 				templatesDir,
+ 				testName
+ 			});
+-			fs.writeFileSync(path.resolve(cwd, testName, "pnpm-workspace.yaml"), "packages:\n  - '**/*'", "utf8");
+ 			fs.writeFileSync(path.resolve(cwd, testName, "package.json"), JSON.stringify({
+ 				name: `${testName}-workspace-root`,
+-				private: true
++				private: true,
++				workspaces: ["*"],
++				trustedDependencies: ["esbuild"]
+ 			}));
+ 			for (const addonTestCase of testCases) {
+ 				const { variant, kind } = addonTestCase;
+@@ -834,17 +835,17 @@ function createSetupTest(vitest, playwright) {
+ 					cwd,
+ 					addons,
+ 					options: kind.options,
+-					packageManager: "pnpm"
++					packageManager: "bun"
+ 				});
+ 				addAllowBuildsIfPnpm({
+ 					cwd,
+-					packageManager: "pnpm",
++					packageManager: "bun",
+ 					packages: ["esbuild"]
+ 				});
+ 			}
+ 			const installDir = path.resolve(cwd, testName);
+-			const install = await exec("pnpm", ["install"], { nodeOptions: { cwd: installDir } });
+-			if (install.exitCode !== 0) throw new Error(`pnpm install failed in ${installDir}\n  stdout: ${install.stdout}\n  stderr: ${install.stderr}`);
++			const install = await exec("bun", ["install"], { nodeOptions: { cwd: installDir } });
++			if (install.exitCode !== 0) throw new Error(`bun install failed in ${installDir}\n  stdout: ${install.stdout}\n  stderr: ${install.stderr}`);
+ 		});
+ 		beforeEach(async (ctx) => {
+ 			let browserCtx;

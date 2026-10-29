@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { basename, dirname, resolve } from 'node:path'
 import { add } from 'sv'
 import { createSetupTest } from 'sv/testing'
 import { beforeAll, beforeEach, expect, inject, test } from 'vitest'
@@ -29,6 +29,9 @@ const { test: addonTest, testCases } = setupTest(addons, {
   ],
   filter: ({ variant }) => variant === 'kit-js' || variant === 'kit-ts',
   preAdd({ addonTestCase, cwd }) {
+    const manifestFile = resolve(cwd, 'package.json')
+    const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'))
+    writeFileSync(manifestFile, JSON.stringify({ ...manifest, name: basename(cwd) }, null, 2))
     ensureLocalDependencyOverrides(cwd)
 
     const extension = addonTestCase.variant.endsWith('-ts') ? 'ts' : 'js'
@@ -99,7 +102,7 @@ for (const addonTestCase of testCases) {
         cwd: projectDir,
         addons,
         options: { 'master-css': {} },
-        packageManager: 'pnpm'
+        packageManager: 'bun'
       })
       expect(snapshotProjectFiles(projectDir, addonTestCase.variant)).toEqual(before)
     }
@@ -140,9 +143,9 @@ function assertMasterCSSSetup(projectDir: string, variant: string) {
 
 function ensureLocalDependencyOverrides(cwd: string) {
   const workspaceRoot = dirname(cwd)
-  const workspaceConfigPath = resolve(workspaceRoot, 'pnpm-workspace.yaml')
-  const workspaceConfig = readFileSync(workspaceConfigPath, 'utf8')
-  if (workspaceConfig.includes("'@master/css-svelte':")) return
+  const workspaceConfigPath = resolve(workspaceRoot, 'package.json')
+  const workspaceConfig = JSON.parse(readFileSync(workspaceConfigPath, 'utf8'))
+  if (workspaceConfig.overrides?.['@master/css-svelte']) return
 
   writeStubPackage(
     workspaceRoot,
@@ -175,7 +178,7 @@ function ensureLocalDependencyOverrides(cwd: string) {
 
   writeFileSync(
     workspaceConfigPath,
-    `${workspaceConfig.trimEnd()}\noverrides:\n  '@master/css': file:./stubs/master-css\n  '@master/css-svelte': file:./stubs/master-css-svelte\n`,
+    JSON.stringify({ ...workspaceConfig, overrides: { ...workspaceConfig.overrides, '@master/css': 'file:./stubs/master-css', '@master/css-svelte': 'file:./stubs/master-css-svelte' } }, null, 2) + '\n',
     'utf8'
   )
 }

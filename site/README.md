@@ -1,6 +1,6 @@
 # Master CSS documentation site
 
-This workspace builds the public Master CSS documentation site. Install the repository dependencies first, then run site commands from the repository root with `pnpm --filter site <script>`.
+This workspace builds the public Master CSS documentation site. Install the repository dependencies first, then run site commands from the repository root with `bun run --filter site <script>`.
 
 ## Ownership
 
@@ -17,14 +17,14 @@ The site owns its shell and dependency versions. The old root `internal` submodu
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm --filter site dev` | Prepare generated data and start the Astro development server. |
-| `pnpm --filter site build` | Build the static site and verify public assets. |
-| `pnpm --filter site prepare-app` | Regenerate page categories and search data. |
-| `pnpm --filter site type-check` | Check TypeScript. |
-| `pnpm --filter site lint` | Run site lint rules. |
-| `pnpm --filter site test:islands` | Check client island rendering and serialization. |
-| `pnpm --filter site test:reference` | Check reference catalog and syntax behavior. |
-| `pnpm --filter site test:llms` | Check generated LLM documentation. |
-| `pnpm --filter site test:assets` | After a build, check that public images, icons, and fonts exist and are used. |
+| `bun run --filter site dev` | Prepare generated data and start the Astro development server. |
+| `bun run --filter site build` | Build the static site and verify public assets. |
+| `bun run --filter site prepare-app` | Regenerate page categories and search data. |
+| `bun run --filter site type-check` | Check TypeScript. |
+| `bun run --filter site lint` | Run site lint rules. |
+| `bun run --filter site test:islands` | Check client island rendering and serialization. |
+| `bun run --filter site test:reference` | Check reference catalog and syntax behavior. |
+| `bun run --filter site test:llms` | Check generated LLM documentation. |
+| `bun run --filter site test:assets` | After a build, check that public images, icons, and fonts exist and are used. |
 
 See [AI.md](./AI.md) for site architecture and authoring guidance.

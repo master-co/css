@@ -77,7 +77,7 @@ const snapshot = {
   sourceReport: {
     suite: report.suite,
     generatedAt: report.generatedAt,
-    command: 'pnpm --filter ./benchmarks bench:master-delivery-modes'
+    command: 'bun run --filter master-css-benchmarks bench:master-delivery-modes'
   },
   environment: report.environment,
   browser: report.browser,

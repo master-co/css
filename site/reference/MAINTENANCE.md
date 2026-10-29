@@ -45,7 +45,7 @@ Individual document pages render their authored or generated body directly. Do n
 4. Keep a text equivalent for every meaningful component. `markdown.ts` handles `Overview`, `Class2CSS`, literal `Code`, local MDX includes, token tables and configured examples. Unsupported components are reported and fail the coverage test. Do not execute arbitrary JSX to extract prose.
 5. Use `ConfiguredExample` for classes that depend on custom theme settings. It compiles the configuration through the public compiler before generating CSS with the public engine.
 6. Add identifiers and task vocabulary in `editorial.ts` only when useful. Search performs retrieval, not syntax interpretation. Project-specific validation belongs in existing CLI, MCP or Play workflows.
-7. When changing tool registrations or exports, rebuild their packages before generating docs. CLI/MCP descriptions come from the built public binaries. API declarations resolve public entrypoint source files, with published declarations used for entries without a source counterpart.
+7. When changing tool registrations or exports, rebuild their packages before generating docs. CLI/MCP descriptions come from the built public binaries. API declarations use the freshly built published declaration entrypoints; TS7 compiles source-only presentation fixtures into a temporary directory.
 
 The first content language is English. Traditional Chinese navigation remains available and per-page Markdown explicitly identifies English fallback. Preserve semantic IDs and identifiers when adding a translated body; do not silently label English prose as a completed translation.
 
@@ -87,20 +87,20 @@ Completion requires full family/mixin coverage; successful property, prefix and 
 
 ## Validation
 
-For policy/inventory-only changes, run site lint and `pnpm run check:ai-context`. The following content/build/browser checks apply when the corresponding public sources or rendering pipeline migrate; recording the policy alone does not establish their results.
+For policy/inventory-only changes, run site lint and `bun run check:ai-context`. The following content/build/browser checks apply when the corresponding public sources or rendering pipeline migrate; recording the policy alone does not establish their results.
 
-Start from the usual package-warmed workspace (`pnpm build:site` performs the full orchestration). Focused commands:
+Start from the usual package-warmed workspace (`bun run build:site` performs the full orchestration). Focused commands:
 
 ```sh
-pnpm --filter site prepare-app
-pnpm --filter site test:reference
-pnpm --filter site test:syntax
-pnpm --filter site test:llms
-pnpm --filter site test:docs-examples
-pnpm --filter site lint
-pnpm --filter site type-check
-pnpm --filter internal test
-pnpm run check:ai-context
+bun run --filter site prepare-app
+bun run --filter site test:reference
+bun run --filter site test:syntax
+bun run --filter site test:llms
+bun run --filter site test:docs-examples
+bun run --filter site lint
+bun run --filter site type-check
+bun run --filter internal test
+bun run check:ai-context
 ```
 
 `internal` has no package-local lint script. Shared search, heading and table changes also require Guide regression checks. Inspect 390px, 768px and 1280px layouts, keyboard selection, one-press Escape, focus restoration, direct row links and reopening search with its query preserved.

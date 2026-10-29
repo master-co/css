@@ -35,7 +35,7 @@ body:
         Browser: Chrome 99.0.1234.56
         OS: macOS 12.0.1 (amd64)
         Node.js: 16.31.1
-        Package Manager: pnpm 6.32.3
+        Package Manager: Bun 1.4.4
 
   - type: markdown
     attributes:

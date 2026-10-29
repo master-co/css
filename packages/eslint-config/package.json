@@ -5,11 +5,11 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest run",
-    "lint": "eslint src *.js"
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "test": "bun --bun vitest run",
+    "lint": "bun --bun eslint src *.js"
   },
   "keywords": [
     "mastercss",

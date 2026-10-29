@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm --dir ../.. build && next build --turbo"
+    "build": "bun run --cwd ../.. build && next build --turbo"
   },
   "dependencies": {
     "@master/css-internal": "workspace:^",

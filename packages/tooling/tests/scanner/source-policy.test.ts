@@ -4,6 +4,21 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { SourcePolicy } from '../../src/scanner/source-policy'
 
+test('a Bun workspace shares root ignores without Git metadata', () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-bun-source-policy-'))
+  try {
+    const project = join(root, 'packages/app')
+    mkdirSync(project, { recursive: true })
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ private: true, workspaces: ['packages/*'] }))
+    writeFileSync(join(root, 'bun.lock'), '{}')
+    writeFileSync(join(root, '.gitignore'), 'packages/app/ignored/\n')
+    const policy = new SourcePolicy(project)
+    expect(policy.root).toBe(root)
+    expect(policy.accepts('ignored/example.ts')).toBe(false)
+    expect(policy.accepts('src/example.ts')).toBe(true)
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
 test('workspace and nested ignores, explicit inputs and output boundaries use one policy', () => {
   const root = mkdtempSync(join(tmpdir(), 'master-source-policy-'))
   try {

@@ -12,5 +12,5 @@ wire session. Editor/LSP adaptation remains in TypeScript.
 ```sh
 cargo test -p mastercss-language
 cargo clippy -p mastercss-language --all-targets --all-features -- -D warnings
-pnpm --filter @master/css-language-service test
+bun run --filter @master/css-language-service test
 ```

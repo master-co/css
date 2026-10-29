@@ -59,17 +59,17 @@ const reportSources = [
   {
     suite: 'css-output-size',
     file: '.results/css-output-size/report.json',
-    command: 'pnpm --filter ./benchmarks bench:css-output-size'
+    command: 'bun run --filter master-css-benchmarks bench:css-output-size'
   },
   {
     suite: 'build-performance',
     file: '.results/build-performance/report.json',
-    command: 'pnpm --filter ./benchmarks bench:build-performance'
+    command: 'bun run --filter master-css-benchmarks bench:build-performance'
   },
   {
     suite: 'css-structure',
     file: '.results/css-structure/report.json',
-    command: 'pnpm --filter ./benchmarks bench:css-structure'
+    command: 'bun run --filter master-css-benchmarks bench:css-structure'
   }
 ]
 

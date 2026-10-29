@@ -1,7 +1,7 @@
 # Local storage retention
 
-`pnpm storage:preview` reports candidates without deleting them.
-`pnpm storage:prune` applies the checked-in policy. `pnpm test:storage` runs filesystem safety regressions.
+`bun run storage:preview` reports candidates without deleting them.
+`bun run storage:prune` applies the checked-in policy. `bun run test:storage` runs filesystem safety regressions.
 
 Maintenance runs before these existing commands (arguments and the original command remain intact):
 `test`, `e2e`, `build`, `build:site`.

@@ -62,7 +62,7 @@ The contract:
   JavaScript engine's transitions, execution state, snapshots and keyframe
   definitions equal the Rust engine's. Rust is the reference: any difference is a
   JavaScript bug.
-- `pnpm --filter @master/css-engine-js differential` compares both engines (Rust through
+- `bun run --filter @master/css-engine-js differential` compares both engines (Rust through
   the engine Wasm) on the language corpus, Rust test strings, site and example
   markup, every token key, seeded fuzz, and manifests compiled for mixins, recipes,
   `@apply`, keyframes and emitted globals. It must report zero differences, also with
@@ -72,7 +72,7 @@ The contract:
 - A change to engine semantics (`mastercss-engine`, the lexer and schema code it
   executes, or the program encoding) lands with the matching JavaScript change and a
   zero-difference differential in the same change. Rebuild the Wasm first
-  (`pnpm run build:rust:wasm`); new syntax needs differential sources that reach it.
+  (`bun run build:rust:wasm`); new syntax needs differential sources that reach it.
 - The JavaScript engine implements no retired syntax and has no dependencies. It is
   repository-private: the shared tsdown config bundles it into the binding, and
   package checks keep it out of published imports and dependencies.

@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import * as ts from 'typescript6'
+import * as ts from 'typescript/unstable/ast'
+import { parseTypeScript } from './typescript-api.mjs'
 import { checkAPICensus } from './api-census.mjs'
 
 const packagesRoot = path.resolve('packages')
@@ -95,12 +96,7 @@ function resolvePublicSource(directory, packageName, target) {
 }
 
 function collectPublicSymbols(file) {
-  const sourceFile = ts.createSourceFile(
-    file,
-    readFileSync(file, 'utf8'),
-    ts.ScriptTarget.Latest,
-    true
-  )
+  const sourceFile = parseTypeScript(file, readFileSync(file, 'utf8')).sourceFile
   const symbols = new Set()
   for (const statement of sourceFile.statements) {
     if (ts.isExportAssignment(statement)) {
@@ -121,9 +117,7 @@ function collectPublicSymbols(file) {
       }
       continue
     }
-    const modifiers = ts.canHaveModifiers(statement)
-      ? ts.getModifiers(statement) || []
-      : []
+    const modifiers = statement.modifiers || []
     if (!modifiers.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword)) continue
     if (modifiers.some(({ kind }) => kind === ts.SyntaxKind.DefaultKeyword)) {
       symbols.add('default')
@@ -161,18 +155,13 @@ function validatePublicSymbol(packageName, subpath, symbol) {
 
 function validateBindingFeatureContracts() {
   for (const file of bindingContractFiles) {
-    const sourceFile = ts.createSourceFile(
-      file,
-      readFileSync(file, 'utf8'),
-      ts.ScriptTarget.Latest,
-      true
-    )
+    const sourceFile = parseTypeScript(file, readFileSync(file, 'utf8')).sourceFile
     const unknownNodes = []
     const visit = (node) => {
       if (node.kind === ts.SyntaxKind.UnknownKeyword) {
         unknownNodes.push(sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1)
       }
-      ts.forEachChild(node, visit)
+      node.forEachChild(visit)
     }
     visit(sourceFile)
     assert.deepEqual(
@@ -419,7 +408,7 @@ if (process.argv.includes('--write')) {
   assert.deepEqual(
     publicAPIContract,
     publicAPIBaseline.packages,
-    'Public package exports changed. Run "pnpm run check:packages:update" and review the golden manifest intentionally.'
+    'Public package exports changed. Run "bun run check:packages:update" and review the golden manifest intentionally.'
   )
 }
 

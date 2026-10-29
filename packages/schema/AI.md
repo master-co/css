@@ -73,8 +73,8 @@ Manifest JSON codec helpers are exported from `.` and `./manifest`;
 ## Validation
 
 ```sh
-pnpm --filter @master/css-schema test
-pnpm --filter @master/css-schema lint
-pnpm --filter @master/css-schema type-check
-pnpm --filter @master/css-schema build
+bun run --filter @master/css-schema test
+bun run --filter @master/css-schema lint
+bun run --filter @master/css-schema type-check
+bun run --filter @master/css-schema build
 ```

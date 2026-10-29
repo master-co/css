@@ -55,7 +55,7 @@ test('config, lockfile and delivered plugin/native bytes are part of the namespa
   write('packages/eslint-config/package.json', JSON.stringify({ name: '@master/eslint-config-css', files: ['dist'], dependencies: { '@master/eslint-plugin-css': 'workspace:*' } }))
   write('packages/eslint-plugin/package.json', JSON.stringify({ name: '@master/eslint-plugin-css', files: ['dist'], dependencies: { '@master/css-binding': 'workspace:*' } }))
   write('packages/binding/package.json', JSON.stringify({ name: '@master/css-binding', files: ['artifacts', 'manifest.json'] }))
-  for (const file of ['site/eslint.rules.js', 'pnpm-lock.yaml', 'packages/eslint-plugin/dist/index.js', 'packages/binding/artifacts/mastercss.node', 'packages/binding/manifest.json']) {
+  for (const file of ['site/eslint.rules.js', 'bun.lock', 'packages/eslint-plugin/dist/index.js', 'packages/binding/artifacts/mastercss.node', 'packages/binding/manifest.json']) {
     const before = key()
     write(file, 'changed bytes')
     assert.notEqual(key(), before, file)

@@ -812,7 +812,7 @@ function getContentType(file: string) {
 
 async function readRuntimeBundle() {
   const file = resolveBenchmarkPackageFile('@master/css-runtime', 'dist/global.min.js')
-  assertExistingFile(file, 'Run `pnpm --filter @master/css-runtime build` before `bench:master-delivery-modes`.')
+  assertExistingFile(file, 'Run `bun run --filter @master/css-runtime build` before `bench:master-delivery-modes`.')
   return readFile(file)
 }
 

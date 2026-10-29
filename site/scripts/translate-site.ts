@@ -591,12 +591,12 @@ function parseArgs(args: string[]) {
 
 function printHelp() {
     console.log(`Usage:
-  pnpm --filter site exec tsx scripts/translate-site.ts collect --locale tw
-  pnpm --filter site exec tsx scripts/translate-site.ts batch --locale tw
-  pnpm --filter site exec tsx scripts/translate-site.ts submit --locale tw
-  pnpm --filter site exec tsx scripts/translate-site.ts download --locale tw --batch <batch_id>
-  pnpm --filter site exec tsx scripts/translate-site.ts apply --locale tw --input .translations/tw.responses.jsonl
-  pnpm --filter site exec tsx scripts/translate-site.ts doctor`)
+  bun run --filter site translate:site collect --locale tw
+  bun run --filter site translate:site batch --locale tw
+  bun run --filter site translate:site submit --locale tw
+  bun run --filter site translate:site download --locale tw --batch <batch_id>
+  bun run --filter site translate:site apply --locale tw --input .translations/tw.responses.jsonl
+  bun run --filter site translate:site doctor`)
 }
 
 function toPosix(pathname: string) {

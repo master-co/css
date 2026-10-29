@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest --run"
+    "test": "bun --bun vitest --run"
   },
   "dependencies": {
     "@master/css": "workspace:^",

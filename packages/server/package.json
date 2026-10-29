@@ -5,11 +5,11 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts && node scripts/restore-json-import-attributes.js",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "lint": "eslint",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest run"
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts && bun scripts/restore-json-import-attributes.js",
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "bun --bun eslint",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "test": "bun --bun vitest run"
   },
   "license": "MIT",
   "description": "Server-side HTML renderer for Master CSS",

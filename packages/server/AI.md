@@ -59,10 +59,10 @@ session, and live CSS state are internal.
 For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
-pnpm --filter @master/css-server test
-pnpm --filter @master/css-server lint
-pnpm --filter @master/css-server type-check
-pnpm --filter @master/css-server build
+bun run --filter @master/css-server test
+bun run --filter @master/css-server lint
+bun run --filter @master/css-server type-check
+bun run --filter @master/css-server build
 ```
 
 Fixture output lives in `tests/fixtures/**/generated.css`; update it only for intentional output changes.

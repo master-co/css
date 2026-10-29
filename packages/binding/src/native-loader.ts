@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { findPackageJSON } from 'node:module'
+import { createRequire } from 'node:module'
 import { dirname, parse, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
@@ -249,10 +249,13 @@ function resolveDevelopmentArtifact(name: string) {
 function resolveTargetArtifact(packageName: string, name: string) {
   for (const base of runtimeResolutionBases()) {
     try {
-      const packageJSON = findPackageJSON(packageName, base)
-      if (!packageJSON) continue
-      const artifact = resolve(dirname(packageJSON), name)
-      if (existsSync(artifact)) return artifact
+      // Native packages deliberately do not export package.json. Search Node's
+      // package paths without executing the addon or depending on Node-only APIs.
+      for (const directory of createRequire(base).resolve.paths(packageName) || []) {
+        const packageRoot = resolve(directory, packageName)
+        const artifact = resolve(packageRoot, name)
+        if (existsSync(resolve(packageRoot, 'package.json')) && existsSync(artifact)) return artifact
+      }
     } catch {
       // Try the next real runtime base when a bundler replaced import.meta.url.
     }

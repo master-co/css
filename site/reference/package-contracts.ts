@@ -26,20 +26,14 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
     const entries = Object.entries(manifest.exports ?? {}).flatMap(([subpath, value]) => {
       const target = typeTarget(value)
       if (!target) return []
-      const publicSource = path.resolve(directory, target.replace('./dist/', './src/').replace(/\.d\.ts$/, '.ts'))
-      return [{ subpath, file: existsSync(publicSource) ? publicSource : path.resolve(directory, target) }]
+      return [{ subpath, file: path.resolve(directory, target) }]
     })
     for (const entry of entries) if (!existsSync(entry.file)) throw new Error(`Build ${name} before generating Reference (${entry.file}).`)
     if (Object.keys(manifest.exports ?? {}).length) packages.push({ name, manifest, directory, entries })
   }
-  const config = ts.readConfigFile(path.join(repo, 'site/tsconfig.json'), ts.sys.readFile)
-  const options = ts.parseJsonConfigFileContent(config.config, ts.sys, path.join(repo, 'site')).options
-  const program = declarationProgram(packages.flatMap(pkg => pkg.entries.map(entry => entry.file)), {
-    ...options, target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
-    skipLibCheck: true, noEmit: true, allowJs: true
-  })
+  const program = declarationProgram(packages.flatMap(pkg => pkg.entries.map(entry => entry.file)), { allowJs: true })
   const checker = program.getTypeChecker()
-  return packages.map(pkg => {
+  try { return packages.map(pkg => {
     const editorial = packageEditorial[pkg.name]
     if (!editorial) throw new Error(`Missing package guidance: ${pkg.name}`)
     const body = ['## Public entrypoints', '', editorial.introduction, '', '| Import path | Purpose |', '| --- | --- |']
@@ -68,7 +62,7 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
       if (!source) throw new Error(`Missing public declaration ${entry.file}`)
       dependencies.push(source.text)
       const symbol = checker.getSymbolAtLocation(source)
-      const symbols: any[] = symbol ? checker.getExportsOfModule(symbol) : []
+      const symbols: any[] = symbol ? [...checker.getExportsOfModule(symbol)] : []
       if (!symbols.length) {
         const ambient = source.statements.some((node: any) => ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name))
         body.push(ambient ? 'Ambient module declarations for TypeScript. Include this entry in the host’s type configuration.' : 'This entry has no named or default exports. Loading it runs its host entrypoint.', '')
@@ -92,7 +86,7 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
         const resolved = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported
         const shared = exported.name === 'default' && symbols.find(candidate => candidate.name !== 'default'
           && (candidate.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(candidate) : candidate) === resolved)
-        const comment = shared ? `Default export of [\`${shared.name}\`](#api-${hash(`${specifier}#${shared.name}`).slice(0, 12)}).` : declarationComment(resolved)
+        const comment = shared ? `Default export of [\`${shared.name}\`](#api-${hash(`${specifier}#${shared.name}`).slice(0, 12)}).` : declarationComment(resolved, checker)
         const declaration = formatDeclaration(shared ? `export { ${shared.name} as default };` : publicDeclaration(resolved, checker)
           + (exported.name !== resolved.name && resolved.name !== 'default' ? `\nexport { ${resolved.name} as ${exported.name} };` : ''))
         if (!declaration) throw new Error(`Unresolved public declaration ${specifier}#${exported.name}`)
@@ -104,5 +98,5 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
     const markdown = body.join('\n')
     const id = `packages/${pkg.name.replace('@master/', '')}`
     return { id, kind: 'package', title: pkg.name, description: pkg.manifest.description, category: 'Package APIs', url: `/reference/${id}`, source: `packages/${path.basename(pkg.directory)}/package.json`, sourceDigest: hash(JSON.stringify(pkg.manifest) + JSON.stringify(editorial) + dependencies.join('\n')), language: 'en', aliases: [...new Set(aliases)], identifierAnchors, terms: [], rows: [], examples: [], related: ['rules/declarations', 'tools/mcp/mastercss_inspect_class'], markdown, headings: documentHeadings(markdown), extractionNotes: [] } satisfies ReferenceDocument
-  })
+  }) } finally { program.close() }
 }

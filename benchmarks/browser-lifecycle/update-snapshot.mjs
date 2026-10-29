@@ -99,7 +99,7 @@ const snapshot = {
   sourceReport: {
     suite: report.suite,
     generatedAt: report.generatedAt,
-    command: 'pnpm --filter ./benchmarks bench:browser-lifecycle'
+    command: 'bun run --filter master-css-benchmarks bench:browser-lifecycle'
   },
   environment: report.environment,
   browser: report.browser,

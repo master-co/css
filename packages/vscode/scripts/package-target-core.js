@@ -94,7 +94,7 @@ function resolvePackageDir(packageName, resolver, resolverName = 'master-css-vsc
       return findPackageDir(resolver.resolve(packageName))
     } catch (entryError) {
       throw new Error(
-        `Unable to resolve ${packageName} from ${resolverName}. Run pnpm install after updating supportedArchitectures.\n`
+        `Unable to resolve ${packageName} from ${resolverName}. Run bun install --os='*' --cpu='*' --libc='*' to install release platform dependencies.\n`
         + `package.json resolution: ${manifestError.message}\n`
         + `entry resolution: ${entryError.message}`
       )

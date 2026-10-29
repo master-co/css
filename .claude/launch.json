@@ -6,7 +6,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/aron/master-css/.claude/worktrees/homepage-evolve/site && exec pnpm exec astro dev --port 3101 --config ../../../../../../../private/tmp/claude-501/-Users-aron-master-css/0939bcf7-2027-4276-91f1-b5ab49bf39ca/scratchpad/astro.wt.config.mjs"
+        "cd /Users/aron/master-css/.claude/worktrees/homepage-evolve/site && exec bun --bun astro dev --port 3101 --config ../../../../../../../private/tmp/claude-501/-Users-aron-master-css/0939bcf7-2027-4276-91f1-b5ab49bf39ca/scratchpad/astro.wt.config.mjs"
       ],
       "port": 3101,
       "autoPort": false
@@ -16,7 +16,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "cd /Users/aron/master-css/site && exec pnpm exec astro dev --ignore-lock --port 3102"
+        "cd /Users/aron/master-css/site && exec bun --bun astro dev --ignore-lock --port 3102"
       ],
       "port": 3102,
       "autoPort": false

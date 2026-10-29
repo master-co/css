@@ -13,4 +13,4 @@ Use for public docs, examples, and AI-facing guidance. For wording-only edits, r
 
 ## Completion
 
-Report the updated guidance and evidence for behavior claims. Run `pnpm run check:ai-context` after AI context structural changes and package lint when a workspace package changed. Run docs/site build checks only when relevant to content or demos; product tests are needed when executable examples or changed fixtures require them.
+Report the updated guidance and evidence for behavior claims. Run `bun run check:ai-context` after AI context structural changes and package lint when a workspace package changed. Run docs/site build checks only when relevant to content or demos; product tests are needed when executable examples or changed fixtures require them.

@@ -24,19 +24,19 @@ shared `internal` submodule sources were changed for this work.
 Run from the repository root:
 
 ```sh
-pnpm --filter site clean
-pnpm build:site
-pnpm --filter site exec tsx --test \
+bun run --filter site clean
+bun run build:site
+bun run --cwd site node --import tsx --test \
   components/demo/reference/reference-demo.test.ts utils/demo-ownership.test.ts
-pnpm --filter site lint
-pnpm --filter site type-check
-pnpm --filter site prepare-app
-pnpm --filter site test:reference
-pnpm --filter site test:docs-examples
-pnpm --filter site test:llms
-pnpm --filter site test:syntax
-pnpm --filter site test:css-contract
-pnpm run check:ai-context
+bun run --filter site lint
+bun run --filter site type-check
+bun run --filter site prepare-app
+bun run --filter site test:reference
+bun run --filter site test:docs-examples
+bun run --filter site test:llms
+bun run --filter site test:syntax
+bun run --filter site test:css-contract
+bun run check:ai-context
 ```
 
 The browser suite used for the results below has since been removed. A clean Next

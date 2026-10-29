@@ -5,14 +5,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { createEngineSync } from '@master/css/node'
 import { toVirtualCSSManifestModulePath } from '@master/css-internal/node'
-import execPnpmSync from './helpers/pnpm-command'
+import execBunSync from './helpers/bun-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const fixtureDir = join(packageDir, 'e2e/css-manifest-query')
 
 function buildFixture() {
   try {
-    execPnpmSync(['--dir', fixtureDir, 'build'], {
+    execBunSync(['run', '--cwd', fixtureDir, 'build'], {
       cwd: packageDir,
       encoding: 'utf-8',
       env: {

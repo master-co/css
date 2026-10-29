@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -10,13 +11,7 @@ import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const bundlerInstallationRoutes = ['/webpack', '/webpack/static-rendering', '/rspack', '/rspack/static-rendering', '/rsbuild', '/rsbuild/static-rendering'] as const
-function dependency(name: string) {
-  if (name === 'webpack') return join(repository, 'packages/webpack/node_modules/webpack')
-  const store = join(repository, 'node_modules/.pnpm')
-  const match = readdirSync(store).filter(value => value.startsWith(name.replace('/', '+') + '@')).sort().at(-1)
-  assert.ok(match, `Existing workspace dependency required: ${name}`)
-  return join(store, match, 'node_modules', name)
-}
+const dependency = (name: string) => workspaceDependency(name, new URL('../../packages/webpack/package.json', import.meta.url))
 function unindent(source: string) {
   const lines = source.trimEnd().split('\n')
   const indent = Math.min(...lines.filter(line => line.trim()).map(line => line.match(/^ */)![0].length))

@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --dir .. build && pnpm exec next dev",
-    "build": "pnpm --dir .. build && pnpm exec next build",
-    "start": "pnpm exec next start"
+    "dev": "bun run --cwd .. build && bun run next dev",
+    "build": "bun run --cwd .. build && bun run next build",
+    "start": "bun run next start"
   },
   "dependencies": {
     "@master/css-internal": "workspace:^",

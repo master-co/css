@@ -444,7 +444,7 @@ function pathPacks(paths: string[]) {
   if (paths.some((path) => path.startsWith('site/') || path.endsWith('README.md') || path.endsWith('.mdx'))) {
     packs.push('.ai/context/docs.md')
   }
-  if (paths.some((path) => path.endsWith('package.json') || path === 'pnpm-workspace.yaml' || path.includes('tsconfig'))) {
+  if (paths.some((path) => path.endsWith('package.json') || (path === 'bun.lock' || path === 'bunfig.toml' || path === 'pnpm-workspace.yaml') || path.includes('tsconfig'))) {
     packs.push('.ai/context/package-boundaries.md')
   }
   if (paths.some((path) => path.startsWith('crates/') || path === 'Cargo.toml' || path === 'Cargo.lock' || path.startsWith('parity/'))) {
@@ -516,12 +516,12 @@ function detectRisks(paths: string[], routes: RoutedPackage[]) {
       paths: paths.filter((path) => path.endsWith('generated.css') || path.endsWith('.snap') || path.includes('/fixtures/'))
     })
   }
-  if (paths.some((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))) {
+  if (paths.some((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || (path === 'bun.lock' || path === 'bunfig.toml' || path === 'pnpm-workspace.yaml') || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))) {
     pushRisk(risks, {
       id: 'public-api-or-package-boundary',
       severity: 'warning',
       reason: 'Package exports, scripts, dependencies, or public entrypoints may affect downstream consumers.',
-      paths: paths.filter((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))
+      paths: paths.filter((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || (path === 'bun.lock' || path === 'bunfig.toml' || path === 'pnpm-workspace.yaml') || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))
     })
   }
   if (paths.some((path) => path.startsWith('site/') || path.endsWith('README.md') || path.endsWith('.mdx'))) {
@@ -605,26 +605,26 @@ function validationCommands(packages: WorkspacePackage[], routes: RoutedPackage[
       continue
     }
     if (pkg.scripts.includes('test')) {
-      commands.push(commandReason(`pnpm --filter ${pkg.name} test`, `Run ${pkg.name} focused tests.`))
+      commands.push(commandReason(`bun run --filter ${pkg.name} test`, `Run ${pkg.name} focused tests.`))
     }
     if (pkg.scripts.includes('e2e') && risks.some((risk) => risk.id === 'runtime' || risk.id === 'css-output')) {
-      commands.push(commandReason(`pnpm --filter ${pkg.name} e2e`, `Run ${pkg.name} browser/e2e coverage for high-risk behavior.`))
+      commands.push(commandReason(`bun run --filter ${pkg.name} e2e`, `Run ${pkg.name} browser/e2e coverage for high-risk behavior.`))
     }
     if (pkg.scripts.includes('lint')) {
-      commands.push(commandReason(`pnpm --filter ${pkg.name} lint`, `Package-local lint is required when ${pkg.name} changes.`))
+      commands.push(commandReason(`bun run --filter ${pkg.name} lint`, `Package-local lint is required when ${pkg.name} changes.`))
     }
     if (pkg.scripts.includes('type-check') && risks.some((risk) => risk.id === 'public-api-or-package-boundary')) {
-      commands.push(commandReason(`pnpm --filter ${pkg.name} type-check`, `Check public types and package boundary changes in ${pkg.name}.`))
+      commands.push(commandReason(`bun run --filter ${pkg.name} type-check`, `Check public types and package boundary changes in ${pkg.name}.`))
     }
     if (pkg.scripts.includes('build') && risks.some((risk) => risk.id === 'public-api-or-package-boundary')) {
-      commands.push(commandReason(`pnpm --filter ${pkg.name} build`, `Build ${pkg.name} after public API or export changes.`))
+      commands.push(commandReason(`bun run --filter ${pkg.name} build`, `Build ${pkg.name} after public API or export changes.`))
     }
     if (pkg.kind === 'site' && pkg.scripts.includes('prepare-app')) {
-      commands.push(commandReason('pnpm --filter site prepare-app', 'Refresh generated site metadata for docs changes.'))
+      commands.push(commandReason('bun run --filter site prepare-app', 'Refresh generated site metadata for docs changes.'))
     }
   }
   if (routes.some((route) => route.kind === 'agent-docs')) {
-    commands.push(commandReason('pnpm run check:ai-context', 'Validate AI-facing routing and source/context budgets.'))
+    commands.push(commandReason('bun run check:ai-context', 'Validate AI-facing routing and source/context budgets.'))
   }
   return unique(commands.map((entry) => JSON.stringify(entry))).map((entry) => JSON.parse(entry) as { command: string, reason: string })
 }

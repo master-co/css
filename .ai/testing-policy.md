@@ -4,7 +4,7 @@
 
 Run the smallest meaningful package-scoped validation first. Broaden to affected consumer checks when a change crosses package boundaries, affects public APIs, or changes CSS output. Use root tests only when the impact cannot be covered by scoped checks. Repeat or broaden after passing checks only for new changes, failures, or unresolved risks.
 
-Package lint is mandatory for every changed workspace package that defines a package-local `lint` script. For multi-package changes, run lint once per affected package with `pnpm --filter <package> lint`; if an affected package has no package-local lint script, report that explicitly.
+Package lint is mandatory for every changed workspace package that defines a package-local `lint` script. For multi-package changes, run lint once per affected package with `bun run --filter <package> lint`; if an affected package has no package-local lint script, report that explicitly.
 
 AI-guidance-only changes require context validation and affected package lint, not product tests or builds. Site content and executable examples follow their applicable local validation rules.
 
@@ -33,27 +33,27 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 
 | Change | Required Validation |
 |---|---|
-| Parser/value parsing | Rust engine tests plus `pnpm --filter @master/css test` |
+| Parser/value parsing | Rust engine tests plus `bun run --filter @master/css test` |
 | Selector parsing/generation | Engine selector tests; generated CSS tests |
 | Condition parsing/generation | Engine condition tests; ordering tests if priority changes |
 | Syntax rule definitions | Engine rule test for emitted declarations and text |
 | Rule priority/cascade | Engine priority/layer tests and fixture review |
 | Variables/tokens/modes | Compiler manifest lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
 | Manifest lowering/execution | Compiler manifest lowering tests and engine parity tests |
-| Engine semantics (any row above that changes what the engine executes) | Also `pnpm run build:rust:wasm`, then `pnpm --filter @master/css-engine-js differential` at zero differences with the matching `packages/engine-js` change; `verify:program` when the program encoding changes |
-| Browser engine (`packages/engine-js`) | The differential at zero, `verify:program` for decoder changes, `check:size`, and `pnpm --filter @master/css-runtime e2e` |
-| Server rendering | `pnpm --filter @master/css-server test` |
-| Static scanning | `pnpm --filter @master/css-tooling test`; add scanning false positive/negative cases |
-| Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |
-| Vite plugin | `pnpm --filter @master/css-vite test`; run affected example build if integration-level |
-| Language primitives | `pnpm --filter @master/css-tooling test` |
-| Language service | `pnpm --filter @master/css-language-service test` |
-| Language server | `pnpm --filter @master/css-language-server test` |
-| ESLint plugin | `pnpm --filter @master/eslint-plugin-css test` |
-| Validator | `pnpm --filter @master/css-tooling test` |
-| CLI | `pnpm --filter @master/css-cli test` |
+| Engine semantics (any row above that changes what the engine executes) | Also `bun run build:rust:wasm`, then `bun run --filter @master/css-engine-js differential` at zero differences with the matching `packages/engine-js` change; `verify:program` when the program encoding changes |
+| Browser engine (`packages/engine-js`) | The differential at zero, `verify:program` for decoder changes, `check:size`, and `bun run --filter @master/css-runtime e2e` |
+| Server rendering | `bun run --filter @master/css-server test` |
+| Static scanning | `bun run --filter @master/css-tooling test`; add scanning false positive/negative cases |
+| Runtime/hydration | `bun run --filter @master/css-runtime e2e` |
+| Vite plugin | `bun run --filter @master/css-vite test`; run affected example build if integration-level |
+| Language primitives | `bun run --filter @master/css-tooling test` |
+| Language service | `bun run --filter @master/css-language-service test` |
+| Language server | `bun run --filter @master/css-language-server test` |
+| ESLint plugin | `bun run --filter @master/eslint-plugin-css test` |
+| Validator | `bun run --filter @master/css-tooling test` |
+| CLI | `bun run --filter @master/css-cli test` |
 | Public exports/types | Package build and type-check; downstream package checks if needed |
-| AI/source context structure | `pnpm run check:ai-context`; run `pnpm run test:ai-context` when checker policy changes |
+| AI/source context structure | `bun run check:ai-context`; run `bun run test:ai-context` when checker policy changes |
 
 ## Snapshots And Fixtures
 

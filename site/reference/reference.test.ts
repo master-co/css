@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { parseTypeScript } from '../../scripts/typescript-api.mjs'
 import { test, before } from 'node:test'
 import { readFile, readdir, mkdtemp, writeFile, rm, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -433,14 +434,15 @@ test('render fingerprint tracks grammar, native artifact and module resolution i
   const siteRoot = path.join(directory, 'site')
   const grammar = path.join(directory, 'packages/language-service/syntaxes/master-css.tmLanguage.json')
   const native = path.join(directory, 'packages/binding/native/tooling.node')
+  const inputs = [path.join(siteRoot, 'tsconfig.json'), grammar, native, ...['bun.lock', 'bunfig.toml', 'scripts/typescript-api.mjs', 'scripts/typescript-declarations.mjs'].map(file => path.join(directory, file))]
   try {
-    for (const file of [path.join(siteRoot, 'tsconfig.json'), grammar, native]) {
+    for (const file of inputs) {
       await mkdir(path.dirname(file), { recursive: true })
       await writeFile(file, '{}')
     }
     let previous = await referenceRenderVersion(siteRoot)
     assert.equal(await referenceRenderVersion(siteRoot), previous)
-    for (const file of [grammar, native, path.join(siteRoot, 'tsconfig.json')]) {
+    for (const file of inputs) {
       await writeFile(file, 'updated input')
       const next = await referenceRenderVersion(siteRoot)
       assert.notEqual(next, previous, file)
@@ -545,20 +547,20 @@ test('package declarations preserve every export and anchor without exposing imp
     assert.match(doc.markdown, /\| Import path \| Purpose \|/, doc.id)
     const tree = markdownTree(doc.markdown)
     for (const node of tree.children) if (node.type === 'code' && node.lang === 'typescript') {
-      const source = ts.createSourceFile('contract.d.ts', node.value, ts.ScriptTarget.Latest, true)
-      assert.deepEqual(source.parseDiagnostics, [], doc.id)
+      const { sourceFile: source, diagnostics } = parseTypeScript('contract.d.ts', node.value)
+      assert.deepEqual(diagnostics, [], doc.id)
       assert.doesNotMatch(node.value, /declare const default\b|static\s*\{|\basync\s+\w+\(/, doc.id)
       function inspect(child: any) {
         if (ts.isMethodDeclaration(child) || ts.isFunctionDeclaration(child) || ts.isConstructorDeclaration(child)) {
           assert.equal(child.body, undefined, doc.id)
           for (const parameter of child.parameters) assert.equal(parameter.initializer, undefined, doc.id)
         }
-        if (ts.isClassDeclaration(child)) for (const member of child.members) {
+        if (ts.isClassDeclaration(child)) for (const member of child.members as readonly any[]) {
           if (ts.isConstructorDeclaration(member)) continue
           assert.ok(!ts.isPrivateIdentifier(member.name ?? {}), doc.id)
           assert.ok(!member.modifiers?.some((modifier: any) => modifier.kind === ts.SyntaxKind.PrivateKeyword), doc.id)
         }
-        ts.forEachChild(child, inspect)
+        child.forEachChild(inspect)
       }
       inspect(source)
     }

@@ -1,3 +1,4 @@
+import { nativeDeclarationOptions } from '../../scripts/typescript-declarations.mjs'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
@@ -69,6 +70,7 @@ export default defineConfig([
     tsconfig: './tsconfig.prod.json',
     fixedExtension: false,
     dts: {
+      ...nativeDeclarationOptions('./tsconfig.prod.json'),
       emitDtsOnly: true
     },
     deps: {

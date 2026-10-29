@@ -30,7 +30,7 @@ try {
   const config = join(temporary, 'playwright.config.mjs')
   await writeFile(config, `import original from ${JSON.stringify(join(root, 'playwright.config.ts'))};\nexport default {...original, testDir:${JSON.stringify(root)}, projects:original.projects.filter(p=>p.name==='firefox').map(p=>({...p,use:{...p.use,launchOptions:{...p.use?.launchOptions,executablePath:${JSON.stringify(executable)}}}}))};\n`)
   process.exitCode = await new Promise((resolve, reject) => {
-    const child = spawn('pnpm', ['exec', 'playwright', 'test', '--config', config, ...process.argv.slice(2)], { cwd: root, stdio: 'inherit' })
+    const child = spawn('bun', ['--bun', 'playwright', 'test', '--config', config, ...process.argv.slice(2)], { cwd: root, stdio: 'inherit' })
     child.once('error', reject)
     child.once('exit', code => resolve(code ?? 1))
   })

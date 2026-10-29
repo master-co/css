@@ -9,11 +9,11 @@ import { getErrorMessage } from './result'
 
 const SETUP_AUDIT_VERSION = 1
 
-const LOCKFILES: Record<string, string> = {
-  pnpm: 'pnpm-lock.yaml',
-  npm: 'package-lock.json',
-  yarn: 'yarn.lock',
-  bun: 'bun.lockb'
+const LOCKFILES: Record<string, string[]> = {
+  pnpm: ['pnpm-lock.yaml'],
+  npm: ['package-lock.json'],
+  yarn: ['yarn.lock'],
+  bun: ['bun.lock', 'bun.lockb']
 }
 
 const MASTER_CSS_PACKAGES = [
@@ -94,6 +94,7 @@ async function readPackageJSON(context: MasterCSSMCPContext) {
 
 function detectPackageManager(context: MasterCSSMCPContext, packageJSON: PackageJSON | undefined) {
   const lockfiles = Object.entries(LOCKFILES)
+    .flatMap(([name, filenames]) => filenames.map(filename => [name, filename]))
     .filter(([, filename]) => existsSync(join(context.root, filename)))
     .map(([name, filename]) => ({ name, filePath: join(context.root, filename) }))
   const declared = typeof packageJSON?.packageManager === 'string'

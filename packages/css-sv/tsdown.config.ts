@@ -1,3 +1,4 @@
+import { nativeDeclarationOptions } from '../../scripts/typescript-declarations.mjs'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
@@ -6,7 +7,7 @@ export default defineConfig({
   },
   platform: 'node',
   tsconfig: './tsconfig.prod.json',
-  dts: true,
+  dts: nativeDeclarationOptions('./tsconfig.prod.json'),
   deps: {
     onlyBundle: ['@sveltejs/sv-utils']
   },

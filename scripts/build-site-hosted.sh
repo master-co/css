@@ -13,4 +13,4 @@ fi
 rustup toolchain install --no-self-update
 rustup show active-toolchain
 
-pnpm build:site
+bun run build:site

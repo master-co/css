@@ -92,10 +92,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-next test
-pnpm --filter @master/css-next lint
-pnpm --filter @master/css-next type-check
-pnpm --filter @master/css-next build
+bun run --filter @master/css-next test
+bun run --filter @master/css-next lint
+bun run --filter @master/css-next type-check
+bun run --filter @master/css-next build
 ```
 
-Run `pnpm --filter @master/css-next e2e` and build `packages/next/playground` when integration behavior changes.
+Run `bun run --filter @master/css-next e2e` and build `packages/next/playground` when integration behavior changes.

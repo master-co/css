@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:ssr": "node dist/angular-with-progressive-rendering/server/server.mjs",
+    "start:ssr": "bun dist/angular-with-progressive-rendering/server/server.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

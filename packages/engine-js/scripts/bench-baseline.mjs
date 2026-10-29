@@ -1,6 +1,6 @@
 // Browser baseline: the current runtime, which inlines the JS engine, against the rc.87
 // pure JS runtime and a Wasm-engine runtime build, on the DOM scenarios of
-// `pnpm --filter @master/css-runtime bench` that they share. Readiness is checked
+// `bun run --filter @master/css-runtime bench` that they share. Readiness is checked
 // through computed styles, so no runtime's API is assumed.
 //
 //   node packages/engine-js/scripts/bench-baseline.mjs [--rc87 <rc.87 dist>] [--wasm <package dir>] [--out file.json]

@@ -5,12 +5,12 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
     "build:artifacts": "cargo xtask build-wasm engine",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "vitest run",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "lint": "eslint"
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "bun --bun vitest run",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "lint": "bun --bun eslint"
   },
   "license": "MIT",
   "description": "Internal Master CSS engine Wasm binding provider.",

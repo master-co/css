@@ -41,8 +41,8 @@ The integration:
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm run dev`             | Starts local dev server at `localhost:3000`      |
-| `npm run build`           | Builds the production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `bun run dev`             | Starts local dev server at `localhost:3000`      |
+| `bun run build`           | Builds the production site to `./dist/`          |
+| `bun run preview`         | Preview your build locally, before deploying     |
+| `bun run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `bun run astro -- --help` | Get help using the Astro CLI                     |

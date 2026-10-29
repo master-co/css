@@ -5,11 +5,11 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "lint": "eslint",
-    "test": "vitest run"
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "lint": "bun --bun eslint",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
   },
   "license": "MIT",
   "description": "Vite plugin for Master CSS",

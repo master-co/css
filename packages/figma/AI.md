@@ -52,8 +52,8 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-figma test
-pnpm --filter @master/css-figma lint
-pnpm --filter @master/css-figma type-check
-pnpm --filter @master/css-figma build
+bun run --filter @master/css-figma test
+bun run --filter @master/css-figma lint
+bun run --filter @master/css-figma type-check
+bun run --filter @master/css-figma build
 ```

@@ -1,50 +1,53 @@
 {
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.3.4",
+  "packageManager": "bun@1.4.4",
   "devEngines": {
     "packageManager": {
-      "name": "pnpm",
-      "version": "12.3.4",
+      "name": "bun",
+      "version": "1.4.4",
       "onFail": "ignore"
     }
   },
   "scripts": {
-    "postinstall": "husky install",
-    "build": "node scripts/storage-retention.mjs --apply --auto && pnpm run build:rust:wasm && node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./packages/*\"",
+    "postinstall": "bun scripts/isolate-tooling-typescript.mjs && bun --bun husky install",
+    "build": "bun scripts/storage-retention.mjs --apply --auto && bun run build:rust:wasm && bun ./node_modules/turbo/bin/turbo run build --filter=\"./packages/*\"",
     "build:rust:native": "cargo xtask build-native --release",
     "build:rust:wasm": "cargo xtask build-wasm all",
-    "build:site": "node scripts/storage-retention.mjs --apply --auto && pnpm build && pnpm --filter site build",
+    "build:site": "bun scripts/storage-retention.mjs --apply --auto && bun run build && bun run --filter site build",
     "build:site:cloudflare-pages": "bash scripts/build-site-hosted.sh",
-    "build:examples": "node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./examples/*\"",
-    "dev:site": "pnpm build && pnpm --filter site dev",
-    "dev:site:clean": "pnpm --filter site clean && pnpm dev:site",
+    "build:examples": "bun ./node_modules/turbo/bin/turbo run build --filter=\"./examples/*\"",
+    "dev:site": "bun run build && bun run --filter site dev",
+    "dev:site:clean": "bun run --filter site clean && bun run dev:site",
     "release:vscode": "node packages/vscode/scripts/release.js",
-    "release": "semantic-release",
-    "check": "pnpm run check:ai-context && pnpm run check:rust && pnpm run check:mdn-registry && pnpm run check:boundaries && pnpm run check:packages && pnpm run check:release && pnpm run commit-check && node scripts/with-typescript-tooling-compat.mjs turbo run test lint type-check --filter=\"./packages/*\" && pnpm run check:artifacts && pnpm run check:runtime-size",
-    "check:ai-context": "node scripts/check-ai-context.mjs",
+    "release": "node ./node_modules/semantic-release/bin/semantic-release.js",
+    "check": "bun run check:toolchain && bun run test:toolchain && bun run check:ai-context && bun run check:rust && bun run check:mdn-registry && bun run check:boundaries && bun run check:packages && bun run check:release && bun run commit-check && bun ./node_modules/turbo/bin/turbo run test lint type-check --filter=\"./packages/*\" && bun run check:artifacts && bun run check:runtime-size",
+    "check:ai-context": "bun scripts/check-ai-context.mjs",
     "check:api-census": "node scripts/check-api-census.mjs",
-    "check:artifacts": "node scripts/check-package-artifacts.mjs",
-    "check:boundaries": "node scripts/check-rust-core-boundaries.mjs",
-    "check:mdn-registry": "node scripts/build-rust-mdn-completion-registry.mjs --check",
+    "check:artifacts": "bun scripts/check-package-artifacts.mjs",
+    "check:boundaries": "bun scripts/check-rust-core-boundaries.mjs",
+    "check:mdn-registry": "bun scripts/build-rust-mdn-completion-registry.mjs --check",
     "check:packages": "node scripts/check-package-contracts.mjs",
     "check:packages:update": "node scripts/check-package-contracts.mjs --write",
-    "check:runtime-size": "node scripts/check-runtime-bundle-size.mjs",
-    "check:runtime-size:update": "node scripts/check-runtime-bundle-size.mjs --write",
+    "check:runtime-size": "bun scripts/check-runtime-bundle-size.mjs",
+    "check:runtime-size:update": "bun scripts/check-runtime-bundle-size.mjs --write",
     "check:rust": "cargo fmt --check && cargo clippy --workspace --all-targets --all-features -- -D warnings && cargo test --workspace && cargo xtask codegen --check && cargo xtask parity",
-    "check:release": "node scripts/release-config-check.mjs",
-    "test": "node scripts/storage-retention.mjs --apply --auto && turbo run test --filter=\"./packages/*\"",
-    "test:ai-context": "node --test scripts/check-ai-context.test.mjs",
-    "e2e": "node scripts/storage-retention.mjs --apply --auto && turbo run e2e --filter=\"./packages/*\" --filter=\"!@master/css-runtime\" --concurrency=1 && pnpm --filter @master/css-runtime e2e",
-    "lint": "turbo run lint --filter=\"./packages/*\"",
-    "type-check": "node scripts/with-typescript-tooling-compat.mjs turbo run type-check --filter=\"./packages/*\"",
-    "type-check:refs": "tsc -b tsconfig.typecheck.json",
-    "type-check:clean": "tsc -b tsconfig.typecheck.json --clean",
-    "type-check:affected": "turbo run type-check --affected",
-    "commit-check": "commitlint --from=HEAD~1 --verbose",
-    "storage:preview": "node scripts/storage-retention.mjs",
-    "storage:prune": "node scripts/storage-retention.mjs --apply",
-    "test:storage": "node --test scripts/storage-retention.spec.node.mjs"
+    "check:release": "bun scripts/release-config-check.mjs",
+    "test": "bun scripts/storage-retention.mjs --apply --auto && bun ./node_modules/turbo/bin/turbo run test --filter=\"./packages/*\"",
+    "test:ai-context": "bun test scripts/check-ai-context.test.mjs",
+    "e2e": "bun scripts/storage-retention.mjs --apply --auto && bun ./node_modules/turbo/bin/turbo run e2e --filter=\"./packages/*\" --filter=\"!@master/css-runtime\" --concurrency=1 && bun run --filter @master/css-runtime e2e",
+    "lint": "bun ./node_modules/turbo/bin/turbo run lint --filter=\"./packages/*\"",
+    "type-check": "bun ./node_modules/turbo/bin/turbo run type-check --filter=\"./packages/*\"",
+    "type-check:refs": "bun --bun tsc -b tsconfig.typecheck.json",
+    "type-check:clean": "bun --bun tsc -b tsconfig.typecheck.json --clean",
+    "type-check:affected": "bun ./node_modules/turbo/bin/turbo run type-check --affected",
+    "commit-check": "bun --bun commitlint --from=HEAD~1 --verbose",
+    "storage:preview": "bun scripts/storage-retention.mjs",
+    "storage:prune": "bun scripts/storage-retention.mjs --apply",
+    "test:storage": "bun test scripts/storage-retention.spec.node.mjs",
+    "turbo": "bun ./node_modules/turbo/bin/turbo",
+    "check:toolchain": "bun scripts/check-toolchain.mjs",
+    "test:toolchain": "node --test scripts/toolchain.test.mjs scripts/semantic-release-workspace.test.mjs scripts/tsdown-package.test.mjs"
   },
   "engines": {
     "node": "^24"
@@ -89,10 +92,8 @@
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/github": "^12.0.10",
     "@semantic-release/release-notes-generator": "^14.1.1",
-    "@ts-macro/tsc": "^0.3.7",
     "@types/edit-json-file": "^1.7.4",
     "@types/node": "^24.19.2",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "aronrepo": "^2.2.1",
     "concurrently": "^10.0.6",
     "cross-env": "^10.1.0",
@@ -114,10 +115,166 @@
     "tsdown": "^0.23.2",
     "tsx": "^4.23.15",
     "turbo": "^2.11.10",
-    "typescript": "^7.0.2",
+    "typescript": "7.0.2",
     "typescript-eslint": "^8.72.0",
-    "typescript6": "npm:typescript@6.0.3",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*",
+    "benchmarks",
+    "site"
+  ],
+  "overrides": {
+    "dompurify@>=3.0.0 <3.4.13": "3.4.13",
+    "qs@>=6.0.0 <6.16.0": "6.16.0",
+    "rolldown-plugin-dts": "0.27.4"
+  },
+  "patchedDependencies": {
+    "rolldown-plugin-dts@0.27.4": "patches/rolldown-plugin-dts@0.27.4.patch",
+    "watchpack@2.5.2": "patches/watchpack@2.5.2.patch",
+    "sv@1.1.1": "patches/sv@1.1.1.patch"
+  },
+  "trustedDependencies": [
+    "@aronrepo/commitlint-config",
+    "@aronrepo/conventional-changelog-config",
+    "@aronrepo/conventional-commits",
+    "@aronrepo/semantic-release-config",
+    "@aronrepo/semantic-release-pnpm",
+    "@firebase/util",
+    "@parcel/watcher",
+    "@swc/core",
+    "@vscode/vsce-sign",
+    "aronrepo",
+    "esbuild",
+    "lmdb",
+    "msgpackr-extract",
+    "protobufjs",
+    "sharp",
+    "unrs-resolver",
+    "workerd"
+  ],
+  "packageExtensions": {
+    "@angular-devkit/build-angular": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@angular/build": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@angular/compiler-cli": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@ngtools/webpack": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@nuxt/module-builder": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@sveltejs/package": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/eslint-plugin": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/parser": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/type-utils": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/typescript-estree": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/project-service": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/tsconfig-utils": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@typescript-eslint/utils": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "mkdist": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "rolldown-plugin-dts": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "rollup-plugin-dts": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "svelte-check": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "svelte2tsx": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "ts-api-utils": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "typescript-eslint": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "unbuild": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "vite-plugin-checker": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "vue-tsc": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    },
+    "@sveltejs/kit": {
+      "dependencies": {
+        "typescript-legacy-api": "npm:typescript@6.0.3"
+      }
+    }
   }
 }

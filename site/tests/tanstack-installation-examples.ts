@@ -1,5 +1,6 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
@@ -10,13 +11,7 @@ import { deliveryFences } from './delivery-examples'
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const tanstackInstallationModes = ['runtime', 'static'] as const
 export type TanstackInstallationMode = typeof tanstackInstallationModes[number]
-function dependency(name: string) {
-  if (name === 'vite' || name.startsWith('@master/')) return realpathSync(join(repository, 'node_modules', name))
-  const store = join(repository, 'node_modules/.pnpm')
-  const entry = readdirSync(store).find(entry => entry.startsWith(name.replace('/', '+') + '@'))
-  assert.ok(entry, `Missing installed dependency: ${name}`)
-  return join(store, entry, 'node_modules', name)
-}
+const dependency = workspaceDependency
 
 /** Builds the literal authored Vite/root/route source with the installed TanStack
  * Start compiler. The local Node adapter serves its fetch entry and client assets;

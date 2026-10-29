@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -39,10 +40,7 @@ export function storybookInstallationFixture(mode: typeof storybookModes[number]
     for (const name of ['vite', '@master/css', '@master/css-vite', '@master/css-runtime', 'react', 'react-dom', '@vitejs/plugin-react']) {
       const destination = join(root, 'node_modules', name)
       mkdirSync(dirname(destination), { recursive: true })
-      const store = join(repository, 'node_modules/.pnpm')
-      const match = readdirSync(store).find(value => value.startsWith(name.replace('/', '+') + '@'))
-      const dependency = name === 'vite' || name.startsWith('@master/') ? join(repository, 'node_modules', name) : join(store, match!, 'node_modules', name)
-      symlinkSync(dependency, destination, 'dir')
+      symlinkSync(workspaceDependency(name), destination, 'dir')
     }
     write('src/fixture.tsx', "import '../.storybook/preview'\nimport { createRoot } from 'react-dom/client'\nimport story from './Hello.stories'\ncreateRoot(document.getElementById('app')!).render(story.render())\n")
     write('index.html', '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Story asset fixture</title></head><body><div id="app"></div><script type="module" src="/src/fixture.tsx"></script></body></html>')

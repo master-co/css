@@ -56,10 +56,10 @@ and `inspect` commands.
 ## Validation
 
 ```sh
-pnpm --filter @master/css-cli test
-pnpm --filter @master/css-cli lint
-pnpm --filter @master/css-cli type-check
-pnpm --filter @master/css-cli build
+bun run --filter @master/css-cli test
+bun run --filter @master/css-cli lint
+bun run --filter @master/css-cli type-check
+bun run --filter @master/css-cli build
 ```
 
 Use or extend `tests/extract` and root command tests for command behavior changes.

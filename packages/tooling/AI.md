@@ -63,10 +63,10 @@ language crates now expose domain modules instead of monolithic `lib.rs` files.
 ## Validation
 
 ```sh
-pnpm --filter @master/css-tooling test
-pnpm --filter @master/css-tooling lint
-pnpm --filter @master/css-tooling type-check
-pnpm --filter @master/css-tooling build
+bun run --filter @master/css-tooling test
+bun run --filter @master/css-tooling lint
+bun run --filter @master/css-tooling type-check
+bun run --filter @master/css-tooling build
 ```
 
 Run downstream language-service, ESLint, compiler, and integration checks when the

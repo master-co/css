@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-pnpm exec commitlint --edit "$1" || {
+bun --bun commitlint --edit "$1" || {
     cat <<'EOF'
 
 Master CSS commit messages must follow Aronrepo conventional commits:

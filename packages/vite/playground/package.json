@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 5174",
-    "build": "tsc && vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 4174"
+    "dev": "bun --bun vite --host 127.0.0.1 --port 5174",
+    "build": "bun --bun tsc && bun --bun vite build",
+    "preview": "bun --bun vite preview --host 127.0.0.1 --port 4174"
   },
   "devDependencies": {
     "@master/css-internal": "workspace:^",

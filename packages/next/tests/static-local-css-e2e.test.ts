@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import { createServer } from 'node:http'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, extname, join, relative } from 'node:path'
@@ -8,7 +9,7 @@ import { beforeAll, expect, it } from 'vitest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 beforeAll(() => {
-  execFileSync('pnpm', ['--dir', packageDir, 'build'], { cwd: packageDir, stdio: 'pipe', timeout: 120_000 })
+  execFileSync('bun', ['run', '--cwd', packageDir, 'build'], { cwd: packageDir, stdio: 'pipe', timeout: 120_000 })
 })
 
 it.each([
@@ -19,7 +20,7 @@ it.each([
 ] as const)('delivers project theme variables without @reference in Next %s %s mode', async (fixture, builder, moduleStyle) => {
   const fixtureDir = join(packageDir, 'e2e', fixture)
   const outDir = join(fixtureDir, 'out')
-  execFileSync(join(packageDir, 'node_modules/.bin/next'), ['build', builder], {
+  execFileSync(process.execPath, [createRequire(import.meta.url).resolve('next/dist/bin/next'), 'build', builder], {
     cwd: fixtureDir,
     env: { ...process.env, NEXT_TELEMETRY_DISABLED: '1' },
     stdio: 'pipe',

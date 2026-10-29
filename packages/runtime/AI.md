@@ -6,7 +6,7 @@
 
 `MasterCSSRuntime` hosts an engine session from `@master/css`. In browsers, bundler applications and the global bundle alike, the binding's browser entry executes the runtime program with the JavaScript engine (`@master/css-engine-js`, bundled into its consumers; `binding` is `'js'`). Its CSS output matches the Rust engine, which a differential gate in that package enforces. Any feature added to the engine, runtime source, schema value constants, default program loading, or other runtime-imported modules can enter the browser runtime bundle. The engine executes a runtime program, a manifest compiled at build time; browsers never parse or compile manifests, and keyframe placement reads the program's definitions from the engine.
 
-Browser engines omit manifest compilation, render sessions and inspection (they throw `FEATURE_UNAVAILABLE`); `binding: 'native'` and `binding: 'wasm'` throw `NATIVE_UNAVAILABLE` and `WASM_UNAVAILABLE` there. No Wasm is fetched, so pages need no `wasm-unsafe-eval` Content Security Policy. `pnpm run check:runtime-size` guards the global bundle, which inlines the engine, the default program, and the progressive critical path: `dist/index.js` bundled and minified without the lazily imported engine.
+Browser engines omit manifest compilation, render sessions and inspection (they throw `FEATURE_UNAVAILABLE`); `binding: 'native'` and `binding: 'wasm'` throw `NATIVE_UNAVAILABLE` and `WASM_UNAVAILABLE` there. No Wasm is fetched, so pages need no `wasm-unsafe-eval` Content Security Policy. `bun run check:runtime-size` guards the global bundle, which inlines the engine, the default program, and the progressive critical path: `dist/index.js` bundled and minified without the lazily imported engine.
 
 The engine is imported dynamically. On a progressive page whose `style#master-css` has a valid, non-empty hydration manifest, `start()` defers it: no engine module or project manifest is loaded, the pre-rendered CSSOM stays untouched, and the runtime only tracks class usage against the hydration manifest's `classNames`: rendered rule-producing classes in rule order, rendered classes without rules, rule-free classes referenced by the page's generated rule selectors, then rule-free classes that project manifest selectors reference, so page scripts can toggle state classes such as `active` and mode classes such as `dark`. Startup replays them in that order; hydration then trusts the client engine's own snapshot IR and verifies it against `resourceOrder`, per-layer node counts and the CSSOM text. Deferred `snapshot().classRules` has usage counts and no rules. The first uncovered connected class, `ready()`, a rule API call, `refresh()` or `enginePrefetch: 'idle'` starts the engine. A deferred `refresh()` replaces the manifest source without calling the loader; during loading, `refresh()` and emitted-global registrations queue in order. Startup runs the existing hydration checks, ensures uncovered connected classes, and queues removal of hydrated classes that are no longer connected, in eager startup as well. A failed engine keeps rule APIs throwing `RUNTIME_ENGINE_NOT_READY`; `refresh()` or a new `start()` retries. `disconnect()` lets startup continue; `dispose()` cancels it and rejects `ready()` with `RUNTIME_DISPOSED`. Pages without that hydration data, and `engine: 'eager'`, start the engine during `start()`.
 
@@ -93,17 +93,17 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
-pnpm --filter @master/css-runtime e2e
-pnpm --filter @master/css-runtime lint
-pnpm --filter @master/css-runtime type-check
-pnpm --filter @master/css-runtime build
+bun run --filter @master/css-runtime e2e
+bun run --filter @master/css-runtime lint
+bun run --filter @master/css-runtime type-check
+bun run --filter @master/css-runtime build
 ```
 
 Use or extend `e2e/lifecycle.test.ts`, `e2e/class-usages.test.ts`, `e2e/hydration-edge-cases.test.ts`, `e2e/engine-startup.test.ts`, `e2e/progressive/**`, and issue-specific browser regressions. Deferred-engine tests assert network requests: a fully pre-rendered page must not request the engine module or runtime program. `e2e/init.ts` compiles test manifests into programs (`compileProgram()`), and its server compiles the manifests page code passes to `startCSSRuntime()`.
 
 ## Benchmark Guidance
 
-For runtime implementation changes, run `pnpm --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Correctness e2e should remain browser correctness, not timing assertions. Report benchmark status, global runtime asset impact, memory/cold-start/runtime CPU/CSSOM tradeoffs, and whether generated CSS output, progressive hydration, or fallback hydration changed. For progressive changes, also report the deferred critical-path size and the first engine-startup latency.
+For runtime implementation changes, run `bun run --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Correctness e2e should remain browser correctness, not timing assertions. Report benchmark status, global runtime asset impact, memory/cold-start/runtime CPU/CSSOM tradeoffs, and whether generated CSS output, progressive hydration, or fallback hydration changed. For progressive changes, also report the deferred critical-path size and the first engine-startup latency.
 
 ## Bundle Audit Notes
 

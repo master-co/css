@@ -7,7 +7,7 @@ Use when selecting validation or adding coverage. Start with the smallest test t
 - Run each changed workspace package's `lint` script if defined; report packages without one.
 - Parser/compiler/renderer/runtime/scanner/language/ESLint behavior changes require focused tests. Use `.ai/testing-policy.md` for the change-type matrix and fixture rules.
 - Tests-only tasks do not authorize implementation changes. Cover existing behavior or a known regression; update snapshots only for an intentional, explained output change.
-- AI guidance structure changes require `pnpm run check:ai-context`; checker policy changes additionally require `pnpm run test:ai-context`.
+- AI guidance structure changes require `bun run check:ai-context`; checker policy changes additionally require `bun run test:ai-context`.
 - Documentation-only AI changes do not require product tests/builds. For site content or runnable examples, use `docs.md` and applicable local guidance.
 
 ## Scoped Commands
@@ -15,12 +15,12 @@ Use when selecting validation or adding coverage. Start with the smallest test t
 Read the affected manifest for available scripts. Common commands are:
 
 ```sh
-pnpm --filter <package> test
-pnpm --filter <package> lint
-pnpm --filter <package> type-check
+bun run --filter <package> test
+bun run --filter <package> lint
+bun run --filter <package> type-check
 ```
 
-Runtime browser correctness uses `pnpm --filter @master/css-runtime e2e`. Rust, ABI, and parity checks are in [rust-routing.md](rust-routing.md); hot-path measurements are in [performance.md](performance.md). Root/CI command details live in `.ai/commands.md`.
+Runtime browser correctness uses `bun run --filter @master/css-runtime e2e`. Rust, ABI, and parity checks are in [rust-routing.md](rust-routing.md); hot-path measurements are in [performance.md](performance.md). Root/CI command details live in `.ai/commands.md`.
 
 ## Completion
 

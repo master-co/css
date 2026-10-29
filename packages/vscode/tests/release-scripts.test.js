@@ -62,12 +62,12 @@ test('release status guard ignores pre-existing dirty paths', () => {
   const current = [
     ...baseline,
     ' M packages/vscode/package.json',
-    ' M pnpm-lock.yaml'
+    ' M bun.lock'
   ]
 
   expect(newStatusLines(current, baseline)).toEqual([
     ' M packages/vscode/package.json',
-    ' M pnpm-lock.yaml'
+    ' M bun.lock'
   ])
   expect(unexpectedReleaseStatusLines(current, baseline)).toEqual([])
 })
@@ -79,7 +79,7 @@ test('release status guard rejects newly dirty unexpected paths', () => {
   const current = [
     ...baseline,
     ' M packages/vscode/package.json',
-    ' M pnpm-lock.yaml',
+    ' M bun.lock',
     ' M packages/vscode/data/generated.json'
   ]
 

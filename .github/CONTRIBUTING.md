@@ -1,11 +1,11 @@
 # Contributing to Master CSS
 ```bash
-pnpm install
+bun install --frozen-lockfile
 ```
 
-Run `pnpm build` in the project root to build all packages:
+Run `bun run build` in the project root to build all packages:
 ```bash
-pnpm build
+bun run build
 ```
 Split a new terminal and switch to the target directory for testing to avoid running tests from other packages:
 ```bash
@@ -14,7 +14,7 @@ cd packages/css
 
 ## Testing
 ```bash
-pnpm test -- --watch
+bun run test --watch
 ```
 
 ### Contributing your test cases
@@ -40,33 +40,33 @@ Test(Core): Add @1aron coverage
 ## Linting
 Follow the repository ESLint flat config.
 ```bash
-pnpm lint
+bun run lint
 ```
 
 To automatically fix any violations in your code:
 ```
-pnpm lint -- --fix
+bun run lint -- --fix
 ```
 
 ## Type Checking
 ```bash
-pnpm type-check
+bun run type-check
 ```
 
 ## Commit Checking
 Follow the [Aronrepo conventional commits](https://github.com/1aron/aronrepo/tree/main/packages/conventional-commits). Commit headers use `Type(Scope): Summary`, with PascalCase types, optional scopes, sentence case, and no trailing period.
 ```bash
-pnpm commit-check
+bun run commit-check
 ```
 
 ## Checking
-You have to pass `pnpm check` before submitting a pull request.
+You have to pass `bun run check` before submitting a pull request.
 ```bash
-pnpm check
+bun run check
 ```
 The command includes all of the following checks:
 
 ## Building
 ```
-pnpm build
+bun run build
 ```

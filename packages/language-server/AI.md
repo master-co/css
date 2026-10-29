@@ -56,10 +56,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-language-server test
-pnpm --filter @master/css-language-server lint
-pnpm --filter @master/css-language-server type-check
-pnpm --filter @master/css-language-server build
+bun run --filter @master/css-language-server test
+bun run --filter @master/css-language-server lint
+bun run --filter @master/css-language-server type-check
+bun run --filter @master/css-language-server build
 ```
 
 Use or extend `tests/custom-workspace.test.ts`, `tests/monorepo.test.ts`, and `tests/fixtures`.

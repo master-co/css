@@ -12,5 +12,5 @@ Route class-list behavior to `class_list.rs`, ordering to `order.rs`, conflicts 
 ```sh
 cargo test -p mastercss-lint
 cargo clippy -p mastercss-lint --all-targets --all-features -- -D warnings
-pnpm --filter @master/eslint-plugin-css test
+bun run --filter @master/eslint-plugin-css test
 ```

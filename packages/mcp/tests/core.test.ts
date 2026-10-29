@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -245,6 +245,8 @@ describe('@master/css-mcp', () => {
 
   it('audits setup and inspects CSS-first directives through MCP', async () => {
     const root = createTempDir('master-css-mcp-setup-')
+    mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
+    symlinkSync(resolve(import.meta.dirname, '../../css'), join(root, 'node_modules/@master/css'), 'junction')
     writeJSON(join(root, 'package.json'), {
       name: 'setup-fixture',
       devDependencies: {
@@ -501,10 +503,10 @@ describe('@master/css-mcp', () => {
         severity: 'high'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css test'
+        command: 'bun run --filter @master/css test'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css lint'
+        command: 'bun run --filter @master/css lint'
       }))
     } finally {
       await connection.close()
@@ -540,7 +542,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(tests.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-runtime e2e'
+        command: 'bun run --filter @master/css-runtime e2e'
       }))
 
       const graph = parseToolJSON(await connection.client.callTool({
@@ -651,16 +653,16 @@ describe('@master/css-mcp', () => {
       ]))
       expect(report.validation.commands).toEqual(expect.arrayContaining([
         expect.objectContaining({
-          command: 'pnpm --filter @master/create-css test'
+          command: 'bun run --filter @master/create-css test'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/create-css lint'
+          command: 'bun run --filter @master/create-css lint'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-svelte-addon test'
+          command: 'bun run --filter @master/css-svelte-addon test'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-svelte-addon lint'
+          command: 'bun run --filter @master/css-svelte-addon lint'
         })
       ]))
     } finally {
@@ -741,7 +743,7 @@ describe('@master/css-mcp', () => {
         severity: 'info'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm run check:ai-context'
+        command: 'bun run check:ai-context'
       }))
     } finally {
       await connection.close()
@@ -783,7 +785,7 @@ describe('@master/css-mcp', () => {
         severity: 'warning'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter site prepare-app'
+        command: 'bun run --filter site prepare-app'
       }))
     } finally {
       await connection.close()

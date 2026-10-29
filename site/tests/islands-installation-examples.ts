@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -11,11 +12,7 @@ import { deliveryFences } from './delivery-examples'
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const islandsInstallationRoutes = ['/astro', '/astro/runtime-rendering', '/astro/static-rendering', '/svelte'] as const
 function dependency(name: string) {
-  const store = join(repository, 'node_modules/.pnpm')
-  if (name === 'typescript') return join(store, 'typescript@6.0.3/node_modules/typescript')
-  const match = readdirSync(store).filter(value => value.startsWith(name.replace('/', '+') + '@')).sort().at(-1)
-  assert.ok(match, `Existing workspace dependency required: ${name}`)
-  return join(store, match, 'node_modules', name)
+  return workspaceDependency(name, name === 'typescript' ? new URL('../../packages/svelte/package.json', import.meta.url) : undefined)
 }
 function unindent(source: string) {
   const lines = source.trimEnd().split('\n')

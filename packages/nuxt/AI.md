@@ -52,7 +52,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-nuxt test
-pnpm --filter @master/css-nuxt lint
-pnpm --filter @master/css-nuxt build
+bun run --filter @master/css-nuxt test
+bun run --filter @master/css-nuxt lint
+bun run --filter @master/css-nuxt build
 ```

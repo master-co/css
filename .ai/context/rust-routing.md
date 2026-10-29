@@ -64,7 +64,7 @@ cargo xtask parity
 Engine/compiler output changes require the matching npm package tests. Engine
 semantics changes (`mastercss-engine`, the lexer and schema code it executes, the
 program encoding) also change `packages/engine-js` in the same change: rebuild the Wasm
-(`pnpm run build:rust:wasm`) and keep `pnpm --filter @master/css-engine-js differential`
+(`bun run build:rust:wasm`) and keep `bun run --filter @master/css-engine-js differential`
 at zero differences (`.ai/architecture.md#browser-engine`). Browser engine changes
-require runtime e2e and bundle-size review (`pnpm run check:runtime-size`). Never edit generated binding
+require runtime e2e and bundle-size review (`bun run check:runtime-size`). Never edit generated binding
 protocol files directly.

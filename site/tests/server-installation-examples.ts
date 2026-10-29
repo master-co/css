@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -10,13 +11,7 @@ import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
 export const serverInstallationRoutes = ['/express', '/express/static-rendering', '/php', '/php/static-rendering', '/rails', '/rails/static-rendering'] as const
-function dependency(name: string) {
-  if (name.startsWith('@master/')) return join(repository, 'node_modules', name)
-  const store = join(repository, 'node_modules/.pnpm')
-  const match = readdirSync(store).filter(value => value.startsWith(name + '@')).sort().at(-1)
-  assert.ok(match, `Existing dependency required: ${name}`)
-  return join(store, match, 'node_modules', name)
-}
+const dependency = workspaceDependency
 async function unusedPort() {
   const server = createServer()
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))

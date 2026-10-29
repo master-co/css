@@ -1,11 +1,11 @@
 {
   "name": "@master/css-cli",
   "scripts": {
-    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
-    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "lint": "eslint",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest run"
+    "build": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "bun --bun tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "lint": "bun --bun eslint",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "test": "node ../../node_modules/vitest/vitest.mjs run"
   },
   "type": "module",
   "engines": {

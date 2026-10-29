@@ -58,10 +58,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-vscode test
-pnpm --filter @master/css-vscode lint
-pnpm --filter @master/css-vscode type-check
-pnpm --filter @master/css-vscode build
+bun run --filter @master/css-vscode test
+bun run --filter @master/css-vscode lint
+bun run --filter @master/css-vscode type-check
+bun run --filter @master/css-vscode build
 ```
 
-Run `pnpm --filter @master/css-vscode vscode:package -- --target darwin-arm64` for packaging changes.
+Run `bun run --filter @master/css-vscode vscode:package -- --target darwin-arm64` for packaging changes.

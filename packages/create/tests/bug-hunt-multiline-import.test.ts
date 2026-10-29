@@ -1,9 +1,14 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import ts from 'typescript6'
+import { parseTypeScript, formatTypeScriptDiagnostics } from '../../../scripts/typescript-api.mjs'
 import { expect, it } from 'vitest'
 import { applyMasterCSSSetupPlan, planMasterCSSSetup } from '../src'
+
+function parseSource(file: string, source: string) {
+    const { sourceFile, diagnostics } = parseTypeScript(file, source)
+    return Object.assign(sourceFile, { parseDiagnostics: diagnostics })
+}
 
 // BH-0021: adding setup must preserve valid multiline imports in an existing config.
 it.each([false, true])('keeps Vite config parseable with multiline=%s', (multiline) => {
@@ -16,8 +21,8 @@ it.each([false, true])('keeps Vite config parseable with multiline=%s', (multili
         const plan = planMasterCSSSetup({ root, framework: 'vite', minimal: true, install: false })
         applyMasterCSSSetupPlan(plan, { install: false })
         const source = readFileSync(file, 'utf8')
-        const parsed = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS) as ts.SourceFile & { parseDiagnostics: ts.Diagnostic[] }
-        expect(parsed.parseDiagnostics.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n')), source).toEqual([])
+        const parsed = parseSource(file, source)
+        expect(formatTypeScriptDiagnostics(parsed.parseDiagnostics), source).toBe('')
     } finally {
         rmSync(root, { recursive: true, force: true })
     }
@@ -34,7 +39,7 @@ it.each([
     const root = mkdtempSync(join(tmpdir(), 'master-css-bh-create-'))
     const file = join(root, 'vite.config.ts')
     const initial = prefix + 'export default defineConfig({ plugins: [] })\n'
-    const parse = (source: string) => ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS) as ts.SourceFile & { parseDiagnostics: ts.Diagnostic[] }
+    const parse = (source: string) => parseSource(file, source)
     try {
         expect(parse(initial).parseDiagnostics).toEqual([])
         writeFileSync(join(root, 'package.json'), JSON.stringify({ type: 'module', devDependencies: { vite: '*' } }))
@@ -42,7 +47,7 @@ it.each([
         applyMasterCSSSetupPlan(planMasterCSSSetup({ root, framework: 'vite', minimal: true, install: false }), { install: false })
         const source = readFileSync(file, 'utf8')
         const parsed = parse(source)
-        expect(parsed.parseDiagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n')), source).toEqual([])
+        expect(formatTypeScriptDiagnostics(parsed.parseDiagnostics), source).toBe('')
         if (prefix.includes("'use client'")) {
             expect(parsed.statements[0].getText()).toBe("'use client';")
         }

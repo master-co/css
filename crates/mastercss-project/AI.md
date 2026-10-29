@@ -13,5 +13,5 @@ markers, graph order, and merge order affect all compiler consumers.
 ```sh
 cargo test -p mastercss-project
 cargo clippy -p mastercss-project --all-targets --all-features -- -D warnings
-pnpm --filter @master/css-compiler test
+bun run --filter @master/css-compiler test
 ```

@@ -43,8 +43,8 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-mcp test
-pnpm --filter @master/css-mcp lint
-pnpm --filter @master/css-mcp type-check
-pnpm --filter @master/css-mcp build
+bun run --filter @master/css-mcp test
+bun run --filter @master/css-mcp lint
+bun run --filter @master/css-mcp type-check
+bun run --filter @master/css-mcp build
 ```

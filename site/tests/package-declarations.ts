@@ -1,18 +1,21 @@
 import assert from 'node:assert/strict'
+import { createScanner } from 'typescript/unstable/ast/scanner'
+import { formatTypeScriptDiagnostics } from '../../scripts/typescript-api.mjs'
 import { mkdtemp, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { declarationProgram, publicDeclaration, formatDeclaration, ts } from '../reference/package-declarations'
 
 export function declarationTokens(text: string) {
-  const scanner = ts.createScanner(ts.ScriptTarget.Latest, true, ts.LanguageVariant.Standard, text)
+  const scanner = createScanner(true, undefined, text)
   const tokens: [number, string][] = []
-  for (let token = scanner.scan(); token !== ts.SyntaxKind.EndOfFileToken; token = scanner.scan()) tokens.push([token, scanner.getTokenText()])
+  for (let token = scanner.scan(); token !== ts.SyntaxKind.EndOfFile; token = scanner.scan()) tokens.push([token, scanner.getTokenText()])
   return tokens
 }
 
 export async function verifyDeclarationPresentation() {
   const root = await mkdtemp(path.join(tmpdir(), 'master-doc-declarations-'))
+  let program: ReturnType<typeof declarationProgram> | undefined
   try {
     const file = path.join(root, 'index.ts')
     await writeFile(path.join(root, 'factory.ts'), 'export default function createSession() { return true; }')
@@ -40,11 +43,13 @@ export default factory();
 export const literal = 'unchanged';
 export { Named as Renamed };
 `)
-    const program = declarationProgram([file], { target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.ESNext, strict: true, skipLibCheck: true })
-    assert.deepEqual(program.getSemanticDiagnostics().map((diagnostic: any) => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), [])
+    program = declarationProgram([file], { target: 'ESNext', module: 'ESNext', strict: true, skipLibCheck: true })
+    assert.equal(formatTypeScriptDiagnostics(program.getSemanticDiagnostics()), '')
     const checker = program.getTypeChecker()
     const source = program.getSourceFile(file)
-    const symbols = checker.getExportsOfModule(checker.getSymbolAtLocation(source))
+    const moduleSymbol = checker.getSymbolAtLocation(source)
+    assert.ok(moduleSymbol)
+    const symbols = checker.getExportsOfModule(moduleSymbol)
     const declarations = Object.fromEntries(symbols.map((symbol: any) => {
       const actual = symbol.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(symbol) : symbol
       const text = publicDeclaration(actual, checker)
@@ -65,5 +70,5 @@ export { Named as Renamed };
     assert.match(declarations.createSession, /^export declare function createSession\(\): boolean;/)
     assert.match(declarations.combine, /combine\(\n/)
     assert.equal(declarations.Renamed, declarations.Named)
-  } finally { await rm(root, { recursive: true, force: true }) }
+  } finally { program?.close(); await rm(root, { recursive: true, force: true }) }
 }

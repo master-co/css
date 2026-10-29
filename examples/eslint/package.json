@@ -2,7 +2,7 @@
   "name": "master-css-eslint-example",
   "type": "module",
   "scripts": {
-    "lint": "eslint"
+    "lint": "bun --bun eslint"
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^22.2.0",

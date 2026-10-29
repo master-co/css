@@ -40,7 +40,7 @@ A token key resolves to its variable on demand through `utility::utility_variabl
 
 ## Browser Engine
 
-Browsers do not run this crate: `packages/engine-js` executes the same programs in JavaScript and must produce byte-identical results (`.ai/architecture.md#browser-engine`). A change to what sessions execute (matching, values, selectors, conditions, priority, ordering, mixins, resources, transitions, snapshots, emitted globals, the program encoding or `finish_program`) lands with the matching `packages/engine-js` change: run `pnpm run build:rust:wasm`, then `pnpm --filter @master/css-engine-js differential` at zero differences, adding differential sources for new syntax. Retired syntax has no JavaScript counterpart.
+Browsers do not run this crate: `packages/engine-js` executes the same programs in JavaScript and must produce byte-identical results (`.ai/architecture.md#browser-engine`). A change to what sessions execute (matching, values, selectors, conditions, priority, ordering, mixins, resources, transitions, snapshots, emitted globals, the program encoding or `finish_program`) lands with the matching `packages/engine-js` change: run `bun run build:rust:wasm`, then `bun run --filter @master/css-engine-js differential` at zero differences, adding differential sources for new syntax. Retired syntax has no JavaScript counterpart.
 
 Code that sessions run for each class joins text with `concat_text!` and `mastercss_lexer::text::decimal`, and short lists sort with a small insertion sort or a partition. Both were chosen for the former browser runtime Wasm; `format!` stays fine in diagnostics, tests and tooling-only modules such as `completion.rs`. `EngineError::message()` is the single source of error text, which `Display` also writes.
 

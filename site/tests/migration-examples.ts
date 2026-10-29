@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { createElement, type ComponentType } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import ts from 'typescript6'
+import { compileTypeScript, formatTypeScriptDiagnostics } from '../../scripts/typescript-api.mjs'
 
 const require = createRequire(import.meta.url)
 export const vendorMigrationSlugs = ['bootstrap', 'material-ui', 'sass', ''] as const
@@ -17,18 +17,13 @@ export function migrationFences(slug: string) {
 }
 
 export function compileMigrationExample(source: string) {
-  return ts.transpileModule(source, {
-    fileName: 'migration-example.tsx', reportDiagnostics: true,
-    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX }
-  })
+  return compileTypeScript(source, { fileName: 'migration-example.tsx' })
 }
 
 /** Execute only the selected, repository-authored component specimen in tests. */
 export function renderMigrationExample(source: string, name: string, props: Record<string, unknown>) {
   const compiled = compileMigrationExample(source)
-  if (compiled.diagnostics?.length) throw new Error(ts.formatDiagnosticsWithColorAndContext(compiled.diagnostics, {
-    getCanonicalFileName: file => file, getCurrentDirectory: () => process.cwd(), getNewLine: () => '\n'
-  }))
+  if (compiled.diagnostics?.length) throw new Error(formatTypeScriptDiagnostics(compiled.diagnostics))
   const exports: Record<string, ComponentType<any>> = {}
   const localRequire = (specifier: string) => specifier === './Button.module.css' ? { button: 'migration-module-button' } : require(specifier)
   new Function('require', 'exports', compiled.outputText)(localRequire, exports)

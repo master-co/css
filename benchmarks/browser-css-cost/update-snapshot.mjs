@@ -71,7 +71,7 @@ const snapshot = {
   sourceReport: {
     suite: report.suite,
     generatedAt: report.generatedAt,
-    command: 'pnpm --filter ./benchmarks bench:browser-css-cost'
+    command: 'bun run --filter master-css-benchmarks bench:browser-css-cost'
   },
   environment: report.environment,
   browser: report.browser,

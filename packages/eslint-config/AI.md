@@ -16,8 +16,8 @@ truth; this package only provides the ecosystem config-package import.
 ## Validation
 
 ```sh
-pnpm --filter @master/eslint-config-css test
-pnpm --filter @master/eslint-config-css lint
-pnpm --filter @master/eslint-config-css type-check
-pnpm --filter @master/eslint-config-css build
+bun run --filter @master/eslint-config-css test
+bun run --filter @master/eslint-config-css lint
+bun run --filter @master/eslint-config-css type-check
+bun run --filter @master/eslint-config-css build
 ```

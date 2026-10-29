@@ -75,10 +75,10 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-compiler test
-pnpm --filter @master/css-compiler lint
-pnpm --filter @master/css-compiler type-check
-pnpm --filter @master/css-compiler build
+bun run --filter @master/css-compiler test
+bun run --filter @master/css-compiler lint
+bun run --filter @master/css-compiler type-check
+bun run --filter @master/css-compiler build
 ```
 
 ## Directive Notes

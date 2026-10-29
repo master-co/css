@@ -106,5 +106,5 @@ import Image from '~/site/docs-shell/components/Image'
 - 看 390／768／1280px、明暗模式的實際截圖；有翻譯時包含繁中。Bento 圖框維持 112px，文字不和圖示碰撞，無非預期裁切或水平溢出。
 - 同列示範起點對齊，Tokens 程式碼區保持正常高度；P3、Editor、Lint、Rendering、Agent 原有鍵盤／點擊互動仍能使用。
 - 圖錄載入、資產無缺圖、同頁多次顯示不產生 ID 衝突；新增圖示時同步對應清單和相關預覽。
-- 改 site 時依現有腳本執行 `pnpm --filter site lint`、`type-check`、`prepare-app`；首頁內容或元件受影響時執行 `test:home`；AI／來源結構受影響時執行 `pnpm run check:ai-context`。
+- 改 site 時依現有腳本執行 `bun run --filter site lint`、`type-check`、`prepare-app`；首頁內容或元件受影響時執行 `test:home`；AI／來源結構受影響時執行 `bun run check:ai-context`。
 - 既有錯誤以當次實際輸出判定，不把歷史「7 個 type errors」當成永久允許失敗的清單。只修此次引入的問題，其他另行報告。

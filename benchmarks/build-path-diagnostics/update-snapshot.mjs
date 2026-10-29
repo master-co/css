@@ -7,22 +7,22 @@ const reportSources = [
   {
     suite: 'startup-diagnostics',
     file: '.results/startup-diagnostics/report.json',
-    command: 'BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:startup-diagnostics'
+    command: 'BENCHMARK_ROUNDS=3 bun run --filter master-css-benchmarks bench:startup-diagnostics'
   },
   {
     suite: 'build-diagnostics',
     file: '.results/build-diagnostics/report.json',
-    command: 'BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:build-diagnostics'
+    command: 'BENCHMARK_ROUNDS=3 bun run --filter master-css-benchmarks bench:build-diagnostics'
   },
   {
     suite: 'compiler-diagnostics',
     file: '.results/compiler-diagnostics/report.json',
-    command: 'BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:compiler-diagnostics'
+    command: 'BENCHMARK_ROUNDS=3 bun run --filter master-css-benchmarks bench:compiler-diagnostics'
   },
   {
     suite: 'extraction-diagnostics',
     file: '.results/extraction-diagnostics/report.json',
-    command: 'BENCHMARK_ROUNDS=3 pnpm --filter ./benchmarks bench:extraction-diagnostics'
+    command: 'BENCHMARK_ROUNDS=3 bun run --filter master-css-benchmarks bench:extraction-diagnostics'
   }
 ]
 

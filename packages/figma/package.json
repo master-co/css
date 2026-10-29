@@ -7,14 +7,14 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "pnpm build:plugin & pnpm build:ui",
-    "build:plugin": "tsdown",
-    "build:ui": "concurrently \"pnpm:build:ui:*\"",
-    "build:ui:export-variables": "vite build --mode export-variables",
-    "build:ui:import-variables": "vite build --mode import-variables",
-    "lint": "eslint",
-    "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest run"
+    "build": "bun run build:plugin & bun run build:ui",
+    "build:plugin": "bun --bun tsdown",
+    "build:ui": "concurrently \"bun run build:ui:export-variables\" \"bun run build:ui:import-variables\"",
+    "build:ui:export-variables": "bun --bun vite build --mode export-variables",
+    "build:ui:import-variables": "bun --bun vite build --mode import-variables",
+    "lint": "bun --bun eslint",
+    "type-check": "bun --bun tsc -b tsconfig.typecheck.json",
+    "test": "bun --bun vitest run"
   },
   "author": "Aoyue Design LLC.",
   "license": "MIT",

@@ -62,10 +62,10 @@
 For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
-pnpm --filter @master/css-language-service test
-pnpm --filter @master/css-language-service lint
-pnpm --filter @master/css-language-service type-check
-pnpm --filter @master/css-language-service build
+bun run --filter @master/css-language-service test
+bun run --filter @master/css-language-service lint
+bun run --filter @master/css-language-service type-check
+bun run --filter @master/css-language-service build
 ```
 
 For Shiki or grammar changes, use `tests/shiki.test.ts`, `tests/shiki-session.test.ts`, and `tests/shiki-textmate.test.ts`.

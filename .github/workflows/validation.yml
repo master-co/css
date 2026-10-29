@@ -75,7 +75,7 @@ jobs:
             # replays tasks that never read those artifacts.
             while IFS= read -r file; do
               case "$file" in
-                .github/workflows/*|.github/actions/setup-pnpm/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*|crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml)
+                .github/workflows/*|.github/actions/setup-bun/*|package.json|bun.lock|bunfig.toml|turbo.json|.npmrc|tsconfig*.json|eslint.config.*|scripts/*|shared/*|crates/*|Cargo.toml|Cargo.lock|rust-toolchain.toml)
                   full=true
                   break
                   ;;
@@ -104,16 +104,20 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: build
       - name: Validate AI context budgets
-        run: pnpm run check:ai-context
+        run: bun run check:ai-context
+      - name: Validate workspace toolchain and release packing
+        run: |
+          bun run check:toolchain
+          bun run test:toolchain
       - name: Validate package contracts
         run: |
-          pnpm run check:mdn-registry
-          pnpm run check:boundaries
-          pnpm run check:packages
+          bun run check:mdn-registry
+          bun run check:boundaries
+          bun run check:packages
       - name: Detect affected release consumers
         id: consumers
         shell: bash
@@ -129,13 +133,13 @@ jobs:
             site_affected=false
             vscode_affected=false
 
-            if pnpm exec turbo run build --filter=site --affected --dry=json \
+            if bun run turbo run build --filter=site --affected --dry=json \
               | jq -e 'any(.tasks[]; .taskId == "site#build")' >/dev/null; then
               site_affected=true
             fi
 
-            if pnpm exec turbo run build --filter=master-css-vscode --affected --dry=json \
-              | jq -e 'any(.tasks[]; .taskId == "master-css-vscode#build")' >/dev/null; then
+            if bun run turbo run build --filter=@master/css-vscode --affected --dry=json \
+              | jq -e 'any(.tasks[]; .taskId == "@master/css-vscode#build")' >/dev/null; then
               vscode_affected=true
             fi
 
@@ -146,15 +150,15 @@ jobs:
             echo "vscode_affected=$vscode_affected"
           } >> "$GITHUB_OUTPUT"
       - name: Audit site translations
-        run: pnpm --filter site audit:i18n
+        run: bun run --filter site audit:i18n
       - name: Install Chromium headless shell
-        run: pnpm exec playwright install --with-deps --only-shell chromium
+        run: bun run playwright install --with-deps --only-shell chromium
       - name: Build release packages
         if: ${{ inputs.release_build }}
-        run: pnpm run build
+        run: bun run build
       - name: Build Rust Wasm artifacts
         if: ${{ !inputs.release_build }}
-        run: pnpm run build:rust:wasm
+        run: bun run build:rust:wasm
       - name: Validate packages
         shell: bash
         env:
@@ -167,13 +171,13 @@ jobs:
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
-          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+          bun run turbo "${args[@]}"
       # `--affected` selects packages by their own files, so Rust, site and example
       # changes never select the browser engine. Its task inputs cover them instead,
       # and the Turbo cache skips the differential when nothing it reads changed.
       - name: Compare the browser engine with Rust
         id: differential
-        run: pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo run test --filter=@master/css-engine-js
+        run: bun run turbo run test --filter=@master/css-engine-js
       - name: Summarize browser engine differences
         if: ${{ failure() && steps.differential.outcome == 'failure' && hashFiles('packages/engine-js/.reports/differential.md') != '' }}
         run: cat packages/engine-js/.reports/differential.md >> "$GITHUB_STEP_SUMMARY"
@@ -185,13 +189,13 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$RELEASE_BUILD" != true ]; then
-            pnpm run build
+            bun run build
           fi
-          pnpm --filter site build
-          pnpm --filter site test:css-contract
-          pnpm --filter site test:lint-cache
-          pnpm --filter site lint:full
-          pnpm --filter site type-check
+          bun run --filter site build
+          bun run --filter site test:css-contract
+          bun run --filter site test:lint-cache
+          bun run --filter site lint:full
+          bun run --filter site type-check
       - name: Build examples
         shell: bash
         env:
@@ -202,7 +206,7 @@ jobs:
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
-          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+          bun run turbo "${args[@]}"
       # Pull requests restore the cache but never write it, so one shared entry
       # per scope is refreshed by pushes instead of every run adding a new one.
       - name: Prune and save Turbo cache
@@ -213,7 +217,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: .turbo/cache
-          key: ${{ runner.os }}-turbo-build-${{ github.ref_name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-build-${{ github.ref_name }}-${{ github.run_id }}
 
   rust_quality:
     name: rust-quality
@@ -263,7 +267,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           install: "false"
           turbo-cache: "false"
@@ -345,13 +349,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: e2e
       - name: Install E2E browsers
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
+        run: bun run playwright install --with-deps chromium firefox webkit
       - name: Build Rust Wasm artifacts
-        run: pnpm run build:rust:wasm
+        run: bun run build:rust:wasm
       - name: Run E2E tests
         shell: bash
         env:
@@ -362,7 +366,7 @@ jobs:
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
-          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+          bun run turbo "${args[@]}"
       # Pull requests restore the cache but never write it, so one shared entry
       # per scope is refreshed by pushes instead of every run adding a new one.
       - name: Prune and save Turbo cache
@@ -373,7 +377,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: .turbo/cache
-          key: ${{ runner.os }}-turbo-e2e-${{ github.ref_name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-e2e-${{ github.ref_name }}-${{ github.run_id }}
 
   compat_windows:
     name: compat-windows
@@ -386,13 +390,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
-        run: pnpm exec playwright install --only-shell chromium
+        run: bun run playwright install --only-shell chromium
       - name: Build Rust Wasm artifacts
-        run: pnpm run build:rust:wasm
+        run: bun run build:rust:wasm
       - name: Test packages
         shell: bash
         env:
@@ -405,7 +409,7 @@ jobs:
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
-          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+          bun run turbo "${args[@]}"
       - name: Build examples
         shell: bash
         env:
@@ -416,7 +420,7 @@ jobs:
           if [ "$FULL_VALIDATION" != true ]; then
             args+=(--affected)
           fi
-          pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+          bun run turbo "${args[@]}"
       # Pull requests restore the cache but never write it, so one shared entry
       # per scope is refreshed by pushes instead of every run adding a new one.
       - name: Prune and save Turbo cache
@@ -427,4 +431,4 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: .turbo/cache
-          key: ${{ runner.os }}-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ runner.arch }}-bun-1.4.4-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}

@@ -43,6 +43,14 @@ function readProjectFile(root: string, file: string) {
   return readFileSync(join(root, file), 'utf8')
 }
 
+test.each(['bun.lock', 'bun.lockb'])('detects %s without a packageManager declaration', (lockfile) => {
+  const root = createTempProject('master-css-create-bun-lock-', { devDependencies: { vite: '*' } })
+  try {
+    writeFileSync(join(root, lockfile), '')
+    expect(planMasterCSSSetup({ root, framework: 'vite' }).packageManager).toBe('bun')
+  } finally { rmSync(root, { recursive: true, force: true }) }
+})
+
 function writeProjectFile(root: string, file: string, content: string) {
   const filePath = join(root, file)
   mkdirSync(dirname(filePath), { recursive: true })

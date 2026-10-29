@@ -17,12 +17,12 @@ on:
       - packages/runtime/**
       - shared/**
       - package.json
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
+      - bun.lock
+      - bunfig.toml
       - turbo.json
       - tsconfig*.json
       - .npmrc
-      - .github/actions/setup-pnpm/action.yml
+      - .github/actions/setup-bun/action.yml
       - .github/workflows/benchmark.yml
   workflow_dispatch:
 
@@ -39,17 +39,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-pnpm
+      - uses: ./.github/actions/setup-bun
         with:
           turbo-cache-scope: benchmark
-      - run: pnpm exec playwright install --with-deps --only-shell chromium
+      - run: bun run playwright install --with-deps --only-shell chromium
       - name: Build benchmark packages
         run: |
-          pnpm --filter @master/css-schema build
-          pnpm --filter @master/css-tooling build
-          pnpm --filter @master/css build
-          pnpm --filter @master/css-preset build
-          pnpm --filter @master/css-runtime build
+          bun run --filter @master/css-schema build
+          bun run --filter @master/css-tooling build
+          bun run --filter @master/css build
+          bun run --filter @master/css-preset build
+          bun run --filter @master/css-runtime build
       - name: Prepare benchmark output
         shell: bash
         run: |
@@ -64,9 +64,9 @@ jobs:
             echo "RUNTIME_BENCHMARK_ARTIFACT=master-css-benchmark-$branch_slug-runtime-$GITHUB_SHA"
           } >> "$GITHUB_ENV"
       - name: Run engine benchmark
-        run: pnpm --filter @master/css bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
+        run: bun run --filter @master/css bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
       - name: Run runtime browser benchmark
-        run: pnpm --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
+        run: bun run --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
       - name: Write benchmark reports
         run: node benchmarks/ci/write-benchmark-report.js --output "$BENCHMARK_OUTPUT_DIR" --engine "$BENCHMARK_OUTPUT_DIR/engine-vitest.json" --runtime "$BENCHMARK_OUTPUT_DIR/runtime.json"
       - name: Compare engine history

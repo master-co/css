@@ -5,7 +5,8 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
-import * as ts from 'typescript6'
+import * as ts from 'typescript/unstable/ast'
+import { parseTypeScript } from '../../../scripts/typescript-api.mjs'
 import {
   createStagedExtension,
   getCurrentTarget,
@@ -216,7 +217,7 @@ test('extension bundle includes workspace language server resolution fallback', 
 
 test('extension bundle reuses one Master CSS output channel for the language client', () => {
   const source = readFileSync(extensionPath, 'utf8')
-  const ast = ts.createSourceFile(extensionPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS)
+  const ast = parseTypeScript(extensionPath, source).sourceFile
   const bindings = new Map()
   const channelCalls = []
   let clientOptions
@@ -236,7 +237,7 @@ test('extension bundle reuses one Master CSS output channel for the language cli
       && node.arguments[1]?.text === 'Master CSS') {
       clientOptions = node.arguments[3]
     }
-    ts.forEachChild(node, visit)
+    node.forEachChild(visit)
   }
   visit(ast)
   const resolveBinding = (node) => node && ts.isIdentifier(node) ? bindings.get(node.text) : node

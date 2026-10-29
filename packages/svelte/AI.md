@@ -47,8 +47,8 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-svelte test
-pnpm --filter @master/css-svelte lint
-pnpm --filter @master/css-svelte check
-pnpm --filter @master/css-svelte build
+bun run --filter @master/css-svelte test
+bun run --filter @master/css-svelte lint
+bun run --filter @master/css-svelte check
+bun run --filter @master/css-svelte build
 ```

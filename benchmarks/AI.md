@@ -84,13 +84,13 @@ git diff --check -- benchmarks/AI.md
 For report-shape or shared report helper changes, run:
 
 ```sh
-pnpm --filter ./benchmarks bench:report-smoke
+bun run --filter ./benchmarks bench:report-smoke
 ```
 
 For suite-specific code changes, run the smallest relevant suite:
 
 ```sh
-pnpm --filter ./benchmarks bench:<suite>
+bun run --filter ./benchmarks bench:<suite>
 ```
 
 Use the package script names from `benchmarks/package.json`, such as `bench:css-output-size`, `bench:css-structure`, `bench:build-performance`, `bench:master-delivery-modes`, `bench:progressive-hydration-diagnostics`, or `bench:browser-css-cost`.

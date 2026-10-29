@@ -104,11 +104,11 @@ interface PackageJSON {
   scripts?: Record<string, string>
 }
 
-const lockfiles: Record<MasterCSSSetupPackageManager, string> = {
-  pnpm: 'pnpm-lock.yaml',
-  npm: 'package-lock.json',
-  yarn: 'yarn.lock',
-  bun: 'bun.lockb'
+const lockfiles: Record<MasterCSSSetupPackageManager, string[]> = {
+  pnpm: ['pnpm-lock.yaml'],
+  npm: ['package-lock.json'],
+  yarn: ['yarn.lock'],
+  bun: ['bun.lock', 'bun.lockb']
 }
 
 export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterCSSSetupPlan {
@@ -450,8 +450,8 @@ function resolvePackageManager(root: string, packageJSON: PackageJSON | undefine
   if (isPackageManager(explicit)) return explicit
   const declared = packageJSON?.packageManager?.split('@')[0]
   if (isPackageManager(declared)) return declared
-  for (const [name, lockfile] of Object.entries(lockfiles) as [MasterCSSSetupPackageManager, string][]) {
-    if (existsSync(join(root, lockfile))) return name
+  for (const [name, lockfile] of Object.entries(lockfiles) as [MasterCSSSetupPackageManager, string[]][]) {
+    if (lockfile.some(file => existsSync(join(root, file)))) return name
   }
   return 'npm'
 }

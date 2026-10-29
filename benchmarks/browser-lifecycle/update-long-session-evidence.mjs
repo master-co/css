@@ -235,7 +235,7 @@ function createSourceCommand(modeId) {
     'BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000',
     `BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-${modeId}`,
     'BENCHMARK_COMMAND_TIMEOUT_MS=900000',
-    'pnpm --filter ./benchmarks bench:browser-lifecycle'
+    'bun run --filter master-css-benchmarks bench:browser-lifecycle'
   ].join(' ')
 }
 

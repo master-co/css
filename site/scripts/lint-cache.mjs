@@ -43,7 +43,7 @@ function workspaceRuntimeInputs(root) {
 /** Content fingerprint for inputs ESLint cannot infer from an individual file. */
 export function lintCacheFingerprint({ site = join(repository, 'site'), root = repository } = {}) {
   const inputs = new Set([
-    ...['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', '.gitignore', 'scripts/typescript-tooling-compat.mjs'].map(file => join(root, file)),
+    ...['package.json', 'bun.lock', 'bunfig.toml', '.gitignore', 'scripts/toolchain-policy.mjs', 'scripts/isolate-tooling-typescript.mjs'].map(file => join(root, file)),
     ...['package.json', '.gitignore', 'scripts/lint.mjs', 'scripts/lint-cache.mjs'].map(file => join(site, file)),
     ...glob.sync(['**/eslint.config.*', 'eslint.rules.*'], { cwd: site, absolute: true, dot: true, ignore: ['node_modules/**', '.astro/**', 'out/**', '.cache/**'] }),
     ...workspaceRuntimeInputs(root)

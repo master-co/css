@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import config from '../release.config.js'
 
-const PNPM_RELEASE_PLUGIN = '@aronrepo/semantic-release-pnpm'
+const WORKSPACE_RELEASE_PLUGIN = './scripts/semantic-release-workspace.mjs'
 const expectedFirstPackages = [
   'packages/binding-darwin-arm64',
   'packages/binding-darwin-x64',
@@ -17,7 +17,7 @@ const expectedFirstPackages = [
 ]
 
 const packageRoots = config.plugins
-  .filter((plugin) => Array.isArray(plugin) && plugin[0] === PNPM_RELEASE_PLUGIN)
+  .filter((plugin) => Array.isArray(plugin) && plugin[0] === WORKSPACE_RELEASE_PLUGIN)
   .map((plugin) => plugin[1]?.pkgRoot)
 
 assert.deepEqual(

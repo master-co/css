@@ -41,7 +41,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/create-css test
-pnpm --filter @master/create-css lint
-pnpm --filter @master/create-css build
+bun run --filter @master/create-css test
+bun run --filter @master/create-css lint
+bun run --filter @master/create-css build
 ```

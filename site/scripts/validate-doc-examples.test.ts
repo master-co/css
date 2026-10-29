@@ -887,7 +887,7 @@ test('migration TypeScript examples parse and preserve native button and progres
   for (const slug of migrationSlugs) {
     const examples = migrationFences(slug).filter(example => ['tsx', 'ts', 'jsx', 'js'].includes(example.language))
     for (const example of examples) {
-      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(diagnostic => diagnostic.messageText), [], `${slug}: ${example.text}`)
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(diagnostic => String(diagnostic)), [], `${slug}: ${example.text}`)
       if (example.text.includes('export function Button')) {
         const html = renderMigrationExample(example.text, 'Button', { children: 'Save changes', className: 'caller-class', type: 'submit', disabled: true })
         assert.match(html, /type="submit"/)
@@ -915,7 +915,7 @@ test('vendor migration snippets parse and the documented engine wrapper forwards
   const { migrationFences, vendorMigrationSlugs, compileMigrationExample } = await import('../tests/migration-examples')
   for (const slug of vendorMigrationSlugs) {
     for (const example of migrationFences(slug).filter(f => ['ts', 'tsx', 'js', 'jsx'].includes(f.language))) {
-      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => d.messageText), [], `${slug || 'overview'}: ${example.text}`)
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => String(d)), [], `${slug || 'overview'}: ${example.text}`)
     }
   }
   const source = migrationFences('').find(f => f.text.includes('function wrapEngine'))!.text

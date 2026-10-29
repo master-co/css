@@ -36,7 +36,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-svelte-addon test
-pnpm --filter @master/css-svelte-addon lint
-pnpm --filter @master/css-svelte-addon build
+bun run --filter @master/css-svelte-addon test
+bun run --filter @master/css-svelte-addon lint
+bun run --filter @master/css-svelte-addon build
 ```

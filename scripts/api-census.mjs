@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import { existsSync, globSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import * as ts from 'typescript6'
+import * as ts from 'typescript/unstable/ast'
+import { parseTypeScript } from './typescript-api.mjs'
 
 const censusPath = path.resolve('.ai/contracts/api-census.json')
 const packagesRoot = path.resolve('packages')
@@ -221,12 +222,7 @@ function readJSON(file) {
 }
 
 function readSource(file) {
-  return ts.createSourceFile(
-    file,
-    readFileSync(file, 'utf8'),
-    ts.ScriptTarget.Latest,
-    true
-  )
+  return parseTypeScript(file, readFileSync(file, 'utf8')).sourceFile
 }
 
 function policyFor(packageName) {
@@ -367,7 +363,7 @@ function collectRegistryCalls(file, methodNames) {
         }
       }
     }
-    ts.forEachChild(node, visit)
+    node.forEachChild(visit)
   }
   visit(readSource(file))
   return entries.sort((left, right) =>
@@ -561,7 +557,7 @@ export function checkAPICensus({
   assert.deepEqual(
     actual,
     readJSON(censusPath),
-    'API census differs from package manifests or CLI/MCP/wire registries. Run "pnpm run check:packages:update" and review it intentionally.'
+    'API census differs from package manifests or CLI/MCP/wire registries. Run "bun run check:packages:update" and review it intentionally.'
   )
   process.stdout.write(`Validated ${actual.summary.records} API census record(s).\n`)
   return actual

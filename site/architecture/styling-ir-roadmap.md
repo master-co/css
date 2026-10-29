@@ -39,7 +39,7 @@ list returns `ready` with `classes: []`; it does not look like a failed load. Th
 example never selects a preset after a project error. Run its regression with:
 
 ```sh
-pnpm --filter @master/css-compiler test tests/public-inspection-workflow.test.ts
+bun run --filter @master/css-compiler test tests/public-inspection-workflow.test.ts
 ```
 
 The example creates a temporary CSS project, uses only public exports, preserves

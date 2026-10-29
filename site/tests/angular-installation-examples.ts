@@ -1,3 +1,4 @@
+import { workspaceDependency } from './workspace-dependency'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -8,14 +9,7 @@ import { installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
-const store = join(repository, 'node_modules/.pnpm')
-const dependency = (name: string) => {
-  if (name.startsWith('@master/')) return join(repository, 'node_modules', name)
-  const version = name === 'typescript' ? '6.' : name.startsWith('@angular/') ? '22.' : ''
-  const entry = readdirSync(store).find(entry => entry.startsWith(name.replace('/', '+') + '@' + version))
-  assert.ok(entry, `Missing installed fixture dependency: ${name}`)
-  return join(store, entry, 'node_modules', name)
-}
+const dependency = (name: string) => workspaceDependency(name, new URL('../../examples/angular/package.json', import.meta.url))
 
 /** Uses the installed Angular 22 CLI/compiler and real Master CSS CLI output.
  * CDN bytes are served from the repository's built runtime in browser tests;

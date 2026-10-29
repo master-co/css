@@ -1,5 +1,4 @@
 import js from '@eslint/js'
-import '../../scripts/typescript-tooling-compat.mjs'
 import { includeIgnoreFile } from '@eslint/compat'
 import svelte from 'eslint-plugin-svelte'
 import globals from 'globals'

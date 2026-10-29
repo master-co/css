@@ -47,7 +47,7 @@ The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro 
 - Guide pages: `site/content/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
 - Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
-- Category data is generated; run `pnpm --filter site prepare-app` when adding or renaming pages.
+- Category data is generated; run `bun run --filter site prepare-app` when adding or renaming pages.
 
 ## Risk Areas
 
@@ -242,12 +242,12 @@ Set an appropriate `sizes` value for responsive images; Cloudflare builds add re
 
 Reference has a normalized build-time catalog in `reference/`. Read `reference/MAINTENANCE.md` before changing its content pipeline, navigation, search or exports. `reference/token-contracts.ts` builds family and namespace lookup documents; `reference/recipes.ts` reads the preset definitions and generates complete recipe CSS. Formal language/directive prose lives in the corresponding Guide directory's `contract.mdx`, while `content.mdx` teaches the workflow and preserves old anchor entrances. Keep explicit MDX heading IDs (`\{#stable-id\}`) when renaming or translating headings. `prepare-app` generates the catalog, search records and per-page Markdown; never edit those outputs directly. Run `test:reference` for Reference changes in addition to the relevant checks below. Policy-only changes require package lint and `check:ai-context`; run the public-content checks when the corresponding pages, examples or pipeline change.
 
-Run site orchestration commands from the repository root (`/Users/aron/master-css`). Use `pnpm dev:site` for normal development, `pnpm dev:site:clean` when Astro or Vite caches must be reset, and `pnpm build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging. `dev` runs `astro dev --ignore-lock`: Astro otherwise detaches the server into the background when an AI agent starts it, where it outlives the agent, keeps port 3000 and the lock, and pushes later sessions to `--force` (which also discards the content cache). The Vite watcher ignores `out/`, so a concurrent build does not reprocess every written file.
+Run site orchestration commands from the repository root (`/Users/aron/master-css`). Use `bun run dev:site` for normal development, `bun run dev:site:clean` when Astro or Vite caches must be reset, and `bun run build:site` for the full package-warmed site build. Only use `site/` as cwd for one-off local debugging. `dev` runs `astro dev --ignore-lock`: Astro otherwise detaches the server into the background when an AI agent starts it, where it outlives the agent, keeps port 3000 and the lock, and pushes later sessions to `--force` (which also discards the content cache). The Vite watcher ignores `out/`, so a concurrent build does not reprocess every written file.
 
 For content-only guide updates, run:
 
 ```sh
-pnpm --filter site prepare-app
+bun run --filter site prepare-app
 ```
 
 For interactive or visual demo changes, additionally verify:
@@ -256,16 +256,16 @@ For interactive or visual demo changes, additionally verify:
 curl -I http://localhost:3000/guide/<slug>
 ```
 
-Use Playwright screenshots for desktop and mobile when layout, images, responsive behavior, or animation demos change. If Playwright browser binaries are missing, install the required browser with `pnpm exec playwright install chromium`.
+Use Playwright screenshots for desktop and mobile when layout, images, responsive behavior, or animation demos change. If Playwright browser binaries are missing, install the required browser with `bun run playwright install chromium`.
 
 Broader site checks are available when relevant:
 
 ```sh
-pnpm --filter site lint
-pnpm --filter site type-check
-pnpm build:site
+bun run --filter site lint
+bun run --filter site type-check
+bun run build:site
 ```
 
 Measure development memory from the repository root with `node site/scripts/profile-dev-memory.mjs --runs 3 --output /tmp/site-memory.json`. Add `--http-only` for comparable server-only runs, and `--assert-lazy` to enforce homepage import boundaries. Each run owns its port and temporary Astro/Vite caches. The report separates RSS, post-GC heap, physical footprint on macOS, module counts, request times, repeated requests and watcher-triggered invalidations; optional browser checks run in a separate process. Watcher invalidation does not edit sources and is not a substitute for a multi-hour editing test.
 
-`pnpm --filter site type-check` may have unrelated existing errors. Report those separately and do not hide new errors introduced by the current change.
+`bun run --filter site type-check` may have unrelated existing errors. Report those separately and do not hide new errors introduced by the current change.

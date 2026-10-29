@@ -5,15 +5,15 @@
     "node": "^24"
   },
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && pnpm run package",
-    "preview": "vite preview",
-    "package": "svelte-kit sync && tsdown --config ../../shared/tsdown-package.config.ts && publint --pack false",
-    "prepublishOnly": "pnpm run package",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "test": "svelte-kit sync && vitest run",
-    "lint": "eslint"
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build && bun run package",
+    "preview": "bun --bun vite preview",
+    "package": "bun --bun svelte-kit sync && bun --bun tsdown --config ../../shared/tsdown-package.config.ts && publint --pack false",
+    "prepublishOnly": "bun run package",
+    "check": "bun --bun svelte-kit sync && bun --bun svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "bun --bun svelte-kit sync && bun --bun svelte-check --tsconfig ./tsconfig.json --watch",
+    "test": "bun --bun svelte-kit sync && bun --bun vitest run",
+    "lint": "bun --bun eslint"
   },
   "license": "MIT",
   "description": "Svelte and SvelteKit integration for Master CSS",

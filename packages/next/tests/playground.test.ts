@@ -6,7 +6,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
-import execPnpmSync from './helpers/pnpm-command'
+import execBunSync from './helpers/bun-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const playgroundDir = join(packageDir, 'playground')
@@ -15,7 +15,7 @@ const removedRuntimeRegistryName = ['CSSRuntime', 'Registry'].join('')
 function buildPlayground(bundler: 'turbopack' | 'webpack') {
   try {
     rmSync(join(playgroundDir, '.next'), { recursive: true, force: true })
-    execPnpmSync(['--dir', playgroundDir, 'exec', 'next', 'build', `--${bundler}`], {
+    execBunSync(['run', '--cwd', playgroundDir, 'next', 'build', `--${bundler}`], {
       cwd: packageDir,
       encoding: 'utf-8',
       env: {

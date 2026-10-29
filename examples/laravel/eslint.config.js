@@ -1,4 +1,3 @@
-import '../../scripts/typescript-tooling-compat.mjs'
 import js from '@eslint/js'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import { defineConfig, globalIgnores } from 'eslint/config'

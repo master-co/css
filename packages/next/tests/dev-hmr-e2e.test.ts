@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process'
+import { createRequire } from 'node:module'
 import { once } from 'node:events'
 import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
@@ -7,10 +8,10 @@ import { dirname, isAbsolute, join, relative, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { chromium, type Browser } from '@playwright/test'
 import { describe, expect, it, onTestFinished } from 'vitest'
-import execPnpmSync from './helpers/pnpm-command'
+import execBunSync from './helpers/bun-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
-const nextBin = fileURLToPath(new URL('../node_modules/next/dist/bin/next', import.meta.url))
+const nextBin = createRequire(import.meta.url).resolve('next/dist/bin/next')
 const traceLoaderPath = fileURLToPath(new URL('./helpers/static-hmr-trace-loader.mjs', import.meta.url))
 
 function delay(ms: number) {
@@ -117,7 +118,7 @@ function writeModules(fixtureDir: string, padding: number) {
 }
 
 function buildPackage() {
-  execPnpmSync(['--dir', packageDir, 'build'], {
+  execBunSync(['run', '--cwd', packageDir, 'build'], {
     cwd: packageDir,
     encoding: 'utf-8',
     env: {
