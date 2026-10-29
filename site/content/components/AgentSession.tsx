@@ -8,7 +8,6 @@ import clsx from 'clsx'
 import ClaudeLogo from '~/site/assets/images/home/clients/claude.svg'
 import Image from '~/site/docs-shell/components/Image'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-import aronImage from '~/site/public/images/authors/aron.jpg'
 import { agentSessionCalls, agentSessionResults, agentSessionStages, type AgentSessionCallId } from './agents-content'
 import { AgentsOrbit } from './AgentsFigures'
 import type { HomeCodeWindowProblem } from './home-content'
@@ -490,7 +489,7 @@ function Message({ children, tone }: { children: ReactNode, tone: 'agent' | 'use
   return (
     <div className={clsx('home-agent-message', `home-agent-message-${tone}`)}>
       <span aria-hidden="true" className="home-agent-avatar">
-        {tone === 'agent' ? <ClaudeLogo height={16} width={16} /> : <Image alt="" height={24} src={aronImage} width={24} />}
+        {tone === 'agent' ? <ClaudeLogo height={16} width={16} /> : <Image alt="" height={24} src="/images/authors/aron.jpg" width={24} />}
       </span>
       <p>{children}</p>
     </div>
