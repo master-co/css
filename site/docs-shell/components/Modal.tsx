@@ -1,17 +1,47 @@
-export default function Modal({ contentClass, backdropClick, children }: any) {
-  return <div className="position:fixed inset:0 z-index:1060 display:flex align-items:center justify-content:center padding:0.625rem animation-duration:0.3s animation-name:fade contain:strict">
-    <svg className="position:absolute inset:0 z-index:-1 height:100% width:100% background-color:rgb(0,0,0,.5) contain:strict" onClick={events => backdropClick(events)}></svg>
-    <div className={`bg-surface-raised border-radius:5px width:100% position:relative ${contentClass}`}
-      style={{ boxShadow: 'rgb(0 0 0 / 20%) 0px 11px 15px -7px, rgb(0 0 0 / 14%) 0px 24px 38px 3px, rgb(0 0 0 / 12%) 0px 9px 46px 8px' }}>
-      {/* <svg className="position:absolute right:10px top:10px fill-neutral-50@apply(--site-dark) fill-neutral-60@apply(--site-light)"
-        xmlns="http://www.w3.org/2000/svg"
-        width="24px"
-        height="24px"
-        viewBox="0 0 24 24">
-        <path
-          d="M13.414 12l4.95-4.95a1 1 0 0 0-1.414-1.414L12 10.586l-4.95-4.95A1 1 0 0 0 5.636 7.05l4.95 4.95-4.95 4.95a1 1 0 0 0 1.414 1.414l4.95-4.95 4.95 4.95a1 1 0 0 0 1.414-1.414z" />
-      </svg> */}
+'use client'
+
+import '~/site/styles/docs-shell/modal.css'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
+import { IconX } from '@tabler/icons-react'
+import clsx from 'clsx'
+import { useLocale } from '../contexts/locale'
+
+interface Props {
+  children: ReactNode
+  contentClass?: string
+  backdropClick: () => void
+  label?: string
+}
+
+export default function Modal({ contentClass, backdropClick, children, label = 'Dialog' }: Props) {
+  const [mounted, setMounted] = useState(false)
+  const dialog = useRef<HTMLDialogElement>(null)
+  const dismiss = useRef(backdropClick)
+  const tw = useLocale() === 'tw'
+  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { dismiss.current = backdropClick }, [backdropClick])
+  useEffect(() => {
+    if (!mounted || !dialog.current) return
+    const element = dialog.current
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const cancel = (event: Event) => { event.preventDefault(); dismiss.current() }
+    const backdrop = (event: MouseEvent) => { if (event.target === element) dismiss.current() }
+    element.addEventListener('cancel', cancel)
+    element.addEventListener('click', backdrop)
+    if (!element.open) element.showModal()
+    return () => {
+      element.removeEventListener('cancel', cancel)
+      element.removeEventListener('click', backdrop)
+      if (element.open) element.close()
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true })
+    }
+  }, [mounted])
+
+  return mounted && createPortal(<dialog ref={dialog} className="site-modal" aria-label={label}>
+    <div className={clsx('site-modal-content', contentClass)}>
+      <button type="button" className="site-modal-close" aria-label={tw ? '關閉視窗' : 'Close dialog'} onClick={() => dismiss.current()}><IconX size={20} stroke={1.5} aria-hidden="true" /></button>
       {children}
     </div>
-  </div>
+  </dialog>, document.body)
 }

@@ -26,10 +26,12 @@ interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' 
   value: string
   label: string
   icon?: ReactNode
+  /** Short status for a specimen that already displays the copied value. */
+  feedback?: 'value' | 'compact'
 }
 
 /** The visible status describes the actual clipboard result, including denial. */
-export default function DemoCopyButton({ value, label, icon = <IconCopy size={15} stroke={1.8} aria-hidden="true" />, children, className, ...props }: Props) {
+export default function DemoCopyButton({ value, label, icon = <IconCopy size={15} stroke={1.8} aria-hidden="true" />, feedback = 'value', children, className, ...props }: Props) {
   const notify = useContext(CopyFeedback)
   const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
@@ -40,9 +42,9 @@ export default function DemoCopyButton({ value, label, icon = <IconCopy size={15
     try {
       if (!window.isSecureContext || !navigator.clipboard?.writeText) throw new Error('Clipboard unavailable')
       await navigator.clipboard.writeText(value)
-      report(`Copied ${value}`)
+      report(feedback === 'compact' ? 'Copied' : `Copied ${value}`)
     } catch {
-      report(`Copy unavailable: ${value}`)
+      report(feedback === 'compact' ? 'Copy unavailable' : `Copy unavailable: ${value}`)
     } finally { setBusy(false) }
   }
   return <span className="demo-copy">

@@ -24,9 +24,11 @@ async function loadPages(locale: string) {
 /** Search triggers live in independent islands; they open the page's single dialog by event. */
 export const useSearch = () => {
   const $ = useTranslation()
+  const locale = useLocale()
   return {
-    open: () => window.dispatchEvent(new CustomEvent(openEvent)),
-    searchPlaceholder: $('Search ⌘ K …')
+    open: (trigger?: HTMLElement) => window.dispatchEvent(new CustomEvent(openEvent, { detail: { trigger } })),
+    searchPlaceholder: $('Search ⌘ K …'),
+    searchLabel: locale === 'tw' ? '搜尋文件' : 'Search documentation',
   }
 }
 
@@ -38,6 +40,8 @@ export default function SearchDialog() {
   const [query, setQuery] = useState('')
   const [pages, setPages] = useState<DocumentationSearchPage[]>([])
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [retry, setRetry] = useState(0)
   const [selected, setSelected] = useState(0)
   const dialog = useRef<HTMLDialogElement>(null)
   const input = useRef<HTMLInputElement>(null)
@@ -59,15 +63,23 @@ export default function SearchDialog() {
     setOpened(false)
     returnFocus.current?.focus()
   }, [])
-  const open = useCallback(() => {
-    returnFocus.current = document.activeElement as HTMLElement
+  const open = useCallback((event?: Event) => {
+    const trigger = (event as CustomEvent<{ trigger?: HTMLElement }> | undefined)?.detail?.trigger
+    returnFocus.current = trigger instanceof HTMLElement ? trigger : document.activeElement as HTMLElement
     setOpened(true)
   }, [])
   useEffect(() => {
+    if (!opened) return
     let active = true
-    loadPages(locale).then(data => { if (active) { setPages(data); setError('') } }, error => { if (active) setError(error.message) })
+    setLoading(true)
+    setError('')
+    loadPages(locale).then(data => {
+      if (active) { setPages(data); setLoading(false) }
+    }, error => {
+      if (active) { setError(error.message); setLoading(false) }
+    })
     return () => { active = false }
-  }, [locale, opened])
+  }, [locale, opened, retry])
   useEffect(() => {
     if (opened) {
       dialog.current?.showModal()
@@ -103,7 +115,7 @@ export default function SearchDialog() {
     {opened && createPortal(<dialog ref={dialog} className="documentation-search" aria-label={tw ? '搜尋文件' : 'Search documentation'} onCancel={close}>
       <div className="documentation-search-input">
         <IconSearch size={22} stroke={1.6} aria-hidden="true" />
-        <input ref={input} type="search" value={query} autoComplete="off" spellCheck={false} placeholder={tw ? '搜尋文件…' : 'Search documentation…'} aria-label={tw ? '搜尋文件' : 'Search documentation'} aria-controls="documentation-search-results" aria-activedescendant={results[selected] ? `documentation-result-${selected}` : undefined}
+        <input ref={input} type="search" role="combobox" aria-autocomplete="list" aria-expanded={Boolean(query)} value={query} autoComplete="off" spellCheck={false} placeholder={tw ? '搜尋文件…' : 'Search documentation…'} aria-label={tw ? '搜尋文件' : 'Search documentation'} aria-controls="documentation-search-results" aria-activedescendant={results[selected] ? `documentation-result-${selected}` : undefined}
           onChange={event => selectQuery(event.target.value)}
           onKeyDown={event => {
             if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); return }
@@ -119,15 +131,16 @@ export default function SearchDialog() {
         <button className="documentation-search-close" onClick={close} aria-label={tw ? '關閉搜尋' : 'Close search'}><kbd>esc</kbd><span>{tw ? '取消' : 'Cancel'}</span></button>
       </div>
       <div className="documentation-search-results" ref={scroll}>
-        <p className="documentation-search-status" role="status">{error ? (tw ? '搜尋暫時無法載入；重新開啟以重試。' : 'Search could not load. Reopen to retry.') : query ? `${results.length === 40 ? (tw ? '前 ' : 'Top ') : ''}${results.length} ${tw ? '筆結果' : results.length === 1 ? 'result' : 'results'}` : (tw ? '依名稱、別名或 CSS 屬性查找' : 'Find a name, alias or CSS property')}</p>
-        {!query && !error && <div className="documentation-search-suggestions">
+        <p className="documentation-search-status" role="status">{loading ? (tw ? '正在載入文件…' : 'Loading documentation…') : error ? (tw ? '搜尋暫時無法載入。' : 'Search could not load.') : query ? `${results.length === 40 ? (tw ? '前 ' : 'Top ') : ''}${results.length} ${tw ? '筆結果' : results.length === 1 ? 'result' : 'results'}` : (tw ? '依名稱、別名或 CSS 屬性查找' : 'Find a name, alias or CSS property')}</p>
+        {error && <div className="documentation-search-retry"><p>{tw ? '請檢查連線，再試一次。' : 'Check your connection and try again.'}</p><button type="button" onClick={() => { setRetry(value => value + 1); input.current?.focus() }}>{tw ? '再試一次' : 'Try again'}</button></div>}
+        {!query && !error && !loading && <div className="documentation-search-suggestions">
           <span>{tw ? '試試看' : 'Try searching'}</span>
           {['padding', 'padding-inline-start:', 'fg-red:hover@sm'].map(value => <button key={value} onClick={() => selectQuery(value)}><code>{value}</code><IconCornerDownLeft size={14} aria-hidden="true" /></button>)}
         </div>}
-        {query && !results.length && !error && <div className="documentation-search-empty"><IconSearch size={28} stroke={1.25} aria-hidden="true" /><strong>{tw ? '找不到相符的文件' : 'No matching documents'}</strong><p>{tw ? '試試屬性全名、token 名稱或其他關鍵字。' : 'Try a property name, a token name or a different keyword.'}</p></div>}
-        <ol id="documentation-search-results">
-          {results.map((result, index) => <li key={result.page.url}>
-            <Link id={`documentation-result-${index}`} href={result.href} onClick={close} onPointerMove={() => setSelected(index)} className={selected === index ? 'is-selected' : undefined}>
+        {query && !results.length && !error && !loading && <div className="documentation-search-empty"><IconSearch size={28} stroke={1.25} aria-hidden="true" /><strong>{tw ? '找不到相符的文件' : 'No matching documents'}</strong><p>{tw ? '試試屬性全名、token 名稱或其他關鍵字。' : 'Try a property name, a token name or a different keyword.'}</p></div>}
+        <ol id="documentation-search-results" role="listbox" aria-label={tw ? '搜尋結果' : 'Search results'} aria-busy={loading}>
+          {!error && results.map((result, index) => <li key={result.page.url} role="presentation">
+            <Link id={`documentation-result-${index}`} role="option" tabIndex={-1} aria-selected={selected === index} href={result.href} onClick={close} onPointerMove={() => setSelected(index)} className={selected === index ? 'is-selected' : undefined}>
               <span className="documentation-search-icon">{result.href.includes('#') ? <IconHash size={22} stroke={1.4} aria-hidden="true" /> : <IconFileText size={22} stroke={1.4} aria-hidden="true" />}</span>
               <span className="documentation-search-copy">
                 <span className="documentation-search-title"><strong>{result.page.title}</strong><small>{kinds[result.page.kind ?? ''] ?? (result.page.url.includes('/guide') ? 'Guide' : 'Page')}</small></span>

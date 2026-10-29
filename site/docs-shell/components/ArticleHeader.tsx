@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import type { CSSProperties } from 'react'
 import { createTranslation } from '../utils/i18n'
 import PackageBadges from './PackageBadges'
+import PageContentDisclosure from './PageContentDisclosure'
 
 const headerIconOuterStyle = {
   alignSelf: 'center',
@@ -46,7 +47,7 @@ export default async function ArticleHeader(props: any) {
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'overflow-wrap:anywhere max-width:52.125rem margin-top:0 font-size:28px leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
+            'overflow-wrap:anywhere max-width:52.125rem margin-top:0 font-size:1.75rem leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
             h1ClassName,
             {
               'font-4xl@md': metadata.type !== 'entity' && !toc
@@ -76,6 +77,7 @@ export default async function ArticleHeader(props: any) {
           <span className='margin-right:0.625rem'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
         </div>
       }
+      {!!toc?.length && <PageContentDisclosure items={toc.map((item: any) => ({ ...item, title: $(item.title) }))} label={$('On this page')} />}
     </>
   )
 }

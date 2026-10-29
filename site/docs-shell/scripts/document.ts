@@ -18,6 +18,8 @@ document.addEventListener('click', (event) => {
   const id = hashLink && decodeURIComponent(hashLink.getAttribute('href')!.slice(1))
   if (id && document.getElementById(id)) {
     event.preventDefault()
+    const contents = hashLink?.closest<HTMLDetailsElement>('[data-contents-disclosure]')
+    if (contents) contents.open = false
     anchor(id, { offset: 110 })
   }
 })

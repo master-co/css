@@ -19,11 +19,11 @@ import clsx from 'clsx'
 export default function DocHeader(props: any) {
   const $ = useTranslation()
   const app = useApp()
-  const { primaryNavClassName, ...headerProps } = props
+  const { primaryNavClassName, documentNavigation, documentNavigationTitle, ...headerProps } = props
   return (
     <Header {...headerProps}>
       <HeaderContent>
-        <DocMenuButton className="margin-left:-1.25rem display:none@md app-header-icon" locale={props.locale} />
+        <DocMenuButton className="margin-left:-1.25rem display:none@md app-header-icon" documentNavigation={documentNavigation} documentNavigationTitle={documentNavigationTitle} />
         <Link href={'/'} className="margin-inline:auto@media((width<64rem))" onContextMenu={(e: any) => {
           e.preventDefault()
           location.assign('/brand')
@@ -56,7 +56,7 @@ export default function DocHeader(props: any) {
         ))}
         {app.communityNavs?.length ? <div className='height:1em width:1px mx-md bg-line-divider display:none@media((width<64rem))'></div> : null}
         <LanguageButton className="margin-right:-0.188rem display:none@media((width<64rem)) app-header-icon" />
-        <SearchButton id="sidebar-toggle" className="margin-right:-1.25rem display:none@md app-header-icon">
+        <SearchButton className="margin-right:-1.25rem display:none@md app-header-icon">
           <IconListSearch width="22" height="22" strokeWidth="1.2" />
         </SearchButton>
       </HeaderContent>

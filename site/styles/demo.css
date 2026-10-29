@@ -86,7 +86,7 @@
   .demo-canvas[data-padding="md"] { padding: var(--spacing-md); }
   .demo-canvas[data-padding="lg"] { padding: 3rem; }
   :where(.demo-surface) { border: 1px solid var(--color-demo-line); border-radius: var(--radius-xl); background: var(--color-demo-surface); }
-  :where(.demo-surface[data-elevation="raised"]) { box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  :where(.demo-surface[data-elevation="raised"]) { box-shadow: var(--shadow-contact); }
   :where(.demo-item) { --demo-tone: var(--color-demo-neutral); }
   :where(.demo-legend-dot) { --demo-tone: var(--color-demo-blue); }
   :where([data-tone="neutral"]) { --demo-tone: var(--color-demo-neutral); }
@@ -159,7 +159,7 @@
     display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-2xs);
     min-height: var(--demo-control-height, 2.25rem); padding: .375rem .75rem; border: 1px solid var(--color-demo-line);
     border-radius: var(--radius-lg); background: var(--color-demo-surface); color: var(--color-text-body);
-    box-shadow: var(--shadow-edge), var(--shadow-contact);
+    box-shadow: var(--shadow-contact);
     font: 550 .75rem/1.4 var(--font-family-sans); cursor: pointer;
     transition: background-color .14s, color .14s, box-shadow .14s;
   }
@@ -180,7 +180,7 @@
   .demo-button[aria-pressed="true"] { color: var(--color-text-strong); background-color: var(--color-surface-raised); }
   .demo-controls[data-variant="segmented"] > .demo-button { min-width: 4.25rem; min-height: var(--demo-control-height, 2.25rem); padding: .375rem .75rem; border-color: transparent; border-radius: calc(var(--radius-2xl) - 4px); background: transparent; color: var(--color-text-muted); box-shadow: none; }
   .demo-controls[data-variant="segmented"] > .demo-button:hover:where(:not(:disabled)) { color: var(--color-text-strong); }
-  .demo-controls[data-variant="segmented"] > .demo-button[aria-pressed="true"] { border-color: var(--color-demo-line); background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .demo-controls[data-variant="segmented"] > .demo-button[aria-pressed="true"] { border-color: var(--color-demo-line); background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: var(--shadow-contact); }
   .demo-controls[data-variant="segmented"] > .demo-button:active:not(:disabled) { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .demo-button[aria-pressed="true"]:disabled,
   .demo-controls[data-variant="segmented"] > .demo-button:disabled { color: var(--color-text-disabled); box-shadow: none; }
@@ -193,9 +193,9 @@
   .demo-controls input[type="range"] { appearance: none; min-width: 0; height: 2.25rem; margin: 0; background: transparent; accent-color: var(--color-accent); cursor: ew-resize; }
   .demo-controls input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: var(--radius-pill); background: var(--color-line-divider); }
   /* Small handles need a legible edge against both the track and its surrounding surface. */
-  .demo-controls input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -5px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .demo-controls input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -5px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .demo-controls input[type="range"]::-moz-range-track { height: 4px; border-radius: var(--radius-pill); background: var(--color-line-divider); }
-  .demo-controls input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .demo-controls input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .demo-controls input[type="range"]:active::-webkit-slider-thumb { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .demo-controls input[type="range"]:active::-moz-range-thumb { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .demo-controls input[type="range"]:disabled { opacity: .45; cursor: default; }

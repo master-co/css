@@ -5,7 +5,7 @@
   .doc-index :is(a, button):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
   /* The section cards sit in a recessed shell, 8px apart, like the homepage bento. */
   .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
-  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: calc(1.25rem - 1px); border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); color: var(--color-text-body); transition: border-color .16s, box-shadow .16s; }
+  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: calc(1.25rem - 1px); border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-contact); color: var(--color-text-body); transition: border-color .16s, box-shadow .16s; }
   .doc-index-section-link:hover { border-color: var(--color-line-divider); }
   .doc-index-section-icon { display: grid; flex: none; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: var(--radius-lg); background: var(--color-surface-canvas); box-shadow: var(--shadow-pressed); color: var(--color-text-muted); }
   .doc-index-section-link > svg { margin-left: auto; color: var(--color-text-muted); order: 1; }
@@ -18,7 +18,7 @@
   .doc-index-view { display: flex; flex-wrap: wrap; gap: 2px; max-width: 100%; padding: 4px; border-radius: var(--radius-2xl); background: var(--color-surface-shell); box-shadow: var(--shadow-pressed); }
   .doc-index-view button { min-height: 2.25rem; padding: .375rem .75rem; border: 1px solid transparent; border-radius: calc(var(--radius-2xl) - 4px); font-size: .75rem; font-weight: 550; line-height: 1.5; color: var(--color-text-muted); }
   .doc-index-view button:hover { color: var(--color-text-strong); }
-  .doc-index-view button[aria-pressed="true"] { border-color: var(--color-line-contour); background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .doc-index-view button[aria-pressed="true"] { border-color: var(--color-line-contour); background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: var(--shadow-contact); }
   .doc-index-view button:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .doc-index-section + .doc-index-section { margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-line-subtle); }
   .doc-index-heading { margin-bottom: var(--spacing-lg); }
@@ -26,7 +26,7 @@
   .doc-index-heading p { margin-top: var(--spacing-xs); font-size: .8125rem; line-height: 1.6; color: var(--color-text-muted); }
   .doc-index-groups { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); }
   .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); font-size: var(--font-size-xs); color: var(--color-text-body); line-height: var(--leading-md); transition: color .16s, box-shadow .16s; }
-  .doc-index-groups a:hover { color: var(--color-text-strong); box-shadow: var(--shadow-edge), 0 0 0 1px var(--color-line-divider), var(--shadow-contact); }
+  .doc-index-groups a:hover { color: var(--color-text-strong); box-shadow: 0 0 0 1px var(--color-line-divider), var(--shadow-contact); }
   .doc-index-categories { columns: 3; column-gap: var(--spacing-xl); }
   .doc-index-category { break-inside: avoid; margin-bottom: var(--spacing-xl); }
   .doc-index-category h3 { display: flex; align-items: baseline; gap: var(--spacing-xs); width: 100%; margin-bottom: var(--spacing-sm); font-size: .8125rem; line-height: 1.5; font-weight: 600; color: var(--color-text-strong); }

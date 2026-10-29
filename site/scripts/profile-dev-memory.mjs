@@ -52,7 +52,7 @@ async function browser(base) {
         await page.waitForFunction(() => document.querySelector('site-island[data-island$="search.tsx#default"]')?.siteIslandHydrated)
         await page.keyboard.press('Meta+k')
         await page.getByRole('dialog', { name: 'Search documentation' }).waitFor()
-        await page.getByRole('searchbox').fill('padding')
+        await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
         await page.locator('#documentation-search-results a').first().waitFor()
         await page.keyboard.press('Escape')
       }

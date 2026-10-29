@@ -2,11 +2,18 @@
 
 import SearchSvg from '../../public/images/search.svg'
 import { useSearch } from '../contexts/search'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-export default function SearchButton({ className, iconSize, hideIcon, children }: any) {
-  const { open, searchPlaceholder } = useSearch()
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+  iconSize?: number
+  hideIcon?: boolean
+  children?: ReactNode
+}
+
+export default function SearchButton({ className, iconSize, hideIcon, children, onClick, ...props }: Props) {
+  const { open, searchPlaceholder, searchLabel } = useSearch()
   return (
-    <button className={className} onClick={open}>
+    <button {...props} type={props.type ?? 'button'} className={className} aria-label={props['aria-label'] ?? searchLabel} aria-keyshortcuts="Meta+K Control+K" onClick={event => { onClick?.(event); if (!event.defaultPrevented) open(event.currentTarget) }}>
       {children
         ? children
         : <>

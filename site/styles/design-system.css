@@ -17,13 +17,13 @@
   .ds-workbench-preview { min-width: 0; }
   .ds-workbench-preview > .doc-disclosure { margin: 1rem .25rem 0; }
   .ds-appearance { display: flex; align-items: center; gap: .5rem; color: var(--color-text-muted); font-size: .75rem; }
-  .ds-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: .375rem; width: 3.5rem; height: 2.25rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: .375rem; width: 3.5rem; height: 2.25rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .ds-appearance svg { pointer-events: none; stroke: currentColor; }
   .ds-appearance > span:active { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .ds-component-page > .ds-appearance { width: fit-content; margin-top: 1.5rem; }
   .ds-appearance > span:has(:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 3px; }
   @media (pointer: coarse) { .ds-appearance > span { height: 2.75rem; } }
-  .ds-token-panel { min-width: 0; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-token-panel { min-width: 0; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .ds-panel-heading { display: flex; align-items: center; gap: .625rem; padding: 1.25rem 1.25rem 1rem; color: var(--color-text-muted); }
   .ds-panel-heading h3 { margin: 0; color: var(--color-text-strong); font-size: .875rem; font-weight: 550; }
   .ds-token-panel dl { margin: 0; padding: 0 1.25rem; }
@@ -36,7 +36,7 @@
   .ds-token-panel > a { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: 1rem 1.25rem; border-top: 1px solid var(--color-line-subtle); color: var(--color-text-strong); font-size: .8125rem; text-decoration: none; }
   .ds-materials { display: grid; gap: 1.5rem 2rem; align-items: center; }
   .ds-material-assembly { padding: .5rem; border-radius: var(--radius-3xl); background: var(--color-surface-shell); }
-  .ds-material-sheet { padding: 1.5rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .ds-material-sheet { padding: 1.5rem; border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .ds-material-sheet h3 { max-width: 24ch; margin: 1rem 0 .75rem; color: var(--color-text-strong); font-size: 1.375rem; font-weight: 550; letter-spacing: -.025em; line-height: 1.35; }
   .ds-material-sheet p { margin: 0; max-width: 42ch; color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
   .ds-material-pair { display: grid; gap: .75rem; margin-top: 1.5rem; padding: 1rem; border-radius: var(--radius-xl); background: var(--color-surface-canvas); }

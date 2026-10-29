@@ -75,7 +75,7 @@ async function worker() {
       window.dispatchEvent(new CustomEvent('site-search:open'))
       return false
     }, null, { timeout: 20000 })
-    await page.getByRole('searchbox').fill('padding')
+    await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
     await page.locator('#documentation-search-results a').first().waitFor()
     const interactiveMs = performance.now() - at
     await page.keyboard.press('Escape')
@@ -100,7 +100,7 @@ async function worker() {
     await page.waitForFunction(() => document.querySelector('site-island[data-island$="search.tsx#default"]')?.siteIslandHydrated)
     await page.keyboard.press(process.platform === 'darwin' ? 'Meta+k' : 'Control+k')
     await page.getByRole('dialog', { name: 'Search documentation' }).waitFor()
-    await page.getByRole('searchbox').fill('padding')
+    await page.getByRole('combobox', { name: /Search documentation|搜尋文件/ }).fill('padding')
     await page.locator('#documentation-search-results a').first().waitFor()
     await page.keyboard.press('Escape')
     const homeUpdates = updates.length, homeLoads = loads.length

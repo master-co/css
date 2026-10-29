@@ -1,8 +1,11 @@
-export const materialRoles = [
-  { name: 'Canvas', token: '--color-surface-canvas', description: 'The quiet ground around content.', className: 'ds-material-canvas' },
-  { name: 'Shell', token: '--color-surface-shell', description: 'A close surround that holds the next layer.', className: 'ds-material-shell' },
-  { name: 'Surface', token: '--color-surface-raised', description: 'An opaque face for reading and working.', className: 'ds-material-surface' },
-] as const
+import { brandColorRoles } from '~/site/common/brand'
+
+export const materialRoles = brandColorRoles.filter(role => ['Canvas', 'Shell', 'Raised'].includes(role.title)).map(role => ({
+  name: role.title === 'Raised' ? 'Surface' : role.title,
+  token: role.token,
+  description: role.description,
+  className: role.title === 'Raised' ? 'ds-material-surface' : role.title === 'Canvas' ? 'ds-material-canvas' : 'ds-material-shell',
+}))
 
 export const canvasTreatments = [
   { background: 'plain', title: 'Plain', description: 'The default surface for reading a complete example.' },

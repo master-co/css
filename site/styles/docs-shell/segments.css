@@ -34,7 +34,7 @@
     &[aria-selected="true"] {
       border-color: var(--color-line-contour);
       background-color: var(--color-surface-raised);
-      box-shadow: var(--shadow-edge), var(--shadow-contact);
+      box-shadow: var(--shadow-contact);
       color: var(--color-text-strong);
     }
 

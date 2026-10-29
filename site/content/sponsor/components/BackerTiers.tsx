@@ -3,20 +3,13 @@
 import { useState } from 'react'
 import TierModal from './TierModal'
 import { usePathname } from '~/site/docs-shell/layouts/root'
+import TierCards, { type SponsorTier } from './TierCards'
 
 export default function BackerTiers() {
   const pathname = usePathname()
   const [selectedTier, setSelectedTier] = useState<any>()
   const openCollectiveRedirectUrl = 'https://docs.master.co' + pathname?.replace('donate', 'sponsor')
-  const backerTiers: {
-    name: string
-    description?: string
-    icon: string
-    amount?: number
-    openCollectiveUrl: string
-    githubSponsorUrl: string
-    one?: boolean
-  }[] = [
+  const backerTiers: SponsorTier[] = [
       {
         name: 'say yeah',
         icon: '✌🏻',
@@ -46,25 +39,10 @@ export default function BackerTiers() {
       }
     ]
 
-  return <div className="grid-cols(2) gap:0.938rem grid-cols(3)@sm">
-    {backerTiers.map((eachBackerTier) => (
-      <button key={eachBackerTier.name} className="gap:1.25rem padding-bottom:1.563rem padding-left:1.875rem padding-right:1.875rem padding-top:1.563rem border-radius:5px flex-direction:column@media((width<80rem)) app-object app-object-interactive" onClick={() => setSelectedTier(eachBackerTier)}>
-        <div className="font-6xl">{eachBackerTier.icon}</div>
-        <div className='flex:1 text-align:left'>
-          <div className="text-md font-medium fg-text-strong text-transform:uppercase::first-letter">{eachBackerTier.name}</div>
-          {eachBackerTier.amount && (
-            <div className="text-sm font-bold">
-              {eachBackerTier.amount}
-              <span className="margin-left:0.313rem text-xs font-regular fg-text-body">
-                / {eachBackerTier.one ? 'one-time' : 'month'}
-              </span>
-            </div>
-          )}
-        </div>
-      </button>
-    ))}
+  return <>
+    <TierCards tiers={backerTiers} onSelect={setSelectedTier} label="Backer tiers" />
     {
       selectedTier && <TierModal tierState={[selectedTier, setSelectedTier]} />
     }
-  </div>
+  </>
 }

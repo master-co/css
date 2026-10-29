@@ -2,19 +2,10 @@
 
 import { useEffect } from 'react'
 import { usePathname } from '~/site/docs-shell/layouts/root'
-import DocSidebar from '~/site/docs-shell/components/DocSidebar'
-import { referenceSections, type ReferenceDocument } from './types'
+import DocSidebar, { type DocSidebarProps } from '~/site/docs-shell/components/DocSidebar'
 
-type Entry = Pick<ReferenceDocument, 'id' | 'kind' | 'title' | 'category' | 'url'>
-
-export default function ReferenceNavigation({ documents, categoryOrder }: { documents: Entry[]; categoryOrder: string[] }) {
+export default function ReferenceNavigation({ pageCategories }: Pick<DocSidebarProps, 'pageCategories'>) {
   const pathname = usePathname()
-  const categories = referenceSections.flatMap(section => {
-    const docs = documents.filter(doc => section.kinds.includes(doc.kind))
-    return [...new Set(docs.map(doc => doc.category))]
-      .sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b))
-      .map(name => ({ name, pages: docs.filter(doc => doc.category === name).map(doc => ({ title: doc.title, pathname: doc.url })) }))
-  })
   useEffect(() => {
     function reveal() {
       const id = decodeURIComponent(location.hash.slice(1))
@@ -28,5 +19,5 @@ export default function ReferenceNavigation({ documents, categoryOrder }: { docu
     window.addEventListener('hashchange', reveal)
     return () => window.removeEventListener('hashchange', reveal)
   }, [pathname])
-  return <DocSidebar pageCategories={categories} includeNestedPages />
+  return <DocSidebar pageCategories={pageCategories} includeNestedPages />
 }

@@ -4,6 +4,8 @@ import RecipeAppendix from '../components/RecipeAppendix'
 
 Keep the complete example, its source and its controls together. The shared UI supplies the surrounding presentation; the example owns every CSS prerequisite and measured relationship.
 
+Use the [brand guide](/brand) for identity, color roles, typography and interaction principles. This handbook owns component interfaces and example construction.
+
 ## Import the shared components \{#authoring\}
 Import site primitives from `~/site/components/demo`. Import each component explicitly in MDX as well. Static primitives render on the server; measurements, playback and viewport controls add only the client behavior they need. In TSX, import `DemoThemeComparison`, `DemoPalette`, `DemoTokenTable` and foundation recipes directly from their matching files under `site/components/demo/`; these server helpers are registered separately from the client-compatible barrel.
 
@@ -128,9 +130,9 @@ Fixed preset color inventory with native clipboard actions.
 
 <DocumentOptionEntry name="DemoCopyButton">
 
-**Interface:** `value`, `label`, native button props
+**Interface:** `value`, `label`, optional `feedback="value" | "compact"`, native button props
 
-Reports the actual clipboard result and retains keyboard focus.
+Reports the actual clipboard result and retains keyboard focus. The default feedback includes the value; use `compact` when that value is already visible beside the control and reserve space for its short status.
 
 </DocumentOptionEntry>
 
@@ -167,7 +169,7 @@ A trusted site example page in a real, scrollable viewport.
 
 Use an opaque content surface inside a close shell. A 24px shell with an 8px inset takes a panel with a 16px outer radius; its 1px border leaves a 15px inner face. A segmented track uses a 4px inset: a 16px track takes a 12px insert, whose bordered face has an 11px radius. Include border thickness when checking the curve.
 
-Give each join one contour. A borderless raised face can use `--shadow-raised`, which includes its contour. A face with its own border uses `--shadow-edge` and `--shadow-contact`; a bordered floating surface pairs the edge with `--shadow-floating-contact`. For a bordered control, `--shadow-pressed-contact` adds the soft inner shadow; a borderless track uses `--shadow-pressed`, which also supplies the contour. Fixed content stays opaque. Reserve translucent surfaces for floating tools that cross other content.
+Give each join one contour. A borderless raised face can use `--shadow-raised`, which includes its contour. A face with its own border uses `--shadow-contact`; a bordered floating surface uses `--shadow-floating-contact`. Reserve `--shadow-edge` for a material that needs inner light, such as glass. For a bordered control, `--shadow-pressed-contact` adds the soft inner shadow; a borderless track uses `--shadow-pressed`, which also supplies the contour. Fixed content stays opaque. Reserve translucent surfaces for floating tools that cross other content.
 
 Keep a control's border box, icon slot and label start steady through selection, pressing and copy feedback. Change fill and shadow for a pressed state. Allow controls and their labels to wrap when text grows, and keep keyboard focus visible.
 

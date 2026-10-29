@@ -12,7 +12,7 @@ export function anchor(id: string, options?: { offset?: number; still?: boolean 
   if (!hadTabIndex) element.addEventListener('blur', () => element.removeAttribute('tabindex'), { once: true })
   const elementPosition = (document.documentElement.scrollTop || document.body.scrollTop) + element.getBoundingClientRect().top
   const offsetPosition = elementPosition - (options?.offset ?? 0)
-  history.pushState({}, '', window.location.pathname + '#' + id)
+  history.pushState({}, '', window.location.pathname + window.location.search + '#' + id)
   if (options?.still) {
     document.body.scrollTop = document.documentElement.scrollTop = offsetPosition
   } else {

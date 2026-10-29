@@ -13,10 +13,11 @@ const sidebarCategories = pageCategories.map(({ name, pages }) => ({
   name,
   pages: pages.map(({ title, pathname, other }: { title: MetadataTitle, pathname: string, other?: { subject: string } }) => other ? { title, pathname, other } : { title, pathname })
 }))
+const menuCategories = sidebarCategories.map(category => ({ ...category, pages: category.pages.filter(page => page.pathname.split('/').length === 3) }))
 
 export default function GuideSection({ children }: { children: ReactNode }) {
   return <DocumentShell>
-    <DocHeader contained />
+    <DocHeader contained documentNavigation={menuCategories} documentNavigationTitle="Guide" />
     <DocWrapper>
       <DocSidebar pageCategories={sidebarCategories} />
       {children}

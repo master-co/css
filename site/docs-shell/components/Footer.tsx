@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/footer.css'
 import clsx from 'clsx'
 import Link from './Link'
 import SearchButton from './SearchButton'
@@ -36,11 +37,11 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
   return (
-    <div {...props} className={clsx('py-2xl bt-line-subtle border-top-style:solid border-top-width:1px', className)}>
+    <div {...props} className={clsx('py-2xl bt-line-subtle border-top-style:solid border-top-width:1px site-footer', className)}>
       <div className='container-type:inline-size max-width:100rem margin-inline:auto'>
-        <div data-footer-navigation="" className="grid-cols(2) flex:1 justify-content:space-between gap:2.5rem font-sm fg-text-muted grid-cols(4)@container((width>=18rem)) grid-cols(5)@container((width>=28rem))">
+        <div data-footer-navigation="" className="font-sm fg-text-muted site-footer-navigation">
           {navGroups.map((group) => (
-            <ul className='display:flex flex-direction:column gap-lg' key={group.name}>
+            <ul className="site-footer-links" key={group.name}>
               <li><h4 className='fg-text-strong'>{$(group.name)}</h4></li>
               {group.links.map((link) => (
                 <li key={link.href || link.name}>
@@ -49,17 +50,17 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
               ))}
             </ul>
           ))}
-          <div className='display:none@container((width<28rem))'>
-            <SearchButton className="display:flex align-items:center height:36px width:100% px-md r-lg font-sm bg-surface-base fg-text-muted" />
+          <div className="site-footer-search">
+            <SearchButton className="display:flex align-items:center width:100% min-height:44px px-md r-lg font-sm bg-surface-base fg-text-muted" />
           </div>
         </div>
       </div>
       <hr className='hr' />
-      <div data-footer-legal="" className="display:flex gap-md max-width:100rem margin-inline:auto font-xs fg-text-muted">
-        {copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}
+      <div data-footer-legal="" className="max-width:100rem margin-inline:auto font-xs fg-text-muted site-footer-legal">
+        <div className="site-footer-copyright">{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</div>
         {legalLinks.map((link, index) => (
           <Fragment key={link.href || link.name}>
-            <Link href={link.href} className={clsx(index === 0 && 'margin-left:auto')}>{$(link.name)}</Link>
+            <Link href={link.href}>{$(link.name)}</Link>
             {index < legalLinks.length - 1 && <div className='bl-line-subtle border-left-style:solid border-left-width:1px'></div>}
           </Fragment>
         ))}

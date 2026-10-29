@@ -32,7 +32,7 @@ export async function designSystemContent(siteRoot: string, route: string) {
         const example = projectStyleExample('tokens')
         return `## A small document workspace {#workspace}\n\n${configuredMarkupMarkdown(example.source, example.html)}\n\n${example.caption}\n\nThe responsive preview and its source use the same project token definitions.`
       }
-      if (name === 'Materials') return materialRoles.map(role => `- **${role.name}**: \`${role.token}\`. ${role.description}`).join('\n') + '\n\nAn eight-pixel surround seats the panel. Inner radii account for the inset and the border; contact shadows and inner edge light follow the role of each surface.'
+      if (name === 'Materials') return materialRoles.map(role => `- **${role.name}**: \`${role.token}\`. ${role.description}`).join('\n') + '\n\nAn eight-pixel surround seats the panel. Inner radii account for the inset and the border. Each join has one contour; contact shadows provide separation when needed, and inner light is reserved for a material such as glass.'
       if (name === 'Controls') return 'Native buttons, selects, sliders and radio groups keep visible focus and keyboard behavior. A selected insert fits inside a four-pixel track; pressing changes the fill and shadow without moving the label or icon. [Explore the controls](/design-system/review/controls).'
       if (name === 'DocumentPatterns') return `### Values, together\n\n| Project token | Value |\n| --- | --- |\n${tokens}\n\nNames, values and supporting details share a start. Longer source stays available in a native disclosure. [Build a complete example](/design-system/authoring).`
       if (name === 'ComponentCatalog') return componentCatalogMarkdown()

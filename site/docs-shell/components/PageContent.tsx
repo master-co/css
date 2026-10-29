@@ -75,7 +75,7 @@ function PageContentNav({ children, id, level, activeTransitionsReady, currentId
 
   useLayoutEffect(() => {
     if (active && asideRef.current && ref.current) {
-      const behavior: ScrollBehavior = initializedPageContentScrollContainers.has(asideRef.current)
+      const behavior: ScrollBehavior = initializedPageContentScrollContainers.has(asideRef.current) && !matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 'smooth'
         : 'instant' as ScrollBehavior
 

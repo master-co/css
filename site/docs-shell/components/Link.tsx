@@ -64,7 +64,7 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
         const targetRect = currentLink.getBoundingClientRect()
         scrollableParent.scrollTo({
           top: currentLink.offsetTop + targetRect.height - scrollableParentRect.height / 2,
-          behavior: initializedScrollPositionParent.has(scrollableParent) ? 'smooth' : 'instant' as ScrollBehavior
+          behavior: initializedScrollPositionParent.has(scrollableParent) && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant' as ScrollBehavior
         })
         initializedScrollPositionParent.add(scrollableParent)
       }

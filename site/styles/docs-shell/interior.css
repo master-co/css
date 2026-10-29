@@ -1,0 +1,25 @@
+@layer components {
+  /* Interior sheets use contour and contact; the existing edge light stays available for glass. */
+  .site-interior {
+    --shadow-raised: 0 0 0 1px var(--color-line-contour), var(--shadow-contact);
+    --shadow-floating: 0 0 0 1px var(--color-line-contour), var(--shadow-floating-contact);
+  }
+  .doc-sidebar .app-nav { overflow-wrap: anywhere; }
+  .doc-sidebar .app-nav:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; border-radius: var(--radius-xs); }
+  .doc-page-navigation > a { min-width: 0; text-decoration: none; }
+  .doc-page-navigation > a:hover > div:last-of-type { text-decoration: underline; text-underline-offset: .25em; }
+  .doc-page-navigation > a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 6px; }
+  .site-interior .code { -webkit-text-size-adjust: auto; text-size-adjust: auto; }
+  .site-interior .code-wrapper { font-size: .8125rem; line-height: 1.25rem; }
+  .site-interior .code-tab[aria-selected="true"] { box-shadow: var(--shadow-contact); }
+
+  @media (pointer: coarse) {
+    .doc-sidebar .app-nav, .doc-page-contents .app-nav { min-height: 44px; }
+    /* The small block map duplicates the contents rail; keep its column, use the larger links. */
+    [data-page-content-block-id] { visibility: hidden; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-interior .doc-page-contents [data-page-content-nav-id] { transition-duration: 0s; }
+  }
+}

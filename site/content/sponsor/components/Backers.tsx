@@ -1,6 +1,6 @@
 import Image from '~/site/docs-shell/components/Image'
 import Link from '~/site/docs-shell/components/Link'
-import clsx from 'clsx'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 
 const sourceIcons: Record<string, string> = {
   'Open Collective': '/images/open-collective.svg',
@@ -8,29 +8,30 @@ const sourceIcons: Record<string, string> = {
 }
 
 export default function Backers({ backers }: any) {
-  return <div className="grid-cols(6) gap-xs grid-cols(8)@2xs grid-cols(10)@xs grid-cols(14)@sm">
+  const $ = useTranslation()
+  return <div className="sponsor-backers">
     {backers.map((eachBacker: any, i: number) => {
       let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
       if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
         // 如果沒有，根據需要自動加上
         href = 'https://' + href // 或是 "http://" + url;
       }
-      const className = `position:relative display:block border-radius:50% aspect-ratio:1/1 content:''::after`
+      const className = 'sponsor-backer'
       const sourceIcon = sourceIcons[eachBacker.from]
       const Avatar = () =>
         <>
-          <Image src={eachBacker.avatarUrl} alt="avatar" className="height:100% width:100% aspect-ratio:1/1 border-radius:50% object-fit:cover" width="64" height="64" />
+          <Image src={eachBacker.avatarUrl} alt={eachBacker.name || eachBacker.username || 'Supporter'} className="height:100% width:100% aspect-ratio:1/1 border-radius:50% object-fit:cover" width="64" height="64" />
           {sourceIcon && <div className="position:absolute bottom:-3px right:-3px height:22px width:22px aspect-ratio:1/1 p-4xs border-radius:50% bg-surface-raised">
-            <Image src={sourceIcon} alt="source" width="18" height="18" />
+            <Image src={sourceIcon} alt="" width="18" height="18" />
           </div>}
         </>
       return (
         href
-          ? <Link key={'backer-' + i} href={href} className={clsx(className, 'transition-duration:0.2s transition-property:transform transform:scale(1.1):hover')}><Avatar /></Link>
+          ? <Link key={'backer-' + i} href={href} className={className}><Avatar /></Link>
           : <div key={'backer-' + i} className={className}><Avatar /></div>
       )
     })}
-    <Link href="#become-a-backer" className="flex-direction:column aspect-ratio:1/1 border-radius:50% app-object app-object-interactive">
+    <Link href="#become-a-backer" className="sponsor-backer-add" aria-label={$('Become a backer')}>
       <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill="currentColor">
         <path d="M0 0h24v24H0V0z" fill="none" />
         <path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z" />

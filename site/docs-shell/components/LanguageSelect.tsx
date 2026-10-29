@@ -22,12 +22,13 @@ export default function LanguageSelect({ className, children, ...props }: { clas
               break
             }
           }
-          location.assign(localizePathname(splits.join('/') || '/', {
+          const target = localizePathname(splits.join('/') || '/', {
             defaultLocale: i18n.defaultLocale,
             locale: newLocale,
             locales: i18n.locales,
             localizablePathnameRoots: i18n.localizablePathnameRoots
-          }))
+          })
+          location.assign(target + location.search + location.hash)
         }}
         defaultValue={locale}>
         {Object.entries(i18n.nameOfLocale).map(([eachLocale, localeName]) => (

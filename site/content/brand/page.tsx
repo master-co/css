@@ -1,5 +1,5 @@
 import createPage from '~/site/docs-shell/factories/create-page'
-import Layout from '~/site/layouts/article'
+import Layout from './components/BrandLayout'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/reference.json'

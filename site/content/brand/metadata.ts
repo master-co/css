@@ -2,8 +2,8 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Brand',
-  description: 'Download the Master CSS logotype and mark, choose the right background, and follow the name and trademark guidelines.',
-  category: 'Policy',
+  description: 'The Master CSS identity and design system: logo, color, typography, layout, interaction, voice and original brand assets.',
+  category: 'Brand',
   fileURL: import.meta.url
 })
 

@@ -1,0 +1,9 @@
+@layer components {
+  .not-found { max-width: 44rem; margin-inline: auto; padding-inline: clamp(20px, 4vw, 40px); overflow-wrap: anywhere; }
+  .not-found > div { max-width: 100%; text-align: center; }
+  .not-found-search { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 18rem; min-height: 44px; margin: var(--spacing-xl) auto 0; padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-line-control); border-radius: var(--radius-lg); background: var(--color-surface-raised); color: var(--color-text-muted); font-size: .875rem; line-height: 1.5; cursor: pointer; }
+  .not-found-search:hover { color: var(--color-text-strong); background: var(--color-surface-base); }
+  .not-found-guide { display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-md); min-height: 44px; margin-top: var(--spacing-md); color: var(--color-text-body); font-size: .875rem; text-decoration: none; }
+  .not-found-guide:hover { color: var(--color-text-strong); text-decoration: underline; text-underline-offset: .25em; }
+  .not-found :is(a, button):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border-radius: var(--radius-xs); }
+}

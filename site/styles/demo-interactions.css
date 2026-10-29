@@ -17,7 +17,7 @@
   .demo-viewport-presets, .demo-viewport-width { display: inline-flex; align-items: center; gap: var(--spacing-xs); max-width: 100%; }
   .demo-viewport-presets { flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: var(--radius-2xl); background: var(--color-surface-shell); box-shadow: var(--shadow-pressed); }
   .demo-viewport-presets .demo-button { min-height: var(--demo-control-height, 2.25rem); border-color: transparent; border-radius: calc(var(--radius-2xl) - 4px); background: transparent; box-shadow: none; }
-  .demo-viewport-presets .demo-button[aria-pressed="true"] { border-color: var(--color-line-contour); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-contact); }
+  .demo-viewport-presets .demo-button[aria-pressed="true"] { border-color: var(--color-line-contour); background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .demo-viewport-presets .demo-button:active:not(:disabled) { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .demo-viewport-presets .demo-button:disabled { color: var(--color-text-disabled); box-shadow: none; }
   .demo-viewport-width { display: grid; grid-template-columns: auto minmax(4rem, 7rem) auto; min-height: 2.5rem; }

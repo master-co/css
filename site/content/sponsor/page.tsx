@@ -1,5 +1,6 @@
 
 import Layout from '~/site/layouts/article'
+import '~/site/styles/sponsor.css'
 import metadata from './metadata'
 import Content from './content.mdx'
 import { getSponsorTiers } from '~/site/docs-shell/utils/get-sponsor-tiers'
@@ -182,10 +183,13 @@ export default async function Page(props: any): Promise<React.ReactNode> {
 
   return <>
     <Layout {...props} pageFileURL={import.meta.url} dictionaries={dictionaries} metadata={metadata} $hideLeftSide>
+      <div className="sponsor-page">
+      <p className="sponsor-lead">{props.params.locale === 'tw' ? '支持 Master CSS 的持續開發與維護。' : 'Support the ongoing development and maintenance of Master CSS.'}</p>
       <Backers backers={backers} />
       {/* <Donors sponsorTiers={sponsorTiers} sponsorsOfLevel={sponsorsOfLevel} /> */}
       <DonationModal />
       <Content />
+      </div>
     </Layout >
   </>
 }

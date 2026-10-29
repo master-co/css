@@ -55,7 +55,7 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
     <script is:inline blocking="render" set:html={themeScript}></script>
     <link blocking="render" rel="preload" as="font" href="/fonts/GeistVariable.woff2" crossorigin="anonymous" />
     <link blocking="render" rel="preload" as="font" href="/fonts/IBMPlexMono-Regular.woff2" crossorigin="anonymous" />
-    {site.locale === 'tw' && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />}
+    {(site.locale === 'tw' || basePathname === '/brand') && <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />}
     <style is:inline blocking="render" set:html={fontCSS}></style>
     <style is:inline>site-island,site-slot{display:contents}</style>
     {assets.links.map((href) => <link rel="stylesheet" href={href} />)}
@@ -63,7 +63,7 @@ if (['dark', 'light'].includes(value)) document.documentElement.style.colorSchem
     <title>{head.title}</title>
     {head.tags.map(({ tag: Tag, attributes }) => <Tag {...attributes} />)}
   </head>
-  <body class={clsx(bodyClass, 'bg-slate-50/.2_:is(::selection)', 'fg-text-body')}>
+  <body class={clsx(bodyClass, !bare && basePathname !== '/' && 'site-interior', 'bg-slate-50/.2_:is(::selection)', 'fg-text-body')}>
     <slot />
     {/* After the content, so persisted code tabs apply in the first pass, before paint. */}
     {!bare && <script is:inline set:html={`(${codeTabsBootstrap.toString()})();`}></script>}
