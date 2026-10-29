@@ -76,9 +76,9 @@ Import the default stylesheet from a global Vue style block:
 </style>
 ```
 
-The default `static` mode generates CSS from source files without injecting the browser runtime. Choose `progressive` to combine Nitro server rendering with browser runtime hydration across Nuxt SSR, SSG, ISR, and Hybrid rendering strategies. The runtime downloads its engine and the project manifest only when a page introduces a class that was not pre-rendered.
+The default `static` mode generates CSS from source files without injecting the browser runtime. Choose `progressive` to combine Nitro server rendering with browser runtime hydration across Nuxt SSR, SSG, ISR, and Hybrid rendering strategies. The runtime downloads its engine and the runtime program only when a page introduces a class that was not pre-rendered.
 
-In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
+In `mode: 'runtime'`, the module publishes a hashed runtime program asset and preloads it with `<link rel="preload" as="fetch">` from the Nuxt document head when it also injects the client runtime plugin. To omit the browser runtime, choose `static` or `pre-render`; `runtime: false` conflicts with `runtime` and `progressive` modes and is rejected.
 
 ## Options
 

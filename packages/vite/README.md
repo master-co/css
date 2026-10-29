@@ -325,12 +325,13 @@ The plugin exposes canonical project-level runtime input modules:
 
 ```ts
 import manifest from 'virtual:master-css-manifest'
+import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 ```
 
-Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry.
+Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry. Browser code passes `program`, the manifest compiled for the browser engine, to `MasterCSSRuntime.start()`; browsers cannot execute manifests.
 
-In production `runtime` mode, the plugin modulepreloads the emitted manifest JSON module when it injects its private runtime bootstrap. In `progressive` mode, the bootstrap passes the manifest as a loader and adds no preloads, so a page whose classes are all pre-rendered loads neither the manifest nor the runtime engine. Applications that need manual startup should import `MasterCSSRuntime` from `@master/css-runtime` and use these virtual inputs; on progressive pages, pass `manifest: () => import('virtual:master-css-manifest').then(module => module.default)`. The bootstrap itself is intentionally not a public subpath.
+In production `runtime` mode, the plugin modulepreloads the runtime chunk and preloads the emitted runtime program with `<link rel="preload" as="fetch">` when it injects its private runtime bootstrap. In `progressive` mode, the bootstrap passes the program as a loader and adds no preloads, so a page whose classes are all pre-rendered loads neither the program nor the runtime engine. Applications that need manual startup should import `MasterCSSRuntime` from `@master/css-runtime` and use these virtual inputs; on progressive pages, pass `program: () => import('virtual:master-css-program').then(module => module.default)`. The bootstrap itself is intentionally not a public subpath.
 
 ## Options
 
