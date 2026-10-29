@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import { mountPaletteCanvas, type PaletteCanvas } from './palette-canvas'
 
 /** Client figures for the homepage's Design system section. */
 export default function DesignSystemFigures() {
@@ -16,11 +17,13 @@ interface PaletteSwatch {
 
 /**
  * The P3 palette field with a readout: pointing at a swatch, tapping it or moving through the
- * field with the arrow keys names its class and preset value. Swatches are server-rendered options
- * that carry their data as attributes, so this island only listens and marks the active one.
+ * field with the arrow keys names its class and preset value. Server-rendered options remain the
+ * accessible listbox and no-JavaScript grid; a single P3 canvas draws their projected surfaces.
  */
 export function PaletteExplorer({ children, columns, label, mark }: { children: ReactNode, columns: number, label: string, mark: ReactNode }) {
   const stageRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const rendererRef = useRef<PaletteCanvas>(undefined)
   const activeRef = useRef<HTMLElement | null>(null)
   const [swatch, setSwatch] = useState<PaletteSwatch>()
 
@@ -31,13 +34,20 @@ export function PaletteExplorer({ children, columns, label, mark }: { children: 
     activeRef.current?.removeAttribute('data-active')
     activeRef.current?.setAttribute('aria-selected', 'false')
     activeRef.current = element
+    rendererRef.current?.select(element)
     if (!element) return setSwatch(undefined)
     element.setAttribute('data-active', '')
     element.setAttribute('aria-selected', 'true')
     setSwatch({ gamut: element.dataset.gamut!, id: element.id, token: element.dataset.token!, value: element.dataset.value! })
   }, [])
 
-  useEffect(() => () => activate(null), [activate])
+  useEffect(() => {
+    rendererRef.current = mountPaletteCanvas(stageRef.current!, canvasRef.current!, activate)
+    return () => {
+      rendererRef.current?.dispose()
+      rendererRef.current = undefined
+    }
+  }, [activate])
 
   function handlePointerOver(event: PointerEvent<HTMLDivElement>) {
     const target = (event.target as Element).closest<HTMLElement>('[data-token]')
@@ -66,6 +76,7 @@ export function PaletteExplorer({ children, columns, label, mark }: { children: 
     }[event.key]
     if (next === undefined) return
     event.preventDefault()
+    rendererRef.current?.keyboard()
     activate(next < 0 ? null : list[Math.min(next, list.length - 1)])
   }
 
@@ -77,7 +88,9 @@ export function PaletteExplorer({ children, columns, label, mark }: { children: 
         className="home-bento-visual home-palette-scene"
         onBlur={(event: FocusEvent<HTMLDivElement>) => {
           if (!event.currentTarget.contains(event.relatedTarget)) activate(null)
+          rendererRef.current?.refresh()
         }}
+        onFocus={() => rendererRef.current?.refresh()}
         onKeyDown={handleKeyDown}
         onPointerLeave={handlePointerLeave}
         onPointerOver={handlePointerOver}
@@ -85,6 +98,7 @@ export function PaletteExplorer({ children, columns, label, mark }: { children: 
         role="listbox"
         tabIndex={0}>
         {children}
+        <canvas aria-hidden="true" className="home-palette-canvas" ref={canvasRef} />
         {/* The well's top-right corner: the height mark at rest, the picked swatch's readout once one is picked. */}
         <div aria-hidden="true" className="home-palette-meta">
           {mark}

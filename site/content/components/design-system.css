@@ -1,28 +1,3 @@
-/* Registered so the figures can tilt, rise, open and count smoothly from a single number each. */
-@property --home-flat {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0;
-}
-
-@property --home-rise {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-
-@property --home-layer-gap {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 40px;
-}
-
-@property --home-layer-open {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-
 /* The whole percentage of the theme preview a token line paints, for its counter. */
 @property --home-token-percent {
   syntax: '<integer>';
@@ -324,59 +299,92 @@
     }
   }
 
-  /*
-   * P3 palette, the grid's middle card across the full width. The field and readout sit below its shared
-   * bento header: extruded bars as tall as their chroma, flattening into a table
-   * under the pointer or the keyboard.
-   */
+  /* One P3 canvas paints the field; native options retain selection and the no-JavaScript table. */
   .home-ds-row > .home-ds-palette {
     display: flex;
     grid-row: auto;
   }
 
   .home-palette-stage {
-    --home-flat: 0;
     display: flex;
     flex: auto;
     flex-direction: column;
+    min-width: 0;
     container-type: inline-size;
-    transition: --home-flat 0.9s var(--home-ease);
+  }
 
-    /* Flat below lg: a field this dense only reads in 3D at full size. */
-    @media (width < 64rem) {
-      --home-flat: 1;
+  .home-palette-scene {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    place-items: center;
+    min-width: 0;
+    height: 20rem;
+    padding: 2.5rem var(--spacing-md) var(--spacing-lg);
+    outline: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+
+    @media (--md) {
+      height: 26rem;
     }
 
     @media (width >= 64rem) {
-      &:has(.home-palette-scene:hover),
-      &:has(.home-palette-scene:focus-visible),
-      &[data-active] {
-        --home-flat: 1;
-      }
+      height: clamp(26rem, 36vw, 32rem);
+    }
+
+    @media (--xl) {
+      height: 36rem;
     }
   }
 
-  /*
-   * The well's top-right corner, like a callout on a drawing: the height mark while the field stands in 3D, the
-   * picked swatch's readout once one is picked. Both share one cell, so neither moves the other. In the flat
-   * grid below lg there is no mark and the picked swatch's tag names it, so the corner is not drawn at all.
-   */
+  .home-palette-canvas {
+    position: absolute;
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    border-color: var(--home-rule);
+    font-family: var(--home-mono);
+    color: var(--home-text-faint);
+    text-decoration-color: var(--home-text-inverse);
+    background-color: var(--home-well);
+    outline-color: var(--home-ink);
+    caret-color: var(--home-signal);
+    cursor: crosshair;
+    pointer-events: none;
+  }
+
+  .home-palette-stage[data-renderer='canvas'] {
+    & .home-palette-canvas {
+      display: block;
+    }
+
+    /* Keep the native options in the accessibility tree, without a second painted field. */
+    & .home-palette {
+      position: absolute;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      clip-path: inset(50%);
+    }
+  }
+
   .home-palette-meta {
     position: absolute;
-    top: 0.75rem;
-    right: 1rem;
+    top: 0.875rem;
+    right: 1.125rem;
+    left: 1.125rem;
     z-index: 1;
     display: grid;
     justify-items: end;
-    max-width: calc(100% - 2rem);
+    min-width: 0;
     pointer-events: none;
 
     & > * {
       grid-area: 1 / 1;
-    }
-
-    @media (width < 64rem) {
-      display: none;
     }
   }
 
@@ -387,13 +395,16 @@
     max-width: 100%;
     height: 1.5rem;
     margin: 0;
-
-    &:empty {
-      visibility: hidden;
-    }
     font-family: var(--home-mono);
     font-size: 0.75rem;
     white-space: nowrap;
+
+    &:empty { visibility: hidden; }
+
+    @container (width < 36rem) {
+      gap: 0.375rem;
+      font-size: 0.625rem;
+    }
   }
 
   .home-palette-readout-swatch {
@@ -404,9 +415,7 @@
     box-shadow: inset 0 0 0 1px var(--home-rule);
   }
 
-  .home-palette-readout-token {
-    color: var(--home-text);
-  }
+  .home-palette-readout-token { color: var(--home-text); }
 
   .home-palette-readout-value {
     overflow: hidden;
@@ -419,113 +428,25 @@
     flex: none;
     color: var(--home-text-faint);
 
-    &[data-gamut='P3'] {
-      color: var(--home-text);
-    }
+    &[data-gamut='P3'] { color: var(--home-text); }
   }
 
-  /* The one mark the field keeps: height means chroma, while the field stands in 3D. */
   .home-palette-mark {
     align-self: center;
     margin: 0;
-    opacity: calc(1 - var(--home-flat));
+    visibility: hidden;
 
-    .home-palette-stage[data-active] & {
-      visibility: hidden;
-    }
+    [data-projection='raised'] & { visibility: visible; }
+    .home-palette-stage[data-active] & { visibility: hidden; }
+
+    @media (width < 64rem) { display: none; }
   }
 
-  .home-palette-scene {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    place-items: center;
-    min-width: 0;
-    border-radius: var(--home-radius-well);
-    outline: none;
-    perspective: var(--home-perspective);
-    /* The top padding leaves room for the picked swatch's tag above the first row. */
-    padding: 2rem var(--spacing-md) var(--spacing-lg);
-
-    @container (width >= 40rem) {
-      padding-inline: var(--spacing-xl);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
-    }
-
-    @media (width >= 64rem) {
-      height: clamp(26rem, 36vw, 32rem);
-    }
-
-    /* The 100rem column's full-width card: room for the larger palette below, with the tag's clearance kept. */
-    @media (--xl) {
-      height: 36rem;
-      perspective-origin: 50% 40%;
-    }
-  }
-
-  /* Narrow screens get a fluid grid at the content width; from lg the swatches keep their size and the field tilts. */
   .home-palette {
-    --home-tilt: calc(1 - var(--home-flat));
-    position: relative;
     display: grid;
     grid-template-columns: 1.5rem repeat(var(--home-palette-columns), minmax(0, 1fr));
-    grid-template-rows: repeat(var(--home-palette-rows), clamp(1rem, 3.6vw, 1.5rem));
-    gap: 2px;
+    gap: 3px;
     width: 100%;
-    transform-style: preserve-3d;
-
-    @media (width >= 64rem) {
-      /* tan(atan2()) turns the ratio of two lengths into a number: full size at 72rem, smaller in narrower columns. */
-      --home-palette-fit: min(1.06, tan(atan2(100cqw, 72rem)));
-
-      /* Wide columns let the field grow a step further, up to the height the scene grants it. */
-      @media (--xl) {
-        --home-palette-fit: min(1.16, tan(atan2(100cqw, 72rem)));
-      }
-      grid-template-columns: 2rem repeat(var(--home-palette-columns), 2.5rem);
-      grid-template-rows: 1rem repeat(var(--home-palette-rows), 1.75rem);
-      gap: 4px;
-      width: max-content;
-      /* In a column narrower than the field's own box, center the box anyway; the scale brings it back inside. */
-      place-self: unsafe center;
-      /* The tilted field projects down and to the left of its box; lift it so the nearest tier stays clear. */
-      translate: calc(-0.5rem * var(--home-tilt)) calc(-3rem * var(--home-tilt) + 0.375rem * var(--home-flat));
-      transform:
-        rotateX(calc(56deg * var(--home-tilt)))
-        rotateZ(calc(-30deg * var(--home-tilt)))
-        scale(calc(var(--home-palette-fit) * (0.86 + 0.12 * var(--home-flat))));
-
-      /* A soft contact shadow on the ground under the field; it fades as the field lies flat. */
-      &::before {
-        position: absolute;
-        inset: 1.25rem 0 0 2rem;
-        border-radius: 1rem;
-        background-color: var(--home-shade-far);
-        filter: blur(24px);
-        opacity: calc(var(--home-tilt) * 0.9);
-        transform: translateZ(-2px);
-        pointer-events: none;
-        content: '';
-      }
-
-      /* The floor plate the bars stand on: a hatched margin around the swatches, closed by a hairline. */
-      &::after {
-        position: absolute;
-        inset: calc(1rem + 4px - 0.875rem) -0.875rem -0.875rem calc(2rem + 4px - 0.875rem);
-        border-radius: 0.5rem;
-        background-color: var(--home-well);
-        background-image: var(--home-hatch);
-        background-size: var(--home-hatch-size) var(--home-hatch-size);
-        box-shadow: inset 0 0 0 1px var(--home-rule);
-        opacity: var(--home-tilt);
-        transform: translateZ(-1px);
-        pointer-events: none;
-        content: '';
-      }
-    }
   }
 
   .home-palette-label {
@@ -535,114 +456,33 @@
     justify-content: center;
     min-width: 0;
     font-family: var(--home-mono);
-    font-size: 0.5625rem;
-    line-height: 1;
+    font-size: 0.625rem;
     white-space: nowrap;
     color: var(--home-text-quiet);
-
-    /* Names and tiers face the reader only once the field lies flat. */
-    @media (width >= 64rem) {
-      font-size: 0.625rem;
-      opacity: var(--home-flat);
-    }
   }
 
-  /* Color names need the room of a full-size swatch; the tier scale stays at every size. */
   .home-palette-name {
-    @media (width < 64rem) {
-      display: none;
-    }
+    @media (width < 64rem) { display: none; }
   }
 
   .home-palette-tier {
     justify-content: flex-end;
     padding-right: var(--spacing-3xs);
     font-variant-numeric: tabular-nums;
-
-    @media (width >= 64rem) {
-      padding-right: var(--spacing-xs);
-    }
   }
 
   .home-swatch {
     position: relative;
     display: block;
+    min-height: 1.25rem;
     border-radius: 2px;
     box-shadow: inset 0 0 0 1px var(--home-hairline);
     cursor: crosshair;
-    transition: scale var(--home-quick) var(--home-ease);
 
-    @media (width >= 64rem) {
-      /* Each bar rises a little after the one before it, so the field grows in a diagonal wave as it scrolls in. */
-      --home-swatch-rise: clamp(0, var(--home-rise) * 1.6 - var(--home-swatch-index) / 34 * 0.6, 1);
-      --home-swatch-height: calc(var(--home-swatch-lift) * 180px * var(--home-swatch-rise) * var(--home-tilt));
-      border-radius: 3px;
-      transform-style: preserve-3d;
-      transform: translateZ(var(--home-swatch-height));
-
-      /* The two faces that turn toward the reader: the front edge and the left edge, shaded away from the light. */
-      &::before,
-      &::after {
-        position: absolute;
-        background-color: inherit;
-        pointer-events: none;
-        content: '';
-      }
-
-      &::before {
-        top: 100%;
-        left: 0;
-        width: 100%;
-        height: var(--home-swatch-height);
-        background-image: linear-gradient(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.34));
-        transform-origin: top;
-        transform: rotateX(-90deg);
-      }
-
-      &::after {
-        top: 0;
-        right: 100%;
-        width: var(--home-swatch-height);
-        height: 100%;
-        background-image: linear-gradient(90deg, rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.24));
-        transform-origin: right;
-        transform: rotateY(-90deg);
-      }
-    }
-
-    /* The picked swatch: a gold ring, the one accent, set off by a 1px gap of canvas. */
     &[data-active] {
       z-index: 1;
-      scale: 1.18;
-      box-shadow: 0 0 0 1px var(--home-well), 0 0 0 2px var(--home-signal);
-    }
-
-    /*
-     * The picked swatch carries its class on a tag above it, the way a design tool names a selection. The tag
-     * leans toward the field's middle by the swatch's column, so it never runs past the first or last column.
-     */
-    &[data-active]::after {
-      --home-tag-lean: calc(var(--home-swatch-column) / (var(--home-palette-columns) - 1));
-      position: absolute;
-      top: auto;
-      right: auto;
-      bottom: calc(100% + 0.375rem);
-      left: calc(var(--home-tag-lean) * 100%);
-      width: auto;
-      height: auto;
-      padding: 0.1875rem 0.4375rem;
-      border-radius: var(--home-radius-chip);
-      font-family: var(--home-mono);
-      font-size: 0.625rem;
-      line-height: 1.3;
-      white-space: nowrap;
-      color: var(--home-text-inverse);
-      background-color: var(--home-ink);
-      background-image: none;
-      opacity: var(--home-flat);
-      transform: translateX(calc(var(--home-tag-lean) * -100%));
-      pointer-events: none;
-      content: attr(data-token);
+      outline: 2px solid var(--home-signal);
+      outline-offset: 1px;
     }
   }
 
@@ -868,247 +708,173 @@
     animation-duration: 0.52s;
   }
 
-  /*
-   * Cascade layers: five slabs in preset order, following one element's padding through them.
-   * The stack is orthographic, so the flat callouts beside it rise by exactly the amount their slab does.
-   */
+  /* A single SVG exploded drawing, with front-facing labels and finely machined plate edges. */
   .home-layers {
-    --home-layer-tilt: 58deg;
-    --home-layer-turn: 36deg;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    container-type: inline-size;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     min-height: 28rem;
+    container-type: inline-size;
 
-    @media (--md) {
-      min-height: 32rem;
-    }
+    @media (--md) { min-height: 32rem; }
   }
 
-  /* The element whose padding the stack decides, set as plain code above it. */
   .home-layers-element {
     z-index: 1;
     margin: 0;
-    padding: 1.25rem 1.375rem 0;
+    padding: 1.375rem 1.375rem 0;
     font-family: var(--home-mono);
     font-size: 0.75rem;
     white-space: nowrap;
     color: var(--home-text-body);
-  }
 
-  /* One origin for the slabs and the callouts: the base slab's center, lowered by half the stack's rise. */
-  .home-layers-scene {
-    --home-layer-width: 11rem;
-    --home-layer-depth: 6.5rem;
-    --home-layer-gap: 3.75rem;
-    --home-layer-rise: calc(var(--home-layer-gap) * var(--home-layer-open) * sin(var(--home-layer-tilt)));
-    --home-layers-x: 40%;
-    --home-layers-y: calc(50% + 2 * var(--home-layer-rise));
-    /* The slab's right-hand corner, where each callout's leader starts. */
-    --home-layer-corner-x: calc(cos(var(--home-layer-turn)) * var(--home-layer-width) / 2 + sin(var(--home-layer-turn)) * var(--home-layer-depth) / 2);
-    --home-layer-corner-y: calc(cos(var(--home-layer-tilt)) * (cos(var(--home-layer-turn)) * var(--home-layer-depth) / 2 - sin(var(--home-layer-turn)) * var(--home-layer-width) / 2));
-    position: relative;
-    min-height: 18rem;
-    transition: --home-layer-gap 0.8s var(--home-ease);
-
-    .home-bento-card:hover & {
-      --home-layer-gap: 4.5rem;
-    }
-  }
-
-  .home-layers-stack {
-    position: absolute;
-    top: var(--home-layers-y);
-    left: var(--home-layers-x);
-    width: var(--home-layer-width);
-    height: var(--home-layer-depth);
-    margin: calc(var(--home-layer-depth) / -2) 0 0 calc(var(--home-layer-width) / -2);
-    transform-style: preserve-3d;
-    transform: rotateX(var(--home-layer-tilt)) rotateZ(calc(var(--home-layer-turn) * -1));
-  }
-
-  /* A slab: a sheet with a 1px contour over a darker copy 4px below it, so its front edges read as thickness. */
-  .home-layer {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: flex-end;
-    padding: 0.625rem 0.75rem;
-    border-radius: var(--radius-xl);
-    background-color: var(--home-sheet);
-    box-shadow: inset 0 0 0 1px var(--home-rule), 0 18px 30px -18px var(--home-shade-far);
-    transform-style: preserve-3d;
-    transform: translateZ(calc(var(--home-layer-index) * var(--home-layer-gap) * var(--home-layer-open)));
-
-    &::before {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background-color: color-mix(in oklab, var(--home-sheet) 82%, var(--home-text));
-      transform: translateZ(-4px);
-      content: '';
-    }
-  }
-
-  /* Utilities are the layer that wins: an amber contour and a soft glow, still one line. */
-  .home-layer[data-wins] {
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--home-signal) 85%, transparent), 0 0 28px -6px var(--home-signal-glow), 0 18px 30px -18px var(--home-shade-far);
-
-    &::before {
-      background-color: color-mix(in oklab, var(--home-signal) 55%, var(--home-sheet));
-    }
-  }
-
-  .home-layer-name {
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    font-weight: var(--font-weight-medium);
-    white-space: nowrap;
-    color: var(--home-text);
-  }
-
-  .home-layer-keyword {
-    font-weight: var(--font-weight-regular);
-    color: var(--home-text-faint);
-  }
-
-  /* A callout names the rule on its slab: a leader's length right of the slab's corner, rising with the slab. */
-  .home-layer-callout {
-    --home-callout-leader: 1rem;
-    position: absolute;
-    top: calc(var(--home-layers-y) + var(--home-layer-corner-y) - var(--home-layer-index) * var(--home-layer-rise));
-    left: calc(var(--home-layers-x) + var(--home-layer-corner-x) + var(--home-callout-leader));
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin: 0;
-    font-family: var(--home-mono);
-    font-size: 0.75rem;
-    line-height: 1.35;
-    white-space: nowrap;
-    color: var(--home-text-faint);
-    translate: 0 -50%;
-    /* Callouts come in once the slabs have lifted far enough apart to be told apart. */
-    opacity: clamp(0, (var(--home-layer-open) - 0.55) * 2.5, 1);
-
-    /* The overridden rule is struck; the winning one is in full ink with a check. */
-    & > code {
-      text-decoration: line-through;
-      text-decoration-color: color-mix(in oklab, var(--home-text-quiet) 70%, transparent);
-    }
-
-    &[data-wins] {
-      color: var(--home-text);
-
-      & > code {
-        text-decoration: none;
-      }
-    }
-
-    /* The leader: a 1px rule from the slab's corner, ending in a dot on the corner. */
-    &::before {
-      position: absolute;
-      top: 50%;
-      right: calc(100% + 0.375rem);
-      width: calc(var(--home-callout-leader) - 0.375rem + 0.3125rem);
-      height: 1px;
-      background: linear-gradient(90deg, var(--home-text-faint) 3px, var(--home-rule-strong) 3px);
-      content: '';
-    }
-  }
-
-  /* The dimension line: ticks level with each slab's left corner, an arrowhead toward the layer that wins. */
-  .home-layers-dimension {
-    --home-dimension-mark: var(--home-rule-strong);
-    position: absolute;
-    --home-dimension-reach: 0.875rem;
-    top: calc(var(--home-layers-y) - var(--home-layer-corner-y) - 4 * var(--home-layer-rise) - var(--home-dimension-reach));
-    left: calc(var(--home-layers-x) - var(--home-layer-corner-x) - 1.125rem);
-    width: 0.375rem;
-    height: calc(4 * var(--home-layer-rise) + 1px + var(--home-dimension-reach));
-    background:
-      linear-gradient(var(--home-dimension-mark), var(--home-dimension-mark)) 0 0 / 1px 100% no-repeat,
-      repeating-linear-gradient(to top, var(--home-dimension-mark) 0 1px, transparent 1px var(--home-layer-rise));
-    opacity: clamp(0, (var(--home-layer-open) - 0.55) * 2.5, 1);
-
-    /* The arrowhead: two 1px strokes meeting at the top of the line. */
-    &::before,
-    &::after {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 1px;
-      height: 0.375rem;
-      background-color: var(--home-dimension-mark);
-      transform-origin: top;
-      content: '';
-    }
-
-    &::before {
-      rotate: 40deg;
-    }
-
-    &::after {
-      rotate: -40deg;
-    }
-  }
-
-  /* Wide wells, such as the single-column card on tablets: a larger stack nearer the middle. */
-  @container (width >= 32rem) {
-    .home-layers-scene {
-      --home-layer-width: 13rem;
-      --home-layer-depth: 7.5rem;
-      --home-layers-x: 42%;
-    }
-  }
-
-  /* The 100rem column's half-width well: larger slabs, opened a little further. */
-  @container (width >= 40rem) {
-    .home-layers-scene {
-      --home-layer-width: 15.5rem;
-      --home-layer-depth: 9rem;
-      --home-layer-gap: 4.25rem;
-
-      .home-bento-card:hover & {
-        --home-layer-gap: 5rem;
-      }
-    }
-  }
-
-  /* Narrow wells: a smaller stack, layer names without the keyword, and a shorter leader. */
-  @container (width < 21rem) {
-    .home-layers-scene {
-      --home-layer-width: 8.5rem;
-      --home-layer-depth: 5.25rem;
-      --home-layer-gap: 3.75rem;
-      --home-layers-x: 34%;
-
-      .home-bento-card:hover & {
-        --home-layer-gap: 4.5rem;
-      }
-    }
-
-    .home-layer-keyword {
-      display: none;
-    }
-
-    .home-layer-callout {
-      --home-callout-leader: 0.875rem;
-      font-size: 0.6875rem;
-    }
-  }
-
-  /* The narrowest wells, such as the two-column card at lg: a compact stack set further right, so the dimension line clears the edge. */
-  @container (width < 18.5rem) {
-    .home-layers-scene {
-      --home-layer-width: 7rem;
-      --home-layer-depth: 4.5rem;
-      --home-layers-x: 42%;
-    }
-
-    .home-layer-callout {
+    @container (width < 19rem) {
+      padding-inline: 1rem;
       font-size: 0.625rem;
     }
+  }
+
+  .home-layers-figure {
+    position: relative;
+    min-height: 0;
+  }
+
+  .home-layers-drawing {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 34rem;
+    padding: 0.25rem 0.75rem;
+    font-family: var(--home-mono);
+    overflow: visible;
+  }
+
+  .home-layer-light { stop-color: var(--home-sheet); }
+  .home-layer-shade { stop-color: color-mix(in oklab, var(--home-sheet) 92%, var(--home-well)); }
+  .home-layer-signal-light { stop-color: color-mix(in oklab, var(--home-signal) 8%, var(--home-sheet)); }
+  .home-layer-signal-shade { stop-color: color-mix(in oklab, var(--home-signal) 15%, var(--home-sheet)); }
+  .home-layer-edge-light { stop-color: color-mix(in oklab, var(--home-sheet) 90%, var(--home-text)); }
+  .home-layer-edge-shade { stop-color: color-mix(in oklab, var(--home-sheet) 86%, var(--home-text)); }
+  .home-layer-shadow { stop-color: var(--home-shade-far); }
+
+  .home-layers-registration {
+    stroke: var(--home-rule-strong);
+    stroke-width: 0.75;
+    opacity: 0.6;
+  }
+
+  .home-layer-group {
+    transition: transform var(--home-slow) var(--home-ease);
+
+    .home-bento-card:is(:hover, :focus-within) & {
+      transform: translateY(var(--home-layer-offset));
+    }
+  }
+
+  .home-layer-face {
+    stroke: var(--home-rule-strong);
+    stroke-width: 0.8;
+  }
+
+  .home-layer-inset {
+    stroke: var(--home-hairline);
+    stroke-width: 0.8;
+  }
+
+  .home-layer-seam,
+  .home-layer-detail {
+    stroke: var(--home-rule);
+    stroke-width: 1;
+  }
+
+  .home-layer-detail { opacity: 0.65; }
+
+  .home-layer-etched {
+    fill: var(--home-text-faint);
+    font-size: 12px;
+  }
+
+  .home-layer-pin {
+    fill: var(--home-rule-strong);
+    stroke: var(--home-highlight);
+    stroke-width: 0.7;
+  }
+
+  .home-layer-rule-slot {
+    fill: var(--home-well);
+    stroke: var(--home-rule);
+    stroke-width: 0.8;
+  }
+
+  .home-layer-rule {
+    fill: var(--home-text-quiet);
+    font-size: 14px;
+  }
+
+  .home-layer-strike { stroke: var(--home-text-faint); }
+
+  .home-layer-check {
+    stroke: var(--home-text-body);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .home-layer-leader,
+  .home-layer-tick {
+    stroke: var(--home-rule-strong);
+    stroke-width: 0.8;
+  }
+
+  .home-layer-anchor { fill: var(--home-rule-strong); }
+
+  .home-layer-label {
+    fill: var(--home-text-quiet);
+    font-size: 14px;
+  }
+
+  .home-layer-number {
+    fill: var(--home-text-faint);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .home-layer-group[data-wins] {
+    & .home-layer-face { stroke: var(--home-signal); }
+    & .home-layer-inset { stroke: color-mix(in oklab, var(--home-signal) 28%, transparent); }
+    & .home-layer-rule-slot { fill: color-mix(in oklab, var(--home-signal) 20%, var(--home-sheet)); }
+    & .home-layer-rule { fill: var(--home-text); }
+    & .home-layer-label { fill: var(--home-text); }
+    & .home-layer-number { fill: var(--home-text-body); }
+    & .home-layer-anchor { fill: var(--home-signal); }
+  }
+
+  .home-layers-result {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.75rem;
+    margin: 0 1.375rem;
+    padding: 0.875rem 0 1.125rem;
+    border-top: 1px solid var(--home-hairline);
+    font-family: var(--home-mono);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+  }
+
+  .home-layers-result-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--home-text);
+
+    & > svg { color: var(--home-text-quiet); }
+  }
+
+  .home-layers-result-declaration {
+    overflow-wrap: anywhere;
+    color: var(--home-text-faint);
   }
 
   @media (--motion-safe) {
@@ -1122,15 +888,6 @@
     }
 
     @supports (animation-timeline: view()) {
-      /* The layers lift apart as the card scrolls in, from a stack to the five slabs. */
-      .home-layers {
-        animation-name: home-layers-open;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 30% cover 50%;
-      }
-
       /* Token lines arrive in source order as the card scrolls in. */
       .home-tokens-code .line {
         animation-name: home-token-line;
@@ -1139,22 +896,11 @@
         animation-timeline: view();
         animation-range: entry 40% entry 100%;
       }
-
-      /* The palette rises out of the ground as it scrolls into view. */
-      .home-palette-stage {
-        animation-name: home-palette-rise;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 10% cover 45%;
-      }
     }
   }
 
   @media (--motion-reduce) {
-    .home-palette-stage,
-    .home-layers-scene,
-    .home-swatch,
+    .home-layer-group,
     .home-theme-knob,
     .home-tokens-code .line[style]::after,
     .home-gallery-frame img,
@@ -1165,26 +911,6 @@
     .home-theme-measure::before {
       transition: none;
     }
-  }
-}
-
-@keyframes home-palette-rise {
-  from {
-    --home-rise: 0;
-  }
-
-  to {
-    --home-rise: 1;
-  }
-}
-
-@keyframes home-layers-open {
-  from {
-    --home-layer-open: 0.12;
-  }
-
-  to {
-    --home-layer-open: 1;
   }
 }
 

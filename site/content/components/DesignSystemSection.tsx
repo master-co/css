@@ -1,21 +1,20 @@
 import './design-system.css'
 import { Fragment, type CSSProperties } from 'react'
-import { createRenderSessionSync } from '@master/css/node'
-import { IconArrowRight, IconCheck } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import Color from 'colorjs.io'
 import Link from '~/site/docs-shell/components/Link'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { getColor } from '~/site/docs-shell/data/color-palette'
-import preset from '~/site/utils/preset-manifest'
 import ArtGalleryPreview from './ArtGalleryPreview'
+import CascadeLayers from './CascadeLayers'
 import { PaletteExplorer } from './DesignSystemFigures'
 import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from './HomeBento'
 import HomeCodeWindow from './HomeCodeWindow'
 import type { HomeIllustrationId } from './HomeIllustration'
 import ThemeModesPreview from './ThemeModesPreview'
-import { cascadeProbe, designSystemGuides } from './design-system-content'
-import { cascadeLayers, designSystemPalette, designSystemTiles, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemTileContent } from './home-content'
+import { designSystemGuides } from './design-system-content'
+import { designSystemPalette, designSystemTiles, homeSections, p3PaletteColorNames, p3PaletteTiers, themeVariablesCode, type DesignSystemTileContent } from './home-content'
 
 type DesignSystemVisual = DesignSystemTileContent['visual'] | 'p3-palette'
 
@@ -97,54 +96,6 @@ function ThemeTokens() {
   )
 }
 
-/** The layer the engine puts the probe's utility rule in. */
-function getUtilityLayer() {
-  const engine = createRenderSessionSync({ manifest: preset })
-  try {
-    const [rule] = engine.ensureClassRules([cascadeProbe.utility]).classRules[cascadeProbe.utility]
-    return rule.layer as typeof cascadeLayers[number]['name']
-  } finally {
-    engine.dispose()
-  }
-}
-
-/** The preset cascade layers as stacked slabs; the utility's rule sits above the component's and wins. */
-function CascadeLayers() {
-  const $ = useTranslation()
-  const rules: Partial<Record<typeof cascadeLayers[number]['name'], { selector: string, wins: boolean }>> = {
-    components: { selector: `.${cascadeProbe.component}`, wins: false },
-    [getUtilityLayer()]: { selector: `.${cascadeProbe.utility}`, wins: true }
-  }
-  return (
-    <div aria-label={`${$('Cascade layers from theme at the bottom to utilities at the top')}. ${$('The px-lg utility sets the padding over the btn component rule, because utilities come later.')}`} className="home-bento-visual home-layers" role="img">
-      <p aria-hidden="true" className="home-layers-element">
-        <span className="home-code-tag">&lt;{cascadeProbe.tag}</span> <span className="home-code-attr">class</span>=<span className="home-code-string">&quot;{cascadeProbe.classes.join(' ')}&quot;</span><span className="home-code-tag">&gt;</span>
-      </p>
-      <div aria-hidden="true" className="home-layers-scene">
-        <div className="home-layers-stack">
-          {cascadeLayers.map((layer, index) => (
-            <div className="home-layer" data-wins={rules[layer.name]?.wins || undefined} key={layer.name} style={{ '--home-layer-index': index } as CSSProperties}>
-              <span className="home-layer-name"><span className="home-layer-keyword">@layer</span> {layer.name}</span>
-            </div>
-          ))}
-        </div>
-        {/* A dimension line beside the stack ticks off each layer in order, bottom to top. */}
-        <span className="home-layers-dimension" />
-        {/* Callouts face the reader beside the slabs, raised by the same amount as the slab they name. */}
-        {cascadeLayers.map((layer, index) => {
-          const rule = rules[layer.name]
-          return rule && (
-            <p className="home-layer-callout" data-wins={rule.wins || undefined} key={layer.name} style={{ '--home-layer-index': index } as CSSProperties}>
-              <code>{rule.selector}</code>
-              {rule.wins && <IconCheck size={12} stroke={2.25} />}
-            </p>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 /** The full-width middle card uses the same header as its neighbors; the readout stays inside the field. */
 function P3Palette({ body, title }: { body: string, title: string }) {
   const $ = useTranslation()
@@ -182,17 +133,15 @@ function P3PaletteField() {
               aria-selected={false}
               className="home-swatch"
               data-gamut={swatch.wide ? 'P3' : 'sRGB'}
+              data-chroma={swatch.chroma.toFixed(4)}
+              data-column={colorIndex}
+              data-row={tierIndex}
               data-token={swatch.token}
               data-value={swatch.value}
               id={`home-swatch-${swatch.colorName}-${swatch.tier}`}
               key={swatch.colorName}
               role="option"
-              style={{
-                backgroundColor: swatch.value,
-                '--home-swatch-index': colorIndex + tierIndex,
-                '--home-swatch-column': colorIndex,
-                '--home-swatch-lift': swatch.chroma.toFixed(3)
-              } as CSSProperties} />
+              style={{ backgroundColor: swatch.value }} />
           ))}
         </Fragment>
       ))}
