@@ -249,6 +249,11 @@ export async function generate(siteRoot: string): Promise<{ index: string; full:
   const publicDir = path.join(siteRoot, 'public')
   await writeFile(path.join(publicDir, 'llms.txt'), index, 'utf8')
   await writeFile(path.join(publicDir, 'llms-full.txt'), full, 'utf8')
+  const brand = pages.find(page => page.url === '/en/brand')
+  if (brand) {
+    const markdown = `# ${brand.title}\n\n${brand.description ?? ''}\n\n- Canonical: /brand\n- Language: English\n- Version: ${catalog.version}\n- Source revision: ${catalog.revision} (${catalog.sourceState})\n\n${brand.body.trim()}\n`
+    await writeFile(path.join(publicDir, 'brand.md'), markdown, 'utf8')
+  }
   return { index, full }
 }
 

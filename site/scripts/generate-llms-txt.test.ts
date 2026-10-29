@@ -34,6 +34,7 @@ import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { getThemeVariables, getThemeNumericVariableEntries } from '../utils/theme-variables'
 import {
   cleanMdx,
+  generate,
   loadPages,
   deriveTitle,
   metadataTitle,
@@ -603,6 +604,12 @@ test('brand downloads retain their asset URLs, labels and policy in portable and
     const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/brand')
     assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
   }
+  await generate(root)
+  const guide = await readFile(path.join(root, 'public/brand.md'), 'utf8')
+  assert.ok(guide.startsWith('# Brand\n'))
+  assert.ok(guide.includes('- Canonical: /brand'))
+  assert.ok(guide.includes('- Language: English'))
+  assert.ok(guide.endsWith(content.markdown.trim() + '\n'), 'the standalone guide uses the exact portable brand body')
 })
 
 

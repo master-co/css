@@ -19,6 +19,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - `common/brand-foundations.ts` selects actual preset values through the existing theme helpers. It does not maintain a second preset palette.
 - `utils/brand-content.ts` exports the same facts and compositions to search, Markdown and llms content, with strict extraction errors for missing adapters.
 - Canvas and Shell are explicitly identified as website roles. Other displayed color roles come from the preset.
+- The standalone `/brand.md` is generated from the exact portable body used in llms output, with version/source metadata. It includes the same original artwork URLs and policy.
+- Typography sizes come from the preset and are checked against actual browser paint. Explicit native CSS references retain the size tokens used by the data-driven specimens.
 - The native standalone mark and the two lockups remain unchanged. The central ribbon's endpoint colors are distinguished from the complete source gradients.
 - The ¼ mark-height clear-space rule and minimum sizes are authored guidance. The SVG canvas ratios are verified against the original files. The page includes actual-size minimum specimens.
 - Original SVG download destinations and trademark/name policy text are retained.
@@ -31,6 +33,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - Language changes and same-page anchor navigation preserve the current query string.
 - A contents jump creates one history entry; one Back returns to the prior location. Modified hash clicks leave the browser's default behavior intact.
 - At 320px with 200% text, search uses two input-bar rows so Clear and Cancel cannot reduce the query field to zero width.
+- The brand chapter list sizes its columns to available space; enlarged labels remain readable, and jumps measure the collapsed navigation before positioning the heading.
+- The shared home link has an accessible name and a larger hit area while retaining the 20px artwork. Global navigation, document navigation and page contents have distinct landmark names.
 - At the standard root size, document title and code sizes remain 28px/13px with the same code leading. They scale with enlarged text instead of staying fixed.
 - Previous/next links identify their direction and allow complete titles to wrap.
 - Interior surfaces use contours and contact shadows. The homepage retains its global material definitions.

@@ -44,6 +44,7 @@ async function assertLayout(page) {
       overflow: root.scrollWidth > innerWidth + 1,
       missingTargets: [...document.querySelectorAll('.brand-navigation a[href^="#"]')].filter(link => !document.getElementById(link.hash.slice(1))).map(link => link.hash),
       colors,
+      typeSizes: [...document.querySelectorAll('.brand-type-row')].map(row => ({ token: row.dataset.sizeToken, expected: Number(row.dataset.sizeRem) * parseFloat(getComputedStyle(root).fontSize), actual: parseFloat(getComputedStyle(row.querySelector('p')).fontSize) })),
       brokenArtwork: [...document.querySelectorAll('.brand-page img')].filter(img => !img.complete || !img.naturalWidth).map(img => img.getAttribute('src')),
       headingBounds: [...document.querySelectorAll('.brand-hero h1,.brand-content > h2')].map(element => ({ left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right })),
     }
@@ -52,6 +53,8 @@ async function assertLayout(page) {
   assert.deepEqual(result.missingTargets, [])
   assert.deepEqual(result.brokenArtwork, [])
   assert.equal(result.colors.length, 21)
+  assert.equal(result.typeSizes.length, 7)
+  for (const entry of result.typeSizes) assert.ok(Math.abs(entry.actual - entry.expected) < .1, `${entry.token}: expected ${entry.expected}px, rendered ${entry.actual}px`)
   for (const entry of result.colors) assert.ok(entry.color !== 'rgba(0, 0, 0, 0)' && entry.color !== 'transparent', `${entry.token}: a real rendered color`)
   for (const bounds of result.headingBounds) { assert.ok(bounds.left >= -1); assert.ok(bounds.right <= (await page.viewportSize()).width + 1) }
 }
@@ -144,7 +147,8 @@ test(`${browserName}: appearance updates real paint and mobile navigation reache
     assert.equal(await menu.getAttribute('open'), null)
     assert.ok(page.url().endsWith('#color-system'))
     const bounds = await page.locator('#color-system').boundingBox()
-    assert.ok(bounds.y >= 95, 'the heading clears both fixed navigation regions')
+    const navigation = await page.locator('.brand-navigation').boundingBox()
+    assert.ok(bounds.y >= navigation.y + navigation.height + 8, 'the heading clears both navigation regions')
   } finally { await context.close() }
 })
 
@@ -162,6 +166,19 @@ test(`${browserName}: asset links download the exact original SVG files`, { time
   } finally { await context.close() }
 })
 
+test(`${browserName}: the portable guide serves the complete brand content`, { timeout: 60000 }, async () => {
+  const { context, page } = await open()
+  try {
+    const response = await page.request.get(`${base}/brand.md`)
+    assert.equal(response.status(), 200)
+    const markdown = await response.text()
+    assert.ok(markdown.startsWith('# Brand\n'))
+    for (const text of ['Canonical: /brand', 'Language: English', '¼ H', '--color-surface-raised', 'Noto Sans TC', '在標記中編寫樣式', '/images/css-logotype@dark.svg', 'trademarks owned by Aoyue Design']) assert.ok(markdown.includes(text), text)
+    assert.doesNotMatch(markdown, /<Brand[A-Z]|MCSS_EXPRESSION/)
+    assert.equal(await page.getByRole('link', { name: 'read this guide as Markdown' }).getAttribute('href'), '/brand.md')
+  } finally { await context.close() }
+})
+
 test(`${browserName}: enlarged text, density, forced colors and static content stay readable`, { timeout: 120000 }, async () => {
   for (const options of [{ width: 390, textSize: 32 }, { width: 1440, density: 1.25 }, { width: 390, density: 2 }, { width: 390, js: false }]) {
     const { context, page, errors } = await open(options)
@@ -172,6 +189,18 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
         await menu.locator('summary').click()
         assert.ok(await menu.getByRole('link', { name: 'Logo system', exact: true }).isVisible())
         await page.locator('.brand-controls-board').getByRole('radio', { name: 'Grid', exact: true }).check()
+      }
+      if (options.textSize) {
+        const menu = page.locator('.brand-mobile-navigation')
+        await menu.locator('summary').click()
+        const first = await menu.locator('a').nth(0).boundingBox()
+        const second = await menu.locator('a').nth(1).boundingBox()
+        assert.equal(first.x, second.x, 'enlarged chapter labels use the available width')
+        assert.ok(second.y > first.y)
+        await menu.getByRole('link', { name: 'Color', exact: true }).click()
+        const navigation = await page.locator('.brand-navigation').boundingBox()
+        const heading = await page.locator('#color-system').boundingBox()
+        assert.ok(heading.y >= navigation.y + navigation.height + 8)
       }
       if (options.textSize) { await page.emulateMedia({ forcedColors: 'active' }); await assertLayout(page) }
       const name = options.textSize ? 'enlarged-forced' : options.js === false ? 'static' : `density-${options.density}`

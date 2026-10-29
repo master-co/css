@@ -64,6 +64,7 @@ export const brandTypeRoles = [
   { title: 'Section', token: '--font-size-2xl', sample: 'The details belong together', description: 'A new idea, separated by space rather than decoration.' },
   { title: 'Body', token: '--font-size-md', sample: 'Style in markup. Keep your decisions close to the work.', description: 'A comfortable reading size, with space for a complete thought.' },
   { title: 'Supporting', token: '--font-size-sm', sample: 'One shared language. 一套共同的設計語言。', description: 'Descriptions, controls and short supporting information.' },
+  { title: 'Label', token: '--font-size-xs', sample: 'Release notes / 024', description: 'Compact navigation labels, metadata and captions. Keep their actions large enough to use.' },
   { title: 'Code', token: '--font-size-sm', sample: 'display:grid gap-md p-lg', description: 'IBM Plex Mono keeps syntax and values easy to distinguish.' },
 ] as const
 

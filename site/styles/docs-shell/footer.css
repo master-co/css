@@ -14,7 +14,7 @@
   @media (pointer: coarse) {
     .site-footer-links { gap: 0; }
     .site-footer-links > li:first-child { padding-bottom: var(--spacing-xs); }
-    .site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
+    .site-footer-links a { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; }
     .site-footer-legal > a { display: inline-flex; align-items: center; min-height: 44px; }
   }
 

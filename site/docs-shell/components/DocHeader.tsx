@@ -15,27 +15,29 @@ import isDateWithinSevenDays from '../utils/is-date-within-seven-days'
 import DocBadge from './DocBadge'
 import { useApp } from '../contexts/app'
 import clsx from 'clsx'
+import { useLocale } from '../contexts/locale'
 
 export default function DocHeader(props: any) {
   const $ = useTranslation()
   const app = useApp()
+  const tw = useLocale() === 'tw'
   const { primaryNavClassName, documentNavigation, documentNavigationTitle, ...headerProps } = props
   return (
-    <Header {...headerProps}>
+    <Header aria-label={tw ? '主要導覽' : 'Main navigation'} {...headerProps}>
       <HeaderContent>
         <DocMenuButton className="margin-left:-1.25rem display:none@md app-header-icon" documentNavigation={documentNavigation} documentNavigationTitle={documentNavigationTitle} />
-        <Link href={'/'} className="margin-inline:auto@media((width<64rem))" onContextMenu={(e: any) => {
+        <Link href={'/'} className="margin-inline:auto@media((width<64rem)) app-header-logo" aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'} onContextMenu={(e: any) => {
           e.preventDefault()
           location.assign('/brand')
         }}>
-          {<app.Logotype style={{ height: 20, width: 'auto' }} />}
+          {<app.Logotype style={{ height: 20, width: 'auto' }} aria-hidden="true" />}
         </Link>
         <label className={clsx('position:relative gap:0.313rem margin-left:1.875rem font-weight:460 display:none@media((width<64rem)) app-header-nav', !app.versions.length && 'fg-text-body:hover!')}>
           {app.versions.length
             ? <>
               v{import.meta.env.PUBLIC_VERSION}
               <DocVersionSelect />
-              <IconChevronDown className="height:1em width:1em margin-right:-0.188rem stroke-width:1.5" />
+              <IconChevronDown aria-hidden="true" className="height:1em width:1em margin-right:-0.188rem stroke-width:1.5" />
             </>
             : <>v{import.meta.env.PUBLIC_VERSION}</>}
         </label>
@@ -51,13 +53,13 @@ export default function DocHeader(props: any) {
             disabled={disabled}
             key={eachLink.name}
           >
-            {Icon && <Icon width="22" height="22" strokeWidth="1.2" />}
+            {Icon && <Icon width="22" height="22" strokeWidth="1.2" aria-hidden="true" />}
           </Link>
         ))}
         {app.communityNavs?.length ? <div className='height:1em width:1px mx-md bg-line-divider display:none@media((width<64rem))'></div> : null}
         <LanguageButton className="margin-right:-0.188rem display:none@media((width<64rem)) app-header-icon" />
         <SearchButton className="margin-right:-1.25rem display:none@md app-header-icon">
-          <IconListSearch width="22" height="22" strokeWidth="1.2" />
+          <IconListSearch width="22" height="22" strokeWidth="1.2" aria-hidden="true" />
         </SearchButton>
       </HeaderContent>
     </Header>

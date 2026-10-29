@@ -4,7 +4,7 @@
   .doc-menu::backdrop { background: transparent; }
   .doc-menu-topbar { position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; min-height: calc(49px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); border-bottom: 1px solid var(--color-line-divider); background: var(--color-surface-base); }
   .doc-menu-topbar > button { display: grid; place-items: center; width: 48px; min-height: 48px; padding: 0; border: 0; background: transparent; color: var(--color-text-muted); cursor: pointer; }
-  .doc-menu-topbar > a { justify-self: center; }
+  .doc-menu-topbar > a { display: inline-flex; align-items: center; justify-self: center; min-height: 48px; }
   .doc-menu-inner { max-width: 36rem; margin-inline: auto; padding: var(--spacing-md) var(--spacing-lg) max(var(--spacing-2xl), env(safe-area-inset-bottom)); container: menu-inner / inline-size; }
   .doc-menu-heading { display: flex; align-items: center; min-height: 2rem; margin-bottom: var(--spacing-sm); }
   .doc-menu-heading strong { color: var(--color-text-muted); font-size: .75rem; font-weight: 460; }

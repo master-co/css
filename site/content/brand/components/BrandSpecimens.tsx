@@ -32,9 +32,10 @@ export function BrandColors() {
 }
 
 export function BrandTypography() {
+  const sizes = brandScale('font-size', brandTypeRoles.map(role => role.token.slice('--font-size-'.length)))
   return <div className="brand-typography">
     <div className="brand-font-families"><div><span className="brand-overline">Latin / Geist</span><strong>Aa</strong><p>Clear, contemporary, and close to the work.</p></div><div><span className="brand-overline">繁體中文 / Noto Sans TC</span><strong lang="zh-Hant">永</strong><p lang="zh-Hant">清晰的結構，讓每個細節各得其所。</p></div><div><span className="brand-overline">Code / IBM Plex Mono</span><strong className="brand-mono">{'{ }'}</strong><p className="brand-mono">0123456789<br />Aa / --token</p></div></div>
-    <div className="brand-type-scale">{brandTypeRoles.map(role => <div className="brand-type-row" key={role.title}><div><strong>{role.title}</strong><code>{role.token}</code></div><div><p className={role.title === 'Code' ? 'brand-mono' : undefined} style={{ fontSize: `var(${role.token})` }}>{role.sample}</p><span>{role.description}</span></div></div>)}</div>
+    <div className="brand-type-scale">{brandTypeRoles.map((role, index) => <div className="brand-type-row" key={role.title} data-size-token={role.token} data-size-rem={sizes[index].rem}><div><strong>{role.title}</strong><code>{role.token}</code><small>{sizes[index].value} · {sizes[index].px}px at a 16px root</small></div><div><p className={role.title === 'Code' ? 'brand-mono' : undefined}>{role.sample}</p><span>{role.description}</span></div></div>)}</div>
     <div className="brand-reading-example"><span className="brand-overline">Reading rhythm</span><h3>A little space makes the structure clear.</h3><p>Keep related ideas together. Let a paragraph finish before the next begins, and use a larger interval to introduce a new section. A reading column should remain comfortable on a wide screen and adapt naturally on a narrow one.</p><p lang="zh-Hant">段落保有完整的意思，相關的資訊彼此靠近。中英文混排時，保留自然的行高與標點，不把拉丁字母的字距直接套用到中文。</p><div className="brand-number-specimen"><span>Aligned values</span><code>012,345.67</code><code>108,902.34</code></div></div>
   </div>
 }

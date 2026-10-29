@@ -1,4 +1,5 @@
 @layer components {
+  .app-header-logo { display: inline-flex; align-items: center; min-height: 48px; }
 .app-header-nav {
     font-size: var(--font-size-sm);
     line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));

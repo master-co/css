@@ -202,6 +202,7 @@
   @media (pointer: coarse) {
     .demo-controls { --demo-control-height: 2.75rem; }
     .demo-button, .demo-select, .demo-controls input[type="range"] { min-height: 2.75rem; }
+    .demo-button, .demo-select { min-width: 44px; }
     .demo-controls input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -7px; }
     .demo-controls input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; }
   }

@@ -48,6 +48,9 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
     const route = section === 'guide' ? '/guide/introduction' : '/reference/rules/conditions'
     const { context, page, errors } = await open(route, { width, scheme: section === 'reference' ? 'dark' : 'light', touch: true })
     try {
+      const home = page.getByRole('link', { name: 'Master CSS home', exact: true }).first()
+      assert.equal(await home.getAttribute('href'), '/')
+      assert.ok((await home.boundingBox()).height >= 44, 'the logotype keeps a usable home target')
       const trigger = page.getByRole('button', { name: 'Menu', exact: true })
       await trigger.focus(); await trigger.press('Enter')
       const menu = page.getByRole('dialog', { name: 'Navigation', exact: true })
@@ -89,6 +92,7 @@ test(`${browserName}: language changes retain a document query and semantic anch
     assert.equal(url.search, '?source=brand')
     assert.equal(url.hash, '#what-is-master-css')
     assert.equal(await page.getByRole('dialog').count(), 0)
+    assert.equal(await page.getByRole('link', { name: 'Master CSS 首頁', exact: true }).count(), 1)
   } finally { await context.close() }
 })
 

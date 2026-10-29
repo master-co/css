@@ -29,7 +29,10 @@ export function brandComponentMarkdown(name: string) {
   ].join('\n\n')
   if (name === 'BrandTypography') return [
     'Geist: Latin and interface text. Noto Sans TC: Traditional Chinese. IBM Plex Mono: code and identifiers.',
-    table(['Role', 'Size token', 'Specimen', 'Use'], brandTypeRoles.map(role => [role.title, `\`${role.token}\``, role.sample, role.description])),
+    table(['Role', 'Size token', 'Value', 'Pixels at a 16px root', 'Specimen', 'Use'], brandTypeRoles.map(role => {
+      const size = brandScale('font-size', [role.token.slice('--font-size-'.length)])[0]
+      return [role.title, `\`${role.token}\``, `\`${size.value}\``, String(size.px), role.sample, role.description]
+    })),
     'A comfortable reading column keeps paragraphs together. Chinese keeps natural tracking and punctuation. Use tabular figures for aligned numbers, including 012,345.67 and 108,902.34.'
   ].join('\n\n')
   if (name === 'BrandGeometry') return [

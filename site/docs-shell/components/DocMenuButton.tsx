@@ -47,7 +47,7 @@ export default function DocMenuButton({ documentNavigation, documentNavigationTi
   return <>
     <MenuButton {...props} ref={trigger} type="button" aria-label={$('Menu')} aria-expanded={opened} aria-haspopup="dialog" aria-controls={opened ? id : undefined} opened={opened} onClick={() => setOpened(value => !value)} />
     {opened && createPortal(<dialog ref={dialog} id={id} className="doc-menu" aria-labelledby={`${id}-title`} onCancel={event => { event.preventDefault(); close() }}>
-      <div className="doc-menu-topbar"><button type="button" onClick={close} aria-label={tw ? '關閉選單' : 'Close menu'}><IconX size={22} stroke={1.5} aria-hidden="true" /></button><Link href="/" onClick={close} aria-label="Master CSS home"><app.Logotype style={{ height: 20, width: 'auto' }} /></Link><span aria-hidden="true" /></div>
+      <div className="doc-menu-topbar"><button type="button" onClick={close} aria-label={tw ? '關閉選單' : 'Close menu'}><IconX size={22} stroke={1.5} aria-hidden="true" /></button><Link href="/" onClick={close} aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'}><app.Logotype style={{ height: 20, width: 'auto' }} aria-hidden="true" /></Link><span aria-hidden="true" /></div>
       <div className="doc-menu-inner">
         <div className="doc-menu-heading"><strong id={`${id}-title`}>{tw ? '網站導覽' : 'Navigation'}</strong></div>
         <SearchButton className="doc-menu-search" />
