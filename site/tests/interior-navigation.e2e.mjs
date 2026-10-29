@@ -187,10 +187,17 @@ for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: sponsor tier 
       assert.equal(await tier.evaluate(element => element === document.activeElement), true)
     }
     await noOverflow(page)
+    await page.setViewportSize({ width: 320, height: 900 })
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     await noOverflow(page)
     await tiers.nth(4).click()
     await noOverflow(page, '.site-modal')
+    const summary = page.locator('.sponsor-tier-modal-summary')
+    const heading = summary.locator('strong')
+    const typography = await heading.evaluate(element => ({ height: element.getBoundingClientRect().height, lineHeight: parseFloat(getComputedStyle(element).lineHeight) }))
+    assert.ok(typography.height <= typography.lineHeight * 2 + 1, 'the tier name stays readable instead of wrapping letter by letter')
+    assert.ok((await summary.locator('.sponsor-tier-copy').boundingBox()).width >= 160, 'the enlarged tier retains room for its amount and interval')
+    await noOverflow(page, '.site-modal-content')
     await page.screenshot({ path: new URL(`${locale}-sponsor-enlarged.png`, output).pathname })
     assert.deepEqual(errors, [])
   } finally { await context.close() }

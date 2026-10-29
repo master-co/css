@@ -10,14 +10,14 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
   const [selectedTier, setSelectedTier] = tierState
   return <Modal label={$('Choose a platform')} backdropClick={() => setSelectedTier(null)} contentClass="max-width:320px padding-bottom:0.938rem">
     <div className="sponsor-tier-modal-summary"><TierSummary tier={selectedTier} /></div>
-    <div className="margin-bottom:0.313rem padding-inline:1.563rem padding-top:0.938rem bt-line-subtle border-top-style:solid border-top-width:1px text-xs">
+    <div className="sponsor-tier-modal-label">
       {$('Choose a platform')}
     </div>
-    <Link href={selectedTier.openCollectiveUrl} className="display:flex align-items:center gap-sm min-height:48px padding-inline:1.563rem font-medium text-decoration:none!">
+    <Link href={selectedTier.openCollectiveUrl} className="sponsor-tier-modal-platform">
       <Image src="/images/open-collective.svg" alt="" width="24" height="24" />
       {$('Open Collective')}
     </Link>
-    <Link href={selectedTier.githubSponsorUrl} className="display:flex align-items:center gap-sm min-height:48px padding-inline:1.563rem font-medium text-decoration:none!">
+    <Link href={selectedTier.githubSponsorUrl} className="sponsor-tier-modal-platform">
       <Image src="/images/github-sponsors.svg" alt="" width="24" height="24" className="transform:scale(1.2)" />
       {$('GitHub Sponsors')}
     </Link>
