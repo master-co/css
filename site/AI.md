@@ -268,4 +268,6 @@ bun run build:site
 
 Measure development memory from the repository root with `node site/scripts/profile-dev-memory.mjs --runs 3 --output /tmp/site-memory.json`. Add `--http-only` for comparable server-only runs, and `--assert-lazy` to enforce homepage import boundaries. Each run owns its port and temporary Astro/Vite caches. The report separates RSS, post-GC heap, physical footprint on macOS, module counts, request times, repeated requests and watcher-triggered invalidations; optional browser checks run in a separate process. Watcher invalidation does not edit sources and is not a substitute for a multi-hour editing test.
 
+Measure cold development startup with `node site/scripts/profile-dev-startup.mjs --runs 3 --output /tmp/site-startup.json`. It reports preparation, readiness, browser first response/interactivity, warm requests, emitted-globals HMR, and post-GC memory separately, using fresh processes and isolated caches. Interactivity requires working search results; island preparation flags are recorded separately. It also verifies homepage lazy imports and later Guide/Reference navigation. Compare the same entry and machine; timings are advisory measurements, not CI thresholds.
+
 `bun run --filter site type-check` may have unrelated existing errors. Report those separately and do not hide new errors introduced by the current change.

@@ -36,6 +36,7 @@ export interface MasterCSSVitePluginContext {
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
   onEmittedGlobalsChange?: () => void
+  refreshEmittedGlobals?: () => Promise<void>
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
   defaultProgramAssetReferenceId?: string

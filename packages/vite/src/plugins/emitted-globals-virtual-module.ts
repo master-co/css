@@ -9,6 +9,7 @@ import { discoverManifestEntries } from '@master/css-compiler/project'
 import { readFile } from 'node:fs/promises'
 import { registerStylesheetSource } from '../utils/register-style-source'
 import { refreshGeneratedModule } from '../utils/dev-module-refresh'
+import { createCoalescedTask } from '../utils/coalesced-task'
 
 // Server programs keep the handle they built from these globals, so a dev update
 // replaces the contents of one object instead of re-running its importers.
@@ -35,21 +36,85 @@ export interface EmittedGlobalsPluginAPI {
   finalize?: (environment: Environment, emittedGlobals: Required<MasterCSSEmittedGlobals>) => MasterCSSEmittedGlobals
 }
 
+interface EnvironmentLifetime { promise: Promise<void>, close: () => void }
+
+interface DevState {
+  active: () => boolean
+  served: Map<Environment, string>
+  loading: Set<Environment>
+  lifetimes: Map<Environment, EnvironmentLifetime>
+  closedEnvironments: WeakSet<Environment>
+  initialStylesheets?: Promise<void>
+  publish: () => Promise<void>
+  closeEnvironment: (environment: Environment) => void
+}
+
 export default function EmittedGlobalsVirtualModulePlugin(
   context: MasterCSSVitePluginContext,
   api: EmittedGlobalsPluginAPI = {}
 ): Plugin {
   const placeholder = '__MASTER_CSS_FINAL_EMITTED_GLOBALS__'
   let finalGlobals: string | undefined
-  let initialStylesheets: Promise<void> | undefined
+  let dev: DevState | undefined
+  const signature = (value: MasterCSSEmittedGlobals) => JSON.stringify(normalizeEmittedGlobals(value), (_key, item) => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return item
+    return Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b)))
+  })
   return {
     name: 'master-css:virtual-module:emitted-globals',
     enforce: 'pre',
     api,
     configureServer(server) {
-      context.onEmittedGlobalsChange = () => {
-        void refreshGeneratedModule(server, RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID).catch(error => server.config.logger.error(String(error)))
+      if (dev) for (const environment of dev.lifetimes.keys()) dev.closeEnvironment(environment)
+      const config = server.config
+      let closed = false
+      const served: DevState['served'] = new Map()
+      const loading: DevState['loading'] = new Set()
+      const lifetimes: DevState['lifetimes'] = new Map()
+      const closedEnvironments = new WeakSet<Environment>()
+      const active = () => !closed && dev === state && server.config === config
+      const onError = (error: unknown) => { if (active()) server.config.logger.error(String(error)) }
+      const publish = createCoalescedTask(async () => {
+        if (!active() || !context.emittedGlobals) return
+        const next = signature(context.emittedGlobals)
+        const previous = new Map<Environment, string>()
+        try {
+          await refreshGeneratedModule(server, RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID, environment => {
+            if (loading.has(environment) || !served.has(environment) || served.get(environment) === next) return false
+            previous.set(environment, served.get(environment)!)
+            served.set(environment, next)
+            return true
+          })
+        } catch (error) {
+          for (const [environment, signature] of previous) if (served.get(environment) === next) served.set(environment, signature)
+          throw error
+        }
+      }, onError)
+      const state: DevState = dev = {
+        active, served, loading, lifetimes, closedEnvironments, publish,
+        closeEnvironment(environment) {
+          served.delete(environment)
+          loading.delete(environment)
+          closedEnvironments.add(environment)
+          lifetimes.get(environment)?.close()
+          lifetimes.delete(environment)
+        }
       }
+      context.onEmittedGlobalsChange = () => { void publish() }
+      context.refreshEmittedGlobals = createCoalescedTask(async () => {
+        if (!active() || !served.size) return
+        // Initial graph discovery is not an edit. Let its static imports settle
+        // before composing their final ownership, without blocking a load hook.
+        await Promise.all(Object.values(server.environments).filter(environment => served.has(environment)).map(environment =>
+          Promise.race([environment.waitForRequestsIdle(), lifetimes.get(environment)!.promise])))
+        if (!active() || !served.size) return
+        await getExtractedCSSResult(context)
+        await publish()
+      }, onError)
+      server.httpServer?.once('close', () => {
+        closed = true
+        for (const environment of lifetimes.keys()) state.closeEnvironment(environment)
+      })
     },
     async resolveId(id) {
       if (id === VIRTUAL_EMITTED_GLOBALS_ID) return RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID
@@ -57,22 +122,40 @@ export default function EmittedGlobalsVirtualModulePlugin(
     async load(id) {
       if (id !== RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID) return
       if (context.config?.command === 'build') return `export default JSON.parse(${JSON.stringify(placeholder)});`
-      if (context.config?.command === 'serve') {
-        initialStylesheets ??= (async () => {
-          const entries = await discoverManifestEntries({ root: context.config?.root })
-          for (const entry of entries) {
-            if (context.stylesheets?.snapshot().sourceIds.includes(entry)) continue
-            await registerStylesheetSource(context, entry, await readFile(entry, 'utf8'))
-          }
-        })().catch(error => { initialStylesheets = undefined; throw error })
-        await initialStylesheets
+      const environment = this.environment
+      const state = context.config?.command === 'serve' && dev?.active() && !dev.closedEnvironments.has(environment) ? dev : undefined
+      let lifetime: EnvironmentLifetime | undefined
+      if (state) {
+        lifetime = state.lifetimes.get(environment)!
+        if (!lifetime) {
+          let close!: () => void
+          const promise = new Promise<void>(resolve => { close = resolve })
+          lifetime = { promise, close }
+          state.lifetimes.set(environment, lifetime)
+        }
+        state.loading.add(environment)
       }
-      const result = await getExtractedCSSResult(context)
-      if (context.config?.command === 'serve' && this.environment.config.consumer === 'server') {
-        return toServerDevEmittedGlobalsModule(result.emittedGlobals)
+      try {
+        if (state) {
+          state.initialStylesheets ??= (async () => {
+            const entries = await discoverManifestEntries({ root: context.config?.root })
+            for (const entry of entries) {
+              if (context.stylesheets?.snapshot().sourceIds.includes(entry)) continue
+              await registerStylesheetSource(context, entry, await readFile(entry, 'utf8'))
+            }
+          })().catch(error => { state.initialStylesheets = undefined; throw error })
+          await state.initialStylesheets
+        }
+        const result = await getExtractedCSSResult(context)
+        const globals = context.emittedGlobals ?? result.emittedGlobals
+        if (state?.active() && state.lifetimes.get(environment) === lifetime) state.served.set(environment, signature(globals))
+        if (state && environment.config.consumer === 'server') return toServerDevEmittedGlobalsModule(globals)
+        return toEmittedGlobalsModule(globals)
+      } finally {
+        if (state && state.lifetimes.get(environment) === lifetime) { state.loading.delete(environment); void state.publish() }
       }
-      return toEmittedGlobalsModule(result.emittedGlobals)
     },
+    closeBundle() { dev?.closeEnvironment(this.environment) },
     shouldTransformCachedModule({ id }) { return id === RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID },
     renderStart: {
       order: 'post',

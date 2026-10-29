@@ -71,6 +71,7 @@ export interface TransformLocalStylesheetResult {
 }
 
 export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
+  preserveUnchangedNativeCSS?: boolean
   /** Keep generated root/mode resources outside a host's locally scoped CSS. */
   generatedGlobals?: 'inline' | 'separate'
   transformNativeStylesheets?: boolean
@@ -131,6 +132,8 @@ export interface ScannerState {
 export interface StylesheetSource {
   references?: CompileCSSResult['references']
   graph?: PreparedCSSImportGraph
+  /** Derived from the registered graph's Rust extraction policies. */
+  classIndependent?: boolean
   source: string
   pruneNativeCSS: boolean
   masterCSS: boolean

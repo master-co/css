@@ -18,7 +18,7 @@ const server = () => {
 
 test('BH-0004 scanner changes notify the replacement server without retaining the closed server', async () => {
   const oldServer = server(), nextServer = server()
-  const context: MasterCSSVitePluginContext = { scanner: scanner() }
+  const context: MasterCSSVitePluginContext = { scanner: scanner(), virtualCSSImporters: new Set(['/entry.css']) }
   const plugin = StyleEntryHMRPlugin({} as ResolvedMasterCSSVitePluginOptions, context)
   if (typeof plugin.configureServer !== 'function' || typeof plugin.buildStart !== 'function') throw new Error('Expected HMR lifecycle hooks')
   // The hooks under test only read environment.getTopLevelConfig during close.

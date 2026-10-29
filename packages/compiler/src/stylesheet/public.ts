@@ -1,4 +1,5 @@
 import { stylesheetValidationSource } from './output-map'
+import { StylesheetCompositionCache } from './composition-cache'
 import { validateCompiledCSS, assertValidationOptions } from '../value-validation'
 import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
 import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
@@ -78,6 +79,8 @@ export interface MasterCSSStylesheetTransformResult {
 }
 
 export interface MasterCSSStylesheetTransformOptions extends MasterCSSStylesheetCompileOptions {
+  /** Leave native CSS to its host when it needs no Master CSS resource expansion. */
+  readonly preserveUnchangedNativeCSS?: boolean
   /** Defaults to inline; separate returns globals outside code for scoped hosts. */
   readonly generatedGlobals?: 'inline' | 'separate'
   /** Also resolve resource usage in native CSS using the supplied context. */
@@ -438,6 +441,7 @@ let bindStylesheetCollection: () => MasterCSSStylesheetCollection
 
 export class MasterCSSStylesheetCollection implements Disposable {
   readonly #sources: StylesheetSources = new Map()
+  readonly #compositionCache = new StylesheetCompositionCache()
   #disposed = false
   #scanners = new Map<string, MasterCSSScanner>()
   #sourceIDs = new Map<string, string>()
@@ -487,6 +491,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options.signal?.throwIfAborted()
     const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
     this.assertActive()
+    this.#compositionCache.clear()
     for (const [key, staged] of stagedSources) {
       if (previousSources.get(key) === staged) continue
       this.#sources.set(key, staged)
@@ -499,6 +504,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
 
   delete(id: string): boolean {
     this.assertActive()
+    this.#compositionCache.clear()
     const key = this.#sourceIDs.get(id) ?? normalizeStylesheetGraphID(cleanStyleRequest(id))
     this.#sourceIDs.delete(id)
     this.#scanners.get(key)?.removeOwner(key)
@@ -508,6 +514,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
 
   clear(): void {
     this.assertActive()
+    this.#compositionCache.clear()
     for (const [id, scanner] of this.#scanners) { if (scanner.initialized) scanner.removeOwner(id) }
     this.#scanners.clear()
     this.#sourceIDs.clear()
@@ -520,18 +527,28 @@ export class MasterCSSStylesheetCollection implements Disposable {
     this.assertActive()
     const { sourceIds, ...compileOptions } = abortableOptions(options)
     const selected = sourceIds && new Set(sourceIds.map(cleanStyleRequest))
-    const result = await createExtractedCSSResult({
-      ...compileOptions,
-      scanner: options.scanner,
-      stylesheetSources: selected
-        ? new Map([...this.#sources].filter(([id]) => selected.has(id)))
-        : this.#sources,
-      loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
-    })
+    const sources = selected ? new Map([...this.#sources].filter(([id]) => selected.has(id))) : this.#sources
+    let result = this.#compositionCache.get(options, sources)
+    const cached = Boolean(result)
+    const captured = result ? undefined : this.#compositionCache.capture(options, sources)
+    if (!result) {
+      result = await createExtractedCSSResult({
+        ...compileOptions,
+        scanner: options.scanner,
+        stylesheetSources: sources,
+        loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
+      })
+      options.signal?.throwIfAborted()
+      this.assertActive()
+    }
     options.signal?.throwIfAborted()
+    const diagnostics = validateCompiledCSS([{ css: result.css }, ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options)
+    options.signal?.throwIfAborted()
+    this.assertActive()
+    if (!cached && !diagnostics.some(diagnostic => diagnostic.severity === 'error')) this.#compositionCache.set(options, sources, result, captured)
     return Object.freeze({
       css: result.css,
-      diagnostics: validateCompiledCSS([{ css: result.css }, ...(result.stylesheets ?? []).map(asset => stylesheetValidationSource(asset.css, asset.id, asset.sourceMap))], options),
+      diagnostics,
       ...(result.stylesheets ? { stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.resources ? { resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.dependencies ? { dependencies: Object.freeze([...result.dependencies]) } : {}),
@@ -559,6 +576,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
   dispose(): void {
     if (this.#disposed) return
     this.#disposed = true
+    this.#compositionCache.clear()
     for (const [id, scanner] of this.#scanners) { if (scanner.initialized) scanner.removeOwner(id) }
     this.#scanners.clear()
     this.#sourceIDs.clear()

@@ -8,6 +8,7 @@ import { toAssetHref } from './html'
 
 const states = new WeakMap<MasterCSSVitePluginContext, DevStylesheetState>()
 interface DevStylesheetState {
+  delivery?: MasterCSSStylesheetDeliveryOptions
   origin: string
   prefix: string
   stylesheets: Map<string, string>
@@ -42,7 +43,7 @@ export function publishDevGlobalStylesheet(context: MasterCSSVitePluginContext, 
 export function getDevStylesheetDelivery(context: MasterCSSVitePluginContext): MasterCSSStylesheetDeliveryOptions | undefined {
   if (context.config?.command !== 'serve') return
   const state = devStylesheetState(context), base = state.origin + state.prefix
-  return {
+  return state.delivery ??= {
     entryURL: base + 'entry.css',
     stylesheetURL: (file, variant) => base + `source-${digest(variant ?? file)}.css`,
     resourceURL: source => {

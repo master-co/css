@@ -4,6 +4,7 @@ import { readFileSync, realpathSync } from 'node:fs'
 import { extname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { compilePreparedGraph } from './prepared-graph-cache'
+import { pureCSSCache } from './pure-css-cache'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -163,7 +164,7 @@ export function resolveCSSImportGraphSource(
 }
 
 export function analyzeCSSDependencies(source: string): CSSDependencyAnalysis {
-  return callCompilerBinding<CSSDependencyAnalysis>(() => nativeCompiler().analyzeCSSDependencies(source))
+  return pureCSSCache.run('dependencies', source, () => callCompilerBinding<CSSDependencyAnalysis>(() => nativeCompiler().analyzeCSSDependencies(source)))
 }
 
 export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
@@ -216,20 +217,20 @@ export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
   const from = options.from || 'master.css'
-  const result = reviveBindingCompileResult(callCompilerBinding<CompileCSSResult>(() => (
+  const bindingOptions = {
+    from,
+    resourceOwner: stylesheetResourceOwner(from),
+    preserveNativeCSS: options.preserveNativeCSS !== false,
+    pruneNativeCSS: options.pruneNativeCSS === true,
+    ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
+    ...(options.classes ? { classes: options.classes } : {})
+  }
+  const result = reviveBindingCompileResult(pureCSSCache.run('directives', [source, bindingOptions], () => callCompilerBinding<CompileCSSResult>(() => (
     nativeCompiler().compileCSSDirectives(
       source,
-      {
-        from,
-        // Single-file keyframe IDs share the graph owner, not the checkout path.
-        resourceOwner: stylesheetResourceOwner(from),
-        preserveNativeCSS: options.preserveNativeCSS !== false,
-        pruneNativeCSS: options.pruneNativeCSS === true,
-        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
-        ...(options.classes ? { classes: options.classes } : {})
-      }
+      bindingOptions
     )
-  )))
+  ))))
   for (const warning of result.warnings) {
     options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   }

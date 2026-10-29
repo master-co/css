@@ -9,12 +9,17 @@ import { createServer } from 'vite'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
 
-const discovery = vi.hoisted(() => ({ calls: 0 }))
+const discovery = vi.hoisted(() => ({ calls: 0, loads: 0, afterLoad: undefined as (() => Promise<void>) | undefined }))
 vi.mock('@master/css-compiler/project', async importOriginal => {
   const actual = await importOriginal<typeof import('@master/css-compiler/project')>()
   return { ...actual, discoverManifestEntries(...args: Parameters<typeof actual.discoverManifestEntries>) {
     discovery.calls++
     return actual.discoverManifestEntries(...args)
+  }, async loadProjectManifest(...args: Parameters<typeof actual.loadProjectManifest>) {
+    discovery.loads++
+    const result = await actual.loadProjectManifest(...args)
+    await discovery.afterLoad?.()
+    return result
   } }
 })
 
@@ -27,7 +32,66 @@ function fixture(command = 'serve') {
   const plugin = LocalStylesPlugin({} as any, context) as any
   return { root, context, plugin }
 }
-afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
+afterEach(() => {
+  discovery.afterLoad = undefined
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true })
+})
+
+test('concurrent stylesheet hosts share project loading and each observe all dependencies', async () => {
+  const { root, plugin } = fixture('test')
+  const entry = join(root, 'app.css'), tokens = join(root, 'tokens.css')
+  writeFileSync(entry, '@import "@master/css";@import "./tokens.css";')
+  writeFileSync(tokens, '@theme{--color-shared:red}')
+  const hosts = [vi.fn(), vi.fn()]
+  discovery.calls = discovery.loads = 0
+  const results = await Promise.all(hosts.map((addWatchFile, index) => plugin.transform.call({ addWatchFile }, '.card{color:var(--color-shared)}', join(root, `src/card-${index}.css`))))
+  expect(discovery.calls).toBe(1)
+  expect(discovery.loads).toBe(1)
+  for (const [index, host] of hosts.entries()) {
+    expect(host).toHaveBeenCalledWith(entry)
+    expect(host).toHaveBeenCalledWith(tokens)
+    expect(results[index].code).toContain('--color-shared:red')
+  }
+})
+
+test('failed shared loading observes missing dependencies and retries after repair', async () => {
+  const { root, plugin } = fixture('test')
+  const tokens = join(root, 'missing.css')
+  writeFileSync(join(root, 'app.css'), '@import "@master/css";@import "./missing.css";')
+  const hosts = [vi.fn(), vi.fn()]
+  const transform = (addWatchFile: ReturnType<typeof vi.fn>, index: number) => plugin.transform.call({ addWatchFile }, '.card{color:var(--color-shared)}', join(root, `src/card-${index}.css`))
+  discovery.calls = 0
+  const failed = await Promise.allSettled(hosts.map(transform))
+  expect(failed.every(result => result.status === 'rejected')).toBe(true)
+  for (const host of hosts) expect(host).toHaveBeenCalledWith(tokens)
+  writeFileSync(tokens, '@theme{--color-shared:green}')
+  const results = await Promise.all(hosts.map(transform))
+  expect(discovery.calls).toBe(2)
+  for (const result of results) expect(result.code).toContain('--color-shared:green')
+})
+
+test('a pending old project cannot replace the manifest loaded after an edit', async () => {
+  const { root, plugin } = fixture('test')
+  const entry = join(root, 'app.css')
+  writeFileSync(entry, '@import "@master/css";@theme{--color-shared:red}')
+  let release!: () => void, started!: () => void
+  const waiting = new Promise<void>(resolve => { started = resolve })
+  const blocked = new Promise<void>(resolve => { release = resolve })
+  discovery.afterLoad = async () => { discovery.afterLoad = undefined; started(); await blocked }
+  const addWatchFile = vi.fn()
+  const transform = (name: string) => plugin.transform.call({ addWatchFile }, '.card{color:var(--color-shared)}', join(root, `src/${name}.css`))
+  const old = transform('old')
+  try {
+    await waiting
+    expect(addWatchFile).toHaveBeenCalledWith(entry)
+    writeFileSync(entry, '@import "@master/css";@theme{--color-shared:blue}')
+    const environment = { moduleGraph: { getModuleById: vi.fn() } }
+    await plugin.hotUpdate.call({ environment }, { type: 'update', file: entry, modules: [] })
+    expect((await transform('new')).code).toContain('--color-shared:blue')
+  } finally { release() }
+  expect((await old).code).toContain('--color-shared:blue')
+  expect((await transform('last')).code).toContain('--color-shared:blue')
+})
 
 test.each(['serve', 'build'])('scoped Vue styles keep project globals outside scoping in %s', async command => {
   const { root, context, plugin } = fixture(command)

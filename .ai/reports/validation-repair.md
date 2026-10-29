@@ -126,3 +126,99 @@ The final checks pass: all 34 package/example lint tasks plus uncached site lint
 with `--max-warnings=0`; root `bun run check` (114 tasks); site build (448 pages,
 92 referenced assets), type checking and all 13 site test scripts. No lint rule,
 diagnostic severity, assertion or CSS snapshot comparison is weakened.
+
+## Development HMR And Cold Startup
+
+Implemented on 2026-10-30 against the `9f6b13013` baseline. Initial class
+discovery previously refreshed emitted-globals unconditionally, repeatedly
+composing identical metadata. Plain native CSS also went through a complete
+probe before its delivery compilation.
+
+- CSS importer refresh and emitted-globals publication now run separately.
+  Publication compares canonical metadata with each environment's loaded value,
+  preserving array order and SSR's existing object identity. Coalesced work waits
+  for Vite's first static graph outside load hooks; environment/server closure,
+  replacement, reset and failed updates retain recovery paths.
+- Metadata reads no longer publish development stylesheet bundles. Development
+  delivery descriptors retain their identity within a context.
+- Pure Rust directive and dependency results share a 4 MiB/128-entry LRU.
+  Collections retain at most one result with a 4 MiB serialized UTF-16 estimate.
+  Eligibility reuses registered Rust extraction policies, including imported
+  pruning and source scope. Generated utilities, pruning and local source scans
+  bypass reuse; so do custom resolvers, Sass loaders and diagnostic callbacks.
+  File observation, dependency notification and output validation remain live.
+  Changed/new dependencies during compilation, errors and cancellation do not
+  publish a cache entry. Registration, replacement and disposal release old data.
+- Node `preserveUnchangedNativeCSS` defaults to `false`. Vite opts in on the old
+  plain-CSS probe path. Rust resource analysis can preserve a wholly native entry
+  before delivery reads assets, keeping ordinary resource aliases with Vite.
+  Managed variables, keyframes and reference contexts still compile. Concurrent
+  project loading shares a promise, immediately notifies every waiting host of
+  dependencies, retries failures and prevents stale work replacing a newer manifest.
+
+### Startup Measurement
+
+Before and after each use three fresh Node 24.22.1 workers, Astro 7.4.2's dev API,
+independent Astro/Vite caches and Chromium. The baseline compiler/Vite packages
+are rebuilt from `9f6b13013` with the repository's tsdown configuration in a
+temporary directory. Both groups install the same Node resolution hook; only
+the baseline redirects those two packages. `profile-dev-startup.mjs` requires a
+working search dialog and query results to measure interactivity: the existing
+island flag marks preparation before React effects, so it is not a ready signal.
+The script also verifies homepage lazy imports and Guide/Reference navigation.
+Background applications were not suspended; timings have no CI threshold.
+Preparation is timed once per batch; the other rows are three-worker medians.
+
+| Measurement | Before | After |
+| --- | ---: | ---: |
+| Preparation | 19.22 s | 16.81 s |
+| Dev ready | 1.50 s | 1.18 s |
+| Homepage first response | 16.09 s | 6.25 s |
+| Search usable, including results | 19.71 s | 9.05 s |
+| Warm homepage request | 0.349 s | 0.312 s |
+| Emitted-globals updates | 43 | 0 |
+| Emitted-globals loads | 43 | 2 |
+| Post-GC heap | 340.8 MiB | 341.0 MiB |
+| Process RSS | 1964.4 MiB | 1900.7 MiB |
+
+First-response samples are 16.086/16.103/14.602 seconds before and
+6.254/7.381/6.177 seconds after: the median improves 61.1%, exceeding the 30%
+target. Search-ready time improves 54.1%. Warm requests vary between
+0.328–0.359 and 0.306–0.331 seconds; the small sample does not establish a
+repeatable warm-request improvement. Earlier runs without the resolution hook
+also met the target (11.83 to 5.83 seconds, 50.7%); their island-preparation
+timing is intentionally excluded from the interactive comparison. The homepage
+still initially loads only `content/page.tsx`, with no MDX routes. The preset's
+imported `@prune native` correctly bypasses collection reuse on the site.
+
+The actual `bun run --filter site dev` entry also passes an isolated-cache browser
+smoke: four navigations, working search, zero page exceptions and zero metadata
+updates, including subsequent navigation. This is functional evidence rather
+than a Bun-versus-Node timing comparison. Session measurement logs and JSON live
+under `/tmp/master-css-dev-*`; they are not committed benchmark baselines.
+
+### Final Validation
+
+- `bun run check`: 114/114 tasks pass. Compiler: 511 tests; Vite: 724 tests.
+  Rust checks, codegen/parity, Astro/SSR integrations, package lint/types, 864
+  published text artifacts and all three runtime size budgets pass.
+- Full site build: 448 pages and 92 referenced public assets. All 13 `test:*`
+  scripts, uncached site lint and site type checking pass. The existing CSS
+  snapshot verifies all 148 delivery contracts and 3,275 exact segments; no
+  snapshot is changed.
+- Runtime E2E: 600/600 pass across Chromium, Firefox and WebKit. The isolated
+  Bun dev/browser smoke passes homepage islands, search and later navigation.
+- Sass URL tracking now starts with the request, covering the gap before its
+  response-finish callback. Failed/aborted responses and closing environments
+  release pending HMR work. Controlled tests cover both sides of URL registration.
+- Missed-notification recovery fixtures isolate native filesystem delivery while
+  preserving polling and watch policy. Sass assertions use the existing shared
+  watch deadline. All recovery, CSS update, close and restart assertions remain.
+- Explicit namespace coverage ensures cache fingerprints retain manifest fields
+  named `onDependency`; callback names cannot hide actual manifest input.
+
+Preparation remains about 17 seconds and warm-request performance is not proven
+to improve. Memory evidence covers bounded cache payloads, disposal and fresh
+worker measurements, rather than a multi-hour editing session. Existing upstream
+Vite configuration notices, Turbo's preset-output notice and the site's public
+image import warning remain outside this change.

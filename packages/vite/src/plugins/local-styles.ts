@@ -34,10 +34,14 @@ function declaresManifestEntry(file: string) {
   }
 }
 
+interface StylesheetDependencyHost { addWatchFile?: (id: string) => void }
+
 export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
   let projectManifestEntries: string[] = []
   let projectManifestDependencies: string[] = []
+  let manifestGeneration = 0
+  let loadingManifest: { generation: number, dependencies: Set<string>, hosts: Set<StylesheetDependencyHost>, promise: Promise<Awaited<ReturnType<typeof loadProjectManifest>>> } | undefined
   const localStyleModules = new Set<string>()
 
   const addServerAllow = (paths: string[]) => {
@@ -48,39 +52,53 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
     }
   }
 
-  const loadStyleContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
+  const loadStyleContext = async (pluginContext: StylesheetDependencyHost) => {
     if (projectManifest) {
       for (const dependency of projectManifestDependencies) pluginContext.addWatchFile?.(dependency)
       return projectManifest
     }
-    const root = context.config?.root
-    const entries = await discoverManifestEntries({ root })
-    projectManifestEntries = [...entries]
-    const dependencies = new Set<string>()
-    for (const entry of entries) {
-      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir: root })) {
-        dependencies.add(dependency)
+    if (!loadingManifest) {
+      const generation = manifestGeneration
+      const dependencies = new Set<string>()
+      const hosts = new Set<StylesheetDependencyHost>()
+      const observe = (file: string) => {
+        if (dependencies.has(file)) return
+        dependencies.add(file)
+        for (const host of hosts) host.addWatchFile?.(file)
       }
+      const promise = (async () => {
+        const root = context.config?.root
+        const entries = await discoverManifestEntries({ root })
+        if (generation === manifestGeneration) projectManifestEntries = [...entries]
+        try {
+          for (const entry of entries) {
+            for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir: root })) observe(dependency)
+          }
+          const result = await loadProjectManifest({ root, entries, baseManifest: defaultBuildManifest, onDependency: observe })
+          for (const dependency of result.dependencies) observe(dependency)
+          if (generation === manifestGeneration) projectManifest = result
+          return result
+        } finally {
+          if (generation === manifestGeneration) {
+            projectManifestDependencies = [...dependencies]
+            addServerAllow(projectManifestDependencies)
+          }
+        }
+      })()
+      loadingManifest = { generation, dependencies, hosts, promise }
     }
-    projectManifestDependencies = [...dependencies]
-    addServerAllow(projectManifestDependencies)
-    for (const dependency of projectManifestDependencies) {
-      pluginContext.addWatchFile?.(dependency)
+    const operation = loadingManifest
+    operation.hosts.add(pluginContext)
+    for (const dependency of operation.dependencies) pluginContext.addWatchFile?.(dependency)
+    try {
+      const result = await operation.promise
+      if (operation.generation !== manifestGeneration) return loadStyleContext(pluginContext)
+      return result
+    } finally {
+      for (const dependency of operation.dependencies) pluginContext.addWatchFile?.(dependency)
+      operation.hosts.delete(pluginContext)
+      if (loadingManifest === operation) loadingManifest = undefined
     }
-    projectManifest = await loadProjectManifest({
-      root,
-      entries,
-      baseManifest: defaultBuildManifest,
-      onDependency: file => { dependencies.add(file); pluginContext.addWatchFile?.(file) }
-    })
-    for (const dependency of projectManifest.dependencies) {
-      if (dependencies.has(dependency)) continue
-      dependencies.add(dependency)
-      pluginContext.addWatchFile?.(dependency)
-    }
-    projectManifestDependencies = [...dependencies]
-    addServerAllow(projectManifestDependencies)
-    return projectManifest
   }
 
   return {
@@ -90,6 +108,8 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
       clearBuildStylesheetSources(context)
       if (context.config?.command === 'build') clearLocalStylesheets(context)
       projectManifest = undefined
+      manifestGeneration++
+      loadingManifest = undefined
       projectManifestEntries = []
       projectManifestDependencies = []
     },
@@ -129,14 +149,11 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
           baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), onDependency,
           generatedGlobals: scopedVueStyle ? 'separate' as const : 'inline' as const
         }
-        if (resolution.kind === 'plain' && !nativeModuleGraph) {
-          const probe = await transformStylesheet(id, code, compileOptions)
-          if (!probe.transformed) return sourceMeta ? { meta: sourceMeta } : undefined
-        }
         const inline = context.config?.command === 'build' && isInlineStylesheet(id)
         const delivery = inline ? inlineDelivery(context) : getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
         const result = await transformStylesheet(id, code, {
           ...compileOptions,
+          preserveUnchangedNativeCSS: resolution.kind === 'plain' && !nativeModuleGraph,
           ...(delivery ? { delivery: {
             ...delivery, baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id), resolveImport: getBuildImportResolver(context, dependencyHost),
             onDependency
@@ -180,8 +197,10 @@ export default function LocalStylesPlugin(options: ResolvedMasterCSSVitePluginOp
       const entriesChanged = file.endsWith('.css')
         && (declaresManifestEntry(file) || projectManifestEntries.some(entry => !declaresManifestEntry(entry)))
         && JSON.stringify(await discoverManifestEntries({ root: context.config?.root })) !== JSON.stringify(projectManifestEntries)
-      if (!includesFile(projectManifestDependencies, file) && !entriesChanged) return
+      if (!includesFile(projectManifestDependencies, file) && !includesFile([...(loadingManifest?.dependencies ?? [])], file) && !entriesChanged) return
       projectManifest = undefined
+      manifestGeneration++
+      loadingManifest = undefined
       const affected = new Set(modules)
       for (const moduleId of localStyleModules) {
         const module = this.environment.moduleGraph.getModuleById(moduleId)

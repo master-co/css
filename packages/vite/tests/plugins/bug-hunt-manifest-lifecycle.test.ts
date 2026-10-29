@@ -2,11 +2,12 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
-import { createServer, type Plugin, type ViteDevServer } from 'vite'
+import { createServer, type ViteDevServer } from 'vite'
 import { MasterCSSServerRenderer } from '@master/css-server'
 import { afterEach, expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
+import { missedWatcherEvents as noExternalEvents } from '../missed-watcher-helper'
 
 const interception = vi.hoisted(() => ({ afterGlobals: undefined as (() => Promise<void>) | undefined }))
 vi.mock('@master/css-compiler/stylesheet', async importOriginal => {
@@ -32,7 +33,6 @@ function fixture(initiallyMissing = false) {
   if (!initiallyMissing) write()
   return { parent, root, dependency, write }
 }
-function noExternalEvents(): Plugin { return { name: 'test:miss-manifest-watch-registration', configureServer(server) { vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher) } } }
 function reloaded(calls: readonly (readonly unknown[])[]) { return calls.some(([message]) => typeof message === 'object' && message !== null && 'type' in message && message.type === 'full-reload') }
 async function html(server: ViteDevServer) {
   const result = await fetch(server.resolvedUrls!.local[0])

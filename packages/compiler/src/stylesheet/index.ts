@@ -476,15 +476,19 @@ export async function transformLocalStylesheet(
   const {
     emittedGlobals,
     generatedGlobals = 'inline',
+    preserveUnchangedNativeCSS = false,
     ...compileOptions
   } = options
   if (generatedGlobals !== 'inline' && generatedGlobals !== 'separate') throw new TypeError('generatedGlobals must be inline or separate.')
   if (options.delivery) {
+    const dependencies = new Set<string>()
     const compiled = await compileDeliveredSource(cleanStyleRequest(id), await preprocessStylesheet(source, id, options), {
       ...compileOptions,
+      preserveUnchangedNativeCSS,
+      delivery: { ...options.delivery, onDependency: file => { dependencies.add(file); options.delivery!.onDependency?.(file) } },
       preserveNativeCSS: true
     })
-    if (!compiled) return { code: source, dependencies: [], transformed: false }
+    if (!compiled) return { code: source, dependencies: preserveUnchangedNativeCSS ? [...dependencies] : [], transformed: false }
     const rendered = renderCompiledManifestCSS({
       manifest: compiled.resolutionManifest,
       nativeCSS: compiled.stylesheets.map(asset => asset.css),

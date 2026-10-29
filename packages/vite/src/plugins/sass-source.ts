@@ -4,12 +4,14 @@ import type { Plugin } from 'vite'
 import type { MasterCSSVitePluginContext } from '../core'
 import { getScanner } from '../utils/scanner-context'
 import { normalizeFilePath } from '../utils/path'
+import { onEnvironmentClosing } from '../utils/environment-closing'
 import { clearBuildSassSources, invalidatePreparedSassSources, getSassSourceFile, prepareBuildSassSource, sassSourceID, sassModuleID, isSassModuleID, isRawStyleRequest } from '../utils/build-sass-source'
 
 /** Sass and CSS Modules enter the CSS pipeline after host preprocessing. */
 export default function SassSourcePlugin(context: MasterCSSVitePluginContext): Plugin {
   let stylesheetURLs = new Map<string, Set<string>>()
   let pendingStylesheetURLs = new Set<Promise<void>>()
+  const lifetimes = new WeakMap<object, { closed: boolean, promise: Promise<void> }>()
   return {
     name: 'master-css:sass-source',
     enforce: 'pre',
@@ -29,29 +31,45 @@ export default function SassSourcePlugin(context: MasterCSSVitePluginContext): P
         if (base !== '/' && url.pathname.startsWith(base)) url.pathname = '/' + url.pathname.slice(base.length)
         const servedPath = url.pathname
         if (!/\.(?:css|scss|sass)$/.test(servedPath)) return next()
+        // HMR can arrive after the body reaches the browser but before finish
+        // dispatches. Track the whole request, including that registration gap.
+        let complete!: () => void, finished = false, aborted = false
+        const completed = new Promise<void>(resolve => { complete = resolve })
+        const registration = completed.finally(() => { serverPendingURLs.delete(registration) })
+        serverPendingURLs.add(registration)
+        response.once('close', () => { if (!finished) { aborted = true; complete() } })
         response.once('finish', () => {
-          if (response.statusCode !== 200) return
+          finished = true
+          if (aborted || response.statusCode !== 200) { complete(); return }
           // Vite adds ?direct for CSS responses and may normalize a Sass URL to
           // .scss.css when its resolved id is our preprocessed CSS proxy.
           let graphURL: string
-          try { graphURL = decodeURI(url.pathname) + url.search + (url.searchParams.has('direct') ? '' : url.search ? '&direct' : '?direct') } catch { return }
-          const registration: Promise<void> = server.moduleGraph.getModuleByUrl(graphURL).then(module => {
+          try { graphURL = decodeURI(url.pathname) + url.search + (url.searchParams.has('direct') ? '' : url.search ? '&direct' : '?direct') } catch { complete(); return }
+          void server.moduleGraph.getModuleByUrl(graphURL).then(module => {
             const owner = module?.id && getSassSourceFile(module.id)
             if (!owner) return
             let urls = serverStylesheetURLs.get(normalizeFilePath(owner))
             if (!urls) { urls = new Set(); serverStylesheetURLs.set(normalizeFilePath(owner), urls) }
             urls.add(servedPath)
           }).catch(error => server.config.logger.warn(`[master-css] Could not track stylesheet URL ${servedPath}: ${String(error)}`))
-            .finally(() => { serverPendingURLs.delete(registration) })
-          serverPendingURLs.add(registration)
+            .finally(complete)
         })
         next()
       })
     },
     async hotUpdate({ file, modules, timestamp }) {
       const { moduleGraph, hot } = this.environment
+      let lifetime = lifetimes.get(this.environment)
+      if (!lifetime) {
+        let close!: () => void
+        const current = { closed: false, promise: new Promise<void>(resolve => { close = resolve }) }
+        lifetimes.set(this.environment, current)
+        onEnvironmentClosing(this.environment, () => { current.closed = true; close() })
+        lifetime = current
+      }
       const urls = stylesheetURLs
-      await Promise.all(pendingStylesheetURLs)
+      await Promise.race([Promise.all(pendingStylesheetURLs), lifetime.promise])
+      if (lifetime.closed || urls !== stylesheetURLs) return
       const owners = new Set(invalidatePreparedSassSources(context, file))
       // Vite also associates retained CSS/resource dependencies with their
       // transformed owner. They are discovered after Sass preprocessing, so

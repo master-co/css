@@ -4,7 +4,11 @@ import { getScanner } from './scanner-context'
 import { getBuildStylesheetDelivery } from './build-stylesheet-delivery'
 import { getDevStylesheetDelivery, publishDevStylesheets } from './dev-stylesheet-delivery'
 
+const revisions = new WeakMap<MasterCSSVitePluginContext, number>()
+
 export async function getExtractedCSSResult(context: MasterCSSVitePluginContext) {
+  const revision = (revisions.get(context) ?? 0) + 1
+  revisions.set(context, revision)
   const scanner = getScanner(context)
   if (!context.stylesheets) {
     const { createStylesheetCollection } = await import('@master/css-compiler/stylesheet')
@@ -17,14 +21,17 @@ export async function getExtractedCSSResult(context: MasterCSSVitePluginContext)
     includeGeneratedCSS: context.includeGeneratedCSS,
     delivery: getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
   }))
-  const changed = JSON.stringify(context.emittedGlobals) !== JSON.stringify(result.emittedGlobals)
-  context.emittedGlobals = result.emittedGlobals
-  if (changed) context.onEmittedGlobalsChange?.()
-  return context.config?.command === 'serve'
-    ? { ...result, css: publishDevStylesheets(context, result, scanner.slotCSSRule) }
-    : result
+  if (revisions.get(context) === revision && context.scanner === scanner) {
+    const changed = JSON.stringify(context.emittedGlobals) !== JSON.stringify(result.emittedGlobals)
+    context.emittedGlobals = result.emittedGlobals
+    if (changed) context.onEmittedGlobalsChange?.()
+  }
+  return result
 }
 
 export default async function getExtractedCSS(context: MasterCSSVitePluginContext): Promise<string> {
-  return (await getExtractedCSSResult(context)).css
+  const result = await getExtractedCSSResult(context)
+  return context.config?.command === 'serve'
+    ? publishDevStylesheets(context, result, getScanner(context).slotCSSRule)
+    : result.css
 }

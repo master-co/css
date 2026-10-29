@@ -153,6 +153,12 @@ transform contract. Vite consumes this asset result for local variant entries in
 development and production, including inline requests. Further host input and
 lifecycle combinations remain under integration validation.
 
+Node hosts that enable `transformNativeStylesheets` with delivery can also set
+`preserveUnchangedNativeCSS: true`. For a wholly native graph whose entry needs
+no managed theme or keyframe expansion, the transform returns the original text
+with `transformed: false`, leaving imports and assets with the host. The option defaults to `false`;
+transformed graphs retain the complete delivery contract above.
+
 Graph diagnostics retain original UTF-16 source spans after resource URL
 relocation and consumption of entry, extraction, and reference directives.
 The public binding converts ranges using the diagnostic's own source

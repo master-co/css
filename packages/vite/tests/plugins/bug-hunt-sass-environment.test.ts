@@ -28,7 +28,7 @@ test('BH-0004 Sass updates invalidate SSR imports without sending browser CSS up
     writeFileSync(file, source('green'))
     await vi.waitFor(() => expect(clientSend).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
       { type: 'css-update', path: '/style.scss', acceptedPath: '/style.scss', timestamp: expect.any(Number) }
-    ]) }))
+    ]) }), { timeout: watchDeadline })
     // SSR reimport recompiles Sass; use the shared rebuild budget, not waitFor's one-second default.
     await vi.waitFor(async () => expect((await server!.ssrLoadModule('/server.js')).css).toContain('green'), { timeout: watchDeadline })
     expect(serverSend).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'update', updates: expect.arrayContaining([expect.objectContaining({ type: 'css-update' })]) }))
@@ -65,7 +65,7 @@ test('BH-0004 server restart discards stylesheet URLs served by the previous ser
     writeFileSync(file, source('blue'))
     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
       { type: 'css-update', path: '/new.scss', acceptedPath: '/new.scss', timestamp: expect.any(Number) }
-    ]) }))
+    ]) }), { timeout: watchDeadline })
     expect(send).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'update', updates: expect.arrayContaining([expect.objectContaining({ path: '/old.scss' })]) }))
   } finally { await server?.close();rmSync(root, { recursive: true, force: true }) }
 })
@@ -94,8 +94,10 @@ test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP r
     server = await createServer({ root, configFile: false, logLevel: 'silent', plugins, server: { host: '127.0.0.1', port: 0 } })
     await server.listen()
     const graph = server.moduleGraph, getModule = graph.getModuleByUrl.bind(graph)
+    const lookups: { url: string, id?: string }[] = []
     vi.spyOn(graph, 'getModuleByUrl').mockImplementation(async (...args) => {
       const module = await getModule(...args)
+      lookups.push({ url: args[0], id: module?.id ?? undefined })
       if (args[0] === '/style.scss?direct') await pending
       return module
     })
@@ -106,8 +108,8 @@ test('BH-0004 HMR waits for pending stylesheet URL registration after the HTTP r
     writeFileSync(file, "@import url(\"@master/css\");@preserve native;.example{color:green}")
     await updating
     release()
-    await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
+    await vi.waitFor(() => expect(send, JSON.stringify(lookups)).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
       { type: 'css-update', path: '/style.scss', acceptedPath: '/style.scss', timestamp: expect.any(Number) }
-    ]) }))
+    ]) }), { timeout: watchDeadline })
   } finally { release();await server?.close();rmSync(root, { recursive: true, force: true }) }
 })

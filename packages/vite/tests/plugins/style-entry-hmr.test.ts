@@ -173,7 +173,8 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     ;(plugin as any).buildStart.call({})
 
     scanner.emit('change')
-    scanner.emit('change')
+    await tick(2)
+    for (let index = 0; index < 30; index++) scanner.emit('change')
 
     // First reloadModule called; second deferred behind the first's promise
     await tick(2)
@@ -203,7 +204,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     expect(server.reloadModule).toHaveBeenCalledWith(cssModule)
   })
 
-  test('reloads emitted globals when extracted CSS ownership changes', async () => {
+  test('delegates emitted globals refresh to the metadata publisher', async () => {
     const scanner = makeScanner()
     const emittedGlobalsModule = { id: RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID }
     const server = makeServer()
@@ -211,14 +212,16 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
       return id === RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID ? emittedGlobalsModule : null
     }
 
-    const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
+    const refreshEmittedGlobals = vi.fn(async () => {})
+    const plugin = StyleEntryHMRPlugin({} as any, { scanner, refreshEmittedGlobals } as any)
     ;(plugin as any).configureServer.call({}, server as any)
     ;(plugin as any).buildStart.call({})
 
     scanner.emit('change')
     await tick(5)
 
-    expect(server.reloadModule).toHaveBeenCalledWith(emittedGlobalsModule)
+    expect(refreshEmittedGlobals).toHaveBeenCalledTimes(1)
+    expect(server.reloadModule).not.toHaveBeenCalled()
   })
 
   test('invalidates server CSS importers instead of reloading their server program', async () => {
@@ -244,7 +247,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     // Runners refetch invalidated modules on their next import; a reload would
     // restart the server program under requests that are still rendering.
     expect(ssr.moduleGraph.invalidateModule.mock.calls.map(([module]) => module.id)).toEqual(['/style.css', '/style.css?inline'])
-    expect(ssr.reloadModule.mock.calls.map(([module]) => module.id)).toEqual([RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID])
+    expect(ssr.reloadModule).not.toHaveBeenCalled()
   })
 
   test('C4: an error in one reset does not poison the chain (subsequent resets still run)', async () => {

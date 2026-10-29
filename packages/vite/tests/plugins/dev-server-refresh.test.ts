@@ -37,3 +37,27 @@ test('class discovery refreshes server modules without reloading the server prog
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+test.each(['static', 'progressive'] as const)('%s class discovery updates CSS without reloading unchanged emitted globals', async mode => {
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'master-dev-metadata-noop-')))
+  let server: Awaited<ReturnType<typeof createServer>> | undefined
+  try {
+    writeFileSync(join(root, 'style.css'), '@import "@master/css";')
+    writeFileSync(join(root, 'server.js'), 'import "./style.css";export {default as globals} from "virtual:master-css-emitted-globals"')
+    for (const [index, value] of ['flex', 'grid', 'block'].entries()) writeFileSync(join(root, `page-${index}.js`), `export const html='<p class="display:${value}"></p>'`)
+    server = await createServer({ root, configFile: false, logLevel: 'silent', optimizeDeps: { noDiscovery: true }, plugins: masterCSS({ mode, runtime: { avoidFOUC: false } }), server: { host: '127.0.0.1', port: 0 } })
+    await server.listen()
+    const ssr = server.environments.ssr
+    if (!isRunnableDevEnvironment(ssr)) throw Error('Expected runnable SSR environment')
+    await server.environments.client.transformRequest('/style.css')
+    await server.environments.client.transformRequest('virtual:master-css-emitted-globals')
+    const { globals } = await ssr.runner.import('/server.js')
+    const before = structuredClone(globals)
+    const reloads = Object.values(server.environments).map(environment => vi.spyOn(environment, 'reloadModule'))
+    for (let index = 0; index < 3; index++) await ssr.runner.import(`/page-${index}.js`)
+    if (mode === 'static') await vi.waitFor(async () => expect((await ssr.runner.import('/style.css?inline')).default).toContain('display:flex'), { timeout: watchDeadline })
+    await ssr.waitForRequestsIdle()
+    expect(globals).toEqual(before)
+    for (const reload of reloads) expect(reload.mock.calls.filter(([module]) => module.id?.includes('master-css-emitted-globals'))).toEqual([])
+  } finally { await server?.close(); rmSync(root, { recursive: true, force: true }) }
+})

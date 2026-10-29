@@ -1,4 +1,4 @@
-import type { ViteDevServer } from 'vite'
+import type { DevEnvironment, ViteDevServer } from 'vite'
 
 /**
  * Refresh a module whose generated content changed without a source edit.
@@ -6,8 +6,9 @@ import type { ViteDevServer } from 'vite'
  * only invalidated, so its runner refetches it on the next import: a program
  * reload would restart the runner under requests that are still rendering.
  */
-export async function refreshGeneratedModule(server: ViteDevServer, id: string) {
+export async function refreshGeneratedModule(server: ViteDevServer, id: string, accepts: (environment: DevEnvironment) => boolean = () => true) {
   await Promise.all(Object.values(server.environments).map(async (environment) => {
+    if (!accepts(environment)) return
     const module = environment.moduleGraph.getModuleById(id)
     if (!module) return
     if (environment.config.consumer === 'client' || module.isSelfAccepting) return environment.reloadModule(module)

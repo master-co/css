@@ -2,9 +2,9 @@ import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
-import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
 import { getScanner, ensureScanner, releaseScannerEnvironment } from '../utils/scanner-context'
 import { refreshGeneratedModule } from '../utils/dev-module-refresh'
+import { createCoalescedTask } from '../utils/coalesced-task'
 
 /** HMR when the config and source files changed */
 export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
@@ -14,7 +14,7 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
   const updateStylesheetImporters = async ({ server }: { server: ViteDevServer }) => {
     if (!server) return
     const affectedModuleIds = new Set(context.virtualCSSImporters || [])
-    affectedModuleIds.add(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
+    await context.refreshEmittedGlobals?.()
     await Promise.all(Array.from(affectedModuleIds).map((eachModuleId) => refreshGeneratedModule(server, eachModuleId)))
   }
   const handleReset = async ({ server }: { server: ViteDevServer }) => {
@@ -39,7 +39,6 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
         })
     )
     await Promise.all(tasks)
-    await updateStylesheetImporters({ server })
   }
   return {
     name: 'master-css:style-entry:hmr',
@@ -51,20 +50,22 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
         if (attachedScanners.has(scanner)) return
         attachedScanners.add(scanner)
         let resetChain: Promise<unknown> = Promise.resolve()
-        let updateChain: Promise<unknown> = Promise.resolve()
         const onError = (label: string) => (err: unknown) => {
           console.error(`[master-css.vite] ${label} failed:`, err)
         }
+        const scheduleUpdate = createCoalescedTask(async () => {
+          await resetChain
+          await Promise.all([...servers.values()].map(server => updateStylesheetImporters({ server })))
+        }, onError('hmr update'))
         scanner
           .on('reset', () => {
             resetChain = resetChain
               .then(() => Promise.all([...servers.values()].map((eachServer) => handleReset({ server: eachServer }))))
               .catch(onError('reset'))
+              .then(() => { void scheduleUpdate() })
           })
           .on('change', () => {
-            updateChain = updateChain
-              .then(() => Promise.all([...servers.values()].map((eachServer) => updateStylesheetImporters({ server: eachServer }))))
-              .catch(onError('hmr update'))
+            void scheduleUpdate()
           })
       }
       if (context.scanner) return attach()

@@ -2,10 +2,11 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
-import { build, createServer, type Plugin, type ViteDevServer } from 'vite'
+import { build, createServer, type ViteDevServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { watchDeadline } from '../watch-deadline-helper'
+import { missedWatcherEvents as noExternalEvents } from '../missed-watcher-helper'
 
 const modes = ["static", 'runtime', 'pre-render', 'progressive'] as const
 const manifestURL = '/@id/__x00__virtual:master-css-manifest'
@@ -17,11 +18,6 @@ function fixture() {
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";import manifest from "virtual:master-css-manifest";window.manifest=manifest;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div><script type="module" src="./entry.js"></script></body></html>')
   return { parent, root, dependency, write(value = '@mixin --paint{@media (width>=7rem){@contents;}} @utility paint {@media (width>=7rem){@contents;}}') { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, value) } }
-}
-function noExternalEvents(): Plugin {
-  return { name: 'test:miss-bootstrap-watcher-registration', configureServer(server) {
-    vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher)
-  } }
 }
 async function response(server: ViteDevServer, path = '/') {
   const result = await fetch(new URL(path, server.resolvedUrls!.local[0]))
