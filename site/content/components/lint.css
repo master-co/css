@@ -141,8 +141,8 @@
     display: grid;
     flex: none;
     place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
     border-radius: 0.5rem;
     color: var(--home-text-faint);
     transition: color var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease), box-shadow var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);

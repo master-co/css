@@ -2,6 +2,8 @@
 
 以下位置相對於實際使用的 Master CSS repository 根目錄。基準來自 `rc` 的 `f7205ccdd`；未來如檔案移動，先找目前擁有同一功能的元件，不重建過時的副本。舊 checkout 與開發服務的 port 都不是固定契約。
 
+清單圖示依 2026-10-29 使用者更新統一為繪製 WebP，取代先前 SVG 接入；bento 及主圖材質規範不變。
+
 ## 資產與元件位置
 
 | 位置 | 用途 |
@@ -10,14 +12,16 @@
 | `site/assets/images/home/icons/artwork.ts` | 型別化主圖對應 |
 | `site/assets/images/home/icons/artwork.css` | `home-icon-artwork` 的 zinc 灰階處理 |
 | `site/assets/images/home/icons/catalog.ts` | 全圖錄、語意 ID、target 與 compact 對應 |
-| `site/assets/images/home/icons/*-compact.svg` | 15 張 32 單位小圖 |
+| `site/assets/images/home/icons/*-compact.svg` | 15 張歷史 32 單位 SVG 研究稿，僅保留於圖錄 |
 | `site/content/components/HomeIllustration.tsx` | 裝飾性明暗主圖；沿用網站圖片元件 |
-| `site/content/components/HomeCompactIcon.tsx` | 裝飾性清單小圖 |
+| `site/content/components/HomeCompactIcon.tsx` | 重用 HomeIllustration 的裝飾性清單 WebP |
 | `site/content/components/HomeBento.tsx` | 共用 bento header／card 與 section header |
 | `site/content/home.css` | 實際大小、圖文排列、主題顯示規則 |
 | `site/content/design-system/review/home-icons/` | 圖錄、尺寸預覽與接入說明；路由 `/design-system/review/home-icons`，noindex |
 
 `catalog.ts` 的 `recommendedSize: 96` 是圖錄通用基準；**bento 實際尺寸是 112px**。不要只讀 catalog 就把首頁縮回 96px。`Icon` 是舊 SVG 構造研究，`artwork.light/dark` 才是定案主圖。
+
+清單項目的 `recommendedSize` 為 lint 48、MCP 40；`CompactIcon` 也只是歷史研究稿，不能因為名稱是 compact 就用於目前首頁。
 
 保持 server 元件與 client island 的邊界。現有 Editor、Lint、Agent islands 接收 server 端生成的圖示 ReactNode slots；不要為了顯示圖示把整個 catalog 或所有 SVG imports 搬進 client bundle。
 
@@ -28,8 +32,8 @@
 | Section heading | 64–80px | 不套 bento 的 7rem |
 | Bento card | **7rem／112px** | 明暗圖都使用相同方框 |
 | Editor feature／rendering mode | 64px | 配合既有段落與互動結構 |
-| Lint item | 32px SVG | 獨立 compact 構圖 |
-| Agent tool row | 24px SVG | 使用 compact 版本 |
+| Lint item | 48px WebP | 使用對應明暗玻璃圖 |
+| Agent tool row | 40px WebP | 使用對應明暗玻璃圖 |
 
 HTML 圖片的 width／height 和圖片來源候選尺寸也要足以支援 112px；只改 CSS、保留過小的來源尺寸可能令正式站圖像模糊。`HomeBentoCard` 已傳 `size={112}`，沿用即可。
 
@@ -84,15 +88,15 @@ import { HomeBentoCard } from '~/site/content/components/HomeBento'
 </HomeBentoCard>
 ```
 
-一般裝飾性使用可用 `HomeIllustration` 或 `HomeCompactIcon`；它們已有 `aria-hidden`，主圖 alt 為空，compact SVG 不接受焦點。不要再給裝飾圖一個重複標題的可存取名稱。
+一般裝飾性使用可用 `HomeIllustration` 或 `HomeCompactIcon`；兩者都顯示明暗 WebP，已有 `aria-hidden`，圖片 alt 為空。不要再給裝飾圖一個重複標題的可存取名稱。
 
-圖示單獨承擔資訊時，不使用上述隱藏包裝，直接用圖片 `alt` 或 SVG `role="img" aria-label="…"` 提供名稱。文字要描述它傳達的資訊，不描述「一個玻璃圖示」。
+圖示單獨承擔資訊時，不使用上述隱藏包裝，直接用圖片 `alt` 提供名稱。文字要描述它傳達的資訊，不描述「一個玻璃圖示」。沿用目前主題對應的圖檔。
 
 ```tsx
-import InspectClass from '~/site/assets/images/home/icons/mcp-inspect-class-compact.svg'
+import Image from '~/site/docs-shell/components/Image'
 
-<InspectClass width={32} height={32} role="img"
-  aria-label={translatedMeaning} focusable="false" />
+<Image src={matchingThemeArtwork} width={48} height={48}
+  className="home-icon-artwork" alt={translatedMeaning} />
 ```
 
 使用既有主題 class 選 light／dark 圖，兩者同方框、同光學裁切。不要另加瀏覽器 theme state 或圖示動畫，也不新增公開套件 API。

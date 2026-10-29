@@ -4,6 +4,8 @@
 
 基準：Master CSS `rc`，commit `f7205ccdd`，2026-10-28。此版本包含 41 個主題、41 組明暗 WebP、15 個 compact SVG。首頁當時實際用到 34 個主題；其餘保留在圖錄，不為了湊滿數量插入首頁。
 
+2026-10-29 更新接入方式：lint 與 MCP 清單也統一使用上述 WebP，分別顯示 48px／40px。下方的 compact SVG 是歷史構造參考，不是目前首頁使用版本；主圖材質與定案參考原檔維持相同。
+
 舊 96 × 96 SVG 留作可編輯構造研究，不是主圖成品。原提案的「主線 2、細線 1.5、純線條深度」已被柔和玻璃方向取代，不要用那些數字重設已定案的外觀。主圖有低對比的材質明暗；不以「最初禁止漸層」為由抹掉它。
 
 ## 材質、光線與色彩
@@ -55,7 +57,7 @@
 | Progressive | [light](approved/render-progressive-light.webp) | [dark](approved/render-progressive-dark.webp) | 分離片段、方向與留白 |
 | Scan | [light](approved/mcp-scan-project-light.webp) | [dark](approved/mcp-scan-project-dark.webp) | 框角、頁面與掃描訊號 |
 
-SVG 小圖參考：[Scan](approved/mcp-scan-project-compact.svg)、[Invalid classes](approved/lint-invalid-classes-compact.svg)、[Apply preview](approved/mcp-apply-preview-compact.svg)。
+歷史 SVG 小圖研究：[Scan](approved/mcp-scan-project-compact.svg)、[Invalid classes](approved/lint-invalid-classes-compact.svg)、[Apply preview](approved/mcp-apply-preview-compact.svg)。可參考遮擋處理，但不拿來替換目前首頁 WebP。
 
 最終頁面比例參考（圖片是單一卡片裁切，檔名的 desktop／mobile 指原頁面 viewport）：
 

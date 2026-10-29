@@ -67,8 +67,8 @@ export const homeIconGroups = [
   { id: 'rendering', label: 'Rendering', description: 'Three paths from class names to CSS.' },
   { id: 'agents', label: 'AI agents', description: 'Connected clients and a reviewable workflow.' },
   { id: 'workflow', label: 'Workflow', description: 'Shared foundations across projects and routes.' },
-  { id: 'lint', label: 'Lint checks', description: 'Six checks, with optically simplified small versions.' },
-  { id: 'mcp', label: 'MCP tools', description: 'Nine tools, with a matching small version of each.' },
+  { id: 'lint', label: 'Lint checks', description: 'Six checks, with archived compact vector studies.' },
+  { id: 'mcp', label: 'MCP tools', description: 'Nine tools, with a matching glass illustration for each.' },
 ] as const
 
 export type HomeIconGroup = typeof homeIconGroups[number]['id']
@@ -80,13 +80,13 @@ export interface HomeIconDefinition {
   target: { section: HomeSectionId, item?: string }
   placement: 'section' | 'card' | 'item'
   concept: string
-  recommendedSize: 96 | 32
+  recommendedSize: 96 | 48 | 40
   artwork: { light: StaticImage, dark: StaticImage }
   Icon: FunctionComponent<SVGProps<SVGSVGElement>>
   CompactIcon?: FunctionComponent<SVGProps<SVGSVGElement>>
 }
 
-/** 41 original themes; the 15 dense-list themes also have a redrawn 32-unit version. */
+/** 41 themed WebP illustrations; 15 dense-list themes also retain archived 32-unit SVG studies. */
 export const homeIcons = [
   {
     id: 'section-design-system', group: 'sections', label: 'Design system',
@@ -275,105 +275,105 @@ export const homeIcons = [
     artwork: homeIconArtwork['lint-invalid-classes'],
     target: { section: 'code-diagnostics', item: 'Invalid classes' }, placement: 'item',
     concept: 'A malformed piece fails to pass a calibrated opening.',
-    recommendedSize: 32, Icon: LintInvalidClasses, CompactIcon: LintInvalidClassesCompact
+    recommendedSize: 48, Icon: LintInvalidClasses, CompactIcon: LintInvalidClassesCompact
   },
   {
     id: 'lint-class-order', group: 'lint', label: 'Class order',
     artwork: homeIconArtwork['lint-class-order'],
     target: { section: 'code-diagnostics', item: 'Class order' }, placement: 'item',
     concept: 'Uneven source rows settle into an ordered column.',
-    recommendedSize: 32, Icon: LintClassOrder, CompactIcon: LintClassOrderCompact
+    recommendedSize: 48, Icon: LintClassOrder, CompactIcon: LintClassOrderCompact
   },
   {
     id: 'lint-conflicting-classes', group: 'lint', label: 'Conflicting classes',
     artwork: homeIconArtwork['lint-conflicting-classes'],
     target: { section: 'code-diagnostics', item: 'Conflicting classes' }, placement: 'item',
     concept: 'Two paths compete for the same destination slot.',
-    recommendedSize: 32, Icon: LintConflictingClasses, CompactIcon: LintConflictingClassesCompact
+    recommendedSize: 48, Icon: LintConflictingClasses, CompactIcon: LintConflictingClassesCompact
   },
   {
     id: 'lint-strict-vocabulary', group: 'lint', label: 'Strict vocabulary',
     artwork: homeIconArtwork['lint-strict-vocabulary'],
     target: { section: 'code-diagnostics', item: 'Strict vocabulary' }, placement: 'item',
     concept: 'A shaped opening admits only a matching piece.',
-    recommendedSize: 32, Icon: LintStrictVocabulary, CompactIcon: LintStrictVocabularyCompact
+    recommendedSize: 48, Icon: LintStrictVocabulary, CompactIcon: LintStrictVocabularyCompact
   },
   {
     id: 'lint-theme-tokens', group: 'lint', label: 'Theme tokens',
     artwork: homeIconArtwork['lint-theme-tokens'],
     target: { section: 'code-diagnostics', item: 'Theme tokens' }, placement: 'item',
     concept: 'Raw values align with a named reference on a ruler.',
-    recommendedSize: 32, Icon: LintThemeTokens, CompactIcon: LintThemeTokensCompact
+    recommendedSize: 48, Icon: LintThemeTokens, CompactIcon: LintThemeTokensCompact
   },
   {
     id: 'lint-fix-previews', group: 'lint', label: 'Fix previews',
     artwork: homeIconArtwork['lint-fix-previews'],
     target: { section: 'code-diagnostics', item: 'Fix previews' }, placement: 'item',
     concept: 'Before and after sheets carry minus and plus marks.',
-    recommendedSize: 32, Icon: LintFixPreviews, CompactIcon: LintFixPreviewsCompact
+    recommendedSize: 48, Icon: LintFixPreviews, CompactIcon: LintFixPreviewsCompact
   },
   {
     id: 'mcp-scan-project', group: 'mcp', label: 'Scan project',
     artwork: homeIconArtwork['mcp-scan-project'],
     target: { section: 'ai-agents', item: 'mastercss_scan_project' }, placement: 'item',
     concept: 'A scan line crosses a source sheet inside a capture frame.',
-    recommendedSize: 32, Icon: McpScanProject, CompactIcon: McpScanProjectCompact
+    recommendedSize: 40, Icon: McpScanProject, CompactIcon: McpScanProjectCompact
   },
   {
     id: 'mcp-manifest-query', group: 'mcp', label: 'Query manifest',
     artwork: homeIconArtwork['mcp-manifest-query'],
     target: { section: 'ai-agents', item: 'mastercss_manifest_query' }, placement: 'item',
     concept: 'Staggered index sheets sit beside a separate inspection lens.',
-    recommendedSize: 32, Icon: McpManifestQuery, CompactIcon: McpManifestQueryCompact
+    recommendedSize: 40, Icon: McpManifestQuery, CompactIcon: McpManifestQueryCompact
   },
   {
     id: 'mcp-inspect-class', group: 'mcp', label: 'Inspect class',
     artwork: homeIconArtwork['mcp-inspect-class'],
     target: { section: 'ai-agents', item: 'mastercss_inspect_class' }, placement: 'item',
     concept: 'A single source piece unfolds into inspectable lines.',
-    recommendedSize: 32, Icon: McpInspectClass, CompactIcon: McpInspectClassCompact
+    recommendedSize: 40, Icon: McpInspectClass, CompactIcon: McpInspectClassCompact
   },
   {
     id: 'mcp-trace-class', group: 'mcp', label: 'Trace class',
     artwork: homeIconArtwork['mcp-trace-class'],
     target: { section: 'ai-agents', item: 'mastercss_trace_class' }, placement: 'item',
     concept: 'A continuous path links source, intermediate node and output.',
-    recommendedSize: 32, Icon: McpTraceClass, CompactIcon: McpTraceClassCompact
+    recommendedSize: 40, Icon: McpTraceClass, CompactIcon: McpTraceClassCompact
   },
   {
     id: 'mcp-render-css', group: 'mcp', label: 'Render CSS',
     artwork: homeIconArtwork['mcp-render-css'],
     target: { section: 'ai-agents', item: 'mastercss_render_css' }, placement: 'item',
     concept: 'Separate rule fragments converge toward one output sheet.',
-    recommendedSize: 32, Icon: McpRenderCss, CompactIcon: McpRenderCssCompact
+    recommendedSize: 40, Icon: McpRenderCss, CompactIcon: McpRenderCssCompact
   },
   {
     id: 'mcp-lint-project', group: 'mcp', label: 'Lint project',
     artwork: homeIconArtwork['mcp-lint-project'],
     target: { section: 'ai-agents', item: 'mastercss_lint_project' }, placement: 'item',
     concept: 'A circular check verifies a layered collection of source sheets.',
-    recommendedSize: 32, Icon: McpLintProject, CompactIcon: McpLintProjectCompact
+    recommendedSize: 40, Icon: McpLintProject, CompactIcon: McpLintProjectCompact
   },
   {
     id: 'mcp-css-compare', group: 'mcp', label: 'Compare CSS',
     artwork: homeIconArtwork['mcp-css-compare'],
     target: { section: 'ai-agents', item: 'mastercss_css_compare' }, placement: 'item',
     concept: 'A double-ended arrow compares two clearly separated outputs.',
-    recommendedSize: 32, Icon: McpCssCompare, CompactIcon: McpCssCompareCompact
+    recommendedSize: 40, Icon: McpCssCompare, CompactIcon: McpCssCompareCompact
   },
   {
     id: 'mcp-preview-fixes', group: 'mcp', label: 'Preview fixes',
     artwork: homeIconArtwork['mcp-preview-fixes'],
     target: { section: 'ai-agents', item: 'mastercss_preview_fixes' }, placement: 'item',
     concept: 'An eye examines additions and removals before confirmation.',
-    recommendedSize: 32, Icon: McpPreviewFixes, CompactIcon: McpPreviewFixesCompact
+    recommendedSize: 40, Icon: McpPreviewFixes, CompactIcon: McpPreviewFixesCompact
   },
   {
     id: 'mcp-apply-preview', group: 'mcp', label: 'Apply preview',
     artwork: homeIconArtwork['mcp-apply-preview'],
     target: { section: 'ai-agents', item: 'mastercss_apply_preview' }, placement: 'item',
     concept: 'A confirmed piece is directed into its target sheet.',
-    recommendedSize: 32, Icon: McpApplyPreview, CompactIcon: McpApplyPreviewCompact
+    recommendedSize: 40, Icon: McpApplyPreview, CompactIcon: McpApplyPreviewCompact
   },
 ] as const satisfies readonly HomeIconDefinition[]
 

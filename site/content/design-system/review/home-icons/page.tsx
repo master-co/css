@@ -10,7 +10,7 @@ import './page.css'
 // Inline metadata keeps this handoff page out of the documentation category catalog.
 export const metadata = {
   title: 'Homepage icons — Master CSS',
-  description: '41 translucent illustrations in light and dark WebP variants, with 15 compact SVG redraws for the Master CSS homepage.',
+  description: '41 translucent illustrations in light and dark WebP variants, with archived SVG construction studies.',
   robots: { index: false, follow: false }
 }
 
@@ -29,11 +29,11 @@ import '~/site/assets/images/home/icons/artwork.css'
     className="home-icon-artwork display:none@apply(--site-light)" />
 </span>`
 
-const compactExample = `import Scan from '~/site/assets/images/home/icons/mcp-scan-project-compact.svg'
+const compactExample = `import HomeCompactIcon from '~/site/content/components/HomeCompactIcon'
 
-<span className="tool-label">
-  <Scan width={32} height={32} aria-hidden="true" focusable="false" />
-  <span>Scan project</span>
+// Server-rendered light/dark artwork, passed into the agent island as a slot.
+<span className="home-agent-call-icon">
+  <HomeCompactIcon icon="mcp-scan-project" />
 </span>`
 
 const accessibleExample = `// Use the matching theme asset. Give informative images an alt.
@@ -43,11 +43,7 @@ const accessibleExample = `// Use the matching theme asset. Give informative ima
   width={96}
   height={96}
   alt="Light and dark modes share the same markup"
-/>
-
-// A standalone compact SVG needs its own accessible name.
-<Scan width={32} height={32} role="img"
-  aria-label="Scan project" focusable="false" />`
+/>`
 
 export default function Page() {
   return <main className="home-icon-review" id="home-icon-top">
@@ -58,11 +54,11 @@ export default function Page() {
       </div>
       <p className="hir-eyebrow">Quiet precision</p>
       <h1>A little depth.<br /><span>A clear purpose.</span></h1>
-      <p className="hir-lead">Original illustrations for the Master CSS homepage. Transparent planes, restrained light, and fine lines describe each mechanism. Dedicated compact drawings keep dense lists clear.</p>
+      <p className="hir-lead">Original illustrations for the Master CSS homepage. Transparent planes, restrained light, and fine lines describe each mechanism. The same glass artwork now carries through to lint rules and agent tools.</p>
       <div className="hir-facts" aria-label="Collection specifications">
         <span><strong>41</strong> original themes</span>
-        <span><strong>15</strong> compact redraws</span>
-        <span><strong>WebP + SVG</strong> material and compact artwork</span>
+        <span><strong>15</strong> archived compact studies</span>
+        <span><strong>WebP</strong> homepage feature artwork</span>
       </div>
       <div className="hir-specimens" aria-label="Six representative illustrations">
         {specimens.map(entry => <figure key={entry.id}>
@@ -105,7 +101,7 @@ export default function Page() {
     <section className="hir-group" id="placement" aria-labelledby="placement-heading">
       <div className="hir-group-heading">
         <span className="hir-number">09</span>
-        <div><h2 id="placement-heading">Placement studies</h2><p>The full collection with current homepage copy where available, shown at 96px and 32px.</p></div>
+        <div><h2 id="placement-heading">Placement studies</h2><p>The full collection with current homepage copy where available, shown at 96px, 48px and 40px.</p></div>
       </div>
       <ContextPreview />
     </section>
@@ -113,19 +109,19 @@ export default function Page() {
     <section className="hir-group hir-handoff" id="handoff" aria-labelledby="handoff-heading">
       <div className="hir-group-heading">
         <span className="hir-number">10</span>
-        <div><h2 id="handoff-heading">Homepage integration</h2><p>The current rc layout uses themed WebP artwork for headings and compact SVGs for rules and tool calls.</p></div>
+        <div><h2 id="handoff-heading">Homepage integration</h2><p>The current rc layout uses themed WebP artwork throughout its section, card, rule and tool illustrations.</p></div>
       </div>
       <div className="hir-handoff-grid">
         <div>
           <h3>File and placement map</h3>
           <p>The current homepage uses 34 subjects across section headings, bento cards, editor features, rendering modes, lint rules and agent tool calls. The three former AI card illustrations and four tools absent from the current agent session remain available in this 41-subject catalog.</p>
           <p>All assets and the typed <code>catalog.ts</code> live in <code>site/assets/images/home/icons/</code>. The <code>artwork/</code> directory contains 41 light/dark WebP pairs. Each catalog entry names its exact homepage section and item.</p>
-          <p>The catalog exposes <code>homeIcons</code>, <code>homeIconGroups</code>, <code>HomeIconId</code> and <code>HomeIconDefinition</code>. Entries provide <code>target</code>, <code>placement</code>, <code>recommendedSize</code>, themed <code>artwork.light</code> and <code>artwork.dark</code>, and, for list items, <code>CompactIcon</code>. The <code>Icon</code> field retains the editable vector construction study.</p>
+          <p>The catalog exposes <code>homeIcons</code>, <code>homeIconGroups</code>, <code>HomeIconId</code> and <code>HomeIconDefinition</code>. Entries provide <code>target</code>, <code>placement</code>, <code>recommendedSize</code> and themed <code>artwork.light</code> and <code>artwork.dark</code>. The <code>Icon</code> and optional <code>CompactIcon</code> fields retain the editable vector construction studies.</p>
           <h3>Size and color</h3>
-          <p>Homepage section headings use 64–80px artwork, bento cards use 112px (7rem), lint rules use 32px drawings and dense agent call rows use 24px drawings. Bento titles and descriptions stay together on the left, with 24–48px of space before the illustration on the right. Card titles link directly to their guides.</p>
-          <p>Main artwork: transparent 384 × 384 WebP exports, reviewed at 64/80/96/112px. Each lighting pair shares the same optical crop. Compact artwork: a dedicated 32-unit SVG canvas with 1.2-unit outlines and 1.25-unit marks, reviewed at 24/32/40px. The recommended size refers to the compact version when one exists.</p>
+          <p>Homepage section headings use 64–80px artwork, bento cards use 112px (7rem), lint rules use 48px artwork and dense agent call rows use 40px artwork. Bento titles and descriptions stay together on the left, with 24–48px of space before the illustration on the right. Card titles link directly to their guides.</p>
+          <p>All homepage feature artwork uses transparent 384 × 384 WebP exports, reviewed at 40/48/64/80/96/112px. Each lighting pair shares the same optical crop. The earlier 32-unit SVG redraws remain below as construction studies; the recommended sizes now refer to WebP artwork.</p>
           <p>Keep each image square and set explicit width and height. Its transparent spacing includes optical adjustments for alignment with headings and neighboring icons. Do not add CSS inversion, blend modes or extra shadows to the WebP artwork.</p>
-          <p>WebP artwork uses separate light and dark lighting; the existing site theme selectors choose the matching image without new browser logic. Import <code>artwork.css</code> and apply <code>home-icon-artwork</code> to each image to remove the blue cast with <code>grayscale(1)</code>, matching the neutral zinc palette while preserving transparency and luminance. Compact SVGs inherit zinc text colors from the site through CSS <code>currentColor</code>.</p>
+          <p>WebP artwork uses separate light and dark lighting; the existing site theme selectors choose the matching image without new browser logic. Import <code>artwork.css</code> and apply <code>home-icon-artwork</code> to each image to remove the blue cast with <code>grayscale(1)</code>, matching the neutral zinc palette while preserving transparency and luminance. <code>HomeCompactIcon</code> shares the same artwork renderer for list items.</p>
           <h3>Source and material</h3>
           <p>The WebP artwork was created with the built-in image generation tool. <code>artwork/source.json</code> records the subject briefs, material prompt, lighting edit and export settings. The material study above preserves the same-size SVG/WebP comparison.</p>
           <h3>Accessible use</h3>
@@ -150,19 +146,19 @@ function IconCard({ entry }: { entry: HomeIconDefinition }) {
       <div className="hir-dark"><Artwork entry={entry} size={96} theme="dark" /><span>Dark</span></div>
     </div>
     <div className="hir-card-copy">
-      <div className="hir-card-title"><h3>{label}</h3>{CompactIcon && <span className="hir-badge">+ compact</span>}</div>
+      <div className="hir-card-title"><h3>{label}</h3>{CompactIcon && <span className="hir-badge">SVG study</span>}</div>
       <p>{concept}</p>
       <code className="hir-filename">artwork/{id}-&#123;light,dark&#125;.webp</code>
       <dl className="hir-target"><div><dt>Section</dt><dd><a href={`/#${target.section}`}>{target.section}</a></dd></div>
         {target.item && <div><dt>Item</dt><dd>{target.item}</dd></div>}
-        <div><dt>Suggested</dt><dd>{recommendedSize}px{CompactIcon ? ' compact' : ' main'}</dd></div>
+        <div><dt>Suggested</dt><dd>{recommendedSize}px artwork</dd></div>
       </dl>
     </div>
     <details className="hir-size-details">
-      <summary>Actual sizes{CompactIcon ? ' · main + compact' : ''}</summary>
+      <summary>Actual sizes{CompactIcon ? ' · artwork + SVG study' : ''}</summary>
       <ArtworkSizeStrip entry={entry} />
       {CompactIcon && <>
-        <SizeStrip Icon={CompactIcon} sizes={[24, 32, 40]} label="Compact redraw" />
+        <SizeStrip Icon={CompactIcon} sizes={[24, 32, 40]} label="Archived compact SVG" />
         <code className="hir-compact-filename">{id}-compact.svg</code>
       </>}
     </details>
@@ -186,7 +182,7 @@ function ArtworkSizeStrip({ entry }: { entry: HomeIconDefinition }) {
   return <div className="hir-size-strip">
     <p>Main artwork · WebP</p>
     {(['light', 'dark'] as const).map(theme => <div className={`hir-size-row hir-${theme}`} key={theme} aria-label={`Main artwork on ${theme}`}>
-      {[64, 80, 96, 112].map(size => <figure key={size}>
+      {(entry.placement === 'item' ? [40, 48, 64] : [64, 80, 96, 112]).map(size => <figure key={size}>
         <Artwork entry={entry} size={size} theme={theme} />
         <figcaption>{size}px</figcaption>
       </figure>)}

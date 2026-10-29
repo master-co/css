@@ -145,17 +145,8 @@
   .dark .home-illustration .home-illustration-dark { display: block; }
 
   .home-compact-icon {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    color: var(--home-text-body);
-    pointer-events: none;
+    --home-illustration-size: 3rem;
   }
-
-  .home-compact-icon svg { flex: none; }
 
   .home-section-caption {
     display: flex;

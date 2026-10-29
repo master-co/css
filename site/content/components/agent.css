@@ -417,8 +417,8 @@
     display: grid;
     flex: none;
     place-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     color: var(--home-text-quiet);
 
     [data-expanded] & {
@@ -426,8 +426,7 @@
     }
   }
 
-  .home-agent-call-icon .home-compact-icon,
-  .home-agent-call-icon .home-compact-icon svg { width: 1.5rem; height: 1.5rem; }
+  .home-agent-call-icon .home-compact-icon { --home-illustration-size: 2.5rem; }
 
   .home-agent-call-name {
     min-width: 0;

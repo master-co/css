@@ -42,9 +42,8 @@ export default function ContextPreview() {
         <div className="hir-placement-grid">
           {items.map(entry => {
             const content = copy.get(entry.target.item!) ?? { title: entry.label, body: entry.concept }
-            const Compact = entry.CompactIcon
-            return <article key={entry.id} className={`hir-placement-card${Compact ? ' hir-placement-compact' : ''}`}>
-              {Compact ? <Compact width={32} height={32} aria-hidden="true" focusable="false" /> : <Artwork entry={entry} size={96} />}
+            return <article key={entry.id} className={`hir-placement-card${entry.placement === 'item' ? ' hir-placement-compact' : ''}`}>
+              <Artwork entry={entry} size={entry.recommendedSize} />
               <div><h4>{content.title}</h4><p>{content.body}</p></div>
             </article>
           })}
