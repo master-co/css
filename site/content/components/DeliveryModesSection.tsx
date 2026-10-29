@@ -6,7 +6,6 @@ import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import DeliveryFigures from './DeliveryFigures'
 import DeliveryStage from './DeliveryStage'
 import { HomeSectionHeader } from './HomeBento'
-import HomeIllustration, { type HomeIllustrationId } from './HomeIllustration'
 import { deliveryModes, homeSections, type DeliveryModeId } from './home-content'
 
 /** Short names for the mode switch. */
@@ -15,12 +14,6 @@ const modeNames = {
   progressive: 'Progressive',
   runtime: 'Runtime'
 } satisfies Record<DeliveryModeId, string>
-
-const modeIcons = {
-  static: 'render-static',
-  progressive: 'render-progressive',
-  runtime: 'render-runtime'
-} satisfies Record<DeliveryModeId, HomeIllustrationId>
 
 export default function DeliveryModesSection() {
   const $ = useTranslation()
@@ -39,14 +32,10 @@ export default function DeliveryModesSection() {
           </Link>
         </HomeSectionHeader>
 
-        {deliveryModes.map((mode) => (
-          <input aria-labelledby={`home-delivery-${mode.id}-title`} className="sr-only" defaultChecked={'default' in mode && mode.default} id={`home-delivery-${mode.id}`} key={mode.id} name="home-delivery-mode" type="radio" value={mode.id} />
-        ))}
-
         {/*
           The figure carries the timeline's state for everything inside it. The drawing comes first;
-          under it one control area holds the mode choice, the player and the chosen mode's description.
-          On narrow screens the controls come first, followed by the code tabs and persistent preview.
+          under it one control area holds the mode choice and player. The preview is the mode explanation.
+          On narrow screens the controls come first, followed by the split editor, processor and preview.
         */}
         <div className="home-delivery-figure home-delivery-stage" data-moment="3" style={{ '--home-delivery-t': 4 } as CSSProperties}>
           <div className="home-delivery-layout">
@@ -61,32 +50,19 @@ export default function DeliveryModesSection() {
                 </defs>
                 <path data-route="input" />
                 <path data-route="rules" />
-                <path data-route="reference" />
                 <path data-route="paint" />
               </svg>
               <div aria-hidden="true" className="home-delivery-flights" />
             </div>
 
             <div className="home-delivery-controls">
-              {/* Labels for the radios above: the page's segmented control, chosen by `:checked`. */}
-              <div aria-hidden="true" className="home-delivery-switch home-segmented-control">
+              {/* Each native input lives at its visible tab, so focusing it never scrolls to the figure's top. */}
+              <div aria-label={$('Rendering')} className="home-delivery-switch home-segmented-control" role="radiogroup">
                 {deliveryModes.map((mode) => (
-                  <label className="home-segmented-control-option" data-mode={mode.id} htmlFor={`home-delivery-${mode.id}`} key={mode.id}>{$(modeNames[mode.id])}</label>
+                  <label className="home-segmented-control-option" data-mode={mode.id} htmlFor={`home-delivery-${mode.id}`} key={mode.id}><input aria-label={$(mode.title)} className="sr-only" defaultChecked={'default' in mode && mode.default} id={`home-delivery-${mode.id}`} name="home-delivery-mode" type="radio" value={mode.id} />{$(modeNames[mode.id])}</label>
                 ))}
               </div>
               <DeliveryFigures sectionId={homeSections.deliveryModes} />
-              <div className="home-delivery-about">
-                {deliveryModes.map((mode) => (
-                  <div className="home-delivery-mode" data-mode={mode.id} key={mode.id}>
-                    <HomeIllustration className="home-illustration-hung" icon={modeIcons[mode.id]} />
-                    <p className="home-delivery-mode-title">
-                      <Link className="home-heading-link" href={mode.href} id={`home-delivery-${mode.id}-title`}>{$(mode.title)}</Link>
-                      {'default' in mode && mode.default && <span className="home-delivery-mode-default">{$('Default')}</span>}
-                    </p>
-                    <p className="home-delivery-mode-body">{$(mode.body)}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

@@ -626,5 +626,7 @@
   "CSS delivery": "CSS 交付",
   "Applying…": "套用中…",
   "Code view": "程式碼視圖",
-  "HTML template": "HTML 範本"
+  "HTML template": "HTML 範本",
+  "Explore this mode": "了解此模式",
+  "Open generated CSS: {file}": "查看產生的 CSS：{file}"
 }
