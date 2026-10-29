@@ -43,106 +43,35 @@
     container-type: inline-size;
   }
 
-  .home-footer-sheet {
-    display: grid;
-    gap: var(--spacing-2xl);
-    padding-block: var(--spacing-2xl);
-
-    @media (--sm) {
-      padding-block: var(--spacing-3xl);
-    }
-
-    @media (--md) {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: var(--spacing-3xl);
-      padding-block: 5rem;
-    }
-  }
-
-  .home-footer-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    @media (width >= 40rem) and (width < 64rem) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--spacing-xl);
-    }
-  }
-
-  .home-footer-logo {
-    display: inline-flex;
-    max-width: 100%;
-    border-radius: var(--radius-sm);
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 4px;
-    }
-  }
-
-  .home-footer-social {
-    display: flex;
-    gap: var(--spacing-xs);
-    margin: var(--spacing-lg) 0 0 -0.625rem;
-    padding: 0;
-    list-style: none;
-
-    @media (width >= 40rem) and (width < 64rem) {
-      margin: 0;
-    }
-
-    @media (--md) {
-      margin-top: auto;
-    }
-  }
-
-  .home-footer-icon {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: var(--home-radius-control);
-    color: var(--home-text-quiet);
-    transition: color var(--home-quick) var(--home-ease), background-color var(--home-quick) var(--home-ease);
-
-    &:hover {
-      color: var(--home-text);
-      background-color: var(--home-sheet);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
-    }
+  .home-footer-nav,
+  .home-footer-base {
+    position: relative;
+    z-index: 1;
   }
 
   .home-footer-nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-content: start;
-    gap: var(--spacing-xl) var(--spacing-lg);
+    gap: var(--spacing-2xl) var(--spacing-lg);
+    padding-block: var(--spacing-2xl);
 
     @media (width >= 40rem) {
-      grid-template-columns: 1.15fr 1fr 0.75fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--spacing-xl);
     }
 
+    @media (--sm) {
+      padding-block: var(--spacing-3xl);
+    }
+
     @media (--md) {
-      padding-top: var(--spacing-xs);
+      padding-block: 5rem;
     }
   }
 
   .home-footer-group {
     min-width: 0;
-
-    @media (width < 40rem) {
-      &:first-child {
-        grid-row: span 2;
-      }
-    }
   }
 
   .home-footer-heading {
@@ -197,7 +126,8 @@
     gap: var(--spacing-lg) var(--spacing-xl);
     padding-block: var(--spacing-lg);
     border-top: 1px solid var(--home-rule);
-    font-size: 0.8125rem;
+    background-color: var(--home-ground);
+    font-size: 0.75rem;
     line-height: 1.6;
     color: var(--home-text-faint);
 
@@ -227,7 +157,7 @@
   .home-footer-preferences {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-lg);
   }
 
   /* Native selects retain their keyboard behavior and get a visible, generous hit area. */
@@ -237,16 +167,11 @@
     align-items: center;
     gap: var(--spacing-xs);
     min-height: 2.5rem;
-    padding-inline: var(--spacing-sm);
-    border: 1px solid var(--home-rule);
-    border-radius: var(--home-radius-control);
-    color: var(--home-text-quiet);
-    transition: color var(--home-quick) var(--home-ease), border-color var(--home-quick) var(--home-ease), background-color var(--home-quick) var(--home-ease);
+    color: inherit;
+    transition: color var(--home-quick) var(--home-ease);
 
     &:hover {
-      border-color: var(--home-rule-strong);
       color: var(--home-text);
-      background-color: var(--home-sheet);
     }
 
     &:has(select:focus-visible) {
@@ -255,10 +180,16 @@
     }
   }
 
-  /* Container-relative type keeps the engraved signature inside the same content rails. */
+  /* The engraved signature sits behind the navigation; the base row covers it. */
   .home-footer-mark {
     --home-footer-engrave: color-mix(in oklab, var(--home-text) 12%, transparent);
-    margin: var(--spacing-xl) 0 0;
+    position: absolute;
+    inset-inline: var(--home-gutter);
+    top: 50%;
+    z-index: 0;
+    opacity: 0.5;
+    margin: 0;
+    transform: translateY(-50%);
     font-size: 20.6cqi;
     font-weight: var(--font-weight-medium);
     line-height: 0.78;
@@ -272,6 +203,7 @@
     background-size: var(--home-hatch-size) var(--home-hatch-size), auto;
     background-clip: text;
     mask-image: linear-gradient(to bottom, black 20%, transparent);
+    pointer-events: none;
     user-select: none;
   }
 
