@@ -9,6 +9,7 @@ const sourceIcons: Record<string, string> = {
 
 export default function Backers({ backers }: any) {
   const $ = useTranslation()
+  if (backers.length === 0) return null
   return <div className="sponsor-backers">
     {backers.map((eachBacker: any, i: number) => {
       let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl

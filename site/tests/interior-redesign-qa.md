@@ -29,6 +29,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - Below 80rem, a native disclosure exposes the same article-heading inventory as the desktop contents rail. It works without hydration; the enhanced link closes it and focuses the destination.
 - Search loads its index when requested, announces loading/empty/failure states, offers retry, supports keyboard selection and restores the initiating control's focus.
 - Language changes and same-page anchor navigation preserve the current query string.
+- A contents jump creates one history entry; one Back returns to the prior location. Modified hash clicks leave the browser's default behavior intact.
+- At 320px with 200% text, search uses two input-bar rows so Clear and Cancel cannot reduce the query field to zero width.
 - At the standard root size, document title and code sizes remain 28px/13px with the same code leading. They scale with enlarged text instead of staying fixed.
 - Previous/next links identify their direction and allow complete titles to wrap.
 - Interior surfaces use contours and contact shadows. The homepage retains its global material definitions.
@@ -38,6 +40,7 @@ Implementation and verification record for `codex/site-interior-redesign`.
 
 - Blog uses the two published posts across the available width, adds a page heading and stable dates, and preserves all post destinations/content.
 - Sponsor gains real section headings, one consistent tier presentation, unchanged amounts and platform destinations, and native modal focus/dismissal behavior. Direct platform links remain available without JavaScript.
+- Empty supporter data does not leave an isolated plus button; the real contribution sections remain available. Without JavaScript, native platform links replace the inactive tier buttons and retain all amounts.
 - 404 gains a search entry and a direct Guide recovery link, with wrapping at narrow/enlarged sizes.
 - Removed the unused `images/gold-pattern.jpg`, previously mentioned only in a commented-out Blog image. No homepage-specific asset was removed.
 
