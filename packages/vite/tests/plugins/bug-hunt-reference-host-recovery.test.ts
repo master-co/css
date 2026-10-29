@@ -26,7 +26,7 @@ function fixture(syntax: string, kind: string, startupMissing: boolean) {
   writeFileSync(join(root, filename), kind === 'retained-module' ? `@import "./main/child.${syntax}" layer(owner);` : input)
   writeFileSync(join(root, 'entry.js'), `import "./${filename}";if(import.meta.hot)import.meta.hot.accept("./${filename}",()=>{});`)
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
-  return { root, reference, pixel, filename, tokens, config: { root, cacheDir: join(root, '.vite'), configFile: false as const, logLevel: 'silent' as const, plugins: masterCSS({ mode: 'static', runtime: false }) } }
+  return { root, reference, pixel, filename, tokens, config: { root, cacheDir: join(root, '.vite'), configFile: false as const, optimizeDeps: { noDiscovery: true }, logLevel: 'silent' as const, plugins: masterCSS({ mode: 'static', runtime: false }) } }
 }
 
 test.each(cases)('BH-0004 dev reference recovery $syntax/$kind/startup=$startupMissing', async ({ syntax, kind, startupMissing }) => {
@@ -139,7 +139,7 @@ test.each([false, true])('BH-0004 external missing reference survives SSR close;
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";if(import.meta.hot)import.meta.hot.accept("./style.css",()=>{});')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [parent] } } })
+    server = await createServer({ root, configFile: false, optimizeDeps: { noDiscovery: true }, logLevel: 'silent', plugins: masterCSS({ mode: 'static', runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [parent] } } })
     await server.listen()
     await server.environments.client.transformRequest('/entry.js')
     await expect(server.environments.client.transformRequest('/style.css')).rejects.toThrow('ENOENT')
@@ -152,14 +152,18 @@ test.each([false, true])('BH-0004 external missing reference survives SSR close;
     expect((await server.environments.client.transformRequest('/style.css'))?.code).toContain('7rem')
     if (!checkObsolete) return
     // Remove this dependency through a successful source transform before another edit.
+    server.watcher.unwatch([root, external])
+    vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher)
     writeFileSync(source, '.target{padding:3rem}')
+    server.environments.client.moduleGraph.invalidateAll()
     await expect.poll(async () => (await server!.environments.client.transformRequest('/style.css'))?.code, { timeout: watchDeadline }).toContain('3rem')
     await server.environments.client.waitForRequestsIdle()
     send.mockClear()
-    const observed = new Promise<void>(resolve => server!.watcher.on('change', file => { if (file === reference) resolve() }))
     writeFileSync(reference, `@theme {--paint-padding:99rem}
 `)
-    await observed
+    // Deliver the event explicitly even when successful reconciliation unwatched the obsolete file.
+    server.watcher.emit('change', reference)
+    await server.environments.client.waitForRequestsIdle()
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(send.mock.calls.filter((args: readonly unknown[]) => args[0] && typeof args[0] === 'object' && 'type' in args[0] && ['update', 'full-reload'].includes(String(args[0].type)))).toEqual([])
     expect((await server.environments.client.transformRequest('/style.css'))?.code).toContain('3rem')

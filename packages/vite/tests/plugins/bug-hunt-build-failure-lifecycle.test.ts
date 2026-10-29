@@ -20,7 +20,8 @@ async function setup(mode: "static" | 'runtime' | 'pre-render' | 'progressive', 
   writeFileSync(style, (managed ? "@import url(\"@master/css\");" : '') + "@reference \"./missing/nested/tokens.css\";.target{@media all {padding:var(--paint-padding);}}")
   writeFileSync(join(root, 'entry.js'), 'import "./style.css"')
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
-  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), { name: 'recovery-event-observer', transform(code, id) { if (id.endsWith('/style.css')) trace('transformed-style', code) }, watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
+  // Exercise actual filesystem changes with a deterministic content watcher.
+  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), { name: 'recovery-event-observer', transform(code, id) { if (id.endsWith('/style.css')) trace('transformed-style', code) }, watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude, watcher: { usePolling: true, pollInterval: 50, compareContentsForPolling: true } }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
   if (!('on' in result)) throw new Error('Expected build watcher')
   const events: { code: string, error?: unknown }[] = [], closing: Promise<void>[] = []
   let terminal: { code: string, error?: unknown } | undefined, closed = false

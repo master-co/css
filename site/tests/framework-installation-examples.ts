@@ -10,7 +10,7 @@ import { installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
-export const frameworkInstallationRoutes = ['/react', '/react/static-rendering', '/vuejs', '/vuejs/static-rendering', '/lit'] as const
+export const frameworkInstallationRoutes = ['/react', '/react/runtime', '/vuejs', '/vuejs/runtime', '/lit'] as const
 
 const dependency = workspaceDependency
 
@@ -18,7 +18,7 @@ const dependency = workspaceDependency
 export function frameworkInstallationFixture(route: typeof frameworkInstallationRoutes[number]) {
   const root = mkdtempSync(join(tmpdir(), 'master-framework-install-'))
   const framework = route.startsWith('/react') ? 'react' : route.startsWith('/vuejs') ? 'vue' : 'lit'
-  const staticMode = route.endsWith('/static-rendering')
+  const staticMode = !route.endsWith('/runtime')
   const write = (name: string, text: string) => {
     const file = join(root, name)
     mkdirSync(dirname(file), { recursive: true })
@@ -42,11 +42,11 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     write(main, framework === 'react'
       ? "import './index.css'\nimport { createRoot } from 'react-dom/client'\nimport App from './App'\ncreateRoot(document.getElementById('app')!).render(<App />)\n"
       : framework === 'vue' ? "import './assets/main.css'\nimport { createApp } from 'vue'\nimport App from './App.vue'\ncreateApp(App).mount('#app')\n"
-        : "import './style.css'\nimport './my-element'\n")
+        : "import './my-element'\n")
     write('index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installation fixture</title></head><body>${framework === 'lit' ? '<my-element></my-element>' : '<div id="app"></div>'}<script type="module" src="/${main}"></script></body></html>`)
     const command = deliveryFences(source).find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
-    assert.equal(command, `npm create @master/css@rc -- --framework ${framework}${staticMode ? ' --mode static' : ''} --yes`)
-    const plan = planMasterCSSSetup({ root, framework, mode: staticMode ? 'static' : undefined, install: false, yes: true })
+    assert.equal(command, `npm create @master/css@rc -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
+    const plan = planMasterCSSSetup({ root, framework, mode: staticMode ? undefined : 'runtime', install: false, yes: true })
     applyMasterCSSSetupPlan(plan, { install: false })
     const config = readFileSync(join(root, 'vite.config.ts'), 'utf8')
     assert.ok(config.includes('@master/css-vite'))
@@ -54,12 +54,8 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     assert.match(readFileSync(join(root, cssEntry), 'utf8'), /@import ['"]@master\/css['"]/)
     if (framework === 'lit') {
       const decorated = readFileSync(join(root, component), 'utf8')
-      assert.ok(decorated.includes('@withMasterCSSRuntime({ manifest, emittedGlobals })'))
-      assert.ok(decorated.includes('masterCSSRuntime?: MasterCSSRuntime'))
-      assert.ok(decorated.includes("from 'virtual:master-css-emitted-globals'"))
+      assert.ok(!decorated.includes('withMasterCSSRuntime'), 'Static Lit setup requires no runtime decorator')
       write(component, authored)
-      write('src/index.css', deliveryFences(source).find(fence => fence.name === 'src/index.css')!.text)
-      write('index.html', deliveryFences(source).find(fence => fence.name === 'index.html')!.text)
     }
     for (const name of [...packages, 'vite', '@master/css', '@master/css-vite', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
@@ -71,11 +67,15 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     const assets = readdirSync(join(root, 'dist/assets'))
     const css = assets.filter(file => file.endsWith('.css')).map(file => readFileSync(join(root, 'dist/assets', file), 'utf8')).join('\n')
     if (staticMode) {
-      assert.match(css, /font-style:italic/)
+      if (framework === 'lit') {
+        const scripts = assets.filter(file => file.endsWith('.js')).map(file => readFileSync(join(root, 'dist/assets', file), 'utf8')).join('\n')
+        assert.match(scripts, /background-color:var\(--color-blue\)/)
+        assert.match(scripts, /padding-inline:var\(--spacing-md\)/)
+      } else assert.match(css, /font-style:italic/)
       assert.ok(!assets.some(file => /\.wasm$|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     } else {
       assert.ok(assets.some(file => /master-css-program/.test(file)), 'Runtime program is emitted')
-      assert.ok(assets.some(file => file.endsWith('.wasm')), 'Runtime Wasm is emitted')
+      assert.ok(!assets.some(file => file.endsWith('.wasm')), 'Browser runtime uses the JavaScript engine')
     }
     return { root: join(root, 'dist'), dispose }
   } catch (error) { dispose(); throw error }

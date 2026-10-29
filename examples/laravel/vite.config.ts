@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react';
 import masterCSS from '@master/css-vite';
 import laravel from 'laravel-vite-plugin';
-import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -14,9 +13,4 @@ export default defineConfig({
     react(),
     masterCSS({ mode: 'static' }),
   ],
-  resolve: {
-    alias: {
-      'ziggy-js': resolve(import.meta.dirname, 'vendor/tightenco/ziggy'),
-    },
-  },
 });

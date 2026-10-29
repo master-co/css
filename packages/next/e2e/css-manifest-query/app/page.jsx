@@ -3,10 +3,7 @@ import manifest from './master-css-manifest'
 import program from './master-css-program'
 
 function getVariable(namespace, key) {
-  return manifest.variables?.[namespace]?.find((variable) =>
-    variable.key === key
-    && !variable.mode
-  )?.value
+  return manifest.variables?.[namespace]?.find(variable => variable.key === key)?.values[0]?.value
 }
 
 export default function Page() {

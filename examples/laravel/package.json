@@ -8,7 +8,8 @@
     "dev": "bun --bun vite",
     "format": "prettier --write resources/",
     "format:check": "prettier --check resources/",
-    "lint": "bun --bun eslint . --fix",
+    "lint": "bun --bun eslint .",
+    "lint:fix": "bun --bun eslint . --fix",
     "types": "bun --bun tsc --noEmit"
   },
   "devDependencies": {
@@ -44,8 +45,8 @@
     "@radix-ui/react-toggle-group": "^1.1.19",
     "@radix-ui/react-tooltip": "^1.2.16",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -59,7 +60,8 @@
     "tailwindcss": "^4.3.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "ziggy-js": "^2.6.4"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.63.1",

@@ -155,13 +155,14 @@ describe('StyleEntryPlugin', () => {
   })
 
   test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {
+    const id = resolve('src/style.css')
     const context = makeContext('serve')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
     const result = await (plugin as any).transform.call(
       {},
       '@import url("@master/css");\n@import "@fontsource/fira-mono";\n.card{color:red}',
-      '/project/src/style.css'
+      id
     )
 
     expect(result.code).toContain('.fg-red')
@@ -171,7 +172,7 @@ describe('StyleEntryPlugin', () => {
     expect(graph).toContain('@font-face')
     expect(graph).toContain('Fira Mono')
     expect(graph).toContain('@layer base')
-    expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+    expect(context.virtualCSSImporters).toEqual(new Set([id]))
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
   })
 
@@ -198,6 +199,7 @@ describe('StyleEntryPlugin', () => {
   })
 
   test('non-generated modes preserve native imports when consuming empty Master entries', async () => {
+    const id = resolve('src/style.css')
     const context = makeContext('serve', '', false)
     context.scanner.latentClasses = new Set()
     const plugin = StyleEntryPlugin({ mode: 'progressive' } as any, context)
@@ -205,7 +207,7 @@ describe('StyleEntryPlugin', () => {
     const result = await (plugin as any).transform.call(
       {},
       '@import url("@master/css");\n@import "@fontsource/fira-mono";',
-      '/project/src/style.css'
+      id
     )
 
     expect(result.code).not.toContain('@fontsource/fira-mono')
@@ -215,7 +217,7 @@ describe('StyleEntryPlugin', () => {
     expect(graph).toContain('@layer base')
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain(SLOT)
-    expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+    expect(context.virtualCSSImporters).toEqual(new Set([id]))
   })
 
   test('treats @master stylesheets as managed entries preserving native CSS', async () => {

@@ -84,9 +84,7 @@ describe('Svelte server hook renderer', () => {
     ])
 
     expect(manifestHash).toMatch(/^[0-9a-f]{8}$/)
-    expect(JSON.parse(manifestJSON).rules).toEqual([
-      expect.objectContaining({ className: "display:block" })
-    ])
+    expect(JSON.parse(manifestJSON).classNames).toEqual(['display:block'])
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/hydration/${manifestHash}.json"`
     )

@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
@@ -7,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, test } from 'vitest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
+const require = createRequire(import.meta.url)
 const expectedStaticCSS = [
   '.display\\:block{display:block}',
   '.fg-primary{color:var(--color-primary)}'
@@ -23,7 +25,15 @@ afterEach(() => {
 
 function createFixture(prefix: string) {
   const root = mkdtempSync(join(tmpdir(), `master-css-integration-lab-${prefix}-`))
-  symlinkSync(join(packageDir, 'node_modules'), join(root, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir')
+  // Resolve each declared dependency through the workspace's actual hoisted layout.
+  const pkg = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'))
+  for (const name of Object.keys({ ...pkg.dependencies, ...pkg.devDependencies })) {
+    const source = require.resolve.paths(name)?.map(directory => join(directory, name)).find(directory => existsSync(join(directory, 'package.json')))
+    if (!source) throw new Error(`Missing integration fixture dependency: ${name}`)
+    const destination = join(root, 'node_modules', name)
+    mkdirSync(dirname(destination), { recursive: true })
+    symlinkSync(source, destination, process.platform === 'win32' ? 'junction' : 'dir')
+  }
   return root
 }
 
@@ -355,8 +365,8 @@ async function buildRspack(root: string) {
 
 async function buildRsbuild(root: string) {
   const { createRsbuild } = await import('@rsbuild/core')
-  const { default: config } = await importFixtureModule<{ default: Parameters<typeof createRsbuild>[0]['config'] }>(join(root, 'rsbuild.config.mjs'))
-  const rsbuild = await createRsbuild({ cwd: root, config })
+  const { default: config } = await importFixtureModule<{ default: Parameters<typeof createRsbuild>[0]['rsbuildConfig'] }>(join(root, 'rsbuild.config.mjs'))
+  const rsbuild = await createRsbuild({ cwd: root, rsbuildConfig: config })
   await rsbuild.build()
 }
 

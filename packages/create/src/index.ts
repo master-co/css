@@ -366,7 +366,7 @@ function assertFrameworkSupportsMode(framework: MasterCSSSetupFramework, mode: M
 }
 
 function dependenciesForFramework(framework: MasterCSSSetupFramework, version: string, mode?: MasterCSSRenderingMode): MasterCSSSetupDependency[] {
-  const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
+  const dependencies: MasterCSSSetupDependency[] = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
   if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'tanstack-start' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
   if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
   if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })

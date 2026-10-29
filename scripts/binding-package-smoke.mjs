@@ -26,8 +26,8 @@ function runNPM(args, options = {}) {
 
 function exerciseEngineSession(binding) {
   const session = new binding.EngineSession(JSON.stringify({
-    version: 2,
-    languageVersion: 4,
+    version: 6,
+    languageVersion: 16,
     theme: [{
       type: 'rule', prelude: ':root,:host',
       children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }]
@@ -45,7 +45,7 @@ function exerciseEngineSession(binding) {
   }))
 
   try {
-    const ensured = JSON.parse(session.ensureClassRules(['bg:var(--stripe)']))
+    const ensured = JSON.parse(session.ensureClassRules(['background:var(--stripe)']))
     if (!ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'theme')
       || !ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'utilities')) {
       throw new Error('Native engine smoke did not emit the expected theme and utility rules.')
@@ -60,7 +60,7 @@ function exerciseEngineSession(binding) {
 
     const snapshot = JSON.parse(session.snapshot())
     if (snapshot.text.includes('--stripe:')
-      || !snapshot.text.includes('.bg\\:var\\(--stripe\\){background:var(--stripe)}')) {
+      || !snapshot.text.includes('.background\\:var\\(--stripe\\){background:var(--stripe)}')) {
       throw new Error('Native engine smoke did not preserve the utility without local theme output.')
     }
   } finally {

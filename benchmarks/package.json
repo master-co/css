@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "bun --bun vitest run tests",
     "bench:build-diagnostics": "bun --bun vitest bench build-diagnostics",
     "bench:build-performance": "bun --bun vitest bench build-performance",
     "bench:browser-lifecycle": "bun --bun vitest bench browser-lifecycle",

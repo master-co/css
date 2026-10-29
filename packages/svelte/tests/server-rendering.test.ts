@@ -52,8 +52,7 @@ describe('Svelte server hook renderer with external hydration', () => {
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-    expect(html).toContain('"className":"display:block"')
-    expect(html).toContain('"className":"fg-red"')
+    expect(html).toContain('"classNames":["fg-red","display:block"]')
     expect(countManifestScripts(html)).toBe(1)
     expect(html).toContain(".display\\:block")
     expect(html).toContain('.fg-red')
@@ -92,7 +91,7 @@ describe('Svelte server hook renderer with external hydration', () => {
     ])
 
     expect(manifestHash).toMatch(/^[0-9a-f]{8}$/)
-    expect(JSON.parse(manifestJSON).rules.map((rule: { className: string }) => rule.className))
+    expect(JSON.parse(manifestJSON).classNames)
       .toEqual(["display:block"])
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/master-css-hydration.${manifestHash}.json"`
@@ -147,7 +146,7 @@ describe('Svelte server hook renderer with external hydration', () => {
 
       expect(source).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
       expect(existsSync(file)).toBe(true)
-      expect(readFileSync(file, 'utf8')).toContain('"className":"display:block"')
+      expect(JSON.parse(readFileSync(file, 'utf8')).classNames).toEqual(['display:block'])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -174,7 +173,7 @@ describe('Svelte server hook renderer with external hydration', () => {
     )
 
     expect(html).not.toContain('"rules":[]')
-    expect(html).toContain('"className":"display:block"')
+    expect(html).toContain('"classNames":["display:block"]')
     expect(countManifestScripts(html)).toBe(1)
   })
 })

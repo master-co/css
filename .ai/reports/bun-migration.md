@@ -1,5 +1,8 @@
 # Bun Migration Validation
 
+This records the initial migration checkpoint. The subsequent requested repair and
+current passing validation are recorded in [validation-repair.md](validation-repair.md).
+
 Validated locally on macOS arm64 on 2026-10-29. The migration is implemented;
 repository-wide validation still exposes the unrelated failures listed below.
 

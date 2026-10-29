@@ -19,7 +19,7 @@ describe('@master/css-compiler/diagnostics', () => {
       writeFileSync(join(cwd, 'index.css'), '@import \"@master/css\"; .size\\:20px { color: red; }')
       writeFileSync(join(cwd, 'index.html'), '<div class="size:20px"></div>')
       const report = await createMasterCSSInspectionReport({ manifest: defaultManifest, cwd, patterns: ['index.html'] })
-      expect(report.diagnostics.some(item => item.code === 'REMOVED_PRESET_UTILITY')).toBe(false)
+      expect(report.diagnostics).toEqual([])
       expect(report.scanner.classes.usedNative).toContain('size:20px')
     } finally { rmSync(cwd, { recursive: true, force: true }) }
   })

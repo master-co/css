@@ -26,7 +26,7 @@ for (const resource of [false, true]) test.each(modes)('BH-0004 reconciles faile
   const f = fixture(resource)
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, optimizeDeps: { noDiscovery: true }, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen()
     // Model an unregistered external dependency without changing the user's watch configuration.
     const add = vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher)
@@ -45,7 +45,7 @@ for (const resource of [false, true]) test.each(modes)('BH-0004 reconciles faile
 })
 
 async function start(f: ReturnType<typeof fixture>, plugins: PluginOption = masterCSS({ mode: 'static', runtime: false }), watch?: WatchOptions | null) {
-  const server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [plugins], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] }, ...(watch !== undefined ? { watch } : {}) } })
+  const server = await createServer({ root: f.root, configFile: false, optimizeDeps: { noDiscovery: true }, logLevel: 'silent', plugins: [plugins], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] }, ...(watch !== undefined ? { watch } : {}) } })
   await server.listen()
   vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher)
   const origin = server.resolvedUrls!.local[0]
@@ -53,6 +53,8 @@ async function start(f: ReturnType<typeof fixture>, plugins: PluginOption = mast
   const response = await fetch(new URL('style.css', origin));expect(response.status).toBe(500);await response.text()
   // Complete the crawl before lifecycle tests close the environment; Vite cancels unresolved idle notifications on close.
   await server.environments.client.waitForRequestsIdle()
+  // These lifecycle cases isolate the polling fallback, not native watcher delivery.
+  await server.watcher.close()
   return { server, origin, send: vi.spyOn(server.ws, 'send'), transform: vi.spyOn(server.environments.client, 'transformRequest') }
 }
 async function stop(f: ReturnType<typeof fixture>, result?: Awaited<ReturnType<typeof start>>) {

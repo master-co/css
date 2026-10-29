@@ -23,7 +23,8 @@ for (const base of ['/', '/nested/']) {
       const child = (color: string) => `.child{@media all{padding:2rem;}color:${color};background:url("./pixel.svg")}`
       writeFileSync(join(root, 'child.css'), child('red'))
       writeFileSync(join(root, 'pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><title>red</title></svg>')
-      server = await createServer({ root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0 } })
+      // Poll real files so startup FSEvents batches cannot impersonate unrelated edits.
+      server = await createServer({ root, base, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { usePolling: true, interval: 50 } } })
       await server.listen()
       const url = new URL('style.scss', server.resolvedUrls!.local[0])
       const initial = await fetch(url, { headers: { Accept: 'text/css' } })

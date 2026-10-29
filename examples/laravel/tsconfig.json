@@ -108,8 +108,7 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "paths": {
-      "@/*": ["./resources/js/*"],
-      "ziggy-js": ["./vendor/tightenco/ziggy"]
+      "@/*": ["./resources/js/*"]
     },
     "jsx": "react-jsx"
   },
