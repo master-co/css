@@ -1,0 +1,123 @@
+/* Shared homepage editor chrome. Keep the language-service editor and delivery workbench in sync. */
+@layer components {
+  .home-editor-window {
+    position: relative;
+    overflow: clip;
+    border-radius: var(--home-radius-sheet);
+    background-color: var(--home-sheet);
+    box-shadow:
+      0 0 0 1px var(--home-hairline),
+      var(--home-contact),
+      0 14px 28px -20px var(--home-shade-near),
+      0 40px 80px -48px var(--home-shade-far);
+  }
+
+  /* Chrome: a quiet bar whose divider steps up around the open tab, so the tab reads as the file itself. */
+  .home-editor-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    height: 3rem;
+    padding-inline: clamp(0.875rem, 2cqw, 1.5rem);
+    background-color: color-mix(in oklab, var(--home-ground) 62%, var(--home-sheet));
+    /* Light from above: the bar is a shade brighter at its top edge. */
+    background-image: linear-gradient(color-mix(in oklab, var(--home-sheet) 55%, transparent), transparent 80%);
+    /* A line of light along the top edge, and the one divider under the bar. */
+    box-shadow: inset 0 1px 0 var(--home-highlight), inset 0 -1px 0 var(--home-hairline);
+  }
+
+  .home-editor-dots {
+    display: flex;
+    align-self: center;
+    gap: 0.4375rem;
+    margin-right: 0.25rem;
+
+    & > span {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(var(--home-rule), var(--home-rule-strong));
+      box-shadow: inset 0 1px 1px var(--home-highlight), 0 1px 0 var(--home-highlight);
+    }
+  }
+
+  .home-editor-tab {
+    --home-editor-tab-radius: 0.75rem;
+    --home-editor-tab-fill: var(--home-sheet);
+    --home-editor-tab-line: var(--home-hairline);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-end;
+    min-width: 0;
+    height: 2.25rem;
+    padding-inline: var(--spacing-md);
+    border-radius: var(--home-editor-tab-radius) var(--home-editor-tab-radius) 0 0;
+    font-family: var(--home-mono);
+    font-size: 0.75rem;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--home-text);
+    background-color: var(--home-editor-tab-fill);
+    /* Top and sides only: the open tab continues into the code below. */
+    box-shadow: inset 1px 0 0 var(--home-editor-tab-line), inset -1px 0 0 var(--home-editor-tab-line), inset 0 1px 0 var(--home-editor-tab-line);
+
+    /* Reverse curves turn the side contours into the bar's baseline. The extra pixel covers the side seam. */
+    &::before,
+    &::after {
+      position: absolute;
+      bottom: 0;
+      width: calc(var(--home-editor-tab-radius) + 1px);
+      height: var(--home-editor-tab-radius);
+      /* Blend each edge over half a pixel so the circular contour stays smooth at any pixel density. */
+      background-image:
+        radial-gradient(
+          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
+          transparent calc(100% - 1.25px),
+          var(--home-editor-tab-line) calc(100% - 0.75px),
+          var(--home-editor-tab-line) calc(100% - 0.25px),
+          transparent calc(100% + 0.25px)
+        ),
+        radial-gradient(
+          circle var(--home-editor-tab-radius) at var(--home-editor-tab-corner) 0,
+          transparent calc(100% - 0.25px),
+          var(--home-editor-tab-fill) calc(100% + 0.25px)
+        );
+      pointer-events: none;
+      content: '';
+    }
+
+    &::before {
+      --home-editor-tab-corner: left;
+      left: calc(-1 * var(--home-editor-tab-radius));
+    }
+
+    &::after {
+      --home-editor-tab-corner: right;
+      right: calc(-1 * var(--home-editor-tab-radius));
+    }
+
+    & svg {
+      flex: none;
+      color: var(--home-text-faint);
+    }
+  }
+
+  .home-editor-status {
+    flex: none;
+    align-self: center;
+    margin-left: auto;
+    font-family: var(--home-mono);
+    font-size: var(--home-label);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--home-text-faint);
+
+    @container (width < 26rem) {
+      display: none;
+    }
+  }
+
+}

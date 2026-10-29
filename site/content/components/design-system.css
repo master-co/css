@@ -72,6 +72,11 @@
     @container (width < 22rem) {
       width: calc(100% - 3rem);
     }
+
+    /* The 100rem column's half-width well: the same screen, set a step larger. */
+    @container (width >= 40rem) {
+      zoom: 1.16;
+    }
   }
 
   .home-theme-labels {
@@ -226,6 +231,11 @@
     /* Alone in its row, the pane is as tall as its code. */
     @media (width < 64rem) {
       height: auto;
+    }
+
+    /* Level with the theme preview's taller well beside it. */
+    @media (--xl) {
+      height: 30rem;
     }
   }
 
@@ -447,6 +457,11 @@
 
     @media (width >= 64rem) {
       height: clamp(26rem, 36vw, 32rem);
+    }
+
+    /* The 100rem column's full-width card: room for the larger palette below, with the tag's clearance kept. */
+    @media (--xl) {
+      height: 36rem;
       perspective-origin: 50% 40%;
     }
   }
@@ -465,6 +480,11 @@
     @media (width >= 64rem) {
       /* tan(atan2()) turns the ratio of two lengths into a number: full size at 72rem, smaller in narrower columns. */
       --home-palette-fit: min(1.06, tan(atan2(100cqw, 72rem)));
+
+      /* Wide columns let the field grow a step further, up to the height the scene grants it. */
+      @media (--xl) {
+        --home-palette-fit: min(1.16, tan(atan2(100cqw, 72rem)));
+      }
       grid-template-columns: 2rem repeat(var(--home-palette-columns), 2.5rem);
       grid-template-rows: 1rem repeat(var(--home-palette-rows), 1.75rem);
       gap: 4px;
@@ -1039,6 +1059,19 @@
       --home-layer-width: 13rem;
       --home-layer-depth: 7.5rem;
       --home-layers-x: 42%;
+    }
+  }
+
+  /* The 100rem column's half-width well: larger slabs, opened a little further. */
+  @container (width >= 40rem) {
+    .home-layers-scene {
+      --home-layer-width: 15.5rem;
+      --home-layer-depth: 9rem;
+      --home-layer-gap: 4.25rem;
+
+      .home-bento-card:hover & {
+        --home-layer-gap: 5rem;
+      }
     }
   }
 

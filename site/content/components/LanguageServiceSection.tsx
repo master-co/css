@@ -30,13 +30,14 @@ export default function LanguageServiceSection() {
           index="02"
           label={$('Editor')}
           title={$('Dense class strings, still readable.')}
-          body={$('The language service completes classes from your manifest, shows the CSS behind each class on hover and marks colors in place.')}>
+          body={$('The language service completes classes from your manifest, shows the CSS behind each class on hover and marks colors in place.')} />
+        <EditorFigures features={editorFeatures} icons={editorFeatures.map(feature => <HomeIllustration icon={featureIcons[feature.id]} key={feature.id} size={96} />)} model={getEditorModel()} />
+        <div className="home-editor-guide">
           <Link className="home-section-link" href="/guide/language-service">
             {$('Explore the language service')}
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
-        </HomeSectionHeader>
-        <EditorFigures features={editorFeatures} icons={editorFeatures.map(feature => <HomeIllustration icon={featureIcons[feature.id]} key={feature.id} />)} model={getEditorModel()} />
+        </div>
       </div>
     </section>
   )

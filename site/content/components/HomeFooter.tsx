@@ -1,7 +1,7 @@
 'use client'
 
 import './footer.css'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconDeviceDesktop, IconLanguage, IconMoon, IconSun } from '@tabler/icons-react'
 import CSSLogotype from '~/site/docs-shell/components/CSSLogotype'
 import LanguageSelect from '~/site/docs-shell/components/LanguageSelect'
 import Link from '~/site/docs-shell/components/Link'
@@ -11,11 +11,7 @@ import { useLocale } from '~/site/docs-shell/contexts/locale'
 import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
 import { communityNavs, footerLegalLinks, footerNavGroups } from '~/site/navigation'
 
-/**
- * The homepage's closing footer, drawn like a spec sheet: the drafting rails and rulers carry
- * on from the sections, the brand and link groups sit in hairline cells, a quiet base line holds the
- * license and preferences, and a hatched wordmark rests on the bottom edge.
- */
+/** An open closing colophon, aligned to the page's drafting rails. */
 export default function HomeFooter() {
   const $ = useTranslation()
   const themeMode = useThemeMode()
@@ -23,6 +19,7 @@ export default function HomeFooter() {
   const i18n = useI18n()
   // The preference is read on the client; the server and the first paint show the default.
   const preference = themeMode.preference ?? 'system'
+  const ThemeIcon = preference === 'light' ? IconSun : preference === 'dark' ? IconMoon : IconDeviceDesktop
   const groups = footerNavGroups.filter((group) => group.name !== 'Community')
   return (
     <footer className="home-footer">
@@ -33,7 +30,6 @@ export default function HomeFooter() {
             <Link aria-label="Master CSS" className="home-footer-logo" href="/">
               <CSSLogotype height={26} width={217} />
             </Link>
-            <p className="home-footer-tagline">{$('A markup-driven CSS orchestration language for developers and AI agents.')}</p>
             <ul className="home-footer-social">
               {communityNavs.map(({ Icon, href, name }) => (
                 <li key={name}>
@@ -45,12 +41,9 @@ export default function HomeFooter() {
             </ul>
           </div>
           <nav aria-label={$('Footer')} className="home-footer-nav">
-            {groups.map((group, index) => (
+            {groups.map((group) => (
               <div className="home-footer-group" key={group.name}>
-                <h2 className="home-footer-heading">
-                  <span className="home-footer-index">{String(index + 1).padStart(2, '0')}</span>
-                  {$(group.name)}
-                </h2>
+                <h2 className="home-footer-heading">{$(group.name)}</h2>
                 <ul className="home-footer-links">
                   {group.links.filter((link) => !footerLegalLinks.some((legal) => legal.href === link.href)).map((link) => (
                     <li key={link.href}>
@@ -63,25 +56,31 @@ export default function HomeFooter() {
           </nav>
         </div>
         <div className="home-footer-base">
-          <span className="home-footer-copyright">© {new Date().getFullYear()} Aoyue Design LLC.</span>
-          {footerLegalLinks.map((link) => (
-            <Link className="home-footer-link" href={link.href} key={link.href}>{$(link.name)}</Link>
-          ))}
-          <span className="home-footer-preferences">
+          <div className="home-footer-meta">
+            <span className="home-footer-copyright">© {new Date().getFullYear()} Aoyue Design LLC.</span>
+            <div className="home-footer-legal">
+              {footerLegalLinks.map((link) => (
+                <Link className="home-footer-link" href={link.href} key={link.href}>{$(link.name)}</Link>
+              ))}
+            </div>
+          </div>
+          <div className="home-footer-preferences">
             <label className="home-footer-select">
-              <span>{$('Theme')}: {$(preference.charAt(0).toUpperCase() + preference.slice(1))}</span>
+              <ThemeIcon aria-hidden="true" size={15} stroke={1.5} />
+              <span>{$(preference.charAt(0).toUpperCase() + preference.slice(1))}</span>
               <IconChevronDown aria-hidden="true" size={13} stroke={1.75} />
-              <ThemeSelect />
+              <ThemeSelect aria-label={$('Theme')} />
             </label>
             <label className="home-footer-select">
+              <IconLanguage aria-hidden="true" size={15} stroke={1.5} />
               <span>{i18n.nameOfLocale[locale] ?? locale}</span>
               <IconChevronDown aria-hidden="true" size={13} stroke={1.75} />
-              <LanguageSelect />
+              <LanguageSelect aria-label={$('Language')} />
             </label>
-          </span>
+          </div>
         </div>
+        <p aria-hidden="true" className="home-footer-mark">master css</p>
       </div>
-      <p aria-hidden="true" className="home-footer-mark">master css</p>
     </footer>
   )
 }

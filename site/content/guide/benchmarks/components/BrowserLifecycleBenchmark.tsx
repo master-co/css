@@ -1,6 +1,6 @@
 import * as React from 'react'
-import snapshot from '~/site/../benchmarks/browser-lifecycle/snapshot.json'
-import evidence from '~/site/../benchmarks/browser-lifecycle/long-session-evidence.json'
+import snapshot from '~/site/.generated/benchmarks/browser-lifecycle.json'
+import evidence from '~/site/.generated/benchmarks/long-session-evidence.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'
 import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 
@@ -45,8 +45,6 @@ type BrowserLifecycleEvidence = {
     version: string
   }
   modes: ModeDescriptor[]
-  scenarios: { id: string; label: string }[]
-  sourceReports: { modeId: ModeId; generatedAt: string }[]
   variantSummaries: LifecycleVariantSummary[]
 }
 
@@ -54,9 +52,6 @@ const lifecycleEvidence = evidence as BrowserLifecycleEvidence
 const browser = lifecycleEvidence.browser ?? (snapshot as { browser?: { name: string; version: string } }).browser
 const modes = lifecycleEvidence.modes
 const evidenceVariants = lifecycleEvidence.variantSummaries
-const snapshotVariants = snapshot.variants as unknown[]
-const snapshotScenarios = snapshot.scenarios as { id: string }[]
-const snapshotModes = snapshot.modes as { id: string }[]
 const modeColors: Record<ModeId, BenchmarkColor> = {
   'master-static': 'yellow',
   'master-runtime': 'blue',
@@ -114,8 +109,8 @@ function createSummaryMetrics(): BenchmarkMetric[] {
   return [
     {
       label: 'Snapshot variants',
-      value: snapshotVariants.length,
-      detail: `${snapshotScenarios.length} scenarios across ${snapshotModes.length} modes`,
+      value: snapshot.variantCount,
+      detail: `${snapshot.scenarioCount} scenarios across ${snapshot.modeCount} modes`,
       tone: 'neutral'
     },
     {

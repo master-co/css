@@ -2,7 +2,7 @@
   .home-page {
     /* Matches `.app-wrapper`, so the guides land just outside the content edges. */
     --home-gutter: 1.25rem;
-    --home-column: min(100%, 80rem);
+    --home-column: min(100%, 100rem);
     --home-rail: calc((100% - var(--home-column)) / 2 + var(--home-gutter) - 1.25rem);
 
     @media (--sm) {
@@ -77,13 +77,13 @@
 
   /* The homepage's header sits on the content column, so the logo and the last icon share the sections' edges. */
   .home-header > * {
-    /* The sections' 80rem wrapper minus its 2.5rem gutters: where the column is wide enough to matter. */
-    max-width: 75rem;
+    /* The sections' 100rem wrapper minus its 2.5rem gutters: where the column is wide enough to matter. */
+    max-width: 95rem;
   }
 
   .home-section-wrap {
     position: relative;
-    max-width: 80rem;
+    max-width: 100rem;
   }
 
   /* A hatched fill for reserved or inactive space inside a figure: an empty slot, a margin, a gap. */
@@ -138,6 +138,15 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  /*
+   * Beside a title or a title and description, the illustration centers on the text and gives back its
+   * height with negative margins, so the text alone sets the row's height and the drawing overhangs it.
+   */
+  .home-illustration-hung {
+    align-self: center;
+    margin-block: calc(var(--home-illustration-size) / -2);
   }
 
   .home-illustration .home-illustration-dark { display: none; }
@@ -380,6 +389,8 @@
   .home-bento-card-caption {
     display: grid;
     grid-template-columns: minmax(0, 44ch) 7rem;
+    /* In a wide card the copy keeps its measure and the illustration rides the card's right edge. */
+    justify-content: space-between;
     align-items: start;
     align-content: start;
     column-gap: 1.5rem;
@@ -389,7 +400,6 @@
 
   .home-bento-card-caption > .home-illustration {
     --home-illustration-size: 7rem;
-    align-self: center;
   }
 
   @container home-card (width >= 22rem) {
@@ -419,6 +429,13 @@
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
+  }
+
+  .home-bento-card-hint {
+    margin: 0.75rem 0 0;
+    font-size: var(--home-caption);
+    line-height: 1.5;
+    color: var(--home-text-faint);
   }
 
   .home-heading-link {

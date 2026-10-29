@@ -19,10 +19,10 @@ export default function HeroSection() {
           {$('An MCP server for your AI agents')}
           <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />
         </Link>
-        <h1 className="home-display">
-          <span className="home-display-line home-enter">{$('A markup-driven CSS orchestration language')}</span>
+        <h1 className="home-display" data-glass-title>
+          <span className="home-display-line">{$('A markup-driven CSS orchestration language')}</span>
           <span className="home-title-gap"> </span>
-          <span className="home-display-line home-enter">{$('for developers\u00a0and AI agents.')}</span>
+          <span className="home-display-line">{$('for developers\u00a0and AI agents.')}</span>
         </h1>
         <p className="home-enter home-hero-lead">
           {$('Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.')}

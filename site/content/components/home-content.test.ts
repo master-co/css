@@ -16,12 +16,15 @@ import { lintRuleReach } from './lint-content'
 import { deliveryLateClass, deliveryMarkup, deliveryRenderedClasses } from './delivery-content'
 // The Design system section checks its gallery classes, token values and cascade probe against the engine.
 import './design-system-content.test'
+import './delivery-content.test'
 // The AI agents section checks its MCP samples against the server source and the tooling lint.
 import './agents-content.test'
 // The Editor section checks its file, swatches, completions and hovers against the language service.
 import './editor-content.test'
 // The Workflow section checks its integrations, monorepo swatches, route samples and impact graph against the packages.
 import './workflow-content.test'
+// The Hero's glass surface must preserve letter counters, coverage and CSS-pixel distances.
+import './hero-title-mask.test'
 import { agentSession, ctaClassRows, lintRules, cascadeLayers, themeVariablesCode } from './home-content'
 
 const linter = new Linter({ configType: 'flat' })

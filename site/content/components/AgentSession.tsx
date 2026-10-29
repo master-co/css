@@ -1,11 +1,14 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { IconAlertTriangle, IconCircleCheck, IconFileCode, IconLoader2, IconPencil, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconSparkles, IconUser } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCircleCheck, IconFileCode, IconLoader2, IconPencil, IconPlayerPauseFilled, IconPlayerPlayFilled, IconShieldCheck, IconTerminal2 } from '@tabler/icons-react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import clsx from 'clsx'
+import ClaudeLogo from '~/site/assets/images/home/clients/claude.svg'
+import Image from '~/site/docs-shell/components/Image'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
+import aronImage from '~/site/public/images/authors/aron.jpg'
 import { agentSessionCalls, agentSessionResults, agentSessionStages, type AgentSessionCallId } from './agents-content'
 import { AgentsOrbit } from './AgentsFigures'
 import type { HomeCodeWindowProblem } from './home-content'
@@ -205,7 +208,7 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
 
   const tabs: { pane: Pane, label: ReactNode }[] = [
     { pane: 'chat', label: $('Session') },
-    { pane: 'code', label: <>{file}{statusMark}</> },
+    { pane: 'code', label: file },
     { pane: 'output', label: $('Output') }
   ]
 
@@ -221,6 +224,7 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
       <div className="home-agent-window" data-outro={beat === at.outro ? '' : undefined} data-pane={pane}>
         <div className="home-agent-bar home-agent-bar-chat">
           <span aria-hidden="true" className="home-agent-dots"><span /><span /><span /></span>
+          <span className="home-agent-bar-label">{$('Session')}</span>
           <span className={clsx('home-agent-server home-status', calling && running && 'home-status-live')}>@master/css-mcp</span>
         </div>
 
@@ -235,7 +239,8 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
           <div aria-label={$('Panes')} className="home-agent-tab-list" role="group">
             {tabs.map((tab) => (
               <button aria-pressed={pane === tab.pane} className="home-agent-tab" key={tab.pane} onClick={() => setPinned(tab.pane)} type="button">
-                {tab.label}
+                <span className="home-agent-tab-label">{tab.label}</span>
+                {tab.pane === 'code' && statusMark}
               </button>
             ))}
           </div>
@@ -296,7 +301,8 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
           {/* Each result arrives along the panel's top seam, the way its request left along the call's. */}
           {panel !== 'idle' && mode === 'tour' && <span aria-hidden="true" className="home-agent-panel-signal" key={`${loop}-${panel}`} />}
           <div className="home-agent-panel-header">
-            <code className="home-agent-panel-tool">{panel === 'idle' ? ' ' : agentSessionCalls[panelCall(panel)].name}</code>
+            <span className="home-agent-panel-label"><IconTerminal2 aria-hidden="true" {...icon} />{$('Output')}</span>
+            <code className="home-agent-panel-tool" title={panel === 'idle' ? undefined : agentSessionCalls[panelCall(panel)].name}>{panel === 'idle' ? ' ' : agentSessionCalls[panelCall(panel)].name}</code>
           </div>
           <div className="home-agent-panel-body">
             {/* Before the first result, the panel is a reserved slot. */}
@@ -403,7 +409,7 @@ export default function AgentSession({ classRows, code, file, fixedCode, inspect
                     data-state={index < stage || (index === stage && mode === 'chosen') ? 'done' : index === stage ? 'current' : undefined}
                     onClick={() => choose(index)}
                     type="button">
-                    <span className="home-agent-step-name">{$(name)}</span>
+                    <span className="home-agent-step-name"><span aria-hidden="true" className="home-agent-step-index">{String(index + 1).padStart(2, '0')}</span>{$(name)}</span>
                     <span aria-hidden="true" className="home-agent-step-track">
                       {index === stage && mode !== 'chosen' && (
                         <span
@@ -478,12 +484,13 @@ function RuleCode({ inspection }: { inspection: AgentSessionInspection }) {
   )
 }
 
-/** The agent speaks beside a sparkle on ink; the reader's own messages sit on the right beside a person. */
+/** Claude speaks on the left; Aron's messages and portrait sit on the right. */
 function Message({ children, tone }: { children: ReactNode, tone: 'agent' | 'user' }) {
-  const Avatar = tone === 'agent' ? IconSparkles : IconUser
   return (
     <div className={clsx('home-agent-message', `home-agent-message-${tone}`)}>
-      <span aria-hidden="true" className="home-agent-avatar"><Avatar {...icon} /></span>
+      <span aria-hidden="true" className="home-agent-avatar">
+        {tone === 'agent' ? <ClaudeLogo height={16} width={16} /> : <Image alt="" height={24} src={aronImage} width={24} />}
+      </span>
       <p>{children}</p>
     </div>
   )

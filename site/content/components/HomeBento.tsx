@@ -12,7 +12,7 @@ export function HomeBentoGrid({ className, ...props }: ComponentPropsWithoutRef<
 }
 
 /** A bento card with a heading block; `children` render below it as the visual. */
-export function HomeBentoCard({ body, children, className, href, icon, title }: { body: string, children?: ReactNode, className?: string, href: string, icon: HomeIllustrationId, title: string }) {
+export function HomeBentoCard({ body, children, className, hint, href, icon, title }: { body: string, children?: ReactNode, className?: string, hint?: string, href: string, icon: HomeIllustrationId, title: string }) {
   return (
     <article className={clsx('home-bento-card', className)}>
       <div className="home-bento-card-header">
@@ -20,8 +20,9 @@ export function HomeBentoCard({ body, children, className, href, icon, title }: 
           <div className="home-bento-card-copy">
             <h3 className="home-bento-card-title"><Link className="home-heading-link" href={href}>{title}</Link></h3>
             <p className="home-bento-card-body">{body}</p>
+            {hint && <p className="home-bento-card-hint">{hint}</p>}
           </div>
-          <HomeIllustration icon={icon} size={112} />
+          <HomeIllustration className="home-illustration-hung" icon={icon} size={112} />
         </div>
       </div>
       {children}

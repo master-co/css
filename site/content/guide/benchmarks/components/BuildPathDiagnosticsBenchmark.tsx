@@ -1,5 +1,5 @@
 import * as React from 'react'
-import snapshot from '~/site/../benchmarks/build-path-diagnostics/snapshot.json'
+import snapshot from '~/site/.generated/benchmarks/build-path-diagnostics.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'
 import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 

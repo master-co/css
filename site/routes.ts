@@ -1,20 +1,22 @@
 import { createElement as h, type ComponentType, type ReactNode } from 'react'
-import i18n from './docs-shell/common/i18n.config.js'
 import { mergeAssets, type PageAssets, type PropagatedModule } from './astro/propagated-assets'
+import { createStaticPaths, directoriesOf, localesOf, sectionOf, type ParamsModule, type RouteProps, type Section } from './astro/route-paths'
 import type { Metadata } from './docs-shell/types/Metadata'
-import type { PageParams, Props } from './docs-shell/types/Props'
+import type { Props } from './docs-shell/types/Props'
+
+export { localizePathname, sectionOf } from './astro/route-paths'
+export type { RouteProps, Section } from './astro/route-paths'
 
 /**
  * Content routes follow `content/<url>/page.tsx`. A page module default-exports a
- * React server component and may export `metadata`, `generateMetadata`,
- * or `generateStaticParams`. `layout.tsx` modules wrap
- * nested pages; `(group)` directories do not add URL segments.
+ * React server component and may export `metadata` or `generateMetadata`.
+ * Dynamic routes enumerate params through a lightweight sibling `params.ts`.
+ * `layout.tsx` modules wrap nested pages; `(group)` directories add no URL segment.
  */
 interface PageModule {
   default?: (props: Props) => ReactNode | Promise<ReactNode>
   metadata?: Partial<Metadata>
   generateMetadata?: (props: Pick<Props, 'params'>) => Promise<Partial<Metadata>> | Partial<Metadata>
-  generateStaticParams?: () => Record<string, string | string[]>[] | Promise<Record<string, string | string[]>[]>
 }
 
 interface LayoutModule {
@@ -27,25 +29,15 @@ interface SectionModule {
   bare?: boolean
 }
 
-type Segment = { kind: 'static', value: string } | { kind: 'param' | 'rest', name: string }
-
-export type Section = 'home' | 'guide' | 'reference' | 'blog' | 'brand' | 'sponsor' | 'design-system' | 'examples'
-
-export interface RouteProps {
-  file: string
-  locale: PageParams['locale']
-  params: Record<string, string | string[]>
-}
-
 type Propagated<T> = () => Promise<PropagatedModule<T>>
 
 const contentRoot = '/content/'
 // Literal globs: see astro/propagated-assets for why modules load through this query.
 const pageModules = import.meta.glob<PropagatedModule<PageModule>>('/content/**/page.tsx', { query: '?astroPropagatedAssets', import: 'default' })
+const paramsModules = import.meta.glob<ParamsModule>('/content/**/params.ts')
 const layoutModules = import.meta.glob<PropagatedModule<LayoutModule>>('/content/**/layout.tsx', { query: '?astroPropagatedAssets', import: 'default' })
 const sectionModules = import.meta.glob<PropagatedModule<SectionModule>>('/sections/*.tsx', { query: '?astroPropagatedAssets', import: 'default' })
 const siteStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/site.ts', { query: '?astroPropagatedAssets', import: 'default' })
-const unlocalizedSections = new Set<Section>(['examples'])
 const sectionShells: Record<Section, string> = {
   home: 'home',
   guide: 'guide',
@@ -57,46 +49,6 @@ const sectionShells: Record<Section, string> = {
   examples: 'examples'
 }
 
-function localesOf(section: Section): readonly string[] {
-  return unlocalizedSections.has(section) ? [i18n.defaultLocale] : i18n.locales
-}
-
-function directoriesOf(file: string) {
-  return file.slice(contentRoot.length).split('/').slice(0, -1)
-}
-
-function segmentsOf(file: string): Segment[] {
-  // Static files would publish `<route>/index.html` as the parent directory's index.
-  if (directoriesOf(file).at(-1) === 'index') throw new Error(`${file}: \`index\` is not a valid route segment`)
-  return directoriesOf(file)
-    .filter((directory) => !/^\(.+\)$/.test(directory))
-    .map((directory) => {
-      const rest = directory.match(/^\[\.\.\.(\w+)\]$/)
-      if (rest) return { kind: 'rest', name: rest[1] }
-      const param = directory.match(/^\[(\w+)\]$/)
-      if (param) return { kind: 'param', name: param[1] }
-      return { kind: 'static', value: directory }
-    })
-}
-
-export function sectionOf(file: string): Section {
-  const first = segmentsOf(file)[0]
-  return first?.kind === 'static' ? first.value as Section : 'home'
-}
-
-function pathnameOf(segments: Segment[], params: Record<string, string | string[]>) {
-  return '/' + segments.map((segment) => {
-    if (segment.kind === 'static') return segment.value
-    const value = params[segment.name]
-    if (value === undefined) throw new Error(`Missing route parameter ${segment.name}`)
-    return Array.isArray(value) ? value.join('/') : value
-  }).join('/')
-}
-
-export function localizePathname(pathname: string, locale: string) {
-  return locale === i18n.defaultLocale ? pathname : `/${locale}${pathname === '/' ? '' : pathname}`
-}
-
 async function loadPropagated<T>(modules: Record<string, Propagated<T>>, file: string) {
   const load = modules[file]
   if (!load) throw new Error(`Unknown module ${file}`)
@@ -104,25 +56,9 @@ async function loadPropagated<T>(modules: Record<string, Propagated<T>>, file: s
   return { propagated, module: await propagated.getMod() }
 }
 
-async function loadModule(file: string) {
-  return (await loadPropagated(pageModules, file)).module
-}
-
 /** Every content page × locale, as Astro `getStaticPaths()` entries. */
 export async function getStaticPaths() {
-  const paths: { params: { path: string | undefined }, props: RouteProps }[] = []
-  for (const file of Object.keys(pageModules).sort()) {
-    const module = await loadModule(file)
-    const segments = segmentsOf(file)
-    const paramSets = module.generateStaticParams ? await module.generateStaticParams() : [{}]
-    for (const params of paramSets) {
-      for (const locale of localesOf(sectionOf(file))) {
-        const pathname = localizePathname(pathnameOf(segments, params), locale)
-        paths.push({ params: { path: pathname.slice(1) || undefined }, props: { file, locale: locale as RouteProps['locale'], params } })
-      }
-    }
-  }
-  return paths
+  return createStaticPaths(Object.keys(pageModules), paramsModules)
 }
 
 export type LoadedRoute = { kind: 'page', metadata: Partial<Metadata>, element: ReactNode, assets: PageAssets, bodyClass?: string, bare?: boolean, locales: readonly string[] }

@@ -1,10 +1,11 @@
 'use client'
 
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
-import { IconVariable } from '@tabler/icons-react'
+import { IconFileCode, IconPlayerPauseFilled, IconPlayerPlayFilled, IconVariable } from '@tabler/icons-react'
 import { useInView } from 'react-intersection-observer'
 import { useMediaQuery } from 'usehooks-ts'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
+import { HomeEditorBar, HomeEditorLights, HomeEditorTab, HomeEditorWindow } from './HomeEditorWindow'
 import { filterCompletions, type EditorClass, type EditorFeature, type EditorModel, type EditorRole, type EditorSceneId } from './editor-content'
 
 /** A color decoration takes two character cells, so every column after it moves two to the right. */
@@ -74,6 +75,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
   const scenes = useMemo(() => createScenes(model, geometry), [model, geometry])
   const [sceneIndex, setSceneIndex] = useState(0)
   const [touring, setTouring] = useState(true)
+  const [paused, setPaused] = useState(false)
   const [loop, setLoop] = useState(0)
   const [held, setHeld] = useState(false)
   const [frame, setFrame] = useState<Frame>(() => scenes.complete.frame(0, false))
@@ -90,12 +92,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
   const sceneId = features[sceneIndex].id
   const scene = scenes[sceneId]
-  const playing = inView && !reduceMotion && (!touring || !held)
-
-  const setRoot = useCallback((node: HTMLDivElement | null) => {
-    rootRef.current = node
-    inViewRef(node)
-  }, [inViewRef])
+  const playing = inView && !paused && !reduceMotion && (!touring || !held)
 
   const show = useCallback((next: Frame) => {
     const key = JSON.stringify(next)
@@ -145,9 +142,25 @@ export default function EditorFigures({ features, icons, model }: { features: re
   const choose = (index: number) => {
     elapsedRef.current = 0
     setTouring(false)
+    setPaused(false)
+    setReaderPicker(false)
+    setInspected(null)
     setReaderColor(null)
     setSceneIndex(index)
-    setProgress(0)
+    setLoop((value) => value + 1)
+    show(scenes[features[index].id].frame(reduceMotion ? scenes[features[index].id].hold : 0, false))
+    setProgress(reduceMotion ? 1 : 0)
+  }
+
+  const togglePlayback = () => {
+    if (touring && !paused) {
+      setPaused(true)
+      return
+    }
+    if (!touring) elapsedRef.current = 0
+    setTouring(true)
+    setPaused(false)
+    setHeld(false)
   }
 
   const inspect = useCallback((index: number | null) => {
@@ -188,7 +201,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
 
   return (
     <div
-      ref={setRoot}
+      ref={rootRef}
       className="home-editor-stage"
       data-scene={sceneId}
       onBlur={(event) => {
@@ -197,22 +210,42 @@ export default function EditorFigures({ features, icons, model }: { features: re
       onFocus={() => setHeld(true)}
       onPointerEnter={() => setHeld(true)}
       onPointerLeave={() => setHeld(false)}>
-      <div className="home-editor-frame home-marks">
-        <div
-          aria-hidden="true"
-          className="home-editor-window"
-          onPointerEnter={() => setInside(true)}
-          onPointerLeave={() => {
-            setInside(false)
-            setInspected(null)
-            setReaderPicker(false)
-          }}>
-          <div className="home-editor-bar">
-            <span className="home-editor-dots"><span /><span /><span /></span>
-            <span className="home-editor-tab">{model.fileName}</span>
+      <div className="home-editor-chapters" role="group" aria-label={$('Language service features')}>
+        {features.map((feature, index) => (
+          <button
+            key={feature.id}
+            aria-label={$(feature.title)}
+            aria-describedby={`${descriptionId}-${index}`}
+            aria-pressed={index === sceneIndex}
+            className="home-editor-chapter"
+            data-touring={touring && !reduceMotion ? '' : undefined}
+            onClick={() => choose(index)}
+            type="button">
+            <span aria-hidden="true" className="home-editor-chapter-track"><span className="home-editor-chapter-progress" /></span>
+            {icons[index]}
+            <span className="home-editor-chapter-title">{$(feature.title)}</span>
+            <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
+          </button>
+        ))}
+      </div>
+      <div ref={inViewRef} className="home-editor-frame home-marks">
+        <HomeEditorWindow>
+          <HomeEditorBar aria-hidden="true">
+            <HomeEditorLights />
+            <HomeEditorTab><IconFileCode size={14} stroke={1.75} />{model.fileName}</HomeEditorTab>
             <span className="home-editor-status">{$('Ln {line}, Col {column}').replace('{line}', String(caretLine + 1)).replace('{column}', String(frame.caret[1] + 1))}</span>
-          </div>
-          <div className="home-editor-body" data-pane={hoverIndex !== null || menuOpen || pickerOpen ? '' : undefined} style={bodyStyle}>
+          </HomeEditorBar>
+          <div
+            aria-hidden="true"
+            className="home-editor-body"
+            data-pane={hoverIndex !== null || menuOpen || pickerOpen ? '' : undefined}
+            onPointerEnter={() => setInside(true)}
+            onPointerLeave={() => {
+              setInside(false)
+              setInspected(null)
+              setReaderPicker(false)
+            }}
+            style={bodyStyle}>
             <div className="home-editor-gutter">
               {model.lines.map((_, index) => <span key={index} data-current={index === caretLine ? '' : undefined}>{index + 1}</span>)}
             </div>
@@ -253,37 +286,17 @@ export default function EditorFigures({ features, icons, model }: { features: re
               <DrawnPointer pointer={inside ? null : frame.pointer} pressed={frame.pressed} />
             </div>
           </div>
-        </div>
-      </div>
-      <div className="home-editor-chapters" role="group" aria-label={$('Language service features')}>
-        {features.map((feature, index) => (
-          <button
-            key={feature.id}
-            aria-label={$(feature.title)}
-            aria-describedby={`${descriptionId}-${index}`}
-            aria-pressed={index === sceneIndex}
-            className="home-editor-chapter"
-            data-done={touring && index < sceneIndex ? '' : undefined}
-            data-touring={touring ? '' : undefined}
-            onClick={() => choose(index)}
-            type="button">
-            <span aria-hidden="true" className="home-editor-chapter-track"><span className="home-editor-chapter-progress" /></span>
-            <span className="home-editor-chapter-heading">
-              <span className="home-editor-chapter-title">{$(feature.title)}</span>
-              {icons[index]}
-            </span>
-            <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
-          </button>
-        ))}
-      </div>
-      <div aria-hidden="true" className="home-editor-caption">
-        {features.map((feature, index) => (
-          <div key={feature.id} className="home-editor-caption-item" data-active={index === sceneIndex ? '' : undefined}>
-            <p className="home-editor-caption-title">{$(feature.title)}</p>
-            {icons[index]}
-            <p className="home-editor-caption-body">{$(feature.body)}</p>
+          <div className="home-editor-footer">
+            <span aria-hidden="true" className="home-editor-file-type"><IconFileCode size={14} stroke={1.75} />HTML</span>
+            <span aria-hidden="true" className="home-editor-scene"><span>{String(sceneIndex + 1).padStart(2, '0')} / {String(features.length).padStart(2, '0')}</span>{$(features[sceneIndex].title)}</span>
+            {!reduceMotion && (
+              <button className="home-editor-playback" onClick={togglePlayback} type="button">
+                {touring && !paused ? <IconPlayerPauseFilled aria-hidden="true" size={12} /> : <IconPlayerPlayFilled aria-hidden="true" size={12} />}
+                {touring && !paused ? $('Pause demo') : $('Play demo')}
+              </button>
+            )}
           </div>
-        ))}
+        </HomeEditorWindow>
       </div>
     </div>
   )

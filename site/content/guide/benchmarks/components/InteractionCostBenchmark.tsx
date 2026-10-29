@@ -1,5 +1,5 @@
 import * as React from 'react'
-import snapshot from '~/site/../benchmarks/interaction-cost/snapshot.json'
+import snapshot from '~/site/.generated/benchmarks/interaction-cost.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'
 import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 
@@ -118,7 +118,7 @@ function formatNumber(value: number, maximumFractionDigits: number) {
 }
 
 function createSummaryMetrics(): BenchmarkMetric[] {
-  const variantCount = snapshot.variants.length
+  const variantCount = snapshot.variantCount
   const primaryExisting = getPrimaryResult().scenarios['existing-class-toggle']
   const sampleCount = primaryExisting['master-runtime']?.interaction.readyMs.sampleCount ?? 0
   const progressiveAdoptedCount = results.filter((result) => (

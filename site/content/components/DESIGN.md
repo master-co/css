@@ -23,12 +23,12 @@ The page reads as a sequence, each section answering the next question a reader 
 | — | Hero | What is it? | The positioning line over a sheet of gold silk |
 | 01 | Design system | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
 | 02 | Editor | Can I read it? | One editor: completion, hover, focused highlighting and color picker in turn |
-| 03 | Rendering | How does CSS reach the browser? | Open drawing: three stations, one in focus per moment, the engine where the mode generates CSS, and one control area for mode and moment |
+| 03 | Rendering | How does CSS reach the browser? | A split editor, a processing rail and a live mode explainer that uses the generated CSS |
 | 04 | CSS size | What does it cost? | Bar chart from the benchmark snapshot |
 | 05 | Lint | How is it checked? | Rule bench: rules beside an editor, with the CLI and MCP server reporting the same check |
 | 06 | AI agents | Can agents use it safely? | Agent session window, joined by a beam to a liquid-glass MCP server on a floor of classes |
 | 07 | Workflow | Does it fit my stack? | Frameworks, impact graph, monorepo, routes |
-| — | Call to action | How do I start? | A framed band: the invitation, Get started and the install command |
+| — | Call to action | How do I start? | A centered invitation, Get started and the install command |
 
 Figures alternate in weight (colorful bento, quiet cards, diagram, chart, editor, session, logos) so no two neighbours look alike.
 
@@ -123,7 +123,7 @@ Plain and specific, the way the docs would say it. Say what the thing is or does
 
 ## Data
 
-- Charts are gray. Bars, gridlines and ticks use text and rule tokens; the Master CSS row alone uses the signal.
+- The CSS size chart uses each brand's colors for its gradient bars, with the Master CSS row in gold. Gridlines, ticks and text stay neutral. Bars share a square left edge; a slow brightness pulse never changes their measured lengths and stops for reduced motion.
 - Third-party logos and brand icons keep their own colors; the gray system governs surfaces, lines and text, not other people's marks.
 - Every figure that shows a number names its source and date, such as the benchmark snapshot, and the tests read the same file.
 
@@ -167,9 +167,10 @@ One bento grid of six columns holds all five cards: themes on the first row, pri
 
 ## Editor stage
 
-Section 02 is one editor window standing directly on the page ground at the content width: one contour, a contact shadow and a long soft shadow, no shell. Below it, four features sit in open columns, a title and one sentence each, under a tour hairline (stories on phones); each sentence is also its button's accessible description.
+Section 02 introduces four features in open columns above one editor window standing directly on the page ground at the content width: one contour, a contact shadow and a long soft shadow, no shell. Each feature has a full-opacity illustration at the top left, a title and one sentence; each sentence is also its button's accessible description. Shared grid rows align the illustrations, titles and descriptions. At least 64rem of available width gives four columns with 96px illustrations; narrower layouts use two by two with 80px illustrations, falling to 64px below 40rem. Phones retain every title and description. The quiet guide link follows the window on the left rail.
 
-- The chrome is quiet: a bar lit along its top edge, and an open tab that continues into the code. The status shows only the caret's line and column.
+- The chrome is quiet: a bar lit along its top edge, domed neutral window lights, and an open file tab that continues into the code. A faint seam separates the line gutter. The top status shows the caret's line and column; a slim footer holds the file type, current feature and an explicit play/pause control. Reduced motion omits playback and reveals the selected scene immediately.
+- The selected feature's hairline is ink; while touring it fills in gold. Hover gives the open column a faint wash, and keyboard focus has an ink ring. Clicking a feature replays it, including the current feature, and leaves it at its revealed moment; Play resumes the tour from that feature. Playback observes the window's visibility so the feature list alone does not start the tour.
 - The window holds one dense file, and a caret and a drawn pointer walk through the language service in turn: type a completion while the real list narrows, inspect a class with a state and a query, step down the file so each class string lights only while the caret is in it, then drag the color picker on the one literal.
 - Class strings rest in a quiet string color; the lit one takes role colors on a faint signal wash, and the hover card colors its CSS with the same roles so each part of a class finds its rule.
 - Panes unfold from their line like a hinge and settle flat. Their edges fall between lines of code, never through a glyph, and a soft shadow lifts them off it. While one is open, the other lines turn one neutral gray (at least 3:1). Detail text breaks only after commas, so a `var(--…)` never splits. Hover CSS decodes in from the class matrix's glyphs.
@@ -178,14 +179,15 @@ Section 02 is one editor window standing directly on the page ground at the cont
 
 ## Rendering stage
 
-Section 03 is a technical drawing on an artboard carrying the standard corner marks, with a little top padding so the station names clear them: three named stations (Build, Server, Browser) on the page's three-column grid, and two rows, the page's markup on top and its CSS below.
+Section 03 is one workbench using `HomeEditorWindow`, the same chrome as section 02. From 52rem, HTML sits above CSS on the left, a narrow processing rail occupies the middle, and the preview fills the right. Smaller screens keep both code surfaces, then the processor and preview, in a vertical reading order.
 
-- The station the timeline is at is drawn in full, its panels as sheets and its CSS raised; the other stations recede to ground-colored outlines with faint content, so each moment has one path to read.
-- Each CSS panel grows with its rules (minified, one per line, as the engine emits them) inside a slot sized for its tallest state, and the reserved space a panel does not fill is hatched: the figure's only hatch, so it always means room a station keeps for CSS it does not hold.
-- Hairline flow lines with arrowheads carry files between stations and run from the markup through the engine into the CSS it writes.
-- The engine, a portal ring with the Master CSS mark, appears only where the mode generates CSS and turns gold only while it writes; a progressive page's browser engine is a dashed rim, a dashed line and the word `deferred` until a class outside the hydration manifest loads it. One custom property, `--home-delivery-t`, drives the film; every element carries the moment it appears (`--at`).
-- One control area sits under the artboard on the same grid: the mode as the page's segmented control and the player's four equal moments on one baseline, then the chosen mode's title, sentence and guide link. Below 52rem the controls come first and one station follows, switching as a cut; where the mode runs no engine in that station, its CSS panel sits 12px under the markup panel and the reserved space falls below it.
-- The server renders the last moment, so the drawing reads without script and under reduced motion. Elements created in the browser carry data attributes, never new classes, so the page's pre-rendered CSS keeps its engine deferred.
+- `index.html` includes doctype, html, head and body. Its head gains a stylesheet link, server-generated style with hydration metadata, or runtime-created style, according to the selected mode. The reference and CSS filename can reveal each other using local focus and a small text highlight. A long dashed wire never crosses a code surface. Nonessential application markup is folded with an ellipsis.
+- The preview is the mode explanation itself: the existing 64px theme-specific WebP (56px at the narrowest size), mode title, description and guide link live inside one example card. All mode copy comes from `deliveryModes`; it is not repeated beneath the controls. Native radio-derived custom properties switch the shadow-root content even without JavaScript. Each mode reserves the same space, so its text and icon never move the workbench.
+- The late `bg-amber-10` class changes that card. “Add a class” and the preview's Apply/Replay action run the same chapter. Source and generated selectors, properties and values receive a short highlight that follows their text; indentation, line numbers, braces and trailing whitespace remain unpainted. Static flashes its existing rule again when it is reused.
+- CSS displays actual Rust-engine rules in stylesheet order. Static pre-generates the late rule; progressive starts with first-screen rules, loads its deferred runtime for the uncovered class, then generates the rule; runtime generates rules in the browser. The preview applies those same rules in an isolated declarative shadow root using real utility classes and timed CSSOM updates. An external stylesheet packet is never shown for runtime rendering.
+- The processor is labelled only Compiler, Server or Runtime. Progressive changes from Server to a deferred/loading/ready Runtime. Measured solid curves occupy the rail and preview gutter: class capsules enter the processor, small light points return to CSS, and the resulting stylesheet or applied rule reaches the preview. Desktop class delivery lands on the preview's corresponding class text; narrow screens use a short downward entry. Caps remain clear of the engine labels and source text. Gold marks active generation, the changed words and the applied result.
+- Code regions support keyboard focus and local scrolling. Reading by pointer, wheel or keyboard pauses playback and ends automatic mode changes. On phones, reaching a code region's vertical boundary continues scrolling the page. Each mode input sits inside its visible tab, so activating it does not scroll back to a hidden input above the figure. Pending application preserves the preview button's focus.
+- Panes and the preview canvas reserve their largest state. Controls follow the desktop figure; below 52rem they precede it. Native radios work without JavaScript, and the server renders a completed scene. Reduced motion keeps that scene without autoplay. Pause, hidden tabs and leaving view stop the clock and flights; resizing clears stale coordinates. Decorative flight elements use data attributes, never new classes.
 
 ## CSS size
 
@@ -206,8 +208,8 @@ A rule bench that leads with the check. The rules are a list of titles hung from
 
 A framed tool window, and below it, open on the page, the server it calls as a quiet accent.
 
-- The window is one sheet with a 1px contour outside it, elevation-3 and a top light over its panes. One 1.25rem inset aligns the chrome, the file tab (a real editor tab that opens into the code), the line gutter, the transcript, the output and the step bar (Manifest, Inspect, Lint, Preview, Apply). Every inline icon is 14px at a 1.75 stroke, and every seam is a single 1px line. A narrow window keeps the traffic lights and shows one pane at a time behind the same folder tabs; the step bar names all five steps at every width.
-- The agent speaks beside a sparkle avatar on ink, the reader on the right. The agent's calls and edits hang in its turn on one icon column, each call with its own tool icon and a status glyph; the latest call opens to its `tools/call` arguments and result. Before the first result, the output is a hatched reserved slot.
+- The window is one sheet with a 1px contour outside it, elevation-3 and a top light over its panes. One fluid 16–28px inset aligns the chrome, the file tab (a real editor tab that opens into the code), the line gutter, the transcript, the output and the step bar (Manifest, Inspect, Lint, Preview, Apply). Session and Output labels distinguish the conversation and results. Every inline icon is 14px at a 1.75 stroke, and every seam is a single 1px line. Below 56rem the window shows one pane at a time behind folder tabs; below 24rem the traffic lights give their space to the tabs. The step bar names all five steps at every width, adds numbers on wide windows, and gives its controls at least 44px of height.
+- The agent speaks beside Claude's brand mark, with Aron's messages and shared blog portrait on the right. The agent's calls and edits hang in its turn on one icon column, each call with its own tool icon and a status glyph; the latest call opens to its `tools/call` arguments and result. Before the first result, the output is a hatched reserved slot.
 - Each state shares one grid cell and fully fades out before the next fades in, so nothing moves and no two states ever show at once. The inspection card docks in the space the diff reserves. When the digests match, both catch the gold and a shield seal lands, then settles to the ok tone.
 - The server is a wide, low ellipse on a lit floor, with a frosted hatched rim, a dial of evenly spaced 1px ticks drawn flat along the ring's outline, and artboard corner marks on the content column's edges, set apart from the window and joined to it by a beam. The floor's classes stay almost invisible and show only as a call's wave reads them. Client marks and the server are liquid glass: a thin tint, a sheen, thickness at the lower edge, and one 1px rim bright at the top-left, at elevation-1 (the server at elevation-2). Each call falls down the beam as a gold comet, the server's rim turns gold, a wave lights the floor, and the reply climbs back in ink. It carries no title or copy of its own.
 - Gold appears only while a call is in flight or at the hash match. Results are real and tested against the preset, the tooling lint and `server.ts`. Reduced motion shows the finished session, every step selectable, and a still scene.
@@ -223,11 +225,11 @@ Each Workflow card follows the Design system card: a title, one plain sentence a
 
 ## The call to action
 
-The close is plain: a framed band on the page ground with the two-line invitation and, under it, the two ways in (Get started, and the install command). One hairline frame, nothing inside it but the copy and the actions: no marks, no hatch, no playground. Below 48rem the two lines run on as one balanced sentence, the actions stack at full width, and the band narrows its inset so the install command stays on one line.
+The close centers on the hero's axis: a hairline panel with a quiet opening line above a large, full-strength destination, then the two ways in (Get started, and the install command). Typography and generous whitespace carry the composition, without an illustration. A faint wash of the hero's gold light meets a thin horizon along the panel's lower edge. Each title line balances independently; below 40rem the actions stack at one shared width, including the command's island wrapper. The command uses a solid recessed surface here, and the panel narrows its inset so the complete command stays on one line.
 
 ## The footer
 
-The homepage closes on its own footer (`HomeFooter`), drawn like a spec sheet. The rails and rulers carry on from the sections, and the sheet's top rule lies on the guide that closes the last section, so the cells hang from one line. The logotype, the positioning line and the community icons (a row of hairline squares, like a tool palette) fill the first cell, and the link groups follow in hairline cells, each headed by a mono index and name. One quiet base line holds the copyright, the license, and the theme and language choices (native selects under plain text); on phones each takes its own row. The wordmark rests on the bottom edge, set large across the column and engraved with 1px diagonal hatching over a faint tint, fading toward the edge like a drafted title block: a signature, not a link. The docs keep the shared footer.
+The homepage closes on its own footer (`HomeFooter`), an open colophon held by whitespace. The logotype and spaced community icons sit on the left; three navigation columns align on the right, with quiet mono headings and generous link hit areas. On phones, Docs occupies the left column while Resources and More stack on the right. A single hairline separates navigation from the copyright and grouped legal links; theme and language are native selects with icons, explicit accessible names and outlined controls. Links underline on hover, every control has a visible keyboard focus ring, and reduced motion removes transitions. The drafting rails continue from the page and fade toward a lightly engraved wordmark sized to the content column at the bottom edge. The docs keep the shared footer.
 
 ## Figures under the pointer
 
