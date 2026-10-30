@@ -281,9 +281,10 @@ test(`${browserName}: pages without a document sidebar keep a visible desktop se
         await noOverflow(page)
       }
       await trigger.click()
-      const input = page.getByRole('combobox')
+      const dialog = page.getByRole('dialog', { name, exact: true })
+      const input = dialog.getByRole('combobox', { name, exact: true })
       await input.pressSequentially('padding')
-      await page.getByRole('option').first().waitFor()
+      await dialog.getByRole('option').first().waitFor()
       await input.press('Escape')
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
       assert.deepEqual(errors, [])
