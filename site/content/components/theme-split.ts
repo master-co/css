@@ -42,6 +42,9 @@ export function mountThemeSplit(root: HTMLElement, artboard: HTMLElement, descri
       slider.setAttribute('aria-valuetext', describe(light, dark))
       lightLabel.textContent = light >= 16 ? `${light}%` : ''
       darkLabel.textContent = dark >= 16 ? `${dark}%` : ''
+      // The code lines quote the same whole percents as the ruler, so the two always sum to 100.
+      lightToken?.style.setProperty('--home-token-percent', String(light))
+      darkToken?.style.setProperty('--home-token-percent', String(dark))
       rounded = light
     }
     lightLabel.style.left = `${split / 2}%`
