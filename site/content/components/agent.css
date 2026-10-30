@@ -1156,32 +1156,15 @@
     background-color: var(--home-agent-chrome);
   }
 
+  /* The session's one control is cut from the hero's stone. */
   .home-agent-play {
     display: grid;
     flex: none;
     place-content: center;
+    box-sizing: border-box;
     width: 2.75rem;
     height: 2.75rem;
-    border: 0;
     border-radius: var(--radius-pill);
-    color: var(--home-text);
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
-    cursor: pointer;
-    transition: box-shadow var(--home-quick) var(--home-ease);
-
-    &:hover {
-      box-shadow: 0 0 0 1px var(--home-rule-strong), var(--home-elevation-1);
-    }
-
-    &:active {
-      box-shadow: 0 0 0 1px var(--home-rule), var(--home-pressed);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
-    }
   }
 
   .home-agent-step-list {

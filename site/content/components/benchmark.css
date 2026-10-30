@@ -10,7 +10,7 @@
     gap: var(--spacing-xl);
   }
 
-  .home-bench-layout[data-visible] {
+  .home-bench-layout[data-visible][data-present] {
     --home-bench-pulse-state: running;
   }
 
@@ -239,6 +239,41 @@
     color: var(--home-text);
   }
 
+  /*
+   * The Master CSS bar is a ribbon of the hero's silk: a fold that deepens at both ends, and a satin
+   * highlight that stretches along the ribbon and stays narrow across it.
+   */
+  .home-bench-row-signal .home-bench-bar {
+    background:
+      linear-gradient(180deg, transparent 12%, color-mix(in oklab, var(--silk-sheen) 85%, transparent) 34%, transparent 58%),
+      linear-gradient(90deg, var(--silk-shadow), var(--silk-body) 28%, color-mix(in oklab, var(--silk-body) 55%, var(--silk-sheen)) 64%, var(--silk-body) 86%, var(--silk-shadow));
+    box-shadow: inset 0 -1px 0 color-mix(in oklab, var(--silk-shadow) 70%, transparent), 0 2px 6px -3px color-mix(in oklab, var(--silk-shadow) 80%, transparent);
+
+    /* A phone's ribbon is too short for folds at both ends; it keeps only the satin along its length. */
+    @media (width < 40rem) {
+      background:
+        linear-gradient(180deg, transparent 12%, color-mix(in oklab, var(--silk-sheen) 85%, transparent) 34%, transparent 58%),
+        linear-gradient(90deg, var(--silk-body), color-mix(in oklab, var(--silk-body) 55%, var(--silk-sheen)) 70%, var(--silk-body));
+      box-shadow: inset 0 -1px 0 color-mix(in oklab, var(--silk-shadow) 70%, transparent);
+    }
+
+    /* The breath of light travels along the ribbon like the lamp moving over silk; only its translation animates. */
+    &::after {
+      inset: 0 auto 0 0;
+      width: 300%;
+      background: linear-gradient(90deg, transparent 36%, var(--silk-sheen) 50%, transparent 64%);
+      mix-blend-mode: soft-light;
+      opacity: 0.9;
+      translate: -66.667% 0;
+
+      @media (--motion-safe) {
+        animation-name: home-bench-satin;
+        animation-duration: 9s;
+        animation-timing-function: var(--home-ease-inout);
+      }
+    }
+  }
+
   /* The axis shares the bars' zero and leaves the brand column outside the measurement. */
   .home-bench-axis {
     display: grid;
@@ -261,4 +296,14 @@
 @keyframes home-bench-pulse {
   0%, 100% { opacity: 0.08; }
   50% { opacity: 0.4; }
+}
+
+@keyframes home-bench-satin {
+  from {
+    translate: -66.667% 0;
+  }
+
+  to {
+    translate: 0 0;
+  }
 }

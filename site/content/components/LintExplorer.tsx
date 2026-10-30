@@ -330,6 +330,7 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
               </button>
             )}
           </div>
+          <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
         </div>
 
         <div className="home-lint-surfaces">
@@ -535,6 +536,7 @@ function LintPane({ active, children, icon: Icon, litLabel, name, note, phase, r
           </div>
         ))}
       </div>
+      <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
     </section>
   )
 }

@@ -9,7 +9,7 @@ export default function WorkflowRepo() {
       <div className="home-wf-repo-stage home-wf-scene">
         {workflowProjects.map((project, index) => (
           <div className="home-wf-repo-app" key={project.directory}>
-            <span aria-hidden="true" className="home-wf-anchor home-wf-repo-entry" data-wf-anchor={`entry-${index}`}>index.css</span>
+            <span aria-hidden="true" className="home-stone home-stone-quiet home-wf-anchor home-wf-repo-entry" data-wf-anchor={`entry-${index}`}>index.css</span>
             <button
               aria-label={`${project.directory}: ${project.file}, ${workflowProjectClass} → ${project.primary}`}
               aria-pressed={index === 0}
@@ -24,7 +24,7 @@ export default function WorkflowRepo() {
             </button>
           </div>
         ))}
-        <span className="home-wf-anchor home-wf-manifest home-wf-repo-root" data-wf-anchor="shared"><code>index.css</code></span>
+        <span className="home-stone home-stone-quiet home-wf-anchor home-wf-manifest home-wf-repo-root" data-wf-anchor="shared"><code>index.css</code></span>
         <WorkflowCanvas figure="repo" />
       </div>
     </div>

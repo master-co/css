@@ -40,12 +40,14 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
 }) {
   const [activeModeId, setActiveModeId] = useState(modes[0].id)
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.34 })
+  // The bars' ambient light runs only while the chart is on screen.
+  const { ref: presenceRef, inView: present } = useInView()
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
   useEffect(() => { chartHydrated = true }, [])
   return (
-    <div className="home-bench-layout" data-visible={inView || undefined} ref={ref}>
+    <div className="home-bench-layout" data-present={present || undefined} data-visible={inView || undefined} ref={(element) => { ref(element); presenceRef(element) }}>
       <div className="home-bench-summary">
         <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
         <p className="home-annotation home-bench-caption">{labels.caption} <span className="white-space:nowrap">· {labels.date}</span></p>

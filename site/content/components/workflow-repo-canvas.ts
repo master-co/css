@@ -30,7 +30,8 @@ export function drawRepository(d: Drawing) {
     plate(d, 8, y + 59, w - 79, 48, 4.5, selected ? 1 : .8)
     wire(d, locals[i], selected ? c.quiet : c.line, .9)
     if (selected) signal(d, locals[i], .9, .62)
-    chip(d, entry.x, entry.y, entryW, 34, true, selected, 7)
+    // Only the entry the selected file resolves through is cut from stone; the other reads as a plain file.
+    chip(d, entry.x, entry.y, entryW, 34, selected, selected, 7)
     chip(d, file.x, file.y, fileW, 58, false, selected, 8)
     d.anchor(`entry-${i}`, entry.x, entry.y, entryW, 34)
     d.anchor(`project-${i}`, file.x, file.y, fileW, 58)

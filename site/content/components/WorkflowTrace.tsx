@@ -14,7 +14,7 @@ export default function WorkflowTrace() {
           <button
             aria-label={kind === 'definition' ? `${label}: ${workflowTraceChange.before} → ${workflowTraceChange.after}` : undefined}
             aria-pressed="false"
-            className={clsx('home-wf-anchor home-wf-trace-node', `home-wf-trace-node-${kind}`)}
+            className={clsx('home-wf-anchor home-wf-trace-node', `home-wf-trace-node-${kind}`, kind === 'definition' && 'home-stone home-stone-quiet')}
             data-node={index}
             data-wf-anchor={`node-${index}`}
             data-wf-pick={index}

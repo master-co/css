@@ -235,6 +235,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
       onPointerOver={(event) => event.pointerType === 'mouse' && setHovered(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
       onPointerLeave={() => setHovered(false)}
       ref={ref}>
+      <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
       <div className="home-agent-window" data-outro={beat === at.outro ? '' : undefined} data-pane={pane}>
         <div className="home-agent-bar home-agent-bar-chat">
           <span aria-hidden="true" className="home-agent-dots"><span /><span /><span /></span>
@@ -422,7 +423,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
 
         <div className="home-agent-steps">
           {!reduceMotion && (
-            <button aria-label={mode === 'tour' ? $('Pause the session') : $('Play the session')} className="home-agent-play" onClick={toggle} type="button">
+            <button aria-label={mode === 'tour' ? $('Pause the session') : $('Play the session')} className="home-agent-play home-lit home-stone home-stone-button home-stone-quiet" suppressHydrationWarning onClick={toggle} type="button">
               {mode === 'tour' ? <IconPlayerPauseFilled aria-hidden="true" size={12} /> : <IconPlayerPlayFilled aria-hidden="true" size={12} />}
             </button>
           )}

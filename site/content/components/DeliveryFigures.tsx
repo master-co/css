@@ -583,7 +583,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
   return (
     <div className="home-delivery-player">
       {/* Every state renders on the server: the page runs on pre-rendered CSS, and a class that first appears in the browser would start its engine. */}
-      <button aria-label={playLabel} className="home-delivery-play" data-playback={playback} hidden={!motion} onClick={() => controls.current?.toggle()} title={playLabel} type="button">
+      <button aria-label={playLabel} className="home-delivery-play home-lit home-stone home-stone-button home-stone-quiet" suppressHydrationWarning data-playback={playback} hidden={!motion} onClick={() => controls.current?.toggle()} title={playLabel} type="button">
         <IconPlayerPauseFilled aria-hidden="true" data-icon="playing" size={12} stroke={1.75} />
         <IconPlayerPlayFilled aria-hidden="true" data-icon="paused" size={12} stroke={1.75} />
         <IconRotate aria-hidden="true" data-icon="ended" size={13} stroke={1.75} />

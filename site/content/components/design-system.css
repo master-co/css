@@ -100,6 +100,11 @@
     }
   }
 
+  /* On a dark page the dark copy would melt into the well, so its edge takes a firmer line and a top light. */
+  .dark .home-theme-copy-dark .home-theme-screen::after {
+    box-shadow: inset 0 0 0 1px var(--home-rule-strong), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+
   /* The split: a 1px line that overshoots the artboard a little, the way a measured guide does. */
   .home-theme-divider {
     position: absolute;
@@ -117,28 +122,34 @@
     }
   }
 
-  /* A slim ink handle on the line, with a two-line grip. */
-  .home-theme-knob {
-    --home-grip: color-mix(in oklab, var(--home-text-inverse) 62%, transparent);
+  /* A slim stone handle on the line, with a two-line grip cut into its face; it mirrors the gold while dragged. */
+  .home-theme-knob.home-stone {
+    --home-grip: color-mix(in oklab, var(--stone-text) 58%, transparent);
     position: absolute;
     top: 50%;
     left: var(--home-split);
+    box-sizing: border-box;
     width: 1.125rem;
     height: 2.75rem;
     margin: -1.375rem 0 0 -0.5625rem;
     border-radius: var(--radius-pill);
     background:
-      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% - 2px) 50% / 1px 0.875rem no-repeat,
-      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% + 2px) 50% / 1px 0.875rem no-repeat,
-      var(--home-ink);
-    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-sheet) 16%, transparent), var(--home-contact), 0 6px 16px -6px var(--home-shade-far);
+      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% - 2px) 50% / 1px 0.875rem no-repeat padding-box,
+      linear-gradient(var(--home-grip), var(--home-grip)) calc(50% + 2px) 50% / 1px 0.875rem no-repeat padding-box,
+      var(--stone-face),
+      var(--stone-edge);
+    /* A ring of the page ground keeps its contour on both the light and the dark half of the split. */
+    box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--home-ground) 85%, transparent), var(--stone-shadow);
     pointer-events: none;
-    transition: scale var(--home-quick) var(--home-ease), box-shadow var(--home-base) var(--home-ease);
+    transition: scale var(--home-quick) var(--home-ease);
 
     .home-theme-slider:hover &,
     .home-theme[data-dragging] & {
       scale: 1.08;
-      box-shadow: inset 0 1px 0 color-mix(in oklab, var(--home-sheet) 16%, transparent), var(--home-contact), 0 10px 22px -8px var(--home-shade-far);
+    }
+
+    .home-theme[data-dragging] & {
+      --stone-mirror: light-dark(oklch(0.86 0.1 82 / 0.55), oklch(0.74 0.12 78 / 0.65));
     }
 
     .home-theme-slider:focus-visible & {
