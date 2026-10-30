@@ -19,8 +19,12 @@ const schemes = (process.env.MASTER_SWEEP_SCHEMES ?? 'light,dark').split(',')
 const limit = Number(process.env.MASTER_SWEEP_LIMIT ?? Infinity)
 const force = process.env.MASTER_SWEEP_FORCE === '1'
 const revision = process.env.MASTER_SWEEP_REVISION ?? null
+const part = process.env.MASTER_SWEEP_PART ?? ''
+if (part && !/^[a-z0-9-]+$/.test(part)) throw new Error('MASTER_SWEEP_PART must be lowercase letters, numbers or hyphens.')
 const staticDelivery = process.env.MASTER_SWEEP_DELIVERY === 'static'
 const output = path.join(evidence, label)
+const progressFile = path.join(output, `progress${part ? `-${part}` : ''}.json`)
+const summaryFile = path.join(output, `summary${part ? `-${part}` : ''}.json`)
 const started = Date.now()
 const results = []
 let completed = 0
@@ -159,7 +163,7 @@ matrix: for (const engine of engines) {
           await saveJSON(file, result)
           results.push(result)
           completed++
-          await saveJSON(path.join(output, 'progress.json'), { label, base, startedAt: new Date(started).toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalPlanned: routes.length * engines.length * widths.length * schemes.length, last: { pathname: route.pathname, engine, width, scheme }, lastCompletedAt: new Date().toISOString() })
+          await saveJSON(progressFile, { label, base, revision, part, startedAt: new Date(started).toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalPlanned: routes.length * engines.length * widths.length * schemes.length, last: { pathname: route.pathname, engine, width, scheme }, lastCompletedAt: new Date().toISOString() })
           if (completed % 10 === 0 || result.failure) console.log(JSON.stringify({ label, completed, reused, failures, route: route.pathname, engine, width, scheme, elapsedMinutes: Math.round((Date.now() - started) / 6000) / 10 }))
         }
       } finally { await context.close() }
@@ -167,6 +171,6 @@ matrix: for (const engine of engines) {
   } finally { await browser.close() }
 }
 
-await saveJSON(path.join(output, 'summary.json'), { label, base, revision, startedAt: new Date(started).toISOString(), completedAt: new Date().toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalRecords: results.length })
+await saveJSON(summaryFile, { label, base, revision, part, startedAt: new Date(started).toISOString(), completedAt: new Date().toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalRecords: results.length })
 console.log(JSON.stringify({ label, completed, reused, failures, elapsedMinutes: Math.round((Date.now() - started) / 6000) / 10 }))
 process.exitCode = failures ? 1 : 0
