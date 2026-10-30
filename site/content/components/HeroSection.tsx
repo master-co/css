@@ -7,7 +7,7 @@ import HeroCanvas from './HeroCanvas'
 import HomeAction from './HomeAction'
 import { homeSections, installCommand } from './home-content'
 
-/** The opening: the positioning line, centered over a sheet of gold grains that answers the pointer. */
+/** White glass type floats above gold silk; both materials share the pointer's light and ripples. */
 export default function HeroSection() {
   const $ = useTranslation()
   return (
@@ -25,7 +25,7 @@ export default function HeroSection() {
           <span className="home-display-line">{$('for developers\u00a0and AI agents.')}</span>
         </h1>
         <p className="home-enter home-hero-lead">
-          {$('Style in markup with class names and design tokens. One project manifest generates only the CSS each page uses, and checks every class the same way in your editor, your build and your AI agents.')}
+          {$('Style in markup with classes and tokens. One manifest generates page CSS, with shared checks for your editor, build and AI agents.')}
         </p>
         <div className="home-enter home-hero-actions">
           <HomeAction href="/guide/introduction" variant="primary">

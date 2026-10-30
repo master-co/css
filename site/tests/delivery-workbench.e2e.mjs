@@ -16,8 +16,11 @@ const errors = []
 async function open(options) {
   const context = await browser.newContext({ viewport: { width: options.width, height: 1000 }, colorScheme: options.scheme, reducedMotion: options.motion ?? 'no-preference', javaScriptEnabled: options.js !== false })
   const page = await context.newPage()
+  // Keep each browser scene stable while other homepage work triggers development reloads.
+  await page.routeWebSocket(socket => socket.hostname === new URL(url).hostname, socket => socket.onMessage(() => undefined))
   page.on('pageerror', error => errors.push(error.message))
-  await page.goto(`${url}/${options.locale === 'tw' ? 'tw' : ''}`, { waitUntil: 'networkidle' })
+  const response = await page.goto(`${url}/${options.locale === 'tw' ? 'tw' : ''}`, { waitUntil: 'networkidle' })
+  assert.equal(response.status(), 200, 'the homepage must render before browser checks run')
   await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded()
   return { context, page }
 }
@@ -27,7 +30,12 @@ const modeCopy = {
   runtime: ['Runtime rendering', 'Generate rules in the browser as classes appear, from editors, CMS content or playgrounds.']
 }
 const clock = page => page.locator('.home-delivery-stage').evaluate(stage => Number(stage.style.getPropertyValue('--home-delivery-t')))
-const until = (page, t) => page.waitForFunction(t => Number(document.querySelector('.home-delivery-stage').style.getPropertyValue('--home-delivery-t')) >= t, t, { timeout: 18000 })
+const visibility = (page, hidden) => page.evaluate(hidden => {
+  if (hidden) Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+  else delete document.hidden
+  document.dispatchEvent(new Event('visibilitychange'))
+}, hidden)
+const until = (page, t) => page.waitForFunction(t => Number(document.querySelector('.home-delivery-stage').style.getPropertyValue('--home-delivery-t')) >= t, t, { timeout: 30000 })
 const select = async (page, mode) => { await page.locator(`label[for=home-delivery-${mode}]`).click(); await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded() }
 const preview = page => page.locator('[data-preview-host]').evaluate(host => {
   const root = host.shadowRoot
@@ -142,7 +150,49 @@ test(`${browserName}: pause/resume, seeking and native keyboard controls`, { tim
   assert.deepEqual(errors, [])
 })
 
-test(`${browserName}: new rules reach the preview after generation`, { timeout: 30000 }, async () => {
+test(`${browserName}: visibility and leaving view pause playback and chapter seeking`, { timeout: 30000 }, async () => {
+  const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'light' })
+  await select(page, 'runtime')
+  await until(page, .1)
+  await visibility(page, true)
+  const paused = await clock(page)
+  await page.waitForTimeout(250)
+  assert.equal(await clock(page), paused)
+  await visibility(page, false)
+  await until(page, paused + .05)
+  await page.locator('.home-delivery-moment').last().click()
+  await visibility(page, true)
+  const seeking = await clock(page)
+  await page.waitForTimeout(350)
+  assert.equal(await clock(page), seeking, 'a chapter seek pauses with the visibility clock')
+  await visibility(page, false)
+  await until(page, 4)
+  await page.locator('.home-delivery-play').click()
+  await until(page, .1)
+  await page.locator('.home-section').first().scrollIntoViewIfNeeded()
+  await page.waitForFunction(() => !document.querySelector('.home-delivery-stage').hasAttribute('data-visible'))
+  const outside = await clock(page)
+  await page.waitForTimeout(250)
+  assert.equal(await clock(page), outside)
+  await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded()
+  await until(page, outside + .05)
+  await context.close()
+})
+
+test(`${browserName}: the completed mode keeps its remaining hold across visibility changes`, { timeout: 45000 }, async () => {
+  const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'light' })
+  await until(page, 4)
+  await page.waitForTimeout(1000)
+  await visibility(page, true)
+  await page.waitForTimeout(5300)
+  await visibility(page, false)
+  await page.waitForTimeout(200)
+  assert.ok(await page.locator('#home-delivery-static').isChecked(), 'returning to the page does not skip the rest of the completed mode')
+  await page.waitForFunction(() => document.querySelector('#home-delivery-progressive').checked, null, { timeout: 5000 })
+  await context.close()
+})
+
+test(`${browserName}: new rules reach the preview after generation`, { timeout: 45000 }, async () => {
   const { page, context } = await open({ width: 1280, locale: 'en', scheme: 'light' })
   for (const [mode, generated, painted] of [['progressive', 3.53, 3.78], ['runtime', 3.43, 3.68]]) {
     await select(page, mode)
@@ -181,9 +231,10 @@ test(`${browserName}: code focus pauses playback and every flow has a destinatio
   await context.close()
 })
 
-test(`${browserName}: automatic tour yields to manual and rapid mode changes`, { timeout: 35000 }, async () => {
+test(`${browserName}: automatic tour yields to manual and rapid mode changes`, { timeout: 45000 }, async () => {
   const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'light' })
-  await page.waitForFunction(() => document.querySelector('#home-delivery-progressive').checked, null, { timeout: 16000 })
+  // Four 4.2s chapters and the 4.8s completed hold precede the next mode.
+  await page.waitForFunction(() => document.querySelector('#home-delivery-progressive').checked, null, { timeout: 26000 })
   assert.equal(await page.locator('.home-delivery-stage').getAttribute('data-touring'), '')
   await select(page, 'runtime')
   await until(page, 2.1)
@@ -196,6 +247,67 @@ test(`${browserName}: automatic tour yields to manual and rapid mode changes`, {
   assert.equal(await page.locator('.home-delivery-stage').getAttribute('data-touring'), null)
   assert.equal(await page.locator('[data-flight]').count(), 0)
   await context.close()
+})
+
+test(`${browserName}: pointer and keyboard focus independently hold automatic mode changes`, { timeout: 45000 }, async () => {
+  const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'light' })
+  await page.locator('.home-delivery-workbench').hover()
+  await page.locator('.home-delivery-play').focus()
+  await page.mouse.move(0, 0)
+  await until(page, 4)
+  const mode = await page.locator('input[name=home-delivery-mode]:checked').inputValue()
+  await page.waitForTimeout(5300)
+  assert.equal(await page.locator('input[name=home-delivery-mode]:checked').inputValue(), mode, 'keyboard focus keeps holding after the pointer leaves')
+  await page.locator('.home-delivery-workbench').hover()
+  await page.locator('.home-delivery-play').evaluate(button => button.blur())
+  await page.waitForTimeout(5300)
+  assert.equal(await page.locator('input[name=home-delivery-mode]:checked').inputValue(), mode, 'the pointer keeps holding after focus leaves')
+  await page.mouse.move(0, 0)
+  await page.waitForFunction(mode => document.querySelector('input[name=home-delivery-mode]:checked').value !== mode, mode, { timeout: 6000 })
+  await context.close()
+})
+
+for (const interaction of ['focus', 'pointer', 'selection', 'code focus']) test(`${browserName}: ${interaction} present before the player loads still holds the tour`, { timeout: 45000 }, async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, colorScheme: 'light' })
+  const page = await context.newPage()
+  let release
+  let delayed = false
+  const player = new Promise(resolve => { release = resolve })
+  await page.routeWebSocket(socket => socket.hostname === new URL(url).hostname, socket => socket.onMessage(() => undefined))
+  await page.route(candidate => /\/DeliveryFigures(?:\.tsx|[^/]*\.js)$/.test(candidate.pathname), async route => {
+    delayed = true
+    await player
+    await route.continue()
+  })
+  try {
+    const response = await page.goto(url, { waitUntil: 'commit' })
+    assert.equal(response.status(), 200)
+    await page.locator('.home-delivery-switch').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.home-delivery-figure')).containerName === 'home-delivery')
+    if (interaction === 'focus') await page.locator('#home-delivery-static').focus()
+    else if (interaction === 'pointer') await page.locator('.home-delivery-workbench').hover()
+    else if (interaction === 'code focus') await page.locator('.home-delivery-template [data-mode=static] .home-delivery-code-scroll').focus()
+    else {
+      await page.locator('label[for=home-delivery-progressive]').click()
+      await page.locator('#home-delivery-progressive').evaluate(input => input.blur())
+      await page.mouse.move(0, 0)
+    }
+    release()
+    await page.locator('.home-delivery-moment:enabled').first().waitFor()
+    assert.ok(delayed, 'the player module is delayed in development and production')
+    await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded()
+    if (interaction === 'code focus') {
+      assert.equal(await clock(page), 4, 'a reader keeps the completed document when the player loads')
+      await page.waitForTimeout(250)
+      assert.equal(await clock(page), 4)
+    }
+    await until(page, 4)
+    await page.waitForTimeout(5300)
+    assert.ok(await page.locator(`#home-delivery-${interaction === 'selection' ? 'progressive' : 'static'}`).isChecked(), 'loading the player preserves an existing reading interaction')
+  } finally {
+    release()
+    await context.close()
+  }
 })
 
 
@@ -236,12 +348,12 @@ test(`${browserName}: stacked files, an engine between editor and preview, and t
   await context.close()
 })
 
-test(`${browserName}: a delivered class lands on its preview text without covering the engine label`, { timeout: 45000 }, async () => {
+test(`${browserName}: a delivered class lands on its preview text without covering the engine label`, { timeout: 60000 }, async () => {
   const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'dark' })
   for (const [width, mode] of [[1024, 'runtime'], [1440, 'progressive']]) {
     await page.setViewportSize({ width, height: 1000 })
     await select(page, mode)
-    await page.waitForFunction(() => [...document.querySelectorAll('[data-flight=packet]')].some(chip => chip.textContent === 'bg-amber-10'), null, { timeout: 18000 })
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-flight=packet]')].some(chip => chip.textContent === 'bg-amber-10'), null, { timeout: 30000 })
     await page.locator('.home-delivery-play').click()
     const landing = await page.locator('.home-delivery-stage').evaluate(async stage => {
       const layer = stage.querySelector('.home-delivery-flights')
@@ -273,17 +385,23 @@ test(`${browserName}: code can scroll, stylesheet references work both ways, and
   await until(page, 2.65)
   const scroll = page.locator('.home-delivery-template [data-mode=runtime] .home-delivery-code-scroll')
   const bounds = await scroll.evaluate(el => ({ height: el.clientHeight, content: el.scrollHeight }))
-  assert.ok(bounds.content > bounds.height + 100)
+  assert.ok(bounds.content > bounds.height, 'the complete HTML document can still scroll')
   await page.locator('[data-preview-change]').focus()
   await page.keyboard.press('Enter')
   await until(page, 3.2)
   const pending = await page.locator('[data-preview-host]').evaluate(host => ({ focused: host.shadowRoot.activeElement === host.shadowRoot.querySelector('[data-preview-change]'), pending: host.shadowRoot.querySelector('[data-preview-sample]').hasAttribute('data-pending') }))
   assert.ok(pending.focused && pending.pending)
-  assert.ok(await scroll.evaluate(el => el.scrollTop > 100))
+  assert.ok(await scroll.evaluate(el => {
+    const viewport = el.getBoundingClientRect(), edit = el.querySelector('[data-edit-line]').getBoundingClientRect()
+    return edit.top >= viewport.top && edit.bottom <= viewport.bottom
+  }), 'the changed class stays in view')
   await until(page, 4)
   assert.ok(await page.locator('[data-preview-host]').evaluate(host => host.shadowRoot.activeElement === host.shadowRoot.querySelector('[data-preview-change]')))
   await page.locator('[data-inspect-css]').first().click()
-  assert.ok(await scroll.evaluate(el => el.scrollTop < 100))
+  assert.ok(await scroll.evaluate(el => {
+    const viewport = el.getBoundingClientRect(), reference = el.querySelector('[data-reference-line]').getBoundingClientRect()
+    return reference.top >= viewport.top && reference.bottom <= viewport.bottom
+  }), 'the stylesheet reference is visible after inspection')
   assert.ok(await scroll.evaluate(el => el === document.activeElement))
   await page.locator('.home-delivery-template [data-mode=runtime] [data-reveal-css]').click()
   assert.ok(await page.locator('.home-delivery-css [data-mode=runtime] .home-delivery-code-scroll').evaluate(el => el === document.activeElement))
@@ -297,6 +415,24 @@ test(`${browserName}: code can scroll, stylesheet references work both ways, and
   const paused = await clock(page)
   await page.waitForTimeout(200)
   assert.equal(await clock(page), paused)
+  await context.close()
+})
+
+for (const motion of ['reduce', 'no-preference']) test(`${browserName}: stylesheet references reveal their pane on short phones with ${motion}`, { timeout: 30000 }, async () => {
+  const { page, context } = await open({ width: 390, locale: 'en', scheme: 'light', motion })
+  await page.setViewportSize({ width: 390, height: 560 })
+  const revealed = selector => page.waitForFunction(selector => {
+    const target = document.querySelector(selector).getBoundingClientRect()
+    const header = document.querySelector('.home-header').getBoundingClientRect()
+    return target.height > 0 && target.top >= header.bottom - 1 && target.bottom <= innerHeight + 1
+  }, selector, { timeout: 3000 })
+  for (const mode of ['static', 'progressive', 'runtime']) {
+    await select(page, mode)
+    await page.locator('.home-delivery-inspect').click()
+    await revealed(`.home-delivery-template [data-mode=${mode}] [data-reference-line]`)
+    await page.locator(`.home-delivery-template [data-mode=${mode}] [data-reveal-css]`).click()
+    await revealed(`.home-delivery-css [data-mode=${mode}] .home-delivery-code-scroll`)
+  }
   await context.close()
 })
 
@@ -344,6 +480,76 @@ test(`${browserName}: preview content and engine status fit their surfaces`, { t
     if (width >= 1024) {
       const css = await page.locator('.home-delivery-css [data-mode=progressive] .home-delivery-code-scroll').evaluate(el => ({ height: el.clientHeight, content: el.scrollHeight }))
       assert.ok(css.content <= css.height + 2)
+    }
+  }
+  await context.close()
+})
+
+for (const js of [true, false]) test(`${browserName}: classes and chapter explanations remain readable with ${js ? 'JavaScript' : 'no JavaScript'}`, { timeout: 30000 }, async () => {
+  const { page, context } = await open({ width: 320, locale: 'en', scheme: 'light', motion: 'reduce', js })
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 1000 })
+    const height = await page.locator('.home-delivery-stage').evaluate(stage => stage.getBoundingClientRect().height)
+    for (const mode of ['static', 'progressive', 'runtime']) {
+      await select(page, mode)
+      const reading = await page.locator(`.home-delivery-template [data-mode=${mode}]`).evaluate(pane => {
+        const viewport = pane.querySelector('.home-delivery-code-scroll').getBoundingClientRect()
+        return [...pane.querySelectorAll('[data-glyph]')].map(token => {
+          const rect = token.getBoundingClientRect()
+          return { text: token.textContent, inside: rect.left >= viewport.left && rect.right <= viewport.right && rect.top >= viewport.top && rect.bottom <= viewport.bottom }
+        })
+      })
+      assert.ok(reading.every(token => token.inside), `${width}px ${mode}: ${JSON.stringify(reading)}`)
+      const explanations = await page.locator('.home-delivery-explanation > span:visible').allTextContents()
+      assert.equal(explanations.length, 1, 'only the selected mode and chapter should be read')
+      assert.match(explanations[0], { static: /already shipped in app\.css/, progressive: /deferred engine/, runtime: /new rule/ }[mode])
+      assert.equal(await page.locator('.home-delivery-stage').evaluate(stage => stage.getBoundingClientRect().height), height, 'the explanation reserves every mode’s text')
+    }
+    const controls = await page.locator('.home-delivery-moment').evaluateAll(buttons => buttons.map(button => {
+      const rect = button.getBoundingClientRect(), label = button.querySelector('.home-delivery-moment-label')
+      return { width: rect.width, height: rect.height, labelFits: label.scrollWidth <= label.clientWidth }
+    }))
+    assert.ok(controls.every(control => control.width >= 44 && control.height >= 44 && control.labelFits), `${width}px controls: ${JSON.stringify(controls)}`)
+  }
+  await context.close()
+})
+
+test(`${browserName}: enlarged text keeps complete controls and the preview inside the workbench`, { timeout: 30000 }, async () => {
+  const { page, context } = await open({ width: 320, locale: 'en', scheme: 'dark', motion: 'reduce' })
+  await page.addStyleTag({ content: ':root { font-size: 200%; }' })
+  for (const width of [320, 390, 480, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 })
+    for (const mode of ['static', 'progressive', 'runtime']) {
+      await select(page, mode)
+      const metrics = await page.locator('.home-delivery-stage').evaluate(stage => {
+        const box = stage.getBoundingClientRect(), host = stage.querySelector('[data-preview-host]')
+        return {
+          labelsFit: [...stage.querySelectorAll('.home-delivery-moment-label, .home-delivery-switch > label')].every(label => label.scrollWidth <= label.clientWidth),
+          controlsFit: [...stage.querySelectorAll('.home-delivery-pane-bar, .home-delivery-add, .home-delivery-player, .home-delivery-switch')].every(element => {
+            const rect = element.getBoundingClientRect()
+            return rect.left >= box.left - 1 && rect.right <= box.right + 1
+          }),
+          previewFits: host.clientWidth <= box.width && host.scrollWidth <= host.clientWidth && host.scrollHeight <= host.clientHeight,
+          targetHeight: host.shadowRoot.querySelector('[data-preview-change]').getBoundingClientRect().height
+        }
+      })
+      assert.ok(metrics.labelsFit && metrics.controlsFit && metrics.previewFits && metrics.targetHeight >= 44, `${width}px ${mode}: ${JSON.stringify(metrics)}`)
+    }
+  }
+  await context.close()
+})
+
+test(`${browserName}: manual chapters keep the explanation and selected moment together`, { timeout: 30000 }, async () => {
+  const { page, context } = await open({ width: 390, locale: 'en', scheme: 'dark', motion: 'reduce' })
+  const height = await page.locator('.home-delivery-stage').evaluate(stage => stage.getBoundingClientRect().height)
+  for (const mode of ['static', 'progressive', 'runtime']) {
+    await select(page, mode)
+    for (const index of [0, 1, 2, 3]) {
+      await page.locator('.home-delivery-moment').nth(index).click()
+      assert.equal(await page.locator('.home-delivery-explanation > span:visible').count(), 1)
+      assert.equal(await page.locator(`.home-delivery-explanation[data-mode=${mode}] > [data-explanation-moment="${index}"]:visible`).count(), 1)
+      assert.equal(await page.locator('.home-delivery-moment').nth(index).getAttribute('aria-pressed'), 'true')
+      assert.equal(await page.locator('.home-delivery-stage').evaluate(stage => stage.getBoundingClientRect().height), height)
     }
   }
   await context.close()
@@ -463,6 +669,11 @@ if (soakMinutes > 0) test(`${browserName}: sustained automatic and interactive p
       console.log(JSON.stringify({ browser: browserName, automatic, completed: cycle, checkpoints: metrics }))
     } catch (error) {
       abort = true
+      const state = await page.locator('.home-delivery-stage').evaluate(stage => {
+        const box = stage.getBoundingClientRect()
+        return { time: stage.style.getPropertyValue('--home-delivery-t'), playing: stage.hasAttribute('data-playing'), visible: stage.hasAttribute('data-visible'), hidden: document.hidden, mode: document.querySelector('input[name=home-delivery-mode]:checked').value, hovered: stage.matches(':hover'), focused: stage.matches(':focus-within'), top: box.top, height: box.height, viewport: innerHeight }
+      }).catch(() => null)
+      console.error(JSON.stringify({ browser: browserName, automatic, cycle, failure: state, errors }))
       throw error
     } finally {
       await context.close()

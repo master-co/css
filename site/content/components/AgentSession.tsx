@@ -93,18 +93,27 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
   // that already has a conversation, a file and a result in it (firstBeat); later loops start from the prompt.
   const [beat, setBeat] = useState(finalBeat)
   const [mode, setMode] = useState<Mode>('chosen')
-  const [held, setHeld] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [visible, setVisible] = useState(true)
   const [loop, setLoop] = useState(0)
   const [pinned, setPinned] = useState<Pane>()
   const { ref, inView } = useInView({ threshold: 0.25 })
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
-  const running = mode === 'tour' && inView && !held && !reduceMotion
+  const running = mode === 'tour' && inView && visible && !hovered && !focused && !reduceMotion
   const remaining = useRef<{ beat: number, ms: number }>(undefined)
 
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     setBeat(firstBeat)
     setMode('tour')
+  }, [])
+
+  useEffect(() => {
+    const update = () => setVisible(!document.hidden)
+    update()
+    document.addEventListener('visibilitychange', update)
+    return () => document.removeEventListener('visibilitychange', update)
   }, [])
 
   // Reduced motion shows the finished session, with every step still open to choose.
@@ -142,6 +151,11 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
     setMode('chosen')
     setBeat(stageEnds[index])
   }
+  // Choosing a pane is an explicit reading hold, including on touch browsers without hover.
+  const pinPane = (pane: Pane) => {
+    setPinned(pane)
+    setMode((current) => current === 'tour' ? 'paused' : current)
+  }
   const toggle = () => {
     if (mode === 'tour') return setMode('paused')
     if (mode === 'chosen') {
@@ -158,7 +172,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
   const styled = before.filter((line) => line.includes(' class="')).length
   const view = beat >= at.written ? 'applied' : beat >= at.diff ? 'diff' : 'draft'
   const draft = beat >= at.problems ? 'problems' : beat >= at.rule ? 'inspect' : beat === at.edit ? 'typing' : beat > at.edit ? 'styled' : 'plain'
-  const panel = beat >= at.apply ? 'apply' : beat >= at.diff ? 'preview' : beat >= at.problems ? 'problems' : beat >= at.rule ? 'rule' : beat >= at.tokens ? 'tokens' : 'idle'
+  const panel = beat >= at.relint ? 'clean' : beat >= at.apply ? 'apply' : beat >= at.diff ? 'preview' : beat >= at.problems ? 'problems' : beat >= at.rule ? 'rule' : beat >= at.tokens ? 'tokens' : 'idle'
   const calling = [at.manifest, at.inspect, at.lint, at.preview, at.apply, at.relint].includes(beat)
 
   const entries: Entry[] = [
@@ -179,7 +193,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
   const lastCall = shown.findLast((entry) => entry.kind === 'call')
   // The figure under the window plays each call as it runs and while its result lands, keyed by the call.
   const flight = !reduceMotion && mode === 'tour' ? shown.find((entry) => entry.kind === 'call' && (beat === entry.at || beat === entry.done)) : undefined
-  const orbitCall = flight?.kind === 'call' ? { key: `${loop}-${flight.at}` } : undefined
+  const orbitCall = flight?.kind === 'call' ? { key: `${loop}-${flight.at}`, response: beat === flight.done } : undefined
 
   const results: Record<AgentSessionCallId, { summary: string, response: ReactNode, tone: 'ok' | 'warn' }> = {
     manifest: { summary: $('{count} tokens').replace('{count}', String(tokens.length)), response: <>{tokens[0].name} … {tokens[tokens.length - 1].name}</>, tone: 'ok' },
@@ -195,7 +209,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
     },
     preview: { summary: $('1 file changed'), response: <>confirmToken <span className="home-agent-json-string">&quot;{shortToken(agentSessionCalls.apply.args.confirmToken as string)}&quot;</span></>, tone: 'ok' },
     apply: { summary: $('Applied'), response: $('Hash matched, file written'), tone: 'ok' },
-    relint: { summary: $('No problems'), response: $('{count} problems').replace('{count}', '0'), tone: 'ok' }
+    relint: { summary: $('No problems'), response: $('{count} problems').replace('{count}', String(agentSessionResults.relint.diagnostics)), tone: 'ok' }
   }
 
   // The file's state is a mark, not a word: a warning while it has problems, a check once it lints clean.
@@ -213,13 +227,13 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
   ]
 
   return (
-    <div className="home-agent-scene">
+    <div className="home-agent-scene" data-mode={mode} data-paused={!running ? '' : undefined}>
     <div
       className="home-agent home-reveal-item"
-      onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setHeld(false)}
-      onFocus={() => setHeld(true)}
-      onPointerEnter={(event) => event.pointerType === 'mouse' && setHeld(true)}
-      onPointerLeave={() => setHeld(false)}
+      onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setFocused(false)}
+      onFocus={(event) => setFocused(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
+      onPointerOver={(event) => event.pointerType === 'mouse' && setHovered(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
+      onPointerLeave={() => setHovered(false)}
       ref={ref}>
       <div className="home-agent-window" data-outro={beat === at.outro ? '' : undefined} data-pane={pane}>
         <div className="home-agent-bar home-agent-bar-chat">
@@ -238,7 +252,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
           <span aria-hidden="true" className="home-agent-dots"><span /><span /><span /></span>
           <div aria-label={$('Panes')} className="home-agent-tab-list" role="group">
             {tabs.map((tab) => (
-              <button aria-pressed={pane === tab.pane} className="home-agent-tab" key={tab.pane} onClick={() => setPinned(tab.pane)} type="button">
+              <button aria-pressed={pane === tab.pane} className="home-agent-tab" key={tab.pane} onClick={() => pinPane(tab.pane)} type="button">
                 <span className="home-agent-tab-label">{tab.label}</span>
                 {tab.pane === 'code' && statusMark}
               </button>
@@ -337,7 +351,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
                   <dd>
                     <code className="home-agent-rule-property">--{inspection.variable.name}</code>
                     {/* Break only between arguments, never inside a var(). */}
-                    <code>{inspection.variable.value.split(', ').map((part, index, parts) => <Fragment key={index}><span className="white-space:nowrap">{part}{index < parts.length - 1 ? ',' : ''}</span>{index < parts.length - 1 ? ' ' : ''}</Fragment>)}</code>
+                    <code>{inspection.variable.value.split(', ').map((part, index, parts) => <Fragment key={index}><span className="home-agent-fact-argument">{part}{index < parts.length - 1 ? ',' : ''}</span>{index < parts.length - 1 ? ' ' : ''}</Fragment>)}</code>
                   </dd>
                 </div>
               </dl>
@@ -387,6 +401,22 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
                 </div>
               </dl>
             </PanelView>
+            <PanelView active={panel === 'clean'} className="home-agent-clean">
+              <div className="home-agent-verdict" data-checking={beat < at.clean ? '' : undefined}>
+                <span aria-hidden="true" className="home-agent-verdict-mark">
+                  {beat < at.clean ? <IconLoader2 className="home-spin" size={24} stroke={1.5} /> : <IconCircleCheck size={24} stroke={1.5} />}
+                </span>
+                <div>
+                  <p className="home-agent-verdict-title">{beat < at.clean ? $('Checking') : $('No problems')}</p>
+                  <code>{file}</code>
+                </div>
+                <span className="home-agent-verdict-count" aria-hidden="true">{beat < at.clean ? '—' : agentSessionResults.relint.diagnostics}</span>
+              </div>
+              <div className="home-agent-receipt">
+                <span><IconShieldCheck aria-hidden="true" {...icon} />{$('Hash matched, file written')}</span>
+                <code>sha256 {shortHash(agentSessionResults.afterHash)}</code>
+              </div>
+            </PanelView>
           </div>
         </div>
 
@@ -399,8 +429,8 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
           <ol aria-label={$('Session steps')} className="home-agent-step-list">
             {agentSessionStages.map((name, index) => {
               const duration = beats.filter((item, beatIndex) => item.stage === index && beatIndex !== at.outro).reduce((total, item) => total + item.ms, 0)
-              // The first tour starts partway into a step; that step's fill starts there too.
-              const elapsed = loop === 0 && index === beats[firstBeat].stage ? beats.slice(0, firstBeat).filter((item) => item.stage === index).reduce((total, item) => total + item.ms, 0) : 0
+              // Each beat begins at its actual place in the chapter, including when resuming a chosen step.
+              const elapsed = beats.slice(0, beat).filter((item) => item.stage === index).reduce((total, item) => total + item.ms, 0)
               return (
                 <li key={name}>
                   <button
@@ -414,7 +444,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
                       {index === stage && mode !== 'chosen' && (
                         <span
                           className="home-agent-step-fill"
-                          key={`${loop}-${stage}`}
+                          key={`${loop}-${beat}`}
                           style={{ animationDuration: `${duration}ms`, animationDelay: `-${elapsed}ms`, animationPlayState: running ? 'running' : 'paused' }} />
                       )}
                     </span>
@@ -427,7 +457,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
       </div>
     </div>
     {/* Tucked under the window, open on the page: the server the session calls, joined to it by the beam its calls travel. */}
-    <AgentsOrbit call={orbitCall} classRows={classRows} live={flight?.at === beat} />
+    <AgentsOrbit call={orbitCall} classRows={classRows} paused={!running} />
     </div>
   )
 }
@@ -438,6 +468,7 @@ function panelCall(panel: string): AgentSessionCallId {
   if (panel === 'rule') return 'inspect'
   if (panel === 'problems') return 'lint'
   if (panel === 'preview') return 'preview'
+  if (panel === 'clean') return 'relint'
   return 'apply'
 }
 
@@ -477,7 +508,7 @@ function RuleCode({ inspection }: { inspection: AgentSessionInspection }) {
     <pre className="home-agent-rule">
       <span className="home-agent-rule-selector">{inspection.selector}</span> {'{'}{'\n'}
       {inspection.declarations.map(({ property, value }) => (
-        <Fragment key={property}>{'  '}<span className="home-agent-rule-property">{property}</span>: <span className="white-space:nowrap">{value};</span>{'\n'}</Fragment>
+        <Fragment key={property}>{'  '}<span className="home-agent-rule-property">{property}</span>: <span className="home-agent-rule-value">{value};</span>{'\n'}</Fragment>
       ))}
       {'}'}
     </pre>

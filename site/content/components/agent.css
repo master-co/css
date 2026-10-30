@@ -797,6 +797,9 @@
     color: var(--home-code-property);
   }
 
+  .home-agent-rule-value,
+  .home-agent-fact-argument { white-space: nowrap; }
+
   /* Output: what the last tool call returned, docked under the code like an editor panel. */
   .home-agent-panel {
     container: home-agent-file / inline-size;
@@ -1059,6 +1062,89 @@
     opacity: 1;
   }
 
+  /* The last lint call leaves a readable receipt, so the session ends on its checked result. */
+  .home-agent-clean {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .home-agent-verdict {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-block: var(--spacing-sm) var(--spacing-xl);
+
+    & code {
+      font-family: var(--home-mono);
+      font-size: 0.75rem;
+      color: var(--home-text-faint);
+    }
+  }
+
+  .home-agent-verdict-mark {
+    display: grid;
+    flex: none;
+    place-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-pill);
+    color: var(--home-ok);
+    background-color: var(--home-well);
+    box-shadow: var(--home-groove), var(--home-edge);
+
+    [data-checking] & {
+      color: var(--home-text-faint);
+    }
+  }
+
+  .home-agent-verdict-title {
+    margin: 0 0 var(--spacing-3xs);
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: -0.02em;
+    color: var(--home-text);
+  }
+
+  .home-agent-verdict-count {
+    margin-left: auto;
+    font-family: var(--home-mono);
+    font-size: 2.75rem;
+    font-weight: var(--font-weight-regular);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--home-text);
+  }
+
+  .home-agent-receipt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs) var(--spacing-md);
+    margin-top: auto;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--home-hairline);
+    font-size: 0.75rem;
+    color: var(--home-text-faint);
+
+    & > span {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    & svg {
+      flex: none;
+      color: var(--home-ok);
+    }
+
+    & code {
+      font-family: var(--home-mono);
+      font-size: var(--home-label);
+    }
+  }
+
   /* Step bar: the session's five calls as chapters. The current one fills toward the next. */
   .home-agent-steps {
     display: flex;
@@ -1229,7 +1315,119 @@
     transition: opacity 0.5s var(--home-ease);
   }
 
+  /* Enlarged text gets a vertical chapter rail and pane picker, rather than overlapping labels.
+     The threshold follows rem so ordinary phone sizes keep the compact horizontal controls. */
+  @container home-agent (width < 16rem) {
+    .home-agent-tabs {
+      align-items: stretch;
+      height: auto;
+      padding: var(--spacing-xs) var(--home-agent-inset);
+    }
+
+    .home-agent-tab-list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spacing-3xs);
+      align-items: stretch;
+    }
+
+    .home-agent-tab {
+      justify-content: flex-start;
+      height: auto;
+      min-height: 44px;
+      margin: 0;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-bottom: 1px solid transparent;
+      border-radius: var(--radius-lg);
+
+      &[aria-pressed='true'] { border-bottom-color: var(--home-hairline); }
+    }
+
+    .home-agent-tab-label {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    /* A class can be wider than the remaining line at enlarged text sizes. */
+    .home-agent-class,
+    .home-agent-rule-value,
+    .home-agent-fact-argument,
+    .home-agent-problem-message .home-agent-word {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .home-agent-rule,
+    .home-agent-facts { overflow-wrap: anywhere; }
+
+    .home-agent-facts > div,
+    .home-agent-problem { min-width: 0; }
+
+    .home-agent-facts code { min-width: 0; max-width: 100%; }
+    .home-agent-hash { min-width: 0; }
+
+    .home-agent-problem-meta {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .home-agent-token { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .home-agent-token-bar { display: none; }
+
+    .home-agent-panel-header { flex-wrap: wrap; }
+
+    .home-agent-panel-tool {
+      flex-basis: 100%;
+      margin-left: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .home-agent-steps {
+      flex-wrap: wrap;
+      align-items: flex-start;
+      padding-inline: var(--home-agent-inset);
+    }
+
+    .home-agent-play { width: 44px; height: 44px; }
+
+    .home-agent-step-list {
+      display: grid;
+      flex: 1 0 100%;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .home-agent-step {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: 'label track';
+      align-items: center;
+      gap: var(--spacing-sm);
+      min-height: 44px;
+      padding: var(--spacing-xs) 0;
+      text-align: left;
+    }
+
+    .home-agent-step-name { justify-content: flex-start; }
+  }
+
+  @container home-agent-file (width < 16rem) {
+    .home-agent-verdict {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+
+      & > div { grid-area: 2 / 1 / 3 / 3; }
+    }
+
+    .home-agent-verdict-mark { width: 48px; height: 48px; }
+    .home-agent-verdict-count { grid-area: 1 / 2; justify-self: end; font-size: 44px; }
+  }
+
   @media (--motion-safe) {
+    /* A held or paused session freezes its local motion as well as its clock. */
+    .home-agent-scene[data-paused] .home-agent-call::before,
+    .home-agent-scene[data-paused] :is(.home-agent-word, .home-agent-pending > span, .home-agent-panel-signal, .home-spin) {
+      animation-play-state: paused;
+    }
+
     .home-agent-entry {
       animation-name: home-agent-entry;
       animation-duration: 0.55s;
@@ -1243,6 +1441,11 @@
       animation-timing-function: var(--home-ease);
       animation-delay: calc(var(--home-agent-word) * 45ms);
       animation-fill-mode: both;
+    }
+
+    /* A chosen chapter and the no-script snapshot are complete reading states. */
+    .home-agent-scene[data-mode='chosen'] :is(.home-agent-entry, .home-agent-word) {
+      animation: none;
     }
 
     /* While a call is in flight, its request runs along the card's top edge toward the server. */
@@ -1329,15 +1532,13 @@
   }
 
   @media (--motion-reduce) {
-    .home-agent-log,
-    .home-agent-code-stack,
-    .home-agent-pane,
-    .home-agent-panel-body,
-    .home-agent-code-view,
-    .home-agent-panel-view,
-    .home-agent-call-body,
-    .home-agent-hover {
-      transition: none;
+    /* Active-state selectors and inline progress styles must also settle immediately. */
+    .home-agent,
+    .home-agent *,
+    .home-agent *::before,
+    .home-agent *::after {
+      animation: none !important;
+      transition: none !important;
     }
   }
 }

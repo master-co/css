@@ -81,6 +81,21 @@
     max-width: 95rem;
   }
 
+  .home-header.at-top :is(.app-header-primary-nav, .app-header-community:not(.app-header-github), .app-header-divider, .app-header-language, .app-header-search) {
+    display: none;
+  }
+
+  .home-header.at-top .app-header-github {
+    display: flex;
+    margin-left: 0;
+    margin-right: -1.25rem;
+
+    @media (--md) {
+      margin-left: auto;
+      margin-right: -0.188rem;
+    }
+  }
+
   .home-section-wrap {
     position: relative;
     max-width: 100rem;
@@ -817,6 +832,53 @@
     }
 
   }
+}
+
+/* Capture only the header, keeping the scrolling page live underneath its transition. */
+:root.app-header-transition {
+  view-transition-name: none;
+}
+
+.app-header-transition .home-header {
+  view-transition-name: home-header;
+}
+
+.app-header-transition .home-header .app-header-github {
+  view-transition-name: home-header-github;
+}
+
+.app-header-transition .home-header .app-header-logo {
+  view-transition-name: home-header-logo;
+}
+
+.app-header-transition .home-header .app-header-version {
+  view-transition-name: home-header-version;
+}
+
+.app-header-transition .home-header .app-header-menu {
+  view-transition-name: home-header-menu;
+}
+
+.app-header-transition::view-transition {
+  pointer-events: none;
+}
+
+.app-header-transition::view-transition-group(home-header),
+.app-header-transition::view-transition-group(home-header-github),
+.app-header-transition::view-transition-group(home-header-logo),
+.app-header-transition::view-transition-group(home-header-version),
+.app-header-transition::view-transition-group(home-header-menu) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+.app-header-transition::view-transition-old(home-header) {
+  animation-duration: var(--duration-fastest);
+}
+
+.app-header-transition::view-transition-new(home-header) {
+  animation-duration: var(--duration-faster);
+  animation-delay: var(--duration-normal);
 }
 
 @keyframes home-reveal-item {

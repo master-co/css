@@ -5,6 +5,28 @@ export const deliveryRenderedClasses = deliveryMarkup.flatMap((line) => line.cla
 export const deliverySourceClasses = [...deliveryRenderedClasses, deliveryLateClass]
 export const deliveryMoments = [{ id: 'template', label: 'Template' }, { id: 'css', label: 'CSS' }, { id: 'paint', label: 'First paint' }, { id: 'later', label: 'New class' }] as const
 
+/** The current chapter explains the delivery difference beside the shared timeline. */
+export const deliveryExplanations = {
+  static: [
+    'Scan complete class names in your source.',
+    'Write the matching rules to app.css.',
+    'Load the stylesheet before the page is painted.',
+    'Reuse the rule already shipped in app.css.'
+  ],
+  progressive: [
+    'Read the classes in the server-rendered HTML.',
+    'Embed the first-load CSS in the page.',
+    'Paint with the CSS that came with the HTML.',
+    'Start the deferred engine for an uncovered class.'
+  ],
+  runtime: [
+    'Read the page’s classes in the browser.',
+    'Start the runtime and create a stylesheet.',
+    'Generate and apply the rules in the browser.',
+    'Insert the new rule into the browser stylesheet.'
+  ]
+} satisfies Record<DeliveryMode, readonly [string, string, string, string]>
+
 /** Timeline units, shared by the drawings and the real, isolated CSS preview. */
 export const deliveryAdded = 3.04
 export const deliveryTiming = {

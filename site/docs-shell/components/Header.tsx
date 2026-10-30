@@ -3,59 +3,81 @@
 import '~/site/styles/docs-shell/wrapper.css'
 import { throttle } from 'throttle-debounce'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { isBrowser } from '../utils/isBrowser'
+import { flushSync } from 'react-dom'
 import clsx from 'clsx'
 
-export default function Header({ top, stickable, fixed = true, ...props }: any) {
-  const initialScrollTop = isBrowser ? window.pageYOffset || document.documentElement.scrollTop : 0
-  const ref = useRef<any>(undefined)
-  let lastScrollTop = initialScrollTop
-  const scrollDirectionRef = useRef(0)
-  const [atTop, setAtTop] = useState(stickable ? true : false)
+export default function Header({ top, stickable, fixed = true, transitionAtTop = false, ...props }: any) {
+  const ref = useRef<HTMLElement>(null)
+  const [atTop, setAtTop] = useState(!!stickable)
 
   useLayoutEffect(() => {
     if (!stickable || top) return
+    const navbar = ref.current!
+    const root = document.documentElement
+    const motion = matchMedia('(prefers-reduced-motion: reduce)')
+    let lastScrollTop = window.scrollY
+    let currentAtTop = lastScrollTop <= 10
+    let scrollDirection = 0
+    let revision = 0
+    let activeTransition: ViewTransition | null = null
+
+    // Restored scroll positions use their final state without an entrance animation.
+    setAtTop(currentAtTop)
+
+    const changeAtTop = (next: boolean) => {
+      currentAtTop = next
+      const request = ++revision
+      activeTransition?.skipTransition()
+      if (!transitionAtTop || !document.startViewTransition || motion.matches) {
+        setAtTop(next)
+        return
+      }
+      root.classList.add('app-header-transition')
+      const transition = document.startViewTransition(() => {
+        // A skipped transition still calls its update; only the latest request may commit.
+        if (request === revision) flushSync(() => setAtTop(next))
+      })
+      activeTransition = transition
+      void transition.ready.catch(() => {})
+      const finish = () => {
+        if (activeTransition !== transition) return
+        activeTransition = null
+        root.classList.remove('app-header-transition')
+      }
+      void transition.finished.then(finish, finish)
+    }
+
+    const reduceMotion = () => { if (motion.matches) activeTransition?.skipTransition() }
     const handleScroll = throttle(
       50,
       () => {
-        const navbar: HTMLElement = ref.current
-        if (navbar) {
-          const { current: scrollDirection } = scrollDirectionRef
-          let st = window.pageYOffset || document.documentElement.scrollTop
-          if (st <= 10) {
-            if (!atTop) {
-              setAtTop(true)
-            }
-          } else {
-            if (atTop) {
-              setAtTop(false)
-            }
-          }
-          if (Math.abs(st - lastScrollTop) <= 100) {
-            return
-          }
-          if (st > lastScrollTop) {
-            // downscroll code
-            if (scrollDirection !== 1) {
-              scrollDirectionRef.current = 1
-              navbar.style.transform = 'translateY(-100%)'
-            }
-          } else {
-            if (scrollDirection !== -1) {
-              // upscroll code
-              scrollDirectionRef.current = -1
-              navbar.style.transform = ''
-            }
-          }
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          lastScrollTop = st <= 0 ? 0 : st // For Mobile or negative scrolling
+        const st = Math.max(0, window.scrollY)
+        const nextAtTop = st <= 10
+        if (nextAtTop) {
+          scrollDirection = -1
+          navbar.style.transform = ''
         }
+        if (nextAtTop !== currentAtTop) changeAtTop(nextAtTop)
+        if (Math.abs(st - lastScrollTop) <= 100) return
+        const direction = st > lastScrollTop ? 1 : -1
+        if (direction !== scrollDirection) {
+          scrollDirection = direction
+          navbar.style.transform = direction === 1 && !nextAtTop ? 'translateY(-100%)' : ''
+        }
+        lastScrollTop = st
       },
     )
-    handleScroll()
+    motion.addEventListener('change', reduceMotion)
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [top, atTop, stickable])
+    return () => {
+      revision++
+      handleScroll.cancel()
+      window.removeEventListener('scroll', handleScroll)
+      motion.removeEventListener('change', reduceMotion)
+      activeTransition?.skipTransition()
+      if (transitionAtTop) root.classList.remove('app-header-transition')
+    }
+  }, [top, stickable, transitionAtTop])
 
   return (
     <nav ref={ref} aria-label={props['aria-label']}

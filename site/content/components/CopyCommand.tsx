@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 
 /** A shell command with a copy button. */
-export default function CopyCommand({ className, command }: { className?: string, command: string }) {
+export default function CopyCommand({ className, command, wrap = false }: { className?: string, command: string, wrap?: boolean }) {
   const $ = useTranslation()
   const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle')
 
@@ -19,7 +19,7 @@ export default function CopyCommand({ className, command }: { className?: string
   return (
     <div className={clsx('home-command home-glass', className)}>
       <span aria-hidden="true" className="fg-text-muted">$</span>
-      <code className="overflow:hidden min-width:0 text-overflow:ellipsis white-space:nowrap">{command}</code>
+      <code className={wrap ? 'overflow-wrap:anywhere min-width:0 white-space:normal' : 'overflow:hidden min-width:0 text-overflow:ellipsis white-space:nowrap'}>{command}</code>
       <button
         aria-label={status === 'copied' ? $('Copied') : $('Copy command')}
         className="home-command-copy"

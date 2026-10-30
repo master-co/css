@@ -40,4 +40,14 @@
       color: var(--color-text-strong);
     }
   }
+
+  .app-header-community {
+    @media (width < 64rem) {
+      display: none;
+    }
+  }
+
+  .app-header-community-first {
+    margin-left: auto;
+  }
 }

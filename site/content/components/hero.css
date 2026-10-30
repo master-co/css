@@ -1,7 +1,7 @@
 @layer components {
   /*
-   * The opening fills the first screen. Silk flows behind the lower glass letters and clears the
-   * prose; the canvas shares this ground color. The fixed header (60px) is cleared by the top padding.
+   * A loose gold sheet flows from the transparent header through the title. Its contour
+   * stays asymmetric, with an open reading space and a soft, uneven fade into the page ground.
    */
   .home-hero {
     display: grid;
@@ -37,6 +37,9 @@
   }
 
   .home-hero-pill {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
@@ -46,15 +49,31 @@
     font-size: var(--home-caption);
     line-height: 1.5;
     color: var(--home-text-quiet);
-    transition: color var(--home-base) var(--home-ease);
+    transition: color var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image: linear-gradient(110deg, transparent 25%, rgb(255 255 255 / 0.45) 50%, transparent 75%);
+      translate: -120% 0;
+      pointer-events: none;
+      content: '';
+    }
 
     /* The arrow moves on its own; the centered pill keeps its width. */
     & > svg {
       transition: translate var(--home-base) var(--home-ease);
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       color: var(--home-text);
+
+      &::after {
+        translate: 120% 0;
+        transition: translate 900ms var(--home-ease);
+      }
 
       & > svg {
         translate: 3px 0;
@@ -99,7 +118,9 @@
     font-weight: var(--font-weight-medium);
     line-height: 1.02;
     letter-spacing: -0.045em;
-    color: var(--home-text);
+    color: white;
+    -webkit-text-stroke: 0.5px light-dark(rgb(0 0 0 / 0.4), rgb(255 255 255 / 0.1));
+    text-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 3px 12px rgb(0 0 0 / 0.08);
     text-wrap: balance;
   }
 
@@ -115,6 +136,8 @@
   /* Keep the real heading selectable and accessible; reveal glass only after a successful frame. */
   .home-hero[data-glass-ready] .home-display {
     -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
 
     &::selection,
     & *::selection {
@@ -128,7 +151,11 @@
       display: none;
     }
 
+    .home-hero .home-display,
     .home-hero[data-glass-ready] .home-display {
+      color: var(--home-text);
+      text-shadow: none;
+      -webkit-text-stroke: 0;
       -webkit-text-fill-color: currentColor;
     }
   }
@@ -162,6 +189,26 @@
       flex-direction: column;
       align-items: stretch;
       width: min(100%, 21rem);
+    }
+  }
+
+  .home-hero-actions .home-action-primary > svg {
+    transition: translate var(--home-base) var(--home-ease);
+  }
+
+  .home-hero-actions .home-action-primary:is(:hover, :focus-visible) > svg {
+    translate: 3px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-pill::after {
+      display: none;
+    }
+
+    .home-hero-pill > svg,
+    .home-hero-actions .home-action-primary > svg {
+      translate: none !important;
+      transition: none;
     }
   }
 }

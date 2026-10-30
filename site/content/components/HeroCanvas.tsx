@@ -20,7 +20,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const canvas = canvasRef.current
     const host = canvas?.closest<HTMLElement>('[data-glyph-host]')
     const title = host?.querySelector<HTMLElement>('[data-glass-title]')
+    const prose = host?.querySelector<HTMLElement>('.home-hero-lead')
     if (!canvas || !host || !title) return
+    const header = document.querySelector<HTMLElement>('.home-header')
     canvas.hidden = false
     let gl: WebGLRenderingContext | null = null
     try {
@@ -89,8 +91,8 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let glyphs: WebGLTexture
     let target: WebGLFramebuffer
     try {
-      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'rise', 'pointer', 'ring', 'shadow', 'body', 'sheen', 'ground', 'title', 'fontSize'])
-      composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'pointer', 'ink', 'ground', 'scene', 'glyphs'])
+      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'pointer', 'ring', 'shadow', 'body', 'sheen', 'ground', 'title', 'prose', 'fontSize'])
+      composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'time', 'pointer', 'ring', 'ink', 'ground', 'scene', 'glyphs'])
       copy = program(heroCopySource, ['scene'])
       context.useProgram(copy.program)
       context.uniform1i(copy.uniforms.scene, 0)
@@ -129,11 +131,15 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let startedAt = -1
     let materialAt = -1
     let ringAt = -1
+    let previousFrame = -1
+    let sceneTime = 8
+    let scroll = 0
     let hasMask = false
     let scissor = [0, 0, 0, 0]
     let fontFace: FontFace | undefined
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, targetStrength: 0 }
     const ring = { x: 0, y: 0 }
+    let touchStart: { id: number, x: number, y: number } | undefined
     const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
     const fallback = () => {
       failed = true
@@ -205,7 +211,8 @@ export default function HeroCanvas({ className }: { className?: string }) {
         context.uniform3f(renderer.uniforms.ground, ...ground)
       }
       context.useProgram(cloth.program)
-      context.uniform1f(cloth.uniforms.rise, width < 640 ? 0.26 : 0.4)
+      const proseRect = prose?.getBoundingClientRect()
+      context.uniform4f(cloth.uniforms.prose, (proseRect?.left ?? rect.left) - rect.left, (proseRect?.top ?? rect.top) - rect.top, proseRect?.width ?? 0, proseRect?.height ?? 0)
       context.uniform3f(cloth.uniforms.shadow, ...channels(style.color))
       context.uniform3f(cloth.uniforms.body, ...channels(style.caretColor))
       context.uniform3f(cloth.uniforms.sheen, ...channels(style.outlineColor))
@@ -235,18 +242,25 @@ export default function HeroCanvas({ className }: { className?: string }) {
         if (startedAt < 0) startedAt = time
         if (hasMask && materialAt < 0) materialAt = time
         const reduced = motion.matches
-        pointer.x += (pointer.targetX - pointer.x) * 0.06
-        pointer.y += (pointer.targetY - pointer.y) * 0.06
-        pointer.strength += ((reduced ? 0 : pointer.targetStrength) - pointer.strength) * 0.04
+        const delta = previousFrame < 0 ? 0 : Math.min(64, time - previousFrame)
+        previousFrame = time
+        if (!reduced) sceneTime += delta / 1000
+        const follow = 1 - Math.exp(-delta / 180)
+        pointer.x += (pointer.targetX - pointer.x) * follow
+        pointer.y += (pointer.targetY - pointer.y) * follow
+        pointer.strength += ((reduced ? 0 : pointer.targetStrength) - pointer.strength) * (1 - Math.exp(-delta / 260))
+        scroll += (Math.min(window.scrollY, height) - scroll) * follow
+        const silkTime = reduced ? 8 : sceneTime + scroll * 0.003
+        const ringAge = reduced || ringAt < 0 ? -1 : (time - ringAt) / 1000
         const opened = reduced ? 1 : Math.min(1, (time - startedAt) / introDuration)
         const formed = reduced ? 1 : Math.max(0, Math.min(1, (time - materialAt) / materialDuration))
         context.bindFramebuffer(context.FRAMEBUFFER, target)
         context.viewport(0, 0, sceneWidth, sceneHeight)
         context.useProgram(cloth.program)
-        context.uniform1f(cloth.uniforms.time, reduced ? 8 : (time + Math.min(window.scrollY, height) * 6) / 1000)
+        context.uniform1f(cloth.uniforms.time, silkTime)
         context.uniform1f(cloth.uniforms.intro, 1 - Math.pow(1 - opened, 3))
         context.uniform3f(cloth.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
-        context.uniform3f(cloth.uniforms.ring, ring.x, ring.y, reduced || ringAt < 0 ? -1 : (time - ringAt) / 1000)
+        context.uniform3f(cloth.uniforms.ring, ring.x, ring.y, ringAge)
         if (ringAt >= 0 && time - ringAt > 2400) ringAt = -1
         context.drawArrays(context.TRIANGLES, 0, 3)
         context.bindFramebuffer(context.FRAMEBUFFER, null)
@@ -255,7 +269,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
         context.drawArrays(context.TRIANGLES, 0, 3)
         if (hasMask) {
           context.useProgram(composite.program)
+          context.uniform1f(composite.uniforms.time, reduced ? 8 : sceneTime)
           context.uniform3f(composite.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
+          context.uniform3f(composite.uniforms.ring, ring.x, ring.y, ringAge)
           context.uniform1f(composite.uniforms.material, 1 - Math.pow(1 - formed, 3))
           context.enable(context.SCISSOR_TEST)
           context.scissor(scissor[0], scissor[1], scissor[2], scissor[3])
@@ -274,6 +290,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const activity = () => {
       cancelAnimationFrame(frame)
       frame = 0
+      previousFrame = -1
       schedule()
     }
     const toPlane = (event: PointerEvent) => {
@@ -284,18 +301,36 @@ export default function HeroCanvas({ className }: { className?: string }) {
       }
     }
     const move = (event: PointerEvent) => {
-      if (motion.matches || event.pointerType !== 'mouse') return
+      if (motion.matches) return
+      if (event.pointerType !== 'mouse') {
+        if (touchStart?.id === event.pointerId && Math.hypot(event.clientX - touchStart.x, event.clientY - touchStart.y) > 12) touchStart = undefined
+        return
+      }
       const point = toPlane(event)
       pointer.targetX = point.x
       pointer.targetY = point.y
       pointer.targetStrength = 1
     }
     const leave = () => { pointer.targetStrength = 0 }
+    const isControl = (event: PointerEvent) => event.target instanceof Element && !!event.target.closest('a, button, input, select, textarea, [role="button"]')
     const press = (event: PointerEvent) => {
-      if (motion.matches) return
+      if (motion.matches || !event.isPrimary || event.button !== 0 || isControl(event)) return
+      if (event.pointerType !== 'mouse') {
+        touchStart = { id: event.pointerId, x: event.clientX, y: event.clientY }
+        return
+      }
       Object.assign(ring, toPlane(event))
       ringAt = performance.now()
     }
+    const releaseTouch = (event: PointerEvent) => {
+      if (touchStart?.id !== event.pointerId) return
+      const start = touchStart
+      touchStart = undefined
+      if (!start || motion.matches || isControl(event) || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) return
+      Object.assign(ring, toPlane(event))
+      ringAt = performance.now()
+    }
+    const cancelTouch = () => { touchStart = undefined }
     const lost = (event: Event) => {
       event.preventDefault()
       contextLost = true
@@ -305,6 +340,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const resize = new ResizeObserver(invalidate)
     resize.observe(canvas)
     resize.observe(title)
+    if (prose) resize.observe(prose)
     const body = host.querySelector('.home-hero-body')
     if (body) resize.observe(body)
     const theme = new MutationObserver(invalidate)
@@ -325,6 +361,10 @@ export default function HeroCanvas({ className }: { className?: string }) {
     host.addEventListener('pointermove', move)
     host.addEventListener('pointerleave', leave)
     host.addEventListener('pointerdown', press)
+    host.addEventListener('pointerup', releaseTouch)
+    host.addEventListener('pointercancel', cancelTouch)
+    header?.addEventListener('pointermove', move)
+    header?.addEventListener('pointerleave', leave)
     canvas.addEventListener('webglcontextlost', lost)
     canvas.addEventListener('webglcontextrestored', restored)
     schedule()
@@ -368,6 +408,10 @@ export default function HeroCanvas({ className }: { className?: string }) {
       host.removeEventListener('pointermove', move)
       host.removeEventListener('pointerleave', leave)
       host.removeEventListener('pointerdown', press)
+      host.removeEventListener('pointerup', releaseTouch)
+      host.removeEventListener('pointercancel', cancelTouch)
+      header?.removeEventListener('pointermove', move)
+      header?.removeEventListener('pointerleave', leave)
       canvas.removeEventListener('webglcontextlost', lost)
       canvas.removeEventListener('webglcontextrestored', restored)
       if (fontFace) document.fonts.delete(fontFace)

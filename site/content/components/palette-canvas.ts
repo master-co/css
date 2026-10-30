@@ -1,300 +1,279 @@
-/** A demand-rendered, wide-gamut palette. Only a short change of projection owns an animation frame. */
-interface Point { x: number, y: number }
-interface Swatch { element: HTMLElement, color: string, chroma: number, column: number, row: number }
-interface Hit { index: number, points: Point[] }
+import { paletteGeometry, paletteHit, type PaletteGeometry, type PalettePoint } from './palette-geometry'
+import { paintPaletteField, paintPaletteSelection, type PaletteColor, type PalettePaints } from './palette-painter'
 
 export interface PaletteCanvas {
-  select: (element: HTMLElement | null) => void
+  select: (element: HTMLElement | null, pinned?: boolean) => void
   keyboard: () => void
-  refresh: () => void
   dispose: () => void
 }
 
-export function mountPaletteCanvas(stage: HTMLElement, canvas: HTMLCanvasElement, pick: (element: HTMLElement | null) => void): PaletteCanvas | undefined {
-  // A browser without P3 canvas support still gets its default sRGB context and the same CSS colors.
-  let context: CanvasRenderingContext2D | null
+interface PaletteCallbacks {
+  preview: (element: HTMLElement | null) => void
+  choose: (element: HTMLElement) => void
+}
+
+function context2D(canvas: HTMLCanvasElement) {
   try {
-    context = canvas.getContext('2d', { colorSpace: 'display-p3', alpha: false })
+    return canvas.getContext('2d', { colorSpace: 'display-p3', alpha: false })
   } catch {
-    context = canvas.getContext('2d', { alpha: false })
+    return canvas.getContext('2d', { alpha: false })
   }
-  if (!context) return
-  const ctx = context
-  const swatches: Swatch[] = [...stage.querySelectorAll<HTMLElement>('[data-token]')].map((element) => ({
-    element, color: element.dataset.value!, chroma: Number(element.dataset.chroma),
-    column: Number(element.dataset.column), row: Number(element.dataset.row)
+}
+
+/** A cached field with a small selection pass. A finite projection change is its only animation. */
+export function mountPaletteCanvas(stage: HTMLElement, canvas: HTMLCanvasElement, callbacks: PaletteCallbacks): PaletteCanvas | undefined {
+  const context = context2D(canvas)
+  const buffer = document.createElement('canvas')
+  buffer.dataset.homePaletteCache = ''
+  const bufferContext = context2D(buffer)
+  if (!context || !bufferContext) return
+  const ctx = context, base = bufferContext
+  const colors: (PaletteColor & { element: HTMLElement })[] = [...stage.querySelectorAll<HTMLElement>('[data-token]')].map((element) => ({
+    element, token: element.dataset.token!, value: element.dataset.value!,
+    name: element.dataset.name!, tier: element.dataset.tier!,
+    chroma: Number(element.dataset.chroma), column: Number(element.dataset.column), row: Number(element.dataset.row)
   }))
-  const columns = Math.max(...swatches.map((swatch) => swatch.column)) + 1
-  const rows = Math.max(...swatches.map((swatch) => swatch.row)) + 1
+  const columns = Math.max(...colors.map((color) => color.column)) + 1
+  const rows = Math.max(...colors.map((color) => color.row)) + 1
   const names = [...stage.querySelectorAll<HTMLElement>('.home-palette-name')].slice(1).map((element) => element.textContent!)
   const tiers = [...stage.querySelectorAll<HTMLElement>('.home-palette-tier')].map((element) => element.textContent!)
-  // Low columns at the back first; front bars are painted last, without a depth buffer.
-  const order = swatches.map((swatch, index) => ({ swatch, index })).sort((a, b) => (a.swatch.row - b.swatch.row) || (b.swatch.column - a.swatch.column))
-  const narrow = matchMedia('(width < 64rem)')
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  const compact = matchMedia('(width < 64rem)')
   const scheme = matchMedia('(prefers-color-scheme: dark)')
-  let width = 0, height = 0, density = 1, frame = 0
-  let visible = false, hovered = false, selected = -1
-  let flat = narrow.matches ? 1 : 0, target = flat, from = flat, started = 0
-  let hits: Hit[] = [], pointer: Point | undefined, touchStart: Point | undefined
-  let colors = { ink: '', ground: '', line: '', signal: '', tag: '', tagText: '', font: '' }
+  let width = 0, height = 0, density = 1, frame = 0, readoutInset = 76
+  let visible = false, drawing = false, baseDirty = true, selectionDirty = true
+  let selected = -1, pinned = false, hovered = stage.matches(':hover')
+  let flat = compact.matches || hovered || stage.matches(':focus-visible') || stage.parentElement!.hasAttribute('data-pinned') ? 1 : 0
+  let target = flat, from = flat, started = 0
+  let geometry: PaletteGeometry | undefined, paints: PalettePaints
+  let pointer: PalettePoint | undefined, pointerDirty = false, lastPreview: number | undefined
+  let gesture: { id: number, start: PalettePoint, scrubbing: boolean } | undefined
 
-  function polygon(points: Point[]) {
-    const path = new Path2D()
-    path.moveTo(points[0].x, points[0].y)
-    for (const point of points.slice(1)) path.lineTo(point.x, point.y)
-    path.closePath()
-    return path
+  function schedule() {
+    if (!frame && !drawing && visible && !document.hidden) frame = requestAnimationFrame(tick)
   }
 
-  function hitTest(point: Point) {
-    // Painter order is reversed, so a raised top takes precedence over the top behind it.
-    for (let i = hits.length - 1; i >= 0; i--) {
-      const { points, index } = hits[i]
-      const inside = points.every((a, j) => {
-        const b = points[(j + 1) % points.length]
-        return (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x) >= 0
-      })
-      if (inside) return swatches[index].element
-    }
-    return null
-  }
-
-  function draw() {
-    if (!width || !height) return
-    ctx.setTransform(density, 0, 0, density, 0, 0)
-    ctx.fillStyle = colors.ground
-    ctx.fillRect(0, 0, width, height)
-    const tilt = (1 - flat) * 56 * Math.PI / 180
-    const turn = (1 - flat) * -28 * Math.PI / 180
-    const cosTurn = Math.cos(turn), sinTurn = Math.sin(turn), cosTilt = Math.cos(tilt), sinTilt = Math.sin(tilt)
-    const cellW = 42
-    // On phones a readable flat table needs taller cells, rather than a uniformly shrunken 3D field.
-    const cellH = narrow.matches ? (height - 100) * columns * cellW / (rows * (width - 48)) : 27
-    const gridW = columns * cellW, gridH = rows * cellH
-    const project = (x: number, y: number, z = 0): Point => ({
-      x: cosTurn * x - sinTurn * y,
-      y: cosTilt * (sinTurn * x + cosTurn * y) - sinTilt * z
-    })
-    const corners = [project(-gridW / 2, -gridH / 2), project(gridW / 2, -gridH / 2), project(gridW / 2, gridH / 2), project(-gridW / 2, gridH / 2)]
-    const minX = Math.min(...corners.map((p) => p.x)), maxX = Math.max(...corners.map((p) => p.x))
-    const minY = Math.min(...corners.map((p) => p.y)), maxY = Math.max(...corners.map((p) => p.y))
-    const scale = Math.min((width - (narrow.matches ? 48 : 92)) / (maxX - minX), (height - 100) / (maxY - minY), 1.3)
-    const gap = narrow.matches ? Math.max(3, 2 / scale) : 3
-    const point = (x: number, y: number, z = 0): Point => {
-      const p = project(x, y, z)
-      return { x: width / 2 + p.x * scale, y: height / 2 + 12 + (p.y - (maxY + minY) / 2) * scale }
-    }
-    const floor = polygon([
-      point(-gridW / 2 - 8, -gridH / 2 - 8), point(gridW / 2 + 8, -gridH / 2 - 8),
-      point(gridW / 2 + 8, gridH / 2 + 8), point(-gridW / 2 - 8, gridH / 2 + 8)
-    ])
-    if (flat < 1) {
-      ctx.save()
-      ctx.shadowColor = 'rgb(0 0 0 / .12)'
-      ctx.shadowBlur = 22 * (1 - flat)
-      ctx.shadowOffsetY = 10 * (1 - flat)
-      ctx.fillStyle = colors.ground
-      ctx.fill(floor)
-      ctx.restore()
-      ctx.strokeStyle = colors.line
-      ctx.lineWidth = .75
-      ctx.stroke(floor)
-    }
-    hits = []
-    for (const { swatch, index } of order) {
-      const x = swatch.column * cellW - gridW / 2, y = swatch.row * cellH - gridH / 2
-      const lift = swatch.chroma * 180 * (1 - flat)
-      const top = [point(x, y, lift), point(x + cellW - gap, y, lift), point(x + cellW - gap, y + cellH - gap, lift), point(x, y + cellH - gap, lift)]
-      if (lift > .1) {
-        const left = polygon([top[0], top[3], point(x, y + cellH - gap), point(x, y)])
-        const front = polygon([top[3], top[2], point(x + cellW - gap, y + cellH - gap), point(x, y + cellH - gap)])
-        ctx.fillStyle = swatch.color
-        ctx.fill(left)
-        ctx.fill(front)
-        ctx.fillStyle = 'rgb(0 0 0 / .28)'
-        ctx.fill(left)
-        ctx.fillStyle = 'rgb(0 0 0 / .16)'
-        ctx.fill(front)
-      }
-      const path = polygon(top)
-      ctx.fillStyle = swatch.color
-      ctx.fill(path)
-      ctx.lineWidth = .6
-      ctx.strokeStyle = 'rgb(0 0 0 / .09)'
-      ctx.stroke(path)
-      hits.push({ index, points: top })
-    }
-    // Labels enter with the flat table. The tier ruler remains readable on small screens.
-    if (flat > .8) {
-      ctx.globalAlpha = (flat - .8) * 5
-      ctx.fillStyle = colors.ink
-      ctx.font = `${narrow.matches ? 9 : 10}px ${colors.font}`
-      ctx.textAlign = 'right'
-      ctx.textBaseline = 'middle'
-      for (let row = 0; row < rows; row++) {
-        const p = point(-gridW / 2, row * cellH - gridH / 2 + (cellH - gap) / 2)
-        ctx.fillText(tiers[row], p.x - 8, p.y)
-      }
-      if (!narrow.matches) {
-        ctx.textAlign = 'center'
-        for (let col = 0; col < columns; col++) {
-          const p = point(col * cellW - gridW / 2 + (cellW - gap) / 2, -gridH / 2)
-          ctx.fillText(names[col], p.x, p.y - 16)
-        }
-      }
-      ctx.globalAlpha = 1
-    }
-    if (selected >= 0) {
-      const hit = hits.find((entry) => entry.index === selected)!
-      ctx.strokeStyle = colors.signal
-      ctx.lineWidth = 2
-      ctx.stroke(polygon(hit.points))
-      // A class tag stays in screen coordinates and within the canvas, including the outer columns.
-      if (flat > .9) {
-        const token = swatches[selected].element.dataset.token!
-        ctx.font = `11px ${colors.font}`
-        const tagW = ctx.measureText(token).width + 16
-        const x = Math.max(8, Math.min(width - tagW - 8, hit.points[0].x))
-        const y = hit.points[0].y - 29
-        ctx.fillStyle = colors.tag
-        ctx.beginPath()
-        ctx.roundRect(x, y, tagW, 22, 4)
-        ctx.fill()
-        ctx.fillStyle = colors.tagText
-        ctx.textAlign = 'left'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(token, x + 8, y + 11)
-      }
-    }
-    // Reveal the canvas only after its first complete frame; the native table covers hydration.
-    stage.parentElement!.dataset.renderer = 'canvas'
-    stage.dataset.projection = flat > .99 ? 'flat' : 'raised'
-    if (pointer) pick(hitTest(pointer))
+  function preview(point: PalettePoint) {
+    const index = geometry ? paletteHit(geometry, point) : undefined
+    if (index === lastPreview) return
+    lastPreview = index
+    callbacks.preview(index === undefined ? null : colors[index].element)
   }
 
   function tick(now: number) {
     frame = 0
-    const progress = reduced.matches ? 1 : Math.min(1, (now - started) / 680)
-    flat = from + (target - from) * (1 - (1 - progress) ** 4)
-    draw()
-    if (progress < 1 && flat !== target) request()
-  }
-
-  function request() {
-    if (!frame && visible && !document.hidden) frame = requestAnimationFrame(tick)
-  }
-
-  function refresh() {
-    const next = narrow.matches || hovered || stage.matches(':focus-visible') || (selected >= 0 && !pointer) ? 1 : 0
-    if (next !== target) {
-      from = flat
-      target = next
-      started = performance.now()
+    drawing = true
+    if (flat !== target) {
+      const progress = reduced.matches ? 1 : Math.min(1, (now - started) / 620)
+      flat = progress === 1 ? target : from + (target - from) * (1 - (1 - progress) ** 4)
+      baseDirty = true
     }
-    if (reduced.matches) flat = from = target
-    request()
+    if (!width || !height) { drawing = false; return }
+    const pixelWidth = Math.max(1, Math.round(width * density)), pixelHeight = Math.max(1, Math.round(height * density))
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = buffer.width = pixelWidth
+      canvas.height = buffer.height = pixelHeight
+      baseDirty = true
+    }
+    if (baseDirty) {
+      geometry = paletteGeometry(width, height, flat, colors, columns, rows, readoutInset)
+      base.setTransform(density, 0, 0, density, 0, 0)
+      paintPaletteField(base, width, height, geometry, colors, paints, names, tiers)
+      baseDirty = false
+      selectionDirty = true
+      if (pointer) pointerDirty = true
+    }
+    // Let the field settle under the pointer before naming a cell; the camera move never churns the readout.
+    if (pointerDirty && pointer && flat > .98) {
+      preview(pointer)
+      pointerDirty = false
+    }
+    if (selectionDirty) {
+      ctx.setTransform(density, 0, 0, density, 0, 0)
+      ctx.drawImage(buffer, 0, 0, buffer.width, buffer.height, 0, 0, width, height)
+      if (selected >= 0) {
+        const cell = geometry!.cells.find((cell) => cell.index === selected)!
+        paintPaletteSelection(ctx, width, geometry!, cell, colors[selected], paints)
+        canvas.dataset.active = colors[selected].token
+      } else delete canvas.dataset.active
+      selectionDirty = false
+    }
+    // The native table covers hydration until a complete frame is available.
+    stage.parentElement!.dataset.renderer = 'canvas'
+    stage.dataset.projection = flat === 1 ? 'flat' : flat === 0 ? 'raised' : 'changing'
+    drawing = false
+    if (flat !== target) schedule()
+  }
+
+  function readPaints() {
+    const css = getComputedStyle(canvas)
+    paints = {
+      ground: css.backgroundColor, sheet: css.textDecorationColor,
+      ink: css.columnRuleColor, muted: css.color, line: css.borderTopColor,
+      signal: css.caretColor, inverse: css.borderBottomColor,
+      font: css.fontFamily
+    }
+    baseDirty = true
+    schedule()
   }
 
   function resize() {
     const rect = stage.getBoundingClientRect()
     width = rect.width
     height = rect.height
-    density = Math.min(window.devicePixelRatio || 1, 2)
-    canvas.width = Math.round(width * density)
-    canvas.height = Math.round(height * density)
-    theme()
-    refresh()
+    readoutInset = readout ? rect.bottom - readout.getBoundingClientRect().top + 16 : 76
+    // Keep both raster surfaces together below 5.2 million pixels, including very wide retina displays.
+    density = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(2_600_000 / Math.max(1, width * height)))
+    readPaints()
   }
 
-  function theme() {
-    const css = getComputedStyle(canvas)
-    colors = { ink: css.color, ground: css.backgroundColor, line: css.borderTopColor, signal: css.caretColor, tag: css.outlineColor, tagText: css.textDecorationColor, font: css.fontFamily }
-    request()
-  }
-
-  function position(event: PointerEvent): Point {
-    const rect = canvas.getBoundingClientRect()
+  function position(event: PointerEvent): PalettePoint {
+    const rect = stage.getBoundingClientRect()
     return { x: event.clientX - rect.left, y: event.clientY - rect.top }
+  }
+
+  function refreshProjection() {
+    const next = compact.matches || hovered || pinned || stage.matches(':focus-visible') ? 1 : 0
+    if (next === target) return
+    from = flat
+    target = next
+    started = performance.now()
+    if (reduced.matches) flat = target
+    baseDirty = true
+    schedule()
   }
 
   function enter(event: PointerEvent) {
     if (event.pointerType !== 'mouse') return
     hovered = true
-    refresh()
+    refreshProjection()
+  }
+
+  function choose(point: PalettePoint) {
+    const index = geometry ? paletteHit(geometry, point) : undefined
+    if (index !== undefined) callbacks.choose(colors[index].element)
   }
 
   function move(event: PointerEvent) {
-    if (event.pointerType !== 'mouse') return
-    pointer = position(event)
-    pick(hitTest(pointer))
+    if (!event.isPrimary) return
+    const point = position(event)
+    if (event.pointerType === 'mouse') {
+      pointer = point
+      pointerDirty = true
+      schedule()
+      return
+    }
+    if (!gesture || gesture.id !== event.pointerId) return
+    const dx = Math.abs(point.x - gesture.start.x), dy = Math.abs(point.y - gesture.start.y)
+    if (!gesture.scrubbing && dx > 8 && dx > dy * 1.3) {
+      gesture.scrubbing = true
+      stage.setPointerCapture(event.pointerId)
+      stage.dataset.scrubbing = ''
+    }
+    if (gesture.scrubbing) choose(point)
   }
 
   function leave(event: PointerEvent) {
-    // Touch emits pointerleave after lifting; retain the tapped swatch and its readout.
     if (event.pointerType !== 'mouse') return
     hovered = false
     pointer = undefined
-    if (!stage.matches(':focus-visible')) pick(null)
-    refresh()
+    pointerDirty = false
+    lastPreview = undefined
+    callbacks.preview(null)
+    refreshProjection()
   }
 
   function down(event: PointerEvent) {
-    if (event.pointerType !== 'mouse') touchStart = position(event)
+    if (!event.isPrimary || event.button !== 0 || event.pointerType === 'mouse') return
+    const point = position(event)
+    gesture = { id: event.pointerId, start: point, scrubbing: false }
+  }
+
+  function finishGesture() {
+    if (gesture && stage.hasPointerCapture(gesture.id)) stage.releasePointerCapture(gesture.id)
+    gesture = undefined
+    delete stage.dataset.scrubbing
   }
 
   function up(event: PointerEvent) {
-    if (event.pointerType === 'mouse' || !touchStart) return
-    const p = position(event)
-    if (Math.hypot(p.x - touchStart.x, p.y - touchStart.y) < 8) pick(hitTest(p))
-    touchStart = undefined
-    refresh()
+    if (!event.isPrimary || event.button !== 0) return
+    const point = position(event)
+    if (event.pointerType === 'mouse') choose(point)
+    else if (gesture?.id === event.pointerId) {
+      if (gesture.scrubbing || Math.hypot(point.x - gesture.start.x, point.y - gesture.start.y) < 8) choose(point)
+      finishGesture()
+    }
   }
 
-  function cancel() { touchStart = undefined }
   function visibility() {
     if (document.hidden) {
       cancelAnimationFrame(frame)
       frame = 0
-    } else refresh()
+      finishGesture()
+    } else schedule()
   }
 
+  function motion() {
+    if (reduced.matches && flat !== target) {
+      flat = target
+      baseDirty = true
+      schedule()
+    }
+  }
+
+  const readout = stage.parentElement!.querySelector<HTMLElement>('.home-palette-inspector')
   const resizeObserver = new ResizeObserver(resize)
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting
-    if (visible) refresh()
-    else { cancelAnimationFrame(frame); frame = 0 }
+    if (visible) schedule()
+    else {
+      cancelAnimationFrame(frame)
+      frame = 0
+      finishGesture()
+    }
   })
-  const themeObserver = new MutationObserver(theme)
+  const themeObserver = new MutationObserver(readPaints)
   resizeObserver.observe(stage)
+  if (readout) resizeObserver.observe(readout)
   intersection.observe(stage)
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] })
-  narrow.addEventListener('change', resize)
-  reduced.addEventListener('change', refresh)
-  scheme.addEventListener('change', theme)
+  reduced.addEventListener('change', motion)
+  compact.addEventListener('change', refreshProjection)
+  scheme.addEventListener('change', readPaints)
   document.addEventListener('visibilitychange', visibility)
-  const listeners = { pointerenter: enter, pointermove: move, pointerleave: leave, pointerdown: down, pointerup: up, pointercancel: cancel }
+  document.fonts.addEventListener('loadingdone', readPaints)
+  const listeners = { pointerenter: enter, pointermove: move, pointerleave: leave, pointerdown: down, pointerup: up, pointercancel: finishGesture, lostpointercapture: finishGesture, focus: refreshProjection, blur: refreshProjection }
   for (const [name, listener] of Object.entries(listeners)) stage.addEventListener(name, listener as EventListener)
   resize()
   return {
-    keyboard() { pointer = undefined },
-    select(element) {
-      const next = swatches.findIndex((swatch) => swatch.element === element)
-      if (selected === next) return
-      selected = next
-      refresh()
+    keyboard() {
+      pointer = undefined
+      pointerDirty = false
+      lastPreview = undefined
+      refreshProjection()
     },
-    refresh,
+    select(element, keep = false) {
+      const next = colors.findIndex((color) => color.element === element)
+      if (next === selected && keep === pinned) return
+      selected = next
+      pinned = keep
+      selectionDirty = true
+      refreshProjection()
+      schedule()
+    },
     dispose() {
       cancelAnimationFrame(frame)
       resizeObserver.disconnect()
       intersection.disconnect()
       themeObserver.disconnect()
-      narrow.removeEventListener('change', resize)
-      reduced.removeEventListener('change', refresh)
-      scheme.removeEventListener('change', theme)
+      reduced.removeEventListener('change', motion)
+      compact.removeEventListener('change', refreshProjection)
+      scheme.removeEventListener('change', readPaints)
       document.removeEventListener('visibilitychange', visibility)
+      document.fonts.removeEventListener('loadingdone', readPaints)
       for (const [name, listener] of Object.entries(listeners)) stage.removeEventListener(name, listener as EventListener)
+      finishGesture()
+      buffer.width = buffer.height = 1
       delete stage.parentElement!.dataset.renderer
     }
   }

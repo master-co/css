@@ -14,7 +14,7 @@ import WorkflowSection from './components/WorkflowSection'
 
 export default function Page() {
   return <>
-    <DocHeader className="home-header" stickable />
+    <DocHeader className="home-header" stickable transitionAtTop />
     <main className="overflow:hidden home-page">
       <HeroSection />
       <DesignSystemSection />

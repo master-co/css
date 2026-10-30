@@ -10,6 +10,7 @@ import preset from '../../utils/preset-manifest'
 import { getColor, type ColorLevel } from '../../docs-shell/data/color-palette'
 import { editorCompletion, editorCompletionDetail, editorCompletionLabels, editorHoverClass, editorSource, editorSwatches, filterCompletions } from './editor-content'
 import { createEditorTextDocument, getEditorModel } from './editor-document'
+import './editor-scene.test'
 
 const manifest = preset as unknown as MasterCSSManifest
 const linter = new Linter({ configType: 'flat' })
@@ -87,4 +88,20 @@ test('every class in the editor carries its semantic parts and the hover the lan
   assert.deepEqual(hover.tokens, ['--color-blue-70'])
   assert.equal(model.classes[model.insertion.classIndex].name, editorCompletion.label)
   assert.equal(model.classes[model.literalClass].swatch?.color, editorSwatches.find((swatch) => 'literal' in swatch)?.literal)
+})
+
+test('editing the literal keeps the displayed hover identical to the language service', () => {
+  const model = getEditorModel()
+  const item = model.classes[model.literalClass]
+  const original = item.swatch!.color
+  withService(service => {
+    for (const color of ['#218875', '#ffffff', '#000000', '#ff0000']) {
+      const source = editorSource.replace(original, color)
+      const document = createEditorTextDocument(source)
+      const hover = service.inspectSyntax(document as never, document.positionAt(source.indexOf(`color:${color}`)))
+      const contents = hover?.contents as { value: string }
+      const css = contents.value.match(/```css\n([\s\S]*?)\n```/)![1]
+      assert.equal(model.hovers[item.hover].css.replaceAll(original.slice(1), color.slice(1)), css, color)
+    }
+  })
 })

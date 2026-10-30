@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { IconPlayerPauseFilled, IconPlayerPlayFilled, IconRotate } from '@tabler/icons-react'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-import { deliveryAdded, deliveryLateClass, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
+import { deliveryAdded, deliveryExplanations, deliveryLateClass, deliveryMoments, deliveryRuleAt, deliveryTiming, type DeliveryMode } from './delivery-content'
 
 /** Give each cause and result time to register, then hold the finished mode for comparison. */
 const unit = 4200
@@ -55,19 +55,21 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
     let t = 4
     let shown = 3
     let playing = false
-    let touring = !reduce
+    let touring = !reduce && !radios.some(radio => radio.checked !== radio.defaultChecked)
     let scrubbed = false
-    let held = false
+    let hovered = frame.matches(':hover')
+    let focused = frame.matches(':focus-within')
     let visible = false
     let inView = false
     let clock = 0
+    let visibleClock = 0
     let endedAt = 0
     let releasedAt = 0
     let last = 0
     let frameId = 0
     let filmMode = ''
     let begun = false
-    let tween: { from: number, to: number, start: number, moment: number } | undefined
+    let tween: { from: number, to: number, elapsed: number, moment: number } | undefined
     let events: { at: number, run: () => void }[] = []
     const animations = new Set<Animation>()
     const timers = new Set<{ at: number, run: () => void }>()
@@ -296,8 +298,11 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       frameId = requestAnimationFrame(tick)
       const elapsed = last ? Math.min(now - last, 64) : 0
       last = now
+      if (!visible) return
+      visibleClock += elapsed
       if (tween) {
-        const progress = Math.min(1, (now - tween.start) / 620)
+        tween.elapsed += elapsed
+        const progress = Math.min(1, tween.elapsed / 620)
         const eased = 1 - (1 - progress) ** 3
         setT(tween.from + (tween.to - tween.from) * eased)
         if (progress >= 1) {
@@ -306,7 +311,6 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
         }
         return
       }
-      if (!visible) return
       if (playing) {
         clock += elapsed
         for (const timer of timers) {
@@ -316,10 +320,10 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
         }
         advance(t + elapsed / unit)
         if (t >= 4) {
-          endedAt = now
+          endedAt = visibleClock
           setPlaying(false)
         }
-      } else if (touring && t >= 4 && !held && now - Math.max(endedAt, releasedAt) > rest) {
+      } else if (touring && t >= 4 && !hovered && !focused && visibleClock - Math.max(endedAt, releasedAt) > rest) {
         const index = radios.findIndex((radio) => radio.checked)
         radios[(index + 1) % radios.length].checked = true
         film()
@@ -363,6 +367,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       stage.setAttribute('data-inspecting', '')
       const target = toCSS ? find(stage, '.home-delivery-css .home-delivery-code-scroll') : find(stage, '[data-reference-line]')?.closest<HTMLElement>('.home-delivery-code-scroll')
       target?.focus({ preventScroll: true })
+      target?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce ? 'instant' : 'smooth' })
       redraw()
     }
     const onClick = () => choose(true)
@@ -404,7 +409,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
         cancel()
         setPlaying(false)
         if (reduce) setT(index + 1)
-        else tween = { from: t, to: index + 1, start: performance.now(), moment: index }
+        else tween = { from: t, to: index + 1, elapsed: 0, moment: index }
         shown = index
         stage.dataset.moment = String(index)
         setMoment(index)
@@ -431,13 +436,15 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
 
     // A pointer or focus inside the figure holds automatic mode changes while the film continues.
     const inside = (node: EventTarget | null) => node instanceof Node && (frame.contains(node) || radios.includes(node as HTMLInputElement))
-    const hold = () => {
-      held = true
+    const hold = (event: Event) => {
+      if (event.type === 'pointerenter') hovered = true
+      else focused = true
     }
     const release = (event: Event) => {
       if (event instanceof FocusEvent && inside(event.relatedTarget)) return
-      held = false
-      releasedAt = performance.now()
+      if (event.type === 'pointerleave') hovered = false
+      else focused = false
+      releasedAt = visibleClock
     }
     frame.addEventListener('pointerenter', hold)
     frame.addEventListener('pointerleave', release)
@@ -533,9 +540,12 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
     updateRows()
     if (!reduce) {
       setMotion(true)
-      stage.setAttribute('data-touring', '')
-      setT(0)
-      setPlaying(true)
+      if (scrolls.some(scroll => scroll.matches(':focus-within'))) onCodeFocus()
+      else {
+        stage.toggleAttribute('data-touring', touring)
+        setT(0)
+        setPlaying(true)
+      }
     }
     frameId = requestAnimationFrame(tick)
 
@@ -586,6 +596,13 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
               <span className="home-delivery-moment-fill" />
             </span>
           </button>
+        ))}
+      </div>
+      <div className="home-delivery-explanations">
+        {Object.entries(deliveryExplanations).map(([mode, chapters]) => (
+          <p className="home-delivery-explanation home-delivery-variant" data-mode={mode} key={mode}>
+            {chapters.map((chapter, index) => <span data-explanation-moment={index} key={chapter}>{$(chapter)}</span>)}
+          </p>
         ))}
       </div>
     </div>

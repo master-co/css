@@ -35,7 +35,10 @@ const p3PaletteGridStyle = {
 const p3Swatches = p3PaletteTiers.map((tier) => p3PaletteColorNames.map((colorName) => {
   const value = getColor(colorName, tier)
   const color = new Color(value)
-  return { colorName, tier, value, token: `bg-${colorName}-${tier}`, wide: !color.inGamut('srgb'), chroma: color.to('oklch').coords[1] ?? 0 }
+  return {
+    colorName, tier, value, token: `bg-${colorName}-${tier}`,
+    wide: !color.inGamut('srgb'), chroma: color.to('oklch').coords[1] ?? 0
+  }
 }))
 
 export default function DesignSystemSection() {
@@ -54,7 +57,7 @@ export default function DesignSystemSection() {
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>
         </HomeSectionHeader>
-        {/* Themes first, the full-width palette in the middle, then layout and layers side by side. */}
+        {/* Themes first, layout and layers side by side, then the full-width palette. */}
         <HomeBentoFrame>
           <HomeBentoGrid className="grid-cols(1) grid-cols(8)@md home-ds-row">
             {designSystemTiles.slice(0, 2).map((tile) => <DesignSystemTile key={tile.title} tile={tile} />)}
@@ -96,7 +99,7 @@ function ThemeTokens() {
   )
 }
 
-/** The full-width middle card uses the same header as its neighbors; the readout stays inside the field. */
+/** The full-width palette closes the bento; its inspector stays beside the field in the same well. */
 function P3Palette({ body, title }: { body: string, title: string }) {
   const $ = useTranslation()
   return (
@@ -109,7 +112,9 @@ function P3Palette({ body, title }: { body: string, title: string }) {
       <PaletteExplorer
         columns={p3PaletteColorNames.length}
         label={$('P3 palette tiers from 100 through 0')}
-        mark={<p className="home-annotation home-palette-mark">↑ {$('Height: chroma')}</p>}>
+        summary={$('{count} colors · {tiers} tiers')
+          .replace('{count}', String(p3PaletteColorNames.length * p3PaletteTiers.length))
+          .replace('{tiers}', String(p3PaletteTiers.length))}>
         <P3PaletteField />
       </PaletteExplorer>
     </HomeBentoCard>
@@ -133,6 +138,8 @@ function P3PaletteField() {
               aria-selected={false}
               className="home-swatch"
               data-gamut={swatch.wide ? 'P3' : 'sRGB'}
+              data-name={swatch.colorName}
+              data-tier={swatch.tier}
               data-chroma={swatch.chroma.toFixed(4)}
               data-column={colorIndex}
               data-row={tierIndex}
@@ -141,7 +148,7 @@ function P3PaletteField() {
               id={`home-swatch-${swatch.colorName}-${swatch.tier}`}
               key={swatch.colorName}
               role="option"
-              style={{ backgroundColor: swatch.value }} />
+              style={{ '--home-swatch-color': swatch.value } as CSSProperties} />
           ))}
         </Fragment>
       ))}

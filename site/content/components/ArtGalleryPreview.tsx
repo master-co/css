@@ -1,6 +1,6 @@
 'use client'
 
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal, flushSync } from 'react-dom'
 import { IconX } from '@tabler/icons-react'
 import clsx from 'clsx'
@@ -55,7 +55,7 @@ const gridColumns = 12
 function getModalImageFrameStyle(aspectRatio: number): CSSProperties {
   return {
     aspectRatio,
-    width: `min(${aspectRatio >= 1 ? '92vw' : '78vw'},calc(82dvh*${aspectRatio}))`,
+    width: `min(${aspectRatio >= 1 ? '92vw' : '78vw'},calc(var(--home-gallery-height)*${aspectRatio}))`,
     viewTransitionName
   }
 }
@@ -69,17 +69,24 @@ function transition(update: () => void) {
     update()
     return Promise.resolve()
   }
-  return document.startViewTransition(() => flushSync(update)).finished
+  // Skipping an interrupted visual transition still leaves the requested DOM update applied.
+  const animation = document.startViewTransition(() => flushSync(update))
+  void animation.ready.catch(() => undefined)
+  return animation.finished.catch(() => undefined)
 }
 
 /** A grid of photos placed by span classes; each opens into a dialog with a view transition. */
 export default function ArtGalleryPreview({ className }: { className?: string }) {
   const $ = useTranslation()
+  const titleId = useId()
   const [modalArtworkId, setModalArtworkId] = useState<string>()
   const [modalFrameAspectRatio, setModalFrameAspectRatio] = useState(1.6)
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
   const artworkFrameRefs = useRef<Record<string, HTMLElement | null>>({})
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const openingRef = useRef(false)
+  const closingRef = useRef(false)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const restoreFocusRef = useRef(false)
   const guidesRef = useRef<HTMLDivElement>(null)
@@ -100,27 +107,30 @@ export default function ArtGalleryPreview({ className }: { className?: string })
 
   const openArtwork = useCallback((artworkId: string) => {
     const frame = artworkFrameRefs.current[artworkId]
-    if (!frame) return
-    const { width, height } = frame.getBoundingClientRect()
-    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    if (!frame || openingRef.current) return
+    openingRef.current = true
+    const artwork = artworks.find((artwork) => artwork.id === artworkId)!
+    previousFocusRef.current = frame.closest<HTMLButtonElement>('button')
     // The grid photo carries the name into the old snapshot; the dialog photo takes it over in the new one.
     frame.style.viewTransitionName = viewTransitionName
-    transition(() => {
+    void transition(() => {
       frame.style.viewTransitionName = ''
-      setModalFrameAspectRatio(width / height)
+      setModalFrameAspectRatio(artwork.image.width / artwork.image.height)
       setModalArtworkId(artworkId)
-    })
+    }).finally(() => { openingRef.current = false })
   }, [])
 
   const closeArtwork = useCallback(() => {
-    if (!modalArtworkId) return
+    if (!modalArtworkId || closingRef.current) return
+    closingRef.current = true
     const frame = artworkFrameRefs.current[modalArtworkId]
     restoreFocusRef.current = true
-    transition(() => {
+    void transition(() => {
       setModalArtworkId(undefined)
       if (frame) frame.style.viewTransitionName = viewTransitionName
     }).finally(() => {
       if (frame) frame.style.viewTransitionName = ''
+      closingRef.current = false
     })
   }, [modalArtworkId])
 
@@ -151,20 +161,25 @@ export default function ArtGalleryPreview({ className }: { className?: string })
     previousFocusRef.current?.focus({ preventScroll: true })
   }, [modalArtwork])
 
+  useLayoutEffect(() => {
+    if (!modalArtwork) return
+    const dialog = dialogRef.current
+    if (dialog && !dialog.open) dialog.showModal()
+    closeButtonRef.current?.focus({ preventScroll: true })
+  }, [modalArtwork])
+
   useEffect(() => {
     if (!modalArtwork) return
     const previousOverflow = document.body.style.overflow
+    const previousPadding = document.body.style.paddingRight
+    const scrollbar = window.innerWidth - document.documentElement.clientWidth
+    if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight) + scrollbar}px`
     document.body.style.overflow = 'hidden'
-    closeButtonRef.current?.focus()
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') closeArtwork()
-    }
-    document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.paddingRight = previousPadding
     }
-  }, [closeArtwork, modalArtwork])
+  }, [modalArtwork])
 
   return (
     <div className={clsx(className, 'home-hatch')}>
@@ -201,15 +216,17 @@ export default function ArtGalleryPreview({ className }: { className?: string })
       </div>
 
       {portalTarget && modalArtwork && createPortal(
-        <div
-          aria-label={$(modalArtwork.imageAlt)}
-          aria-modal="true"
+        <dialog
+          aria-labelledby={titleId}
           className="home-gallery-dialog"
+          onCancel={(event) => {
+            event.preventDefault()
+            closeArtwork()
+          }}
           onPointerDown={(event) => {
             if (event.target instanceof Element && !event.target.closest('[data-home-art-modal-content]')) closeArtwork()
           }}
-          role="dialog">
-          <div aria-hidden="true" className="home-gallery-backdrop" />
+          ref={dialogRef}>
           <button
             aria-label={$('Close photo')}
             className="home-gallery-close"
@@ -222,7 +239,11 @@ export default function ArtGalleryPreview({ className }: { className?: string })
           <figure className="home-gallery-view" data-home-art-modal-content="" style={getModalImageFrameStyle(modalFrameAspectRatio)}>
             <Image alt={$(modalArtwork.imageAlt)} className="object-fit:cover object-position:center" fill sizes="92vw" src={modalArtwork.image} />
           </figure>
-        </div>,
+          <p className="home-gallery-caption" data-home-art-modal-content="" id={titleId}>
+            <span>{$(modalArtwork.title)}</span>
+            <code>{placements[modalArtwork.id]}</code>
+          </p>
+        </dialog>,
         portalTarget
       )}
     </div>
