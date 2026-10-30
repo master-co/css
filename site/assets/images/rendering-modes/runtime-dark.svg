@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="480" viewBox="0 0 600 480" role="img" aria-labelledby="title description" font-family="Geist, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400" role="img" aria-labelledby="title description" font-family="Geist, sans-serif">
   <title id="title">Runtime delivery</title>
   <desc id="description">Read connected elements and receive DOM class changes. Execute complete classes with the compiled project program. Insert or reuse native CSS rules in the runtime stylesheet. The browser engine inserts or reuses CSS rules. Cached rules can outlive their connected DOM usage.</desc>
   <defs>
@@ -10,36 +10,32 @@
     </filter>
     <marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 1l4 3-4 3" fill="none" stroke="#898989" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></marker>
   </defs>
-  <rect x="0" y="0" width="600" height="480" rx="0" fill="#111111" />
-  <g transform="translate(20 20)">
-      <text x="26" y="61" font-size="18" font-weight="500" fill="#ababab" >Connected DOM</text>
-      <circle cx="26" cy="84" r="3" fill="#898989"/>
-      <path d="M26 96V228M26 143H45M26 228H45" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M260 143H290" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-      <path d="M420 188V266" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-      <rect x="54" y="110" width="194" height="66" rx="7" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="55" y="111" width="192" height="64" rx="6" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
-      <text x="70" y="137" font-size="19" font-weight="500" fill="#e5e5e5" >&lt;h2&gt;</text>
-      <text x="70" y="160" font-size="15" font-weight="400" fill="#ababab" >text-align:center</text>
-      <rect x="54" y="208" width="128" height="40" rx="7" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="55" y="209" width="126" height="38" rx="6" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
-      <text x="70" y="234" font-size="18" font-weight="400" fill="#ababab" >&lt;p&gt;</text>
-      <g>
-      <path d="M297 130h5m236 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/><path d="M297 144h5m236 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/><path d="M297 158h5m236 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/>
-      <rect x="302" y="112" width="236" height="64" rx="8" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="303" y="113" width="234" height="62" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
-      <g transform="translate(318 134)" stroke="#747474" stroke-width="1.2" fill="none" stroke-linecap="round">
-        <rect x="1" y="1" width="18" height="18" rx="3"/>
-        <rect x="6" y="6" width="8" height="8" rx="1"/>
-        <path d="M6-2v3m8-3v3M6 19v3m8-3v3M-2 6h3m-3 8h3M19 6h3m-3 8h3"/>
-      </g>
-      <text x="350" y="150" font-size="18" font-weight="500" fill="#e5e5e5" >Engine + program</text>
+  <rect x="0" y="0" width="600" height="400" rx="0" fill="#111111" />
+  <g transform="translate(0 0)">
+      <g transform="translate(0 24)">
+      <text x="62" y="92" font-size="20" font-weight="500" fill="#ababab" >Connected DOM</text>
+      <path d="M62 114V246Q62 264 80 264H336Q356 264 356 244V214" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M62 145H76M62 211H76" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+      <rect x="88" y="114" width="198" height="66" rx="8" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="89" y="115" width="196" height="64" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <text x="102" y="141" font-size="20" font-weight="500" fill="#e5e5e5" >&lt;h2&gt;</text>
+      <text x="102" y="167" font-size="18" font-weight="400" fill="#ababab" >text-align:center</text>
+      <rect x="88" y="194" width="72" height="36" rx="7" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="89" y="195" width="70" height="34" rx="6" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <text x="102" y="220" font-size="20" font-weight="400" fill="#ababab" >&lt;p&gt;</text>
 
-    </g>
-      <text x="435" y="228" font-size="15" font-weight="400" fill="#ababab" >Insert / reuse</text>
-      <g>
-      <rect x="316" y="284" width="208" height="126" rx="8" fill="#202020" stroke="#414141"/>
-      <rect x="310" y="278" width="220" height="126" rx="8" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="311" y="279" width="218" height="124" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
-      <text x="328" y="312" font-size="18" font-weight="500" fill="#e5e5e5" >CSS rules</text>
-      <path d="M311 329H529" stroke="#414141"/>
-      <rect x="328" y="347" width="170" height="4" rx="2" fill="#646464" opacity=".65"/><rect x="328" y="365" width="150" height="4" rx="2" fill="#646464" opacity=".65"/><rect x="328" y="383" width="130" height="4" rx="2" fill="#646464" opacity=".65"/>
-    </g>
+      <rect x="326" y="136" width="60" height="64" rx="9" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="327" y="137" width="58" height="62" rx="8" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <g transform="translate(343 155)" fill="none" stroke="#747474" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="26" height="26" rx="4"/>
+        <rect x="7" y="7" width="12" height="12" rx="2"/>
+        <path d="M7-5v5m12-5v5M7 26v5m12-5v5M-5 7h5m-5 12h5M26 7h5m-5 12h5"/>
+      </g>
+      <text x="356" y="92" font-size="20" font-weight="500" fill="#e5e5e5" text-anchor="middle">Engine + program</text>
+
+      <text x="498" y="92" font-size="20" font-weight="500" fill="#e5e5e5" text-anchor="middle">CSS rules</text>
+      <rect x="450" y="120" width="96" height="118" rx="8" fill="#202020" stroke="#414141"/>
+      <rect x="444" y="114" width="108" height="118" rx="8" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="445" y="115" width="106" height="116" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <rect x="462" y="138" width="70" height="4" rx="2" fill="#646464" opacity=".65"/><rect x="462" y="162" width="52" height="4" rx="2" fill="#646464" opacity=".65"/><rect x="462" y="186" width="70" height="4" rx="2" fill="#646464" opacity=".65"/><rect x="462" y="210" width="52" height="4" rx="2" fill="#646464" opacity=".65"/>
+      <path d="M400 168H430" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <text x="498" y="274" font-size="18" font-weight="400" fill="#ababab" text-anchor="middle">Insert / reuse</text>
+      </g>
     </g>
 </svg>

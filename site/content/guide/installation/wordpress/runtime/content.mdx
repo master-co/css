@@ -39,6 +39,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
@@ -96,12 +97,11 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
           filemtime($theme_dir . '/assets/master.css')
         );
 
-        wp_enqueue_script(
+        wp_enqueue_script_module(
           'master-css-runtime',
           $theme_uri . '/assets/master.js',
           [],
-          filemtime($theme_dir . '/assets/master.js'),
-          true
+          filemtime($theme_dir . '/assets/master.js')
         );
       });
       ```
@@ -110,7 +110,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
   <Step $row>
     <StepL>
       ### <StepNum />Prevent unstyled first paint
-      Add `display:none` to the root document in the theme header so the runtime can reveal the page after it starts.
+      Add the `hidden` attribute to the root document in the theme header so the runtime can reveal the page after it starts.
     </StepL>
     <StepR>
       ```php name=header.php
@@ -132,3 +132,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
 ```
 
 Use [WordPress static rendering](/guide/installation/wordpress) when theme template class strings are complete at build time and you want a generated CSS asset. For WooCommerce templates, include your theme overrides and avoid scanning plugin internals unless your theme stores complete class strings there.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+
+This runtime recipe requires WordPress 6.5 or later for [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/). A Vite ES module must be loaded as a module, including its generated imports. With JavaScript disabled, a hidden root stays hidden; choose static rendering when content must remain available without JavaScript.

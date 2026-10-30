@@ -1,3 +1,4 @@
+import DeliveryFlow from '~/site/components/DeliveryFlow'
 import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
 
 A component can construct a class name that is absent as a complete string in source. If Next.js renders that component during the build, the final HTML contains the class, even though a source scanner cannot infer it. Progressive Rendering in `@master/css-next` uses that HTML to generate the page's CSS, then lets the Master CSS runtime handle new classes in the browser.
@@ -14,7 +15,7 @@ Static Rendering remains the default. Use it when complete class names are visib
 
 ## Why final HTML is useful
 
-Next.js's [Adapter API](https://nextjs.org/blog/nextjs-across-platforms#the-adapter-api) exposes the completed build output. `@master/css-next` uses its `onBuildComplete` hook to locate static and pre-rendered HTML and pass each document to the Master CSS server renderer.
+Next.js's [Adapter API](https://nextjs.org/docs/app/api-reference/config/next-config-js/adapterPath) exposes the completed build output. `@master/css-next` uses its `onBuildComplete` hook to locate static and pre-rendered HTML and pass each document to the Master CSS server renderer.
 
 At that point, the page has already combined its layouts, components, and content into markup. Master CSS can read the class strings in that document without inferring how the application constructed them. This is useful for generated markup and component variants, provided that Next.js emits their HTML during the build.
 
@@ -26,13 +27,15 @@ The handoff has three parts:
 
 1. Next.js produces static and pre-rendered HTML during `next build`.
 2. Master CSS reads each document and inserts its generated rules in `style#master-css`.
-3. The browser runtime adopts the rendered rules and handles classes introduced later, such as those in client-only UI.
+3. The browser runtime tracks classes already covered by the page manifest. An uncovered class starts the engine, which validates and adopts matching rules before generating new ones.
 
 <a id="hydration-manifest-hydration"></a>
 
+<DeliveryFlow name="nextjs" />
+
 ### CSS and the runtime handoff
 
-A document with generated rules receives an external page hydration manifest. The style element points to that manifest through `data-master-css-hydration-manifest`, so the runtime can adopt the existing rules at startup instead of generating them again. The runtime loads its engine when it needs to generate a class outside the page manifest.
+A document with generated rules receives an external page hydration manifest. The style element points to that manifest through `data-master-css-hydration-manifest`, so the runtime can track covered classes while its engine is deferred. When the engine starts, it validates and adopts matching CSSOM rules. The runtime loads its engine when it needs to generate a class outside the page manifest.
 
 The inline CSS is usable before that handoff. The manifest supports continued rule management; it is not required for the browser to apply the CSS already in the document. See [Rendering modes](/guide/rendering-modes) for the full delivery and hydration behavior.
 
@@ -50,17 +53,13 @@ npm create @master/css@rc -- --framework nextjs --mode progressive --yes
 
 The essential configuration is one adapter registration and a loaded CSS entry. Keep your other Next.js options when configuring the adapter:
 
-```js name=next.config.js
+```ts name=next.config.ts
+import type { NextConfig } from 'next'
 import withMasterCSS from '@master/css-next'
 
-/** @type {import('next').NextConfig} */
-const nextConfig = await withMasterCSS({
-  // your Next.js config
-}, {
-  mode: 'progressive'
-})
+const nextConfig: NextConfig = {}
 
-export default nextConfig
+export default async () => withMasterCSS(nextConfig, { mode: 'progressive' })
 ```
 
 Import Master CSS from the global stylesheet your application loads:
@@ -174,7 +173,7 @@ If another integration already owns Next.js `adapterPath`, the Master CSS integr
 
 ## When to keep Static Rendering
 
-Use the [default Next.js setup](/guide/installation/nextjs) when source scanning can find your complete class strings. Static mode produces a stylesheet and supports both Turbopack and Webpack without requiring the Master CSS browser runtime. Interactive components can still switch among classes already included in that stylesheet.
+Use the [default Next.js setup](/guide/installation/nextjs) when source scanning can find your complete class strings. Static mode produces a stylesheet without requiring the Master CSS browser runtime. Verify the selected bundler independently; the [installation guide](/guide/installation/nextjs#verify-the-loaded-configuration) includes the current generated-asset limitation and Webpack build path. Interactive components can still switch among classes already included in that stylesheet.
 
 <a id="a-better-foundation-for-nextjs"></a>
 

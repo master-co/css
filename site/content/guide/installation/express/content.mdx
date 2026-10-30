@@ -38,12 +38,13 @@ Use static rendering when Express templates contain complete class strings and y
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'static' })
         ],
         build: {
           outDir: 'public/assets',
-          emptyOutDir: true,
+          emptyOutDir: false,
           rollupOptions: {
             input: 'src/main.ts',
             output: {
@@ -103,3 +104,5 @@ Use static rendering when Express templates contain complete class strings and y
 ```
 
 Static rendering depends on complete class strings in scanned source files. If a template assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.

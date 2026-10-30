@@ -39,10 +39,18 @@ export const deliveryFlows = {
     title: 'Native CSS pruning',
     steps: [
       { title: 'Collect usage', description: 'Read native class names from the root’s selected source files.' },
-      { title: 'Filter rules', description: 'Keep selector branches that reference detected native classes.' },
-      { title: 'Emit CSS', description: 'Preserve surviving native rules and their required managed resources.' }
+      { title: 'Filter rules', description: 'Each file chooses its own preserve/prune policy. An opted-in imported file uses the importing root’s selected class usage; the root’s pruning directive does not propagate into imports.' },
+      { title: 'Emit CSS', description: 'Keep surviving native rules. Under pruning, retained animation declarations and tokens retain required keyframes; same-name definitions keep their conditions, layers and order.' }
     ],
     caption: 'Source usage is a conservative signal; pruning does not evaluate the live DOM.'
+  },
+  nextjs: {
+    title: 'Next.js progressive boundary',
+    steps: [
+      { title: 'Build-time HTML', description: 'Next.js emits static or pre-rendered HTML. The Master CSS build adapter inserts the generated CSS and supplies page hydration data.' },
+      { title: 'Request-time HTML', description: 'A dynamic SSR response is produced after the build adapter has finished. This integration does not pre-render its generated CSS; progressive mode relies on the browser runtime for those rules.' }
+    ],
+    caption: 'Verify a pre-rendered page and a dynamic route separately. Build-time CSS coverage does not establish request-time SSR coverage.'
   },
   route: {
     title: 'Route stylesheet ownership',
@@ -51,7 +59,7 @@ export const deliveryFlows = {
       { title: 'Compose', description: 'Lower local declarations, variants and native selectors.' },
       { title: 'Load', description: 'Let the framework or bundler deliver the route’s CSS output.' }
     ],
-    caption: '@reference supplies context. It does not load the global stylesheet or create a route boundary.'
+    caption: 'Definition context does not load global native rules. The framework delivers route CSS; its import does not isolate selectors.'
   }
 } as const
 
@@ -59,6 +67,18 @@ export type DeliveryFlowName = keyof typeof deliveryFlows
 
 /** Short figure labels and alternatives share the delivery content owner. */
 export const deliveryIllustrations = {
+  pruning: {
+    alt: 'A root shares selected class usage with imported CSS; each file chooses its own pruning policy.',
+    labels: { usage: 'Selected sources', classes: 'Complete native class usage', entry: 'style.css', entryPolicy: '@prune native;', localPolicy: '@prune native;', imports: 'imports', local: 'cards.css', used: 'Used rules kept', external: 'vendor.css', default: 'No opt-in', all: 'Native rules kept', animation: 'retained animation', resources: 'Required keyframes', identity: 'Keep conditions, layers and order' }
+  },
+  route: {
+    alt: 'Project definitions supply compile-time context to route CSS, whose output is loaded by the framework.',
+    labels: { project: 'Project definitions', definitions: 'Tokens · mixins · custom media', context: 'context', route: 'home.css', native: 'Native selectors and declarations', compile: 'compile', output: 'Route CSS output', resources: 'Rules + required resources', load: 'CSS import', page: 'Framework loads the stylesheet' }
+  },
+  nextjs: {
+    alt: 'The Next.js adapter processes build-time HTML; request-time dynamic SSR relies on browser rule generation.',
+    labels: { build: 'Build time', request: 'Request time', static: 'Pre-rendered', dynamic: 'Dynamic SSR', staticHTML: 'Page HTML', dynamicHTML: 'Page HTML', adapter: 'Build adapter', css: 'CSS + manifest', outside: 'Outside the', boundary: 'build adapter', initial: 'Initial CSS', runtime: 'Runtime CSS', ready: 'Before startup', generate: 'Browser generation' }
+  },
   progressive: {
     alt: 'HTML brings initial CSS to the browser; an uncovered class triggers the deferred engine and additional CSS.',
     labels: { host: 'Build / server', browser: 'Browser', html: 'HTML', inline: 'Inline CSS', trigger: 'New class', condition: 'outside page manifest', engine: 'Engine + program', output: 'New CSS' }

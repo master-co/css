@@ -9,7 +9,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
     </StepL>
     <StepR>
       ```bash name=Terminal
-      ng new my-app
+      npx --package @angular/cli ng new my-app
       cd my-app
       ```
     </StepR>
@@ -44,7 +44,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   <HelloWorld url="localhost:4200" />
 </StepSection>
 
-```html name=src/app/app.component.html
+```html name=src/app/app.html
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">Hello World</h1>
 ```
 
@@ -62,3 +62,5 @@ npm run build
 During development, run `npx master-css generate --output src/master.generated.css --watch` in a separate terminal. Static rendering needs complete class strings in templates or an explicit safelist. CSS custom properties can still supply dynamic values.
 
 For class names created in the browser, use the [Angular runtime guide](/guide/installation/angular/runtime).
+
+The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new#file-name-style-guide) may use `src/app/app.component.html`; edit the template referenced by your root component.

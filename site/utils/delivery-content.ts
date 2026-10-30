@@ -5,11 +5,22 @@ import { firstPaintMarkdown, resourceWaterfallsMarkdown } from './first-paint-ex
 
 export const deliveryGuideSlugs = ['rendering-modes', 'scanning-latent-classes', 'native-css-pruning', 'route-level-styles', 'preload-critical-resources', 'flash-of-unstyled-content'] as const
 
+export const deliveryBlogSlugs = ['master-css-next', 'bootstrapping-master-css-with-vite'] as const
+
+export async function deliveryBlogContent(siteRoot: string, slug: string) {
+  if (!deliveryBlogSlugs.includes(slug as typeof deliveryBlogSlugs[number])) throw new Error(`Unsupported delivery blog: ${slug}`)
+  return deliveryContent(siteRoot, 'blog', slug)
+}
+
 export async function deliveryGuideContent(siteRoot: string, slug: string) {
   if (!deliveryGuideSlugs.includes(slug as typeof deliveryGuideSlugs[number])) throw new Error(`Unsupported delivery guide: ${slug}`)
-  const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
+  return deliveryContent(siteRoot, 'guide', slug)
+}
+
+async function deliveryContent(siteRoot: string, section: string, slug: string) {
+  const result = await extractReferenceMdx(path.join(siteRoot, `content/${section}/${slug}/content.mdx`), [], [], {
     overview: 'include',
-    component: (name, attributes) => name === 'DeliveryFlow' ? deliveryFlowMarkdown(String(attributes.name))
+    component: (name, attributes) => name === 'ArticleTOC' ? '' : name === 'DeliveryFlow' ? deliveryFlowMarkdown(String(attributes.name))
       : name === 'ResourceWaterfall' ? resourceWaterfallsMarkdown()
         : name === 'FirstPaintComparison' ? firstPaintMarkdown()
           : name === 'ModeImg' ? `![${String(attributes.alt)}](${String(attributes.src)})`

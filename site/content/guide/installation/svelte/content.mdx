@@ -68,14 +68,14 @@ SvelteKit client hook:
 import 'virtual:master-css-runtime'
 ```
 
-The module starts the runtime with the project manifest and emitted globals and
+The module starts the runtime with the project program and emitted globals and
 handles Vite HMR. SvelteKit owns its HTML rendering, so the Vite mode option alone
 does not insert a runtime script into the page.
 
 For progressive rendering, select `mode: 'progressive'`, keep the client hook,
 and export the `handle` from `@master/css-svelte/hooks.server`;
 compose it first when using SvelteKit’s `sequence()`. In this mode the client
-hook passes the project manifest as a loader, so a page whose classes are all
+hook passes the project program as a loader, so a page whose classes are all
 pre-rendered does not download the runtime engine. For pre-render only, select
 `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
 A static application needs neither Master CSS hook. A pre-render application

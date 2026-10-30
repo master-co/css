@@ -11,7 +11,7 @@ Runtime rendering generates rules in the browser when Angular adds class names t
     </StepL>
     <StepR>
       ```bash name=Terminal
-      ng new my-app
+      npx --package @angular/cli ng new my-app
       cd my-app
       ```
     </StepR>
@@ -19,7 +19,7 @@ Runtime rendering generates rules in the browser when Angular adds class names t
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS in runtime mode
-      The installer adds the runtime and preset packages, initializes `MasterCSSRuntime` in `src/main.ts`, and adds the Master CSS import to `src/styles.css`.
+      The installer adds the runtime and preset packages, initializes `MasterCSSRuntime` in `src/main.ts`, and adds a stylesheet import to `src/styles.css`. For the browser-only setup below, replace that import with the native base stylesheet.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -30,11 +30,11 @@ Runtime rendering generates rules in the browser when Angular adds class names t
   <Step $row>
     <StepL>
       ### <StepNum />Check the stylesheet entry
-      Keep Angular's global stylesheet in its existing builder configuration. Runtime mode uses the project CSS entry and does not run the static CLI generator.
+      Keep Angular's global stylesheet in its existing builder configuration. This setup loads the compiled default preset through `@master/css-runtime/default-program`; Angular’s CSS builder does not compile Master CSS directives. Keep only native CSS imports in the builder’s stylesheet.
     </StepL>
     <StepR>
       ```css name=src/styles.css
-      @import '@master/css';
+      @import '@master/css/base.css';
       ```
     </StepR>
   </Step>
@@ -56,6 +56,10 @@ Runtime rendering generates rules in the browser when Angular adds class names t
   <HelloWorld url="localhost:4200" />
 </StepSection>
 
-```html name=src/app/app.component.html
+```html name=src/app/app.html
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">Hello World</h1>
 ```
+
+The generated runtime startup uses the default program. Adding `@theme` or `@utility` to Angular’s ordinary CSS input does not compile a custom runtime program. Use the static CLI path for project-defined vocabulary, or provide a separately compiled program through the public runtime API.
+
+The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new#file-name-style-guide) may use `src/app/app.component.html`; edit the template referenced by your root component.

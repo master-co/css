@@ -39,12 +39,13 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
         build: {
           outDir: 'public/assets',
-          emptyOutDir: true,
+          emptyOutDir: false,
           rollupOptions: {
             input: 'resources/main.ts',
             output: {
@@ -116,3 +117,5 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
 ```
 
 For CodeIgniter, load `/assets/app.css` and `/assets/app.js` with your normal asset helper. Use [PHP static rendering](/guide/installation/php) when complete PHP template class strings should be compiled into a CSS asset.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.

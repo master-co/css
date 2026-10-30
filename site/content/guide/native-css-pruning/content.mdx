@@ -1,11 +1,9 @@
+import DeliveryFlow from '~/site/components/DeliveryFlow'
+
 ## Overview [sr-only]
 Class scanning decides which classes are used. Native CSS is preserved by default. Explicit native CSS pruning uses that usage graph to remove unused class rules from selected stylesheets.
 
-```txt
-source usage + stylesheet with @prune native;
-  -> used native class names
-  -> pruned native CSS
-```
+<DeliveryFlow name="pruning" />
 
 Importing `@master/css` supplies the preset and generated CSS entry. Add `@prune native;` to opt this source file into pruning; the directive does not affect its imports. Passing class names to a compiler API alone never enables pruning.
 
@@ -137,6 +135,7 @@ app/b/b.css
 ```css name=app/a/a.css
 @prune native;
 @import "@master/css";
+@source "./page.html";
 @import "../shared.css";
 
 .a-page {
@@ -147,6 +146,7 @@ app/b/b.css
 ```css name=app/b/b.css
 @prune native;
 @import "@master/css";
+@source "./page.html";
 @import "../shared.css";
 
 .b-page {
@@ -165,7 +165,7 @@ app/b/b.css
 }
 ```
 
-If `app/a/page.html` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.b-page` and `.only-used-in-b`.
+Each root above selects its adjacent `page.html`. If `app/a/page.html` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.only-used-in-b` from the shared source. The `.b-page` rule belongs to the other root and is not imported here.
 
 If `app/b/page.html` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
 
@@ -312,6 +312,7 @@ Rules without class selectors, such as `body`, `html`, and `:root`, are not clas
 Pruned native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a manifest animation name, Master CSS includes the required manifest output.
 
 ```css name=index.css
+@prune native;
 @theme {
   --color-primary: #175cff;
 }
@@ -330,6 +331,7 @@ Pruned native CSS can reference variables and keyframes from the project CSS ent
 ```css name=src/style.css
 @prune native;
 @import "@master/css";
+@import "../index.css";
 
 .notice {
   color: var(--color-primary);

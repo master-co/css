@@ -85,7 +85,8 @@ test('migration exports retain readable comparisons, complete examples and searc
     if (!slug) {
       for (const guide of migrationGuides) assert.ok(content.markdown.includes(`[${guide.title}](/guide/migration/${guide.slug}) — ${guide.description}`))
       assert.doesNotMatch(content.markdown, /<MigrationGuides|brands\[/)
-      assert.match(content.markdown, /function wrapEngine/)
+      assert.match(content.markdown, /id="custom-engine-and-binding-migration"/)
+      assert.match(content.markdown, /\/guide\/rendering-modes#engine-state-for-custom-hosts/)
     }
     const source = await readFile(path.join(root, `content/guide/migration/${slug}/content.mdx`), 'utf8')
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) {
@@ -459,17 +460,12 @@ test('agent guides export complete prompts, tool catalogs, preview workflow and 
   }
 })
 
-test('tool references export readable parameters, complete schemas and literal examples in both locales', async () => {
+test('tool catalogs export source links and basic usage in both locales', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const { renderDocumentMarkdown } = await import('../reference/build')
-  const { mcpEditorial } = await import('../reference/mcp-editorial')
-  const { cliEditorial } = await import('../reference/cli-editorial')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'tool')
-  assert.deepEqual(docs.map((doc: any) => doc.id).sort(), [
-    ...Object.keys(mcpEditorial).map(name => `tools/mcp/${name}`),
-    ...Object.keys(cliEditorial).map(name => `tools/cli/${name}`)
-  ].sort())
+  assert.deepEqual(docs.map((doc: any) => doc.id).sort(), ['tools/cli', 'tools/mcp'])
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {
@@ -482,19 +478,18 @@ test('tool references export readable parameters, complete schemas and literal e
       }
       const indexed = search.find((page: any) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === doc.url)
       assert.ok(indexed, doc.id)
-      for (const term of ['Input', 'Example', 'Output'].filter(term => doc.id.startsWith('tools/mcp/'))) assert.ok(indexed.nodes.some((node: any) => node.text?.includes(term) || node.title?.includes(term)), `${doc.id}: ${term}`)
       assert.doesNotMatch(body, /<(?:DocumentParameters|DocumentDisclosure)/)
     }
   }
 })
 
 
-test('package references retain full declarations, import guidance and symbol indexes in portable output', async () => {
+test('package catalog retains import guidance and source destinations in portable output', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'package')
-  assert.equal(docs.length, 20)
+  assert.equal(docs.length, 1)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {
@@ -506,7 +501,7 @@ test('package references retain full declarations, import guidance and symbol in
         assert.ok(llms.includes(fence[0]), `${locale}: ${doc.id} llms declaration`)
       }
       for (const heading of doc.headings) {
-        const explicit = /^(entry|api)-/.test(heading.id)
+        const explicit = doc.markdown.includes(`{#${heading.id}}`)
         assert.ok(exported.includes(explicit ? `id="${heading.id}"` : `## ${heading.title}\n`), `${locale}: ${doc.id}#${heading.id}`)
       }
       const indexed = search.find((page: any) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === doc.url)

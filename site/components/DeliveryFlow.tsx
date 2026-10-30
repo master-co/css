@@ -5,7 +5,7 @@ import { deliveryFlow, deliveryIllustrations, type DeliveryFlowName } from '../u
 
 export default function DeliveryFlow({ name }: { name: DeliveryFlowName }) {
   const flow = deliveryFlow(name)
-  if (name === 'runtime' || name === 'progressive' || name === 'hydration') {
+  if (name !== 'scanning') {
     return <DocumentIllustration title={flow.title} alt={deliveryIllustrations[name].alt} images={deliveryIllustrationImages[name]} caption={flow.caption}>
       <ol>
         {flow.steps.map(step => <li key={step.title}><strong>{step.title}.</strong> {step.description}</li>)}

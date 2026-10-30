@@ -14,7 +14,7 @@ import { syntaxTutorialContent } from './utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from './utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from './utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from './utils/migration-content'
-import { deliveryGuideContent, deliveryGuideSlugs } from './utils/delivery-content'
+import { deliveryGuideContent, deliveryGuideSlugs, deliveryBlogContent, deliveryBlogSlugs } from './utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from './utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from './utils/tooling-content'
 import { designSystemContent, designSystemRoutes } from './utils/design-system-content'
@@ -33,6 +33,9 @@ for (const slug of projectStyleGuideSlugs) {
 }
 for (const slug of migrationGuideSlugs) {
   guideContentNodes.set(`/guide/migration${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await migrationGuideContent(process.cwd(), slug)).searchMarkdown))
+}
+for (const slug of deliveryBlogSlugs) {
+  guideContentNodes.set(`/blog/${slug}`, extractSearchNodesFromMdx((await deliveryBlogContent(process.cwd(), slug)).searchMarkdown))
 }
 for (const slug of deliveryGuideSlugs) {
   guideContentNodes.set(`/guide/${slug}`, extractSearchNodesFromMdx((await deliveryGuideContent(process.cwd(), slug)).searchMarkdown))

@@ -1,3 +1,5 @@
+import DeliveryFlow from '~/site/components/DeliveryFlow'
+
 ## Overview [sr-only]
 Keep a page's layout and one-off styles in a CSS file beside the page. Import that file from the route or component that owns it.
 
@@ -25,11 +27,13 @@ Load the route stylesheet from the route, page module, or component entry that o
 import "./home.css"
 ```
 
-Keep the global stylesheet loaded from your app shell for the reset, layer order and shared styles. A route's CSS import loads only that route's output.
+Keep the global stylesheet loaded from your app shell for the reset, layer order and shared styles. The framework or bundler controls when route CSS is loaded. A CSS import does not scope selectors to that route: use distinctive class names or your framework’s CSS module support when isolation is needed.
 
 ---
 
 ## Use project definitions
+
+<DeliveryFlow name="route" />
 A route stylesheet can use project tokens, mixins, and custom media directly. It remains a separate CSS output owned by its route.
 
 ```css name=app/home/home.css
@@ -96,7 +100,7 @@ Use classes when the selector is part of the page structure. Use native selector
 }
 ```
 
-Because these are native rules, they are emitted with the stylesheet that imports them. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
+These native rules are emitted with their stylesheet by default. If that source opts into [native CSS pruning](/guide/native-css-pruning), its detected class usage determines which rules remain. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
 
 ---
 
@@ -214,4 +218,4 @@ This keeps global CSS small, route CSS explicit, and shared vocabulary intention
 ## Compile a stylesheet independently
 The automatic project context above belongs to the framework integrations. An independent compiler call needs explicit definitions: supply absolute filenames through `referenceFiles` with `transformNativeStylesheets` enabled, or use `@reference` in the stylesheet.
 
-See the [compiler API](/reference/packages/css-compiler) for programmatic options.
+See the [compiler API](/reference/packages#css-compiler) for programmatic options.

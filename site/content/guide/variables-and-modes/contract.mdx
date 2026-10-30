@@ -11,9 +11,9 @@ Theme variables connect project vocabulary to ordinary CSS custom properties. De
   --spacing-card: 1.5rem;
   --color-surface-card: white;
 }
-  @media (prefers-color-scheme: dark) {
-    :root, :host { --color-surface-card: #111827; }
-  }
+@media (prefers-color-scheme: dark) {
+  :root, :host { --color-surface-card: #111827; }
+}
 ```
 
 ```html
@@ -38,12 +38,11 @@ Write custom properties as `--<namespace>-<key>`. Reference groups role values s
 
 ```css
 @theme {
-    --color-brand: #4f46e5;
-    --color-text-action: var(--color-brand);
-    --color-line-divider: rgb(0 0 0 / 12%);
-    --spacing-card: 1.5rem;
-    --radius-card: .75rem;
-
+  --color-brand: #4f46e5;
+  --color-text-action: var(--color-brand);
+  --color-line-divider: rgb(0 0 0 / 12%);
+  --spacing-card: 1.5rem;
+  --radius-card: .75rem;
 }
 ```
 
@@ -85,10 +84,12 @@ Use `inline` to substitute a token's value in generated declarations and `static
 Native selectors and queries outside `@theme` express alternate values. The same class follows the browser's cascade:
 
 ```css
-@theme { --color-panel: white; --color-text-panel: #111827;
+@theme {
+  --color-panel: white;
+  --color-text-panel: #111827;
 }
-  .dark { --color-panel: #111827; --color-text-panel: #f9fafb; }
-  [data-theme="contrast"] { --color-panel: black; --color-text-panel: yellow; }
+.dark { --color-panel: #111827; --color-text-panel: #f9fafb; }
+[data-theme="contrast"] { --color-panel: black; --color-text-panel: yellow; }
 ```
 
 ### Derived scoped values \{#derived-mode-aware-values\}
@@ -96,13 +97,15 @@ Derived values remain CSS functions, including `var()` fallbacks and `color-mix(
 
 ```css
 @theme {
-  --color-link:var(--color-brand);
-  --color-link-hover:color-mix(in oklab, var(--color-brand), black 15%);
+  --color-brand: #4f46e5;
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
 }
-  :root, .dark {
-    --color-link: var(--color-brand);
-    --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
-  }
+.dark { --color-brand: #818cf8; }
+:root, .dark {
+  --color-link: var(--color-brand);
+  --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
+}
 ```
 
 ## Theme activation and mixin wrappers \{#mode-triggers\}
@@ -112,9 +115,8 @@ Theme selectors activate values. A separate selector `@mixin` defines where an `
 @mixin --ocean {
   &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
 }
-@theme { --color-surface: white;
-}
-  [data-theme="ocean"] { --color-surface: #082f49; }
+@theme { --color-surface: white; }
+[data-theme="ocean"] { --color-surface: #082f49; }
 ```
 
 `bg-surface` follows the variable wherever it inherits. `padding:1rem@apply(--ocean)` uses the explicitly authored mixin selector.
@@ -123,8 +125,7 @@ Theme selectors activate values. A separate selector `@mixin` defines where an `
 The full preset uses native `light-dark()` and `color-scheme`. Choose `data-theme="light"` or `data-theme="dark"` on the root or a nested region; the preset's native stylesheet sets that region's scheme. A custom adaptive token needs only one declaration:
 
 ```css
-@theme { --color-panel: light-dark(white, #111827);
-}
+@theme { --color-panel: light-dark(white, #111827); }
 ```
 
 Preset `@dark` and `@light` suffixes still test system media preferences. Manual token switching does not activate them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
@@ -136,10 +137,8 @@ Local selectors participate in the normal cascade. If themes overlap or nest, se
 Default theme declarations already include `:host`. For scoped host overrides, write `:host(...)` explicitly. Load the native stylesheet, generated CSS and any native keyframes in the tree where they are consumed.
 
 ```css
-@theme {
-}
-  :host { --color-panel: white; }
-  :host([data-theme="dark"]) { --color-panel: #111827; }
+@theme { --color-panel: white; }
+:host([data-theme="dark"]) { --color-panel: #111827; }
 ```
 
 See the [directive contract](/reference/directives/theme) for definition scope and resource delivery.

@@ -39,12 +39,13 @@ Use progressive rendering when Express owns the HTML response. Express renders t
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
         build: {
           outDir: 'public/assets',
-          emptyOutDir: true,
+          emptyOutDir: false,
           rollupOptions: {
             input: 'src/main.ts',
             output: {
@@ -154,3 +155,5 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 ```
 
 Progressive rendering sends the first response with `style#master-css`, then the runtime reads the injected hydration manifest and keeps handling classes added after the initial response. The manifest loader keeps the project manifest out of the first page load: the runtime imports it, together with its engine, only when a class outside the hydration manifest appears. Use [Express static rendering](/guide/installation/express) when templates contain complete class strings and you want a generated CSS asset instead.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.

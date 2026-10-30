@@ -40,12 +40,13 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
         build: {
           outDir: 'public/assets',
-          emptyOutDir: true,
+          emptyOutDir: false,
           rollupOptions: {
             input: 'app/frontend/main.ts',
             output: {
@@ -128,3 +129,5 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
 ```
 
 Use [Rails static rendering](/guide/installation/rails) when ERB class strings are complete at build time and you want a generated CSS asset.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.

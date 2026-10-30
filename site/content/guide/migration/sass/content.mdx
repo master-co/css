@@ -40,8 +40,10 @@ Import Master CSS from the stylesheet your app already loads. Keep Sass compilat
 
 ```css name=app.css
 @import "@master/css";
-@import "./legacy.scss";
+@import "./legacy.css";
 ```
+
+Compile the existing Sass entry to `legacy.css` before Master CSS resolves this import graph. Keep Sass syntax in its own input; the imported result must be ordinary CSS.
 
 Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
 

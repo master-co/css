@@ -1,4 +1,4 @@
-/** Reader guidance only. Export paths and declarations are derived from package sources. */
+/** Reader guidance only. Export paths and searchable symbols come from public package contracts. */
 export interface PackageEditorial {
   introduction: string
   usage: string
@@ -8,7 +8,7 @@ export interface PackageEditorial {
 export const packageEditorial: Record<string, PackageEditorial> = {
   '@master/css': {
     introduction: 'Execute a compiled manifest or runtime program, generate rules for class names and inspect engine state. CSS entrypoints provide the preset stylesheet layers.',
-    usage: 'Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages/css-compiler); for DOM observation, use [the runtime](/reference/packages/css-runtime).',
+    usage: 'Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages#css-compiler); for DOM observation, use [the runtime](/reference/packages#css-runtime).',
     entries: {
       '.': 'Asynchronous engine creation and one-shot class rendering.',
       './node': 'Synchronous native engine, runtime program compilation and reusable render sessions in Node.js.',
@@ -50,7 +50,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/eslint-plugin-css': {
     introduction: 'The ESLint plugin connects JavaScript and template syntax to Master CSS validation, class ordering and fixes. Its default and `masterCSS` exports expose the same plugin.',
-    usage: 'Use [the official preset](/reference/packages/eslint-config-css) for the standard rules, or register the plugin in your own flat configuration. See [Code linting](/guide/code-linting) for rule behavior and settings.',
+    usage: 'Use [the official preset](/reference/packages#eslint-config-css) for the standard rules, or register the plugin in your own flat configuration. See [Code linting](/guide/code-linting) for rule behavior and settings.',
     entries: { '.': 'Plugin rules and recommended configuration.' }
   },
   '@master/css-language-server': {
@@ -70,13 +70,13 @@ export const packageEditorial: Record<string, PackageEditorial> = {
     }
   },
   '@master/css-mcp': {
-    introduction: 'Create a Master CSS Model Context Protocol server or start its stdio transport. Tool contracts describe each request and its file effects separately.',
-    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP Server](/guide/mcp-server) for client registration and [the tool catalog](/guide/mcp-server) for request contracts.',
+    introduction: 'Create a Master CSS Model Context Protocol server or start its stdio transport. The tool catalog identifies operations and their file effects.',
+    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP Server](/guide/mcp-server) for client registration and [the tool catalog](/guide/mcp-server) for usage; read complete contracts through `tools/list`.',
     entries: { '.': 'Server factory and stdio startup.' }
   },
   '@master/css-next': {
     introduction: 'Connect Master CSS to Next.js configuration and build output. The root export wraps Next configuration; the adapter entry supports build integration and adapter composition.',
-    usage: 'Use the root default export in Next configuration. Its overloads distinguish synchronous runtime or disabled configuration from asynchronous static configuration. See [Next.js installation](/guide/installation/nextjs) for the setup and supported rendering modes.',
+    usage: 'Use the root default export in Next configuration. Await the wrapper when using a rendering mode that processes build output. See [Next.js installation](/guide/installation/nextjs) for the setup and supported rendering modes.',
     entries: { '.': 'Next configuration wrapper and integration options.', './adapter': 'Build adapter, composition helpers and rendered-output reports.' }
   },
   '@master/css-nuxt': {

@@ -15,7 +15,7 @@ Guide teaches design and implementation tasks. Reference owns complete token cat
 | Shared Guide and Reference facts | [foundation data](../../site/common/foundation-data/tokens.ts) |
 | Public tool and package contracts | [tool contracts](../../site/reference/tool-contracts.ts), [package contracts](../../site/reference/package-contracts.ts) and API census |
 
-The generated catalog contains 84 content documents. Counts exclude category indexes, locale copies, Markdown/text copies and navigation-only URLs. Capability coverage determines the catalog; these counts are not a quota.
+The generated catalog contains 44 content documents. Counts exclude category indexes, locale copies, Markdown/text copies and navigation-only URLs. Capability coverage determines the catalog; these counts are not a quota.
 
 | Group | Documents |
 | --- | ---: |
@@ -23,9 +23,9 @@ The generated catalog contains 84 content documents. Counts exclude category ind
 | Token families, values and presets | 20 |
 | Preset recipes | 7 |
 | Stylesheet directives | 8 |
-| CLI commands | 3 |
-| MCP tools | 20 |
-| Package APIs | 20 |
+| CLI catalog | 1 |
+| MCP catalog | 1 |
+| Package source catalog | 1 |
 
 ## Reference contracts
 
@@ -54,7 +54,7 @@ Token documents live under `tokens/`:
 
 The family index includes all loaded families, including namespaces with no token values. Prefixes, native properties and namespaces come from Rust analysis. Color role names are part of token keys within the color namespace. `text` documents primary tokens and typography companions. `animate` documents complete shorthand values and resource behavior. `container` documents dimensions; explicit container-query thresholds have independent native values.
 
-| Recipe path | Mixin |
+| Recipe path | Utility |
 | --- | --- |
 | `screen-readers` | `sr-only` |
 | `grid-columns` | `grid-cols(n)` |
@@ -62,11 +62,11 @@ The family index includes all loaded families, including namespaces with no toke
 | `grid-column` | `grid-col-span(n)` |
 | `grid-row` | `grid-row-span(n)` |
 | `clamp-lines` | `clamp-lines(n)` |
-| `text-size` | `text("key")` and named `text-*` classes |
+| `text-size` | Named `text-*` classes |
 
 Recipe documents include purpose, executable examples, parameter contracts, preset source and complete generated CSS. Each scene uses the public compiler/engine output.
 
-Directive documents live under `directives/`: `entry`, `reference`, `theme`, `definitions`, `source`, `candidates`, `variant`, and `preserve`. Their formal source is the Guide directive contract. Tool and package documents derive signatures and schemas from their owning public surfaces.
+Directive documents live under `directives/`: `entry`, `reference`, `theme`, `definitions`, `source`, `candidates`, `variant`, and `preserve`. Their formal source is the Guide directive contract. The three tool/package catalogs identify public names, purposes, file effects and source destinations. Complete signatures and schemas remain in GitHub and installed tools.
 
 ## Design Foundations
 

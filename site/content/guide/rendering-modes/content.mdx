@@ -160,7 +160,7 @@ Write or serve the returned `html`. Its `style#master-css` contains the heading'
 
 No Master CSS runtime or hydration manifest is needed for this output. A class that only appears later needs CSS supplied separately, or a mode with runtime support.
 
-The renderer can reuse cached rules across a finite static build while producing page-specific CSS. Recreate it when the manifest changes and dispose it when the build ends. For a long-lived server, choose a bounded `maxCachedClasses` instead of the build example's `Infinity`; see the [server API](/reference/packages/css-server).
+The renderer can reuse cached rules across a finite static build while producing page-specific CSS. Recreate it when the manifest changes and dispose it when the build ends. For a long-lived server, choose a bounded `maxCachedClasses` instead of the build example's `Infinity`; see the [server API](/reference/packages#css-server).
 
 ---
 
@@ -222,7 +222,7 @@ console.log(snapshot.classRules['text-align:center']?.rules)
 
 `usageCounts` tracks connected DOM usage. `classRules` can also include warmed, hydrated, or temporarily retained rules, so a cached rule does not imply that a connected element still uses its class. `engine` reports `'deferred'`, `'loading'`, `'ready'`, or `'failed'`. Before a deferred engine starts, snapshots have usage counts but no generated rule entries in their class snapshots, and `layers` is empty.
 
-Direct rule APIs operate separately from DOM usage: `ensureClassRules([...])` generates or reuses rules, while `deleteClassRules([...])` removes them synchronously and bypasses retention. Calls made before the engine is ready throw `RUNTIME_ENGINE_NOT_READY` and start it; await `cssRuntime.ready()` before deliberately warming classes. See the [runtime API](/reference/packages/css-runtime) for the full snapshot and method contracts.
+Direct rule APIs operate separately from DOM usage: `ensureClassRules([...])` generates or reuses rules, while `deleteClassRules([...])` removes them synchronously and bypasses retention. Calls made before the engine is ready throw `RUNTIME_ENGINE_NOT_READY` and start it; await `cssRuntime.ready()` before deliberately warming classes. See the [runtime API](/reference/packages#css-runtime) for the source of the snapshot and method contracts.
 
 ### Diagnose progressive startup
 
@@ -292,7 +292,7 @@ Build-time and server generation use Rust semantics. The browser's JavaScript en
 ### Manifest compatibility
 Compile project CSS with matching compiler, server and runtime packages. Unsupported execution or language versions are rejected; changing version fields by hand does not make a manifest compatible.
 
-For stored manifests, use `MasterCSSManifest` and `serializeMasterCSSManifest` from the [schema API](/reference/packages/css-schema). Serialization normalizes derived fields; it does not replace engine validation or preserve comments and editable CSS source formatting. Unknown fields are not a general extension mechanism: retention in an outer envelope does not imply that nested fields are accepted or that the engine executes a new capability.
+For stored manifests, use `MasterCSSManifest` and `serializeMasterCSSManifest` from the [schema API](/reference/packages#css-schema). Serialization normalizes derived fields; it does not replace engine validation or preserve comments and editable CSS source formatting. Unknown fields are not a general extension mechanism: retention in an outer envelope does not imply that nested fields are accepted or that the engine executes a new capability.
 
 ## Engine state for custom hosts
 Most applications can use the integrations above. A custom engine host that tracks rule ownership can query stored rule references after ensuring its classes:
@@ -311,11 +311,37 @@ const state = engine.executionState(['block', 'missing'])
 
 `executionState()` preserves request order, including repeated names, and reads stored references without generating rules. Unknown or never-ensured classes have empty references. Use `snapshot()` for complete rules and CSS; use Node inspection or tooling when you need class diagnostics. Recognition alone does not establish that a CSS value or browser feature is supported. The browser engine does not provide inspection or render sessions.
 
-Hosts must synchronize resource state even when a transition contains no CSS mutations. Consult the generated [engine API](/reference/packages/css) and [schema contracts](/reference/packages/css-schema) for current types rather than maintaining a separate copy of those interfaces in application code.
+Hosts must synchronize resource state even when a transition contains no CSS mutations. Follow the [engine source links](/reference/packages#css) and [schema source links](/reference/packages#css-schema) for current types rather than maintaining a separate copy of those interfaces in application code.
+
+### Forward the public engine surface
+
+A wrapper around an official engine must forward state queries as well as rule changes. This example keeps disposal with the owning engine:
+
+```ts
+import type { MasterCSSEngine } from '@master/css'
+
+function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
+  return {
+    binding: inner.binding,
+    ensureClassRules: names => inner.ensureClassRules(names),
+    deleteClassRules: names => inner.deleteClassRules(names),
+    registerEmittedGlobals: globals => inner.registerEmittedGlobals(globals),
+    replaceEmittedGlobals: globals => inner.replaceEmittedGlobals(globals),
+    refresh: manifest => inner.refresh(manifest),
+    executionState: names => inner.executionState(names),
+    inspect: name => inner.inspect(name),
+    snapshot: () => inner.snapshot(),
+    dispose: () => inner.dispose(),
+    [Symbol.dispose]: () => inner.dispose()
+  }
+}
+```
+
+Read stored references through `executionState()` instead of regenerating a class to inspect ownership. Keep compiler and binding artifacts compatible; their version checks remain part of loading.
 
 ### Animation resource placement
 Keyframes retain their original stylesheet position and native containers. Native preservation and pruning determine which definitions remain; see the [keyframe contract](/reference/directives/theme#native-keyframes) and [Native CSS pruning](/guide/native-css-pruning). Runtime and server rendering track each definition independently, including same-name definitions in different layers or conditions.
 
 Deploy `.master-css.json` companions and rendered CSS import assets with the build output. Official adapters provide their locations. Runtime uses compiled companions to manage writable stylesheets at the original link positions; cross-origin JSON needs CORS access, and qualified imports can require blob stylesheet URLs allowed by the site's CSP. Disposing runtime ownership restores the original linked stylesheet.
 
-Custom browser hosts can supply `stylesheets: () => [{ sheet, ownerIds }]` for already-writable sheets, including adopted stylesheets in a ShadowRoot. Custom server hosts supply compiler-prepared `stylesheets`, `documentURL`, and `stylesheetImportSource(css, source)` when owned imports need published URLs. Pre-render and progressive adapters prepare those styles before JavaScript runs so hydration can reuse their CSSOM and anonymous layers. See the [runtime](/reference/packages/css-runtime) and [server](/reference/packages/css-server) APIs for the host options.
+Custom browser hosts can supply `stylesheets: () => [{ sheet, ownerIds }]` for already-writable sheets, including adopted stylesheets in a ShadowRoot. Custom server hosts supply compiler-prepared `stylesheets`, `documentURL`, and `stylesheetImportSource(css, source)` when owned imports need published URLs. Pre-render and progressive adapters prepare those styles before JavaScript runs so hydration can reuse their CSSOM and anonymous layers. See the [runtime](/reference/packages#css-runtime) and [server](/reference/packages#css-server) APIs for the host options.

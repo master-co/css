@@ -65,7 +65,7 @@ Codex App can register stdio MCP servers through the Codex CLI:
 codex mcp add master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
 ```
 
-This writes an equivalent entry to `~/.codex/config.toml`:
+The server entry lives in `~/.codex/config.toml`. You can add `startup_timeout_sec` there when initial package startup needs more time:
 
 ```toml name=~/.codex/config.toml
 [mcp_servers.master-css]

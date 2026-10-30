@@ -8,6 +8,8 @@ Keep scenes and images with their owning guide or feature under `site/assets/ima
 
 The current renderer accepts a scene module whose default export has a stable `id` and `render(theme)` method returning `{ width, height, svg }`. Theme is `light` or `dark`; both use one composition for all screen sizes. This is a small authoring interface, not a general diagram schema.
 
+The returned outer dimensions, SVG viewport and exported images must all be landscape 3:2 (`width * 2 === height * 3`), including padding. When using `drawing().svg`, its width and height arguments describe the inner area: `560 × 360` with padding `20` produces a `600 × 400` canvas and `1200 × 800` PNG. Recompose older non-3:2 scenes before producing a revised figure; changing CSS dimensions cannot repair their composition.
+
 From the repository root:
 
 ```sh
@@ -18,7 +20,7 @@ bun .agents/skills/master-css-doc-illustrations/scripts/render.ts \
 
 The helper outputs `<id>-<theme>.svg` and matching 2× PNG files, using the site's local Geist fonts and existing `@resvg/resvg-js`. Author the shared scene and material parameters; regenerate its variants together. The SVG retains text and paths for inspection and editing; the scene remains the source for reproducible changes. Standalone SVG viewing requires the intended font, while the PNG has no font dependency.
 
-The helper checks output dimensions. Independently verify text bounds, geometry, font appearance, labels, and arrow directions. Do not claim a passing render proves visual correctness. Do not rerender unrelated figures.
+The helper checks output dimensions; separately verify the 3:2 ratio and identical light/dark dimensions. Independently verify text bounds, geometry, font appearance, labels, and arrow directions. Do not claim a passing render proves visual correctness. Do not rerender unrelated figures.
 
 The three rendering-mode scenes share labels and text descriptions from `site/utils/delivery-flows.ts`. `DeliveryFlow` selects their images through `delivery-illustration-images.ts` and renders `DocumentIllustration`; its existing Markdown adapter keeps the same ordered explanation. The active site theme chooses the paint variant. The image fills the expanded figure width and scales proportionally on every screen; there is no mobile asset or layout switch. This preserves the existing MDX interface.
 
@@ -33,9 +35,9 @@ The three rendering-mode scenes share labels and text descriptions from `site/ut
 
 ## Verify at the final scale
 
-Inspect both theme outputs and the actual article column at 390, 768, and 1280px in both themes. Check 200% zoom/enlarged text as applicable, with readable HTML descriptions available independently of bitmap labels.
+Inspect both theme outputs and the actual article column at 390, 768, and 1280px in both themes. Verify that the entire 3:2 image fills the media width with proportional height and no clipping. This width check applies to the image element; assess the drawn content for balanced margins, moderate whitespace and readable scale, without a coverage target. Check 200% zoom/enlarged text as applicable, with readable HTML descriptions available independently of bitmap labels.
 
-Check for clipped folds and shadows, tiny labels, intersecting text, missing glyphs, illegible paths, false visual grouping, and arrowheads with no shaft or the wrong direction. Inspect meaningful contrast separately from decorative highlights and grid lines. Browser preview injection is useful for a style study but is not committed integration.
+Check for clipped folds and shadows, illegible labels, intersecting text, missing glyphs, illegible paths, false visual grouping, and arrowheads with no shaft or the wrong direction. Compare the set's label sizes, weights and proportions to the objects as well as inspecting each figure alone. Inspect meaningful contrast separately from decorative highlights and grid lines. Browser preview injection is useful for a style study but is not committed integration.
 
 Run the checks appropriate to the actual change:
 

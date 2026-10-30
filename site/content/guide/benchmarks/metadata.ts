@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Benchmarks',
-  description: 'Read reproducible Master CSS benchmarks for the runtime/CSSOM tradeoff: small runtime, fewer CSS rules, browser cost, and lifecycle behavior.',
+  description: 'Compare measured build, delivery, browser and runtime costs, including each benchmark’s scope and limits.',
   category: 'Build & Delivery',
   fileURL: import.meta.url
 })

@@ -49,7 +49,7 @@ This page collects the public benchmark snapshots used to explain Master CSS per
 ## Core hypothesis
 The central performance question is not whether a runtime is faster than no runtime in isolation. It is whether **small Runtime plus very few CSS rules** can produce lower whole-browser cost than **zero Runtime plus many CSS rules** over the page lifecycle.
 
-For Master CSS, runtime and progressive rendering trade a small amount of JavaScript work for lower delivered CSS, smaller CSSOM/rule volume, and fewer rules for the browser to consider during style recalculation. Tailwind CSS is useful here as a zero-runtime static CSS control: it does not provide a runtime-equivalent implementation, but it does represent the large static CSS side of the tradeoff.
+Runtime and progressive rendering add JavaScript work to generate rules from observed classes. When that class set is smaller than a static source-derived set, they can reduce initial CSS and CSSOM rule volume. Whether that reduction offsets startup and mutation work depends on the workload. Tailwind CSS is useful here as a zero-runtime static CSS control: it does not provide a runtime-equivalent implementation, but it does represent the large static CSS side of the tradeoff.
 
 The current evidence should be read as directional. It can support the hypothesis in measured fixtures when runtime/progressive modes reduce CSSOM/rule volume and style recalculation enough to offset runtime bootstrap, observe, and mutation work. It does not establish that every application will be faster.
 
@@ -95,7 +95,7 @@ Question answered: how much inline and external CSS do popular documentation pag
 
 <PageCSSSizeBenchmark />
 
-This snapshot counts inline `style` tags and external stylesheets discovered from each page's initial HTML. Master CSS stays near **6 kB brotli** on this documentation site because progressive rendering emits the page rules first, then lets runtime rendering handle later dynamic classes.
+This snapshot counts inline `style` tags and external stylesheets discovered from each page's initial HTML. The committed snapshot records about **6 kB brotli** for its Master CSS page sample. Treat that as the measured response at the snapshot date, not a size guarantee for every documentation route or the current build.
 
 Limits: this is a page transfer measurement, not a browser timing metric. Browser cache state, CDN behavior, JavaScript-loaded styles, fonts, images, and application runtime work are outside the snapshot.
 

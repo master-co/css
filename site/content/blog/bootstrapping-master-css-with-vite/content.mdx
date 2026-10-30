@@ -111,7 +111,7 @@ Choose progressive mode when the built HTML is useful on its own but the browser
 masterCSS({ mode: 'progressive' })
 ```
 
-The initial HTML carries its generated rules. At startup, the runtime loads a page hydration manifest and adopts those rules; it can generate additional rules when new classes appear. This adds runtime and manifest delivery to the page, so use it when that continuation is needed.
+The initial HTML carries its generated rules. At startup, the runtime reads a page hydration manifest and tracks covered classes while its engine is deferred. A class outside the manifest starts the engine, which validates and adopts matching rules before generating new ones. This adds runtime and manifest delivery to the page, so use it when that continuation is needed.
 
 The browser can use the inline CSS before the runtime starts. That describes CSS availability; any effect on paint timing depends on the page and needs measurement.
 

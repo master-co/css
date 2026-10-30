@@ -12,9 +12,9 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 | Language rules | `content/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `content/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes, conditions and consumers |
-| CLI | Public `master-css` binary | Actual `--help` output |
-| MCP | Public stdio `tools/list` protocol | Actual tool descriptions and input/output schemas when advertised |
-| Package APIs | Published exports and public TypeScript entrypoints | Declarations, overloads and public names; API census controls visibility |
+| CLI | Public `master-css` binary and concise catalog guidance | Command discovery and invocation; complete options remain in `--help` and GitHub |
+| MCP | Public stdio `tools/list` protocol and concise catalog guidance | Tool discovery and file effects; complete schemas remain in the server and GitHub |
+| Packages | Published exports, API census and package editorial | Public import paths, searchable symbols, lifecycle guidance and GitHub source destinations |
 
 The declarations, selectors, conditions and directives contracts have no Guide route; Reference publishes them and the Getting Started Syntax Tutorial teaches them. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
 
@@ -45,7 +45,7 @@ Individual document pages render their authored or generated body directly. Do n
 4. Keep a text equivalent for every meaningful component. `markdown.ts` handles `Overview`, `Class2CSS`, literal `Code`, local MDX includes, token tables and configured examples. Unsupported components are reported and fail the coverage test. Do not execute arbitrary JSX to extract prose.
 5. Use `ConfiguredExample` for classes that depend on custom theme settings. It compiles the configuration through the public compiler before generating CSS with the public engine.
 6. Add identifiers and task vocabulary in `editorial.ts` only when useful. Search performs retrieval, not syntax interpretation. Project-specific validation belongs in existing CLI, MCP or Play workflows.
-7. When changing tool registrations or exports, rebuild their packages before generating docs. CLI/MCP descriptions come from the built public binaries. API declarations use the freshly built published declaration entrypoints; TS7 compiles source-only presentation fixtures into a temporary directory.
+7. When changing tool registrations or exports, rebuild their packages before generating docs. CLI/MCP names come from the built public binaries; catalog descriptions remain concise authored guidance. Package discovery reads public export contracts without compiling declaration presentation. Tool queries still use freshly built public binaries.
 
 The first content language is English. Traditional Chinese navigation remains available and per-page Markdown explicitly identifies English fallback. Preserve semantic IDs and identifiers when adding a translated body; do not silently label English prose as a completed translation.
 
@@ -67,14 +67,14 @@ Namespace consumers come from `utils/variable-namespace-sources.ts` and build-ti
 
 ## Content migration sequence
 
-1. For future content migrations, reconcile the inventory with completed canonical-syntax work, public families, preset mixins and current APIs. Do not change semantics or force the catalog to a fixed page count.
+1. For future content migrations, reconcile the inventory with completed canonical-syntax work, public families, preset utility recipes and current APIs. Do not change semantics or force the catalog to a fixed page count.
 2. Extract shared foundation data using existing theme/manifest helpers. Move reusable MDX before removing source routes; Typography and Corner Radius own their teaching MDX locally after this migration.
 3. Populate complete family/namespace lookups and recipe contracts. Preserve full values, scopes, modes, dependencies, minimal examples and useful lookup specimens; Guide keeps task-specific selections and compositions.
 4. Split `tokens/containers`: values/consumers belong to `tokens/container`, query contracts to `rules/conditions`, and teaching to `/guide/containers`. Retain the Guide URL and title it `Container queries`; width-cap design belongs in Sizing. Keep breakpoint definitions identified as custom media.
 5. Identify the actual owner of useful content before retiring pages. Preserve Master-specific behavior found inside native CSS articles in its owning contract; retain only demos that support a concrete teaching task. Do not create placeholder property catalogs to replace retired pages.
 6. Update Guide/Reference navigation, internal links, search tasks, sitemap, Markdown and llms together. Rebuild from authored sources, verify active link targets and remove retired route files.
 
-Completion requires full family/mixin coverage; successful property, prefix and namespace lookup; runnable self-contained Guide examples; identical selected facts across HTML/search/portable output; and no broken imports or meaningful anchors. A preset-value change must update all related presentations without implying that a literal container-query threshold changes with it. Validate lookup by `padding`, `p`, `px` and `padding-inline` alongside concrete design tasks. Preserve the documented conditions on mode and accessibility claims when relocating them.
+Completion requires full family/recipe coverage; successful property, prefix and namespace lookup; runnable self-contained Guide examples; identical selected facts across HTML/search/portable output; and no broken imports or meaningful anchors. A preset-value change must update all related presentations without implying that a literal container-query threshold changes with it. Validate lookup by `padding`, `p`, `px` and `padding-inline` alongside concrete design tasks. Preserve the documented conditions on mode and accessibility claims when relocating them.
 
 ## Specimen restoration and maintenance
 
@@ -194,27 +194,14 @@ consumed tokens and stale-file rejection. The browser matrix checks wrapped pros
 clipboard keyboard feedback and failure, stable anchors, and native button states.
 
 
-### CLI and MCP contracts
+### CLI and MCP catalogs
 
-`mcp-editorial` and `cli-editorial` own site explanations, literal requests,
-command examples, output interpretation and file effects. `tool-contracts` merges
-them with actual public `tools/list` and command help. `tool-parameters` is a
-presentation adapter; it never supplies protocol semantics. Missing or stale MCP
-field descriptions fail generation. Keep the complete original schemas and help
-in normalized Markdown even when the page initially collapses them.
-
-The renderer recognizes only the exact Parameter/Type/Requirement/Description
-table shape for `DocumentParameters`, and explicit code-fence disclosure metadata
-for `DocumentDisclosure`. Other tables and code keep their existing rendering.
-The native disclosure and definition lists remain server components. Narrow MCP
-identifier titles use a site-scoped fluid font size; title text remains unchanged.
-
-`tool-contract-examples` exercises all documented MCP requests in a disposable
-workspace, then runs only read-only contributor requests against this repository.
-`cli-contract-examples` runs the literal curated shell commands in a temporary
-project, including watcher startup and shutdown. Share the stdio fixture with
-the agent guide checks. Do not run preview/apply examples against this checkout.
-
+The CLI and MCP catalogs each occupy one page. `tool-contracts` discovers current
+commands and tools through public help and `tools/list`; concise guidance identifies
+purpose, file effects and how to obtain the full contract from the installed tool
+or GitHub. Do not embed complete schemas or command help in website or portable
+output. Keep literal examples checked in disposable projects through the existing
+CLI/MCP fixtures. The Guide owns setup and the complete preview/apply workflow.
 
 ### Directive examples
 
@@ -238,26 +225,15 @@ highlights and native keyboard copy buttons. Plain source fences
 retain their normal code rendering. Keep source strings literal; JSON string
 expressions preserve indentation that MDX can strip from multiline attributes.
 
-### Package API presentation
+### Package source catalog
 
-`package-declarations` emits TypeScript declarations in memory before resolving
-public entrypoint exports. Never print implementation AST as a declaration: actual
-emission owns overloads, inferred types, optional parameters and default expressions.
-Presentation removes private class members while retaining constructor restrictions
-and protected members. Parameter wrapping changes whitespace only. Named aliases
-remain explicit; a default export sharing a named declaration links to that symbol.
-`package-editorial` owns the purpose and usage of each public import path.
-
-The exact Import path/Purpose and Export/Kind tables become `DocumentAPIIndex`.
-Explicit `typescript declaration` fences become `DocumentDeclaration`; contracts
-over 40 lines use a native disclosure with complete server-rendered content and
-keyboard copying. Copy controls stay disabled until their event handlers are ready.
-`DocumentIdentifier` adds native word-break opportunities at identifier boundaries
-without inserting copied characters. The page TOC lists entrypoints; each large entry has its own
-symbol index. Full declarations, indexes and stable anchors remain in search and
-portable Markdown. `PackageDeclarationExample` resolves the identifier's package
-through the route index and loads only that package's generated document for the
-Design System gallery, instead of importing the complete Reference catalog.
+`package-contracts` builds one `/reference/packages` document from public API census,
+package exports and `package-editorial`. Import paths and qualified symbol aliases
+point to their owning package section. That section explains purpose and lifecycle
+and links to current `rc` source and export mappings. Full declarations remain in
+GitHub and installed packages. The Design System uses small public type references;
+it does not load a generated declaration catalog. The standard document renderer
+keeps indexes, anchors and source links in search and portable output.
 
 ### Installation sequences
 

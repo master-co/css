@@ -70,18 +70,17 @@ On a progressive page, the critical CSS is already in `style#master-css`. The ru
 </html>
 ```
 
-(x) Do not preload the runtime or the project program in progressive rendering mode. A preload downloads them even when the page never needs the engine.
+(x) Avoid explicitly preloading the deferred engine or project program on progressive pages. Those requests can otherwise run even when no new class needs the engine. Application-module preloads have their own purpose; inspect the dependency graph to keep the deferred engine out of that initial graph.
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
   <link rel="preload" as="fetch" crossorigin href="/assets/master-css-program.<hash>.bin"> <!-- [!code --] -->
 </head>
 </html>
 ```
 
-When new classes usually appear soon after load, start the runtime with `enginePrefetch: 'idle'`. The runtime then starts the engine during browser idle time, after first paint, so the first new class does not wait for the engine download.
+When new classes usually appear soon after load, start the runtime with `enginePrefetch: 'idle'`. The runtime then schedules engine startup for an idle callback. This can reduce a later interaction’s wait, but does not guarantee that startup follows first paint or finishes before the interaction.
 
 ---
 

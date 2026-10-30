@@ -87,11 +87,11 @@ test(`${engine}: source tabs support arrows, Home and End with complete readable
   } finally { await context.close() }
 })
 
-test(`${engine}: package-manager selection synchronizes code sets and survives a reload`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/blog/bootstrapping-master-css-with-vite')
+test(`${engine}: package-manager selection persists across installation guides and a reload`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/installation')
   try {
     const sets = page.locator('[data-code-tabs-storage-key="pm"]')
-    assert.ok(await sets.count() >= 2)
+    assert.ok(await sets.count() >= 1)
     await sets.first().getByRole('tab', { name: 'bun', exact: true }).click()
     for (const set of await sets.all()) {
       assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
@@ -99,6 +99,12 @@ test(`${engine}: package-manager selection synchronizes code sets and survives a
     }
     await page.reload({ waitUntil: 'networkidle' })
     for (const set of await sets.all()) assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
+    await page.goto(base + '/guide/installation/astro', { waitUntil: 'networkidle' })
+    assert.ok(await sets.count() >= 1)
+    for (const set of await sets.all()) {
+      assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
+      assert.ok((await set.getByRole('tabpanel').textContent()).includes('bun'))
+    }
     await noOverflow(page)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

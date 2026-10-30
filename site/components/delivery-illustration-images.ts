@@ -6,7 +6,17 @@ import progressiveDark from '../assets/images/rendering-modes/progressive-dark.p
 import hydrationLight from '../assets/images/rendering-modes/hydration-light.png'
 import hydrationDark from '../assets/images/rendering-modes/hydration-dark.png'
 
+import pruningLight from '../assets/images/rendering-modes/pruning-light.png'
+import pruningDark from '../assets/images/rendering-modes/pruning-dark.png'
+import routeLight from '../assets/images/rendering-modes/route-light.png'
+import routeDark from '../assets/images/rendering-modes/route-dark.png'
+import nextjsLight from '../assets/images/rendering-modes/nextjs-light.png'
+import nextjsDark from '../assets/images/rendering-modes/nextjs-dark.png'
+
 export const deliveryIllustrationImages = {
+  pruning: { light: pruningLight, dark: pruningDark },
+  route: { light: routeLight, dark: routeDark },
+  nextjs: { light: nextjsLight, dark: nextjsDark },
   runtime: { light: runtimeLight, dark: runtimeDark },
   progressive: { light: progressiveLight, dark: progressiveDark },
   hydration: { light: hydrationLight, dark: hydrationDark }

@@ -13,6 +13,14 @@ Start with the question and draw the relationship that answers it. A figure shou
 
 Choose one primary argument per figure. Split an overloaded lifecycle into adjacent figures if its overview and handoff require different detail. Keep each figure next to the prose that uses it.
 
+## Canvas and density
+
+Compose every new or revised figure within a landscape 3:2 outer canvas. Padding, arrowheads, labels and shadow clearance belong inside those dimensions; the article caption and HTML text description remain outside the image.
+
+Use moderate whitespace around the composition and between groups to separate stages, clarify relationships and give the eye room to follow the paths. Choose object sizes and connector lengths for readable, balanced relationships; canvas coverage is not a target. Do not enlarge objects or spread them to the edges merely to fill the available area.
+
+Plan the relationships for this canvas from the start. If the explanation becomes too dense, remove secondary detail, move qualifications into adjacent prose, or split it into several focused 3:2 figures. Keep labels readable at phone width. Reflow an existing tall composition for the canvas while preserving object proportions, readable type and natural spacing.
+
 ## Rendering modes examples
 
 These statements describe the intended lessons; verify current implementation before producing or revising the diagrams.

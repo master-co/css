@@ -1,37 +1,37 @@
 import { deliveryFlow, deliveryFlowDescription, deliveryIllustrations } from '../../../../utils/delivery-flows'
 import { drawing, type Theme } from './materials'
 
-const flow = deliveryFlow('runtime')
-const labels = deliveryIllustrations.runtime.labels
-
 export default {
   id: 'runtime',
   render(theme: Theme) {
-    const { p, text, line, surface, engine, stylesheet, svg } = drawing(theme)
-    const width = 560
-    const height = 440
-    const treeX = 26
-    const nodeX = 54
-    const headingY = 110
-    const paragraphY = 208
-    const chip = { x: 302, y: 112, w: 236 }
-    const sheet = { x: 310, y: 278 }
-    const textY = 228
-    const content = `
-      ${text(treeX, 61, labels.dom, 18, p.muted, 500)}
-      <circle cx="${treeX}" cy="84" r="3" fill="${p.route}"/>
-      ${line(`M${treeX} 96V${Math.max(headingY + 33, paragraphY + 20)}M${treeX} ${headingY + 33}H${nodeX - 9}M${treeX} ${paragraphY + 20}H${nodeX - 9}`)}
-      ${line('M260 143H290', 'marker-end="url(#arrow)"')}
-      ${line(`M${chip.x + chip.w / 2} ${chip.y + 76}V${sheet.y - 12}`, 'marker-end="url(#arrow)"')}
-      ${surface(nodeX, headingY, 194, 66, 7)}
-      ${text(nodeX + 16, headingY + 27, labels.heading, 19, p.ink, 500)}
-      ${text(nodeX + 16, headingY + 50, labels.candidate, 15, p.muted)}
-      ${surface(nodeX, paragraphY, 128, 40, 7)}
-      ${text(nodeX + 16, paragraphY + 26, labels.paragraph, 18, p.muted)}
-      ${engine(chip.x, chip.y, chip.w, 64, labels.engine)}
-      ${text(435, textY, labels.insert, 15, p.muted)}
-      ${stylesheet(sheet.x, sheet.y, 220, 126, labels.rules)}
-    `
-    return svg(width, height, flow.title, deliveryFlowDescription('runtime'), content, 20)
+    const { p, text, rect, line, surface, svg } = drawing(theme)
+    const l = deliveryIllustrations.runtime.labels
+    return svg(600, 400, deliveryFlow('runtime').title, deliveryFlowDescription('runtime'), `
+      <g transform="translate(0 24)">
+      ${text(62, 92, l.dom, 20, p.muted, 500)}
+      ${line('M62 114V246Q62 264 80 264H336Q356 264 356 244V214', 'marker-end="url(#arrow)"')}
+      ${line('M62 145H76M62 211H76')}
+      ${surface(88, 114, 198, 66, 8)}
+      ${text(102, 141, l.heading, 20, p.ink, 500)}
+      ${text(102, 167, l.candidate, 18, p.muted)}
+      ${surface(88, 194, 72, 36, 7)}
+      ${text(102, 220, l.paragraph, 20, p.muted)}
+
+      ${surface(326, 136, 60, 64, 9)}
+      <g transform="translate(343 155)" fill="none" stroke="${p.quiet}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="26" height="26" rx="4"/>
+        <rect x="7" y="7" width="12" height="12" rx="2"/>
+        <path d="M7-5v5m12-5v5M7 26v5m12-5v5M-5 7h5m-5 12h5M26 7h5m-5 12h5"/>
+      </g>
+      ${text(356, 92, l.engine, 20, p.ink, 500, 'text-anchor="middle"')}
+
+      ${text(498, 92, l.rules, 20, p.ink, 500, 'text-anchor="middle"')}
+      ${rect(450, 120, 96, 118, 8, p.inset, `stroke="${p.line}"`)}
+      ${surface(444, 114, 108, 118, 8)}
+      ${[138, 162, 186, 210].map((y, i) => rect(462, y, i % 2 ? 52 : 70, 4, 2, p.blockStrong, 'opacity=".65"')).join('')}
+      ${line('M400 168H430', 'marker-end="url(#arrow)"')}
+      ${text(498, 274, l.insert, 18, p.muted, 400, 'text-anchor="middle"')}
+      </g>
+    `, 0)
   }
 }
