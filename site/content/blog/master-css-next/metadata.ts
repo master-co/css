@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Introducing the Master CSS Next.js',
-  description: 'The Next.js Adapter brings Progressive Rendering into the build pipeline, with Turbopack support for Static Rendering.',
+  title: 'Master CSS with Next.js: when to use Progressive Rendering',
+  description: 'Generate CSS from pre-rendered Next.js HTML, handle later classes in the browser, and understand the boundary for dynamic SSR.',
   category: 'New Feature',
   authors: [
     { name: 'Aron' },

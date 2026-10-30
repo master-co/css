@@ -1,188 +1,140 @@
 import ArticleTOC from '~/site/docs-shell/components/ArticleTOC'
 
-Vite is one of the best foundations for modern frontend work: fast startup, predictable module graph, first-class plugins, and a build pipeline that is easy to extend without making the application feel heavy.
+A Vite app can know its class names at different times: in source files, in generated HTML, or only after a user interacts with the page. Choose a Master CSS rendering mode based on when that information becomes available.
 
-`@master/css-vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, scanning scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
-
-The goal is simple: keep Master CSS authoring as direct as markup, while letting Vite own the integration work.
+Start with `static`, the default in `@master/css-vite`, when complete class names are visible in source. It produces ordinary CSS without a Master CSS browser runtime. Use another mode when you need to generate rules from final HTML or interpret new class names in the browser.
 
 <ArticleTOC data={toc}/>
 
 ---
 
-## One plugin, four rendering modes
+<a id="one-plugin-four-rendering-modes"></a>
 
-The original Vite integration focused on Static Rendering. It worked well for projects that wanted a compiled stylesheet, but the rest of the Master CSS rendering story still required manual setup.
+## What each mode produces
 
-The new `@master/css-vite` plugin unifies the modes behind one entry point:
+The same plugin supports four modes. This table describes their production behavior; “runtime” means the Master CSS runtime, not your application's JavaScript.
 
-- `runtime`: injects the Master CSS runtime and config so styles can be generated in the browser.
-- `static`: wires Master CSS stylesheet imports into the static rendering workflow.
-- `pre-render`: renders HTML output and injects the CSS needed by those documents.
-- `progressive`: combines pre-rendered first-response CSS with the runtime engine for dynamic UI.
+<div className="overflow-x:auto min-width:40rem>figure white-space:nowrap>figure>table>tbody>tr>td:first-child" role="region" aria-label="Rendering mode comparison" tabIndex={0}>
 
-That matters because not every Vite app has the same shape. A design system playground, a documentation site, a SPA, and a partially pre-rendered app should not be forced into the same CSS delivery strategy.
+| Mode | Use it when | CSS output | Master CSS in the browser |
+| --- | --- | --- | --- |
+| `static` (default) | Complete class names are discoverable in source | A generated stylesheet loaded by the application | No runtime required |
+| `runtime` | New class names are created in the browser | Rules generated from connected DOM elements | Runtime generates and manages rules |
+| `pre-render` | Emitted HTML contains the classes the page needs | Matching rules inline in `style#master-css` | No runtime; classes absent from the HTML need another CSS source |
+| `progressive` | Emitted HTML covers the initial page, and new classes may appear later | Initial rules inline in `style#master-css`, with later rules generated in the browser | Runtime adopts the rendered rules and handles new classes |
 
-Master CSS now lets the Vite project choose.
+</div>
+
+Pre-rendering needs actual page markup. If a client-rendered SPA emits only an empty root element, there are no application classes in that HTML to pre-render. Use static mode for discoverable source classes, or runtime support for classes created later.
 
 ---
 
 ## Install it
 
-If you don't have a project yet, create one using `npm create vite@latest my-app`.
+From an existing Vite project root, run the official installer:
 
-```bash action=install
-@master/css-vite@rc
+```bash name=Terminal
+npm create @master/css@rc -- --framework vite --yes
 ```
 
-Then register the plugin:
+For project creation and framework-specific steps, follow the [Vite installation guide](/guide/installation/vite). The installer adds the integration and configures static mode by default. Keep existing framework plugins when reviewing the generated configuration. A minimal vanilla Vite configuration is:
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
-import masterCSS from '@master/css-vite' // [!code highlight]
+import masterCSS from '@master/css-vite'
 
 export default defineConfig({
-  plugins: [
-    masterCSS() // [!code highlight]
-  ]
+  plugins: [masterCSS()]
 })
 ```
 
-By default, the plugin uses `static` mode. Master CSS scans complete classes in source and emits ordinary CSS. CSS variables and native selectors remain dynamic in the browser; explicitly select runtime mode when new class names must be interpreted after the build.
+The plugin also needs a CSS entry that your application loads. Keep the Master CSS import in that stylesheet. For a vanilla Vite app using `src/style.css` and `src/main.js`, the relevant files are:
 
-Run the Vite dev server and start writing Master CSS classes:
-
-```bash action=run
-dev
+```css name=src/style.css
+@import '@master/css';
 ```
+
+```js name=src/main.js
+import './style.css'
+```
+
+Use your existing entry filenames in a framework app. Adding the import to a stylesheet that the application never loads does not complete the setup.
+
+For a minimal vanilla example, put the markup directly in `index.html`:
+
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Master CSS with Vite</title>
+  </head>
+  <body>
+    <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+Run `npm run dev`. The heading should be large, heavy, italic, and separated from the page edge. Then run `npm run build`: Vite's output includes CSS for these classes. In the default static mode, those styles remain available with JavaScript disabled because the generated HTML links the stylesheet.
 
 ---
 
 ## Choose the right mode
 
-### Runtime
-
-Use runtime mode when new class names must be interpreted in the browser, such as in visual editors or client-generated interfaces. Select it explicitly:
-
-```js name=vite.config.js
-import { defineConfig } from 'vite'
-import masterCSS from '@master/css-vite'
-
-export default defineConfig({
-  plugins: [
-    masterCSS({ mode: 'runtime' })
-  ]
-})
-```
-
 ### Static Rendering
 
-Use static mode when your classes are visible in source and you want a compiled CSS asset before runtime. This is the closest mode to traditional utility-first build workflows.
+Keep `masterCSS()` when the scanner can find the complete classes you use. State changes can still switch among those classes, and CSS variables, selectors, and media queries keep their native browser behavior. A changing interface alone does not require runtime generation.
 
-```js name=vite.config.js
-import { defineConfig } from 'vite'
-import masterCSS from '@master/css-vite'
+Constructed strings such as `` `bg-${tone}` `` need care: source scanning cannot infer every completed class. Prefer an explicit map of complete strings for a finite set of variants, or choose a mode that sees the final class names. See [Scanning latent classes](/guide/scanning-latent-classes) for source-scanning controls.
 
-export default defineConfig({
-  plugins: [
-    masterCSS({ mode: 'static' })
-  ]
-})
-```
+### Runtime
+
+Choose `masterCSS({ mode: 'runtime' })` when the browser must interpret classes that cannot be enumerated during the build, such as classes entered in a visual editor. The plugin injects the runtime; it generates rules as elements enter or change in the DOM.
+
+This makes styling dependent on runtime startup. Account for that JavaScript work when choosing the mode.
 
 ### Pre-rendering
 
-Use pre-render mode when Vite emits HTML that can be styled before the browser runs JavaScript. The plugin renders the matching CSS and injects it into the document.
+Choose `masterCSS({ mode: 'pre-render' })` when the built HTML contains the page's classes and you do not need runtime generation later. The plugin inserts their rules into `style#master-css` without starting a browser runtime.
 
-For rendered pages, the required CSS stays inline in `style#master-css`. Pre-render mode does not start a browser runtime or deliver a hydration manifest.
-
-```js name=vite.config.js
-import { defineConfig } from 'vite'
-import masterCSS from '@master/css-vite'
-
-export default defineConfig({
-  plugins: [
-    masterCSS({ mode: 'pre-render' })
-  ]
-})
-```
+This is CSS generation from HTML the build already emits. It does not render your framework's client components into HTML. A class introduced only after the page loads will need CSS supplied separately.
 
 ### Progressive Rendering
 
-Use progressive mode when you want the first HTML response to carry the CSS it needs, while the runtime continues to support client-only state, late-rendered components, and dynamic UI.
+Choose progressive mode when the built HTML is useful on its own but the browser may later introduce new classes. Replace the plugin call in your existing configuration with:
 
-```js name=vite.config.js
-import { defineConfig } from 'vite'
-import masterCSS from '@master/css-vite'
-
-export default defineConfig({
-  plugins: [
-    masterCSS({ mode: 'progressive' })
-  ]
-})
+```js
+masterCSS({ mode: 'progressive' })
 ```
 
-This is the mode that best represents the Master CSS rendering model: render what can be known early, keep the runtime for what becomes known later.
+The initial HTML carries its generated rules. At startup, the runtime loads a page hydration manifest and adopts those rules; it can generate additional rules when new classes appear. This adds runtime and manifest delivery to the page, so use it when that continuation is needed.
 
-In progressive mode, the runtime imports the page hydration manifest as a JSON module when it starts. Do not add a preload hint for that JSON file: the browser can already paint from `style#master-css`, and the manifest is only needed for the runtime to adopt those rules instead of rebuilding them.
+The browser can use the inline CSS before the runtime starts. That describes CSS availability; any effect on paint timing depends on the page and needs measurement.
 
 ---
 
 ## What the plugin handles
 
-`@master/css-vite` is not just a wrapper around an import. It participates in the Vite pipeline:
+The CSS entry connects your theme, utilities, and native styles to the integration. In static mode, the plugin scans source classes and includes their generated CSS in the application's stylesheet. Modes with runtime support inject the runtime, while modes with pre-rendering process the emitted HTML.
 
-- resolves the compiled MasterCSSManifest as a virtual module;
-- detects common Vite entry modules;
-- keeps the default stylesheet as an explicit `@import "@master/css"` in app CSS;
-- injects the runtime where runtime behavior is enabled;
-- handles static rendering output;
-- pre-renders HTML when the selected mode requires it;
-- externalizes page hydration manifests for progressive HTML;
-- applies FOUC avoidance for runtime-first rendering.
-
-That is the difference between "Master CSS works in a Vite app" and "Master CSS feels like a Vite-native tool."
+Keep application-specific CSS in the loaded stylesheet and rendering choices in the plugin configuration. The [rendering modes guide](/guide/rendering-modes) covers delivery details and verification for each mode.
 
 ---
 
-## Built for Vite-powered frameworks
+<a id="built-for-vite-powered-frameworks"></a>
 
-Vite is also the build foundation for many frameworks. `@master/css-vite` is the lower-level integration that makes the core Vite workflow work well, while framework packages can provide a more native setup when the framework has its own conventions.
+## Vite-powered frameworks
 
-[Nuxt](/guide/installation/nuxtjs) uses a module:
-
-```ts name=nuxt.config.ts
-export default defineNuxtConfig({
-  modules: [
-    '@master/css-nuxt' // static by default [!code highlight]
-    // ['@master/css-nuxt', { mode: 'progressive' }]
-    // ['@master/css-nuxt', { mode: 'runtime' }]
-    // ['@master/css-nuxt', { mode: 'pre-render' }]
-  ]
-})
-```
-
-[Astro](/guide/installation/astro) uses an integration:
-
-```ts name=astro.config.ts
-import masterCSS from '@master/css-astro'
-
-export default defineConfig({
-  integrations: [
-    masterCSS() // 'static' [!code highlight]
-    // masterCSS({ mode: 'progressive' })
-  ]
-})
-```
+Use the framework integration when the framework owns Vite's configuration or rendering lifecycle. Follow the [Nuxt installation guide](/guide/installation/nuxtjs) or [Astro installation guide](/guide/installation/astro) for the appropriate module or integration, CSS entry, and mode options.
 
 ---
 
-## A better default for Vite projects
+<a id="a-better-default-for-vite-projects"></a>
 
-The value of this release is not only that setup is shorter. It is that the rendering strategy is now explicit and local to the Vite config.
+## Start with source-visible classes
 
-Start with the default Static Rendering when complete class names are visible in source. Choose Runtime Rendering when new class names appear in the browser, Pre-rendering when HTML is available before delivery, or Progressive Rendering when pre-rendered first-page CSS must hand off to a browser runtime.
-
-That is the kind of choice a build tool should enable: one integration, multiple delivery strategies, and no extra application code when you change modes.
-
-For full setup details, see the [Vite installation guide](/guide/installation/vite) and the [rendering modes guide](/guide/rendering-modes).
+For an ordinary app with complete class strings in source, start with static mode and verify the generated stylesheet. Move to pre-rendering when final HTML is the useful input, or add runtime support when new classes must be interpreted after the build. The decision follows the application's rendering behavior, and the markup syntax stays the same.

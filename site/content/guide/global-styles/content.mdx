@@ -1,4 +1,5 @@
 import ProjectStyleExample from '~/site/components/demo/ProjectStyleExample'
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only]
 Global styles are the project-level CSS that every page can depend on. They define the Master CSS entry, default layer order, base styles, shared tokens, named media and reusable mixins, generated class vocabulary, and native CSS that belongs to the whole app.
@@ -100,14 +101,14 @@ Load the matching font files with normal `@font-face` rules or a provider styles
 ## Shared vocabulary
 Reusable styling is an ownership decision. Keep local choices in markup while a pattern is changing. Promote only the part that has become shared.
 
-Use this order:
+Choose the abstraction by what is shared:
 
-1. Keep one-off styling in markup utilities.
-2. Give shared product decisions theme tokens; keep independent roles separate even when their current values match.
-3. Write native global CSS for global selectors and app-wide stylesheet surfaces.
-4. Use a static mixin only when a parameterized combination has a clear shared responsibility.
-5. Create component classes for repeated product UI roles.
-6. Write broad native defaults in `@layer defaults`.
+- Keep one-off styling in markup utilities.
+- Give shared values theme tokens; keep independent roles separate even when their current values match.
+- Register reusable class recipes with `@utility` when markup needs a shared styling capability.
+- Define a `@mixin` when multiple CSS rules need the same declarations or nested styles, then expand it with `@apply`. A mixin does not register a markup class.
+- Create native component classes in `@layer components` for repeated product UI roles.
+- Write native global selectors for app-wide styles, using `@layer defaults` for broad defaults.
 
 Start with utilities when the style belongs to one element or one usage site:
 
@@ -210,25 +211,29 @@ Keep hover and focus behavior in the component when it belongs to every usage, a
 ## Custom utilities
 Use custom utilities for reusable primitives that are lower-level than product components. Good utility names describe a styling capability, not a UI role.
 
-```css name=app.css
-@utility flow {
-    display: grid;
-    gap: var(--spacing-md);
-  }
-@utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
-@utility print-hidden {
-    @media (--print) {
-      display: none;
-    }
-  }
-```
+Add these definitions to the app stylesheet after its existing `@import '@master/css'`. The preset supplies `--spacing-md`; the print condition uses native CSS and needs no custom media definition.
 
-```html
-<section class="content-auto flow print-hidden">...</section>
-```
+<ConfiguredExample source={`@utility flow {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+
+@utility print-hidden {
+  @media print {
+    display: none;
+  }
+}`} html={`<section class="content-auto flow print-hidden">
+  <h2>Related articles</h2>
+  <a href="/guide/theme">Choose shared theme values</a>
+  <a href="/guide/responsive-design">Adapt a layout to its available space</a>
+</section>`} />
+
+Load the page normally: the related links appear in a grid with the shared gap. Open the browser's print preview: the entire section is hidden. Remove `print-hidden` to include it in print again.
 
 Custom utilities are generated only when used. Use them for shared layout helpers, rendering hints, print behavior, or other primitives that should feel like part of the project class language.
 

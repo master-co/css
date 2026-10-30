@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Master CSS Vite: one plugin for every rendering mode',
-  description: 'A cleaner Vite integration for runtime rendering, static rendering, pre-rendering, and progressive rendering.',
+  title: 'Master CSS with Vite: choose when to generate CSS',
+  description: 'Start with a working static setup, then choose runtime, pre-render, or progressive mode based on when your class names become known.',
   category: 'New Feature',
   authors: [
     { name: 'Aron' }
