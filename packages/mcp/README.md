@@ -1,6 +1,6 @@
 # Master CSS MCP Server
 
-Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, audit setup, read the active project manifest, inspect CSS-first directives, trace classes through extraction and generated CSS, render or compare CSS output, run lint diagnostics, request syntax suggestions, apply reviewed fix previews, and route Master CSS repository contributor work through deterministic context tools.
+Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, audit setup, read the active project manifest, inspect CSS-first directives, trace classes through extraction and generated CSS, render or compare CSS output, run lint diagnostics, request syntax suggestions, and apply reviewed fix previews.
 
 ## Installation
 
@@ -53,17 +53,6 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_apply_preview` | Apply a preview after token, hash, and workspace checks. |
 
 `@theme` defines utility tokens with direct custom-property declarations and optional `static` / `inline` modifiers. Native CSS controls scoped overrides and does not add utility candidates. Directive inspection and manifest queries report the same Rust-backed contract as the compiler and language service.
-
-## Contributor tools
-
-These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They expose repository-specific routing as low-token JSON instead of asking an agent to repeatedly infer package ownership, risk, and validation from raw files. In non-Master CSS workspaces they return limited package data instead of guessing.
-
-| Tool | Use |
-| --- | --- |
-| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
-| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
-| `mastercss_test_router` | Return focused validation commands for contributor changes. |
-| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
 
 ## Prompt templates
 

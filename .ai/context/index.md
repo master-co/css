@@ -21,6 +21,11 @@ For package code, read the affected manifest and local `AI.md`. For high-risk be
 
 ## Deep References
 
+Repository contributors can run `bun scripts/contributor-context.mjs <paths...>`
+or `--diff <file>` to locate owning packages/crates and canonical guidance. Use
+`--graph` for manifest-derived dependencies. This local command does not duplicate
+risk policy or register tools in the public Master CSS MCP server.
+
 - Project overview: `.ai/overview.md`
 - Package ownership and dependency direction: `.ai/architecture.md`, `.ai/package-map.md`
 - Enforced source/context budgets: `.ai/context/source-budget.json`

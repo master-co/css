@@ -51,7 +51,7 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 84)
+  assert.equal(catalog.documents.length, 80)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
   assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!

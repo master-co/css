@@ -132,17 +132,6 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_preview_directive_format` | Preview Master CSS directive formatting for files, or format in-memory content without writing. |
 | `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
 
-### Contributor tools
-
-These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They return repository-specific routing as compact JSON: affected packages, required context files, risk flags, and focused validation commands. In non-Master CSS workspaces they return limited package data instead of guessing.
-
-| Tool | Use |
-| --- | --- |
-| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
-| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
-| `mastercss_test_router` | Return focused validation commands for contributor changes. |
-| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
-
 The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations.
 
 ---

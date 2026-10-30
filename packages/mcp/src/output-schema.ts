@@ -8,15 +8,10 @@ import { projectSnapshot, projectComparison } from './project-comparison-schema'
 const object = z.record(z.string(), z.json())
 const css = z.object({ bytes: z.number(), text: z.string().optional() }).passthrough()
 
-const contributor = { root: z.string(), status: z.enum(['loaded', 'limited']), inputs: object, affectedPackages: z.array(object), risks: z.array(object) }
 const preview = z.object({ confirmToken: z.string().optional(), expiresAt: z.number().optional(), changes: z.array(change), summary: previewSummary }).passthrough()
 const fields: Record<string, z.ZodRawShape> = {
   mastercss_workspace_info: { root: z.string(), roots: strings, packages: object, manifest: metadata },
   mastercss_setup_audit: { root: z.string(), status: z.string(), packageJSON: object, packages: object, integrations: z.array(object), manifest: metadata, summary: object },
-  mastercss_repo_context: { ...contributor, context: object, validation: object },
-  mastercss_change_impact: { ...contributor, summary: object },
-  mastercss_test_router: { ...contributor, validation: object },
-  mastercss_package_graph: { root: z.string(), status: z.enum(['loaded', 'limited']), packages: z.array(object), summary: object },
   mastercss_lint_project: { root: z.string(), manifest: metadata, files: z.array(lintFile), summary: lintSummary },
   mastercss_lint_content: { root: z.string(), manifest: metadata, files: z.array(lintFile), summary: lintSummary },
   mastercss_preview_fixes: { manifest: metadata, mode: z.enum(['lint-fixes', 'generated-css']), preview },

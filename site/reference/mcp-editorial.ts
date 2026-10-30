@@ -26,15 +26,6 @@ const snapshotFields = Object.fromEntries(['beforeSnapshot', 'afterSnapshot'].fl
   [`${side}.excluded`, 'Excluded paths or patterns retained as coverage evidence.'],
   [`${side}.unresolved`, 'Dynamic or unavailable sources which could not be enumerated.']
 ]))
-const contributorFields = {
-  task: 'Description of the contributor task. It helps select context packs; it does not select changed paths.',
-  paths: 'Changed repository-relative paths. These are combined with paths extracted from `diff`.',
-  diff: 'Unified diff text used to identify affected paths. The tool does not run Git or discover the current diff for you.'
-}
-const contributorLife = 'This operation reads repository metadata and does not edit files or run validation commands. Routing is designed for the Master CSS repository. Other workspaces report `status: limited`; missing recommendations do not establish that a change needs no checks.'
-const contributorExample = { task: 'Update guide examples', paths: ['site/content/guide/ai-coding/content.mdx'] }
-const contributorNote = 'This request targets a file in the Master CSS repository. Substitute the paths you are actually changing.'
-
 export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_workspace_info: {
     purpose: 'Start here to confirm the server root, package resolution, and discovered CSS entries before interpreting project-dependent results.',
@@ -149,26 +140,5 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     example: { confirmToken: '<token-from-reviewed-preview>' }, exampleNote: 'Replace the placeholder with `preview.confirmToken` from the same server session. The placeholder itself is not a valid token.',
     output: 'A successful result has `applied: true` and `changes` containing file paths and their resulting hashes. Unknown, expired, consumed, changed-source, and out-of-root previews are rejected. Inspect tool errors before treating a change as applied.',
     lifecycle: 'The server validates all original file hashes and writable paths before writing the proposed contents. Successful application consumes the token. File writes are sequential; this is not a transactional multi-file rollback mechanism. Run project checks and inspect the changed UI afterward.'
-  },
-  mastercss_repo_context: {
-    purpose: 'Find the owning packages, context documents, risks, and suggested checks for work inside the Master CSS repository.',
-    fields: contributorFields, example: contributorExample, exampleNote: contributorNote,
-    output: 'Read `status`, `affectedPackages`, `context.files`, `risks`, and `validation.commands`. The context list contains paths to read; it does not embed those documents. Source and nearby tests remain the authority for behavior.', lifecycle: contributorLife
-  },
-  mastercss_change_impact: {
-    purpose: 'Classify the likely areas of impact for a contributor change before choosing its validation scope.',
-    fields: contributorFields, example: contributorExample, exampleNote: contributorNote,
-    output: '`affectedPackages` and `risks` describe matched paths and risk categories. `summary` counts risks and packages. These classifications are routing hints, not a code review or a proof that unlisted behavior is unaffected.', lifecycle: contributorLife
-  },
-  mastercss_test_router: {
-    purpose: 'Find focused validation commands for the packages affected by a Master CSS contributor change.',
-    fields: contributorFields, example: { paths: contributorExample.paths }, exampleNote: contributorNote,
-    output: '`validation.commands` pairs suggested commands with reasons. The result also reports `status`, affected packages, and risks. The tool lists commands; it does not execute them or report passing tests.', lifecycle: contributorLife
-  },
-  mastercss_package_graph: {
-    purpose: 'Inspect workspace package ownership and dependency relationships without traversing the installed node_modules tree.',
-    fields: { packageName: 'Exact package name or repository-relative package path. Omit to return all discovered packages.', includeExamples: 'Include packages under `examples/`. Defaults to true.' },
-    example: { includeExamples: false }, exampleNote: 'Inspect the connected workspace’s package graph without example packages.',
-    output: '`packages` contains names, paths, package kinds, scripts, exports, internal workspace dependencies, dependents, and AI-note paths. `summary` counts returned packages. `status: limited` identifies a generic workspace outside the Master CSS repository.', lifecycle: contributorLife
   }
 }
