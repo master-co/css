@@ -21,7 +21,8 @@ export interface BenchmarkBrand {
 
 const chartAnimationDuration = 3
 const chartAnimationStartPercent = 90
-const chartEasing = 'cubic-bezier(.22,1,.36,1)'
+const chartCurve = [0.22, 1, 0.36, 1] as const
+const chartEasing = `cubic-bezier(${chartCurve.join(',')})`
 const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
@@ -224,7 +225,7 @@ function CountdownKilobytes({ active, armed, barDuration, className, delay, from
       const step = (timestamp: number) => {
         startedAt ||= timestamp
         const progress = Math.min(1, (timestamp - startedAt) / (barDuration * 1000))
-        setDisplayBytes(fromBytes + (toBytes - fromBytes) * (1 - (1 - progress) ** 3))
+        setDisplayBytes(fromBytes + (toBytes - fromBytes) * cubicBezier(chartCurve, progress))
         if (progress < 1) animationFrame = window.requestAnimationFrame(step)
       }
       animationFrame = window.requestAnimationFrame(step)
@@ -272,6 +273,19 @@ function formatAxisNumber(value: number) {
 
 function formatKilobytes(bytes: number) {
   return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(bytes / 1000)} kB`
+}
+
+/** The bars' CSS curve, evaluated in script, so each count lands with its bar. */
+function cubicBezier([x1, y1, x2, y2]: readonly [number, number, number, number], x: number) {
+  if (x <= 0 || x >= 1) return Math.min(1, Math.max(0, x))
+  const axis = (t: number, p1: number, p2: number) => ((1 - 3 * p2 + 3 * p1) * t + (3 * p2 - 6 * p1)) * t * t + 3 * p1 * t
+  let t = x
+  for (let index = 0; index < 8; index++) {
+    const slope = (3 * (1 - 3 * x2 + 3 * x1) * t + 2 * (3 * x2 - 6 * x1)) * t + 3 * x1
+    if (Math.abs(slope) < 1e-6) break
+    t -= (axis(t, x1, x2) - x) / slope
+  }
+  return axis(Math.min(1, Math.max(0, t)), y1, y2)
 }
 
 function toPercent(value: number, max: number) {
