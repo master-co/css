@@ -2,6 +2,7 @@
 
 const tabChange = 'site-code-tabs:change'
 const resetTimers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>()
+const pendingCopies = new WeakSet<HTMLButtonElement>()
 
 function tabsOf(root: HTMLElement) {
   return [...root.querySelectorAll<HTMLButtonElement>('[data-code-tabs-tab-name]')]
@@ -50,25 +51,33 @@ function codeText(button: HTMLButtonElement) {
   return [...scope?.querySelectorAll<HTMLElement>('.line') ?? []].map(line => (line.textContent ?? '').replace(/[\t ]+$/u, '')).join('\n')
 }
 
-function showCopyStatus(button: HTMLButtonElement, status: 'idle' | 'copied' | 'error') {
+function showCopyStatus(button: HTMLButtonElement, status: 'idle' | 'pending' | 'copied' | 'error', name = button.dataset.codeCopy) {
   const element = button.parentElement?.querySelector<HTMLElement>('.code-copy-status')
-  const name = button.dataset.codeCopy
   if (element) {
-    element.textContent = status === 'copied' ? `${name || 'Code'} copied` : status === 'error' ? 'Clipboard unavailable. Select the code to copy it.' : ''
+    element.textContent = status === 'pending' ? `Copying ${name || 'code'}…` : status === 'copied' ? `${name || 'Code'} copied` : status === 'error' ? 'Clipboard unavailable. Select the code to copy it.' : ''
     element.toggleAttribute('data-error', status === 'error')
+    element.toggleAttribute('data-pending', status === 'pending')
   }
   button.toggleAttribute('data-copied', status === 'copied')
   clearTimeout(resetTimers.get(button))
-  if (status !== 'idle') resetTimers.set(button, setTimeout(() => showCopyStatus(button, 'idle'), status === 'error' ? 5000 : 2000))
+  if (status === 'copied' || status === 'error') resetTimers.set(button, setTimeout(() => showCopyStatus(button, 'idle'), status === 'error' ? 5000 : 2000))
 }
 
 async function copy(button: HTMLButtonElement) {
+  if (pendingCopies.has(button)) return
+  const name = button.dataset.codeCopy
+  pendingCopies.add(button)
+  button.setAttribute('aria-busy', 'true')
+  showCopyStatus(button, 'pending', name)
   try {
     if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable')
     await navigator.clipboard.writeText(codeText(button))
-    showCopyStatus(button, 'copied')
+    showCopyStatus(button, 'copied', name)
   } catch {
     showCopyStatus(button, 'error')
+  } finally {
+    pendingCopies.delete(button)
+    button.removeAttribute('aria-busy')
   }
 }
 

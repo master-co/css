@@ -231,8 +231,8 @@
   .code-copy-corner { position: absolute; z-index: 1; top: .375rem; right: .375rem; border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
   .code-copy-corner .code-copy-button { width: 2rem; height: 2rem; border-radius: inherit; }
   .code-copy-corner .code-copy-button:active { box-shadow: var(--shadow-pressed-contact); }
-  .code-copy-status:not([data-error]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-  .code-copy-status[data-error] { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-edge), var(--shadow-floating-contact); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
+  .code-copy-status:not([data-error], [data-pending]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .code-copy-status:is([data-error], [data-pending]) { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-floating-contact); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
   @media (pointer: coarse) {
     .code-tab { min-height: 2.75rem; }

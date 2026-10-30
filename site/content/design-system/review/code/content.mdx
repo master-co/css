@@ -1,5 +1,7 @@
 The shared code window keeps source text, tab names and copy feedback together. Switch tabs with arrow keys; the selected insert keeps a stable width.
 
+Copy shows a pending request and confirms success after the clipboard write finishes. Repeating the action while it is pending keeps one request. If you switch tabs during a write, the confirmation still names the source you copied. A denied write leaves the source selectable and explains how to copy it manually.
+
 ### Block code
 ```html
 <!-- A readable card in either appearance -->
