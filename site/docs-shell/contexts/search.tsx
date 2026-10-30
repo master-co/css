@@ -2,7 +2,7 @@
 
 import '~/site/styles/docs-shell/documentation-search.css'
 import Link from '../components/Link'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from './i18n'
 import { useLocale } from './locale'
 import { createDocumentationSearch, type DocumentationSearchPage } from '../utils/documentation-search'
@@ -80,7 +80,7 @@ export default function SearchDialog() {
     })
     return () => { active = false }
   }, [locale, opened, retry])
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (opened) {
       dialog.current?.showModal()
       input.current?.focus()
