@@ -11,8 +11,8 @@ let browser
 before(async () => { await mkdir(output, { recursive: true }); browser = await ({ chromium, webkit })[browserName].launch() })
 after(async () => { await browser?.close() })
 
-async function open(route, { width = 390, scheme = 'light', js = true, touch = false } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, reducedMotion: 'reduce', javaScriptEnabled: js, hasTouch: touch })
+async function open(route, { width = 390, scheme = 'light', js = true, touch = false, motion = 'reduce' } = {}) {
+  const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, reducedMotion: motion, javaScriptEnabled: js, hasTouch: touch })
   const page = await context.newPage()
   const errors = []
   page.on('pageerror', error => errors.push(error.message))
@@ -296,6 +296,32 @@ test(`${browserName}: pages without a document sidebar keep a visible desktop se
       const header = page.getByRole('navigation', { name: 'Main navigation', exact: true })
       assert.equal(await header.getByRole('button', { name: 'Search documentation', exact: true, includeHidden: true }).isVisible(), false)
       assert.equal(await page.locator('#sidebar').getByRole('button', { name: 'Search documentation', exact: true }).count(), 1, 'the document sidebar keeps its existing search entry')
+    } finally { await context.close() }
+  }
+})
+
+test(`${browserName}: tucked-away navigation reveals keyboard focus without changing the reading position`, { timeout: 90000 }, async () => {
+  for (const motion of ['reduce', 'no-preference']) {
+    const { context, page, errors } = await open('/blog/master-css-next', { width: 1440, motion })
+    try {
+      const header = page.getByRole('navigation', { name: 'Main navigation', exact: true })
+      await page.evaluate(() => scrollTo(0, 1600))
+      await page.waitForFunction(element => element.getBoundingClientRect().bottom <= 1, await header.elementHandle())
+      if (motion === 'reduce') assert.ok(await header.evaluate(element => getComputedStyle(element).transitionDuration.split(',').every(value => parseFloat(value) === 0)), 'reduced motion removes header travel')
+      await page.keyboard.press('Tab')
+      assert.equal(await header.evaluate(element => element.contains(document.activeElement)), true)
+      await page.waitForFunction(element => element.getBoundingClientRect().top >= -.5, await header.elementHandle())
+      assert.equal(await page.evaluate(() => scrollY), 1600, 'revealing focus keeps the current paragraph in place')
+      const trigger = header.getByRole('button', { name: 'Search documentation', exact: true })
+      await trigger.focus(); await trigger.press('Enter')
+      const search = page.getByRole('dialog', { name: 'Search documentation', exact: true })
+      await search.getByRole('combobox').press('Escape')
+      assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
+      const box = await trigger.boundingBox()
+      assert.ok(box.y >= 0 && box.y + box.height <= 900, 'focus returns to a visible search entry')
+      assert.equal(await page.evaluate(() => scrollY), 1600)
+      await page.screenshot({ path: new URL(`sticky-header-${motion}-keyboard.png`, output).pathname })
+      assert.deepEqual(errors, [])
     } finally { await context.close() }
   }
 })

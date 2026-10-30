@@ -60,6 +60,7 @@ export default function Header({ top, stickable, fixed = true, ...props }: any) 
   return (
     <nav ref={ref} aria-label={props['aria-label']}
       className={clsx('z-index:1040 width:100% padding-top:env(safe-area-inset-top) white-space:nowrap contain:layout|style bb-line-subtle:not(.at-top) border-bottom-style:solid:not(.at-top) border-bottom-width:1px:not(.at-top) bg-surface-base/.9:not(.at-top) backdrop-filter:blur(25px):not(.at-top) display:none@media(print) app-wrapper',
+        'app-header',
         props.className,
         {
           'transition-duration:.2s transition-property:transform,height,padding,backdrop-filter,background-color': stickable,

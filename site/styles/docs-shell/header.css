@@ -1,5 +1,10 @@
 @layer components {
   .app-header-logo { display: inline-flex; align-items: center; min-height: 48px; }
+  /* A focused navigation control must remain on screen after the header has tucked away. */
+  .app-header:focus-within { transform: none !important; transition-duration: 0s !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .app-header { transition-duration: 0s !important; }
+  }
 .app-header-nav {
     font-size: var(--font-size-sm);
     line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
