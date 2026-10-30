@@ -54,9 +54,12 @@ export const brandMarkGradientStops = ['#FCDD98', '#C8861C'] as const
 export const brandRoleOrigins = {
   '--color-surface-canvas': 'Site role',
   '--color-surface-shell': 'Site role',
+  '--color-text-success': 'Site role',
+  '--color-text-info': 'Site role',
+  '--color-text-danger': 'Site role',
 } as const
 
-export const brandRoleGuidance = 'Canvas and Shell are roles defined by this website. The other color roles shown here come from the Master CSS preset. Copying a variable uses the definition in your theme; it does not install a site-specific role.'
+export const brandRoleGuidance = 'Canvas, Shell and the functional text colors are roles defined by this website. The remaining neutral roles shown here come from the Master CSS preset. Copying a variable uses the definition in your theme; it does not install a site-specific role.'
 
 export const brandTypeRoles = [
   { title: 'Display', token: '--font-size-5xl', sample: 'A clear point of view.', description: 'A short opening thought. Give it room; use it once.' },

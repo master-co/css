@@ -24,7 +24,9 @@ export function brandComponentMarkdown(name: string) {
     '### Roles that follow the theme',
     brandRoleGuidance,
     table(['Role', 'Variable', 'Purpose'], brandColorRoles.map(role => [role.title, `\`${role.token}\``, role.description])),
-    table(['State', 'Variable', 'Purpose'], brandFunctionalColors.map(role => [role.title, `\`${role.token}\``, role.description])),
+    '### Functional color',
+    'Name the outcome in words; color reinforces its meaning. These website roles adapt to the mode. The visual guide shows their current rendered values and offers the same variable-copy feedback as the neutral roles.',
+    table(['State', 'Website variable', 'Purpose'], brandFunctionalColors.map(role => [role.title, `\`${role.token}\``, role.description])),
     'Copy a variable to preserve its adaptive relationship. The visual page displays the current browser-rendered color alongside its role.'
   ].join('\n\n')
   if (name === 'BrandTypography') return [

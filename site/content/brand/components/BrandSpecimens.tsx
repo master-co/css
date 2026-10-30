@@ -27,7 +27,8 @@ export function BrandColors() {
     <div className="brand-palette">{palette.map(color => <BrandColor key={color.key} title={color.key.replace('amber', 'Gold · amber').replace('zinc', 'Zinc')} token={color.token} value={color.value} />)}</div>
     <h3>Roles that follow the theme</h3><p className="brand-specimen-intro">A role describes a job. Its color adapts to the surface and theme. The readings below show the current rendered color; copy the variable to preserve that relationship.</p><p className="brand-specimen-intro">{brandRoleGuidance} <Link href="/guide/theme">Define roles in your theme <span aria-hidden="true">→</span></Link></p>
     <div className="brand-role-palette">{brandColorRoles.map(role => <BrandColor key={role.token} {...role} />)}</div>
-    <div className="brand-functional-colors">{brandFunctionalColors.map(role => <div key={role.title} data-role={role.title}><span aria-hidden="true" /><strong>{role.title}</strong><p>{role.description}</p><code>{role.token}</code></div>)}</div>
+    <h3>Functional color</h3><p className="brand-specimen-intro">Name the outcome in words; color reinforces its meaning. These website roles adapt to the mode, with the current rendered value and the same copy feedback as the neutral roles.</p>
+    <div className="brand-functional-colors">{brandFunctionalColors.map(role => <BrandColor key={role.token} {...role} family="text" />)}</div>
   </div>
 }
 

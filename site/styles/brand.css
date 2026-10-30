@@ -143,6 +143,9 @@
   .brand-color[data-token="--color-text-muted"] { --brand-swatch-color: var(--color-text-muted); }
   .brand-color[data-token="--color-line-divider"] { --brand-swatch-color: var(--color-line-divider); }
   .brand-color[data-token="--color-line-control"] { --brand-swatch-color: var(--color-line-control); }
+  .brand-color[data-token="--color-text-success"] { --brand-swatch-color: var(--color-text-success); }
+  .brand-color[data-token="--color-text-info"] { --brand-swatch-color: var(--color-text-info); }
+  .brand-color[data-token="--color-text-danger"] { --brand-swatch-color: var(--color-text-danger); }
   .brand-color[data-family="text"] .brand-color-paint, .brand-color[data-family="line"] .brand-color-paint { background-color: var(--brand-ground) !important; }
   .brand-color[data-family="text"] .brand-color-paint > span { font-size: 3rem; font-weight: 460; letter-spacing: -.05em; }
   .brand-color[data-family="line"] .brand-color-paint > span { width: 55%; height: 2.5rem; border: 1px solid; border-radius: var(--radius-md); }
@@ -156,15 +159,7 @@
   .brand-copy:hover { color: var(--brand-ink); background: var(--brand-ground); }
   .brand-color .demo-copy-status:not(:empty) { position: absolute; bottom: 0; width: 100%; max-width: 100%; margin: 0; padding: .25rem .5rem; border-left: 0; background: transparent; font-size: .625rem; overflow-wrap: anywhere; }
   .brand-specimen-intro { font-size: .875rem; line-height: 1.8; }
-  .brand-functional-colors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-2xl); }
-  .brand-functional-colors > div { display: grid; grid-template-columns: .5rem 1fr; align-content: start; gap: var(--spacing-xs) var(--spacing-sm); }
-  .brand-functional-colors > div > span { width: .375rem; height: .375rem; margin-top: .5rem; border-radius: var(--radius-pill); }
-  .brand-functional-colors > div[data-role="Success"] > span { background: var(--color-text-success); }
-  .brand-functional-colors > div[data-role="Information"] > span { background: var(--color-text-info); }
-  .brand-functional-colors > div[data-role="Error"] > span { background: var(--color-text-danger); }
-  .brand-functional-colors strong { font-size: .875rem; }
-  .brand-functional-colors p { grid-column: 2; margin: 0; font-size: .8125rem; line-height: 1.6; }
-  .brand-functional-colors code { grid-column: 2; font-size: .625rem; overflow-wrap: anywhere; }
+  .brand-functional-colors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-md); margin-top: var(--spacing-xl); }
 
   .brand-font-families { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
   .brand-font-families > div { padding-top: var(--spacing-md); border-top: 1px solid var(--brand-line); }

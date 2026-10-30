@@ -38,7 +38,7 @@ async function assertLayout(page) {
       const paint = card.querySelector('.brand-color-paint')
       const sample = family === 'text' || family === 'line' ? paint.firstElementChild : paint
       const style = getComputedStyle(sample)
-      return { token: card.getAttribute('data-token'), color: family === 'text' ? style.color : family === 'line' ? style.borderTopColor : style.backgroundColor }
+      return { token: card.getAttribute('data-token'), definition: getComputedStyle(card).getPropertyValue(card.getAttribute('data-token')).trim(), color: family === 'text' ? style.color : family === 'line' ? style.borderTopColor : style.backgroundColor }
     })
     return {
       overflow: root.scrollWidth > innerWidth + 1,
@@ -52,10 +52,13 @@ async function assertLayout(page) {
   assert.equal(result.overflow, false, 'the page keeps horizontal overflow local')
   assert.deepEqual(result.missingTargets, [])
   assert.deepEqual(result.brokenArtwork, [])
-  assert.equal(result.colors.length, 21)
+  assert.equal(result.colors.length, 24)
   assert.equal(result.typeSizes.length, 7)
   for (const entry of result.typeSizes) assert.ok(Math.abs(entry.actual - entry.expected) < .1, `${entry.token}: expected ${entry.expected}px, rendered ${entry.actual}px`)
-  for (const entry of result.colors) assert.ok(entry.color !== 'rgba(0, 0, 0, 0)' && entry.color !== 'transparent', `${entry.token}: a real rendered color`)
+  for (const entry of result.colors) {
+    assert.ok(entry.definition, `${entry.token}: a real inherited definition`)
+    assert.ok(entry.color !== 'rgba(0, 0, 0, 0)' && entry.color !== 'transparent', `${entry.token}: a real rendered color`)
+  }
   for (const bounds of result.headingBounds) { assert.ok(bounds.left >= -1); assert.ok(bounds.right <= (await page.viewportSize()).width + 1) }
 }
 
