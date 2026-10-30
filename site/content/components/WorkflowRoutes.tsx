@@ -1,14 +1,9 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-import { workflowRouteDefinitions, workflowRouteReferences, workflowRoutes } from './workflow-content'
+import { workflowRouteDefinitions, workflowRoutes } from './workflow-content'
+import WorkflowCanvas from './WorkflowCanvas'
 
-/** Which routes use each definition, as a `data-trace` word list of route indexes. */
-const definitionTraces = workflowRouteDefinitions.map(({ name }) => workflowRoutes
-  .map((route, index) => workflowRouteReferences(route.code).includes(name) ? index : -1)
-  .filter((index) => index >= 0)
-  .join(' '))
-
-/** A route stylesheet line with each project definition it references marked. */
+/** Keep the actual stylesheet selectable; Canvas supplies only its floating paper and connections. */
 function CodeLine({ line }: { line: string }) {
   const parts: ReactNode[] = []
   let last = 0
@@ -22,17 +17,10 @@ function CodeLine({ line }: { line: string }) {
   return <span className="home-wf-routes-line">{parts}</span>
 }
 
-/**
- * Route stylesheets as a deck of sheets over the project manifest, a slab in the section's oblique
- * projection with `index.css` on its front edge. The definitions stand on the slab; the ones the
- * chosen sheet uses turn to ink and send a gold signal up into it. The sheet's code shows how each is used.
- */
 export default function WorkflowRoutes() {
   const $ = useTranslation()
   return (
     <div className="home-wf-figure home-wf-routes" data-wf="routes">
-      <div className="home-wf-routes-drawing">
-      {/* The page's segmented control, at a small size; radios, so the deck follows the choice before hydration. */}
       <div aria-label={$('Route')} className="home-segmented-control home-wf-routes-tabs" role="radiogroup">
         {workflowRoutes.map(({ route }, index) => (
           <label className="home-segmented-control-option home-wf-routes-tab" key={route}>
@@ -41,24 +29,25 @@ export default function WorkflowRoutes() {
           </label>
         ))}
       </div>
-      <div aria-hidden="true" className="home-wf-routes-deck">
-        {workflowRoutes.map(({ route, code }, index) => (
-          <div className="home-wf-routes-sheet" data-sheet={index} key={route} style={{ '--home-wf-sheet': index } as CSSProperties}>
-            <code className="home-wf-routes-code">
-              {code.split('\n').map((line, number) => <CodeLine key={number} line={line} />)}
-            </code>
-          </div>
-        ))}
-      </div>
-      <div aria-hidden="true" className="home-wf-routes-floor">
-        <span className="home-wf-routes-slab" />
-        <span className="home-wf-routes-edge">index.css</span>
-        <div className="home-wf-routes-defs">
-          {workflowRouteDefinitions.map(({ name }, index) => (
-            <span className="home-wf-routes-def" data-trace={definitionTraces[index]} key={name} style={{ '--home-wf-row': index } as CSSProperties}>{name}</span>
+      <div className="home-wf-routes-stage home-wf-scene">
+        <div className="home-wf-anchor home-wf-routes-paper" data-wf-anchor="route-sheet">
+          {workflowRoutes.map(({ route, code }, index) => (
+            <div className="home-wf-routes-sheet" data-sheet={index} key={route}>
+              <span className="home-wf-routes-filename">{route === '/' ? 'index' : route.slice(1)}.css</span>
+              {/* Keyboard readers need a focus target for this native overflow region. */}
+              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+              <div aria-label={`${route} CSS`} className="home-wf-routes-code" role="region" tabIndex={0}>
+                <code>{code.split('\n').map((line, number) => <CodeLine key={number} line={line} />)}</code>
+              </div>
+            </div>
           ))}
         </div>
-      </div>
+        <div className="home-wf-routes-defs">
+          {workflowRouteDefinitions.map(({ name }, index) => (
+            <span className="home-wf-anchor home-wf-routes-def" data-wf-anchor={`definition-${index}`} key={name}>{name}</span>
+          ))}
+        </div>
+        <WorkflowCanvas figure="routes" />
       </div>
     </div>
   )

@@ -3,7 +3,7 @@
  * `home-content.test.ts` checks them against the packages, guides, compiler and language service.
  */
 
-/** The guide each Workflow card's "See details" link opens; tests check every page and heading exists. */
+/** Each card's title links to its guide; tests check every page and heading exists. */
 export const workflowGuides = {
   frameworks: '/guide/installation/integrations',
   workspaces: '/guide/monorepo',

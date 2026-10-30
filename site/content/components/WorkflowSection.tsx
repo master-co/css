@@ -8,7 +8,6 @@ import { HomeBentoCard, HomeBentoFrame, HomeBentoGrid, HomeSectionHeader } from 
 import type { HomeIllustrationId } from './HomeIllustration'
 import { homeSections, workflowCards } from './home-content'
 import { workflowGuides } from './workflow-content'
-import { WorkflowTours } from './WorkflowFigures'
 import WorkflowRepo from './WorkflowRepo'
 import WorkflowRoutes from './WorkflowRoutes'
 import WorkflowStage from './WorkflowStage'
@@ -42,7 +41,7 @@ function WorkflowCard({ card, children, className }: { card: WorkflowCardKey, ch
 /**
  * Workflow: one project manifest, orchestrated across the frameworks, monorepo apps and routes
  * that use it, and a report of where a change goes. Each card holds one drawing straight on the
- * card: scopes are plates in one oblique projection, and a change is a gold signal from the manifest.
+ * card: Canvas draws the glass scopes and signals; native links, code and controls sit above it.
  */
 export default function WorkflowSection() {
   const $ = useTranslation()
@@ -76,7 +75,6 @@ export default function WorkflowSection() {
             </WorkflowCard>
           </HomeBentoGrid>
         </HomeBentoFrame>
-        <WorkflowTours sectionId={homeSections.developmentWorkflow} />
       </div>
     </section>
   )
