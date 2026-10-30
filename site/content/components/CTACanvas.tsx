@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-/** The words and actions render without JavaScript; only the field hydrates. */
+/** The words and actions render without JavaScript; only the silk and its lamp hydrate. */
 export default function CTACanvas() {
   const ref = useRef<HTMLCanvasElement>(null)
+  // A restored WebGL context remounts the field on a fresh canvas state.
+  const [generation, setGeneration] = useState(0)
   useEffect(() => {
     const canvas = ref.current
     const host = canvas?.closest<HTMLElement>('.home-cta')
@@ -15,7 +17,7 @@ export default function CTACanvas() {
       if (!entry.isIntersecting) return
       observer.disconnect()
       import('./cta-canvas').then(({ mountCTAField }) => {
-        if (!disposed) cleanup = mountCTAField(host, canvas)
+        if (!disposed) cleanup = mountCTAField(host, canvas, () => setGeneration((value) => value + 1), generation > 0)
       }).catch(() => { /* The invitation and its single point remain complete without Canvas. */ })
     }, { rootMargin: '240px' })
     observer.observe(canvas)
@@ -24,6 +26,6 @@ export default function CTACanvas() {
       observer.disconnect()
       cleanup?.()
     }
-  }, [])
+  }, [generation])
   return <canvas className="home-cta-canvas" ref={ref} aria-hidden="true" />
 }

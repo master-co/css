@@ -1,194 +1,163 @@
-interface Point { x: number, y: number }
-interface Thread { points: Point[], weight: number, gold: boolean }
-interface Ripple extends Point { started: number }
+import { backingDensity, ctaLitProperties, litValues, type Box, type Lamp } from './cta-light'
+import { ctaRippleCount, ctaSilkSource, ctaVertexSource } from './cta-shaders'
 
-const pixelBudget = 2_000_000
-const revealDuration = 1800
-const rippleDuration = 1600
+const revealDuration = 2000
+// The sheet waits on its bead until this much of the canvas is in view, so the reader sees it unfurl.
+const revealThreshold = 0.38
+const rippleDuration = 1700
+const litSelector = '.home-cta-actions > *'
+const titleSelector = '.home-cta-title-finish'
+const uniformNames = ['resolution', 'density', 'origin', 'extent', 'lanes', 'reveal', 'lamp', 'carried', 'ripples', 'rippling', 'shadow', 'body', 'sheen', 'dark'] as const
 
-/** A small, transparent 2D field. It sleeps after the arrival and every pointer response. */
-export function mountCTAField(host: HTMLElement, canvas: HTMLCanvasElement) {
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-  const context = ctx
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+interface LitControl extends Box { element: HTMLElement, values: string[], text?: boolean }
+interface Ripple { x: number, y: number, started: number }
+
+/**
+ * The closing silk and its lamp. The lamp lives in the invitation's coordinates and lights both the
+ * WebGL drape below the actions and the native controls above it, through the same `--lit-*` and
+ * `--cast-*` properties the hero uses. It draws only while something changes, then sleeps.
+ */
+export function mountCTAField(host: HTMLElement, canvas: HTMLCanvasElement, onRestore?: () => void, settled = false) {
+  let gl: WebGLRenderingContext | null = null
+  try {
+    gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false })
+  } catch {
+    // The invitation, its controls and the CSS starting point remain complete without WebGL.
+  }
+  const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+  if (!gl || !probe) return
+  const context = gl
+  const actions = host.querySelector<HTMLElement>('.home-cta-actions')
+  const page = host.closest<HTMLElement>('.home-page') ?? document.body
+  const motion = matchMedia('(prefers-reduced-motion: reduce)')
   const contrast = matchMedia('(forced-colors: active)')
+  const print = matchMedia('print')
   const scheme = matchMedia('(prefers-color-scheme: dark)')
-  let width = 0, height = 0, density = 1, frame = 0
-  let visible = false, disposed = false, dirty = true, ready = false
-  let started = 0, reveal = 0, last = 0
-  let threads: Thread[] = []
-  let ripples: Ripple[] = []
-  let focused: HTMLElement | null = null
-  let colors = { thread: '', line: '', light: '' }
-  const pointer = { x: 0, y: 0, strength: 0 }
-  const target = { x: 0, y: 0, strength: 0 }
 
-  function measure() {
+  let disposed = false, failed = false, lost = false, visible = false, dirty = true, inView = settled
+  const shaders: WebGLShader[] = []
+  let program: WebGLProgram | null = null
+  let buffer: WebGLBuffer | null = null
+  let uniforms = {} as Record<typeof uniformNames[number], WebGLUniformLocation | null>
+  try {
+    program = context.createProgram()
+    if (!program) throw new Error('Cannot allocate the closing silk')
+    for (const [type, source] of [[context.VERTEX_SHADER, ctaVertexSource], [context.FRAGMENT_SHADER, ctaSilkSource]] as const) {
+      const shader = context.createShader(type)
+      if (!shader) throw new Error('Cannot allocate a silk shader')
+      shaders.push(shader)
+      context.shaderSource(shader, source)
+      context.compileShader(shader)
+      if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) throw new Error(context.getShaderInfoLog(shader) ?? 'Cannot compile the closing silk')
+      context.attachShader(program, shader)
+    }
+    context.bindAttribLocation(program, 0, 'position')
+    context.linkProgram(program)
+    if (!context.getProgramParameter(program, context.LINK_STATUS)) throw new Error('Cannot link the closing silk')
+    context.useProgram(program)
+    const linked = program
+    uniforms = Object.fromEntries(uniformNames.map((name) => [name, context.getUniformLocation(linked, name === 'ripples' ? 'ripples[0]' : name)])) as typeof uniforms
+    buffer = context.createBuffer()
+    if (!buffer) throw new Error('Cannot allocate the silk triangle')
+    context.bindBuffer(context.ARRAY_BUFFER, buffer)
+    context.bufferData(context.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), context.STATIC_DRAW)
+    context.enableVertexAttribArray(0)
+    context.vertexAttribPointer(0, 2, context.FLOAT, false, 0, 0)
+  } catch {
+    release()
+    return
+  }
+
+  // A field rebuilt after a lost context opens complete instead of unfurling a second time.
+  let frame = 0, previous = -1, started = -1, reveal = settled ? 1 : 0
+  let width = 0, height = 0, density = 1
+  // The canvas sits inside the invitation; the lamp and controls use the invitation's coordinates.
+  const offset = { x: 0, y: 0 }
+  const rest: Lamp = { x: 0, y: 0, z: 1 }
+  const lamp: Lamp & { placed: boolean } = { x: 0, y: 0, z: 1, placed: false }
+  const aim = { source: 'rest' as 'rest' | 'pointer' | 'focus', clientX: 0, clientY: 0, focusX: 0, focusY: 0 }
+  const carry = { value: 0, target: 0 }
+  let lowZ = 160
+  let ripples: Ripple[] = []
+  let lit: LitControl[] = []
+  let poolValues = ['', '']
+  const rippleData = new Float32Array(ctaRippleCount * 4)
+
+  function channels(color: string) {
+    probe!.clearRect(0, 0, 1, 1)
+    probe!.fillStyle = '#000'
+    probe!.fillStyle = color
+    probe!.fillRect(0, 0, 1, 1)
+    const [red, green, blue] = probe!.getImageData(0, 0, 1, 1).data
+    return [red / 255, green / 255, blue / 255] as const
+  }
+
+  function layout() {
+    const box = host.getBoundingClientRect()
     const rect = canvas.getBoundingClientRect()
-    const previous = { width, height }
+    if (!rect.width || !rect.height) return false
     width = rect.width
     height = rect.height
-    if (!width || !height) return
-    density = Math.min(devicePixelRatio || 1, 2, Math.sqrt(pixelBudget / (width * height)))
-    canvas.width = Math.max(1, Math.floor(width * density))
-    canvas.height = Math.max(1, Math.floor(height * density))
-    const style = getComputedStyle(canvas)
-    colors = { thread: style.color, line: style.borderTopColor, light: style.outlineColor }
-    const count = width < 640 ? 36 : 56
-    threads = Array.from({ length: count + 1 }, (_, index) => {
-      const lane = index / count * 2 - 1
-      return {
-        weight: 0.6 + (index === count / 2 || index % 7 === 0 ? 0.25 : 0),
-        gold: index === count / 2 || index % 3 !== 0,
-        points: Array.from({ length: 65 }, (_, step) => {
-          const t = step / 64
-          return {
-            x: width / 2 + lane * width * 0.7 * Math.pow(t, 1.45),
-            y: height * (0.09 + 0.98 * t - 0.32 * Math.pow(Math.abs(lane), 1.6) * t * t)
-              + Math.sin(lane * Math.PI) * Math.sin(t * Math.PI) * height * 0.035
-          }
-        })
-      }
+    offset.x = rect.left - box.left
+    offset.y = rect.top - box.top
+    density = backingDensity(width, height, devicePixelRatio)
+    const pixelWidth = Math.max(1, Math.floor(width * density))
+    const pixelHeight = Math.max(1, Math.floor(height * density))
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = pixelWidth
+      canvas.height = pixelHeight
+    }
+    lit = Array.from(host.querySelectorAll<HTMLElement>(litSelector), (element) => {
+      // An island wrapper has no box of its own: measure what it holds, and write the lamp on the wrapper,
+      // where it inherits into the control without touching the island's own nodes.
+      const shape = getComputedStyle(element).display === 'contents' ? element.firstElementChild ?? element : element
+      const control = shape.getBoundingClientRect()
+      return { element, left: control.left - box.left, top: control.top - box.top, width: control.width, height: control.height, values: [] }
     })
-    if (previous.width && previous.height) {
-      pointer.x *= width / previous.width
-      target.x *= width / previous.width
-      pointer.y *= height / previous.height
-      target.y *= height / previous.height
-    } else {
-      pointer.x = target.x = width / 2
-      pointer.y = target.y = height * 0.45
+    // The cut-stone title takes the same lamp, so its sheen and shadow agree with Get started's.
+    const title = host.querySelector<HTMLElement>(titleSelector)
+    if (title) {
+      const text = title.getBoundingClientRect()
+      lit.push({ element: title, left: text.left - box.left, top: text.top - box.top, width: text.width, height: text.height, values: [], text: true })
     }
-    if (focused) focusTarget(focused, rect)
-    dirty = false
+    const row = actions?.getBoundingClientRect()
+    const rowLeft = row ? row.left - box.left : box.width * 0.3
+    const rowTop = row ? row.top - box.top : offset.y
+    const rowWidth = row?.width ?? box.width * 0.4
+    const rowHeight = Math.min(row?.height ?? 52, 64)
+    // The lamp rests above the actions' left third, so light falls across the row and on into the silk.
+    rest.x = rowLeft + rowWidth * 0.3
+    rest.y = rowTop - rowHeight * 2.4
+    rest.z = Math.max(260, Math.min(460, box.width * 0.3))
+    // Carried, the lamp comes low enough to rake the folds but stays high enough to keep the bell's sheen.
+    lowZ = Math.max(160, Math.min(270, box.width * 0.18))
+    const originY = Math.min(36, height * 0.1)
+    // The drape keeps a bell's proportions at every width rather than flattening into a fan.
+    const spread = Math.min(width * 0.58, (height - originY) * 1.9)
+    const style = getComputedStyle(canvas)
+    const ground = channels(getComputedStyle(page).backgroundColor)
+    const groundLight = ground[0] * 0.2126 + ground[1] * 0.7152 + ground[2] * 0.0722
+    context.viewport(0, 0, canvas.width, canvas.height)
+    context.uniform2f(uniforms.resolution, width, height)
+    context.uniform1f(uniforms.density, canvas.width / width)
+    context.uniform2f(uniforms.origin, width / 2, originY)
+    context.uniform2f(uniforms.extent, spread, height - originY)
+    // About one thread every 11px at the hem; fewer, wider-spaced threads on phones.
+    context.uniform1f(uniforms.lanes, Math.round(Math.max(56, Math.min(200, spread * 2 / (width < 640 ? 9 : 11))) / 2) * 2)
+    context.uniform3f(uniforms.shadow, ...channels(style.color))
+    context.uniform3f(uniforms.body, ...channels(style.caretColor))
+    context.uniform3f(uniforms.sheen, ...channels(style.outlineColor))
+    context.uniform1f(uniforms.dark, groundLight < 0.4 ? 1 : 0)
+    if (aim.source === 'focus') aimAtFocus(document.activeElement)
+    return true
   }
 
-  function displace(point: Point, now: number): Point {
-    let { x, y } = point
-    // The root stays still; the field responds more freely as it opens away from that point.
-    const freedom = Math.min(1, Math.max(0, (y / height - 0.09) / 0.18))
-    if (pointer.strength > 0.001) {
-      const dx = x - pointer.x, dy = y - pointer.y
-      const radius = Math.min(width * 0.3, 190)
-      const influence = Math.exp(-(dx * dx + dy * dy) / (radius * radius)) * pointer.strength * freedom
-      y -= influence * 19
-      x += influence * dx * 0.07
-    }
-    for (const ripple of ripples) {
-      const age = Math.max(0, (now - ripple.started) / rippleDuration)
-      const distance = Math.hypot(x - ripple.x, y - ripple.y)
-      const crest = distance - age * Math.min(width, 700)
-      const wave = Math.exp(-(crest * crest) / 1600) * Math.pow(1 - age, 2)
-      y -= wave * 16 * freedom
-    }
-    return { x, y }
-  }
-
-  function draw(now: number) {
-    if (!width || !height) return
-    context.setTransform(density, 0, 0, density, 0, 0)
-    context.clearRect(0, 0, width, height)
-    context.lineCap = 'round'
-    const progress = reduced.matches ? 1 : reveal
-    const light = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, Math.min(width * 0.3, 190))
-    light.addColorStop(0, colors.light)
-    light.addColorStop(1, 'transparent')
-    for (let index = 0; index < threads.length; index++) {
-      const thread = threads[index]
-      const lane = Math.abs(index / (threads.length - 1) * 2 - 1)
-      const reach = Math.min(1, Math.max(0, progress * 1.3 - lane * 0.3))
-      if (reach <= 0) continue
-      context.beginPath()
-      const steps = Math.min(64, Math.ceil(reach * 64))
-      for (let step = 0; step <= steps; step++) {
-        const p = displace(thread.points[step], now)
-        if (step === 0) context.moveTo(p.x, p.y)
-        else context.lineTo(p.x, p.y)
-      }
-      context.lineWidth = thread.weight
-      context.strokeStyle = thread.gold ? colors.thread : colors.line
-      context.globalAlpha = thread.gold ? 0.25 : 0.4
-      context.stroke()
-      if (pointer.strength > 0.001) {
-        context.strokeStyle = light
-        context.lineWidth = thread.weight + 0.35
-        context.globalAlpha = pointer.strength * 0.7
-        context.stroke()
-      }
-    }
-    // A few transverse curves reveal the ordered surface, without turning it into a diagram.
-    for (let row = 1; row < 12; row++) {
-      const step = Math.round(Math.pow(row / 12, 0.75) * 64)
-      if (step / 64 > progress) continue
-      context.beginPath()
-      let connected = false
-      for (let index = 0; index < threads.length; index++) {
-        const lane = Math.abs(index / (threads.length - 1) * 2 - 1)
-        if (step / 64 > progress * 1.3 - lane * 0.3) continue
-        const p = displace(threads[index].points[step], now)
-        if (!connected) context.moveTo(p.x, p.y)
-        else context.lineTo(p.x, p.y)
-        connected = true
-      }
-      context.lineWidth = 0.6
-      context.strokeStyle = colors.thread
-      context.globalAlpha = 0.11 * Math.min(1, (progress - step / 64) * 8)
-      context.stroke()
-    }
-    context.globalAlpha = 1
-    // Fade all sides into the page, keeping an open silhouette rather than a hard canvas rectangle.
-    context.globalCompositeOperation = 'destination-in'
-    const vertical = context.createLinearGradient(0, 0, 0, height)
-    vertical.addColorStop(0, 'transparent')
-    vertical.addColorStop(0.09, 'transparent')
-    vertical.addColorStop(0.22, 'black')
-    vertical.addColorStop(0.6, 'black')
-    vertical.addColorStop(1, 'transparent')
-    context.fillStyle = vertical
-    context.fillRect(0, 0, width, height)
-    const horizontal = context.createLinearGradient(0, 0, width, 0)
-    horizontal.addColorStop(0, 'transparent')
-    horizontal.addColorStop(0.15, 'black')
-    horizontal.addColorStop(0.85, 'black')
-    horizontal.addColorStop(1, 'transparent')
-    context.fillStyle = horizontal
-    context.fillRect(0, 0, width, height)
-    context.globalCompositeOperation = 'source-over'
-    if (progress === 1 && !ready) {
-      canvas.dataset.ready = ''
-      ready = true
-    }
-  }
-
-  function canRun() {
-    return visible && !document.hidden && !contrast.matches && !disposed
+  function canDraw() {
+    return !disposed && !failed && !lost && visible && !document.hidden && !contrast.matches && !print.matches
   }
 
   function schedule() {
-    if (!frame && canRun()) frame = requestAnimationFrame(tick)
-  }
-
-  function tick(now: number) {
-    frame = 0
-    if (!canRun()) return
-    if (dirty) measure()
-    const dt = Math.min(64, last ? now - last : 16)
-    last = now
-    if (!started) started = now
-    const elapsed = Math.min(1, (now - started) / revealDuration)
-    // A completed still frame cannot rewind when the reader enables motion.
-    reveal = reduced.matches ? 1 : Math.max(reveal, 1 - Math.pow(1 - elapsed, 3))
-    const ease = 1 - Math.exp(-dt / 95)
-    pointer.x += (target.x - pointer.x) * ease
-    pointer.y += (target.y - pointer.y) * ease
-    pointer.strength += (target.strength - pointer.strength) * ease
-    ripples = reduced.matches ? [] : ripples.filter((ripple) => now - ripple.started < rippleDuration)
-    draw(now)
-    const unsettled = Math.abs(pointer.strength - target.strength) > 0.001
-      || (target.strength > 0 && Math.hypot(pointer.x - target.x, pointer.y - target.y) > 0.1)
-    if (!reduced.matches && (reveal < 1 || unsettled || ripples.length)) schedule()
-    else last = 0
+    if (!frame && canDraw()) frame = requestAnimationFrame(tick)
   }
 
   function invalidate() {
@@ -196,99 +165,236 @@ export function mountCTAField(host: HTMLElement, canvas: HTMLCanvasElement) {
     schedule()
   }
 
+  function tick(time: number) {
+    frame = 0
+    if (!canDraw()) return
+    try {
+      if (dirty) {
+        if (!layout()) return
+        dirty = false
+      }
+      const reduced = motion.matches
+      if (started < 0 && (inView || reduced)) started = time
+      const delta = previous < 0 ? 16 : Math.min(64, time - previous)
+      previous = time
+      const opened = reduced ? 1 : started < 0 ? 0 : Math.min(1, (time - started) / revealDuration)
+      // A completed still frame never rewinds when the reader turns motion back on.
+      reveal = Math.max(reveal, reduced ? 1 : 1 - Math.pow(1 - opened, 3))
+      let targetX = rest.x
+      let targetY = rest.y
+      // The lamp lowers into place as the silk unfurls, so shadows grow from short and faint to their resting length.
+      let targetZ = rest.z * (1 + (1 - reveal) * 2.5)
+      if (!reduced && aim.source === 'pointer') {
+        const box = host.getBoundingClientRect()
+        targetX = aim.clientX - box.left
+        targetY = aim.clientY - box.top
+        targetZ = lowZ
+      } else if (!reduced && aim.source === 'focus') {
+        targetX = aim.focusX
+        targetY = aim.focusY
+        targetZ = lowZ * 1.3
+      }
+      carry.target = !reduced && aim.source !== 'rest' ? (aim.source === 'pointer' ? 1 : 0.6) : 0
+      const follow = lamp.placed && !reduced ? 1 - Math.exp(-delta / 120) : 1
+      lamp.x += (targetX - lamp.x) * follow
+      lamp.y += (targetY - lamp.y) * follow
+      lamp.z += (targetZ - lamp.z) * follow
+      lamp.placed = true
+      carry.value += (carry.target - carry.value) * (reduced ? 1 : 1 - Math.exp(-delta / 220))
+      ripples = reduced ? [] : ripples.filter((ripple) => time - ripple.started < rippleDuration)
+      rippleData.fill(0)
+      ripples.slice(-ctaRippleCount).forEach((ripple, index) => {
+        rippleData.set([ripple.x, ripple.y, (time - ripple.started) / rippleDuration, 1], index * 4)
+      })
+      illuminate()
+      context.uniform1f(uniforms.reveal, reveal)
+      context.uniform3f(uniforms.lamp, lamp.x - offset.x, lamp.y - offset.y, lamp.z)
+      context.uniform1f(uniforms.carried, carry.value)
+      context.uniform4fv(uniforms.ripples, rippleData)
+      context.uniform1f(uniforms.rippling, ripples.length ? 1 : 0)
+      context.clearColor(0, 0, 0, 0)
+      context.clear(context.COLOR_BUFFER_BIT)
+      context.drawArrays(context.TRIANGLES, 0, 3)
+      if (!canvas.hasAttribute('data-ready')) {
+        if (context.getError() !== context.NO_ERROR) throw new Error('Cannot draw the closing silk')
+        canvas.setAttribute('data-ready', '')
+      }
+      // Before the canvas is in view the bead holds still, and the field sleeps until it is.
+      const settled = (reveal >= 1 || started < 0) && !ripples.length
+        && Math.abs(lamp.x - targetX) < 0.25 && Math.abs(lamp.y - targetY) < 0.25 && Math.abs(lamp.z - targetZ) < 0.25
+        && Math.abs(carry.value - carry.target) < 0.002
+      if (!settled && !reduced) schedule()
+      else previous = -1
+    } catch {
+      if (!disposed) fallback()
+    }
+  }
+
+  function illuminate() {
+    const near = aim.source === 'rest' ? 0.4 : 1
+    for (const control of lit) {
+      const values = control.text ? litValues(control, lamp, near, { elevation: 3, text: true }) : litValues(control, lamp, near)
+      values.forEach((value, index) => {
+        if (value !== control.values[index]) control.element.style.setProperty(ctaLitProperties[index], value)
+      })
+      control.values = values
+    }
+    // The lamp's light pools softly on the ground around the invitation.
+    const pool = [`${Math.round(lamp.x / 2) * 2}px`, `${Math.round(lamp.y / 2) * 2}px`]
+    if (pool[0] !== poolValues[0]) host.style.setProperty('--cta-lamp-x', pool[0])
+    if (pool[1] !== poolValues[1]) host.style.setProperty('--cta-lamp-y', pool[1])
+    poolValues = pool
+  }
+
+  function unlight() {
+    for (const control of lit) {
+      ctaLitProperties.forEach((name) => control.element.style.removeProperty(name))
+      control.values = []
+    }
+    host.style.removeProperty('--cta-lamp-x')
+    host.style.removeProperty('--cta-lamp-y')
+    poolValues = ['', '']
+  }
+
+  function release() {
+    if (lost) return
+    if (program) context.deleteProgram(program)
+    shaders.forEach((shader) => context.deleteShader(shader))
+    if (buffer) context.deleteBuffer(buffer)
+    program = null
+    buffer = null
+  }
+
+  function fallback() {
+    failed = true
+    cancelAnimationFrame(frame)
+    frame = 0
+    unlight()
+    canvas.removeAttribute('data-ready')
+    canvas.hidden = true
+    release()
+  }
+
   function activity() {
     cancelAnimationFrame(frame)
     frame = 0
-    last = 0
-    if (reduced.matches) {
-      pointer.strength = target.strength = 0
+    previous = -1
+    if (contrast.matches || print.matches) unlight()
+    if (motion.matches) {
+      aim.source = 'rest'
       ripples = []
-    } else if (focused) focusTarget(focused)
+    }
+    dirty = true
     schedule()
   }
 
   function move(event: PointerEvent) {
-    if (reduced.matches || event.pointerType === 'touch') return
-    const rect = canvas.getBoundingClientRect()
-    target.x = event.clientX - rect.left
-    target.y = event.clientY - rect.top
-    target.strength = 1
+    if (motion.matches || event.pointerType !== 'mouse') return
+    aim.clientX = event.clientX
+    aim.clientY = event.clientY
+    aim.source = 'pointer'
     schedule()
   }
 
   function leave() {
-    if (reduced.matches) return
-    if (focused) {
-      focusTarget(focused)
-      schedule()
-      return
-    }
-    if (target.strength === 0 && pointer.strength <= 0.001) return
-    target.strength = 0
-    schedule()
+    if (aim.source !== 'pointer') return
+    aim.source = 'rest'
+    if (!aimAtFocus(document.activeElement)) schedule()
+  }
+
+  function scroll() {
+    if (aim.source === 'pointer') schedule()
   }
 
   function press(event: MouseEvent) {
-    if (reduced.matches || (event.target as Element).closest('a,button')) return
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left, y = event.clientY - rect.top
-    if (y < 0 || y > height) return
-    ripples.push({ x, y, started: performance.now() })
-    ripples = ripples.slice(-3)
+    // Controls, the command and a finished text selection are not taps on the silk.
+    if (motion.matches || (event.target as Element).closest('a,button,code') || getSelection()?.toString()) return
+    const box = canvas.getBoundingClientRect()
+    ripples.push({ x: event.clientX - box.left, y: event.clientY - box.top, started: performance.now() })
+    ripples = ripples.slice(-ctaRippleCount)
     schedule()
   }
 
-  function focusTarget(element: HTMLElement, field = canvas.getBoundingClientRect()) {
-    if (reduced.matches) return
-    const rect = element.getBoundingClientRect()
-    target.x = rect.left + rect.width / 2 - field.left
-    target.y = height * 0.22
-    target.strength = 0.65
+  // Keyboard focus hangs the lamp just above the focused control.
+  function aimAtFocus(target: Element | null) {
+    const control = target instanceof Element ? lit.find((item) => item.element.contains(target)) : undefined
+    if (motion.matches || !control || !target?.matches(':focus-visible')) return false
+    aim.focusX = control.left + control.width * 0.35
+    aim.focusY = control.top - control.height * 0.6
+    if (aim.source !== 'pointer') aim.source = 'focus'
+    schedule()
+    return true
   }
 
   function focus(event: FocusEvent) {
-    if (!(event.target instanceof HTMLElement)) return
-    focused = event.target
-    focusTarget(focused)
-    schedule()
+    aimAtFocus(event.target as Element)
   }
 
   function blur(event: FocusEvent) {
-    if (event.relatedTarget instanceof Node && host.contains(event.relatedTarget)) return
-    focused = null
-    leave()
+    if (aim.source === 'focus' && !host.contains(event.relatedTarget as Node)) {
+      aim.source = 'rest'
+      schedule()
+    }
+  }
+
+  function contextLost(event: Event) {
+    event.preventDefault()
+    lost = true
+    cancelAnimationFrame(frame)
+    frame = 0
+    unlight()
+    canvas.removeAttribute('data-ready')
+  }
+
+  function contextRestored() {
+    onRestore?.()
   }
 
   const resize = new ResizeObserver(invalidate)
   resize.observe(canvas)
+  resize.observe(host)
   const theme = new MutationObserver(invalidate)
   theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] })
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting
     activity()
   })
-  intersection.observe(canvas)
-  reduced.addEventListener('change', activity)
+  intersection.observe(host)
+  const arrival = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting || entry.intersectionRatio < revealThreshold) return
+    inView = true
+    arrival.disconnect()
+    schedule()
+  }, { threshold: [0, revealThreshold] })
+  arrival.observe(canvas)
+  motion.addEventListener('change', activity)
   contrast.addEventListener('change', activity)
+  print.addEventListener('change', activity)
   scheme.addEventListener('change', invalidate)
   document.addEventListener('visibilitychange', activity)
   host.addEventListener('pointermove', move, { passive: true })
   host.addEventListener('pointerleave', leave)
-  // Native click distinguishes a tap from a touch scroll, with no gesture interception.
+  // A native click tells a tap from a touch scroll, so the page never intercepts a gesture.
   host.addEventListener('click', press, { passive: true })
   host.addEventListener('focusin', focus)
   host.addEventListener('focusout', blur)
-  window.addEventListener('resize', invalidate)
+  canvas.addEventListener('webglcontextlost', contextLost)
+  canvas.addEventListener('webglcontextrestored', contextRestored)
+  addEventListener('scroll', scroll, { passive: true })
+  addEventListener('resize', invalidate)
 
   return () => {
     disposed = true
-    canvas.removeAttribute('data-ready')
     cancelAnimationFrame(frame)
+    unlight()
+    canvas.removeAttribute('data-ready')
     resize.disconnect()
     theme.disconnect()
     intersection.disconnect()
-    reduced.removeEventListener('change', activity)
+    arrival.disconnect()
+    motion.removeEventListener('change', activity)
     contrast.removeEventListener('change', activity)
+    print.removeEventListener('change', activity)
     scheme.removeEventListener('change', invalidate)
     document.removeEventListener('visibilitychange', activity)
     host.removeEventListener('pointermove', move)
@@ -296,6 +402,10 @@ export function mountCTAField(host: HTMLElement, canvas: HTMLCanvasElement) {
     host.removeEventListener('click', press)
     host.removeEventListener('focusin', focus)
     host.removeEventListener('focusout', blur)
-    window.removeEventListener('resize', invalidate)
+    canvas.removeEventListener('webglcontextlost', contextLost)
+    canvas.removeEventListener('webglcontextrestored', contextRestored)
+    removeEventListener('scroll', scroll)
+    removeEventListener('resize', invalidate)
+    release()
   }
 }

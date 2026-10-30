@@ -17,17 +17,18 @@ async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'n
   await page.routeWebSocket(socket => socket.hostname === new URL(url).hostname, socket => socket.onMessage(() => undefined))
   await page.addInitScript(blocked => {
     window.ctaPaints = 0
-    if (blocked) {
-      const get = HTMLCanvasElement.prototype.getContext
-      HTMLCanvasElement.prototype.getContext = function (...args) {
-        if (this.classList.contains('home-cta-canvas')) return null
-        return get.apply(this, args)
-      }
+    const get = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = function (type, options) {
+      if (!this.classList.contains('home-cta-canvas')) return get.call(this, type, options)
+      if (blocked) return null
+      // Keep the silk's pixels readable after compositing, so tests can compare frames.
+      return get.call(this, type, { ...options, preserveDrawingBuffer: true })
     }
-    const clear = CanvasRenderingContext2D.prototype.clearRect
-    CanvasRenderingContext2D.prototype.clearRect = function (...args) {
-      if (this.canvas.classList.contains('home-cta-canvas')) window.ctaPaints++
-      return clear.apply(this, args)
+    // Every frame of the silk is one full-screen draw.
+    const draw = WebGLRenderingContext.prototype.drawArrays
+    WebGLRenderingContext.prototype.drawArrays = function (...args) {
+      if (this.canvas.classList?.contains('home-cta-canvas')) window.ctaPaints++
+      return draw.apply(this, args)
     }
   }, blockCanvas)
   const errors = []
@@ -43,7 +44,8 @@ async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'n
 
 const paints = page => page.evaluate(() => window.ctaPaints)
 const settle = async page => {
-  await page.waitForTimeout(2200)
+  // The silk unfurls while the lamp lowers into place, about 2.6 seconds in all.
+  await page.waitForTimeout(3000)
   const count = await paints(page)
   await page.waitForTimeout(300)
   assert.equal(await paints(page), count, 'the field releases its animation frame at rest')
@@ -217,6 +219,29 @@ test(`${browserName}: the painter loads only near the invitation`, { timeout: 30
     await page.locator('.home-cta').scrollIntoViewIfNeeded()
     await page.waitForFunction(() => window.ctaPaints > 0)
     assert.equal(painterRequests.length, 1)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+test(`${browserName}: the silk unfurls only once its canvas is in view, and its lamp lights the title`, { timeout: 30000 }, async () => {
+  const { context, page, errors } = await open({ scroll: false })
+  try {
+    // Bring only the canvas's first rows into view: the painter mounts and draws its bead, then waits.
+    await page.evaluate(() => {
+      const canvas = document.querySelector('.home-cta-canvas').getBoundingClientRect()
+      scrollBy(0, canvas.top - innerHeight + 40)
+    })
+    await page.waitForFunction(() => window.ctaPaints > 0)
+    await page.waitForTimeout(400)
+    const waiting = await paints(page)
+    await page.waitForTimeout(400)
+    assert.equal(await paints(page), waiting, 'a barely visible canvas holds the bead without animating')
+    await page.locator('.home-cta-canvas').scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
+    assert.ok(await paints(page) > waiting + 5, 'the sheet unfurls once the canvas is in view')
+    await settle(page)
+    const title = await page.locator('.home-cta-title-finish').evaluate(element => ['--lit-x', '--cast-y', '--lit-near'].map(name => element.style.getPropertyValue(name)))
+    assert.ok(title.every(Boolean), 'the closing lamp writes onto the title')
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
