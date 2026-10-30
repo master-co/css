@@ -72,10 +72,10 @@ export const brandTypeRoles = [
 ] as const
 
 export const brandVoiceExamples = [
-  { context: 'Introduce the product', preferred: 'Style in markup with class names and design tokens.', avoid: 'The ultimate, revolutionary styling experience.' },
-  { context: 'Guide an action', preferred: 'Copy the color variable.', avoid: 'Unlock your palette’s full potential.' },
-  { context: 'Explain a result', preferred: 'Copied var(--color-surface-raised).', avoid: 'Success! Everything is ready to go.' },
-  { context: 'Write in Traditional Chinese', preferred: '在標記中編寫樣式，使用共用的設計 tokens。', avoid: '透過極致創新的方案，全面賦能設計體驗。' },
+  { context: 'Introduce the product', lang: 'en', preferred: 'Style in markup with class names and design tokens.', avoid: 'The ultimate, revolutionary styling experience.' },
+  { context: 'Guide an action', lang: 'en', preferred: 'Copy the color variable.', avoid: 'Unlock your palette’s full potential.' },
+  { context: 'Explain a result', lang: 'en', preferred: 'Copied var(--color-surface-raised).', avoid: 'Success! Everything is ready to go.' },
+  { context: 'Write in Traditional Chinese', lang: 'zh-Hant', preferred: '在標記中編寫樣式，使用共用的設計 tokens。', avoid: '透過極致創新的方案，全面賦能設計體驗。' },
 ] as const
 
 export const brandAssets = [

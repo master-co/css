@@ -65,7 +65,7 @@ export function BrandApplications() {
 }
 
 export function BrandVoice() {
-  return <div className="brand-voice-examples">{brandVoiceExamples.map(example => <section key={example.context}><h3>{example.context}</h3><div><span className="brand-voice-label"><IconCheck size={15} aria-hidden="true" /> Clear and useful</span><p>{example.preferred}</p></div><div data-avoid="true"><span className="brand-voice-label"><IconX size={15} aria-hidden="true" /> Avoid</span><p>{example.avoid}</p></div></section>)}</div>
+  return <div className="brand-voice-examples">{brandVoiceExamples.map(example => <section key={example.context}><h3>{example.context}</h3><div><span className="brand-voice-label"><IconCheck size={15} aria-hidden="true" /> Clear and useful</span><p lang={example.lang}>{example.preferred}</p></div><div data-avoid="true"><span className="brand-voice-label"><IconX size={15} aria-hidden="true" /> Avoid</span><p lang={example.lang}>{example.avoid}</p></div></section>)}</div>
 }
 
 export function BrandDownloads() {
