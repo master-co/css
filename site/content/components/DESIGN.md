@@ -285,7 +285,7 @@ Looping figures hand over to the reader: pointing at a figure holds it in its re
 
 ## Tours
 
-A figure with several states tours them on its own while it is in view: the lint bench plays each rule's check, and the rendering section plays each mode on its four-moment timeline, moving the focus from station to station, with a segment that fills toward the next moment and a play button that pauses it. A hairline on the chosen item fills toward the next one. Pointer or focus inside the figure pauses the tour; choosing an item ends it. Under reduced motion there is no tour and the first state stays.
+A figure with several states tours them on its own while it is in view: the lint bench plays each rule's check, and the rendering section plays each mode on its four-moment timeline, moving the focus from station to station, with a segment that fills toward the next moment and a play button that pauses it. A hairline on the chosen item fills toward the next one. Pointer or focus inside the figure pauses the tour on a revealed state (a lint check held before it reports plays on until it does); choosing an item ends it. Under reduced motion there is no tour and the first state stays.
 
 ## Stable figures
 

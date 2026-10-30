@@ -64,7 +64,9 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
   const rule = rules[active]
   const finalPhase: Phase = view.kind === 'sort' || view.kind === 'remove' ? 'fixed' : 'report'
   const duration = view.kind === 'sort' || view.kind === 'remove' ? tourDuration.fix : tourDuration.report
-  const playing = inView && !reduceMotion && !finished && (touring ? !held : true)
+  // A reader holds the tour on a revealed check: one held before the report plays on until it reports.
+  const revealed = phase !== 'idle' && phase !== 'scan'
+  const playing = inView && !reduceMotion && !finished && (touring ? !(held && revealed) : true)
 
   function goTo(next: Phase) {
     if (next === phaseRef.current) return
