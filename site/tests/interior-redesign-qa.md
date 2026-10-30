@@ -69,12 +69,16 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `baseline-production/` and `redesign-production/`: browser measurements and before/after screenshots, including loading, headings, links, artwork, overflow and geometry.
 - `brand-*`, `search-*`, `navigation-*`: behavior, enlarged text, densities, keyboard and theme evidence.
 - `final-behavior-results.json`: all 430 unique browser cases pass in complete production runs—216 Chromium and 214 WebKit. Native navigation includes desktop search availability, actual landmark names and visible focus after the scrolling header tucks away.
+- `windowed-clipboard-audit.json`: real windowed WebKit completes four native color/code writes with exact keyboard-paste verification across both locales, plus 24 immediate search-opening paste operations. Clipboard APIs are not replaced or granted simulated permissions.
 - `enlarged-routes-*`: 366 further non-review resources per engine at 320px/200% text, combined with the 82 Design System route checks per engine. All 896 scenes fit. This covers every non-home page plus the two deliberately missing routes.
 - `breakpoint-audit.json`: 32 native scenes verify the exact 1023/1024px navigation and 1279/1280px contents boundaries in both locales and engines. Resizing an open drawer to desktop closes it and restores document scrolling.
 - `brand-final-details/`: 160 native viewport captures of 20 brand subjects across both engines, light/dark and 390/1440px.
 - `interior-final-details/`: 448 additional viewport captures of openings, source panels, tables, demos and footers across 17 representative page types, both engines/themes and 390/1440px.
 - `focus-paint/summary.json`: 20 actual keyboard-focus scenes in both engines, with and without forced colors; painted focus remains visible, including native selects inside their visible labels.
 - `global-token-audit.json`: native CSSOM parsing verifies all 60,488 shared root-token declarations across 448 delivered routes, with layer/condition identity retained; zero value differences.
+- `adaptive-color-audit.json`: 20 preference/system-appearance states across both engines/locales keep all 180 neutral-role readings synchronized with actual paint. Explicit light/dark choices override system appearance.
+- `painted-font-audit.json`: Chromium's native platform-font inspection confirms rendered Geist, Noto Sans TC and IBM Plex Mono glyphs on both Brand locales, including the English page's Chinese specimens.
+- `preview-integrity.json`: all 2,644 frozen preview files are byte-identical to the formal build. Aggregate file/hash SHA-256: `005b34e5c1a420899d7a9c9c3feb106216bfde182c1cbfc45fff2a43ae123b07`.
 - `home-animation-audit.json`: each home locale preserves its 53 dedicated keyframes in order, 80 animation-declaration rule sets and 94 dedicated transition rule sets. Effective keyframe definitions also agree.
 - `state-review.html` and `state-review/summary.json`: five matched interaction/enlargement pairs, clearly labeled as findings from original or intermediate layouts; original-resolution image dimensions and capture conditions are retained.
 - `scope-boundaries.json`: no core/package/lockfile changes, no protected homepage-source changes, and byte-identical original SVG assets.
@@ -82,6 +86,8 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `viewer-audit.json`: both engines at 320/390/768/1440px decode the selected paired images, fit their viewport and retain the correct route/theme after rapid changes. The selector grid contains long route names; unsupported full-page choices are disabled in the native option state.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
+
+The 446 non-home HTML resources comprise 178 Guide, 170 Reference, 82 Design System, six Blog, two Brand, two Sponsor, five standalone examples and the 404 template. Two home locales are included for regression comparison, and two unknown-path probes verify real 404 responses: 450 destinations × two engines × five widths × two themes = 9,000 scenes per version.
 
 ```sh
 node --import tsx site/scripts/interior-inventory.ts
@@ -97,6 +103,11 @@ MASTER_BRAND_URL=http://127.0.0.1:3222 MASTER_BRAND_MATRIX=full \
   node --test site/tests/brand-system.e2e.mjs
 MASTER_SITE_URL=http://127.0.0.1:3222 \
   node --test site/tests/documentation-search.e2e.mjs site/tests/interior-navigation.e2e.mjs
+
+# Requires a graphical desktop session; it briefly opens and closes a test window.
+MASTER_SITE_URL=http://127.0.0.1:3222 \
+  MASTER_SITE_REVISION=8a74848806d171d82952a630f7054daaa88ad5a1 \
+  node site/tests/windowed-clipboard.e2e.mjs
 ```
 
 Set `MASTER_BRAND_BROWSER=webkit` or `MASTER_SITE_BROWSER=webkit` for the corresponding behavior suite. Sweep defaults cover Chromium/WebKit, 320/390/768/1280/1440px, light/dark, and both route locales. Cached captures are reused only for matching URLs and expectations.
@@ -134,7 +145,7 @@ Final snapshot approval remains pending completion of the fresh production captu
 - Existing static hosting uses one English 404 HTML fallback, including for unknown `/tw/` paths. Development can render that page in Traditional Chinese per request; this change retains the existing hosting behavior.
 - Source locales without a complete translation continue to use English content. The brand guide's English body declares its language and includes Traditional Chinese voice/type examples; its hero and navigation are localized.
 - Text contrast measurements cover visible non-code text in eight representative page types, in both themes. Syntax colors, hidden/decorative text and disabled states are excluded; this is not a complete accessibility audit.
-- Playwright's WebKit engine did not complete a native OS clipboard write in the automated context. Real clipboard write/read success is verified in Chromium. Both engines verify visible pending feedback, duplicate-request prevention and denied-write feedback; native Safari clipboard success remains a manual check.
-- Immediate bulk `fill()` directly after autofocus intermittently leaves the WebKit search query empty in production automation, including with the baseline sweep suspended. Keyboard-by-keyboard input and clicking the field before bulk entry pass repeated checks. Diagnostics retain this ambiguity rather than treating a rerun as proof of a fix. The behavior suites use actual key events for keyboard lookup and explicit field focus for bulk entry; zero-delay native Safari paste after autofocus is not claimed as verified.
+- Headless Playwright WebKit cannot grant clipboard permissions and did not complete its native OS write. Windowed WebKit does complete real writes: exact color variables and selected code are verified through keyboard paste in both locales. Chromium also passes native write/read checks. Both engines verify visible pending feedback, duplicate-request prevention and denied-write feedback.
+- Immediate bulk `fill()` directly after autofocus intermittently leaves the headless WebKit search query empty, including with the baseline sweep suspended. Keyboard-by-keyboard input and clicking the field before bulk entry pass repeated checks. Windowed WebKit additionally passes 24 real clipboard pastes immediately after search opens, across both locales. The headless automation ambiguity remains recorded; no fix is claimed for that synthetic zero-delay operation. The behavior suites use actual key events for keyboard lookup and explicit field focus for bulk entry.
 - The committed original production build also differs from the older approved CSS snapshot: `.home-agent-edit-icon` is already 2.5rem in the base source, while the stored snapshot says 1.25rem. This is a pre-existing snapshot discrepancy; homepage source and computed appearance are compared directly against the frozen committed build.
 - No payment or sponsorship transaction was submitted during testing.

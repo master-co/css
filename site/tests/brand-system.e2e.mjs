@@ -239,7 +239,7 @@ test(`${browserName}: a pending clipboard request is visible and repeat activati
   } finally { await context.close() }
 })
 
-// Playwright WebKit cannot grant clipboard permissions; its OS write may remain pending.
+// Headless WebKit cannot grant clipboard permissions; windowed-clipboard.e2e.mjs covers its real writes and pastes.
 // Real browser success is verified in Chromium; both engines exercise denial and pending feedback.
 if (browserName === 'chromium') test('chromium: copying writes the exact CSS variable through the native clipboard API', { timeout: 60000 }, async () => {
   const { context, page } = await open()
