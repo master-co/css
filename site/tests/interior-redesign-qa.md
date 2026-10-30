@@ -41,6 +41,7 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - At a 16px root, the small-screen document title remains 28px and dense code remains 13px on 20px leading. Larger breakpoints retain their existing size hierarchy. These sizes scale with enlarged text instead of staying fixed.
 - Traditional Chinese headings use natural tracking, including `zh-TW` pages. English document headings retain their existing treatment.
 - Previous/next links identify their direction and allow complete titles to wrap.
+- A tucked-away header becomes immediately visible while one of its controls has focus, including focus returned from search. This keeps the current paragraph at the same scroll position. Reduced motion removes its sliding transition.
 - Interior surfaces use contours and contact shadows. The homepage retains its global material definitions.
 - Footer groups wrap to fit their available width; legal links and controls remain usable at enlarged text and touch sizes.
 
@@ -67,7 +68,7 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `home-paint/summary.json`: 40 pairs of homepage-main screenshots are byte-identical, including both locales/engines/themes and five widths. The existing `.home-header` hook is present in both revisions and the audit asserts it is hidden before capture; full geometry and text also agree.
 - `baseline-production/` and `redesign-production/`: browser measurements and before/after screenshots, including loading, headings, links, artwork, overflow and geometry.
 - `brand-*`, `search-*`, `navigation-*`: behavior, enlarged text, densities, keyboard and theme evidence.
-- `final-behavior-results.json`: all 428 unique browser cases pass—215 Chromium and 213 WebKit. The five unchanged suites use their complete production run; all 20 Navigation cases were rerun after correcting a test that counted the footer shortcut as a second sidebar control.
+- `final-behavior-results.json`: all 430 unique browser cases pass in complete production runs—216 Chromium and 214 WebKit. Native navigation includes desktop search availability, actual landmark names and visible focus after the scrolling header tucks away.
 - `enlarged-routes-*`: 366 further non-review resources per engine at 320px/200% text, combined with the 82 Design System route checks per engine. All 896 scenes fit. This covers every non-home page plus the two deliberately missing routes.
 - `brand-final-details/`: 160 native viewport captures of 20 brand subjects across both engines, light/dark and 390/1440px.
 - `interior-final-details/`: 448 additional viewport captures of openings, source panels, tables, demos and footers across 17 representative page types, both engines/themes and 390/1440px.
@@ -99,7 +100,7 @@ Set `MASTER_BRAND_BROWSER=webkit` or `MASTER_SITE_BROWSER=webkit` for the corres
 
 Implementation checks passed so far: site lint and type check; Reference (25), syntax (14), llms (33), document examples (21), islands (8), atomic authoring (3), MDX imports (2), brand export/source checks (3), and homepage source behavior (34). Production builds render all 448 pages and public-asset verification passes.
 
-Final behavior coverage passes: Brand (28 Chromium / 27 WebKit), Search (20 / 20), Navigation (20 / 20), demos (48 / 48), reading and source controls (13 / 12), and component reviews (86 / 86). The 320px/200% route checks have no remaining overflow. All 448 HTML resources retain titles, valid local destinations and unique HTML IDs; 41,378 local/remote anchor elements were checked for local resolution, with no missing local destination or anchor.
+Final behavior coverage passes: Brand (28 Chromium / 27 WebKit), Search (20 / 20), Navigation (21 / 21), demos (48 / 48), reading and source controls (13 / 12), and component reviews (86 / 86). The 320px/200% route checks have no remaining overflow. All 448 HTML resources retain titles, valid local destinations and unique HTML IDs; 41,378 local/remote anchor elements were checked for local resolution, with no missing local destination or anchor.
 
 The final 9,000-scene production comparison and CSS contract approval remain in progress. Update this section after the complete fresh captures finish.
 
@@ -111,6 +112,7 @@ Intentional website delivery changes are:
 
 - The complete Brand presentation and its scoped type, color-role and geometry specimens.
 - Native menu/contents behavior, larger named targets, search states and source-copy feedback.
+- Focused scrolling navigation stays visible, with no sliding transition for reduced motion.
 - Interior contour/contact materials, scalable dense code and natural Chinese heading tracking.
 - Responsive footer, Blog, Sponsor and 404 presentation.
 - Flexible demo/review chrome, content-owned canvas height and named local overflow for specimens that retain their actual geometry.
