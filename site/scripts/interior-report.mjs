@@ -8,12 +8,15 @@ import fg from 'fast-glob'
 const directory = fileURLToPath(new URL('../test-results/interior-redesign/', import.meta.url))
 const labels = ['baseline-production', 'redesign-production']
 const inventory = JSON.parse(await readFile(path.join(directory, 'inventory.json'), 'utf8'))
+const finalCapture = await readFile(path.join(directory, 'redesign-final-start.json'), 'utf8').then(JSON.parse).catch(() => null)
+const captureRevision = finalCapture?.revision ?? null
 const failures = []
 const summaries = []
 const snapshots = new Map()
 for (const label of labels) {
   const files = await fg(`${label}/{chromium,webkit}/**/*.json`, { cwd: directory })
-  const records = await Promise.all(files.map(async file => ({ file, ...JSON.parse(await readFile(path.join(directory, file), 'utf8')) })))
+  const retained = await Promise.all(files.map(async file => ({ file, ...JSON.parse(await readFile(path.join(directory, file), 'utf8')) })))
+  const records = label === labels[1] && captureRevision ? retained.filter(record => record.revision === captureRevision) : retained
   summaries.push({ label, cases: records.length, routes: new Set(records.map(record => record.pathname)).size, engines: [...new Set(records.map(record => record.engine))], widths: [...new Set(records.map(record => record.width))].sort((a, b) => a - b), schemes: [...new Set(records.map(record => record.scheme))] })
   for (const record of records) {
     snapshots.set([label, record.pathname, record.engine, record.width, record.scheme].join('|'), record)
@@ -63,6 +66,7 @@ for (const route of inventory.routes) for (const engine of ['chromium', 'webkit'
 }
 
 const status = {
+  captureRevision,
   plannedCasesPerVersion: inventory.routes.length * 20,
   pairedCases,
   complete: summaries.every(summary => summary.cases === inventory.routes.length * 20),
@@ -80,7 +84,7 @@ const html = `<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta na
 <main>${labels.map((label,index)=>`<section><h2>${index ? '精修後' : '原版 rc'}</h2><small id="${label}-status">等待載入</small><figure><a id="${label}-link" target="_blank"><img id="${label}-image" alt="${index ? '精修後' : '原版'}頁面截圖"></a></figure><a id="${label}-record" target="_blank">檢查記錄</a></section>`).join('')}</main>
 <details><summary>巡檢結果與保留的原版問題</summary><pre id="report"></pre></details>
 <script>
-const labels=${JSON.stringify(labels)},keys=${JSON.stringify(keys)};
+const labels=${JSON.stringify(labels)},keys=${JSON.stringify(keys)},captureRevision=${JSON.stringify(captureRevision)};
 const form=document.querySelector('form');let request=0;
 async function update(){
   const pending=++request,route=document.querySelector('#route').value,engine=document.querySelector('#engine').value,width=document.querySelector('#width').value,scheme=document.querySelector('#scheme').value;
@@ -90,10 +94,12 @@ async function update(){
   history.replaceState(null,'','?'+new URLSearchParams({engine,width,scheme,extent:full?'full':'viewport'})+'#'+encodeURIComponent(route));
   await Promise.all(labels.map(async label=>{
     const base=label+'/'+engine+'/'+width+'-'+scheme+'/'+keys[route],img=document.getElementById(label+'-image'),status=document.getElementById(label+'-status'),link=document.getElementById(label+'-link');
+    img.onerror=null;img.removeAttribute('src');link.removeAttribute('href');document.getElementById(label+'-record').removeAttribute('href');
     status.textContent='正在讀取檢查記錄…';
     try{
       const response=await fetch(base+'.json');if(!response.ok)throw new Error('Missing record');
       const record=await response.json();if(request!==pending)return;
+      if(label===labels[1]&&captureRevision&&record.revision!==captureRevision)throw new Error('Waiting for this revision');
       const image=full&&record.fullImage?record.fullImage:record.image;
       if(!image)throw new Error('Missing image');
       const directory=base.slice(0,base.lastIndexOf('/')+1);

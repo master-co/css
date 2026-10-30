@@ -18,6 +18,7 @@ const widths = (process.env.MASTER_SWEEP_WIDTHS ?? '320,390,768,1280,1440').spli
 const schemes = (process.env.MASTER_SWEEP_SCHEMES ?? 'light,dark').split(',')
 const limit = Number(process.env.MASTER_SWEEP_LIMIT ?? Infinity)
 const force = process.env.MASTER_SWEEP_FORCE === '1'
+const revision = process.env.MASTER_SWEEP_REVISION ?? null
 const staticDelivery = process.env.MASTER_SWEEP_DELIVERY === 'static'
 const output = path.join(evidence, label)
 const started = Date.now()
@@ -129,10 +130,10 @@ matrix: for (const engine of engines) {
           const key = createHash('sha256').update(route.pathname).digest('hex').slice(0, 14)
           const file = path.join(directory, `${route.section}-${key}.json`)
           const cached = force ? null : await readJSON(file)
-          if (cached?.complete && cached.base === base && cached.pathname === route.pathname && cached.expectedStatus === expectedStatus) { reused++; if (hasFailure(cached)) failures++; results.push(cached); continue }
+          if (cached?.complete && cached.base === base && cached.pathname === route.pathname && cached.expectedStatus === expectedStatus && (!revision || cached.revision === revision)) { reused++; if (hasFailure(cached)) failures++; results.push(cached); continue }
           const began = Date.now()
           errors = []; resourceFailures = []
-          let result = { ...route, expectedStatus, delivery: staticDelivery ? 'static' : 'development', engine, width, scheme, base, label, capturedAt: new Date().toISOString() }
+          let result = { ...route, expectedStatus, delivery: staticDelivery ? 'static' : 'development', engine, width, scheme, base, label, revision, capturedAt: new Date().toISOString() }
           try {
             const response = await page.goto(`${base}${route.pathname}`, { waitUntil: 'networkidle', timeout: 60000 })
             await page.evaluate(() => document.fonts.ready)
@@ -166,6 +167,6 @@ matrix: for (const engine of engines) {
   } finally { await browser.close() }
 }
 
-await saveJSON(path.join(output, 'summary.json'), { label, base, startedAt: new Date(started).toISOString(), completedAt: new Date().toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalRecords: results.length })
+await saveJSON(path.join(output, 'summary.json'), { label, base, revision, startedAt: new Date(started).toISOString(), completedAt: new Date().toISOString(), elapsedMs: Date.now() - started, completed, reused, failures, totalRecords: results.length })
 console.log(JSON.stringify({ label, completed, reused, failures, elapsedMinutes: Math.round((Date.now() - started) / 6000) / 10 }))
 process.exitCode = failures ? 1 : 0
