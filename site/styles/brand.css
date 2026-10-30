@@ -30,6 +30,10 @@
   .brand-appearance { position: absolute; top: 5rem; right: 0; display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 44px; color: var(--brand-quiet); font-size: .75rem; }
   .brand-appearance select { z-index: 1; }
   .brand-overline { display: flex; align-items: center; gap: var(--spacing-sm); margin: 0; color: var(--brand-quiet); font: 400 .6875rem/1.5 var(--font-family-mono); letter-spacing: .06em; }
+  .brand-hero-kicker { flex-wrap: wrap; }
+  .brand-hero-signature, .brand-hero-subject { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
+  .brand-hero-signature { flex: none; white-space: nowrap; }
+  .brand-hero-subject { min-width: 0; }
   .brand-signal { flex: none; width: .375rem; height: .375rem; border-radius: var(--radius-pill); background: var(--brand-gold); box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-gold) 12%, transparent); }
   .brand-hero h1 { margin: var(--spacing-xl) 0 var(--spacing-lg); color: var(--brand-ink); font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 460; line-height: 1.04; letter-spacing: -.055em; }
   .brand-hero h1:lang(zh), .brand-next h2:lang(zh) { letter-spacing: 0; }

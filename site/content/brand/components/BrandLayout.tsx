@@ -13,7 +13,7 @@ export default function BrandLayout({ children, params }: any) {
       <header className="brand-hero">
         <BrandAppearance />
         <div className="brand-hero-copy">
-          <p className="brand-overline"><span className="brand-signal" aria-hidden="true" />Master CSS <span aria-hidden="true">/</span> {tw ? '品牌與設計系統' : 'Brand & design system'}</p>
+          <p className="brand-overline brand-hero-kicker"><span className="brand-hero-signature"><span className="brand-signal" aria-hidden="true" />Master CSS</span><span className="brand-hero-subject"><span aria-hidden="true">/</span>{tw ? '品牌與設計系統' : 'Brand & design system'}</span></p>
           <h1>{tw ? <>共同的語言。<br />清晰的識別。</> : <>One language.<br />A clear identity.</>}</h1>
           <p className="brand-hero-lead">{tw ? '為開發者與 AI agents 打造的設計語言。以清晰的結構、細緻的互動，以及恰到好處的金色，讓每個部分彼此連貫。' : 'A design language for developers and AI agents. Clear structure, considered interactions, and a small point of gold connect every part.'}</p>
           <div className="brand-hero-actions"><a className="brand-primary-link" href="#download-assets">{tw ? '取得品牌素材' : 'Get the assets'}<span aria-hidden="true">↓</span></a><a href="#identity">{tw ? '探索設計系統' : 'Explore the system'}<span aria-hidden="true">↘</span></a></div>
