@@ -11,8 +11,8 @@ let browser
 before(async () => { await mkdir(output, { recursive: true }); browser = await ({ chromium, webkit })[browserName].launch() })
 after(async () => { await browser?.close() })
 
-async function open({ width = 1440, locale = 'en', scheme = 'light', route = '/guide/introduction', intercept } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, reducedMotion: 'reduce' })
+async function open({ width = 1440, locale = 'en', scheme = 'light', forcedColors = 'none', route = '/guide/introduction', intercept } = {}) {
+  const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, forcedColors, reducedMotion: 'reduce' })
   const page = await context.newPage()
   const requests = []
   const errors = []
@@ -203,6 +203,38 @@ test(`${browserName}: IME confirmation and candidate keys do not trigger search 
     assert.equal(await dialog.isVisible(), true)
     await page.keyboard.press('Escape')
     assert.equal(await dialog.count(), 0)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+test(`${browserName}: forced colors retain distinct focus and selected-result boundaries with enlarged text`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open({ width: 320, locale: 'tw', forcedColors: 'active' })
+  try {
+    await page.addStyleTag({ content: 'html{font-size:32px!important}' })
+    assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches && matchMedia('(prefers-reduced-motion: reduce)').matches), true)
+    const trigger = page.getByRole('button', { name: '搜尋文件', exact: true }).first()
+    await trigger.click()
+    const input = page.getByRole('combobox')
+    await input.pressSequentially('css')
+    const options = page.getByRole('option')
+    await options.first().waitFor()
+    assert.ok(await options.count() > 1, 'the keyboard can move between actual results')
+    const previous = await input.getAttribute('aria-activedescendant')
+    await input.press('ArrowDown')
+    await page.waitForFunction(({ element, previous }) => element.getAttribute('aria-activedescendant') !== previous, { element: await input.elementHandle(), previous })
+    const id = await input.getAttribute('aria-activedescendant')
+    const selected = page.locator(`#${id}`)
+    assert.equal(await selected.getAttribute('aria-selected'), 'true')
+    for (const element of [input, selected]) {
+      const outline = await element.evaluate(element => ({ style: getComputedStyle(element).outlineStyle, width: parseFloat(getComputedStyle(element).outlineWidth) }))
+      assert.equal(outline.style, 'solid')
+      assert.ok(outline.width >= 2, 'forced colors keep a painted boundary')
+    }
+    assert.equal(await input.evaluate(element => element.matches(':focus-visible')), true)
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1))
+    await page.screenshot({ path: new URL('320-tw-enlarged-forced-colors.png', output).pathname })
+    await input.press('Escape')
+    assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
