@@ -20,6 +20,16 @@
       ],
       "port": 3102,
       "autoPort": false
+    },
+    {
+      "name": "design-polish",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/aron/master-css/.claude/worktrees/master-design-polish/site && exec bun --bun astro dev --ignore-lock --port 3105"
+      ],
+      "port": 3105,
+      "autoPort": false
     }
   ]
 }
