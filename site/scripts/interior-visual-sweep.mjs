@@ -1,7 +1,7 @@
 /** Capture the complete route inventory against one frozen preview, with resumable evidence. */
 import { chromium, webkit } from '@playwright/test'
 import { createHash } from 'node:crypto'
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -145,7 +145,7 @@ matrix: for (const engine of engines) {
             if ([390, 1440].includes(width) && metrics.height <= 32000) {
               fullImage = path.basename(file, '.json') + '-full.png'
               await page.screenshot({ path: path.join(directory, fullImage), fullPage: true })
-            }
+            } else await rm(file.replace(/\.json$/, '-full.png'), { force: true })
             result = { ...result, status: response.status(), visit, metrics, image, fullImage, errors: [...errors], resourceFailures: [...resourceFailures], durationMs: Date.now() - began, complete: true }
           } catch (error) {
             result = { ...result, failure: error.message, errors: [...errors], resourceFailures: [...resourceFailures], durationMs: Date.now() - began, complete: true }

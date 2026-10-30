@@ -205,7 +205,11 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
         const heading = await page.locator('#color-system').boundingBox()
         assert.ok(heading.y >= navigation.y + navigation.height + 8)
       }
-      if (options.textSize) { await page.emulateMedia({ forcedColors: 'active' }); await assertLayout(page) }
+      if (options.textSize) {
+        await page.emulateMedia({ forcedColors: 'active' })
+        assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true, 'the forced-color scene exercises the actual media condition')
+        await assertLayout(page)
+      }
       const name = options.textSize ? 'enlarged-forced' : options.js === false ? 'static' : `density-${options.density}`
       await page.screenshot({ path: new URL(`${name}.png`, output).pathname, fullPage: true })
       assert.deepEqual(errors, [])

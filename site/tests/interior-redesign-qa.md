@@ -30,6 +30,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - Below 64rem, the native modal site menu includes the current document chapters as well as global navigation and preferences. Search has its own entry and nested dialog behavior.
 - Below 80rem, a native disclosure exposes the same article-heading inventory as the desktop contents rail. It works without hydration; the enhanced link closes it and focuses the destination.
 - Search loads its index when requested, announces loading/empty/failure states, offers retry, supports keyboard selection and restores the initiating control's focus.
+- Closed search markup stays hidden until the native modal boundary exists. Opening establishes focus before paint. IME composition keeps its confirmation, candidate and cancellation keys instead of invoking document navigation.
+- Code copying shows a visible pending request, prevents duplicate writes, preserves the original source name across a tab switch and reports denied writes with selectable source still available.
 - Language changes and same-page anchor navigation preserve the current query string.
 - A contents jump creates one history entry; one Back returns to the prior location. Modified hash clicks leave the browser's default behavior intact.
 - At 320px with 200% text, search uses two input-bar rows so Clear and Cancel cannot reduce the query field to zero width.
@@ -55,6 +57,8 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `work-log.json`: actual start time and milestone events; the requested minimum is eight hours. No completed duration is claimed until recorded at delivery.
 - `inventory.json`: 448 built page resources including the 404 template, plus two deliberately missing-path probes.
 - `document-baseline/geometry.json`: initial positions/widths at 390, 768, 1280 and 1440px for four document types.
+- `content-preservation.json`: all 352 Guide, Reference and Blog article bodies preserve their normalized text and existing semantic anchors.
+- `home-paint/summary.json`: 40 pairs of homepage-main screenshots are byte-identical, including both locales/engines/themes and five widths. The allowed shared header is hidden equally in both captures; full geometry and text also agree.
 - `baseline-production/` and `redesign-production/`: browser measurements and before/after screenshots, including loading, headings, links, artwork, overflow and geometry.
 - `brand-*`, `search-*`, `navigation-*`: behavior, enlarged text, densities, keyboard and theme evidence.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
@@ -92,5 +96,6 @@ The full final browser comparison and CSS contract review are still in progress.
 - Source locales without a complete translation continue to use English content. The brand guide's English body declares its language and includes Traditional Chinese voice/type examples; its hero and navigation are localized.
 - Text contrast measurements cover visible non-code text in eight representative page types, in both themes. Syntax colors, hidden/decorative text and disabled states are excluded; this is not a complete accessibility audit.
 - Playwright's WebKit engine did not complete a native OS clipboard write in the automated context. Real clipboard write/read success is verified in Chromium. Both engines verify visible pending feedback, duplicate-request prevention and denied-write feedback; native Safari clipboard success remains a manual check.
+- Immediate bulk `fill()` directly after autofocus intermittently leaves the WebKit search query empty in production automation, including with the baseline sweep suspended. Keyboard-by-keyboard input and clicking the field before bulk entry pass repeated checks. Diagnostics retain this ambiguity rather than treating a rerun as proof of a fix. The behavior suites use actual key events for keyboard lookup and explicit field focus for bulk entry; zero-delay native Safari paste after autofocus is not claimed as verified.
 - The committed original production build also differs from the older approved CSS snapshot: `.home-agent-edit-icon` is already 2.5rem in the base source, while the stored snapshot says 1.25rem. This is a pre-existing snapshot discrepancy; homepage source and computed appearance are compared directly against the frozen committed build.
 - No payment or sponsorship transaction was submitted during testing.

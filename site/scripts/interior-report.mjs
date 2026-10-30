@@ -68,6 +68,36 @@ const html = `<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta na
 <header><h1>Master CSS 品牌與內頁精修 · 前後對照</h1><p>原版以 rc 已提交狀態建立。左右使用相同瀏覽器、寬度、色彩模式；檢查記錄會列出缺漏與例外。圖片依可用寬度縮放，可開啟原圖檢查實際尺寸。</p><form><label>頁面<select id="route">${routeOptions}</select></label><label>瀏覽器<select id="engine"><option>chromium</option><option>webkit</option></select></label><label>寬度<select id="width">${[390,768,1280,1440,320].map(width=>`<option>${width}</option>`).join('')}</select></label><label>模式<select id="scheme"><option>light</option><option>dark</option></select></label><label>截圖<select id="extent"><option value="">首屏</option><option value="-full">整頁（390 / 1440）</option></select></label></form></header>
 <main>${labels.map((label,index)=>`<section><h2>${index ? '精修後' : '原版 rc'}</h2><small id="${label}-status">等待載入</small><figure><a id="${label}-link" target="_blank"><img id="${label}-image" alt="${index ? '精修後' : '原版'}頁面截圖"></a></figure><a id="${label}-record" target="_blank">檢查記錄</a></section>`).join('')}</main>
 <details><summary>檢查概況與待確認項目</summary><pre id="report"></pre></details>
-<script>const labels=${JSON.stringify(labels)},keys=${JSON.stringify(keys)};const form=document.querySelector('form');function update(){const route=document.querySelector('#route').value,engine=document.querySelector('#engine').value,width=document.querySelector('#width').value,scheme=document.querySelector('#scheme').value,extent=document.querySelector('#extent').value;for(const label of labels){const base=label+'/'+engine+'/'+width+'-'+scheme+'/'+keys[route];const img=document.getElementById(label+'-image'),status=document.getElementById(label+'-status');status.textContent=width+'px / '+engine+' / '+scheme;img.onerror=()=>status.textContent='此截圖尚未產生，請查看巡檢進度。';img.src=base+extent+'.png';document.getElementById(label+'-link').href=img.src;document.getElementById(label+'-record').href=base+'.json'}history.replaceState(null,'','#'+encodeURIComponent(route))}form.addEventListener('change',update);const selected=decodeURIComponent(location.hash.slice(1));document.querySelector('#route').value=keys[selected]?selected:'/brand';update();fetch('review-report.json').then(response=>response.json()).then(report=>document.querySelector('#report').textContent=JSON.stringify(report,null,2));</script></html>`
+<script>
+const labels=${JSON.stringify(labels)},keys=${JSON.stringify(keys)};
+const form=document.querySelector('form');let request=0;
+async function update(){
+  const pending=++request,route=document.querySelector('#route').value,engine=document.querySelector('#engine').value,width=document.querySelector('#width').value,scheme=document.querySelector('#scheme').value;
+  const extent=document.querySelector('#extent'),supportsFull=['390','1440'].includes(width);
+  extent.options[1].disabled=!supportsFull;if(!supportsFull)extent.value='';
+  const full=Boolean(extent.value);
+  history.replaceState(null,'','?'+new URLSearchParams({engine,width,scheme,extent:full?'full':'viewport'})+'#'+encodeURIComponent(route));
+  await Promise.all(labels.map(async label=>{
+    const base=label+'/'+engine+'/'+width+'-'+scheme+'/'+keys[route],img=document.getElementById(label+'-image'),status=document.getElementById(label+'-status'),link=document.getElementById(label+'-link');
+    status.textContent='正在讀取檢查記錄…';
+    try{
+      const response=await fetch(base+'.json');if(!response.ok)throw new Error('Missing record');
+      const record=await response.json();if(request!==pending)return;
+      const image=full&&record.fullImage?record.fullImage:record.image;
+      if(!image)throw new Error('Missing image');
+      const directory=base.slice(0,base.lastIndexOf('/')+1);
+      status.textContent=width+'px / '+engine+' / '+scheme+(full&&!record.fullImage?' · 此頁保留首屏，整頁超過截圖範圍':'')+' · '+new Date(record.capturedAt).toLocaleString('zh-TW');
+      img.onerror=()=>{if(request===pending)status.textContent='截圖無法讀取，請查看檢查記錄。'};
+      img.src=directory+image;link.href=img.src;document.getElementById(label+'-record').href=base+'.json';
+    }catch{if(request===pending)status.textContent='此截圖尚未產生，請查看巡檢進度。'}
+  }));
+}
+form.addEventListener('change',update);
+const selected=decodeURIComponent(location.hash.slice(1)),parameters=new URLSearchParams(location.search);
+document.querySelector('#route').value=keys[selected]?selected:'/brand';
+for(const key of ['engine','width','scheme']){const select=document.querySelector('#'+key),value=parameters.get(key);if([...select.options].some(option=>option.value===value))select.value=value}
+if(parameters.get('extent')==='full')document.querySelector('#extent').value='-full';
+update();fetch('review-report.json').then(response=>response.json()).then(report=>document.querySelector('#report').textContent=JSON.stringify(report,null,2));
+</script></html>`
 await writeFile(path.join(directory, 'index.html'), html)
 console.log(JSON.stringify({ summaries, failures: failures.length, missingLinks: missingLinks.length, geometryDifferences: documentGeometry.length, homepageComparisons: homeStyles.length }))
