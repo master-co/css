@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import LogotypeAtDark from '../../public/images/css-logotype@dark.svg'
-import LogotypeAtLight from '../../public/images/css-logotype@light.svg'
+import LogotypeAtDark from '../../public/brand/v2/logo/master-css/master-css-horizontal-on-dark.svg'
+import LogotypeAtLight from '../../public/brand/v2/logo/master-css/master-css-horizontal-on-light.svg'
 import { SVGProps } from 'react'
 
 export default function CSSLogotype({ className, ...props }: SVGProps<SVGSVGElement>) {

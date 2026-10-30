@@ -4,6 +4,7 @@ import Link from '~/site/docs-shell/components/Link'
 import { footerProps } from '~/site/navigation'
 import BrandNavigation from './BrandNavigation'
 import BrandAppearance from './BrandAppearance'
+import BrandMark from './BrandMark'
 
 export default function BrandLayout({ children, params }: any) {
   const tw = params.locale === 'tw'
@@ -19,7 +20,7 @@ export default function BrandLayout({ children, params }: any) {
           <div className="brand-hero-actions"><a className="brand-primary-link" href="#download-assets">{tw ? '取得品牌素材' : 'Get the assets'}<span aria-hidden="true">↓</span></a><a href="#identity">{tw ? '探索設計系統' : 'Explore the system'}<span aria-hidden="true">↘</span></a></div>
         </div>
         <figure className="brand-hero-art" aria-label={tw ? 'Master CSS 原始金色標誌' : 'The original Master CSS gold mark'}>
-          <div className="brand-mark-board"><span className="brand-board-label">M / 01</span><div className="brand-mark-clearspace"><img src="/images/logo.svg" width="312" height="169" alt="" /><span className="brand-mark-axis brand-mark-axis-x" /><span className="brand-mark-axis brand-mark-axis-y" /></div><span className="brand-board-caption">Master CSS <span>Original mark</span></span></div>
+          <div className="brand-mark-board"><span className="brand-board-label">M / 01</span><div className="brand-mark-clearspace"><BrandMark width={312} height={312 * 120 / 216.6} alt="" /><span className="brand-mark-axis brand-mark-axis-x" /><span className="brand-mark-axis brand-mark-axis-y" /></div><span className="brand-board-caption">Master CSS <span>Original mark</span></span></div>
         </figure>
       </header>
       <div className="brand-document">

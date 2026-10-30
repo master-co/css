@@ -33,7 +33,7 @@ import tanstack from '../../public/images/frameworks/tanstack.svg'
 import esmSh from '../../public/images/cdns/esm-sh.svg'
 import html from '../../public/icons/html.svg'
 import vscode from '../../public/icons/visualstudiocode.svg'
-import logo from '../../public/images/logo.svg'
+import logo from '../../public/brand/v2/logo/mark/master-mark-small-on-dark.svg'
 
 const brands = {
   tailwindcss: { name: 'Tailwind CSS', src: tailwindcss, path: 'tailwindcss', color: 'cyan', className: 'transform:scale(.85)' },

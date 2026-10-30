@@ -72,8 +72,12 @@ for (const width of full ? [320, 390, 768, 1280, 1440] : [390, 1440]) {
       try {
         assert.equal(await page.locator('h1').count(), 1)
         await assertLayout(page)
+        const colors = await page.locator('.app-header-logo svg:visible stop').evaluateAll(stops => stops.map(stop => stop.getAttribute('stop-color').toLowerCase()))
+        assert.ok(colors.includes(scheme === 'light' ? '#fde2a7' : '#fcdd98'), 'the rendered header uses the approved background highlight')
+        assert.ok(colors.includes('#e6b65d'), 'the rendered header uses the shared gold endpoint')
+        assert.ok((await page.locator('.brand-hero-art img:visible').getAttribute('src')).endsWith(`on-${scheme}.svg`))
         const assets = await page.locator('.brand-downloads a[download]').evaluateAll(links => links.map(link => link.getAttribute('href')))
-        assert.deepEqual(assets, ['/images/css-logotype@dark.svg', '/images/css-logotype@light.svg', '/images/logo.svg'])
+        assert.deepEqual(assets, ['/images/css-logotype@dark.svg', '/images/css-logotype@light.svg', '/images/logo.svg', '/brand/v2/logo/mark/master-mark-on-light.svg', '/brand/v2/logo/mark/master-mark-small-on-dark.svg', '/brand/v2/logo/mark/master-mark-small-on-light.svg', '/brand/v2/master-css-brand-kit-v2.zip'])
         await page.screenshot({ path: new URL(`${width}-${locale}-${scheme}.png`, output).pathname, fullPage: true })
         assert.deepEqual(errors, [])
       } finally { await context.close() }
@@ -124,16 +128,16 @@ test(`${browserName}: minimum logo examples keep their actual dimensions and sou
     const examples = page.locator('.brand-logo-minimums')
     await examples.scrollIntoViewIfNeeded()
     assert.equal(await examples.locator('img:visible').count(), 2, 'one mark and one theme-appropriate lockup')
-    const mark = await examples.locator('img[src="/images/logo.svg"]').boundingBox()
+    const mark = await examples.locator('img[src$="master-mark-small-on-light.svg"]').boundingBox()
     const lockup = await examples.locator('img:visible').last().boundingBox()
     assert.equal(mark.height, 16)
-    assert.equal(lockup.width, 160)
-    assert.ok(Math.abs(mark.width / mark.height - 103.81 / 56.36) < .001)
-    assert.ok(Math.abs(lockup.width / lockup.height - 460 / 55) < .01)
+    assert.ok(Math.abs(lockup.height - 16) < .1)
+    assert.ok(Math.abs(mark.width / mark.height - 216.6 / 120) < .001)
+    assert.ok(Math.abs(lockup.width / lockup.height - 1197.53 / 130.26) < .01)
     await page.getByRole('combobox', { name: 'Brand appearance' }).selectOption('dark')
     await page.waitForFunction(() => document.documentElement.classList.contains('dark'))
     assert.equal(await examples.locator('img:visible').count(), 2)
-    assert.equal(await examples.locator('img.brand-logo-dark').isVisible(), true)
+    assert.equal(await examples.locator('img.brand-logo-dark').first().isVisible(), true)
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false)
     await page.screenshot({ path: new URL('minimum-logo-sizes.png', output).pathname })
   } finally { await context.close() }
@@ -158,7 +162,7 @@ test(`${browserName}: appearance updates real paint and mobile navigation reache
   } finally { await context.close() }
 })
 
-test(`${browserName}: asset links download the exact original SVG files`, { timeout: 60000 }, async () => {
+test(`${browserName}: asset links download the exact approved SVG files and ZIP kit`, { timeout: 60000 }, async () => {
   const { context, page } = await open({ width: 390 })
   try {
     for (const link of await page.locator('.brand-downloads a[download]').all()) {
@@ -179,18 +183,19 @@ test(`${browserName}: the portable guide serves the complete brand content`, { t
     assert.equal(response.status(), 200)
     const markdown = await response.text()
     assert.ok(markdown.startsWith('# Brand\n'))
-    for (const text of ['Canonical: /brand', 'Language: English', '¼ H', '--color-surface-raised', 'Noto Sans TC', '在標記中編寫樣式', '/images/css-logotype@dark.svg', 'trademarks owned by Aoyue Design']) assert.ok(markdown.includes(text), text)
+    for (const text of ['Canonical: /brand', 'Language: English', '½ H / x', '--color-surface-raised', 'Noto Sans TC', '在標記中編寫樣式', '/images/css-logotype@dark.svg', 'trademarks owned by Aoyue Design']) assert.ok(markdown.includes(text), text)
     assert.doesNotMatch(markdown, /<Brand[A-Z]|MCSS_EXPRESSION/)
     assert.equal(await page.getByRole('link', { name: 'read this guide as Markdown' }).getAttribute('href'), '/brand.md')
   } finally { await context.close() }
 })
 
 test(`${browserName}: enlarged text, density, forced colors and static content stay readable`, { timeout: 120000 }, async () => {
-  for (const options of [{ width: 390, textSize: 32 }, { width: 320, locale: 'tw', textSize: 32 }, { width: 1440, density: 1.25 }, { width: 390, density: 2 }, { width: 390, js: false }]) {
+  for (const options of [{ width: 390, textSize: 32 }, { width: 320, locale: 'tw', textSize: 32 }, { width: 1440, density: 1.25 }, { width: 390, density: 2 }, { width: 390, js: false }, { width: 390, scheme: 'dark', js: false }]) {
     const { context, page, errors } = await open(options)
     try {
       await assertLayout(page)
       if (options.js === false) {
+        assert.ok((await page.locator('.brand-hero-art img:visible').getAttribute('src')).endsWith(`on-${options.scheme ?? 'light'}.svg`))
         const menu = page.locator('.brand-mobile-navigation')
         await menu.locator('summary').click()
         assert.ok(await menu.getByRole('link', { name: 'Logo system', exact: true }).isVisible())
@@ -214,7 +219,7 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
         assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true, 'the forced-color scene exercises the actual media condition')
         await assertLayout(page)
       }
-      const name = options.textSize ? options.locale === 'tw' ? '320-tw-enlarged-forced' : 'enlarged-forced' : options.js === false ? 'static' : `density-${options.density}`
+      const name = options.textSize ? options.locale === 'tw' ? '320-tw-enlarged-forced' : 'enlarged-forced' : options.js === false ? `static-${options.scheme ?? 'light'}` : `density-${options.density}`
       await page.screenshot({ path: new URL(`${name}.png`, output).pathname, fullPage: options.locale !== 'tw' })
       assert.deepEqual(errors, [])
     } finally { await context.close() }

@@ -1,4 +1,5 @@
 import metadata from './metadata'
+import { brandAssets } from '~/site/common/brand'
 import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
@@ -10,15 +11,7 @@ import './page.css'
 
 export { metadata }
 
-const asset = {
-  title: 'Logotype for dark backgrounds',
-  description: 'Light lettering with the original gold mark.',
-  src: '/images/css-logotype@dark.svg',
-  alt: 'Master CSS logotype with light lettering',
-  width: 460,
-  height: 55,
-  surface: 'dark' as const
-}
+const asset = brandAssets[0]
 
 const options = [
   {
@@ -50,8 +43,8 @@ export default function Page() {
       <h2 id="asset-surfaces">Real Brand variants</h2>
 
       <div className="review-asset-surfaceGrid">
-        <DemoAsset title="Logotype for light backgrounds" description="Dark lettering with the original gold mark." src="/images/css-logotype@light.svg" alt="Master CSS logotype with dark lettering" width={460} height={55} surface="light" />
-        <DemoAsset title="Master CSS mark" description="Original artwork on a transparency preview." src="/images/logo.svg" alt="Master CSS gold mark" width={104} height={56} />
+        <DemoAsset {...brandAssets[1]} />
+        <DemoAsset {...brandAssets[2]} surface="transparent" />
       </div>
       <Link className="review-asset-bodyLink" href="/brand#download-assets">Open all assets on /brand</Link>
     </section>

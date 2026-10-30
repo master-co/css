@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
-import { brandAssets, brandExampleMarkup, brandLogoGeometry, brandMarkGradientStops, brandSections } from '../common/brand'
+import { brandAssets, brandExampleMarkup, brandKit, brandLogoGeometry, brandMarkGradientStops, brandSections } from '../common/brand'
 import { brandContent } from './brand-content'
 import { configuredExampleCSS, configuredMarkupClasses } from '../reference/configured-example'
 
@@ -12,7 +12,7 @@ test('the complete brand system remains available to search and portable readers
   const content = await brandContent(root)
   assert.deepEqual(content.notes, [])
   for (const section of brandSections) assert.ok(content.markdown.includes(`id="${section.id}"`), section.id)
-  for (const text of ['¼ H', '160px wide', '16px high', 'Geist', 'Noto Sans TC', 'IBM Plex Mono', '--color-surface-floating', '--spacing-lg', '--radius-3xl', 'prefers-reduced-motion', '在標記中編寫樣式']) {
+  for (const text of ['½ H / x', '25mm wide', '16px high', 'Geist', 'Noto Sans TC', 'IBM Plex Mono', '--color-surface-floating', '--spacing-lg', '--radius-3xl', 'prefers-reduced-motion', '在標記中編寫樣式']) {
     assert.ok(content.markdown.includes(text), text)
   }
   assert.ok(content.markdown.includes(brandExampleMarkup))
@@ -20,7 +20,7 @@ test('the complete brand system remains available to search and portable readers
   assert.doesNotMatch(content.markdown, /<(?:Brand[A-Z]|DemoAsset)|MCSS_EXPRESSION/)
 })
 
-test('brand downloads preserve all three original source destinations and the policy', async () => {
+test('brand downloads preserve approved background variants, source geometry and the policy', async () => {
   const { markdown } = await brandContent(root)
   for (const asset of brandAssets) {
     assert.ok(markdown.includes(`[Download ${asset.title} (SVG)](${asset.src})`))
@@ -30,7 +30,16 @@ test('brand downloads preserve all three original source destinations and the po
   assert.ok(markdown.includes('without written consent'))
   assert.ok(markdown.includes('trademarks owned by Aoyue Design'))
   const mark = await readFile(new URL('../public/images/logo.svg', import.meta.url), 'utf8')
-  for (const stop of brandMarkGradientStops) assert.ok(mark.toLowerCase().includes(stop.toLowerCase()), `${stop}: an actual stop in the original artwork`)
+  for (const [mode, stops] of Object.entries(brandMarkGradientStops)) {
+    const svg = await readFile(new URL(`../public/brand/v2/logo/mark/master-mark-on-${mode}.svg`, import.meta.url), 'utf8')
+    for (const stop of stops) {
+      assert.ok(svg.toLowerCase().includes(stop.toLowerCase()), `${stop}: an actual ${mode}-background stop`)
+      assert.ok(markdown.includes(stop), `${stop}: available in the portable guide`)
+    }
+    assert.match(svg, /x1="108.3" y1="0" x2="108.3" y2="120"/, 'central ribbon uses the approved vertical field')
+  }
+  assert.ok(markdown.includes(brandKit.src))
+  assert.ok(markdown.includes(brandKit.manifest))
   assert.ok(mark.includes(`viewBox="${brandLogoGeometry[0].viewBox}"`))
   for (const file of brandAssets.slice(0, 2)) assert.ok((await readFile(new URL(`../public${file.src}`, import.meta.url), 'utf8')).includes(`viewBox="${brandLogoGeometry[1].viewBox}"`))
 })

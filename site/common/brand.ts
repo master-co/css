@@ -18,16 +18,16 @@ export const brandPrinciples = [
   { title: 'Precision with warmth', description: 'Keep the structure neutral and the details considered. Gold brings a small, recognizable point of warmth.' },
 ] as const
 
-export const brandLogoMinimums = { markHeight: 16, lockupWidth: 160 } as const
+export const brandLogoMinimums = { markHeight: 16, regularMarkHeight: 24, lockupHeight: 16, lockupWidth: 1197.53 / 130.26 * 16 } as const
 export const brandLogoGeometry = [
-  { title: 'Standalone mark', viewBox: '0 0 103.81 56.36', ratio: '103.81 : 56.36' },
-  { title: 'Horizontal lockup', viewBox: '0 0 460 55', ratio: '460 : 55' },
+  { title: 'Standalone mark', viewBox: '0 0 216.6 120', ratio: '216.6 : 120' },
+  { title: 'Horizontal lockup', viewBox: '0 -128 1197.53 130.26', ratio: '1197.53 : 130.26' },
 ] as const
 
 export const brandLogoRules = [
-  { title: 'Clear space', value: '¼ H', description: 'Leave at least one quarter of the mark’s height around the mark or complete lockup. Measure H from the mark, not the lettering.' },
-  { title: 'Mark minimum', value: `${brandLogoMinimums.markHeight}px high`, description: 'Use the standalone mark at 16 CSS pixels high or larger. Check its silhouette at the final rendered size.' },
-  { title: 'Lockup minimum', value: `${brandLogoMinimums.lockupWidth}px wide`, description: 'Keep the complete horizontal lockup at least 160 CSS pixels wide so its lettering remains readable.' },
+  { title: 'Clear space', value: '½ H / x', description: 'Leave half the mark’s height around a standalone mark. Leave one wordmark x-height around a complete lockup; the mark is 1.3 times that x-height.' },
+  { title: 'Mark minimum', value: `${brandLogoMinimums.markHeight}px high`, description: 'Use the small-size artwork from 16px to below 24px high. Use the standard mark from 24px high. Check its silhouette at the final rendered size.' },
+  { title: 'Lockup minimum', value: `${brandLogoMinimums.lockupHeight}px high`, description: 'Keep the horizontal lockup at least 16 CSS pixels high, or 25mm wide in print, so its lettering remains readable.' },
 ] as const
 
 export const brandColorRoles = [
@@ -48,8 +48,13 @@ export const brandFunctionalColors = [
   { title: 'Error', token: '--color-text-danger', description: 'A problem that needs attention.' },
 ] as const
 
-/** Endpoints of the central ribbon's gradient C; the SVG retains every intermediate stop. */
-export const brandMarkGradientStops = ['#FCDD98', '#C8861C'] as const
+/** Endpoints of the shared vertical field; each SVG retains its intermediate stops. */
+export const brandMarkGradientStops = {
+  dark: ['#FCDD98', '#E6B65D'],
+  light: ['#FDE2A7', '#E6B65D'],
+} as const
+
+export const brandKit = { src: '/brand/v2/master-css-brand-kit-v2.zip', manifest: '/brand/v2/manifest.json' } as const
 
 export const brandRoleOrigins = {
   '--color-surface-canvas': 'Site role',
@@ -79,9 +84,12 @@ export const brandVoiceExamples = [
 ] as const
 
 export const brandAssets = [
-  { title: 'Logotype for dark backgrounds', description: 'Light lettering with the original gold mark.', src: '/images/css-logotype@dark.svg', alt: 'Master CSS logotype with light lettering', width: 460, height: 55, surface: 'dark' as const },
-  { title: 'Logotype for light backgrounds', description: 'Dark lettering with the original gold mark.', src: '/images/css-logotype@light.svg', alt: 'Master CSS logotype with dark lettering', width: 460, height: 55, surface: 'light' as const },
-  { title: 'Master CSS mark', description: 'Original artwork on a transparency preview.', src: '/images/logo.svg', alt: 'Master CSS gold mark', width: 104, height: 56, surface: 'transparent' as const },
+  { title: 'Logotype for dark backgrounds', description: 'Light lettering with the champagne-to-gold mark.', src: '/images/css-logotype@dark.svg', alt: 'Master CSS logotype with light lettering', width: 1197.53, height: 130.26, surface: 'dark' as const },
+  { title: 'Logotype for light backgrounds', description: 'Dark lettering with the champagne-to-gold mark.', src: '/images/css-logotype@light.svg', alt: 'Master CSS logotype with dark lettering', width: 1197.53, height: 130.26, surface: 'light' as const },
+  { title: 'Mark for dark backgrounds', description: 'Standard flat mark, for heights of 24px and above.', src: '/images/logo.svg', alt: 'Master CSS gold mark for dark backgrounds', width: 216.6, height: 120, surface: 'dark' as const },
+  { title: 'Mark for light backgrounds', description: 'Standard flat mark, for heights of 24px and above.', src: '/brand/v2/logo/mark/master-mark-on-light.svg', alt: 'Master CSS gold mark for light backgrounds', width: 216.6, height: 120, surface: 'light' as const },
+  { title: 'Small mark for dark backgrounds', description: 'Wider gaps for heights from 16px to below 24px.', src: '/brand/v2/logo/mark/master-mark-small-on-dark.svg', alt: 'Small Master CSS mark for dark backgrounds', width: 216.6, height: 120, surface: 'dark' as const },
+  { title: 'Small mark for light backgrounds', description: 'Wider gaps for heights from 16px to below 24px.', src: '/brand/v2/logo/mark/master-mark-small-on-light.svg', alt: 'Small Master CSS mark for light backgrounds', width: 216.6, height: 120, surface: 'light' as const },
 ] as const
 
 export const brandExampleMarkup = '<section class="display:grid gap-md p-lg r-xl bg-surface-raised">\n  <h2 class="margin:0 text-xl fg-text-strong">A shared language</h2>\n  <p class="margin:0 text-sm fg-text-muted">Keep the decisions close to the work.</p>\n  <a class="fg-text-link" href="/guide">Explore the Guide</a>\n</section>'

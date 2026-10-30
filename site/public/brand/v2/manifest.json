@@ -1,0 +1,310 @@
+{
+  "sourceRepository": "https://github.com/master-co/master",
+  "sourceRevision": "b0d663a84f2d3a6724aec8d3b5ebc7db7d3bbc0f",
+  "assets": [
+    {
+      "src": "/brand/v2/icon/app-icon-dark-rounded.svg",
+      "source": "brand/icon/app-icon-dark-rounded.svg",
+      "sha256": "834718e325cc3b482c3823983456a4c4634338eb23659d64327c570197dc8424",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/app-icon-dark.svg",
+      "source": "brand/icon/app-icon-dark.svg",
+      "sha256": "cccd5ee20d1061be9abe0478cf4a45c3281411c1cf3e16ba94e052ba187005c7",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/app-icon-gold-rounded.svg",
+      "source": "brand/icon/app-icon-gold-rounded.svg",
+      "sha256": "d91089f6e1a8684cdd3f23c48c870b0139f8ca9626068a6e46fd49ccafb019c6",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/app-icon-gold.svg",
+      "source": "brand/icon/app-icon-gold.svg",
+      "sha256": "035a8c1c6b97a3bdd4c8e9bd48c19edf51e93530db1b11d9b0c0f0d86284b9c0",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/app-icon-light-rounded.svg",
+      "source": "brand/icon/app-icon-light-rounded.svg",
+      "sha256": "4633d9480f724028810d4f363ae8f76c25f160f092a16045af1c5264299a9526",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/app-icon-light.svg",
+      "source": "brand/icon/app-icon-light.svg",
+      "sha256": "623acb77d0867bf3ac146b1a9bb1192d6d654d5085e448b7f2ce1525347f1d65",
+      "viewBox": "0 0 1024 1024"
+    },
+    {
+      "src": "/brand/v2/icon/favicon.ico",
+      "source": "brand/icon/favicon.ico",
+      "sha256": "bcd1a5d34a9f885133228baacfec35c82b98c19e06e7714c4bcceddfe3897502"
+    },
+    {
+      "src": "/brand/v2/icon/favicon.svg",
+      "source": "brand/icon/favicon.svg",
+      "sha256": "15ec6f7eb7ced2b732e816f2c29da4d6a12230a68d7a61462a4990e4308d5a53",
+      "viewBox": "0 0 32 32"
+    },
+    {
+      "src": "/brand/v2/icon/png/android-chrome-192.png",
+      "source": "brand/icon/png/android-chrome-192.png",
+      "sha256": "9b34e71b8656fb3650564e75e0c416091997c9a177ad7925d56329a6565f2ed3"
+    },
+    {
+      "src": "/brand/v2/icon/png/app-icon-1024.png",
+      "source": "brand/icon/png/app-icon-1024.png",
+      "sha256": "2f1add3d25b7ce563586a6d46fe3b7d0cab303943382c1e30e0657ac9e26c464"
+    },
+    {
+      "src": "/brand/v2/icon/png/app-icon-512.png",
+      "source": "brand/icon/png/app-icon-512.png",
+      "sha256": "3c8f84a74ec83dd90c90f51afb6c846f89c786837e5616a164f60243f59192f1"
+    },
+    {
+      "src": "/brand/v2/icon/png/apple-touch-icon.png",
+      "source": "brand/icon/png/apple-touch-icon.png",
+      "sha256": "6c2903cecdbb7012dd9013c57bcdc708b4fc178b428f05f66f4263754183b398"
+    },
+    {
+      "src": "/brand/v2/icon/png/avatar-460.png",
+      "source": "brand/icon/png/avatar-460.png",
+      "sha256": "6ca87f5cc4575375a8fea36901e399258bb0f8671861712e39c2414391faf3c1"
+    },
+    {
+      "src": "/brand/v2/icon/png/avatar-gold-460.png",
+      "source": "brand/icon/png/avatar-gold-460.png",
+      "sha256": "67074d8f5c0f65761da8e774c0999d9785114cd1ae5835e379ba8c1d44d0cd1d"
+    },
+    {
+      "src": "/brand/v2/icon/png/favicon-16.png",
+      "source": "brand/icon/png/favicon-16.png",
+      "sha256": "9f7510f647834ed603a5e6ff7e4b1f6436bcf759c1fd8c47cbec7f7eff029898"
+    },
+    {
+      "src": "/brand/v2/icon/png/favicon-32.png",
+      "source": "brand/icon/png/favicon-32.png",
+      "sha256": "a530f225ec4a80ffa29901dff38754609a8f74028e8dac5f2aaa287e672e84b8"
+    },
+    {
+      "src": "/brand/v2/icon/png/favicon-48.png",
+      "source": "brand/icon/png/favicon-48.png",
+      "sha256": "fe3857c6840a7e67bd030416f8e3c629ac082112e760f60588c445a0e1b4a756"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-black.svg",
+      "source": "brand/logo/mark/master-mark-black.svg",
+      "sha256": "b600aedbd5048f92724f6233e5622e5c4495fd693ae53acda6776257700ac98a",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-dimensional-on-dark.svg",
+      "source": "brand/logo/mark/master-mark-dimensional-on-dark.svg",
+      "sha256": "f9e041abfa2b8af8726726eee4ab50b1a9dbb1ca83f1528d7334a9f715c3fe33",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-dimensional-on-light.svg",
+      "source": "brand/logo/mark/master-mark-dimensional-on-light.svg",
+      "sha256": "768b35aca75cff1722546ac2f09119370a812a6f62267218dc0ee61bcbf15361",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-gold.svg",
+      "source": "brand/logo/mark/master-mark-gold.svg",
+      "sha256": "7ef17be334f06d72c7393530db6fe8c4375c80e217833ed63340bdfc9d933904",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-on-dark.svg",
+      "source": "brand/logo/mark/master-mark-on-dark.svg",
+      "sha256": "4085a15c36fb6d9cb9b80854bf13a42b69f07b3ca6fee5c99cbf5ce260cac4df",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-on-light.svg",
+      "source": "brand/logo/mark/master-mark-on-light.svg",
+      "sha256": "ffed7460d92146ea192268ac8240f6eecd4309c17800950101f00143b4b56d42",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-small-on-dark.svg",
+      "source": "brand/logo/mark/master-mark-small-on-dark.svg",
+      "sha256": "d58a45a2011cf8b8d230cd3d2cf808942636125072057a569660b8f1ea368841",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-small-on-light.svg",
+      "source": "brand/logo/mark/master-mark-small-on-light.svg",
+      "sha256": "d8b29949bd1ba7d7c4d12b83fc4f0902b65db6e22eedb9a98b8fa82fce85b22a",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/mark/master-mark-white.svg",
+      "source": "brand/logo/mark/master-mark-white.svg",
+      "sha256": "1368cd9e182f5a5daa688ac4d495884c7a2dc1adfd2a9470a713f71c834f2970",
+      "viewBox": "0 0 216.6 120"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/dimensional/master-css-horizontal-dimensional-on-dark.svg",
+      "source": "brand/logo/master-css/dimensional/master-css-horizontal-dimensional-on-dark.svg",
+      "sha256": "81fb59267bd0c95ae95617399e688ac7d1e3614753b6978378ec8cf68487c585",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/dimensional/master-css-horizontal-dimensional-on-light.svg",
+      "source": "brand/logo/master-css/dimensional/master-css-horizontal-dimensional-on-light.svg",
+      "sha256": "7eee89f61151ba5a9d49c3a646535230999f39e95bbb3b18f72f8848f93a8d0c",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/dimensional/master-css-stacked-dimensional-on-dark.svg",
+      "source": "brand/logo/master-css/dimensional/master-css-stacked-dimensional-on-dark.svg",
+      "sha256": "684115656f9e4db0edffdf280e97eb7ff7384ddd3176d12685f7c2ae1f1a7405",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/dimensional/master-css-stacked-dimensional-on-light.svg",
+      "source": "brand/logo/master-css/dimensional/master-css-stacked-dimensional-on-light.svg",
+      "sha256": "f55a42e4efaa350716a079bdbf160cc7a7385a24c4ca147dc4bb700c7d575576",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-horizontal-black.svg",
+      "source": "brand/logo/master-css/master-css-horizontal-black.svg",
+      "sha256": "15742cfdb0a6594240edc932b8029c0be08b391631fceb2fbff5adeadea9b7b8",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-horizontal-on-dark.svg",
+      "source": "brand/logo/master-css/master-css-horizontal-on-dark.svg",
+      "sha256": "4ee0e97695f8de4358c40cf82d6d4e840a3b647a9855feb5a7e1881a092c4304",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-horizontal-on-light.svg",
+      "source": "brand/logo/master-css/master-css-horizontal-on-light.svg",
+      "sha256": "ae23f867010a42139a84dc80bfab43553cd7168d561fdaa21b63f686f612824a",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-horizontal-white.svg",
+      "source": "brand/logo/master-css/master-css-horizontal-white.svg",
+      "sha256": "9edd9fc85d02b4cb24a1c2b8efc42294562964f4ed77ce68cf7ab81afc8f643f",
+      "viewBox": "0 -128 1197.53 130.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-stacked-black.svg",
+      "source": "brand/logo/master-css/master-css-stacked-black.svg",
+      "sha256": "78c1fa6315f2daa9e4ef668cf93456d5b2c97867a9416c7e141d948ee39a478e",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-stacked-on-dark.svg",
+      "source": "brand/logo/master-css/master-css-stacked-on-dark.svg",
+      "sha256": "54cce4a74f45e10103ac0b08ccefd44080221096671b57eb50571706b9076d76",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-stacked-on-light.svg",
+      "source": "brand/logo/master-css/master-css-stacked-on-light.svg",
+      "sha256": "2f4bd73e4d0985d3aebb767755b67857a982f1aca687249e55a4ccc792e13752",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-stacked-white.svg",
+      "source": "brand/logo/master-css/master-css-stacked-white.svg",
+      "sha256": "13f1cca13e1a89273793781c125670023007484c4891e57590de8f9ff33678bc",
+      "viewBox": "0 -364 910.88 366.26"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-wordmark-black.svg",
+      "source": "brand/logo/master-css/master-css-wordmark-black.svg",
+      "sha256": "09437d506e956708a5dd19cff64d9d63239622dabf15fa596e19b15341f746b2",
+      "viewBox": "0 -119.93 910.88 122.18"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-wordmark-on-dark.svg",
+      "source": "brand/logo/master-css/master-css-wordmark-on-dark.svg",
+      "sha256": "6a1578b73f8f28a704d565ab25cd00078f4e9e83fffae861da8797890fb0e7c3",
+      "viewBox": "0 -119.93 910.88 122.18"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-wordmark-on-light.svg",
+      "source": "brand/logo/master-css/master-css-wordmark-on-light.svg",
+      "sha256": "3a46b0bbadbbbb366546fa83d53f8d433d743842a641594fe9fa07725cea6692",
+      "viewBox": "0 -119.93 910.88 122.18"
+    },
+    {
+      "src": "/brand/v2/logo/master-css/master-css-wordmark-white.svg",
+      "source": "brand/logo/master-css/master-css-wordmark-white.svg",
+      "sha256": "264c5d54234e7bd81702b4210684f318e6568a72cc534bf009531361bc10866a",
+      "viewBox": "0 -119.93 910.88 122.18"
+    },
+    {
+      "src": "/brand/v2/logo/png/master-css-horizontal-on-dark@2x.png",
+      "source": "brand/logo/png/master-css-horizontal-on-dark@2x.png",
+      "sha256": "d10fbef6c0d9ed227156e4130d43f0f3db71d557fefaf160c71dee9a87bd5181"
+    },
+    {
+      "src": "/brand/v2/logo/png/master-css-horizontal-on-light@2x.png",
+      "source": "brand/logo/png/master-css-horizontal-on-light@2x.png",
+      "sha256": "ee1a26d6e5b94297c920121c85e96b0235667d2563655daac6c05299613b2a17"
+    },
+    {
+      "src": "/brand/v2/logo/png/master-mark-dimensional-on-dark-1024.png",
+      "source": "brand/logo/png/master-mark-dimensional-on-dark-1024.png",
+      "sha256": "1270fca48f7f2634b4d351a3fd111817766066c09e9ca469ef2384099a43fcd1"
+    },
+    {
+      "src": "/brand/v2/logo/png/master-mark-dimensional-on-light-1024.png",
+      "source": "brand/logo/png/master-mark-dimensional-on-light-1024.png",
+      "sha256": "7b5d0a8440c83f271d0d746c7cc061f7858e6244ae1e72429549887fccc8ac09"
+    },
+    {
+      "src": "/brand/v2/social/master-css-github.svg",
+      "source": "brand/social/master-css-github.svg",
+      "sha256": "ad3d7ccc2c33ad887801b144796ce844940904303bf05312da2de5cb8376d985",
+      "viewBox": "0 0 1280 640"
+    },
+    {
+      "src": "/brand/v2/social/master-css-og.svg",
+      "source": "brand/social/master-css-og.svg",
+      "sha256": "25e40170a633c7b439c06af817786d378e09ad94684eff2aea47406fcb0ed51d",
+      "viewBox": "0 0 1200 630"
+    },
+    {
+      "src": "/brand/v2/social/png/master-css-github.png",
+      "source": "brand/social/png/master-css-github.png",
+      "sha256": "52ff60df4d739c1b520f2f0d13a24b653e86e50b9741a9ac943e108efd82b002"
+    },
+    {
+      "src": "/brand/v2/social/png/master-css-og.png",
+      "source": "brand/social/png/master-css-og.png",
+      "sha256": "9dd35c111e6ed44aa588a68098be4be1d04b6289bcf0fe78d17d5482419c658e"
+    }
+  ],
+  "aliases": {
+    "site/public/images/css-logotype@dark.svg": "logo/master-css/master-css-horizontal-on-dark.svg",
+    "site/public/images/css-logotype@light.svg": "logo/master-css/master-css-horizontal-on-light.svg",
+    "site/public/images/css-logotype@light.png": "logo/png/master-css-horizontal-on-light@2x.png",
+    "site/public/images/logo.svg": "logo/mark/master-mark-on-dark.svg",
+    "site/public/favicon.svg": "icon/favicon.svg",
+    "site/public/favicon.ico": "icon/favicon.ico",
+    "packages/vscode/icon.png": "icon/png/avatar-460.png",
+    "packages/figma/master.svg": "icon/favicon.svg",
+    "examples/svelte/static/master-css.logotype@light.svg": "logo/master-css/master-css-horizontal-on-light.svg",
+    "examples/next.js/public/css-logotype@dark.svg": "logo/master-css/master-css-horizontal-on-dark.svg",
+    "examples/next.js/public/css-logotype@light.svg": "logo/master-css/master-css-horizontal-on-light.svg",
+    "examples/blank/public/master.svg": "icon/favicon.svg",
+    "examples/lit/src/assets/master.svg": "icon/favicon.svg",
+    "examples/react/src/assets/master.svg": "icon/favicon.svg",
+    "examples/nuxt.js/public/master.svg": "icon/favicon.svg",
+    "examples/svelte/static/master.svg": "icon/favicon.svg",
+    "examples/vite/public/master.svg": "icon/favicon.svg",
+    "examples/webpack/assets/master.svg": "icon/favicon.svg"
+  }
+}

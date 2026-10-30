@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
-import { brandAssets, brandColorRoles, brandExampleMarkup, brandFunctionalColors, brandLogoGeometry, brandLogoRules, brandMarkGradientStops, brandPrinciples, brandRoleGuidance, brandTypeRoles, brandVoiceExamples } from '../common/brand'
+import { brandAssets, brandColorRoles, brandExampleMarkup, brandFunctionalColors, brandKit, brandLogoGeometry, brandLogoRules, brandMarkGradientStops, brandPrinciples, brandRoleGuidance, brandTypeRoles, brandVoiceExamples } from '../common/brand'
 import { brandPalette, brandScale, brandTiming } from '../common/brand-foundations'
 
 function table(headings: string[], rows: string[][]) {
@@ -11,7 +11,7 @@ function table(headings: string[], rows: string[][]) {
 export function brandComponentMarkdown(name: string) {
   if (name === 'BrandPrinciples') return brandPrinciples.map(item => `### ${item.title}\n\n${item.description}`).join('\n\n')
   if (name === 'BrandLogoSystem') return [
-    'The complete signature uses the original horizontal logotype.',
+    'The complete signature uses the approved Master CSS horizontal logotype.',
     ...brandLogoRules.map(rule => `### ${rule.title}\n\n**${rule.value}**. ${rule.description}`),
     table(['Artwork', 'Original SVG canvas ratio'], brandLogoGeometry.map(geometry => [geometry.title, geometry.ratio])),
     'The visual guide shows both minimum sizes at actual CSS pixel dimensions. Check the mark and lettering where they will be used.',
@@ -19,7 +19,7 @@ export function brandComponentMarkdown(name: string) {
   ].join('\n\n')
   if (name === 'BrandColors') return [
     '### The signature: gold',
-    `The original logo keeps its own artwork and gradients. The standalone mark’s central ribbon has gradient endpoints ${brandMarkGradientStops.join(' and ')}; all intermediate stops stay in the SVG. Interface gold uses the preset amber family.`,
+    `Both background variants share a continuous vertical gold gradient and soft wing shading. Central ribbon endpoints: dark background ${brandMarkGradientStops.dark.join(' → ')}; light background ${brandMarkGradientStops.light.join(' → ')}. Keep every intermediate stop in the SVG. Interface gold uses the preset amber family.`,
     table(['Palette token', 'Authored value'], brandPalette().map(color => [`\`${color.token}\``, `\`${color.value}\``])),
     '### Roles that follow the theme',
     brandRoleGuidance,
@@ -59,7 +59,8 @@ export function brandComponentMarkdown(name: string) {
     '### Logotype {#logotype}',
     ...brandAssets.slice(0, 2).map(asset => `**${asset.title}**\n\n${asset.description}\n\n![${asset.alt}](${asset.src})\n\n[Download ${asset.title} (SVG)](${asset.src})`),
     '### Mark {#mark}',
-    `**${brandAssets[2].title}**\n\n${brandAssets[2].description}\n\n![${brandAssets[2].alt}](${brandAssets[2].src})\n\n[Download ${brandAssets[2].title} (SVG)](${brandAssets[2].src})`,
+    ...brandAssets.slice(2).map(asset => `**${asset.title}**\n\n${asset.description}\n\n![${asset.alt}](${asset.src})\n\n[Download ${asset.title} (SVG)](${asset.src})`),
+    `[Download the complete brand kit (ZIP)](${brandKit.src}) · [Asset manifest](${brandKit.manifest})`,
     'The checkerboard indicates transparency and is not part of the downloaded file.'
   ].join('\n\n')
 }

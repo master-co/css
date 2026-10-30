@@ -13,7 +13,7 @@ const maxTotalRawBytes = Math.max(...pages.map((page) => page.css.total.rawBytes
 
 // Repeated tab panels must not share the internal IDs of an inline brand SVG.
 const brandImages: Record<string, string> = {
-  mastercss: '/images/logo.svg',
+  mastercss: '/brand/v2/logo/mark/master-mark-small-on-dark.svg',
   tailwindcss: '/images/tailwindcss.svg',
   bootstrap: '/images/bootstrap.svg',
   mui: '/images/mui.svg',

@@ -48,7 +48,7 @@ export default function Home() {
           src="/css-logotype@dark.svg"
           alt="Master CSS Logo"
           width={380}
-          height={48}
+          height={380 * 130.26 / 1197.53}
           priority
           hidden
         />
@@ -57,7 +57,7 @@ export default function Home() {
           src="/css-logotype@light.svg"
           alt="Master CSS Logo"
           width={380}
-          height={48}
+          height={380 * 130.26 / 1197.53}
           priority
           hidden
         />

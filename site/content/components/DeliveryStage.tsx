@@ -119,7 +119,7 @@ function Processor({ mode }: { mode: DeliveryMode }) {
   ] : [{ id: mode, label: mode === 'static' ? 'Compiler' : 'Runtime', show: '1', deferred: false }]
   return <div className="home-delivery-engine-group" style={{ '--glow': active } as CSSProperties}>
     {phases.map(phase => <div className="home-delivery-engine" data-ring={phase.id} data-deferred={phase.deferred ? '' : undefined} key={phase.id} style={{ '--phase': phase.show, '--ready': phase.deferred ? on(deliveryTiming.progressive.ready) : 1 } as CSSProperties}>
-      <span className="home-delivery-engine-core"><img alt="" src="/images/logo.svg" width="34" height="19" /><i /><i /></span>
+      <span className="home-delivery-engine-core"><img alt="" src="/brand/v2/logo/mark/master-mark-small-on-dark.svg" width="34" height={34 * 120 / 216.6} /><i /><i /></span>
       <span className="home-delivery-engine-label">{phase.label}</span>
       {phase.deferred && <span className="home-delivery-engine-state"><code style={{ '--on': `calc(1 - ${on(deliveryTiming.progressive.loading)})` } as CSSProperties}>deferred</code><code style={{ '--on': between(deliveryTiming.progressive.loading, deliveryTiming.progressive.ready) } as CSSProperties}>loading</code><code style={{ '--on': on(deliveryTiming.progressive.ready) } as CSSProperties}>ready</code></span>}
     </div>)}

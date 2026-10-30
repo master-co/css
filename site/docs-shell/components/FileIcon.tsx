@@ -96,7 +96,7 @@ export default function FileIcon({ name, ext, lang, ...props }: Props) {
     laravel: '/icons/laravel.svg',
     vue: '/icons/vue.svg',
     json: '/icons/json.svg',
-    master: '/images/logo.svg',
+    master: '/brand/v2/logo/mark/master-mark-small-on-dark.svg',
     webpack: '/icons/webpack.svg',
     styledComponent: '/images/styled-components.svg',
     tailwindcss: '/images/tailwindcss.svg',
