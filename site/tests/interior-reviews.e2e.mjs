@@ -13,6 +13,7 @@ const output = new URL(`test-results/interior-redesign/reviews-${engine}/`, site
 const files = await fg('content/design-system/**/page.tsx', { cwd: site.pathname })
 const routes = files.map(file => '/' + path.dirname(file).replace(/^content\//, '')).sort()
 const records = []
+const visited = new Set()
 let browser, context, page
 let errors = []
 before(async () => {
@@ -29,7 +30,15 @@ after(async () => {
 
 async function open(route) {
   errors = []
-  assert.equal((await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })).status(), 200)
+  const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
+  if (response.status() === 304) {
+    const headers = await response.request().allHeaders()
+    assert.ok(visited.has(route), 'a cached response must follow an earlier visit')
+    assert.ok(headers['if-none-match'] || headers['if-modified-since'], 'a 304 must answer a conditional cache request')
+    records.push({ action: 'cache-revalidation', route, status: 304 })
+  } else assert.equal(response.status(), 200)
+  visited.add(route)
+  assert.ok(await page.getByRole('heading', { level: 1 }).isVisible(), 'the cached document still renders its page heading')
   await page.addStyleTag({ content: 'html { font-size: 32px !important }' })
   await page.evaluate(() => document.fonts.ready)
 }
