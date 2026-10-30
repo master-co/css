@@ -70,6 +70,7 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `brand-*`, `search-*`, `navigation-*`: behavior, enlarged text, densities, keyboard and theme evidence.
 - `final-behavior-results.json`: all 430 unique browser cases pass in complete production runs—216 Chromium and 214 WebKit. Native navigation includes desktop search availability, actual landmark names and visible focus after the scrolling header tucks away.
 - `enlarged-routes-*`: 366 further non-review resources per engine at 320px/200% text, combined with the 82 Design System route checks per engine. All 896 scenes fit. This covers every non-home page plus the two deliberately missing routes.
+- `breakpoint-audit.json`: 32 native scenes verify the exact 1023/1024px navigation and 1279/1280px contents boundaries in both locales and engines. Resizing an open drawer to desktop closes it and restores document scrolling.
 - `brand-final-details/`: 160 native viewport captures of 20 brand subjects across both engines, light/dark and 390/1440px.
 - `interior-final-details/`: 448 additional viewport captures of openings, source panels, tables, demos and footers across 17 representative page types, both engines/themes and 390/1440px.
 - `focus-paint/summary.json`: 20 actual keyboard-focus scenes in both engines, with and without forced colors; painted focus remains visible, including native selects inside their visible labels.
@@ -78,6 +79,7 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `state-review.html` and `state-review/summary.json`: five matched interaction/enlargement pairs, clearly labeled as findings from original or intermediate layouts; original-resolution image dimensions and capture conditions are retained.
 - `scope-boundaries.json`: no core/package/lockfile changes, no protected homepage-source changes, and byte-identical original SVG assets.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
+- `viewer-audit.json`: both engines at 320/390/768/1440px decode the selected paired images, fit their viewport and retain the correct route/theme after rapid changes. The selector grid contains long route names; unsupported full-page choices are disabled in the native option state.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
 
@@ -109,7 +111,7 @@ The final 9,000-scene production comparison and CSS contract approval remain in 
 
 ## Exact CSS delivery review
 
-Review compares the frozen committed base with the redesigned production output, rather than using a previously stale snapshot as the visual baseline. The route inventory remains 448 pages. Native CSSOM parsing also confirms all 60,488 shared global variable declarations retain their values, including their layer and condition identity. The project manifest is byte-identical in both captures (SHA-256 `16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9`); no preset, utility semantics or theme definition changed.
+Review compares the frozen committed base with the redesigned production output, rather than using a previously stale snapshot as the visual baseline. The route inventory remains 448 pages. There are 3,284 → 3,709 unique exact CSS segments: 548 added and 123 removed; 447 route deliveries change and the bare responsive-button example remains identical. Native CSSOM parsing also confirms all 60,488 shared global variable declarations retain their values, including their layer and condition identity. The project manifest is byte-identical in both captures (SHA-256 `16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9`); no preset, utility semantics or theme definition changed.
 
 Intentional website delivery changes are:
 
