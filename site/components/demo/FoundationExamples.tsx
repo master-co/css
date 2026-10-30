@@ -46,7 +46,7 @@ export function FoundationSizing() {
       <DemoLabel>width:100% · max-w-sm</DemoLabel>
       <div className="display:flex align-items:center gap-md mt-md">
         <DemoItem className="display:grid flex-shrink:0 place-content:center height:3rem width:3rem aspect-ratio:1/1 border-radius:50% text-sm font-mono">FN</DemoItem>
-        <div className="flex:1 min-width:0">
+        <div className="overflow-wrap:anywhere flex:1 min-width:0">
           <div className="text-sm font-semibold">Field notes</div>
           <p className="mt-2xs margin-bottom:0 margin-inline:0 text-sm fg-text-muted">Measured avatar. Flexible content.</p>
         </div>

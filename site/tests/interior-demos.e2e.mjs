@@ -168,3 +168,19 @@ test(`${engine}: finite motion and native dialog preserve reduced-motion and foc
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
+
+test(`${engine}: enlarged sizing specimen retains the measured avatar while its text reflows`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/tw/guide/sizing', { width: 320, enlarged: true })
+  try {
+    const demo = page.locator('[data-foundation="sizing"]')
+    const avatar = demo.locator('.demo-item')
+    assert.equal(Math.round((await avatar.boundingBox()).width), 96, 'the authored 3rem avatar is preserved at a 32px root')
+    const canvas = await demo.locator('.demo-canvas').boundingBox()
+    const prose = demo.getByText('Measured avatar. Flexible content.', { exact: true })
+    const text = await prose.boundingBox()
+    assert.ok(text.x >= canvas.x && text.x + text.width <= canvas.x + canvas.width, 'the flexible text stays in the specimen')
+    await noPageOverflow(page)
+    await demo.screenshot({ path: new URL('320-tw-enlarged-sizing.png', output).pathname })
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
