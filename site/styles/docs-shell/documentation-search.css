@@ -1,6 +1,7 @@
 @layer components {
   html:has(.documentation-search[open]) { overflow: hidden; scrollbar-gutter: stable; }
   .documentation-search { position: fixed; inset: 0; display: flex; flex-direction: column; margin: min(14dvh, 8rem) auto auto; padding: 0; width: min(42.5rem, calc(100% - 2rem)); max-width: 100%; max-height: min(72dvh, 42rem); border: 1px solid var(--color-line-contour); border-radius: var(--radius-2xl); background: var(--color-surface-floating); color: var(--color-text-body); box-shadow: var(--shadow-floating-contact); overflow: hidden; container: documentation-search / inline-size; }
+  .documentation-search:not([open]) { display: none; }
   .documentation-search::backdrop { background: #0004; backdrop-filter: blur(3px); }
   .documentation-search-input { position: relative; display: flex; flex-shrink: 0; align-items: center; gap: .75rem; min-height: 4rem; padding: .75rem 1.25rem; }
   .documentation-search-input::after, .documentation-search-footer::before { position: absolute; inset-inline: 1.25rem; height: 1px; background: var(--color-line-subtle); content: ''; }

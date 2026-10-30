@@ -152,3 +152,32 @@ for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: 320px with 20
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
+
+test(`${browserName}: an opening search stays hidden until its native modal boundary exists`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open({ width: 320, intercept: async page => {
+    await page.addInitScript(() => {
+      const showModal = HTMLDialogElement.prototype.showModal
+      HTMLDialogElement.prototype.showModal = function () {
+        if (this.classList.contains('documentation-search')) window.finishOpeningSearch = () => showModal.call(this)
+        else showModal.call(this)
+      }
+    })
+  } })
+  try {
+    await page.addStyleTag({ content: 'html{font-size:32px!important}' })
+    const trigger = page.getByRole('button', { name: 'Search documentation', exact: true }).first()
+    await trigger.click()
+    await page.waitForFunction(() => typeof window.finishOpeningSearch === 'function')
+    const dialog = page.locator('.documentation-search')
+    assert.equal(await dialog.isVisible(), false, 'closed native markup cannot expose a premature input')
+    await page.evaluate(() => window.finishOpeningSearch())
+    const input = dialog.getByRole('combobox')
+    await input.fill('padding')
+    await dialog.getByRole('option').first().waitFor()
+    assert.equal(await dialog.evaluate(element => element.matches(':modal')), true)
+    assert.equal(await input.inputValue(), 'padding')
+    await page.keyboard.press('Escape')
+    assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
