@@ -155,9 +155,11 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let maskKey = ''
     let fontFace: FontFace | undefined
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, targetStrength: 0 }
-    // The lamp rests above the title's left half and drifts; a mouse picks it up and carries it lower.
-    const lamp = { x: 0, y: 0, z: 0, targetX: 0, targetY: 0, held: false, placed: false }
+    // The lamp rests above the title's left half and drifts, staying with the viewer as the page scrolls.
+    // A mouse picks it up and carries it lower; keyboard focus hangs it over the focused control.
+    const lamp = { x: 0, y: 0, z: 0, clientX: 0, clientY: 0, focusX: 0, focusY: 0, source: 'rest' as 'rest' | 'pointer' | 'focus', placed: false }
     const rest = { x: 0, y: 0, z: 1, sway: 0, fontSize: 1 }
+    const origin = { left: 0, top: 0, scroll: 0 }
     let lit: LitControl[] = []
     const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
     const maximumViewport = context.getParameter(context.MAX_VIEWPORT_DIMS) as Int32Array
@@ -248,6 +250,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
       const groundLight = ground[0] * 0.2126 + ground[1] * 0.7152 + ground[2] * 0.0722
       // Obsidian casts a clear shadow on champagne silk; on dark silk it only separates the moonstone.
       context.uniform1f(copy.uniforms.shade, mask ? (groundLight > 0.4 ? 1 : 0.45) : 0)
+      origin.left = rect.left
+      origin.top = rect.top
+      origin.scroll = scrollY
       rest.x = titleRect.left - rect.left + titleRect.width * 0.3
       rest.y = titleRect.top - rect.top - fontSize * 0.8
       rest.z = fontSize * 5
@@ -297,14 +302,22 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const formed = reduced ? 1 : Math.max(0, Math.min(1, (time - materialAt) / materialDuration))
         const material = 1 - Math.pow(1 - formed, 3)
         const glint = reduced || materialAt < 0 ? 1 : Math.max(0, Math.min(1, (time - materialAt - glintDelay) / glintDuration))
-        if (!lamp.held) {
-          lamp.targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway
-          lamp.targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3
+        const scrolled = scrollY - origin.scroll
+        let targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway
+        let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + (reduced ? 0 : scrolled)
+        if (lamp.source === 'pointer') {
+          targetX = lamp.clientX - origin.left
+          targetY = lamp.clientY - origin.top + scrolled
+          pointer.targetX = (targetX / width - 0.5) * width / height * heroPlaneScale
+          pointer.targetY = (0.5 - targetY / height) * heroPlaneScale
+        } else if (lamp.source === 'focus') {
+          targetX = lamp.focusX
+          targetY = lamp.focusY
         }
-        const targetZ = lamp.held ? rest.fontSize * 3.2 : rest.z
+        const targetZ = lamp.source === 'rest' ? rest.z : rest.fontSize * 3.2
         const carry = lamp.placed ? 1 - Math.exp(-delta / 120) : 1
-        lamp.x += (lamp.targetX - lamp.x) * carry
-        lamp.y += (lamp.targetY - lamp.y) * carry
+        lamp.x += (targetX - lamp.x) * carry
+        lamp.y += (targetY - lamp.y) * carry
         lamp.z += (targetZ - lamp.z) * carry
         lamp.placed = true
         illuminate()
@@ -362,7 +375,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
           `${Math.round(Math.atan2(lamp.x - centerX, centerY - lamp.y) * 180 / Math.PI)}deg`,
           `${castX.toFixed(1)}px`,
           `${castY.toFixed(1)}px`,
-          (lamp.held ? near : near * 0.4).toFixed(2)
+          (lamp.source === 'rest' ? near * 0.4 : near).toFixed(2)
         ]
         litProperties.forEach((name, index) => {
           if (values[index] !== control.values[index]) control.element.style.setProperty(name, values[index])
@@ -384,15 +397,25 @@ export default function HeroCanvas({ className }: { className?: string }) {
     }
     const move = (event: PointerEvent) => {
       if (motion.matches || event.pointerType !== 'mouse') return
-      const rect = canvas.getBoundingClientRect()
-      pointer.targetX = ((event.clientX - rect.left) / width - 0.5) * width / height * heroPlaneScale
-      pointer.targetY = (0.5 - (event.clientY - rect.top) / height) * heroPlaneScale
       pointer.targetStrength = 1
-      lamp.targetX = event.clientX - rect.left
-      lamp.targetY = event.clientY - rect.top
-      lamp.held = true
+      lamp.clientX = event.clientX
+      lamp.clientY = event.clientY
+      lamp.source = 'pointer'
     }
-    const leave = () => { pointer.targetStrength = 0; lamp.held = false }
+    const leave = () => {
+      pointer.targetStrength = 0
+      if (lamp.source === 'pointer') lamp.source = 'rest'
+    }
+    const focus = (event: FocusEvent) => {
+      const control = lit.find((item) => item.element.contains(event.target as Node))
+      if (motion.matches || !control || !(event.target as Element).matches(':focus-visible')) return
+      lamp.focusX = control.left + control.width * 0.35
+      lamp.focusY = control.top - control.height * 0.6
+      lamp.source = 'focus'
+    }
+    const blur = (event: FocusEvent) => {
+      if (lamp.source === 'focus' && !host.contains(event.relatedTarget as Node)) lamp.source = 'rest'
+    }
     const lost = (event: Event) => { event.preventDefault(); contextLost = true; fallback() }
     const restored = () => { setGeneration((value) => value + 1) }
     const resize = new ResizeObserver(invalidate)
@@ -415,6 +438,8 @@ export default function HeroCanvas({ className }: { className?: string }) {
     scheme.addEventListener('change', invalidate)
     host.addEventListener('pointermove', move)
     host.addEventListener('pointerleave', leave)
+    host.addEventListener('focusin', focus)
+    host.addEventListener('focusout', blur)
     header?.addEventListener('pointermove', move)
     header?.addEventListener('pointerleave', leave)
     canvas.addEventListener('webglcontextlost', lost)
@@ -457,6 +482,8 @@ export default function HeroCanvas({ className }: { className?: string }) {
       scheme.removeEventListener('change', invalidate)
       host.removeEventListener('pointermove', move)
       host.removeEventListener('pointerleave', leave)
+      host.removeEventListener('focusin', focus)
+      host.removeEventListener('focusout', blur)
       header?.removeEventListener('pointermove', move)
       header?.removeEventListener('pointerleave', leave)
       canvas.removeEventListener('webglcontextlost', lost)

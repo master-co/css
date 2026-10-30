@@ -68,11 +68,11 @@ void main() {
     float reach = length(offset);
     offset *= min(1.0, distanceRange * 0.8 / max(reach, 0.0001));
     // The penumbra widens with distance from the letter; the field saturates at its range, so it stays inside.
-    float softness = min(distanceRange * 0.95, 3.0 + reach * 1.1);
+    float softness = min(distanceRange * 0.95, 2.0 + reach * 0.85);
     float thrown = smoothstep(-softness, softness * 0.35, titleDistance(screen - offset));
     float contact = smoothstep(-fontSize * 0.05, 0.0, titleDistance(screen));
     // A longer shadow spreads the same occlusion over a wider penumbra, so it also fades.
-    float amount = (thrown * thrown * 0.25 * (1.0 - 0.4 * smoothstep(0.0, distanceRange, reach)) + contact * 0.08) * shade;
+    float amount = (thrown * thrown * 0.22 * (1.0 - 0.4 * smoothstep(0.0, distanceRange, reach)) + contact * 0.08) * shade;
     // Shadows on gold keep a little warmth instead of turning gray.
     color *= mix(vec3(1.0), vec3(0.78, 0.71, 0.60), amount);
   }
@@ -241,18 +241,30 @@ void main() {
 
   vec3 moonstone;
   {
-    // A milky body lit from within: the bevel bends the gold behind it, and the lamp side warms to amber.
     float toward = smoothstep(-0.4, 0.9, dot(outward, normalize(light.xy + vec2(0.0001))));
     float fresnel = pow(view, 1.4);
     vec2 bend = normal.xy * fontSize * 0.3 / resolution;
     vec3 refracted = sceneAt(vUv - bend);
-    vec3 color = mix(ink, ink * 0.78 + refracted * 0.55, 0.3);
-    color = mix(color, color * vec3(1.0, 0.93, 0.8) + refracted * 0.4, edge * 0.35);
+    // A warm, milky body; near the contour the bright gold behind it glows through, never the dark.
+    float core = smoothstep(bevel * 0.5, bevel + fontSize * 0.06, distance);
+    vec3 color = ink * vec3(0.94, 0.905, 0.85);
+    color += refracted * refracted * edge * 0.45;
+    // Adularescence: a cool, billowing light floats under the surface where the lamp's angle catches it,
+    // brighter than the body, with the stone's blue at its fringe.
+    vec2 drift = (screen - lamp.xy) / fontSize;
+    float billow = 0.5 + 0.25 * sin(drift.x * 0.9 - drift.y * 0.6 + time * 0.16 + sin(drift.y * 1.3 + time * 0.11) * 1.6)
+      + 0.25 * sin(drift.x * 2.3 + drift.y * 1.7 - time * 0.21);
+    float sheen = smoothstep(0.28, 1.0, pow(halfway.z, 6.0) * billow) * mix(0.55, 1.0, core);
+    float fringe = sheen * (1.0 - sheen) * 4.0;
+    color = mix(color, vec3(0.74, 0.82, 1.0), fringe * 0.24);
+    color = mix(color, vec3(0.95, 0.98, 1.04), sheen * 0.75);
     color += vec3(1.0, 0.82, 0.52) * fresnel * toward * 0.38;
     color *= 1.0 - fresnel * (1.0 - toward) * 0.16;
     float hot = (pow(facing, mix(1200.0, 90.0, edge)) * mix(0.6, 0.25, edge) + pow(facing, 140.0) * 0.08 * (1.0 - edge)) * hold;
     color += vec3(1.0, 0.97, 0.9) * hot;
-    color += vec3(1.0, 0.9, 0.7) * (sweep * (0.03 + edge * toward * 0.12) + glinting * (0.06 + edge * 0.5));
+    color += vec3(1.0, 0.9, 0.7) * sweep * (0.03 + edge * toward * 0.12);
+    // On a pale stone the intro glint reads as a wave of the cool sheen rather than more white.
+    color = mix(color, vec3(0.74, 0.83, 1.0), clamp(glinting, 0.0, 1.0) * 0.7 * hold);
     moonstone = color;
   }
 

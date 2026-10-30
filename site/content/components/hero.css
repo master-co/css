@@ -1,7 +1,7 @@
 @layer components {
   .home-hero {
-    --hero-gold-shadow: light-dark(oklch(0.69 0.10 75), oklch(0.19 0.035 65));
-    --hero-gold-body: light-dark(oklch(0.87 0.115 83), oklch(0.57 0.115 77));
+    --hero-gold-shadow: light-dark(oklch(0.79 0.105 76), oklch(0.19 0.035 65));
+    --hero-gold-body: light-dark(oklch(0.9 0.1 84), oklch(0.57 0.115 77));
     --hero-gold-sheen: light-dark(oklch(0.985 0.035 92), oklch(0.95 0.08 90));
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -10,6 +10,12 @@
     padding-block: clamp(8rem, 6rem + 5vw, 10.5rem) clamp(8rem, 5rem + 7vw, 12rem);
     text-align: center;
     background-color: var(--home-ground);
+    /* The hero is a scene, not prose: only the install command can be selected and copied. */
+    user-select: none;
+
+    & .home-command code {
+      user-select: text;
+    }
 
     /* A quiet static field survives unavailable WebGL, fonts or script. */
     &::before {
@@ -190,15 +196,9 @@
     }
   }
 
-  /* The actual heading remains selectable; only a successfully painted mask replaces its ink. */
+  /* Only a successfully painted mask replaces the heading's native ink. */
   .home-hero[data-glass-ready] .home-display {
     -webkit-text-fill-color: transparent;
-
-    &::selection,
-    & *::selection {
-      -webkit-text-fill-color: var(--home-text);
-      background-color: var(--home-signal-glow);
-    }
   }
 
   /* Get started is cut from the title's stone: polished obsidian in light mode, milky quartz in dark mode. */
@@ -212,6 +212,8 @@
     --stone-mirror: light-dark(oklch(0.86 0.1 82 / 0.42), oklch(0.74 0.12 78 / 0.55));
     --stone-sheen: light-dark(rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.9));
     --stone-glare: light-dark(rgb(255 255 255 / 0.36), rgb(255 255 255 / 1));
+    /* Moonstone's cool sheen floats low in the pill, across from the lamp; obsidian has none. */
+    --stone-adularescence: light-dark(transparent, oklch(0.9 0.045 255 / 0.55));
     --stone-glint: light-dark(rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.85));
     --stone-contact: light-dark(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.5));
     --stone-cast: light-dark(oklch(0.3 0.06 68 / 0.45), oklch(0.03 0.01 60 / 0.7));
@@ -252,6 +254,7 @@
       background-image:
         radial-gradient(ellipse 24% 46% at clamp(12%, var(--lit-x), 88%) clamp(20%, var(--lit-y), 40%), color-mix(in oklab, var(--stone-glare) calc(var(--lit-near) * 100%), transparent), transparent),
         radial-gradient(ellipse 80% 70% at var(--lit-x) -10%, var(--stone-sheen), transparent 70%),
+        radial-gradient(ellipse 55% 120% at calc(100% - var(--lit-x) * 0.6) 75%, var(--stone-adularescence), transparent 75%),
         linear-gradient(180deg, var(--stone-top), var(--stone-mid) 52%, var(--stone-bottom));
       box-shadow:
         inset 0 1px 0 var(--stone-lip),
