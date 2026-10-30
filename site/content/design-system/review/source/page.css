@@ -3,10 +3,8 @@
 .review-source-optionPreview { max-width: 42rem; min-width: 0; margin: .85rem 0 0; padding: 1.25rem 1rem 1.35rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
 .review-source-optionPreview .doc-table { margin: 0; }
 .review-source-optionPreview .doc-table table { min-width: 37rem; }
-.review-source-sourceTable { width: 100%; border-collapse: collapse; text-align: left; font-size: .75rem; }
-.review-source-sourceTable :is(th, td) { padding: .6rem .75rem; border-bottom: 1px solid var(--color-line-subtle); vertical-align: top; }
-.review-source-sourceTable thead th { color: var(--color-text-muted); font-weight: 550; }
-.review-source-sourceTable tbody th { color: var(--color-text-strong); font-weight: 500; min-width: 10rem; }
+.review-source-sourceTable tbody :is(th, td) { vertical-align: top; }
+.review-source-sourceTable tbody th { min-width: 10rem; }
 .review-source-sourceTable a { color: var(--color-text-link); }
 .review-source-sourceTable code { font-family: var(--font-family-mono); font-size: .7rem; overflow-wrap: anywhere; }
 .review-source-optionNote { margin: .7rem .25rem 0; max-width: 70ch; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
