@@ -29,7 +29,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 
 - Below 64rem, the native modal site menu includes the current document chapters as well as global navigation and preferences. Search has its own entry and nested dialog behavior.
 - Below 80rem, a native disclosure exposes the same article-heading inventory as the desktop contents rail. It works without hydration; the enhanced link closes it and focuses the destination.
-- Search loads its index when requested, announces loading/empty/failure states, offers retry, supports keyboard selection and restores the initiating control's focus.
+- Search loads its index when requested, announces loading/empty/failure states, offers retry, supports keyboard selection and restores the initiating control's focus. Pages without a document sidebar expose the same entry in the desktop header at 1024, 1280 and 1440px; Guide and Reference retain their sidebar entry.
+- The native main-navigation element receives its localized accessible name. Forced colors retain explicit input-focus and selected-result outlines instead of relying on a background or shadow.
 - Closed search markup stays hidden until the native modal boundary exists. Opening establishes focus before paint. IME composition keeps its confirmation, candidate and cancellation keys instead of invoking document navigation.
 - Code copying shows a visible pending request, prevents duplicate writes, preserves the original source name across a tab switch and reports denied writes with selectable source still available.
 - Language changes and same-page anchor navigation preserve the current query string.
@@ -45,12 +46,13 @@ Implementation and verification record for `codex/site-interior-redesign`.
 
 ## Secondary pages
 
-- Blog uses the two published posts across the available width, adds a page heading and stable dates, and preserves all post destinations/content.
+- Blog uses the two published posts across the available width, adds a page heading and stable dates, and preserves all post destinations/content. Article headings and author groups wrap at enlarged text; author links keep a 44px minimum target.
 - Sponsor gains real section headings, one consistent tier presentation, unchanged amounts and platform destinations, and native modal focus/dismissal behavior. Direct platform links remain available without JavaScript.
 - Empty supporter data does not leave an isolated plus button; the real contribution sections remain available. Without JavaScript, native platform links replace the inactive tier buttons and retain all amounts.
 - All 82 Design System routes are checked at 320px with 200% text. Review chrome adapts its padding, labels, palette columns and range controls; a default canvas owns its full height instead of overlapping the following note.
 - Alignment and float specimens keep their subject geometry inside named local scroll regions with visible focus and horizontal keyboard operation. Document-review composites avoid applying prose bleed twice.
 - Homepage-icon review changes affect only text and layout containers. Artwork sources, icon components, prescribed icon sizes and dedicated homepage styles remain untouched; large review specimens keep their actual size in a local scroll area.
+- The sizing specimen lets enlarged text reflow beside the unchanged 3rem avatar. This fixes a 2px page spill without changing the measured object or article layout.
 - 404 gains a search entry and a direct Guide recovery link, with wrapping at narrow/enlarged sizes.
 - Removed the unused `images/gold-pattern.jpg`, previously mentioned only in a commented-out Blog image. No homepage-specific asset was removed.
 
@@ -62,9 +64,12 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `inventory.json`: 448 built page resources including the 404 template, plus two deliberately missing-path probes.
 - `document-baseline/geometry.json`: initial positions/widths at 390, 768, 1280 and 1440px for four document types.
 - `content-preservation.json`: all 352 Guide, Reference and Blog article bodies preserve their normalized text and existing semantic anchors.
-- `home-paint/summary.json`: 40 pairs of homepage-main screenshots are byte-identical, including both locales/engines/themes and five widths. The allowed shared header is hidden equally in both captures; full geometry and text also agree.
+- `home-paint/summary.json`: 40 pairs of homepage-main screenshots are byte-identical, including both locales/engines/themes and five widths. The existing `.home-header` hook is present in both revisions and the audit asserts it is hidden before capture; full geometry and text also agree.
 - `baseline-production/` and `redesign-production/`: browser measurements and before/after screenshots, including loading, headings, links, artwork, overflow and geometry.
 - `brand-*`, `search-*`, `navigation-*`: behavior, enlarged text, densities, keyboard and theme evidence.
+- `final-behavior-results.json`: all 428 unique browser cases pass—215 Chromium and 213 WebKit. The five unchanged suites use their complete production run; all 20 Navigation cases were rerun after correcting a test that counted the footer shortcut as a second sidebar control.
+- `enlarged-routes-*`: 366 further non-review resources per engine at 320px/200% text, combined with the 82 Design System route checks per engine. All 896 scenes fit. This covers every non-home page plus the two deliberately missing routes.
+- `brand-final-details/`: 160 native viewport captures of 20 brand subjects across both engines, light/dark and 390/1440px.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
@@ -74,14 +79,14 @@ node --import tsx site/scripts/interior-inventory.ts
 MASTER_SWEEP_URL=http://127.0.0.1:3219 \
   MASTER_SWEEP_LABEL=baseline-production MASTER_SWEEP_DELIVERY=static \
   node site/scripts/interior-visual-sweep.mjs
-MASTER_SWEEP_URL=http://127.0.0.1:3220 \
+MASTER_SWEEP_URL=http://127.0.0.1:3222 \
   MASTER_SWEEP_LABEL=redesign-production MASTER_SWEEP_DELIVERY=static \
   node site/scripts/interior-visual-sweep.mjs
 node site/scripts/interior-report.mjs
 
-MASTER_BRAND_URL=http://127.0.0.1:3220 MASTER_BRAND_MATRIX=full \
+MASTER_BRAND_URL=http://127.0.0.1:3222 MASTER_BRAND_MATRIX=full \
   node --test site/tests/brand-system.e2e.mjs
-MASTER_SITE_URL=http://127.0.0.1:3220 \
+MASTER_SITE_URL=http://127.0.0.1:3222 \
   node --test site/tests/documentation-search.e2e.mjs site/tests/interior-navigation.e2e.mjs
 ```
 
@@ -91,7 +96,25 @@ Set `MASTER_BRAND_BROWSER=webkit` or `MASTER_SITE_BROWSER=webkit` for the corres
 
 Implementation checks passed so far: site lint and type check; Reference (25), syntax (14), llms (33), document examples (21), islands (8), atomic authoring (3), MDX imports (2), brand export/source checks (3), and homepage source behavior (34). Production builds render all 448 pages and public-asset verification passes.
 
-The full final browser comparison and CSS contract review are still in progress. Update this section with final results before delivery.
+Final behavior coverage passes: Brand (28 Chromium / 27 WebKit), Search (20 / 20), Navigation (20 / 20), demos (48 / 48), reading and source controls (13 / 12), and component reviews (86 / 86). The 320px/200% route checks have no remaining overflow. All 448 HTML resources retain titles, valid local destinations and unique HTML IDs; 41,378 local/remote anchor elements were checked for local resolution, with no missing local destination or anchor.
+
+The final 9,000-scene production comparison and CSS contract approval remain in progress. Update this section after the complete fresh captures finish.
+
+## Exact CSS delivery review
+
+Review compares the frozen committed base with the redesigned production output, rather than using a previously stale snapshot as the visual baseline. The route inventory remains 448 pages. The project manifest is byte-identical in both captures (SHA-256 `16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9`); no preset, utility semantics or theme definition changed.
+
+Intentional website delivery changes are:
+
+- The complete Brand presentation and its scoped type, color-role and geometry specimens.
+- Native menu/contents behavior, larger named targets, search states and source-copy feedback.
+- Interior contour/contact materials, scalable dense code and natural Chinese heading tracking.
+- Responsive footer, Blog, Sponsor and 404 presentation.
+- Flexible demo/review chrome, content-owned canvas height and named local overflow for specimens that retain their actual geometry.
+
+Changes to retained theme-token sets come from which values these website subjects reference. Homepage-main source and artwork are unchanged. Forty native screenshot pairs already agree byte for byte; the complete route comparison additionally checks every document column's x-position, width and horizontal padding. `css-delivery-review.json` retains the exact added/removed CSS segments, counts and manifest comparison.
+
+Final snapshot approval remains pending completion of the fresh production captures and their review. The update command will cite this section once that review is complete; the verifier itself remains unchanged.
 
 ## Known conditions
 
