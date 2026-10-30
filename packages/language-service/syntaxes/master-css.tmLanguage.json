@@ -95,6 +95,10 @@
           },
           "patterns": [
             {
+              "match": "\\b(?:static|inline)\\b(?!-)",
+              "name": "storage.modifier.master-css"
+            },
+            {
               "include": "#master-block"
             }
           ]
@@ -113,6 +117,20 @@
             }
           },
           "patterns": [
+            {
+              "begin": "\\G\\s*(keyframes)\\b(?!-)",
+              "beginCaptures": {
+                "1": {
+                  "name": "storage.modifier.master-css"
+                }
+              },
+              "end": "(?=;)|$",
+              "patterns": [
+                {
+                  "include": "#master-plain-string"
+                }
+              ]
+            },
             {
               "include": "#master-string"
             },
@@ -347,6 +365,9 @@
               "include": "#comment"
             },
             {
+              "include": "#master-attribute-selector"
+            },
+            {
               "include": "#master-string"
             },
             {
@@ -354,6 +375,9 @@
             },
             {
               "include": "#master-native-declaration"
+            },
+            {
+              "include": "#master-conditional-group"
             },
             {
               "include": "source.css#at-rules"
@@ -476,6 +500,13 @@
     },
     "master-selector": {
       "patterns": [
+        {
+          "include": "#master-attribute-selector"
+        },
+        {
+          "match": "\\*",
+          "name": "entity.name.tag.wildcard.css"
+        },
         {
           "match": "(&|[>+~(),\\[\\]])",
           "name": "keyword.operator.selector.master-css"
@@ -675,6 +706,9 @@
           "include": "#comment"
         },
         {
+          "include": "#master-plain-string"
+        },
+        {
           "match": "<(?:integer|number|string|custom-ident)>",
           "name": "support.function.misc.master-css"
         },
@@ -683,12 +717,152 @@
           "name": "variable.css.custom-property.master-css"
         },
         {
+          "match": "-?(?:[0-9]*\\.)?[0-9]+(?:%|[a-zA-Z]+)?",
+          "name": "constant.numeric.master-css"
+        },
+        {
           "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
           "name": "entity.other.attribute-name.class.master-css"
         },
         {
           "match": "[:,()]",
           "name": "keyword.operator.master-css"
+        }
+      ]
+    },
+    "master-conditional-group": {
+      "patterns": [
+        {
+          "begin": "(?i)(?=@(?:media|container|supports|layer|scope|starting-style)(?![\\w-]))",
+          "end": "(?<=\\})|(;)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.terminator.rule.css"
+            }
+          },
+          "patterns": [
+            {
+              "begin": "(?i)\\G(@)media(?![\\w-])",
+              "beginCaptures": {
+                "0": {
+                  "name": "keyword.control.at-rule.media.css"
+                },
+                "1": {
+                  "name": "punctuation.definition.keyword.css"
+                }
+              },
+              "end": "(?=\\s*[{;])",
+              "name": "meta.at-rule.media.header.css",
+              "patterns": [
+                {
+                  "include": "source.css#media-query-list"
+                }
+              ]
+            },
+            {
+              "begin": "(?i)\\G(@)container(?![\\w-])",
+              "beginCaptures": {
+                "0": {
+                  "name": "keyword.control.at-rule.css"
+                },
+                "1": {
+                  "name": "punctuation.definition.keyword.css"
+                }
+              },
+              "end": "(?=\\s*[{;])",
+              "name": "meta.at-rule.container.header.css",
+              "patterns": [
+                {
+                  "include": "source.css#media-query-list"
+                }
+              ]
+            },
+            {
+              "begin": "(?i)\\G(@)supports(?![\\w-])",
+              "beginCaptures": {
+                "0": {
+                  "name": "keyword.control.at-rule.supports.css"
+                },
+                "1": {
+                  "name": "punctuation.definition.keyword.css"
+                }
+              },
+              "end": "(?=\\s*[{;])",
+              "name": "meta.at-rule.supports.header.css",
+              "patterns": [
+                {
+                  "include": "source.css#feature-query-operators"
+                },
+                {
+                  "include": "source.css#feature-query"
+                }
+              ]
+            },
+            {
+              "begin": "(?i)\\G(@)(?:layer|scope|starting-style)(?![\\w-])",
+              "beginCaptures": {
+                "0": {
+                  "name": "keyword.control.at-rule.css"
+                },
+                "1": {
+                  "name": "punctuation.definition.keyword.css"
+                }
+              },
+              "end": "(?=\\s*[{;])",
+              "name": "meta.at-rule.header.css",
+              "patterns": [
+                {
+                  "include": "#comment"
+                },
+                {
+                  "include": "#master-selector"
+                }
+              ]
+            },
+            {
+              "include": "#master-block"
+            }
+          ]
+        }
+      ]
+    },
+    "master-attribute-selector": {
+      "patterns": [
+        {
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.entity.begin.bracket.square.css"
+            }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.entity.end.bracket.square.css"
+            }
+          },
+          "name": "meta.attribute-selector.master-css",
+          "patterns": [
+            {
+              "include": "#master-plain-string"
+            },
+            {
+              "match": "[~|^$*]?=",
+              "name": "keyword.operator.pattern.css"
+            },
+            {
+              "match": "(?<==)\\s*[_a-zA-Z-][_a-zA-Z0-9-]*",
+              "name": "string.unquoted.attribute-value.css"
+            },
+            {
+              "match": "\\b[is]\\s*(?=\\])",
+              "name": "storage.modifier.ignore-case.css"
+            },
+            {
+              "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
+              "name": "entity.other.attribute-name.css"
+            }
+          ]
         }
       ]
     }
