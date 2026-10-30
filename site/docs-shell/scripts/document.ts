@@ -23,3 +23,13 @@ document.addEventListener('click', (event) => {
     anchor(id, { offset: 110 })
   }
 })
+
+// Give bounded inline previews the same horizontal keys in every browser.
+document.addEventListener('keydown', event => {
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+  const element = event.target
+  if (!(element instanceof HTMLElement) || !element.matches('[data-preview-scroll]')) return
+  if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') || element.scrollWidth <= element.clientWidth) return
+  event.preventDefault()
+  element.scrollBy({ left: event.key === 'ArrowRight' ? 40 : -40, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+})

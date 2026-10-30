@@ -6,7 +6,6 @@
 .review-demo-objects { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .625rem; width: 100%; }
 .review-demo-objects > div { min-width: 3.25rem; min-height: 3.25rem; padding: .75rem; font: 500 .8125rem/1.5 var(--font-family-mono); }
 .review-demo-current .site-demo { margin: 1rem 0 0; min-height: 10rem; }
-.review-demo-current .site-demo { height: 10rem; }
 .review-demo-current .demo-canvas { min-height: calc(10rem - 2px); display: flex; align-items: center; }
 .review-demo-sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
 .review-demo-sectionHeading h2 { margin-bottom: .25rem; }
@@ -16,4 +15,4 @@
 .review-demo-sectionHeading a:focus-visible, .review-demo-optionalUsage .demo-header-controls a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; border-radius: 2px; }
 .review-demo-actualUsage { width: min(100%, 48rem); }
 .review-demo-optionalUsage { width: min(100%, 40rem); }
-@media (max-width: 70rem) { .review-demo-current .site-demo { min-height: 9rem; } .review-demo-current .site-demo { height: 9rem; } .review-demo-current .demo-canvas { min-height: calc(9rem - 2px); } }
+@media (max-width: 70rem) { .review-demo-current .site-demo { min-height: 9rem; } .review-demo-current .demo-canvas { min-height: calc(9rem - 2px); } }

@@ -21,11 +21,14 @@ export default function ControlsReviewScene() {
   >{label}</button>)
 
   return <Demo title="Cross-axis alignment" controls={<DemoControls label="Cross-axis alignment" variant="segmented">{buttons}</DemoControls>}
-    caption="Selection changes the actual alignment utility on the flex parent.">
-    <div className={`display:flex gap-sm height:10rem ${alignment}`}>
-      <DemoItem tone="blue" className="flex:1 p-md">01</DemoItem>
-      <DemoItem tone="violet" className="flex:1 height:6rem p-md">02</DemoItem>
-      <DemoItem className="flex:1 p-md">03</DemoItem>
+    caption="Selection changes the actual alignment utility on the flex parent. Scroll the preview horizontally when space is limited.">
+    {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard focus enables native horizontal scrolling. */}
+    <div className="ds-controls-viewport" role="region" aria-label="Alignment preview" tabIndex={0} data-preview-scroll="">
+      <div className={`display:flex gap-sm height:10rem ${alignment}`}>
+        <DemoItem tone="blue" className="flex:1 p-md">01</DemoItem>
+        <DemoItem tone="violet" className="flex:1 height:6rem p-md">02</DemoItem>
+        <DemoItem className="flex:1 p-md">03</DemoItem>
+      </div>
     </div>
   </Demo>
 }

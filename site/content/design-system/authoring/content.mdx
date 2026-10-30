@@ -173,6 +173,8 @@ Give each join one contour. A borderless raised face can use `--shadow-raised`, 
 
 Keep a control's border box, icon slot and label start steady through selection, pressing and copy feedback. Change fill and shadow for a pressed state. Allow controls and their labels to wrap when text grows, and keep keyboard focus visible.
 
+When an inline lesson needs more width than the document can provide, put a named, keyboard-focusable scroll region around the complete subject. Keep the subject's float, flex and sizing rules intact. The site's `data-preview-scroll` boundary uses Left and Right Arrow keys for horizontal scrolling; labels and controls stay outside that subject.
+
 Keep select menus native. Pair `demo-select` with an `aria-hidden` chevron inside `demo-select-wrap`; the wrapper supplies the arrow slot without replacing the browser's picker or keyboard behavior. Use concise option labels and check that they remain fully visible at 200% text size.
 
 Inspect icons and range handles at their rendered size in both modes. A small handle needs a stronger edge than a large panel to remain visible against its track. If an asymmetric icon needs optical centering, adjust only the glyph inside its stable slot. A disabled control keeps its selected position but loses the active text and contact shadow.

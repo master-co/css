@@ -5,8 +5,9 @@
     min-width: 0;
     max-width: 76rem;
     margin-inline: auto;
-    padding: 6rem var(--spacing-md) var(--spacing-2xl);
+    padding: 6rem min(var(--spacing-md), 16px) var(--spacing-2xl);
     color: var(--color-text-strong);
+    overflow-wrap: anywhere;
   }
   .home-icon-review * { box-sizing: border-box; }
   .home-icon-review :is(h1, h2, h3, p, figure, dl, dd) { margin: 0; }
@@ -33,7 +34,8 @@
   .hir-material-intro { max-width: 44rem; margin-top: var(--spacing-md) !important; color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
   .hir-material-theme { margin-top: var(--spacing-lg); padding: var(--spacing-lg); border: 1px solid var(--hir-line); border-radius: var(--radius-xl); }
   .hir-material-label { opacity: .6; font-size: .75rem; }
-  .hir-material-pair { display: grid; gap: var(--spacing-lg); margin-top: var(--spacing-md); }
+  .hir-material-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-lg); margin-top: var(--spacing-md); }
+  .hir-material-option { min-width: 0; overflow-wrap: anywhere; }
   .hir-material-option > p { margin-bottom: var(--spacing-sm); font-family: var(--font-family-mono); font-size: .6875rem; opacity: .6; }
   .hir-material-card { display: flex; align-items: center; gap: var(--spacing-md); min-height: 13rem; padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, currentColor 8%, transparent); }
   .hir-light .hir-material-card { background: white; }
@@ -42,12 +44,13 @@
   .hir-material-card > div { min-width: 0; }
   .hir-material-card h3 { font-size: 1.125rem; line-height: 1.35; font-weight: 550; letter-spacing: -.015em; }
   .hir-material-card p { margin-top: .375rem; opacity: .65; font-size: .9375rem; line-height: 1.6; }
-  .hir-material-sizes { display: flex; flex-wrap: wrap; align-items: end; justify-content: center; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+  .hir-material-sizes { display: flex; flex-wrap: wrap; align-items: end; justify-content: center; gap: var(--spacing-sm); max-width: 100%; margin-top: var(--spacing-lg); overflow-x: auto; }
   .hir-material-sizes figure { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs); }
   .hir-material-sizes figcaption { opacity: .55; font-size: .625rem; }
   .hir-material-study img { display: block; object-fit: contain; }
   @media (min-width: 64rem) { .hir-material-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 39.999rem) { .hir-material-theme { padding: var(--spacing-sm); } .hir-material-card { flex-direction: column; align-items: start; } }
+  @media (max-width: 39.999rem) { .hir-material-theme { padding: min(var(--spacing-sm), 12px); } .hir-material-card { flex-direction: column; align-items: start; padding: min(var(--spacing-md), 16px); } .hir-material-sizes { justify-content: start; } }
+  @media (max-width: 28rem) { .hir-index { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8em), 1fr)); } }
   .hir-toolbar { margin-top: var(--spacing-2xl); padding-block: var(--spacing-md); font-size: .8125rem; }
   .hir-appearance { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-text-muted); font-size: .75rem; }
   .hir-appearance > span { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-width: 3.5rem; min-height: 2.75rem; border: 1px solid var(--hir-line); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
@@ -62,6 +65,7 @@
   .hir-group-heading { display: flex; align-items: baseline; gap: var(--spacing-md); padding-bottom: var(--spacing-lg); }
   .hir-number { color: var(--color-text-muted); font-size: .6875rem; }
   .hir-group-heading h2 { font-size: 1.375rem; line-height: 1.3; font-weight: 550; letter-spacing: -.025em; }
+  .hir-group-heading > div { min-width: 0; }
   .hir-group-heading p { margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
   .hir-count { display: none; margin-left: auto; color: var(--color-text-muted); font-size: .6875rem; white-space: nowrap; }
   .hir-grid { display: grid; gap: var(--spacing-md); }
@@ -94,8 +98,8 @@
   .hir-construction-compact { min-height: 11rem; border-top: 1px solid var(--hir-line); }
   .hir-construction-compact > span { color: var(--color-text-muted); font-size: .625rem; }
   .hir-placement-grid { display: grid; gap: var(--spacing-sm); padding: var(--spacing-sm); border-radius: var(--radius-2xl); background: var(--color-surface-base); }
-  .hir-placement-card { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-md); padding: var(--spacing-lg); border-radius: var(--radius-xl); background: var(--color-surface-raised); }
-  .hir-placement-card > div { flex: 1 1 12rem; }
+  .hir-placement-card { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-md); padding: min(var(--spacing-lg), 24px); border-radius: var(--radius-xl); background: var(--color-surface-raised); }
+  .hir-placement-card > div { flex: 1 1 12rem; min-width: 0; }
   .hir-placement-card p { margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .875rem; line-height: 1.7; }
   .hir-handoff { padding-top: var(--spacing-xl); border-top: 1px solid var(--hir-line); }
   .hir-handoff-grid { display: grid; gap: var(--spacing-xl); }

@@ -18,4 +18,4 @@
 .review-swatch-actualUse .site-demo { margin: .75rem 0 0; }
 .review-swatch-currentRoleRow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; width: 100%; }
 @media (max-width: 50rem) { .review-swatch-roleGrid { grid-template-columns: 1fr; } }
-@media (max-width: 28rem) { .review-swatch-currentRoleRow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 28rem) { .review-swatch-currentRoleRow { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7em), 1fr)); } }

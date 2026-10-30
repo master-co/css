@@ -37,7 +37,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - At 320px with 200% text, search uses two input-bar rows so Clear and Cancel cannot reduce the query field to zero width.
 - The brand chapter list sizes its columns to available space; enlarged labels remain readable, and jumps measure the collapsed navigation before positioning the heading.
 - The shared home link has an accessible name and a larger hit area while retaining the 20px artwork. Global navigation, document navigation and page contents have distinct landmark names.
-- At the standard root size, document title and code sizes remain 28px/13px with the same code leading. They scale with enlarged text instead of staying fixed.
+- At a 16px root, the small-screen document title remains 28px and dense code remains 13px on 20px leading. Larger breakpoints retain their existing size hierarchy. These sizes scale with enlarged text instead of staying fixed.
+- Traditional Chinese headings use natural tracking, including `zh-TW` pages. English document headings retain their existing treatment.
 - Previous/next links identify their direction and allow complete titles to wrap.
 - Interior surfaces use contours and contact shadows. The homepage retains its global material definitions.
 - Footer groups wrap to fit their available width; legal links and controls remain usable at enlarged text and touch sizes.
@@ -47,6 +48,9 @@ Implementation and verification record for `codex/site-interior-redesign`.
 - Blog uses the two published posts across the available width, adds a page heading and stable dates, and preserves all post destinations/content.
 - Sponsor gains real section headings, one consistent tier presentation, unchanged amounts and platform destinations, and native modal focus/dismissal behavior. Direct platform links remain available without JavaScript.
 - Empty supporter data does not leave an isolated plus button; the real contribution sections remain available. Without JavaScript, native platform links replace the inactive tier buttons and retain all amounts.
+- All 82 Design System routes are checked at 320px with 200% text. Review chrome adapts its padding, labels, palette columns and range controls; a default canvas owns its full height instead of overlapping the following note.
+- Alignment and float specimens keep their subject geometry inside named local scroll regions with visible focus and horizontal keyboard operation. Document-review composites avoid applying prose bleed twice.
+- Homepage-icon review changes affect only text and layout containers. Artwork sources, icon components, prescribed icon sizes and dedicated homepage styles remain untouched; large review specimens keep their actual size in a local scroll area.
 - 404 gains a search entry and a direct Guide recovery link, with wrapping at narrow/enlarged sizes.
 - Removed the unused `images/gold-pattern.jpg`, previously mentioned only in a commented-out Blog image. No homepage-specific asset was removed.
 
