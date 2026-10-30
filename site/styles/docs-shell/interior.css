@@ -12,6 +12,7 @@
   .site-interior .code { -webkit-text-size-adjust: auto; text-size-adjust: auto; }
   .site-interior .code-wrapper { font-size: .8125rem; line-height: 1.25rem; }
   .site-interior .code-tab[aria-selected="true"] { box-shadow: var(--shadow-contact); }
+  .site-interior .prose :is(h2, h3, h4, h5, h6):lang(zh):not(:where(.site-demo *, [data-demo-container] *)) { letter-spacing: 0; }
 
   @media (pointer: coarse) {
     .doc-sidebar .app-nav, .doc-page-contents .app-nav { min-height: 44px; }

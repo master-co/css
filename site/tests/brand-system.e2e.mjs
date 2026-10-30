@@ -46,7 +46,7 @@ async function assertLayout(page) {
       colors,
       typeSizes: [...document.querySelectorAll('.brand-type-row')].map(row => ({ token: row.dataset.sizeToken, expected: Number(row.dataset.sizeRem) * parseFloat(getComputedStyle(root).fontSize), actual: parseFloat(getComputedStyle(row.querySelector('p')).fontSize) })),
       brokenArtwork: [...document.querySelectorAll('.brand-page img')].filter(img => !img.complete || !img.naturalWidth).map(img => img.getAttribute('src')),
-      headingBounds: [...document.querySelectorAll('.brand-hero h1,.brand-content > h2')].map(element => ({ left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right })),
+      headingBounds: [...document.querySelectorAll('.brand-hero h1,.brand-content > h2')].map(element => ({ left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right, chinese: element.matches(':lang(zh)'), tracking: getComputedStyle(element).letterSpacing })),
     }
   })
   assert.equal(result.overflow, false, 'the page keeps horizontal overflow local')
@@ -59,7 +59,10 @@ async function assertLayout(page) {
     assert.ok(entry.definition, `${entry.token}: a real inherited definition`)
     assert.ok(entry.color !== 'rgba(0, 0, 0, 0)' && entry.color !== 'transparent', `${entry.token}: a real rendered color`)
   }
-  for (const bounds of result.headingBounds) { assert.ok(bounds.left >= -1); assert.ok(bounds.right <= (await page.viewportSize()).width + 1) }
+  for (const bounds of result.headingBounds) {
+    assert.ok(bounds.left >= -1); assert.ok(bounds.right <= (await page.viewportSize()).width + 1)
+    if (bounds.chinese) assert.ok(bounds.tracking === 'normal' || parseFloat(bounds.tracking) === 0, 'Chinese headings keep natural tracking')
+  }
 }
 
 for (const width of full ? [320, 390, 768, 1280, 1440] : [390, 1440]) {
@@ -183,7 +186,7 @@ test(`${browserName}: the portable guide serves the complete brand content`, { t
 })
 
 test(`${browserName}: enlarged text, density, forced colors and static content stay readable`, { timeout: 120000 }, async () => {
-  for (const options of [{ width: 390, textSize: 32 }, { width: 1440, density: 1.25 }, { width: 390, density: 2 }, { width: 390, js: false }]) {
+  for (const options of [{ width: 390, textSize: 32 }, { width: 320, locale: 'tw', textSize: 32 }, { width: 1440, density: 1.25 }, { width: 390, density: 2 }, { width: 390, js: false }]) {
     const { context, page, errors } = await open(options)
     try {
       await assertLayout(page)
@@ -194,13 +197,14 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
         await page.locator('.brand-controls-board').getByRole('radio', { name: 'Grid', exact: true }).check()
       }
       if (options.textSize) {
+        if (options.locale === 'tw') await page.screenshot({ path: new URL('320-tw-enlarged-hero.png', output).pathname })
         const menu = page.locator('.brand-mobile-navigation')
         await menu.locator('summary').click()
         const first = await menu.locator('a').nth(0).boundingBox()
         const second = await menu.locator('a').nth(1).boundingBox()
         assert.equal(first.x, second.x, 'enlarged chapter labels use the available width')
         assert.ok(second.y > first.y)
-        await menu.getByRole('link', { name: 'Color', exact: true }).click()
+        await menu.getByRole('link', { name: options.locale === 'tw' ? '色彩' : 'Color', exact: true }).click()
         const navigation = await page.locator('.brand-navigation').boundingBox()
         const heading = await page.locator('#color-system').boundingBox()
         assert.ok(heading.y >= navigation.y + navigation.height + 8)
@@ -210,8 +214,8 @@ test(`${browserName}: enlarged text, density, forced colors and static content s
         assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true, 'the forced-color scene exercises the actual media condition')
         await assertLayout(page)
       }
-      const name = options.textSize ? 'enlarged-forced' : options.js === false ? 'static' : `density-${options.density}`
-      await page.screenshot({ path: new URL(`${name}.png`, output).pathname, fullPage: true })
+      const name = options.textSize ? options.locale === 'tw' ? '320-tw-enlarged-forced' : 'enlarged-forced' : options.js === false ? 'static' : `density-${options.density}`
+      await page.screenshot({ path: new URL(`${name}.png`, output).pathname, fullPage: options.locale !== 'tw' })
       assert.deepEqual(errors, [])
     } finally { await context.close() }
   }

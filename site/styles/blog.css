@@ -3,7 +3,7 @@
   .blog-header { max-width: 42rem; margin-bottom: var(--spacing-3xl); }
   .blog-overline { display: flex; align-items: center; gap: var(--spacing-sm); margin: 0; color: var(--color-text-muted); font: .6875rem/1.5 var(--font-family-mono); letter-spacing: .05em; }
   .blog-header h1 { margin: var(--spacing-lg) 0; color: var(--color-text-strong); font-size: clamp(2.25rem, 4.5vw, 4rem); font-weight: 460; line-height: 1.1; letter-spacing: -.045em; }
-  .blog-header h1:lang(zh-Hant) { letter-spacing: 0; }
+  .blog-header h1:lang(zh) { letter-spacing: 0; }
   .blog-header > p:not(.blog-overline) { margin: 0; font-size: 1rem; line-height: 1.8; }
   .blog-index-heading { display: flex; align-items: baseline; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-line-divider); }
   .blog-index-heading h2 { margin: 0; color: var(--color-text-strong); font-size: .8125rem; font-weight: 550; }
@@ -17,7 +17,7 @@
   .blog-post-meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--spacing-xs) var(--spacing-md); color: var(--color-text-muted); font-size: .6875rem; line-height: 1.5; }
   .blog-post-meta time { font-family: var(--font-family-mono); font-size: .625rem; }
   .blog-post-link h3 { max-width: 28rem; margin: var(--spacing-lg) 0 var(--spacing-md); color: var(--color-text-strong); font-size: 1.5rem; font-weight: 460; line-height: 1.3; letter-spacing: -.025em; text-wrap: pretty; overflow-wrap: anywhere; }
-  .blog-post-link h3:lang(zh-Hant) { letter-spacing: 0; }
+  .blog-post-link h3:lang(zh) { letter-spacing: 0; }
   .blog-post-link > p { margin: 0 0 var(--spacing-2xl); font-size: .875rem; line-height: 1.8; }
   .blog-post-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-top: auto; padding-top: var(--spacing-lg); border-top: 1px solid var(--color-line-divider); }
   .blog-authors { display: flex; align-items: center; gap: var(--spacing-sm); min-width: 0; }

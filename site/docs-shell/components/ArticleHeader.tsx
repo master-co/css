@@ -47,7 +47,8 @@ export default async function ArticleHeader(props: any) {
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx(
-            'overflow-wrap:anywhere max-width:52.125rem margin-top:0 font-size:1.75rem leading-xs tracking-tight text-wrap:wrap fg-text-strong font-3xl@sm',
+            'overflow-wrap:anywhere max-width:52.125rem margin-top:0 font-size:1.75rem leading-xs text-wrap:wrap fg-text-strong font-3xl@sm',
+            locale === 'tw' ? 'tracking-normal' : 'tracking-tight',
             h1ClassName,
             {
               'font-4xl@md': metadata.type !== 'entity' && !toc

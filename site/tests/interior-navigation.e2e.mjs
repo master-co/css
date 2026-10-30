@@ -93,6 +93,8 @@ test(`${browserName}: language changes retain a document query and semantic anch
     assert.equal(url.hash, '#what-is-master-css')
     assert.equal(await page.getByRole('dialog').count(), 0)
     assert.equal(await page.getByRole('link', { name: 'Master CSS 首頁', exact: true }).count(), 1)
+    const tracking = await page.locator('article.prose :is(h1,h2,h3)').evaluateAll(headings => headings.map(heading => getComputedStyle(heading).letterSpacing))
+    assert.ok(tracking.every(value => value === 'normal' || parseFloat(value) === 0), 'the localized document keeps natural heading tracking')
   } finally { await context.close() }
 })
 

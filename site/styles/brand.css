@@ -32,7 +32,7 @@
   .brand-overline { display: flex; align-items: center; gap: var(--spacing-sm); margin: 0; color: var(--brand-quiet); font: 400 .6875rem/1.5 var(--font-family-mono); letter-spacing: .06em; }
   .brand-signal { flex: none; width: .375rem; height: .375rem; border-radius: var(--radius-pill); background: var(--brand-gold); box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-gold) 12%, transparent); }
   .brand-hero h1 { margin: var(--spacing-xl) 0 var(--spacing-lg); color: var(--brand-ink); font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 460; line-height: 1.04; letter-spacing: -.055em; }
-  .brand-hero h1:lang(zh-Hant), .brand-next h2:lang(zh-Hant) { letter-spacing: 0; }
+  .brand-hero h1:lang(zh), .brand-next h2:lang(zh) { letter-spacing: 0; }
   .brand-hero-lead { max-width: 32rem; margin: 0; font-size: 1.0625rem; line-height: 1.75; text-wrap: pretty; }
   .brand-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
   .brand-hero-actions a { display: inline-flex; align-items: center; gap: var(--spacing-md); min-height: 44px; color: var(--brand-ink); font-size: .875rem; text-decoration: none; }
@@ -376,6 +376,10 @@
     .brand-font-families strong { margin: 0; }
     .brand-font-families p { grid-column: 1 / -1; }
     .brand-application-bar { align-items: start; flex-direction: column; }
+    .brand-spacing-scale > div { grid-template-columns: minmax(0, 1fr) auto; }
+    .brand-spacing-scale code { grid-column: 1; grid-row: 1; }
+    .brand-spacing-scale > div > span:not(.brand-spacing-track) { grid-column: 2; grid-row: 1; }
+    .brand-spacing-track { grid-column: 1 / -1; grid-row: 2; }
   }
   @container brand-art (width < 320px) {
     .brand-mark-board { grid-template-rows: auto minmax(0, 1fr) auto; gap: 24px; min-height: 288px; padding: 24px; }
