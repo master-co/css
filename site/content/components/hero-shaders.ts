@@ -31,17 +31,52 @@ vec3 backgroundAt(vec2 uv) {
   return color + grainAt(p) * 0.044 * smoothstep(0.025, 0.25, luminance) * coverage;
 }`
 
-/** Upscale the sculpted gold; expensive glass passes cover only their own bounds. */
+// The lamp is a point light in CSS pixels (y down) at a height above the page; z is that height.
+const lampLighting = `
+vec3 toLamp(vec2 screen) {
+  return normalize(vec3(lamp.x - screen.x, screen.y - lamp.y, lamp.z));
+}
+float titleDistance(vec2 screen) {
+  vec2 uv = (screen - title.xy) / title.zw;
+  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return -distanceRange;
+  return (texture2D(glyphs, uv).r - 0.5) * 2.0 * distanceRange;
+}`
+
+/** Upscale the sculpted gold, and let the raised title cast a soft shadow away from the lamp. */
 export const heroCopySource = `
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D scene;
+uniform sampler2D glyphs;
 uniform vec2 resolution;
 uniform float time;
 uniform vec3 ground;
+uniform vec4 title;
+uniform float distanceRange;
+uniform float fontSize;
+uniform vec3 lamp;
+uniform float shade;
 ${sceneSampling}
+${lampLighting}
 void main() {
-  gl_FragColor = vec4(backgroundAt(vUv), 1.0);
+  vec3 color = backgroundAt(vUv);
+  if (shade > 0.0) {
+    vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
+    // Letters float a short height above the silk; a lower lamp throws a longer, softer shadow.
+    float elevation = fontSize * 0.11;
+    vec2 offset = (screen - lamp.xy) * elevation / max(lamp.z - elevation, 1.0);
+    float reach = length(offset);
+    offset *= min(1.0, distanceRange * 0.8 / max(reach, 0.0001));
+    // The penumbra widens with distance from the letter; the field saturates at its range, so it stays inside.
+    float softness = min(distanceRange * 0.95, 3.0 + reach * 1.1);
+    float thrown = smoothstep(-softness, softness * 0.35, titleDistance(screen - offset));
+    float contact = smoothstep(-fontSize * 0.05, 0.0, titleDistance(screen));
+    // A longer shadow spreads the same occlusion over a wider penumbra, so it also fades.
+    float amount = (thrown * thrown * 0.25 * (1.0 - 0.4 * smoothstep(0.0, distanceRange, reach)) + contact * 0.08) * shade;
+    // Shadows on gold keep a little warmth instead of turning gray.
+    color *= mix(vec3(1.0), vec3(0.78, 0.71, 0.60), amount);
+  }
+  gl_FragColor = vec4(color, 1.0);
 }`
 
 export const heroClothSource = `
@@ -58,6 +93,7 @@ uniform vec3 ground;
 uniform vec4 title;
 uniform vec4 readingArea;
 uniform float fontSize;
+uniform vec3 lamp;
 
 float cloth(vec2 p) {
   // Independent warped folds form broad valleys and continuous curved crests.
@@ -89,6 +125,12 @@ void main() {
   color *= 0.94 + 0.06 * smoothstep(-1.3, 1.3, h);
 
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
+  // A carried lamp rakes across nearby folds: crests that face it brighten, and the light pools softly.
+  vec2 fromLamp = (screen - lamp.xy) / (fontSize * 3.2);
+  float pool = exp(-dot(fromLamp, fromLamp)) * pointer.z;
+  vec3 toLamp = normalize(vec3(lamp.x - screen.x, screen.y - lamp.y, lamp.z));
+  float raking = pow(max(dot(normal, toLamp), 0.0), 6.0);
+  color = mix(color, sheen, clamp(pool * (raking * 0.6 + 0.08), 0.0, 1.0));
   // A soft, open reading band keeps pale glass legible when a dark-theme crest crosses it.
   float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
   float above = smoothstep(title.y - fontSize * 1.45, title.y - fontSize * 0.12, screen.y);
@@ -110,7 +152,10 @@ void main() {
   gl_FragColor = vec4(mix(ground, color, alpha), 1.0);
 }`
 
-/** A flat optical film: quiet transmission and one broad reflection, without an extruded bevel. */
+/**
+ * Cut stone lit by the lamp. Light mode is polished obsidian: a near-black face, a narrow rounded bevel
+ * that mirrors the gold, and one sharp highlight. Dark mode is moonstone: a milky body whose bevel bends the gold behind it.
+ */
 export const heroCompositeSource = `
 precision highp float;
 varying vec2 vUv;
@@ -121,10 +166,16 @@ uniform vec4 title;
 uniform float distanceRange;
 uniform float fontSize;
 uniform float material;
+uniform float glint;
 uniform float time;
-uniform vec3 pointer;
+uniform vec3 lamp;
 uniform vec3 ink;
 uniform vec3 ground;
+${lampLighting}
+
+vec3 sceneAt(vec2 uv) {
+  return texture2D(scene, clamp(uv, vec2(0.0), vec2(1.0))).rgb;
+}
 
 void main() {
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
@@ -133,32 +184,79 @@ void main() {
     gl_FragColor = vec4(0.0);
     return;
   }
-  float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
   vec4 glyph = texture2D(glyphs, textUv);
-  float distance = (glyph.r - 0.5) * 2.0 * distanceRange;
-  float contour = (1.0 - glyph.a) * smoothstep(-1.0, -0.1, distance) * mix(0.36, 0.02, dark) * material;
   if (glyph.a < 0.002) {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, contour);
+    gl_FragColor = vec4(0.0);
     return;
   }
-  vec2 plane = (vUv - 0.5) * vec2(resolution.x / resolution.y, 1.0) * ${heroPlaneScale.toFixed(1)};
-  vec2 toPointer = pointer.xy - plane;
-  float proximity = exp(-dot(toPointer, toPointer) * 1.25) * pointer.z;
-  vec2 flow = vec2(sin(plane.y * 1.2 + time * 0.12), cos(plane.x - time * 0.09));
-  vec2 outward = glyph.gb * 2.0 - 1.0;
-  vec2 offset = (flow * 0.6 + outward * 0.4) * min(2.4, fontSize * 0.035) * material / resolution;
-  vec3 transmitted = texture2D(scene, clamp(vUv + vec2(offset.x, -offset.y), vec2(0.0), vec2(1.0))).rgb;
-  float luminance = dot(transmitted, vec3(0.2126, 0.7152, 0.0722));
-  transmitted = mix(vec3(luminance), transmitted, 0.30);
-  float reflectedPosition = plane.x * 0.72 + plane.y * 0.42 + sin(time * 0.10) * 2.2;
-  float reflection = exp(-pow(reflectedPosition / 1.15, 2.0));
-  float film = mix(0.66, 0.72, dark) + reflection * 0.10 - proximity * 0.035;
-  vec3 glass = mix(transmitted, ink, film);
-  // A subpixel contour keeps light glass readable, with no drop shadow or nested reflective ridge.
-  float edge = 1.0 - smoothstep(0.0, 0.65, max(distance, 0.0));
-  glass *= 1.0 - edge * mix(0.12, 0.025, dark);
-  glass += vec3(reflection * 0.025 + proximity * 0.012);
-  vec3 color = mix(ink, clamp(glass, 0.0, 1.0), material);
-  float alpha = glyph.a + contour;
-  gl_FragColor = vec4(color * glyph.a / max(alpha, 0.0001), alpha);
+  float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
+  float distance = (glyph.r - 0.5) * 2.0 * distanceRange;
+  // Screen-space outward direction, y up, so it shares a frame with the lamp.
+  vec2 outward = (glyph.gb * 2.0 - 1.0) * vec2(1.0, -1.0);
+  float bevel = clamp(fontSize * 0.03, 1.3, 2.8);
+  float rise = clamp(distance / bevel, 0.0, 1.0);
+  // A quarter-round edge: steep at the contour, flat across the face.
+  float slope = (1.0 - rise) * (1.0 - rise) * 2.4;
+  vec3 normal = normalize(vec3(outward * slope, 1.0));
+  vec3 light = toLamp(screen);
+  vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
+  float facing = max(dot(normal, halfway), 0.0);
+  float edge = 1.0 - rise;
+  // Antialiased contour pixels sit on the steepest slope; holding reflections back there avoids a beaded rim.
+  float hold = smoothstep(0.0, 0.9, distance);
+  float view = (1.0 - normal.z) * hold;
+  // The bevel looks sideways into the silk around the letter.
+  vec2 aside = normal.xy * fontSize * 0.55 / resolution;
+  vec3 surround = sceneAt(vUv + aside);
+  vec3 behind = sceneAt(vUv);
+  // One studio light sweeps across slowly, plus the intro glint that travels once along the line.
+  vec2 plane = (screen - title.xy) / fontSize;
+  float band = plane.x * 0.8 - plane.y * 0.55;
+  float sweep = exp(-pow((band - (fract(time * 0.018 + 0.35) * 2.6 - 0.8) * title.z / fontSize) / 0.9, 2.0));
+  float pass = glint * (1.0 - glint) * 4.0;
+  float glintAt = band - mix(-2.0, title.z / fontSize + 2.0, glint);
+  float glinting = (exp(-pow(glintAt / 0.13, 2.0)) + exp(-pow(glintAt / 0.6, 2.0)) * 0.12) * pass;
+
+  vec3 obsidian;
+  {
+    // Edges turned toward the lamp mirror the lit silk; edges turned away fall into the stone's own black.
+    float toward = smoothstep(-0.35, 0.85, dot(outward, normalize(light.xy + vec2(0.0001))));
+    // The bevel is only a few device pixels wide, so its highlight is broad; only the face takes the sharp spot.
+    float hot = (pow(facing, mix(1400.0, 90.0, edge)) * mix(1.1, 0.4, edge) + pow(facing, 160.0) * 0.12 * (1.0 - edge)) * hold;
+    vec3 face = vec3(0.030, 0.029, 0.033);
+    float fresnel = pow(view, 1.6);
+    vec3 color = face;
+    color += surround * fresnel * mix(0.05, 0.85, toward);
+    // Head-on, the polished face is a dark mirror: a few percent of distant silk, softened and dimmed.
+    vec3 mirrored = sceneAt(vec2(vUv.x + (vUv.x - 0.5) * 0.3, vUv.y + 0.22 + plane.y * 0.004));
+    vec3 distant = mix(behind, mirrored, 0.7);
+    color += distant * distant * 0.085 * (1.0 - edge);
+    // Thin edges facing away let a smoky brown through, the way obsidian does when held up to light.
+    color += vec3(0.11, 0.06, 0.03) * fresnel * (1.0 - toward) * 0.35;
+    color += vec3(1.0, 0.97, 0.92) * hot;
+    color += vec3(0.95, 0.88, 0.74) * sweep * (0.025 * (1.0 - edge) + 0.16 * edge * toward);
+    color += vec3(1.0, 0.95, 0.86) * glinting * (0.28 + edge * 0.9) * hold;
+    obsidian = color;
+  }
+
+  vec3 moonstone;
+  {
+    // A milky body lit from within: the bevel bends the gold behind it, and the lamp side warms to amber.
+    float toward = smoothstep(-0.4, 0.9, dot(outward, normalize(light.xy + vec2(0.0001))));
+    float fresnel = pow(view, 1.4);
+    vec2 bend = normal.xy * fontSize * 0.3 / resolution;
+    vec3 refracted = sceneAt(vUv - bend);
+    vec3 color = mix(ink, ink * 0.78 + refracted * 0.55, 0.3);
+    color = mix(color, color * vec3(1.0, 0.93, 0.8) + refracted * 0.4, edge * 0.35);
+    color += vec3(1.0, 0.82, 0.52) * fresnel * toward * 0.38;
+    color *= 1.0 - fresnel * (1.0 - toward) * 0.16;
+    float hot = (pow(facing, mix(1200.0, 90.0, edge)) * mix(0.6, 0.25, edge) + pow(facing, 140.0) * 0.08 * (1.0 - edge)) * hold;
+    color += vec3(1.0, 0.97, 0.9) * hot;
+    color += vec3(1.0, 0.9, 0.7) * (sweep * (0.03 + edge * toward * 0.12) + glinting * (0.06 + edge * 0.5));
+    moonstone = color;
+  }
+
+  vec3 stone = mix(obsidian, moonstone, dark);
+  vec3 color = mix(ink, clamp(stone, 0.0, 1.0), material);
+  gl_FragColor = vec4(color, glyph.a);
 }`

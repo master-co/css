@@ -8,12 +8,25 @@ import { rasterizeHeroTitle, type HeroTitleMask } from './hero-title-mask'
 const renderScale = 0.6
 const introDuration = 2200
 const materialDuration = 800
+const glintDelay = 260
+const glintDuration = 1700
 const compositePixelBudget = 3_000_000
 const backgroundPixelBudget = 1_500_000
+const litSelector = '.home-hero-pill, .home-hero-actions > *'
+const litProperties = ['--lit-x', '--lit-y', '--lit-angle', '--cast-x', '--cast-y', '--lit-near']
 
 type Bounds = [number, number, number, number]
 
-/** Matte gold and a flat glass title share one scene; controls use native frosted surfaces. */
+interface LitControl {
+  element: HTMLElement
+  left: number
+  top: number
+  width: number
+  height: number
+  values: string[]
+}
+
+/** Matte gold and a cut-stone title share one lamp; controls read the same lamp through CSS properties. */
 export default function HeroCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [generation, setGeneration] = useState(0)
@@ -98,9 +111,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let glyphs: WebGLTexture
     let target: WebGLFramebuffer
     try {
-      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'pointer', 'shadow', 'body', 'sheen', 'ground', 'title', 'readingArea', 'fontSize'])
-      composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'time', 'pointer', 'ink', 'ground', 'scene', 'glyphs'])
-      copy = program(heroCopySource, ['scene', 'resolution', 'time', 'ground'])
+      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'pointer', 'lamp', 'shadow', 'body', 'sheen', 'ground', 'title', 'readingArea', 'fontSize'])
+      composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'glint', 'time', 'lamp', 'ink', 'ground', 'scene', 'glyphs'])
+      copy = program(heroCopySource, ['scene', 'glyphs', 'resolution', 'time', 'ground', 'title', 'fontSize', 'distanceRange', 'lamp', 'shade'])
       const buffer = context.createBuffer()
       if (!buffer) throw new Error('Cannot allocate a hero triangle')
       buffers.push(buffer)
@@ -142,11 +155,16 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let maskKey = ''
     let fontFace: FontFace | undefined
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, targetStrength: 0 }
+    // The lamp rests above the title's left half and drifts; a mouse picks it up and carries it lower.
+    const lamp = { x: 0, y: 0, z: 0, targetX: 0, targetY: 0, held: false, placed: false }
+    const rest = { x: 0, y: 0, z: 1, sway: 0, fontSize: 1 }
+    let lit: LitControl[] = []
     const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
     const maximumViewport = context.getParameter(context.MAX_VIEWPORT_DIMS) as Int32Array
     const maximumSurface = Math.min(maximumTexture, maximumViewport[0], maximumViewport[1])
     const fallback = () => {
       failed = true
+      unlight()
       cancelAnimationFrame(frame)
       frame = 0
       clearReady()
@@ -218,11 +236,27 @@ export default function HeroCanvas({ className }: { className?: string }) {
         if ('ground' in renderer.uniforms) context.uniform3f(renderer.uniforms.ground, ...ground)
         if ('scene' in renderer.uniforms) context.uniform1i(renderer.uniforms.scene, 0)
       }
-      for (const renderer of [cloth, composite]) {
+      const fontSize = mask?.fontSize ?? parseFloat(titleStyle.fontSize)
+      for (const renderer of [cloth, composite, copy]) {
         context.useProgram(renderer.program)
         context.uniform4f(renderer.uniforms.title, ...bounds)
-        context.uniform1f(renderer.uniforms.fontSize, mask?.fontSize ?? parseFloat(titleStyle.fontSize))
+        context.uniform1f(renderer.uniforms.fontSize, fontSize)
       }
+      context.useProgram(copy.program)
+      context.uniform1i(copy.uniforms.glyphs, 1)
+      context.uniform1f(copy.uniforms.distanceRange, mask?.range ?? 1)
+      const groundLight = ground[0] * 0.2126 + ground[1] * 0.7152 + ground[2] * 0.0722
+      // Obsidian casts a clear shadow on champagne silk; on dark silk it only separates the moonstone.
+      context.uniform1f(copy.uniforms.shade, mask ? (groundLight > 0.4 ? 1 : 0.45) : 0)
+      rest.x = titleRect.left - rect.left + titleRect.width * 0.3
+      rest.y = titleRect.top - rect.top - fontSize * 0.8
+      rest.z = fontSize * 5
+      rest.sway = titleRect.width * 0.2
+      rest.fontSize = fontSize
+      lit = Array.from(host.querySelectorAll<HTMLElement>(litSelector), (element) => {
+        const box = element.getBoundingClientRect()
+        return { element, left: box.left - rect.left, top: box.top - rect.top, width: box.width, height: box.height, values: [] }
+      })
       context.useProgram(cloth.program)
       const readingRect = readingArea?.getBoundingClientRect()
       context.uniform4f(cloth.uniforms.readingArea, (readingRect?.left ?? rect.left) - rect.left, (readingRect?.top ?? rect.top) - rect.top, readingRect?.width ?? 0, readingRect?.height ?? 0)
@@ -262,17 +296,31 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const opened = reduced ? 1 : Math.min(1, (time - startedAt) / introDuration)
         const formed = reduced ? 1 : Math.max(0, Math.min(1, (time - materialAt) / materialDuration))
         const material = 1 - Math.pow(1 - formed, 3)
+        const glint = reduced || materialAt < 0 ? 1 : Math.max(0, Math.min(1, (time - materialAt - glintDelay) / glintDuration))
+        if (!lamp.held) {
+          lamp.targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway
+          lamp.targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3
+        }
+        const targetZ = lamp.held ? rest.fontSize * 3.2 : rest.z
+        const carry = lamp.placed ? 1 - Math.exp(-delta / 120) : 1
+        lamp.x += (lamp.targetX - lamp.x) * carry
+        lamp.y += (lamp.targetY - lamp.y) * carry
+        lamp.z += (targetZ - lamp.z) * carry
+        lamp.placed = true
+        illuminate()
         context.bindFramebuffer(context.FRAMEBUFFER, target)
         context.viewport(0, 0, sceneWidth, sceneHeight)
         context.useProgram(cloth.program)
         context.uniform1f(cloth.uniforms.time, sceneClock)
         context.uniform1f(cloth.uniforms.intro, 1 - Math.pow(1 - opened, 3))
         context.uniform3f(cloth.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
+        context.uniform3f(cloth.uniforms.lamp, lamp.x, lamp.y, lamp.z)
         context.drawArrays(context.TRIANGLES, 0, 3)
         context.bindFramebuffer(context.FRAMEBUFFER, null)
         context.viewport(0, 0, canvas.width, canvas.height)
         context.useProgram(copy.program)
         context.uniform1f(copy.uniforms.time, sceneClock)
+        context.uniform3f(copy.uniforms.lamp, lamp.x, lamp.y, lamp.z)
         context.drawArrays(context.TRIANGLES, 0, 3)
         context.enable(context.SCISSOR_TEST)
         context.enable(context.BLEND)
@@ -280,8 +328,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
         if (mask) {
           context.useProgram(composite.program)
           context.uniform1f(composite.uniforms.time, sceneClock)
-          context.uniform3f(composite.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
+          context.uniform3f(composite.uniforms.lamp, lamp.x, lamp.y, lamp.z)
           context.uniform1f(composite.uniforms.material, material)
+          context.uniform1f(composite.uniforms.glint, glint)
           context.scissor(...scissor)
           context.drawArrays(context.TRIANGLES, 0, 3)
         }
@@ -295,6 +344,34 @@ export default function HeroCanvas({ className }: { className?: string }) {
       } catch {
         if (!disposed) fallback()
       }
+    }
+    // Native controls read the lamp as a highlight position, a rim angle and a cast-shadow offset.
+    const illuminate = () => {
+      for (const control of lit) {
+        const centerX = control.left + control.width / 2
+        const centerY = control.top + control.height / 2
+        const elevation = 6
+        const scale = elevation / Math.max(lamp.z - elevation, 1)
+        const castX = Math.max(-10, Math.min(10, (centerX - lamp.x) * scale))
+        const castY = Math.max(-10, Math.min(10, (centerY - lamp.y) * scale))
+        const near = Math.exp(-(((lamp.x - centerX) / (control.width * 0.9)) ** 2 + ((lamp.y - centerY) / (control.height * 2.4)) ** 2))
+        // Rounded to what the eye can tell apart, so a drifting lamp restyles the controls only now and then.
+        const values = [
+          `${Math.round(Math.max(-60, Math.min(160, (lamp.x - control.left) / control.width * 100)))}%`,
+          `${Math.round(Math.max(-160, Math.min(260, (lamp.y - control.top) / control.height * 100)))}%`,
+          `${Math.round(Math.atan2(lamp.x - centerX, centerY - lamp.y) * 180 / Math.PI)}deg`,
+          `${castX.toFixed(1)}px`,
+          `${castY.toFixed(1)}px`,
+          (lamp.held ? near : near * 0.4).toFixed(2)
+        ]
+        litProperties.forEach((name, index) => {
+          if (values[index] !== control.values[index]) control.element.style.setProperty(name, values[index])
+        })
+        control.values = values
+      }
+    }
+    const unlight = () => {
+      for (const control of lit) litProperties.forEach((name) => control.element.style.removeProperty(name))
     }
     const activity = () => {
       cancelAnimationFrame(frame)
@@ -311,8 +388,11 @@ export default function HeroCanvas({ className }: { className?: string }) {
       pointer.targetX = ((event.clientX - rect.left) / width - 0.5) * width / height * heroPlaneScale
       pointer.targetY = (0.5 - (event.clientY - rect.top) / height) * heroPlaneScale
       pointer.targetStrength = 1
+      lamp.targetX = event.clientX - rect.left
+      lamp.targetY = event.clientY - rect.top
+      lamp.held = true
     }
-    const leave = () => { pointer.targetStrength = 0 }
+    const leave = () => { pointer.targetStrength = 0; lamp.held = false }
     const lost = (event: Event) => { event.preventDefault(); contextLost = true; fallback() }
     const restored = () => { setGeneration((value) => value + 1) }
     const resize = new ResizeObserver(invalidate)
@@ -363,6 +443,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
       disposed = true
       cancelAnimationFrame(frame)
       clearReady()
+      unlight()
       resize.disconnect()
       theme.disconnect()
       text.disconnect()

@@ -6,7 +6,7 @@ The homepage explains a precise tool, so it should look precise and stay quiet: 
 
 1. **Type carries the hierarchy.** Size, weight and gray level order the page. Color is a signal, not decoration.
 2. **One neutral: zinc.** Every gray is a step of the preset's `zinc` family, a near-neutral with a faint cool, metallic cast. Home tokens alias the preset roles and the site roles in `styles/docs-shell/theme.css`, so the homepage, header, footer and docs share one system.
-3. **One light, one accent.** Light falls from above. Primary actions use solid ink, while secondary hero controls use softly frosted glass; the gold signal (`--home-signal`, the preset's amber at the logo's hue) marks only live states, the path a change takes and the Master CSS figure in a chart. The hero field and the closing field are the same gold, so the page carries one brand color; preset yellow appears only where a sample class names it.
+3. **One light, one accent.** Light falls from above; in the hero the pointer carries it. Primary actions use solid ink (in the hero, the title's stone), while secondary hero controls use clear liquid glass; the gold signal (`--home-signal`, the preset's amber at the logo's hue) marks only live states, the path a change takes and the Master CSS figure in a chart. The hero field and the closing field are the same gold, so the page carries one brand color; preset yellow appears only where a sample class names it.
 4. **Figures explain mechanisms.** Every illustration shows something Master CSS actually does: classes becoming rules, layers ordering them, rules flowing to a delivery target. No ornamental art.
 5. **Motion shows cause and effect.** Things move because data moves or state changes. Ambient motion is slow; everything stops for reduced motion.
 6. **Truthful samples.** Code, diagnostics, completions and numbers come from the engine, linter, language service or committed benchmarks, and tests keep them that way.
@@ -20,7 +20,7 @@ The page reads as a sequence, each section answering the next question a reader 
 
 | # | Section | Question | Figure |
 | --- | --- | --- | --- |
-| — | Hero | What is it? | The positioning line over a sheet of gold silk |
+| — | Hero | What is it? | The positioning line, cut in stone, over a sheet of gold silk under one lamp |
 | 01 | Design system | What can I express? | Bento: modes, tokens, P3 palette, layout and motion, layers |
 | 02 | Editor | Can I read it? | One editor: completion, hover, focused highlighting and color picker in turn |
 | 03 | Rendering | How does CSS reach the browser? | A split editor, a processing rail and a live mode explainer that uses the generated CSS |
@@ -81,7 +81,7 @@ Light mode stays clean and white: the ground is about `#f7f7f7` and sheets white
 
 ## Glass
 
-The base `.home-glass` combines a translucent fill, 10px backdrop blur, top and left inner light, a faint dark contour and soft falloff. The hero overrides it with the flat frosted material below. Main content stays solid.
+The base `.home-glass` combines a translucent fill, 10px backdrop blur, top and left inner light, a faint dark contour and soft falloff. The hero overrides it with the clear liquid glass below. Main content stays solid.
 
 ## Lines, guides and text
 
@@ -106,7 +106,7 @@ One scale, set in `../design.css`. Two sizes are fluid; everything else is fixed
 
 | Role | Token | Size | Weight and treatment |
 | --- | --- | --- | --- |
-| Display | `--home-display` | 44 → 84px | Medium, flat translucent glass, tracking `-0.045em`, line height 1.04. Browser line breaks follow the actual font and locale. Also capped at 10.5% of the viewport height, and short laptop screens trim the hero's air, so the actions stay in the first screen |
+| Display | `--home-display` | 44 → 84px | Medium, cut stone (obsidian in light mode, moonstone in dark mode), tracking `-0.045em`, line height 1.04. Browser line breaks follow the actual font and locale. Also capped at 10.5% of the viewport height, and short laptop screens trim the hero's air, so the actions stay in the first screen |
 | Section title | `--home-title` | 36 → 56px | Regular, tracking `-0.035em`, balanced, at most two lines |
 | Lead | `--home-lead` | 17 → 20px | Regular, quiet gray, line height 1.6 |
 | Card title | `--home-card-title` | 24px | Regular, tracking `-0.025em` |
@@ -145,18 +145,20 @@ The page borrows the quiet marks of a design tool, used sparingly so they read a
 - The **dot grid** marks a rendered preview, a canvas where markup becomes UI: the theme split, the gallery. Diagrams, palettes and code never sit on it.
 - Problems are marked in the code with the word-mark directives the docs use (`@ERROR`, `@WARN`, `@MARK`), so the underline points at exactly what the rule reports; tests check the mark starts at the reported column.
 
-## The hero's gold and glass
+## The hero's gold, stone and glass
 
 The hero has an announcement, heading and actions; no description. Two slowly warped gold folds form broad valleys and continuous crests, with a satin reflection and fine grain. Independent phases evolve over 20–30 seconds. Light mode is champagne; dark mode is deep amber, with a soft open reading band to keep bright crests behind pale type readable. The action row opens into a quiet lower-left fade.
 
-Foreground glass stays flat. The title is a translucent film with a broad, quiet reflection and subtle transmission: smoked ink in light mode, pale ink in dark mode. A subpixel contour replaces bevels and directional shadows. Native text owns layout, selection and accessibility; its mask changes only with fonts, text or layout, and replaces native ink only after a successful frame.
+One lamp lights everything. It rests above the title's left half and drifts slowly; a mouse picks it up and carries it lower, so its light rakes across nearby folds, its highlights travel over the letters and every shadow turns away from it. Touch and reduced motion keep the resting lamp.
 
-Announcement and install use 70–74% tinted fill, 18px backdrop blur, one thin boundary and a short contact shadow. Get started uses solid opposite-theme colors: dark with light ink in light mode, light with dark ink in dark mode. States preserve contrast and flat geometry. Main controls are at least 52px tall, with a 44px copy target. Mobile actions share a width and fit at 320px. Enlarged text splits the announcement into rows and places copy below the complete command, preserving its reading width.
+The title is cut stone. In light mode it is polished obsidian: a near-black face that mirrors a few percent of the silk, a narrow quarter-round bevel that reflects the gold on edges turned toward the lamp and falls into smoky black on edges turned away, one sharp highlight under the lamp, and a soft warm shadow on the silk. In dark mode it is moonstone: a milky pale body whose bevel bends the gold behind it, warming toward amber on the lamp side, with only a faint shadow for separation. A single glint crosses the line once as the stone forms, and a slow studio light sweeps it afterwards. Contour pixels never take reflections, so edges stay clean at 1×. Native text owns layout, selection and accessibility; its mask changes only with fonts, text or layout, and replaces native ink only after a successful frame.
 
-- `--hero-gold-shadow`, `--hero-gold-body` and `--hero-gold-sheen` own the palette. The pointer deforms gold and moves its light; controls retain native states and touch behavior.
-- Gold forms over 2.2 seconds and title film over 800ms, with still geometry. Controls render independently of canvas.
-- Gold renders at 60% density, capped at 1.5 million pixels; final output stays within three million, with glyph masks up to 2×. Grain resolves at CSS-pixel scale and disappears at the page ground.
-- Canvas pauses off screen, in hidden tabs, in print and forced colors. Reduced motion freezes the current phase and makes control feedback immediate. Context loss restores native ink before rebuilding; failures release GPU resources. CSS gold and text survive unavailable WebGL or fonts. Print and forced colors use solid ink and boundaries.
+Get started is cut from the same stone: obsidian with light ink in light mode, moonstone with dark ink in dark mode. Its rim catches the lamp on the near side and the gold on the far side, its curved top carries the lamp's sheen and a hot spot when the pointer arrives, a glint crosses it on hover, and its shadow follows the lamp. Announcement and install are clear liquid glass: a nearly transparent white fill that lets the silk through a little brighter, two lit rims, an inner pool of light at the bottom and a lamp-following shadow. Main controls are at least 52px tall, with a 44px copy target. Mobile actions share a width and fit at 320px. Enlarged text splits the announcement into rows and places copy below the complete command, preserving its reading width.
+
+- `--hero-gold-shadow`, `--hero-gold-body` and `--hero-gold-sheen` own the palette; `--stone-*` and `--glass-*` own the control materials. The canvas hands the lamp to controls as `--lit-x`, `--lit-y`, `--lit-angle`, `--cast-x`, `--cast-y` and `--lit-near`; their CSS defaults hang it above the title when the canvas is unavailable.
+- Gold forms over 2.2 seconds and the stone over 800ms, followed by the glint. Controls render independently of canvas.
+- Gold renders at 60% density, capped at 1.5 million pixels; final output stays within three million, with glyph masks up to 2×. Grain resolves at CSS-pixel scale and disappears at the page ground. The title's distance field reaches 22% of its font size, and the mask's padding covers that range, so shadows end inside it.
+- Canvas pauses off screen, in hidden tabs, in print and forced colors. Reduced motion freezes the current phase and the lamp, drops the hover glint and makes control feedback immediate. Context loss restores native ink before rebuilding; failures release GPU resources and the lamp properties. CSS gold and text survive unavailable WebGL or fonts. Print and forced colors use solid ink and boundaries.
 - Class samples belong to the MCP figure, not the hero.
 
 ## Design system figures
@@ -261,7 +263,7 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 - Easing: `--home-ease` for arrivals and responses, `--home-ease-inout` for loops.
 - Durations: `--home-quick` (hover, press), `--home-base` (state changes), `--home-slow` (reveals). Ambient loops run 8 s or longer.
-- The hero's geometry stays still as gold forms over 2.2 seconds and glass type over 800ms. Native control states use restrained fill and boundary changes without translation or inset shadows.
+- The hero's geometry stays still as gold forms over 2.2 seconds and the stone over 800ms, with one glint across it. Native controls never translate; their light, rims and shadows follow the lamp, and pressing Get started trades its cast shadow for an inner one.
 - Below the hero, every header line and card rises as it scrolls in on a view timeline, so the stagger comes from position, not timers. Interactive figures pause when off screen.
 - Under `prefers-reduced-motion: reduce`, loops stop and figures show their finished state.
 - Write animations with longhand properties when a value uses a route variable; a variable inside the `animation` shorthand makes the build keep every preset keyframe.
@@ -270,7 +272,7 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 3D is used to separate meaning into planes, never as a gimmick:
 
-- The hero gold is lit as a matte surface: sculpted folds catch a broad sheen from one light, while the foreground glass remains flat and quiet.
+- The hero gold is lit as a matte surface: sculpted folds catch a broad sheen from one light. The stone title floats a short height above it, so its shadow lengthens and softens as the lamp comes lower.
 - The cascade layer figure explodes `@layer theme, base, defaults, components, utilities` into orthographic planes, so flat callouts beside it rise with their planes and stay level.
 - The palette card's well holds extruded bars on a hatched floor plate, as tall as each swatch's oklch chroma; they rise in a diagonal wave on scroll and flatten into a table under the pointer or keyboard.
 - The MCP figure stands liquid-glass client marks and the server on a wide, low, dial-rimmed floor of real classes; narrow widths tilt less.

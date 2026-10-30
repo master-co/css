@@ -137,7 +137,10 @@ export function rasterizeHeroTitle(title: HTMLElement, canvas: HTMLCanvasElement
   }
   const visible = runs.filter((run) => run.text.trim())
   if (!visible.length) return null
-  const padding = 8
+  const fontSize = parseFloat(getComputedStyle(title).fontSize)
+  const distanceRange = Math.max(6, fontSize * 0.22)
+  // Shadows sample beyond the glyphs; the border must already sit at the field's saturated distance.
+  const padding = Math.max(8, Math.ceil(distanceRange) + 2)
   const left = Math.floor(Math.min(...visible.map((run) => run.rect.left))) - padding
   const top = Math.floor(Math.min(...visible.map((run) => run.rect.top))) - padding
   const cssWidth = Math.ceil(Math.max(...visible.map((run) => run.rect.right))) - left + padding
@@ -157,8 +160,6 @@ export function rasterizeHeroTitle(title: HTMLElement, canvas: HTMLCanvasElement
     const metrics = context.measureText(run.text)
     context.fillText(run.text, run.rect.left - left, run.rect.top - top + metrics.fontBoundingBoxAscent)
   }
-  const fontSize = parseFloat(getComputedStyle(title).fontSize)
-  const distanceRange = Math.max(6, fontSize * 0.16)
   const rect = canvas.getBoundingClientRect()
   return {
     pixels: createTitleDistanceField(context.getImageData(0, 0, mask.width, mask.height).data, mask.width, mask.height, ratio, distanceRange),

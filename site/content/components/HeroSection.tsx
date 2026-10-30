@@ -7,7 +7,7 @@ import HeroCanvas from './HeroCanvas'
 import HomeAction from './HomeAction'
 import { homeSections, installCommand } from './home-content'
 
-/** A flat glass title and softly frosted controls float over a sculpted matte gold field. */
+/** A cut-stone title, a stone action and liquid-glass controls share one lamp over a sculpted gold field. */
 export default function HeroSection() {
   const $ = useTranslation()
   return (
