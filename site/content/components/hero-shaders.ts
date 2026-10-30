@@ -127,8 +127,10 @@ void main() {
   }
   if (shade > 0.0) {
     screen = seen;
-    // Letters float a short height above the silk; a lower lamp throws a longer, softer shadow.
-    float elevation = fontSize * 0.16;
+    // Letters float a short height above the silk; a lower lamp throws a longer, softer shadow. Held close, the
+    // stone seems to lift toward it, so its shadow stretches further and the lamp's height reads at once.
+    float lifted = smoothstep(fontSize * 4.6, fontSize * 2.4, lamp.z);
+    float elevation = fontSize * mix(0.16, 0.26, lifted);
     // The room's light comes from above as well, so shadows lean down even under a lamp held over the type.
     vec2 offset = (screen - lamp.xy + vec2(0.0, fontSize * 0.6)) * elevation / max(lamp.z - elevation, 1.0);
     float reach = length(offset);
@@ -140,7 +142,7 @@ void main() {
     // A longer shadow spreads the same occlusion over a wider penumbra, so it also fades.
     // Straight under the lamp the letter hides its own shadow; a penumbra all round would read as a blur.
     float visible = smoothstep(0.5, 5.0, reach);
-    float amount = (thrown * thrown * 0.17 * visible * (1.0 - 0.4 * smoothstep(0.0, distanceRange, reach)) + contact * 0.035) * shade;
+    float amount = (thrown * thrown * mix(0.17, 0.26, lifted) * visible * (1.0 - 0.35 * smoothstep(0.0, distanceRange, reach)) + contact * 0.035) * shade;
     // Shadows on gold keep a little warmth instead of turning gray.
     color *= mix(vec3(1.0), vec3(0.78, 0.71, 0.60), amount);
   }
@@ -320,7 +322,7 @@ void main() {
   // Screen-space outward direction, y up, so it shares a frame with the lamp.
   vec2 gradient = vec2(west - east, south - north);
   vec2 outward = mix((glyph.gb * 2.0 - 1.0) * vec2(1.0, -1.0), normalize(gradient + vec2(0.00001)), smoothstep(0.004, 0.02, length(gradient)));
-  float bevel = clamp(fontSize * 0.03, 1.3, 2.8);
+  float bevel = clamp(fontSize * 0.04, 1.6, 3.6);
   float rise = clamp(distance / bevel, 0.0, 1.0);
   // A quarter-round edge: steep at the contour, flat across the face.
   float slope = (1.0 - rise) * (1.0 - rise) * 2.4;
@@ -338,14 +340,25 @@ void main() {
   float spot = exp(-dot(image, image) / pow(fontSize * 0.075, 2.0));
   // The glow around the lamp's image belongs to a lamp held close; resting high, it leaves the stone even.
   float held = smoothstep(fontSize * 4.6, fontSize * 3.4, lamp.z);
-  float pool = exp(-dot(image, image) / pow(fontSize * 2.6, 2.0)) * held;
+  // The glow is diffuse, so it lights face and bevel alike rather than following the mirror image off the bevel,
+  // which would leave a dark ring inside every lit letter.
+  vec2 under = screen - lamp.xy;
+  float pool = exp(-dot(under, under) / pow(fontSize * 2.6, 2.0)) * held;
+  // The lamp is a long strip light: polished stone mirrors it as one crisp, slightly tilted streak running across
+  // the letters beneath it, the way glossy black type reflects a studio strip. A streak reads as a reflection,
+  // where a broad panel would read as a lighter fill inside dark outlines. At rest it still glides over the
+  // first line, at half strength.
+  vec2 panel = mat2(0.94, -0.34, 0.34, 0.94) * image / fontSize;
+  vec2 panelEdge = abs(panel) - vec2(1.1, 0.05);
+  float panelDistance = length(max(panelEdge, 0.0)) + min(max(panelEdge.x, panelEdge.y), 0.0) - 0.02;
+  float softbox = (1.0 - smoothstep(-0.012, 0.018, panelDistance)) * (1.0 - smoothstep(0.6, 1.1, abs(panel.x))) * mix(0.5, 1.0, held);
   // The bevel catches the lamp as one band where its curve turns toward it. Placing that band by distance
   // and weighting it by the edge's direction, not by the exact slope, keeps it even along a diagonal.
   float bevelLine = exp(-pow((edge - 0.75) / 0.28, 2.0)) * pow(max(dot(outward, normalize(halfway.xy + vec2(0.0001))), 0.0), 4.0);
   // Close to the lamp the bevels flare, so where it hangs reads at a glance.
-  vec2 fromLamp = (screen - lamp.xy) / (fontSize * 2.4);
+  vec2 fromLamp = (screen - lamp.xy) / (fontSize * 3.0);
   float nearLamp = exp(-dot(fromLamp, fromLamp));
-  bevelLine *= 0.2 + nearLamp * 1.4;
+  bevelLine *= 0.25 + nearLamp * mix(1.3, 2.2, held);
   // Antialiased contour pixels sit on the steepest slope; holding reflections back there avoids a beaded rim.
   float hold = smoothstep(0.0, 0.9, distance);
   float view = (1.0 - normal.z) * hold;
@@ -369,7 +382,7 @@ void main() {
     // line reaches the outermost pixel, so the rounded edge itself catches the light, not a ring inside it.
     float plain = (1.0 - edge) * (1.0 - edge);
     vec3 sheenTint = vec3(0.98, 0.86, 0.62);
-    float hot = spot * 0.85 * plain * hold + bevelLine * 0.3 * smoothstep(-0.6, 0.4, distance);
+    float hot = spot * 0.85 * plain * hold;
     vec3 face = vec3(0.030, 0.029, 0.033);
     float fresnel = pow(view, 1.6);
     vec3 color = face;
@@ -386,11 +399,13 @@ void main() {
     // Thin edges facing away let a smoky brown through, the way obsidian does when held up to light.
     color += vec3(0.11, 0.06, 0.03) * fresnel * (1.0 - toward) * 0.1;
     color += vec3(1.0, 0.97, 0.92) * hot;
+    // The lit bevel mirrors the gold silk beside it, brightened by the lamp, so the cut edge reads as polished stone.
+    color += mix(surround * 1.5, vec3(1.0, 0.95, 0.85), 0.45) * bevelLine * 0.42 * smoothstep(-0.6, 0.4, distance);
     color += vec3(0.95, 0.88, 0.74) * (sweep * sweep * 0.05 * hold + sweep * 0.16 * edge * toward);
-    // A broad, barely-there softbox lies across the face. Like the other reflections it covers the bevel too, so the
-    // face is never lighter than its edges and no dark rim reads as an outline.
-    float softbox = exp(-pow((band - title.z / fontSize * 0.35) / 3.2, 2.0));
-    color += vec3(0.86, 0.85, 0.83) * softbox * 0.01 * hold;
+    // The lamp's softbox, mirrored below full white, so the type reads as black glass, not chrome. The bevel mirrors
+    // it too, through its own tilt, so only the side that turns toward the lamp catches it and no dark rim rings
+    // a lit face.
+    color += vec3(0.97, 0.9, 0.76) * softbox * 0.2 * hold;
     color += vec3(1.0, 0.95, 0.86) * glinting * (0.28 + edge * 0.9) * hold;
     obsidian = color;
   }
@@ -403,7 +418,11 @@ void main() {
     vec3 refracted = sceneAt(vUv - bend);
     // A warm, milky body; near the contour the bright gold behind it glows through, never the dark.
     // The body sits a step below white, leaving room for the sheen and highlights to rise above it.
-    vec3 color = ink * vec3(0.9, 0.875, 0.83);
+    // The lamp lights the stone from within: the body is brightest and coolest near it and settles to a deeper
+    // warm ivory away from it, so where the lamp hangs reads across the whole line.
+    vec2 reach = (screen - lamp.xy) / (fontSize * 3.6);
+    float lampLit = exp(-dot(reach, reach)) * mix(0.65, 1.0, held);
+    vec3 color = ink * vec3(0.9, 0.875, 0.83) * mix(0.89, 1.14, lampLit);
     color += refracted * refracted * edge * edge * 0.3;
     // Light pools in the stone's lower edges, which turn a little denser and milkier.
     color *= 1.0 - edge * smoothstep(0.2, 0.9, -outward.y) * 0.08;
@@ -418,11 +437,15 @@ void main() {
     // At rest the sheen is a soft hint, so the line reads as one stone; a lamp held close brings it out.
     color = mix(color, vec3(1.0, 1.01, 1.04), sheen * mix(0.45, 0.85, held));
     // Where the lamp hangs, the sheen gathers across a few letters into a cool glow, so a held lamp reads at once.
-    color = mix(color, vec3(0.88, 0.92, 0.99), pool * 0.6 * (1.0 - edge * 0.5));
+    color = mix(color, vec3(0.9, 0.94, 1.0), max(pool * 0.6, lampLit * 0.42) * (1.0 - edge * 0.5));
+    // Light that enters on the lamp's side leaves through the far edges as a warm amber glow, as it does through
+    // translucent stone held up to a light.
+    float rim = 1.0 - smoothstep(0.0, bevel * 2.4, distance);
+    color = mix(color, vec3(1.0, 0.78, 0.46), rim * (1.0 - toward) * nearLamp * 0.55 * hold);
     color += vec3(1.0, 0.86, 0.62) * fresnel * toward * 0.24;
     color *= 1.0 - fresnel * (1.0 - toward) * 0.08;
     float plain = (1.0 - edge) * (1.0 - edge);
-    float hot = ((spot * 0.6 + pool * 0.07) * plain + bevelLine * 0.2) * hold;
+    float hot = ((spot * 0.6 + pool * 0.07) * plain + bevelLine * 0.45) * hold;
     color += vec3(1.0, 0.97, 0.9) * hot;
     color += vec3(1.0, 0.9, 0.7) * sweep * (0.03 + edge * toward * 0.12);
     // On a pale stone the intro glint reads as a wave of the cool sheen rather than more white.
