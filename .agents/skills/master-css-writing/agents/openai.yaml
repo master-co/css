@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master CSS Writing"
+  short_description: "Write and review Master CSS guides, reference, and blog posts"
+  default_prompt: "Use $master-css-writing to research, write, or edit the requested article against current project behavior and content policy, then run the relevant validation."

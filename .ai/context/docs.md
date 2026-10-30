@@ -5,6 +5,7 @@ Use for public docs, examples, and AI-facing guidance. For wording-only edits, r
 ## Relevant Context
 
 - Public content belongs in `site/`; use `site/AI.md` for guide style, examples, demos, and content validation.
+- For researching, writing, editing, translating or reviewing Guide, Reference and Blog articles, use the project [master-css-writing skill](../../.agents/skills/master-css-writing/SKILL.md); load only the references relevant to the task.
 - Before adding, retaining, merging or retiring documentation, read [Guide and Reference ownership](../../site/AI.md#guide-and-reference-ownership). Design Foundations teach tasks and retain useful visual comparisons; Reference owns exhaustive lookup data and Master-specific contracts. Use the [content inventory](../reports/reference-content-inventory.md) for implemented page dispositions and [Reference maintenance](../../site/reference/MAINTENANCE.md) for migration mechanics. Retired Reference routes are removed; redirect compatibility is not required for this migration.
 - AI architecture/governance belongs in `.ai/`, routing in `.ai/context/`, and package-specific constraints in local `AI.md` files.
 - For generated CSS explanations, use [css-output.md](css-output.md).

@@ -99,6 +99,8 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 ## Content Strategy
 
+For Guide, Reference and Blog research, writing, editing, translation and review, use the project [master-css-writing skill](../.agents/skills/master-css-writing/SKILL.md). It provides editorial methods and task-specific references; the content policies below remain canonical.
+
 ### Current documentation and migration ownership
 
 Public Guide, Reference, Blog, examples and package READMEs describe current behavior only. Describe supported syntax directly; never mention retired syntax, retired API names or version history. Migration Guide covers converting external styling systems. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
