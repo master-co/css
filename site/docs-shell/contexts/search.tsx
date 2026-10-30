@@ -118,6 +118,7 @@ export default function SearchDialog() {
         <input ref={input} type="search" role="combobox" aria-autocomplete="list" aria-expanded={Boolean(query)} value={query} autoComplete="off" spellCheck={false} placeholder={tw ? '搜尋文件…' : 'Search documentation…'} aria-label={tw ? '搜尋文件' : 'Search documentation'} aria-controls="documentation-search-results" aria-activedescendant={results[selected] ? `documentation-result-${selected}` : undefined}
           onChange={event => selectQuery(event.target.value)}
           onKeyDown={event => {
+            if (event.nativeEvent.isComposing || event.keyCode === 229) return
             if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); return }
             if (event.key === 'Enter' && results.length) { event.preventDefault(); document.getElementById(`documentation-result-${selected}`)?.click() }
             if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
