@@ -26,7 +26,7 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
         return (
           <Wrapper
             key={author.name}
-            className={clsx('display:flex align-items:center', {
+            className={clsx('display:flex align-items:center min-height:44px', {
               'gap-sm': size === 'md',
               'gap-xs': size === 'sm' || size === 'xs',
             })}

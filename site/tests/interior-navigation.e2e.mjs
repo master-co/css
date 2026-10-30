@@ -242,3 +242,26 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
+
+test(`${browserName}: enlarged Blog article titles and author links remain fully readable at 320px`, { timeout: 90000 }, async () => {
+  for (const locale of ['', '/tw']) for (const slug of ['master-css-next', 'bootstrapping-master-css-with-vite']) {
+    const { context, page, errors } = await open(`${locale}/blog/${slug}`, { width: 320, scheme: 'dark' })
+    try {
+      const title = await page.locator('h1').innerText()
+      await page.addStyleTag({ content: 'html{font-size:32px!important}' })
+      await page.evaluate(() => document.fonts.ready)
+      await noOverflow(page)
+      assert.equal(await page.locator('h1').innerText(), title, 'the complete title remains in the reading flow')
+      const author = page.getByRole('link', { name: /Aron @aron1tw/ }).first()
+      const box = await author.boundingBox()
+      assert.ok(box.x >= 0 && box.x + box.width <= 321, 'the author link fits the page')
+      assert.ok(box.height >= 44, 'the complete author link offers a standalone touch target')
+      if (slug === 'master-css-next') {
+        const second = await page.getByRole('link', { name: /BenSeage @benseage/ }).boundingBox()
+        assert.ok(second.x >= 0 && second.x + second.width <= 321, 'the second author wraps into available space')
+      }
+      await page.screenshot({ path: new URL(`${locale ? 'tw' : 'en'}-${slug}-320-enlarged.png`, output).pathname })
+      assert.deepEqual(errors, [])
+    } finally { await context.close() }
+  }
+})
