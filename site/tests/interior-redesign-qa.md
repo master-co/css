@@ -143,6 +143,17 @@ Changes to retained theme-token sets come from which values these website subjec
 
 Approved after reviewing the complete 9,000-pair comparison, native interactions, preserved content, homepage regression evidence and exact CSS delivery diff on 2026-10-30. The snapshot update cites this section. The verifier remains unchanged; the snapshot records the reviewed website output and the explicitly documented pre-existing discrepancy below.
 
+## Actual work record
+
+Continuous work ran from 2026-10-29 20:29:30 to 2026-10-30 04:30:00 UTC: **8h 0m 30s**, exceeding the requested eight hours. The retained milestones give these contiguous work windows; builds and browser captures overlap feature refinement, and parallel-agent hours are not added.
+
+| Work window | UTC start → end | Actual elapsed |
+| --- | --- | --- |
+| Independent setup, baseline and first implementation | 2026-10-29 20:29:30 → 2026-10-29 22:24:33 | 1h 55m 3s |
+| Brand, portable content and control refinement | 2026-10-29 22:24:33 → 2026-10-30 00:39:28 | 2h 14m 55s |
+| Interior demos, typography, navigation and enlarged-state refinement | 2026-10-30 00:39:28 → 2026-10-30 02:58:17 | 2h 18m 49s |
+| Complete comparison, native clipboard, CSS approval and handoff | 2026-10-30 02:58:17 → 2026-10-30 04:30:00 | 1h 31m 43s |
+
 ## Known conditions
 
 - Static preview serves the named `/404` resource with HTTP 200; deliberately unknown routes must return HTTP 404 and the recovery page. Both behaviors are checked separately.
