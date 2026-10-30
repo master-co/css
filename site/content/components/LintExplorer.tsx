@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import type { HomeCodeWindowProblem } from './home-content'
 import type { LintRuleReach } from './lint-content'
+import { pointerMoved } from './pointer-motion'
 
 export interface LintExplorerRule {
   title: string
@@ -221,7 +222,11 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
         if (!event.currentTarget.contains(event.relatedTarget)) setHeld(false)
       }}
       onFocus={() => setHeld(true)}
-      onPointerEnter={() => setHeld(true)}
+      // Reading means moving over the bench; content scrolled under a resting pointer does not hold the tour,
+      // including the motionless pointermove WebKit sends once scrolling stops.
+      onPointerMove={(event) => {
+        if (pointerMoved(event)) setHeld(true)
+      }}
       onPointerLeave={() => setHeld(false)}
       ref={ref}
       style={{ '--home-lint-columns': view.columns, '--home-lint-lines': view.lines.length } as CSSProperties}>

@@ -11,6 +11,7 @@ import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { agentSessionCalls, agentSessionResults, agentSessionStages, type AgentSessionCallId } from './agents-content'
 import { AgentsOrbit } from './AgentsFigures'
 import type { HomeCodeWindowProblem } from './home-content'
+import { pointerMoved } from './pointer-motion'
 
 /** The window's three panes. A narrow window shows one at a time and follows the one that changes. */
 type Pane = 'chat' | 'code' | 'output'
@@ -232,7 +233,9 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
       className="home-agent home-reveal-item"
       onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setFocused(false)}
       onFocus={(event) => setFocused(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
-      onPointerOver={(event) => event.pointerType === 'mouse' && setHovered(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
+      // Only a pointer that moves over the window holds it; content scrolled under a resting pointer does not,
+      // including the motionless pointermove WebKit sends once scrolling stops.
+      onPointerMove={(event) => event.pointerType === 'mouse' && pointerMoved(event) && setHovered(!(event.target instanceof Element && event.target.closest('.home-agent-play')))}
       onPointerLeave={() => setHovered(false)}
       ref={ref}>
       <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
