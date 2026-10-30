@@ -1,7 +1,3 @@
-/* The alignment preview selects these utilities after hydration. */
-@safelist "align-items:flex-start";
-@safelist "align-items:center";
-@safelist "align-items:flex-end";
 
 @layer components {
   .ds-overview { width: 100%; min-width: 0; max-width: 74rem; margin-inline: auto; padding: 6rem 1.25rem 5rem; }

@@ -38,7 +38,7 @@ async function readJSON(file) {
 
 function hasFailure(result) {
   // Working HTML specimens can legitimately contain their own h1 alongside the page title.
-  return !!(result.failure || result.status !== result.expectedStatus || result.metrics?.overflow || result.errors?.length || result.metrics?.brokenImages?.length || (result.section !== 'examples' && !result.metrics?.headings.length))
+  return !!(result.failure || result.status !== result.expectedStatus || result.metrics?.overflow || result.errors?.length || result.resourceFailures?.length || result.metrics?.brokenImages?.length || (result.section !== 'examples' && !result.metrics?.headings.length))
 }
 
 async function visitContent(page) {

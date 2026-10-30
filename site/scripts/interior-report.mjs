@@ -23,6 +23,7 @@ for (const label of labels) {
     if (record.metrics?.overflow) issues.push('Horizontal page overflow')
     if (record.section !== 'examples' && !record.metrics?.headings?.length) issues.push('No page heading')
     issues.push(...(record.errors ?? []), ...(record.metrics?.brokenImages ?? []).map(src => `Broken image: ${src}`))
+    issues.push(...(record.resourceFailures ?? []).map(resource => `HTTP ${resource.status} resource: ${resource.url}`))
     if (issues.length) failures.push({ label, pathname: record.pathname, engine: record.engine, width: record.width, scheme: record.scheme, issues, evidence: record.file })
   }
 }
