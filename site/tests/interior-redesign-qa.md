@@ -74,6 +74,9 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `interior-final-details/`: 448 additional viewport captures of openings, source panels, tables, demos and footers across 17 representative page types, both engines/themes and 390/1440px.
 - `focus-paint/summary.json`: 20 actual keyboard-focus scenes in both engines, with and without forced colors; painted focus remains visible, including native selects inside their visible labels.
 - `global-token-audit.json`: native CSSOM parsing verifies all 60,488 shared root-token declarations across 448 delivered routes, with layer/condition identity retained; zero value differences.
+- `home-animation-audit.json`: each home locale preserves its 53 dedicated keyframes in order, 80 animation-declaration rule sets and 94 dedicated transition rule sets. Effective keyframe definitions also agree.
+- `state-review.html` and `state-review/summary.json`: five matched interaction/enlargement pairs, clearly labeled as findings from original or intermediate layouts; original-resolution image dimensions and capture conditions are retained.
+- `scope-boundaries.json`: no core/package/lockfile changes, no protected homepage-source changes, and byte-identical original SVG assets.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
@@ -116,6 +119,8 @@ Intentional website delivery changes are:
 - Interior contour/contact materials, scalable dense code and natural Chinese heading tracking.
 - Responsive footer, Blog, Sponsor and 404 presentation.
 - Flexible demo/review chrome, content-owned canvas height and named local overflow for specimens that retain their actual geometry.
+
+Shared `slide-to-right` delivery has 20 → 22 identical occurrences on each home route. The dedicated home definitions and their order remain identical; the effective shared definition is unchanged. This repeated delivery is retained in the exact CSS snapshot and in the animation audit.
 
 Changes to retained theme-token sets come from which values these website subjects reference. Homepage-main source and artwork are unchanged. Forty native screenshot pairs already agree byte for byte; the complete route comparison additionally checks every document column's x-position, width and horizontal padding. `css-delivery-review.json` retains the exact added/removed CSS segments, counts and manifest comparison.
 
