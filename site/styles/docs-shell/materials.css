@@ -9,6 +9,9 @@
   --color-surface-ink: light-dark(var(--color-zinc-90), var(--color-zinc-5));
   --color-text-subtle: light-dark(var(--color-zinc-40), var(--color-zinc-60));
   --color-line-contour: light-dark(oklch(24% .002 265 / .085), oklch(100% 0 none / .075));
+  /* Media uses a quiet 10% black/white perimeter in the active theme. */
+  --opacity-media-ring: 0.1;
+  --color-line-media: light-dark(color(srgb 0 0 0 / var(--opacity-media-ring)), color(srgb 1 1 1 / var(--opacity-media-ring)));
 }
 
 /*

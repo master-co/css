@@ -1,4 +1,4 @@
-import ModeImg from '~/site/docs-shell/components/ModeImg'
+import DeliveryFlow from '~/site/components/DeliveryFlow'
 import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 import Class2CSS from '~/site/components/Class2CSS'
@@ -77,10 +77,7 @@ For a changing value, keep the class fixed and update a CSS variable. This class
 ## Runtime rendering
 Use runtime rendering when class names become known in the browser, such as in a visual editor or content loaded after the build. The runtime uses [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to track connected elements and their class changes, then inserts or reuses the matching CSS rules.
 
-<figure>
-  <ModeImg src="/master-css-runtime-rendering.svg" alt="Master CSS runtime rendering" />
-  <figcaption>Connected elements request rules. Removing their classes ends active usage; cached rules may remain until idle cleanup.</figcaption>
-</figure>
+<DeliveryFlow name="runtime" />
 
 Select runtime mode through your integration, for example the [Vite runtime setup](/guide/installation/vite/runtime). Once it is running, execute these snippets one at a time in the browser console:
 
@@ -168,16 +165,9 @@ The renderer can reuse cached rules across a finite static build while producing
 ---
 
 ## Progressive rendering
-Use progressive rendering when the server or build can generate the initial page CSS and the browser may later introduce new classes. It combines pre-rendering with runtime rule management:
+Use progressive rendering when the server or build can generate the initial page CSS and the browser may later introduce new classes. The response carries that CSS in `style#master-css`; the runtime reads a page hydration manifest to distinguish covered classes from those that need the engine.
 
-1. Render CSS from the finished page HTML and deliver it in `style#master-css`.
-2. Start the runtime and read the page hydration manifest, which identifies classes the response already covers.
-3. Observe class usage. By default, a page with a valid hydration manifest defers its engine until a class outside that manifest appears.
-
-<figure>
-  <ModeImg src="/master-css-progressive-rendering.svg" alt="Master CSS progressive rendering" />
-  <figcaption>Initial CSS comes from rendered HTML. The runtime continues in the browser, loading its engine when additional classes require it.</figcaption>
-</figure>
+<DeliveryFlow name="progressive" />
 
 A typical output points the style element to an external manifest:
 
@@ -194,10 +184,7 @@ A class listed in the manifest can be reused without starting the engine. This i
 ### CSS hydration
 Hydration lets the runtime adopt existing CSS rules. At startup it reads the explicit `hydrationManifest` option, or discovers the inline manifest or the URL on `style#master-css`. With the engine deferred, it tracks usage without rebuilding the stylesheet.
 
-<figure>
-  <ModeImg src="/master-css-hydration.svg" alt="Master CSS hydration" />
-  <figcaption>When the engine starts, the runtime validates the rendered rules and adopts matching CSSOM entries.</figcaption>
-</figure>
+<DeliveryFlow name="hydration" />
 
 When a new class or `cssRuntime.ready()` starts the engine, the browser engine replays the manifest's classes in server rule order, validates resources, and compares the generated result with the existing CSSOM. Matching rules become runtime-managed rules; new classes can then generate additional CSS. Removed classes may keep their pre-rendered rules until this handoff, then enter the normal retained-rule cleanup path.
 
@@ -252,7 +239,6 @@ An interaction that adds many first-time classes asks the browser to process bot
 
 - Keep stable layout, typography and component states in shared classes.
 - Warm predictable runtime classes before inserting the view, after the engine is ready.
-
 - Use CSS variables or inline styles for volatile per-element values such as coordinates or user-generated colors.
 - Use native selectors for repeated states that do not need a distinct generated class for every value.
 

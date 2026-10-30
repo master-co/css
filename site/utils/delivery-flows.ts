@@ -6,25 +6,25 @@ export const deliveryFlows = {
       { title: 'Ensure', description: 'Execute complete classes with the compiled project program.' },
       { title: 'Update', description: 'Insert or reuse native CSS rules in the runtime stylesheet.' }
     ],
-    caption: 'DOM usage and cached CSS rules have separate lifecycles.'
+    caption: 'The browser engine inserts or reuses CSS rules. Cached rules can outlive their connected DOM usage.'
   },
   progressive: {
     title: 'Progressive delivery',
     steps: [
       { title: 'Render', description: 'Generate CSS from the classes in the rendered page HTML.' },
-      { title: 'Paint', description: 'Deliver the initial CSS in the HTML for the first screen.' },
-      { title: 'Continue', description: 'Hydrate matching rules, then observe new DOM classes.' }
+      { title: 'Deliver', description: 'Send the initial CSS with the HTML so the browser can apply it before runtime startup.' },
+      { title: 'Continue', description: 'Read the page hydration manifest and track connected DOM classes. By default, a class outside that manifest loads the browser engine and project program, adopts matching existing rules, and generates any additional CSS.' }
     ],
-    caption: 'The page hydration manifest describes existing rules; the compiled project program supplies class definitions.'
+    caption: 'Initial CSS arrives with the HTML. With a valid pre-rendered stylesheet and page manifest, the engine stays deferred until a connected class outside that manifest appears.'
   },
   hydration: {
     title: 'CSS hydration',
     steps: [
-      { title: 'Read', description: 'Load the page hydration manifest and the existing stylesheet.' },
-      { title: 'Validate', description: 'Compare the manifest with native rule order and resources.' },
-      { title: 'Adopt', description: 'Reuse matching rules as runtime-managed rule objects.' }
+      { title: 'Read', description: 'Load the page hydration manifest; keep using the existing stylesheet.' },
+      { title: 'Validate', description: 'When the browser engine starts, use the project program to replay manifest classes in server rule order, validate resources, and compare the generated rules with the existing CSSOM.' },
+      { title: 'Adopt or rebuild', description: 'Reuse matching rules as runtime-managed rule objects. A mismatch rebuilds CSS.' }
     ],
-    caption: 'A mismatch rebuilds CSS; a referenced manifest that cannot load or validate rejects startup.'
+    caption: 'When the engine starts, matching rules are adopted; a mismatch rebuilds CSS. A referenced manifest that cannot load or validate rejects startup before this comparison.'
   },
   scanning: {
     title: 'From source to utilities',
@@ -57,6 +57,22 @@ export const deliveryFlows = {
 
 export type DeliveryFlowName = keyof typeof deliveryFlows
 
+/** Short figure labels and alternatives share the delivery content owner. */
+export const deliveryIllustrations = {
+  progressive: {
+    alt: 'HTML brings initial CSS to the browser; an uncovered class triggers the deferred engine and additional CSS.',
+    labels: { host: 'Build / server', browser: 'Browser', html: 'HTML', inline: 'Inline CSS', trigger: 'New class', condition: 'outside page manifest', engine: 'Engine + program', output: 'New CSS' }
+  },
+  runtime: {
+    alt: 'Connected DOM class usage flows through the browser engine into native stylesheet rules.',
+    labels: { dom: 'Connected DOM', heading: '<h2>', paragraph: '<p>', candidate: 'text-align:center', engine: 'Engine + program', insert: 'Insert / reuse', rules: 'CSS rules' }
+  },
+  hydration: {
+    alt: 'Existing CSS is compared with engine replay of the page manifest; matching rules are adopted and a mismatch rebuilds CSS.',
+    labels: { existing: 'Existing CSS', manifest: 'Page manifest', replay: 'Engine replay', compare: 'Compare', match: 'Match', mismatch: 'Mismatch', adopt: 'Adopt rules', rebuild: 'Rebuild CSS' }
+  }
+} as const
+
 export function deliveryFlow(name: string) {
   if (!Object.hasOwn(deliveryFlows, name)) throw new Error(`Unknown delivery flow: ${name}`)
   return deliveryFlows[name as DeliveryFlowName]
@@ -65,4 +81,9 @@ export function deliveryFlow(name: string) {
 export function deliveryFlowMarkdown(name: string) {
   const flow = deliveryFlow(name)
   return `**${flow.title}**\n\n${flow.steps.map((step, i) => `${i + 1}. **${step.title}.** ${step.description}`).join('\n')}\n\n${flow.caption}`
+}
+
+export function deliveryFlowDescription(name: string) {
+  const flow = deliveryFlow(name)
+  return `${flow.steps.map(step => step.description).join(' ')} ${flow.caption}`
 }

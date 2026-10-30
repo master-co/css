@@ -245,6 +245,12 @@
       height: auto;
     }
 
+    /* An inward outline paints over images and videos; an inset shadow sits behind them. */
+    :is(img, video):not(:focus-visible) {
+      outline: 1px solid var(--color-line-media);
+      outline-offset: -1px;
+    }
+
     :is(figcaption) {
       font-size: var(--font-size-sm);
       line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
@@ -359,7 +365,7 @@
   }
 
   /* Demos bleed the same way from demo.css, so routes without demos ship no demo selectors. */
-  :is(.code, .codeTabs, .code-wrapper, .doc-table, table, figure:not(.doc-code-example), video, iframe):is(
+  :is(.code, .codeTabs, .code-wrapper, .doc-table, table, figure:not(.doc-code-example), img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child), a:has(> img:only-child)):is(
     .prose > *,
     .prose > :is(div, section, site-island):not([class]) > *,
     .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
@@ -373,9 +379,20 @@
       --prose-table-gutter: var(--prose-bleed);
     }
 
-    &:is(table, video, iframe) {
+    &:is(table, img, video, iframe) {
       width: calc(100% + var(--prose-bleed) * 2);
       max-width: none;
+    }
+
+    /* The media fills its already-expanded wrapper; do not apply the bleed twice. */
+    &:is(figure, p, a, picture) :is(img, video):not(:where(.site-demo *, [data-demo-container] *)) {
+      width: 100%;
+      max-width: none;
+      height: auto;
+    }
+
+    &:is(a, picture) {
+      display: block;
     }
 
     /* The figure bleeds; its caption is reading text and stays on the text column. */

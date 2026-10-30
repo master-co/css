@@ -1,6 +1,6 @@
 ---
 name: master-css-writing
-description: "Research, write, edit, translate, and review Master CSS Guide, Reference, and Blog articles. Organize content around reader tasks, verify technical claims and examples, and follow the project's content ownership and export conventions. Use for public technical articles and their titles or summaries; exclude standalone code fixes, homepage marketing copy, and visual design."
+description: "Research, write, edit, translate, and review Master CSS Guide, Reference, and Blog articles. Organize content around reader tasks, verify technical claims and examples, and follow the project's content ownership and export conventions. Use for public technical articles and their titles or summaries; exclude standalone code fixes, homepage marketing copy, and standalone visual design."
 ---
 
 # Master CSS writing
@@ -21,7 +21,7 @@ Read the requested article, nearby examples, and the applicable [site/AI.md](../
 
 Choose the primary reader need before drafting. Different articles may cover the same topic, but each needs a distinct purpose and an authoritative source for its facts. Guide can include necessary explanation and visual comparisons; Blog does not replace a Reference contract.
 
-Do not apply the article workflow to standalone code fixes, homepage marketing copy, or visual design. For mixed requests, apply it only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
+Do not apply the article workflow to standalone code fixes, homepage marketing copy, or standalone visual design. Article illustrations are part of teaching: use [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md) when the article needs them. For mixed requests, apply the writing workflow only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
 
 ## Research and define the purpose
 
@@ -41,7 +41,9 @@ Discover what you can before asking questions. Ask only about missing informatio
 
 ## Draft and edit
 
-For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Edit ordinary revisions directly. Choose the sequence for the article type rather than imposing an introduction, three body sections, and a conclusion.
+For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Identify questions whose answers depend on sequence, conditional branches, hierarchy, scope, or a visual difference. When a figure or existing working demo is needed to make that relationship clear, complete and place it beside the relevant explanation using [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md). A placeholder, uniform prose cards, or more paragraphs do not fulfill an identified visual teaching need. Do not impose an image quota on simple lookup pages, single-step operations, or local edits.
+
+Edit ordinary revisions directly. Choose the sequence for the article type rather than imposing an introduction, three body sections, and a conclusion.
 
 1. **Check claims and sequence.** Give each section a purpose, introduce prerequisites before they are needed, and remove irrelevant, repeated, or unsupported arguments.
 2. **Make the content usable.** Instructions include necessary setup and observable results; contracts explain conditions and failure; Blog supports its argument with examples and tradeoffs.

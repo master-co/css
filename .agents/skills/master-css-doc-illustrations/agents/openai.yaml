@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master CSS Doc Illustrations"
+  short_description: "Create precise light and dark documentation diagrams"
+  default_prompt: "Use $master-css-doc-illustrations to explain the requested article concept with a verified, editable diagram, coordinated light and dark images, and the same composition across screen sizes."

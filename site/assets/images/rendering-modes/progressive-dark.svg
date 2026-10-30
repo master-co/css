@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="490" viewBox="0 0 600 490" role="img" aria-labelledby="title description" font-family="Geist, sans-serif">
+  <title id="title">Progressive delivery</title>
+  <desc id="description">Generate CSS from the classes in the rendered page HTML. Send the initial CSS with the HTML so the browser can apply it before runtime startup. Read the page hydration manifest and track connected DOM classes. By default, a class outside that manifest loads the browser engine and project program, adopts matching existing rules, and generates any additional CSS. Initial CSS arrives with the HTML. With a valid pre-rendered stylesheet and page manifest, the engine stays deferred until a connected class outside that manifest appears.</desc>
+  <defs>
+    <linearGradient id="surface" x2=".2" y2="1"><stop stop-color="#303030"/><stop offset="1" stop-color="#222222"/></linearGradient>
+    <linearGradient id="edge" x2=".65" y2="1"><stop stop-color="#696969"/><stop offset="1" stop-color="#3c3c3c"/></linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000000" flood-opacity=".14"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#000000" flood-opacity=".16"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 1l4 3-4 3" fill="none" stroke="#898989" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="600" height="490" rx="0" fill="#111111" />
+  <g transform="translate(20 20)">
+      <text x="22" y="70" font-size="16" font-weight="500" fill="#ababab" >Build / server</text>
+      <text x="240" y="70" font-size="16" font-weight="500" fill="#ababab" >Browser</text>
+      <path d="M200 174H228" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M370 264V342" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 5" marker-end="url(#arrow)"/>
+      <path d="M260 384H216Q208 384 208 376V233Q208 225 216 225H228" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <text x="132" y="326" font-size="15" font-weight="400" fill="#ababab" >New CSS</text>
+      <g>
+      <path d="M32 94H164L188 118V272Q188 282 178 282H32Q22 282 22 272V104Q22 94 32 94Z" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/>
+      <path d="M164 95V113Q164 118 169 118H187" fill="none" stroke="#3c3c3c"/>
+      <text x="40" y="139" font-size="20" font-weight="500" fill="#e5e5e5" >HTML</text>
+      <g stroke="#747474" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M49 156l-7 7 7 7m20-14 7 7-7 7m-8-17-4 20"/>
+      </g>
+      <rect x="91" y="158" width="74" height="5" rx="2.5" fill="#3e3e3e" />
+      <rect x="91" y="170" width="55" height="5" rx="2.5" fill="#3e3e3e" />
+      <rect x="42" y="190" width="126" height="5" rx="2.5" fill="#3e3e3e" />
+      <rect x="42" y="202" width="98" height="5" rx="2.5" fill="#3e3e3e" />
+      <path d="M23 220H187V272Q187 281 178 281H32Q23 281 23 272Z" fill="#202020"/>
+      <path d="M23 220H187" stroke="#414141"/>
+      <g transform="translate(42 241)" fill="none" stroke="#747474" stroke-width="1.2" stroke-linejoin="round">
+        <path d="M1 0h10l5 5v14H1ZM11 0v5h5M5 10h7M5 14h7"/>
+      </g>
+      <text x="70" y="257" font-size="18" font-weight="400" fill="#e5e5e5" >Inline CSS</text>
+    </g>
+      <g>
+      <rect x="240" y="94" width="260" height="158" rx="10" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="241" y="95" width="258" height="156" rx="9" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <rect x="241" y="95" width="258" height="30" rx="9" fill="#2e2e2e" />
+      <rect x="241" y="114" width="258" height="11" rx="0" fill="#2e2e2e" />
+      <path d="M240 125H500" stroke="#414141"/>
+      <circle cx="255" cy="110" r="2" fill="#747474"/><circle cx="265" cy="110" r="2" fill="#747474"/><circle cx="275" cy="110" r="2" fill="#747474"/>
+      <rect x="303" y="105" width="145" height="10" rx="3" fill="#202020" stroke="#414141" stroke-width=".6"/>
+      <rect x="257" y="142" width="30" height="92" rx="4" fill="#202020" />
+      <rect x="264" y="155" width="16" height="3" rx="1.5" fill="#646464" /><rect x="264" y="170" width="16" height="3" rx="1.5" fill="#646464" /><rect x="264" y="185" width="16" height="3" rx="1.5" fill="#646464" />
+      <rect x="304" y="157" width="100" height="7" rx="3.5" fill="#646464" />
+      <rect x="304" y="184" width="168" height="4" rx="2" fill="#3e3e3e" />
+      <rect x="304" y="195" width="143" height="4" rx="2" fill="#3e3e3e" />
+      <rect x="304" y="213" width="64" height="18" rx="4" fill="#bcbcbc" />
+    </g>
+      <text x="385" y="298" font-size="16" font-weight="500" fill="#e5e5e5" >New class</text>
+      <text x="385" y="320" font-size="15" font-weight="400" fill="#ababab" >outside page manifest</text>
+      <g>
+      <path d="M267 372h5m228 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/><path d="M267 386h5m228 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/><path d="M267 400h5m228 0h5" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".45"/>
+      <rect x="272" y="354" width="228" height="60" rx="8" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="273" y="355" width="226" height="58" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <g transform="translate(288 374)" stroke="#747474" stroke-width="1.2" fill="none" stroke-linecap="round">
+        <rect x="1" y="1" width="18" height="18" rx="3"/>
+        <rect x="6" y="6" width="8" height="8" rx="1"/>
+        <path d="M6-2v3m8-3v3M6 19v3m8-3v3M-2 6h3m-3 8h3M19 6h3m-3 8h3"/>
+      </g>
+      <text x="320" y="390" font-size="18" font-weight="500" fill="#e5e5e5" >Engine + program</text>
+
+    </g>
+    </g>
+</svg>

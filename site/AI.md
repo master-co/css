@@ -101,6 +101,8 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 For Guide, Reference and Blog research, writing, editing, translation and review, use the project [master-css-writing skill](../.agents/skills/master-css-writing/SKILL.md). It provides editorial methods and task-specific references; the content policies below remain canonical.
 
+For technical article illustrations, use [master-css-doc-illustrations](../.agents/skills/master-css-doc-illustrations/SKILL.md). When understanding depends on a flow, conditional branch, hierarchy, scope boundary or visual difference, assess and complete the necessary figure or working demo beside the explanation. Do not replace an identified visual teaching need with placeholders, uniform prose cards or longer prose. Simple lookup entries and local wording edits do not require an image quota. Preserve meaningful text equivalents in the existing search and Markdown/llms flows.
+
 ### Current documentation and migration ownership
 
 Public Guide, Reference, Blog, examples and package READMEs describe current behavior only. Describe supported syntax directly; never mention retired syntax, retired API names or version history. Migration Guide covers converting external styling systems. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.

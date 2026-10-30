@@ -12,7 +12,7 @@ Read the change to understand its purpose before checking relevant evidence. Rep
 | Reader task | Prerequisites, actions, or decision criteria are sufficient and the result is recognizable |
 | Ownership | Teaching and contracts have appropriate owners without duplicate fact sources |
 | Argument and voice | Sections support the subject, paragraphs connect, and explanation replaces empty slogans |
-| Examples and visuals | Visible settings, code, and results agree; comparisons aid understanding and work as described |
+| Examples and visuals | Visible settings, code, and results agree; necessary visual explanations are actually present, show the relevant relationships, and remain readable in both themes and narrow columns |
 | Integration and exports | Links, anchors, and MDX imports work; meaningful content survives the relevant output paths |
 
 Incorrect syntax, invented data, missing necessary steps, and incorrect ownership must be resolved rather than averaged away by other strengths. For a small edit, review the dimensions it affects.
@@ -28,6 +28,8 @@ Ask practical questions based on the purpose and answer using only the article a
 - Blog: What is the argument? Where is the evidence? When does it not apply? What can I do next?
 
 If an answer depends on the conversation, add the missing context. Check ambiguity, unsupported inference, and contradictions. The author may do this check but must not describe it as independent reader testing. Additional agents or human evaluations depend on current authorization and tool rules; they are not required for every edit.
+
+For substantial writing or restructuring, check whether readers must mentally reconstruct an execution path, conditional branch, hierarchy, boundary, or visible difference. If that creates a concrete comprehension gap, complete the appropriate figure or demo through [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md). Check arrows, conditions, and grouping as technical claims. Simple lookup content and local prose edits do not need artificial illustration work.
 
 ## Select checks
 
