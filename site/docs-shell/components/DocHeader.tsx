@@ -57,8 +57,8 @@ export default function DocHeader(props: any) {
           </Link>
         ))}
         {app.communityNavs?.length ? <div className='height:1em width:1px mx-md bg-line-divider display:none@media((width<64rem))'></div> : null}
-        <LanguageButton className="margin-right:-0.188rem display:none@media((width<64rem)) app-header-icon" />
-        <SearchButton className="margin-right:-1.25rem display:none@md app-header-icon">
+        <LanguageButton className={clsx('display:none@media((width<64rem)) app-header-icon', documentNavigation && 'margin-right:-0.188rem')} />
+        <SearchButton className={clsx('margin-right:-1.25rem@media((width<64rem)) app-header-icon', documentNavigation && 'display:none@md')}>
           <IconListSearch width="22" height="22" strokeWidth="1.2" aria-hidden="true" />
         </SearchButton>
       </HeaderContent>

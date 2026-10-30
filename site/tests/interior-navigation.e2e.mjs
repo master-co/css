@@ -265,3 +265,36 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
     } finally { await context.close() }
   }
 })
+
+test(`${browserName}: pages without a document sidebar keep a visible desktop search entry`, { timeout: 120000 }, async () => {
+  for (const locale of ['', '/tw']) for (const route of ['/', '/brand', '/blog', '/sponsor', '/design-system', '/404']) {
+    const { context, page, errors } = await open(locale + (route === '/' && locale ? '' : route), { width: 1024 })
+    try {
+      const tw = (await page.locator('html').getAttribute('lang')).startsWith('zh')
+      const name = tw ? '搜尋文件' : 'Search documentation'
+      const header = page.getByRole('navigation', { name: tw ? '主要導覽' : 'Main navigation', exact: true })
+      assert.equal(await header.count(), 1, 'the main navigation has its actual accessible name')
+      const trigger = header.getByRole('button', { name, exact: true })
+      for (const width of [1024, 1280, 1440]) {
+        await page.setViewportSize({ width, height: 900 })
+        assert.equal(await trigger.isVisible(), true)
+        await noOverflow(page)
+      }
+      await trigger.click()
+      const input = page.getByRole('combobox')
+      await input.pressSequentially('padding')
+      await page.getByRole('option').first().waitFor()
+      await input.press('Escape')
+      assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
+      assert.deepEqual(errors, [])
+    } finally { await context.close() }
+  }
+  for (const route of ['/guide/introduction', '/reference']) {
+    const { context, page } = await open(route, { width: 1440 })
+    try {
+      const header = page.getByRole('navigation', { name: 'Main navigation', exact: true })
+      assert.equal(await header.getByRole('button', { name: 'Search documentation', exact: true, includeHidden: true }).isVisible(), false)
+      assert.equal(await page.getByRole('button', { name: 'Search documentation', exact: true }).count(), 1, 'the document sidebar keeps its existing search entry')
+    } finally { await context.close() }
+  }
+})
