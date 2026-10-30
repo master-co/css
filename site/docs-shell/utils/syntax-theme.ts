@@ -11,21 +11,26 @@ const syntaxTheme = {
   tokenColors: [
     { scope: ['variable', 'meta.embedded'], settings: { foreground: 'var(--color-code-text)' } },
     { scope: ['keyword', 'storage'], settings: { foreground: 'var(--color-code-keyword)' } },
-    { scope: ['punctuation', 'keyword.operator'], settings: { foreground: 'var(--color-code-punctuation)' } },
+    { scope: ['punctuation', 'meta.brace', 'keyword.operator'], settings: { foreground: 'var(--color-code-punctuation)' } },
     {
-      scope: ['entity.name', 'support.function', 'support.type', 'entity.other.inherited-class'],
+      // Word operators read as keywords, not symbols.
+      scope: ['keyword.operator.new', 'keyword.operator.expression', 'keyword.operator.word', 'keyword.operator.logical.feature', 'keyword.operator.logical.and.media', 'keyword.operator.logical.not.media', 'keyword.operator.logical.only.media', 'keyword.operator.logical.to'],
+      settings: { foreground: 'var(--color-code-keyword)' }
+    },
+    {
+      scope: ['entity.name', 'support.function', 'support.type', 'support.class', 'entity.other.inherited-class'],
       settings: { foreground: 'var(--color-code-function)' }
     },
     {
-      scope: ['entity.other.attribute-name', 'support.type.property-name', 'support.variable.property', 'variable.other.property', 'variable.object.property', 'meta.object-literal.key', 'meta.mapping.key'],
+      scope: ['entity.other.attribute-name', 'support.type.property-name', 'support.variable.property', 'variable.other.property', 'variable.object.property', 'variable.other.key', 'meta.object-literal.key', 'meta.mapping.key'],
       settings: { foreground: 'var(--color-code-property)' }
     },
     {
-      scope: ['string', 'punctuation.definition.string', 'support.constant.property-value', 'support.constant.font-name', 'support.constant.color', 'constant.other.color'],
+      scope: ['string', 'punctuation.definition.string', 'support.constant.property-value', 'support.constant.font-name', 'support.constant.color', 'support.constant.media', 'constant.other.color'],
       settings: { foreground: 'var(--color-code-string)' }
     },
     {
-      scope: ['constant.numeric', 'constant.language', 'constant.character', 'keyword.other.unit'],
+      scope: ['constant.numeric', 'constant.language', 'constant.character', 'keyword.other.unit', 'entity.other.keyframe-offset.percentage'],
       settings: { foreground: 'var(--color-code-number)' }
     },
     {
@@ -33,14 +38,15 @@ const syntaxTheme = {
       settings: { foreground: 'var(--color-code-function)' }
     },
     {
-      scope: ['entity.other.attribute-name.pseudo-class', 'entity.other.attribute-name.pseudo-element', 'keyword.other.important', 'keyword.operator.important', 'punctuation.definition.keyword'],
+      scope: ['entity.other.attribute-name.pseudo-class', 'entity.other.attribute-name.pseudo-element', 'entity.other.keyframe-offset', 'keyword.other.important', 'keyword.operator.important', 'punctuation.definition.keyword'],
       settings: { foreground: 'var(--color-code-keyword)' }
     },
     { scope: ['comment', 'punctuation.definition.comment', 'string.quoted.docstring.multi'], settings: { foreground: 'var(--color-code-comment)' } },
     { scope: ['markup.heading', 'markup.bold'], settings: { foreground: 'var(--color-code-function)' } },
     { scope: ['markup.inline', 'markup.raw', 'markup.underline.link'], settings: { foreground: 'var(--color-code-string)' } },
     { scope: 'markup.inserted', settings: { foreground: 'var(--color-code-success)' } },
-    { scope: ['markup.deleted', 'invalid'], settings: { foreground: 'var(--color-code-danger)' } }
+    // Grammar `invalid` scopes flag valid docs code such as custom elements and `<hash>` placeholders; they keep their host role.
+    { scope: 'markup.deleted', settings: { foreground: 'var(--color-code-danger)' } }
   ]
 } satisfies ThemeRegistration
 
