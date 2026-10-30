@@ -634,16 +634,23 @@ function CodeLine({ changed, line, marks, number, sign, style, valueClassName }:
       <span className="home-agent-text">
         {match
           ? <>
-            {match[1]}<span className="home-code-tag">&lt;{match[2]}</span><span className="home-agent-attr"> <span className="home-code-attr">class</span>=<span className="home-code-string">&quot;<span className={valueClassName}>
+            {match[1]}<span className="home-code-punct">&lt;</span><span className="home-code-tag">{match[2]}</span><span className="home-agent-attr"> <span className="home-code-attr">class</span><span className="home-code-punct">=</span><span className="home-code-string">&quot;<span className={valueClassName}>
               {match[3].split(' ').map((className, index) => (
                 <Fragment key={className}>{index ? ' ' : ''}<span className={clsx('home-agent-class', marks?.[className])}>{className}</span></Fragment>
               ))}
-            </span>&quot;</span></span><span className="home-code-tag">&gt;</span>{closing ? match[4].slice(0, -closing.length) : match[4]}{closing && <span className="home-code-tag">{closing}</span>}
+            </span>&quot;</span></span><span className="home-code-punct">&gt;</span>{closing ? match[4].slice(0, -closing.length) : match[4]}{closing && <MarkupTag text={closing} />}
           </>
-          : <span className="home-code-tag">{line}</span>}
+          : <MarkupTag text={line} />}
       </span>
     </div>
   )
+}
+
+/** A bare tag such as `</article>`: brackets read as punctuation and the name as the tag, as in highlighted docs code. */
+function MarkupTag({ text }: { text: string }) {
+  const tag = text.match(/^(\s*)(<\/?)(\w+)(\s*\/?>)$/)
+  if (!tag) return <span className="home-code-tag">{text}</span>
+  return <>{tag[1]}<span className="home-code-punct">{tag[2]}</span><span className="home-code-tag">{tag[3]}</span><span className="home-code-punct">{tag[4]}</span></>
 }
 
 /** Keeps each class-like word whole, so a wrapped message never breaks a class at its hyphen. */

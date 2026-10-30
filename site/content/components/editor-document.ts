@@ -125,8 +125,9 @@ export function getEditorModel(): EditorModel {
       const spans: EditorSpan[] = []
       for (const match of line.matchAll(markupPattern)) {
         const [, tag, space, name, equals, open, value, close, end, text] = match
-        if (tag) spans.push({ text: tag, tone: 'tag' })
-        else if (end) spans.push({ text: end, tone: 'tag' })
+        // Brackets read as punctuation and the name as the tag, as in highlighted docs code.
+        if (tag) spans.push({ text: tag.match(/^<\/?/)![0], tone: 'punct' }, { text: tag.replace(/^<\/?/, ''), tone: 'tag' })
+        else if (end) spans.push({ text: end, tone: 'punct' })
         else if (text) spans.push({ text, tone: 'text' })
         else {
           spans.push({ text: space, tone: 'text' }, { text: name, tone: 'attr' }, { text: equals, tone: 'punct' }, { text: open, tone: 'string' })
