@@ -295,10 +295,14 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
     }
 
     const tick = (now: number) => {
+      // Offscreen and hidden figures release the frame loop; becoming visible starts it again.
+      if (!visible) {
+        frameId = 0
+        return
+      }
       frameId = requestAnimationFrame(tick)
       const elapsed = last ? Math.min(now - last, 64) : 0
       last = now
-      if (!visible) return
       visibleClock += elapsed
       if (tween) {
         tween.elapsed += elapsed
@@ -459,6 +463,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       stage.toggleAttribute('data-visible', visible)
       syncAnimations()
       last = 0
+      if (visible && !frameId) frameId = requestAnimationFrame(tick)
     }
     const intersection = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting
