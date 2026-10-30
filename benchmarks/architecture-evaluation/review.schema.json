@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Master CSS second-change human review input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "reviewSeconds", "repairIterations", "toolCalls", "findings", "visualReview", "transcript", "notes"],
+  "properties": {
+    "status": { "type": "string", "enum": ["completed", "timed-out", "blocked"] },
+    "reviewSeconds": { "type": "number", "minimum": 0 },
+    "repairIterations": { "type": "integer", "minimum": 0 },
+    "toolCalls": { "type": "integer", "minimum": 0 },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["message", "source", "verdict", "evidence"],
+        "properties": {
+          "message": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "enum": ["agent", "cli", "mcp", "browser", "reviewer"] },
+          "verdict": { "type": "string", "enum": ["true-positive", "false-positive", "unresolved"] },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "visualReview": { "type": "string", "enum": ["pass", "fail", "not-reviewed"] },
+    "transcript": { "type": "string", "minLength": 1 },
+    "notes": { "type": "string" }
+  }
+}

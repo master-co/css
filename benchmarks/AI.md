@@ -14,6 +14,7 @@ Benchmark results are evidence for investigation. They do not replace correctnes
 - Vitest benchmark entrypoints under each suite directory.
 - `BenchmarkReport` data shape, metric IDs, suite IDs, fixture IDs, adapter IDs, sample summaries, report limits, and artifact metadata.
 - Local report output under `benchmarks/.results/**`.
+- Standalone architecture experiments and the second-change evaluation protocol under `architecture-evaluation/`; model trials remain separate from deterministic fixture controls.
 - CI helpers that normalize engine/runtime benchmark reports and compare GitHub Actions artifact history.
 - Tailwind static comparison snapshot tooling.
 
@@ -92,6 +93,8 @@ For suite-specific code changes, run the smallest relevant suite:
 ```sh
 bun run --filter ./benchmarks bench:<suite>
 ```
+
+For the standalone architecture kit, run `bun benchmarks/architecture-evaluation/run.ts selftest` and `bun benchmarks/architecture-evaluation/experiments.ts` from the repository root. It intentionally uses a local protocol/result schema rather than the historical `BenchmarkReport` suite registry. Do not publish deterministic control runs as model productivity results.
 
 Use the package script names from `benchmarks/package.json`, such as `bench:css-output-size`, `bench:css-structure`, `bench:build-performance`, `bench:master-delivery-modes`, `bench:progressive-hydration-diagnostics`, or `bench:browser-css-cost`.
 

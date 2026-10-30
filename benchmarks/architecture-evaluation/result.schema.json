@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Master CSS second-change recorded trial",
+  "type": "object",
+  "required": ["kind", "version", "arm", "task", "repeat", "protocol", "protocolSHA256", "initialSourceHashes", "startedAt", "finishedAt", "elapsedSeconds", "withinBudget", "review", "diagnosticFalseDiscoveryRate", "accepted", "acceptance", "transcriptSHA256", "finalEnvironment", "environmentChanged"],
+  "properties": {
+    "kind": { "const": "model-trial" },
+    "version": { "const": 1 },
+    "arm": { "enum": ["native-css", "tailwind", "master-cli", "master-mcp"] },
+    "task": { "enum": ["token-migration", "responsive-layout", "scoped-hover", "dynamic-value", "source-discovery", "reduced-motion"] },
+    "repeat": { "type": "integer", "minimum": 1 },
+    "protocol": { "type": "object", "required": ["model", "repeats", "maxSeconds", "maxToolCalls", "reviewer", "documentationRevision", "environment"] },
+    "protocolSHA256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "initialSourceHashes": { "type": "object", "required": ["index.html", "input.css", "app.js"] },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": "string", "format": "date-time" },
+    "elapsedSeconds": { "type": "number", "minimum": 0 },
+    "withinBudget": { "type": "boolean" },
+    "review": { "$ref": "./review.schema.json" },
+    "diagnosticFalseDiscoveryRate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "accepted": { "type": "boolean" },
+    "acceptance": { "type": "object", "required": ["passed", "checks"] },
+    "transcriptSHA256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "finalEnvironment": { "type": "object" },
+    "environmentChanged": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}
