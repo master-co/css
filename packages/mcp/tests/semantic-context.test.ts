@@ -8,6 +8,7 @@ import { inspectDirectives } from '../src/directives'
 import { loadWorkspaceManifest } from '../src/project'
 import { executeTool, jsonToolResult } from '../src/result'
 import { queryManifest } from '../src/manifest-query'
+import { MASTER_CSS_BINDING_ABI_VERSION } from '@master/css-binding'
 
 const roots: string[] = []
 function project(source?: string) {
@@ -54,7 +55,7 @@ it('explicit preset context reports matching separately from validity and browse
   try {
     const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: 28 } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
     const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })

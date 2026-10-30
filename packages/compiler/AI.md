@@ -14,6 +14,10 @@
 - Project entry discovery, manifest loading, sync loading, and workspace package resolution under `./project`.
 - Managed stylesheet registration, extraction policy, native CSS pruning, and generated CSS composition under `./stylesheet`.
 - Complete project inspection reports under `./diagnostics`.
+- Opt-in authored source graphs from project loading, and managed design-system
+  inspection orchestration under `./diagnostics`; all reference/policy semantics
+  remain in Rust lint sessions. Package CSS supplies definitions but is excluded
+  from project-owned declaration policy.
 
 ## Does Not Own
 

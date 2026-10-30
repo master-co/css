@@ -12,6 +12,18 @@ pub struct NodeLintSession {
 
 #[napi]
 impl NodeLintSession {
+    #[napi]
+    pub fn inspect_design_system(&self, request_json: String) -> Result<String> {
+        let request = serde_json::from_str::<mastercss_lint::DesignSystemRequest>(&request_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .inspect_design_system(&request)
+                .map_err(invalid_lint_request)?,
+        )
+    }
+
     #[napi(constructor)]
     pub fn new(manifest_json: String) -> Result<Self> {
         Ok(Self {
@@ -101,17 +113,8 @@ impl NodeLintSession {
         }
         let raw_value_policy = request
             .raw_value_policy
-            .map(|policy| {
-                RawValuePolicy::new(
-                    policy.allow_raw_values,
-                    policy.allow_properties,
-                    policy.allowed_patterns,
-                )
-                .map(|mut result| {
-                    result.require_properties = policy.require_properties;
-                    result
-                })
-            })
+            .as_ref()
+            .map(RawValuePolicyRequest::compile)
             .transpose()
             .map_err(invalid_lint_request)?;
         to_json(

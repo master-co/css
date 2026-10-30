@@ -16,7 +16,8 @@ export type {
   MasterCSSProjectCompileOptions,
   MasterCSSProjectDiscoveryOptions,
   MasterCSSProjectLoadOptions,
-  MasterCSSProjectResult
+  MasterCSSProjectResult,
+  MasterCSSProjectSourceGraph
 } from './options'
 
 function warningDiagnostic(message: string): MasterCSSDiagnostic {
@@ -48,7 +49,8 @@ function immutableProjectResult(
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
     entries: Object.freeze([...result.entries]),
     dependencies: Object.freeze([...result.dependencies]),
-    diagnostics
+    diagnostics,
+    ...(result.sourceGraph ? { sourceGraph: result.sourceGraph } : {})
   })
 }
 
@@ -66,7 +68,8 @@ export function loadProjectManifestSync(
     resolve(options.root ?? process.cwd()),
     options.baseManifest,
     options.entries,
-    options.onDependency
+    options.onDependency,
+    options.includeSourceGraph
   ), options.onDiagnostic)
 }
 

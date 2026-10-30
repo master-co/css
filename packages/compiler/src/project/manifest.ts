@@ -16,7 +16,8 @@ export type {
   MasterCSSProjectCompileOptions,
   MasterCSSProjectDiscoveryOptions,
   MasterCSSProjectLoadOptions,
-  MasterCSSProjectResult
+  MasterCSSProjectResult,
+  MasterCSSProjectSourceGraph
 } from './options'
 
 function throwIfAborted(signal: AbortSignal | undefined) {
@@ -52,7 +53,8 @@ function immutableProjectResult(
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
     entries: Object.freeze([...result.entries]),
     dependencies: Object.freeze([...result.dependencies]),
-    diagnostics
+    diagnostics,
+    ...(result.sourceGraph ? { sourceGraph: result.sourceGraph } : {})
   })
 }
 
@@ -74,7 +76,8 @@ export async function loadProjectManifest(
     resolve(options.root ?? process.cwd()),
     options.baseManifest,
     options.entries,
-    options.onDependency
+    options.onDependency,
+    options.includeSourceGraph
   )
   throwIfAborted(options.signal)
   return immutableProjectResult(result, options.onDiagnostic)

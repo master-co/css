@@ -205,6 +205,25 @@ adaptation over `@master/css-tooling/lint`. `@master/eslint-config-css` is delib
 retained as the thin public ecosystem preset and delegates to the matching plugin
 version without duplicating rules or configuration policy.
 
+## Design-System Inspection Boundary
+
+Design-system inspection is build-time tooling. Rust lint sessions own authored CSS
+token-reference ranges, limited raw-value policy, definition metadata validation and
+token-family collision diagnostics. Metadata describes intent, deprecation and
+replacement; it is not executable Manifest data and never enters runtime programs.
+Compiler project loading classifies source ownership in its opt-in resolved
+import/reference graph. Diagnostics and language-server consume that same evidence;
+do not duplicate filesystem ownership policy in downstream hosts. Combined project
+inspection reuses its loaded graph for design-system analysis. CLI, MCP and
+language-server adapt the same Rust reports.
+Reference edges establish definition context, not CSS delivery or DOM usage.
+
+Keep native CSS and Master classes usable together. Do not add a second policy
+language, arbitrary JavaScript evaluation, cross-framework semantic adapters or a
+browser cascade simulator to implement inspection. Fixed-wrapper materialization
+and native-keyframe preservation experiments live under benchmarks and must not
+change production execution contracts without correctness and workload evidence.
+
 ## Cycles And New Responsibilities
 
 When cycle pressure appears:

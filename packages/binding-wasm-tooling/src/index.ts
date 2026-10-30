@@ -59,6 +59,7 @@ interface GeneratedToolingWasmModule {
     free(): void
   }
   ToolingLintSession: new (manifestJSON: string) => {
+    inspectDesignSystem(requestJSON: string): unknown
     nativeDeclarationCandidates(classNames: string[]): unknown
     resolveValidation(batch: unknown, ruleErrors: string[][][]): unknown
     canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown
@@ -234,6 +235,7 @@ export async function createToolingLintSession(
   const module = await initToolingWasm(options)
   const session = new module.ToolingLintSession(manifestJSON)
   return {
+    inspectDesignSystem: (request: unknown) => session.inspectDesignSystem(JSON.stringify(request)),
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     resolveValidation: (batch: unknown, ruleErrors: string[][][]) => session.resolveValidation(batch, ruleErrors),
     canonicalClassNames: (

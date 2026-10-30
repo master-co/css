@@ -15,6 +15,7 @@
 - Workspace root containment and two-step write confirmation for generated fixes.
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
 - Utility queries expose native properties, explicit utility recipes and named token families.
+- Optional `scan_project.designSystem` passes metadata and native declaration policy to compiler-owned project inspection; it returns the Rust report and authored source graph without changing CSS or runtime programs.
 
 ## Does Not Own
 

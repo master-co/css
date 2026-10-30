@@ -8,8 +8,9 @@ import {
   stripWindowsExtendedPathPrefix
 } from '../node-compiler'
 import { realpathSync } from 'node:fs'
-import { join, relative, resolve, sep } from 'node:path'
+import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { prepareCSSImportGraph } from '../node-imports'
+import type { MasterCSSProjectSourceGraph } from './options'
 
 function prepareManifestGraph(entry: string, projectDir: string, onDependency?: (file: string) => void) {
   const graph = prepareCSSImportGraph(entry, undefined, { projectDir, onDependency }, analyzeCSSDependencies)
@@ -39,6 +40,7 @@ interface BindingProjectSourceEntryPlan {
 }
 
 interface BindingProjectManifestResult {
+  sourceGraph?: MasterCSSProjectSourceGraph
   entries: string[]
   manifest: MasterCSSManifest
   dependencies: string[]
@@ -56,11 +58,18 @@ interface BindingProjectManifestResult {
   }
 }
 
+function isProjectPath(root: string, file: string) {
+  const local = relative(root, file)
+  return local !== '..' && !local.startsWith(`..${sep}`) && !isAbsolute(local)
+    && !local.split(sep).includes('node_modules')
+}
+
 export function loadBindingProjectManifest(
   projectDir: string,
   baseManifest: MasterCSSManifest,
   entries?: readonly string[],
-  onDependency?: (file: string) => void
+  onDependency?: (file: string) => void,
+  includeSourceGraph = false
 ): BindingProjectManifestResult {
   const compiler = createCompilerBindingSessionSync()
   const root = resolve(projectDir)
@@ -96,6 +105,27 @@ export function loadBindingProjectManifest(
     baseManifest,
     graphs
   ) as BindingProjectManifestResult
+  if (includeSourceGraph) {
+    const files = new Map<string, string>()
+    const edges = new Map<string, { from: string, specifier: string, resolved: string }>()
+    for (const { manifestGraph } of graphs) {
+      for (const [source, content] of Object.entries(manifestGraph.files)) files.set(preservePath(source), content)
+      for (const edge of manifestGraph.edges) {
+        const value = { from: preservePath(edge.from), specifier: edge.specifier, resolved: preservePath(edge.resolved) }
+        edges.set(JSON.stringify(value), value)
+      }
+    }
+    result.sourceGraph = Object.freeze({
+      version: 1,
+      files: Object.freeze([...files].map(([source, content]) => Object.freeze({
+        source,
+        content,
+        projectOwned: isProjectPath(root, source)
+          && isProjectPath(realRoot, stripWindowsExtendedPathPrefix(realpathSync.native(source)))
+      }))),
+      edges: Object.freeze([...edges.values()].map(edge => Object.freeze(edge)))
+    })
+  }
   result.entries = result.entries.map(preservePath)
   result.dependencies = result.dependencies.map(preservePath)
   result.sourcePlan.files = result.sourcePlan.files.map(preservePath)

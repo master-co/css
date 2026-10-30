@@ -233,6 +233,60 @@ Use native conditions and explicit mixin calls for wrappers. Define media names 
 
 ## Review the second change
 
+For native component CSS, inspect the managed stylesheet graph as well as class
+strings. This also works when a component uses only ordinary CSS classes.
+
+```bash name=Terminal
+npx @master/css-cli inspect --design-system
+```
+
+The report lists token references with authored UTF-16 ranges, selector and at-rule
+ancestors, import/reference predecessors, and shared-prefix collisions. Project
+entries and their local dependencies are included; unrelated stylesheets, package
+CSS and files outside the project root are excluded from declaration checks.
+An `@reference` edge supplies definition context and does not mean its CSS is delivered.
+
+Provide team intent separately from executable CSS:
+
+```json name=design-system.options.json
+{
+  "version": 1,
+  "metadata": {
+    "--color-brand": {
+      "description": "Primary product actions; separate from information status colors"
+    }
+  },
+  "rawValuePolicy": {
+    "requireProperties": ["color", "background-color"]
+  }
+}
+```
+
+Use names defined in the active project. Metadata can also declare `deprecated: true`
+and a `replacement` token name. Replacements are review suggestions; the tools do
+not infer intent from equal values or automatically replace references.
+Deprecation warnings cover authored CSS `var()` references. For token classes in
+markup, use class diagnostics and snapshot comparison when changing definitions.
+
+```bash name=Terminal
+npx @master/css-cli inspect --design-system --design-system-options design-system.options.json --format json
+```
+
+This optional configuration is read by the inspection tool only. It does not alter
+generated CSS or add data to browser programs. Raw-value policy is disabled when
+omitted. The same options are available through `mastercss_scan_project.designSystem`
+and the language server's `designSystem` setting. All three use the same Rust report.
+Unrecognized option fields are rejected so a typo cannot silently change the checks.
+The native declaration policy covers token-backed properties and top-level value
+components. A complete `var()` component, including its fallback, is exempt.
+Tokens supplied only by `@reference` may provide local compilation context without
+appearing in the final project's registered token list.
+
+References are authored syntax evidence. They do not establish which selector
+matches a DOM element, which conditional branch runs, or whether the interface is
+visually correct. The report keeps `browser: "not-checked"`. Keep using the browser
+for interaction, accessibility and appearance checks.
+
 Before changing shared definitions, save a project snapshot. The next inspection can compare it with the current project even when markup has not changed:
 
 ```bash name=Terminal

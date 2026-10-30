@@ -555,6 +555,77 @@ export interface MasterCSSLintRawValuePolicy {
   allowedPatterns?: readonly string[]
 }
 
+export interface MasterCSSDesignTokenMetadata {
+  description?: string
+  deprecated?: boolean
+  replacement?: string
+}
+
+export interface MasterCSSDesignSystemStylesheet {
+  source: string
+  content: string
+  /** Source graph predecessors, including @reference; not delivery edges. */
+  importers?: readonly string[]
+}
+
+export interface MasterCSSDesignSystemRequest {
+  version: 1
+  stylesheets: readonly MasterCSSDesignSystemStylesheet[]
+  metadata?: Readonly<Record<string, MasterCSSDesignTokenMetadata>>
+  rawValuePolicy?: MasterCSSLintRawValuePolicy
+}
+
+export interface MasterCSSStylesheetAncestor {
+  kind: 'selector' | 'at-rule'
+  name?: string
+  prelude: string
+  range: MasterCSSSourceRange
+}
+
+export interface MasterCSSStylesheetTokenReference {
+  source: string
+  token: string
+  registered: boolean
+  /** Exact authored custom-property identifier, in UTF-16 offsets. */
+  range: MasterCSSSourceRange
+  property: string
+  declarationRange: MasterCSSSourceRange
+  ancestry: MasterCSSStylesheetAncestor[]
+  /** This var() supplies a fallback, including an explicitly empty one. */
+  hasFallback: boolean
+  /** This occurrence is inside another var() fallback. */
+  inFallback: boolean
+  importers: string[]
+}
+
+export interface MasterCSSDesignSystemDiagnostic {
+  code: string
+  severity: 'error' | 'warning' | 'information'
+  message: string
+  source?: string
+  range?: MasterCSSSourceRange
+  token?: string
+  data?: Readonly<Record<string, unknown>>
+}
+
+export interface MasterCSSDesignSystemCollision {
+  prefix: string
+  key: string
+  className: string
+  namespaces: string[]
+  properties: string[]
+}
+
+export interface MasterCSSDesignSystemReport {
+  version: 1
+  tokens: { name: string, metadata?: MasterCSSDesignTokenMetadata }[]
+  references: MasterCSSStylesheetTokenReference[]
+  collisions: MasterCSSDesignSystemCollision[]
+  diagnostics: MasterCSSDesignSystemDiagnostic[]
+  coverage: { scope: 'provided-stylesheets', browser: 'not-checked', notes: string[] }
+  summary: { stylesheets: number, tokens: number, references: number, collisions: number, errors: number, warnings: number }
+}
+
 export interface MasterCSSLintClassListPolicyRequest {
   version: typeof MASTER_CSS_LINT_BATCH_VERSION
   classList: string

@@ -97,6 +97,7 @@ export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBinding
 }
 
 export interface MasterCSSLintBindingSession extends MasterCSSToolingBindingSession {
+  inspectDesignSystem(request: import('./protocol').MasterCSSDesignSystemRequest): import('./protocol').MasterCSSDesignSystemReport
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclarationCandidate[]

@@ -65,6 +65,7 @@ export declare interface MasterCSSWorkspace {
   manifestSource?: 'workspace' | 'bundled'
   manifestErrors?: unknown[]
   planEntries?: string[]
+  designSystemFiles?: readonly string[]
 }
 
 export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
@@ -467,6 +468,7 @@ export class MasterCSSLanguageServer implements Disposable {
     workspace.baseManifest = await this.loadWorkspaceBaseManifest(workspace)
     let workspacePlan: Awaited<ReturnType<MasterCSSLanguageServer['loadWorkspacePlan']>>
     workspace.manifestErrors = []
+    workspace.designSystemFiles = []
     if (workspace !== this.globalWorkspace) {
       try {
         workspacePlan = await this.loadWorkspacePlan(workspace, workspace.baseManifest)
@@ -484,6 +486,8 @@ export class MasterCSSLanguageServer implements Disposable {
     const manifest = workspacePlan?.manifest
       ?? workspace.languageServiceSettings.manifest
       ?? workspace.baseManifest
+    workspace.designSystemFiles = workspacePlan?.sourceGraph?.files
+      .filter(file => file.projectOwned).map(file => file.source) ?? []
     workspace.languageService = new MasterCSSLanguageService(
       { ...workspace.languageServiceSettings, manifest },
       { session: await createToolingSession({ manifest, nativeClassNames: workspacePlan?.nativeClassNames }) }
@@ -516,7 +520,8 @@ export class MasterCSSLanguageServer implements Disposable {
     const result = await loadProjectManifest({
       root: cwd,
       entries,
-      baseManifest
+      baseManifest,
+      includeSourceGraph: Boolean(workspace.languageServiceSettings.designSystem)
     })
     return result
   }
@@ -587,11 +592,45 @@ export class MasterCSSLanguageServer implements Disposable {
     const diagnostics: Diagnostic[] = []
     diagnostics.push(...this.createManifestLoadingDiagnostics(textDocument, workspace))
     diagnostics.push(...this.createCSSDirectiveDiagnostics(textDocument, workspace))
+    diagnostics.push(...this.createDesignSystemDiagnostics(textDocument, workspace))
 
     this.connection.sendDiagnostics({
       uri: textDocument.uri,
       diagnostics
     })
+  }
+
+  private createDesignSystemDiagnostics(document: TextDocument, workspace: MasterCSSWorkspace): Diagnostic[] {
+    const options = workspace.languageServiceSettings.designSystem
+    if (!options || !workspace.languageService || workspace.manifestErrors?.length || document.languageId !== 'css') return []
+    const source = path.resolve(URI.parse(document.uri).fsPath)
+    if (!workspace.designSystemFiles?.includes(source)) return []
+    try {
+      const report = workspace.languageService.session.inspectDesignSystem({
+        ...options,
+        stylesheets: [{ source, content: document.getText() }]
+      })
+      return report.diagnostics.map(item => ({
+        range: {
+          start: document.positionAt(item.range?.start ?? 0),
+          end: document.positionAt(item.range?.end ?? 0)
+        },
+        severity: item.severity === 'error' ? DiagnosticSeverity.Error
+          : item.severity === 'warning' ? DiagnosticSeverity.Warning : DiagnosticSeverity.Information,
+        source: 'Master CSS',
+        code: item.code,
+        message: item.message,
+        data: { version: report.version, coverage: report.coverage, ...item.data }
+      }))
+    } catch (error) {
+      return [{
+        range: { start: document.positionAt(0), end: document.positionAt(0) },
+        severity: DiagnosticSeverity.Error,
+        source: 'Master CSS',
+        code: 'DESIGN_SYSTEM_INSPECTION_ERROR',
+        message: error instanceof Error ? error.message : String(error)
+      }]
+    }
   }
 
   private createCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: MasterCSSWorkspace) {

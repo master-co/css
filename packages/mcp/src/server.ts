@@ -18,6 +18,7 @@ import { compareCSS } from './compare'
 import { jsonResourceResult, executeTool } from './result'
 import { toolOutputSchema } from './output-schema'
 import { projectSnapshot } from './project-comparison-schema'
+import { designSystemOptions } from './design-system-schema'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -319,13 +320,14 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_scan_project',
     {
       title: 'Scan Master CSS Project',
-      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison.',
+      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison. Pass designSystem to inspect stylesheet token references and design policies.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
         includeCss: z.boolean().optional(),
-        includeSnapshot: z.boolean().optional()
+        includeSnapshot: z.boolean().optional(),
+        designSystem: designSystemOptions.optional()
       },
       outputSchema: toolOutputSchema('mastercss_scan_project'),
       annotations: {

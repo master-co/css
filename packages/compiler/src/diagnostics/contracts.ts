@@ -76,6 +76,8 @@ export interface MasterCSSStylesheetError {
 }
 
 export interface MasterCSSInspectionReport {
+  /** Optional authored CSS analysis from the same resolved project. */
+  readonly designSystem?: import('./design-system').MasterCSSProjectDesignSystemReport
   readonly version: 5
   readonly cwd: string
   readonly inputs: Readonly<{

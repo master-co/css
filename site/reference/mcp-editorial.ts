@@ -74,10 +74,23 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     lifecycle: readOnly
   },
   mastercss_scan_project: {
-    purpose: 'Inspect scanned files, stylesheet entries, generated CSS, and optional missing-class checks for a chosen source scope.',
-    fields: { context, patterns, includeSnapshot: 'Capture a version 1 project snapshot in the same inspection session. Compilation errors prevent capture.', classes: 'Complete class names to check against the generated output. This does not add classes to source or safelist them.', includeCss: 'Include the generated stylesheet in `css.text`. Omitted by default.' },
+    purpose: 'Inspect scanned files, stylesheet entries, generated CSS, and optional missing-class checks for a chosen source scope. Add design-system inspection to check token references and policies in managed project CSS.',
+    fields: {
+      context, patterns,
+      includeSnapshot: 'Capture a version 1 project snapshot in the same inspection session. Compilation errors prevent capture.',
+      classes: 'Complete class names to check against the generated output. This does not add classes to source or safelist them.',
+      includeCss: 'Include the generated stylesheet in `css.text`. Omitted by default.',
+      designSystem: 'Add a design-system report from managed project stylesheet entries and their project-owned imports. Requires project context. Source patterns scope the ordinary scan, not this stylesheet graph.',
+      'designSystem.version': 'Design-system options version. Must be 1.',
+      'designSystem.metadata': 'Optional metadata keyed by complete registered token names, including `--`. Each value accepts `description`, `deprecated`, and `replacement` (another complete registered token name). Metadata affects inspection only.',
+      'designSystem.rawValuePolicy': 'Enable raw-value checks for native declarations backed by named token families. Omit to leave this policy disabled. Custom property declarations and declarations inside `@theme` are excluded.',
+      'designSystem.rawValuePolicy.allowRawValues': 'Allow all raw values and suppress raw-value policy warnings. Defaults to false when a policy is supplied.',
+      'designSystem.rawValuePolicy.allowProperties': 'Native property names exempt from raw-value checks. These exemptions take precedence over `requireProperties`.',
+      'designSystem.rawValuePolicy.requireProperties': 'Restrict raw-value checks to these native property names. Omit or supply an empty list to check all eligible token-backed properties.',
+      'designSystem.rawValuePolicy.allowedPatterns': 'Rust regular expressions that exempt matching raw-value segments. Matching is unanchored unless the expression includes anchors. Invalid expressions fail the request.'
+    },
     example: { patterns: ['src/button.html'], classes: ['p-md'], includeCss: true }, exampleNote: 'Use an existing source file. The requested class is checked against actual scan output.',
-    output: 'With includeSnapshot, snapshot contains resolved definitions, known source classes, native stylesheets, CSS assets and coverage limits. Read `summary` and `diagnostics`, then `files`, `stylesheets`, scanner state, `css`, and `missingCSS`. The report includes the configured `root` and manifest status. Check the discovered stylesheet entries before attributing a missing rule to extraction.',
+    output: 'With `includeSnapshot`, `snapshot` contains resolved definitions, known source classes, native stylesheets, CSS assets and coverage limits. Read `summary` and `diagnostics`, then `files`, `stylesheets`, scanner state, `css`, and `missingCSS`. The report includes the configured `root` and manifest status. Check the discovered stylesheet entries before attributing a missing rule to extraction.\n\nWith `designSystem`, the added version 1 `designSystem` report contains registered `tokens`, authored CSS token `references`, token-family `collisions`, `diagnostics`, and `summary`. References include source ranges, declaration and selector/at-rule context, fallback flags, and importers. `project` records entries, files, excluded paths, and import edges. `coverage` identifies the supplied-stylesheet scope; dependencies outside project-owned CSS and browser computed styles are not checked. An unregistered reference is evidence about this manifest, not proof that the variable is undefined in the browser.',
     lifecycle: readOnly
   },
   mastercss_manifest_query: {

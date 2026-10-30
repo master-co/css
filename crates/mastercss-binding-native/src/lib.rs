@@ -5,7 +5,8 @@ use mastercss_compiler::{
 use mastercss_engine::{EngineError, EngineSession as RustEngineSession};
 use mastercss_language::LanguageSession as RustLanguageSession;
 use mastercss_lint::{
-    CanonicalClassNameOptions, LintClassListPolicy, LintSession as RustLintSession, RawValuePolicy,
+    CanonicalClassNameOptions, LintClassListPolicy, LintSession as RustLintSession,
+    RawValuePolicyRequest,
 };
 use mastercss_render::RenderSession as RustRenderSession;
 use mastercss_scanner::ScannerSession as RustScannerSession;
@@ -117,21 +118,8 @@ struct LintClassListRequest {
     validation_errors: Vec<Vec<String>>,
     #[serde(default)]
     disallow_unknown_class: bool,
-    raw_value_policy: Option<LintRawValuePolicyRequest>,
+    raw_value_policy: Option<RawValuePolicyRequest>,
     canonical_options: Option<CanonicalClassNameOptions>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct LintRawValuePolicyRequest {
-    #[serde(default)]
-    allow_raw_values: bool,
-    #[serde(default)]
-    allow_properties: Vec<String>,
-    #[serde(default)]
-    require_properties: Vec<String>,
-    #[serde(default)]
-    allowed_patterns: Vec<String>,
 }
 
 fn to_napi_error(error: EngineError) -> Error {

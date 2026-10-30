@@ -123,21 +123,8 @@ struct LintClassListRequest {
     validation_errors: Vec<Vec<String>>,
     #[serde(default)]
     disallow_unknown_class: bool,
-    raw_value_policy: Option<LintRawValuePolicyRequest>,
+    raw_value_policy: Option<mastercss_lint::RawValuePolicyRequest>,
     canonical_options: Option<mastercss_lint::CanonicalClassNameOptions>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct LintRawValuePolicyRequest {
-    #[serde(default)]
-    allow_raw_values: bool,
-    #[serde(default)]
-    allow_properties: Vec<String>,
-    #[serde(default)]
-    require_properties: Vec<String>,
-    #[serde(default)]
-    allowed_patterns: Vec<String>,
 }
 
 #[wasm_bindgen(js_name = extractClassCandidates)]
@@ -195,6 +182,20 @@ pub struct ToolingLintSession {
 
 #[wasm_bindgen]
 impl ToolingLintSession {
+    #[wasm_bindgen(js_name = inspectDesignSystem)]
+    pub fn inspect_design_system(&self, request_json: &str) -> Result<JsValue, JsValue> {
+        // Object-to-struct serde_wasm_bindgen only visits expected fields, which
+        // bypasses deny_unknown_fields. Share native's strict JSON decoding.
+        let request = serde_json::from_str::<mastercss_lint::DesignSystemRequest>(request_json)
+            .map_err(|error| invalid_lint_request(error.to_string()))?;
+        json_value(
+            &self
+                .inner
+                .inspect_design_system(&request)
+                .map_err(invalid_lint_request)?,
+        )
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(manifest_json: &str) -> Result<ToolingLintSession, JsValue> {
         Ok(Self {
@@ -302,17 +303,8 @@ impl ToolingLintSession {
         }
         let raw_value_policy = request
             .raw_value_policy
-            .map(|policy| {
-                mastercss_lint::RawValuePolicy::new(
-                    policy.allow_raw_values,
-                    policy.allow_properties,
-                    policy.allowed_patterns,
-                )
-                .map(|mut result| {
-                    result.require_properties = policy.require_properties;
-                    result
-                })
-            })
+            .as_ref()
+            .map(mastercss_lint::RawValuePolicyRequest::compile)
             .transpose()
             .map_err(invalid_lint_request)?;
         let batch = self

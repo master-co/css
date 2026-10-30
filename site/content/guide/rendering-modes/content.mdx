@@ -605,7 +605,7 @@ in Node or with `@master/css-tooling`.
 
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v6, engine snapshot v4 and transition v4 define the data exchanged with the engine; page hydration manifests use v5.
 
-Custom engine or binding implementations must provide this query under binding ABI 26.
+Custom engine or binding implementations must provide this query under binding ABI 29.
 
 
 ### Animation resource placement

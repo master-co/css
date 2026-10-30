@@ -818,36 +818,48 @@ impl EngineSession {
         })
     }
 
-    /// Whether a declaration key has a registered named-token counterpart.
+    /// Whether a class declaration key or utility prefix has usable named tokens.
     pub fn has_named_tokens_for_key(&self, key: &str) -> bool {
-        // Native-property policy queries resolve the property's canonical family;
-        // this does not register another token spelling.
+        // Class policy accepts both native declaration keys and utility prefixes;
+        // this query does not register another token spelling.
         self.compiled
             .token_families
             .iter()
             .filter(|family| {
                 family.prefix == key || family.properties.iter().any(|property| property == key)
             })
-            .any(|family| {
-                self.compiled
-                    .token_utilities
-                    .get(&concat_text!(family.prefix, "-"))
-                    .is_some_and(|indexes| {
-                        indexes.iter().any(|index| {
-                            let utility = &self.compiled.utilities[*index];
-                            utility.variable_alias_refs == [concat_text!("~", family.namespace)]
-                                && super::utility::utility_variable_entries(utility, &self.compiled)
-                                    .iter()
-                                    .any(|(key, _)| {
-                                        super::named::matching_utilities(
-                                            &concat_text!(family.prefix, "-", key),
-                                            &self.compiled,
-                                        )
-                                        .iter()
-                                        .any(|(matched, _)| matched == index)
-                                    })
-                        })
-                    })
+            .any(|family| self.has_named_tokens_for_family(family))
+    }
+
+    /// Whether a native property has usable tokens, without treating its name as
+    /// a class prefix (for example, font-* does not supply the font shorthand).
+    pub fn has_named_tokens_for_property(&self, property: &str) -> bool {
+        self.compiled
+            .token_families
+            .iter()
+            .filter(|family| family.properties.iter().any(|item| item == property))
+            .any(|family| self.has_named_tokens_for_family(family))
+    }
+
+    fn has_named_tokens_for_family(&self, family: &super::TokenFamily) -> bool {
+        self.compiled
+            .token_utilities
+            .get(&concat_text!(family.prefix, "-"))
+            .is_some_and(|indexes| {
+                indexes.iter().any(|index| {
+                    let utility = &self.compiled.utilities[*index];
+                    utility.variable_alias_refs == [concat_text!("~", family.namespace)]
+                        && super::utility::utility_variable_entries(utility, &self.compiled)
+                            .iter()
+                            .any(|(key, _)| {
+                                super::named::matching_utilities(
+                                    &concat_text!(family.prefix, "-", key),
+                                    &self.compiled,
+                                )
+                                .iter()
+                                .any(|(matched, _)| matched == index)
+                            })
+                })
             })
     }
 

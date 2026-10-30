@@ -122,7 +122,7 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_extract_classes` | Extract class positions and validation summaries from project files or an in-memory source buffer. |
 | `mastercss_inspect_directives` | Inspect CSS-first directives and report manifest, dependency, warning, and CSS effects. |
 | `mastercss_render_css` | Generate CSS from an HTML fragment or a whitespace-separated class list. |
-| `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_scan_project` | Scan source files, register stylesheet entries, check optional classes, and report scanner state, generated CSS metadata, and missing CSS diagnostics. Optionally inspect stylesheet token references and design policies. |
 | `mastercss_manifest_query` | Query active manifest tokens, utilities, mixins, custom media, and token families. |
 | `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
 | `mastercss_lint_project` | Run Master CSS class-list diagnostics for workspace files and return fix proposals without writing files. |
@@ -133,6 +133,32 @@ The server exposes focused tools instead of asking the agent to infer Master CSS
 | `mastercss_apply_preview` | Apply a previously generated preview after validating the token, file hashes, and workspace containment. |
 
 The server also exposes workspace resources for the loaded manifest, entry files, and resolved Master CSS package locations.
+
+### Inspect token use in stylesheets
+
+Pass `designSystem` to `mastercss_scan_project` with the default project context to inspect project-owned CSS reached from your Master CSS entries. This option cannot be combined with `context: "preset"`:
+
+```json
+{
+  "designSystem": {
+    "version": 1,
+    "metadata": {
+      "--color-brand-old": {
+        "description": "Previous brand color",
+        "deprecated": true,
+        "replacement": "--color-brand"
+      }
+    },
+    "rawValuePolicy": {
+      "requireProperties": ["color", "background-color"]
+    }
+  }
+}
+```
+
+The version 1 report in `result.data.designSystem` includes authored `var()` references with source ranges, selector and at-rule ancestry, importers, token-family collisions, and diagnostics for the supplied metadata and policy. Native CSS declarations and Master CSS classes can use the same registered `@theme` tokens. An unregistered custom-property reference can still resolve through ordinary CSS or inheritance; it is not automatically an error.
+
+These analysis inputs do not change generated CSS or runtime programs. Omit `rawValuePolicy` to skip native declaration raw-value checks. Read `project.excluded` and `coverage`: package sources and files outside the project root are excluded, source importers include reference-only context, and the report does not verify DOM usage, cascade winners, computed styles, or browser behavior. You can request `includeSnapshot` in the same call.
 
 ---
 

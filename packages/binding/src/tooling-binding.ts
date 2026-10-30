@@ -82,3 +82,13 @@ export type { MasterCSSDiagnostic, MasterCSSMatchStatus, MasterCSSValueStatus, M
 export { MASTER_CSS_LANGUAGE_VERSION } from './protocol'
 
 export type { MasterCSSScannerUpdate, MasterCSSScannerState, MasterCSSSourceOccurrence, MasterCSSScannerSourceOptions, MasterCSSScannerSourceInput } from './protocol'
+export type {
+  MasterCSSDesignTokenMetadata,
+  MasterCSSDesignSystemStylesheet,
+  MasterCSSDesignSystemRequest,
+  MasterCSSStylesheetAncestor,
+  MasterCSSStylesheetTokenReference,
+  MasterCSSDesignSystemDiagnostic,
+  MasterCSSDesignSystemCollision,
+  MasterCSSDesignSystemReport
+} from './protocol'
