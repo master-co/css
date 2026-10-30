@@ -462,9 +462,14 @@ test('agent guides export complete prompts, tool catalogs, preview workflow and 
 test('tool references export readable parameters, complete schemas and literal examples in both locales', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const { renderDocumentMarkdown } = await import('../reference/build')
+  const { mcpEditorial } = await import('../reference/mcp-editorial')
+  const { cliEditorial } = await import('../reference/cli-editorial')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'tool')
-  assert.equal(docs.length, 23)
+  assert.deepEqual(docs.map((doc: any) => doc.id).sort(), [
+    ...Object.keys(mcpEditorial).map(name => `tools/mcp/${name}`),
+    ...Object.keys(cliEditorial).map(name => `tools/cli/${name}`)
+  ].sort())
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {
