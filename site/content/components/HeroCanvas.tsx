@@ -62,6 +62,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let released = false
     const clearReady = () => {
       host.removeAttribute('data-glass-ready')
+      host.removeAttribute('data-lens-ready')
     }
     const release = () => {
       // Restoration invalidates old handles; the driver has already reclaimed these resources.
@@ -113,7 +114,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
     try {
       cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'pointer', 'lamp', 'shadow', 'body', 'sheen', 'ground', 'title', 'readingArea', 'fontSize'])
       composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'glint', 'time', 'lamp', 'ink', 'ground', 'scene', 'glyphs'])
-      copy = program(heroCopySource, ['scene', 'glyphs', 'resolution', 'time', 'ground', 'title', 'fontSize', 'distanceRange', 'lamp', 'shade'])
+      copy = program(heroCopySource, ['scene', 'glyphs', 'resolution', 'time', 'ground', 'title', 'fontSize', 'distanceRange', 'lamp', 'shade', 'lenses', 'lensRadii'])
       const buffer = context.createBuffer()
       if (!buffer) throw new Error('Cannot allocate a hero triangle')
       buffers.push(buffer)
@@ -160,6 +161,8 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const lamp = { x: 0, y: 0, z: 0, clientX: 0, clientY: 0, focusX: 0, focusY: 0, source: 'rest' as 'rest' | 'pointer' | 'focus', placed: false }
     const rest = { x: 0, y: 0, z: 1, sway: 0, fontSize: 1 }
     const origin = { left: 0, top: 0, scroll: 0 }
+    // On a phone, tilting the device swings the resting lamp, as turning a stone in the hand would.
+    const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 }
     let lit: LitControl[] = []
     const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
     const maximumViewport = context.getParameter(context.MAX_VIEWPORT_DIMS) as Int32Array
@@ -262,6 +265,17 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const box = element.getBoundingClientRect()
         return { element, left: box.left - rect.left, top: box.top - rect.top, width: box.width, height: box.height, values: [] }
       })
+      // Liquid-glass controls refract the silk drawn beneath them.
+      const lenses = lit.filter((control) => control.element.classList.contains('home-glass')).slice(0, 2)
+      context.useProgram(copy.program)
+      context.uniform4fv(copy.uniforms.lenses, [0, 1].flatMap((index) => {
+        const lens = lenses[index]
+        return lens ? [lens.left, lens.top, lens.width, lens.height] : [0, 0, 0, 0]
+      }))
+      context.uniform2f(copy.uniforms.lensRadii, ...[0, 1].map((index) => {
+        const lens = lenses[index]
+        return lens ? Math.min(parseFloat(getComputedStyle(lens.element).borderTopLeftRadius) || 0, lens.width / 2, lens.height / 2) : 0
+      }) as [number, number])
       context.useProgram(cloth.program)
       const readingRect = readingArea?.getBoundingClientRect()
       context.uniform4f(cloth.uniforms.readingArea, (readingRect?.left ?? rect.left) - rect.left, (readingRect?.top ?? rect.top) - rect.top, readingRect?.width ?? 0, readingRect?.height ?? 0)
@@ -303,8 +317,10 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const material = 1 - Math.pow(1 - formed, 3)
         const glint = reduced || materialAt < 0 ? 1 : Math.max(0, Math.min(1, (time - materialAt - glintDelay) / glintDuration))
         const scrolled = scrollY - origin.scroll
-        let targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway
-        let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + (reduced ? 0 : scrolled)
+        tilt.x += (tilt.targetX - tilt.x) * follow
+        tilt.y += (tilt.targetY - tilt.y) * follow
+        let targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway + tilt.x * rest.sway * 2
+        let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + tilt.y * rest.fontSize * 1.5 + (reduced ? 0 : scrolled)
         if (lamp.source === 'pointer') {
           targetX = lamp.clientX - origin.left
           targetY = lamp.clientY - origin.top + scrolled
@@ -314,7 +330,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
           targetX = lamp.focusX
           targetY = lamp.focusY
         }
-        const targetZ = lamp.source === 'rest' ? rest.z : rest.fontSize * 3.2
+        // The lamp lowers into place with the silk, so shadows grow from short and faint to their resting length.
+        const lowered = 1 - Math.pow(1 - opened, 3)
+        const targetZ = lamp.source === 'rest' ? rest.z * (1 + (1 - lowered) * 2.5) : rest.fontSize * 3.2
         const carry = lamp.placed ? 1 - Math.exp(-delta / 120) : 1
         lamp.x += (targetX - lamp.x) * carry
         lamp.y += (targetY - lamp.y) * carry
@@ -349,6 +367,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
         }
         context.disable(context.SCISSOR_TEST)
         context.disable(context.BLEND)
+        if (!host.hasAttribute('data-lens-ready')) host.setAttribute('data-lens-ready', '')
         if (mask && !host.hasAttribute('data-glass-ready')) {
           if (context.getError() !== context.NO_ERROR) throw new Error('Cannot draw hero glass')
           if (mask) host.setAttribute('data-glass-ready', '')
@@ -416,6 +435,12 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const blur = (event: FocusEvent) => {
       if (lamp.source === 'focus' && !host.contains(event.relatedTarget as Node)) lamp.source = 'rest'
     }
+    const orient = (event: DeviceOrientationEvent) => {
+      if (motion.matches || event.beta === null || event.gamma === null) return
+      // Relative to a phone held at a comfortable reading angle.
+      tilt.targetX = Math.max(-1, Math.min(1, event.gamma / 25))
+      tilt.targetY = Math.max(-1, Math.min(1, (event.beta - 40) / 25))
+    }
     const lost = (event: Event) => { event.preventDefault(); contextLost = true; fallback() }
     const restored = () => { setGeneration((value) => value + 1) }
     const resize = new ResizeObserver(invalidate)
@@ -440,6 +465,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
     host.addEventListener('pointerleave', leave)
     host.addEventListener('focusin', focus)
     host.addEventListener('focusout', blur)
+    // Only browsers that grant orientation without a permission prompt take part.
+    const coarse = matchMedia('(pointer: coarse)').matches
+    if (coarse) addEventListener('deviceorientation', orient)
     header?.addEventListener('pointermove', move)
     header?.addEventListener('pointerleave', leave)
     canvas.addEventListener('webglcontextlost', lost)
@@ -484,6 +512,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
       host.removeEventListener('pointerleave', leave)
       host.removeEventListener('focusin', focus)
       host.removeEventListener('focusout', blur)
+      if (coarse) removeEventListener('deviceorientation', orient)
       header?.removeEventListener('pointermove', move)
       header?.removeEventListener('pointerleave', leave)
       canvas.removeEventListener('webglcontextlost', lost)

@@ -111,6 +111,11 @@
     }
   }
 
+  /* Once the canvas refracts the silk beneath the glass, a light blur keeps that bending visible. */
+  .home-hero[data-lens-ready] :is(.home-hero-pill, .home-hero-actions .home-command) {
+    backdrop-filter: blur(1px) saturate(1.3) brightness(1.05);
+  }
+
   .home-hero .home-hero-pill:is(:hover, :focus-visible),
   .home-hero .home-command:focus-within {
     --glass-fill: light-dark(rgb(255 255 255 / 0.28), rgb(255 255 255 / 0.08));

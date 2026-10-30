@@ -42,7 +42,11 @@ float titleDistance(vec2 screen) {
   return (texture2D(glyphs, uv).r - 0.5) * 2.0 * distanceRange;
 }`
 
-/** Upscale the sculpted gold, and let the raised title cast a soft shadow away from the lamp. */
+/**
+ * Upscale the sculpted gold, and let the raised title cast a soft shadow away from the lamp.
+ * Under each liquid-glass control the silk is refracted: the rim pulls in what lies just outside it,
+ * splitting it slightly by wavelength, and the middle magnifies a little.
+ */
 export const heroCopySource = `
 precision highp float;
 varying vec2 vUv;
@@ -56,12 +60,49 @@ uniform float distanceRange;
 uniform float fontSize;
 uniform vec3 lamp;
 uniform float shade;
+uniform vec4 lenses[2];
+uniform vec2 lensRadii;
 ${sceneSampling}
 ${lampLighting}
+float lensDistance(vec2 p, vec4 rect, float radius) {
+  vec2 halfSize = rect.zw * 0.5;
+  vec2 q = abs(p - rect.xy - halfSize) - halfSize + radius;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+}
+vec2 uvAt(vec2 screen) {
+  return vec2(screen.x / resolution.x, 1.0 - screen.y / resolution.y);
+}
 void main() {
-  vec3 color = backgroundAt(vUv);
+  vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
+  vec2 seen = screen;
+  vec2 dispersion = vec2(0.0);
+  float thick = 0.0;
+  for (int i = 0; i < 2; i++) {
+    vec4 rect = lenses[i];
+    float radius = i == 0 ? lensRadii.x : lensRadii.y;
+    float d = rect.z > 0.0 ? lensDistance(screen, rect, radius) : 1.0;
+    if (d < 0.0) {
+      float band = min(rect.w * 0.42, 15.0);
+      float bend = pow(1.0 - clamp(-d / band, 0.0, 1.0), 2.2);
+      vec2 e = vec2(0.5, 0.0);
+      vec2 normal = normalize(vec2(
+        lensDistance(screen + e.xy, rect, radius) - lensDistance(screen - e.xy, rect, radius),
+        lensDistance(screen + e.yx, rect, radius) - lensDistance(screen - e.yx, rect, radius)) + 0.00001);
+      vec2 center = rect.xy + rect.zw * 0.5;
+      seen = center + (screen - center) * 0.94 + normal * bend * band * 2.2;
+      dispersion = normal * bend * 2.6;
+      thick = max(thick, bend);
+    }
+  }
+  vec3 color = backgroundAt(uvAt(seen));
+  if (dispersion != vec2(0.0)) {
+    color.r = backgroundAt(uvAt(seen + dispersion)).r;
+    color.b = backgroundAt(uvAt(seen - dispersion)).b;
+    // Light travels farther through the thick rim, so its color deepens there.
+    color = mix(color, color * color * 1.08, thick * 0.35);
+  }
   if (shade > 0.0) {
-    vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
+    screen = seen;
     // Letters float a short height above the silk; a lower lamp throws a longer, softer shadow.
     float elevation = fontSize * 0.11;
     vec2 offset = (screen - lamp.xy) * elevation / max(lamp.z - elevation, 1.0);
@@ -122,6 +163,16 @@ void main() {
   float crest = pow(facing, 58.0) * 0.18;
   vec3 color = mix(shadow, body, smoothstep(0.06, 0.91, lit));
   color = mix(color, sheen, clamp(reflection * 0.74 + crest, 0.0, 1.0));
+  // Satin: threads run along each fold, so its highlight stretches along the fold and stays narrow across it.
+  vec3 along = vec3(-slope.y, slope.x, 0.0);
+  float folded = smoothstep(0.04, 0.35, length(along));
+  along = normalize(along + vec3(0.0001, 0.0, 0.0));
+  along = normalize(along - normal * dot(along, normal));
+  vec3 across = cross(normal, along);
+  vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
+  float aligned = max(dot(halfway, normal), 0.001);
+  float satin = exp(-(pow(dot(halfway, along) / 0.6, 2.0) + pow(dot(halfway, across) / 0.14, 2.0)) / (aligned * aligned));
+  color = mix(color, sheen, satin * folded * 0.17);
   color *= 0.94 + 0.06 * smoothstep(-1.3, 1.3, h);
 
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
@@ -145,7 +196,7 @@ void main() {
   reading.x += reading.y * 0.17 - 0.08 + max(reading.y, 0.0) * 0.32;
   reading.y /= 1.0 + max(reading.y, 0.0) * 0.6;
   reading.y += sin(reading.x * 1.1 + 0.4) * 0.24 + h * 0.08;
-  alpha *= mix(0.14, 1.0, smoothstep(0.58, 1.9, length(reading)));
+  alpha *= mix(0.4, 1.0, smoothstep(0.58, 1.9, length(reading)));
   float bottom = smoothstep(0.0, 0.24 + x * 0.12 + h * 0.025, vUv.y);
   alpha *= bottom * bottom * (3.0 - 2.0 * bottom);
   alpha *= 1.0 - smoothstep(0.91, 1.12, vUv.y) * 0.55;
@@ -197,7 +248,10 @@ void main() {
   float rise = clamp(distance / bevel, 0.0, 1.0);
   // A quarter-round edge: steep at the contour, flat across the face.
   float slope = (1.0 - rise) * (1.0 - rise) * 2.4;
-  vec3 normal = normalize(vec3(outward * slope, 1.0));
+  // Hand polishing leaves a face that is almost, not perfectly, flat: reflections waver slightly across it.
+  vec2 polish = screen / fontSize;
+  vec2 undulation = vec2(sin(polish.y * 2.7 + polish.x * 0.6), sin(polish.x * 2.1 - polish.y * 1.2)) * 0.03;
+  vec3 normal = normalize(vec3(outward * slope + undulation * rise, 1.0));
   vec3 light = toLamp(screen);
   vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
   float facing = max(dot(normal, halfway), 0.0);
@@ -228,7 +282,7 @@ void main() {
     vec3 color = face;
     color += surround * fresnel * mix(0.05, 0.85, toward);
     // Head-on, the polished face is a dark mirror: a few percent of distant silk, softened and dimmed.
-    vec3 mirrored = sceneAt(vec2(vUv.x + (vUv.x - 0.5) * 0.3, vUv.y + 0.22 + plane.y * 0.004));
+    vec3 mirrored = sceneAt(vec2(vUv.x + (vUv.x - 0.5) * 0.3, vUv.y + 0.22 + plane.y * 0.004) + normal.xy * 0.6);
     vec3 distant = mix(behind, mirrored, 0.7);
     color += distant * distant * 0.085 * (1.0 - edge);
     // Thin edges facing away let a smoky brown through, the way obsidian does when held up to light.
