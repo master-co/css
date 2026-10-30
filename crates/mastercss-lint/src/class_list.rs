@@ -112,37 +112,9 @@ fn create_raw_value_diagnostics(
     }
     let mut diagnostics = Vec::new();
     for candidate in candidates {
-        if !policy.require_properties.is_empty()
-            && !candidate
-                .properties
-                .iter()
-                .any(|property| policy.require_properties.contains(property))
-        {
+        let Some(value) = policy.unapproved_value(candidate) else {
             continue;
-        }
-        if policy.allow_properties.contains(&candidate.key)
-            || candidate
-                .properties
-                .iter()
-                .any(|property| policy.allow_properties.contains(property))
-        {
-            continue;
-        }
-        let value = candidate
-            .segments
-            .iter()
-            .filter(|segment| {
-                !policy
-                    .allowed_patterns
-                    .iter()
-                    .any(|pattern| pattern.is_match(segment))
-            })
-            .map(String::as_str)
-            .collect::<Vec<_>>()
-            .join("|");
-        if value.is_empty() {
-            continue;
-        }
+        };
         let Some(range) = find_class_range(items, &candidate.class_name) else {
             continue;
         };

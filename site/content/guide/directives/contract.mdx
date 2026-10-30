@@ -426,7 +426,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 26. Hydration manifests use v5; engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v6 with languageVersion 16 and binding ABI 29. Hydration manifests use v5; engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
@@ -872,6 +872,15 @@ Automatic discovery respects project/workspace `.gitignore` files and excludes g
 
 ## Definition ownership
 
+Build-time design-system inspection reads authored CSS from the resolved project
+import/reference graph without changing directive lowering. Its versioned metadata
+contains descriptions, deprecations and replacement suggestions; it is not part of
+`@theme`, Manifest execution or browser programs. Token-reference ranges use UTF-16
+offsets into the supplied source. Import/reference predecessors show definition
+reachability, not stylesheet delivery or DOM usage. Native declaration policy is
+opt-in and does not infer token identity from equal values. See
+[the inspection workflow](/guide/ai-coding#review-the-second-change).
+
 A top-level mixin name has one final definition. A later definition replaces its complete parameter list and body, including nested calls and resource dependencies. Empty definitions remain registered. Mixins are not registered inside layers or conditions; use an explicit layer variant at a call site when needed.
 
 An exact static utility wins over token patterns. Otherwise the longest family prefix wins. Token patterns are identified by their decoded prefix and namespace; a later definition replaces only that branch. Static and function registrations use their form and name independently. Once selected, a family with a missing token reports an error instead of falling back. Native `property:value` classes always keep their property meaning.
@@ -886,4 +895,4 @@ The preset’s direct-value `animate-*` family maps `--animate-*` values to the 
 
 ## Token family names
 
-Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 16 and binding ABI 26.
+Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 16 and binding ABI 29.

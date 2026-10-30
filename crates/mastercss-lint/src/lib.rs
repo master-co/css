@@ -1,6 +1,12 @@
 #![forbid(unsafe_code)]
 
 mod class_list;
+mod design_system;
+pub use design_system::{
+    DesignSystemCollision, DesignSystemCoverage, DesignSystemDiagnostic, DesignSystemReport,
+    DesignSystemRequest, DesignSystemStylesheet, DesignSystemSummary, DesignSystemToken,
+    DesignTokenMetadata, StylesheetAncestor, StylesheetTokenReference,
+};
 
 use mastercss_engine::{ClassSemanticInspection, EngineError, EngineSession, natural_compare};
 use mastercss_schema::{
@@ -182,6 +188,33 @@ pub struct CanonicalClassGroupSuggestionsIr {
     pub suggestions: Vec<CanonicalClassGroupSuggestionIr>,
 }
 
+/// Shared wire policy for class and authored-stylesheet lint, compiled in its
+/// semantic owner rather than independently in native/Wasm host adapters.
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RawValuePolicyRequest {
+    #[serde(default)]
+    pub allow_raw_values: bool,
+    #[serde(default)]
+    pub allow_properties: Vec<String>,
+    #[serde(default)]
+    pub require_properties: Vec<String>,
+    #[serde(default)]
+    pub allowed_patterns: Vec<String>,
+}
+
+impl RawValuePolicyRequest {
+    pub fn compile(&self) -> Result<RawValuePolicy, String> {
+        let mut policy = RawValuePolicy::new(
+            self.allow_raw_values,
+            self.allow_properties.clone(),
+            self.allowed_patterns.clone(),
+        )?;
+        policy.require_properties = self.require_properties.clone();
+        Ok(policy)
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct RawValuePolicy {
     pub allow_raw_values: bool,
@@ -191,6 +224,37 @@ pub struct RawValuePolicy {
 }
 
 impl RawValuePolicy {
+    /// Shared class/native-declaration policy; callers supply syntactic segments.
+    pub(crate) fn unapproved_value(&self, candidate: &RawValueCandidateIr) -> Option<String> {
+        if self.allow_raw_values
+            || (!self.require_properties.is_empty()
+                && !candidate
+                    .properties
+                    .iter()
+                    .any(|property| self.require_properties.contains(property)))
+            || self.allow_properties.contains(&candidate.key)
+            || candidate
+                .properties
+                .iter()
+                .any(|property| self.allow_properties.contains(property))
+        {
+            return None;
+        }
+        let value = candidate
+            .segments
+            .iter()
+            .filter(|segment| {
+                !self
+                    .allowed_patterns
+                    .iter()
+                    .any(|pattern| pattern.is_match(segment))
+            })
+            .map(String::as_str)
+            .collect::<Vec<_>>()
+            .join("|");
+        (!value.is_empty()).then_some(value)
+    }
+
     pub fn new(
         allow_raw_values: bool,
         allow_properties: Vec<String>,

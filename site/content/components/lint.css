@@ -1199,7 +1199,7 @@
   }
 
   .home-lint-json-number {
-    color: var(--home-code-property);
+    color: var(--color-code-number);
   }
 
   /* Output prints when the surface reports; once the editor applies the fix, the report fades back. */

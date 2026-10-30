@@ -582,11 +582,6 @@
     }
   }
 
-  /* Shiki's palettes, pulled toward the body text so every sample reads as structure rather than decoration. */
-  .home-page .shiki span[style] {
-    color: light-dark(color-mix(in oklab, var(--shiki-light) 56%, #3a3a3a), color-mix(in oklab, var(--shiki-dark) 56%, #cfcfcf));
-  }
-
   .home-code-window-has-fix {
     &:where(:hover, :active) .home-code-window-source {
       opacity: 0;
@@ -868,12 +863,17 @@
     color: var(--home-code-tag);
   }
 
+  /* Markup brackets and `=` are punctuation, as in the docs' highlighted code. */
+  .home-code-punct {
+    color: var(--home-text-faint);
+  }
+
   .home-code-attr {
     color: var(--home-code-attr);
   }
 
   .home-code-string {
-    color: var(--home-ok);
+    color: var(--home-code-string);
   }
 
   .home-spin {

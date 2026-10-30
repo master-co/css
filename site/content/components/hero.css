@@ -1,19 +1,45 @@
 @layer components {
-  /*
-   * A loose gold sheet flows from the transparent header through the title. Its contour
-   * stays asymmetric, with an open reading space and a soft, uneven fade into the page ground.
-   */
   .home-hero {
+    --hero-gold-shadow: light-dark(oklch(0.79 0.105 76), oklch(0.19 0.035 65));
+    --hero-gold-body: light-dark(oklch(0.9 0.1 84), oklch(0.57 0.115 77));
+    --hero-gold-sheen: light-dark(oklch(0.985 0.035 92), oklch(0.95 0.08 90));
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-content: center;
-    min-height: max(42rem, 100svh);
-    padding-block: clamp(8.5rem, 6rem + 6vw, 11rem) clamp(9rem, 6rem + 9vw, 14rem);
+    min-height: max(43rem, 100svh);
+    padding-block: clamp(8rem, 6rem + 5vw, 10.5rem) clamp(8rem, 5rem + 7vw, 12rem);
     text-align: center;
     background-color: var(--home-ground);
+    /* The hero is a scene, not prose: only the install command can be selected and copied. */
+    user-select: none;
 
-    /* Short laptop screens keep the actions in the first screen: less air above, a title sized by height too. */
+    & .home-command code {
+      user-select: text;
+    }
+
+    /* A quiet static field survives unavailable WebGL, fonts or script. */
+    &::before {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      background-image:
+        radial-gradient(ellipse at 10% 20%, color-mix(in oklab, var(--hero-gold-body) 65%, transparent), transparent 65%),
+        radial-gradient(ellipse at 95% 55%, color-mix(in oklab, var(--hero-gold-body) 45%, transparent), transparent 50%);
+      pointer-events: none;
+      content: '';
+    }
+
     @media (width >= 48rem) and (height < 50rem) {
-      padding-block: 7.5rem 6rem;
+      min-height: max(38rem, 100svh);
+      padding-block: 6rem 3.5rem;
+
+      & .home-display {
+        margin-top: var(--spacing-lg);
+      }
+
+      & .home-hero-actions {
+        margin-top: var(--spacing-xl);
+      }
     }
   }
 
@@ -24,65 +50,104 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    /* The silk's shadow, body and sheen; the canvas reads them from these three properties. */
-    /* Light mode keeps the chroma up in the shadows too, so the silk reads as gold rather than khaki. */
-    color: light-dark(oklch(0.79 0.09 76), oklch(0.17 0.02 60));
-    caret-color: light-dark(oklch(0.87 0.115 83), oklch(0.56 0.11 74));
-    outline-color: light-dark(oklch(0.985 0.035 92), oklch(0.95 0.08 90));
+    /* The renderer resolves the theme's shadow, body and sheen without duplicating its palette. */
+    color: var(--hero-gold-shadow);
+    caret-color: var(--hero-gold-body);
+    outline-color: var(--hero-gold-sheen);
   }
 
   .home-hero-body {
+    container: hero-content / inline-size;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: center;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* The canvas lamp reaches native controls as these properties; the defaults hang it above the title. */
+  .home-hero :is(.home-hero-pill, .home-hero-actions > *) {
+    --lit-x: 30%;
+    --lit-y: -160%;
+    --lit-angle: -20deg;
+    --cast-x: 1px;
+    --cast-y: 4px;
+    --lit-near: 0;
+    --cast-tone: light-dark(oklch(0.42 0.07 72 / 0.2), oklch(0.04 0.01 60 / 0.5));
+  }
+
+  /* Liquid glass: nearly clear, it lets the silk's color through a little brighter, and its rims catch the lamp. */
+  .home-hero :is(.home-hero-pill, .home-hero-actions .home-command) {
+    --glass-fill: light-dark(rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.045));
+    --glass-top: light-dark(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.07));
+    --glass-lip: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.16));
+    --glass-pool: light-dark(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.09));
+    --glass-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.55));
+    --glass-rim-far: light-dark(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.16));
+    position: relative;
+    isolation: isolate;
+    border: 1px solid transparent;
+    background-color: var(--glass-fill);
+    background-image: linear-gradient(180deg, var(--glass-top), transparent 50%);
+    box-shadow:
+      inset 0 1px 1px var(--glass-lip),
+      inset 0 -10px 16px -12px var(--glass-pool),
+      0 1px 2px light-dark(oklch(0.4 0.06 70 / 0.1), rgb(0 0 0 / 0.3)),
+      var(--cast-x) var(--cast-y) 16px -6px var(--cast-tone);
+    backdrop-filter: blur(6px) saturate(1.35) brightness(1.06);
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    /* Both rims are lit: the near one by the lamp, the far one by light bent through the glass. */
+    &::before {
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      padding: 1px;
+      border-radius: inherit;
+      background-image: linear-gradient(var(--lit-angle), var(--glass-rim-far), transparent 32%, transparent 62%, var(--glass-rim));
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /* Once the canvas refracts the silk beneath the glass, a light blur keeps that bending visible. */
+  .home-hero[data-lens-ready] :is(.home-hero-pill, .home-hero-actions .home-command) {
+    backdrop-filter: blur(1px) saturate(1.3) brightness(1.05);
+  }
+
+  .home-hero .home-hero-pill:is(:hover, :focus-visible),
+  .home-hero .home-command:focus-within {
+    --glass-fill: light-dark(rgb(255 255 255 / 0.28), rgb(255 255 255 / 0.08));
   }
 
   .home-hero-pill {
     position: relative;
-    isolation: isolate;
-    overflow: hidden;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
     max-width: 100%;
+    min-height: 2rem;
     padding: 0.25rem var(--spacing-sm) 0.25rem 0.25rem;
     border-radius: var(--radius-pill);
     font-size: var(--home-caption);
     line-height: 1.5;
-    color: var(--home-text-quiet);
-    transition: color var(--home-base) var(--home-ease), background-color var(--home-base) var(--home-ease);
+    color: var(--home-text);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+    transition: color var(--home-quick) var(--home-ease);
 
-    &::after {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background-image: linear-gradient(110deg, transparent 25%, rgb(255 255 255 / 0.45) 50%, transparent 75%);
-      translate: -120% 0;
-      pointer-events: none;
-      content: '';
-    }
-
-    /* The arrow moves on its own; the centered pill keeps its width. */
     & > svg {
-      transition: translate var(--home-base) var(--home-ease);
+      flex: none;
     }
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       color: var(--home-text);
-
-      &::after {
-        translate: 120% 0;
-        transition: translate 900ms var(--home-ease);
-      }
-
-      & > svg {
-        translate: 3px 0;
-      }
     }
 
     &:focus-visible {
       outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
+      outline-offset: 4px;
     }
   }
 
@@ -98,8 +163,8 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--home-text);
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-1);
+    background-color: light-dark(rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.07));
+    box-shadow: inset 0 1px 0 light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.1));
 
     &::before {
       width: 0.375rem;
@@ -111,20 +176,23 @@
     }
   }
 
+  .home-hero-pill-label {
+    min-width: 0;
+  }
+
   .home-display {
-    max-width: 15em;
+    min-width: 0;
+    max-width: min(15em, 100%);
     margin: var(--spacing-xl) 0 0;
     font-size: min(var(--home-display), 5.25rem, max(10.5svh, 3.25rem));
     font-weight: var(--font-weight-medium);
-    line-height: 1.02;
+    line-height: 1.04;
     letter-spacing: -0.045em;
-    color: white;
-    -webkit-text-stroke: 0.5px light-dark(rgb(0 0 0 / 0.4), rgb(255 255 255 / 0.1));
-    text-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 3px 12px rgb(0 0 0 / 0.08);
+    color: var(--home-text);
     text-wrap: balance;
+    overflow-wrap: anywhere;
   }
 
-  /* Two set lines on wide screens; below lg the lines flow together and balance, so no word is left alone. */
   .home-display-line {
     display: block;
 
@@ -133,82 +201,258 @@
     }
   }
 
-  /* Keep the real heading selectable and accessible; reveal glass only after a successful frame. */
+  /* Only a successfully painted mask replaces the heading's native ink. */
   .home-hero[data-glass-ready] .home-display {
     -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 0;
-    text-shadow: none;
+  }
 
-    &::selection,
-    & *::selection {
-      -webkit-text-fill-color: var(--home-text);
-      background-color: var(--home-signal-glow);
+  /* Get started is cut from the title's stone: polished obsidian in light mode, milky quartz in dark mode. */
+  .home-hero .home-action-primary {
+    --stone-top: light-dark(oklch(0.29 0.004 270), oklch(0.995 0.003 90));
+    --stone-mid: light-dark(oklch(0.16 0.003 270), oklch(0.95 0.009 88));
+    --stone-bottom: light-dark(oklch(0.075 0.002 270), oklch(0.85 0.022 84));
+    --stone-text: light-dark(oklch(0.97 0.008 85), oklch(0.2 0.012 70));
+    --stone-lip: light-dark(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.95));
+    --stone-rim: light-dark(rgb(255 255 255 / 0.42), rgb(255 255 255 / 1));
+    --stone-mirror: light-dark(oklch(0.86 0.1 82 / 0.42), oklch(0.74 0.12 78 / 0.55));
+    --stone-sheen: light-dark(rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.9));
+    --stone-glare: light-dark(rgb(255 255 255 / 0.36), rgb(255 255 255 / 1));
+    /* Moonstone's cool sheen floats low in the pill, across from the lamp; obsidian has none. */
+    --stone-adularescence: light-dark(transparent, oklch(0.9 0.045 255 / 0.55));
+    --stone-glint: light-dark(rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.85));
+    --stone-contact: light-dark(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.5));
+    --stone-cast: light-dark(oklch(0.3 0.06 68 / 0.45), oklch(0.03 0.01 60 / 0.7));
+    --stone-press: light-dark(rgb(0 0 0 / 0.7), oklch(0.55 0.05 80 / 0.5));
+  }
+
+  .home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    max-width: 100%;
+    margin-top: var(--spacing-2xl);
+
+    & .home-action-primary,
+    & .home-command {
+      box-sizing: border-box;
+      height: auto;
+      min-width: 0;
+      min-height: 3.25rem;
+      border-radius: 1.625rem;
+      color: var(--home-text);
+    }
+
+    & .home-action-primary {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: var(--spacing-sm) 1.5rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--stone-text);
+      text-shadow: 0 -1px 0 light-dark(rgb(0 0 0 / 0.5), rgb(255 255 255 / 0.7));
+      border: 0;
+      background-color: var(--stone-mid);
+      /* The curved top reflects the lamp as a sheen that follows it, and as a hot spot when it comes close. */
+      background-image:
+        radial-gradient(ellipse 24% 46% at clamp(12%, var(--lit-x), 88%) clamp(20%, var(--lit-y), 40%), color-mix(in oklab, var(--stone-glare) calc(var(--lit-near) * 100%), transparent), transparent),
+        radial-gradient(ellipse 80% 70% at var(--lit-x) -10%, var(--stone-sheen), transparent 70%),
+        radial-gradient(ellipse 55% 120% at calc(100% - var(--lit-x) * 0.6) 75%, var(--stone-adularescence), transparent 75%),
+        linear-gradient(180deg, var(--stone-top), var(--stone-mid) 52%, var(--stone-bottom));
+      box-shadow:
+        inset 0 1px 0 var(--stone-lip),
+        inset 0 -1px 0 var(--stone-mirror),
+        inset 0 -10px 16px -12px var(--stone-mirror),
+        0 1px 1px var(--stone-contact),
+        var(--cast-x) var(--cast-y) 10px -3px var(--stone-cast),
+        calc(var(--cast-x) * 2.5) calc(var(--cast-y) * 2.5) 28px -10px var(--stone-cast);
+      backdrop-filter: none;
+      transition: box-shadow var(--home-base) var(--home-ease);
+
+      /* The rim catches the lamp on its near side and the gold silk on its far side. */
+      &::before {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        padding: 1px;
+        border-radius: inherit;
+        background-image: linear-gradient(var(--lit-angle), var(--stone-mirror), transparent 40%, transparent 58%, var(--stone-rim));
+        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+        pointer-events: none;
+        content: '';
+      }
+
+      /* A single glint crosses the polished face as the pointer arrives. */
+      &::after {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background-image: linear-gradient(105deg, transparent 38%, var(--stone-glint) 50%, transparent 62%);
+        background-size: 250% 100%;
+        background-position: 100% 0;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        content: '';
+      }
+
+      &:is(:hover, :focus-visible) {
+        border-color: transparent;
+        box-shadow:
+          inset 0 1px 0 var(--stone-lip),
+          inset 0 -1px 0 var(--stone-mirror),
+          inset 0 -14px 20px -12px var(--stone-mirror),
+          0 1px 1px var(--stone-contact),
+          var(--cast-x) var(--cast-y) 12px -3px var(--stone-cast),
+          calc(var(--cast-x) * 3) calc(var(--cast-y) * 3) 34px -10px var(--stone-cast);
+
+        &::after {
+          background-position: 0 0;
+          transition: background-position 900ms var(--home-ease);
+        }
+      }
+
+      &:active {
+        box-shadow:
+          inset 0 2px 6px var(--stone-press),
+          inset 0 -1px 0 var(--stone-mirror),
+          0 1px 1px var(--stone-contact),
+          calc(var(--cast-x) * 0.4) calc(var(--cast-y) * 0.4) 6px -3px var(--stone-cast);
+      }
+    }
+
+    & .home-command {
+      flex: auto;
+      padding: 0.1875rem 0.1875rem 0.1875rem 1.125rem;
+      font-size: 0.875rem;
+    }
+
+    & .home-command-copy {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: var(--radius-pill);
+      color: var(--home-text);
+
+      &:hover {
+        color: var(--home-text);
+        background-color: light-dark(rgb(0 0 0 / 0.035), rgb(255 255 255 / 0.07));
+      }
+
+      &:focus-visible {
+        outline-offset: -2px;
+      }
+    }
+
+    & .home-action-primary:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 4px;
+    }
+
+    @media (width < 40rem) {
+      flex-direction: column;
+      width: min(100%, 21rem);
+
+      & .home-command {
+        width: 100%;
+      }
+    }
+  }
+
+  /* Use the space available to enlarged text, rather than squeezing its reading column. */
+  @container hero-content (width < 14em) {
+    .home-hero-pill {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.25rem 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 1rem;
+      text-align: left;
+    }
+
+    .home-hero-pill-badge {
+      justify-self: start;
+    }
+
+    .home-hero-pill-label {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .home-hero-pill > svg {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .home-hero-actions .home-action-primary {
+      padding-inline: 0.75rem;
+    }
+
+    .home-hero-actions .home-command {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.125rem 0.5rem;
+      padding: 0.5rem 0.75rem 0.25rem;
+      border-radius: 1rem;
+    }
+
+    .home-hero-actions .home-command > [aria-hidden] {
+      align-self: start;
+    }
+
+    .home-hero-actions .home-command-copy {
+      grid-column: 2;
+      justify-self: end;
+      margin-right: -0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero :is(.home-hero-pill, .home-action-primary, .home-command, .home-command-copy) {
+      transition-duration: 0s;
+    }
+
+    .home-hero .home-action-primary::after {
+      display: none;
     }
   }
 
   @media (forced-colors: active), print {
-    .home-hero-field {
+    .home-hero-field,
+    .home-hero::before {
       display: none;
     }
 
     .home-hero .home-display,
     .home-hero[data-glass-ready] .home-display {
       color: var(--home-text);
-      text-shadow: none;
-      -webkit-text-stroke: 0;
       -webkit-text-fill-color: currentColor;
     }
-  }
 
-  .home-hero-lead {
-    max-width: 40rem;
-    margin: var(--spacing-xl) auto 0;
-    font-size: var(--home-lead);
-    line-height: 1.6;
-    color: var(--home-text-quiet);
-    text-wrap: pretty;
+    .home-hero :is(.home-hero-pill, .home-hero-actions .home-action-primary, .home-hero-actions .home-command) {
+      border: 1px solid currentColor;
+      color: CanvasText;
+      background-color: Canvas;
+      background-image: none;
+      box-shadow: none;
+      text-shadow: none;
+      backdrop-filter: none;
 
-    /* Han text breaks only at spaces, punctuation and the dictionary's phrase hints, so no word splits across lines. */
-    &:lang(zh) {
-      word-break: keep-all;
-      overflow-wrap: anywhere;
-      text-wrap: balance;
+      &::before,
+      &::after {
+        display: none;
+      }
     }
   }
 
-  .home-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-2xl);
-
-    /* Stacked on phones, both take one width. */
-    @media (width < 40rem) {
-      flex-direction: column;
-      align-items: stretch;
-      width: min(100%, 21rem);
-    }
-  }
-
-  .home-hero-actions .home-action-primary > svg {
-    transition: translate var(--home-base) var(--home-ease);
-  }
-
-  .home-hero-actions .home-action-primary:is(:hover, :focus-visible) > svg {
-    translate: 3px 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-hero-pill::after {
-      display: none;
-    }
-
-    .home-hero-pill > svg,
-    .home-hero-actions .home-action-primary > svg {
-      translate: none !important;
-      transition: none;
+  @media print {
+    .home-hero {
+      --home-text: CanvasText;
+      --home-text-body: CanvasText;
+      --color-text-muted: CanvasText;
+      color-scheme: light;
+      background-color: Canvas;
     }
   }
 }

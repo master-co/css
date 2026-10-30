@@ -1,6 +1,6 @@
 # Master CSS MCP Server
 
-Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, audit setup, read the active project manifest, inspect CSS-first directives, trace classes through extraction and generated CSS, render or compare CSS output, run lint diagnostics, request syntax suggestions, apply reviewed fix previews, and route Master CSS repository contributor work through deterministic context tools.
+Model Context Protocol server for Master CSS tooling. It lets AI clients inspect a Master CSS workspace, audit setup, read the active project manifest, inspect CSS-first directives, trace classes through extraction and generated CSS, render or compare CSS output, run lint diagnostics, request syntax suggestions, and apply reviewed fix previews.
 
 ## Installation
 
@@ -42,7 +42,7 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 | `mastercss_extract_classes` | Extract class positions and validation summaries from files or an in-memory source buffer. |
 | `mastercss_inspect_directives` | Inspect CSS-first directives and report manifest, dependency, warning, and CSS effects. |
 | `mastercss_render_css` | Generate CSS from HTML or a class list. |
-| `mastercss_scan_project` | Scan sources, check optional classes, and report scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics. |
+| `mastercss_scan_project` | Scan sources, check optional classes, and report scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics. Optionally inspect stylesheet token references and design policies. |
 | `mastercss_manifest_query` | Query active manifest tokens, utilities, mixins, custom media, and token families. |
 | `mastercss_css_compare` | Compare class/content output under one manifest, or two resolved project snapshots including definition changes and known consumers. |
 | `mastercss_lint_project` | Run class-list diagnostics for workspace files without writing files. |
@@ -54,16 +54,31 @@ Use an absolute `--root` path so the server resolves the intended workspace.
 
 `@theme` defines utility tokens with direct custom-property declarations and optional `static` / `inline` modifiers. Native CSS controls scoped overrides and does not add utility candidates. Directive inspection and manifest queries report the same Rust-backed contract as the compiler and language service.
 
-## Contributor tools
+## Inspect token use in stylesheets
 
-These read-only tools are for Master CSS repository contributors, AI coding agents, review bots, and CI support. They expose repository-specific routing as low-token JSON instead of asking an agent to repeatedly infer package ownership, risk, and validation from raw files. In non-Master CSS workspaces they return limited package data instead of guessing.
+Pass `designSystem` to `mastercss_scan_project` with the default project context to include a version 1 report in `result.data.designSystem`. This option cannot be combined with `context: "preset"`:
 
-| Tool | Use |
-| --- | --- |
-| `mastercss_repo_context` | Route changed paths or a diff to affected packages, required context files, risks, and validation commands. |
-| `mastercss_change_impact` | Summarize contributor change risk for CSS output, runtime, extraction, language tooling, ESLint, docs, and package boundaries. |
-| `mastercss_test_router` | Return focused validation commands for contributor changes. |
-| `mastercss_package_graph` | Report workspace package ownership, scripts, exports, workspace dependencies, and dependents. |
+```json
+{
+  "designSystem": {
+    "version": 1,
+    "metadata": {
+      "--color-brand-old": {
+        "description": "Previous brand color",
+        "deprecated": true,
+        "replacement": "--color-brand"
+      }
+    },
+    "rawValuePolicy": {
+      "requireProperties": ["color", "background-color"]
+    }
+  }
+}
+```
+
+The report covers project-owned CSS reached from the project's Master CSS entries. It includes authored `var()` reference ranges in UTF-16 offsets, selector and at-rule ancestry, source importers, token-family collisions, and diagnostics for the supplied metadata and raw-value policy. Ordinary native CSS can reference the same `@theme` tokens as Master CSS classes. Unregistered custom properties may come from native CSS or inheritance and are not automatically missing-token errors.
+
+Metadata and policies are analysis inputs: they do not change generated CSS, manifests, or runtime programs. Unrecognized option fields are rejected. Omit `rawValuePolicy` to skip native declaration raw-value checks. Read `project.excluded` and `coverage`: package sources and files outside the project root are excluded, importer links include reference-only context, and the report does not establish DOM usage, cascade winners, computed styles, or browser behavior. `includeSnapshot` remains available in the same call.
 
 ## Prompt templates
 

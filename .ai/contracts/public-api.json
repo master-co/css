@@ -156,6 +156,12 @@
           "MASTER_CSS_VALIDATOR_BATCH_VERSION",
           "MasterCSSBindingLoadOptions",
           "MasterCSSBrowserSupport",
+          "MasterCSSDesignSystemCollision",
+          "MasterCSSDesignSystemDiagnostic",
+          "MasterCSSDesignSystemReport",
+          "MasterCSSDesignSystemRequest",
+          "MasterCSSDesignSystemStylesheet",
+          "MasterCSSDesignTokenMetadata",
           "MasterCSSDiagnostic",
           "MasterCSSEngineSnapshot",
           "MasterCSSEngineTransition",
@@ -188,6 +194,8 @@
           "MasterCSSSourceExtractorKind",
           "MasterCSSSourceOccurrence",
           "MasterCSSSourceRange",
+          "MasterCSSStylesheetAncestor",
+          "MasterCSSStylesheetTokenReference",
           "MasterCSSSyntaxStatus",
           "MasterCSSTokenFamily",
           "MasterCSSToolingBinding",
@@ -211,7 +219,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "7ab68af1036b3e06"
+      "surface": "2960d257ed87082b"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -413,6 +421,7 @@
           "MasterCSSProjectDiscoveryOptions",
           "MasterCSSProjectLoadOptions",
           "MasterCSSProjectResult",
+          "MasterCSSProjectSourceGraph",
           "compileProjectManifest",
           "discoverManifestEntries",
           "loadProjectManifest"
@@ -422,6 +431,7 @@
           "MasterCSSProjectDiscoveryOptions",
           "MasterCSSProjectLoadOptions",
           "MasterCSSProjectResult",
+          "MasterCSSProjectSourceGraph",
           "compileProjectManifestSync",
           "discoverManifestEntriesSync",
           "loadProjectManifestSync"
@@ -468,8 +478,11 @@
           "compileBrowserStylesheet"
         ],
         "./diagnostics": [
+          "CreateMasterCSSDesignSystemReportOptions",
           "CreateMasterCSSInspectionReportOptions",
           "MASTER_CSS_INSPECTION_REPORT_VERSION",
+          "MasterCSSDesignSystemOptions",
+          "MasterCSSDesignSystemReport",
           "MasterCSSDiscoveredClasses",
           "MasterCSSInspectionDiagnostic",
           "MasterCSSInspectionDiagnosticCode",
@@ -481,16 +494,18 @@
           "MasterCSSMissingCSSStatus",
           "MasterCSSProjectComparison",
           "MasterCSSProjectComparisonRequest",
+          "MasterCSSProjectDesignSystemReport",
           "MasterCSSProjectSnapshot",
           "MasterCSSSourceInspection",
           "MasterCSSStylesheetError",
           "MasterCSSStylesheetInspection",
           "captureMasterCSSProject",
           "compareProjectSnapshots",
+          "createMasterCSSDesignSystemReport",
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "0bae938fd4d95846"
+      "surface": "da6a7273d48be7a9"
     },
     "@master/create-css": {
       "directory": "create",
@@ -1105,6 +1120,13 @@
           "MasterCSSCanonicalClassesReportOptions",
           "MasterCSSClassListEditOptions",
           "MasterCSSClassListLintReportOptions",
+          "MasterCSSDesignSystemCollision",
+          "MasterCSSDesignSystemDiagnostic",
+          "MasterCSSDesignSystemOptions",
+          "MasterCSSDesignSystemReport",
+          "MasterCSSDesignSystemRequest",
+          "MasterCSSDesignSystemStylesheet",
+          "MasterCSSDesignTokenMetadata",
           "MasterCSSFixContentOptions",
           "MasterCSSInvalidClassesReportOptions",
           "MasterCSSLintAnalysis",
@@ -1139,6 +1161,8 @@
           "MasterCSSLintSourceLocationRange",
           "MasterCSSLintSummary",
           "MasterCSSLintToken",
+          "MasterCSSStylesheetAncestor",
+          "MasterCSSStylesheetTokenReference",
           "MasterCSSUnapprovedRawValueClassesReportOptions",
           "RawValuePolicyOptions",
           "createMasterCSSLintDiagnostics",
@@ -1217,7 +1241,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "a7aec66c8f8d14b0"
+      "surface": "7c65149ded9c39a6"
     },
     "@master/css-vite": {
       "directory": "vite",

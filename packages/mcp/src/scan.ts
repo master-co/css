@@ -2,7 +2,7 @@ import { SourcePolicy } from '@master/css-tooling/scanner/node'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { renderClassNamesSync } from '@master/css/node'
-import { createMasterCSSInspectionReport, captureMasterCSSProject } from '@master/css-compiler/diagnostics'
+import { createMasterCSSInspectionReport, captureMasterCSSProject, type MasterCSSDesignSystemOptions } from '@master/css-compiler/diagnostics'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
@@ -17,6 +17,7 @@ export interface ScanProjectOptions {
   classes?: string[]
   includeCss?: boolean
   includeSnapshot?: boolean
+  designSystem?: MasterCSSDesignSystemOptions
 }
 
 export interface RenderCSSOptions {
@@ -42,6 +43,9 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
+  if (options.designSystem && options.context === 'preset') {
+    throw new Error('designSystem inspection requires project context; omit context or select "project".')
+  }
   const manifest = await loadWorkspaceManifest(context, options.context)
   const inspectionOptions = {
     manifest: requireWorkspaceManifest(manifest),
@@ -49,6 +53,7 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
     patterns: options.patterns,
     classes: options.classes,
     includeCss: options.includeCss,
+    designSystem: options.designSystem,
     resolveExistingFile: (filePath: string) => context.resolveExistingFile(filePath),
     validatePatterns: (patterns: readonly string[]) => context.validateGlobPatterns(patterns)
   }

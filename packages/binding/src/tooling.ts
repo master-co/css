@@ -134,6 +134,7 @@ export function loadNativeToolingBinding(
         const session = new nativeBinding.LintSession(serializeMasterCSSManifest(manifest))
         const dispose = disposable(session)
         return {
+          inspectDesignSystem: (input) => parse(session.inspectDesignSystem(request(input))),
           nativeDeclarationCandidates: (classNames) =>
             parse(session.nativeDeclarationCandidates([...classNames])),
           resolveValidation: (batch, ruleErrors) =>
@@ -261,4 +262,14 @@ export {
   type MasterCSSSourceRange,
   type MasterCSSValidatorBatch,
   type MasterCSSValidatorClass
+} from './protocol'
+export type {
+  MasterCSSDesignTokenMetadata,
+  MasterCSSDesignSystemStylesheet,
+  MasterCSSDesignSystemRequest,
+  MasterCSSStylesheetAncestor,
+  MasterCSSStylesheetTokenReference,
+  MasterCSSDesignSystemDiagnostic,
+  MasterCSSDesignSystemCollision,
+  MasterCSSDesignSystemReport
 } from './protocol'

@@ -16,20 +16,58 @@
     width: 100%;
   }
 
+  /* One table treatment for every document table: an open grid with a quiet caption row,
+     hairline row separators and one closing line. Zero-specificity selectors leave column
+     geometry and dense variants to their owners. */
   .doc-table {
     border-bottom: 1px solid var(--color-line-subtle);
     overflow-x: auto;
 
-    th {
+    :where(table) {
+      width: 100%;
+      border-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    :where(th, td) {
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-bottom: 1px solid var(--color-line-subtle);
+      color: var(--color-text-body);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+      letter-spacing: 0;
       text-align: start;
+      vertical-align: baseline;
+    }
+
+    :where(th, td):first-child {
+      padding-inline-start: var(--prose-table-gutter, 0);
+    }
+
+    :where(th, td):last-child {
+      padding-inline-end: var(--prose-table-gutter, 0);
+    }
+
+    :where(thead th) {
+      padding-block: var(--spacing-xs);
+      border-bottom-color: var(--color-line-divider);
+      color: var(--color-text-muted);
+      font-family: inherit;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+      text-transform: none;
+      white-space: nowrap;
+      vertical-align: bottom;
+    }
+
+    :where(tbody th) {
+      color: var(--color-text-strong);
+      font-weight: var(--font-weight-medium);
     }
 
     :is(tbody tr:last-child th, tbody tr:last-child td) {
       border-bottom-width: 0px!important;
-    }
-
-    :is(thead th) {
-      white-space: nowrap;
     }
 
     :is(td, th) p {
@@ -46,6 +84,9 @@
 
     :is(code) {
       vertical-align: middle;
+      /* A token that wraps in a narrow column keeps a complete chip on each line. */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
   }
   .doc-table:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }

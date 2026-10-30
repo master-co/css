@@ -260,6 +260,7 @@
 
     :is(table) {
       border-spacing: 0;
+      font-variant-numeric: tabular-nums;
     }
 
     :is(td, th) {
@@ -270,8 +271,14 @@
       border-bottom-width: 0px;
     }
 
+    /* Mirrors the shared .doc-table caption row for tables outside that wrapper. */
     :is(thead) th {
-      border-bottom: 1px solid var(--color-line-subtle);
+      border-bottom: 1px solid var(--color-line-divider);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+      vertical-align: bottom;
     }
 
     :is(hr) {
@@ -358,8 +365,13 @@
     .prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
   ),
   .prose > .doc-code-example .doc-code-example-part {
-    --prose-table-gutter: var(--prose-bleed);
+    /* Table data spans the whole bleed; only at the viewport edge does it keep an inset. */
+    --prose-table-gutter: 0rem;
     margin-inline: calc(var(--prose-bleed) * -1);
+
+    @media (width < 52.125rem) {
+      --prose-table-gutter: var(--prose-bleed);
+    }
 
     &:is(table, video, iframe) {
       width: calc(100% + var(--prose-bleed) * 2);

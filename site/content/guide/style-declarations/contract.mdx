@@ -66,7 +66,7 @@ Use `animation-name:*`, `animation-duration:*`, `transition-property:*` and `tra
 <a id="group"></a>
 
 ### Combining declarations \{#combining-declarations\}
-Write each declaration as a separate class, repeating any shared selector or query suffix. For reusable combinations or ordered declarations, define an [`@mixin`](/reference/directives/definitions#utilities).
+Write each declaration as a separate class, repeating any shared selector or query suffix. To register a reusable class recipe for markup, define an [`@utility`](/reference/directives/definitions#utilities). For reuse within CSS, define an [`@mixin` and expand it with `@apply`](/reference/directives/definitions#reusing-a-matched-value); a mixin does not register a markup class.
 
 ```html
 <ul class="display:block>li:hover@md font-size:14px>li:hover@md text-align:center>li:hover@md">…</ul>

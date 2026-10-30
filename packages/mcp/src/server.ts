@@ -9,7 +9,6 @@ import { getWorkspaceInfo, loadWorkspaceManifest } from './project'
 import { inspectClass, previewGeneratedCSS, renderCSS, scanProject } from './scan'
 import { suggestSyntax } from './language'
 import { lintContent, lintProject, previewLintFixes } from './lint'
-import { getChangeImpact, getPackageGraph, getRepoContext, getTestRouter } from './contributor'
 import { auditSetup } from './setup'
 import { inspectDirectives } from './directives'
 import { extractClasses, traceClass } from './classes'
@@ -19,6 +18,7 @@ import { compareCSS } from './compare'
 import { jsonResourceResult, executeTool } from './result'
 import { toolOutputSchema } from './output-schema'
 import { projectSnapshot } from './project-comparison-schema'
+import { designSystemOptions } from './design-system-schema'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -320,13 +320,14 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_scan_project',
     {
       title: 'Scan Master CSS Project',
-      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison.',
+      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison. Pass designSystem to inspect stylesheet token references and design policies.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
         includeCss: z.boolean().optional(),
-        includeSnapshot: z.boolean().optional()
+        includeSnapshot: z.boolean().optional(),
+        designSystem: designSystemOptions.optional()
       },
       outputSchema: toolOutputSchema('mastercss_scan_project'),
       annotations: {
@@ -337,89 +338,6 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       }
     },
     async (input) => executeTool(() => scanProject(context, input))
-  )
-
-  server.registerTool(
-    'mastercss_repo_context',
-    {
-      title: 'Master CSS Repository Context',
-      description: 'Route Master CSS repository contributor work to affected packages, required context files, risks, and validation commands.',
-      inputSchema: {
-        task: z.string().optional(),
-        paths: z.array(z.string()).optional(),
-        diff: z.string().optional()
-      },
-      outputSchema: toolOutputSchema('mastercss_repo_context'),
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      }
-    },
-    async (input) => executeTool(() => getRepoContext(context, input))
-  )
-
-  server.registerTool(
-    'mastercss_change_impact',
-    {
-      title: 'Master CSS Change Impact',
-      description: 'Classify contributor change risk for CSS output, runtime, extraction, language, ESLint, docs, and package boundaries.',
-      inputSchema: {
-        task: z.string().optional(),
-        paths: z.array(z.string()).optional(),
-        diff: z.string().optional()
-      },
-      outputSchema: toolOutputSchema('mastercss_change_impact'),
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      }
-    },
-    async (input) => executeTool(() => getChangeImpact(context, input))
-  )
-
-  server.registerTool(
-    'mastercss_test_router',
-    {
-      title: 'Master CSS Test Router',
-      description: 'Return focused validation commands for Master CSS repository contributor changes.',
-      inputSchema: {
-        task: z.string().optional(),
-        paths: z.array(z.string()).optional(),
-        diff: z.string().optional()
-      },
-      outputSchema: toolOutputSchema('mastercss_test_router'),
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      }
-    },
-    async (input) => executeTool(() => getTestRouter(context, input))
-  )
-
-  server.registerTool(
-    'mastercss_package_graph',
-    {
-      title: 'Master CSS Package Graph',
-      description: 'Report Master CSS workspace package ownership, scripts, exports, workspace dependencies, and dependents.',
-      inputSchema: {
-        packageName: z.string().optional(),
-        includeExamples: z.boolean().optional()
-      },
-      outputSchema: toolOutputSchema('mastercss_package_graph'),
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        idempotentHint: true,
-        openWorldHint: false
-      }
-    },
-    async (input) => executeTool(() => getPackageGraph(context, input))
   )
 
   server.registerTool(

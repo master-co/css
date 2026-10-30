@@ -78,3 +78,13 @@ export function loadNativeToolingBinding(
     message: 'Master CSS native tooling bindings are unavailable in browsers.'
   })
 }
+export type {
+  MasterCSSDesignTokenMetadata,
+  MasterCSSDesignSystemStylesheet,
+  MasterCSSDesignSystemRequest,
+  MasterCSSStylesheetAncestor,
+  MasterCSSStylesheetTokenReference,
+  MasterCSSDesignSystemDiagnostic,
+  MasterCSSDesignSystemCollision,
+  MasterCSSDesignSystemReport
+} from './protocol'

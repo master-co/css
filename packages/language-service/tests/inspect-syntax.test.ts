@@ -75,3 +75,9 @@ test.each(['{color:red;display:block}'])('does not offer CSS hover for an invali
   expect(hover?.contents).toMatchObject({ kind: 'markdown', value: expect.stringContaining('CLASS_SYNTAX_ERROR') })
   expect((hover?.contents as { value: string }).value).not.toContain('```css')
 })
+
+test('hover CSS keeps spaced query comparisons and combinators', () => {
+  const value = (inspect('fg-blue-70:hover@sm')?.contents as { value: string }).value
+  expect(value).toMatch(/@media \(width >= [\d.]+rem\) \{/)
+  expect((inspect('mt-md>*')?.contents as { value: string }).value).toContain(' > * {')
+})

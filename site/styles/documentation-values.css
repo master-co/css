@@ -51,36 +51,29 @@
   .doc-key-more summary:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; border-radius: var(--radius-xs); }
   .doc-key-more[open] summary { margin-bottom: var(--spacing-sm); }
   .doc-namespace-table :is(th, td) { vertical-align: top; }
-  .doc-namespace-table tbody th { width: 8rem; font-weight: var(--font-weight-medium); }
+  .doc-namespace-table tbody th { width: 8rem; }
   .doc-namespace-table tbody th code { white-space: nowrap; font-size: var(--font-size-xs); }
   .doc-namespace-table .doc-key-list { margin: 0; }
   .doc-namespace-table .doc-key-list code { white-space: normal; overflow-wrap: anywhere; }
   .doc-namespace-table .doc-key-more { margin-block: var(--spacing-xs) 0; }
-  .doc-utility-table { border: 1px solid var(--color-line-contour); border-radius: var(--radius-xl); background: var(--color-surface-raised); }
-  .doc-utility-table:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
-  .doc-utility-table table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  /* Utility and numeric tables keep the shared .doc-table treatment and add only their column geometry. */
+  .doc-utility-table table { table-layout: fixed; }
   .doc-utility-table[data-has-descriptions] table { min-width: 35rem; }
   .doc-utility-table :is(thead, tbody, tr, th, td) { contain: none; }
-  .doc-utility-table :is(th, td) { padding: .8rem .9rem; vertical-align: top; border-block-end: 1px solid var(--color-line-subtle); font-size: .8125rem; line-height: 1.55; }
-  .doc-utility-table thead th { padding-block: .7rem; color: var(--color-text-muted); font: 600 .6875rem/1.4 var(--font-family-mono); letter-spacing: .045em; text-transform: uppercase; }
+  .doc-utility-table :is(th, td) { vertical-align: top; }
   .doc-utility-table :is(thead th, tbody th):first-child { width: 25%; }
   .doc-utility-table[data-has-descriptions] :is(thead th, tbody td):nth-child(2) { width: 37%; }
-  .doc-utility-table tbody th { color: var(--color-text-strong); font-weight: 600; white-space: normal; }
-  .doc-utility-table tbody td:last-child:not(:nth-child(2)) { color: var(--color-text-muted); }
+  .doc-utility-table tbody th { white-space: normal; }
   .doc-utility-table code { white-space: normal; overflow-wrap: anywhere; }
-  .doc-number-variable-table:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
-  .doc-number-variable-table[data-representation="spacing"] { border-block: 1px solid var(--color-line-divider); }
-  .doc-number-variable-table[data-representation="spacing"] table { width: 100%; min-width: 39rem; border-collapse: collapse; table-layout: fixed; }
+  .doc-number-variable-table[data-representation="spacing"] table { min-width: 39rem; table-layout: fixed; }
   .doc-number-variable-table[data-representation="spacing"] :is(thead, tbody, tr, th, td) { contain: none; }
-  .doc-number-variable-table[data-representation="spacing"] :is(th, td) { padding: .75rem .85rem; vertical-align: middle; border-block-end: 1px solid var(--color-line-subtle); font-size: .8125rem; line-height: 1.5; }
-  .doc-number-variable-table[data-representation="spacing"] thead th { padding-block: .7rem; color: var(--color-text-muted); font: 600 .6875rem/1.4 var(--font-family-mono); letter-spacing: .045em; text-transform: uppercase; }
-  .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody th):first-child { width: 31%; padding-inline-start: .45rem; }
+  .doc-number-variable-table[data-representation="spacing"] tbody :is(th, td) { vertical-align: middle; }
+  .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody th):first-child { width: 31%; }
   .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody td):nth-child(2) { width: 15%; }
   .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody td):nth-child(3) { width: 13%; }
-  .doc-number-variable-table[data-representation="spacing"] tbody th { color: var(--color-text-strong); font-weight: 500; }
   .doc-number-variable-table[data-representation="spacing"] code { white-space: normal; overflow-wrap: anywhere; }
   .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] table { min-width: 0; table-layout: auto; }
-  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td) { padding-inline: .5rem; }
+  .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):not(:first-child, :last-child) { padding-inline: .5rem; }
   .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):first-child { width: 40%; }
   .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):nth-child(2) { width: 25%; }
   .doc-number-variable-table[data-representation="spacing"][data-reference-units="false"] :is(th, td):nth-child(3) { width: 35%; }
@@ -91,7 +84,6 @@
   .doc-comparison .doc-table table { width: 100%; table-layout: fixed; }
   .doc-comparison .doc-table :is(thead, tbody, tr, th, td) { contain: none; }
   .doc-comparison .doc-table :is(th, td) { vertical-align: top; white-space: normal; overflow-wrap: anywhere; }
-  .doc-comparison .doc-table th { font-weight: var(--font-weight-medium); }
   .doc-comparison .doc-table th:first-child { width: 40%; }
   .doc-comparison .doc-table code { border: 0; padding: 0; border-radius: 0; background: none; white-space: normal; overflow-wrap: anywhere; }
   @container (min-width: 28rem) {

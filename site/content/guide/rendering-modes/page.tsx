@@ -9,7 +9,7 @@ export const { Page, generateMetadata } = createPage({
   metadata,
   dictionaries,
   categories,
-  subtitle: 'It can be runtime, zero-runtime, or even hydration.',
+  subtitle: 'Choose when CSS is generated and how it reaches the page.',
   content,
   Layout,
 })

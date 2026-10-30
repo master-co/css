@@ -34,6 +34,14 @@ test('surface normals point out of each side of a stroke', () => {
   assert.ok(at(3, 3).ny > 0.9)
 })
 
+test('surface normals soften through the medial axis instead of flipping at full strength', () => {
+  const at = field(['.........', '..####...', '..####...', '..####...', '.........'])
+  assert.ok(at(2, 2).nx < -0.9)
+  assert.ok(at(5, 2).nx > 0.9)
+  assert.ok(Math.abs(at(3, 2).nx) < 0.55)
+  assert.ok(Math.abs(at(4, 2).nx) < 0.55)
+})
+
 test('distance units are CSS pixels regardless of device density', () => {
   const rows = ['.......', '..###..', '..###..', '..###..', '.......']
   const standard = field(rows)(3, 2).distance
@@ -55,4 +63,14 @@ test('the distance field retains antialiased glyph coverage', () => {
   const pixels = createTitleDistanceField(input, 3, 3, 1, 8)
   assert.equal(pixels[4 * 4 + 3], 173)
   assert.equal(pixels[3], 0)
+})
+
+test('partial coverage retains the subpixel edge position in the distance channel', () => {
+  const input = new Uint8ClampedArray(3 * 3 * 4)
+  input[4 * 4 + 3] = 191
+  const positive = createTitleDistanceField(input, 3, 3, 1, 8)
+  assert.ok(Math.abs((positive[4 * 4] / 255 - 0.5) * 16 - 0.25) < 0.07)
+  input[4 * 4 + 3] = 64
+  const negative = createTitleDistanceField(input, 3, 3, 1, 8)
+  assert.ok(Math.abs((negative[4 * 4] / 255 - 0.5) * 16 + 0.25) < 0.07)
 })

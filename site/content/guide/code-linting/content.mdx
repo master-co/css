@@ -240,6 +240,20 @@ The shared diagnostic identifies `no-unapproved-raw-values`, the applicable prop
 
 ---
 
+## Native component CSS
+
+Use `master-css inspect --design-system` for token references and naming collisions
+in the project's managed CSS graph. Add `--design-system-options <file>` to supply
+versioned token descriptions, deprecations and optional raw-value policy. See
+[the native CSS review workflow](/guide/ai-coding#review-the-second-change).
+
+This inspection is separate from ESLint's class-list rules. It keeps native CSS
+declarations and duplicate declarations intact, reports source ranges, and offers
+no automatic token replacement. Unmanaged or package CSS is outside its declaration
+policy scope; browser cascade and visual behavior remain unchecked.
+Native policy uses each token family's declared CSS properties. A shared class
+prefix such as `font-*` does not make the native `font` shorthand token-backed.
+
 ## Editor feedback
 The Master CSS extension provides completions, hover previews, color tools, highlighting and directive diagnostics. The VS Code ESLint extension adds class sorting, canonical syntax, conflict checks and invalid-class diagnostics. Use both when you want those checks while editing; the Master CSS extension avoids duplicating ESLint's class warnings by default.
 

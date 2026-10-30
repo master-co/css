@@ -1,4 +1,5 @@
 import './maintenance-examples.test'
+import './writing-examples.test'
 import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'

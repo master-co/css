@@ -10,6 +10,20 @@ import type {
   MasterCSSLintDiagnosticSeverity
 } from './diagnostics'
 
+export type {
+  MasterCSSDesignSystemRequest,
+  MasterCSSDesignSystemReport,
+  MasterCSSDesignSystemStylesheet,
+  MasterCSSDesignTokenMetadata,
+  MasterCSSDesignSystemDiagnostic,
+  MasterCSSDesignSystemCollision,
+  MasterCSSStylesheetTokenReference,
+  MasterCSSStylesheetAncestor
+} from '@master/css-binding/tooling'
+
+/** Tool-only policy and metadata; never part of an executable manifest or runtime program. */
+export type MasterCSSDesignSystemOptions = Omit<import('@master/css-binding/tooling').MasterCSSDesignSystemRequest, 'stylesheets'>
+
 export { defaultClassLintSettings } from './constants'
 export {
   defaultMasterCSSLintRules,

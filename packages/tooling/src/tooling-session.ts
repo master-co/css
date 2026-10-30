@@ -58,6 +58,7 @@ import type {
   MasterCSSLanguageInspection
 } from './language/contracts'
 import { freezeToolingResult } from './immutable'
+import type { MasterCSSDesignSystemRequest, MasterCSSDesignSystemReport } from '@master/css-binding/tooling'
 
 export interface ToolingSessionParts {
   readonly lexer: LexerSession
@@ -126,6 +127,12 @@ export class MasterCSSToolingSession implements Disposable {
   lintClassNames(classNames: readonly string[]): MasterCSSLintAnalysis {
     this.assertActive()
     return freezeToolingResult(this.parts.lint.analyze([...classNames]))
+  }
+
+  /** Inspect authored CSS and tool-only definition information without generating CSS. */
+  inspectDesignSystem(request: MasterCSSDesignSystemRequest): MasterCSSDesignSystemReport {
+    this.assertActive()
+    return freezeToolingResult(this.parts.lint.inspectDesignSystem(request))
   }
 
   tokenizeClassList(

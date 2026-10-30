@@ -2,6 +2,9 @@ import {
   createMasterCSSInspectionReport,
   captureMasterCSSProject,
   compareProjectSnapshots,
+  createMasterCSSDesignSystemReport,
+  type MasterCSSDesignSystemOptions,
+  type MasterCSSProjectDesignSystemReport,
   type MasterCSSProjectSnapshot,
   type MasterCSSProjectComparison,
   type MasterCSSInspectionReport
@@ -22,6 +25,8 @@ export interface InspectOptions {
   maxWarnings?: string | number
   snapshot?: boolean
   compare?: string
+  designSystem?: boolean
+  designSystemOptions?: string
 }
 
 function parseMaxWarnings(value: string | number | undefined) {
@@ -53,14 +58,36 @@ function outputReport(report: MasterCSSInspectionReport, format: 'json' | 'styli
   }
 }
 
-export default function runInspect(specifiedSourcePaths?: string[], options?: InspectOptions & { snapshot?: false, compare?: undefined }): Promise<MasterCSSInspectionReport>
+export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions & { designSystem: true }): Promise<MasterCSSProjectDesignSystemReport>
+export default function runInspect(specifiedSourcePaths?: string[], options?: InspectOptions & { snapshot?: false, compare?: undefined, designSystem?: false }): Promise<MasterCSSInspectionReport>
 export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions & { snapshot: true, compare?: undefined }): Promise<MasterCSSProjectSnapshot>
 export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions & { compare: string, snapshot?: false }): Promise<MasterCSSProjectComparison>
-export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions): Promise<MasterCSSInspectionReport | MasterCSSProjectSnapshot | MasterCSSProjectComparison>
+export default function runInspect(specifiedSourcePaths: string[], options: InspectOptions): Promise<MasterCSSInspectionReport | MasterCSSProjectSnapshot | MasterCSSProjectComparison | MasterCSSProjectDesignSystemReport>
 export default async function runInspect(specifiedSourcePaths: string[] = [], options: InspectOptions = {}) {
   const cwd = path.resolve(options.cwd || process.cwd())
   const format = options.format || 'json'
   const exitCode = options.exitCode || 'diagnostics'
+  if (options.designSystemOptions && !options.designSystem) throw new Error('--design-system-options requires --design-system.')
+  if (options.designSystem) {
+    if (options.snapshot || options.compare || specifiedSourcePaths.length || options.classes || options.includeCss) {
+      throw new Error('--design-system inspects the managed CSS graph; do not combine it with source patterns, --classes, --include-css, --snapshot or --compare.')
+    }
+    const designSystem = options.designSystemOptions
+      ? JSON.parse(await readFile(path.resolve(cwd, options.designSystemOptions), 'utf8')) as MasterCSSDesignSystemOptions
+      : undefined
+    if (options.designSystemOptions && (!designSystem || typeof designSystem !== 'object' || Array.isArray(designSystem))) {
+      throw new TypeError('Design-system options must be a versioned JSON object.')
+    }
+    const report = await createMasterCSSDesignSystemReport({ manifest: defaultManifest, cwd, designSystem })
+    if (format === 'stylish') {
+      const lines = [`Inspected ${report.summary.stylesheets} managed stylesheets, ${report.summary.references} token references.`]
+      for (const item of report.diagnostics) lines.push(`${item.severity.toUpperCase()} ${item.code}${item.source ? ` ${item.source}` : ''}: ${item.message}`)
+      lines.push('Coverage: supplied project CSS; browser behavior not checked.')
+      process.stderr.write(`${lines.join('\n')}\n`)
+    } else process.stdout.write(`${JSON.stringify(report, null, 2)}\n`)
+    if (exitCode !== 'never' && (report.summary.errors || report.summary.warnings > parseMaxWarnings(options.maxWarnings))) process.exitCode = 1
+    return report
+  }
   const inspectionOptions = {
     manifest: defaultManifest,
     cwd,

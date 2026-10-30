@@ -5,6 +5,40 @@ use super::{
     utf16_len,
 };
 
+impl EngineSession {
+    /// Tooling-only family keys before ambiguity filtering. Reuses execution's
+    /// longest-prefix ownership, namespace resolution and companion-key exclusions.
+    pub fn token_family_keys(
+        &self,
+        family: &super::TokenFamily,
+    ) -> Result<Vec<String>, EngineError> {
+        self.ensure_active()?;
+        let mut keys = Vec::new();
+        let prefix = format!("{}-", family.prefix);
+        if let Some(indexes) = self.compiled.token_utilities.get(&prefix) {
+            for index in indexes {
+                let utility = &self.compiled.utilities[*index];
+                if utility.variable_alias_refs == [format!("~{}", family.namespace)] {
+                    keys.extend(
+                        super::utility::utility_variable_entries(utility, &self.compiled)
+                            .into_iter()
+                            .map(|(key, _)| key)
+                            .filter(|key| {
+                                super::named::token_prefix(
+                                    &format!("{prefix}{key}"),
+                                    &self.compiled,
+                                ) == Some(prefix.as_str())
+                            }),
+                    );
+                }
+            }
+        }
+        keys.sort();
+        keys.dedup();
+        Ok(keys)
+    }
+}
+
 pub(crate) fn utility_completion_metadata(
     utility: &UtilityDefinition,
 ) -> (Vec<String>, Vec<String>) {

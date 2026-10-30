@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, realpathSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { mcpEditorial } from '../reference/mcp-editorial'
 import { connect, value } from './mcp-stdio'
 
@@ -53,7 +52,6 @@ export async function verifyToolContractExamples() {
     assert.ok(reports.suggest_syntax.total > 5)
     assert.equal(reports.preview_directive_format.formatted, '@safelist "background-color:transparent!";' )
     assert.equal(reports.preview_directive_format.preview, undefined)
-    for (const name of ['repo_context', 'change_impact', 'test_router', 'package_graph']) assert.equal(reports[name].status, 'limited')
     const preview = reports.preview_fixes.preview
     assert.equal(preview.changes.length, 1)
     assert.ok(preview.confirmToken)
@@ -62,18 +60,4 @@ export async function verifyToolContractExamples() {
     assert.equal(applied.applied, true)
     assert.equal(readFileSync(file, 'utf8'), "<button class=\"display:flex gap-sm p-md bg-blue-60\">Save</button>")
   } finally { await connection.close(); rmSync(root, { recursive: true, force: true }) }
-  // Contributor requests read this actual repository; no preview or write tool is called here.
-  const repo = fileURLToPath(new URL('../../', import.meta.url))
-  const contributor = await connect(repo)
-  try {
-    for (const short of ['repo_context', 'change_impact', 'test_router', 'package_graph']) {
-      const name = `mastercss_${short}`
-      const report = value<any>(await contributor.call(name, mcpEditorial[name].example))
-      assert.equal(report.status, 'loaded', name)
-      if (short === 'package_graph') assert.ok(report.packages.some((item: any) => item.name === 'site'))
-      else assert.ok(report.affectedPackages.some((item: any) => item.name === 'site'))
-      if (short === 'repo_context') assert.ok(report.context.files.includes('site/AI.md'))
-      if (short === 'test_router') assert.ok(report.validation.commands.length)
-    }
-  } finally { await contributor.close() }
 }

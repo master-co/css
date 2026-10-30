@@ -180,6 +180,19 @@ Run `Master CSS: Restart Language Server` after dependency changes, major worksp
 
 ---
 
+## Design-system diagnostics
+
+Language-server clients may opt into native CSS checks with the `designSystem`
+setting. It takes the same `{ version: 1, metadata, rawValuePolicy }` object as the
+[CLI inspection workflow](/guide/ai-coding#review-the-second-change).
+
+Checks apply only to open CSS files in the successfully loaded workspace's managed
+stylesheet graph. The current document text supplies the ranges; the last loaded
+project manifest supplies token definitions. Save changed definitions to reload
+project context. Unrelated stylesheets and embedded framework style blocks are not
+included in this opt-in policy. Diagnostic codes and report version come from the
+same Rust inspection used by CLI and MCP; no browser result is implied.
+
 ## Troubleshooting
 | Symptom | Fix |
 | --- | --- |

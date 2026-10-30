@@ -16,6 +16,15 @@ export default function CopyCommand({ className, command, wrap = false }: { clas
     return () => clearTimeout(timeout)
   }, [status])
 
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(command)
+      setStatus('copied')
+    } catch {
+      setStatus('failed')
+    }
+  }
+
   return (
     <div className={clsx('home-command home-glass', className)}>
       <span aria-hidden="true" className="fg-text-muted">$</span>
@@ -23,7 +32,7 @@ export default function CopyCommand({ className, command, wrap = false }: { clas
       <button
         aria-label={status === 'copied' ? $('Copied') : $('Copy command')}
         className="home-command-copy"
-        onClick={() => navigator.clipboard.writeText(command).then(() => setStatus('copied'), () => setStatus('failed'))}
+        onClick={copy}
         type="button">
         {status === 'copied' ? <IconCheck aria-hidden="true" size={16} stroke={2} /> : <IconCopy aria-hidden="true" size={16} stroke={1.75} />}
       </button>

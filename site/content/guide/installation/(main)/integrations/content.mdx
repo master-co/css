@@ -31,6 +31,21 @@ Installation guides for popular frameworks and build tools integrated with Maste
   ]}
 </IconButtons>
 
+## Rendering support by adapter
+
+Static rendering is the default for these official adapters. Runtime generation is an explicit choice for classes that are unknown at build time. `pre-render` generates CSS from HTML without a client runtime; `progressive` combines HTML rendering with a runtime for later classes. The HTML each adapter can process depends on its host:
+
+| Adapter | Static | Runtime | `pre-render` and server HTML | `progressive` |
+| --- | --- | --- | --- | --- |
+| [Vite](/guide/installation/vite) | Build-time extraction | Injected through Vite's HTML pipeline | HTML processed by Vite hooks; custom SSR needs a server integration | Vite HTML rendering plus runtime; custom SSR needs its own HTML rendering |
+| [Webpack](/guide/installation/webpack) | Build-time extraction | Injected into compilation HTML assets | Your HTML host must call `@master/css-server`; the plugin has no request-time server hook | Runtime delivery is provided; your host supplies rendered HTML and hydration data |
+| [Next.js](/guide/installation/nextjs) | Build-time extraction | Client instrumentation | HTML outputs processed after the build; dynamic request-time SSR is not transformed | Build-rendered HTML plus runtime; dynamic SSR has no automatic server CSS injection |
+| [Astro](/guide/installation/astro) | Build-time extraction through Vite | Injected page script | Astro middleware processes prerendered pages and server HTML responses | Middleware rendering plus runtime |
+| [Nuxt](/guide/installation/nuxtjs) | Build-time extraction through Vite | Nuxt client plugin | Nitro HTML responses with string bodies; streaming bodies are not transformed | Nitro HTML rendering plus client runtime |
+| [SvelteKit](/guide/installation/svelte) | Build-time extraction through Vite | Requires the documented client hook | Requires the Master CSS server handle; it processes page chunks during SSR and prerendering | Requires both the server handle and client hook |
+
+Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path.
+
 ---
 
 Don't have a preferred framework or tool yet? Use the [quick start](/guide/installation) for the default static setup, or generate CSS with the [CLI](/guide/installation/cli) when no integration fits. For browser-only prototypes, C&P the [Runtime CDN](/guide/installation/cdn) or initialize the [`@master/css-runtime`](https://www.npmjs.com/package/@master/css-runtime) package in your app’s entry point.

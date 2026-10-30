@@ -1,62 +1,77 @@
 import Overview from './components/Overview.mdx'
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only]
 <Overview />
-Master CSS lets teams compose CSS and project design rules in markup, trace the impact of changes, and check generated styles. It is built for interfaces that will be edited and maintained over time.
+The card combines shared colors, spacing and type with local layout choices. Its classes describe the styling where you use it; the theme supplies the shared values.
 
 ---
 
 ## What is Master CSS?
-Master CSS lets you write styling decisions in markup using CSS-like class strings, then generates the CSS those classes need.
+Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS.
 
-Use it when you want the style to stay close to the element while still keeping access to real CSS features such as tokens, selectors, media queries, cascade layers, and generated stylesheets.
+Its class language combines native declarations such as `display:grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. You can start with the supplied theme and write local styles without designing a complete system first.
 
-Each class is a small styling instruction:
+As values and patterns become shared, define them in your project CSS. Theme tokens, native component classes and custom utilities give those decisions names that you can reuse. Your stylesheets can also contain ordinary selectors, media queries, cascade layers and keyframes.
 
-- `bg-surface-raised` gives the example panel a shared surface treatment.
-- `p-lg` applies padding from the spacing scale.
-- `fg-text-blue` uses a theme color.
-- `bg-blue-70:hover` changes the button background on hover.
-
+Use Master when you want to compose styles close to an element while keeping shared definitions in CSS. Complex selectors and longer reusable styles can stay in native stylesheets alongside your classes.
 
 ---
 
-## Write your first class
-Start with local styling in markup. This is enough for a first screen, prototype, or component draft:
+## Define values that should change together \{#write-your-first-class\}
+In the card, `p-lg` reads a spacing token and `bg-surface-raised` reads a surface color. These names come from the supplied theme. Add your own token when several elements should share a project decision, such as the brand color used by primary actions.
 
-```html
-<section class="display:grid gap-md p-lg r-lg bg-blue-60 fg-white">
-  <h2 class="margin:0 font-2xl font-semibold">Dashboard</h2>
-  <p class="margin:0 fg-white/.8">A compact panel styled from its class list.</p>
-</section>
+After [Installation](/guide/installation), your application loads a CSS entry containing:
+
+```css name=app.css
+@import '@master/css';
 ```
 
-Master CSS reads those class names, validates them against the active project vocabulary, and emits CSS for the classes that are actually used.
+Add the following definitions after that import. The two links show alternative ways to give the card's action a brand background: `bg-brand` uses the theme token through a Master class, while `card-action` uses the same token in native CSS.
 
-When a value or pattern becomes shared across the product, promote it later. Values that should change together belong in [theme tokens](/guide/theme); equal values can still represent different product decisions. Stable product roles can become [component classes](/guide/global-styles#component-classes).
+<ConfiguredExample source={`@theme {
+  --color-brand: #2563eb;
+}
+
+@layer components {
+  .card-action {
+    background-color: var(--color-brand);
+  }
+}`} html={`<a class="px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
+  Start building
+</a>
+
+<a class="card-action px-md py-xs r-md fg-white" href="/guide/installation">
+  Start building
+</a>`} />
+
+Both backgrounds reference `--color-brand`. Changing that definition updates both consumers wherever the value applies. Local layout classes can still differ, and a reusable component can collect more declarations as its role becomes clear.
+
+Share a token because its consumers should change together. An informational color may initially have the same value as the brand color and still deserve a separate token. [Theme Tokens](/guide/theme) explains shared values; [Global Styles](/guide/global-styles) covers reusable components and utilities.
 
 ---
 
-After [Installation](/guide/installation), follow the [Syntax Tutorial](/guide/syntax-tutorial) to build one button with declarations, interaction states, responsive conditions and a project token.
+## Understand the next change
+Suppose the brand color changes. Before editing `--color-brand`, inspect the project definitions and their known uses. After the edit, compare project snapshots to see which classes, stylesheets and outputs are affected. A class such as `bg-brand` can be affected even when its generated declaration still reads `background-color:var(--color-brand)`.
+
+The tools can also locate token references in project CSS and check configured policies, such as requiring tokens for selected properties. [Code Linting](/guide/code-linting) explains the checks; the [project review workflow](/guide/ai-coding#review-the-second-change) shows how to inspect and compare changes.
+
+You and your coding agent can use the same project definitions and checks. The CLI and MCP server expose these capabilities for development workflows; see [AI Coding](/guide/ai-coding) for setup and examples.
+
+<a id="generated-css-syntax-diagnostics-and-dependency-reports-provide-different-kinds-of-evidence-they-do-not-establish-the-final-appearance-interaction-behavior-or-accessibility-of-a-page"></a>
+
+These reports cover known project sources. Some native CSS relationships are reported conservatively; they do not simulate which selectors and inherited values apply to every element. Generating CSS, checking syntax or policies, and finding dependencies provide different evidence. Check the rendered page and its interaction states in a browser to verify appearance, behavior and accessibility.
 
 ---
 
 ## Choose how CSS is delivered
 Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or engine.
 
-Changing state does not require compiling CSS in the browser. Toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime when a playground, visual editor or deployed content introduces previously unknown class names. Server pre-rendering and progressive delivery remain available for those specific needs; see [Rendering Modes](/guide/rendering-modes).
-
-<a id="generated-css-syntax-diagnostics-and-dependency-reports-provide-different-kinds-of-evidence-they-do-not-establish-the-final-appearance-interaction-behavior-or-accessibility-of-a-page"></a>
-
-Generated CSS, syntax diagnostics and dependency reports provide different kinds of evidence. They do not establish the final appearance, interaction behavior or accessibility of a page.
+Changing state does not require compiling CSS in the browser. Toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime when a playground, visual editor or deployed content introduces previously unknown class names. [Rendering Modes](/guide/rendering-modes) explains static, runtime and progressive delivery, including server pre-rendering.
 
 ---
 
 ## Keep going
-If you are new to Master CSS, read these next:
+Start with [Installation](/guide/installation), then follow the [Syntax Tutorial](/guide/syntax-tutorial) to build and verify one button with interaction states, responsive conditions and a project token.
 
-1. [Installation](/guide/installation) to add Master CSS to a project.
-2. [Syntax Tutorial](/guide/syntax-tutorial) to build and verify your first interactive, responsive component.
-3. [Theme Tokens](/guide/theme) when you need shared values, [Variables and Modes](/guide/variables-and-modes) when those values need modes, and [Global Styles](/guide/global-styles) when repeated roles become components or utilities.
-4. [Rendering Modes](/guide/rendering-modes) when CSS delivery matters.
-5. [Language Service](/guide/language-service), [Code Linting](/guide/code-linting), and [AI Coding](/guide/ai-coding) when you want editor help, team checks, or AI-assisted styling.
+As the interface grows, use [Theme Tokens](/guide/theme) and [Global Styles](/guide/global-styles) to organize shared decisions. Add [Language Service](/guide/language-service) for editor feedback and [Code Linting](/guide/code-linting) for checks you can repeat during development and review.

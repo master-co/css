@@ -6,7 +6,7 @@ import highlightCode from './highlight-code'
 
 const manifest: MasterCSSManifest = {
   version: 6, languageVersion: 16,
-  mixins: [{ name: '--brand', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
+  utilities: [{ name: 'brand', kind: 'static', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
 }
 
 test('reused default sessions return independent trees and retain custom transformers', async () => {

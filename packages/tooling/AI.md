@@ -13,6 +13,10 @@ analysis, and the dependency-light diagnostics bridge.
   `language`.
 - CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
 - Read-only token-family metadata inferred by Rust from the active manifest for documentation and tooling.
+- `inspectDesignSystem()` delegates authored CSS token references, tool-only
+  metadata, raw-value policy and family collisions to Rust lint. Metadata never
+  changes Manifest or runtime program data. References are syntax evidence, not
+  proof of DOM usage or computed values.
 - Private first-party Vue and Svelte extraction adapters used by the scanner.
 
 ## Does Not Own

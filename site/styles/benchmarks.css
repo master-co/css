@@ -35,11 +35,11 @@
   .benchmark-data[open] > summary::after { position: absolute; inset-inline: 1.25rem; bottom: 0; height: 1px; background: var(--color-line-subtle); content: ''; }
   .benchmark-table-scroll { overflow: auto; max-height: 36rem; overscroll-behavior-x: contain; border-radius: 0 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px); }
   .benchmark-table-scroll .doc-table { margin: 0; overflow: visible; }
-  .benchmark-table-scroll table { width: max-content; min-width: 100%; margin: 0; border-collapse: collapse; border-spacing: 0; font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
-  .benchmark-table-scroll :is(th, td) { padding: var(--spacing-xs) var(--spacing-sm); white-space: nowrap; }
+  .benchmark-table-scroll table { width: max-content; min-width: 100%; margin: 0; border-collapse: collapse; border-spacing: 0; font-variant-numeric: tabular-nums; }
+  .benchmark-table-scroll :is(th, td) { padding: var(--spacing-xs) var(--spacing-sm); font-size: var(--font-size-xs); white-space: nowrap; }
   .benchmark-table-scroll :is(th, td):first-child { padding-inline-start: 1.25rem; }
   .benchmark-table-scroll :is(th, td):last-child { padding-inline-end: 1.25rem; }
-  .benchmark-table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--color-demo-canvas); }
+  .benchmark-table-scroll thead { position: sticky; top: 0; z-index: 1; background: var(--color-surface-raised); }
   .benchmark-table-scroll tbody tr:hover { background: var(--color-surface-inset); }
   .benchmark-data > summary:focus-visible, .benchmark-table-scroll:focus-visible { outline: 2px solid var(--color-demo-blue); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .benchmark-data-chevron { transition: none; } }

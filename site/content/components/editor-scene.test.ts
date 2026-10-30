@@ -85,4 +85,10 @@ test('syntax paint retains the exact CSS returned for every class, including whi
   const parts = editorCSSParts('  color: oklch(46.26% .3057 266.7);')
   assert.ok(parts.some(([text, role]) => text === 'oklch' && role === 'function'))
   assert.ok(parts.some(([text, role]) => text === '46.26%' && role === 'number'))
+  // The same roles the docs' syntax palette gives native CSS.
+  const roles = (line: string) => Object.fromEntries(editorCSSParts(line).filter(([text]) => text.trim()).map(([text, role]) => [text.trim(), role]))
+  assert.deepEqual(roles('  @media (width >= 52.125rem) {'), { '@media': 'keyword', '(': 'punct', width: 'property', '>=': 'punct', '52.125rem': 'number', ')': 'punct', '{': 'punct' })
+  assert.deepEqual(roles('    .fg-blue-70\\:hover\\@sm:hover {'), { '.fg-blue-70\\:hover\\@sm': 'selector', ':hover': 'keyword', '{': 'punct' })
+  assert.deepEqual(roles('  :root,'), { ':root': 'keyword', ',': 'punct' })
+  assert.equal(roles('    color: var(--color-blue-70)')['--color-blue-70'], 'utility')
 })

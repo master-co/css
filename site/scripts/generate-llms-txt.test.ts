@@ -462,9 +462,14 @@ test('agent guides export complete prompts, tool catalogs, preview workflow and 
 test('tool references export readable parameters, complete schemas and literal examples in both locales', async () => {
   const root = fileURLToPath(new URL('..', import.meta.url))
   const { renderDocumentMarkdown } = await import('../reference/build')
+  const { mcpEditorial } = await import('../reference/mcp-editorial')
+  const { cliEditorial } = await import('../reference/cli-editorial')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'tool')
-  assert.equal(docs.length, 23)
+  assert.deepEqual(docs.map((doc: any) => doc.id).sort(), [
+    ...Object.keys(mcpEditorial).map(name => `tools/mcp/${name}`),
+    ...Object.keys(cliEditorial).map(name => `tools/cli/${name}`)
+  ].sort())
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {
@@ -618,8 +623,17 @@ test('introduction retains its authored panel code in portable and search output
   const content = await introductionContent(root)
   const pages = await loadPages(path.join(root, 'content'))
   assert.equal(pages.find(page => page.url === '/en/guide/introduction')?.body, content.markdown)
-  for (const text of ['Launch panel', 'Build the first screen in markup', 'Dashboard', 'gap-md', 'font-2xl', 'bg-surface-raised shadow-lg']) assert.ok(content.markdown.includes(text), text)
-  assert.doesNotMatch(content.markdown, /<Overview|<DemoConfiguredExample|MCSS_EXPRESSION/)
+  for (const text of ['Project panel', 'Style with shared values', 'Use shared colors, spacing and type in markup.', 'bg-surface-raised shadow-lg', "@import '@master/css';", 'known project sources']) assert.ok(content.markdown.includes(text), text)
+  const example = content.examples.find(example => example.classes.includes('bg-brand'))
+  assert.ok(example, 'the shared-token example survives the Introduction export')
+  assert.match(example.css, /--color-brand:\s*#2563eb/)
+  assert.match(example.css, /\.bg-brand\s*\{\s*background-color:\s*var\(--color-brand\)/)
+  assert.match(example.css, /\.card-action\s*\{\s*background-color:\s*var\(--color-brand\)/)
+  const changed = configuredExampleCSS(example.configuration!.replace('#2563eb', '#4f46e5'), example.classes)
+  assert.match(changed, /--color-brand:\s*#4f46e5/)
+  assert.match(changed, /\.bg-brand\s*\{\s*background-color:\s*var\(--color-brand\)/)
+  assert.match(changed, /\.card-action\s*\{\s*background-color:\s*var\(--color-brand\)/)
+  assert.doesNotMatch(content.markdown, /<Overview|<ConfiguredExample|<DemoConfiguredExample|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/introduction')

@@ -26,6 +26,11 @@ import type {
   MasterCSSStylesheetError,
   MasterCSSStylesheetInspection
 } from './contracts'
+import {
+  inspectResolvedProjectDesignSystem,
+  type MasterCSSDesignSystemOptions,
+  type MasterCSSProjectDesignSystemReport
+} from './design-system'
 
 export type {
   MasterCSSDiscoveredClasses,
@@ -44,6 +49,14 @@ export type {
 
 export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
 
+export { createMasterCSSDesignSystemReport } from './design-system'
+export type {
+  CreateMasterCSSDesignSystemReportOptions,
+  MasterCSSDesignSystemOptions,
+  MasterCSSDesignSystemReport,
+  MasterCSSProjectDesignSystemReport
+} from './design-system'
+
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
@@ -53,6 +66,8 @@ export interface CreateMasterCSSInspectionReportOptions {
   patterns?: readonly string[]
   classes?: readonly string[] | string
   includeCss?: boolean
+  /** Inspect authored CSS using the same project manifest as the class scan. */
+  designSystem?: MasterCSSDesignSystemOptions
   ignore?: readonly string[]
   resolveExistingFile?: (filePath: string) => string | Promise<string>
   validatePatterns?: (patterns: readonly string[]) => void
@@ -207,13 +222,21 @@ async function inspectProject(options: CreateMasterCSSInspectionReportOptions, c
   let reportInput: MasterCSSDiagnosticsReportInput
   let stylesheetInspection: Awaited<ReturnType<typeof registerManagedCSSEntries>> | undefined
   let snapshot: MasterCSSProjectSnapshot | undefined
+  let designSystem: MasterCSSProjectDesignSystemReport | undefined
 
   try {
     let projectManifest = options.manifest
     let projectError: unknown
     try {
-      projectManifest = (await loadProjectManifest({ root: cwd, baseManifest: options.manifest })).manifest
+      const project = await loadProjectManifest({
+        root: cwd,
+        baseManifest: options.manifest,
+        includeSourceGraph: Boolean(options.designSystem)
+      })
+      projectManifest = project.manifest
+      if (options.designSystem) designSystem = await inspectResolvedProjectDesignSystem(project, cwd, options)
     } catch (error) { projectError = error }
+    if (projectError && options.designSystem) throw projectError
     await scanner.init({ ...scanner.customOptions, manifest: projectManifest })
     stylesheetInspection = await registerManagedCSSEntries(
       scanner,
@@ -316,6 +339,8 @@ async function inspectProject(options: CreateMasterCSSInspectionReportOptions, c
       firstSourceByClass: Object.fromEntries(firstSourceByClass)
     }
   } catch (error) {
+    // An explicitly requested design-system report must not disappear on failure.
+    if (options.designSystem && !designSystem) throw error
     snapshot = undefined
     reportInput = {
       version: MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
@@ -331,7 +356,8 @@ async function inspectProject(options: CreateMasterCSSInspectionReportOptions, c
   } finally {
     await scanner.dispose()
   }
-  return { report: await createBindingInspectionReport(reportInput), snapshot }
+  const report = await createBindingInspectionReport(reportInput)
+  return { report: designSystem ? { ...report, designSystem } : report, snapshot }
 }
 
 export async function createMasterCSSInspectionReport(options: CreateMasterCSSInspectionReportOptions): Promise<MasterCSSInspectionReport> {
