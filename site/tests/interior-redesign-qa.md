@@ -70,6 +70,9 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `final-behavior-results.json`: all 428 unique browser cases pass—215 Chromium and 213 WebKit. The five unchanged suites use their complete production run; all 20 Navigation cases were rerun after correcting a test that counted the footer shortcut as a second sidebar control.
 - `enlarged-routes-*`: 366 further non-review resources per engine at 320px/200% text, combined with the 82 Design System route checks per engine. All 896 scenes fit. This covers every non-home page plus the two deliberately missing routes.
 - `brand-final-details/`: 160 native viewport captures of 20 brand subjects across both engines, light/dark and 390/1440px.
+- `interior-final-details/`: 448 additional viewport captures of openings, source panels, tables, demos and footers across 17 representative page types, both engines/themes and 390/1440px.
+- `focus-paint/summary.json`: 20 actual keyboard-focus scenes in both engines, with and without forced colors; painted focus remains visible, including native selects inside their visible labels.
+- `global-token-audit.json`: native CSSOM parsing verifies all 60,488 shared root-token declarations across 448 delivered routes, with layer/condition identity retained; zero value differences.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
@@ -102,7 +105,7 @@ The final 9,000-scene production comparison and CSS contract approval remain in 
 
 ## Exact CSS delivery review
 
-Review compares the frozen committed base with the redesigned production output, rather than using a previously stale snapshot as the visual baseline. The route inventory remains 448 pages. The project manifest is byte-identical in both captures (SHA-256 `16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9`); no preset, utility semantics or theme definition changed.
+Review compares the frozen committed base with the redesigned production output, rather than using a previously stale snapshot as the visual baseline. The route inventory remains 448 pages. Native CSSOM parsing also confirms all 60,488 shared global variable declarations retain their values, including their layer and condition identity. The project manifest is byte-identical in both captures (SHA-256 `16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9`); no preset, utility semantics or theme definition changed.
 
 Intentional website delivery changes are:
 
