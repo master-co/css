@@ -8,13 +8,40 @@ void main() {
   gl_Position = vec4(position, 0.0, 1.0);
 }`
 
-/** Upscale the soft silk with a cheap pass; only the title rectangle runs the glass shader. */
+// Resolve grain at CSS-pixel density. The shared coordinates prevent rectangular scissor seams.
+const sceneSampling = `
+float hash(vec2 p) {
+  vec3 q = fract(vec3(p.xyx) * 0.1031);
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.x + q.y) * q.z);
+}
+float grainAt(vec2 p) {
+  vec2 cell = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(cell), hash(cell + vec2(1.0, 0.0)), f.x),
+    mix(hash(cell + vec2(0.0, 1.0)), hash(cell + vec2(1.0)), f.x), f.y) - 0.5;
+}
+vec3 backgroundAt(vec2 uv) {
+  vec3 color = texture2D(scene, uv).rgb;
+  vec2 p = uv * resolution * 1.15;
+  p += vec2(sin(uv.y * 5.0 + time * 0.08) * 1.4, time * 0.12);
+  float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+  float coverage = clamp(length(color - ground) * 7.0, 0.0, 1.0);
+  return color + grainAt(p) * 0.044 * smoothstep(0.025, 0.25, luminance) * coverage;
+}`
+
+/** Upscale the sculpted gold; expensive glass passes cover only their own bounds. */
 export const heroCopySource = `
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D scene;
+uniform vec2 resolution;
+uniform float time;
+uniform vec3 ground;
+${sceneSampling}
 void main() {
-  gl_FragColor = texture2D(scene, vUv);
+  gl_FragColor = vec4(backgroundAt(vUv), 1.0);
 }`
 
 export const heroClothSource = `
@@ -24,65 +51,66 @@ uniform vec2 resolution;
 uniform float time;
 uniform float intro;
 uniform vec3 pointer;
-uniform vec3 ring;
 uniform vec3 shadow;
 uniform vec3 body;
 uniform vec3 sheen;
 uniform vec3 ground;
 uniform vec4 title;
-uniform vec4 prose;
+uniform vec4 readingArea;
 uniform float fontSize;
 
 float cloth(vec2 p) {
-  vec2 q = p + 0.32 * vec2(sin(p.y * 1.6 + time * 0.23), sin(p.x * 1.2 - time * 0.19));
-  float h = sin(q.x * 1.5 + q.y * 0.8 + time * 0.31) * 0.55;
-  h += sin(q.x * 0.6 - q.y * 1.7 + time * 0.21 + sin(q.x * 0.45 + time * 0.12) * 1.6) * 0.38;
-  h += sin((q.x + q.y) * 2.6 - time * 0.42) * 0.1;
-  vec2 toPointer = p - pointer.xy;
-  h += pointer.z * 0.45 * exp(-dot(toPointer, toPointer) * 1.4);
-  if (ring.z >= 0.0) {
-    float front = length(p - ring.xy) - ring.z * 2.2;
-    h += 0.3 * exp(-front * front * 5.0) * max(0.0, 1.0 - ring.z / 2.4);
-  }
+  // Independent warped folds form broad valleys and continuous curved crests.
+  vec2 q = p + vec2(sin(p.y * 0.82 + time * 0.11), sin(p.x * 0.68 - time * 0.09)) * 0.56;
+  float a = q.x * 1.13 + q.y * 0.92 + sin(q.y * 0.72 - time * 0.07) * 0.65 + time * 0.21;
+  float b = q.x * 0.48 - q.y * 1.22 + sin(q.x * 0.67 + time * 0.08) * 0.85 - time * 0.16;
+  float h = sin(a) * 0.72 + sin(b) * 0.64;
+  h += atan(sin(a + b * 0.38) * 4.0) * 0.58;
+  vec2 local = p - pointer.xy;
+  h += pointer.z * 0.20 * exp(-dot(local, local) * 1.15);
   return h;
 }
 
 void main() {
   float aspect = resolution.x / resolution.y;
   vec2 p = (vUv - 0.5) * vec2(aspect, 1.0) * ${heroPlaneScale.toFixed(1)};
-  float e = 0.012;
+  float e = 0.009;
   float h = cloth(p);
   vec2 slope = vec2(cloth(p + vec2(e, 0.0)) - h, cloth(p + vec2(0.0, e)) - h) / e;
-  vec3 normal = normalize(vec3(-slope * 0.4, 1.0));
-  vec3 light = normalize(vec3(-0.5 + pointer.z * 0.25 * pointer.x / aspect, 0.62, 0.6));
+  vec3 normal = normalize(vec3(-slope * 1.05, 1.0));
+  vec3 light = normalize(vec3(-0.65 + pointer.x * pointer.z * 0.035, 0.72, 0.72));
   float lit = max(dot(normal, light), 0.0);
   float facing = max(dot(normal, normalize(light + vec3(0.0, 0.0, 1.0))), 0.0);
-  float gloss = pow(facing, 18.0) + pow(facing, 90.0) * 0.6;
-  vec3 color = mix(shadow, body, smoothstep(0.05, 0.9, lit));
-  color = mix(color, sheen, clamp(gloss + pow(lit, 10.0) * 0.3, 0.0, 1.0));
+  // A wide rough reflection rolls over the folds, with a restrained highlight at the lip.
+  float reflection = pow(facing, 18.0);
+  float crest = pow(facing, 58.0) * 0.18;
+  vec3 color = mix(shadow, body, smoothstep(0.06, 0.91, lit));
+  color = mix(color, sheen, clamp(reflection * 0.74 + crest, 0.0, 1.0));
+  color *= 0.94 + 0.06 * smoothstep(-1.3, 1.3, h);
 
-  // One loose sheet drifts through the title; its contour never traces the text rectangle.
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
+  // A soft, open reading band keeps pale glass legible when a dark-theme crest crosses it.
   float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
+  float above = smoothstep(title.y - fontSize * 1.45, title.y - fontSize * 0.12, screen.y);
+  float below = 1.0 - smoothstep(title.y + title.w + fontSize * 0.12, title.y + title.w + fontSize * 1.45, screen.y);
+  color *= mix(1.0, 0.46, above * below * dark);
   float x = vUv.x - 0.5;
-  float crown = 1.0 - title.y / resolution.y + 0.1;
-  float edge = crown - x * 0.38 + x * x * 1.05 + sin(x * 5.5 + 0.7) * 0.045 + h * 0.075;
-  float alpha = (1.0 - smoothstep(edge - 0.28, edge + 0.075, vUv.y)) * intro;
-  // The reading space bends with the sheet and opens toward the lower left, without a closed halo.
-  vec2 proseDistance = (screen - prose.xy - prose.zw * 0.5) / max(prose.zw * vec2(0.58, 0.62) + fontSize * vec2(0.75, 0.95), vec2(1.0));
-  proseDistance.x += proseDistance.y * 0.18 - 0.1 + max(proseDistance.y, 0.0) * 0.45;
-  proseDistance.y /= 1.0 + max(proseDistance.y, 0.0) * 0.5;
-  proseDistance.y += sin(proseDistance.x * 1.4 + 0.5) * 0.35 + h * 0.12;
-  alpha *= mix(0.08, 1.0, smoothstep(0.62, 1.95, length(proseDistance)));
-  alpha *= smoothstep(0.0, 0.18 + x * 0.1 + h * 0.025, vUv.y);
-  alpha *= mix(1.0, mix(0.5, 0.3, dark), smoothstep(0.84, 1.0, vUv.y));
-  // Static film grain belongs to the silk, so the polished glass remains clear.
-  vec2 grainPoint = floor(vUv * resolution);
-  float grain = fract(sin(dot(grainPoint, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
-  color += grain * 0.065;
+  float crown = 1.0 - title.y / resolution.y + 0.18;
+  float edge = crown - x * 0.24 + x * x * 0.9 + sin(x * 4.5 + 0.7) * 0.055 + h * 0.055;
+  float alpha = (1.0 - smoothstep(edge - 0.26, edge + 0.12, vUv.y)) * intro;
+  // The reading space follows the sheet and opens toward the lower left, never a closed panel.
+  vec2 reading = (screen - readingArea.xy - readingArea.zw * 0.5) / max(readingArea.zw * vec2(0.62, 0.65) + fontSize * vec2(0.8, 1.05), vec2(1.0));
+  reading.x += reading.y * 0.17 - 0.08 + max(reading.y, 0.0) * 0.32;
+  reading.y /= 1.0 + max(reading.y, 0.0) * 0.6;
+  reading.y += sin(reading.x * 1.1 + 0.4) * 0.24 + h * 0.08;
+  alpha *= mix(0.14, 1.0, smoothstep(0.58, 1.9, length(reading)));
+  float bottom = smoothstep(0.0, 0.24 + x * 0.12 + h * 0.025, vUv.y);
+  alpha *= bottom * bottom * (3.0 - 2.0 * bottom);
+  alpha *= 1.0 - smoothstep(0.91, 1.12, vUv.y) * 0.55;
   gl_FragColor = vec4(mix(ground, color, alpha), 1.0);
 }`
 
+/** A flat optical film: quiet transmission and one broad reflection, without an extruded bevel. */
 export const heroCompositeSource = `
 precision highp float;
 varying vec2 vUv;
@@ -95,80 +123,42 @@ uniform float fontSize;
 uniform float material;
 uniform float time;
 uniform vec3 pointer;
-uniform vec3 ring;
 uniform vec3 ink;
 uniform vec3 ground;
 
 void main() {
-  vec3 background = texture2D(scene, vUv).rgb;
-  float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
   vec2 textUv = (screen - title.xy) / title.zw;
   if (textUv.x < 0.0 || textUv.y < 0.0 || textUv.x > 1.0 || textUv.y > 1.0) {
-    gl_FragColor = vec4(background, 1.0);
+    gl_FragColor = vec4(0.0);
     return;
   }
+  float dark = 1.0 - smoothstep(0.25, 0.6, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
   vec4 glyph = texture2D(glyphs, textUv);
-  float signedDistance = (glyph.r - 0.5) * 2.0 * distanceRange;
-  // A hairline of ambient occlusion keeps white glass legible on the light canvas too.
-  float contact = smoothstep(-1.5, 0.7, signedDistance);
-  background *= 1.0 - contact * mix(0.5, 0.12, dark) * material;
-  float shadowDistance = (texture2D(glyphs, textUv - vec2(0.0, 0.9) / title.zw).r - 0.5) * 2.0 * distanceRange;
-  background *= 1.0 - smoothstep(-1.4, 0.8, shadowDistance) * mix(0.2, 0.1, dark) * material;
+  float distance = (glyph.r - 0.5) * 2.0 * distanceRange;
+  float contour = (1.0 - glyph.a) * smoothstep(-1.0, -0.1, distance) * mix(0.36, 0.02, dark) * material;
   if (glyph.a < 0.002) {
-    gl_FragColor = vec4(background, 1.0);
+    gl_FragColor = vec4(0.0, 0.0, 0.0, contour);
     return;
   }
-  float distance = max(0.0, signedDistance);
-  float bevel = max(1.3, fontSize * 0.042);
-  float shoulder = 1.0 - smoothstep(0.0, bevel, distance);
-  vec2 outward = glyph.gb * 2.0 - 1.0;
   vec2 plane = (vUv - 0.5) * vec2(resolution.x / resolution.y, 1.0) * ${heroPlaneScale.toFixed(1)};
-  float flow = sin(plane.x * 1.2 + plane.y * 1.8 - time * 0.35);
-  vec2 liquid = vec2(sin(plane.y * 2.4 + time * 0.3), cos(plane.x * 1.8 - time * 0.25)) * 0.065;
-  vec3 normal = normalize(vec3(outward * shoulder * 0.97 + liquid, sqrt(max(0.06, 1.0 - shoulder * shoulder * 0.94))));
   vec2 toPointer = pointer.xy - plane;
-  float proximity = exp(-dot(toPointer, toPointer) * 1.4) * pointer.z;
-  vec3 light = normalize(mix(vec3(-0.55, -0.7, 1.2), vec3(toPointer.x, -toPointer.y, 2.4), pointer.z * 0.7));
-  vec3 halfLight = normalize(light + vec3(0.0, 0.0, 1.0));
-  float highlight = pow(max(dot(normal, halfLight), 0.0), 38.0) * shoulder;
-  float rim = pow(1.0 - normal.z, 2.0);
-  float thickness = fontSize * 0.7 * (1.0 + proximity * 0.2) * material;
-  vec2 offset = (vec2(normal.x, -normal.y) + liquid * 1.4) * thickness / resolution;
-  // Nearby rays split just at the curved lip, making the bend visible without a colored outline.
-  vec2 refractedUv = clamp(vUv + offset, vec2(0.0), vec2(1.0));
-  vec3 transmitted = texture2D(scene, refractedUv).rgb;
-  transmitted.r = texture2D(scene, clamp(vUv + offset * 1.018, vec2(0.0), vec2(1.0))).r;
-  transmitted.b = texture2D(scene, clamp(vUv + offset * 0.982, vec2(0.0), vec2(1.0))).b;
+  float proximity = exp(-dot(toPointer, toPointer) * 1.25) * pointer.z;
+  vec2 flow = vec2(sin(plane.y * 1.2 + time * 0.12), cos(plane.x - time * 0.09));
+  vec2 outward = glyph.gb * 2.0 - 1.0;
+  vec2 offset = (flow * 0.6 + outward * 0.4) * min(2.4, fontSize * 0.035) * material / resolution;
+  vec3 transmitted = texture2D(scene, clamp(vUv + vec2(offset.x, -offset.y), vec2(0.0), vec2(1.0))).rgb;
   float luminance = dot(transmitted, vec3(0.2126, 0.7152, 0.0722));
-  transmitted = mix(vec3(luminance), transmitted, 0.32);
-  float windowPosition = (screen.x - title.x + (screen.y - title.y) * 0.38) / fontSize + flow * 0.18;
-  float windowSpan = (title.z + title.w * 0.38) / fontSize + 6.0;
-  float windowCenter = fract(time * 0.055) * windowSpan - 3.0 + pointer.x * pointer.z * 0.5;
-  float windowDistance = windowPosition - windowCenter;
-  float windowLight = exp(-pow(windowDistance / 1.35, 2.0));
-  float windowEdge = exp(-pow((windowDistance + 0.72) / 0.16, 2.0));
-  float windowShade = exp(-pow((windowDistance - 1.0) / 0.72, 2.0));
-  // A white veil and bright rim keep the type luminous; the body now reveals the moving scene.
-  float transmission = mix(0.12, 0.08, dark) + shoulder * 0.2 + windowShade * 0.4 + proximity * 0.28;
-  vec3 glass = mix(vec3(0.98), transmitted, transmission);
-  glass += vec3(windowLight * 0.14 + windowEdge * 0.22 + proximity * 0.04);
-  float focalRim = exp(-pow((length(toPointer) - 0.48) / 0.13, 2.0)) * pointer.z;
-  glass += vec3(focalRim * 0.12);
-  float edgeLight = dot(normal.xy, normalize(light.xy));
-  vec3 reflection = mix(vec3(mix(0.64, 0.82, dark)), vec3(1.0), smoothstep(-0.65, 0.7, edgeLight));
-  glass = mix(glass, reflection, rim * 0.55);
-  glass += vec3(highlight * 0.5);
-  float lip = 1.0 - smoothstep(0.2, 0.95, distance);
-  glass = mix(glass, reflection, lip * 0.6);
-  // A fine lower contact edge suggests thickness without moving or distorting the letter's outline.
-  glass *= 1.0 - shoulder * max(normal.y, 0.0) * mix(0.16, 0.06, dark);
-  // A tap catches the same expanding wave in the silk and in each letter's polished edge.
-  if (ring.z >= 0.0) {
-    float front = length(plane - ring.xy) - ring.z * 2.2;
-    float caustic = exp(-front * front * 65.0) * max(0.0, 1.0 - ring.z / 2.4);
-    glass = mix(glass, vec3(1.0), caustic * (0.12 + shoulder * 0.5));
-  }
+  transmitted = mix(vec3(luminance), transmitted, 0.30);
+  float reflectedPosition = plane.x * 0.72 + plane.y * 0.42 + sin(time * 0.10) * 2.2;
+  float reflection = exp(-pow(reflectedPosition / 1.15, 2.0));
+  float film = mix(0.66, 0.72, dark) + reflection * 0.10 - proximity * 0.035;
+  vec3 glass = mix(transmitted, ink, film);
+  // A subpixel contour keeps light glass readable, with no drop shadow or nested reflective ridge.
+  float edge = 1.0 - smoothstep(0.0, 0.65, max(distance, 0.0));
+  glass *= 1.0 - edge * mix(0.12, 0.025, dark);
+  glass += vec3(reflection * 0.025 + proximity * 0.012);
   vec3 color = mix(ink, clamp(glass, 0.0, 1.0), material);
-  gl_FragColor = vec4(mix(background, color, glyph.a), 1.0);
+  float alpha = glyph.a + contour;
+  gl_FragColor = vec4(color * glyph.a / max(alpha, 0.0001), alpha);
 }`

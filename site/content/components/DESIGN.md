@@ -6,7 +6,7 @@ The homepage explains a precise tool, so it should look precise and stay quiet: 
 
 1. **Type carries the hierarchy.** Size, weight and gray level order the page. Color is a signal, not decoration.
 2. **One neutral: zinc.** Every gray is a step of the preset's `zinc` family, a near-neutral with a faint cool, metallic cast. Home tokens alias the preset roles and the site roles in `styles/docs-shell/theme.css`, so the homepage, header, footer and docs share one system.
-3. **One light, one accent.** Light falls from above. The primary action is solid ink; the gold signal (`--home-signal`, the preset's amber at the logo's hue) marks only live states, the path a change takes and the Master CSS figure in a chart. The hero silk and the closing field are the same gold, so the page carries one brand color; preset yellow appears only where a sample class names it.
+3. **One light, one accent.** Light falls from above. Primary actions use solid ink, while secondary hero controls use softly frosted glass; the gold signal (`--home-signal`, the preset's amber at the logo's hue) marks only live states, the path a change takes and the Master CSS figure in a chart. The hero field and the closing field are the same gold, so the page carries one brand color; preset yellow appears only where a sample class names it.
 4. **Figures explain mechanisms.** Every illustration shows something Master CSS actually does: classes becoming rules, layers ordering them, rules flowing to a delivery target. No ornamental art.
 5. **Motion shows cause and effect.** Things move because data moves or state changes. Ambient motion is slow; everything stops for reduced motion.
 6. **Truthful samples.** Code, diagnostics, completions and numbers come from the engine, linter, language service or committed benchmarks, and tests keep them that way.
@@ -75,13 +75,13 @@ Light mode stays clean and white: the ground is about `#f7f7f7` and sheets white
 ## Controls
 
 - **Segmented control**: a soft pill track drawn with one 1px line, and a raised pill thumb (hairline, two soft shadows, a top highlight) that slides to the chosen option and takes its width. Until it is measured, the chosen option paints the raised look itself, so nothing jumps on hydration.
-- **Buttons**: primary is ink, secondary is a sheet with a rule ring. Both use the 10px control radius and are 44px tall, and so is the install command beside them, whose copy button nests inside with a 6px concentric corner. Stacked on phones, a row of actions takes one shared width.
+- **Buttons outside the hero**: primary is ink, secondary is a sheet with a rule ring. Both use the 10px control radius and are 44px tall, like the install command, whose copy target has a 6px concentric corner. Phone actions share one width.
 - **Links into the guide** (`.home-section-link`: a section's link, "See details", "How it works") are quiet: 14px, the faint text color, a 14px arrow that moves on hover. They follow the copy and never compete with the figure.
 - **Focus**: a 2px ink outline, offset 2px.
 
 ## Glass
 
-Only elements that float over the character matrix use `.home-glass`: the announcement pill and the install command. Glass is a translucent fill, 10px backdrop blur, inner light on the top and left, a barely-there dark contour (5%, 7% at the bottom) and a falloff that spreads wide and soft. Main content is always solid.
+The base `.home-glass` combines a translucent fill, 10px backdrop blur, top and left inner light, a faint dark contour and soft falloff. The hero overrides it with the flat frosted material below. Main content stays solid.
 
 ## Lines, guides and text
 
@@ -106,7 +106,7 @@ One scale, set in `../design.css`. Two sizes are fluid; everything else is fixed
 
 | Role | Token | Size | Weight and treatment |
 | --- | --- | --- | --- |
-| Display | `--home-display` | 44 → 84px | Medium, white glass on both lines, tracking `-0.045em`, line height 1.02. Also capped at 10.5% of the viewport height, and short laptop screens trim the hero's air, so the actions stay in the first screen |
+| Display | `--home-display` | 44 → 84px | Medium, flat translucent glass, tracking `-0.045em`, line height 1.04. Browser line breaks follow the actual font and locale. Also capped at 10.5% of the viewport height, and short laptop screens trim the hero's air, so the actions stay in the first screen |
 | Section title | `--home-title` | 36 → 56px | Regular, tracking `-0.035em`, balanced, at most two lines |
 | Lead | `--home-lead` | 17 → 20px | Regular, quiet gray, line height 1.6 |
 | Card title | `--home-card-title` | 24px | Regular, tracking `-0.025em` |
@@ -145,17 +145,19 @@ The page borrows the quiet marks of a design tool, used sparingly so they read a
 - The **dot grid** marks a rendered preview, a canvas where markup becomes UI: the theme split, the gallery. Diagrams, palettes and code never sit on it.
 - Problems are marked in the code with the word-mark directives the docs use (`@ERROR`, `@WARN`, `@MARK`), so the underline points at exactly what the rule reports; tests check the mark starts at the reported column.
 
-## The hero silk
+## The hero's gold and glass
 
-The hero is the positioning line, centered in white glass. A white veil keeps the face luminous while the curved body visibly refracts the silk beneath it. Slowly flowing surface normals bend the background, and a broad diagonal reflection crosses the complete title with a bright leading edge and a darker, more transparent trailing band. Near the pointer the body becomes clearer and catches a local rim of light, while the letter edges stay white. The reflected silk is mostly neutral, so the letters keep a white identity. A fine ambient contour keeps the silhouette visible on the light ground. The real heading owns layout, selection and accessibility; a distance-field mask follows its browser line breaks, and the canvas takes over only after a successful frame.
+The hero has an announcement, heading and actions; no description. Two slowly warped gold folds form broad valleys and continuous crests, with a satin reflection and fine grain. Independent phases evolve over 20–30 seconds. Light mode is champagne; dark mode is deep amber, with a soft open reading band to keep bright crests behind pale type readable. The action row opens into a quiet lower-left fade.
 
-The cloth keeps its original three-fold surface, upper-left light, gold palette, satin sheen and film grain. Composition changes only its coverage: one loose, asymmetric sheet flows from the header through the title and past the actions. Its broad contour follows the title's height without tracing its rectangle or forming a horizontal band. The paragraph's measured bounds open a soft, skewed reading space that bends with the folds and continues toward the lower left rather than forming a closed halo; the lower edge recedes unevenly into the ground before the section's bottom rule. The header's center stays quiet. Static film grain belongs to the silk shader, leaving the polished letters clear; the cloth renders at 60% density and the title mask at up to 2× density.
+Foreground glass stays flat. The title is a translucent film with a broad, quiet reflection and subtle transmission: smoked ink in light mode, pale ink in dark mode. A subpixel contour replaces bevels and directional shadows. Native text owns layout, selection and accessibility; its mask changes only with fonts, text or layout, and replaces native ink only after a successful frame.
 
-- Color comes from CSS: the canvas's `color`, `caret-color` and `outline-color` are the silk's shadow, body and sheen, set with `light-dark()`, so dark mode is molten gold on the ground and light mode is champagne.
-- The pointer lifts the cloth and carries a local reflection across the letters with a soft, frame-rate-independent response, including while crossing the homepage header. Clicking the open scene sends one wave through the folds and catches the same wave along the glass edges. A touch responds on release after a tap; scrolling and using a control do not trigger a wave. Scroll position eases into the cloth's flow.
-- The announcement pill catches a passing sheen on hover or keyboard focus; the primary action's arrow moves a few pixels without changing its size.
-- The silk fades in over 2.4 seconds on load, pauses off screen and in hidden tabs, and resumes without a phase jump. Reduced motion shows one still frame and removes pointer, ripple and arrow motion. Without WebGL the white DOM heading retains its contour and shadow on the plain ground; forced colors and print use solid text.
-- No class names in the hero: rows of real classes appear only as the floor of the MCP figure.
+Announcement and install use 70–74% tinted fill, 18px backdrop blur, one thin boundary and a short contact shadow. Get started uses solid opposite-theme colors: dark with light ink in light mode, light with dark ink in dark mode. States preserve contrast and flat geometry. Main controls are at least 52px tall, with a 44px copy target. Mobile actions share a width and fit at 320px. Enlarged text splits the announcement into rows and places copy below the complete command, preserving its reading width.
+
+- `--hero-gold-shadow`, `--hero-gold-body` and `--hero-gold-sheen` own the palette. The pointer deforms gold and moves its light; controls retain native states and touch behavior.
+- Gold forms over 2.2 seconds and title film over 800ms, with still geometry. Controls render independently of canvas.
+- Gold renders at 60% density, capped at 1.5 million pixels; final output stays within three million, with glyph masks up to 2×. Grain resolves at CSS-pixel scale and disappears at the page ground.
+- Canvas pauses off screen, in hidden tabs, in print and forced colors. Reduced motion freezes the current phase and makes control feedback immediate. Context loss restores native ink before rebuilding; failures release GPU resources. CSS gold and text survive unavailable WebGL or fonts. Print and forced colors use solid ink and boundaries.
+- Class samples belong to the MCP figure, not the hero.
 
 ## Design system figures
 
@@ -259,7 +261,7 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 - Easing: `--home-ease` for arrivals and responses, `--home-ease-inout` for loops.
 - Durations: `--home-quick` (hover, press), `--home-base` (state changes), `--home-slow` (reveals). Ambient loops run 8 s or longer.
-- The hero's pill, lead and actions arrive in reading order, rising 20px out of a 6px blur. The heading keeps its measured position as the white glass forms over 640ms, while the silk fades in behind it over 2.4 seconds.
+- The hero's geometry stays still as gold forms over 2.2 seconds and glass type over 800ms. Native control states use restrained fill and boundary changes without translation or inset shadows.
 - Below the hero, every header line and card rises as it scrolls in on a view timeline, so the stagger comes from position, not timers. Interactive figures pause when off screen.
 - Under `prefers-reduced-motion: reduce`, loops stop and figures show their finished state.
 - Write animations with longhand properties when a value uses a route variable; a variable inside the `animation` shorthand makes the build keep every preset keyframe.
@@ -268,7 +270,7 @@ Animated figures reserve the space of their largest state. Editor panes keep a d
 
 3D is used to separate meaning into planes, never as a gimmick:
 
-- The hero silk is lit as a surface: folds catch a sheen and a glint from one light, and the pointer moves that light.
+- The hero gold is lit as a matte surface: sculpted folds catch a broad sheen from one light, while the foreground glass remains flat and quiet.
 - The cascade layer figure explodes `@layer theme, base, defaults, components, utilities` into orthographic planes, so flat callouts beside it rise with their planes and stay level.
 - The palette card's well holds extruded bars on a hatched floor plate, as tall as each swatch's oklch chroma; they rise in a diagonal wave on scroll and flatten into a table under the pointer or keyboard.
 - The MCP figure stands liquid-glass client marks and the server on a wide, low, dial-rimmed floor of real classes; narrow widths tilt less.

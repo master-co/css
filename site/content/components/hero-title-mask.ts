@@ -54,15 +54,15 @@ function distanceTransform(grid: Float32Array, width: number, height: number) {
   }
 }
 
-/** R: signed distance, GB: outward normal in screen coordinates, A: original glyph coverage. */
+/** R: signed distance, GB: smoothed outward gradient, A: original glyph coverage. */
 export function createTitleDistanceField(alpha: Uint8ClampedArray, width: number, height: number, ratio: number, range: number) {
   const count = width * height
   const outside = new Float32Array(count)
   const inside = new Float32Array(count)
   for (let i = 0; i < count; i++) {
-    const filled = alpha[i * 4 + 3] >= 128
-    outside[i] = filled ? 1e10 : 0
-    inside[i] = filled ? 0 : 1e10
+    const coverage = alpha[i * 4 + 3] / 255
+    outside[i] = coverage === 1 ? 1e10 : Math.max(0, coverage - 0.5) ** 2
+    inside[i] = coverage === 0 ? 1e10 : Math.max(0, 0.5 - coverage) ** 2
   }
   distanceTransform(outside, width, height)
   distanceTransform(inside, width, height)
@@ -70,13 +70,20 @@ export function createTitleDistanceField(alpha: Uint8ClampedArray, width: number
     outside[i] = (Math.sqrt(outside[i]) - Math.sqrt(inside[i])) / ratio
   }
   const pixels = new Uint8Array(count * 4)
-  const sampleRadius = Math.max(1, Math.round(ratio * 1.2))
+  const sampleRadius = Math.max(1, Math.round(ratio * 1.4))
   for (let y = 0; y < height; y++) {
+    const above = Math.max(0, y - sampleRadius) * width
+    const below = Math.min(height - 1, y + sampleRadius) * width
+    const row = y * width
     for (let x = 0; x < width; x++) {
       const i = y * width + x
-      const dx = outside[y * width + Math.min(width - 1, x + sampleRadius)] - outside[y * width + Math.max(0, x - sampleRadius)]
-      const dy = outside[Math.min(height - 1, y + sampleRadius) * width + x] - outside[Math.max(0, y - sampleRadius) * width + x]
-      const magnitude = Math.hypot(dx, dy) || 1
+      const left = Math.max(0, x - sampleRadius)
+      const right = Math.min(width - 1, x + sampleRadius)
+      // A Sobel footprint smooths subpixel edge steps before their curvature catches a highlight.
+      const dx = (outside[above + right] + outside[row + right] * 2 + outside[below + right] - outside[above + left] - outside[row + left] * 2 - outside[below + left]) * 0.25
+      const dy = (outside[below + left] + outside[below + x] * 2 + outside[below + right] - outside[above + left] - outside[above + x] * 2 - outside[above + right]) * 0.25
+      // Preserve a weak gradient at the stroke's center, avoiding a hard normal flip across its ridge.
+      const magnitude = Math.max(2 * sampleRadius / ratio, Math.hypot(dx, dy))
       pixels[i * 4] = Math.round(Math.max(0, Math.min(1, 0.5 + outside[i] / (2 * range))) * 255)
       pixels[i * 4 + 1] = Math.round((0.5 - dx / magnitude * 0.5) * 255)
       pixels[i * 4 + 2] = Math.round((0.5 - dy / magnitude * 0.5) * 255)
