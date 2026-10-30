@@ -5,6 +5,10 @@
   @media (prefers-reduced-motion: reduce) {
     .app-header { transition-duration: 0s !important; }
   }
+  /* Without scripts the header never leaves its transparent top state, so it scrolls away instead of covering content. */
+  @media (scripting: none) {
+    .app-header.at-top { position: absolute !important; }
+  }
 .app-header-nav {
     font-size: var(--font-size-sm);
     line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));

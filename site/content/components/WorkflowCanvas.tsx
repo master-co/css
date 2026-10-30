@@ -22,7 +22,7 @@ export default function WorkflowCanvas({ figure }: { figure: WorkflowFigure }) {
       import('./workflow-canvas').then(({ mountWorkflowCanvas }) => {
         if (!disposed) cleanup = mountWorkflowCanvas(scene, canvas, figure)
       }).catch(() => { /* Native content remains usable if the drawing cannot load. */ })
-    }, { rootMargin: '240px' })
+    }, { rootMargin: '600px 0px' })
     observer.observe(scene)
     return () => {
       disposed = true

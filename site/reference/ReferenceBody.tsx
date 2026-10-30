@@ -58,7 +58,9 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
         if (heading?.id === 'examples' && recipeSpecimen) return <Fragment key={key}><h2 id="examples">Example</h2>{recipeSpecimen}</Fragment>
         if (heading?.id === 'specimens' && tokenSpecimen) return <Fragment key={key}><h2 id="specimens">Specimens</h2>{tokenSpecimen}</Fragment>
         const cleanBody = node.children.map((child: any, index: number) => render(child.type === 'text' ? { ...child, value: child.value.replace(/\s+\{#[\w-]+\}$/, '') } : child, index))
-        return createElement(`h${node.depth}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
+        // A section page's own heading becomes the page title, so its subsections move up one level.
+        const level = introHeadingId ? Math.max(2, node.depth - 1) : node.depth
+        return createElement(`h${level}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
           ? <DocumentIdentifier>{heading.title}</DocumentIdentifier> : cleanBody)
       }
       case 'link': return <Link key={key} href={node.url}>{body}</Link>

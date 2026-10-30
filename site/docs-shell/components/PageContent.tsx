@@ -53,12 +53,12 @@ export default function PageContent({ metadata }: any) {
       </ul>
       <ul className='mt-sm'>
         {metadata.sourcePath && <li>
-          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
+          <Link className="display:block text-xs! line-height:1.5rem! fg-text-muted app-nav" href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
             {$('Edit this page')}
           </Link>
         </li>}
         <li>
-          <Link className="display:block py-4xs text-xs! fg-text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
+          <Link className="display:block text-xs! line-height:1.5rem! fg-text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
             {$('Issue on this page')}
           </Link>
         </li>

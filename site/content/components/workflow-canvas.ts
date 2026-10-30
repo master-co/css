@@ -213,6 +213,9 @@ export function mountWorkflowCanvas(scene: HTMLElement, canvas: HTMLCanvasElemen
     glassCanvas.width = glassCanvas.height = 0
     dirty = true
     theme()
+    // Resizing clears the bitmap. Repaint now rather than on the next visible frame: mounting starts just
+    // outside the viewport, so the scene enters already drawn instead of swapping from its native fallback.
+    draw()
   }
 
   function hold(event: PointerEvent) {

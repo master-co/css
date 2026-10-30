@@ -190,6 +190,19 @@
   .code { position: relative; }
   .codeTabs > .code { flex: 1; margin: 0; border: 0; border-radius: 0; overflow: visible; }
   .code > .code-wrapper { min-width: 0; margin: 0; border-radius: 0; }
+  /*
+   * Long lines scroll sideways and mobile browsers hide the scrollbar: a soft shade on the right edge says more
+   * code follows. The cover scrolls with the content and hides the shade at the end; short code never shows it.
+   */
+  .code > .code-wrapper {
+    background-image:
+      linear-gradient(to right, transparent, var(--color-code-surface) 70%),
+      radial-gradient(farthest-side at 100% 50%, light-dark(oklch(0% 0 none / .14), oklch(0% 0 none / .55)), transparent);
+    background-position: right center, right center;
+    background-size: 2.5rem 100%, .875rem 100%;
+    background-repeat: no-repeat;
+    background-attachment: local, scroll;
+  }
   .code-plain > .code-wrapper { padding-inline-end: 3rem; }
 
   .code-bar {
@@ -234,6 +247,12 @@
   .code-copy-status:not([data-error], [data-pending]) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
   .code-copy-status:is([data-error], [data-pending]) { position: fixed; z-index: 1060; bottom: 1rem; left: 50%; width: max-content; max-width: calc(100vw - 2rem); padding: .625rem .875rem; transform: translateX(-50%); border: 1px solid var(--color-line-contour); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-floating-contact); color: var(--color-text-strong); font-size: .75rem; line-height: 1.4; white-space: normal; }
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+  /*
+   * Scrollable code is focusable, but the frame clips it and the scroller paints over the frame's own outline:
+   * an overlay above the code draws the ring along the frame's radius.
+   */
+  .code:has(> .code-wrapper:focus-visible)::after { position: absolute; z-index: 2; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 2px var(--color-focus); pointer-events: none; content: ''; }
+  .code > .code-wrapper:focus-visible { outline: none; }
   @media (pointer: coarse) {
     .code-tab { min-height: 2.75rem; }
     .code-copy-button, .code-copy-corner .code-copy-button { width: 2.75rem; height: 2.75rem; }

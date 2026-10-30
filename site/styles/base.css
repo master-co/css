@@ -11,6 +11,32 @@
       font-weight: 350;
     }
   }
+
+  /*
+   * Keyboard focus reads the same everywhere: a 2px ink ring. Components that draw their own focus
+   * override this; everything else (scrollable code, search, navigation links) no longer falls back
+   * to the browser's thin blue ring.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /*
+   * The theme class comes from an inline script. Without it (scripts disabled), paired light and dark artwork
+   * would both show: follow the system scheme instead, as the brand page does.
+   */
+  @media (prefers-color-scheme: light) {
+    :root:not(.light, .dark) [class~="display:none@apply(--site-light)"] { display: none !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light, .dark) [class~="display:none@apply(--site-dark)"] { display: none !important; }
+  }
+
+  /* The side rails scroll and clip their overflow, so rings inside them sit on the element's edge. */
+  :is(#sidebar, .doc-page-contents) :focus-visible {
+    outline-offset: -2px;
+  }
 }
 
 @layer defaults {

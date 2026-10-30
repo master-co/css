@@ -33,3 +33,14 @@ document.addEventListener('keydown', event => {
   event.preventDefault()
   element.scrollBy({ left: event.key === 'ArrowRight' ? 40 : -40, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
 })
+
+// A table wider than its column scrolls sideways; only then does it take a tab stop, so keyboard users can scroll it.
+// Tables inside islands are left to their components: changing their markup before hydration breaks it.
+const tableSizes = new ResizeObserver(entries => {
+  for (const { target } of entries) {
+    const table = target as HTMLElement
+    if (table.scrollWidth > table.clientWidth + 1) table.tabIndex = 0
+    else table.removeAttribute('tabindex')
+  }
+})
+document.querySelectorAll<HTMLElement>('.doc-table:not([tabindex])').forEach(table => { if (!table.closest('site-island')) tableSizes.observe(table) })

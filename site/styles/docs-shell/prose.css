@@ -34,6 +34,9 @@
 
     :is(p, li, td, th, h2, h3, h4, summary) code:not(.code-block) {
       overflow-wrap: anywhere;
+      /* A run that wraps keeps its padding, contour and radius on both lines instead of an open cut. */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
 
     :is(h2)+*>h3:first-child {
@@ -361,6 +364,11 @@
     &:is(table, video, iframe) {
       width: calc(100% + var(--prose-bleed) * 2);
       max-width: none;
+    }
+
+    /* The figure bleeds; its caption is reading text and stays on the text column. */
+    &:is(figure) > figcaption {
+      padding-inline: var(--prose-caption-inset, var(--prose-bleed));
     }
   }
 

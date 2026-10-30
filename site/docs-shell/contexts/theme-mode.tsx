@@ -35,12 +35,25 @@ function subscribe(onChange: () => void) {
   }
 }
 
+/**
+ * A theme swap recolors the whole page at once. Without pausing transitions, every element would fade or slide
+ * to its new colors on its own timing, so the swap commits with transitions off and restores them a frame later.
+ */
+function withoutTransitions(change: () => void) {
+  const style = document.createElement('style')
+  style.textContent = '*,*::before,*::after{transition:none!important}'
+  document.head.append(style)
+  change()
+  void document.body.offsetHeight
+  requestAnimationFrame(() => requestAnimationFrame(() => style.remove()))
+}
+
 export function useThemeMode() {
   const current = useSyncExternalStore(subscribe, () => (getThemeMode(), snapshot), () => serverSnapshot)
   return {
     ...current,
     set preference(preference: ThemePreference | undefined) {
-      if (preference) getThemeMode().preference = preference
+      if (preference) withoutTransitions(() => { getThemeMode().preference = preference })
     },
     get preference() {
       return current.preference

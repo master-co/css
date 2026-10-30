@@ -1,6 +1,13 @@
 @layer components {
   .benchmark-gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-xl); }
   .benchmark-gallery > figure { min-width: 0; margin: 0; }
+  /* Measured columns run from a known column to the end: their figures share widths and align on the right. */
+  .doc-table[data-numeric-from] :is(td, th) { font-variant-numeric: tabular-nums; }
+  .doc-table[data-numeric-from="2"] :is(td, th):nth-child(n + 2),
+  .doc-table[data-numeric-from="3"] :is(td, th):nth-child(n + 3),
+  .doc-table[data-numeric-from="4"] :is(td, th):nth-child(n + 4) { text-align: end; }
+  /* A chart in prose bleeds with the other wide figures, but its labels and values stay on the text column. */
+  figure:is(.prose > *, .prose > :is(div, section, site-island):not([class]) > *):has(.benchmark-bars, .benchmark-stacks, .benchmark-group) { --prose-table-gutter: 0rem; --prose-caption-inset: 0rem; padding-inline: var(--prose-bleed); }
   .benchmark-bars { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-md); min-width: 0; }
   .benchmark-stacks { gap: var(--spacing-lg); }
   .benchmark-bar-label { overflow-wrap: anywhere; }

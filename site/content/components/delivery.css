@@ -1,3 +1,9 @@
+@property --delivery-code-fade {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 @layer components {
   .home-delivery {
     --delivery-static-on: 0;
@@ -47,7 +53,14 @@
   .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-variant[data-mode='runtime'] { visibility: visible; opacity: 1; transition-delay: 0s; }
 
   .home-delivery-code-scroll { overflow: auto; height: 100%; scroll-margin-block: 4.5rem 1rem; scrollbar-width: thin; overscroll-behavior: contain; }
-  .home-delivery-code-scroll:focus-visible { outline: 2px solid var(--home-ink); outline-offset: -3px; }
+  /* A pane that scrolls fades its last visible row instead of cutting it under the bar; the fade lifts at the end. */
+  .home-delivery-code-scroll { mask-image: linear-gradient(to bottom, #000 calc(100% - var(--delivery-code-fade)), transparent); }
+  @supports (animation-timeline: scroll()) {
+    /* Longhands: a timeline inside the `animation` shorthand is not yet supported by browsers. */
+    .home-delivery-code-scroll { animation-name: home-delivery-code-fade; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: scroll(self block); }
+  }
+  @keyframes home-delivery-code-fade { from { --delivery-code-fade: 1.75rem; } to { --delivery-code-fade: 0px; } }
+  .home-delivery-code-scroll:focus-visible { outline: 2px solid var(--home-ink); outline-offset: -3px; mask-image: none; }
   .home-delivery-code { min-width: 100%; width: max-content; padding: 0.875rem 1rem 0.875rem 0; font-family: var(--home-mono); font-size: var(--delivery-code); font-variant-ligatures: none; line-height: var(--delivery-row); color: var(--home-text-body); }
   .home-delivery-code-row { position: relative; display: grid; grid-template-columns: 2.5rem 1fr; min-height: var(--delivery-row); }
   .home-delivery-line-number { padding-right: 0.75rem; text-align: right; font-size: 0.625rem; font-variant-numeric: tabular-nums; color: color-mix(in oklab, var(--home-text-faint) 75%, transparent); user-select: none; }

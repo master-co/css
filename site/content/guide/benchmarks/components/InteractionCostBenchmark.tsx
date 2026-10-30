@@ -216,7 +216,7 @@ function InteractionChart(props: {
 }
 
 export function InteractionCostSummary() {
-  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable label="Interaction cost metrics" metrics={createSummaryMetrics()} />
 }
 
 export function InteractionPrimaryCharts() {
@@ -260,7 +260,8 @@ export function InteractionRuntimeCharts() {
 export function InteractionCostTables() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={4} role="region" aria-label="Interaction cost results" tabIndex={0}>
         <table>
           <thead>
             <tr>

@@ -62,6 +62,7 @@ Light mode stays clean and white: the ground is about `#f7f7f7` and sheets white
 - Inside a card the figure may sit in a well 12px in (`--home-gap`), and nothing deeper: at most two surfaces.
 - Radii nest concentrically, outer = inner + inset: well 8px, sheet 20px.
 - Never put a sheet directly on a sheet; put a well between them.
+- A card narrower than 28rem cannot spare the illustration's 7rem column: its title shares a row with a 4rem illustration (3rem below 16rem) and the description takes the card's full measure, so no line holds only a word or two.
 
 ## Light and shadow
 
@@ -76,8 +77,10 @@ Light mode stays clean and white: the ground is about `#f7f7f7` and sheets white
 
 - **Segmented control**: a soft pill track drawn with one 1px line, and a raised pill thumb (hairline, two soft shadows, a top highlight) that slides to the chosen option and takes its width. Until it is measured, the chosen option paints the raised look itself, so nothing jumps on hydration.
 - **Buttons**: primary is ink, secondary is a sheet with a rule ring. Both use the 10px control radius and are 44px tall, and so is the install command beside them, whose copy button nests inside with a 6px concentric corner. Stacked on phones, a row of actions takes one shared width.
-- **Links into the guide** (`.home-section-link`: a section's link, "See details", "How it works") are quiet: 14px, the faint text color, a 14px arrow that moves on hover. They follow the copy and never compete with the figure.
-- **Focus**: a 2px ink outline, offset 2px.
+- **Links into the guide** (`.home-section-link`: a section's link, "See details", "How it works") are quiet: 14px, the faint text color, a 14px arrow that moves on hover. They follow the copy and never compete with the figure. On touch, the 20px line reaches a 44px target into the air around it without moving.
+- **Focus**: a 2px ink outline, offset 2px; inside a clipped well or pane the ring sits on the inner edge instead. Elsewhere on the site `:focus-visible` falls back to the same ring.
+- **Reduced motion** keeps color, opacity and visibility cues but removes travel: hover arrows, logo lifts, tooltip rises and photo zoom stay put. A theme switch commits with transitions off, so the page recolors at once.
+- **Forced colors**: framed tools keep a `CanvasText` outline, the size chart keeps its measured bars, the agent's current step keeps a `Highlight` outline, and the footer's engraved mark is removed.
 
 ## Glass
 
