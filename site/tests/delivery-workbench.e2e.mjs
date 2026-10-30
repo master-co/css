@@ -22,6 +22,8 @@ async function open(options) {
   const response = await page.goto(`${url}/${options.locale === 'tw' ? 'tw' : ''}`, { waitUntil: 'networkidle' })
   assert.equal(response.status(), 200, 'the homepage must render before browser checks run')
   await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded()
+  // The server renders the completed scene; wait for hydration to take over its clock before reading it.
+  if (options.js !== false) await page.locator('.home-delivery-stage[data-routed]').waitFor({ state: 'attached' })
   return { context, page }
 }
 const modeCopy = {
