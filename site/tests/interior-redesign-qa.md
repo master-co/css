@@ -84,6 +84,10 @@ Generated evidence is ignored under `site/test-results/interior-redesign/`:
 - `scope-boundaries.json`: no core/package/lockfile changes, no protected homepage-source changes, and byte-identical original SVG assets.
 - `index.html` and `review-report.json`: generated comparison viewer and findings.
 - `viewer-audit.json`: both engines at 320/390/768/1440px decode the selected paired images, fit their viewport and retain the correct route/theme after rapid changes. The selector grid contains long route names; unsupported full-page choices are disabled in the native option state.
+- `final-resource-visit-audit.json`: all 9,000 final scenes reach the end of their page without the visit limit; zero failed resources, page errors or broken images. The longest page is 55,101px.
+- `css-contract-verification.json`: the approved 448-route/245-contract/3,709-segment snapshot matches the exact reviewed capture. Its verifier is byte-identical to the committed base and its variable-reference tests pass.
+- `user-preview-smoke.json` and `final-delivery-viewer.json`: the shared preview's actual HTTP bodies match the formal build, including real 404 recovery; both engines decode the final complete Brand comparison.
+- `acceptance-audit.json`: the final aggregation checks all 21 evidence and duration conditions against their retained results.
 
 The frozen original source was exported separately and built with the same package artifacts. Production comparisons use independent previews so development hot reload and regeneration cannot invalidate a browser capture. Earlier development captures remain available separately.
 
@@ -114,11 +118,11 @@ Set `MASTER_BRAND_BROWSER=webkit` or `MASTER_SITE_BROWSER=webkit` for the corres
 
 ## Verification status
 
-Implementation checks passed so far: site lint and type check; Reference (25), syntax (14), llms (33), document examples (21), islands (8), atomic authoring (3), MDX imports (2), brand export/source checks (3), and homepage source behavior (34). Production builds render all 448 pages and public-asset verification passes.
+Implementation checks pass: site lint and type check; Reference (25), syntax (14), llms (33), document examples (21), islands (8), atomic authoring (3), MDX imports (2), brand export/source checks (3), and homepage source behavior (34). Production builds render all 448 pages and verify all 91 referenced public assets. AI context budgets pass for 2,580 files.
 
 Final behavior coverage passes: Brand (28 Chromium / 27 WebKit), Search (20 / 20), Navigation (21 / 21), demos (48 / 48), reading and source controls (13 / 12), and component reviews (86 / 86). The 320px/200% route checks have no remaining overflow. All 448 HTML resources retain titles, valid local destinations and unique HTML IDs; 41,378 local/remote anchor elements were checked for local resolution, with no missing local destination or anchor.
 
-The final 9,000-scene production comparison and CSS contract approval remain in progress. Update this section after the complete fresh captures finish.
+The final fresh production comparison completed on 2026-10-30 at 04:21:36 UTC, frozen website revision `8a74848806d171d82952a630f7054daaa88ad5a1`: 4,500 Chromium and 4,500 WebKit scenes, zero reused captures, zero current findings, and both processes exit 0. All 9,000 cases pair with the independent committed baseline. Document column differences are zero; all 40 homepage computed-style comparisons agree, in addition to the 40 byte-identical homepage-main image pairs. The original 40 Blog heading findings and two Sponsor anchor findings are retained separately; the redesigned output resolves them.
 
 ## Exact CSS delivery review
 
@@ -137,7 +141,7 @@ Shared `slide-to-right` delivery has 20 → 22 identical occurrences on each hom
 
 Changes to retained theme-token sets come from which values these website subjects reference. Homepage-main source and artwork are unchanged. Forty native screenshot pairs already agree byte for byte; the complete route comparison additionally checks every document column's x-position, width and horizontal padding. `css-delivery-review.json` retains the exact added/removed CSS segments, counts and manifest comparison.
 
-Final snapshot approval remains pending completion of the fresh production captures and their review. The update command will cite this section once that review is complete; the verifier itself remains unchanged.
+Approved after reviewing the complete 9,000-pair comparison, native interactions, preserved content, homepage regression evidence and exact CSS delivery diff on 2026-10-30. The snapshot update cites this section. The verifier remains unchanged; the snapshot records the reviewed website output and the explicitly documented pre-existing discrepancy below.
 
 ## Known conditions
 
