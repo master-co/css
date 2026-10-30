@@ -173,7 +173,7 @@ float cloth(vec2 p) {
   float a = q.x * 1.13 + q.y * 0.92 + sin(q.y * 0.72 - time * 0.07) * 0.65 + time * 0.21;
   float b = q.x * 0.48 - q.y * 1.22 + sin(q.x * 0.67 + time * 0.08) * 0.85 - time * 0.16;
   float h = sin(a) * 0.72 + sin(b) * 0.64;
-  h += atan(sin(a + b * 0.38) * 4.0) * 0.58;
+  h += atan(sin(a + b * 0.38) * 6.0) * 0.58;
   vec2 local = p - pointer.xy;
   h += pointer.z * 0.20 * exp(-dot(local, local) * 1.15);
   // Pressing a control sends one ring through the silk; it spreads and settles within about two seconds.
@@ -190,6 +190,13 @@ void main() {
   float e = 0.009;
   float h = cloth(p);
   vec2 slope = vec2(cloth(p + vec2(e, 0.0)) - h, cloth(p + vec2(0.0, e)) - h) / e;
+  // Where the sheet curves the same way in both directions it is a dome, not a fold; there the broad sheen
+  // would pool into a round, out-of-focus spot, so it gives way to the satin streak instead.
+  float c = 0.07;
+  float hxx = (cloth(p + vec2(c, 0.0)) + cloth(p - vec2(c, 0.0)) - 2.0 * h) / (c * c);
+  float hyy = (cloth(p + vec2(0.0, c)) + cloth(p - vec2(0.0, c)) - 2.0 * h) / (c * c);
+  float hxy = (cloth(p + vec2(c)) - cloth(p + vec2(c, -c)) - cloth(p + vec2(-c, c)) + cloth(p - vec2(c))) / (4.0 * c * c);
+  float dome = smoothstep(0.4, 4.0, hxx * hyy - hxy * hxy);
   vec3 normal = normalize(vec3(-slope * 1.05, 1.0));
   vec3 light = normalize(vec3(-0.65 + pointer.x * pointer.z * 0.035, 0.72, 0.72));
   float lit = max(dot(normal, light), 0.0);
@@ -198,9 +205,11 @@ void main() {
   // little room between body and sheen, so there the reflection tightens and the satin carries the folds.
   float pale = smoothstep(0.6, 0.8, dot(ground, vec3(0.2126, 0.7152, 0.0722)));
   float reflection = pow(facing, mix(18.0, 30.0, pale));
-  float crest = pow(facing, 40.0) * 0.1;
+  float crest = pow(facing, 40.0) * 0.1 + pow(facing, 160.0) * 0.3 * (1.0 - pale * 0.5);
   vec3 color = mix(shadow, body, smoothstep(0.06, 0.91, lit));
-  color = mix(color, sheen, clamp(reflection * 0.74 + crest, 0.0, 1.0));
+  // On dark silk part of the broad sheen moves into the satin streak below, so lit areas read as streaks along
+  // the folds rather than round, out-of-focus spots.
+  color = mix(color, sheen, clamp(reflection * mix(0.5, 0.74, pale) * (1.0 - dome * 0.7) + crest, 0.0, 1.0));
   // Satin: threads run along each fold, so its highlight stretches along the fold and stays narrow across it.
   vec3 along = vec3(-slope.y, slope.x, 0.0);
   float folded = smoothstep(0.04, 0.35, length(along));
@@ -210,8 +219,12 @@ void main() {
   vec3 halfway = normalize(light + vec3(0.0, 0.0, 1.0));
   float aligned = max(dot(halfway, normal), 0.001);
   float satin = exp(-(pow(dot(halfway, along) / 0.6, 2.0) + pow(dot(halfway, across) / 0.14, 2.0)) / (aligned * aligned));
-  color = mix(color, sheen, satin * folded * mix(0.17, 0.32, pale));
+  color = mix(color, sheen, satin * folded * mix(0.5, 0.32, pale));
   color *= 0.94 + 0.06 * smoothstep(-1.3, 1.3, h);
+  // On dark silk a broad, nearly flat lit area would read as a pillow; it settles a little toward shadow, so the
+  // light gathers on the folds' turns instead.
+  float flat0 = 1.0 - smoothstep(0.5, 3.5, abs(hxx) + abs(hyy));
+  color *= 1.0 - flat0 * smoothstep(0.55, 0.95, lit) * 0.14 * (1.0 - pale);
 
   vec2 screen = vec2(vUv.x, 1.0 - vUv.y) * resolution;
   // A carried lamp rakes across nearby folds: crests that face it brighten, and the light pools softly.
@@ -230,7 +243,7 @@ void main() {
   float above = smoothstep(title.y - fontSize * 1.45, title.y - fontSize * 0.12, screen.y);
   float below = 1.0 - smoothstep(title.y + title.w + fontSize * 0.12, title.y + title.w + fontSize * 1.45, screen.y);
   // Dimmed warm rather than neutral: the same luminance drop keeps a bright crest amber instead of khaki.
-  color *= mix(vec3(1.0), vec3(0.55, 0.45, 0.3), above * below * dark);
+  color *= mix(vec3(1.0), vec3(0.5, 0.41, 0.27), above * below * dark);
   float x = vUv.x - 0.5;
   // On tall screens the silk's top edge also rises toward the header, so the space above the title is never bare.
   float crown = 1.0 - title.y / resolution.y + 0.18 + clamp(1.0 - aspect, 0.0, 1.0) * 0.16;
@@ -248,6 +261,8 @@ void main() {
   float bottom = smoothstep(0.0, 0.3 + x * 0.12 + h * 0.025, vUv.y);
   alpha *= bottom * bottom * (3.0 - 2.0 * bottom);
   alpha *= 1.0 - smoothstep(0.91, 1.12, vUv.y) * 0.55;
+  // Under the header the silk recedes, so a crest never passes behind its icons or the gold logo mark.
+  alpha *= 1.0 - (1.0 - smoothstep(fontSize * 0.45, fontSize * 1.15, screen.y)) * 0.6;
   // Half-faded gold over a neutral ground turns gray; the middle of the fade passes through dark amber, or warm
   // ivory in light mode, while both ends still meet the ground and the full silk exactly.
   // Toward the section's foot the warmth lets go first, so the silk settles into the page without a seam.
@@ -319,7 +334,8 @@ void main() {
   // A flat mirror shows the lamp directly beneath it, at a fixed size however high it hangs; tilting the
   // surface by an angle moves that image by twice the angle times the lamp's height.
   vec2 image = screen - lamp.xy + normal.xy * lamp.z * 2.0;
-  float spot = exp(-dot(image, image) / pow(fontSize * 0.16, 2.0));
+  // Polished stone mirrors the lamp as a small, crisp point; a broad soft one reads as a gray smudge on black.
+  float spot = exp(-dot(image, image) / pow(fontSize * 0.075, 2.0));
   // The glow around the lamp's image belongs to a lamp held close; resting high, it leaves the stone even.
   float held = smoothstep(fontSize * 4.6, fontSize * 3.4, lamp.z);
   float pool = exp(-dot(image, image) / pow(fontSize * 2.6, 2.0)) * held;
@@ -353,7 +369,7 @@ void main() {
     // line reaches the outermost pixel, so the rounded edge itself catches the light, not a ring inside it.
     float plain = (1.0 - edge) * (1.0 - edge);
     vec3 sheenTint = vec3(0.98, 0.86, 0.62);
-    float hot = spot * 0.55 * plain * hold + bevelLine * 0.3 * smoothstep(-0.6, 0.4, distance);
+    float hot = spot * 0.85 * plain * hold + bevelLine * 0.3 * smoothstep(-0.6, 0.4, distance);
     vec3 face = vec3(0.030, 0.029, 0.033);
     float fresnel = pow(view, 1.6);
     vec3 color = face;
