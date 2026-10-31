@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { useInView } from 'react-intersection-observer'
-import { useMediaQuery } from 'usehooks-ts'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import clsx from 'clsx'
-import type { HomePageCSSSizeMode, HomePageCSSSizeModeId, HomePageCSSSizeRow } from '~/site/utils/home-page-css-size'
+import type { HomePageCSSSizeMode, HomePageCSSSizeModeId } from '~/site/utils/home-page-css-size'
 import HomeSegmentedControl from './HomeSegmentedControl'
+import { createBenchmarkAxis, formatKilobytes, mountBenchmarkCanvas, toPercent, type BenchmarkCanvas } from './benchmark-size-canvas'
 
 export interface BenchmarkSizeChartLabels {
   caption: string
@@ -19,276 +18,127 @@ export interface BenchmarkBrand {
   icon?: ReactNode
 }
 
-const chartAnimationDuration = 3
-const chartAnimationStartPercent = 90
-const chartCurve = [0.22, 1, 0.36, 1] as const
-const chartEasing = `cubic-bezier(${chartCurve.join(',')})`
-const ratioFadeDuration = 0.24
-const rowDelayStep = 0.085
-const axisTickTarget = 4
-const axisHeadroom = 1.45
-/*
- * The server renders the measured sizes, so the chart reads true without scripts and before hydration.
- * Only once hydrated does a chart reset to the shared start, offscreen, to grow when it scrolls into view.
- */
-let chartHydrated = false
+interface PlotShape {
+  /** Desktop readouts ride beside their bars; phone readouts sit above them. */
+  inline: boolean
+  /** Only the axis's ends are labelled on a very narrow plot. */
+  narrow: boolean
+  /** Axis room past the longest bar: inline readouts need more, the narrower the plot. */
+  headroom: number
+}
 
-/** Page CSS sizes as bars that grow from a shared start once the chart scrolls into view. */
+function plotShape(inline: boolean, width: number): PlotShape {
+  return { inline, narrow: width < 320, headroom: !inline ? 1.1 : width < 320 ? 2.1 : width < 900 ? 1.45 : 1.2 }
+}
+
+/**
+ * Page CSS sizes as bars on one canvas that count down from a shared start once the chart scrolls into view.
+ * The server renders the rows, values and DOM bars at the measured sizes, so the chart reads true without scripts
+ * and before hydration; the canvas takes over once it has painted.
+ */
 export default function BenchmarkSizeChart({ brands, labels, modes }: {
   brands: Record<string, BenchmarkBrand>
   labels: BenchmarkSizeChartLabels
   modes: HomePageCSSSizeMode[]
 }) {
   const [activeModeId, setActiveModeId] = useState(modes[0].id)
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.34 })
-  // The bars' ambient light runs only while the chart is on screen.
-  const { ref: presenceRef, inView: present } = useInView()
-  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
+  const [switched, setSwitched] = useState(false)
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
-  useEffect(() => { chartHydrated = true }, [])
-  return (
-    <div className="home-bench-layout" data-present={present || undefined} data-visible={inView || undefined} ref={(element) => { ref(element); presenceRef(element) }}>
-      <div className="home-bench-summary">
-        <HomeSegmentedControl aria-label={labels.modeSelectorLabel} onValueChange={setActiveModeId} options={modeOptions} value={activeMode.id} />
-        <p className="home-annotation home-bench-caption">{labels.caption} <span className="white-space:nowrap">· {labels.date}</span></p>
-      </div>
-      {/* Remounting per mode replays the bars from the shared start. */}
-      <BenchmarkRows brands={brands} key={activeMode.id} mode={activeMode} reduceMotion={reduceMotion} visible={inView} />
-    </div>
-  )
-}
+  const chartRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const painterRef = useRef<BenchmarkCanvas | undefined>(undefined)
+  const [plot, setPlot] = useState(() => plotShape(true, Infinity))
 
-function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
-  brands: Record<string, BenchmarkBrand>
-  mode: HomePageCSSSizeMode
-  reduceMotion: boolean
-  visible: boolean
-}) {
-  const [played, setPlayed] = useState(false)
-  // A mode switch remounts after hydration and starts armed; the first hydration keeps the server's result.
-  const [armed, setArmed] = useState(chartHydrated)
-  useEffect(() => setArmed(true), [])
-  const rowsRef = useRef<HTMLDivElement>(null)
-  // Measure the plot, excluding the desktop brand column. Mobile readouts sit above their bars.
-  const [{ inlineLabels, width }, setSize] = useState({ inlineLabels: true, width: Infinity })
   useEffect(() => {
-    const rows = rowsRef.current
-    if (!rows) return
-    const resize = new ResizeObserver(([entry]) => setSize({
-      inlineLabels: parseFloat(getComputedStyle(rows).getPropertyValue('--home-bench-brand-width')) > 0,
-      width: entry.contentRect.width
-    }))
-    resize.observe(rows.querySelector('.home-bench-track') || rows)
+    const chart = chartRef.current
+    const track = chart?.querySelector('.home-bench-track')
+    if (!chart || !track) return
+    const resize = new ResizeObserver(([entry]) => {
+      const next = plotShape(parseFloat(getComputedStyle(chart).getPropertyValue('--home-bench-brand-width')) > 0, entry.contentRect.width)
+      setPlot((current) => current.inline === next.inline && current.narrow === next.narrow && current.headroom === next.headroom ? current : next)
+    })
+    resize.observe(track)
     return () => resize.disconnect()
   }, [])
-  const narrow = width < 320
-  const ticks = width < 640 ? 2 : axisTickTarget
-  // Only inline readouts need extra axis space beyond the longest bar.
-  const headroom = inlineLabels ? (narrow ? 2.1 : width < 900 ? axisHeadroom : 1.2) : 1.1
-  const axis = useMemo(() => createBenchmarkAxis(mode.maxBytes, headroom, ticks), [mode.maxBytes, headroom, ticks])
-  const barDuration = Math.max(1.2, chartAnimationDuration - (mode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
 
-  useEffect(() => {
-    if (!visible || reduceMotion || !armed) return
-    // Compute the start positions first so the bars transition away from them.
-    rowsRef.current?.getBoundingClientRect()
-    setPlayed(true)
-  }, [armed, reduceMotion, visible])
+  const axis = useMemo(() => createBenchmarkAxis(activeMode.maxBytes, plot.headroom), [activeMode.maxBytes, plot.headroom])
 
-  const settled = reduceMotion || played || !armed
-  return (
-    <div className="home-bench-chart" ref={rowsRef}>
-      <div aria-hidden="true" className="home-bench-grid">
-        <div className="position:relative">
-          {axis.ticks.map((tick) => (
-            <span className="home-bench-gridline" key={tick.label} style={{ left: `${tick.percent}%` }} />
-          ))}
-        </div>
-      </div>
-
-      <div className="home-bench-rows">
-        {mode.rows.map((row, index) => (
-          <BenchmarkRow
-            axisMaxBytes={axis.maxBytes}
-            barDuration={barDuration}
-            brand={brands[row.name]}
-            delay={index * rowDelayStep}
-            key={row.name}
-            armed={armed}
-            played={played}
-            reduceMotion={reduceMotion}
-            row={row}
-            settled={settled} />
-        ))}
-      </div>
-
-      {/* The axis is a ruler: a baseline with four ticks per labelled step, and labels under the major ones. */}
-      <div className="home-bench-axis" style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
-        <div className="position:relative height:1.25rem width:100%">
-          {axis.ticks.map((tick, index) => (
-            <span
-              className={clsx('position:absolute top:0 white-space:nowrap home-bench-tick', narrow && index > 0 && index < axis.ticks.length - 1 && 'visibility:hidden')}
-              key={tick.label}
-              style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
-              {tick.label}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function BenchmarkRow({ armed, axisMaxBytes, barDuration, brand, delay, played, reduceMotion, row, settled }: {
-  armed: boolean
-  axisMaxBytes: number
-  barDuration: number
-  brand?: BenchmarkBrand
-  delay: number
-  played: boolean
-  reduceMotion: boolean
-  row: HomePageCSSSizeRow
-  settled: boolean
-}) {
-  const rowPercent = toPercent(row.bytes, axisMaxBytes)
-  const startPercent = `${chartAnimationStartPercent}%`
-  // Only the growth animates; arming jumps straight to the start while the chart is out of view.
-  const transition = {
-    transitionDelay: reduceMotion || !played ? '0s' : `${delay}s`,
-    transitionDuration: reduceMotion || !played ? '0s' : `${barDuration}s`,
-    transitionTimingFunction: chartEasing
-  }
-  return (
-    <div
-      className={clsx('home-bench-row', row.isMasterCSS && 'home-bench-row-signal')}
-      data-brand={row.name}
-      style={{ '--home-bench-pulse-delay': `${-delay * 12}s` } as CSSProperties}>
-      <div className="home-bench-brand">
-        {brand?.icon && <span aria-hidden="true" className="home-bench-icon">{brand.icon}</span>}
-        <span>{row.name}</span>
-      </div>
-      <div className="home-bench-track">
-        <div
-          aria-hidden="true"
-          className="position:absolute left:0 top:50% min-width:1px translate:0|-50% transition-property:width home-bench-bar"
-          style={{ ...transition, width: settled ? `${rowPercent}%` : startPercent }} />
-        <span
-          className="home-bench-readout"
-          style={{ ...transition, '--home-bench-end': settled ? `${rowPercent}%` : `min(${startPercent}, calc(100% - 7rem))` } as CSSProperties}>
-          <span className="home-bench-label">
-            <CountdownKilobytes
-              active={played}
-              armed={armed}
-              barDuration={barDuration}
-              className="home-bench-value"
-              delay={delay}
-              fromBytes={axisMaxBytes * chartAnimationStartPercent / 100}
-              reduceMotion={reduceMotion}
-              toBytes={row.bytes} />
-            {!row.isMasterCSS && (
-              <span
-                className={clsx('transition-property:opacity,translate home-bench-ratio', settled ? 'opacity:1' : 'opacity:0 translate:0|3px')}
-                style={{ transitionDelay: `${reduceMotion ? 0 : delay + barDuration}s`, transitionDuration: `${ratioFadeDuration}s`, transitionTimingFunction: chartEasing }}>
-                {`${row.ratio.toFixed(1)}×`}
-              </span>
-            )}
-          </span>
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function CountdownKilobytes({ active, armed, barDuration, className, delay, fromBytes, reduceMotion, toBytes }: {
-  active: boolean
-  armed: boolean
-  barDuration: number
-  className?: string
-  delay: number
-  fromBytes: number
-  reduceMotion: boolean
-  toBytes: number
-}) {
-  const [displayBytes, setDisplayBytes] = useState(armed ? fromBytes : toBytes)
-
-  useEffect(() => {
-    if (reduceMotion || !armed) {
-      setDisplayBytes(toBytes)
-      return
-    }
-    setDisplayBytes(fromBytes)
-    if (!active) return
-    let animationFrame = 0
-    let startedAt = 0
-    const timeout = window.setTimeout(() => {
-      const step = (timestamp: number) => {
-        startedAt ||= timestamp
-        const progress = Math.min(1, (timestamp - startedAt) / (barDuration * 1000))
-        setDisplayBytes(fromBytes + (toBytes - fromBytes) * cubicBezier(chartCurve, progress))
-        if (progress < 1) animationFrame = window.requestAnimationFrame(step)
-      }
-      animationFrame = window.requestAnimationFrame(step)
-    }, delay * 1000)
+  useLayoutEffect(() => {
+    const painter = mountBenchmarkCanvas(chartRef.current!, canvasRef.current!)
+    painterRef.current = painter
     return () => {
-      window.clearTimeout(timeout)
-      window.cancelAnimationFrame(animationFrame)
+      painter?.dispose()
+      painterRef.current = undefined
     }
-  }, [active, armed, barDuration, delay, fromBytes, reduceMotion, toBytes])
+  }, [])
 
-  return <span className={className}>{formatKilobytes(displayBytes)}</span>
-}
+  // Before the browser paints the new rows, the painter sets each one where the last frame left it.
+  useLayoutEffect(() => { painterRef.current?.update(activeMode, axis) }, [activeMode, axis])
 
-interface BenchmarkAxisTick {
-  label: string
-  percent: number
-}
-
-function createBenchmarkAxis(maxBytes: number, headroom: number, tickTarget: number) {
-  const maxKilobytes = Math.max(1, maxBytes / 1000)
-  const step = getNiceAxisStep(maxKilobytes / tickTarget)
-  // Leave room past the longest bar for its value and ratio, which sit beside the bar.
-  const axisMaxKilobytes = Math.ceil(maxKilobytes * headroom / step) * step
-  const ticks: BenchmarkAxisTick[] = []
-  for (let valueKilobytes = 0; valueKilobytes <= axisMaxKilobytes + step / 2; valueKilobytes += step) {
-    ticks.push({ label: formatAxisNumber(valueKilobytes), percent: toPercent(valueKilobytes, axisMaxKilobytes) })
-  }
-  // Only the last tick carries the unit, so narrow axes keep their labels apart.
-  ticks[ticks.length - 1].label += ' kB'
-  return { maxBytes: axisMaxKilobytes * 1000, ticks }
-}
-
-function getNiceAxisStep(targetKilobytes: number) {
-  const magnitude = 10 ** Math.floor(Math.log10(targetKilobytes))
-  const normalized = targetKilobytes / magnitude
-  if (normalized <= 1) return magnitude
-  if (normalized <= 2) return 2 * magnitude
-  if (normalized <= 5) return 5 * magnitude
-  return 10 * magnitude
-}
-
-function formatAxisNumber(value: number) {
-  return new Intl.NumberFormat('en-US', { maximumFractionDigits: value >= 10 ? 0 : 1 }).format(value)
-}
-
-function formatKilobytes(bytes: number) {
-  return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(bytes / 1000)} kB`
-}
-
-/** The bars' CSS curve, evaluated in script, so each count lands with its bar. */
-function cubicBezier([x1, y1, x2, y2]: readonly [number, number, number, number], x: number) {
-  if (x <= 0 || x >= 1) return Math.min(1, Math.max(0, x))
-  const axis = (t: number, p1: number, p2: number) => ((1 - 3 * p2 + 3 * p1) * t + (3 * p2 - 6 * p1)) * t * t + 3 * p1 * t
-  let t = x
-  for (let index = 0; index < 8; index++) {
-    const slope = (3 * (1 - 3 * x2 + 3 * x1) * t + 2 * (3 * x2 - 6 * x1)) * t + 3 * x1
-    if (Math.abs(slope) < 1e-6) break
-    t -= (axis(t, x1, x2) - x) / slope
-  }
-  return axis(Math.min(1, Math.max(0, t)), y1, y2)
-}
-
-function toPercent(value: number, max: number) {
-  if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) return 0
-  return Math.max(0, Math.min(100, value / max * 100))
+  return (
+    <div className="home-bench-layout">
+      <div className="home-bench-summary">
+        <HomeSegmentedControl
+          aria-label={labels.modeSelectorLabel}
+          onValueChange={(value) => {
+            setSwitched(true)
+            setActiveModeId(value)
+          }}
+          options={modeOptions}
+          value={activeMode.id} />
+        <p className="home-annotation home-bench-caption">{labels.caption} <span className="white-space:nowrap">· {labels.date}</span></p>
+      </div>
+      <div className="home-bench-chart" ref={chartRef} style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
+        <canvas aria-hidden="true" className="home-bench-canvas" ref={canvasRef} />
+        {/* Gridlines, bars and the ruler's marks below stand in until the canvas paints, and in print. */}
+        <div aria-hidden="true" className="home-bench-grid">
+          <div className="position:relative">
+            {axis.ticks.map((tick) => (
+              <span className="home-bench-gridline" key={tick.label} style={{ left: `${tick.percent}%` }} />
+            ))}
+          </div>
+        </div>
+        <ol className="home-bench-rows">
+          {activeMode.rows.map((row) => {
+            const percent = `${toPercent(row.bytes, axis.maxBytes)}%`
+            const size = formatKilobytes(row.bytes)
+            return (
+              // The painter counts the visible value and clears `data-settled` while a row moves.
+              <li className={clsx('home-bench-row', row.isMasterCSS && 'home-bench-row-signal')} data-brand={row.name} data-settled="" key={row.name}>
+                <div className="home-bench-brand">
+                  {brands[row.name]?.icon && <span aria-hidden="true" className="home-bench-icon">{brands[row.name].icon}</span>}
+                  <span>{row.name}</span>
+                </div>
+                <div className="home-bench-track">
+                  <div aria-hidden="true" className="home-bench-bar" style={{ width: percent }} />
+                  <span className="home-bench-readout" style={{ '--home-bench-end': percent } as CSSProperties}>
+                    <span className="home-bench-label">
+                      {/* Screen readers get the measured size, never a number mid-count. */}
+                      <span aria-hidden="true" className="home-bench-value">{size}</span>
+                      <span className="sr-only">{size}</span>
+                      {!row.isMasterCSS && <span className="home-bench-ratio">{`${row.ratio.toFixed(1)}×`}</span>}
+                    </span>
+                  </span>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
+        {/* The axis is a ruler: a baseline with four ticks per labelled step, and labels under the major ones. */}
+        <div className="home-bench-axis" data-switched={switched || undefined} key={activeMode.id}>
+          <div className="position:relative height:1.25rem width:100%">
+            {axis.ticks.map((tick, index) => (
+              <span
+                className={clsx('position:absolute top:0 white-space:nowrap home-bench-tick', plot.narrow && index > 0 && index < axis.ticks.length - 1 && 'visibility:hidden')}
+                key={tick.label}
+                style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
+                {tick.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

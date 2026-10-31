@@ -298,7 +298,7 @@ test(`${browserName}: large drawing surfaces wait for visibility`, { timeout: 30
     assert.equal(await page.locator('.home-palette-canvas').evaluate(el => el.width * el.height), 45_000)
     assert.equal(await page.locator('.home-palette-stage').getAttribute('data-renderer'), null)
     await page.locator('.home-palette-stage').scrollIntoViewIfNeeded()
-    await page.waitForSelector('[data-renderer=canvas]')
+    await page.waitForSelector('.home-palette-stage[data-renderer=canvas]')
     assert.ok(await page.locator('.home-palette-canvas').evaluate(el => el.width * el.height) > 45_000)
     assert.deepEqual(errors, [])
   } finally { await context.close() }
