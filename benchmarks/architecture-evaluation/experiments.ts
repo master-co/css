@@ -9,7 +9,7 @@ import { analyzeCSSStructure } from '../shared/css-structure'
 import { summarizeBytes } from '../shared/bytes'
 import { environment, resultRoot, digest } from './acceptance'
 
-const baseManifest = { version: 6 as const, languageVersion: 17 as const }
+const baseManifest = { version: 6 as const, languageVersion: 18 as const }
 const folder = resolve(resultRoot, 'bounded')
 mkdirSync(folder, { recursive: true })
 const bytes = (value: string | Uint8Array) => summarizeBytes(Buffer.from(value))

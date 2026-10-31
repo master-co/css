@@ -13,7 +13,7 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
       ? option.name.split('.').pop()
       : ''
     return (
-      <div className='flex flex-col (width:100%)'>
+      <div className='flex flex-col w-full'>
         <div className='flex items-center'>
           {ext && <FileIcon name={option.name} ext={ext} className="(height:1.2em) (width:1.2em) mr-3xs" />}
           {!ext && <FolderSvg className="(height:1.2em) (width:1.2em) mr-3xs" />}

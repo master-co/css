@@ -184,8 +184,8 @@ Use the same pattern for a data-driven progress value. Keep an accessible numeri
 ```html
 <div id="progress" role="progressbar" aria-label="Upload progress"
   aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
-  class="(overflow:hidden) (height:1rem) (border-radius:100%) bg-gray-10">
-  <div id="progress-fill" class="(height:100%) (width:var(--progress)) bg-blue-60 (transition-property:width)@motion-safe (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))@motion-safe"
+  class="overflow-hidden (height:1rem) (border-radius:100%) bg-gray-10">
+  <div id="progress-fill" class="h-full (width:var(--progress)) bg-blue-60 (transition-property:width)@motion-safe (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))@motion-safe"
     style="--progress: 25%"></div>
 </div>
 ```

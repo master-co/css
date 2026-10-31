@@ -16,7 +16,9 @@ import type {
   MasterCSSLanguageColorTokens,
   MasterCSSLanguageCompletionIndex,
   MasterCSSLanguageTokenFamilies,
-  MasterCSSLanguageInspection
+  MasterCSSLanguageInspection,
+  MasterCSSNativeDeclarationCompletion,
+  MasterCSSNativeDeclarationCompletionRequest
 } from './contracts'
 
 interface BindingLanguageSession {
@@ -25,6 +27,7 @@ interface BindingLanguageSession {
   cancelDocument(id: number): void
   analyzeDocument(request: unknown): unknown
   formatDirectives(request: unknown): unknown
+  nativeDeclarationCompletion(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
   inspectClassName(className: string, nativeSupport?: boolean[]): unknown
@@ -39,6 +42,8 @@ export interface LanguageSession extends Disposable {
   readonly binding: 'native' | 'wasm'
   analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
+  /** The completion context at a cursor inside a `(property:value)` head; undefined elsewhere. */
+  nativeDeclarationCompletion(request: MasterCSSNativeDeclarationCompletionRequest): MasterCSSNativeDeclarationCompletion | undefined
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications
   inspectClassName(className: string): MasterCSSLanguageInspection
   tokenFamilies(): MasterCSSLanguageTokenFamilies
@@ -98,6 +103,11 @@ export function bindLanguageSession(
     formatDirectives(request) {
       assertActive()
       return validate(parse<MasterCSSFormatDirectivesResult>(session.formatDirectives(request)))
+    },
+    nativeDeclarationCompletion(request) {
+      assertActive()
+      const completion = parse<MasterCSSNativeDeclarationCompletion | null>(session.nativeDeclarationCompletion(request))
+      return completion ? validate(completion) : undefined
     },
     classifyClassNames(classNames) {
       assertActive()

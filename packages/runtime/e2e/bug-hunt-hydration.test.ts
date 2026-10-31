@@ -9,7 +9,7 @@ test('BH-0008: external hydration works with modules allowed but unsafe-eval and
     headers: { 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify({
   "version": 5 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "classNames": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })

@@ -84,7 +84,7 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   }, [ref])
 
   const resolvedClassName = clsx(className, {
-    '(font-size:70%):after (line-height:0):after (text-wrap-mode:wrap):after (vertical-align:super):after (white-space-collapse:break-spaces):after': indicate && (external || isHash),
+    '(font-size:70%):after (line-height:0):after (text-wrap-mode:wrap):after vertical-super:after (white-space-collapse:break-spaces):after': indicate && (external || isHash),
     '(content:var(--content-hash)):after': indicate && isHash,
     '(content:var(--content-external)):after': indicate && external,
     'fg-text-disabled': props.disabled

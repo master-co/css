@@ -83,10 +83,10 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
 /** A product as a picture and a line of text, with no card around it. */
 function Product({ icon, label, price }: { icon: ReactNode, label: string, price: string }) {
   return (
-    <div className="(min-width:0)">
+    <div className="min-w(0)">
       <div className="grid (place-content:center) (height:5rem) r-xl bg-surface-inset fg-text-muted">{icon}</div>
       <div className="flex items-baseline justify-between gap-xs mt-xs">
-        <p className="(overflow:hidden) font-xs font-medium (text-overflow:ellipsis) (white-space:nowrap) fg-text-strong">{label}</p>
+        <p className="truncate font-xs font-medium fg-text-strong">{label}</p>
         <span className="font-mono font-2xs fg-text-muted">{price}</span>
       </div>
     </div>

@@ -21,7 +21,7 @@ const bound = z.object({ value: z.number(), inclusive: z.boolean() }).nullable()
 export const rule = z.object({
   className: z.string(), key: z.string(), layer: z.enum(['base', 'defaults', 'components', 'utilities']),
   type: z.number(), sortTier: z.number(), text: z.string().optional(), selectorText: z.string().optional(),
-  priority: z.object({ features: z.array(z.object({ domain: z.string(), feature: z.string(), unit: z.string(), lower: bound, upper: bound })), selector: z.number(), conditions: strings.optional(), sortKey: z.string().optional(), valuePriority: z.number().optional() }),
+  priority: z.object({ features: z.array(z.object({ domain: z.string(), feature: z.string(), unit: z.string(), lower: bound, upper: bound })), selector: z.number(), conditions: strings.optional(), sortKey: z.string().optional(), valuePriority: z.number().optional(), category: z.number(), family: z.string().optional(), coverage: z.number().optional(), property: z.string().optional() }),
   nodes: z.array(z.object({ text: z.string() })).optional(), variableNames: strings.optional()
 })
 export const inspection = z.object({

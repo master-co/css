@@ -70,22 +70,22 @@ Changing font size alone leaves line height and letter spacing inherited. Compar
 Use a font-size token when the inherited treatment is intentional:
 
 ```html
-<div class="leading-md tracking-normal (overflow-wrap:anywhere)">
-  <p class="(margin:0) font-3xl font-regular">Designing for a clearer reading experience.</p>
+<div class="leading-md tracking-normal wrap-anywhere">
+  <p class="m(0) font-3xl font-regular">Designing for a clearer reading experience.</p>
 </div>
 ```
 
 Use a text token when the size, leading and tracking should travel together:
 
 ```html
-<div class="leading-md tracking-normal (overflow-wrap:anywhere)">
-  <p class="(margin:0) text-3xl font-regular">Designing for a clearer reading experience.</p>
+<div class="leading-md tracking-normal wrap-anywhere">
+  <p class="m(0) text-3xl font-regular">Designing for a clearer reading experience.</p>
 </div>
 ```
 
 Inspect the preview's computed values, then compare the generated declarations. Both use the same size token; only `text-3xl` sets line height and letter spacing on the paragraph.
 
-<Class2CSS>{['font-3xl', 'text-3xl', 'leading-md', 'tracking-normal', '(overflow-wrap:anywhere)']}</Class2CSS>
+<Class2CSS>{['font-3xl', 'text-3xl', 'leading-md', 'tracking-normal', 'wrap-anywhere']}</Class2CSS>
 
 Prefer `text-<token>` for repeated body, heading, and display styles. Reach for lower-level typography utilities only when the design intentionally departs from the text scale.
 

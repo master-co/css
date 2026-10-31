@@ -53,7 +53,6 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
     assert!(!rule.text.contains("animation-duration:"));
     for class in [
         "b-1",
-        "b-solid",
         "border-red",
         "animation-duration-fast",
         "transition-timing-function-smooth",
@@ -144,7 +143,8 @@ fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
     right.ensure_class_rules(classes.into_iter().rev()).unwrap();
     let css = left.css_text();
     assert_eq!(css, right.css_text());
+    // A shorthand family name precedes its longhand families, so the longhand refines it.
     let shorthand = css.find("animation:var(--animate-fade)").unwrap();
-    assert!(css.find("animation-duration:var(--duration-fast)").unwrap() < shorthand);
+    assert!(shorthand < css.find("animation-duration:var(--duration-fast)").unwrap());
     assert!(shorthand < css.find("animation-duration:var(--duration-slow)").unwrap());
 }

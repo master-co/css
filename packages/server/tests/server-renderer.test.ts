@@ -44,7 +44,7 @@ test('preserves native aliases that share a declaration across cached pages', ()
     }
   ],
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "variables": {
     "": [
       {
@@ -183,7 +183,7 @@ test('returns a complete final chunk when no prefix can be emitted safely', () =
 test('renders on-demand keyframes with the page CSS and leaves native ones to their stylesheet', async () => {
   const { compileRenderedStylesheet } = await import('@master/css-compiler/stylesheet')
   const compiled = await compileRenderedStylesheet('/ssr.css', '@prune native;@layer motion{@keyframes probe{to{opacity:.25}}}@keyframes spin{to{rotate:1turn}}@layer motion{@keyframes spin{to{rotate:-1turn}}}', {
-    baseManifest: { version: 6, languageVersion: 17 }, classes: []
+    baseManifest: { version: 6, languageVersion: 18 }, classes: []
   })
   expect(compiled.nativeCSS).not.toContain('@keyframes')
   using renderer = createServerRenderer({ manifest: compiled.manifest, emittedGlobals: compiled.emittedGlobals })

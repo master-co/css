@@ -18,7 +18,9 @@ emitted globals as `EmittedGlobals` values; hosts that receive JSON use
 - `session.rs`, `state.rs`: lifecycle, batch execution, snapshots, transition state.
 - `utility.rs`, `value_syntax.rs`: utility lookup and value/declaration matching.
 - `condition.rs`: custom media, variants, selectors, and conditional wrappers.
-- `generation.rs`, `render.rs`: generated rule assembly and render IR.
+- `generation.rs`, `render.rs`: generated rule assembly and render IR. `render.rs` owns compatibility declarations for every utility declaration.
+- `ordering.rs`: rule shape (recipe, named atomic, native) and the property family and coverage that `compare_rule_priority` sorts atomics by. Shapes come from the expanded structure before compatibility declarations and are stored in `RulePriorityIr` when a rule is generated.
+- `class_apply.rs`: `@apply` classes, one stored rule per outer condition branch; inner mixin selectors and conditions never raise the outer tier.
 - `resources.rs`, `stylesheet_resources.rs`: scoped variables and references.
 - `manifest.rs`: manifest validation, compilation into a `Program`, and `finish_program`.
 - `program.rs`: the versioned binary `Program` encoding; decoding checks every bound.

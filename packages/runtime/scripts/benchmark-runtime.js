@@ -551,7 +551,7 @@ try {
     try {
       await loadRuntime(page, scriptURL)
       return await page.evaluate(async () => {
-        const className = '(outline-offset:13px)'
+        const className = 'outline-offset(13)'
         const startedAt = performance.now()
         const element = document.createElement('p')
         element.className = className

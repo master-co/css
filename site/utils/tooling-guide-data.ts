@@ -7,8 +7,8 @@ export const toolingOptions = {
     options: [
       { name: 'sort-classes', defaultValue: 'warn · fixable', description: 'Order and deduplicate class tokens.' },
       { name: 'no-invalid-classes', defaultValue: 'error · no automatic fix', description: 'Report recognized classes that emit invalid CSS.' },
-      { name: 'no-conflicting-classes', defaultValue: 'warn · fixable', description: 'Resolve full or partial declaration overlaps in the same scope.' },
-      { name: 'prefer-canonical-classes', defaultValue: 'warn · fixable', description: 'Prefer the active manifest’s utilities, tokens, and property aliases.' }
+      { name: 'no-conflicting-classes', defaultValue: 'warn · fixable', description: 'Remove fully overridden classes in the same scope; report partial overlaps for review.' },
+      { name: 'prefer-canonical-classes', defaultValue: 'warn · fixable', description: 'Suggest canonical forms only when token identity and generated-rule behavior are preserved.' }
     ]
   },
   canonical: {
@@ -70,8 +70,8 @@ export const toolingExamples = {
     diagnostic: { severity: 'Error', rule: '@master/css/no-invalid-classes', message: 'Class "(text-decoration:bad())" emits invalid CSS: Invalid value for `text-decoration` property.' }
   },
   canonical: {
-    title: 'Use the project vocabulary', language: 'mcss', sourceLabel: 'Before canonicalization', resultLabel: 'After canonicalization',
-    source: '(margin:1rem) fg-red@dark@sm', result: 'm:1rem fg-red@dark@sm'
+    title: 'Explicit values stay as written', language: 'mcss', sourceLabel: 'Before canonicalization', resultLabel: 'After canonicalization',
+    source: '(margin:1rem) fg-red@dark@sm', result: '(margin:1rem) fg-red@dark@sm'
   },
   conflict: {
     title: 'One intended margin', language: 'mcss', sourceLabel: 'Before fix', resultLabel: 'After fix',
@@ -89,7 +89,7 @@ export const toolingExamples = {
   },
   format: {
     title: 'Keep the important marker with its class', language: 'css', sourceLabel: 'Before formatting', resultLabel: 'After formatting',
-    source: '@safelist "bg:transparent !";', result: '@safelist "bg:transparent!";'
+    source: '@safelist "bg-surface-base !";', result: '@safelist "bg-surface-base!";'
   }
 } satisfies Record<string, DocumentCodeExampleProps>
 

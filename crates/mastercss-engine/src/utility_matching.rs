@@ -136,16 +136,25 @@ pub(crate) fn diagnostic(source: &str, manifest: &Program) -> Option<String> {
     None
 }
 
+/// The recipe expansion of a match, computed once and shared by its state branches.
+pub(crate) fn expansion<'a>(
+    manifest: &Program,
+    definition: usize,
+    matched: &'a UtilityMatch,
+) -> Option<&'a [super::ExpandedMixinRule]> {
+    matched
+        .expansion
+        .get_or_init(|| expand(manifest, definition, &matched.arguments).ok())
+        .as_deref()
+}
+
 pub(crate) fn emit(
     manifest: &Program,
     definition: usize,
     matched: &UtilityMatch,
     important: bool,
 ) -> Vec<(usize, String, Option<String>, Vec<String>)> {
-    let Some(rules) = matched
-        .expansion
-        .get_or_init(|| expand(manifest, definition, &matched.arguments).ok())
-    else {
+    let Some(rules) = expansion(manifest, definition, matched) else {
         return Vec::new();
     };
     rules
@@ -156,7 +165,7 @@ pub(crate) fn emit(
                 .declarations
                 .iter()
                 .map(|declaration| {
-                    super::render::format_declaration(
+                    super::render::format_output_declaration(
                         &declaration.property,
                         &declaration.value,
                         important,

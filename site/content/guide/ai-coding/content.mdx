@@ -225,7 +225,7 @@ Use explicit `var(--name)` references inside raw values, including functions and
 
 For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `(font-family:var(--font-family-brand))` or `(font-size:var(--font-size-brand))`. Check compiler diagnostics and generated declarations.
 
-Use explicit dimensions: `(width:20px) (height:20px)` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. Write `flex` for a flex layout and `(flex:1)` for the native flex shorthand on an item. To change display on hover, write `(flex:hover)`.
+Use explicit dimensions: `w(20) h(20)` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. Write `flex` for a flex layout and `(flex:1)` for the native flex shorthand on an item. To change display on hover, write `flex:hover`.
 
 Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
 

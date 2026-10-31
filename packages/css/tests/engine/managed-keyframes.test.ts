@@ -66,7 +66,8 @@ test('animation tokens use general ordering and direct longhands override the sh
     wasm.ensureClassRules([...classes].reverse())
     expect(wasm.snapshot().text).toBe(native.snapshot().text)
     const text = native.snapshot().text
-    expect(text.indexOf('animation-duration:var(--duration-fast)')).toBeLessThan(text.indexOf('animation:var(--animate-fade)'))
+    // The shorthand family precedes its longhand families, so token and native longhands refine it.
+    expect(text.indexOf('animation:var(--animate-fade)')).toBeLessThan(text.indexOf('animation-duration:var(--duration-fast)'))
     expect(text.indexOf('animation:var(--animate-fade)')).toBeLessThan(text.indexOf('animation-duration:var(--duration-slow)'))
     for (const engine of [native, wasm]) {
       expect(engine.inspect('animate(var(--animate-fade))').rules).toEqual([])

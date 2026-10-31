@@ -4,26 +4,26 @@
     "id": "create-a-scroll-container",
     "title": "Create a scroll container",
     "html": [
-      "<div class=\"(overflow-y:auto) (height:10rem) (width:14rem)\" tabindex=\"0\" aria-label=\"Vertical collection\">\n  <div class=\"h-3xs\">Tall collection</div>\n</div>\n\n<div class=\"(overflow-x:auto) (width:14rem)\" tabindex=\"0\" aria-label=\"Horizontal collection\">\n  <div class=\"(height:10rem) w-xs\">Wide collection</div>\n</div>"
+      "<div class=\"overflow-y-auto (height:10rem) (width:14rem)\" tabindex=\"0\" aria-label=\"Vertical collection\">\n  <div class=\"h-3xs\">Tall collection</div>\n</div>\n\n<div class=\"overflow-x-auto (width:14rem)\" tabindex=\"0\" aria-label=\"Horizontal collection\">\n  <div class=\"(height:10rem) w-xs\">Wide collection</div>\n</div>"
     ],
     "css": "",
     "classes": [
-      "(overflow-y:auto)",
+      "overflow-y-auto",
       "(height:10rem)",
       "(width:14rem)",
       "h-3xs",
-      "(overflow-x:auto)",
+      "overflow-x-auto",
       "w-xs"
     ],
     "classLists": [
-      "(overflow-y:auto) (height:10rem) (width:14rem)",
+      "overflow-y-auto (height:10rem) (width:14rem)",
       "h-3xs",
-      "(overflow-x:auto) (width:14rem)",
+      "overflow-x-auto (width:14rem)",
       "(height:10rem) w-xs"
     ],
     "highlighted": [
-      "(overflow-y:auto)",
-      "(overflow-x:auto)"
+      "overflow-y-auto",
+      "overflow-x-auto"
     ]
   },
   {
@@ -31,11 +31,11 @@
     "id": "clip-without-scrolling",
     "title": "Clip without scrolling",
     "html": [
-      "<div class=\"(overflow:clip) (height:10rem) (width:14rem) r-md\">\n  <div class=\"h-3xs w-xs\">Content larger than its frame</div>\n</div>"
+      "<div class=\"overflow-clip (height:10rem) (width:14rem) r-md\">\n  <div class=\"h-3xs w-xs\">Content larger than its frame</div>\n</div>"
     ],
     "css": "",
     "classes": [
-      "(overflow:clip)",
+      "overflow-clip",
       "(height:10rem)",
       "(width:14rem)",
       "r-md",
@@ -43,11 +43,11 @@
       "w-xs"
     ],
     "classLists": [
-      "(overflow:clip) (height:10rem) (width:14rem) r-md",
+      "overflow-clip (height:10rem) (width:14rem) r-md",
       "h-3xs w-xs"
     ],
     "highlighted": [
-      "(overflow:clip)"
+      "overflow-clip"
     ]
   }
 ]

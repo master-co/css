@@ -40,7 +40,7 @@ impl Checkout {
         fs::write(path, source).unwrap();
     }
     fn load(&self) -> ProjectManifestIr {
-        load_project_manifest(&self.0, json!({"version":6,"languageVersion":17})).unwrap()
+        load_project_manifest(&self.0, json!({"version":6,"languageVersion":18})).unwrap()
     }
 }
 impl Drop for Checkout {

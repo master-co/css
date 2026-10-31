@@ -194,7 +194,7 @@ describe('Webpack progressive mode', () => {
     try {
       writeFileSync(join(root, 'entry.js'), 'console.log("webpack progressive fixture")\n')
       writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@utility probe-grid { display: grid; }\n')
-      const hydrationManifest = { version: 5, languageVersion: 17, classNames: ['(display:block)'], resourceOrder: { variables: [], keyframes: [] } }
+      const hydrationManifest = { version: 5, languageVersion: 18, classNames: ['(display:block)'], resourceOrder: { variables: [], keyframes: [] } }
       const html = [
         '<!doctype html><html><head>',
         '<style id="master-css">@layer utilities{.\\(display\\:block\\){display:block}}</style>',

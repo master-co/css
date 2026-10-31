@@ -50,14 +50,14 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 44)
-  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
+  assert.equal(catalog.documents.length, 46)
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 9)
   // Fixed utilities emit one literal declaration; the declarations contract lists them all.
   const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration' && utility.body[0].value.every(part => part.type === 'text'))
-  assert.equal(fixed.length, 94)
+  assert.equal(fixed.length, 237)
   const declarations = catalog.documents.find(doc => doc.id === 'rules/declarations')!
   for (const { name } of fixed) assert.ok(declarations.markdown.includes(`\`${name}\``), name)
-  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !fixed.includes(mixin) && !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
+  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !fixed.includes(mixin) && !(mixin.kind === 'token' && foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name))).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
   for (const namespace of ['font-family', 'font-size', 'font-weight']) assert.ok(families.markdown.includes(`[${namespace}](/reference/tokens/${namespace})`))
@@ -226,7 +226,7 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.match(extraction, /setAttribute\('aria-valuenow'/)
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
-  assert.match(conditions, /\(container-name:card\) \(container-type:inline-size\)/)
+  assert.match(conditions, /\(container-name:card\) container-inline/)
   assert.match(conditions, /@supports\(\(display:grid\)\)/)
   assert.doesNotMatch(conditions, /`css @/)
 })

@@ -39,14 +39,16 @@ function walk(root: string, extensions: Set<string>, files: string[] = []) {
   return files
 }
 
-// A class candidate has no whitespace or quotes and contains a Master CSS separator.
-const CANDIDATE = /^[^\s"'`<>]{2,160}$/
+// A class candidate has no ASCII whitespace or quotes and contains a Master CSS
+// separator. Class lists split at ASCII whitespace only: U+00A0, U+2003 and U+0085
+// are class text, for example inside an unquoted `url()`.
+const CANDIDATE = /^[^ \t\n\f\r"'`<>]{2,160}$/
 function isCandidate(token: string) {
   return CANDIDATE.test(token) && /[:(@{!-]/.test(token) && !/^(https?:|\/\/|\.\/|\.\.\/)/.test(token)
 }
 
 function splitCandidates(text: string, into: Set<string>) {
-  for (const token of text.split(/\s+/)) if (isCandidate(token)) into.add(token)
+  for (const token of text.split(/[ \t\n\f\r]+/)) if (isCandidate(token)) into.add(token)
 }
 
 export function corpusEngineCases(root: string): EngineCase[] {
@@ -127,6 +129,22 @@ const MALFORMED_DECLARATIONS = [
 ]
 const STATES = [':hover', ':focus', ':active', ':first', '::before', '::after', ':nth-child(2n+1)', '.active', '[disabled]', ':not(.disabled)', ':is(_foo)', ':of(.active>)', '_button', ':where(h1,h2)']
 const PRIMITIVE_CONDITIONS = ['@layer(base)', '@layer(defaults)', '@layer(components)', '@starting-style', '@print']
+
+/**
+ * Every static and function utility of a manifest, alone and with a selector, a
+ * condition and importance; functions also with zero, decimal, negative and invalid
+ * arguments, which both engines must reject alike.
+ */
+export function utilityClasses(manifest: ManifestLike) {
+  const classes = new Set<string>()
+  for (const { kind, name } of manifest.utilities) {
+    const heads = kind === 'static' ? [name] : kind === 'function' ? ['0', '1.5', '-4', '1px', 'var(--x)', 'auto', ''].map((value) => `${name}(${value})`) : []
+    for (const head of heads) {
+      for (const suffix of ['', ':hover', '@sm', '!', '#target', '_li']) classes.add(`${head}${suffix}`)
+    }
+  }
+  return classes
+}
 
 /** Grammar-driven combinations of utilities, values, states and conditions. */
 export function fuzzClasses(manifest: ManifestLike, count: number, seed: number) {
@@ -283,7 +301,7 @@ export function themeEngineCases(): EngineCase[] {
     .map((value) => ({ type: 'declaration', name: 'name' in entry ? entry.name : `${namespace}-${entry.key}`, value: value.value }))))
   const manifest = {
     version: 6,
-    languageVersion: 17,
+    languageVersion: 18,
     variables,
     theme: [':root,:host', '.dark', '.x'].map((prelude) => ({ type: 'rule', prelude, children: declarations(prelude) })),
     customMedia: {},

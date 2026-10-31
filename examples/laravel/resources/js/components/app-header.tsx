@@ -60,7 +60,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col items-stretch justify-between bg-sidebar h-full w-64">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                <SheetHeader className="flex justify-start (text-align:left)">
+                <SheetHeader className="flex justify-start text-left">
                   <AppLogoIcon className="fill-current dark:text-white h-6 text-black w-6" />
                 </SheetHeader>
                 <div className="flex flex-col flex-1 h-full p-4 space-y-4">

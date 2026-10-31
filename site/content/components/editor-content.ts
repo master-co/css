@@ -45,7 +45,7 @@ export const editorFeatures = [
 export const editorFileName = 'usage-alerts.html'
 
 /** The file in the editor, as it reads once the completion below is accepted. Valid and sorted. */
-export const editorSource = `<article class="grid gap-lg p-xl b-line-divider r-2xl (border-style:solid) (border-width:1px) bg-surface-raised shadow-sm">
+export const editorSource = `<article class="grid gap-lg p-xl b-solid b(1) b-line-divider r-2xl bg-surface-raised shadow-sm">
   <header class="flex items-center justify-between gap-md">
     <h3 class="text-lg font-medium fg-text-strong">Usage alerts</h3>
     <a class="text-sm font-medium fg-blue-60 fg-blue-70:hover@sm" href="/settings/alerts">Manage</a>

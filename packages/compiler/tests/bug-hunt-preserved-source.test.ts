@@ -25,7 +25,7 @@ const baseManifest = {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = `@theme {--color-unused:red}

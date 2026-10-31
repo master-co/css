@@ -21,9 +21,9 @@ export default function AuthSimpleLayout({ children, title, description }: Props
               <span className="sr-only">{title}</span>
             </Link>
 
-            <div className="(text-align:center) space-y-2">
+            <div className="text-center space-y-2">
               <h1 className="text-xl font-medium">{title}</h1>
-              <p className="text-sm (text-align:center) text-muted-foreground">{description}</p>
+              <p className="text-sm text-center text-muted-foreground">{description}</p>
             </div>
           </div>
           {children}

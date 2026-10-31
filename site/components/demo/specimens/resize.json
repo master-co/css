@@ -4,28 +4,28 @@
     "id": "restrict-resizing-to-one-axis",
     "title": "Restrict resizing to one axis",
     "html": [
-      "<!-- Vertical only -->\n<label class=\"grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"(overflow:auto) (height:96px) (width:240px) (min-height:80px)\n         (min-width:160px) (max-height:176px) (max-width:100%)\n         (resize:vertical)\">A clear layout leaves room for the next idea.</textarea>\n</label>",
-      "<!-- Horizontal only -->\n<label class=\"grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"(overflow:auto) (height:96px) (width:240px) (min-height:80px)\n         (min-width:160px) (max-height:176px) (max-width:100%)\n         (resize:horizontal)\">A clear layout leaves room for the next idea.</textarea>\n</label>"
+      "<!-- Vertical only -->\n<label class=\"grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"overflow-auto h(96) w(240) min-h(80)\n         min-w(160) max-h(176) max-w-full\n         (resize:vertical)\">A clear layout leaves room for the next idea.</textarea>\n</label>",
+      "<!-- Horizontal only -->\n<label class=\"grid gap-sm\">\n  Notes\n  <textarea id=\"target\" rows=\"3\"\n\n  class=\"overflow-auto h(96) w(240) min-h(80)\n         min-w(160) max-h(176) max-w-full\n         (resize:horizontal)\">A clear layout leaves room for the next idea.</textarea>\n</label>"
     ],
     "css": "",
     "classes": [
       "grid",
       "gap-sm",
-      "(overflow:auto)",
-      "(height:96px)",
-      "(width:240px)",
-      "(min-height:80px)",
-      "(min-width:160px)",
-      "(max-height:176px)",
-      "(max-width:100%)",
+      "overflow-auto",
+      "h(96)",
+      "w(240)",
+      "min-h(80)",
+      "min-w(160)",
+      "max-h(176)",
+      "max-w-full",
       "(resize:vertical)",
       "(resize:horizontal)"
     ],
     "classLists": [
       "grid gap-sm",
-      "(overflow:auto) (height:96px) (width:240px) (min-height:80px) (min-width:160px) (max-height:176px) (max-width:100%) (resize:vertical)",
+      "overflow-auto h(96) w(240) min-h(80) min-w(160) max-h(176) max-w-full (resize:vertical)",
       "grid gap-sm",
-      "(overflow:auto) (height:96px) (width:240px) (min-height:80px) (min-width:160px) (max-height:176px) (max-width:100%) (resize:horizontal)"
+      "overflow-auto h(96) w(240) min-h(80) min-w(160) max-h(176) max-w-full (resize:horizontal)"
     ],
     "highlighted": []
   }

@@ -27,7 +27,7 @@ function runNPM(args, options = {}) {
 function exerciseEngineSession(binding) {
   const session = new binding.EngineSession(JSON.stringify({
     version: 6,
-    languageVersion: 17,
+    languageVersion: 18,
     theme: [{
       type: 'rule', prelude: ':root,:host',
       children: [{ type: 'declaration', name: 'stripe', value: 'linear-gradient(red,blue)' }]

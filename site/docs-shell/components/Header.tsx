@@ -95,12 +95,12 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
 
   return (
     <nav ref={ref} aria-label={props['aria-label']}
-      className={clsx('(z-index:1040) (width:100%) (padding-top:env(safe-area-inset-top)) (white-space:nowrap) (contain:layout|style) bb-line-subtle:not(.at-top) (border-bottom-style:solid):not(.at-top) (border-bottom-width:1px):not(.at-top) bg-surface-base/.9:not(.at-top) (backdrop-filter:blur(25px)):not(.at-top) hidden@media(print) app-wrapper',
+      className={clsx('(z-index:1040) w-full (padding-top:env(safe-area-inset-top)) whitespace-nowrap (contain:layout|style) bb-line-subtle:not(.at-top) bb-solid:not(.at-top) bb(1):not(.at-top) bg-surface-base/.9:not(.at-top) (backdrop-filter:blur(25px)):not(.at-top) hidden@media(print) app-wrapper',
         'app-header',
         props.className,
         {
           '(transition-duration:.2s) (transition-property:transform,height,padding,backdrop-filter,background-color)': stickable && !transitionAtTop,
-          'fixed (top:0)': fixed,
+          'fixed top(0)': fixed,
           'at-top': atTop
         }
       )}

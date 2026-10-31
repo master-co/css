@@ -37,15 +37,15 @@ export default defineConfig([
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-bg-white font-md flex px-md relative (width:100%) shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
-relative (z-index:10) flex (gap:0.5rem) (width:100%) px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+bg-white font-md flex px-md relative w-full shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
+relative (z-index:10) flex (gap:0.5rem) w-full px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
 ```
 
 Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
 
 ```mcss
-bg-black:hover flex p-sm (width:100%) block@dark (text-align:center) <!-- [!code --] -->
-flex (width:100%) p-sm (text-align:center) bg-black:hover block@dark <!-- [!code ++] -->
+bg-black:hover flex p-sm w-full block@dark text-center <!-- [!code --] -->
+flex w-full p-sm text-center bg-black:hover block@dark <!-- [!code ++] -->
 ```
 
 Sorting also removes duplicate class values in the same class string.
@@ -137,7 +137,7 @@ A fully overridden class can be removed automatically. The winner follows genera
 Partial declaration overlaps need review. For example, the top border override below is reported, but the rule does not split the shorthand or remove the other three borders:
 
 ```mcss
-(border-style:solid) (border-top-style:dashed)
+b-solid bt-dashed
 ```
 
 Use the generated CSS preview to decide whether the override is intentional before changing it.

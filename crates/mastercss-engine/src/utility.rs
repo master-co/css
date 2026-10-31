@@ -88,19 +88,32 @@ pub(crate) fn compare_stored_rules(left: &StoredRule, right: &StoredRule) -> Ord
 
 /// Compare generated rule order within one CSS layer. Hosts that reason about
 /// conflicts must use the same value-source and declaration ordering as rendering.
+///
+/// Within a tier, recipes precede named atomic utilities, which precede native
+/// declarations. Atomics order by family, coverage, value source, property,
+/// declaration and class; recipes and native declarations keep their type, value
+/// source, declaration and class order.
 pub fn compare_rule_priority(left: &GeneratedRuleIr, right: &GeneratedRuleIr) -> Ordering {
+    let (a, b) = (&left.priority, &right.priority);
     left.sort_tier
         .cmp(&right.sort_tier)
-        .then_with(|| compare_condition_features(&left.priority.features, &right.priority.features))
-        .then_with(|| left.priority.conditions.cmp(&right.priority.conditions))
-        .then_with(|| left.priority.selector.cmp(&right.priority.selector))
-        .then_with(|| left.utility_type.cmp(&right.utility_type))
+        .then_with(|| compare_condition_features(&a.features, &b.features))
+        .then_with(|| a.conditions.cmp(&b.conditions))
+        .then_with(|| a.selector.cmp(&b.selector))
+        .then_with(|| a.category.cmp(&b.category))
+        // Only atomics carry a family, coverage and property; only others compare types.
+        .then_with(|| a.family.cmp(&b.family))
+        .then_with(|| a.coverage.cmp(&b.coverage))
         .then_with(|| {
-            left.priority
-                .value_priority
-                .cmp(&right.priority.value_priority)
+            if a.category == super::ordering::ATOMIC {
+                Ordering::Equal
+            } else {
+                left.utility_type.cmp(&right.utility_type)
+            }
         })
-        .then_with(|| natural_compare(&left.priority.sort_key, &right.priority.sort_key))
+        .then_with(|| a.value_priority.cmp(&b.value_priority))
+        .then_with(|| a.property.cmp(&b.property))
+        .then_with(|| natural_compare(&a.sort_key, &b.sort_key))
         .then_with(|| natural_compare(&left.key, &right.key))
 }
 

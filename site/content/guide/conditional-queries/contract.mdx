@@ -99,18 +99,18 @@ Container size tokens such as `--container-md` do not supply query thresholds. C
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
 
 ```html
-<aside class="(container-name:card) (container-type:inline-size)">
+<aside class="(container-name:card) container-inline">
   <div class="grid-cols(2)@container(card|(width>=40rem))">Card content</div>
 </aside>
 ```
 
-<Class2CSS>{['(container-name:card) (container-type:inline-size)', 'grid-cols(2)@container(card|(width>=40rem))']}</Class2CSS>
+<Class2CSS>{['(container-name:card) container-inline', 'grid-cols(2)@container(card|(width>=40rem))']}</Class2CSS>
 
 Style queries use their native form:
 
 ```html
 <div style="--density:compact">
-  <div class="(padding:8px)@container(style(--density:compact))">Compact content</div>
+  <div class="p(8)@container(style(--density:compact))">Compact content</div>
 </div>
 ```
 

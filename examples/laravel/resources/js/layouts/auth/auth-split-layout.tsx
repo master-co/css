@@ -33,7 +33,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
           <Link href={route('home')} className="flex items-center justify-center hidden@md relative z-20">
             <AppLogoIcon className="fill-current sm:h-12 h-10 text-black" />
           </Link>
-          <div className="flex flex-col items-start (text-align:left) sm:text-center gap-2">
+          <div className="flex flex-col items-start text-left sm:text-center gap-2">
             <h1 className="text-xl font-medium">{title}</h1>
             <p className="text-sm (text-wrap:balance) text-muted-foreground">{description}</p>
           </div>

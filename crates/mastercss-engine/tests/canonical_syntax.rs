@@ -34,7 +34,7 @@ fn every_preset_value_family_keeps_its_builtin_contract() {
         .into_iter()
         .map(|entry| entry.label)
         .collect::<HashSet<_>>();
-    assert_eq!(baseline().len(), 119);
+    assert_eq!(baseline().len(), 118);
     for family in baseline() {
         let prefix = family["prefix"].as_str().unwrap();
         let property = family["property"].as_str().unwrap();
@@ -96,7 +96,7 @@ fn every_preset_value_family_keeps_its_builtin_contract() {
             MatchStatus::Matched
         );
     }
-    assert_eq!(prefixes.len(), 119);
+    assert_eq!(prefixes.len(), 118);
     for class in [
         "font-proof",
         "filter-proof",

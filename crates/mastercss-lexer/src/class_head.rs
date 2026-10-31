@@ -6,11 +6,11 @@ use crate::css_syntax::{name, starts_identifier};
 use std::ops::Range;
 
 /// The characters that may begin a class suffix after a complete head: importance,
-/// selector combinators, pseudo-classes, attributes, `_` descendants and conditions.
+/// selector combinators, pseudo-classes, attributes, ids, `_` descendants and conditions.
 pub fn is_class_suffix_start(character: char) -> bool {
     matches!(
         character,
-        '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_' | '.'
+        '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_' | '.' | '#'
     )
 }
 
@@ -30,14 +30,21 @@ pub struct NativeDeclarationHead {
 }
 
 impl NativeDeclarationHead {
+    /// Whether the decoded property is a custom property, so `\\2d\\2dx` is `--x`.
     pub fn custom_property(&self, source: &str) -> bool {
-        source[self.property.clone()].starts_with("--")
+        let mut cursor = self.property.start;
+        name(source, &mut cursor).starts_with("--")
     }
 }
 
 /// The property of a `(property:` prefix, and the value start once its colon exists.
 /// Editors use it for incomplete declarations; it never makes a class complete.
 pub fn native_declaration_prefix(source: &str) -> Option<(Range<usize>, Option<usize>)> {
+    declaration_prefix(source).map(|(property, colon, _)| (property, colon))
+}
+
+/// The prefix with whether its decoded property is a custom property.
+fn declaration_prefix(source: &str) -> Option<(Range<usize>, Option<usize>, bool)> {
     let rest = source.strip_prefix('(')?;
     if !starts_identifier(rest) {
         return None;
@@ -47,8 +54,9 @@ pub fn native_declaration_prefix(source: &str) -> Option<(Range<usize>, Option<u
     if property == "--" {
         return None;
     }
+    let custom = property.starts_with("--");
     let colon = source[cursor..].starts_with(':').then_some(cursor + 1);
-    Some((1..cursor, colon))
+    Some((1..cursor, colon, custom))
 }
 
 /// Parses a class that starts with `(` as exactly one native declaration. Other
@@ -60,21 +68,13 @@ pub fn parse_native_declaration(
 }
 
 fn declaration(source: &str) -> Result<NativeDeclarationHead, &'static str> {
-    let (property, colon) = native_declaration_prefix(source)
+    let (property, colon, custom) = declaration_prefix(source)
         .ok_or("Native declarations start with a CSS property, for example (display:block)")?;
     let start = colon.ok_or("Native declarations require a colon after the property")?;
-    let custom = source[property.clone()].starts_with("--");
     let scan = scan_value(source, start, custom)?;
     let close = scan.close;
     let (value_end, important) = match scan.important {
-        Some(bang) => (
-            bang - source[start..bang]
-                .bytes()
-                .rev()
-                .take_while(|byte| *byte == b'|' || byte.is_ascii_whitespace())
-                .count(),
-            true,
-        ),
+        Some(value_end) => (value_end.max(start), true),
         None => (close, false),
     };
     if !custom && scan.significant == 0 {
@@ -101,7 +101,8 @@ fn declaration(source: &str) -> Result<NativeDeclarationHead, &'static str> {
 
 struct ValueScan {
     close: usize,
-    /// The `!` of a trailing native `!important`.
+    /// The value end before a trailing native `!important`: the end of the last
+    /// component before its `!`, so separators and escapes stay where they belong.
     important: Option<usize>,
     /// Top-level component values before any trailing `!important`.
     significant: usize,
@@ -109,6 +110,7 @@ struct ValueScan {
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Item {
+    /// A top-level `!` and the end of the last component before it.
     Bang(usize),
     Important,
     Other,
@@ -117,13 +119,16 @@ enum Item {
 fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'static str> {
     let mut stack: Vec<char> = Vec::new();
     let mut items: Vec<Item> = Vec::new();
+    // The end of the last component, so a trailing `!important` never trims into an
+    // escape such as `\|`.
+    let mut component_end = start;
     let mut cursor = start;
     while let Some(character) = source[cursor..].chars().next() {
         let top = stack.is_empty();
-        let at = cursor;
         match character {
             '"' | '\'' => {
                 cursor = skip_string(source, cursor)?;
+                component_end = cursor;
                 if top {
                     items.push(Item::Other);
                 }
@@ -134,6 +139,7 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                     .find("*/")
                     .map(|offset| cursor + 2 + offset + 2)
                     .ok_or("Unclosed comment in a native declaration")?;
+                component_end = cursor;
                 continue;
             }
             '\\' if !starts_identifier(&source[cursor..]) => {
@@ -160,14 +166,23 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
                         Item::Other
                     });
                 }
+                component_end = cursor;
                 continue;
             }
-            '(' => stack.push(')'),
-            '[' => stack.push(']'),
-            '{' if top && !custom => {
-                return Err("Blocks belong only in custom property values");
+            // A block is a component of its own: `a!important{}` is not important.
+            '(' | '[' | '{' => {
+                if character == '{' && top && !custom {
+                    return Err("Blocks belong only in custom property values");
+                }
+                stack.push(match character {
+                    '(' => ')',
+                    '[' => ']',
+                    _ => '}',
+                });
+                if top {
+                    items.push(Item::Other);
+                }
             }
-            '{' => stack.push('}'),
             ')' if top => {
                 return Ok(finish(cursor, &items));
             }
@@ -179,20 +194,27 @@ fn scan_value(source: &str, start: usize, custom: bool) -> Result<ValueScan, &'s
             ';' if top => {
                 return Err("A native declaration head contains exactly one declaration");
             }
-            '!' if top => items.push(Item::Bang(at)),
-            '|' => {}
-            _ if character.is_ascii_whitespace() => {}
+            '!' if top => items.push(Item::Bang(component_end)),
+            '|' => {
+                cursor += 1;
+                continue;
+            }
+            _ if character.is_ascii_whitespace() => {
+                cursor += 1;
+                continue;
+            }
             _ if top => items.push(Item::Other),
             _ => {}
         }
         cursor += character.len_utf8();
+        component_end = cursor;
     }
     Err("Unclosed native declaration")
 }
 
 fn finish(close: usize, items: &[Item]) -> ValueScan {
     let important = match items {
-        [.., Item::Bang(bang), Item::Important] => Some(*bang),
+        [.., Item::Bang(value_end), Item::Important] => Some(*value_end),
         _ => None,
     };
     ValueScan {
@@ -224,6 +246,8 @@ fn skip_string(source: &str, start: usize) -> Result<usize, &'static str> {
 }
 
 /// An unquoted `url(` token is opaque: brackets, braces, slashes and pipes are URL text.
+/// It follows the CSS URL token: only CSS whitespace before `)` and non-printable code
+/// points end it badly; other Unicode, including U+00A0 and U+0085, is URL text.
 fn skip_url(source: &str, start: usize) -> Result<usize, &'static str> {
     let mut cursor = start;
     while let Some(character) = source[cursor..].chars().next() {
@@ -233,14 +257,180 @@ fn skip_url(source: &str, start: usize) -> Result<usize, &'static str> {
                 cursor += 1;
                 cursor += source[cursor..].chars().next().map_or(0, char::len_utf8);
             }
+            ' ' | '\t' | '\n' | '\r' | '\x0c' => {
+                cursor += source[cursor..]
+                    .find(|c: char| !matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0c'))
+                    .unwrap_or(source.len() - cursor);
+                return if source[cursor..].starts_with(')') {
+                    Ok(cursor + 1)
+                } else {
+                    Err("Invalid url() in a native declaration")
+                };
+            }
             '"' | '\'' | '(' | '\\' => return Err("Invalid url() in a native declaration"),
-            _ if character.is_whitespace() || character.is_control() => {
+            '\0'..='\x08' | '\x0b' | '\x0e'..='\x1f' | '\x7f' => {
                 return Err("Invalid url() in a native declaration");
             }
             _ => cursor += character.len_utf8(),
         }
     }
     Err("Unclosed url() in a native declaration")
+}
+
+/// Where an editor cursor sits inside a `(property:value)` head. Byte ranges index the
+/// class; incomplete heads are accepted, so `(display:bl` reports its value component.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum NativeHeadCursor {
+    /// In the property name: the name and its colon, when present.
+    Property { range: Range<usize> },
+    /// In a top-level value component, which extends past the cursor to its end.
+    Value {
+        property: Range<usize>,
+        component: Range<usize>,
+        /// Whether a top-level `)` already closes the head.
+        closed: bool,
+    },
+    /// Inside a string, comment, URL or nested function or block.
+    Protected,
+}
+
+/// Separators end a value component; everything else continues it.
+fn component_character(character: char) -> bool {
+    !matches!(
+        character,
+        '|' | ',' | '/' | '!' | ';' | ':' | '(' | ')' | '[' | ']' | '{' | '}' | '"' | '\''
+    ) && !character.is_ascii_whitespace()
+}
+
+/// The cursor context of a class that starts with `(`, or `None` outside a head: in
+/// another class, before the parenthesis, or after the head closes.
+pub fn native_head_cursor(source: &str, cursor: usize) -> Option<NativeHeadCursor> {
+    if !source.starts_with('(') || cursor == 0 || !source.is_char_boundary(cursor) {
+        return None;
+    }
+    let mut property_end = 1;
+    name(source, &mut property_end);
+    let colon = source[property_end..].starts_with(':');
+    if cursor <= property_end {
+        return Some(NativeHeadCursor::Property {
+            range: 1..property_end + usize::from(colon),
+        });
+    }
+    if !colon {
+        return None;
+    }
+    let mut stack = Vec::new();
+    let mut component = property_end + 1;
+    let mut index = component;
+    while index < cursor {
+        let character = source[index..].chars().next()?;
+        if stack.is_empty() && character == ')' {
+            return None;
+        }
+        if starts_identifier(&source[index..]) {
+            let mut end = index;
+            let ident = name(source, &mut end);
+            if end >= cursor {
+                break;
+            }
+            if !source[end..].starts_with('(') {
+                index = end;
+                continue;
+            }
+            if ident.eq_ignore_ascii_case("url") && !source[end + 1..].starts_with(['"', '\'']) {
+                index = skip_url(source, end + 1).unwrap_or(source.len());
+                if index > cursor {
+                    return Some(NativeHeadCursor::Protected);
+                }
+                component = index;
+                continue;
+            }
+            index = end;
+        }
+        let next = match step(source, index, &mut stack) {
+            Some(next) if next <= cursor => next,
+            _ => return Some(NativeHeadCursor::Protected),
+        };
+        if !component_character(character) {
+            component = next;
+        }
+        index = next;
+    }
+    if !stack.is_empty() {
+        return Some(NativeHeadCursor::Protected);
+    }
+    let mut end = cursor;
+    while let Some(character) = source[end..].chars().next() {
+        if character == '\\' && starts_identifier(&source[end..]) {
+            name(source, &mut end);
+        } else if component_character(character) {
+            end += character.len_utf8();
+        } else {
+            break;
+        }
+    }
+    let mut closed = false;
+    let mut index = end;
+    while let Some(character) = source[index..].chars().next() {
+        if stack.is_empty() && character == ')' {
+            closed = true;
+            break;
+        }
+        if starts_identifier(&source[index..]) {
+            let mut after = index;
+            let ident = name(source, &mut after);
+            if source[after..].starts_with('(')
+                && ident.eq_ignore_ascii_case("url")
+                && !source[after + 1..].starts_with(['"', '\''])
+            {
+                let Ok(next) = skip_url(source, after + 1) else {
+                    break;
+                };
+                index = next;
+            } else {
+                index = after;
+            }
+            continue;
+        }
+        let Some(next) = step(source, index, &mut stack) else {
+            break;
+        };
+        index = next;
+    }
+    Some(NativeHeadCursor::Value {
+        property: 1..property_end,
+        component: component..end,
+        closed,
+    })
+}
+
+/// Advances past one character, string, comment or escape, tracking open brackets.
+fn step(source: &str, index: usize, stack: &mut Vec<char>) -> Option<usize> {
+    let character = source[index..].chars().next()?;
+    Some(match character {
+        '"' | '\'' => skip_string(source, index).ok()?,
+        '/' if source[index..].starts_with("/*") => index + 2 + source[index + 2..].find("*/")? + 2,
+        '\\' => {
+            let mut end = index;
+            name(source, &mut end);
+            end.max(index + 1)
+        }
+        '(' | '[' | '{' => {
+            stack.push(match character {
+                '(' => ')',
+                '[' => ']',
+                _ => '}',
+            });
+            index + 1
+        }
+        ')' | ']' | '}' => {
+            if stack.pop() != Some(character) {
+                return None;
+            }
+            index + 1
+        }
+        _ => index + character.len_utf8(),
+    })
 }
 
 /// Decodes Master's `|` value spaces outside strings, comments, escapes and URL tokens.
@@ -358,6 +548,38 @@ mod tests {
                 "(width:calc(1px+(2px*3)))",
                 ("width", "calc(1px+(2px*3))", false, ""),
             ),
+            (
+                "(font-family:foo\\|!important)",
+                ("font-family", "foo\\|", true, ""),
+            ),
+            (
+                "(font-family:foo\\||!important)",
+                ("font-family", "foo\\|", true, ""),
+            ),
+            ("(--x:a!important{})", ("--x", "a!important{}", false, "")),
+            ("(--x:a!{}important)", ("--x", "a!{}important", false, "")),
+            ("(--x:a!important[b])", ("--x", "a!important[b]", false, "")),
+            ("(--x:a!important(b))", ("--x", "a!important(b)", false, "")),
+            (
+                "(color:red/*keep*/!important)",
+                ("color", "red/*keep*/", true, ""),
+            ),
+            ("(\\2d\\2dx:)", ("\\2d\\2dx", "", false, "")),
+            ("(\\2d\\2dx:{a:b})", ("\\2d\\2dx", "{a:b}", false, "")),
+            (
+                "(background:url(/a\u{a0}b\u{2003}c\u{85}d.png))",
+                (
+                    "background",
+                    "url(/a\u{a0}b\u{2003}c\u{85}d.png)",
+                    false,
+                    "",
+                ),
+            ),
+            ("(color:red)#target", ("color", "red", false, "#target")),
+            (
+                "(color:red!important):hover",
+                ("color", "red", true, ":hover"),
+            ),
         ] {
             assert_eq!(parts(source), expected, "{source}");
         }
@@ -387,6 +609,10 @@ mod tests {
             "(background:url(a'b))",
             "(width:1px\\",
             "(a:b])",
+            "(background:url(a\tb))",
+            "(background:url(a\u{7f}b))",
+            "(background:url(a\u{1}b))",
+            "(color:red)hover#x",
         ] {
             assert!(
                 parse_native_declaration(source).unwrap().is_err(),
@@ -404,6 +630,74 @@ mod tests {
             decode_native_value(r#"a|"b|c"|d\|e/*|*/|url(x|y)|url('p|q')"#),
             r#"a "b|c" d\|e/*|*/ url(x|y) url('p|q')"#
         );
+    }
+
+    #[test]
+    fn reports_cursor_contexts_for_editors() {
+        use NativeHeadCursor::{Property, Protected, Value};
+        let at = |source: &str| {
+            let cursor = source.find('¦').unwrap();
+            native_head_cursor(&source.replace('¦', ""), cursor)
+        };
+        assert_eq!(at("(disp¦"), Some(Property { range: 1..5 }));
+        assert_eq!(at("(disp¦lay:block)"), Some(Property { range: 1..9 }));
+        assert_eq!(
+            at("(display:bl¦ock):hover"),
+            Some(Value {
+                property: 1..8,
+                component: 9..14,
+                closed: true
+            })
+        );
+        assert_eq!(
+            at("(display:bl¦"),
+            Some(Value {
+                property: 1..8,
+                component: 9..11,
+                closed: false
+            })
+        );
+        assert_eq!(
+            at("(flex:1|1|au¦to)"),
+            Some(Value {
+                property: 1..5,
+                component: 10..14,
+                closed: true
+            })
+        );
+        assert_eq!(
+            at("(color:rg¦b(0|0|0))"),
+            Some(Value {
+                property: 1..6,
+                component: 7..10,
+                closed: true
+            })
+        );
+        assert_eq!(
+            at("(grid-template-columns:[a]|1f¦"),
+            Some(Value {
+                property: 1..22,
+                component: 27..29,
+                closed: false
+            })
+        );
+        assert_eq!(at("(content:'a)b¦c'):hover"), Some(Protected));
+        assert_eq!(at("(width:calc(1px+¦2px))"), Some(Protected));
+        assert_eq!(at("(color:red/*no¦pe*/)"), Some(Protected));
+        assert_eq!(at("(background:url(a¦b.png))"), Some(Protected));
+        assert_eq!(
+            at("(background:url(a.png)|re¦"),
+            Some(Value {
+                property: 1..11,
+                component: 23..25,
+                closed: false
+            })
+        );
+        assert_eq!(at("(display:block)¦:hover"), None);
+        assert_eq!(at("(display:block):ho¦ver"), None);
+        assert_eq!(at("flex:ho¦ver"), None);
+        assert_eq!(at("(display¦)"), Some(Property { range: 1..8 }));
+        assert_eq!(at("(display)¦"), None);
     }
 
     #[test]

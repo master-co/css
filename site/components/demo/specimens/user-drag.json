@@ -4,24 +4,24 @@
     "id": "prevent-dragging-media",
     "title": "Prevent dragging media",
     "html": [
-      "<!-- CSS · native image drag disabled -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block (height:auto) (width:240px) (max-width:100%) r-sm (user-drag:none)\">",
-      "<!-- Default image · native drag allowed -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block (height:auto) (width:240px) (max-width:100%) r-sm (user-drag:auto)\">",
-      "<!-- HTML · explicit false -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block (height:auto) (width:240px) (max-width:100%) r-sm \" draggable=\"false\">"
+      "<!-- CSS · native image drag disabled -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block h-auto w(240) max-w-full r-sm (user-drag:none)\">",
+      "<!-- Default image · native drag allowed -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block h-auto w(240) max-w-full r-sm (user-drag:auto)\">",
+      "<!-- HTML · explicit false -->\n<img id=\"target\" src=\"/demo/landscape.svg\" alt=\"Sun above layered mountains\"\n  width=\"240\" height=\"144\" class=\"block h-auto w(240) max-w-full r-sm \" draggable=\"false\">"
     ],
     "css": "",
     "classes": [
       "block",
-      "(height:auto)",
-      "(width:240px)",
-      "(max-width:100%)",
+      "h-auto",
+      "w(240)",
+      "max-w-full",
       "r-sm",
       "(user-drag:none)",
       "(user-drag:auto)"
     ],
     "classLists": [
-      "block (height:auto) (width:240px) (max-width:100%) r-sm (user-drag:none)",
-      "block (height:auto) (width:240px) (max-width:100%) r-sm (user-drag:auto)",
-      "block (height:auto) (width:240px) (max-width:100%) r-sm "
+      "block h-auto w(240) max-w-full r-sm (user-drag:none)",
+      "block h-auto w(240) max-w-full r-sm (user-drag:auto)",
+      "block h-auto w(240) max-w-full r-sm "
     ],
     "highlighted": []
   }

@@ -8,7 +8,7 @@ import {
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { MasterCSSLanguageCompletionEntry } from '@master/css-tooling/language'
 import type { MasterCSSLanguageService } from '../core'
-import { analyzeDocument } from '../document-analysis'
+import { analyzeDocument, documentRequest } from '../document-analysis'
 import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
 
 function sortCompletionItems(items: CompletionItem[]) {
@@ -87,14 +87,14 @@ function rootCompletionItems(
     }))
 }
 
-/** Values of a `(property:` head; `close` adds the closing parenthesis the head still lacks. */
+/** Values of a `(property:` head; `suffix` is the text the head still lacks, such as its `)`. */
 function valueCompletionItems(
   service: MasterCSSLanguageService,
   entries: readonly MasterCSSLanguageCompletionEntry[],
   key: string,
   valuePrefix: string,
   range: Range,
-  close: boolean
+  suffix: string
 ) {
   const prefix = `(${key}:`
   return sortCompletionItems(entries
@@ -106,7 +106,7 @@ function valueCompletionItems(
       item.filterText = value
       item.textEdit = {
         range,
-        newText: entry.kind === 'function' ? `${value.slice(0, -1)}$0)${close ? ')' : ''}` : `${value}${close ? ')' : ''}`
+        newText: entry.kind === 'function' ? `${value.slice(0, -1)}$0)${suffix}` : `${value}${suffix}`
       }
       item.insertText = undefined
       return item
@@ -206,17 +206,18 @@ export default function suggestSyntax(
     }
   }
 
-  // Rust reports the property and value prefix of an incomplete `(property:value` head.
-  const inspection = this.session.inspectClassName(field)
-  if (field.startsWith('(') && inspection.base === field && inspection.kind !== 'declaration') {
-    if (inspection.key === undefined || inspection.value === undefined) return rootCompletionItems(this, entries, field, typed)
-    // Only the component at the cursor is replaced; earlier `|`, `,` or `/` separated components stay.
-    const component = /[^|,/]*$/u.exec(inspection.value)?.[0] ?? ''
-    const valueStart = document.positionAt(offset - component.length)
-    const rest = document.getText({ start: position, end: document.positionAt(classPosition.range.end) })
-    const values = valueCompletionItems(this, entries, inspection.key, component, { start: valueStart, end: position }, !rest.startsWith(')'))
-    return values.length ? values : []
+  // Inside a `(property:value)` head, Rust reports the component at the cursor: its
+  // property, typed prefix, whole source range and the text the head still lacks.
+  if (field.startsWith('(')) {
+    const head = this.session.nativeDeclarationCompletion({ ...documentRequest(this, document), offset })
+    if (head) {
+      if (head.kind === 'none' || !head.range) return []
+      const range: Range = { start: document.positionAt(head.range.start), end: document.positionAt(head.range.end) }
+      if (head.kind === 'property') return rootCompletionItems(this, entries, `(${head.prefix}`, { start: typed.start, end: range.end })
+      return valueCompletionItems(this, entries, head.property ?? '', head.prefix, range, head.suffix ?? '')
+    }
   }
+  const inspection = this.session.inspectClassName(field)
   if (hasSyntaxError(inspection.diagnostics)) return []
   // Conditions start at a top-level `@` of the suffix after the class head.
   const suffix = inspection.suffix ?? ''

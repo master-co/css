@@ -18,7 +18,7 @@ import WorkflowSection from './components/WorkflowSection'
 export default function Page() {
   return <>
     <DocHeader className="home-header" stickable transitionAtTop />
-    <main className="(overflow:clip) home-page">
+    <main className="overflow-clip home-page">
       <HeroSection />
       <DesignSystemSection />
       <LanguageServiceSection />

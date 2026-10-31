@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "mixins": [
     {
       "name": "--block",
@@ -36,7 +36,7 @@ const factories = {
 it('derives readonly family metadata from the effective manifest in both bindings', async () => {
   const preset = createPresetManifest()
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 17,
+    version: 6, languageVersion: 18,
     utilities: [
       ...(preset.utilities ?? []),
       { kind: 'token', name: 'space', parameters: [{ name: '--custom-space' }], body: [
@@ -59,13 +59,13 @@ it('derives readonly family metadata from the effective manifest in both binding
   expect(Object.isFrozen(result.families)).toBe(true)
   expect(result.families.every(family => Object.isFrozen(family) && Object.isFrozen(family.properties))).toBe(true)
   expect(native.inspectClassName('p-md').rules).toEqual([])
-  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 17 } })
+  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 18 } })
   expect(empty.tokenFamilies().families).toEqual([])
 })
 
 it('inline tokens have identical native and Wasm language behavior', async () => {
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 17,
+    version: 6, languageVersion: 18,
     utilities: createPresetManifest().utilities,
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }

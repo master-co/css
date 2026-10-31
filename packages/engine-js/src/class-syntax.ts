@@ -2,7 +2,7 @@
 // class heads, as crates/mastercss-lexer and the engine's utility.rs and state.rs read
 // them. Every scan skips escapes, quotes and nested brackets.
 import { DELIM, FUNCTION, readName, startsIdentifier, tokenize } from './css-syntax'
-import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, isWhitespace, trim } from './text'
+import { isAsciiCase, isAsciiDigit, isAsciiWhitespace, trim } from './text'
 
 const isOpen = (unit: number) => unit === 0x28 || unit === 0x5b || unit === 0x7b
 const isClose = (unit: number) => unit === 0x29 || unit === 0x5d || unit === 0x7d
@@ -57,7 +57,7 @@ export const nativeContent = (source: string) => content(source, false)
 export const decodeNativeContent = (source: string) => content(source, true)
 
 /** The characters that may begin a class suffix after a complete head. */
-export const isClassSuffixStart = (character: string) => '!*>+~:[@_.'.includes(character)
+export const isClassSuffixStart = (character: string) => '!*>+~:[@_.#'.includes(character)
 
 /** Whether a matched name may end here: the rest is empty or starts a state. */
 export function isMatchStateBoundary(rest: string) {
@@ -73,12 +73,12 @@ export interface NativeDeclarationHead {
   suffixStart: number
 }
 
-/** The property range of a `(property:` prefix and the value start once its colon exists. */
-function nativeDeclarationPrefix(source: string): [property: [number, number], valueStart: number | undefined] | undefined {
+/** The property range of a `(property:` prefix, the value start once its colon exists and whether the decoded property is custom. */
+function nativeDeclarationPrefix(source: string): [property: [number, number], valueStart: number | undefined, custom: boolean] | undefined {
   if (source.charCodeAt(0) !== 0x28 || !startsIdentifier(source, 1)) return
   const [end, property] = readName(source, 1)
   if (property === '--') return
-  return [[1, end], source.charCodeAt(end) === 0x3a ? end + 1 : undefined]
+  return [[1, end], source.charCodeAt(end) === 0x3a ? end + 1 : undefined, property.startsWith('--')]
 }
 
 /** The end of the string whose quote is at `start`, or undefined when it is unclosed or broken by a newline. */
@@ -97,17 +97,23 @@ function skipString(source: string, start: number) {
   }
 }
 
-/** Rust `char::is_control`: the C0 and C1 controls. */
-const isControl = (unit: number) => unit <= 0x1f || (unit >= 0x7f && unit <= 0x9f)
 
-/** The end of an unquoted `url(` token whose contents start at `start`; brackets, braces and pipes are URL text. */
+/**
+ * The end of an unquoted `url(` token whose contents start at `start`; brackets, braces
+ * and pipes are URL text. Only CSS whitespace before `)` and non-printable code points
+ * end it badly; other Unicode, including U+00A0 and U+0085, is URL text.
+ */
 function skipUrl(source: string, start: number) {
   for (let cursor = start; cursor < source.length; cursor++) {
     const unit = source.charCodeAt(cursor)
     if (unit === 0x29) return cursor + 1
     if (unit === 0x5c && startsIdentifier(source, cursor)) {
       cursor++
-    } else if (isQuote(unit) || unit === 0x28 || unit === 0x5c || isWhitespace(unit) || isControl(unit)) {
+    } else if (isAsciiWhitespace(unit)) {
+      while (cursor < source.length && isAsciiWhitespace(source.charCodeAt(cursor))) cursor++
+      return source.charCodeAt(cursor) === 0x29 ? cursor + 1 : undefined
+    } else if (isQuote(unit) || unit === 0x28 || unit === 0x5c || unit < 0x20 || unit === 0x7f) {
+      // Below 0x20, only non-printable code points remain: they end a URL token badly.
       return
     }
   }
@@ -116,10 +122,14 @@ function skipUrl(source: string, start: number) {
 const OTHER_ITEM = -1
 const IMPORTANT_ITEM = -2
 
-/** The closing parenthesis and top-level items of a declaration value; bangs are their offsets. */
+/**
+ * The closing parenthesis and top-level items of a declaration value. A bang is the end
+ * of the last component before it, so a trailing `!important` never trims into an escape.
+ */
 function scanValue(source: string, start: number, custom: boolean): [close: number, items: number[]] | undefined {
   const stack: number[] = []
   const items: number[] = []
+  let componentEnd = start
   let cursor = start
   while (cursor < source.length) {
     const unit = source.charCodeAt(cursor)
@@ -127,14 +137,14 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
     if (isQuote(unit)) {
       const end = skipString(source, cursor)
       if (end === undefined) return
-      cursor = end
+      cursor = componentEnd = end
       if (top) items.push(OTHER_ITEM)
       continue
     }
     if (unit === 0x2f && source.charCodeAt(cursor + 1) === 0x2a) {
       const end = source.indexOf('*/', cursor + 2)
       if (end < 0) return
-      cursor = end + 2
+      cursor = componentEnd = end + 2
       continue
     }
     if (startsIdentifier(source, cursor)) {
@@ -153,21 +163,27 @@ function scanValue(source: string, start: number, custom: boolean): [close: numb
       } else if (top) {
         items.push(isAsciiCase(ident, 'important') ? IMPORTANT_ITEM : OTHER_ITEM)
       }
+      componentEnd = cursor
+      continue
+    }
+    if (unit === 0x7c || isAsciiWhitespace(unit)) {
+      cursor++
       continue
     }
     if (unit === 0x5c) return
-    if (unit === 0x28) stack.push(0x29)
-    else if (unit === 0x5b) stack.push(0x5d)
-    else if (unit === 0x7b) {
-      if (top && !custom) return
-      stack.push(0x7d)
+    // A block is a component of its own: `a!important{}` is not important.
+    if (isOpen(unit)) {
+      if (unit === 0x7b && top && !custom) return
+      stack.push(unit === 0x28 ? 0x29 : unit === 0x5b ? 0x5d : 0x7d)
+      if (top) items.push(OTHER_ITEM)
     } else if (unit === 0x29 && top) return [cursor, items]
-    else if (unit === 0x29 || unit === 0x5d || unit === 0x7d) {
+    else if (isClose(unit)) {
       if (stack.pop() !== unit) return
     } else if (unit === 0x3b && top) return
-    else if (unit === 0x21 && top) items.push(cursor)
-    else if (unit !== 0x7c && !isAsciiWhitespace(unit) && top) items.push(OTHER_ITEM)
+    else if (unit === 0x21 && top) items.push(componentEnd)
+    else if (top) items.push(OTHER_ITEM)
     cursor++
+    componentEnd = cursor
   }
 }
 
@@ -179,15 +195,13 @@ export function parseNativeDeclaration(source: string): NativeDeclarationHead | 
   if (source.charCodeAt(0) !== 0x28) return
   const prefix = nativeDeclarationPrefix(source)
   if (!prefix || prefix[1] === undefined) return null
-  const [property, start] = prefix
-  const custom = source.startsWith('--', 1)
+  const [property, start, custom] = prefix
   const scan = scanValue(source, start, custom)
   if (!scan) return null
   const [close, items] = scan
   const bang = items.length >= 2 && items[items.length - 1] === IMPORTANT_ITEM ? items[items.length - 2] : -1
   const important = bang >= 0
-  let valueEnd = important ? bang : close
-  while (important && valueEnd > start && (source.charCodeAt(valueEnd - 1) === 0x7c || isAsciiWhitespace(source.charCodeAt(valueEnd - 1)))) valueEnd--
+  const valueEnd = important ? Math.max(bang, start) : close
   if (!custom && items.length === (important ? 2 : 0)) return null
   const suffixStart = close + 1
   if (suffixStart < source.length && !isClassSuffixStart(source[suffixStart])) return null
@@ -356,7 +370,7 @@ export function parseFunctionalClass(source: string): FunctionalClassHead | stri
   const close = first.close
   const suffixStart = tokens[close].end
   const suffix = source.slice(suffixStart)
-  if (suffix && !'!*>+~:[@_.'.includes(suffix[0])) return 'Invalid suffix after mixin arguments'
+  if (suffix && !isClassSuffixStart(suffix[0])) return 'Invalid suffix after mixin arguments'
   const argumentsStart = first.end
   const argumentsEnd = tokens[close].start
   const ranges: [number, number][] = []

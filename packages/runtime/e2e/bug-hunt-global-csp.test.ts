@@ -12,7 +12,7 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
     engine.ensureClassRules(["(display:block)"])
     const snapshot = engine.snapshot()
     text = snapshot.text
-    hydration = JSON.stringify({ version: 5, languageVersion: 17, classNames: [...new Set(snapshot.rules.map(rule => rule.className))], resourceOrder: { variables: snapshot.resources.variables.map(resource => resource.name), keyframes: snapshot.resources.keyframes.map(resource => resource.id) } })
+    hydration = JSON.stringify({ version: 5, languageVersion: 18, classNames: [...new Set(snapshot.rules.map(rule => rule.className))], resourceOrder: { variables: snapshot.resources.variables.map(resource => resource.name), keyframes: snapshot.resources.keyframes.map(resource => resource.id) } })
   } finally { engine.dispose() }
   const requests: string[] = []
   const errors: string[] = []

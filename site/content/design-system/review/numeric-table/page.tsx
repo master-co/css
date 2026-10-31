@@ -20,7 +20,7 @@ function SpacingTable() {
         <th scope="row"><InlineCode>{`--spacing-${entry.key}`}</InlineCode></th>
         <td><InlineCode>{entry.value}</InlineCode></td>
         <td>{`${Number(entry.px.toFixed(4))}px`}</td>
-          <td><div className="inline-flex (width:fit-content) outline-line-subtle (outline-offset:-1px) (outline-style:solid) (outline-width:1px) (background:var(--stripe-pink)) v:middle" style={{ gap: entry.value }}>
+          <td><div className="inline-flex w-fit outline-line-subtle outline-offset(-1) outline-solid outline(1) (background:var(--stripe-pink)) v:middle" style={{ gap: entry.value }}>
           {Array.from({ length: 5 }, (_, index) => <span key={index} className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised" />)}
         </div></td>
       </tr>)}</tbody>

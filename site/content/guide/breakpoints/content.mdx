@@ -102,7 +102,7 @@ Viewport breakpoints decide when the page changes. Container size values decide 
 
 ```html
 <!-- @MARK max-w-4xl@sm --><!-- @MARK max-w-5xl@md --><!-- @MARK max-w-7xl@lg -->
-<main class="(width:100%) (margin-inline:auto) px-md max-w-4xl@sm max-w-5xl@md px-xl@md max-w-7xl@lg">
+<main class="w-full mx-auto px-md max-w-4xl@sm max-w-5xl@md px-xl@md max-w-7xl@lg">
   ...
 </main>
 ```
@@ -137,7 +137,7 @@ Here `@sm`, `@md`, and `@lg` come from custom media definitions. The `4xl`, `5xl
 
 ```html
 <main class="grid-cols(1) gap-lg grid-cols(12)@md">
-  <section class="(container-type:inline-size) grid-col-span(8)@md">
+  <section class="container-inline grid-col-span(8)@md">
     <article class="grid-cols(1) gap-md grid-cols(2)@container((width>=28rem))">
       <div>Summary</div>
       <div>Details</div>

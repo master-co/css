@@ -20,7 +20,7 @@ import type {
   VariableResource
 } from './types'
 
-export const TRANSITION_VERSION = 4
+export const TRANSITION_VERSION = 5
 
 export class EngineError extends Error {
   constructor(readonly code: 'SESSION_DISPOSED' | 'INVALID_PROGRAM' | 'UNSUPPORTED_PROGRAM_VERSION', message: string) {

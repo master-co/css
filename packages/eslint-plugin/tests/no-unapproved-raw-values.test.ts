@@ -13,7 +13,7 @@ const customManifest = createPresetManifest({
 })
 
 createTester({ settings: { '@master/css': { manifest: {
-  version: 6, languageVersion: 17,
+  version: 6, languageVersion: 18,
   utilities: createPresetManifest().utilities,
   variables: { 'font-family': [{ key: 'sans', values: [{ path: [':root,:host'], value: 'sans-serif' }] }] }
 } } } }).run('shared prefix raw value policy follows the property namespace', rule, {

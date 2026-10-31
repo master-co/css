@@ -8,9 +8,9 @@ export default function AnnotationComposition() {
         <div className="review-axes-composition-content"><DemoAxes>
       <DemoMeasure label="Container">
         <DemoSurface className="flex items-center gap-sm (min-height:10rem) p-md">
-          <DemoItem tone="blue" className="(flex:1) p-md (text-align:center)">01</DemoItem>
-          <DemoItem tone="violet" className="(flex:1) p-md (text-align:center)">02</DemoItem>
-          <DemoItem tone="neutral" className="(flex:1) p-md (text-align:center)">03</DemoItem>
+          <DemoItem tone="blue" className="(flex:1) p-md text-center">01</DemoItem>
+          <DemoItem tone="violet" className="(flex:1) p-md text-center">02</DemoItem>
+          <DemoItem tone="neutral" className="(flex:1) p-md text-center">03</DemoItem>
         </DemoSurface>
       </DemoMeasure>
         </DemoAxes></div>

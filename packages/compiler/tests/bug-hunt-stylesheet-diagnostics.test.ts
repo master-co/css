@@ -26,7 +26,7 @@ const baseManifest = {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
 const inputs = [
   { source: '/*😀*/.image{background:url(a.png)}\r\n.x{@contents;}', token: '@contents' as const, code: 'CSS_DIRECTIVE_ERROR' },

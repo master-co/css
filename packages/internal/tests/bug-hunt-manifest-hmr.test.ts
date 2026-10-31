@@ -7,7 +7,7 @@ for (const importedManifest of [false, true]) test(`BH-0004 manifest updates ret
   const file = '/project/style.css'
   const plugin = createMasterCSSManifestVirtualModulePlugin(async () => ({ manifest: {
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 }, entries: [file], dependencies: [file], diagnostics: [] }))
   plugin.configResolved({ command: 'serve', root: '/project' })
   await plugin.buildStart.call({})
@@ -24,7 +24,7 @@ test('manifest dependency updates invalidate an imported runtime program', async
   const file = '/project/style.css'
   const plugin = createMasterCSSManifestVirtualModulePlugin(async () => ({ manifest: {
     version: 6 as const,
-    languageVersion: 17 as const
+    languageVersion: 18 as const
   }, entries: [file], dependencies: [file], diagnostics: [] }), {}, async () => new Uint8Array())
   plugin.configResolved({ command: 'serve', root: '/project' })
   await plugin.buildStart.call({})

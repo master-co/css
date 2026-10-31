@@ -1209,6 +1209,8 @@
           "MasterCSSLanguageSession",
           "MasterCSSLanguageTokenFamilies",
           "MasterCSSLanguageVariable",
+          "MasterCSSNativeDeclarationCompletion",
+          "MasterCSSNativeDeclarationCompletionRequest",
           "MasterCSSTokenFamily",
           "QUERY_COMPARISON_OPERATORS",
           "QUERY_LOGICAL_OPERATORS",
@@ -1238,7 +1240,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "7c65149ded9c39a6"
+      "surface": "55ba01110e2f8827"
     },
     "@master/css-vite": {
       "directory": "vite",

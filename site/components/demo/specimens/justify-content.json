@@ -4,17 +4,17 @@
     "id": "use-explicit-css-values",
     "title": "Keep overflowing content reachable",
     "html": [
-      "<div id=\"layout\" class=\"flex (overflow:auto) (justify-content:safe|center) (width:15rem) (max-width:100%)\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered overflow\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>",
-      "<div id=\"layout\" class=\"flex (overflow:auto) (justify-content:unsafe|center) (width:15rem) (max-width:100%)\" tabindex=\"0\" role=\"region\" aria-label=\"Unsafe centered overflow\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>",
-      "<div id=\"layout\" class=\"flex (overflow:auto) (justify-content:safe|center) (width:15rem) (max-width:100%)\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered fitting content\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:12rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>"
+      "<div id=\"layout\" class=\"flex overflow-auto (justify-content:safe|center) (width:15rem) max-w-full\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered overflow\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>",
+      "<div id=\"layout\" class=\"flex overflow-auto (justify-content:unsafe|center) (width:15rem) max-w-full\" tabindex=\"0\" role=\"region\" aria-label=\"Unsafe centered overflow\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>",
+      "<div id=\"layout\" class=\"flex overflow-auto (justify-content:safe|center) (width:15rem) max-w-full\" tabindex=\"0\" role=\"region\" aria-label=\"Safe centered fitting content\">\n  <div id=\"target\" class=\"flex (flex:none) justify-between (height:4rem) (width:12rem) p-xs\"><span>Start</span><span>End</span></div>\n</div>"
     ],
     "css": "",
     "classes": [
       "flex",
-      "(overflow:auto)",
+      "overflow-auto",
       "(justify-content:safe|center)",
       "(width:15rem)",
-      "(max-width:100%)",
+      "max-w-full",
       "(flex:none)",
       "justify-between",
       "(height:4rem)",
@@ -24,11 +24,11 @@
       "(width:12rem)"
     ],
     "classLists": [
-      "flex (overflow:auto) (justify-content:safe|center) (width:15rem) (max-width:100%)",
+      "flex overflow-auto (justify-content:safe|center) (width:15rem) max-w-full",
       "flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs",
-      "flex (overflow:auto) (justify-content:unsafe|center) (width:15rem) (max-width:100%)",
+      "flex overflow-auto (justify-content:unsafe|center) (width:15rem) max-w-full",
       "flex (flex:none) justify-between (height:4rem) (width:17.5rem) p-xs",
-      "flex (overflow:auto) (justify-content:safe|center) (width:15rem) (max-width:100%)",
+      "flex overflow-auto (justify-content:safe|center) (width:15rem) max-w-full",
       "flex (flex:none) justify-between (height:4rem) (width:12rem) p-xs"
     ],
     "highlighted": []

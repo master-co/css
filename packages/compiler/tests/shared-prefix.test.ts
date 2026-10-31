@@ -9,7 +9,7 @@ import { compileCSSManifestFile } from '../src/node-compiler'
 import { MasterCSSScanner } from './helpers/scanner'
 
 const definitions = '@theme{--font-family-sans:sans-serif;--font-size-sm:1rem}@utility font-(--font-family){font-family:var(--font-family)}@utility font-(--font-size){font-size:var(--font-size)}'
-const baseManifest = { version: 6, languageVersion: 17 } as const
+const baseManifest = { version: 6, languageVersion: 18 } as const
 
 for (const directive of ['import', 'reference']) test(`${directive} retains shared branches and replaces only the authored namespace`, async () => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-shared-prefix-')))

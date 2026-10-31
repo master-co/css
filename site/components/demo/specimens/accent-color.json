@@ -4,17 +4,17 @@
     "id": "set-the-accent-color",
     "title": "Set the accent color",
     "html": [
-      "<!-- Platform accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"grid gap-md (min-width:0) (margin:0) (padding:0) (border-width:0)\n           (accent-color:auto)\">\n    <legend class=\"sr-only\">Platform accent</legend>\n    <label class=\"flex items-center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"flex flex-wrap gap-md\">\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"grid gap-xs (width:240px) (max-width:100%)\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"(width:100%)\">\n    </label>\n  </fieldset>\n</form>",
-      "<!-- Blue accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"grid gap-md (min-width:0) (margin:0) (padding:0) (border-width:0)\n           accent-color-blue\">\n    <legend class=\"sr-only\">Blue accent</legend>\n    <label class=\"flex items-center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"flex flex-wrap gap-md\">\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"grid gap-xs (width:240px) (max-width:100%)\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"(width:100%)\">\n    </label>\n  </fieldset>\n</form>"
+      "<!-- Platform accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"grid gap-md min-w(0) m(0) p(0) b(0)\n           (accent-color:auto)\">\n    <legend class=\"sr-only\">Platform accent</legend>\n    <label class=\"flex items-center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"flex flex-wrap gap-md\">\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"grid gap-xs w(240) max-w-full\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"w-full\">\n    </label>\n  </fieldset>\n</form>",
+      "<!-- Blue accent -->\n<form>\n  <fieldset id=\"target\"\n    class=\"grid gap-md min-w(0) m(0) p(0) b(0)\n           accent-blue\">\n    <legend class=\"sr-only\">Blue accent</legend>\n    <label class=\"flex items-center gap-sm\">\n      <input type=\"checkbox\" checked> Snap to grid\n    </label>\n    <div class=\"flex flex-wrap gap-md\">\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"canvas\" checked> Canvas\n      </label>\n      <label class=\"flex items-center gap-sm\">\n        <input type=\"radio\" name=\"view\" value=\"layers\"> Layers\n      </label>\n    </div>\n    <label class=\"grid gap-xs w(240) max-w-full\">\n      Zoom\n      <input type=\"range\" min=\"25\" max=\"100\" value=\"65\"\n        class=\"w-full\">\n    </label>\n  </fieldset>\n</form>"
     ],
     "css": "",
     "classes": [
       "grid",
       "gap-md",
-      "(min-width:0)",
-      "(margin:0)",
-      "(padding:0)",
-      "(border-width:0)",
+      "min-w(0)",
+      "m(0)",
+      "p(0)",
+      "b(0)",
       "(accent-color:auto)",
       "sr-only",
       "flex",
@@ -22,28 +22,28 @@
       "gap-sm",
       "flex-wrap",
       "gap-xs",
-      "(width:240px)",
-      "(max-width:100%)",
-      "(width:100%)",
-      "accent-color-blue"
+      "w(240)",
+      "max-w-full",
+      "w-full",
+      "accent-blue"
     ],
     "classLists": [
-      "grid gap-md (min-width:0) (margin:0) (padding:0) (border-width:0) (accent-color:auto)",
+      "grid gap-md min-w(0) m(0) p(0) b(0) (accent-color:auto)",
       "sr-only",
       "flex items-center gap-sm",
       "flex flex-wrap gap-md",
       "flex items-center gap-sm",
       "flex items-center gap-sm",
-      "grid gap-xs (width:240px) (max-width:100%)",
-      "(width:100%)",
-      "grid gap-md (min-width:0) (margin:0) (padding:0) (border-width:0) accent-color-blue",
+      "grid gap-xs w(240) max-w-full",
+      "w-full",
+      "grid gap-md min-w(0) m(0) p(0) b(0) accent-blue",
       "sr-only",
       "flex items-center gap-sm",
       "flex flex-wrap gap-md",
       "flex items-center gap-sm",
       "flex items-center gap-sm",
-      "grid gap-xs (width:240px) (max-width:100%)",
-      "(width:100%)"
+      "grid gap-xs w(240) max-w-full",
+      "w-full"
     ],
     "highlighted": []
   }

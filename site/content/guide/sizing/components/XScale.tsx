@@ -6,7 +6,7 @@ function renderInlineCodes(values: string[]) {
   return (
     <div className="flex flex-wrap gap-xs">
       {values.map((value) => (
-        <InlineCode key={value} className="(white-space:nowrap)">{value}</InlineCode>
+        <InlineCode key={value} className="whitespace-nowrap">{value}</InlineCode>
       ))}
     </div>
   )

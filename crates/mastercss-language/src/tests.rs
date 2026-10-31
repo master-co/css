@@ -137,7 +137,7 @@ fn applies_document_context_settings_in_rust() {
 #[test]
 fn tokenizes_selector_combinators_without_class_group_tokens() {
     let session = LanguageSession::create(
-        r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":6,"languageVersion":18,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
     let source = "<div class=\"(color:red)>li:hover block>li:hover\"></div>";
@@ -208,7 +208,7 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+            r#"{"version":6,"languageVersion":18,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
@@ -236,7 +236,7 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}]}"#,
+            r#"{"version":6,"languageVersion":18,"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
@@ -269,7 +269,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_mixin_wrappers_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":6,"languageVersion":17,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":6,"languageVersion":18,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@apply(--ocean)",
@@ -289,7 +289,7 @@ fn completion_owns_mixin_wrappers_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":18}"#).unwrap();
     let class_names = ["(display:block)", "(made-up:nope)"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -323,7 +323,7 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":6,"languageVersion":17,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{},"utilities":[{"kind":"function","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}]}"#,
+        r#"{"version":6,"languageVersion":18,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{},"utilities":[{"kind":"function","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}]}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();
@@ -676,10 +676,130 @@ fn incomplete_declarations_report_their_property_and_value_prefix() {
     assert_eq!(complete.suffix, "[open]:hover");
     assert_eq!(complete.key.as_deref(), Some("display"));
     assert_eq!(complete.value.as_deref(), Some("block"));
+    for (class_name, base, suffix) in [
+        (
+            "(color:red!important):hover",
+            "(color:red!important)",
+            ":hover",
+        ),
+        ("(color:red)!:hover", "(color:red)", "!:hover"),
+        ("(color:red):hover!", "(color:red)", ":hover!"),
+        ("(color:red)#target", "(color:red)", "#target"),
+        ("flex#target", "flex", "#target"),
+        ("flex!", "flex", "!"),
+    ] {
+        let inspection = session.inspect_class_name(class_name, None).unwrap();
+        assert_eq!(
+            inspection.match_status,
+            mastercss_schema::MatchStatus::Matched,
+            "{class_name}"
+        );
+        assert_eq!(inspection.base, base, "{class_name}");
+        assert_eq!(inspection.suffix, suffix, "{class_name}");
+    }
     let short = session.inspect_class_name("flex:hover", None).unwrap();
     assert_eq!(short.kind, ClassSemanticKind::Semantic);
     assert_eq!(
         short.text,
         "@layer utilities{.flex\\:hover:hover{display:flex}}"
     );
+}
+
+#[test]
+fn completes_native_declaration_components_at_the_cursor() {
+    let session = LanguageSession::create(r#"{"version":6,"languageVersion":18}"#).unwrap();
+    let complete = |language_id: &str, marked: &str| {
+        let offset = utf16_len(&marked[..marked.find('¦').unwrap()]);
+        let source = marked.replace('¦', "");
+        // A host string context whose `\"` escapes decode to quotes.
+        let host_ranges = (language_id == "plaintext")
+            .then(|| ClassListContextIr {
+                start: 1,
+                end: utf16_len(&source) - 1,
+                unescape: vec!["\"".into()],
+            })
+            .into_iter()
+            .collect();
+        let result = session
+            .native_declaration_completion(&crate::NativeDeclarationCompletionRequestIr {
+                document: AnalyzeDocumentRequestIr {
+                    source: source.clone(),
+                    language_id: language_id.into(),
+                    host_ranges,
+                    settings: LanguageDocumentSettingsIr::default(),
+                },
+                offset,
+            })
+            .unwrap()?;
+        let replaced = result.range.as_ref().map(|range| {
+            let index = mastercss_lexer::Utf16Index::new(&source);
+            let start = index.utf16_to_byte(range.start).unwrap();
+            let end = index.utf16_to_byte(range.end).unwrap();
+            source[start..end].to_owned()
+        });
+        Some((
+            result.kind,
+            result.property,
+            result.prefix,
+            replaced,
+            result.suffix,
+        ))
+    };
+    use crate::NativeCompletionKind::{None as Protected, Property, Value};
+    let value = |property: &str, prefix: &str, replaced: &str, suffix: &str| {
+        Some((
+            Value,
+            Some(property.to_owned()),
+            prefix.to_owned(),
+            Some(replaced.to_owned()),
+            suffix.to_owned(),
+        ))
+    };
+    // Choosing `block` rewrites the whole component: `(display:block):hover`.
+    assert_eq!(
+        complete("html", r#"<a class="(display:bl¦ock):hover"></a>"#),
+        value("display", "bl", "block", "")
+    );
+    assert_eq!(
+        complete("html", r#"<a class="flex (display:bl¦"></a>"#),
+        value("display", "bl", "bl", ")")
+    );
+    assert_eq!(
+        complete("html", r#"<a class="(flex:1|1|au¦"></a>"#),
+        value("flex", "au", "au", ")")
+    );
+    // Host escapes map back to their source text.
+    assert_eq!(
+        complete("plaintext", r#""(font-family:\"a|b\"|se¦rif)""#),
+        value("font-family", "se", "serif", "")
+    );
+    assert_eq!(
+        complete("html", r#"<a class="(disp¦lay:block)"></a>"#),
+        Some((
+            Property,
+            None,
+            "disp".to_owned(),
+            Some("display:".to_owned()),
+            String::new()
+        ))
+    );
+    for marked in [
+        r#"<a class="(content:'a|b¦c')"></a>"#,
+        r#"<a class="(width:calc(1px+¦2px))"></a>"#,
+        r#"<a class="(background:url(https://a.test/¦b.png))"></a>"#,
+        r#"<a class="(color:red/*a¦*/)"></a>"#,
+    ] {
+        assert_eq!(
+            complete("html", marked),
+            Some((Protected, None, String::new(), None, String::new())),
+            "{marked}"
+        );
+    }
+    for marked in [
+        r#"<a class="(display:block):ho¦ver"></a>"#,
+        r#"<a class="flex:ho¦ver"></a>"#,
+        r#"<a class="block" ¦></a>"#,
+    ] {
+        assert_eq!(complete("html", marked), None, "{marked}");
+    }
 }

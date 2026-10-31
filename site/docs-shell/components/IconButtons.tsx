@@ -2,11 +2,11 @@ import clsx from 'clsx'
 import Link from './Link'
 
 export default ({ children, className, url }: any) =>
-  <section className={clsx(className, 'grid-cols(3) bl-line-subtle bt-line-subtle (border-left-style:solid) (border-left-width:1px) (border-top-style:solid) (border-top-width:1px)')}>{
+  <section className={clsx(className, 'grid-cols(3) bl-line-subtle bt-line-subtle bl-solid bl(1) bt-solid bt(1)')}>{
     children.map((item: any) =>
       <Link key={item.name}
         className={clsx(
-          'flex flex-col items-center justify-center (aspect-ratio:1/1) bb-line-subtle br-line-subtle (border-bottom-style:solid) (border-bottom-width:1px) (border-right-style:solid) (border-right-width:1px) (text-align:center) (transition-duration:0.2s) (transition-property:background-color) bg-surface-raised:hover:not(.disabled)',
+          'flex flex-col items-center justify-center (aspect-ratio:1/1) bb-line-subtle br-line-subtle bb-solid bb(1) br-solid br(1) text-center (transition-duration:0.2s) (transition-property:background-color) bg-surface-raised:hover:not(.disabled)',
           {
             '(filter:grayscale(1)) disabled': item.disabled
           }

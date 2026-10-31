@@ -281,12 +281,6 @@ pub(crate) fn normalize_dynamic_value(value: &str) -> String {
     value.to_owned()
 }
 
-pub(crate) fn parse_raw_condition_wrapper(raw: &str) -> Option<(String, String)> {
-    let raw = raw.trim();
-    let id = raw.strip_prefix('@')?.split_whitespace().next()?.to_owned();
-    Some((id, raw.to_owned()))
-}
-
 pub(crate) fn add_condition_wrapper(
     wrappers: &mut Vec<(String, String)>,
     id: &str,

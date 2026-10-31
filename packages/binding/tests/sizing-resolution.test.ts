@@ -4,7 +4,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createEngineBindingSession } from '../src/engine-binding'
 
 test('native and Wasm agree on entry replacement, theme-only isolation and removed sizes', async () => {
-  const manifest: MasterCSSManifest = { version: 6, languageVersion: 17,
+  const manifest: MasterCSSManifest = { version: 6, languageVersion: 18,
     variables: { 'font-size': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }], 'font-family': [{ key: 'brand', values: [{ path: [':root'], value: 'red' }] }] },
     utilities: [
       ...['size', 'box'].map(name => ({ kind: 'function' as const, name, parameters: [{ name: '--value' }], body: [{ type: 'declaration' as const, property: 'width', value: [{ type: 'function' as const, name: 'var', value: [{ type: 'text' as const, value: '--value' }] }] }] })),

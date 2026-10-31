@@ -11,16 +11,16 @@ export default function ExpandContent(props: any) {
   return (
     <>
       <div {...props} className={clsx(props.className, {
-        '(overflow:hidden) (max-height:480px)': !expanded,
-        '(overflow:auto)': expanded,
+        'overflow-hidden max-h(480)': !expanded,
+        'overflow-auto': expanded,
       })}>
         {props.children}
       </div>
-      <div className={clsx('relative flex items-center justify-center (width:100%) (background-image:linear-gradient(transparent,var(--color-surface-base)))', {
-        'sticky (bottom:0) pb-md (padding-top:1em)': expanded,
+      <div className={clsx('relative flex items-center justify-center w-full (background-image:linear-gradient(transparent,var(--color-surface-base)))', {
+        'sticky bottom(0) pb-md (padding-top:1em)': expanded,
         '(margin-bottom:2em) (margin-top:-7.5rem) (padding-top:7.5rem)': !expanded,
       })}>
-        <button className={clsx('(border-radius:1e9em) outline-line-subtle (outline-offset:0) (outline-style:solid) (outline-width:1px) bg-surface-raised shadow-sm btn btn-sm', {
+        <button className={clsx('(border-radius:1e9em) outline-line-subtle outline-offset(0) outline-solid outline(1) bg-surface-raised shadow-sm btn btn-sm', {
           '(margin-top:-2rem)': !expanded
         })} onClick={() => setExpanded(!expanded)}>{$(expanded ? 'Collapse' : 'Expand')}</button>
       </div>

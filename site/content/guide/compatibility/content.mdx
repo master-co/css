@@ -124,11 +124,11 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 
 ```html
 <!-- @MARK :has(:checked) -->
-<form class="(outline-width:2px):has(:checked) (outline-style:solid):has(:checked) outline-red:has(:checked)">…</form>
+<form class="outline(2):has(:checked) outline-solid:has(:checked) outline-red:has(:checked)">…</form>
 ```
 
 <Class2CSS>
-  {['(outline-width:2px):has(:checked) (outline-style:solid):has(:checked) outline-red:has(:checked)']}
+  {['outline(2):has(:checked) outline-solid:has(:checked) outline-red:has(:checked)']}
 </Class2CSS>
 
 ---
@@ -198,7 +198,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button type="button" class="(height:40px) px-md r-md bg-blue fg-white">Save</button>
+<button type="button" class="h(40) px-md r-md bg-blue fg-white">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#explicit-pruning).

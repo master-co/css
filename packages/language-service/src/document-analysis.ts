@@ -15,22 +15,29 @@ export function clearDocumentAnalyses(service: MasterCSSLanguageService) {
   documents.delete(service)
 }
 
-export function analyzeDocument(service: MasterCSSLanguageService, document: TextDocument) {
-  const settings = {
-    classAttributes: service.settings.classAttributes,
-    classFunctions: service.settings.classFunctions,
-    classDeclarations: service.settings.classDeclarations
+/** The Rust document request for a document under the service's class settings. */
+export function documentRequest(service: MasterCSSLanguageService, document: TextDocument) {
+  return {
+    source: document.getText(),
+    languageId: document.languageId,
+    settings: {
+      classAttributes: service.settings.classAttributes,
+      classFunctions: service.settings.classFunctions,
+      classDeclarations: service.settings.classDeclarations
+    }
   }
-  const settingsKey = JSON.stringify(settings)
+}
+
+export function analyzeDocument(service: MasterCSSLanguageService, document: TextDocument) {
+  const request = documentRequest(service, document)
+  const settingsKey = JSON.stringify(request.settings)
   let cache = documents.get(service)
   const cached = cache?.get(document)
   if (cached && cached.version === document.version
     && cached.languageId === document.languageId && cached.settingsKey === settingsKey) {
     return cached.result
   }
-  const result = service.session.analyzeDocument({
-    source: document.getText(), languageId: document.languageId, settings
-  })
+  const result = service.session.analyzeDocument(request)
   if (!cache) documents.set(service, cache = new WeakMap())
   cache.set(document, { version: document.version, languageId: document.languageId, settingsKey, result })
   return result

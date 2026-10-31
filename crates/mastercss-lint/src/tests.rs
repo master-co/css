@@ -8,11 +8,11 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":6,"languageVersion":17,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"function","name":"physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":6,"languageVersion":18,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"function","name":"physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn wrapper_conflicts_compare_expanded_selectors_and_keep_branch_order() {
-    let manifest = serde_json::json!({"version":6,"languageVersion":17,"mixins":[{"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"name":"--multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}]});
+    let manifest = serde_json::json!({"version":6,"languageVersion":18,"mixins":[{"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"name":"--multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}]});
     let mut session = LintSession::create(&manifest.to_string()).unwrap();
     let equivalent = session
         .analyze(
@@ -337,10 +337,27 @@ fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
 
 #[test]
 fn canonical_partial_fixes_preserve_static_cascade_positions() {
+    // A side style partially overrides the whole style in either class order; it is a
+    // read-only overlap, never a full conflict that would remove `b-solid`.
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     for classes in [["b-solid", "bt-dashed"], ["bt-dashed", "b-solid"]] {
         let result = session.analyze(classes, None, &HashSet::new()).unwrap();
-        assert!(result.partial_conflicts.is_empty());
+        assert!(result.conflicts.is_empty());
+        assert_eq!(result.partial_conflicts.len(), 1);
+        assert_eq!(result.partial_conflicts[0].class_name, "b-solid");
+        assert_eq!(result.partial_conflicts[0].conflict, "bt-dashed");
+    }
+    for classes in [["m-md", "mt(0)"], ["mt(0)", "m-md"]] {
+        let result = session.analyze(classes, None, &HashSet::new()).unwrap();
+        assert!(result.conflicts.is_empty());
+        assert_eq!(result.partial_conflicts[0].class_name, "m-md");
+        assert_eq!(result.partial_conflicts[0].conflict, "mt(0)");
+    }
+    for classes in [["m-md", "m(4)"], ["m(4)", "m-md"]] {
+        let result = session.analyze(classes, None, &HashSet::new()).unwrap();
+        assert_eq!(result.conflicts.len(), 1);
+        assert_eq!(result.conflicts[0].class_name, "m-md");
+        assert_eq!(result.conflicts[0].conflicts, ["m(4)"]);
     }
 }
 

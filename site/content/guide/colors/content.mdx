@@ -39,9 +39,9 @@ Start with the kind of decision you are making. Most app chrome should use roles
 <FoundationColorRoles />
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK (border-width:1px) (border-style:solid) b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK b(1) b-solid b-line-divider --><!-- @MARK fg-text-strong --><!-- @MARK fg-text-muted --><!-- @MARK fg-text-link -->
 <main class="bg-surface-base fg-text-body">
-  <section class="(border-width:1px) (border-style:solid) b-line-divider bg-surface-raised">
+  <section class="b(1) b-solid b-line-divider bg-surface-raised">
     <h2 class="fg-text-strong">Project updates</h2>
     <p class="fg-text-muted">Three milestones changed this week.</p>
     <a class="fg-text-link underline" href="#">Continue</a>
@@ -86,10 +86,10 @@ Line tokens are for borders, dividers, outlines, and strokes. `divider` and `sub
 See the complete [values and consumers](/reference/tokens/color-line) in Reference.
 
 ```html
-<!-- @MARK (border-width:1px) (border-style:solid) b-line-control -->
+<!-- @MARK b(1) b-solid b-line-control -->
 <label>
   Collection name
-  <input class="(border-width:1px) (border-style:solid) b-line-control" />
+  <input class="b(1) b-solid b-line-control" />
 </label>
 ```
 
@@ -158,9 +158,9 @@ Override preset role tokens when a repeated UI decision needs product-specific c
 ```
 
 ```html
-<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK (border-width:1px) (border-style:solid) b-line-divider --><!-- @MARK fg-text-muted -->
+<!-- @MARK bg-surface-base --><!-- @MARK fg-text-body --><!-- @MARK bg-surface-raised --><!-- @MARK b(1) b-solid b-line-divider --><!-- @MARK fg-text-muted -->
 <main class="bg-surface-base fg-text-body">
-  <section class="(border-width:1px) (border-style:solid) b-line-divider bg-surface-raised">
+  <section class="b(1) b-solid b-line-divider bg-surface-raised">
     <p class="fg-text-muted">The classes stay the same in every mode.</p>
   </section>
 </main>

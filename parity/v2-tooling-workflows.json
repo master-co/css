@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "languageVersion": 17,
+  "languageVersion": 18,
   "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@utility erased { color:red; }\n@utility erased {}\n@utility pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {

@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import { compileProgram, getRuntimeLoaderURL } from './init'
 
-const baseManifest = { version: 6 as const, languageVersion: 17 as const }
+const baseManifest = { version: 6 as const, languageVersion: 18 as const }
 const definitions = '@layer before;@layer motion{@keyframes probe{to{opacity:.2}}@media(width>600px){@keyframes probe{to{opacity:.4}}}}@supports(display:grid){@keyframes probe{to{opacity:.6}}}@keyframes probe{to{opacity:.8}}'
 const source = '@prune native;' + definitions
 

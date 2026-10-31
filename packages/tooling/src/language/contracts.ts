@@ -44,6 +44,26 @@ export interface MasterCSSDocumentAnalysis {
   readonly semanticTokenData: readonly number[]
 }
 
+export interface MasterCSSNativeDeclarationCompletionRequest extends MasterCSSDocumentAnalysisRequest {
+  /** The UTF-16 cursor offset in the source. */
+  readonly offset: number
+}
+
+/** The completion context of a cursor inside a `(property:value)` class head. */
+export interface MasterCSSNativeDeclarationCompletion {
+  readonly version: number
+  /** `none` is a string, comment, URL or nested function or block, where nothing completes. */
+  readonly kind: 'property' | 'value' | 'none'
+  /** The property of a value context. */
+  readonly property?: string
+  /** The class text of the component before the cursor. */
+  readonly prefix: string
+  /** The source range a completion replaces, including the component's rest after the cursor. */
+  readonly range?: Readonly<{ start: number, end: number }>
+  /** Text a completion must end with, such as the `)` an unclosed head lacks. */
+  readonly suffix?: string
+}
+
 export interface MasterCSSFormatDirectivesRequest {
   readonly source: string
   readonly range?: Readonly<{ start: number, end: number }>

@@ -17,7 +17,7 @@ export default function PackageBadges({ repo, npm, source, translate = (text) =>
   const darkQ = `color=${darkBg}&logoColor=${darkFg}&style=for-the-badge`
   const $ = translate
   return (
-    <div className='flex gap-xs (min-height:28px) mt-md'>
+    <div className='flex gap-xs min-h(28) mt-md'>
       {repo && <Link aria-label={$('GitHub release (latest by date including pre-releases)')} href={`https://github.com/${repo}/releases`}>
         <img className='r-sm hidden@apply(--site-dark)' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${lightQ}&label=%20&logo=github&include_prereleases`} />
         <img className='r-sm hidden@apply(--site-light)' alt={$('GitHub release (latest by date including pre-releases)')} src={`https://img.shields.io/github/v/release/${repo}?${darkQ}&label=%20&logo=github&include_prereleases`} />

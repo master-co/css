@@ -330,13 +330,12 @@
   --shadow-2xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 12px 24px -8px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .50)), 0 32px 64px -16px light-dark(oklch(0% 0 none / .18), oklch(0% 0 none / .44));
 }
 
-/* Named value aliases */
-@theme {
-  --full: 100%;
-
-  --fit: fit-content;
-  --max: max-content;
-  --min: min-content;
+/* Keyword constants, substituted into the utilities that use them. */
+@theme inline {
+  --container-full: 100%;
+  --container-fit: fit-content;
+  --container-max: max-content;
+  --container-min: min-content;
 
   --order-first: -999999;
   --order-last: 999999;

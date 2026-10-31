@@ -155,7 +155,7 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | --- | --- | --- |
 | `p-6`, `px-4`, `mt-8` | `(padding:1.5rem)`, `(padding-inline:1rem)`, `(margin-top:2rem)` | These values assume Tailwind’s default .25rem scale; check the original project configuration. Use a defined token such as `p-card` for product spacing. |
 | `-mt-4` | `(margin-top:-1rem)` | Use a negative raw value, or `-mt-card` for a defined numeric token. |
-| `w-full`, `h-screen`, `min-w-0` | `(width:100%)`, `(height:100vh)`, `(min-width:0)` | Use native values when they read better. |
+| `w-full`, `h-screen`, `min-w-0` | `w-full`, `(height:100vh)`, `min-w(0)` | Pixel and zero values use direct-value functions; other units stay native. |
 | `rounded-lg` | `r-lg` | Radius tokens come from the `radius` namespace. |
 | `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
 | `bg-zinc-50`, `text-zinc-500` | `bg-zinc-5`, `fg-zinc-60` | The scales differ. This darker text step keeps the fixed light surface readable; compare actual values instead of dividing Tailwind steps by ten. |
@@ -164,14 +164,14 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 | `grid-cols-3`, `gap-4` | `grid-cols(3)`, `(gap:1rem)` | Use the explicit grid recipe and the native `gap` property. |
 | Arbitrary value such as `w-[min(100%,72rem)]` | `(width:min(100%,72rem))` | Write native CSS function values directly. |
 | Arbitrary property such as `[scroll-margin-top:4rem]` | `(scroll-margin-top:4rem)` | Master CSS writes every native declaration in parentheses. |
-| Important modifier such as `!mt-0` | `(margin-top:0)!` | The important marker goes at the end of the class. |
+| Important modifier such as `!mt-0` | `mt(0)!` | The important marker goes at the end of the class. |
 
 Example conversion:
 
 ```html
-<section class="grid gap-lg (width:100%) max-w-5xl (margin-inline:auto) px-md py-2xl grid-cols(3)@md">
+<section class="grid gap-lg w-full max-w-5xl mx-auto px-md py-2xl grid-cols(3)@md">
   <article class="p-lg r-lg bg-surface-base shadow-sm">
-    <h2 class="(margin:0) font-2xl font-semibold fg-text-neutral">Account</h2>
+    <h2 class="m(0) font-2xl font-semibold fg-text-neutral">Account</h2>
     <p class="mt-xs fg-text-muted">Review profile settings.</p>
   </article>
 </section>
@@ -195,7 +195,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | Tailwind v4 pattern | Master CSS pattern | Notes |
 | --- | --- | --- |
 | `hover:bg-blue-700` | `bg-blue-70:hover` | Selector states follow the value. |
-| `focus-visible:outline-2` | `(outline-width:2px):focus-visible` | Use native pseudo-class names when they are clearer. |
+| `focus-visible:outline-2` | `outline(2):focus-visible` | Use native pseudo-class names when they are clearer. |
 | `disabled:opacity-50` | `(opacity:.5):disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | Preserve the original threshold with an explicit condition; the two presets use different `md` values. |
 | `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | Output follows the explicit `--manual-dark` selector mixin. |
@@ -388,9 +388,9 @@ function Progress({ value }: { value: number }) {
   const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
   return (
     <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
-      className="(overflow:hidden) (height:1rem) (border-radius:100%) bg-gray-10">
+      className="overflow-hidden (height:1rem) (border-radius:100%) bg-gray-10">
       <div
-        className="(height:100%) (width:var(--progress)) bg-blue-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        className="h-full (width:var(--progress)) bg-blue-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
         style={{ '--progress': `${percent}%` } as React.CSSProperties}
       />
     </div>
@@ -469,6 +469,6 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
-| Tailwind `container` utility semantics | Master CSS uses native `container-type` declarations for a query boundary. | Use `(width:100%) (max-width:72rem) (margin-inline:auto) (padding-inline:1rem)` for page wrappers and `(container-type:inline-size)` for an ancestor query container. |
+| Tailwind `container` utility semantics | Master CSS uses native `container-type` declarations for a query boundary. | Use `w-full (max-width:72rem) mx-auto (padding-inline:1rem)` for page wrappers and `container-inline` for an ancestor query container. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `(outline:*)`, `(outline-offset:*)`, `(box-shadow:*)`, or custom utilities. |
 | Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, and combinators. |

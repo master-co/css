@@ -27,8 +27,9 @@ for (const mode of ['runtime', 'progressive'] as const) {
     expect(await page.locator('#type').evaluate(element => getComputedStyle(element).fontFamily)).toContain('sans-serif')
     for (const property of ['animation-duration', 'transition-duration']) await expect(page.locator('#motion')).toHaveCSS(property, '0.15s')
     for (const property of ['animation-timing-function', 'transition-timing-function']) await expect(page.locator('#motion')).toHaveCSS(property, 'cubic-bezier(0.4, 0, 0.2, 1)')
-    await expect(page.locator('#shorthand')).toHaveCSS('animation-duration', '1s')
-    await expect(page.locator('#shorthand')).toHaveCSS('animation-timing-function', 'ease')
+    // Longhand token families follow the shorthand family, so they refine `animate-fade`.
+    await expect(page.locator('#shorthand')).toHaveCSS('animation-duration', '0.15s')
+    await expect(page.locator('#shorthand')).toHaveCSS('animation-timing-function', 'cubic-bezier(0.4, 0, 0.2, 1)')
     if (mode === 'progressive') expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
     await page.evaluate(program => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh(program), compileProgram(ambiguous))
     await expect(page.locator('#type')).toHaveCSS('font-size', '16px')

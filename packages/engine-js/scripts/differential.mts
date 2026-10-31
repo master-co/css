@@ -9,7 +9,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileRuntimeProgram, createWasmEngineSession } from '../../binding-wasm-engine/src/node.ts'
 import { createEngineSession, decodeProgram, type EngineSession, type Program } from '../src/index.ts'
-import { corpusEngineCases, fuzzClasses, markupClasses, noiseClasses, rustTestClasses, stateClasses, themeEngineCases, tokenClasses, valueClasses, type EngineCase, type ManifestSource } from './class-sources.mts'
+import { corpusEngineCases, fuzzClasses, markupClasses, noiseClasses, rustTestClasses, stateClasses, themeEngineCases, tokenClasses, utilityClasses, valueClasses, type EngineCase, type ManifestSource } from './class-sources.mts'
 import { recipeSources } from './recipe-sources.mts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -105,8 +105,10 @@ async function sessions(program: Uint8Array, emittedGlobals?: EngineCase['emitte
 // Coverage: syntactic features among the classes Rust accepts, plus which manifest
 // utilities, custom media and variable namespaces they reach.
 const FEATURES: [string, RegExp][] = [
-  ['native declaration', /^-?[a-z-]+:[^:]/],
-  ['custom property', /^--/],
+  // `flex:hover` is a registered name with a selector; only parenthesized heads are native.
+  ['native declaration', /^\((?!--)-?[a-z][\w-]*:/i],
+  ['custom property', /^\(--/],
+  ['id selector #', /[^(|]#[a-z_]/i],
   ['group {…}', /^\{/],
   ['function utility', /^-?[a-z-]+\(/],
   ['negative', /^-[a-z]/],
@@ -122,8 +124,10 @@ const FEATURES: [string, RegExp][] = [
   ['var()', /var\(/],
   ['multi-value |', /\|/]
 ]
-// Generated rules that only recipes, `@apply` and keyframe resources produce, over every source.
-const RULE_FEATURES = ['function utility', '@apply', 'several nodes', 'keyframeNames', 'retainAllKeyframes'] as const
+// Generated rules that only recipes, `@apply` and keyframe resources produce, and the
+// rule categories ordering sorts by, over every source.
+const RULE_FEATURES = ['function utility', '@apply', 'several nodes', 'keyframeNames', 'retainAllKeyframes', 'recipe category', 'atomic category', 'native category'] as const
+const CATEGORY_FEATURES = ['recipe category', 'atomic category', 'native category'] as const
 const coverage = {
   features: Object.fromEntries(FEATURES.map(([name]) => [name, 0])) as Record<string, number>,
   rules: Object.fromEntries(RULE_FEATURES.map((name) => [name, 0])) as Record<typeof RULE_FEATURES[number], number>,
@@ -135,7 +139,7 @@ const coverage = {
 const utilityNames = (manifest.utilities as { name: string }[]).map((utility) => utility.name).sort((a, b) => b.length - a.length)
 const mediaNames = Object.keys(manifest.customMedia).map((name) => name.slice(2))
 
-type ReportedRule = { variableNames?: string[], keyframeNames?: string[], nodes?: unknown[], retainAllKeyframes?: boolean }
+type ReportedRule = { variableNames?: string[], keyframeNames?: string[], nodes?: unknown[], retainAllKeyframes?: boolean, priority?: { category?: number } }
 
 function recordRuleCoverage(className: string, rules: ReportedRule[]) {
   if (/^-?[a-z-]+\(/.test(className)) coverage.rules['function utility']++
@@ -143,6 +147,9 @@ function recordRuleCoverage(className: string, rules: ReportedRule[]) {
   if (rules.some((rule) => rule.nodes)) coverage.rules['several nodes']++
   if (rules.some((rule) => rule.keyframeNames)) coverage.rules.keyframeNames++
   if (rules.some((rule) => rule.retainAllKeyframes)) coverage.rules.retainAllKeyframes++
+  for (const [category, feature] of CATEGORY_FEATURES.entries()) {
+    if (rules.some((rule) => rule.priority?.category === category)) coverage.rules[feature]++
+  }
 }
 
 function recordCoverage(className: string, rules: ReportedRule[]) {
@@ -229,7 +236,7 @@ async function runEngineCases(name: string, cases: EngineCase[]) {
 }
 
 function globalsCases(): EngineCase[] {
-  const classes = ['fg-red-60', 'animation:fade|1s', 'animate-fade', 'bg-blue-50@dark', 'm-md']
+  const classes = ['fg-red-60', '(animation:fade|1s)', 'animate-fade', 'bg-blue-50@dark', 'm-md']
   return [{
     id: 'default',
     manifest: 'default',
@@ -245,12 +252,63 @@ function globalsCases(): EngineCase[] {
   }]
 }
 
+/**
+ * Expected outputs checked against each engine on its own: when both engines are
+ * wrong alike, zero differences prove nothing. Each case is a class list and the
+ * rule texts the snapshot must hold, in order.
+ */
+const EXPECTED: [classes: string[], texts: string[]][] = [
+  [['(color:red/*keep*/)'], ['.\\(color\\:red\\/\\*keep\\*\\/\\){color:red/*keep*/}']],
+  [['(color:red)#target'], ['.\\(color\\:red\\)\\#target#target{color:red}']],
+  [['block#target'], ['.block\\#target#target{display:block}']],
+  [['(font-family:foo\\|!important)'], ['.\\(font-family\\:foo\\\\\\|\\!important\\){font-family:foo\\|!important}']],
+  [['(--x:a!important{})'], ['.\\(--x\\:a\\!important\\{\\}\\){--x:a!important{}}']],
+  [['(--x:a!important[b])'], ['.\\(--x\\:a\\!important\\[b\\]\\){--x:a!important[b]}']],
+  [['(\\2d\\2dx:)'], ['.\\(\\\\2d\\\\2dx\\:\\){\\2d\\2dx:}']],
+  [['(background:url(/a\u00a0b.png))'], ['.\\(background\\:url\\(\\/a\u00a0b\\.png\\)\\){background:url(/a\u00a0b.png)}']],
+  [['select-none', '(user-select:none)'], ['.select-none{-webkit-user-select:none;user-select:none}', '.\\(user-select\\:none\\){-webkit-user-select:none;user-select:none}']],
+  [['mt(0)', 'm-md'], ['.m-md{margin:var(--spacing-md)}', '.mt\\(0\\){margin-top:calc(0 * 1px)}']],
+  [['mt-md', 'm(4)'], ['.m\\(4\\){margin:calc(4 * 1px)}', '.mt-md{margin-top:var(--spacing-md)}']],
+  [['mx-auto', 'm-md'], ['.m-md{margin:var(--spacing-md)}', '.mx-auto{margin-inline:auto}']],
+  [['ml(0)', 'mx(4)', 'm(8)'], ['.m\\(8\\){margin:calc(8 * 1px)}', '.mx\\(4\\){margin-inline:calc(4 * 1px)}', '.ml\\(0\\){margin-left:calc(0 * 1px)}']],
+  [['m(4)', 'm-md'], ['.m-md{margin:var(--spacing-md)}', '.m\\(4\\){margin:calc(4 * 1px)}']],
+  [['(margin:2rem)', 'm(4)'], ['.m\\(4\\){margin:calc(4 * 1px)}', '.\\(margin\\:2rem\\){margin:2rem}']],
+  [['whitespace-normal', 'truncate'], ['.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}', '.whitespace-normal{white-space:normal}']],
+  [['w-full', 'order-first'], ['.order-first{order:-999999}', '.w-full{width:100%}']]
+]
+
+function checkExpected(name: string, engine: 'rust' | 'js', create: () => Promise<{ ensureClassRules(classes: string[]): unknown, snapshot(): unknown, dispose(): void }>) {
+  return async () => {
+    for (const [classes, texts] of EXPECTED) {
+      const session = await create()
+      try {
+        session.ensureClassRules(classes)
+        const { rules } = session.snapshot() as { rules: { text: string }[] }
+        const actual = rules.map((rule) => rule.text)
+        const stats = source(name).operations.expected ??= { compared: 0, mismatched: 0, examples: [] }
+        stats.compared++
+        if (JSON.stringify(actual) !== JSON.stringify(texts)) {
+          stats.mismatched++
+          if (stats.examples.length < EXAMPLE_LIMIT) stats.examples.push({ subject: `${engine}: ${classes.join(' ')}`, difference: { expected: texts, actual } })
+        }
+      } finally {
+        session.dispose()
+      }
+    }
+  }
+}
+
 const startedAt = performance.now()
+const defaultProgram = await programFor('default')
+source('expected outputs').candidates = EXPECTED.length * 2
+await checkExpected('expected outputs', 'rust', () => createWasmEngineSession(defaultProgram, {}))()
+await checkExpected('expected outputs', 'js', async () => createEngineSession(defaultProgram))()
 const markup = markupClasses(root)
 await runEngineCases('corpus engineCases', corpusEngineCases(root))
 await runEngineCases('theme manifests', themeEngineCases())
 await runClassSet('rust tests', rustTestClasses(root))
 await runClassSet('site + examples', markup.classes)
+await runClassSet('preset utilities', utilityClasses(manifest))
 await runClassSet(`fuzz (seed ${seed})`, fuzzClasses(manifest, fuzzCount, seed))
 await runClassSet('token utilities', tokenClasses((decodeProgram(await programFor('default')) as { program: Program }).program))
 await runClassSet(`value fuzz (seed ${seed})`, valueClasses(fuzzCount * 2, seed))

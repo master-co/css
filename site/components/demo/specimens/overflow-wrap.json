@@ -4,22 +4,22 @@
     "id": "allow-breaks-anywhere",
     "title": "Allow breaks anywhere",
     "html": [
-      "<!-- wrap-break-word -->\n<code id=\"target\" class=\"block (overflow-wrap:break-word) (width:min-content) (margin:0) font-md (line-height:24px)\">PREVIEW</code>",
-      "<!-- wrap-anywhere -->\n<code id=\"target\" class=\"block (overflow-wrap:anywhere) (width:min-content) (margin:0) font-md (line-height:24px)\">PREVIEW</code>"
+      "<!-- wrap-break-word -->\n<code id=\"target\" class=\"block wrap-break-word w-min m(0) font-md (line-height:24px)\">PREVIEW</code>",
+      "<!-- wrap-anywhere -->\n<code id=\"target\" class=\"block wrap-anywhere w-min m(0) font-md (line-height:24px)\">PREVIEW</code>"
     ],
     "css": "",
     "classes": [
       "block",
-      "(overflow-wrap:break-word)",
-      "(width:min-content)",
-      "(margin:0)",
+      "wrap-break-word",
+      "w-min",
+      "m(0)",
       "font-md",
       "(line-height:24px)",
-      "(overflow-wrap:anywhere)"
+      "wrap-anywhere"
     ],
     "classLists": [
-      "block (overflow-wrap:break-word) (width:min-content) (margin:0) font-md (line-height:24px)",
-      "block (overflow-wrap:anywhere) (width:min-content) (margin:0) font-md (line-height:24px)"
+      "block wrap-break-word w-min m(0) font-md (line-height:24px)",
+      "block wrap-anywhere w-min m(0) font-md (line-height:24px)"
     ],
     "highlighted": []
   }

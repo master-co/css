@@ -91,7 +91,13 @@ pub fn extract_source_batch(request: &SourceBatchRequestIr) -> SourceBatchIr {
 /// Extracts unvalidated Master CSS class-like candidates from arbitrary source.
 /// Validation and CSS generation intentionally remain outside this crate.
 pub fn extract_class_candidates(content: &str) -> Vec<String> {
-    let content = pre_exclude(content);
+    literal_class_candidates(&pre_exclude(content))
+}
+
+/// The candidates of a string value a parser already separated from host code: its
+/// text is class text, so `/*`, `//` and `import(` belong to classes such as
+/// `(color:red/*keep*/)` or `(background:url(https://a.test/b.png))`.
+pub fn literal_class_candidates(content: &str) -> Vec<String> {
     let mut candidates = Vec::new();
     let mut seen = HashSet::new();
     for block in content.split_whitespace() {
@@ -291,7 +297,7 @@ impl ClassCandidateVisitor {
 
     fn add_class_string(&mut self, value: &str, range: std::ops::Range<usize>) {
         self.records.push((value.to_owned(), range, false));
-        for candidate in extract_class_candidates(value) {
+        for candidate in literal_class_candidates(value) {
             if source_url_literal(&candidate) {
                 continue;
             }
@@ -828,6 +834,27 @@ mod tests {
             "---\nconst frontmatterClasses = 'fg-red'\n---\n<script>const scriptClasses = 'p-md'</script><style>.ignored { color: red; }</style><main class=\"block (margin:auto)\">Hello</main>",
         );
         assert_eq!(classes, ["fg-red", "p-md", "block", "(margin:auto)"]);
+    }
+
+    #[test]
+    fn javascript_literals_keep_comments_and_urls_inside_classes() {
+        let classes = [
+            "(color:red/*keep*/)",
+            "(background:url(https://a.test/b.png))",
+            "(background:url('https://a.test/c.png'))",
+        ];
+        let list = classes.join(" ");
+        let source = format!(
+            "// fg-red\n/* p-md */\nconst a = <div className=\"{list}\" />;\nconst b = `{list}`; // m-md"
+        );
+        assert_eq!(extract_oxc_classes("component.tsx", &source), classes);
+        let result = extract_source_result(&SourceExtractionInputIr {
+            source: "component.tsx".into(),
+            content: source.clone(),
+            kind: SourceExtractorKind::default(),
+            owner: None,
+        });
+        assert_eq!(result.candidates, classes);
     }
 
     #[test]

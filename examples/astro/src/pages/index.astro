@@ -5,23 +5,23 @@ import Card from '../components/Card.astro';
 
 <Layout title="Master CSS Astro progressive rendering">
   <main class="(min-height:100vh) (padding:2.5rem) (background-color:#f8fafc) (color:#0f172a)">
-    <section class="(max-width:960px) (margin-inline:auto) (padding-block:3rem)">
-      <p class="inline-flex items-center (height:32px) (padding-inline:0.75rem) (border-radius:999px) (background-color:#eff6ff) (color:royalblue) (font-size:14px) (font-weight:600)">
+    <section class="max-w(960) mx-auto (padding-block:3rem)">
+      <p class="inline-flex items-center h(32) (padding-inline:0.75rem) r(999) (background-color:#eff6ff) (color:royalblue) (font-size:14px) (font-weight:600)">
         Astro integration
       </p>
       <h1 class="(margin:1rem|0|0) (font-size:48px) (font-weight:800) (letter-spacing:-.015em)">
         Explicit progressive rendering
       </h1>
-      <p class="(max-width:640px) (color:#475569) (font-size:18px) (line-height:1.7)">
+      <p class="max-w(640) (color:#475569) (font-size:18px) (line-height:1.7)">
         The Astro integration pre-renders the CSS needed for the initial HTML and hydrates the Master CSS runtime for classes that appear later in the browser.
       </p>
-      <div class="(margin-top:1.5rem) (padding:1.25rem) (border-radius:10px) bg-white (border:1px|solid|#e2e8f0)">
-        <p class="(margin:0) (color:#475569) (line-height:1.6)">
+      <div class="(margin-top:1.5rem) (padding:1.25rem) r(10) bg-white (border:1px|solid|#e2e8f0)">
+        <p class="m(0) (color:#475569) (line-height:1.6)">
           This button starts with pre-rendered classes. Click it to add a new runtime-only class after the page has loaded.
         </p>
         <button
           data-runtime-toggle
-          class="inline-flex items-center (height:44px) (padding-inline:1.25rem) (margin-top:1rem) bg-black fg-white (border-radius:6px) (font-size:14px) (font-weight:600) (border:0) (cursor:pointer)"
+          class="inline-flex items-center h(44) (padding-inline:1.25rem) (margin-top:1rem) bg-black fg-white r(6) (font-size:14px) (font-weight:600) (border:0) (cursor:pointer)"
         >
           Hydrate runtime class
         </button>
@@ -30,8 +30,8 @@ import Card from '../components/Card.astro';
         </p>
       </div>
     </section>
-    <section class="(max-width:960px) (margin-inline:auto) (padding-bottom:3rem)">
-      <ul role="list" class="grid grid-cols(3) (gap:1rem) (padding:0) (margin:0)">
+    <section class="max-w(960) mx-auto (padding-bottom:3rem)">
+      <ul role="list" class="grid grid-cols(3) (gap:1rem) p(0) m(0)">
         <Card
           href="https://css.master.co/guide/rendering-modes#progressive-rendering"
           title="pre-rendered CSS"

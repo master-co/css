@@ -20,7 +20,7 @@ export const projectStyleExamples = {
   tokens: {
     title: 'A small project vocabulary',
     source: `@theme {\n${projectTokenDefinitions.map(token => `  ${token.name}: ${token.value};`).join('\n')}\n}\n`,
-    html: "<article class=\"p-card r-card (border-width:1px) (border-style:solid) b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"(margin:0) font-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-semibold fg-text-strong\">Room for the details</h2>\n  <p class=\"(margin:0) text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
+    html: "<article class=\"p-card r-card b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"m(0) font-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-semibold fg-text-strong\">Room for the details</h2>\n  <p class=\"m(0) text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
     caption: 'p-card reads spacing, r-card reads radius, and fg-brand reads color. Each class retains a reference to its theme variable.',
     guide: '/guide/theme',
   },
@@ -30,7 +30,7 @@ export const projectStyleExamples = {
   --spacing-card: 1.5rem;
 }
 `,
-    html: "<div class=\"grid gap-md\">\n  <article class=\"p-card r-sm (border-width:1px) (border-style:solid) b-line-divider bg-surface-raised\">\n    <h2 class=\"(margin:0) text-lg font-semibold\">Collection</h2>\n    <p class=\"mt-xs (margin-bottom:0) text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm (border-width:1px) (border-style:solid) b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
+    html: "<div class=\"grid gap-md\">\n  <article class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n    <h2 class=\"m(0) text-lg font-semibold\">Collection</h2>\n    <p class=\"mt-xs mb(0) text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
     caption: 'Both elements have 1.5rem of padding. A change to --spacing-card applies to both consumers.',
     guide: '/guide/variables-and-modes',
   },
@@ -53,7 +53,7 @@ export const projectStyleExamples = {
   --color-text-card: var(--color-zinc-20);
 }
 `,
-    html: "<article class=\"p-lg r-lg (border-width:1px) (border-style:solid) b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"(margin:0) text-lg font-semibold\">Collection details</h2>\n  <p class=\"mt-sm (margin-bottom:0) text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
+    html: "<article class=\"p-lg r-lg b(1) b-solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"m(0) text-lg font-semibold\">Collection details</h2>\n  <p class=\"mt-sm mb(0) text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
     caption: 'Theme switches the preview document’s light/dark class. The browser resolves the actual generated custom properties.',
     guide: '/guide/variables-and-modes#add-modes-after-the-shared-value-works',
     theme: true,
@@ -100,21 +100,21 @@ export const projectStyleExamples = {
     color: var(--color-text-body);
   }
 }`,
-    html: "<div class=\"grid gap-md\">\n  <article class=\"card\">\n    <h2 class=\"(margin:0) text-lg font-semibold\">Standard card</h2>\n    <p class=\"mt-xs (margin-bottom:0) text-sm\">card sets 1.5rem of padding.</p>\n  </article>\n  <article class=\"card p-sm\">\n    <h2 class=\"(margin:0) text-lg font-semibold\">Compact card</h2>\n    <p class=\"mt-xs (margin-bottom:0) text-sm\">p-sm changes this instance to .75rem.</p>\n  </article>\n</div>",
+    html: "<div class=\"grid gap-md\">\n  <article class=\"card\">\n    <h2 class=\"m(0) text-lg font-semibold\">Standard card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">card sets 1.5rem of padding.</p>\n  </article>\n  <article class=\"card p-sm\">\n    <h2 class=\"m(0) text-lg font-semibold\">Compact card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">p-sm changes this instance to .75rem.</p>\n  </article>\n</div>",
     caption: 'The same component is used twice. With the base layer order loaded, the normal padding utility wins in the second card.',
     guide: '/guide/cascade-layers',
   },
   nativeField: {
     title: 'A field that follows its content',
     source: '',
-    html: "<label for=\"project-note\" class=\"block mb-xs text-sm font-medium\">Project note</label>\n<textarea id=\"project-note\" rows=\"3\"\n  class=\"block (field-sizing:content) (min-width:0) (max-width:100%) (width:100%)\n         (min-height:6rem) (max-height:12rem) p-sm (border-width:1px) (border-style:solid) b-line-divider r-sm\n         bg-surface-raised fg-text-body (font:inherit) (resize:vertical)\n         (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible (outline-offset:2px):focus-visible\"\n  aria-describedby=\"note-help\">Keep the interaction close to its context.</textarea>\n<p id=\"note-help\" class=\"mt-xs (margin-bottom:0) text-xs fg-text-muted\">Add a few lines to try content-based sizing.</p>",
+    html: "<label for=\"project-note\" class=\"block mb-xs text-sm font-medium\">Project note</label>\n<textarea id=\"project-note\" rows=\"3\"\n  class=\"block (field-sizing:content) min-w(0) max-w-full w-full\n         (min-height:6rem) (max-height:12rem) p-sm b(1) b-solid b-line-divider r-sm\n         bg-surface-raised fg-text-body (font:inherit) (resize:vertical)\n         outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible outline-offset(2):focus-visible\"\n  aria-describedby=\"note-help\">Keep the interaction close to its context.</textarea>\n<p id=\"note-help\" class=\"mt-xs mb(0) text-xs fg-text-muted\">Add a few lines to try content-based sizing.</p>",
     caption: 'The textarea uses native field-sizing. Minimum and maximum heights bound the enhancement; unsupported browsers retain a usable field.',
     guide: '/guide/compatibility#native-declarations',
   },
   checkedSelector: {
     title: 'Selection with a native selector',
     source: '',
-    html: "<div class=\"p-md (border-width:1px) (border-style:solid) b-line-divider r-sm bg-surface-raised\n            b-blue:has(:checked)\">\n  <label class=\"flex items-start gap-sm text-sm\">\n    <input type=\"checkbox\" class=\"mt-3xs accent-color-blue\n      (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible (outline-offset:2px):focus-visible\" />\n    <span>Include project notes\n      <span class=\"block mt-2xs text-xs fg-text-muted\">The card border follows the checkbox.</span>\n    </span>\n  </label>\n</div>",
+    html: "<div class=\"p-md b(1) b-solid b-line-divider r-sm bg-surface-raised\n            b-blue:has(:checked)\">\n  <label class=\"flex items-start gap-sm text-sm\">\n    <input type=\"checkbox\" class=\"mt-3xs accent-blue\n      outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible outline-offset(2):focus-visible\" />\n    <span>Include project notes\n      <span class=\"block mt-2xs text-xs fg-text-muted\">The card border follows the checkbox.</span>\n    </span>\n  </label>\n</div>",
     caption: 'Check the option with a pointer or the Space key. :has(:checked) adds a border cue; the native checkbox carries the state.',
     guide: '/guide/compatibility#new-selectors',
   },

@@ -110,6 +110,7 @@ export function loadNativeToolingBinding(
           cancelDocument: (id) => session.cancelDocument(id),
           analyzeDocument: (input) => parse(session.analyzeDocument(request(input))),
           formatDirectives: (input) => parse(session.formatDirectives(request(input))),
+          nativeDeclarationCompletion: (input) => parse(session.nativeDeclarationCompletion(request(input))),
           nativeDeclarationCandidates: (classNames) =>
             parse(session.nativeDeclarationCandidates([...classNames])),
           classifyClassNames: (classNames, nativeSupport) =>

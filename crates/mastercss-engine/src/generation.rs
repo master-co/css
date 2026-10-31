@@ -89,7 +89,7 @@ impl EngineSession {
     }
 
     pub(crate) fn generate_class_rules(&self, class_name: &str) -> Vec<StoredRule> {
-        if let Some(result) = self.application_rules(class_name) {
+        if let Some(result) = self.application_groups(class_name) {
             return self.store_application(class_name, result.unwrap_or_default());
         }
         if !super::valid_class_structure(class_name) {
@@ -183,17 +183,22 @@ impl EngineSession {
         let native = self.native_declaration(semantic_class_name);
         let matches = super::named::matching_utilities(semantic_class_name, &self.compiled);
         let mut seen = HashSet::default();
-        for (utility, matched, important) in matches
+        for (utility, matched, important, native) in matches
             .iter()
-            .map(|(index, matched)| (&self.compiled.utilities[*index], matched, important))
+            .map(|(index, matched)| (&self.compiled.utilities[*index], matched, important, false))
             .chain(
                 native
                     .as_ref()
-                    .map(|(utility, matched, inner)| (utility, matched, important || *inner)),
+                    .map(|(utility, matched, inner)| (utility, matched, important || *inner, true)),
             )
         {
-            // The sort key ignores the branch; compute it once for the first emitted one.
-            let mut sort_key = None;
+            // The shape and sort key ignore the branch; compute them once.
+            let shape = if native {
+                super::ordering::RuleShape::native()
+            } else {
+                super::ordering::utility_shape(utility, matched, &self.compiled)
+            };
+            let mut sort_key = shape.content.clone();
             for (branch_index, branch) in
                 resolve_state_branches(&matched.state_token, important, &self.compiled)
                     .into_iter()
@@ -236,6 +241,10 @@ impl EngineSession {
                     features,
                     conditions,
                     selector: selector_priority(branch.selector_template.as_deref()),
+                    category: shape.category,
+                    family: shape.family.clone(),
+                    coverage: shape.coverage,
+                    property: shape.property.clone(),
                 };
                 visit(GeneratedBranch {
                     utility,

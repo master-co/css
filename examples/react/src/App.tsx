@@ -6,7 +6,7 @@ function App() {
   const [count, setCount] = useState(0)
   return (
     <>
-      <div className='grid-cols(2) (width:fit-content) (margin-inline:auto)'>
+      <div className='grid-cols(2) w-fit mx-auto'>
         <a href="https://rc.css.master.co" target="_blank" rel="noreferrer">
           <img src={masterLogo} className="(scale:2) logo master" alt="Master logo" />
         </a>

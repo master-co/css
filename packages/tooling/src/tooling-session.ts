@@ -55,7 +55,9 @@ import type {
   MasterCSSLanguageColorTokens,
   MasterCSSLanguageCompletionIndex,
   MasterCSSLanguageTokenFamilies,
-  MasterCSSLanguageInspection
+  MasterCSSLanguageInspection,
+  MasterCSSNativeDeclarationCompletion,
+  MasterCSSNativeDeclarationCompletionRequest
 } from './language/contracts'
 import { freezeToolingResult } from './immutable'
 import type { MasterCSSDesignSystemRequest, MasterCSSDesignSystemReport } from '@master/css-binding/tooling'
@@ -192,6 +194,12 @@ export class MasterCSSToolingSession implements Disposable {
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult {
     this.assertActive()
     return freezeToolingResult(this.parts.language.formatDirectives(request))
+  }
+
+  nativeDeclarationCompletion(request: MasterCSSNativeDeclarationCompletionRequest): MasterCSSNativeDeclarationCompletion | undefined {
+    this.assertActive()
+    const completion = this.parts.language.nativeDeclarationCompletion(request)
+    return completion && freezeToolingResult(completion)
   }
 
   classifyClassNames(classNames: readonly string[]): MasterCSSLanguageClassifications {

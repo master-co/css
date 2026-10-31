@@ -19,7 +19,7 @@ export default async function ArticleHeader(props: any) {
         ? (
           <Link href={typeof categoryLink === 'string' ? categoryLink : './'} lang={languageOf(metadata.category)} className={clsx(
             'doc-article-category',
-            center && '(margin-inline:auto)'
+            center && 'mx-auto'
           )}>
             <ChevronLeftSvg aria-hidden="true" />
             {children}
@@ -31,13 +31,13 @@ export default async function ArticleHeader(props: any) {
   return (
     <>
       <div className="flex flex-nowrap gap-xl flex-col@media((width<37.5rem))">
-        <div className='(flex:1) (min-width:0)'>
+        <div className='(flex:1) min-w(0)'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx('doc-article-title', h1ClassName)} lang={languageOf(metadata.title.absolute || metadata.title)}>
             {$(metadata.title.absolute || metadata.title)}
             {metadata.type === 'entity' && locale !== 'en' && <span className='(margin-left:.25em)' lang={sourceLanguage}>{metadata.title}</span>}
-            {metadata.unfinished && <span className='(margin-left:.5em) (font-size:.5em) (vertical-align:top)'>🚧</span>}
+            {metadata.unfinished && <span className='(margin-left:.5em) (font-size:.5em) vertical-top'>🚧</span>}
           </h1>
         </div >
         <div className={clsx('flex gap-xs hidden:empty', center ? 'items-center' : 'items-start')}>

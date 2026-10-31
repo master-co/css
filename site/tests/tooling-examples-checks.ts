@@ -47,7 +47,7 @@ export function verifyLintExamples() {
     }
     assert.equal(pairsChecked, 4, 'Every displayed before/after lint example is exercised')
     assert.equal(lint.verifyAndFix(html('(margin:1.25rem) (margin:0.625rem)'), config('no-conflicting-classes')).output, html('(margin:1.25rem)'))
-    const partial = deliveryFences(section('No conflicting classes')).find(fence => fence.text.includes('border-style:solid'))!
+    const partial = deliveryFences(section('No conflicting classes')).find(fence => fence.text.includes('bt-dashed'))!
     const partialResult = lint.verifyAndFix(html(partial.text.trim()), config('no-conflicting-classes'))
     assert.equal(partialResult.messages.length, 1)
     assert.equal(partialResult.fixed, false)

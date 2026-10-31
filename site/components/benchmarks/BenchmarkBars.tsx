@@ -32,12 +32,12 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
         return (
           <div key={item.id} className="grid gap-sm">
             <div className="flex flex-wrap items-baseline justify-between gap-sm">
-              <div className="flex items-center gap-xs (min-width:0)">
+              <div className="flex items-center gap-xs min-w(0)">
                 {item.icon}
-                <span id={labelId} className="(min-width:0) font-sm (font-weight:460) fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-w(0) font-sm (font-weight:460) fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="flex flex-wrap items-baseline gap-xs (min-width:0)">
-                <strong id={valueId} className="font-sm (font-weight:460) (white-space:nowrap) fg-text-strong">{valueLabel}</strong>
+              <div className="flex flex-wrap items-baseline gap-xs min-w(0)">
+                <strong id={valueId} className="font-sm (font-weight:460) whitespace-nowrap fg-text-strong">{valueLabel}</strong>
                 {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>

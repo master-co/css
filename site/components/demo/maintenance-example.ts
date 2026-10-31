@@ -40,7 +40,7 @@ const maintenanceExample = {
   html: `<section class="card-region p-lg r-lg bg-surface-raised">
   <article class="card">
     <div class="panel-stack(1.5)">
-      <h2 class="(margin:0) fg-brand">Workspace</h2>
+      <h2 class="m(0) fg-brand">Workspace</h2>
       <p class="fg-information">Your files stay available during updates.</p>
       <div class="flex flex-wrap gap-sm">
         <button class="button" type="button">Save</button>

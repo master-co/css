@@ -77,6 +77,19 @@ impl ToolingLanguageSession {
             .map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = nativeDeclarationCompletion)]
+    pub fn native_declaration_completion(&self, request: JsValue) -> Result<JsValue, JsValue> {
+        let request = serde_wasm_bindgen::from_value::<
+            mastercss_language::NativeDeclarationCompletionRequestIr,
+        >(request)
+        .map_err(|error| JsValue::from_str(&error.to_string()))?;
+        self.inner
+            .native_declaration_completion(&request)
+            .map_err(|error| JsValue::from_str(&error.to_string()))?
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     #[wasm_bindgen(js_name = formatDirectives)]
     pub fn format_directives(&self, request: JsValue) -> Result<JsValue, JsValue> {
         let request =

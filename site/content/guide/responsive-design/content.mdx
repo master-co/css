@@ -15,13 +15,13 @@ The gallery starts at two columns, then grows to three at `2xs`, four at `sm`, a
 ```html
 <!-- @MARK @2xs @sm @md -->
 <div class="grid-cols(2) gap-md grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md">
-  <img class="grid-col-span(2) grid-row-span(2) (width:100%) (height:100%) (min-height:0) object-cover"
+  <img class="grid-col-span(2) grid-row-span(2) w-full h-full min-h(0) object-cover"
     src="mountain1.jpg" alt="Snowy peaks above the clouds" />
-  <img class="(width:100%) (aspect-ratio:2/1) object-cover" src="mountain2.jpg" alt="A pyramid-shaped summit" />
-  <img class="(width:100%) (aspect-ratio:2/1) object-cover" src="mountain3.jpg" alt="Snowy ridges beneath stars" />
-  <img class="(width:100%) (aspect-ratio:2/1) object-cover" src="mountain4.jpg" alt="A forested range at dusk" />
-  <img class="(width:100%) (aspect-ratio:2/1) object-cover" src="mountain5.jpg" alt="Rocky towers above an alpine valley" />
-  <img class="(width:100%) (aspect-ratio:2/1) object-cover" src="mountain6.jpg" alt="Rock spires beneath heavy clouds" />
+  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain2.jpg" alt="A pyramid-shaped summit" />
+  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain3.jpg" alt="Snowy ridges beneath stars" />
+  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain4.jpg" alt="A forested range at dusk" />
+  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain5.jpg" alt="Rocky towers above an alpine valley" />
+  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain6.jpg" alt="Rock spires beneath heavy clouds" />
 </div>
 ```
 
@@ -53,7 +53,7 @@ Use a complete [native media query](/reference/rules/conditions#mediafeature) to
 Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
 ```html
 <!-- @MARK max-w-4xl@sm max-w-5xl@md max-w-7xl@lg -->
-<main class="(width:100%) (margin-inline:auto) px-md max-w-4xl@sm max-w-5xl@md max-w-7xl@lg">
+<main class="w-full mx-auto px-md max-w-4xl@sm max-w-5xl@md max-w-7xl@lg">
   Page content
 </main>
 ```
@@ -64,15 +64,15 @@ Set fixed maximum widths from the container scale when a wrapper should step thr
 Use [container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) for reusable cards, media objects and controls. The component can stack inside a sidebar while staying horizontal in a wider region of the same page.
 
 ### Using container queries
-The `(container-type:inline-size)` declaration establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
+The `container-inline` utility sets `container-type: inline-size`, which establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
 
 (resize) Try making the container smaller.
 <Demo title="Responsive media object" padding="none" frame="none" caption="The slider measures the query container. The card stacks at 18rem or less; the surrounding page keeps its own viewport.">
   <DemoContainer title="Responsive media object">
-    <div className="(container-type:inline-size)">
-      <div className="(overflow:hidden) (width:100%) b-line-divider r-lg (border-style:solid) (border-width:1px) bg-surface-raised">
+    <div className="container-inline">
+      <div className="overflow-hidden w-full b-line-divider r-lg b-solid b(1) bg-surface-raised">
       <div className="flex flex-col@container((width<=18rem))">
-        <Image src="/images/blur.png" className="w-3xs (aspect-ratio:3/2) object-cover (width:100%)@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
+        <Image src="/images/blur.png" className="w-3xs (aspect-ratio:3/2) object-cover w-full@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
         <div className='py-lg px-xl'>
           <div className='text-md font-medium fg-text-body'>Field notes</div>
           <div className='mt-3xs text-sm'>A collection of textures, places and quiet details. This card shares the available space with its image, then stacks when its own container becomes narrow.</div>
@@ -83,10 +83,10 @@ The `(container-type:inline-size)` declaration establishes an inline-size query 
   </DemoContainer>
 </Demo>
 ```html
-<div class="(container-type:inline-size)">
+<div class="container-inline">
   <!-- @MARK @container((width<=18rem)) -->
   <article class="flex flex-col@container((width<=18rem))">
-    <img class="w-3xs (aspect-ratio:3/2) object-cover (width:100%)@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))"
+    <img class="w-3xs (aspect-ratio:3/2) object-cover w-full@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))"
       src="texture.jpg" width="300" height="200" alt="Soft blue and violet gradient" />
     <div class="py-lg px-xl">
       <h2 class="text-md font-medium">Field notes</h2>
@@ -96,7 +96,7 @@ The `(container-type:inline-size)` declaration establishes an inline-size query 
 </div>
 ```
 <Class2CSS>
-  {['(container-type:inline-size)', 'flex', 'flex-col@container((width<=18rem))', 'w-3xs', '(width:100%)@container((width<=18rem))', '(aspect-ratio:3/2)', '(aspect-ratio:16/9)@container((width<=18rem))']}
+  {['container-inline', 'flex', 'flex-col@container((width<=18rem))', 'w-3xs', 'w-full@container((width<=18rem))', '(aspect-ratio:3/2)', '(aspect-ratio:16/9)@container((width<=18rem))']}
 </Class2CSS>
 Use your own image for `texture.jpg`. At or below `18rem`, the content stacks and the image fills the card's width. Above that threshold, the image and text sit beside each other.
 
@@ -115,14 +115,14 @@ Use a complete [native container query](/reference/rules/conditions#containersiz
 ### Creating named containers
 Set `container-name` and `container-type` on the ancestor. Include its name and a size condition in the descendant’s query.
 ```html
-<!-- @MARK (container-name:card) (container-type:inline-size) -->
-<div class="(container-name:card) (container-type:inline-size)">
+<!-- @MARK (container-name:card) container-inline -->
+<div class="(container-name:card) container-inline">
   <!-- @MARK @container(card|(width>=16rem)) -->
   <div class="hidden@container(card|(width>=16rem))"></div>
 </div>
 ```
 <Class2CSS>
-  {['(container-name:card) (container-type:inline-size)', 'hidden@container(card|(width>=16rem))']}
+  {['(container-name:card) container-inline', 'hidden@container(card|(width>=16rem))']}
 </Class2CSS>
 
 ---

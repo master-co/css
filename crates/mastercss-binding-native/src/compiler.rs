@@ -172,6 +172,20 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn native_declaration_completion(&self, request_json: String) -> Result<String> {
+        let request = serde_json::from_str::<
+            mastercss_language::NativeDeclarationCompletionRequestIr,
+        >(&request_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .native_declaration_completion(&request)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
     pub fn format_directives(&self, request_json: String) -> Result<String> {
         let request =
             serde_json::from_str::<mastercss_language::FormatDirectivesRequestIr>(&request_json)

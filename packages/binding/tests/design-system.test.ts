@@ -4,7 +4,7 @@ import { createToolingBinding, type MasterCSSDesignSystemRequest } from '../src/
 
 const manifest: MasterCSSManifest = {
   version: 6,
-  languageVersion: 17,
+  languageVersion: 18,
   variables: { color: [{ key: 'brand', type: 'string', values: [{ path: [':root,:host'], value: 'red' }] }] },
   utilities: [{ kind: 'token', name: 'fg', parameters: [{ name: '--color' }], body: [{ type: 'declaration', property: 'color', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--color' }] }] }] }]
 }

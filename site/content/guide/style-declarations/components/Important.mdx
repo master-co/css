@@ -2,7 +2,7 @@ Syntax: <code><span className="mcss token">(<span className="Mkey token">propert
 
 Add `!` at the end of the class to emit `!important`. A native `!important` at the end of a parenthesized value has the same effect, and using both still emits it once.
 ```html
-<div class="(text-align:center)! (color:red!important) flex!">
+<div class="text-center! (color:red!important) flex!">
 ```
 
 Use it as a last resort for integration boundaries or unavoidable third-party CSS. For normal Master CSS classes, cascade layers and rule priority usually give you a cleaner override path.

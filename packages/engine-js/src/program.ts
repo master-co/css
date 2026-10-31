@@ -23,7 +23,7 @@ import {
 import { selectedInlineValue } from './value'
 
 export const PROGRAM_VERSION = 2
-export const LANGUAGE_VERSION = 17
+export const LANGUAGE_VERSION = 18
 const MAGIC = [0x4d, 0x43, 0x53, 0x50] // MCSP
 const MAX_DEPTH = 512
 // The Rust engine runs as wasm32, where `usize` is 32 bits wide.

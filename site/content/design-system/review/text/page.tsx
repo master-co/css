@@ -16,8 +16,8 @@ function FloatExample() {
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard focus enables native horizontal scrolling. */}
       <div className="review-text-flow-viewport" role="region" aria-label="Text flow preview" tabIndex={0} data-preview-scroll="">
         <DemoSurface className="flow-root p-md font-sm review-text-flow-content">
-          <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="(float:left) (height:auto) (width:7rem) mb-sm mr-md r-sm" />
-          <DemoText className="(margin:0)">{bodyCopy}</DemoText>
+          <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="(float:left) h-auto (width:7rem) mb-sm mr-md r-sm" />
+          <DemoText className="m(0)">{bodyCopy}</DemoText>
         </DemoSurface>
       </div>
     </Demo>

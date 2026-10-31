@@ -93,7 +93,7 @@ describe('static export e2e', () => {
     }
     // Browsers receive the compiled runtime program, never the project manifest.
     const chunkFiles = collectFiles(join(outDir, '_next/static'), '.js')
-    expect(chunkFiles.filter(file => /\bversion:6,languageVersion:17\b/.test(readFileSync(file, 'utf-8')))).toEqual([])
+    expect(chunkFiles.filter(file => /\bversion:6,languageVersion:18\b/.test(readFileSync(file, 'utf-8')))).toEqual([])
     const programChunks = chunkFiles.filter(file => collectInlinePrograms(file).length > 0)
     expect(programChunks).toHaveLength(1)
     const [program] = collectInlinePrograms(programChunks[0])
@@ -112,7 +112,7 @@ describe('static export e2e', () => {
       expect(existsSync(manifestFile), `${source} should exist in the static export`).toBe(true)
       const manifest = JSON.parse(readFileSync(manifestFile, 'utf-8'))
       expect(manifest.version).toBe(5)
-      expect(manifest.languageVersion).toBe(17)
+      expect(manifest.languageVersion).toBe(18)
       expect(manifest.classNames.length).toBeGreaterThan(0)
     }
     const requests: { path: string; raw: number; gzip: number; brotli: number }[] = []
@@ -150,7 +150,7 @@ describe('static export e2e', () => {
       expect(requests.some(request => request.path === programChunkPath)).toBe(true)
       expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
       if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({
-        languageVersion: 17, delivery: 'bundler-esm', requests,
+        languageVersion: 18, delivery: 'bundler-esm', requests,
         compression: 'Measured from fetched response bodies; local test server sends uncompressed responses.',
         timing: await page.evaluate(() => performance.getEntriesByType('resource').map(entry => {
           const resource = entry as PerformanceResourceTiming

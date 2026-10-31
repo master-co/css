@@ -1,7 +1,9 @@
 // Rule order within a CSS layer, as `compare_stored_rules` in the engine's utility.rs
-// sorts it: sort tier, condition features and text, selector priority, utility type,
-// value source, declarations, then key.
-import { compareText, isAsciiDigit } from './text'
+// sorts it: sort tier, condition features and text, selector priority, rule category
+// (recipe, named atomic, native), then for atomics family, coverage, value source and
+// property, otherwise utility type and value source; then declarations and key. Rule
+// shapes follow the engine's ordering.rs.
+import { asciiLowercase, compareText, isAsciiDigit } from './text'
 import type { ConditionBound, ConditionFeature, GeneratedRule } from './types'
 
 export interface StoredRule {
@@ -86,12 +88,65 @@ function compareConditions(left: string[] = [], right: string[] = []) {
 export function compareStoredRules(left: StoredRule, right: StoredRule) {
   const a = left.ir
   const b = right.ir
+  const p = a.priority
+  const q = b.priority
   return sign(a.sortTier - b.sortTier)
     || compareConditionFeatures(left.features, right.features)
-    || compareConditions(a.priority.conditions, b.priority.conditions)
-    || sign(a.priority.selector - b.priority.selector)
-    || sign(a.type - b.type)
-    || sign((a.priority.valuePriority ?? 0) - (b.priority.valuePriority ?? 0))
-    || naturalCompare(a.priority.sortKey ?? '', b.priority.sortKey ?? '')
+    || compareConditions(p.conditions, q.conditions)
+    || sign(p.selector - q.selector)
+    || sign(p.category - q.category)
+    // Only atomics carry a family, coverage and property; only others compare types.
+    || compareText(p.family ?? '', q.family ?? '')
+    || sign((p.coverage ?? 0) - (q.coverage ?? 0))
+    || (p.category !== ATOMIC && sign(a.type - b.type))
+    || sign((p.valuePriority ?? 0) - (q.valuePriority ?? 0))
+    || compareText(p.property ?? '', q.property ?? '')
+    || naturalCompare(p.sortKey ?? '', q.sortKey ?? '')
     || naturalCompare(a.key, b.key)
+}
+
+/** Several declarations, or an inner selector or condition. */
+export const RECIPE = 0
+/** One declaration of a named static, token or function utility. */
+export const ATOMIC = 1
+/** A `(property:value)` head. */
+export const NATIVE = 2
+
+/** The shape a rule sorts by: its category and, for atomics, family placement and declaration. */
+export interface RuleShape {
+  category: number
+  family?: string
+  coverage?: number
+  property?: string
+  content?: string
+}
+
+export const atomicShape = (property: string, value: string): RuleShape => {
+  const [family, coverage] = propertyFamily(property)
+  return { category: ATOMIC, family, coverage, property, content: `${property}:${value}` }
+}
+
+// A box family name, then an optional axis or side: `margin`, `margin-inline`, `margin-top`.
+const BOX = /^(margin|padding|scroll-margin|scroll-padding|inset)(-(inline|block)(-start|-end)?|-(top|right|bottom|left))?$/
+// A border width, style or color, with the same optional axis or side before the kind.
+const BORDER = /^border(-(inline|block)(-start|-end)?|-(top|right|bottom|left))?-(width|style|color)$/
+const AXIS = /^(?:(row|column)-gap|overflow-(?:x|y|inline|block))$/
+const CORNER = /^border-(?:(?:top|bottom)-(?:left|right)|(?:start|end)-(?:start|end))-radius$/
+const coverage = (side?: string, axis?: string, end?: string) => side || end ? 2 : axis ? 1 : 0
+
+/**
+ * The family a property belongs to and its coverage in it, as `property_family` in the
+ * engine's ordering.rs: 0 sets the whole family, 1 an axis and 2 one side or corner.
+ * Custom properties are case-sensitive families of their own; other unlisted
+ * properties, shorthands included, are their own family.
+ */
+export function propertyFamily(property: string): [family: string, coverage: number] {
+  if (property.startsWith('--')) return [property, 0]
+  property = asciiLowercase(property)
+  let match = BOX.exec(property)
+  if (match) return [match[1], coverage(match[5], match[3], match[4])]
+  if (/^(top|right|bottom|left)$/.test(property)) return ['inset', 2]
+  if ((match = BORDER.exec(property))) return [`border-${match[5]}`, coverage(match[4], match[2], match[3])]
+  if ((match = AXIS.exec(property))) return [match[1] ? 'gap' : 'overflow', 1]
+  return CORNER.test(property) ? ['border-radius', 2] : [property, 0]
 }

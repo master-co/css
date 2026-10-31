@@ -92,4 +92,4 @@ export const brandAssets = [
   { title: 'Small mark for light backgrounds', description: 'Wider gaps for heights from 16px to below 24px.', src: '/brand/v2/logo/mark/master-mark-small-on-light.svg', alt: 'Small Master CSS mark for light backgrounds', width: 216.6, height: 120, surface: 'light' as const },
 ] as const
 
-export const brandExampleMarkup = '<section class="grid gap-md p-lg r-xl bg-surface-raised">\n  <h2 class="(margin:0) text-xl fg-text-strong">A shared language</h2>\n  <p class="(margin:0) text-sm fg-text-muted">Keep the decisions close to the work.</p>\n  <a class="fg-text-link" href="/guide">Explore the Guide</a>\n</section>'
+export const brandExampleMarkup = '<section class="grid gap-md p-lg r-xl bg-surface-raised">\n  <h2 class="m(0) text-xl fg-text-strong">A shared language</h2>\n  <p class="m(0) text-sm fg-text-muted">Keep the decisions close to the work.</p>\n  <a class="fg-text-link" href="/guide">Explore the Guide</a>\n</section>'

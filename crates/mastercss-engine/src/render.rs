@@ -191,7 +191,7 @@ pub(crate) fn emit_declarations(
             .map(|value| {
                 vec![(
                     0,
-                    format_native_declaration(property, value, important),
+                    format_output_declaration(property, value, important),
                     None,
                     Vec::new(),
                 )]
@@ -208,8 +208,10 @@ pub(crate) fn format_declaration(property: &str, value: &str, important: bool) -
     }
 }
 
-/// Compatibility declarations are an engine output policy, not preset recipes.
-fn format_native_declaration(property: &str, value: &str, important: bool) -> String {
+/// Compatibility declarations are an engine output policy, not preset recipes: every
+/// utility declaration, whether a native head, a token, a static or a function utility
+/// emits it, gets the same companions.
+pub(crate) fn format_output_declaration(property: &str, value: &str, important: bool) -> String {
     let standard = format_declaration(property, value, important);
     if matches!(
         property,

@@ -264,7 +264,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":6,"languageVersion":17,"utilities":[utility]}).to_string();
+        let source = json!({"version":6,"languageVersion":18,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source).is_err(),
             "legacy matcher entries must be rejected"

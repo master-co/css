@@ -319,19 +319,18 @@ impl LanguageSession {
             inspect_class_name_parts(class_name);
         let (base, suffix, key, value) =
             if inspection.match_status == mastercss_schema::MatchStatus::Matched {
-                let suffix = format!(
-                    "{}{}",
-                    if semantics.important { "!" } else { "" },
-                    semantics.state_token.as_deref().unwrap_or_default()
-                );
-                let base = if suffix.is_empty() {
-                    class_name.to_owned()
-                } else {
-                    class_name
-                        .strip_suffix(&suffix)
-                        .unwrap_or(class_name)
-                        .to_owned()
-                };
+                // The suffix is authored text after the head: a native `!important`
+                // inside the parentheses stays in the base.
+                let semantic = class_name.strip_suffix('!').unwrap_or(class_name);
+                let state = semantics.state_token.as_deref().unwrap_or_default();
+                let mut base_end = semantic
+                    .strip_suffix(state)
+                    .map_or(semantic.len(), str::len);
+                if !state.is_empty() || base_end < class_name.len() {
+                    base_end -= usize::from(semantic[..base_end].ends_with('!'));
+                }
+                let base = class_name[..base_end].to_owned();
+                let suffix = class_name[base_end..].to_owned();
                 let (key, value) = if semantics.kind == ClassSemanticKind::Declaration {
                     (fallback_key, fallback_value)
                 } else {

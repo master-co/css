@@ -418,13 +418,13 @@ describe('class conflicts', () => {
 
 describe('partial class conflicts', () => {
   test.each([
-    ['mt-lg', 'm-md'],
-    ['pl-lg', 'p-md'],
+    ['m-md', 'mt-lg'],
+    ['p-md', 'pl-lg'],
     ['inset-md', 'top-lg'],
     ['inset-md', 'left-lg'],
     ['inset-md@sm', 'top-lg@sm'],
     ['r-md', 'rtl-lg'],
-    ['rbr-lg', 'r-md'],
+    ['r-md', 'rbr-lg'],
     ['(border-radius:.375rem)', '(border-top-left-radius:.5rem)'],
     ['(border-top-width:2px)', '(border-width:1px)'],
     ['(border-left-width:1px)', '(border-width:0)'],
@@ -432,7 +432,11 @@ describe('partial class conflicts', () => {
     ['b-red-60', 'bl-blue-60'],
     ['(border-style:solid)', '(border-top-style:dashed)'],
     ['(border-bottom-style:dotted)', '(border-style:solid)'],
-    ['ixs-lg', 'ix-md']
+    ['ix-md', 'ixs-lg'],
+    // Atomic utilities: a side or axis follows its whole family whatever registered it.
+    ['m(4)', 'mt-lg'],
+    ['m-md', 'mt(0)'],
+    ['b-solid', 'bt-dashed']
   ])('reports %s overridden by %s without a replacement', (className, conflict) => {
     const expected = [{ className, conflict }]
     expect(findPartialClassConflicts([className, conflict], css)).toEqual(expected)

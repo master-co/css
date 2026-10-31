@@ -4,15 +4,15 @@
     "id": "blur-content-behind-an-element",
     "title": "Blur content behind an element",
     "html": [
-      "<!-- No filter · sharp backdrop -->\n<div class=\"relative (height:168px) (width:240px) (max-width:100%)\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"block (height:168px) (width:240px) (max-width:100%)\n         object-cover\" />\n  <div id=\"target\"\n    class=\"absolute inset-md flex (align-items:center)\n           justify-center p-sm (border-width:1px) (border-style:solid) b-line-divider r-sm\n           font-md bg-surface-base/.64 fg-text-strong\n           (backdrop-filter:none)\">\n    Preview layer\n  </div>\n</div>",
-      "<!-- Blur · softened backdrop -->\n<div class=\"relative (height:168px) (width:240px) (max-width:100%)\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"block (height:168px) (width:240px) (max-width:100%)\n         object-cover\" />\n  <div id=\"target\"\n    class=\"absolute inset-md flex (align-items:center)\n           justify-center p-sm (border-width:1px) (border-style:solid) b-line-divider r-sm\n           font-md bg-surface-base/.64 fg-text-strong\n           (backdrop-filter:blur(8px))\">\n    Preview layer\n  </div>\n</div>"
+      "<!-- No filter · sharp backdrop -->\n<div class=\"relative h(168) w(240) max-w-full\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"block h(168) w(240) max-w-full\n         object-cover\" />\n  <div id=\"target\"\n    class=\"absolute inset-md flex items-center\n           justify-center p-sm b(1) b-solid b-line-divider r-sm\n           font-md bg-surface-base/.64 fg-text-strong\n           (backdrop-filter:none)\">\n    Preview layer\n  </div>\n</div>",
+      "<!-- Blur · softened backdrop -->\n<div class=\"relative h(168) w(240) max-w-full\">\n  <img src=\"/demo/landscape.svg\"\n  width=\"320\" height=\"200\"\n  alt=\"\"\n  class=\"block h(168) w(240) max-w-full\n         object-cover\" />\n  <div id=\"target\"\n    class=\"absolute inset-md flex items-center\n           justify-center p-sm b(1) b-solid b-line-divider r-sm\n           font-md bg-surface-base/.64 fg-text-strong\n           (backdrop-filter:blur(8px))\">\n    Preview layer\n  </div>\n</div>"
     ],
     "css": "",
     "classes": [
       "relative",
-      "(height:168px)",
-      "(width:240px)",
-      "(max-width:100%)",
+      "h(168)",
+      "w(240)",
+      "max-w-full",
       "block",
       "object-cover",
       "absolute",
@@ -21,8 +21,8 @@
       "items-center",
       "justify-center",
       "p-sm",
-      "(border-width:1px)",
-      "(border-style:solid)",
+      "b(1)",
+      "b-solid",
       "b-line-divider",
       "r-sm",
       "font-md",
@@ -32,12 +32,12 @@
       "(backdrop-filter:blur(8px))"
     ],
     "classLists": [
-      "relative (height:168px) (width:240px) (max-width:100%)",
-      "block (height:168px) (width:240px) (max-width:100%) object-cover",
-      "absolute inset-md flex items-center justify-center p-sm (border-width:1px) (border-style:solid) b-line-divider r-sm font-md bg-surface-base/.64 fg-text-strong (backdrop-filter:none)",
-      "relative (height:168px) (width:240px) (max-width:100%)",
-      "block (height:168px) (width:240px) (max-width:100%) object-cover",
-      "absolute inset-md flex items-center justify-center p-sm (border-width:1px) (border-style:solid) b-line-divider r-sm font-md bg-surface-base/.64 fg-text-strong (backdrop-filter:blur(8px))"
+      "relative h(168) w(240) max-w-full",
+      "block h(168) w(240) max-w-full object-cover",
+      "absolute inset-md flex items-center justify-center p-sm b(1) b-solid b-line-divider r-sm font-md bg-surface-base/.64 fg-text-strong (backdrop-filter:none)",
+      "relative h(168) w(240) max-w-full",
+      "block h(168) w(240) max-w-full object-cover",
+      "absolute inset-md flex items-center justify-center p-sm b(1) b-solid b-line-divider r-sm font-md bg-surface-base/.64 fg-text-strong (backdrop-filter:blur(8px))"
     ],
     "highlighted": []
   }

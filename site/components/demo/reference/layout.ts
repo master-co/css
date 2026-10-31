@@ -39,7 +39,7 @@ export function flow(section: ReferenceDemoSection): DemoScene {
   }
   if (page.startsWith('break-')) {
     const parent = lists.find(value => /columns:|column-count:/.test(value)) ?? '(column-count:2) (height:12.5rem) (column-fill:auto)'
-    const values = lists.length > 1 ? lists.slice(1, 5) : ['(height:130px)', target, '(height:60px)', '(height:40px)']
+    const values = lists.length > 1 ? lists.slice(1, 5) : ['h(130)', target, 'h(60)', 'h(40)']
     const preview = (baseline: boolean) => `<div data-ui="columns" data-scenario="fragmentation" class="${classValue(parent)}">${values.map((value, index) => tile(index === 1 ? '02 · Target' : `0${index + 1}`, value, index === 1 ? 'blue' : 'neutral', baseline && index === 1 ? `${page}:auto` : '').replace(baseline || index !== 1 ? ' data-target' : ' data-unused', '')).join('')}</div>`
     const caption = page === 'break-inside' ? 'Both column sets are 200px tall. The blue block can split in the automatic flow; avoid keeps it together when the condition applies.' : `Both column sets are 200px tall. The forced break moves content to the next column ${page === 'break-before' ? 'before' : 'after'} the blue block when the condition applies.`
     return { html: comparison([{ name: 'Automatic breaks', content: preview(true) }, { name: 'With class', content: preview(false) }]), caption, sizing: 'content' }

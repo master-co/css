@@ -47,6 +47,7 @@ interface MasterCSSToolingWasmLanguageProviderSession {
   cancelDocument(id: number): void
   analyzeDocument(request: unknown): unknown
   formatDirectives(request: unknown): unknown
+  nativeDeclarationCompletion(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): unknown
   inspectClassName(className: string, nativeSupport?: boolean[], mode?: string): unknown

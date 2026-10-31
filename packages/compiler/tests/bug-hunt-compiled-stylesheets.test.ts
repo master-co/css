@@ -32,7 +32,7 @@ for (const item of cases) {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     }
     using native = await createCompiler({ binding: 'native' })
@@ -76,7 +76,7 @@ test('BH-0004 shared finalized manifest resolves child compose and revives extra
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     })
     expect(result.stylesheets[1].generatedCSS).toContain('color:red')
@@ -120,7 +120,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
     }
     expect(() => compiler.compileStylesheets(request)).toThrowError(expect.objectContaining({ code: 'CSS_IMPORT_ERROR' }))
@@ -143,7 +143,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     const result = compiler.compileStylesheets({ ...request, resolutionManifest: reference.manifest })
     expect(result.css).toContain('color:red')
@@ -166,7 +166,7 @@ test('BH-0004 reference context is explicit and is not merged into the emitted m
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     expect(result.manifest).toEqual(empty.manifest)
   }
@@ -202,7 +202,7 @@ test('BH-0004 native/Wasm agree on explicitly scoped sibling resource delivery',
   }
 ],
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] }
   }
   using native = await createCompiler({ binding: 'native' })

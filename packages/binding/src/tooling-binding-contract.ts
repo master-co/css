@@ -28,6 +28,8 @@ import type {
   MasterCSSLanguageDocument,
   MasterCSSLanguageDocumentRequest,
   MasterCSSLanguageFormatEdits,
+  MasterCSSLanguageNativeDeclarationCompletion,
+  MasterCSSLanguageNativeDeclarationCompletionRequest,
   MasterCSSLanguageFormatRequest,
   MasterCSSLanguageInspection,
   MasterCSSNativeDeclarationCandidate,
@@ -79,6 +81,9 @@ export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBinding
   cancelDocument(id: number): void
   analyzeDocument(request: MasterCSSLanguageDocumentRequest): MasterCSSLanguageDocument
   formatDirectives(request: MasterCSSLanguageFormatRequest): MasterCSSLanguageFormatEdits
+  nativeDeclarationCompletion(
+    request: MasterCSSLanguageNativeDeclarationCompletionRequest
+  ): MasterCSSLanguageNativeDeclarationCompletion | null
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclarationCandidate[]

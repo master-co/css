@@ -4,32 +4,32 @@
     "id": "stagger-sibling-elements",
     "title": "Stagger sibling elements",
     "html": [
-      "<!-- One native trigger · two independent timelines -->\n<label class=\"block (width:280px) (max-width:100%) font-sm\n              (transform:translateX(96px)):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move both layers\"\n    class=\"mr-xs accent-color-blue\n           (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible\n           (outline-offset:3px):focus-visible\">\n  Move both layers\n  <span aria-hidden=\"true\"\n    class=\"block mt-md p-xs (outline-width:1px) (outline-style:dashed) outline-line-subtle\">\n    <span id=\"first\"\n      class=\"grid (place-items:center) (height:48px) (width:128px)\n             (border-width:1px) (border-style:solid) b-blue-60 r-sm bg-blue-10\n             fg-blue-80 (transform:none)\n             (transition:none)@media(print)\n             (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe\">\n      First · no delay\n    </span>\n    <span id=\"target\"\n      class=\"grid (place-items:center) (height:48px) (width:128px) mt-sm\n             (border-width:1px) (border-style:solid) b-violet-60 r-sm bg-violet-10\n             fg-violet-80 (transform:none)\n             (transition:none)@media(print)\n             (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe\n             transition-delay-slow@media(screen)@motion-safe\">\n      Second · 300ms\n    </span>\n  </span>\n</label>"
+      "<!-- One native trigger · two independent timelines -->\n<label class=\"block w(280) max-w-full font-sm\n              (transform:translateX(96px)):has(input:checked)>span>span@media(screen)\">\n  <input type=\"checkbox\" aria-label=\"Move both layers\"\n    class=\"mr-xs accent-blue\n           outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible\n           outline-offset(3):focus-visible\">\n  Move both layers\n  <span aria-hidden=\"true\"\n    class=\"block mt-md p-xs outline(1) outline-dashed outline-line-subtle\">\n    <span id=\"first\"\n      class=\"grid (place-items:center) h(48) w(128)\n             b(1) b-solid b-blue-60 r-sm bg-blue-10\n             fg-blue-80 (transform:none)\n             (transition:none)@media(print)\n             (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe\">\n      First · no delay\n    </span>\n    <span id=\"target\"\n      class=\"grid (place-items:center) h(48) w(128) mt-sm\n             b(1) b-solid b-violet-60 r-sm bg-violet-10\n             fg-violet-80 (transform:none)\n             (transition:none)@media(print)\n             (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe\n             transition-delay-slow@media(screen)@motion-safe\">\n      Second · 300ms\n    </span>\n  </span>\n</label>"
     ],
     "css": "",
     "classes": [
       "block",
-      "(width:280px)",
-      "(max-width:100%)",
+      "w(280)",
+      "max-w-full",
       "font-sm",
       "(transform:translateX(96px)):has(input:checked)>span>span@media(screen)",
       "mr-xs",
-      "accent-color-blue",
-      "(outline-width:2px):focus-visible",
-      "(outline-style:solid):focus-visible",
+      "accent-blue",
+      "outline(2):focus-visible",
+      "outline-solid:focus-visible",
       "outline-blue:focus-visible",
-      "(outline-offset:3px):focus-visible",
+      "outline-offset(3):focus-visible",
       "mt-md",
       "p-xs",
-      "(outline-width:1px)",
-      "(outline-style:dashed)",
+      "outline(1)",
+      "outline-dashed",
       "outline-line-subtle",
       "grid",
       "(place-items:center)",
-      "(height:48px)",
-      "(width:128px)",
-      "(border-width:1px)",
-      "(border-style:solid)",
+      "h(48)",
+      "w(128)",
+      "b(1)",
+      "b-solid",
       "b-blue-60",
       "r-sm",
       "bg-blue-10",
@@ -46,11 +46,11 @@
       "transition-delay-slow@media(screen)@motion-safe"
     ],
     "classLists": [
-      "block (width:280px) (max-width:100%) font-sm (transform:translateX(96px)):has(input:checked)>span>span@media(screen)",
-      "mr-xs accent-color-blue (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible (outline-offset:3px):focus-visible",
-      "block mt-md p-xs (outline-width:1px) (outline-style:dashed) outline-line-subtle",
-      "grid (place-items:center) (height:48px) (width:128px) (border-width:1px) (border-style:solid) b-blue-60 r-sm bg-blue-10 fg-blue-80 (transform:none) (transition:none)@media(print) (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe",
-      "grid (place-items:center) (height:48px) (width:128px) mt-sm (border-width:1px) (border-style:solid) b-violet-60 r-sm bg-violet-10 fg-violet-80 (transform:none) (transition:none)@media(print) (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe transition-delay-slow@media(screen)@motion-safe"
+      "block w(280) max-w-full font-sm (transform:translateX(96px)):has(input:checked)>span>span@media(screen)",
+      "mr-xs accent-blue outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible outline-offset(3):focus-visible",
+      "block mt-md p-xs outline(1) outline-dashed outline-line-subtle",
+      "grid (place-items:center) h(48) w(128) b(1) b-solid b-blue-60 r-sm bg-blue-10 fg-blue-80 (transform:none) (transition:none)@media(print) (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe",
+      "grid (place-items:center) h(48) w(128) mt-sm b(1) b-solid b-violet-60 r-sm bg-violet-10 fg-violet-80 (transform:none) (transition:none)@media(print) (transition-property:transform)@media(screen)@motion-safe (transition-duration:var(--duration-slowest))@media(screen)@motion-safe (transition-timing-function:linear)@media(screen)@motion-safe transition-delay-slow@media(screen)@motion-safe"
     ],
     "highlighted": []
   }

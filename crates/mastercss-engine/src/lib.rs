@@ -373,6 +373,7 @@ mod token_family;
 mod utility_matching;
 pub use token_family::{TokenFamily, TokenFamilyArgument, direct_value_mixin};
 mod named;
+mod ordering;
 mod program;
 mod render;
 mod resources;
@@ -386,8 +387,7 @@ mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
-    add_condition_wrapper, normalize_dynamic_value, parse_raw_condition_wrapper,
-    render_condition_token, resolve_layer_condition,
+    add_condition_wrapper, normalize_dynamic_value, render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::compile_manifest;
 pub(crate) use manifest::{engine_variable_ir, finish_program, layer_name};

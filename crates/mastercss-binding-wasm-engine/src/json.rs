@@ -124,7 +124,7 @@ macro_rules! integer_json {
     )*};
 }
 
-integer_json!(i8, i32, u32);
+integer_json!(i8, u8, i32, u32);
 
 impl WriteJson for f64 {
     fn write_json(&self, out: &mut String) {
@@ -237,6 +237,16 @@ impl WriteJson for RulePriorityIr {
         }
         if !self.sort_key.is_empty() {
             object.field("sortKey", &self.sort_key);
+        }
+        object.field("category", &self.category);
+        if !self.family.is_empty() {
+            object.field("family", &self.family);
+        }
+        if self.coverage != 0 {
+            object.field("coverage", &self.coverage);
+        }
+        if !self.property.is_empty() {
+            object.field("property", &self.property);
         }
         object.end();
     }

@@ -9,7 +9,7 @@ test('audit control: failed manifest loads retain watch dependencies and recover
     if (fail) throw new Error('temporary invalid manifest')
     return { manifest: {
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 }, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
   })
   const allow: string[] = []

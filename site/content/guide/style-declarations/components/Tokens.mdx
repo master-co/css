@@ -26,4 +26,4 @@ Use `var(--name)` to combine tokens in a direct value:
 
 There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, and important syntax apply to both forms.
 
-Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md (padding:8px)` and `(padding:8px) p-md` therefore use `8px`. Importance still applies; HTML class order does not decide the winner. Use independent edge settings when different values are needed.
+Within the same layer, condition and selector, a direct value follows a token for the same property. Both `p-md p(8)` and `p(8) p-md` therefore use `8px`, and a native declaration such as `(padding:0.5rem)` follows both. Importance still applies; HTML class order does not decide the winner. Use independent edge settings when different values are needed.

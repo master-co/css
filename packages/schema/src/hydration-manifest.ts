@@ -46,7 +46,7 @@ export interface MasterCSSHydrationRule {
 
 export interface MasterCSSHydrationManifest {
   readonly version: 5
-  readonly languageVersion: 17
+  readonly languageVersion: 18
   /**
    * Every rendered class: those with rules in rule order, then those without, such as
    * authored component classes, then classes manifest selectors reference without rules

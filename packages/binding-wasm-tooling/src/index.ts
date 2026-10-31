@@ -16,6 +16,7 @@ interface GeneratedToolingWasmModule {
   cancelDocument(id: number): void
   analyzeDocument(request: unknown): unknown
     formatDirectives(request: unknown): unknown
+    nativeDeclarationCompletion(request: unknown): unknown
     nativeDeclarationCandidates(classNames: string[]): unknown
     classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
     inspectClassName(className: string, nativeSupport: boolean[], mode?: string): unknown
@@ -212,6 +213,7 @@ export async function createToolingLanguageSession(
     cancelDocument: (id: number) => session.cancelDocument(id),
     analyzeDocument: (request: unknown) => session.analyzeDocument(request),
     formatDirectives: (request: unknown) => session.formatDirectives(request),
+    nativeDeclarationCompletion: (request: unknown) => session.nativeDeclarationCompletion(request),
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     classifyClassNames: (classNames: string[], nativeSupport?: boolean[]) =>
       session.classifyClassNames(classNames, nativeSupport || []),

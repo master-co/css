@@ -67,7 +67,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { className, type = 'button', ...buttonProps } = props
   return (
     <button
-      className={['inline-flex items-center gap-xs (min-height:2.5rem) (padding-block:0) px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
+      className={['inline-flex items-center gap-xs (min-height:2.5rem) py(0) px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
       type={type}
       {...buttonProps}
     />
@@ -115,7 +115,7 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 
 ```tsx
 const toneClasses = {
-  neutral: 'bg-surface-base fg-text-body b-line-divider (border-style:solid) (border-width:1px)',
+  neutral: 'bg-surface-base fg-text-body b-line-divider b-solid b(1)',
   primary: 'bg-blue-60 fg-white bg-blue-70:hover',
   danger: 'bg-red-70 fg-white bg-red-80:hover'
 }
@@ -156,9 +156,9 @@ export function Meter({ value }: { value: number }) {
   const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
   return (
     <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
-      className="(overflow:hidden) (height:0.5rem) (border-radius:100%) bg-gray-10">
+      className="overflow-hidden (height:0.5rem) (border-radius:100%) bg-gray-10">
       <div
-        className="(height:100%) (width:var(--value)) bg-green-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
+        className="h-full (width:var(--value)) bg-green-60 (transition-property:width) (transition-duration:var(--duration-fast))@motion-safe (transition-timing-function:var(--easing-smooth))"
         style={{ '--value': `${percent}%` } as React.CSSProperties}
       />
     </div>

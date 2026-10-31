@@ -4,20 +4,20 @@
     "id": "set-border-color",
     "title": "Set border color",
     "html": [
-      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"flex items-center justify-center (height:96px)\n         (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor)\n         b-blue font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>",
-      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"flex items-center justify-center (height:96px)\n         (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor)\n         b-violet font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>"
+      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"flex items-center justify-center h(96)\n         w(240) max-w-full p-md b(2) b-solid (border-color:currentcolor)\n         b-blue font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>",
+      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"flex items-center justify-center h(96)\n         w(240) max-w-full p-md b(2) b-solid (border-color:currentcolor)\n         b-violet font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>"
     ],
     "css": "",
     "classes": [
       "flex",
       "items-center",
       "justify-center",
-      "(height:96px)",
-      "(width:240px)",
-      "(max-width:100%)",
+      "h(96)",
+      "w(240)",
+      "max-w-full",
       "p-md",
-      "(border-width:2px)",
-      "(border-style:solid)",
+      "b(2)",
+      "b-solid",
       "(border-color:currentcolor)",
       "b-blue",
       "font-md",
@@ -27,8 +27,8 @@
       "b-violet"
     ],
     "classLists": [
-      "flex items-center justify-center (height:96px) (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor) b-blue font-md bg-surface-inset fg-text-body box-border",
-      "flex items-center justify-center (height:96px) (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor) b-violet font-md bg-surface-inset fg-text-body box-border"
+      "flex items-center justify-center h(96) w(240) max-w-full p-md b(2) b-solid (border-color:currentcolor) b-blue font-md bg-surface-inset fg-text-body box-border",
+      "flex items-center justify-center h(96) w(240) max-w-full p-md b(2) b-solid (border-color:currentcolor) b-violet font-md bg-surface-inset fg-text-body box-border"
     ],
     "highlighted": []
   }

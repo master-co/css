@@ -43,11 +43,11 @@ Opacity changes paint, including descendants. It does not disable a control or r
 A native declaration is one parenthesized head. Master CSS finds its closing parenthesis with CSS rules before it looks up any property, utility or selector name, then reads the optional selector, condition and `!` suffix after it:
 
 ```html
-<!-- @MARK (display:block)[aria-expanded=true]:hover@sm -->
-<button class="(display:block)[aria-expanded=true]:hover@sm">Menu</button>
+<!-- @MARK block[aria-expanded=true]:hover@sm -->
+<button class="block[aria-expanded=true]:hover@sm">Menu</button>
 ```
 
-<Class2CSS>{['(display:block)[aria-expanded=true]:hover@sm']}</Class2CSS>
+<Class2CSS>{['block[aria-expanded=true]:hover@sm']}</Class2CSS>
 
 - Strings, comments, escapes, nested parentheses and brackets, and unquoted `url()` tokens stay inside the value: `(content:')')::before`, `(grid-template-columns:[start]|1fr|[end])`, `(background-image:url(/a{b.svg))` and `(--payload:a:b@c_foo)` each end at their own closing parenthesis.
 - A head contains exactly one declaration. A top-level `;`, a second head such as `(color:red)(display:block)`, a missing closing parenthesis or an unbalanced bracket makes the class invalid; it generates no CSS and does not fall back to another class form.
@@ -58,7 +58,7 @@ A native declaration is one parenthesized head. Master CSS finds its closing par
 - A bare `property:value` is not a declaration. `flex:hover` applies the `flex` utility while hovered, and `display:block` generates nothing.
 
 ### Fixed utilities \{#fixed-utilities\}
-The preset names 94 common fixed values. Each class emits exactly the one declaration in this table, with no implied `display` or reset of related properties:
+The preset names 237 common fixed values. Each class emits exactly the one declaration in this table, with no implied `display`, width, color or reset of related properties:
 
 | Property | Classes |
 | --- | --- |
@@ -78,19 +78,61 @@ The preset names 94 common fixed values. Each class emits exactly the one declar
 | `justify-content` | `justify-normal`, `justify-start`, `justify-end`, `justify-flex-start`, `justify-flex-end`, `justify-center`, `justify-between`, `justify-around`, `justify-evenly` (`space-*`), `justify-stretch` |
 | `object-fit` | `object-cover`, `object-contain`, `object-fill`, `object-none`, `object-scale-down` |
 | `object-position` | `object-center`, `object-top`, `object-bottom`, `object-left`, `object-right` |
+| margins | `m-auto`, `mt-auto`, `mr-auto`, `mb-auto`, `ml-auto`, `mx-auto`, `mxs-auto`, `mxe-auto`, `my-auto`, `mys-auto`, `mye-auto` |
+| insets | `top-auto`, `right-auto`, `bottom-auto`, `left-auto`, `inset-auto`, `ix-auto`, `ixs-auto`, `ixe-auto`, `iy-auto`, `iys-auto`, `iye-auto` |
+| sizes | `w-auto`, `h-auto`, `size-x-auto`, `size-y-auto`, `min-w-auto`, `min-h-auto`, `min-size-x-auto`, `min-size-y-auto`, `basis-auto`; `max-w-none`, `max-h-none`, `max-size-x-none`, `max-size-y-none` |
+| `border-style` | `b-solid`, `b-dashed`, `b-dotted`, `b-double`, `b-none` |
+| `border-top-style` | `bt-solid`, `bt-dashed`, `bt-dotted`, `bt-double`, `bt-none` |
+| `border-right-style` | `br-solid`, `br-dashed`, `br-dotted`, `br-double`, `br-none` |
+| `border-bottom-style` | `bb-solid`, `bb-dashed`, `bb-dotted`, `bb-double`, `bb-none` |
+| `border-left-style` | `bl-solid`, `bl-dashed`, `bl-dotted`, `bl-double`, `bl-none` |
+| `border-inline-style` | `bx-solid`, `bx-dashed`, `bx-dotted`, `bx-double`, `bx-none` |
+| `border-inline-start-style` | `bxs-solid`, `bxs-dashed`, `bxs-dotted`, `bxs-double`, `bxs-none` |
+| `border-inline-end-style` | `bxe-solid`, `bxe-dashed`, `bxe-dotted`, `bxe-double`, `bxe-none` |
+| `border-block-style` | `by-solid`, `by-dashed`, `by-dotted`, `by-double`, `by-none` |
+| `border-block-start-style` | `bys-solid`, `bys-dashed`, `bys-dotted`, `bys-double`, `bys-none` |
+| `border-block-end-style` | `bye-solid`, `bye-dashed`, `bye-dotted`, `bye-double`, `bye-none` |
+| `outline-style` | `outline-solid`, `outline-dashed`, `outline-dotted`, `outline-double`, `outline-none` |
+| `text-align` | `text-left`, `text-center`, `text-right`, `text-start`, `text-end`, `text-justify` |
+| `overflow` | `overflow-auto`, `overflow-hidden`, `overflow-clip`, `overflow-visible`, `overflow-scroll` |
+| `overflow-x` | `overflow-x-auto`, `overflow-x-hidden`, `overflow-x-clip`, `overflow-x-visible`, `overflow-x-scroll` |
+| `overflow-y` | `overflow-y-auto`, `overflow-y-hidden`, `overflow-y-clip`, `overflow-y-visible`, `overflow-y-scroll` |
+| `white-space` | `whitespace-normal`, `whitespace-nowrap`, `whitespace-pre`, `whitespace-pre-wrap`, `whitespace-pre-line`, `whitespace-break-spaces` |
+| `user-select` | `select-none`, `select-text`, `select-all`, `select-auto` |
+| `pointer-events` | `pointer-none`, `pointer-auto` |
+| `vertical-align` | `vertical-baseline`, `vertical-top`, `vertical-middle`, `vertical-bottom`, `vertical-text-top`, `vertical-text-bottom`, `vertical-sub`, `vertical-super` |
+| `container-type` | `container-inline` (`inline-size`), `container-size`, `container-normal` |
+| `overflow-wrap` | `wrap-anywhere`, `wrap-break-word`, `wrap-normal` |
+| `text-overflow` | `ellipsis` |
 
-`start` and `end` keep their native meaning, distinct from `flex-start` and `flex-end`. `flex-col` only sets the direction; combine it with `flex` on the container. `underline` sets `text-decoration-line` alone; use `(text-decoration:underline)` when you need the shorthand to reset color, style and thickness as well. Fixed utilities are ordinary static utilities: they accept selectors, conditions and `!`, and generate CSS only when used.
+`start` and `end` keep their native meaning, distinct from `flex-start` and `flex-end`. `flex-col` only sets the direction; combine it with `flex` on the container. Border and outline styles set only the style: `b-none` never removes a width, and `b(0)` never changes the style. `truncate` is the one multi-declaration recipe in this family: `overflow: hidden`, `text-overflow: ellipsis` and `white-space: nowrap`, without any width or display. `underline` sets `text-decoration-line` alone; use `(text-decoration:underline)` when you need the shorthand to reset color, style and thickness as well. Fixed utilities are ordinary static utilities: they accept selectors, conditions and `!`, and generate CSS only when used.
 
+
+### Direct values \{#direct-values\}
+A direct value passes one static number to a preset function. Length functions emit `calc(var(--value) * 1px)`, so `m(4)` is `margin: calc(4 * 1px)` and `m(1.5)` is one and a half pixels; zero, decimals and negative numbers are accepted as written:
+
+| Family | Functions |
+| --- | --- |
+| margin and padding | `m`, `mt`, `mr`, `mb`, `ml`, `mx`, `mxs`, `mxe`, `my`, `mys`, `mye` and the same with `p` |
+| scroll margin and padding | the margin and padding functions prefixed with `scroll-`, such as `scroll-mt(8)` |
+| insets | `top`, `right`, `bottom`, `left`, `inset`, `ix`, `ixs`, `ixe`, `iy`, `iys`, `iye` |
+| other lengths | `gap`, `gap-x` (`column-gap`), `gap-y` (`row-gap`), `border-spacing`, `outline-offset`, `shape-margin`, `translate`, `word-spacing` |
+| sizes | `w`, `h`, `size-x`, `size-y`, `min-w`, `min-h`, `min-size-x`, `min-size-y`, `max-w`, `max-h`, `max-size-x`, `max-size-y`, `basis` |
+| radii | `r`, `rtl`, `rtr`, `rbl`, `rbr`, `rss`, `rse`, `res`, `ree` |
+| border and outline widths | `b`, `bt`, `br`, `bb`, `bl`, `bx`, `bxs`, `bxe`, `by`, `bys`, `bye` (`border-*-width`) and `outline` (`outline-width`) |
+| unitless | `grow(1)` (`flex-grow`), `shrink(0)` (`flex-shrink`), `order(2)` (`order`, an integer) |
+
+`x` names the inline axis, `y` the block axis and `t`, `r`, `b`, `l` the physical sides; the two letters of a logical corner name its block edge, then its inline edge. A function and a token family share a prefix without merging: `b(1)` sets the width, `b-red-60` the color and `b-solid` the style. Other units and dynamic values use a native declaration, such as `(margin:1rem)` or `(margin:var(--gap))`; `m(1px)` and `b(var(--x))` are invalid rather than a fallback.
 
 ### Independent properties \{#independent-properties\}
 
-Each class expresses one styling decision. Use named color tokens and full CSS properties for explicit values:
+Each class expresses one styling decision. Use fixed utilities, named tokens and direct values where the preset has them, and full CSS properties for other values:
 
 ```html
-<div class="(border-width:1px) b-line-control (border-style:solid)">Content</div>
+<div class="b(1) b-line-control b-solid">Content</div>
 ```
 
-A single value may express one decision, as with `p-sm`, `gap-md`, `(overflow:hidden)`, and `(animation:none)@media(print)`. Give different edges or axes their own declarations. Native stylesheets and inline styles retain ordinary CSS syntax.
+A single value may express one decision, as with `p-sm`, `gap-md`, `overflow-hidden`, and `(animation:none)@media(print)`. Give different edges or axes their own declarations. Native stylesheets and inline styles retain ordinary CSS syntax.
 
 ### Motion properties \{#motion-properties\}
 
@@ -111,10 +153,10 @@ Use `(animation-name:*)`, `(animation-duration:*)`, `(transition-property:*)` an
 Write each declaration as a separate class, repeating any shared selector or query suffix. To register a reusable class recipe for markup, define an [`@utility`](/reference/directives/definitions#utilities). For reuse within CSS, define an [`@mixin` and expand it with `@apply`](/reference/directives/definitions#reusing-a-matched-value); a mixin does not register a markup class.
 
 ```html
-<ul class="block>li:hover@md (font-size:14px)>li:hover@md (text-align:center)>li:hover@md">…</ul>
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
 ```
 
-Within the same layer and conditions, fixed utilities and other recipes sort before native declarations, so a `(property:value)` class can override one setting of a utility independently of markup order. Fixed utilities among themselves sort by class name; give conflicting states mutually exclusive classes instead of relying on that order.
+Within the same layer, conditions and selector, recipes sort first, then single-declaration utilities, then native declarations, so a `(property:value)` class can override one setting of a utility independently of markup order. Single-declaration utilities sort by property family, then coverage, then value source: `m-md mt(0)` keeps the top margin at zero and `m-md mx-auto` centers horizontally in either class order, and a token precedes a fixed or direct value of the same property. Families such as border width, style and color stay independent. Give conflicting states of one property mutually exclusive classes instead of relying on that order.
 
 ### Important \{#important\}
 <Important />

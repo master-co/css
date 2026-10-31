@@ -147,7 +147,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
-    let manifest = r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
+    let manifest = r#"{"version":6,"languageVersion":18,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     let inspection = engine.inspect("multi").unwrap();
     assert_eq!(inspection.rules.len(), 1);
@@ -305,7 +305,7 @@ fn validates_and_saturates_host_globals_before_classes_are_ensured() {
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":18}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["(display:block)", "(made-up:nope)"])
         .unwrap();
@@ -323,7 +323,7 @@ fn commits_native_declarations_without_host_support_filtering() {
 #[test]
 // Native declarations are preserved; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":18}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["(width:error)", "(width:10px)"])
         .unwrap();
@@ -361,7 +361,7 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":6,"languageVersion":18}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["(padding-left:calc(5x-2px))"])
         .unwrap();

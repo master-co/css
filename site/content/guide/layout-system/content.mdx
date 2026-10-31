@@ -20,7 +20,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 
 ```html
 <!-- @MARK max-w-3xl --><!-- @MARK grid-cols(4) --><!-- @MARK grid-cols(8)@2xs --><!-- @MARK gap-md@2xs -->
-<main class="(width:100%) max-w-3xl (margin-inline:auto) p-md">
+<main class="w-full max-w-3xl mx-auto p-md">
   <section class="grid-cols(4) gap-sm grid-cols(8)@2xs gap-md@2xs">
     <header class="grid-col-span(4) grid-col-span(8)@2xs"><h1>Project overview</h1></header>
     <article class="grid-col-span(4)"><h2>Revenue</h2><p>$128.4k</p></article>
@@ -32,7 +32,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 ```
 
 <Class2CSS>
-  {['(width:100%)', 'max-w-3xl', '(margin-inline:auto)', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-sm', 'gap-md@2xs', 'grid-col-span(4)', 'grid-col-span(8)@2xs', 'grid-col-span(5)@2xs', 'grid-col-span(3)@2xs']}
+  {['w-full', 'max-w-3xl', 'mx-auto', 'p-md', 'grid-cols(4)', 'grid-cols(8)@2xs', 'gap-sm', 'gap-md@2xs', 'grid-col-span(4)', 'grid-col-span(8)@2xs', 'grid-col-span(5)@2xs', 'grid-col-span(3)@2xs']}
 </Class2CSS>
 
 This reduced example keeps the page's main regions. Below `2xs`, each region spans all four columns. At `2xs`, the header spans eight, the two metrics share a row equally, and the demand and task regions split the next row five to three. The preview adds navigation, chart details and a separate compact metric layout.
@@ -44,7 +44,7 @@ A layout system should answer five questions before individual components start 
 
 | Decision | Master CSS foundation | Typical utilities |
 | --- | --- | --- |
-| Canvas width | Container sizes and sizing | `(width:100%)`, `max-w-7xl`, `(margin-inline:auto)` |
+| Canvas width | Container sizes and sizing | `w-full`, `max-w-7xl`, `mx-auto` |
 | Outer margin | Spacing | `px-md`, `px-xl@md` |
 | Columns | Grid | `grid-cols(4)`, `grid-cols(12)@md` |
 | Gutters | Spacing | `gap-md`, `gap-x-lg`, `gap-y-xl` |
@@ -55,17 +55,17 @@ These decisions are separate on purpose. A page can keep the same maximum width 
 ---
 
 ## Start with a page container
-The container defines the live area for the layout. Use `(width:100%)` so the wrapper can shrink, `max-w-*` so it aligns with the [container size scale](/reference/tokens/container), `(margin-inline:auto)` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+The container defines the live area for the layout. Use `w-full` so the wrapper can shrink, `max-w-*` so it aligns with the [container size scale](/reference/tokens/container), `mx-auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
 
 ```html
-<!-- @MARK (width:100%) --><!-- @MARK max-w-7xl --><!-- @MARK (margin-inline:auto) --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
-<main class="(width:100%) max-w-7xl (margin-inline:auto) px-md px-xl@md">
+<!-- @MARK w-full --><!-- @MARK max-w-7xl --><!-- @MARK mx-auto --><!-- @MARK px-md --><!-- @MARK px-xl@md -->
+<main class="w-full max-w-7xl mx-auto px-md px-xl@md">
   ...
 </main>
 ```
 
 <Class2CSS>
-  {['(width:100%)', 'max-w-7xl', '(margin-inline:auto)', 'px-md', 'px-xl@md']}
+  {['w-full', 'max-w-7xl', 'mx-auto', 'px-md', 'px-xl@md']}
 </Class2CSS>
 
 Use the wrapper for page-level alignment. Use inner grids for content relationships. This keeps outer margins, columns, and card padding from competing with each other.
@@ -165,9 +165,9 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-  <div className="(container-type:inline-size) (width:100%)">
-    <article className="flex flex-col gap-md (width:100%) p-md b-line-divider r-lg (border-style:solid) (border-width:1px) bg-surface-raised shadow-xs flex-row@container((width>=18rem))">
-      <div className="grid (place-content:center) (width:100%) (aspect-ratio:4/3) r-md bg-blue-60/.12 (flex-shrink:0)@container((width>=18rem)) (width:9rem)@container((width>=18rem))">
+  <div className="container-inline w-full">
+    <article className="flex flex-col gap-md w-full p-md b-line-divider r-lg b-solid b(1) bg-surface-raised shadow-xs flex-row@container((width>=18rem))">
+      <div className="grid (place-content:center) w-full (aspect-ratio:4/3) r-md bg-blue-60/.12 shrink(0)@container((width>=18rem)) (width:9rem)@container((width>=18rem))">
         <div className="grid-cols(3) gap-2xs (width:5rem)">
           <div className="(height:1.25rem) r-sm bg-blue-60/.25"></div>
           <div className="(height:1.25rem) r-sm bg-blue-60/.35"></div>
@@ -177,10 +177,10 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
           <div className="(height:1.25rem) r-sm bg-blue-60/.3"></div>
         </div>
       </div>
-      <div className="(flex:1) (min-width:0)">
+      <div className="(flex:1) min-w(0)">
         <DemoLabel>Flex media object</DemoLabel>
         <div className="font-semibold fg-text-neutral">Quarterly planning</div>
-        <p className="mt-xs (margin-bottom:0) (margin-inline:0) text-sm fg-text-gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+        <p className="mt-xs mb(0) mx(0) text-sm fg-text-gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
         <div className="flex flex-wrap gap-xs mt-md">
           <span className="py-2xs px-xs r-sm text-xs bg-blue-60/.12 fg-text-link">Roadmap</span>
           <span className="py-2xs px-xs r-sm text-xs bg-green/.12 fg-text-green">Ready</span>
@@ -191,30 +191,30 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 </Demo>
 
 ```html
-<!-- @MARK (container-type:inline-size) --><!-- @MARK (width:100%) --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container((width>=18rem)) -->
-<div class="(container-type:inline-size)">
-  <article class="flex flex-col gap-md (width:100%) flex-row@container((width>=18rem))">
-    <img class="(width:100%) (flex-shrink:0)@container((width>=18rem)) (width:9rem)@container((width>=18rem))" alt="" />
-    <div class="(flex:1) (min-width:0)">...</div>
+<!-- @MARK container-inline --><!-- @MARK w-full --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container((width>=18rem)) -->
+<div class="container-inline">
+  <article class="flex flex-col gap-md w-full flex-row@container((width>=18rem))">
+    <img class="w-full shrink(0)@container((width>=18rem)) (width:9rem)@container((width>=18rem))" alt="" />
+    <div class="(flex:1) min-w(0)">...</div>
   </article>
 </div>
 ```
 
 <Class2CSS>
-  {['(container-type:inline-size)', 'flex', 'flex-col', 'flex-row@container((width>=18rem))', 'gap-md', '(width:100%)', '(width:9rem)@container((width>=18rem))', '(flex-shrink:0)@container((width>=18rem))', '(min-width:0)', '(flex:1)']}
+  {['container-inline', 'flex', 'flex-col', 'flex-row@container((width>=18rem))', 'gap-md', 'w-full', '(width:9rem)@container((width>=18rem))', 'shrink(0)@container((width>=18rem))', 'min-w(0)', '(flex:1)']}
 </Class2CSS>
 
-`(min-width:0)` lets a flex or grid item shrink below its automatic minimum width. Long unbroken text still needs a wrapping rule such as `(overflow-wrap:anywhere)`, or an intentional truncation rule; see [Sizing](/guide/sizing#constrain-instead-of-forcing).
+`min-w(0)` lets a flex or grid item shrink below its automatic minimum width. Long unbroken text still needs a wrapping rule such as `wrap-anywhere`, or an intentional truncation rule such as `truncate`; see [Sizing](/guide/sizing#constrain-instead-of-forcing).
 
 ---
 
 ## Use container queries for components
 Viewport breakpoints are a good fit for page-level layout. Container queries are a better fit for reusable components because the same component can appear in a narrow sidebar, a modal, or a wide content column.
 
-Add `(container-type:inline-size)` to the component boundary, then use `@container((width>=18rem))` on descendants.
+Add `container-inline` to the component boundary, then use `@container((width>=18rem))` on descendants.
 
 ```html
-<section class="(container-type:inline-size)">
+<section class="container-inline">
   <!-- @MARK grid-cols(2)@container((width>=18rem)) --><!-- @MARK gap-lg@container((width>=18rem)) -->
   <article class="grid-cols(1) gap-md grid-cols(2)@container((width>=18rem)) gap-lg@container((width>=18rem))">
     ...
@@ -223,7 +223,7 @@ Add `(container-type:inline-size)` to the component boundary, then use `@contain
 ```
 
 <Class2CSS>
-  {['(container-type:inline-size)', 'grid-cols(1)', 'grid-cols(2)@container((width>=18rem))', 'gap-md', 'gap-lg@container((width>=18rem))']}
+  {['container-inline', 'grid-cols(1)', 'grid-cols(2)@container((width>=18rem))', 'gap-md', 'gap-lg@container((width>=18rem))']}
 </Class2CSS>
 
 Use viewport breakpoints for global decisions such as page shell, navigation mode, and maximum canvas width. Use container queries for cards, forms, media objects, and reusable panels.
@@ -237,12 +237,12 @@ Use viewport breakpoints for global decisions such as page shell, navigation mod
 <!-- @MARK grid --><!-- @MARK (grid-template-columns:4.5rem|minmax(0,1fr)) --><!-- @MARK gap-md -->
 <section class="grid (grid-template-columns:4.5rem|minmax(0,1fr)) gap-md">
   <nav>...</nav>
-  <main class="(min-width:0)">...</main>
+  <main class="min-w(0)">...</main>
 </section>
 ```
 
 <Class2CSS>
-  {['grid', '(grid-template-columns:4.5rem|minmax(0,1fr))', 'gap-md', '(min-width:0)']}
+  {['grid', '(grid-template-columns:4.5rem|minmax(0,1fr))', 'gap-md', 'min-w(0)']}
 </Class2CSS>
 
 Use explicit tracks for app shells, data views, split panes, and content that has a real fixed region. For ordinary responsive content, equal columns plus spans are usually more flexible.
@@ -253,7 +253,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ### Page shell
 ```html
 <!-- @MARK max-w-7xl --><!-- @MARK px-lg --><!-- @MARK px-2xl@lg -->
-<main class="(width:100%) max-w-7xl (margin-inline:auto) px-lg px-2xl@lg">
+<main class="w-full max-w-7xl mx-auto px-lg px-2xl@lg">
   ...
 </main>
 ```
@@ -285,11 +285,11 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 
 ### Media object
 ```html
-<!-- @MARK flex-row@container((width>=24rem)) --><!-- @MARK (width:8rem)@container((width>=24rem)) --><!-- @MARK (min-width:0) -->
-<section class="(container-type:inline-size)">
+<!-- @MARK flex-row@container((width>=24rem)) --><!-- @MARK (width:8rem)@container((width>=24rem)) --><!-- @MARK min-w(0) -->
+<section class="container-inline">
   <article class="flex flex-col gap-md flex-row@container((width>=24rem))">
-    <img class="(width:100%) (flex-shrink:0)@container((width>=24rem)) (width:8rem)@container((width>=24rem))" alt="" />
-    <div class="(min-width:0)">...</div>
+    <img class="w-full shrink(0)@container((width>=24rem)) (width:8rem)@container((width>=24rem))" alt="" />
+    <div class="min-w(0)">...</div>
   </article>
 </section>
 ```
@@ -326,7 +326,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 (o) Let the card respond to the space it actually receives.
 
 ```html
-<section class="(container-type:inline-size)">
+<section class="container-inline">
   <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=18rem))">...</article>
 </section>
 ```

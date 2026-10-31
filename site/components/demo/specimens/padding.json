@@ -4,13 +4,13 @@
     "id": "add-padding-on-every-side",
     "title": "Add padding on every side",
     "html": [
-      "<div id=\"layout\" class=\"(width:17.5rem) (max-width:100%)\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"(width:fit-content) p-md\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:10rem)\">Content</div></div>\n</div>"
+      "<div id=\"layout\" class=\"(width:17.5rem) max-w-full\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"w-fit p-md\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:10rem)\">Content</div></div>\n</div>"
     ],
     "css": "",
     "classes": [
       "(width:17.5rem)",
-      "(max-width:100%)",
-      "(width:fit-content)",
+      "max-w-full",
+      "w-fit",
       "p-md",
       "grid",
       "(place-items:center)",
@@ -18,8 +18,8 @@
       "(width:10rem)"
     ],
     "classLists": [
-      "(width:17.5rem) (max-width:100%)",
-      "(width:fit-content) p-md",
+      "(width:17.5rem) max-w-full",
+      "w-fit p-md",
       "grid (place-items:center) (height:3rem) (width:10rem)"
     ],
     "highlighted": []
@@ -29,14 +29,14 @@
     "id": "set-inline-or-block-padding",
     "title": "Set inline or block padding",
     "html": [
-      "<!-- Horizontal writing -->\n<div id=\"layout\" class=\"(width:17.5rem) (max-width:100%)\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"(width:fit-content) px-md py-sm\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:7.5rem)\">Content</div></div>\n</div>",
-      "<!-- Vertical writing -->\n<div id=\"layout\" class=\"(width:17.5rem) (max-width:100%)\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"(width:fit-content) px-md py-sm (writing-mode:vertical-rl)\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:7.5rem)\">Content</div></div>\n</div>"
+      "<!-- Horizontal writing -->\n<div id=\"layout\" class=\"(width:17.5rem) max-w-full\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"w-fit px-md py-sm\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:7.5rem)\">Content</div></div>\n</div>",
+      "<!-- Vertical writing -->\n<div id=\"layout\" class=\"(width:17.5rem) max-w-full\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"w-fit px-md py-sm (writing-mode:vertical-rl)\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:7.5rem)\">Content</div></div>\n</div>"
     ],
     "css": "",
     "classes": [
       "(width:17.5rem)",
-      "(max-width:100%)",
-      "(width:fit-content)",
+      "max-w-full",
+      "w-fit",
       "px-md",
       "py-sm",
       "grid",
@@ -46,11 +46,11 @@
       "(writing-mode:vertical-rl)"
     ],
     "classLists": [
-      "(width:17.5rem) (max-width:100%)",
-      "(width:fit-content) px-md py-sm",
+      "(width:17.5rem) max-w-full",
+      "w-fit px-md py-sm",
       "grid (place-items:center) (height:3rem) (width:7.5rem)",
-      "(width:17.5rem) (max-width:100%)",
-      "(width:fit-content) px-md py-sm (writing-mode:vertical-rl)",
+      "(width:17.5rem) max-w-full",
+      "w-fit px-md py-sm (writing-mode:vertical-rl)",
       "grid (place-items:center) (height:3rem) (width:7.5rem)"
     ],
     "highlighted": []
@@ -60,23 +60,23 @@
     "id": "apply-conditionally",
     "title": "Apply conditionally",
     "html": [
-      "<div id=\"layout\" class=\"(width:17.5rem) (max-width:100%)\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"(width:fit-content) p-md (padding:0)@sm\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:10rem)\">Content</div></div>\n</div>"
+      "<div id=\"layout\" class=\"(width:17.5rem) max-w-full\" role=\"group\" aria-label=\"Available space\">\n  <div id=\"target\" class=\"w-fit p-md p(0)@sm\"><div id=\"item-3\" class=\"grid (place-items:center) (height:3rem) (width:10rem)\">Content</div></div>\n</div>"
     ],
     "css": "",
     "classes": [
       "(width:17.5rem)",
-      "(max-width:100%)",
-      "(width:fit-content)",
+      "max-w-full",
+      "w-fit",
       "p-md",
-      "(padding:0)@sm",
+      "p(0)@sm",
       "grid",
       "(place-items:center)",
       "(height:3rem)",
       "(width:10rem)"
     ],
     "classLists": [
-      "(width:17.5rem) (max-width:100%)",
-      "(width:fit-content) p-md (padding:0)@sm",
+      "(width:17.5rem) max-w-full",
+      "w-fit p-md p(0)@sm",
       "grid (place-items:center) (height:3rem) (width:10rem)"
     ],
     "highlighted": []

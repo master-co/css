@@ -41,14 +41,14 @@ use serde_json::Value;
 use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 6;
-pub const LANGUAGE_VERSION: u32 = 17;
+pub const LANGUAGE_VERSION: u32 = 18;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 5;
-pub const BINDING_ABI_VERSION: u32 = 30;
-pub const ENGINE_TRANSITION_VERSION: u32 = 4;
+pub const BINDING_ABI_VERSION: u32 = 31;
+pub const ENGINE_TRANSITION_VERSION: u32 = 5;
 pub const VALIDATOR_BATCH_VERSION: u32 = 4;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
 pub const LINT_BATCH_VERSION: u32 = 4;
-pub const LANGUAGE_BATCH_VERSION: u32 = 7;
+pub const LANGUAGE_BATCH_VERSION: u32 = 8;
 pub const LEXER_BATCH_VERSION: u32 = 1;
 pub const SOURCE_BATCH_VERSION: u32 = 2;
 /// The encoding of compiled runtime programs, which browsers execute instead of

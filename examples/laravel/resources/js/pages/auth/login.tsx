@@ -96,7 +96,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
           </Button>
         </div>
 
-        <div className="text-sm (text-align:center) text-muted-foreground">
+        <div className="text-sm text-center text-muted-foreground">
           Don't have an account?{' '}
           <TextLink href={route('register')} tabIndex={5}>
             Sign up

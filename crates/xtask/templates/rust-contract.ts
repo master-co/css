@@ -788,6 +788,25 @@ export interface MasterCSSLanguageCompletionIndex {
   keyframes: { name: string; insertText: string; text: string; sources: import('@master/css-schema/css-directives').CSSDirectiveSourceReference[] }[]
 }
 
+export interface MasterCSSLanguageNativeDeclarationCompletionRequest extends MasterCSSLanguageDocumentRequest {
+  /** The UTF-16 cursor offset in the document. */
+  offset: number
+}
+
+/** The completion context of a cursor inside a `(property:value)` class head. */
+export interface MasterCSSLanguageNativeDeclarationCompletion {
+  version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
+  /** `none` is a string, comment, URL or nested function or block. */
+  kind: 'property' | 'value' | 'none'
+  property?: string
+  /** The class text of the component before the cursor. */
+  prefix: string
+  /** The document range a completion replaces, including the component's rest after the cursor. */
+  range?: MasterCSSSourceRange
+  /** Text a completion must end with, such as the `)` an unclosed head lacks. */
+  suffix?: string
+}
+
 export interface MasterCSSLanguageColorPresentation {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   colorToken: string

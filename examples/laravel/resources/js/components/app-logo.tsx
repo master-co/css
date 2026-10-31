@@ -6,7 +6,7 @@ export default function AppLogo() {
       <div className="flex items-center justify-center aspect-square bg-sidebar-primary rounded-md size-8 text-sidebar-primary-foreground">
         <AppLogoIcon className="fill-current dark:text-black size-5 text-white" />
       </div>
-      <div className="grid text-sm (text-align:left) flex-1 ml-1">
+      <div className="grid text-sm text-left flex-1 ml-1">
         <span className="font-semibold leading-none mb-0.5 truncate">Laravel Starter Kit</span>
       </div>
     </>

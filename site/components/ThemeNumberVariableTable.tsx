@@ -60,7 +60,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string) {
   return (
-    <div aria-hidden="true" className="inline-flex (width:fit-content) outline-line-subtle (outline-offset:-1px) (outline-style:solid) (outline-width:1px) (background:var(--stripe-pink)) (vertical-align:middle)" style={{ gap: value }}>
+    <div aria-hidden="true" className="inline-flex w-fit outline-line-subtle outline-offset(-1) outline-solid outline(1) (background:var(--stripe-pink)) vertical-middle" style={{ gap: value }}>
       <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
       <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
     </div>

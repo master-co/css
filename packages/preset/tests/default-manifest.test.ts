@@ -57,9 +57,9 @@ describe('@master/css-preset defaultManifest', () => {
  const manifest = getCompiledDefaultManifest()
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(6)
- expect(manifest.languageVersion).toBe(17)
- expect(manifest.utilities).toHaveLength(220)
- expect(new Set(manifest.utilities?.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(220)
+ expect(manifest.languageVersion).toBe(18)
+ expect(manifest.utilities).toHaveLength(463)
+ expect(new Set(manifest.utilities?.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(463)
  for (const field of ['mixins', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
  expect(manifest.utilities?.find(utility => utility.name === 'text')?.parameters).toEqual([{ name: '--text', syntax: 'string' }])
@@ -111,7 +111,7 @@ describe('@master/css-preset defaultManifest', () => {
   it('reads explicit preset token families, including empty namespaces', () => {
     using tooling = createLanguageSessionSync({ manifest: defaultManifest })
     const families = tooling.tokenFamilies().families
-    expect(families.filter(family => family.argument === 'value')).toHaveLength(119)
+    expect(families.filter(family => family.argument === 'value')).toHaveLength(118)
     expect(families).toEqual(expect.arrayContaining([
       { utility: 'p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
       { utility: 'bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
@@ -273,7 +273,8 @@ describe('@master/css-preset defaultManifest', () => {
     }
     expect(css.createRule('w-md')?.text).toContain('width:var(--container-md)')
     expect(css.createRule('h-md')?.text).toContain('height:var(--container-md)')
-    expect(css.createRule('flex-basis-sm')?.text).toBe('.flex-basis-sm{flex-basis:var(--container-sm)}')
+    expect(css.createRule('basis-sm')?.text).toBe('.basis-sm{flex-basis:var(--container-sm)}')
+    expect(css.createRule('flex-basis-sm')).toBeUndefined()
     expect(css.createRule('(flex-basis:0.5rem)')?.text).toBe('.\\(flex-basis\\:0\\.5rem\\){flex-basis:0.5rem}')
     expect(declarationsCSS.createRule('(outline-width:1px)')?.text).toContain('outline-width:1px')
     expect(declarationsCSS.createRule('(outline-width:2px)')?.text).toContain('outline-width:2px')
@@ -286,7 +287,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(declarationsCSS.createRule('(stroke-width:1px)')?.text).toContain('stroke-width:1px')
     expect(css.createRule('text-underline-sm')).toBeUndefined()
     expect(css.createRule('(text-underline-offset:0.5rem)')?.text).toBe('.\\(text-underline-offset\\:0\\.5rem\\){text-underline-offset:0.5rem}')
-    expect(css.createRule('text-indent-sm')?.text).toBe('.text-indent-sm{text-indent:var(--spacing-sm)}')
+    expect(css.createRule('text-indent-sm')).toBeUndefined()
+    expect(css.createRule('(text-indent:var(--spacing-sm))')?.text).toBe('.\\(text-indent\\:var\\(--spacing-sm\\)\\){text-indent:var(--spacing-sm)}')
     expect(css.createRule('background-size-sm')).toBeUndefined()
     expect(css.createRule('(background-position:0.5rem|center)')?.text).toBe('.\\(background-position\\:0\\.5rem\\|center\\){background-position:0.5rem center}')
     expect(css.createRule('(mask-position:0.5rem|center)')?.text).toBe('.\\(mask-position\\:0\\.5rem\\|center\\){mask-position:0.5rem center}')

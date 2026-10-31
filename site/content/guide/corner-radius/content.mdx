@@ -26,7 +26,7 @@ See the complete [values and consumers](/reference/tokens/radius) in Reference.
 Use related tokens for related surfaces. A card, its nested media, and an action group can share a radius or use a smaller inner radius. To keep two inset contours concentric, subtract the inset from the outer radius, down to a minimum of zero. Other nested controls can use a radius suited to their own role.
 
 <DemoConfiguredExample name="nested-radius" title="Related shapes, one composition" source="" theme previewFirst code={false}
-  html={'<article class="(width:100%) max-w-sm (margin-inline:auto) p-xs r-2xl (overflow-wrap:anywhere) bg-surface-raised shadow-sm"><div class="p-xs r-lg bg-surface-inset fg-text-body"><p class="(margin:0) text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="(margin:0) text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="(min-width:0) (width:100%) p-sm r-md (border-width:1px) (border-style:solid) b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
+  html={'<article class="w-full max-w-sm mx-auto p-xs r-2xl wrap-anywhere bg-surface-raised shadow-sm"><div class="p-xs r-lg bg-surface-inset fg-text-body"><p class="m(0) text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="m(0) text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="min-w(0) w-full p-sm r-md b(1) b-solid b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
   caption="The outer card uses r-2xl and p-xs; its inset panel uses r-lg. With the preset values, outer radius minus padding equals inner radius. The input and pill action have their own shapes. This preview does not save data." />
 
 ---
@@ -119,7 +119,7 @@ Override radius variables when your product needs sharper controls, softer panel
 <section class="r-panel">...</section>
 ```
 
-Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `(border-radius:1px)` or `(border-radius:0.5rem)` until it becomes a reusable shape.
+Promote repeated raw values into the radius scale. Keep one-off measured geometry as direct values such as `r(1)` or `(border-radius:0.5rem)` until it becomes a reusable shape.
 
 ---
 

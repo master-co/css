@@ -214,7 +214,15 @@ impl Collector<'_> {
             if html {
                 self.html_attribute(&self.input.content[start..end], start);
             } else {
-                self.add(&value, start..end, "oxc", content_kind, true, None);
+                let candidates = crate::literal_class_candidates(&value);
+                self.add(
+                    &value,
+                    start..end,
+                    "oxc",
+                    content_kind,
+                    true,
+                    Some(candidates),
+                );
             }
         }
         Ok(())

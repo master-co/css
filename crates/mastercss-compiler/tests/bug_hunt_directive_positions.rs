@@ -16,8 +16,8 @@ fn diagnostics_after_source_directives_retain_original_utf16_offsets() {
             let request = serde_json::from_value(json!({
                 "graph":{"entry":"entry.css","files":{"entry.css":source},"edges":[]},
                 "urls":{"entry.css":"/entry.css"},
-                "baseManifest":{"version":6,"languageVersion":17,"mixins":[],"utilities":[]},
-                "resolutionManifest":{"version":6,"languageVersion":17,"mixins":[],"utilities":[]}
+                "baseManifest":{"version":6,"languageVersion":18,"mixins":[],"utilities":[]},
+                "resolutionManifest":{"version":6,"languageVersion":18,"mixins":[],"utilities":[]}
             }))
             .unwrap();
             let error = compile_css_stylesheet_graph(&request)

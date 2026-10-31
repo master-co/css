@@ -63,7 +63,7 @@ export function stacking(section: ReferenceDemoSection): DemoScene {
   const layer = (text: string, classes: string, tone: string) => tile(text, classes, tone, 'display:grid;align-content:end;text-align:right;padding:4px 12px')
   if (id.includes('local')) {
     return {
-      html: `${label('Context 0 contains child 99 · sibling 1 paints above both')}${context(`<article data-ui="local-context" class="${classValue(lists[1])}">${tile('Child 99', lists[2], 'blue', '(text-align:left)')}</article>${layer('Sibling 1', lists[3], 'violet')}`, lists[0])}`,
+      html: `${label('Context 0 contains child 99 · sibling 1 paints above both')}${context(`<article data-ui="local-context" class="${classValue(lists[1])}">${tile('Child 99', lists[2], 'blue', 'text-left')}</article>${layer('Sibling 1', lists[3], 'violet')}`, lists[0])}`,
       caption: 'Z-index values are compared within their own stacking context. Raising the child to 99 cannot lift its parent above sibling 1.', sizing: 'content',
     }
   }

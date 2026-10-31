@@ -413,6 +413,10 @@ pub struct LanguageSession {
 
 mod analysis;
 mod color;
+mod completion;
+pub use completion::{
+    NativeCompletionKind, NativeDeclarationCompletionIr, NativeDeclarationCompletionRequestIr,
+};
 mod document_index;
 pub use analysis::PreparedDocumentIr;
 use document_index::DocumentIndex;

@@ -11,8 +11,8 @@ pub struct PreparedDocumentIr {
 pub(crate) struct PreparedDocument {
     id: u32,
     index: DocumentIndex,
-    contexts: Vec<ClassListContextIr>,
-    positions: Vec<ClassPositionIr>,
+    pub(crate) contexts: Vec<ClassListContextIr>,
+    pub(crate) positions: Vec<ClassPositionIr>,
     keyframe_positions: Vec<ClassPositionIr>,
     class_names: Vec<String>,
     native_candidates: Vec<NativeDeclarationCandidateIr>,
@@ -20,7 +20,7 @@ pub(crate) struct PreparedDocument {
 }
 
 impl LanguageSession {
-    fn document_input(
+    pub(crate) fn document_input(
         &self,
         request: &AnalyzeDocumentRequestIr,
         id: u32,

@@ -142,6 +142,7 @@ export async function createWasmToolingBinding(
         cancelDocument: (id) => session.cancelDocument(id),
         analyzeDocument: (request) => session.analyzeDocument(request),
         formatDirectives: (request) => session.formatDirectives(request),
+        nativeDeclarationCompletion: (request) => session.nativeDeclarationCompletion(request) as ReturnType<MasterCSSLanguageBindingSession['nativeDeclarationCompletion']>,
         nativeDeclarationCandidates: (classNames) =>
           session.nativeDeclarationCandidates([...classNames]),
         classifyClassNames: (classNames, nativeSupport) =>

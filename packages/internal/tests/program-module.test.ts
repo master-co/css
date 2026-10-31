@@ -25,7 +25,7 @@ afterEach(() => {
 const source = { file: '/home/build/project/app.css', range: { start: 0, end: 1 } }
 const manifest = {
   version: 6,
-  languageVersion: 17,
+  languageVersion: 18,
   keyframes: [{ id: 'fade', name: 'fade', text: '@keyframes fade{}', source }]
 } as MasterCSSManifest
 

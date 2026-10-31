@@ -88,4 +88,24 @@ describe('declaration head values', () => {
   test('offers no values once the head is complete', () => {
     expect(complete('(display:block)').items).toEqual([])
   })
+
+  test('replaces the whole component around the cursor', () => {
+    const apply = (before: string, after: string, label: string) => {
+      const { find } = complete(before, after)
+      const { range, newText } = find(label).textEdit as { range: { start: { character: number }, end: { character: number } }, newText: string }
+      const content = `<div class="${before}${after}"></div>`
+      return content.slice(0, range.start.character) + newText + content.slice(range.end.character)
+    }
+    expect(apply('(display:bl', 'ock):hover', 'block')).toBe('<div class="(display:block):hover"></div>')
+    expect(apply('(display:inl', 'ine-blo', 'inline-block')).toBe('<div class="(display:inline-block)"></div>')
+    expect(apply('(border:1px|so', 'lid|red)', 'dashed')).toBe('<div class="(border:1px|dashed|red)"></div>')
+    expect(apply('(disp', 'lay:block)', '(display:')).toBe('<div class="(display:block)"></div>')
+  })
+
+  test('offers nothing inside strings, comments, URLs or nested functions', () => {
+    expect(complete("(content:'a|b", "c')").items).toEqual([])
+    expect(complete('(width:calc(1px+', '2px))').items).toEqual([])
+    expect(complete('(background:url(https://a.test/', 'b.png))').items).toEqual([])
+    expect(complete('(color:red/*a', '*/)').items).toEqual([])
+  })
 })

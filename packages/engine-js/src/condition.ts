@@ -37,17 +37,6 @@ export function queryRequiresCss(token: string) {
   return prelude !== undefined && !simpleQuery(kind, prelude)
 }
 
-/** A raw `@rule prelude` wrapper with its at-rule name as the kind. */
-export function parseRawConditionWrapper(raw: string): [kind: string, wrapper: string] | undefined {
-  const wrapper = trim(raw)
-  if (wrapper[0] !== '@') return
-  let start = 1
-  while (start < wrapper.length && isWhitespace(wrapper.charCodeAt(start))) start++
-  let end = start
-  while (end < wrapper.length && !isWhitespace(wrapper.charCodeAt(end))) end++
-  return end > start ? [wrapper.slice(start, end), wrapper] : undefined
-}
-
 function simpleQuery(kind: string, prelude: string) {
   const tokens = tokenize(prelude)
   if (!tokens.length) return false

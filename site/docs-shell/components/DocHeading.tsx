@@ -17,7 +17,7 @@ export default function DocHeading({ tagName, ...props }: any) {
   const heading = resolvingHeading(props.children, props.id)
   return (
     <Element {...props} {...heading} title={typeof heading.title === 'string' ? heading.title : textOf(props.children).trim() || undefined} data-doc-heading="">
-      <IconHash className="absolute (inset:0) (margin-block:auto) (margin-left:-1.375em) stroke-text-muted (contain:strict) doc-heading-icon" width={'1em'} height={'1em'} />
+      <IconHash className="absolute inset(0) my-auto (margin-left:-1.375em) stroke-text-muted (contain:strict) doc-heading-icon" width={'1em'} height={'1em'} />
       <Link href={'#' + props.id} className="(content:none):after">
         {typeof props.children === 'string' ? props.children.replace(' [sr-only]', '') : props.children}
       </Link>

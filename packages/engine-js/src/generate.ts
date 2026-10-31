@@ -7,7 +7,7 @@ import { applicationRules } from './apply'
 import { decodeNativeValue, parseNativeDeclaration, splitTopLevel, validClassStructure } from './class-syntax'
 import { conditionPriority } from './condition'
 import { expandUtility } from './mixin'
-import type { StoredRule } from './order'
+import { atomicShape, NATIVE, RECIPE, type RuleShape, type StoredRule } from './order'
 import { cssEscape } from './program'
 import type { Program, Utility, UtilityLayer } from './program-model'
 import { replaceNestingSelector, selectorPriority } from './selector'
@@ -21,10 +21,14 @@ export function formatDeclaration(property: string, value: string, important: bo
   return important && !value.endsWith('!important') ? `${property}:${value}!important` : `${property}:${value}`
 }
 
-/** Compatibility declarations are an engine output policy, not preset recipes. */
+/**
+ * Compatibility declarations are an engine output policy, not preset recipes: every
+ * utility declaration, whether a native head, a token, a static or a function utility
+ * emits it, gets the same companions.
+ */
 const WEBKIT_PROPERTIES = new Set(['text-decoration', 'backdrop-filter', 'box-decoration-break', 'mask-image', 'user-drag', 'user-select'])
 
-function formatNativeDeclaration(property: string, value: string, important: boolean) {
+function formatOutputDeclaration(property: string, value: string, important: boolean) {
   const standard = formatDeclaration(property, value, important)
   return WEBKIT_PROPERTIES.has(property) ? `${formatDeclaration(`-webkit-${property}`, value, important)};${standard}` : standard
 }
@@ -35,13 +39,30 @@ type EmittedRule = [declarations: string, selector: string | undefined, conditio
 function emitDeclarations(utility: Utility, matched: UtilityMatch, important: boolean, program: Program): EmittedRule[] {
   const { emit } = utility
   // Only `(--name:)` declares an empty value; token values are never empty.
-  if (emit.type === 'property') return matched.value === undefined ? [] : [[formatNativeDeclaration(emit.property, matched.value, important), undefined, []]]
-  if (matched.expansion === undefined) matched.expansion = expandUtility(program, program.utilityDefinitions[emit.definition], matched.arguments) ?? null
-  return (matched.expansion ?? []).map(({ selector, conditions, declarations }) => [
-    declarations.map(([property, value]) => formatDeclaration(property, value, important)).join(';'),
+  if (emit.type === 'property') return matched.value === undefined ? [] : [[formatOutputDeclaration(emit.property, matched.value, important), undefined, []]]
+  return expansion(utility, matched, program).map(({ selector, conditions, declarations }) => [
+    declarations.map(([property, value]) => formatOutputDeclaration(property, value, important)).join(';'),
     selector === '&' ? undefined : selector,
     conditions
   ])
+}
+
+/** The recipe expansion of a match, computed once and shared by its state branches. */
+function expansion(utility: Utility, matched: UtilityMatch, program: Program) {
+  const { emit } = utility
+  if (emit.type !== 'recipe') return []
+  if (matched.expansion === undefined) matched.expansion = expandUtility(program, program.utilityDefinitions[emit.definition], matched.arguments) ?? null
+  return matched.expansion ?? []
+}
+
+/**
+ * The shape of a named utility match, read from its expanded structure before
+ * compatibility declarations: duplicates still count, so `margin:0;margin:0` is a recipe.
+ */
+function utilityShape(utility: Utility, matched: UtilityMatch, program: Program): RuleShape {
+  if (utility.emit.type === 'property') return matched.value === undefined ? { category: RECIPE } : atomicShape(utility.emit.property, matched.value)
+  const [rule, other] = expansion(utility, matched, program)
+  return rule && !other && rule.selector === '&' && !rule.conditions.length && rule.declarations.length === 1 ? atomicShape(...rule.declarations[0]) : { category: RECIPE }
 }
 
 /** Declaration semantics for ordering; static and enum identities keep their manifest order. */
@@ -97,11 +118,13 @@ const reportedFeatures = (features: ConditionFeature[]) => features.some(({ lowe
   : features
 
 /** A rule priority as the Rust JSON reports it, omitting empty fields. */
-export function rulePriority(features: ConditionFeature[], selector: number, conditions: string[], valuePriority: number, sortKey: string) {
-  const priority: RulePriority = { features: reportedFeatures(features), selector }
+export function rulePriority(features: ConditionFeature[], selector: number, conditions: string[], valuePriority: number, sortKey: string, shape: RuleShape) {
+  const priority = { features: reportedFeatures(features), selector } as RulePriority
   if (conditions.length) priority.conditions = conditions
   if (valuePriority) priority.valuePriority = valuePriority
   if (sortKey) priority.sortKey = sortKey
+  priority.category = shape.category
+  for (const key of ['family', 'coverage', 'property'] as const) if (shape[key]) (priority[key] as unknown) = shape[key]
   return priority
 }
 
@@ -138,13 +161,14 @@ interface GeneratedBranch {
 function generatedBranches(className: string, program: Program, visit: (generated: GeneratedBranch) => void) {
   const classImportant = className.endsWith('!')
   const source = classImportant ? className.slice(0, -1) : className
-  const candidates = matchingUtilities(source, program).map(([index, matched]): [Utility, UtilityMatch, boolean] => [program.utilities[index], matched, classImportant])
+  const candidates = matchingUtilities(source, program).map(([index, matched]): [Utility, UtilityMatch, boolean, RuleShape | undefined] => [program.utilities[index], matched, classImportant, undefined])
   const native = nativeDeclaration(source)
-  if (native) candidates.push([native[0], native[1], classImportant || native[2]])
+  if (native) candidates.push([native[0], native[1], classImportant || native[2], { category: NATIVE }])
   const seen = new Set<string>()
-  for (const [utility, matched, important] of candidates) {
-    // The sort key ignores the branch; it is computed once, for the first emitted one.
-    let branchSortKey: string | undefined
+  for (const [utility, matched, important, nativeShape] of candidates) {
+    // The shape and sort key ignore the branch; they are computed once.
+    const shape = nativeShape ?? utilityShape(utility, matched, program)
+    let branchSortKey = shape.content
     for (const [index, branch] of resolveStateBranches(matched.stateToken, important, program).entries()) {
       const rules = emitDeclarations(utility, matched, branch.important, program)
       if (!rules.length) continue
@@ -164,7 +188,7 @@ function generatedBranches(className: string, program: Program, visit: (generate
         emitted: rules,
         sortTier: wrappers.length ? 3 : branch.selectorTemplate === undefined ? 0 : 1,
         features,
-        priority: rulePriority(features, selectorPriority(branch.selectorTemplate), conditions, matched.matcherType === 'token' ? -1 : 0, branchSortKey)
+        priority: rulePriority(features, selectorPriority(branch.selectorTemplate), conditions, matched.matcherType === 'token' ? -1 : 0, branchSortKey, shape)
       })
     }
   }

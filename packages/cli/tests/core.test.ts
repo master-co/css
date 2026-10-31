@@ -20,6 +20,8 @@ const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')
 function runCLI(args: string[], options: { cwd?: string, input?: string, env?: NodeJS.ProcessEnv } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
     encoding: 'utf8',
+    // Project snapshots embed the complete preset manifest.
+    maxBuffer: 16 * 1024 * 1024,
     input: options.input,
     stdio: [options.input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
     cwd: options.cwd,

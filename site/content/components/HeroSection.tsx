@@ -11,7 +11,7 @@ import { homeSections, installCommand } from './home-content'
 export default function HeroSection() {
   const $ = useTranslation()
   return (
-    <section data-glyph-host id={homeSections.hero} className="relative (overflow:hidden) isolate home-hero">
+    <section data-glyph-host id={homeSections.hero} className="relative overflow-hidden isolate home-hero">
       <HeroCanvas className="home-hero-field" />
       <div className="relative app-wrapper home-hero-body home-section-wrap">
         <Link className="home-glass home-hero-pill" href="/guide/mcp-server">

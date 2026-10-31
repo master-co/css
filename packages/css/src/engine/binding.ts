@@ -42,7 +42,7 @@ export type MasterCSSEngineMutation =
   | MasterCSSEngineDeleteMutation
 
 export interface MasterCSSEngineTransition {
-  readonly version: 4
+  readonly version: 5
   readonly mutations: readonly MasterCSSEngineMutation[]
 }
 
@@ -70,7 +70,7 @@ export interface MasterCSSEngineExecutionState {
 }
 
 export interface MasterCSSEngineSnapshot {
-  readonly version: 4
+  readonly version: 5
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resources: MasterCSSEngineResources
   readonly text: string

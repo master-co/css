@@ -33,9 +33,25 @@ pub struct RulePriorityIr {
     /// Declaration semantics, independent of aliases and the class separator.
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub sort_key: String,
+    /// Rule shape within a tier: 0 recipe, 1 named atomic utility, 2 native
+    /// declaration. Required: priorities without it predate atomic ordering.
+    pub category: u8,
+    /// The property family of an atomic rule, such as `margin` for `margin-top`.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub family: String,
+    /// An atomic rule's coverage of its family: 0 whole, 1 axis, 2 side or corner.
+    #[serde(default, skip_serializing_if = "is_zero_coverage")]
+    pub coverage: u8,
+    /// The native property of an atomic rule.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub property: String,
 }
 
 fn is_zero_priority(value: &i8) -> bool {
+    *value == 0
+}
+
+fn is_zero_coverage(value: &u8) -> bool {
     *value == 0
 }
 

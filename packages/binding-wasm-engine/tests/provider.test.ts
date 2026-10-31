@@ -9,7 +9,7 @@ const wasm = new URL('../artifacts/mastercss_binding_wasm_engine_bg.wasm', impor
 
 const manifest = JSON.stringify({
   version: 6,
-  languageVersion: 17,
+  languageVersion: 18,
   keyframes: [{ id: 'fade', name: 'fade', text: '@keyframes fade{to{opacity:0}}' }],
   utilities: [{
     kind: 'static',

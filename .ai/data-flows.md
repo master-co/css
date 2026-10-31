@@ -30,8 +30,8 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
-Manifest envelopes are v6; hydration manifests are v5; transition and engine snapshot envelopes are v4. Executable data must carry
-`languageVersion: 17` (binding ABI 30, program 2). Reject missing or unsupported language versions before
+Manifest envelopes are v6; hydration manifests are v5; transition and engine snapshot envelopes are v5. Executable data must carry
+`languageVersion: 18` (binding ABI 31, program 2). Reject missing or unsupported language versions before
 semantic execution. Native declaration output does not depend on host support
 callbacks. CSS value checking belongs to compiler/tooling report or strict
 failure policy, and browser support is a separate observation.
@@ -68,7 +68,7 @@ Risks:
   re-declared theme rules and variable values replace identical base copies, keyframes by ID.
 - Package CSS entrypoints must not accidentally identify themselves as project roots.
 - Import-graph order and manifest merge order affect every consumer.
-- Mixin expansion and recipe sorting affect generated CSS and cascade behavior. Native @apply roots pin their expanded token closure through emittedGlobals; unreferenced definitions are not roots.
+- Mixin expansion and recipe sorting affect generated CSS and cascade behavior. Within a tier, rules sort recipes, then named atomic utilities by property family and coverage, then native declarations (`ordering.rs`); an `@apply` class sorts each outer condition branch by its head and outer suffixes only. Native @apply roots pin their expanded token closure through emittedGlobals; unreferenced definitions are not roots.
 - Virtual ids and generated JavaScript module source are private official-integration
   protocol, not project semantics.
 

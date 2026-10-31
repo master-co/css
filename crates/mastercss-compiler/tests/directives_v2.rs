@@ -234,7 +234,7 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
     let error =
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
-    let manifest = r#"{"version":6,"languageVersion":17,"customMedia":{"wide":{"type":"true"}}}"#;
+    let manifest = r#"{"version":6,"languageVersion":18,"customMedia":{"wide":{"type":"true"}}}"#;
     assert!(EngineSession::create(manifest).is_err(), "{manifest}");
 }
 

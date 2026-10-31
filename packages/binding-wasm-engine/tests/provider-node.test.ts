@@ -15,7 +15,7 @@ test('loads an explicit engine artifact file URL in Node', async () => {
   }
   const engine = await provider.createEngineSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 }))
 
   expect(engine.inspect("(display:block)")).toMatchObject({

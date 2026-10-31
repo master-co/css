@@ -301,9 +301,9 @@ Use `card-layout`, `gap-x-sm`, and `grid-cols(3)@sm` in markup. The header deter
 A utility name or token prefix cannot contain `_`, because `_` begins a descendant selector in classes; such a definition reports an error at its source. Token keys may contain `_`: they remain valid variables for `var()`, but they do not create bare token classes or completions. Mixin names, custom properties and native stylesheet classes may still use `_`.
 
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
-Write a direct value as one `(property:value)` head with the full native property name: `(padding:1rem)`, `(color:red)`, `(background:#fff)`. Genuine native names such as SVG `r` retain their native meaning. The preset also registers 94 [fixed utilities](/reference/rules/declarations#fixed-utilities), such as `block`, `hidden` and `items-center`, as ordinary static `@utility` definitions that each emit one declaration.
+Write a direct value as one `(property:value)` head with the full native property name: `(padding:1rem)`, `(color:red)`, `(background:#fff)`. Genuine native names such as SVG `r` retain their native meaning. The preset also registers 237 [fixed utilities](/reference/rules/declarations#fixed-utilities), such as `block`, `hidden`, `text-center`, `mx-auto` and `b-solid`, as ordinary static `@utility` definitions that each emit one declaration, the `truncate` recipe, and 100 [direct-value functions](/reference/rules/declarations#direct-values) such as `m(4)`, `b(1)` and `grow(1)`: 97 lengths that emit `calc(var(--value) * 1px)` for a `<number>` and the unitless `grow`, `shrink` and `order`.
 
-Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 119 direct-value families, 7 recipes and 94 fixed utilities; the [family catalog](/reference/tokens/families) lists their prefixes, native properties and namespaces.
+Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 463 definitions: 119 token definitions (118 direct-value families and the `text` recipe), 105 function utilities and 239 static utilities (237 fixed utilities, `sr-only` and `truncate`); the [family catalog](/reference/tokens/families) lists the token prefixes, native properties and namespaces. Keyword constants such as `--container-full: 100%` and `--order-first: -999999` are `@theme inline` tokens, so `w-full` and `order-first` emit their values directly.
 
 ### Token patterns \{#named-token-patterns\}
 A pattern has one trailing placeholder. Its parameter names the token namespace; the fixed part names the class prefix. An untyped placeholder binds the token value:
@@ -347,7 +347,7 @@ A shared prefix can expose several namespaces explicitly:
 
 `font-sans`, `font-sm` and `font-bold` each select the one namespace containing that key. A key present in multiple branches reports `AMBIGUOUS_TOKEN` when used and produces no CSS. Use distinct keys or a native declaration such as `(font-size:var(--font-size-brand))`. This rule also applies to string-key recipes and bodies with multiple declarations. Negation and opacity are checked only after a unique branch is selected.
 
-Fixed classes take priority over patterns. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Token patterns sharing a prefix coexist when their parameter namespaces differ. A later pattern replaces the entire definition with the same decoded prefix and namespace, including its parameter mode, body, source and dependencies. Static and function registrations replace the same form and name independently.
+Fixed classes take priority over patterns: the complete class spelling is reserved, not the token key, so `text-center` sets `text-align` even when `--text-center` exists, while `fg-solid`, `b-solid/.5` and `-mx-auto` still reach tokens named `solid` or `auto`. Patterns use the longest prefix; an unknown token in the selected family reports an error without retrying a shorter prefix. Token patterns sharing a prefix coexist when their parameter namespaces differ. A later pattern replaces the entire definition with the same decoded prefix and namespace, including its parameter mode, body, source and dependencies. Static and function registrations replace the same form and name independently.
 
 Negative values and opacity apply to the direct-value subset: one untyped placeholder and one native declaration whose entire value is `var(--parameter)`. `-m-md` negates a numeric spacing token; `-p-md` is invalid because padding does not support negative values. `fg-red/.5` applies opacity to a color token, with opacity between zero and one. These capabilities do not extend to general multi-declaration or string-key recipes.
 
@@ -364,7 +364,7 @@ Function utilities and mixins accept positional parameters: untyped, `<integer>`
 Use `pair(2rem)`. General function arguments must be statically known. A function or mixin with exactly one untyped, default-free parameter and one native declaration whose complete value is `var(--parameter)` also accepts symbolic `var()` expressions. Its caller's reference remains intact for browser evaluation. Other functions reject external `var()`, `attr()`, and browser-dependent arguments. A known outer parameter may be forwarded through `var(--parameter)`.
 
 ### Native property precedence \{#literal-and-raw-values\}
-`(property:value)` always retains its native meaning, and its parentheses end the class head before any utility, token or selector lookup. A bare `name:suffix` is always a registered name followed by a selector: `flex:hover` applies the `flex` utility while hovered. Within the same layer and conditions, direct declarations sort after recipes and fixed utilities so one declaration can override part of a recipe independently of markup order. Selectors, conditions and `!` modifiers apply to utilities and direct declarations.
+`(property:value)` always retains its native meaning, and its parentheses end the class head before any utility, token or selector lookup. A bare `name:suffix` is always a registered name followed by a selector: `flex:hover` applies the `flex` utility while hovered. Within the same layer, conditions and selector, rules sort in three categories: recipes with several declarations or an inner selector or condition, then single-declaration utilities, then native declarations, so one declaration can override part of a recipe independently of markup order. Single-declaration utilities, whatever registered them, sort by property family (margin, padding, scroll margin and padding, inset, border width, border style, border color, border radius, gap and overflow group their sides and axes; other properties are their own family), then coverage from the whole family through an axis to a side or corner, then value source, with tokens before fixed and direct values; `m-md mt(0)` keeps the top margin at zero in either class order. Logical and physical members of one coverage keep a stable property order instead of a guessed writing mode, and shorthands such as `border` are not related to other families. Selectors, conditions and `!` modifiers apply to utilities and direct declarations.
 
 ### `@mixin` and `@apply` \{#reusing-a-matched-value\}
 Master compiles a static subset of the experimental [CSS Mixins specification](https://drafts.csswg.org/css-mixins-1/#mixin-rule). Definitions have dashed names and must be unconditional stylesheet-level rules. A mixin supplies CSS reuse; it does not register a Master class.
@@ -412,7 +412,7 @@ Supplied content retains the caller's parameter bindings, including when forward
 <div class="emphasis@apply(--hocus)!"></div>
 ```
 
-`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `(color:red)@apply(--a)@apply(--b)` puts `--a` outside `--b`. A utility supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. Ordering, inspection and conflicts use the expanded rules.
+`@apply(--name(...))` accepts static arguments. Multiple `@` wrappers nest from left to right: `(color:red)@apply(--a)@apply(--b)` puts `--a` outside `--b`. A utility supplies its declarations as one block, so a wrapper's own declarations are emitted once per class. Selector suffixes retain their existing placement; a final `!` marks every expanded declaration important. The class head and its condition suffixes other than `@apply` order the class: each outer condition branch is one rule that sorts on its own, while the mixins' inner selectors and conditions stay in the emitted text without moving the class to a later tier, and the expansion keeps its authored order. An expansion that adds no declaration, selector or condition sorts with single-declaration utilities, or with native declarations for a `(property:value)` head; any other expansion sorts as a recipe. Inspection and conflicts use the expanded rules.
 
 Unused definitions, discarded contents and unused fallback blocks do not retain tokens or keyframes. Delivered native `@apply` remains a resource root through the emitted-globals contract. Declaration locations and relative URLs retain their defining or calling file.
 
@@ -426,7 +426,7 @@ Classes from source scanning, safelists, engine APIs and runtime DOM changes are
 
 Runtime manifests retain unused definitions for future DOM classes. On-demand generation concerns CSS and resource output. Native CSS pruning remains opt-in; keyframes share their declaring file’s native preservation and pruning policy. Qualified imports must contain native CSS only. Load definitions through an unqualified import or reference.
 
-Compile definitions into Manifest v6 with languageVersion 17 and binding ABI 29. Hydration manifests use v5; engine snapshots and transitions use v4; inspection uses v2. Load artifacts that match these contracts.
+Compile definitions into Manifest v6 with languageVersion 18 and binding ABI 31. Hydration manifests use v5; engine snapshots and transitions use v5; inspection uses v2. Load artifacts that match these contracts.
 
 <StylesheetExample title="Scoped tokens in native CSS" source={"@theme { --color-brand: #4f46e5; }  .dark { --color-brand: #111827; } .card { color: var(--color-brand); }"} />
 
@@ -808,13 +808,13 @@ A condition suffix accepts a registered name or a complete native query. The
 outer parentheses belong to Master; parentheses inside them belong to CSS:
 
 ```text name="Language v2 queries"
-(width:10px)@sm
-(width:20px)@media((width>=800px))
-(width:30px)@media((aspect-ratio>=1.5))
-(width:40px)@media((width>=50rem))
+w(10)@sm
+w(20)@media((width>=800px))
+w(30)@media((aspect-ratio>=1.5))
+w(40)@media((width>=50rem))
 grid@supports((display:grid))
-(width:50px)@container(card|(width>=40rem))
-(width:60px)@container(style(--density:compact))
+w(50)@container(card|(width>=40rem))
+w(60)@container(style(--density:compact))
 ```
 
 Query units remain authored: `800px` is not rewritten to `50rem`. Pipes decode
@@ -894,4 +894,4 @@ The preset’s direct-value `animate-*` family maps `--animate-*` values to the 
 
 ## Token family names
 
-Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 17 and binding ABI 29.
+Preset named-token families are defined in `utilities.css` and have one canonical prefix: `p-md`, `fg-red`, `bg-red`, and `shadow-sm`. Direct declarations still require complete native property names. An explicit token pattern with a `<string>` parameter binds a key from its namespace; companion tokens do not create extra class names. The versioned, readonly `tokenFamilies()` result on language and tooling sessions describes the effective manifest, including registered families with no current tokens. Each entry exposes `utility`, `prefix`, `namespace`, `argument` (`value` or `key`), and `properties`. Multiple entries may share a prefix; identify each branch by prefix and namespace. Completion omits ambiguous classes and uses the resolved branch for token details and source navigation. Manifest v6 uses language version 18 and binding ABI 31.

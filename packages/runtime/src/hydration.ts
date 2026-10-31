@@ -29,7 +29,7 @@ export function getRenderedClassNames(hydrationManifest: MasterCSSHydrationManif
 function validateHydrationManifest(hydrationManifest: unknown): MasterCSSHydrationManifest | undefined {
   const candidate = hydrationManifest as MasterCSSHydrationManifest | undefined
   return candidate?.version === 5
-    && candidate.languageVersion === 17
+    && candidate.languageVersion === 18
     && Array.isArray(candidate.classNames)
     && candidate.classNames.every(className => typeof className === 'string')
     && Array.isArray(candidate.resourceOrder?.variables)
@@ -53,7 +53,7 @@ function parseHydrationManifest(source: string): MasterCSSHydrationManifest {
   } catch (cause) {
     throw invalidHydrationManifest('Cannot parse the Master CSS hydration manifest.', cause)
   }
-  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 17. Recompile with matching packages.')
+  throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 18. Recompile with matching packages.')
 }
 
 function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
@@ -93,7 +93,7 @@ export async function resolveHydrationManifest(
   if (explicit !== undefined) {
     const hydrationManifest = validateHydrationManifest(explicit)
     if (!hydrationManifest) {
-      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 17. Recompile with matching packages.')
+      throw invalidHydrationManifest('Unsupported Master CSS hydration manifest. Expected version 5 and languageVersion 18. Recompile with matching packages.')
     }
     return hydrationManifest
   }

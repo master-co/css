@@ -169,7 +169,7 @@ function TraceMetricGroup(props: {
   return (
     <div className="grid gap-sm">
       <div className="flex items-baseline justify-between gap-md">
-        <h4 className="(margin:0) font-sm (font-weight:460) fg-text-strong">{props.title}</h4>
+        <h4 className="m(0) font-sm (font-weight:460) fg-text-strong">{props.title}</h4>
         <span className="font-xs fg-text-muted">Warm-cache median</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />

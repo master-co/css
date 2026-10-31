@@ -4,7 +4,7 @@ const DocBadge = styled.div<{
   color?: 'primary' | 'fade',
   size?: 'xs' | 'sm' | 'md'
 }>(
-  'inline-flex items-center justify-center (border-radius:3px) (font-weight:460) tracking-tight',
+  'inline-flex items-center justify-center r(3) (font-weight:460) tracking-tight',
   {
     color: {
       primary: 'bg-accent/.1 fg-accent',
@@ -16,7 +16,7 @@ const DocBadge = styled.div<{
       md: '(height:1.75rem) px-xs font-xs'
     },
   },
-  ({ outlined }) => outlined && '(border-width:1px) (border-style:solid) b-line-subtle fg-text-strong'
+  ({ outlined }) => outlined && 'b(1) b-solid b-line-subtle fg-text-strong'
 )
 
 export default DocBadge

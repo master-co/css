@@ -53,7 +53,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "mixins": [
     {
       "name": "--block",
@@ -86,7 +86,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "mixins": [
     {
       "name": "--block",
@@ -130,7 +130,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ],
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "variables": {
     "spacing": [
       {
@@ -275,7 +275,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 17 as const,
+  "languageVersion": 18 as const,
   "mixins": [
     {
       "name": "--block",
@@ -295,33 +295,33 @@ test('loads the isolated source tooling Wasm surface', async () => {
   ]
 , utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 7 as const,
+    version: 8 as const,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 7 as const,
+    version: 8 as const,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 7 as const,
+    version: 8 as const,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: "(color:", kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 7 as const,
+    version: 8 as const,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
     sourceFormat: { syntax: 'rgb' as const }
   })
   expect(language.colorTokens([{ className: '(color:#123)', start: 2 }])).toEqual({
-    version: 7 as const,
+    version: 8 as const,
     tokens: [{
       range: { start: 9, end: 13 },
       expression: { kind: 'literal', value: '#123' }

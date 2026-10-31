@@ -5,7 +5,7 @@ import { createTestCSS } from './helpers/rust-engine'
 
 const baseManifest = {
   "version": 6 as const,
-  "languageVersion": 17 as const
+  "languageVersion": 18 as const
 }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 

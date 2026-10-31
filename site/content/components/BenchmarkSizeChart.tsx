@@ -87,7 +87,7 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
           }}
           options={modeOptions}
           value={activeMode.id} />
-        <p className="home-annotation home-bench-caption">{labels.caption} <span className="(white-space:nowrap)">· {labels.date}</span></p>
+        <p className="home-annotation home-bench-caption">{labels.caption} <span className="whitespace-nowrap">· {labels.date}</span></p>
       </div>
       <div className="home-bench-chart" ref={chartRef} style={{ '--home-bench-minor': `${100 / ((axis.ticks.length - 1) * 4)}%` } as CSSProperties}>
         <canvas aria-hidden="true" className="home-bench-canvas" ref={canvasRef} />
@@ -127,10 +127,10 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
         </ol>
         {/* The axis is a ruler: a baseline with four ticks per labelled step, and labels under the major ones. */}
         <div className="home-bench-axis" data-switched={switched || undefined} key={activeMode.id}>
-          <div className="relative (height:1.25rem) (width:100%)">
+          <div className="relative (height:1.25rem) w-full">
             {axis.ticks.map((tick, index) => (
               <span
-                className={clsx('absolute (top:0) (white-space:nowrap) home-bench-tick', plot.narrow && index > 0 && index < axis.ticks.length - 1 && 'invisible')}
+                className={clsx('absolute top(0) whitespace-nowrap home-bench-tick', plot.narrow && index > 0 && index < axis.ticks.length - 1 && 'invisible')}
                 key={tick.label}
                 style={{ left: `${tick.percent}%`, translate: tick.percent === 0 ? undefined : tick.percent === 100 ? '-100%' : '-50%' }}>
                 {tick.label}

@@ -4,26 +4,26 @@
     "id": "use-a-radius-token",
     "title": "Use a radius token",
     "html": [
-      "<!-- Radius only · child corners stay square -->\n<div id=\"target\"\n  class=\"(width:240px) (max-width:100%) r-2xl bg-surface-inset\n         box-border\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"block (height:auto) (width:100%)\" />\n</div>",
-      "<!-- Radius + overflow hidden · child is clipped -->\n<div id=\"target\"\n  class=\"(overflow:hidden) (width:240px) (max-width:100%) r-2xl\n         bg-surface-inset box-border\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"block (height:auto) (width:100%)\" />\n</div>"
+      "<!-- Radius only · child corners stay square -->\n<div id=\"target\"\n  class=\"w(240) max-w-full r-2xl bg-surface-inset\n         box-border\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"block h-auto w-full\" />\n</div>",
+      "<!-- Radius + overflow hidden · child is clipped -->\n<div id=\"target\"\n  class=\"overflow-hidden w(240) max-w-full r-2xl\n         bg-surface-inset box-border\">\n  <img src=\"/demo/landscape.svg\"\n    alt=\"Blue and violet mountains\"\n    width=\"320\" height=\"200\"\n    class=\"block h-auto w-full\" />\n</div>"
     ],
     "css": "",
     "classes": [
-      "(width:240px)",
-      "(max-width:100%)",
+      "w(240)",
+      "max-w-full",
       "r-2xl",
       "bg-surface-inset",
       "box-border",
       "block",
-      "(height:auto)",
-      "(width:100%)",
-      "(overflow:hidden)"
+      "h-auto",
+      "w-full",
+      "overflow-hidden"
     ],
     "classLists": [
-      "(width:240px) (max-width:100%) r-2xl bg-surface-inset box-border",
-      "block (height:auto) (width:100%)",
-      "(overflow:hidden) (width:240px) (max-width:100%) r-2xl bg-surface-inset box-border",
-      "block (height:auto) (width:100%)"
+      "w(240) max-w-full r-2xl bg-surface-inset box-border",
+      "block h-auto w-full",
+      "overflow-hidden w(240) max-w-full r-2xl bg-surface-inset box-border",
+      "block h-auto w-full"
     ],
     "highlighted": []
   }

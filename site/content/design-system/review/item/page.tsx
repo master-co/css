@@ -18,7 +18,7 @@ function specimen() {
 
 function spacingTiles() {
   return (
-    <div className="grid-cols(2) gap-md (width:100%) p-md r-md (background:var(--stripe-pink)) grid-cols(5)@sm">
+    <div className="grid-cols(2) gap-md w-full p-md r-md (background:var(--stripe-pink)) grid-cols(5)@sm">
       {Array.from({ length: 10 }, (_, index) => <DemoItem key={index} className="review-item-spacingTile">{index + 1}</DemoItem>)}
     </div>
   )

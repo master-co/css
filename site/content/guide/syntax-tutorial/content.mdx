@@ -39,23 +39,23 @@ Read the class from left to right:
 
 The output contains a variable definition and a rule inside a media query. The class is escaped in the CSS selector so the browser matches the literal HTML class name. You write the readable form in HTML; you do not copy that escaped selector back into the class attribute.
 
-There are four ways to supply the style part. A **fixed utility**, such as `flex` or `items-center`, names one common native declaration. A **direct declaration**, such as `(color:rebeccapurple)`, writes any CSS property and value inside parentheses. A **token class**, such as `fg-blue-60`, selects a registered named value. A **utility recipe**, such as `text-sm` or `grid-cols(3)`, expands a recipe that can set several declarations. Each can carry selectors and conditions.
+There are four ways to supply one setting. A **fixed utility**, such as `flex`, `text-center` or `mx-auto`, names one common native declaration. A **token class**, such as `m-md`, `b-red-60` or `fg-blue-60`, selects a registered named value. A **direct value**, such as `m(4)`, `b(1)` or `grow(1)`, passes a number to a registered function; lengths are pixels. A **native declaration**, such as `(margin:1rem)` or `(flex:1|1|auto)`, writes any CSS property and value inside parentheses. A **utility recipe**, such as `text-sm`, `truncate` or `grid-cols(3)`, sets several declarations at once. Each can carry selectors and conditions.
 
 ## Write independent declarations \{#composition\}
 
 Give each local decision its own class. A quiet control needs a border width, a border color and a border style:
 
 ```html
-<button type="button" class="p-sm (border-width:1px) b-line-control (border-style:solid)">
+<button type="button" class="p-sm b(1) b-line-control b-solid">
   Save
 </button>
 ```
 
-<Class2CSS>{['p-sm', '(border-width:1px)', 'b-line-control', '(border-style:solid)']}</Class2CSS>
+<Class2CSS>{['p-sm', 'b(1)', 'b-line-control', 'b-solid']}</Class2CSS>
 
-Here `(border-width:1px)` and `(border-style:solid)` are native declarations; `b-line-control` selects the color token `--color-line-control`. You can now change the color on interaction without restating the width or style. A single setting such as `p-sm` or `gap-md` remains one class. When a print rule should disable animation completely, `(animation:none)@media(print)` expresses that decision directly.
+Here `b(1)` sets a one-pixel border width, `b-solid` sets the border style, and `b-line-control` selects the color token `--color-line-control`. Width, style and color stay independent, so you can change the color on interaction without restating the width or style. A single setting such as `p-sm` or `gap-md` remains one class. When a print rule should disable animation completely, `(animation:none)@media(print)` expresses that decision directly.
 
-Direct declarations use full property names inside parentheses. Write `(padding:12px)`, `(font-size:1rem)` and `(--progress:65%)`; a common fixed value such as `display: grid` has the short utility `grid`. CSS determines valid values: lengths need their intended units, while properties such as `opacity` accept unitless numbers. Master CSS does not turn a bare length into pixels or rems. CSS-wide values such as `inherit`, `initial`, `unset`, `revert` and `revert-layer` keep their native meaning.
+Native declarations use full property names inside parentheses. Write `(padding:0.75rem)`, `(font-size:1rem)` and `(--progress:65%)`; a pixel value such as `padding: 12px` has the direct value `p(12)`, and a common fixed value such as `display: grid` has the fixed utility `grid`. CSS determines valid values: lengths need their intended units, while properties such as `opacity` accept unitless numbers. Master CSS does not turn a bare length into pixels or rems. CSS-wide values such as `inherit`, `initial`, `unset`, `revert` and `revert-layer` keep their native meaning.
 
 ```html
 <div class="grid gap-md (max-width:32rem) (opacity:0.9) (--progress:65%)">
@@ -132,7 +132,7 @@ The longest matching prefix owns the lookup. A missing primary token under that 
 
 A Save button needs visible feedback for both a pointer and a keyboard. The button below changes its surface on hover and keeps a distinct focus outline:
 
-<DemoConfiguredExample name="syntax-button" title="A button that responds to you" source="" html={'<button type="button" class="px-lg py-sm r-md (border-width:1px) (border-style:solid) b-line-control bg-surface-raised bg-surface-inset:hover fg-text-strong (outline-color:currentColor) (outline-offset:3px) (outline-width:2px):focus-visible (outline-style:solid):focus-visible">Save</button>'} caption="Hover the button, then reach it with Tab. The surface changes on hover; keyboard focus adds an offset outline. Styling does not perform a Save action." />
+<DemoConfiguredExample name="syntax-button" title="A button that responds to you" source="" html={'<button type="button" class="px-lg py-sm r-md b(1) b-solid b-line-control bg-surface-raised bg-surface-inset:hover fg-text-strong (outline-color:currentColor) outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">Save</button>'} caption="Hover the button, then reach it with Tab. The surface changes on hover; keyboard focus adds an offset outline. Styling does not perform a Save action." />
 
 Native pseudo-classes and pseudo-elements work as selector suffixes: `:hover`, `:focus-visible`, `:disabled`, `:nth-child(2)` and `::before`. Attribute selectors and selector functions are also native. For example, `(opacity:0.5)[aria-disabled=true]` matches an attribute on the class-bearing element; `fg-blue-60:is(:hover,:focus-visible)` uses either state.
 
@@ -168,7 +168,7 @@ Underscores inside quoted attribute values, such as `[data-id='a_b']`, stay lite
 
 A viewport breakpoint and a component's available width solve different problems. `p-lg@sm` follows the viewport. A card inside a narrow sidebar should usually follow its container instead.
 
-<DemoConfiguredExample name="syntax-container" title="A card follows its container" source="" html={'<section class="(container-name:card) (container-type:inline-size)"><article class="grid gap-md p-lg r-lg bg-surface-raised (grid-template-columns:1fr|auto)@container(card|(width>=28rem))"><div><h3 class="(margin:0) text-lg fg-text-strong">Field notes</h3><p class="mt-sm (margin-bottom:0) text-sm fg-text-muted">A collection that fits the space it has.</p></div><button type="button" class="self-center px-md py-sm r-md bg-blue-60 (color:white)">Open</button></article></section>'} responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 600 }]} caption="Switch between Narrow and Wide. The button moves beside the text when the named card container reaches 28rem. The container is the parent of the element whose layout changes." />
+<DemoConfiguredExample name="syntax-container" title="A card follows its container" source="" html={'<section class="(container-name:card) container-inline"><article class="grid gap-md p-lg r-lg bg-surface-raised (grid-template-columns:1fr|auto)@container(card|(width>=28rem))"><div><h3 class="m(0) text-lg fg-text-strong">Field notes</h3><p class="mt-sm mb(0) text-sm fg-text-muted">A collection that fits the space it has.</p></div><button type="button" class="self-center px-md py-sm r-md bg-blue-60 (color:white)">Open</button></article></section>'} responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 600 }]} caption="Switch between Narrow and Wide. The button moves beside the text when the named card container reaches 28rem. The container is the parent of the element whose layout changes." />
 
 Container queries need a query container with the right name and type. A size query styles a descendant; it cannot use an element as its own size-query container. Container dimension tokens and query thresholds are separate decisions: changing `--container-md` does not rewrite `28rem` in a query.
 
@@ -214,7 +214,7 @@ Direct declarations in `@theme` use `:root, :host`. Used managed tokens are emit
 
 A local brand can change a token without changing any consuming class. This example also separates brand from light and dark appearance:
 
-<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: light-dark(oklch(48% 0.18 255), oklch(78% 0.12 255));\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: light-dark(oklch(48% 0.2 315), oklch(78% 0.12 315)); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="(margin:0) text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="(margin:0) text-sm">Nested light surface</p><p class="mt-sm (margin-bottom:0) font-semibold fg-brand">The inherited plum token</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand token. Both fg-brand classes use that token; light-dark() chooses a readable accent for each surface. The outer section keeps its dark surface." />
+<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: light-dark(oklch(48% 0.18 255), oklch(78% 0.12 255));\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: light-dark(oklch(48% 0.2 315), oklch(78% 0.12 315)); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="m(0) text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-semibold fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="m(0) text-sm">Nested light surface</p><p class="mt-sm mb(0) font-semibold fg-brand">The inherited plum token</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand token. Both fg-brand classes use that token; light-dark() chooses a readable accent for each surface. The outer section keeps its dark surface." />
 
 Keep selectors and conditions outside `@theme`. A native media query can override a registered token:
 
@@ -260,7 +260,7 @@ General recipe arguments must be known during compilation. Pass literal argument
 
 The preset's `text-sm` is a recipe, whereas `font-sm` changes one property. An explicit token pattern with a `<string>` parameter binds a key from its parameter namespace. A matching primary token creates the named class. A project can add a new text treatment without replacing the recipe:
 
-<DemoConfiguredExample name="syntax-type" title="A small editorial hierarchy" source={'@theme {\n  --text-note: 0.9375rem;\n  --text-note--line-height: 1.65;\n  --text-note--letter-spacing: 0.01em;\n}'} html={'<article class="(max-width:34rem) p-lg r-lg bg-surface-raised"><p class="(margin:0) text-sm fg-text-muted">FIELD NOTES / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">Make space for the details.</h3><p class="(margin:0) text-note fg-text-body">A text treatment keeps size, line height and letter spacing together. Weight, family and color remain independent decisions.</p></article>'} caption="Compare the compact label, larger heading and relaxed paragraph. text-note reads one primary token and two companions; its color is selected separately." />
+<DemoConfiguredExample name="syntax-type" title="A small editorial hierarchy" source={'@theme {\n  --text-note: 0.9375rem;\n  --text-note--line-height: 1.65;\n  --text-note--letter-spacing: 0.01em;\n}'} html={'<article class="(max-width:34rem) p-lg r-lg bg-surface-raised"><p class="m(0) text-sm fg-text-muted">FIELD NOTES / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">Make space for the details.</h3><p class="m(0) text-note fg-text-body">A text treatment keeps size, line height and letter spacing together. Weight, family and color remain independent decisions.</p></article>'} caption="Compare the compact label, larger heading and relaxed paragraph. text-note reads one primary token and two companions; its color is selected separately." />
 
 `text-note` binds the key `"note"` to `--text` in the preset utility. The primary `--text-note` supplies font size. Its companions supply line height and letter spacing; companions alone do not create classes. The recipe uses `ident()` to build variable names from the static string argument:
 
@@ -280,7 +280,7 @@ With those definitions, `caption-small` expands both declarations and uses `norm
 
 The `animate` token family maps a complete animation shorthand to the `animation` property:
 
-<DemoConfiguredExample name="syntax-motion" title="A finite reveal" source={'@prune native;\n@theme {\n  --animate-reveal: note-reveal 700ms ease-out;\n}\n@keyframes note-reveal {\n  from { opacity: 0; translate: 0 0.75rem; }\n  to { opacity: 1; translate: 0 0; }\n}'} html={'<article id="reveal" class="p-lg r-lg bg-surface-raised animate-reveal@motion-safe"><h3 class="(margin:0) text-lg fg-text-strong">Collection saved</h3><p class="mt-sm (margin-bottom:0) text-sm fg-text-muted">Ready for the next idea.</p></article><output data-animation-readout="reveal" class="block mt-md text-sm fg-text-muted">Paused</output>'} motion caption="Use Play, Pause and Replay to inspect the actual animation. The reveal runs once. With reduced motion enabled, the card is visible immediately without the entrance animation." />
+<DemoConfiguredExample name="syntax-motion" title="A finite reveal" source={'@prune native;\n@theme {\n  --animate-reveal: note-reveal 700ms ease-out;\n}\n@keyframes note-reveal {\n  from { opacity: 0; translate: 0 0.75rem; }\n  to { opacity: 1; translate: 0 0; }\n}'} html={'<article id="reveal" class="p-lg r-lg bg-surface-raised animate-reveal@motion-safe"><h3 class="m(0) text-lg fg-text-strong">Collection saved</h3><p class="mt-sm mb(0) text-sm fg-text-muted">Ready for the next idea.</p></article><output data-animation-readout="reveal" class="block mt-md text-sm fg-text-muted">Paused</output>'} motion caption="Use Play, Pause and Replay to inspect the actual animation. The reveal runs once. With reduced motion enabled, the card is visible immediately without the entrance animation." />
 
 The output contains `animation: var(--animate-reveal)`. The token supplies the complete shorthand; omitted fields use native CSS defaults, so this reveal runs once. Keyframes retain their native conditions, layers and source order; this file opts into usage-based pruning. See [animation tokens](/reference/tokens/animate) for values, overrides and resource ownership.
 
@@ -318,18 +318,18 @@ For normal declarations, later layers win over earlier layers before selector sp
 
 A class may choose `@layer(base)`, `@layer(defaults)`, `@layer(components)` or `@layer(utilities)`. The selection applies to the whole class. `theme` is for managed variables, not one of those four style-layer choices. The suffix does not create sublayers; conflicting layer choices on a class are errors.
 
-<ConfiguredExample source={'@utility inset { padding: 2rem; }'} html={'<div class="inset p-md (padding:12px)">A local spacing decision</div>'} />
+<ConfiguredExample source={'@utility inset { padding: 2rem; }'} html={'<div class="inset p-md p(12)">A local spacing decision</div>'} />
 
-Under the same selector, conditions, layer and importance, the generated order places a recipe before a token and a token before a direct declaration for the competing property. Open the output: the final direct padding is `12px`. Reordering these words in HTML does not change that result. Differences in native specificity, layers or matching conditions can change which declaration wins.
+Under the same selector, conditions, layer and importance, the generated order places recipes first, then single-declaration utilities, then native declarations. For the same property, a token precedes a direct value. Open the output: the final direct padding is `12px`. Reordering these words in HTML does not change that result. Differences in native specificity, layers or matching conditions can change which declaration wins.
 
 A final `!` marks the expanded declarations important:
 
 ```html
-<div class="p-md! (padding:12px)">Important token versus normal direct value</div>
-<div class="(padding:8px)@layer(base)! (padding:12px)!">Two important layer choices</div>
+<div class="p-md! p(12)">Important token versus normal direct value</div>
+<div class="p(8)@layer(base)! p(12)!">Two important layer choices</div>
 ```
 
-<Class2CSS>{['p-md!', '(padding:12px)', '(padding:8px)@layer(base)!', '(padding:12px)!']}</Class2CSS>
+<Class2CSS>{['p-md!', 'p(12)', 'p(8)@layer(base)!', 'p(12)!']}</Class2CSS>
 
 In the first pair, important token padding wins over normal direct padding. In the second pair, important base-layer padding wins over important utilities-layer padding because importance reverses layer precedence. A utility recipe's final `!` marks every declaration it expands.
 
@@ -387,7 +387,7 @@ Native rules ship by default. Source-based native pruning is an explicit option 
 
 The final card uses a local project token, an on-demand button recipe, an interaction wrapper and a container query. Native component CSS owns the card surface; utilities own the decisions visible at each element.
 
-<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="(container-name:collection) (container-type:inline-size)"><article class="collection grid gap-lg p-lg (grid-template-columns:1fr|auto)@container(collection|(width>=28rem))"><div><p class="(margin:0) text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">A place for good ideas.</h3><p class="(margin:0) text-sm fg-text-body (max-width:38ch)">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action self-center justify-center fg-action bg-surface-inset@apply(--hocus) (outline-offset:3px)"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
+<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="(container-name:collection) container-inline"><article class="collection grid gap-lg p-lg (grid-template-columns:1fr|auto)@container(collection|(width>=28rem))"><div><p class="m(0) text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-semibold fg-text-strong">A place for good ideas.</h3><p class="m(0) text-sm fg-text-body (max-width:38ch)">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action self-center justify-center fg-action bg-surface-inset@apply(--hocus) outline-offset(3)"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
 
 Add these definitions after the preset import in your own app stylesheet. The demonstration's appearance switch changes the native color scheme; `light-dark()` selects the corresponding action color. Both states use the same complete classes.
 

@@ -12,14 +12,14 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   let prevDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex - 1]
   let nextDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex + 1]
   const Nav = ({ definedMetadata, navigatorIconClass, direction }: any) =>
-    <Link href={definedMetadata.pathname} rel={direction} aria-label={`${locale === 'tw' ? direction === 'prev' ? '上一篇' : '下一篇' : direction === 'prev' ? 'Previous' : 'Next'}: ${$(definedMetadata.title.absolute || definedMetadata.title)}`} className="flex-col (flex-basis:100%) (flex-grow:1) (flex-shrink:1) justify-start! r-sm (flex-basis:50%)@sm (flex-grow:1)@sm (flex-shrink:1)@sm">
+    <Link href={definedMetadata.pathname} rel={direction} aria-label={`${locale === 'tw' ? direction === 'prev' ? '上一篇' : '下一篇' : direction === 'prev' ? 'Previous' : 'Next'}: ${$(definedMetadata.title.absolute || definedMetadata.title)}`} className="flex-col basis-full grow(1) shrink(1) justify-start! r-sm (flex-basis:50%)@sm grow(1)@sm shrink(1)@sm">
       <div className='flex items-center'>
-        <IconChevronLeft aria-hidden="true" className={clsx('(height:14px) (width:14px) stroke-text-muted (vertical-align:middle)', navigatorIconClass)} />
+        <IconChevronLeft aria-hidden="true" className={clsx('h(14) w(14) stroke-text-muted vertical-middle', navigatorIconClass)} />
         <span className="font-xs fg-text-muted">{$(definedMetadata.category)}</span>
       </div>
-      <div className="(overflow-wrap:anywhere) (width:100%) mt-sm font-md fg-text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
+      <div className="wrap-anywhere w-full mt-sm font-md fg-text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
       {definedMetadata.description && (
-        <p className="clamp-lines(2) (width:100%) (margin-bottom:0) (margin-top:0.625rem) text-xs (text-wrap:pretty) fg-text-body (font-weight:460)_b">
+        <p className="clamp-lines(2) w-full mb(0) (margin-top:0.625rem) text-xs (text-wrap:pretty) fg-text-body (font-weight:460)_b">
           {$(definedMetadata.description)}
         </p>
       )}
@@ -29,7 +29,7 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
       <hr className="hr" />
       <nav className="flex (gap:2.5rem) flex-wrap@media((width<52.125rem)) doc-page-navigation" aria-label={locale === 'tw' ? '前後篇文件' : 'Previous and next documents'}>
         {prevDefinedMetadata && <Nav direction="prev" definedMetadata={prevDefinedMetadata} navigatorIconClass="(margin-left:-0.25rem) (margin-right:0.375rem) (margin-top:-0.125rem)" />}
-        {nextDefinedMetadata && <Nav direction="next" definedMetadata={nextDefinedMetadata} navigatorIconClass="(margin-left:0.375rem) (order:1) (rotate:180deg) (margin-top:-0.125rem)" />}
+        {nextDefinedMetadata && <Nav direction="next" definedMetadata={nextDefinedMetadata} navigatorIconClass="(margin-left:0.375rem) order(1) (rotate:180deg) (margin-top:-0.125rem)" />}
       </nav>
     </>
   )

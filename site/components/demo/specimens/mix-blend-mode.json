@@ -4,39 +4,39 @@
     "id": "blend-an-element-with-its-backdrop",
     "title": "Blend an element with its backdrop",
     "html": [
-      "<!-- Normal · one foreground color -->\n<div class=\"relative isolate (height:160px) (width:240px)\n         (max-width:100%) (background-color:#e2e8f0)\">\n  <div aria-hidden=\"true\"\n    class=\"absolute (bottom:0) (right:0) (top:0) (width:120px) (background-color:#c4b5fd)\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"absolute (left:72px) top-xl (width:96px) (height:96px) r-lg\n           (background-color:#2563eb) (mix-blend-mode:normal)\"></div>\n</div>",
-      "<!-- Multiply · combines with both backdrops -->\n<div class=\"relative isolate (height:160px) (width:240px)\n         (max-width:100%) (background-color:#e2e8f0)\">\n  <div aria-hidden=\"true\"\n    class=\"absolute (bottom:0) (right:0) (top:0) (width:120px) (background-color:#c4b5fd)\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"absolute (left:72px) top-xl (width:96px) (height:96px) r-lg\n           (background-color:#2563eb) (mix-blend-mode:multiply)\"></div>\n</div>"
+      "<!-- Normal · one foreground color -->\n<div class=\"relative isolate h(160) w(240)\n         max-w-full (background-color:#e2e8f0)\">\n  <div aria-hidden=\"true\"\n    class=\"absolute bottom(0) right(0) top(0) w(120) (background-color:#c4b5fd)\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"absolute left(72) top-xl w(96) h(96) r-lg\n           (background-color:#2563eb) (mix-blend-mode:normal)\"></div>\n</div>",
+      "<!-- Multiply · combines with both backdrops -->\n<div class=\"relative isolate h(160) w(240)\n         max-w-full (background-color:#e2e8f0)\">\n  <div aria-hidden=\"true\"\n    class=\"absolute bottom(0) right(0) top(0) w(120) (background-color:#c4b5fd)\"></div>\n  <div id=\"target\" role=\"img\"\n    aria-label=\"Blue foreground across two backdrops\"\n    class=\"absolute left(72) top-xl w(96) h(96) r-lg\n           (background-color:#2563eb) (mix-blend-mode:multiply)\"></div>\n</div>"
     ],
     "css": "",
     "classes": [
       "relative",
       "isolate",
-      "(height:160px)",
-      "(width:240px)",
-      "(max-width:100%)",
+      "h(160)",
+      "w(240)",
+      "max-w-full",
       "(background-color:#e2e8f0)",
       "absolute",
-      "(bottom:0)",
-      "(right:0)",
-      "(top:0)",
-      "(width:120px)",
+      "bottom(0)",
+      "right(0)",
+      "top(0)",
+      "w(120)",
       "(background-color:#c4b5fd)",
-      "(left:72px)",
+      "left(72)",
       "top-xl",
-      "(width:96px)",
-      "(height:96px)",
+      "w(96)",
+      "h(96)",
       "r-lg",
       "(background-color:#2563eb)",
       "(mix-blend-mode:normal)",
       "(mix-blend-mode:multiply)"
     ],
     "classLists": [
-      "relative isolate (height:160px) (width:240px) (max-width:100%) (background-color:#e2e8f0)",
-      "absolute (bottom:0) (right:0) (top:0) (width:120px) (background-color:#c4b5fd)",
-      "absolute (left:72px) top-xl (width:96px) (height:96px) r-lg (background-color:#2563eb) (mix-blend-mode:normal)",
-      "relative isolate (height:160px) (width:240px) (max-width:100%) (background-color:#e2e8f0)",
-      "absolute (bottom:0) (right:0) (top:0) (width:120px) (background-color:#c4b5fd)",
-      "absolute (left:72px) top-xl (width:96px) (height:96px) r-lg (background-color:#2563eb) (mix-blend-mode:multiply)"
+      "relative isolate h(160) w(240) max-w-full (background-color:#e2e8f0)",
+      "absolute bottom(0) right(0) top(0) w(120) (background-color:#c4b5fd)",
+      "absolute left(72) top-xl w(96) h(96) r-lg (background-color:#2563eb) (mix-blend-mode:normal)",
+      "relative isolate h(160) w(240) max-w-full (background-color:#e2e8f0)",
+      "absolute bottom(0) right(0) top(0) w(120) (background-color:#c4b5fd)",
+      "absolute left(72) top-xl w(96) h(96) r-lg (background-color:#2563eb) (mix-blend-mode:multiply)"
     ],
     "highlighted": []
   }

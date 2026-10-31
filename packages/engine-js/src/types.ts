@@ -30,6 +30,11 @@ export interface RulePriority {
   conditions?: string[]
   valuePriority?: number
   sortKey?: string
+  /** 0 recipe, 1 named atomic utility, 2 native declaration. */
+  category: number
+  family?: string
+  coverage?: number
+  property?: string
 }
 
 /** A generated rule as the Rust engine reports it; optional fields are absent when empty. */

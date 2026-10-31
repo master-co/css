@@ -6,7 +6,7 @@ use serde_json::json;
 fn manifest() -> String {
     let color = |name: &str| json!({"type":"declaration","property":"color","value":[{"type":"text","value":format!("var(--{name})")}]});
     json!({
-        "version":6,"languageVersion":17,
+        "version":6,"languageVersion":18,
         "variables":{"color":[
             {"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]},
             {"key":"secondary","values":[{"path":[":root,:host"],"value":"blue"},{"path":[".dark,:host(.dark)"],"value":"navy"}]}

@@ -7,7 +7,7 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { compileRenderedStylesheet, createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-const manifest: MasterCSSManifest = { version: 6, languageVersion: 17 }
+const manifest: MasterCSSManifest = { version: 6, languageVersion: 18 }
 
 async function fixture(source: string, files: Record<string, string> = {}) {
   const root = mkdtempSync(join(tmpdir(), 'master-composition-cache-'))

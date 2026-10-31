@@ -9,7 +9,7 @@ After [Installation](/guide/installation), add the definitions below after the e
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
   --radius-card: 1rem;
-}`} html={'<article class="max-w-sm (margin-inline:auto) p-card r-card bg-surface-raised fg-text-body shadow-sm"><h2 class="(margin:0) text-xl font-semibold">Field notes</h2><p class="mt-sm mb-md text-sm fg-text-muted">Keep the details that matter.</p><button type="button" class="px-md py-sm r-md bg-brand fg-white">New collection</button></article>'} previewFirst theme caption="p-card, r-card and bg-brand read project tokens. The preview uses the same theme and markup as the source below; the button does not create data." />
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><h2 class="m(0) text-xl font-semibold">Field notes</h2><p class="mt-sm mb-md text-sm fg-text-muted">Keep the details that matter.</p><button type="button" class="px-md py-sm r-md bg-brand fg-white">New collection</button></article>'} previewFirst theme caption="p-card, r-card and bg-brand read project tokens. The preview uses the same theme and markup as the source below; the button does not create data." />
 
 Master CSS resolves token names when generating class rules. Values stay as CSS custom properties; the browser computes the active value in each scope. A referenced token retains its declarations and transitive dependencies. Native overrides follow stylesheet delivery.
 
@@ -89,7 +89,7 @@ Aliases resolve where they are declared. If `--color-text-action` is declared at
   [data-rebind-action] {
     --color-text-action: var(--color-brand);
   }
-}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="(margin:0) text-lg font-semibold fg-brand">Plum brand scope</h2><p class="mt-md (margin-bottom:0) font-medium fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm (margin-bottom:0) font-medium fg-text-action">Rebound action: plum</p></section>'} theme previewFirst caption="Both action labels use fg-text-action. The first inherits the alias computed at the root. The second redeclares the alias on its own element, where --color-brand is plum. Switch the preview theme to inspect both color schemes." />
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="m(0) text-lg font-semibold fg-brand">Plum brand scope</h2><p class="mt-md mb(0) font-medium fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm mb(0) font-medium fg-text-action">Rebound action: plum</p></section>'} theme previewFirst caption="Both action labels use fg-text-action. The first inherits the alias computed at the root. The second redeclares the alias on its own element, where --color-brand is plum. Switch the preview theme to inspect both color schemes." />
 
 The [CSS custom property rules](https://www.w3.org/TR/css-variables-1/#defining-variables) resolve `var()` references before inheritance. The local brand override therefore changes the heading, but the inherited action color remains blue. Redeclaring the alias makes that action follow the local brand.
 
@@ -173,7 +173,7 @@ This example overrides the preset’s container sizes and named viewport conditi
   ...
 </div>
 
-<aside class="(container-type:inline-size) max-w-lg">
+<aside class="container-inline max-w-lg">
   <article class="grid-cols(1) grid-cols(2)@container((width>=28rem))">
     ...
   </article>

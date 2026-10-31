@@ -24,7 +24,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
   const hast = await highlightCode(text, {
     lang: 'css',
     inline: true,
-    className: 'fg-text-body (white-space:pre-wrap) (white-space:pre)@sm (border-width:0) (padding:0) (border-radius:0) (background-color:transparent)',
+    className: 'fg-text-body whitespace-pre-wrap whitespace-pre@sm b(0) p(0) r(0) (background-color:transparent)',
     transformers: [transformerRestore]
   })
   const codeElement = (hast.children[0] as any)
@@ -39,7 +39,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
   })
   return (
     <tr key={value} id={syntaxAnchor(value)} className="reference-syntax-row">
-      <td className='(white-space:normal) (white-space:nowrap)@sm'>
+      <td className='whitespace-normal whitespace-nowrap@sm'>
         {children}
         {toJsxRuntime(keyHast as any, { Fragment, jsxs, jsx })}
       </td>

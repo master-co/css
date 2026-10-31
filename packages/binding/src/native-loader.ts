@@ -111,6 +111,7 @@ export interface NativeLanguageSession {
   cancelDocument(id: number): void
   analyzeDocument(requestJSON: string): string
   formatDirectives(requestJSON: string): string
+  nativeDeclarationCompletion(requestJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   classifyClassNames(classNames: string[], nativeSupport?: boolean[]): string
   inspectClassName(className: string, nativeSupport?: boolean[]): string

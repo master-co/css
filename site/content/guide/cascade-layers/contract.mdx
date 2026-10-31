@@ -179,23 +179,29 @@ size is 16px:
 
 | Competing classes or rules | Result | Reason |
 | --- | --- | --- |
-| `p-md (padding:8px)`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
-| `p-md! (padding:8px)` | `padding: 1rem` | Importance takes precedence over value source. |
-| `p-md! (padding:8px)!` | `padding: 8px` | With equal importance, the direct value wins. |
-| `(padding:8px)@layer(base) (padding:12px)` | `padding: 12px` | Normal utilities take precedence over the base layer. |
-| `(padding:8px)@layer(base)! (padding:12px)!` | `padding: 8px` | Important declarations reverse layer precedence. |
-| Unlayered `.outside { padding: 32px; }` and `(padding:8px)` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
-| Component-layer `padding: 24px !important` and `(padding:8px)!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `p-md p(8)`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
+| `p(8) (padding:2rem)`, in either order | `padding: 2rem` | Native declarations follow single-declaration utilities. |
+| `m-md mt(0)`, in either order | `margin-top: 0`, other sides `1rem` | A side or axis follows its whole family, whichever form registered either class. |
+| `b(2) bt(0) b-solid b-red-60` | top width `0`, other widths `2px`, solid style, `red-60` color | Border width, style and color are independent families. |
+| `p-md! p(8)` | `padding: 1rem` | Importance takes precedence over value source. |
+| `p-md! p(8)!` | `padding: 8px` | With equal importance, the direct value wins. |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| Unlayered `.outside { padding: 32px; }` and `p(8)` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
+| Component-layer `padding: 24px !important` and `p(8)!` | `padding: 24px` | The earlier component layer wins for important declarations. |
 
 Selector and condition scope still matter. A hover or breakpoint rule only
 participates while its selector and conditions match. Direct values do not
 universally override tokens in other layers or scopes.
 
-When a recipe, token and direct declaration target the same property in the same
-layer and scope, their generated order lets the direct declaration override the
-token, and the token override the recipe. Importance and native specificity still
-apply. Use separate classes for independent decisions and inspect the emitted
-rules when properties overlap; HTML class order does not resolve that overlap.
+Within one layer and scope, generated rules follow a fixed order: recipes with
+several declarations or inner selectors and conditions, then single-declaration
+utilities, then native declarations. Single-declaration utilities, whether fixed,
+token or direct-value classes, order by property family and then coverage, so a
+side or axis follows its whole family; for the same property a token precedes a
+direct value. Importance and native specificity still apply. Use separate classes
+for independent decisions and inspect the emitted rules when properties overlap;
+HTML class order does not resolve that overlap.
 
 ## Layer checklist \{#layer-checklist\}
 Use the five layers in their declared order:

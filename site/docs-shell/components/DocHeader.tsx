@@ -28,7 +28,7 @@ export default function DocHeader(props: any) {
     <Header aria-label={tw ? '主要導覽' : 'Main navigation'} {...headerProps}>
       <HeaderContent>
         <DocMenuButton className="(margin-left:-1.25rem) hidden@md app-header-icon app-header-menu" documentNavigation={documentNavigation} documentNavigationTitle={documentNavigationTitle} />
-        <Link href={'/'} className="(margin-inline:auto)@media((width<64rem)) app-header-logo" aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'} onContextMenu={(e: any) => {
+        <Link href={'/'} className="mx-auto@media((width<64rem)) app-header-logo" aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'} onContextMenu={(e: any) => {
           e.preventDefault()
           location.assign('/brand')
         }}>
@@ -58,7 +58,7 @@ export default function DocHeader(props: any) {
             {Icon && <Icon width="22" height="22" strokeWidth="1.2" aria-hidden="true" />}
           </Link>
         ))}
-        {app.communityNavs?.length ? <div className='(height:1em) (width:1px) mx-md bg-line-divider hidden@media((width<64rem)) app-header-divider'></div> : null}
+        {app.communityNavs?.length ? <div className='(height:1em) w(1) mx-md bg-line-divider hidden@media((width<64rem)) app-header-divider'></div> : null}
         <LanguageButton className={clsx('hidden@media((width<64rem)) app-header-icon app-header-language', (documentNavigation || home) && '(margin-right:-0.188rem)')} />
         <SearchButton className={clsx('(margin-right:-1.25rem)@media((width<64rem)) app-header-icon app-header-search', (documentNavigation || home) && 'hidden@md')}>
           <IconListSearch width="22" height="22" strokeWidth="1.2" aria-hidden="true" />

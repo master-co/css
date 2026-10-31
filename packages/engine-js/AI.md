@@ -19,8 +19,8 @@ The browser engine: it executes compiled runtime programs (Rust still compiles m
 - `src/state.ts`: the state branches of a class, one per custom media path.
 - `src/mixin.ts`: the static mixin subset: utility recipes, mixin calls with `@contents`, parameters, `ident()` and the argument checks.
 - `src/generate.ts`: class rules from each utility's emitted rules (several for recipes) or a native declaration head, and the composition rules `@apply` starts from.
-- `src/apply.ts`: `@apply(--mixin)` classes, expanded into one atomic rule, and the class diagnostics that make one expand to nothing.
-- `src/order.ts`: rule order in a layer. Rules sort by their own condition features; the reported ones write `-0` as `0`, as the Rust JSON does.
+- `src/apply.ts`: `@apply(--mixin)` classes, expanded into one rule per outer condition branch, and the class diagnostics that make one expand to nothing.
+- `src/order.ts`: rule order in a layer and the rule shapes of `ordering.rs`. Rules sort by their own condition features; the reported ones write `-0` as `0`, as the Rust JSON does.
 - `src/animation.ts`: keyframe references of declarations.
 - `src/session.ts`: rules per layer with reference counts; theme variables, the theme rule and keyframes counted over the host's emitted globals; keyframes rule mutations; rebuilds for emitted globals and refresh.
 

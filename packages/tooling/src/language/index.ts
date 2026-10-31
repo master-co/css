@@ -62,6 +62,8 @@ export type {
   MasterCSSDocumentAnalysisRequest,
   MasterCSSFormatDirectivesRequest,
   MasterCSSFormatDirectivesResult,
+  MasterCSSNativeDeclarationCompletion,
+  MasterCSSNativeDeclarationCompletionRequest,
   MasterCSSLanguageClass,
   MasterCSSLanguageClassifications,
   MasterCSSLanguageClassKind,
