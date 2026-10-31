@@ -101,6 +101,8 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 For Guide, Reference and Blog research, writing, editing, translation and review, use the project [master-css-writing skill](../.agents/skills/master-css-writing/SKILL.md). It provides editorial methods and task-specific references; the content policies below remain canonical.
 
+For technical article illustrations, use [master-css-doc-illustrations](../.agents/skills/master-css-doc-illustrations/SKILL.md). When understanding depends on a flow, conditional branch, hierarchy, scope boundary or visual difference, assess and complete the necessary figure or working demo beside the explanation. Do not replace an identified visual teaching need with placeholders, uniform prose cards or longer prose. Simple lookup entries and local wording edits do not require an image quota. Preserve meaningful text equivalents in the existing search and Markdown/llms flows.
+
 ### Current documentation and migration ownership
 
 Public Guide, Reference, Blog, examples and package READMEs describe current behavior only. Describe supported syntax directly; never mention retired syntax, retired API names or version history. Migration Guide covers converting external styling systems. General article bodies do not link to Migration Guide; navigation, catalogs and search may expose it.
@@ -109,7 +111,7 @@ MCP Guide and README may list `migrate-to-mastercss` and its purpose of converti
 
 ### Guide and Reference ownership
 
-The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented Reference catalog and the disposition of all existing first-level pages. Its size follows current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
+The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source for styling contracts. Package APIs, CLI and MCP use concise source catalogs. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented Reference catalog and the disposition of all existing first-level pages. Its size follows current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
 
 | Content | Primary owner | Use in Guide |
 | --- | --- | --- |
@@ -139,6 +141,13 @@ Reference lookup needs carefully designed palettes, scales, specimens and compar
 `FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; Reference renders complete namespaces through the same views. `common/foundation-data/specimens.ts` and `recipe-specimens.ts` own site-only presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
 
 For a visual migration, record old → new destinations and compare complete sections at 390, 768 and 1280px in light and dark. Verify actual effects, native keyboard focus, clipboard success/failure, paused motion, reduced motion, responsive controls and anchors. A compiling page without overflow is not sufficient evidence of visual quality. See the [restoration inventory](../.ai/reports/foundation-visual-restoration.md).
+
+Package APIs, CLI and MCP each use one Reference entry: `/reference/packages`,
+`/reference/tools/cli` and `/reference/tools/mcp`. Keep purpose, public names,
+necessary lifecycle/file effects and links to Guide there. Full declarations,
+options and schemas belong to GitHub or the installed tool’s `--help`/`tools/list`.
+Preserve package, symbol, command and tool search through section anchors. Do not
+restore per-symbol, per-package or per-tool pages to mirror the source.
 
 ### Page admission and retirement
 

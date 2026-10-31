@@ -17,9 +17,10 @@ export function tierDisplayName(name: string) {
   return name === 'sliver' ? 'Silver' : name.replace(/^./, letter => letter.toUpperCase())
 }
 
+/** Both platforms bill tiers in US dollars, so the amount names its currency. */
 export function TierSummary({ tier }: { tier: SponsorTier }) {
   const tw = useLocale() === 'tw'
-  return <><span className="sponsor-tier-icon" aria-hidden="true">{tier.icon}</span><span className="sponsor-tier-copy"><strong>{tierDisplayName(tier.name)}</strong><span className="sponsor-tier-amount">{tier.amount !== undefined ? <>{new Intl.NumberFormat(tw ? 'zh-TW' : 'en').format(tier.amount)}<span> / {tier.one ? (tw ? '單次' : 'one-time') : (tw ? '每月' : 'month')}</span></> : <span>{tw ? '自由支持' : 'Your choice'}</span>}</span></span></>
+  return <><span className="sponsor-tier-icon" aria-hidden="true">{tier.icon}</span><span className="sponsor-tier-copy"><strong>{tierDisplayName(tier.name)}</strong><span className="sponsor-tier-amount">{tier.amount !== undefined ? <>{new Intl.NumberFormat(tw ? 'zh-TW' : 'en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(tier.amount)}<span> / {tier.one ? (tw ? '單次' : 'one-time') : (tw ? '每月' : 'month')}</span></> : <span>{tw ? '自由支持' : 'Your choice'}</span>}</span></span></>
 }
 
 export default function TierCards({ tiers, onSelect, label }: { tiers: SponsorTier[], onSelect: (tier: SponsorTier) => void, label: string }) {

@@ -146,11 +146,13 @@ Runtime values should not become generated class names. Keep the class static an
 
 ```tsx
 export function Meter({ value }: { value: number }) {
+  const percent = Math.max(0, Math.min(100, value))
   return (
-    <div className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
       <div
         className="height:100% width:var(--value) bg-green-60 transition-property:width transition-duration:var(--duration-fast) transition-timing-function:var(--easing-smooth)"
-        style={{ '--value': `${value}%` } as React.CSSProperties}
+        style={{ '--value': `${percent}%` } as React.CSSProperties}
       />
     </div>
   )
@@ -183,8 +185,11 @@ export function GlobalStyles() {
 @layer base {
   body {
     margin: 0;
-    background: var(--color-surface);
   }
+}
+
+@layer defaults {
+  body { background: var(--color-surface); }
 }
 ```
 

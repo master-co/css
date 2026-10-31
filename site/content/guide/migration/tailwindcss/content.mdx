@@ -37,12 +37,14 @@ Use a clean git branch and commit migration batches by feature area. If a screen
 ---
 
 ## Install Master CSS beside Tailwind
-Keep the existing Tailwind import while introducing Master CSS from the stylesheet your app already loads.
+Keep Tailwind’s compiler responsible for its own entry. Compile that entry to ordinary CSS, then load the result beside the Master CSS entry. Both systems use directive names such as `@theme`, `@utility` and `@apply` with different contracts; do not pass unprocessed Tailwind definitions through the Master CSS compiler.
 
 ```css name=app.css
-@import "tailwindcss";
+@import "./legacy-tailwind.generated.css";
 @import "@master/css";
 ```
+
+Keep the existing Tailwind build producing `legacy-tailwind.generated.css` before this entry is compiled. Both systems can define the same class name; compare cascade layers, resets and overlapping names during coexistence.
 
 For most integrations, no Master CSS source directive is needed here. The integration or CLI scanner discovers ordinary app files; add `@source` only for migrated markup outside that default scope.
 
@@ -377,11 +379,13 @@ When only the value is dynamic, keep the class static and pass the runtime value
 
 ```tsx
 function Progress({ value }: { value: number }) {
+  const percent = Math.max(0, Math.min(100, value))
   return (
-    <div className="overflow:hidden height:1rem border-radius:100% bg-gray-10">
+    <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
+      className="overflow:hidden height:1rem border-radius:100% bg-gray-10">
       <div
         className="height:100% width:var(--progress) bg-blue-60 transition-property:width transition-duration:var(--duration-fast) transition-timing-function:var(--easing-smooth)"
-        style={{ '--progress': `${value}%` } as React.CSSProperties}
+        style={{ '--progress': `${percent}%` } as React.CSSProperties}
       />
     </div>
   )
@@ -427,7 +431,7 @@ After a batch passes checks, remove only the Tailwind utilities that are no long
 ## Remove Tailwind
 Remove Tailwind only after the converted paths build and visually match the intended design.
 
-1. Delete `@import "tailwindcss"` from the app CSS entry.
+1. Remove the generated Tailwind CSS import from the app entry, then retire its separate Tailwind build input.
 2. Remove Tailwind-specific `@theme`, `@utility`, `@custom-variant`, `@variant`, `@apply`, `@source inline()`, and `@plugin` usage that has been replaced.
 3. Remove Tailwind packages and PostCSS or Vite integration code when no stylesheet imports Tailwind.
 4. Run the full project validation suite.
@@ -459,6 +463,6 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
-| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `width:100% max-width:72rem margin-inline:auto padding-inline:1rem` for page wrappers and `container` only for container queries. |
+| Tailwind `container` utility semantics | Master CSS uses native `container-type` declarations for a query boundary. | Use `width:100% max-width:72rem margin-inline:auto padding-inline:1rem` for page wrappers and `container-type:inline-size` for an ancestor query container. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
 | Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, and combinators. |

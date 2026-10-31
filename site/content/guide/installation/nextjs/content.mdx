@@ -9,7 +9,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npx create-next-app@latest my-app --ts --app --no-tailwind
+      npx create-next-app@latest my-app --ts --app --no-tailwind --no-src-dir
       cd my-app
       ```
     </StepR>
@@ -58,3 +58,34 @@ export default function Home() {
 Local CSS and CSS Modules automatically receive project definitions in both Turbopack and Webpack. Use native declarations with project tokens directly, and native selectors for shared behavior. Their required theme resources are emitted globally, while local selectors retain the framework’s normal scope. Use `@reference` for additional definition files outside the project context.
 
 On the Webpack path, generated theme resources are delivered through an ordinary global stylesheet. Local Module selectors still receive Next.js naming; `:root`, `:host`, and mode selectors keep their original scope. This lets a component inherit tokens from an ancestor or a nested theme without redeclaring them on the component. Repeated components share the generated resources. Native `var(--token)` works in ordinary CSS and CSS Modules with either bundler when the token is supplied by the global entry.
+
+## Verify the loaded configuration
+
+The examples use a top-level `app` directory. Keep your global stylesheet imported by `app/layout.tsx`. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
+
+```ts name=next.config.ts
+import type { NextConfig } from 'next'
+import withMasterCSS from '@master/css-next'
+
+const nextConfig: NextConfig = {}
+
+export default async () => withMasterCSS(nextConfig, { mode: 'static' })
+```
+
+Keep your existing Next.js options in `nextConfig`.
+
+```css name=app/globals.css
+@import '@master/css';
+```
+
+```tsx name=app/layout.tsx
+import './globals.css'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <html lang="en"><body>{children}</body></html>
+}
+```
+
+Run `npm run build` and `npm run start` to check production delivery. The heading remains styled with JavaScript disabled because the generated stylesheet supplies its rules.
+
+If a Turbopack production build reports that a generated `.master/stylesheets/...-entry.css` cannot be resolved, check the Webpack build with `npx next build --webpack`. This generated-asset failure is reproducible in the current workspace integration; verify the resulting page with `npm run start` before deployment. A successful Webpack build does not verify the Turbopack path.

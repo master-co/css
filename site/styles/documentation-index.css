@@ -11,7 +11,7 @@
   .doc-index-section-link > svg { margin-left: auto; color: var(--color-text-muted); order: 1; }
   .doc-index-section-copy { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; width: 100%; order: 2; overflow-wrap: anywhere; }
   .doc-index-section-title { color: var(--color-text-strong); font-size: .9375rem; line-height: 1.5; font-weight: 600; letter-spacing: -.01em; }
-  .doc-index-section-description { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.55; }
+  .doc-index-section-description { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.55; text-wrap: pretty; }
   .doc-index-section-link:hover .doc-index-section-icon, .doc-index-section-link:hover > svg { color: var(--color-accent); }
   .doc-index-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-block: var(--spacing-2xl) var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-line-subtle); font-size: .8125rem; font-weight: 600; color: var(--color-text-body); }
   .doc-index-count { display: inline-flex; align-items: center; justify-content: center; margin-left: var(--spacing-xs); font-size: .6875rem; font-weight: 400; line-height: 1.5; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }

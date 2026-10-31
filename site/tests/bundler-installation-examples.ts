@@ -61,7 +61,7 @@ await app.build();
     else write('.fixture-build.mjs', `import host from '${framework === 'webpack' ? 'webpack' : '@rspack/core'}';
 ${framework === 'webpack' ? "import HtmlPlugin from 'html-webpack-plugin';" : 'const HtmlPlugin = host.HtmlRspackPlugin;'}
 import config from './${config}';
-const compiler = host({ ...config, mode: 'production', entry: './src/index.js', ${framework === 'webpack' ? 'resolve: { tsconfig: false }, experiments: { css: true },' : ''} plugins: [new HtmlPlugin({ template: './index.html' }), ...config.plugins] });
+const compiler = host({ ...config, mode: 'production', entry: './src/index.js', ${framework === 'webpack' ? 'resolve: { tsconfig: false }, experiments: { css: true },' : ''} plugins: ${framework === 'webpack' ? 'config.plugins' : "[new HtmlPlugin({ template: './index.html' }), ...config.plugins]"} });
 try { await new Promise((resolve, reject) => compiler.run((error, stats) => error || stats.hasErrors() ? reject(error || new Error(stats.toString({ all: false, errors: true }))) : resolve())); }
 finally { await new Promise((resolve, reject) => compiler.close(error => error ? reject(error) : resolve())); }
 `)

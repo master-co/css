@@ -202,7 +202,7 @@ function createSummaryMetrics(): BenchmarkMetric[] {
 }
 
 export function StaticComparisonSummary() {
-  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable label="Static CSS output metrics" metrics={createSummaryMetrics()} />
 }
 
 export function StaticCSSOutputChart() {
@@ -220,7 +220,8 @@ export function StaticStructureChart() {
 export function StaticCSSBytesTable() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static CSS bytes results" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -256,7 +257,8 @@ export function StaticCSSBytesTable() {
 export function StaticBuildTable() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static build results" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -290,7 +292,8 @@ export function StaticBuildTable() {
 export function StaticStructureTable() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static structure results" tabIndex={0}>
         <table>
           <thead>
             <tr>

@@ -22,7 +22,7 @@ Generated CSS emits rules into those layer blocks. Native style rules that use `
 
 ## The five layers \{#the-five-layers\}
 ### Theme \{#theme\}
-Use `theme` for generated CSS custom properties. Regular tokens defined in `@theme` are emitted here when a generated rule needs them. Retained tokens preserve ordered declarations and transitive dependencies under `:root, :host`. Use `@theme static` for tokens that must always ship. Native selectors and conditions provide scoped overrides; use a later layer when they must outrank default token declarations.
+Use `theme` for generated CSS custom properties. Regular tokens defined in `@theme` are emitted here when a generated rule or delivered native declaration needs them. Retained tokens preserve ordered declarations and transitive dependencies under `:root, :host`. Use `@theme static` for tokens that must always ship. Native selectors and conditions provide scoped overrides; use a later layer when they must outrank default token declarations.
 
 Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
 
@@ -34,7 +34,7 @@ Use the `@layer(base)` class suffix for a generated rule, or write native CSS in
 ### Defaults \{#defaults\}
 Use `defaults` for broad visual choices made by the project, such as the page's text color, typography inside an article, or code styling that should remain below component and utility styles. These are not the browser's built-in default styles.
 
-Use the `@layer(defaults)` class suffix, native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
+Use the `@layer(defaults)` class suffix or native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
 
 For example, put `button { font: inherit; }` in `base`, `body { color: var(--color-text-body); }` in `defaults`, and `.btn { display: inline-flex; }` in `components`.
 
@@ -72,7 +72,7 @@ Notice the shape of the output:
 - Theme variables are emitted in `@layer theme`.
 - The `.btn` definition is emitted in `@layer components`.
 - `display:flex` and `animation-name:fade animation-duration:1s` are emitted in `@layer utilities`.
-- `@keyframes` are emitted at the top level, outside cascade layers.
+- The example’s preset keyframes are top-level. Keyframes authored inside a native layer or condition retain that container and source order.
 
 ## Base is for normalization \{#base-is-for-normalization\}
 Put reset-style rules in the base layer when they should sit below normal defaults, components and utility declarations.

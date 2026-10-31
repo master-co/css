@@ -70,6 +70,7 @@ export const theme = createTheme({
   --color-surface: #ffffff;
   --color-body: #172033;
   --radius-control: .5rem;
+  --radius-panel: 1rem;
 }
 
 ```
@@ -108,12 +109,14 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="display:grid gap-md p-lg bg-surface r-control">
+    <section className="display:grid gap-md p-lg bg-surface r-panel">
       {children}
     </section>
   )
 }
 ```
+
+With the theme above, [MUI’s `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders) multiplies the 8px base radius to 16px. `r-panel` expresses that panel role as 1rem; compare the result at the application’s root font size. Spacing and breakpoint names also need explicit value comparison.
 
 Use Material UI components with `className` when the component still provides useful behavior and forwards the class to the root element.
 

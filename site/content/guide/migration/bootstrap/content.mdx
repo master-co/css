@@ -43,7 +43,15 @@ Import Master CSS from the stylesheet your app already loads. Do not remove Boot
 
 Default source discovery is enough for ordinary app files. Add explicit source directives only when the app needs custom include, exclude, safelist, or blocklist behavior.
 
-If Bootstrap should stay lower in the cascade, keep its import before Master CSS or wrap vendor CSS in a lower-priority layer controlled by the project. Verify the resulting cascade in the browser before deleting any overrides.
+Import order alone does not put unlayered Bootstrap rules below normal layered utilities. To give Master CSS components and utilities precedence, declare the layer order before importing Bootstrap into `defaults`:
+
+```css name=app.css
+@layer theme, base, defaults, components, utilities;
+@import "bootstrap/dist/css/bootstrap.css" layer(defaults);
+@import "@master/css";
+```
+
+This changes cascade behavior. Compare existing overrides in the browser before adopting it across the application.
 
 ---
 

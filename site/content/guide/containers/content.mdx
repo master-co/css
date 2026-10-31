@@ -11,7 +11,14 @@ Add `container-type:inline-size` to an ancestor whose inline size comes from the
 <section class="container-type:inline-size">
   <!-- @MARK grid-cols(2)@container((width>=28rem)) -->
   <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
-    ...
+    <div>
+      <h2>Flexible workspace</h2>
+      <p>A quiet desk with natural light.</p>
+    </div>
+    <div>
+      <h3>Plan your visit</h3>
+      <p>Available for a full day or an afternoon.</p>
+    </div>
   </article>
 </section>
 ```
@@ -21,6 +28,8 @@ Add `container-type:inline-size` to an ancestor whose inline size comes from the
 <Class2CSS>
   {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
 </Class2CSS>
+
+Resize the preview across `28rem`: the two child regions form one column below that width and two columns at or above it.
 
 Container queries make components portable. The same card can be stacked in a sidebar and split into columns in a wide content region without knowing the viewport width.
 

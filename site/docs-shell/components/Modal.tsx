@@ -14,6 +14,13 @@ interface Props {
   label?: string
 }
 
+/** Whether the latest input was a pointer or touch; keyboard use resets it. */
+let pointerInput = false
+if (typeof document !== 'undefined') {
+  document.addEventListener('pointerdown', () => { pointerInput = true }, true)
+  document.addEventListener('keydown', () => { pointerInput = false }, true)
+}
+
 export default function Modal({ contentClass, backdropClick, children, label = 'Dialog' }: Props) {
   const [mounted, setMounted] = useState(false)
   const dialog = useRef<HTMLDialogElement>(null)
@@ -30,6 +37,13 @@ export default function Modal({ contentClass, backdropClick, children, label = '
     element.addEventListener('cancel', cancel)
     element.addEventListener('click', backdrop)
     if (!element.open) element.showModal()
+    // A pointer or touch opening starts on the dialog itself, so no ring appears on its close control; a keyboard
+    // opening keeps the browser's choice. The next Tab still reaches the close control first.
+    const content = element.querySelector<HTMLElement>('.site-modal-content')
+    if (pointerInput && content) {
+      content.tabIndex = -1
+      content.focus({ preventScroll: true })
+    }
     return () => {
       element.removeEventListener('cancel', cancel)
       element.removeEventListener('click', backdrop)

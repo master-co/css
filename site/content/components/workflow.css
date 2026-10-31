@@ -111,6 +111,10 @@
       translate: 0 calc(-3px * var(--home-wf-charge, 1));
     }
     :is(:hover, :focus-visible) > & { opacity: 1; filter: grayscale(0); translate: 0 -3px; }
+    /* Reduced motion keeps the lit color and opacity; the logo no longer hops. */
+    @media (--motion-reduce) {
+      &, [data-lit] > &, :is(:hover, :focus-visible) > & { translate: none; }
+    }
   }
   .home-wf-integration-grid {
     display: flex;

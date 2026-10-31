@@ -4,7 +4,7 @@ const metadata = define({
   title: {
     absolute: 'Installing Master CSS'
   },
-  description: 'Install Master CSS with Vite, generate CSS from class names, and start styling in a few steps.',
+  description: 'Install Master CSS for your framework, a standalone CLI build, or a browser runtime.',
   category: 'Getting Started',
   order: 2,
   other: {

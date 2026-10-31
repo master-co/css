@@ -11,8 +11,9 @@ import { deliveryAdded, deliveryLateClass, deliveryOn as on, deliveryBetween as 
 
 const modes = ['static', 'progressive', 'runtime'] as const
 const always = -1
-const tag = (text: string) => <span className="home-delivery-code-tag">{text}</span>
-const attr = (name: string, value: ReactNode) => <> <span className="home-delivery-code-attr">{name}</span>=<span className="home-delivery-code-string">&quot;{value}&quot;</span></>
+/** Brackets and `=` read as punctuation and names as tags, as in highlighted docs code. */
+const tag = (text: string) => <>{text.split(/(<\/?|\/?>)/).filter(Boolean).map((part, index) => <span className={/^[</>]/.test(part) ? 'home-delivery-code-punct' : 'home-delivery-code-tag'} key={index}>{part}</span>)}</>
+const attr = (name: string, value: ReactNode) => <> <span className="home-delivery-code-attr">{name}</span><span className="home-delivery-code-punct">=</span><span className="home-delivery-code-string">&quot;{value}&quot;</span></>
 function Token({ value }: { value: string }) { return <span className="home-delivery-token" data-glyph={value}>{value}</span> }
 function CodeReference({ children }: { children: string }) {
   const $ = useTranslation()
@@ -73,7 +74,7 @@ function templateLines(mode: DeliveryMode, title: string, language: string): Lin
     ...heads[mode],
     { id: 'head-close', content: <>  {tag('</head>')}</> },
     { id: 'body', content: <>  {tag('<body>')}</> },
-    { id: 'classes', content: <>    {tag('<article')}<span className="home-delivery-class-attribute"> <span className="home-delivery-code-attr">class</span>=<span className="home-delivery-code-string">&quot;demo <Token value="p-lg" /> <Token value="r-xl" /></span></span></> },
+    { id: 'classes', content: <>    {tag('<article')}<span className="home-delivery-class-attribute"> <span className="home-delivery-code-attr">class</span><span className="home-delivery-code-punct">=</span><span className="home-delivery-code-string">&quot;demo <Token value="p-lg" /> <Token value="r-xl" /></span></span></> },
     { id: 'edit', edit: true, content: <>      <span className="home-delivery-template-new" style={{ '--added': on(deliveryAdded) } as CSSProperties}><Token value={deliveryLateClass} /> <span className="home-delivery-caret" /></span><span className="home-delivery-code-string"><Token value="shadow-sm" />&quot;</span>{tag('>')}</> },
     { id: 'plan-title', content: <>      {tag('<h1>')}{title}{tag('</h1>')}</> },
     { id: 'details', content: <span className="home-delivery-code-comment">      …</span> },

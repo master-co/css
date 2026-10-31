@@ -131,6 +131,8 @@
   /* Every section opens the same way, hung on the left rail: eyebrow, title, lead, an optional link. */
   .home-section-header {
     display: grid;
+    /* The column never grows past the content edge, even when large text widens the eyebrow row. */
+    grid-template-columns: minmax(0, 1fr);
     justify-items: start;
     max-width: 44rem;
     margin-bottom: var(--home-header-space);
@@ -174,6 +176,7 @@
 
   .home-section-caption {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-sm);
     margin-inline-start: -0.4rem;
@@ -194,6 +197,8 @@
     letter-spacing: -0.035em;
     color: var(--home-text);
     text-wrap: balance;
+    /* Only a word wider than the column breaks, as with very large text on a phone; `anywhere` also lets the grid item shrink. */
+    overflow-wrap: anywhere;
   }
 
   .home-section-body {
@@ -294,6 +299,17 @@
       border-radius: var(--radius-sm);
       outline: 2px solid var(--home-ink);
       outline-offset: 3px;
+    }
+
+    /* On touch the 20px line gets a 44px target that reaches into the air around it; nothing visible moves. */
+    @media (pointer: coarse) {
+      position: relative;
+
+      &::before {
+        position: absolute;
+        inset: -0.75rem -0.5rem;
+        content: '';
+      }
     }
   }
 
@@ -417,8 +433,36 @@
     --home-illustration-size: 7rem;
   }
 
-  @container home-card (width >= 22rem) {
-    .home-bento-card-caption { column-gap: 2rem; }
+  /*
+   * A narrow card cannot spare a 7rem column beside its copy: the title shares a row with a smaller
+   * illustration and the description takes the full measure below, so neither wraps a word or two per line.
+   */
+  @container home-card (width < 28rem) {
+    .home-bento-card-caption {
+      grid-template-columns: minmax(0, 1fr) 4rem;
+      align-items: center;
+      gap: 0.75rem 1rem;
+    }
+    .home-bento-card-copy { display: contents; }
+    .home-bento-card-title { grid-column: 1; grid-row: 1; }
+    .home-bento-card-body { grid-column: 1 / -1; grid-row: 2; max-width: none; margin-top: 0; }
+    .home-bento-card-hint { grid-column: 1 / -1; grid-row: 3; margin-top: 0; }
+    .home-bento-card-caption > .home-illustration {
+      --home-illustration-size: 4rem;
+      grid-column: 2;
+      grid-row: 1;
+      margin-block: 0;
+    }
+  }
+
+  @container home-card (width < 16rem) {
+    .home-bento-card-caption { grid-template-columns: minmax(0, 1fr) 3rem; column-gap: 0.75rem; }
+    .home-bento-card-caption > .home-illustration { --home-illustration-size: 3rem; }
+  }
+
+  @container home-card (width < 12rem) {
+    .home-bento-card-caption { grid-template-columns: minmax(0, 1fr); }
+    .home-bento-card-caption > .home-illustration { display: none; }
   }
 
   @container home-card (width >= 28rem) {
@@ -538,11 +582,6 @@
     }
   }
 
-  /* Shiki's palettes, pulled toward the body text so every sample reads as structure rather than decoration. */
-  .home-page .shiki span[style] {
-    color: light-dark(color-mix(in oklab, var(--shiki-light) 56%, #3a3a3a), color-mix(in oklab, var(--shiki-dark) 56%, #cfcfcf));
-  }
-
   .home-code-window-has-fix {
     &:where(:hover, :active) .home-code-window-source {
       opacity: 0;
@@ -582,6 +621,11 @@
   .home-code-window-body {
     flex: auto;
     min-height: 0;
+  }
+
+  /* The scrollable code fills a clipped well, so its focus ring sits inside the well's edge. */
+  .home-code-window-body :focus-visible {
+    outline-offset: -2px;
   }
 
   .home-code-window-problem {
@@ -707,6 +751,12 @@
     .home-segmented-control-thumb {
       transition: none !important;
     }
+
+    /* Without motion, hover keeps its color cue but the arrow stays put instead of jumping. */
+    .home-section-link:hover > svg,
+    .home-cta-actions .home-action-primary:is(:hover, :focus-visible) > svg {
+      translate: none;
+    }
   }
 
   .home-chip {
@@ -813,12 +863,17 @@
     color: var(--home-code-tag);
   }
 
+  /* Markup brackets and `=` are punctuation, as in the docs' highlighted code. */
+  .home-code-punct {
+    color: var(--home-text-faint);
+  }
+
   .home-code-attr {
     color: var(--home-code-attr);
   }
 
   .home-code-string {
-    color: var(--home-ok);
+    color: var(--home-code-string);
   }
 
   .home-spin {
@@ -918,5 +973,49 @@
     opacity: 1;
     translate: 0 0;
     filter: blur(0);
+  }
+}
+
+/*
+ * Forced colors drop shadows and backgrounds: framed tools keep a system-color contour, the size chart keeps
+ * its measured bars, and the footer's engraved mark (decoration only) steps aside instead of covering the links.
+ */
+@layer components {
+  @media (forced-colors: active) {
+    :is(.home-bento-card, .home-editor-window, .home-agent, .home-code-window, .home-lint-pane) {
+      outline: 1px solid CanvasText;
+    }
+
+    .home-bench-bar {
+      forced-color-adjust: none;
+    }
+
+    .home-footer-mark {
+      display: none;
+    }
+
+    /* The theme split keeps a visible line and handle where the two modes meet. */
+    .home-theme-divider {
+      forced-color-adjust: none;
+      background-color: CanvasText !important;
+    }
+
+    .home-theme-knob {
+      outline: 1px solid CanvasText;
+    }
+
+    /* The agent's steps keep a visible current step and progress without their fills. */
+    .home-agent-step[aria-current] {
+      outline: 1px solid Highlight;
+    }
+
+    .home-agent-step-track {
+      outline: 1px solid CanvasText;
+    }
+
+    .home-agent-step-fill {
+      background-color: Highlight;
+      forced-color-adjust: none;
+    }
   }
 }

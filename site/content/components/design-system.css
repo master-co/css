@@ -305,39 +305,6 @@
     grid-row: auto;
   }
 
-  @container home-card (width < 28rem) {
-    .home-ds-palette .home-bento-card-caption {
-      grid-template-columns: minmax(0, 1fr) min(5rem, 80px);
-      align-items: center;
-      gap: 0.75rem 1rem;
-    }
-    .home-ds-palette .home-bento-card-copy { display: contents; }
-    .home-ds-palette .home-bento-card-title { grid-column: 1; grid-row: 1; overflow-wrap: anywhere; }
-    .home-ds-palette .home-bento-card-body { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
-    .home-ds-palette .home-bento-card-caption > .home-illustration {
-      grid-column: 2;
-      grid-row: 1;
-      width: min(5rem, 80px);
-      height: min(5rem, 80px);
-    }
-  }
-
-  @container home-card (width < 16rem) {
-    .home-ds-palette .home-bento-card-caption {
-      grid-template-columns: minmax(0, 1fr) min(4rem, 64px);
-      column-gap: 0.75rem;
-    }
-    .home-ds-palette .home-bento-card-caption > .home-illustration {
-      width: min(4rem, 64px);
-      height: min(4rem, 64px);
-    }
-  }
-
-  @container home-card (width < 12rem) {
-    .home-ds-palette .home-bento-card-caption { grid-template-columns: minmax(0, 1fr); }
-    .home-ds-palette .home-bento-card-caption > .home-illustration { display: none; }
-  }
-
   .home-palette-stage {
     display: flex;
     flex: auto;
@@ -976,6 +943,15 @@
     .home-theme-divider,
     .home-theme-measure::before {
       transition: none;
+    }
+
+    /* Without transitions the zoom and the tag's rise would jump; the photo and its tag simply appear. */
+    .home-gallery-photo:is(:hover, :focus-visible) .home-gallery-frame img {
+      scale: none;
+    }
+
+    .home-gallery-classes {
+      translate: 0 0;
     }
   }
 }

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Monorepo',
-  description: 'A guide to setting up Master CSS in a modern repository.',
+  description: 'Give each application its own project context and share CSS vocabulary across workspace packages.',
   category: 'Fundamentals',
   fileURL: import.meta.url
 })

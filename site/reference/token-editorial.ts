@@ -17,5 +17,6 @@ export const tokenEditorial: Record<string, { context: string, guide: string, la
   radius: { context: 'Corner radii shape an element’s border. They do not, by themselves, clip its descendants.', guide: '/guide/corner-radius', label: 'Corner radius' },
   shadow: { context: 'Each shadow combines several layers. The current light and dark variants keep the same geometry and change their colors and opacity.', guide: '/guide/elevation', label: 'Elevation' },
   spacing: { context: 'A shared spacing scale supports padding, margin, gaps and other length-valued properties.', guide: '/guide/spacing', label: 'Spacing' },
+  text: { context: 'A primary text token supplies size. Optional --line-height and --letter-spacing companions complete a treatment; companions alone do not register classes. See the [text recipe](/reference/text-size) for fallback behavior.', guide: '/guide/typography', label: 'Typography' },
   tracking: { context: 'Nonzero tracking values use em units, so letter spacing scales with the element’s font size.', guide: '/guide/typography#letter-spacing', label: 'Typography' }
 }

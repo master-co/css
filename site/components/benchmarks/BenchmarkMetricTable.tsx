@@ -5,15 +5,17 @@ import { benchmarkToneTextClasses } from './utils'
 
 interface BenchmarkMetricTableProps {
   metrics: BenchmarkMetric[]
+  /** Names the scrollable region; several metric tables share a page, so each needs its own name. */
+  label?: string
 }
 
 export default function BenchmarkMetricTable(props: BenchmarkMetricTableProps) {
-  const { metrics } = props
+  const { metrics, label = 'Benchmark metrics' } = props
   const hasDetails = metrics.some((metric) => metric.detail)
 
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide metric tables.
-    <div className="doc-table" role="region" aria-label="Benchmark metrics" tabIndex={0}>
+    <div className="doc-table" role="region" aria-label={label} tabIndex={0}>
       <table>
         <thead>
           <tr>

@@ -191,7 +191,7 @@ function MetricChart(props: {
 }
 
 export function BuildPathDiagnosticsSummary() {
-  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable label="Build path diagnostics metrics" metrics={createSummaryMetrics()} />
 }
 
 export function BuildPathDiagnosticsCharts() {
@@ -216,7 +216,8 @@ export function BuildPathDiagnosticsCharts() {
 export function BuildPathDiagnosticsTable() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={2} role="region" aria-label="Build path diagnostics results" tabIndex={0}>
         <table>
           <thead>
             <tr>

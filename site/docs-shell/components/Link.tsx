@@ -55,6 +55,9 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
     return pathname === canonicalHref
   }, [active, href, canonicalHref, ambiguous, pathname])
 
+  // A link to the page being read says so; section-level (ambiguous) matches only change its styling.
+  const currentPage = !isHash && !external && pathname === canonicalHref
+
   useLayoutEffect(() => {
     const currentLink = linkRef.current
     if (currentLink && pathnameActive && scrollIntoView) {
@@ -81,14 +84,14 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   }, [ref])
 
   const resolvedClassName = clsx(className, {
-    'font-size:50%:after line-height:0:after text-wrap-mode:wrap:after vertical-align:super:after white-space-collapse:break-spaces:after': indicate && (external || isHash),
+    'font-size:70%:after line-height:0:after text-wrap-mode:wrap:after vertical-align:super:after white-space-collapse:break-spaces:after': indicate && (external || isHash),
     'content:var(--content-hash):after': indicate && isHash,
     'content:var(--content-external):after': indicate && external,
     'fg-text-disabled': props.disabled
   }, !props.disabled && (pathnameActive ? activeClassName : inactiveClassName).trim()) || undefined
 
   return (props.href && !props.disabled)
-    ? <a ref={handleRef} {...props} href={href} rel={external ? 'noreferrer noopener' : props.rel} target={external ? '_blank' : props.target} onClick={onClick}
+    ? <a ref={handleRef} {...props} href={href} aria-current={props['aria-current'] ?? (currentPage ? 'page' : undefined)} rel={external ? 'noreferrer noopener' : props.rel} target={external ? '_blank' : props.target} onClick={onClick}
       className={resolvedClassName}>
       {children}{unfinished && <span className='ml-2xs font-size:.5em'>🚧</span>}
     </a>

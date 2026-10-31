@@ -213,7 +213,8 @@ export function BrowserLifecycleLongSessionCharts() {
 export function BrowserLifecycleLongSessionTable() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={2} role="region" aria-label="Browser lifecycle long session results" tabIndex={0}>
         <table>
           <thead>
             <tr>

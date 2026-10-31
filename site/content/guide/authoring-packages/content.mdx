@@ -129,4 +129,4 @@ npx @master/css-cli lint --format json --exit-code never
 npx @master/css-cli inspect --classes "btn content-auto bg-brand" --format json --exit-code never
 ```
 
-The goal is to confirm that the package can be imported by name, its vocabulary is visible to the project manifest, and the generated CSS matches the contract you intend to publish.
+Check the consuming app’s production build as well as these reports. Confirm that the package resolves by name and inspect the generated CSS for the expected tokens and classes. Standalone project inspection has limitations with package-backed entries; an empty report does not establish that the package’s vocabulary was compiled. Use the build integration’s actual output and a rendered example to complete that check.

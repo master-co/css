@@ -26,6 +26,11 @@ const ratioFadeDuration = 0.24
 const rowDelayStep = 0.085
 const axisTickTarget = 4
 const axisHeadroom = 1.45
+/*
+ * The server renders the measured sizes, so the chart reads true without scripts and before hydration.
+ * Only once hydrated does a chart reset to the shared start, offscreen, to grow when it scrolls into view.
+ */
+let chartHydrated = false
 
 /** Page CSS sizes as bars that grow from a shared start once the chart scrolls into view. */
 export default function BenchmarkSizeChart({ brands, labels, modes }: {
@@ -38,6 +43,7 @@ export default function BenchmarkSizeChart({ brands, labels, modes }: {
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', { initializeWithValue: false })
   const activeMode = modes.find((mode) => mode.id === activeModeId) || modes[0]
   const modeOptions = useMemo(() => modes.map((mode) => ({ label: labels.modeLabels[mode.id], value: mode.id })), [labels.modeLabels, modes])
+  useEffect(() => { chartHydrated = true }, [])
   return (
     <div className="home-bench-layout" data-visible={inView || undefined} ref={ref}>
       <div className="home-bench-summary">
@@ -57,6 +63,9 @@ function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
   visible: boolean
 }) {
   const [played, setPlayed] = useState(false)
+  // A mode switch remounts after hydration and starts armed; the first hydration keeps the server's result.
+  const [armed, setArmed] = useState(chartHydrated)
+  useEffect(() => setArmed(true), [])
   const rowsRef = useRef<HTMLDivElement>(null)
   // Measure the plot, excluding the desktop brand column. Mobile readouts sit above their bars.
   const [{ inlineLabels, width }, setSize] = useState({ inlineLabels: true, width: Infinity })
@@ -78,13 +87,13 @@ function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
   const barDuration = Math.max(1.2, chartAnimationDuration - (mode.rows.length - 1) * rowDelayStep - ratioFadeDuration)
 
   useEffect(() => {
-    if (!visible || reduceMotion) return
+    if (!visible || reduceMotion || !armed) return
     // Compute the start positions first so the bars transition away from them.
     rowsRef.current?.getBoundingClientRect()
     setPlayed(true)
-  }, [reduceMotion, visible])
+  }, [armed, reduceMotion, visible])
 
-  const settled = reduceMotion || played
+  const settled = reduceMotion || played || !armed
   return (
     <div className="home-bench-chart" ref={rowsRef}>
       <div aria-hidden="true" className="home-bench-grid">
@@ -103,6 +112,7 @@ function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
             brand={brands[row.name]}
             delay={index * rowDelayStep}
             key={row.name}
+            armed={armed}
             played={played}
             reduceMotion={reduceMotion}
             row={row}
@@ -127,7 +137,8 @@ function BenchmarkRows({ brands, mode, reduceMotion, visible }: {
   )
 }
 
-function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, played, reduceMotion, row, settled }: {
+function BenchmarkRow({ armed, axisMaxBytes, barDuration, brand, delay, played, reduceMotion, row, settled }: {
+  armed: boolean
   axisMaxBytes: number
   barDuration: number
   brand?: BenchmarkBrand
@@ -139,9 +150,10 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, played, reduceM
 }) {
   const rowPercent = toPercent(row.bytes, axisMaxBytes)
   const startPercent = `${chartAnimationStartPercent}%`
+  // Only the growth animates; arming jumps straight to the start while the chart is out of view.
   const transition = {
-    transitionDelay: reduceMotion ? '0s' : `${delay}s`,
-    transitionDuration: reduceMotion ? '0s' : `${barDuration}s`,
+    transitionDelay: reduceMotion || !played ? '0s' : `${delay}s`,
+    transitionDuration: reduceMotion || !played ? '0s' : `${barDuration}s`,
     transitionTimingFunction: chartEasing
   }
   return (
@@ -164,6 +176,7 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, played, reduceM
           <span className="home-bench-label">
             <CountdownKilobytes
               active={played}
+              armed={armed}
               barDuration={barDuration}
               className="home-bench-value"
               delay={delay}
@@ -184,8 +197,9 @@ function BenchmarkRow({ axisMaxBytes, barDuration, brand, delay, played, reduceM
   )
 }
 
-function CountdownKilobytes({ active, barDuration, className, delay, fromBytes, reduceMotion, toBytes }: {
+function CountdownKilobytes({ active, armed, barDuration, className, delay, fromBytes, reduceMotion, toBytes }: {
   active: boolean
+  armed: boolean
   barDuration: number
   className?: string
   delay: number
@@ -193,10 +207,10 @@ function CountdownKilobytes({ active, barDuration, className, delay, fromBytes, 
   reduceMotion: boolean
   toBytes: number
 }) {
-  const [displayBytes, setDisplayBytes] = useState(fromBytes)
+  const [displayBytes, setDisplayBytes] = useState(armed ? fromBytes : toBytes)
 
   useEffect(() => {
-    if (reduceMotion) {
+    if (reduceMotion || !armed) {
       setDisplayBytes(toBytes)
       return
     }
@@ -217,7 +231,7 @@ function CountdownKilobytes({ active, barDuration, className, delay, fromBytes, 
       window.clearTimeout(timeout)
       window.cancelAnimationFrame(animationFrame)
     }
-  }, [active, barDuration, delay, fromBytes, reduceMotion, toBytes])
+  }, [active, armed, barDuration, delay, fromBytes, reduceMotion, toBytes])
 
   return <span className={className}>{formatKilobytes(displayBytes)}</span>
 }

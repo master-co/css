@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { readFile } from 'node:fs/promises'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { configuredMarkupMarkdown } from '../reference/configured-example'
 import { projectStyleExample, projectTokenDefinitions } from '../components/demo/project-style-examples'
@@ -13,7 +12,6 @@ import { deliveryFlowMarkdown } from './delivery-flows'
 import { firstPaintMarkdown, resourceWaterfallsMarkdown } from './first-paint-examples'
 import { migrationGuidesMarkdown } from './migration-guides'
 import { variableNamespaceSourcesMarkdown } from './variable-namespace-sources'
-import { packageDeclaration } from './package-declaration'
 import { documentValueExamples } from '../content/design-system/components/value-examples'
 import { benchmarkExamplesMarkdown } from '../content/design-system/components/benchmark-examples'
 
@@ -22,9 +20,6 @@ export const designSystemRoutes = ['', '/authoring', ...componentGroups.flatMap(
 /** Keep the overview's authored facts in search and portable documents. */
 export async function designSystemContent(siteRoot: string, route: string) {
   if (!designSystemRoutes.includes(route)) throw new Error(`Unknown design-system route: ${route}`)
-  // Preparation regenerates the catalog before extracting search. Read that revision,
-  // rather than retaining an earlier JSON module in Node's import cache.
-  const catalog = route === '/design-system/review/package-api' ? JSON.parse(await readFile(path.join(siteRoot, '.generated/reference.json'), 'utf8')) : undefined
   const tokens = projectTokenDefinitions.map(token => `| \`${token.name}\` | \`${token.value}\` |`).join('\n')
   const result = await extractReferenceMdx(path.join(siteRoot, `content${route}/content.mdx`), [], [], {
     component(name, attrs) {
@@ -53,7 +48,6 @@ export async function designSystemContent(siteRoot: string, route: string) {
       if (name === 'MigrationGuides') return migrationGuidesMarkdown()
       if (name === 'NamespaceRecipes') return variableNamespaceSourcesMarkdown(['duration', 'color-text', 'spacing'])
       if (name === 'CodeTableRecipes') return ['| Token | CSS |', '| --- | --- |', ...codeTableRecipeRows.map(row => `| \`${row.syntax}\` | \`${row.css}\` |`)].join('\n')
-      if (name === 'PackageDeclarationExample') return `**${attrs.identifier}**\n\n\`\`\`typescript\n${packageDeclaration(String(attrs.identifier), catalog)}\n\`\`\``
       if (name === 'DocumentValueExamples') return documentValueExamples.map(row => `### ${row.title} {#${row.id}}\n\n\`${row.identifier}\`\n\n${row.values.map(value => `${value.label}: \`${value.value}\``).join('\n\n')}`).join('\n\n')
       if (name === 'BenchmarkChartsDemo') return benchmarkExamplesMarkdown()
     }

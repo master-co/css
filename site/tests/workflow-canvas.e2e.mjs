@@ -410,3 +410,20 @@ test(`${browserName}: native route arrows retain a visible keyboard cue`, { time
   assert.deepEqual(errors, [])
   await context.close()
 })
+test(`${browserName}: scenes enter already drawn instead of swapping from the native layout`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open({ scheme: 'dark', motion: 'no-preference' })
+  for (const name of figures) {
+    const figure = page.locator(`[data-wf="${name}"]`)
+    // Only the top edge is in view: below the drawing's 10% visibility threshold, inside its load margin.
+    await figure.evaluate(node => scrollTo(0, node.getBoundingClientRect().top + scrollY - innerHeight + 24))
+    const drawn = await figure.locator('canvas').evaluate(canvas => new Promise(resolve => {
+      const until = performance.now() + 3000
+      const check = () => canvas.closest('[data-renderer="canvas"]') || performance.now() > until ? resolve(!!canvas.closest('[data-renderer="canvas"]')) : requestAnimationFrame(check)
+      check()
+    }))
+    assert.equal(drawn, true, `${name} switches to its drawing before it is visible`)
+    assert.equal(await figure.locator('canvas').evaluate(c => c.getContext('2d').getImageData(0, 0, c.width, c.height).data.some((value, i) => i % 4 === 3 && value > 0)), true, `${name} is painted while it enters`)
+  }
+  assert.deepEqual(errors, [])
+  await context.close()
+})

@@ -220,6 +220,8 @@
   }
 
   @media (--motion-reduce) {
-    .home-mcp-client-name { transition: none; }
+    /* The name still appears; it no longer rises into place. */
+    .home-mcp-client-name { --home-mcp-tip-rise: 0px; transition: none; }
+    .home-mcp-client[data-side='above'] .home-mcp-client-name { --home-mcp-tip-rise: 0px; }
   }
 }

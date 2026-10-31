@@ -91,7 +91,7 @@ Work in a small batch. After editing, show the changed files, explain the stylin
 ## Use the MCP server
 When your AI client supports the Model Context Protocol, connect it to the [Master CSS MCP server](/guide/mcp-server). The server lets the agent inspect the active manifest, scan project sources, lint class strings, inspect generated CSS, request syntax suggestions, and create safe write previews from one local tool surface.
 
-```json name=mcp.json
+```json name=mcp-client-config.json
 {
   "mcpServers": {
     "master-css": {
@@ -102,9 +102,11 @@ When your AI client supports the Model Context Protocol, connect it to the [Mast
 }
 ```
 
+Use this JSON shape only in a client that accepts `mcpServers`. Follow the [client registration steps](/guide/mcp-server#configure-an-mcp-client) for Codex or Claude Code.
+
 Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately; an unknown value is not a failed match, and an unchecked browser is not verified support. Manifest load failure requires fixing the project context rather than silently answering from a preset.
 
-Keep complex selectors and container relationships in native CSS. Use `@custom-media` for shared media conditions and static mixins only for meaningful parameterized combinations. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
+Keep complex selectors and container relationships in native CSS. Use `@custom-media` for shared media conditions and functional utilities for reusable class recipes and mixins for CSS reuse. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
 
 When an agent cannot use MCP, use the CLI JSON commands in the review workflow below.
 

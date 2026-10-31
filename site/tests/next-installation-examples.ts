@@ -18,20 +18,19 @@ const dependency = (name: string) => workspaceDependency(name, new URL('../../pa
  * to the authored Next configuration. No packages are installed or modified.
  */
 export function nextInstallationFixture(mode: NextInstallationMode) {
-  mkdirSync(join(repository, 'tmp'), { recursive: true })
-  const root = mkdtempSync(join(repository, 'tmp/master-next-doc-'))
+  const root = mkdtempSync(join(repository, '.master-next-doc-'))
   const dispose = () => rmSync(root, { recursive: true, force: true })
   const write = (name: string, text: string) => { mkdirSync(dirname(join(root, name)), { recursive: true }); writeFileSync(join(root, name), text) }
   try {
     write('package.json', JSON.stringify({ private: true, type: 'module', dependencies: { next: '16.3.4', react: '19.2.8', 'react-dom': '19.2.8' }, scripts: { dev: 'next dev', build: 'next build', start: 'next start' } }))
     write('next.config.ts', "import type { NextConfig } from 'next'\nconst nextConfig: NextConfig = {}\nexport default nextConfig\n")
-    const plan = planMasterCSSSetup({ root, framework: 'nextjs', mode: mode === 'progressive' ? undefined : mode, install: false })
+    const plan = planMasterCSSSetup({ root, framework: 'nextjs', mode: mode === 'static' ? undefined : mode, install: false })
     applyMasterCSSSetupPlan(plan, { install: false })
     const installed = readFileSync(join(root, 'next.config.ts'), 'utf8')
     assert.match(installed, /import withMasterCSS from '@master\/css-next'/)
-    assert.ok(installed.includes(mode === 'progressive' ? 'withMasterCSS(nextConfig)' : `${mode === 'static' ? 'await ' : ''}withMasterCSS(nextConfig, { mode: '${mode}' })`))
+    if (mode !== 'static') assert.ok(installed.includes(`mode: '${mode}'`))
     assert.match(readFileSync(join(root, 'app/globals.css'), 'utf8'), /@import '@master\/css'/)
-    const route = '/nextjs' + (mode === 'progressive' ? '' : `/${mode}-rendering`)
+    const route = '/nextjs' + (mode === 'static' ? '' : `/${mode}`)
     const source = installationSource(route)
     const fences = deliveryFences(source)
     for (const name of ['next.config.ts', 'app/globals.css', 'app/layout.tsx', 'app/page.tsx']) {
@@ -43,23 +42,27 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
       if (name === 'next.config.ts') text = text.replace('const nextConfig: NextConfig = {}', 'const nextConfig: NextConfig = { experimental: { cpus: 2 } }')
       write(name, text)
     }
-    assert.ok(source.includes(`npm create @master/css@rc -- --framework nextjs${mode === 'progressive' ? '' : ` --mode ${mode}`} --yes`))
+    assert.ok(source.includes(`npm create @master/css@rc -- --framework nextjs${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
     // Additional route verifies the documented request-time delivery boundary.
-    write('app/dynamic/page.tsx', "import { connection } from 'next/server'\nexport default async function DynamicPage() {\n  await connection()\n  return <h1 className=\"m-md font-style:italic font-3xl font-heavy text:strong\">Request-time heading</h1>\n}\n")
+    write('app/dynamic/page.tsx', "import { connection } from 'next/server'\nexport default async function DynamicPage() {\n  await connection()\n  return <h1 className=\"m-md font-style:italic font-3xl font-heavy fg-text-strong\">Request-time heading</h1>\n}\n")
     for (const name of ['next', 'react', 'react-dom', 'typescript', '@types/react', '@types/react-dom', '@types/node', '@master/css', '@master/css-next', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
       mkdirSync(dirname(destination), { recursive: true })
       symlinkSync(dependency(name), destination, 'dir')
     }
     const bin = join(root, 'node_modules/next/dist/bin/next')
-    const built = spawnSync(process.execPath, [bin, 'build'], { cwd: root, encoding: 'utf8', timeout: 120000, env: { ...process.env, NEXT_TELEMETRY_DISABLED: '1' } })
+    const built = spawnSync(process.execPath, [bin, 'build', ...(process.env.MASTER_NEXT_DOC_BUNDLER === 'webpack' ? ['--webpack'] : [])], { cwd: root, encoding: 'utf8', timeout: 120000, env: { ...process.env, NEXT_TELEMETRY_DISABLED: '1' } })
     assert.equal(built.status, 0, `${mode}: ${built.stderr}\n${built.stdout}`)
-    const html = readFileSync(join(root, '.next/server/app/index.html'), 'utf8')
+    const serverFiles = readdirSync(join(root, '.next/server'), { recursive: true }).filter((file): file is string => typeof file === 'string')
+    // Next 16.4 moves prerendered output into its route cache.
+    const home = serverFiles.find(file => file === 'app/index.html' || file.endsWith('/$/index.html'))
+    assert.ok(home, `Missing prerendered home: ${serverFiles.filter(file => file.endsWith('.html')).join(', ')}`)
+    const html = readFileSync(join(root, '.next/server', home), 'utf8')
     assert.match(html, /Hello World/)
     const assets = readdirSync(join(root, '.next/static'), { recursive: true }).filter((file): file is string => typeof file === 'string')
     const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, '.next/static', name), 'utf8')).join('\n')
-    if (mode !== 'runtime') assert.match(html + css, /font-style:\s?italic/)
-    else assert.doesNotMatch(html + css, /font-style:\s?italic/)
+    if (mode !== 'runtime') assert.match(html + css, /font-style:\s?italic[;}]/)
+    else assert.doesNotMatch(html + css, /font-style:\s?italic[;}]/)
     if (mode === 'static') assert.ok(!assets.some(name => name.endsWith('.wasm')))
     return { root, bin, dispose }
   } catch (error) { dispose(); throw error }

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="545" viewBox="0 0 400 545" role="img" aria-labelledby="title description" font-family="Geist, sans-serif">
+  <title id="title">Next.js progressive boundary</title>
+  <desc id="description">Next.js emits static or pre-rendered HTML. The Master CSS build adapter inserts the generated CSS and supplies page hydration data. A dynamic SSR response is produced after the build adapter has finished. This integration does not pre-render its generated CSS; progressive mode relies on the browser runtime for those rules. Verify a pre-rendered page and a dynamic route separately. Build-time CSS coverage does not establish request-time SSR coverage.</desc>
+  <defs>
+    <linearGradient id="surface" x2=".2" y2="1"><stop stop-color="#303030"/><stop offset="1" stop-color="#222222"/></linearGradient>
+    <linearGradient id="edge" x2=".65" y2="1"><stop stop-color="#696969"/><stop offset="1" stop-color="#3c3c3c"/></linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000000" flood-opacity=".14"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#000000" flood-opacity=".16"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 1l4 3-4 3" fill="none" stroke="#898989" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect x="0" y="0" width="400" height="545" rx="0" fill="#111111" />
+  <g transform="translate(20 20)">
+      <text x="88" y="36" font-size="18" font-weight="500" fill="#e5e5e5" text-anchor="middle">Build time</text>
+      <text x="272" y="36" font-size="18" font-weight="500" fill="#e5e5e5" text-anchor="middle">Request time</text>
+      <rect x="8" y="65" width="160" height="104" rx="10" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="9" y="66" width="158" height="102" rx="9" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <text x="24" y="101" font-size="17" font-weight="500" fill="#e5e5e5" >Pre-rendered</text>
+      <text x="24" y="132" font-size="16" font-weight="400" fill="#ababab" >Page HTML</text>
+      <rect x="192" y="65" width="160" height="104" rx="10" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="193" y="66" width="158" height="102" rx="9" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <text x="208" y="101" font-size="17" font-weight="500" fill="#e5e5e5" >Dynamic SSR</text>
+      <text x="208" y="132" font-size="16" font-weight="400" fill="#ababab" >Page HTML</text>
+      <path d="M88 183V228" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M272 183V228" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <rect x="8" y="241" width="160" height="104" rx="10" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/><rect x="9" y="242" width="158" height="102" rx="9" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+      <text x="24" y="277" font-size="17" font-weight="500" fill="#e5e5e5" >Build adapter</text>
+      <text x="24" y="308" font-size="16" font-weight="400" fill="#ababab" >CSS + manifest</text>
+      <text x="272" y="277" font-size="16" font-weight="400" fill="#ababab" text-anchor="middle">Outside the</text>
+      <text x="272" y="305" font-size="16" font-weight="400" fill="#ababab" text-anchor="middle">build adapter</text>
+      <path d="M88 359V404" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <path d="M272 327V404" fill="none" stroke="#898989" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+      <text x="88" y="442" font-size="17" font-weight="500" fill="#e5e5e5" text-anchor="middle">Initial CSS</text>
+      <text x="272" y="442" font-size="17" font-weight="500" fill="#e5e5e5" text-anchor="middle">Runtime CSS</text>
+      <text x="88" y="472" font-size="15" font-weight="400" fill="#ababab" text-anchor="middle">Before startup</text>
+      <text x="272" y="472" font-size="15" font-weight="400" fill="#ababab" text-anchor="middle">Browser generation</text>
+    </g>
+</svg>

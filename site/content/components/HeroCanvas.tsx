@@ -10,15 +10,22 @@ const introDuration = 2200
 const materialDuration = 800
 const glintDelay = 260
 const glintDuration = 1700
-const compositePixelBudget = 3_000_000
+const touchDuration = 2600
+const rippleDuration = 2.5
+// The silk renders into its own low-density target, so the output pass is cheap enough to reach the
+// display's density on most screens; a slow GPU steps it down at runtime.
+const compositePixelBudget = 9_000_000
+const minimumCompositeBudget = 2_000_000
 const backgroundPixelBudget = 1_500_000
-const litSelector = '.home-hero-pill, .home-hero-actions > *'
+// Named directly: an island wrapper with `display: contents` sits between the action row and the command.
+const litSelector = '.home-hero-pill, .home-hero-actions .home-action-primary, .home-hero-actions .home-command'
 const litProperties = ['--lit-x', '--lit-y', '--lit-angle', '--cast-x', '--cast-y', '--lit-near']
 
 type Bounds = [number, number, number, number]
 
 interface LitControl {
   element: HTMLElement
+  focus: number
   left: number
   top: number
   width: number
@@ -53,6 +60,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
     const contrast = matchMedia('(forced-colors: active)')
     const print = matchMedia('print')
     const scheme = matchMedia('(prefers-color-scheme: dark)')
+    const opaque = matchMedia('(prefers-reduced-transparency: reduce), (prefers-contrast: more)')
     const programs: WebGLProgram[] = []
     const shaders: WebGLShader[] = []
     const textures: WebGLTexture[] = []
@@ -112,9 +120,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let glyphs: WebGLTexture
     let target: WebGLFramebuffer
     try {
-      cloth = program(heroClothSource, ['resolution', 'time', 'intro', 'pointer', 'lamp', 'shadow', 'body', 'sheen', 'ground', 'title', 'readingArea', 'fontSize'])
+      cloth = program(heroClothSource, ['resolution', 'time', 'pointer', 'lamp', 'drift', 'ripple', 'shadow', 'body', 'sheen', 'ground', 'title', 'readingArea', 'fontSize'])
       composite = program(heroCompositeSource, ['resolution', 'title', 'fontSize', 'distanceRange', 'material', 'glint', 'time', 'lamp', 'ink', 'ground', 'scene', 'glyphs'])
-      copy = program(heroCopySource, ['scene', 'glyphs', 'resolution', 'time', 'ground', 'title', 'fontSize', 'distanceRange', 'lamp', 'shade', 'lenses', 'lensRadii'])
+      copy = program(heroCopySource, ['scene', 'glyphs', 'resolution', 'time', 'ground', 'title', 'fontSize', 'distanceRange', 'lamp', 'shade', 'intro', 'lenses', 'lensRadii', 'lensFocus'])
       const buffer = context.createBuffer()
       if (!buffer) throw new Error('Cannot allocate a hero triangle')
       buffers.push(buffer)
@@ -149,21 +157,28 @@ export default function HeroCanvas({ className }: { className?: string }) {
     let sceneHeight = 0
     let startedAt = -1
     let materialAt = -1
+    let darkScheme: boolean | undefined
     let previousFrame = -1
     let sceneTime = 8
+    let budget = compositePixelBudget
+    let slowFrames = 0
     let scissor: Bounds = [0, 0, 0, 0]
     let mask: HeroTitleMask | null = null
     let maskKey = ''
     let fontFace: FontFace | undefined
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, strength: 0, targetStrength: 0 }
-    // The lamp rests above the title's left half and drifts, staying with the viewer as the page scrolls.
-    // A mouse picks it up and carries it lower; keyboard focus hangs it over the focused control.
-    const lamp = { x: 0, y: 0, z: 0, clientX: 0, clientY: 0, focusX: 0, focusY: 0, source: 'rest' as 'rest' | 'pointer' | 'focus', placed: false }
-    const rest = { x: 0, y: 0, z: 1, sway: 0, fontSize: 1 }
+    // The lamp rests over the title's first line, left of center, and drifts, staying with the viewer as the page scrolls.
+    // A mouse picks it up and carries it lower; keyboard focus hangs it over the focused control; a tap
+    // sets it down where the finger touched for a moment.
+    const lamp = { x: 0, y: 0, z: 0, clientX: 0, clientY: 0, focusX: 0, focusY: 0, until: 0, source: 'rest' as 'rest' | 'pointer' | 'focus' | 'touch', placed: false }
+    const rest = { x: 0, y: 0, z: 1, sway: 0, fontSize: 1, left: 0, top: 0, right: 0, bottom: 0 }
     const origin = { left: 0, top: 0, scroll: 0 }
     // On a phone, tilting the device swings the resting lamp, as turning a stone in the hand would.
     const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 }
+    const ripple = { x: 0, y: 0, at: -1 }
     let lit: LitControl[] = []
+    let lenses: LitControl[] = []
+    let litAt = -Infinity
     const maximumTexture = context.getParameter(context.MAX_TEXTURE_SIZE) as number
     const maximumViewport = context.getParameter(context.MAX_VIEWPORT_DIMS) as Int32Array
     const maximumSurface = Math.min(maximumTexture, maximumViewport[0], maximumViewport[1])
@@ -196,8 +211,9 @@ export default function HeroCanvas({ className }: { className?: string }) {
       if (!rect.width || !rect.height) return false
       width = rect.width
       height = rect.height
-      const maskRatio = Math.min(devicePixelRatio || 1, 2, maximumTexture / (Math.max(width, height) + 16))
-      const ratio = Math.min(maskRatio, Math.sqrt(compositePixelBudget / (width * height)), maximumSurface / Math.max(width, height))
+      // Phones at 3× fit their full density within the output budget, so the stone stays as crisp as native type.
+      const maskRatio = Math.min(devicePixelRatio || 1, 3, maximumTexture / (Math.max(width, height) + 16))
+      const ratio = Math.min(maskRatio, Math.sqrt(budget / (width * height)), maximumSurface / Math.max(width, height))
       const pixelWidth = Math.max(1, Math.floor(width * ratio))
       const pixelHeight = Math.max(1, Math.floor(height * ratio))
       if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
@@ -251,22 +267,31 @@ export default function HeroCanvas({ className }: { className?: string }) {
       context.uniform1i(copy.uniforms.glyphs, 1)
       context.uniform1f(copy.uniforms.distanceRange, mask?.range ?? 1)
       const groundLight = ground[0] * 0.2126 + ground[1] * 0.7152 + ground[2] * 0.0722
+      // Switching themes re-cuts the title: the native ink returns, then the other stone forms and glints.
+      if (darkScheme !== undefined && darkScheme !== groundLight <= 0.4) materialAt = -1
+      darkScheme = groundLight <= 0.4
       // Obsidian casts a clear shadow on champagne silk; on dark silk it only separates the moonstone.
       context.uniform1f(copy.uniforms.shade, mask ? (groundLight > 0.4 ? 1 : 0.45) : 0)
       origin.left = rect.left
       origin.top = rect.top
       origin.scroll = scrollY
       rest.x = titleRect.left - rect.left + titleRect.width * 0.3
-      rest.y = titleRect.top - rect.top - fontSize * 0.8
+      // Over the first line, so as the lamp sways its reflection now and then slides across the letters.
+      rest.y = titleRect.top - rect.top + fontSize * 0.3
       rest.z = fontSize * 5
       rest.sway = titleRect.width * 0.2
+      rest.left = titleRect.left - rect.left
+      rest.top = titleRect.top - rect.top
+      rest.right = rest.left + titleRect.width
+      rest.bottom = rest.top + titleRect.height
       rest.fontSize = fontSize
       lit = Array.from(host.querySelectorAll<HTMLElement>(litSelector), (element) => {
         const box = element.getBoundingClientRect()
-        return { element, left: box.left - rect.left, top: box.top - rect.top, width: box.width, height: box.height, values: [] }
+        const previous = lit.find((item) => item.element === element)
+        return { element, focus: previous?.focus ?? 0, left: box.left - rect.left, top: box.top - rect.top, width: box.width, height: box.height, values: [] }
       })
       // Liquid-glass controls refract the silk drawn beneath them.
-      const lenses = lit.filter((control) => control.element.classList.contains('home-glass')).slice(0, 2)
+      lenses = opaque.matches ? [] : lit.filter((control) => control.element.classList.contains('home-glass')).slice(0, 2)
       context.useProgram(copy.program)
       context.uniform4fv(copy.uniforms.lenses, [0, 1].flatMap((index) => {
         const lens = lenses[index]
@@ -306,6 +331,15 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const reduced = motion.matches
         const delta = previousFrame < 0 ? 0 : Math.min(64, time - previousFrame)
         previousFrame = time
+        // After the arrival settles, sustained frames under ~40fps trade output density for smoothness.
+        if (time - startedAt > introDuration + 1000 && budget > minimumCompositeBudget) {
+          slowFrames = delta > 25 ? slowFrames + 1 : Math.max(0, slowFrames - 2)
+          if (slowFrames > 45) {
+            slowFrames = 0
+            budget = Math.max(minimumCompositeBudget, Math.min(budget, canvas.width * canvas.height) * 0.6)
+            dirty = true
+          }
+        }
         if (!reduced) sceneTime += delta / 1000
         const follow = 1 - Math.exp(-delta / 180)
         pointer.x += (pointer.targetX - pointer.x) * follow
@@ -321,7 +355,11 @@ export default function HeroCanvas({ className }: { className?: string }) {
         tilt.y += (tilt.targetY - tilt.y) * follow
         let targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway + tilt.x * rest.sway * 2
         let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + tilt.y * rest.fontSize * 1.5 + (reduced ? 0 : scrolled)
-        if (lamp.source === 'pointer') {
+        if (lamp.source === 'touch' && time > lamp.until) {
+          lamp.source = 'rest'
+          pointer.targetStrength = 0
+        }
+        if (lamp.source === 'pointer' || lamp.source === 'touch') {
           targetX = lamp.clientX - origin.left
           targetY = lamp.clientY - origin.top + scrolled
           pointer.targetX = (targetX / width - 0.5) * width / height * heroPlaneScale
@@ -332,26 +370,43 @@ export default function HeroCanvas({ className }: { className?: string }) {
         }
         // The lamp lowers into place with the silk, so shadows grow from short and faint to their resting length.
         const lowered = 1 - Math.pow(1 - opened, 3)
-        const targetZ = lamp.source === 'rest' ? rest.z * (1 + (1 - lowered) * 2.5) : rest.fontSize * 3.2
-        const carry = lamp.placed ? 1 - Math.exp(-delta / 120) : 1
+        // Held over the title, the lamp comes closer, as if to examine the stone: longer shadows, a tighter glint.
+        const examining = lamp.source === 'pointer' && targetX > rest.left && targetX < rest.right && targetY > rest.top && targetY < rest.bottom
+        const targetZ = lamp.source === 'rest' ? rest.z * (1 + (1 - lowered) * 2.5) : rest.fontSize * (examining ? 2.2 : 3.2)
+        // A held lamp follows the hand closely; let go, it drifts back to its resting place.
+        const carry = lamp.placed ? 1 - Math.exp(-delta / (lamp.source === 'rest' ? 700 : 120)) : 1
         lamp.x += (targetX - lamp.x) * carry
         lamp.y += (targetY - lamp.y) * carry
         lamp.z += (targetZ - lamp.z) * carry
         lamp.placed = true
-        illuminate()
+        // A drifting lamp moves the controls' light by a fraction of a percent per frame; restyling them ten
+        // times a second is indistinguishable and spares most style recalculation. A held lamp updates every frame.
+        if (lamp.source !== 'rest' || time - litAt > 100) {
+          litAt = time
+          illuminate()
+        }
         context.bindFramebuffer(context.FRAMEBUFFER, target)
         context.viewport(0, 0, sceneWidth, sceneHeight)
         context.useProgram(cloth.program)
         context.uniform1f(cloth.uniforms.time, sceneClock)
-        context.uniform1f(cloth.uniforms.intro, 1 - Math.pow(1 - opened, 3))
         context.uniform3f(cloth.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
         context.uniform3f(cloth.uniforms.lamp, lamp.x, lamp.y, lamp.z)
+        context.uniform1f(cloth.uniforms.drift, reduced ? 0 : scrolled / height * heroPlaneScale * 0.3)
+        const rippleAge = ripple.at < 0 || reduced ? -1 : (time - ripple.at) / 1000
+        context.uniform3f(cloth.uniforms.ripple, ripple.x, ripple.y, rippleAge > rippleDuration ? -1 : rippleAge)
         context.drawArrays(context.TRIANGLES, 0, 3)
         context.bindFramebuffer(context.FRAMEBUFFER, null)
         context.viewport(0, 0, canvas.width, canvas.height)
         context.useProgram(copy.program)
         context.uniform1f(copy.uniforms.time, sceneClock)
         context.uniform3f(copy.uniforms.lamp, lamp.x, lamp.y, lamp.z)
+        context.uniform1f(copy.uniforms.intro, 1 - Math.pow(1 - opened, 3))
+        // Hovered or focused glass is drawn a little closer: it magnifies and bends more.
+        for (const lens of lenses) {
+          const engaged = !reduced && lens.element.matches(':hover, :focus-within')
+          lens.focus += ((engaged ? 1 : 0) - lens.focus) * (1 - Math.exp(-delta / 160))
+        }
+        context.uniform2f(copy.uniforms.lensFocus, lenses[0]?.focus ?? 0, lenses[1]?.focus ?? 0)
         context.drawArrays(context.TRIANGLES, 0, 3)
         context.enable(context.SCISSOR_TEST)
         context.enable(context.BLEND)
@@ -421,6 +476,31 @@ export default function HeroCanvas({ className }: { className?: string }) {
       lamp.clientY = event.clientY
       lamp.source = 'pointer'
     }
+    // Touch never holds the lamp, so it cannot interfere with scrolling; it only sets it down briefly.
+    const tap = (event: PointerEvent) => {
+      if (motion.matches || event.pointerType === 'mouse' || !event.isPrimary) return
+      pointer.targetStrength = 1
+      lamp.clientX = event.clientX
+      lamp.clientY = event.clientY
+      lamp.until = performance.now() + touchDuration
+      lamp.source = 'touch'
+    }
+    // A mouse may press anywhere on the silk; touch and keys ripple only from a control, so scrolling stays quiet.
+    const press = (event: PointerEvent | KeyboardEvent) => {
+      if (motion.matches) return
+      const control = lit.find((item) => item.element.contains(event.target as Node))
+      if (event instanceof KeyboardEvent) {
+        // Only keys that activate: Enter on a link or button, Space on a button (on a link it scrolls).
+        const activates = event.key === 'Enter' || (event.key === ' ' && (event.target as Element).closest('button'))
+        if (!control || !activates) return
+      } else if (!control && (event.pointerType !== 'mouse' || event.button !== 0)) return
+      const rect = canvas.getBoundingClientRect()
+      const x = event instanceof PointerEvent ? event.clientX - rect.left : control!.left + control!.width / 2
+      const y = event instanceof PointerEvent ? event.clientY - rect.top : control!.top + control!.height / 2
+      ripple.x = (x / width - 0.5) * width / height * heroPlaneScale
+      ripple.y = (0.5 - y / height) * heroPlaneScale
+      ripple.at = performance.now()
+    }
     const leave = () => {
       pointer.targetStrength = 0
       if (lamp.source === 'pointer') lamp.source = 'rest'
@@ -461,8 +541,12 @@ export default function HeroCanvas({ className }: { className?: string }) {
     contrast.addEventListener('change', activity)
     print.addEventListener('change', activity)
     scheme.addEventListener('change', invalidate)
+    opaque.addEventListener('change', invalidate)
     host.addEventListener('pointermove', move)
     host.addEventListener('pointerleave', leave)
+    host.addEventListener('pointerdown', tap)
+    host.addEventListener('pointerdown', press)
+    host.addEventListener('keydown', press)
     host.addEventListener('focusin', focus)
     host.addEventListener('focusout', blur)
     // Only browsers that grant orientation without a permission prompt take part.
@@ -508,8 +592,12 @@ export default function HeroCanvas({ className }: { className?: string }) {
       contrast.removeEventListener('change', activity)
       print.removeEventListener('change', activity)
       scheme.removeEventListener('change', invalidate)
+      opaque.removeEventListener('change', invalidate)
       host.removeEventListener('pointermove', move)
       host.removeEventListener('pointerleave', leave)
+      host.removeEventListener('pointerdown', tap)
+      host.removeEventListener('pointerdown', press)
+      host.removeEventListener('keydown', press)
       host.removeEventListener('focusin', focus)
       host.removeEventListener('focusout', blur)
       if (coarse) removeEventListener('deviceorientation', orient)

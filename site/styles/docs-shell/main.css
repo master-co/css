@@ -9,6 +9,27 @@
     outline-offset: -2px;
   }
 
+  /*
+   * Han text breaks between any two characters, so a short description can strand a character or split a word.
+   * It breaks at spaces and punctuation instead and balances its lines; an overlong phrase may still wrap anywhere.
+   */
+  :lang(zh) :is(.doc-article-description, .doc-index-section-description) { text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; }
+
+  /*
+   * The tab row scrolls sideways, so it clips vertically: a tab's focus ring is drawn inside the row's height
+   * and reaches a little past the label, and the row keeps room for that at both ends without moving.
+   */
+  nav:has(> div > .doc-tab) { padding-inline: .5rem; margin-inline: -.5rem; }
+  .doc-tab { position: relative; }
+  .doc-tab:focus-visible { outline: none; }
+  .doc-tab:focus-visible::before { position: absolute; inset: .375rem -.375rem; border-radius: var(--radius-sm); outline: 2px solid var(--color-focus); pointer-events: none; content: ''; }
+
+  /* Forced colors paint every tab border alike; only the current tab keeps its underline. */
+  @media (forced-colors: active) {
+    .doc-tab { forced-color-adjust: none; color: LinkText; border-block-color: transparent !important; }
+    .doc-tab[aria-current="page"] { border-bottom-color: Highlight !important; }
+  }
+
 .hr {
     margin-block: var(--spacing-2xl);
     border-bottom: 1px solid var(--color-line-subtle);

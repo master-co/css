@@ -6,7 +6,13 @@ Start with the recommended config below, or use the [installation integrations](
 ---
 
 ## Install the recommended config
-The recommended config enables the canonical rule set:
+Install ESLint and the recommended config in the project. Keep framework parser configuration when the project needs it.
+
+```bash
+npm install -D eslint @master/eslint-config-css@rc
+```
+
+The recommended config enables these rules:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
@@ -191,7 +197,7 @@ export default defineConfig([
 ])
 ```
 
-Customize canonicalization when a team wants to keep one class family literal while still applying the other recommendations:
+Enable matching registered static utilities in canonical suggestions when the project uses named recipes:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'

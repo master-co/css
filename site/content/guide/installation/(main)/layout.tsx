@@ -7,7 +7,7 @@ import metadata from './metadata'
 
 export const { Page, generateMetadata } = createLayout({
   metadata,
-  subtitle: 'Runtime, zero-runtime, or hydration — it’s your call.',
+  subtitle: 'Start with static CSS; choose runtime or progressive rendering when your application needs it.',
   dictionaries,
   categories,
   noTOC: true,

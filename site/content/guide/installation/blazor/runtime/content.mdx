@@ -40,12 +40,13 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'runtime' })
         ],
         build: {
           outDir: 'wwwroot/assets',
-          emptyOutDir: true,
+          emptyOutDir: false,
           rollupOptions: {
             input: 'src/main.ts',
             output: {
@@ -112,6 +113,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
       </head>
       <body>
         <Routes />
+        <script src="_framework/blazor.web.js"></script>
         <script type="module" src="/assets/app.js"></script>
       </body>
       </html>
@@ -144,3 +146,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
 ```
 
 Runtime rendering generates CSS in the browser as Blazor renders and updates elements. Use [Blazor static rendering](/guide/installation/blazor) when classes are statically visible and you need build-time CSS output.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+
+Merge the asset tags into the existing host document; retain its framework bootstrap script and routing setup. For a deployment below a URL prefix, resolve asset URLs through the host’s base path rather than assuming `/` is the application root.

@@ -20,7 +20,7 @@ The Master CSS engine does not polyfill every CSS feature. It generates CSS from
 
 For example, `background-color:red` uses a native named color, `bg-red` also needs support for its preset OKLCH value, and `bg-surface-raised` uses `light-dark()`. `backdrop-filter:blur(16px)` needs the filter feature itself. Check the complete generated declaration in [Can I use](https://caniuse.com/) or MDN.
 
-A class must use valid syntax and values before it can generate a rule. That validation does not prove that a target browser implements the resulting CSS. Inspect the output and use a feature query or a native fallback when a feature is optional.
+Recognition, CSS validity and browser support are separate checks. A recognized class can generate a rule even when tooling reports an invalid or unknown value. Inspect its diagnostics and generated output; use a feature query or a native fallback when the browser feature is optional.
 
 Use this rule of thumb:
 
@@ -82,7 +82,7 @@ Custom properties can use the same direct declaration form:
 </Class2CSS>
 
 ### Native declarations and Master utilities
-Complete CSS properties such as `margin:1rem` keep their native value semantics. Native declarations such as `margin-top:1rem` target that property, while named classes such as `mt-md` select theme tokens. Static mixin calls use their declared parameters. Colon values retain native CSS value semantics.
+Complete CSS properties such as `margin:1rem` keep their native value semantics. Native declarations such as `margin-top:1rem` target that property, while named classes such as `mt-md` select theme tokens. Functional utilities use their declared parameters. Colon values retain native CSS value semantics.
 
 ```html
 <!-- @MARK margin-top:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
@@ -99,7 +99,7 @@ This preserves the expected syntax model:
 - `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
-- `field-sizing:banana` and `interpolate-size:banana` are rejected instead of emitted as raw CSS.
+- Tooling reports values such as `field-sizing:banana` and `interpolate-size:banana` as invalid. A generated rule alone does not establish validity; the browser ignores unsupported declarations.
 
 ### Arbitrary properties
 Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it directly with `property:value` syntax:
@@ -184,7 +184,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 
 ```css name=Button.module.css
 .button {
-  background-color: var(--color-primary);
+  background-color: var(--color-blue);
   border-radius: var(--radius-md);
 }
 ```

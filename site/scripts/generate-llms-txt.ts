@@ -11,7 +11,7 @@ import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
 import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
 import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-content'
-import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
+import { deliveryGuideContent, deliveryGuideSlugs, deliveryBlogContent, deliveryBlogSlugs } from '../utils/delivery-content'
 import { agentGuideContent, agentGuideSlugs } from '../utils/agent-content'
 import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content'
 import { designSystemContent, designSystemRoutes } from '../utils/design-system-content'
@@ -219,6 +219,7 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
         : installation ? (await installationGuideContent(path.resolve(localeRoot, '..'), installationSlug)).markdown
         : agent ? (await agentGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
         : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
+        : segments[0] === 'blog' && deliveryBlogSlugs.includes(lastSegment as typeof deliveryBlogSlugs[number]) ? (await deliveryBlogContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
         : delivery ? (await deliveryGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
           : foundation ? (await foundationGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown
           : projectStyle ? (await projectStyleGuideContent(path.resolve(localeRoot, '..'), lastSegment)).markdown

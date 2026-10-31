@@ -1,5 +1,7 @@
 import './maintenance-examples.test'
 import './writing-examples.test'
+import './illustration-examples.test'
+import { verifyRuntimeRootExamples } from '../tests/runtime-root-examples'
 import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'
@@ -919,7 +921,8 @@ test('vendor migration snippets parse and the documented engine wrapper forwards
       assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => String(d)), [], `${slug || 'overview'}: ${example.text}`)
     }
   }
-  const source = migrationFences('').find(f => f.text.includes('function wrapEngine'))!.text
+  const { deliveryFences, deliverySource } = await import('../tests/delivery-examples')
+  const source = deliveryFences(deliverySource('rendering-modes')).find(f => f.text.includes('function wrapEngine'))!.text
   const { createEngineSync } = await import('@master/css/node')
   const inner = createEngineSync({ manifest: defaultManifest })
   const exports: { wrapEngine?: (engine: typeof inner) => typeof inner } = {}
@@ -968,4 +971,8 @@ test('removed compose statements are not treated as class-list sources', () => {
 test('authoring packages and monorepo examples retain native components and utility references', async () => {
   await verifyPackageAuthoringExamples()
   await verifyMonorepoExamples()
+})
+
+test('framework runtime bootstraps emit client programs without entering SSR', async () => {
+  await verifyRuntimeRootExamples()
 })

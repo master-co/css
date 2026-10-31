@@ -25,7 +25,7 @@ export default function CascadeLayers() {
   return (
     <div aria-label={`${$('Cascade layers from theme at the bottom to utilities at the top')}. ${$('The px-lg utility sets the padding over the btn component rule, because utilities come later.')}`} className="home-bento-visual home-layers" role="img">
       <p aria-hidden="true" className="home-layers-element">
-        <span className="home-code-tag">&lt;{cascadeProbe.tag}</span> <span className="home-code-attr">class</span>=<span className="home-code-string">&quot;{cascadeProbe.classes.join(' ')}&quot;</span><span className="home-code-tag">&gt;</span>
+        <span className="home-code-punct">&lt;</span><span className="home-code-tag">{cascadeProbe.tag}</span> <span className="home-code-attr">class</span><span className="home-code-punct">=</span><span className="home-code-string">&quot;{cascadeProbe.classes.join(' ')}&quot;</span><span className="home-code-punct">&gt;</span>
       </p>
       <div aria-hidden="true" className="home-layers-figure">
         <svg className="home-layers-drawing" fill="none" viewBox="0 0 400 460">

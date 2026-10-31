@@ -562,7 +562,7 @@ These APIs return a manifest and metadata; they do not publish native CSS assets
 can prepare a file and its imports for publication as separate stylesheets. The
 Node host resolves local imports, package entries and references; the existing
 Rust graph compiler retains external import order, conditions and native
-native variant positions. `delivery` uses the same URL callbacks as standalone
+variant positions. `delivery` uses the same URL callbacks as standalone
 stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
 Each stylesheet must have a distinct final URL.
 
@@ -813,7 +813,6 @@ width:20px@media((width>=800px))
 width:30px@media((aspect-ratio>=1.5))
 width:40px@media((width>=50rem))
 display:grid@supports((display:grid))
-display:grid@supports((display:grid))
 width:50px@container(card|(width>=40rem))
 width:60px@container(style(--density:compact))
 ```
@@ -851,7 +850,7 @@ Use lexical `var(--parameter)` references in a mixin body. `--value()` is always
 ```css
 @theme {
   --color-muted: color-mix(in oklab, var(--color-primary) 50%, transparent);
- }
+}
 ```
 
 For queries outside the [simple class query subset](/reference/rules/conditions), define a `@custom-media` or a mixin wrapper in CSS. Authored CSS queries retain native syntax and do not decode class whitespace.

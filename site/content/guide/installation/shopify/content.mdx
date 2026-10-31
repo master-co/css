@@ -38,6 +38,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
       import masterCSS from '@master/css-vite'
 
       export default defineConfig({
+        base: './',
         plugins: [
           masterCSS({ mode: 'static' })
         ],
@@ -102,3 +103,5 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
 ```
 
 Run `vite build --watch` beside `shopify theme dev` while editing. If your theme has no asset build at all, use the [CLI guide](/guide/installation/cli) with the same Liquid globs and output to `assets/master.css`.
+
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.

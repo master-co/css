@@ -28,6 +28,8 @@
   .doc-menu-preference-value select { z-index: 1; }
   .doc-menu :is(a, button, summary):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
   .doc-menu label:has(select:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
+  /* The close control sits in the viewport's corner, so its ring stays inside the button. */
+  .doc-menu-topbar > :is(button, a):focus-visible { outline-offset: -2px; }
   .doc-menu-topbar > button:hover { background: var(--color-surface-canvas); color: var(--color-text-strong); }
   .doc-menu .app-nav.active { color: var(--color-text-strong); }
 

@@ -17,9 +17,10 @@ export function installationSource(route: string) {
 }
 
 export function verifyInstallationExamples() {
-  const ledger = JSON.parse(readFileSync(new URL('./docs-refinement.json', import.meta.url), 'utf8')) as { pages: { url: string }[] }
-  const routes = new Set([...ledger.pages.map(page => page.url), ...installationGuideSlugs.map(slug => `/guide/installation${slug ? `/${slug}` : ''}`)])
+  const ledger = JSON.parse(readFileSync(new URL('./docs-quality-review.json', import.meta.url), 'utf8')) as { pages: { url: string }[] }
+  const routes = new Set(ledger.pages.map(page => page.url))
   for (const route of installationRoutes) {
+    assert.ok(routes.has(`/guide/installation${route}`), `Current review inventory: ${route}`)
     for (const match of installationSource(route).matchAll(/\]\((\/[^)]+)\)|href: ['"](\/[^'"]+)['"]/g)) {
       const href = (match[1] ?? match[2]).split('#')[0]
       assert.ok(routes.has(href), `${route}: missing destination ${href}`)

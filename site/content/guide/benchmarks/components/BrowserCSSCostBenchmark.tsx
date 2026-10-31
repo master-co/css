@@ -178,7 +178,7 @@ function TraceMetricGroup(props: {
 }
 
 export function BrowserCSSCostSummary() {
-  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable label="Browser CSS cost metrics" metrics={createSummaryMetrics()} />
 }
 
 export function BrowserCSSVolumeTraceChart() {
@@ -210,7 +210,8 @@ export function BrowserDOMScalingTraceChart() {
 export function BrowserCSSCostTables() {
   return (
     <ExpandContent>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
+      <div className="doc-table" data-numeric-from={4} role="region" aria-label="Browser CSS cost results" tabIndex={0}>
         <table>
           <thead>
             <tr>

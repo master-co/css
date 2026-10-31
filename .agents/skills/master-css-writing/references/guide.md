@@ -23,6 +23,8 @@ An article can include necessary background while keeping one primary task. When
 
 This is a reading sequence, not six mandatory headings. Setup guides prioritize working configuration; visual topics prioritize observable comparisons. Put restrictions that would break the main example before its instructions.
 
+For process, hierarchy, scope, or visual-comparison lessons, identify the relationship readers must understand and provide the necessary figure or working demo beside that explanation. Use [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md) for authored technical figures. Keep the code and observable result with the lesson; a decorative image or a row of prose cards does not substitute for showing the relationship.
+
 ## Project example: container queries
 
 Read the current [Container queries Guide](../../../../site/content/guide/containers/content.mdx), then check the [conditions contract](../../../../site/content/guide/conditional-queries/contract.mdx) and relevant source or tests. These pages provide context rather than permanent gold standards.

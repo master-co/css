@@ -43,10 +43,27 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   <HelloWorld url="localhost:3000" />
 </StepSection>
 
-```vue name=app.vue
+```vue name=app/app.vue
 <template>
   <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
     Hello World
   </h1>
 </template>
 ```
+
+## Load the project stylesheet
+
+Keep the module registration and explicitly load the CSS entry created by the installer. `~~/` points to the project root, including in Nuxt projects whose application directory is `app/`.
+
+```ts name=nuxt.config.ts
+export default defineNuxtConfig({
+  modules: [['@master/css-nuxt', { mode: 'progressive' }]],
+  css: ['~~/assets/css/master.css']
+})
+```
+
+```css name=assets/css/master.css
+@import '@master/css';
+```
+
+Run `npm run build`, then serve the generated Nitro output with `node .output/server/index.mjs`. Check initial styling before JavaScript and a later class absent from the page manifest. Also test the copied deployment artifact in its target directory; an in-place build does not establish that all manifest and program paths are portable.

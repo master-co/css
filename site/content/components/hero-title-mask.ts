@@ -138,7 +138,7 @@ export function rasterizeHeroTitle(title: HTMLElement, canvas: HTMLCanvasElement
   const visible = runs.filter((run) => run.text.trim())
   if (!visible.length) return null
   const fontSize = parseFloat(getComputedStyle(title).fontSize)
-  const distanceRange = Math.max(6, fontSize * 0.22)
+  const distanceRange = Math.max(6, fontSize * 0.3)
   // Shadows sample beyond the glyphs; the border must already sit at the field's saturated distance.
   const padding = Math.max(8, Math.ceil(distanceRange) + 2)
   const left = Math.floor(Math.min(...visible.map((run) => run.rect.left))) - padding

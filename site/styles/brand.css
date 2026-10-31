@@ -36,7 +36,8 @@
   .brand-hero-subject { min-width: 0; }
   .brand-signal { flex: none; width: .375rem; height: .375rem; border-radius: var(--radius-pill); background: var(--brand-gold); box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-gold) 12%, transparent); }
   .brand-hero h1 { margin: var(--spacing-xl) 0 var(--spacing-lg); color: var(--brand-ink); font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 460; line-height: 1.04; letter-spacing: -.055em; }
-  .brand-hero h1:lang(zh), .brand-next h2:lang(zh) { letter-spacing: 0; }
+  /* Han titles keep their phrases whole: they break at punctuation, and only an overlong phrase wraps inside. */
+  .brand-hero h1:lang(zh), .brand-next h2:lang(zh) { letter-spacing: 0; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
   .brand-hero-lead { max-width: 32rem; margin: 0; font-size: 1.0625rem; line-height: 1.75; text-wrap: pretty; }
   .brand-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
   .brand-hero-actions a { display: inline-flex; align-items: center; gap: var(--spacing-md); min-height: 44px; color: var(--brand-ink); font-size: .875rem; text-decoration: none; }
@@ -56,6 +57,8 @@
   .brand-document { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); padding-bottom: var(--brand-rule-space); border-top: 1px solid var(--brand-line); }
   .brand-navigation { align-self: start; position: sticky; top: 6rem; padding-top: var(--spacing-2xl); }
   .brand-desktop-navigation { max-height: calc(100dvh - 9rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  /* The navigation scrolls and clips its overflow, so focus rings sit on each link's edge. */
+  .brand-page .brand-desktop-navigation :focus-visible { outline-offset: -2px; }
   .brand-desktop-navigation .brand-overline { margin-bottom: var(--spacing-lg); }
   .brand-navigation ol { display: grid; margin: 0; padding: 0; list-style: none; }
   .brand-navigation li { margin: 0; }

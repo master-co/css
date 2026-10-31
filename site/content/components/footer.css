@@ -96,6 +96,8 @@
   .home-footer-link {
     display: inline-flex;
     align-items: center;
+    /* A one-letter label such as X still gets a usable target. */
+    min-width: 2.75rem;
     min-height: 2rem;
     font-size: 0.875rem;
     line-height: 1.6;

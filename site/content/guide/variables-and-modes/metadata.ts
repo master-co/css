@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Variables and Modes',
-  description: 'Understand how Master CSS resolves theme variables, emits CSS custom properties, and applies light, dark, and custom modes.',
+  description: 'Connect managed tokens to native CSS variables, scope overrides, and light, dark or custom themes.',
   category: 'Fundamentals',
   fileURL: import.meta.url
 })

@@ -17,6 +17,11 @@
     --demo-chrome-inset: var(--prose-bleed);
     --prose-table-gutter: var(--prose-bleed);
     margin-inline: calc(var(--prose-bleed) * -1);
+
+    /* A frameless canvas has no edge of its own to bleed: its contents stay on the text column. */
+    &[data-frame="none"] > .demo-canvas:is(:not([data-padding]), [data-padding="none"]) {
+      padding-inline: var(--prose-bleed);
+    }
   }
 
   .prose .site-demo table {
@@ -32,6 +37,12 @@
       .prose > .step-section > *
     ) {
       margin-inline: calc(var(--prose-bleed) * -1);
+
+      /* The bleed reaches the viewport edge here, so the canvas drops its side frame like code blocks do. */
+      & > .demo-canvas {
+        border-inline-width: 0;
+        border-radius: 0;
+      }
     }
   }
   .demo-header {

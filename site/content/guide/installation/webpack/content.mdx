@@ -12,7 +12,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
       mkdir my-app
       cd my-app
       npm init -y
-      npm install -D webpack webpack-cli webpack-dev-server
+      npm install -D webpack webpack-cli webpack-dev-server html-webpack-plugin
       ```
     </StepR>
   </Step>
@@ -27,31 +27,23 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run your Webpack development command.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm run dev
-      ```
-    </StepR>
-  </Step>
   <Step>
-    ### <StepNum />Hello world
-    Now style your first element using Master CSS syntax.
-  </Step>
-  <HelloWorld />
-</StepSection>
+    ### <StepNum />Connect the CSS and HTML
 
-The installer registers the Webpack plugin in `webpack.config.*` and creates `src/index.css` as the Master CSS entry.
+The installer registers the Master CSS plugin and creates `src/index.css`. The complete configuration below also supplies native CSS handling and HTML generation for the new project. Create these files before starting the development server.
 
 ```js name=webpack.config.mjs
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
+  entry: './src/index.js',
+  experiments: { css: true },
+  module: {
+    rules: [{ test: /\.css$/i, type: 'css/auto' }]
+  },
   plugins: [
+    new HtmlWebpackPlugin({ template: './index.html' }),
     new MasterCSSPlugin({ mode: 'static' })
   ]
 }
@@ -66,3 +58,32 @@ export default {
   Hello World
 </h1>
 ```
+
+## Load the CSS entry
+
+```js name=src/index.js
+import './index.css'
+```
+
+Create `index.html` for `HtmlWebpackPlugin` with the heading shown above inside its body. The plugin emits the HTML and stylesheet links; serving an unprocessed file from a static directory does not perform that injection.
+
+Run `npx webpack --config webpack.config.mjs --mode production` to verify production output. The emitted page loads generated CSS without a Master CSS runtime.
+
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Launch server
+      Run your Webpack development command.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npx webpack serve --config webpack.config.mjs
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Hello world
+    Now style your first element using Master CSS syntax.
+  </Step>
+  <HelloWorld />
+</StepSection>

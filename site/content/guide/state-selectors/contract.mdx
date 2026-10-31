@@ -262,10 +262,10 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 document.querySelector('#select-all').indeterminate = true
 ```
 
-### `:rtl`, `:ltr` \{#rtl--ltr\}
-Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:dir(ltr)`.
+### `:dir(rtl)`, `:dir(ltr)` \{#rtl--ltr\}
+Use native `:dir(rtl)` and `:dir(ltr)` selectors to match the element’s resolved text direction.
 ```html
-<!-- @MARK :rtl -->
+<!-- @MARK :dir(rtl) -->
 <div dir="rtl" class="mr-xs:dir(rtl)">مرحبا</div>
 ```
 

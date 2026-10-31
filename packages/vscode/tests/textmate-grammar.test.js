@@ -296,6 +296,44 @@ test('keeps source and reference paths separate from class lists', () => {
   for (const value of ['src', 'tokens', 'debug-']) expectNoSomeScope(tokens, value, 'entity.other.attribute-name.class.master-css')
 })
 
+test('highlights directive modifiers, keyframe names and mixin argument values', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@theme static inline { --color-brand: var(--app-brand); }
+@safelist keyframes "fade-in" "pop";
+@mixin --card(--pad: 1.5rem, --label <string>: "Card") { padding: var(--pad); }
+.card { @apply --card(2rem, "Hero"); }`)
+  expectScope(tokens, 'static', 'storage.modifier.master-css')
+  expectScope(tokens, 'inline', 'storage.modifier.master-css')
+  expectScope(tokens, 'keyframes', 'storage.modifier.master-css')
+  for (const name of ['fade-in', 'pop']) expectNoSomeScope(tokens, name, 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '1.5rem', 'constant.numeric.master-css')
+  expectScope(tokens, '2rem', 'constant.numeric.master-css')
+  expectNoScope(tokens, 'rem', 'entity.other.attribute-name.class.master-css')
+  expectSomeScope(tokens, 'Card', 'string.quoted.double.master-css')
+  expectSomeScope(tokens, 'Hero', 'string.quoted.double.master-css')
+})
+
+test('keeps declarations in conditional groups and plain attribute values inside directive blocks', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `@utility card {
+  padding: 1rem;
+  @media (width >= 40rem) {
+    padding: 2rem;
+    &:hover { opacity: .5; }
+  }
+  @supports (display: grid) { display: grid; }
+  border-radius: 1rem;
+}
+@mixin --ocean { &:where([data-theme="ocean"], [data-theme=ocean] *) { @contents; } }`)
+  expectScope(tokens, 'media', 'keyword.control.at-rule.media.css')
+  expectScope(tokens, 'width', 'support.type.property-name.media.css')
+  for (const property of ['padding', 'opacity', 'display', 'border-radius']) expectScope(tokens, property, 'support.type.property-name.master-css')
+  expectNoSomeScope(tokens, 'padding: 2rem', 'meta.selector.css')
+  expectScope(tokens, 'data-theme', 'entity.other.attribute-name.css')
+  expectScope(tokens, 'ocean', 'string.unquoted.attribute-value.css')
+  expectSomeScope(tokens, 'ocean', 'string.quoted.double.master-css')
+  expectNoSomeScope(tokens, 'ocean', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '*', 'entity.name.tag.wildcard.css')
+})
+
 test('highlights explicit custom-variant slots and native wrappers', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, `@mixin --hocus { &:is(:hover,:focus) { @contents; } }
 @mixin --card { @apply --hocus { color: red; } @media print { display: block; } }`)
