@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Static Rendering in Angular',
-  description: 'Guide to setting up Master CSS static rendering in your Angular project.',
+  title: 'Set up Master CSS in Angular',
+  description: 'Generate static Master CSS for an Angular app with the CLI, or start the browser runtime.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

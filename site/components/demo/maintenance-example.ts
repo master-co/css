@@ -55,7 +55,7 @@ const maintenanceExample = {
   </article>
 </section>`,
   caption: 'Switch Theme to compare the color roles. The heading, action and progress fill share the brand color; information and action text have their own roles. The buttons demonstrate enabled and disabled states without saving data.',
-  guide: '/guide/global-styles#keep-responsibilities-clear-when-editing',
+  guide: '/guide/global-styles',
   theme: true,
 }
 

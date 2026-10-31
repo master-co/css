@@ -182,7 +182,7 @@ for (const width of full ? [320, 390, 768, 1440, 1920] : [390, 1440]) {
         assert.ok(scheme === 'light' ? state.actionBackground[0] < 80 && state.actionInk[0] > 200 : state.actionBackground[0] > 200 && state.actionInk[0] < 80, 'the primary action reverses the page theme')
         assert.equal(await section.locator('code').textContent(), 'npm create @master/css@rc')
         assert.equal(await section.locator('.home-action-primary').getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/introduction`)
-        assert.equal(await section.locator('.home-hero-pill').getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/mcp-server`)
+        assert.equal(await section.locator('.home-hero-pill').getAttribute('href'), `${locale === 'tw' ? '/tw' : ''}/guide/ai-coding#connect-the-mcp-server`)
         assert.deepEqual(errors, [])
       } finally { await context.close() }
     })

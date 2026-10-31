@@ -49,7 +49,7 @@ for (const slug of agentGuideSlugs) {
 for (const slug of installationGuideSlugs) {
   guideContentNodes.set(`/guide/installation${slug ? `/${slug}` : ''}`, extractSearchNodesFromMdx((await installationGuideContent(process.cwd(), slug)).searchMarkdown))
 }
-guideContentNodes.set('/guide/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
+guideContentNodes.set('/benchmarks', extractSearchNodesFromMdx((await benchmarkContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/guide/introduction', extractSearchNodesFromMdx((await introductionContent(process.cwd())).searchMarkdown))
 guideContentNodes.set('/brand', extractSearchNodesFromMdx((await brandContent(process.cwd())).searchMarkdown))
 for (const route of designSystemRoutes) {

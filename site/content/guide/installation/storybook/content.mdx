@@ -1,11 +1,4 @@
-Use the application’s CSS entry in Storybook’s preview iframe, where stories render. This page shows React with the Vite builder; the same CSS ownership applies to other supported Vite frameworks.
-
-## Install in the application
-Install Storybook in the application that already uses Master CSS.
-
-```bash name=Terminal
-npm create storybook@latest
-```
+Use the application’s CSS entry in Storybook’s preview iframe, where stories render. Start from an application that already uses Master CSS and has [Storybook installed](https://storybook.js.org/docs/get-started/install). This page shows React with the Vite builder; the same CSS ownership applies to other supported Vite frameworks.
 
 ## Import the shared CSS entry
 Storybook’s [Vite builder](https://storybook.js.org/docs/builders/vite) normally reads the application’s Vite configuration. Keep Master CSS registered there once, then import the application stylesheet from `.storybook/preview.ts`. Preserve existing preview decorators and parameters.

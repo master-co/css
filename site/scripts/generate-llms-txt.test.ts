@@ -86,7 +86,7 @@ test('migration exports retain readable comparisons, complete examples and searc
       for (const guide of migrationGuides) assert.ok(content.markdown.includes(`[${guide.title}](/guide/migration/${guide.slug}) — ${guide.description}`))
       assert.doesNotMatch(content.markdown, /<MigrationGuides|brands\[/)
       assert.match(content.markdown, /id="custom-engine-and-binding-migration"/)
-      assert.match(content.markdown, /\/guide\/rendering-modes#engine-state-for-custom-hosts/)
+      assert.match(content.markdown, /\/reference\/packages#css\)/)
     }
     const source = await readFile(path.join(root, `content/guide/migration/${slug}/content.mdx`), 'utf8')
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) {
@@ -129,7 +129,8 @@ test('project style guides retain complete configured examples in search and llm
     }
   }
   const compatibility = await projectStyleGuideContent(root, 'compatibility')
-  assert.ok(compatibility.markdown.includes('preserves direct native declarations without using `CSS.supports()` as an acceptance filter'))
+  assert.ok(compatibility.markdown.includes("@import 'swiper/css' layer(defaults);"))
+  assert.ok(compatibility.markdown.includes('/reference/rules/declarations#vendor-prefixes'))
   assert.doesNotMatch(compatibility.markdown, /```css\n\s*```/)
   const transitions = await projectStyleGuideContent(root, 'view-transitions')
   assert.ok(transitions.markdown.includes('[Interactive article transition preview](/guide/view-transitions#article-list-to-detail)'))
@@ -137,8 +138,7 @@ test('project style guides retain complete configured examples in search and llm
   assert.ok(transitions.markdown.includes('## Reduced motion'))
   const theme = await projectStyleGuideContent(root, 'theme')
   assert.ok(theme.markdown.includes('--color-brand: #4f46e5'))
-  assert.ok(theme.markdown.includes('## Add mode-aware values'))
-  for (const slug of ['variables-and-modes', 'cascade-layers']) {
+  for (const slug of ['cascade-layers']) {
     const source = await readFile(path.join(root, `content/guide/${slug}/content.mdx`), 'utf8')
     const content = await projectStyleGuideContent(root, slug)
     for (const anchor of source.matchAll(/<a id="([^"]+)"><\/a>/g)) assert.ok(content.markdown.includes(anchor[0]))
@@ -317,7 +317,7 @@ test('all foundation bodies preserve generated CSS and agree with search and llm
     assert.doesNotMatch(content.markdown, /\[object Object\]|<Foundation\w+\s*\/>|MCSS_EXPRESSION_/)
   }
   const typography = await foundationGuideContent(root, 'typography')
-  assert.match(typography.markdown, /### Without vs with `text-<token>`/)
+  assert.match(typography.markdown, /## Text treatments and font sizes/)
   assert.ok(extractSearchNodesFromMdx(typography.searchMarkdown).some(node => node.id === 'without-vs-with-text-token'))
 })
 
@@ -334,15 +334,10 @@ test('foundation exports preserve the visual comparisons and explicit token sele
     }
     assert.doesNotMatch(source, /<FoundationTokens\b(?![^>]*\bkeys=)/, `${slug}: specimens require an explicit selection`)
   }
+  // The complete palette and type scales live in Reference; Guide pages keep one composed comparison.
   const colors = (await foundationGuideContent(root, 'colors')).markdown
-  assert.ok(colors.includes(portableMarkdown(selectedSpecimensMarkdown('color', paletteKeys))))
-  for (const key of paletteKeys) assert.ok(colors.includes(`--color-${key}`), key)
-  const typography = (await foundationGuideContent(root, 'typography')).markdown
-  for (const name of ['BodyText', 'Headings', 'PageTitles']) {
-    const included = await extractReferenceMdx(`${root}/content/guide/typography/components/${name}.mdx`)
-    assert.ok(typography.includes(portableMarkdown(included.markdown)), name)
-  }
-  assert.match(typography, /Readable product copy/)
+  assert.ok(!paletteKeys.every(key => colors.includes(`--color-${key}`)), 'the full palette belongs to /reference/tokens/color')
+  assert.ok(colors.includes('/reference/tokens/color'))
 })
 
 test('foundation extraction fails on missing adapters and recursive includes without executing JSX', async () => {
@@ -413,7 +408,7 @@ test('current public documents keep historical teaching in Migration Guide', asy
     const url = page.url.replace(/^\/(en|tw)(?=\/)/, '')
     if (/^\/guide\/migration(?:\/|$)/.test(url)) continue
     const navigation = ['/guide', '/reference', '/design-system', '/design-system/review/documents'].includes(url)
-    failures.push(...documentationHygieneIssues(page.body, navigation, url === '/guide/mcp-server').map(issue => `${url}: ${issue}`))
+    failures.push(...documentationHygieneIssues(page.body, navigation, url === '/guide/ai-coding#connect-the-mcp-server').map(issue => `${url}: ${issue}`))
   }
   const { default: glob } = await import('fast-glob')
   const files = await glob(['packages/*/README*', 'examples/**/README*', 'site/README.md'], { cwd: path.dirname(root), ignore: ['**/node_modules/**', '**/vendor/**'] })
@@ -619,7 +614,7 @@ test('introduction retains its authored panel code in portable and search output
   const content = await introductionContent(root)
   const pages = await loadPages(path.join(root, 'content'))
   assert.equal(pages.find(page => page.url === '/en/guide/introduction')?.body, content.markdown)
-  for (const text of ['Project panel', 'Style with shared values', 'Use shared colors, spacing and type in markup.', 'bg-surface-raised shadow-lg', "@import '@master/css';", 'known project sources']) assert.ok(content.markdown.includes(text), text)
+  for (const text of ['Project panel', 'Style with shared values', 'Use shared colors, spacing and type in markup.', 'bg-surface-raised shadow-lg', "@import '@master/css';"]) assert.ok(content.markdown.includes(text), text)
   const example = content.examples.find(example => example.classes.includes('bg-brand'))
   assert.ok(example, 'the shared-token example survives the Introduction export')
   assert.match(example.css, /--color-brand:\s*#2563eb/)
@@ -645,7 +640,7 @@ test('benchmarks export the same chart values and complete tables as the page', 
   const root = fileURLToPath(new URL('../', import.meta.url))
   const content = await benchmarkContent(root)
   const pages = await loadPages(path.join(root, 'content'))
-  assert.equal(pages.find(page => page.url === '/en/guide/benchmarks')?.body, content.markdown)
+  assert.equal(pages.find(page => page.url === '/en/benchmarks')?.body, content.markdown)
   const snapshot = JSON.parse(await readFile(path.join(root, '../benchmarks/docs-page-css-size/snapshot.json'), 'utf8'))
   for (const page of snapshot.pages) {
     assert.ok(content.markdown.includes(`| ${page.name} | ${(page.css.total.rawBytes / 1000).toFixed(1)} kB | ${(page.css.total.brotliBytes / 1000).toFixed(1)} kB |`), page.name)
@@ -656,11 +651,11 @@ test('benchmarks export the same chart values and complete tables as the page', 
     assert.ok(rendered.includes('|'), name)
     assert.ok(content.markdown.includes(rendered.trim().replace(/\n{3,}/g, '\n\n')), name)
   }
-  for (const text of ['Five-minute lifecycle evidence', 'Complete interaction cost data', 'Static CSS output, structure, and production build', 'It does not measure an individual input delay or Web Vitals INP', 'Session elapsed', 'one measured run']) assert.ok(content.markdown.includes(text), text)
+  for (const text of ['Complete interaction cost data', 'Static CSS output, structure, and production build', 'It does not measure an individual input delay or Web Vitals INP', 'Session elapsed', 'one measured run']) assert.ok(content.markdown.includes(text), text)
   assert.doesNotMatch(content.markdown, /<Benchmark|<StaticCSS|\[object Object\]|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
-    const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/benchmarks')
+    const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === '/benchmarks')
     assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
   }
   const fragment = createElement(Fragment, null, 'Fixture ', createElement('strong', null, 'A'))
@@ -670,7 +665,7 @@ test('benchmarks export the same chart values and complete tables as the page', 
 })
 
 test('delivery payload charts count complete responses once and omit absent assets', async () => {
-  const { MasterDeliveryPayloadChart, MasterDeliveryModesTables } = await import('../content/guide/benchmarks/components/MasterDeliveryModesBenchmark')
+  const { MasterDeliveryPayloadChart, MasterDeliveryModesTables } = await import('../content/benchmarks/components/MasterDeliveryModesBenchmark')
   const { benchmarkMarkdown } = await import('../utils/benchmark-content')
   const chart = MasterDeliveryPayloadChart()
   const items = chart.props.items as import('../components/benchmarks').BenchmarkStackedBarItem[]

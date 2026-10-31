@@ -5,7 +5,7 @@ import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
 import { DemoLabel, DemoSurface } from '~/site/components/demo'
-import { ShadowScaleDemo } from '~/site/content/guide/elevation/components/ShadowTokens'
+import ShadowScaleDemo from '~/site/components/demo/foundations/ShadowScaleDemo'
 import './page.css'
 
 export { metadata }
@@ -63,7 +63,7 @@ export default function Page() {
     <section aria-labelledby="label-real-use">
       <div className="review-label-sectionHeading">
         <div><h2 id="label-real-use">Actual Guide use</h2><p>The elevation guide retains its original utility labels above the shadow specimens.</p></div>
-        <Link href="/guide/elevation">Open /guide/elevation</Link>
+        <Link href="/guide/colors#raised-surfaces">Open /guide/colors#raised-surfaces</Link>
       </div>
       <ShadowScaleDemo />
       <p className="review-label-optionNote">The shared label changes text treatment only. The lesson continues to own its card geometry, alignment and spacing.</p>

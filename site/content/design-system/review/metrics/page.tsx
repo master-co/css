@@ -6,7 +6,7 @@ import Link from '~/site/docs-shell/components/Link'
 import AppearanceControl from '../../components/AppearanceControl'
 import { BenchmarkMetricTable, BenchmarkMetrics, type BenchmarkMetric } from '~/site/components/benchmarks'
 
-import { StaticComparisonSummary } from '~/site/content/guide/benchmarks/components/StaticTailwindComparison'
+import { StaticComparisonSummary } from '~/site/content/benchmarks/components/StaticTailwindComparison'
 import './page.css'
 
 export { metadata }
@@ -40,7 +40,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="metrics-real-use">
-      <div className="review-metrics-sectionHeading"><div><h2 id="metrics-real-use">Actual Guide use</h2><p>The live static-comparison summary is still rendered from committed benchmark results.</p></div><Link href="/guide/benchmarks#static-css-output-structure-and-production-build">Open /guide/benchmarks</Link></div>
+      <div className="review-metrics-sectionHeading"><div><h2 id="metrics-real-use">Actual Guide use</h2><p>The live static-comparison summary is still rendered from committed benchmark results.</p></div><Link href="/benchmarks#static-css-output-structure-and-production-build">Open /benchmarks</Link></div>
       <div className="review-metrics-realUse"><StaticComparisonSummary /></div>
       <p className="review-metrics-optionNote">The current component affects only the optional compact summary list. Guide tables and their surrounding caveats remain intact.</p>
     </section>

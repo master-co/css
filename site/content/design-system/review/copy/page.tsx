@@ -42,7 +42,7 @@ export default function Page() {
     <section aria-labelledby="copy-real-use">
       <div className="review-copy-sectionHeading">
         <div><h2 id="copy-real-use">Actual Guide palette</h2><p>The colors guide retains its original interactive grid and native color values.</p></div>
-        <Link href="/guide/colors#default-color-palette">Open /guide/colors</Link>
+        <Link href="/reference/tokens/color">Open /guide/colors</Link>
       </div>
       <div className="review-copy-guidePalette"><ColorPalette filterColors={['blue']} /></div>
       <p className="review-copy-optionNote">The Design System palette can copy variable references; the Guide palette continues to copy literal palette values.</p>

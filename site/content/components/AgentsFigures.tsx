@@ -23,9 +23,9 @@ function OpenAILogo(props: SVGProps<SVGSVGElement>) {
 }
 
 /** Local stdio clients. The links explain their setup; all brand marks remain native SVG. */
-const mcpClients: { name: string, Logo: Logo, color?: string, anchor?: string }[] = [
-  { name: 'Claude Code', Logo: claudeLogo, color: '#d97757', anchor: 'use-with-claude-code' },
-  { name: 'Codex', Logo: OpenAILogo, anchor: 'use-with-codex-app' },
+const mcpClients: { name: string, Logo: Logo, color?: string }[] = [
+  { name: 'Claude Code', Logo: claudeLogo, color: '#d97757' },
+  { name: 'Codex', Logo: OpenAILogo },
   { name: 'Cursor', Logo: cursorLogo },
   { name: 'GitHub Copilot', Logo: copilotLogo },
   { name: 'Gemini CLI', Logo: geminiLogo, color: '#8e75b2' },
@@ -73,9 +73,9 @@ export function AgentsOrbit({ call, classRows, paused }: { call?: AgentsOrbitCal
         <canvas aria-hidden="true" className="home-mcp-canvas" ref={canvas} />
         <span aria-hidden="true" className="home-mcp-fallback-ring" />
         <ul aria-label={$('MCP clients')} className="home-mcp-clients">
-          {mcpClients.map(({ color, name, Logo, anchor }, index) => (
+          {mcpClients.map(({ color, name, Logo }, index) => (
             <li className="home-mcp-client" data-side={index === 0 || index >= 5 ? 'above' : 'below'} key={name} style={{ '--home-mcp-angle': `${index * 45 - 22.5}deg` } as CSSProperties}>
-              <Link aria-label={name} className="home-mcp-client-link" href={`/guide/mcp-server#${anchor ?? 'configure-an-mcp-client'}`}>
+              <Link aria-label={name} className="home-mcp-client-link" href="/guide/ai-coding#connect-the-mcp-server">
                 <span className="home-mcp-client-mark" style={color ? { '--home-brand': color } as CSSProperties : undefined}>
                   <Logo aria-hidden="true" height={22} width={22} />
                 </span>

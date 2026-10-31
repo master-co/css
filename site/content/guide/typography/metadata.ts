@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Typography',
-  description: 'Use text scale tokens, font utilities, line height, letter spacing, families, and weights.',
+  description: 'Choose complete text treatments or single font tokens, and set the site typeface once.',
   category: 'Design Foundations',
   fileURL: import.meta.url
 })

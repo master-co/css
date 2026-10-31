@@ -5,7 +5,7 @@ import { agentPromptMarkdown, agentFixExample, previewWorkflowMarkdown } from '.
 import { agentOptionsMarkdown } from './agent-options'
 import { agentStyleExample } from './agent-style-example'
 
-export const agentGuideSlugs = ['ai-coding', 'mcp-server'] as const
+export const agentGuideSlugs = ['ai-coding'] as const
 
 export function agentFixMarkdown() {
   return `${agentFixExample.title}\n\n${agentFixExample.sourceLabel}:\n\n\`\`\`html\n${agentFixExample.source}\n\`\`\`\n\n${agentFixExample.resultLabel}:\n\n\`\`\`html\n${agentFixExample.result}\n\`\`\``

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { deliveryFences } from './delivery-examples'
+import { deliveryFences, deliverySection } from './delivery-examples'
 import { installationGuideSlugs } from '../utils/installation-content'
 
 const rootURL = new URL('../../', import.meta.url)
@@ -14,6 +14,44 @@ export const installationRoutes = installationGuideSlugs.map(slug => slug ? `/${
 export function installationSource(route: string) {
   const path = ['', '/integrations', '/cli', '/cdn'].includes(route) ? `(main)${route}/content.mdx` : `${route.slice(1)}/content.mdx`
   return readFileSync(new URL(path, installation), 'utf8')
+}
+
+const consolidatedPages: Record<string, string> = {
+  react: '/vite', vuejs: '/vite', 'react-router': '/vite', 'tanstack-start': '/vite',
+  rspack: '/webpack', rsbuild: '/webpack',
+  php: '/server-rendered', rails: '/server-rendered', laravel: '/server-rendered', wordpress: '/server-rendered',
+  shopify: '/server-rendered', 'aspnet-core': '/server-rendered', blazor: '/server-rendered', express: '/server-rendered'
+}
+
+/** The page that now documents a retired framework or mode route, such as `/blazor/runtime` → `/server-rendered`. */
+export function installationPage(route: string) {
+  const framework = route.split('/')[1]
+  return consolidatedPages[framework] ?? `/${framework}`
+}
+
+/** One heading with an explicit `\{#id\}` through the next heading of the same or a higher level. */
+export function installationSection(route: string, id: string) {
+  const source = installationSource(route)
+  const lines = source.split('\n')
+  const start = lines.findIndex(line => /^#{2,6} /.test(line) && line.includes(`\\{#${id}\\}`))
+  if (start < 0) throw new Error(`${route}: missing section #${id}`)
+  const level = lines[start].match(/^#+/)![0].length
+  let end = start + 1
+  let fenced = false
+  for (; end < lines.length; end++) {
+    if (/^\s*```/.test(lines[end])) fenced = !fenced
+    const heading = !fenced && lines[end].match(/^(#+) /)
+    if (heading && heading[1].length <= level) break
+  }
+  return lines.slice(start, end).join('\n')
+}
+
+/** The body of the `<DocumentDisclosure>` with this title, where a page keeps an optional mode. */
+export function installationDisclosure(route: string, title: string) {
+  const source = installationSource(route)
+  const start = source.indexOf(`<DocumentDisclosure title="${title}">`)
+  if (start < 0) throw new Error(`${route}: missing disclosure "${title}"`)
+  return source.slice(start, source.indexOf('</DocumentDisclosure>', start))
 }
 
 export function verifyInstallationExamples() {
@@ -48,7 +86,9 @@ export function verifyInstallationExamples() {
       mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
       for (const name of ['css', 'css-vite', 'css-runtime']) symlinkSync(fileURLToPath(new URL(`node_modules/@master/${name}`, rootURL)), join(root, 'node_modules/@master', name), 'dir')
       symlinkSync(fileURLToPath(new URL('node_modules/vite', rootURL)), join(root, 'node_modules/vite'), 'dir')
-      const authored = deliveryFences(installationSource(mode === 'runtime' ? '/vite/runtime' : '/vite')).find(fence => fence.name === 'src/main.js')!
+      const authored = deliveryFences(installationSource('/vite')).find(fence => fence.name === 'src/main.js')!
+      const command = deliveryFences(mode === 'runtime' ? installationDisclosure('/vite', 'Generate new classes in the browser') : installationSource('/vite')).find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
+      assert.equal(command, `npm create @master/css@rc -- --framework vite${mode === 'runtime' ? ' --mode runtime' : ''} --yes`)
       assert.ok(authored, 'The Vite guide includes its complete application entry')
       writeFileSync(join(root, 'src/main.js'), authored.text)
       writeFileSync(join(root, 'index.html'), '<html><head><script type="module" src="/src/main.js"></script></head><body><div id="app"></div></body></html>')
@@ -90,7 +130,7 @@ export function verifyInstallationExamples() {
     assert.doesNotMatch(css, /@compose|@master|@theme/)
   } finally { rmSync(root, { recursive: true, force: true }) }
 
-  const settings = deliveryFences(installationSource('/vscode')).filter(f => f.name === '.vscode/settings.json').map(f => JSON.parse(f.text)).at(-1)
+  const settings = JSON.parse(deliveryFences(deliverySection('language-service', 'Set up VS Code \\{#set-up-vs-code\\}')).find(f => f.name === '.vscode/settings.json')!.text)
   assert.equal(settings['editor.quickSuggestions'].strings, true)
   assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
   const cdnExamples = deliveryFences(installationSource('/cdn'))

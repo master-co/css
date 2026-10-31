@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationPage, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -18,7 +18,7 @@ const dependency = workspaceDependency
  */
 export function themeInstallationFixture(route: typeof themeInstallationRoutes[number]) {
   const root = mkdtempSync(join(tmpdir(), 'master-theme-install-'))
-  const source = installationSource(route)
+  const source = installationSource(installationPage(route))
   const fences = deliveryFences(source)
   const dispose = () => rmSync(root, { recursive: true, force: true })
   const write = (name: string, text: string) => { mkdirSync(dirname(join(root, name)), { recursive: true }); writeFileSync(join(root, name), text) }

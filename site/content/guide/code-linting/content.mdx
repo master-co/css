@@ -12,7 +12,7 @@ Install ESLint and the recommended config in the project. Keep framework parser 
 npm install -D eslint @master/eslint-config-css@rc
 ```
 
-The recommended config enables these rules:
+Add the recommended config to your flat config:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
@@ -23,12 +23,7 @@ export default defineConfig([
 ])
 ```
 
-| Rule | Default | Fixable | Purpose |
-| --- | --- | --- | --- |
-| `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
-| `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
-| `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
-| `@master/css/prefer-canonical-classes` | `warn` | Yes | Suggest canonical forms only when token identity and generated-rule behavior are preserved. |
+It enables the four rules below; see the [rule defaults and fixes](/reference/packages#eslint-config-css).
 
 ---
 
@@ -70,40 +65,7 @@ By default, unmatched classes are ignored so teams can mix Master CSS with nativ
 
 An unknown CSS value is a different case: the class can match the language while the validator cannot fully check its value. For example, the current validator reports `(display:banana)` as `unknown`, and this rule does not flag it. A clean lint result therefore does not establish browser support or the intended appearance.
 
-Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest. It rejects unmatched class names; it does not change unknown CSS-value diagnostics:
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS,
-  {
-    rules: {
-      '@master/css/no-invalid-classes': ['error', {
-        disallowUnknownClass: true
-      }]
-    }
-  }
-])
-```
-
-```html
-<button class="btn">...</button>
-```
-
-(x) `"btn" is not a valid or known class.`
-
-Define project classes in the CSS entry when they are intentional:
-
-```css name=index.css
-@layer components {
-  .btn {
-    display: inline-flex;
-    padding-inline: var(--spacing-md);
-  }
-}
-```
+To reject unmatched class names too, enable [`disallowUnknownClass`](#team-policy).
 
 ### Prefer canonical classes
 `@master/css/prefer-canonical-classes` checks for equivalent canonical forms while preserving token identity, value source, condition nesting and generated-rule ordering.
@@ -145,14 +107,7 @@ Use the generated CSS preview to decide whether the override is intentional befo
 ---
 
 ## Supported sources
-The default config checks class strings in common markup and JavaScript locations.
-
-| Setting | Default | Use |
-| --- | --- | --- |
-| `classAttributes` | `['class', 'className']` | Markup attributes that contain class strings. |
-| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | JavaScript callees and tagged templates whose arguments can contain class strings; `styled` also accepts member forms such as `styled.button`. |
-| `classDeclarations` | `[]` | Project-specific variables or object properties that should be treated as class declarations. |
-| `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | Object keys ignored while traversing variant config objects. |
+The plugin checks class strings in `class` and `className` attributes, helpers such as `clsx` and `cva`, and `classList` methods. See the [settings and their defaults](/reference/packages#eslint-plugin-css).
 
 Customize settings under the `@master/css` settings key. Arrays replace their defaults, so include every helper or attribute you want ESLint to inspect:
 
@@ -177,7 +132,7 @@ export default defineConfig([
 ---
 
 ## Team policy
-Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest:
+Use stricter validation when the team wants every class to come from Master CSS syntax or the project manifest. `disallowUnknownClass` rejects unmatched class names; it does not change unknown CSS-value diagnostics:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
@@ -194,6 +149,14 @@ export default defineConfig([
   }
 ])
 ```
+
+```html
+<button class="btn">...</button>
+```
+
+(x) `"btn" is not a valid or known class.`
+
+Define intentional project classes in the CSS entry, for example `.btn` inside `@layer components`, so they enter the manifest.
 
 Enable raw value policy when the team wants token-backed utilities to use tokens unless a value is explicitly allowed:
 
@@ -220,63 +183,15 @@ export default defineConfig([
 
 (!) Unexpected raw value `"15px"` in `"(font-size:15px)"`. Use a token or allow it explicitly.
 
-To regulate selected native properties, set `requireProperties: ['color', 'background-color']`. Omit it or use an empty array to check every token-backed property. `allowProperties` and `allowedPatterns` remain explicit exceptions; `allowRawValues` disables this policy. Native custom-property references remain valid.
-
-The shared diagnostic identifies `no-unapproved-raw-values`, the applicable property scope and canonical token families in its `data`. The rule has no autofix: matching a token's current value cannot establish whether `brand`, `information` or another role is appropriate. This policy checks vocabulary use, not visual or design correctness.
+The rule has no autofix: a token with the same current value is not necessarily the right role. See its [options](/reference/packages#eslint-plugin-css) to scope the policy to selected properties.
 
 ---
 
 ## Native component CSS
-
-Use `master-css inspect --design-system` for token references and naming collisions
-in the project's managed CSS graph. Add `--design-system-options <file>` to supply
-versioned token descriptions, deprecations and optional raw-value policy. See
-[the native CSS review workflow](/guide/ai-coding#review-the-second-change).
-
-This inspection is separate from ESLint's class-list rules. It keeps native CSS
-declarations and duplicate declarations intact, reports source ranges, and offers
-no automatic token replacement. Unmanaged or package CSS is outside its declaration
-policy scope; browser cascade and visual behavior remain unchecked.
-Native policy uses each token family's declared CSS properties. A shared class
-prefix such as `font-*` does not make the native `font` shorthand token-backed.
+To check token references in native CSS, run [`master-css inspect --design-system`](/guide/ai-coding#review-the-second-change); ESLint checks class lists only.
 
 ## Editor feedback
-The Master CSS extension provides completions, hover previews, color tools, highlighting and directive diagnostics. The VS Code ESLint extension adds class sorting, canonical syntax, conflict checks and invalid-class diagnostics. Use both when you want those checks while editing; the Master CSS extension avoids duplicating ESLint's class warnings by default.
-
-Use editor sort-on-save for low-friction cleanup:
-
-```json name=.vscode/settings.json
-{
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "eslint.codeActionsOnSave.rules": [
-    "@master/css/sort-classes"
-  ]
-}
-```
-
-The first setting enables ESLint fixes on an explicit save. The rule list restricts that save action to class sorting; it does not enable save actions by itself. Keep `eslint.codeActionsOnSave.mode` at its default `all` so the rule filter applies. See the [ESLint extension's save settings](https://github.com/microsoft/vscode-eslint#settings-options).
-
-See [Visual Studio Code setup](/guide/installation/vscode) for the full editor flow.
-
----
+For diagnostics and sort-on-save while editing, follow [Language service](/guide/language-service).
 
 ## Lint from scripts and AI tools
-Keep `eslint .` in the project's development and CI scripts for JavaScript and framework projects. When a script needs machine-readable diagnostics without loading an ESLint parser, use the CLI. It is a separate dependency: [install it locally](/guide/installation/cli) with the same Master CSS release as the project, then run:
-
-```bash name=Terminal
-npx @master/css-cli lint --format json
-```
-
-With no source paths, the CLI follows the scanner's source policy: generated output and files excluded by project or workspace `.gitignore` rules are skipped. Pass a path or glob explicitly to lint an ignored build artifact.
-
-The [Master CSS MCP server](/guide/mcp-server) exposes the same policy through `mastercss_lint_project` and can preview safe fixes.
-
-Use `npx @master/css-cli inspect --format json` for scanner state, stylesheet entries, generated CSS size and missing-CSS checks. Use lint for class sorting, canonical classes, conflicts and raw-value policy.
-
----
-
-## Setup links
-- [Installation integrations](/guide/installation/integrations) for framework setup.
-- [Visual Studio Code setup](/guide/installation/vscode) for editor diagnostics and sort-on-save.
+Keep `eslint .` in development and CI scripts; for JSON diagnostics without an ESLint parser, use [`master-css lint`](/reference/tools/cli#lint), and for agents, [`mastercss_lint_project`](/reference/tools/mcp#mastercss_lint_project).

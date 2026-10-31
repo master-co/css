@@ -38,7 +38,7 @@ export default function Page() {
     <section aria-labelledby="palette-real-use">
       <div className="review-palette-sectionHeading">
         <div><h2 id="palette-real-use">Actual Guide palette</h2><p>The colors Guide keeps all families and its original swatch behavior.</p></div>
-        <Link href="/guide/colors#default-color-palette">Open /guide/colors</Link>
+        <Link href="/reference/tokens/color">Open /guide/colors</Link>
       </div>
       <div className="review-palette-realGuide"><ColorPalette filterColors={['blue', 'violet']} /></div>
       <p className="review-palette-optionNote">The Design System palette is a separate inventory of CSS variable names. It does not replace the original Guide component.</p>

@@ -1,16 +1,15 @@
 import Class2CSS from '~/site/components/Class2CSS'
-import Demo from '~/site/components/demo/Demo'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import { DemoPageViewport } from '~/site/components/demo/DemoBrowser'
-import DemoContainer from '~/site/components/demo/DemoContainer'
+import FoundationBreakpoint from '~/site/components/demo/FoundationBreakpoint'
+import { FoundationContainerGrid } from '~/site/components/demo/FoundationExamples'
 
 ## Overview [sr-only]
-Choose the boundary that owns the change: viewport queries adapt a page; container queries adapt a component to the space it receives. Start with a layout that fits, then add a condition where the content needs it.
+Append a condition to any class with `@`. Viewport conditions such as `@md` adapt a page; container queries adapt a component to the space it receives.
 
 (resize) Resize the gallery with the slider or its arrow keys. Its column count follows the preview viewport.
 
 <DemoPageViewport src="/examples/responsive-gallery" title="Responsive asset gallery" height={420} />
-
-The gallery starts at two columns, then grows to three at `2xs`, four at `sm`, and five at `md`. This smaller example keeps the same column rules and the featured image's two-by-two span. Replace the image paths with your own files.
 
 ```html
 <!-- @MARK @2xs @sm @md -->
@@ -19,150 +18,88 @@ The gallery starts at two columns, then grows to three at `2xs`, four at `sm`, a
     src="mountain1.jpg" alt="Snowy peaks above the clouds" />
   <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain2.jpg" alt="A pyramid-shaped summit" />
   <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain3.jpg" alt="Snowy ridges beneath stars" />
-  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain4.jpg" alt="A forested range at dusk" />
-  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain5.jpg" alt="Rocky towers above an alpine valley" />
-  <img class="w-full (aspect-ratio:2/1) object-cover" src="mountain6.jpg" alt="Rock spires beneath heavy clouds" />
 </div>
 ```
 
-<Class2CSS>{['grid-cols(2)', 'grid-cols(3)@2xs', 'grid-cols(4)@sm', 'grid-cols(5)@md', 'gap-md', 'grid-col-span(2)', 'grid-row-span(2)']}</Class2CSS>
+<Class2CSS>{['grid-cols(2)', 'grid-cols(3)@2xs', 'grid-cols(4)@sm', 'grid-cols(5)@md']}</Class2CSS>
 
-Viewport queries use [named custom media](/guide/breakpoints). [Container queries](/guide/containers) measure an eligible ancestor at an explicit threshold.
-
----
-
-## Based on viewport breakpoints
-Use viewport breakpoints when navigation, page columns, outer spacing or another page-level decision changes. Append `@<name>` to the declaration or token class.
-
-### Using responsive breakpoints
-The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [custom media name](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
-
-In the gallery above, the unqualified `grid-cols(2)` supplies the base layout. Wider conditions replace its column count. Test each threshold on both sides with the preview slider; changing the article's width is not required because the preview has its own viewport.
-
-### Querying viewport ranges
-Use a complete [native media query](/reference/rules/conditions#mediafeature) to create more complex viewport range queries.
-```html
-<!-- @MARK @media((52.125rem<=width<=64rem)) -->
-<div class="hidden@media((52.125rem<=width<=64rem))">…</div>
-```
-<Class2CSS>
-  {['hidden@media((52.125rem<=width<=64rem))']}
-</Class2CSS>
-
-### Creating responsive wrappers
-Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
-```html
-<!-- @MARK max-w-4xl@sm max-w-5xl@md max-w-7xl@lg -->
-<main class="w-full mx-auto px-md max-w-4xl@sm max-w-5xl@md max-w-7xl@lg">
-  Page content
-</main>
-```
+The unconditioned `grid-cols(2)` is the base layout; each wider condition replaces the column count.
 
 ---
 
-## Based on container sizes
-Use [container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) for reusable cards, media objects and controls. The component can stack inside a sidebar while staying horizontal in a wider region of the same page.
+## Choose a viewport or a container \{#choose-a-boundary\}
 
-### Using container queries
-The `container-inline` utility sets `container-type: inline-size`, which establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
+Choose the condition by what owns the change:
 
-(resize) Try making the container smaller.
-<Demo title="Responsive media object" padding="none" frame="none" caption="The slider measures the query container. The card stacks at 18rem or less; the surrounding page keeps its own viewport.">
-  <DemoContainer title="Responsive media object">
-    <div className="container-inline">
-      <div className="overflow-hidden w-full b-line-divider r-lg b-solid b(1) bg-surface-raised">
-      <div className="flex flex-col@container((width<=18rem))">
-        <Image src="/images/blur.png" className="w-3xs (aspect-ratio:3/2) object-cover w-full@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
-        <div className='py-lg px-xl'>
-          <div className='text-md font-medium fg-text-body'>Field notes</div>
-          <div className='mt-3xs text-sm'>A collection of textures, places and quiet details. This card shares the available space with its image, then stacks when its own container becomes narrow.</div>
-        </div>
-      </div>
-      </div>
-    </div>
-  </DemoContainer>
-</Demo>
-```html
-<div class="container-inline">
-  <!-- @MARK @container((width<=18rem)) -->
-  <article class="flex flex-col@container((width<=18rem))">
-    <img class="w-3xs (aspect-ratio:3/2) object-cover w-full@container((width<=18rem)) (aspect-ratio:16/9)@container((width<=18rem))"
-      src="texture.jpg" width="300" height="200" alt="Soft blue and violet gradient" />
-    <div class="py-lg px-xl">
-      <h2 class="text-md font-medium">Field notes</h2>
-      <p class="text-sm">A collection of textures, places and quiet details.</p>
-    </div>
-  </article>
-</div>
-```
-<Class2CSS>
-  {['container-inline', 'flex', 'flex-col@container((width<=18rem))', 'w-3xs', 'w-full@container((width<=18rem))', '(aspect-ratio:3/2)', '(aspect-ratio:16/9)@container((width<=18rem))']}
-</Class2CSS>
-Use your own image for `texture.jpg`. At or below `18rem`, the content stacks and the image fills the card's width. Above that threshold, the image and text sit beside each other.
+- The page, such as navigation, the app shell or page columns, uses a viewport condition: `grid-cols(12)@md`.
+- A reusable component uses a container query: `grid-cols(2)@container((width>=28rem))`.
 
-Choose component thresholds from the space the content needs. Changing a [container size token](/reference/tokens/container) does not update a literal query. Reuse a condition with a CSS mixin wrapper when needed; see [Container queries](/guide/containers).
-
-### Querying container ranges
-Use a complete [native container query](/reference/rules/conditions#containersize) for a bounded container range.
-```html
-<!-- @MARK @container((24rem<=width<=28rem)) -->
-<div class="hidden@container((24rem<=width<=28rem))">…</div>
-```
-<Class2CSS>
-  {['hidden@container((24rem<=width<=28rem))']}
-</Class2CSS>
-
-### Creating named containers
-Set `container-name` and `container-type` on the ancestor. Include its name and a size condition in the descendant’s query.
-```html
-<!-- @MARK (container-name:card) container-inline -->
-<div class="(container-name:card) container-inline">
-  <!-- @MARK @container(card|(width>=16rem)) -->
-  <div class="hidden@container(card|(width>=16rem))"></div>
-</div>
-```
-<Class2CSS>
-  {['(container-name:card) container-inline', 'hidden@container(card|(width>=16rem))']}
-</Class2CSS>
+A card with `grid-cols(2)@md` splits at the page's `md` width even inside a narrow sidebar. Give it a container query so it follows its own space.
 
 ---
 
-## Strategies
-Start with the default state that best describes the interface. Add minimum-width conditions to grow it, maximum-width conditions to simplify it, or a bounded condition for a style that only belongs in one range. All three use the same syntax.
+## Viewport breakpoints \{#based-on-viewport-breakpoints\}
 
-### Mobile-first
-Use unqualified classes for the compact layout, then add changes at larger widths:
+`@md` reads the preset's `@custom-media --md` definition. Breakpoints are custom media, not theme variables: the preset has no `--breakpoint-*` custom properties.
+
+<FoundationBreakpoint />
 
 ```html
-<p class="font-2xl font-3xl@md">A heading with room to grow</p>
+<!-- @MARK font-2xl --><!-- @MARK font-3xl@md -->
+<h1 class="font-2xl font-3xl@md">Build for the current viewport</h1>
 ```
 
 <Class2CSS>{['font-2xl', 'font-3xl@md']}</Class2CSS>
 
-The heading uses `font-2xl` by default and `font-3xl` when `@md` matches. The actual threshold comes from the project's custom media definition.
+To change a threshold, redeclare its custom media in your project CSS entry. This replaces the preset `md` for every class that uses it:
 
-### Desktop-first
-Use the wider treatment as the default, then apply a change below an explicit threshold:
-
-```html
-<p class="font-3xl font-2xl@media((width<64rem))">A compact heading below 64rem</p>
+```css name=index.css
+@custom-media --md (width >= 48rem);
 ```
 
-<Class2CSS>{['font-3xl', 'font-2xl@media((width<64rem))']}</Class2CSS>
+For a one-off range, write the complete native query, such as `hidden@media((52.125rem<=width<=64rem))`. See [Breakpoints](/reference/tokens/breakpoints) for the preset names and [conditions](/reference/rules/conditions#mediafeature) for the query syntax.
 
-Use this when the wide layout is the natural starting point for the product. Keep the small-screen state complete enough to read and operate.
+---
 
-### Syntax-first
-A style that only belongs in one range does not need a reset outside it. Attach the condition to that style directly:
+## Container queries \{#based-on-container-sizes\}
+
+`container-inline` makes an ancestor an inline-size query container. Its descendants then take a complete query such as `@container((width>=28rem))`; an element cannot query itself.
+
+<FoundationContainerGrid />
 
 ```html
-<!-- Only below 64rem -->
-<div class="bg-surface-raised@media((width<64rem))">...</div>
-
-<!-- Only when the named md query matches -->
-<div class="bg-surface-raised@md">...</div>
+<!-- @MARK container-inline --><!-- @MARK grid-cols(2)@container((width>=28rem)) -->
+<section class="container-inline">
+  <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
+    <img src="mountain.jpg" alt="" />
+    <div>…</div>
+  </article>
+</section>
 ```
 
-<Class2CSS>{['bg-surface-raised@media((width<64rem))', 'bg-surface-raised@md']}</Class2CSS>
+<Class2CSS>{['container-inline', 'grid-cols(2)@container((width>=28rem))']}</Class2CSS>
 
-Test just below and above each threshold, including with longer text. A page breakpoint and a component container query can work together; choose each one for the region it controls.
+Container query thresholds are explicit lengths. Changing `--container-md` changes `max-w-md`, not `(width>=28rem)`. See [conditions](/reference/rules/conditions#containersize) for ranges and the complete query contract.
+
+### Named containers \{#creating-named-containers\}
+
+A query measures the nearest container. To measure an outer one, name it with `(container-name:<name>)` and put the name before the condition: `@container(card|(width>=16rem))`.
+
+<DemoConfiguredExample name="named-container" title="Choose the ancestor to measure" source="" responsive widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} previewFirst html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container((width>=28rem))">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container((width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container((width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|(width>=28rem))">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container(outer|(width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container(outer|(width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Switch between Narrow outer and Wide outer. The inner container stays below 28rem, so only the named query changes when the outer container grows." />
+
+<Class2CSS>{['(container-name:outer)', 'b-text-blue@container(outer|(width>=28rem))']}</Class2CSS>
+
+---
+
+## Condition only the style that changes \{#syntax-first\}
+
+A condition can sit on any class, so a style that belongs to one range needs no reset outside it. Write the base state without a condition, then attach a condition only where a style differs:
+
+```html
+<!-- @MARK bg-surface-raised@media((width<64rem)) -->
+<aside class="p-md bg-surface-raised@media((width<64rem))">…</aside>
+```
+
+<Class2CSS>{['bg-surface-raised@media((width<64rem))']}</Class2CSS>
+
+Minimum, maximum and bounded conditions all use the same syntax, and a page breakpoint and a component query can apply to the same element.

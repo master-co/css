@@ -97,7 +97,7 @@ const categories = [
 
 const documentation: Record<string, string> = {
   'screen-readers': '/reference/sr-only',
-  padding: '/guide/spacing',
+  padding: '/guide/layout-system#namespace-for-spacing',
   'border-radius': '/reference/tokens/radius',
   'box-shadow': '/reference/tokens/shadow',
   fill: '/guide/colors',

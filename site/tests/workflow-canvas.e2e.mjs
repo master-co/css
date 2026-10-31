@@ -320,7 +320,7 @@ for (const width of [320, 390, 576]) test(`${browserName}: touch choices and fra
   const size = await stage.locator('canvas').evaluate(canvas => ({ pixels: canvas.width * canvas.height, scale: canvas.width / canvas.clientWidth }))
   assert.ok(size.scale <= 2.01 && size.pixels <= 2_005_000)
   await stage.locator('[data-wf-pick="1"]').tap()
-  await page.waitForURL('**/guide/installation/react')
+  await page.waitForURL('**/guide/installation/vite#react')
   assert.deepEqual(errors, [])
   await context.close()
 })

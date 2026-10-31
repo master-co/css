@@ -23,7 +23,7 @@ export default function AgentsSection() {
           label={$('AI agents')}
           title={$('Agents check their own changes.')}
           body={$('The MCP server gives coding agents your manifest and lint rules, so they check their own edits and hand you fixes as diffs.')}>
-          <Link className="home-section-link" href="/guide/mcp-server">
+          <Link className="home-section-link" href="/guide/ai-coding#connect-the-mcp-server">
             {$('Set up the MCP server')}
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>

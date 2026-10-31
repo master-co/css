@@ -43,8 +43,6 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 
 <PackageAuthoringExample part="source" />
 
-The button keeps its brand background in both color schemes. Separate action-text and focus tokens use lighter colors on dark surfaces. Check text and focus outlines against the backgrounds used by each consuming app.
-
 Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, and container tokens.
@@ -52,7 +50,7 @@ Good package vocabulary is stable and reusable:
 - Use `@utility` for on-demand classes and `@mixin` for reuse inside native CSS.
 - Use native `@layer components` only when the package intentionally owns semantic UI vocabulary such as `btn`, `field`, `card`, or `toolbar`.
 
-For token namespace behavior, see [Variables and Modes](/guide/variables-and-modes). For creating tokens, see [Theme Tokens](/guide/theme). For directive syntax, see [CSS directives](/reference#directives). For abstraction decisions, see [Global Styles](/guide/global-styles#shared-vocabulary).
+See [Theme tokens](/guide/theme) for naming tokens, [CSS directives](/reference#directives) for the directive syntax and [Global styles](/guide/global-styles#shared-vocabulary) for choosing an abstraction.
 
 ---
 
@@ -98,40 +96,5 @@ Use the package for shared vocabulary. Use the app CSS entry for local source bo
 
 ---
 
-## Version vocabulary
-Treat exported tokens, utilities and native class names like public API. Native component CSS ships by default; its same-layer conflicts follow source order. Native classes do not derive Master suffixes.
-
-Removing or renaming a token, utility, mixin, custom media name, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, utilities, mixins, custom media names, or component classes is usually a minor change when it does not alter existing output.
-
-Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `fg-text-action`, `content-auto`, or `btn` without reading the package source.
-
----
-
 ## Validate with an example
-Before publishing, test the package through a small consuming project or fixture.
-
-Run `npm pack` in the package directory and install the resulting `.tgz` in the consumer. This checks the published file set and package exports as well as the source itself. Import it through the consumer's CSS entry:
-
-```css name=app.css
-@import '@master/css';
-@import '<package-name>';
-```
-
-```html
-<button class="btn">Save</button>
-<article class="p-lg r-lg bg-surface-raised content-auto">
-  ...
-</article>
-```
-
-Run the same checks the app uses for Master CSS, such as ESLint or the CLI lint and inspect commands. For CLI checks, [install the CLI](/guide/installation/cli) in the consumer with the same Master CSS release as the app:
-
-```bash name=Terminal
-npx @master/css-cli lint --format json --exit-code never
-```
-
-```bash name=Terminal
-npx @master/css-cli inspect --classes "btn content-auto bg-brand" --format json --exit-code never
-```
-
-Check the consuming app’s production build as well as these reports. Confirm that the package resolves by name and inspect the generated CSS for the expected tokens and classes. Standalone project inspection has limitations with package-backed entries; an empty report does not establish that the package’s vocabulary was compiled. Use the build integration’s actual output and a rendered example to complete that check.
+Before publishing, run `npm pack` and install the resulting `.tgz` in a small consuming project. Import it from the consumer's CSS entry, use a few of its classes, and inspect the production build's CSS for the expected tokens and classes. Standalone CLI inspection does not compile package-backed entries, so an empty report does not prove the vocabulary was included.

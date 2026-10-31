@@ -32,7 +32,7 @@ export const projectStyleExamples = {
 `,
     html: "<div class=\"grid gap-md\">\n  <article class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n    <h2 class=\"m(0) text-lg font-semibold\">Collection</h2>\n    <p class=\"mt-xs mb(0) text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
     caption: 'Both elements have 1.5rem of padding. A change to --spacing-card applies to both consumers.',
-    guide: '/guide/variables-and-modes',
+    guide: '/guide/theme',
   },
   modes: {
     title: 'The same card in two modes',
@@ -55,7 +55,7 @@ export const projectStyleExamples = {
 `,
     html: "<article class=\"p-lg r-lg b(1) b-solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"m(0) text-lg font-semibold\">Collection details</h2>\n  <p class=\"mt-sm mb(0) text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
     caption: 'Theme switches the preview document’s light/dark class. The browser resolves the actual generated custom properties.',
-    guide: '/guide/variables-and-modes#add-modes-after-the-shared-value-works',
+    guide: '/guide/colors#native-color-scheme-and-manual-themes',
     theme: true,
   },
   components: {

@@ -5,15 +5,23 @@ import { join, dirname } from 'node:path'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import preset from '../utils/preset-manifest'
 
-export const deliverySlugs = ['rendering-modes', 'scanning-latent-classes', 'native-css-pruning', 'route-level-styles'] as const
+export const deliverySlugs = ['rendering-modes', 'scanning-and-pruning', 'route-level-styles'] as const
 export const siteRoot = fileURLToPath(new URL('..', import.meta.url))
 
 export function deliverySource(slug: string) {
   return readFileSync(join(siteRoot, `content/guide/${slug}/content.mdx`), 'utf8')
 }
 
+/** Pruning behavior fixtures; the public contract keeps shorter examples. */
+export function pruningFixture(heading: string) {
+  return sectionOf(readFileSync(join(siteRoot, 'tests/fixtures/native-pruning.md'), 'utf8'), 'native-pruning', heading)
+}
+
 export function deliverySection(slug: string, heading: string) {
-  const source = deliverySource(slug)
+  return sectionOf(deliverySource(slug), slug, heading)
+}
+
+function sectionOf(source: string, slug: string, heading: string) {
   const start = source.indexOf(`## ${heading}\n`)
   if (start < 0) throw new Error(`Missing section ${slug}: ${heading}`)
   const end = source.indexOf('\n## ', start + 4)

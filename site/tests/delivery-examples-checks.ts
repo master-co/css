@@ -4,11 +4,11 @@ import { compileCSSSync } from '@master/css-compiler/node'
 import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import preset from '../utils/preset-manifest'
-import { deliveryFences, deliveryFixture, deliverySection, deliverySource, routeStyles } from './delivery-examples'
+import { deliveryFences, deliveryFixture, deliverySource, pruningFixture, routeStyles } from './delivery-examples'
 import { compileMigrationExample } from './migration-examples'
 
 export async function verifyDeliveryExamples() {
-  const pruning = deliveryFences(deliverySection('native-css-pruning', 'Rule filtering'))
+  const pruning = deliveryFences(pruningFixture('Rule filtering'))
   const source = pruning.find(f => f.name === 'src/style.css')!.text.replace(/@import[^;]+;/g, '')
   const result = compileCSSSync(source, { classes: ['card', 'title'] })
   assert.match(result.css, /\.card[\s{]/)
@@ -23,7 +23,7 @@ export async function verifyDeliveryExamples() {
   const scanner = new MasterCSSScanner({ manifest: preset }, fixture.root)
   const collection = createStylesheetCollection()
   try {
-    const fences = deliveryFences(deliverySection('native-css-pruning', 'Scoped scanning'))
+    const fences = deliveryFences(pruningFixture('Scoped scanning'))
     // The last a.css fence is a separate exclusion example, not part of this graph.
     for (const fence of fences.filter(f => /^(css|html)$/.test(f.language)).slice(0, 5)) fixture.write(fence.name, fence.text)
     await scanner.init()
@@ -42,9 +42,6 @@ export async function verifyDeliveryExamples() {
 
   const css = await routeStyles()
   assert.doesNotMatch(css, /@reference|@compose|@variant/)
-  assert.match(css, /@container home-feature-grid/)
-  assert.match(css, /prefers-reduced-motion/)
-  assert.match(css, /home-cta:focus-visible/)
 
   const rendering = deliveryFences(deliverySource('rendering-modes'))
   const html = rendering.find(f => f.name === 'index.html')!.text

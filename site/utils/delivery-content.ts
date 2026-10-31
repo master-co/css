@@ -3,7 +3,7 @@ import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { deliveryFlowMarkdown } from './delivery-flows'
 import { firstPaintMarkdown, resourceWaterfallsMarkdown } from './first-paint-examples'
 
-export const deliveryGuideSlugs = ['rendering-modes', 'scanning-latent-classes', 'native-css-pruning', 'route-level-styles', 'preload-critical-resources', 'flash-of-unstyled-content'] as const
+export const deliveryGuideSlugs = ['rendering-modes', 'scanning-and-pruning', 'route-level-styles'] as const
 
 export const deliveryBlogSlugs = ['master-css-next', 'bootstrapping-master-css-with-vite'] as const
 

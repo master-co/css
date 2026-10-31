@@ -4,7 +4,7 @@ import { after, before, test } from 'node:test'
 import { chromium } from '@playwright/test'
 
 const base = process.env.MASTER_SITE_URL ?? 'http://127.0.0.1:3001'
-const routes = ['/guide/rendering-modes', '/guide/native-css-pruning', '/guide/route-level-styles', '/blog/master-css-next']
+const routes = ['/guide/rendering-modes', '/guide/scanning-and-pruning#prune-native-css', '/guide/route-level-styles', '/blog/master-css-next']
 let browser
 before(async () => { browser = await chromium.launch() })
 after(async () => { await browser.close() })

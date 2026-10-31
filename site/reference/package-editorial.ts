@@ -8,7 +8,10 @@ export interface PackageEditorial {
 export const packageEditorial: Record<string, PackageEditorial> = {
   '@master/css': {
     introduction: 'Execute a compiled manifest or runtime program, generate rules for class names and inspect engine state. CSS entrypoints provide the preset stylesheet layers.',
-    usage: 'Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages#css-compiler); for DOM observation, use [the runtime](/reference/packages#css-runtime).',
+    usage: 'Pass an explicit manifest to engine and render APIs in Node.js, or a runtime program from `compileRuntimeProgram()` anywhere; browsers execute only programs. Reuse a session for repeated work and dispose it when finished. For stylesheet authoring and project loading, use [the compiler](/reference/packages#css-compiler); for DOM observation, use [the runtime](/reference/packages#css-runtime).\n\n'
+      + 'Build integrations expose the delivery artifacts as virtual modules declared by `./client`: `virtual:master-css-manifest` is the compiled `MasterCSSManifest` for the Node engine, server renderer and tooling; `virtual:master-css-program` is the browser engine program, a hashed `.bin` asset in production builds; `virtual:master-css-emitted-globals` lists variables and keyframes the CSS entry already emits, so runtime generation does not repeat them. A page hydration manifest is separate and describes one response.\n\n'
+      + 'Build-time and server generation use Rust semantics; the browser engine executes compiled programs and produces the same CSS for the same definitions and classes. Compile with matching compiler, server and runtime releases: unsupported execution or language versions are rejected.\n\n'
+      + '`executionState(names)` reads stored rule references in request order, repeats included, without generating rules; unknown or never-ensured classes have empty references. Use `snapshot()` for complete rules and CSS. The browser engine has no inspection or render sessions. A host must synchronize resource state even when a transition has no CSS mutations, and a wrapper must forward every `MasterCSSEngine` member, including `executionState`, `registerEmittedGlobals`, `replaceEmittedGlobals`, `refresh`, `dispose` and `Symbol.dispose`.',
     entries: {
       '.': 'Asynchronous engine creation and one-shot class rendering.',
       './node': 'Synchronous native engine, runtime program compilation and reusable render sessions in Node.js.',
@@ -45,12 +48,25 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/eslint-config-css': {
     introduction: 'Use the official flat-config preset to enable Master CSS lint rules in ESLint. The default export and `recommended` refer to the same configuration.',
-    usage: 'Add the preset to your ESLint flat configuration. Configure project-specific behavior through the plugin settings described in [Code linting](/guide/code-linting).',
+    usage: 'Add the preset to your ESLint flat configuration. Configure project-specific behavior through [the plugin settings](/reference/packages#eslint-plugin-css); [Code linting](/guide/code-linting) shows each rule.\n\n'
+      + '| Rule | Default | Fixable | Reports |\n| --- | --- | --- | --- |\n'
+      + '| `@master/css/sort-classes` | `warn` | Yes | Classes out of generated-rule order, and duplicates. |\n'
+      + '| `@master/css/no-invalid-classes` | `error` | No | Invalid Master CSS syntax and invalid generated CSS; unmatched classes only with `disallowUnknownClass`. |\n'
+      + '| `@master/css/no-conflicting-classes` | `warn` | Yes | Full and partial declaration conflicts in the same variant scope; only full overrides are fixed. |\n'
+      + '| `@master/css/prefer-canonical-classes` | `warn` | Yes | Non-canonical forms, only when token identity and generated-rule behavior are preserved. |\n\n'
+      + '`@master/css/no-unapproved-raw-values` is not in the preset.',
     entries: { '.': 'Recommended ESLint flat configuration.' }
   },
   '@master/eslint-plugin-css': {
     introduction: 'The ESLint plugin connects JavaScript and template syntax to Master CSS validation, class ordering and fixes. Its default and `masterCSS` exports expose the same plugin.',
-    usage: 'Use [the official preset](/reference/packages#eslint-config-css) for the standard rules, or register the plugin in your own flat configuration. See [Code linting](/guide/code-linting) for rule behavior and settings.',
+    usage: 'Use [the official preset](/reference/packages#eslint-config-css) for the standard rules, or register the plugin in your own flat configuration. See [Code linting](/guide/code-linting) for rule behavior.\n\n'
+      + 'Settings live under the `@master/css` settings key. Arrays replace their defaults.\n\n'
+      + '| Setting | Default | Use |\n| --- | --- | --- |\n'
+      + '| `classAttributes` | `[\'class\', \'className\']` | Markup attributes that contain class strings. |\n'
+      + '| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | Callees and tagged templates whose arguments can contain class strings; `styled` also accepts member forms such as `styled.button`. |\n'
+      + '| `classDeclarations` | `[]` | Project variables or object properties treated as class declarations. |\n'
+      + '| `ignoredKeys` | `[\'compoundVariants\', \'defaultVariants\']` | Object keys skipped while traversing variant config objects. |\n\n'
+      + '`@master/css/no-unapproved-raw-values` reports raw values in token-backed utilities. `requireProperties` limits it to listed native properties (empty or omitted checks every token-backed property); `allowProperties` and `allowedPatterns` add exceptions; `allowRawValues` disables it. Native custom-property references stay valid. Its diagnostic `data` names the property scope and canonical token families; it has no autofix.',
     entries: { '.': 'Plugin rules and recommended configuration.' }
   },
   '@master/css-language-server': {
@@ -71,7 +87,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-mcp': {
     introduction: 'Create a Master CSS Model Context Protocol server or start its stdio transport. The tool catalog identifies operations and their file effects.',
-    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP Server](/guide/mcp-server) for client registration and [the tool catalog](/guide/mcp-server) for usage; read complete contracts through `tools/list`.',
+    usage: 'Use `createMasterCSSMCPServer()` when the host owns transport setup, or `startMasterCSSMCPStdioServer()` for stdio. See [MCP Server](/guide/ai-coding#connect-the-mcp-server) for client registration and [the tool catalog](/guide/ai-coding#connect-the-mcp-server) for usage; read complete contracts through `tools/list`.',
     entries: { '.': 'Server factory and stdio startup.' }
   },
   '@master/css-next': {
@@ -99,7 +115,9 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-runtime': {
     introduction: 'Observe classes in a document or shadow root and maintain their generated CSS. Runtime startup requires a runtime program, the project manifest compiled for the browser engine, and returns an owned session.',
-    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering Modes](/guide/rendering-modes) for the browser workflow.',
+    usage: 'Await `MasterCSSRuntime.start()` before using the session, and call `dispose()` when its owner is finished. `withMasterCSSRuntime()` integrates startup and disposal with custom-element connection callbacks and requires a shadow root. See [Rendering Modes](/guide/rendering-modes) for the browser workflow.\n\n'
+      + 'Official integrations inject startup. A custom entry passes `program` as a loader, such as `() => import(\'virtual:master-css-program\').then(module => module.default)`, plus `emittedGlobals`, then calls `observe()`. Runtime-only pages load the program during startup; progressive pages with a valid `hydrationManifest` defer the engine until a class outside it appears, unless `engine: \'eager\'` or `enginePrefetch: \'idle\'` is set. `emittedGlobals` applies to every page using the bundle. The runtime inserts generated rules and on-demand keyframes into its own stylesheet and never writes to linked stylesheets.\n\n'
+      + '`snapshot()` separates `usageCounts`, connected DOM usage, from `classRules`, which can also hold warmed, hydrated or retained rules. `engine` is `\'deferred\'`, `\'loading\'`, `\'ready\'` or `\'failed\'`; before a deferred engine starts, class snapshots have no rule entries and `layers` is empty. `ensureClassRules()` and `deleteClassRules()` act independently of DOM usage; deletion is synchronous and bypasses retention. Before the engine is ready they throw `RUNTIME_ENGINE_NOT_READY` and start it, so await `ready()` first.',
     entries: {
       '.': 'Runtime startup, observation, snapshots and custom-element integration.',
       './default-program': 'The default preset compiled into a runtime program, for apps without a Master CSS build integration.'
@@ -107,7 +125,8 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-schema': {
     introduction: 'Shared types and codecs describe manifests, diagnostics, hydration and integration options. These contracts let hosts exchange structured Master CSS data.',
-    usage: 'Import types from the narrow subpath that owns them. A type declaration describes a data shape; it does not validate arbitrary input or compile stylesheet directives. Preserve version fields when passing manifests and diagnostics between APIs.',
+    usage: 'Import types from the narrow subpath that owns them. A type declaration describes a data shape; it does not validate arbitrary input or compile stylesheet directives. Preserve version fields when passing manifests and diagnostics between APIs; editing them by hand does not make a manifest compatible.\n\n'
+      + 'Store manifests with `serializeMasterCSSManifest()`. Serialization normalizes derived fields; it does not replace engine validation or keep comments and editable CSS formatting. Unknown fields are not an extension mechanism: an outer envelope that retains them does not make nested fields accepted or executable.',
     entries: {
       '.': 'Common manifest, diagnostic and rendering-mode exports.',
       './manifest': 'Manifest v6 types, variable helpers and serialization.',
@@ -124,7 +143,8 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-server': {
     introduction: 'Render generated CSS into HTML and produce hydration data for the browser. Use a one-shot helper, a reusable renderer or a streaming HTML session to match the host lifecycle.',
-    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering Modes](/guide/rendering-modes) for complete HTML examples.',
+    usage: 'Provide a compiled manifest before rendering. Keep emitted-global and hydration metadata aligned with the CSS delivered to the client, and dispose reusable sessions after use. See [Rendering Modes](/guide/rendering-modes) for complete HTML examples.\n\n'
+      + '`createServerRenderer()` caches rules across renders: recreate it when the manifest changes, and bound `maxCachedClasses` in a long-lived server. Custom hosts can pass the final `stylesheets` a page may link, as `{ href, css, imports }` from `describeLinkedStylesheet()` in `@master/css-compiler/stylesheet`, with the `documentURL` that resolves them; theme variables and native keyframes those stylesheets already deliver are not repeated in `style#master-css`. Rendering tracks each keyframe definition independently, including same-name definitions in different layers or conditions.',
     entries: { '.': 'HTML rendering, streaming sessions and hydration options.' }
   },
   '@master/css-svelte': {

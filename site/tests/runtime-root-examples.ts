@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import { build } from 'vite'
 import masterCSS from '@master/css-vite'
 import { deliveryFences } from './delivery-examples'
-import { installationSource } from './installation-examples'
+import { installationDisclosure } from './installation-examples'
 import { workspaceDependency } from './workspace-dependency'
 
 /** Exercise the authored bootstrap without index.html injection. This checks
@@ -13,8 +13,8 @@ import { workspaceDependency } from './workspace-dependency'
  */
 export async function verifyRuntimeRootExamples() {
   for (const [route, entry, stylesheet] of [
-    ['/react-router/runtime', 'app/root.tsx', 'app/app.css'],
-    ['/tanstack-start/runtime', 'src/routes/__root.tsx', 'src/styles/app.css']
+    ['/vite', 'app/root.tsx', 'app/app.css'],
+    ['/vite', 'src/routes/__root.tsx', 'src/styles/app.css']
   ]) {
     const root = mkdtempSync(join(tmpdir(), 'master-doc-runtime-root-'))
     const write = (file: string, value: string) => {
@@ -23,8 +23,8 @@ export async function verifyRuntimeRootExamples() {
     }
     try {
       write('package.json', '{"private":true,"type":"module"}')
-      const source = deliveryFences(installationSource(route)).find(fence => fence.name === entry)
-      assert.ok(source, `${route}: authored root bootstrap`)
+      const source = deliveryFences(installationDisclosure(route, 'Generate new classes in the browser')).find(fence => fence.name === entry)
+      assert.ok(source, `${route} ${entry}: authored root bootstrap`)
       write(entry, source.text)
       write(stylesheet, "@import '@master/css';\n")
       for (const name of ['@master/css', '@master/css-runtime']) {

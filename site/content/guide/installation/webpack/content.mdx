@@ -1,27 +1,14 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
-Use the Webpack plugin to process the CSS entry and emit styles with the HTML produced by `HtmlWebpackPlugin`.
+Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It processes the CSS entry and emits the generated stylesheet with the HTML produced by the bundler's HTML plugin.
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a project
-      If you don't have a Webpack project, create one first.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      mkdir my-app
-      cd my-app
-      npm init -y
-      npm install -D webpack webpack-cli webpack-dev-server html-webpack-plugin
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Webpack project root. Static is the default; it registers the Webpack plugin and creates the Master CSS entry stylesheet.
+      In an existing [Webpack](https://webpack.js.org/guides/getting-started/), [Rspack](https://rspack.dev/guide/start/quick-start) or [Rsbuild](https://rsbuild.rs/guide/start/quick-start) project, run the installer from the project root with `--framework webpack`, `rspack` or `rsbuild`. Static is the default: it registers the plugin and creates `src/index.css`.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -29,10 +16,45 @@ Use the Webpack plugin to process the CSS entry and emit styles with the HTML pr
       ```
     </StepR>
   </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Import the CSS entry
+      Import `src/index.css` from the application's JavaScript or TypeScript entry, keeping its existing mount code.
+    </StepL>
+    <StepR>
+      ```js name=src/index.js
+      import './index.css'
+      ```
+    </StepR>
+  </Step>
   <Step>
-    ### <StepNum />Connect the CSS and HTML
+    ### <StepNum />Start using Master CSS
+    Start the dev server and place the heading in the HTML template processed by the HTML plugin, or in a framework component.
+  </Step>
+  <HelloWorld />
+</StepSection>
 
-The installer registers the Master CSS plugin and creates `src/index.css`. The complete configuration below also supplies native CSS handling and HTML generation for the new project. Create these files before starting the development server.
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+  </body>
+</html>
+```
+
+## Bundler configuration \{#configuration\}
+The installer writes the Master CSS part of the configuration. Merge it with the existing configuration, preserving framework plugins, entry points and HTML generation, and register the plugin only once.
+
+### Webpack \{#webpack\}
+The plugin needs native CSS handling and `HtmlWebpackPlugin` to deliver the generated stylesheet:
 
 ```js name=webpack.config.mjs
 import HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -51,54 +73,84 @@ export default {
 }
 ```
 
-```css name=src/index.css
-@import '@master/css';
+### Rspack \{#rspack\}
+Rspack uses the same Webpack-compatible plugin with its built-in CSS support and `HtmlRspackPlugin`:
+
+```js name=rspack.config.mjs
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        type: 'css/auto'
+      }
+    ]
+  },
+  plugins: [
+    new MasterCSSPlugin({ mode: 'static' })
+  ]
+}
 ```
 
-```html name=index.html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Master CSS with Webpack</title>
-  </head>
-  <body>
-    <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+### Rsbuild \{#rsbuild\}
+Rsbuild registers the plugin through its `tools.rspack` hook. Keep the framework plugin and the entry that mounts the application; the hook only adds Master CSS processing.
+
+```ts name=rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import MasterCSSPlugin from '@master/css-webpack'
+
+export default defineConfig({
+  tools: {
+    rspack(config) {
+      config.plugins ||= []
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
+      return config
+    }
+  }
+})
+```
+
+In a React starter, put the heading in `src/App.tsx`:
+
+```tsx name=src/App.tsx
+export default function App() {
+  return (
+    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
-  </body>
-</html>
+  )
+}
 ```
 
-Import the CSS entry from the JavaScript entry:
+## Check the setup \{#check-the-setup\}
+Build and serve the production output, for example with `npx webpack --mode production`. The heading should be large, heavy and italic, and the emitted page should load generated CSS without a Master CSS runtime. A client-rendered framework still needs JavaScript to create the heading.
 
-```js name=src/index.js
-import './index.css'
+The HTML plugin emits the stylesheet links and any runtime script. A file served directly from a development server's static directory does not receive them.
+
+---
+
+## Choose another rendering mode \{#rendering-modes\}
+Static mode is the default. The plugin's `mode` option selects another delivery, and the HTML plugin carries its runtime script:
+
+| Mode | Plugin option | Installer option |
+| --- | --- | --- |
+| Static | `mode: 'static'` | None |
+| Runtime | `mode: 'runtime'` | `--mode runtime` |
+
+<DocumentDisclosure title="Generate new classes in the browser">
+
+Run the installer with `--mode runtime` and your `--framework` value. It sets the plugin option to `mode: 'runtime'`:
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework webpack --mode runtime --yes
 ```
 
-`HtmlWebpackPlugin` emits the HTML and stylesheet links; serving an unprocessed file from a static directory does not perform that injection.
+Build and serve the production output. The emitted HTML should load the Master CSS runtime script. After startup, run this in the browser console; the heading should gain an underline without rebuilding:
 
-Run `npx webpack --config webpack.config.mjs --mode production` to verify production output. The emitted page loads generated CSS without a Master CSS runtime.
+```js
+document.querySelector('h1').classList.add('underline')
+```
 
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run your Webpack development command.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npx webpack serve --config webpack.config.mjs
-      ```
-    </StepR>
-  </Step>
-  <Step>
-    ### <StepNum />Hello world
-    Now style your first element using Master CSS syntax.
-  </Step>
-  <HelloWorld />
-</StepSection>
-
-## Verify the result
-Build and serve the production output. The heading should be large, heavy and italic. The generated utilities are ordinary CSS; a client-rendered framework may still need JavaScript to create the heading.
+</DocumentDisclosure>

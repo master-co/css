@@ -1,9 +1,7 @@
 import IconButtons from '~/site/docs-shell/components/IconButtons'
 import brands from '~/site/docs-shell/data/brands'
 
-Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. Treat the work as a product styling change: inspect the existing styling systems, add Master CSS beside them, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
-
-If you use a local AI coding agent, start with [AI Coding with Master CSS](/guide/ai-coding) for setup, context, prompts, and review habits. When your client supports MCP, connect the [Master CSS MCP server](/guide/mcp-server) and use the `migrate-to-mastercss` prompt for an external styling system so the agent can inspect the workspace before planning migration batches. This page keeps the migration-specific checklist and fallback prompt focused on converting an existing project.
+Migrating a product to Master CSS is a styling change, not a one-to-one syntax rewrite: add Master CSS beside the existing system, convert one reviewable slice at a time, and remove old dependencies only after the migrated UI is validated.
 
 ---
 
@@ -25,15 +23,11 @@ Start with the guide for the CSS or component system you are replacing. Keep the
 ---
 
 ## Migration strategy
-CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
-
-Start with an audit, then migrate incrementally. The first milestone is a working vertical slice: one component or route generates the intended CSS, preserves its interactions, and still matches the design. Keep the legacy styles required by the rest of the application.
-
-For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
+Start with an audit, then migrate incrementally. The first milestone is a working vertical slice: one component or route generates the intended CSS, preserves its interactions and still matches the design, while the rest of the application keeps its legacy styles.
 
 ### Plan an external-system conversion with MCP
 
-The `migrate-to-mastercss` prompt asks the agent to inspect the workspace first and return its framework, stylesheet entries, extraction coverage and existing vocabulary, followed by a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow; retain existing styles until each converted slice builds and matches the intended UI.
+With the [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) connected, the `migrate-to-mastercss` prompt asks the agent to inspect the active manifest, stylesheet entries, extraction coverage and existing vocabulary first, then return a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow and does not edit files.
 
 ```text name=prompt
 Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
@@ -43,19 +37,9 @@ Inspect the external styling system, framework, CSS entries, tokens, source disc
 Return an incremental plan with the rendering mode, first conversion batch, CSS output risks, validation commands and visual checks.
 ```
 
----
+### Without MCP \{#migration-prompt\}
 
-## Before you start
-- Start from a clean git working tree, or commit your current work first.
-- Identify the existing styling systems, such as global CSS, CSS Modules, Tailwind CSS, CSS-in-JS, Sass, framework style blocks, or component-library CSS.
-- Decide which [rendering mode](/guide/rendering-modes) fits the project: static rendering, runtime rendering, or progressive rendering.
-- Find the CSS file your app already loads. This is usually where `@import '@master/css';` should enter the project.
-- Keep the old styling system in place until the migrated screens build, run, and visually match the previous UI.
-
----
-
-## Migration prompt
-Paste this into your local coding agent from the project root. For general AI workflow guidance, use [AI Coding with Master CSS](/guide/ai-coding).
+Paste this into your local coding agent from the project root:
 
 ```text name=prompt
 You are migrating this project to Master CSS.
@@ -86,25 +70,12 @@ Work in small migration batches. After each focused batch, show me the changed f
 
 ---
 
-## Review the result
-Review the migration as code and as UI.
-
-- Inspect the diff before accepting each batch.
-- Run the formatter, type check, tests, and production build available in the project.
+## Checklist
+- Start from a clean git working tree and identify every existing styling system, including component-library CSS.
+- Choose a [rendering mode](/guide/rendering-modes) and add `@import '@master/css';` to the CSS entry your app already loads.
+- Review each batch's diff and run the project's formatter, type check, tests and production build.
 - Compare important screens in the browser, including responsive states and dark mode if the app supports them.
-- Keep regular CSS for vendor styles, generated output, hard-to-read one-off declarations, complex animations, and anything external code controls.
-- Remove old styling dependencies only after the converted paths no longer rely on them.
-
----
-
-## Useful references
-- [Installation](/guide/installation) for adding Master CSS to a project.
-- [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
-- [Style declarations](/reference/rules/declarations) for class syntax.
-- [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for named conditions and selectors.
-- [Global styles](/guide/global-styles#shared-vocabulary) for deciding between utilities, theme tokens, and component classes.
-- [Code linting](/guide/code-linting) for validating Master CSS classes in source code.
-- [Language Service](/guide/language-service) for editor highlighting and completion.
+- Keep the old styling system, and regular CSS for vendor or generated styles, until the converted paths no longer rely on it.
 
 <a id="custom-engine-and-binding-migration"></a>
-For a custom engine host, use the [current execution contract](/guide/rendering-modes#engine-state-for-custom-hosts). This migration index focuses on converting external styling systems.
+For a custom engine host, use the [current execution contract](/reference/packages#css). This migration index focuses on converting external styling systems.

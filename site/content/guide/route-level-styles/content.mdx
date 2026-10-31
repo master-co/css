@@ -28,7 +28,7 @@ Load the route stylesheet from the route, page module, or component entry that o
 import "./home.css"
 ```
 
-Keep the global stylesheet loaded from your app shell for the reset, layer order and shared styles. The framework or bundler controls when route CSS is loaded. A CSS import does not scope selectors to that route: use distinctive class names or your framework’s CSS module support when isolation is needed.
+Keep the global stylesheet loaded from your app shell for the layer order and shared styles.
 
 ---
 
@@ -38,16 +38,9 @@ Keep the global stylesheet loaded from your app shell for the reset, layer order
 A route stylesheet can use project tokens, mixins, and custom media directly. It remains a separate CSS output owned by its route.
 
 ```css name=app/home/home.css
-.pricing-hero {
-  display: grid;
-  gap: var(--spacing-lg);
-  padding-block: var(--spacing-5xl);
-}
-
 .pricing-card {
-  border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  border: 1px solid var(--color-line-divider);
+  border-radius: var(--radius-xl);
   background-color: var(--color-surface-raised);
 }
 ```
@@ -115,26 +108,18 @@ Both cards below use the same native class. The second adds `p-md`, so its utili
   caption="Compare the space inside each card. Both share the route's native CSS; only the second card changes its padding with a utility."
 />
 
-The descendant selectors style the headings and descriptions without adding a class to every element. They stay inside the same component layer. An unlayered native declaration would outrank normal declarations in named layers; see [Cascade layers](/guide/cascade-layers) before mixing the two.
+Keeping the rules in `@layer components` lets classes override them; see [Cascade layers](/guide/cascade-layers).
 
-These native rules are emitted with their stylesheet by default. If that source opts into [native CSS pruning](/guide/native-css-pruning), its detected class usage determines which rules remain. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
+These native rules are emitted with their stylesheet by default. If that source opts into [native CSS pruning](/guide/scanning-and-pruning#prune-native-css), its detected class usage determines which rules remain. If a selector becomes reused across multiple pages, move the shared role to [Global styles](/guide/global-styles#shared-vocabulary).
 
 ---
 
 ## Use variants locally
-Use a named media query inside the rule and a native media query for a page-specific breakpoint:
+Project custom media work inside native rules, beside ordinary media queries:
 
 ```css name=app/home/home.css
 .home-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-xl);
-  gap: var(--spacing-xs);
-  padding-inline: var(--spacing-lg);
   background-color: var(--color-blue);
-  color: oklch(100% 0 none);
-  height: 3rem;
 
   @media (--dark) {
     background-color: var(--color-blue-70);
@@ -147,107 +132,3 @@ Use a named media query inside the rule and a native media query for a page-spec
 ```
 
 `--dark` follows the system’s `prefers-color-scheme` preference. A manual `data-theme` attribute does not change that query; use [adaptive color tokens](/guide/colors#native-color-scheme-and-manual-themes) for surfaces that should follow a manually selected scheme.
-
-Use native declarations for route-only motion and interaction. Enable this decorative hover movement only when the reader has not requested reduced motion:
-
-```css name=app/home/home.css
-@media (prefers-reduced-motion: no-preference) {
-  .home-cta {
-    transition: transform var(--duration-normal) var(--easing-smooth);
-  }
-
-  .home-cta:hover {
-    transform: translateY(-0.125rem);
-  }
-}
-```
-
----
-
-## Use native keyframes
-Use native top-level `@keyframes` for route-only motion. Keep the animation in the route stylesheet unless it becomes a shared motion token.
-
-```css name=app/home/home.css
-@keyframes home-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.home-hero {
-  animation: home-reveal 420ms ease both;
-}
-```
-
-Use native media queries for accessibility and route-specific fallbacks:
-
-```css name=app/home/home.css
-@media (prefers-reduced-motion: reduce) {
-  .home-hero {
-    animation: none;
-  }
-}
-```
-
----
-
-## Use container queries
-Container queries are often route-specific because they describe how one section responds to the space it receives.
-
-```css name=app/home/home.css
-.home-feature-grid {
-  display: grid;
-  gap: var(--spacing-md);
-  container: home-feature-grid / inline-size;
-}
-
-.home-feature-list {
-  display: grid;
-  gap: var(--spacing-md);
-}
-
-@container home-feature-grid (width >= 42rem) {
-  .home-feature-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-```
-
-The query container must be an ancestor of the element whose layout changes:
-
-```html
-<section class="home-feature-grid">
-  <div class="home-feature-list">
-    <article>Team workspace</article>
-    <article>Project library</article>
-    <article>Shared calendar</article>
-  </div>
-</section>
-```
-
-At `42rem` of available container width, the three articles become columns. Use viewport breakpoints when the layout depends on the page viewport. Use container queries when the section can appear inside different shells, sidebars, or slots. See [Container queries](/guide/containers) for a resizable example and threshold choices.
-
----
-
-## Promote shared patterns
-Keep route CSS local while the structure belongs to one route. Promote only the stable part:
-
-- Move repeated values into [Theme Tokens](/guide/theme).
-- Move repeated UI roles into [Global styles](/guide/global-styles#component-classes).
-- Move repeated low-level styling capabilities into [Global styles](/guide/global-styles#custom-utilities).
-- Keep unique layout, content structure, and route-only animation in the route stylesheet.
-
-This keeps global CSS small, route CSS explicit, and shared vocabulary intentional.
-
----
-
-## Compile a stylesheet independently
-The automatic project context above belongs to the framework integrations. An independent compiler call needs explicit definitions: supply absolute filenames through `referenceFiles` with `transformNativeStylesheets` enabled, or use `@reference` in the stylesheet.
-
-See the [compiler API](/reference/packages#css-compiler) for programmatic options.

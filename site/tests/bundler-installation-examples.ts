@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationDisclosure, installationSection, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -32,13 +32,12 @@ export function bundlerInstallationFixture(route: typeof bundlerInstallationRout
     applyMasterCSSSetupPlan(plan, { install: false })
     const config = framework + '.config.' + (framework === 'rsbuild' ? 'ts' : 'mjs')
     assert.ok(readFileSync(join(root, config), 'utf8').includes('@master/css-webpack'))
-    const source = installationSource(route)
-    const fences = deliveryFences(source)
-    for (const name of [config, 'src/index.css']) {
-      const fence = fences.find(fence => fence.name === name)
-      assert.ok(fence, `${route}: missing ${name}`)
-      write(name, unindent(fence.text))
-    }
+    // Webpack, Rspack and Rsbuild share one guide; each configuration is in its own section.
+    const source = installationSource('/webpack')
+    const fences = [...deliveryFences(installationSection('/webpack', framework)), ...deliveryFences(source)]
+    const fence = fences.find(fence => fence.name === config)
+    assert.ok(fence, `${route}: missing ${config}`)
+    write(config, unindent(fence.text).replace("mode: 'static'", `mode: '${staticMode ? 'static' : 'runtime'}'`))
     // The guides show the integration and markup, not a complete host scaffold.
     const markup = fences.map(fence => fence.text.match(/<h1\b[\s\S]*?<\/h1>/)?.[0]).find(Boolean)
     assert.ok(markup, `${route}: missing authored heading`)
@@ -46,8 +45,8 @@ export function bundlerInstallationFixture(route: typeof bundlerInstallationRout
     const classes = markup.match(/class(?:Name)?="([^"]+)"/)?.[1]
     assert.ok(classes, `${route}: missing authored classes`)
     write('src/index.js', `import "./index.css";document.querySelector('h1').className = ${JSON.stringify(classes)};`)
-    const setup = fences.find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
-    assert.equal(setup, `npm create @master/css@rc -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
+    assert.match(source, new RegExp(`--framework webpack\\b[\\s\\S]*\\b${framework}\\b`))
+    if (!staticMode) assert.match(installationDisclosure('/webpack', 'Generate new classes in the browser'), /--mode runtime/)
     for (const name of [...packages, '@master/css', '@master/css-webpack', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
       mkdirSync(dirname(destination), { recursive: true })

@@ -41,7 +41,7 @@ export default function Page() {
     <section aria-labelledby="waterfall-real-use">
       <div className="review-waterfall-sectionHeading">
         <div><h2 id="waterfall-real-use">Actual Guide use</h2><p>The published preload lesson keeps its resource phases and FCP condition.</p></div>
-        <Link href="/guide/preload-critical-resources#preload-runtime-engine">Open /guide/preload-critical-resources</Link>
+        <Link href="/guide/rendering-modes#preload-runtime-engine">Open /guide/rendering-modes#preload-runtime-engine</Link>
       </div>
       <div className="review-waterfall-realGuide"><GuideResourceWaterfall /></div>
       <p className="review-waterfall-optionNote">Guide and Design System share the request-order diagram and its source data. The first-paint marker is illustrative.</p>

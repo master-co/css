@@ -219,7 +219,7 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         '/': { reference: false, benchmark: false, demo: false, button: false, review: false },
         '/guide': { reference: false, benchmark: false },
         '/reference': { reference: true, benchmark: false, demo: false },
-        '/guide/benchmarks': { benchmark: true, reference: false },
+        '/benchmarks': { benchmark: true, reference: false },
         '/design-system': { demo: true, benchmark: false, reference: false },
         '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false },
         '/design-system/review/asset': { review: true, reference: false, benchmark: false }

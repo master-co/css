@@ -1,3 +1,4 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
@@ -6,20 +7,8 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a project
-      If you don't have a Nuxt project, create one with the [Nuxt starter](https://nuxt.com/docs/4.x/api/commands/init). These examples use Nuxt 4's `app/` directory.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm create nuxt@latest my-app
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Nuxt project root. Static is the default: it scans complete class strings and emits ordinary CSS.
+      In an existing [Nuxt project](https://nuxt.com/docs/getting-started/installation), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -27,20 +16,9 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run the development server.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal&action=run
-      dev
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Now style your first component using Master CSS syntax.
+    Start the dev server and style your first component. These examples use Nuxt 4's `app/` directory.
   </Step>
   <HelloWorld url="localhost:3000" />
 </StepSection>
@@ -69,3 +47,42 @@ export default defineNuxtConfig({
 ```
 
 Run `npm run build`, then serve the generated Nitro output with `node .output/server/index.mjs`. Check that the heading is styled with JavaScript disabled. Framework SSR still supplies the HTML; Master CSS static mode supplies its CSS from source scanning.
+
+---
+
+## Choose another rendering mode \{#rendering-modes\}
+Static mode is the default. The installer option sets the module's `mode`; keep the CSS entry when changing modes:
+
+| Mode | Installer option | Delivery |
+| --- | --- | --- |
+| Static | None | Generated stylesheet from source scanning |
+| Runtime | `--mode runtime` | Browser runtime, without server-side first-page CSS |
+| Progressive | `--mode progressive` | First-response CSS from Nitro plus a runtime handoff |
+
+<DocumentDisclosure title="Generate new classes in the browser">
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework nuxt --mode runtime --yes
+```
+
+The installer registers `['@master/css-nuxt', { mode: 'runtime' }]`. Nuxt still renders HTML on the server, while the runtime supplies generated class rules in the browser. After building and serving the Nitro output, run this in the browser console:
+
+```js
+document.querySelector('h1').classList.add('underline')
+```
+
+The heading should gain an underline without rebuilding. If it does not, inspect the runtime program request and console diagnostics.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Include server-rendered styles">
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework nuxt --mode progressive --yes
+```
+
+Progressive mode adds first-response CSS to Nitro HTML responses with string bodies; streaming bodies are not transformed. Check initial styling with JavaScript disabled, then a later class absent from the page manifest as above.
+
+Also test the copied deployment artifact in its target directory: an in-place build does not establish that all manifest and program paths are portable. If the copied server reports an `ENOENT` path under the original project's `node_modules/.master-css/manifest/`, it still depends on a build-machine manifest and is not ready for an independent deployment. Use static or runtime mode when either meets the application's delivery needs, and verify the chosen output after moving it too.
+
+</DocumentDisclosure>

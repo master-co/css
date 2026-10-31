@@ -52,7 +52,7 @@ for (const width of [320, 390, 550, 552, 768, 1280, 1440]) for (const scheme of 
       const box = await link.boundingBox()
       targets.push(box)
       assert.ok(box.width >= 44 && box.height >= 44, 'setup targets remain at least 44px')
-      assert.match(await link.getAttribute('href'), /^\/(tw\/)?guide\/mcp-server#/)
+      assert.match(await link.getAttribute('href'), /^\/(tw\/)?guide\/ai-coding#connect-the-mcp-server$/)
       assert.ok(box.x >= 0 && box.x + box.width <= width, 'client targets stay inside the viewport')
       assert.ok(box.y >= field.y && box.y + box.height <= field.y + field.height, 'the glass field contains every client target')
     }

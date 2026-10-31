@@ -63,7 +63,7 @@ export default function Page() {
       <section aria-labelledby="item-real-use">
         <div className="review-item-sectionHeading">
           <div><h2 id="item-real-use">Spacing composition</h2><p>Ten items sit on the guide&apos;s pink inner stripe.</p></div>
-          <Link href="/guide/spacing">Open /guide/spacing</Link>
+          <Link href="/guide/layout-system#namespace-for-spacing">Open /guide/layout-system#namespace-for-spacing</Link>
         </div>
         <div className="review-item-actualUse">
           <div><span className="review-item-useLabel">Shared object in the composition</span><Demo>{spacingTiles()}</Demo></div>

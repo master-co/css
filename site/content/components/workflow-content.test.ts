@@ -104,7 +104,8 @@ test('the workflow stage puts each framework on the integration that sets it up'
   const root = mkdtempSync(join(tmpdir(), 'home-workflow-'))
   try {
     for (const framework of workflowFrameworks) {
-      const guide = new URL(`${framework.guide}/`, installationGuides)
+      // A guide may point at a section of a shared page, such as vite#react.
+      const guide = new URL(`${framework.guide.split('#')[0]}/`, installationGuides)
       assert.ok(existsSync(guide), `missing guide /guide/installation/${framework.guide}`)
       const installer = installerFrameworks[framework.brand]
       // The installer's plan is the source of truth; frameworks it does not set up name the package in their guide.

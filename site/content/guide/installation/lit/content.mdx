@@ -7,20 +7,8 @@ Lit components normally render into a shadow root. Document styles cannot reach 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a Lit project
-      If you don't have a Lit project, create one first.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm create vite@latest my-app -- --template lit-ts
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Lit project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
+      In an existing [Lit project](https://lit.dev/docs/getting-started/) built with Vite, run the installer from the project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -50,20 +38,9 @@ Lit components normally render into a shadow root. Document styles cannot reach 
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Start dev server
-      Run the command to start the Vite dev server.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal&action=run
-      dev
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Now style elements inside your Lit templates using Master CSS syntax.
+    Start the dev server and style elements inside your Lit templates.
   </Step>
   <DemoConfiguredExample
     name="lit-shadow-button"

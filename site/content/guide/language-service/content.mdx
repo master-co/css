@@ -1,24 +1,37 @@
 ## Overview [sr-only]
-The Master CSS Language Service brings the project manifest into the editor. It reads project tokens, utility recipes, mixins, custom media, selectors, and conditions, then uses that context to make class strings easier to read and edit.
+The Master CSS Language Service brings the project manifest into the editor. It reads project tokens, utility recipes, mixins, custom media, selectors and conditions, then uses that context for completion, hover previews, highlighting, color tools, directive formatting and diagnostics in class strings and stylesheets.
 
-Use [Visual Studio Code setup](/guide/installation/vscode) to install the official extension. Use it with the VS Code ESLint extension when you need team rules, diagnostics for committed markup, and automated class sorting.
+---
+
+## Set up VS Code \{#set-up-vs-code\}
+Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode) for language-service features, and the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for class policy diagnostics and sort-on-save once the project has [Code linting](/guide/code-linting) set up. The extension finds project context through a CSS entry that imports `@master/css` or a `package.json` that declares a Master CSS package.
+
+Enable suggestions inside strings, and restrict ESLint's save action to class sorting:
+
+```json name=.vscode/settings.json
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.rules": [
+    "@master/css/sort-classes"
+  ]
+}
+```
+
+The rule list alone does not turn on fixes when saving, and the ESLint extension's `problems` mode ignores the filter; keep `eslint.codeActionsOnSave.mode` at its default `all`. See the [ESLint extension settings](https://github.com/microsoft/vscode-eslint#settings-options).
 
 ---
 
 ## Editor features
 ### Syntax suggestions
-Completion works inside configured class sources, including markup attributes, bound framework attributes, JavaScript helper calls, tagged templates, and project-specific class declarations.
-
-```html
-<button class="inline-flex items-center gap-xs px-md py-xs r-md bg-blue-60 fg-white">
-  Save
-</button>
-```
-
-Suggestions include utilities, property values, color tokens, selectors, queries, and directive syntax. They are manifest-aware, so project tokens become completion items after the language service finds the correct workspace manifest.
+Completion works inside configured class sources: markup attributes, bound framework attributes, JavaScript helper calls, tagged templates and project-specific class declarations. Suggestions include utilities, property values, color tokens, selectors, queries and directive syntax, and project tokens appear once the workspace manifest loads.
 
 ### Hover inspection
-Hover inspection shows the generated CSS for a class at the cursor. This is useful when a class combines a declaration, value, selector state, and query in one compact string.
+Hovering a class such as `bg-blue-60:hover@sm` previews the CSS Master CSS emits for it, including its selector state and query.
 
 ```html
 <button class="bg-blue-70 fg-white bg-blue-60:hover@sm">
@@ -26,187 +39,72 @@ Hover inspection shows the generated CSS for a class at the cursor. This is usef
 </button>
 ```
 
-Hovering `bg-blue-60:hover@sm` previews the CSS that Master CSS would emit for the hover state at the `sm` breakpoint.
-
 ### Syntax highlighting
-The extension highlights Master CSS directive syntax in CSS-family documents and uses semantic tokens for class-list spans. Embedded utilities can show their declaration, value, selector, query, unit, important marker, quoted segment, and component boundaries.
+The extension highlights directive syntax in CSS-family documents and uses semantic tokens for class-list spans: declaration, value, selector, query, unit, important marker, quoted segment and component boundaries. By default it highlights only the class string under the cursor, keeping long markup calm. If semantic colors do not appear, enable semantic highlighting in the active VS Code theme.
 
-The default highlighting mode is active-context highlighting. It keeps long markup calm until the cursor enters a class string, then highlights the current class context.
-
-Shiki code examples use the same quiet default for markup class attributes, with pointer hover in place of the editor cursor. Import the public stylesheet alongside `transformerMasterCSS` to show the native string color until a class value is hovered:
+Shiki code examples use the same quiet default for markup class attributes, with pointer hover in place of the cursor. Import the public stylesheet alongside `transformerMasterCSS`:
 
 ```ts
 import '@master/css-language-service/shiki.css'
 import { transformerMasterCSS } from '@master/css-language-service/shiki'
 ```
 
-Each visible line of a multiline class value responds separately. Class strings in standalone JavaScript helpers and CSS directive class lists keep their existing highlighting.
-
 ### Color tools
-Color syntax can use VS Code color decorators and the color picker. This includes supported Master CSS color utilities and manifest colors that resolve through the active project.
-
-```html
-<span class="bg-blue-5 (color:#4f46e5)">Primary</span>
-```
-
-Keep both `masterCSS.renderSyntaxColors` and VS Code's [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css) enabled. Color previews are independent of embedded semantic highlighting.
+Master CSS color utilities and manifest colors use VS Code color decorators and the color picker. Keep both `masterCSS.renderSyntaxColors` and VS Code's [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css) enabled.
 
 ### Directive formatting
-Document and range formatting can repair Master CSS directive source without changing compiler semantics, cascade behavior, or generated CSS. It is enabled by default with `masterCSS.formatDirectives`.
-
-The formatter supports CSS, SCSS, and LESS documents. It also scans CSS-family `<style>` blocks in Vue, Svelte, and Astro documents when the Master CSS formatter handles the request.
-
-For class-list directives, formatting keeps important markers attached to the class token:
-
-```css
-@safelist "(background-color:transparent) !";
-```
-
-becomes:
-
-```css
-@safelist "(background-color:transparent)!";
-```
+Document and range formatting repairs directive source in CSS, SCSS and LESS documents and in CSS-family `<style>` blocks in Vue, Svelte and Astro, without changing generated CSS. For class-list directives it keeps important markers attached to their class: `@safelist "(background-color:transparent) !";` becomes `@safelist "(background-color:transparent)!";`.
 
 ### Diagnostics
-The language server reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files. It also reports project manifest loading errors so workspace setup issues are visible in the editor.
-
-Class-string syntax, policy, and sort-on-save diagnostics in markup and JavaScript are owned by [code linting](/guide/code-linting). The language server does not duplicate `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, or `no-unapproved-raw-values` warnings.
+The language server reports directive errors in the same documents and project manifest loading errors. Class-string syntax, policy and sorting diagnostics belong to [Code linting](/guide/code-linting) and are not duplicated. Language-server clients can also opt into token-reference checks for open managed CSS files with the `designSystem` setting, which takes the same [design-system options](/reference/tools/cli#design-system-options) as `master-css inspect`.
 
 ---
 
-## Supported class sources
-The default settings cover common web, framework, and content files: HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown, and MDX.
+## Settings and class sources \{#supported-class-sources\}
+Set options in `.vscode/settings.json` or VS Code user settings. The defaults cover HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown and MDX.
 
 | Setting | Default | Use |
 | --- | --- | --- |
-| `masterCSS.includedLanguages` | Common web and template language IDs | Languages that receive Master CSS language-service features. |
-| `masterCSS.classAttributes` | `class`, `className` | Markup attributes whose quoted values contain class strings. |
-| `masterCSS.classAttributeBindings` | Framework binding defaults | Bound attributes such as `:class`, `v-bind:class`, `[ngClass]`, and `class:list`. |
-| `masterCSS.classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | JavaScript callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`. |
-| `masterCSS.classDeclarations` | `[]` | Project-specific variables or object properties whose strings should be treated as class declarations. |
-| `masterCSS.exclude` | `.git`, `node_modules`, `.hg` | Files excluded from all Master CSS language-service features. |
+| `masterCSS.includedLanguages` | Common web and template language IDs | Languages that receive language-service features. |
+| `masterCSS.classAttributes` | `class`, `className` | Markup attributes whose values contain class strings. |
+| `masterCSS.classAttributeBindings` | Framework binding defaults | Bound attributes such as `:class`, `v-bind:class`, `[ngClass]` and `class:list`. |
+| `masterCSS.classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | Callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`. |
+| `masterCSS.classDeclarations` | `[]` | Variables or object properties whose strings are class declarations. |
+| `masterCSS.exclude` | `.git`, `node_modules`, `.hg` | Files excluded from all features. |
+| `masterCSS.suggestSyntax` | `true` | Completion items. |
+| `masterCSS.inspectSyntax` | `true` | Hover inspection and generated CSS previews. |
+| `masterCSS.renderSyntaxColors` | `true` | Color decorators for Master CSS color syntax. |
+| `masterCSS.formatDirectives` | `true` | Directive formatting. |
+| `masterCSS.embeddedSyntaxHighlighting` | `active` | `active` highlights the class under the cursor, `always` every embedded class, `off` none; directive syntax stays highlighted. |
+| `masterCSS.workspaces` | `auto` | Workspace detection for project manifests. |
 
-Customize the source settings when a project uses its own class helpers or naming conventions. Language-service arrays extend the built-in class sources; this differs from ESLint settings, where arrays replace the defaults:
+Language-service arrays extend the built-in class sources; ESLint settings replace them instead:
 
 ```json name=.vscode/settings.json
 {
-  "masterCSS.classAttributes": [
-    "class",
-    "className",
-    "ui"
-  ],
-  "masterCSS.classDeclarations": [
-    "classes",
-    "styles"
-  ],
-  "masterCSS.classFunctions": [
-    "clsx",
-    "cva",
-    "cn"
-  ]
+  "masterCSS.classAttributes": ["ui"],
+  "masterCSS.classDeclarations": ["classes", "styles"],
+  "masterCSS.classFunctions": ["cn"]
 }
 ```
 
 ---
 
 ## Workspace-aware manifests
-The language server creates a root workspace, then `masterCSS.workspaces` controls whether additional project workspaces are detected.
-
-With the default `auto` mode, it detects:
-
-- CSS files importing `@master/css`
-- `package.json` files that declare Master CSS package dependencies
-
-Each detected workspace gets its own language service and manifest. In a monorepo, this keeps completions, hover previews, colors, directive diagnostics, and component names aligned with the nearest Master CSS project.
+In `auto` mode the language server detects a workspace for each CSS file importing `@master/css` and each `package.json` declaring a Master CSS package, and gives each its own manifest. In a monorepo, completions, hover previews, colors and diagnostics follow the nearest Master CSS project. List workspace directories when detection does not match the repository layout, and see [Monorepo](/guide/monorepo) for project boundaries:
 
 ```json name=.vscode/settings.json
 {
-  "masterCSS.workspaces": [
-    "apps/admin",
-    "apps/shop",
-    "packages/design-system"
-  ]
+  "masterCSS.workspaces": ["apps/admin", "apps/shop", "packages/design-system"]
 }
 ```
 
-Use explicit workspace globs when auto-detection does not match the repository layout. See [Monorepo](/guide/monorepo) for project-boundary guidance.
-
----
-
-## Highlighting modes
-Embedded syntax highlighting is controlled by `masterCSS.embeddedSyntaxHighlighting`.
-
-| Mode | Behavior |
-| --- | --- |
-| `active` | Highlights the active class context at the editor selection. This is the default and keeps dense markup quieter. |
-| `always` | Highlights every discovered embedded utility class in supported documents. |
-| `off` | Disables embedded utility highlighting. Master CSS directive syntax in CSS documents remains highlighted by the extension grammar. |
-
-```json name=.vscode/settings.json
-{
-  "masterCSS.embeddedSyntaxHighlighting": "active"
-}
-```
-
-If semantic colors do not appear, confirm that semantic highlighting is enabled in the active VS Code theme.
-
----
-
-## Settings
-Set options in `.vscode/settings.json` or VS Code user settings with the `masterCSS.` prefix.
-
-```json name=.vscode/settings.json
-{
-  "editor.quickSuggestions": {
-    "strings": true
-  },
-  "masterCSS.suggestSyntax": true,
-  "masterCSS.inspectSyntax": true,
-  "masterCSS.renderSyntaxColors": true,
-  "masterCSS.formatDirectives": true,
-  "masterCSS.embeddedSyntaxHighlighting": "active"
-}
-```
-
-| Setting | Default | Effect |
-| --- | --- | --- |
-| `masterCSS.suggestSyntax` | `true` | Enables Master CSS completion items. |
-| `masterCSS.inspectSyntax` | `true` | Enables hover inspection and generated CSS previews. |
-| `masterCSS.renderSyntaxColors` | `true` | Enables color information for supported Master CSS color syntax. |
-| `masterCSS.formatDirectives` | `true` | Enables Master CSS directive formatting in CSS-family documents and style blocks. |
-| `masterCSS.embeddedSyntaxHighlighting` | `active` | Controls semantic highlighting for embedded utility classes. |
-| `masterCSS.workspaces` | `auto` | Controls workspace detection for project-aware manifests. |
-
-Run `Master CSS: Restart Language Server` after dependency changes, major workspace-layout changes, or manifest edits if VS Code has not reloaded the language server automatically.
-
----
-
-## Design-system diagnostics
-
-Language-server clients may opt into native CSS checks with the `designSystem`
-setting. It takes the same `{ version: 1, metadata, rawValuePolicy }` object as the
-[CLI inspection workflow](/guide/ai-coding#review-the-second-change).
-
-Checks apply only to open CSS files in the successfully loaded workspace's managed
-stylesheet graph. The current document text supplies the ranges; the last loaded
-project manifest supplies token definitions. Save changed definitions to reload
-project context. Unrelated stylesheets and embedded framework style blocks are not
-included in this opt-in policy. Diagnostic codes and report version come from the
-same Rust inspection used by CLI and MCP; no browser result is implied.
+Run `Master CSS: Restart Language Server` after dependency changes, workspace-layout changes or manifest edits that VS Code has not picked up.
 
 ## Troubleshooting
 | Symptom | Fix |
 | --- | --- |
 | Completions do not show inside strings. | Enable `editor.quickSuggestions.strings`. |
-| Project variables, components, or utilities are missing. | Add a CSS entry that imports `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
+| Project tokens, components or utilities are missing. | Add a CSS entry that imports `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
 | The wrong monorepo package is used. | Set `masterCSS.workspaces` to explicit workspace directories. |
-| Embedded highlighting is too noisy or too quiet. | Change `masterCSS.embeddedSyntaxHighlighting` to `active`, `always`, or `off`. |
-| Color decorators do not appear. | Enable `masterCSS.renderSyntaxColors` and `editor.colorDecorators`; check for language-specific overrides in VS Code settings. |
-
----
-
-## Setup links
-- [Visual Studio Code setup](/guide/installation/vscode) for extension installation, string completions, project-aware entries, ESLint diagnostics, and sort-on-save.
-- [Code linting](/guide/code-linting) for rule behavior, options, and team policy examples.
-- [Monorepo](/guide/monorepo) for workspace boundaries across multiple projects.
+| Color decorators do not appear. | Enable `masterCSS.renderSyntaxColors` and `editor.colorDecorators`; check language-specific overrides. |

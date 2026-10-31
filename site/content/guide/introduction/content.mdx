@@ -3,18 +3,9 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only]
 <Overview />
-The card combines shared colors, spacing and type with local layout choices. Its classes describe the styling where you use it; the theme supplies the shared values.
+Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS. The card combines shared colors, spacing and type with local layout choices: its classes describe the styling where you use it, and the theme supplies the shared values.
 
----
-
-## What is Master CSS?
-Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS.
-
-Its class language combines native declarations such as `grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. You can start with the supplied theme and write local styles without designing a complete system first.
-
-As values and patterns become shared, define them in your project CSS. Theme tokens, native component classes and custom utilities give those decisions names that you can reuse. Your stylesheets can also contain ordinary selectors, media queries, cascade layers and keyframes.
-
-Use Master when you want to compose styles close to an element while keeping shared definitions in CSS. Complex selectors and longer reusable styles can stay in native stylesheets alongside your classes.
+The class language combines native declarations such as `grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. Start with the supplied theme and write local styles without designing a complete system first; as values and patterns become shared, name them in your project CSS with theme tokens, native component classes and custom utilities. Complex selectors and longer reusable styles can stay in native stylesheets alongside your classes.
 
 ---
 
@@ -52,26 +43,11 @@ Share a token because its consumers should change together. An informational col
 ---
 
 ## Understand the next change
-Suppose the brand color changes. Before editing `--color-brand`, inspect the project definitions and their known uses. After the edit, compare project snapshots to see which classes, stylesheets and outputs are affected. A class such as `bg-brand` can be affected even when its generated declaration still reads `(background-color:var(--color-brand))`.
-
-The tools can also locate token references in project CSS and check configured policies, such as requiring tokens for selected properties. [Code Linting](/guide/code-linting) explains the checks; the [project review workflow](/guide/ai-coding#review-the-second-change) shows how to inspect and compare changes.
-
-You and your coding agent can use the same project definitions and checks. The CLI and MCP server expose these capabilities for development workflows; see [AI Coding](/guide/ai-coding) for setup and examples.
-
-<a id="generated-css-syntax-diagnostics-and-dependency-reports-provide-different-kinds-of-evidence-they-do-not-establish-the-final-appearance-interaction-behavior-or-accessibility-of-a-page"></a>
-
-These reports cover known project sources. Some native CSS relationships are reported conservatively; they do not simulate which selectors and inherited values apply to every element. Generating CSS, checking syntax or policies, and finding dependencies provide different evidence. Check the rendered page and its interaction states in a browser to verify appearance, behavior and accessibility.
+Before editing a shared token such as `--color-brand`, the CLI, MCP server, [Language Service](/guide/language-service) and [Code Linting](/guide/code-linting) read the same project definitions to locate its consumers and compare snapshots of the affected classes and outputs. [AI Coding](/guide/ai-coding#review-the-second-change) walks through that review with a coding agent.
 
 ---
 
 ## Choose how CSS is delivered
-Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or engine.
+Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or engine. Changing state does not require compiling CSS in the browser: toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime only when a playground, visual editor or deployed content introduces previously unknown class names; [Rendering Modes](/guide/rendering-modes) compares static, runtime and progressive delivery.
 
-Changing state does not require compiling CSS in the browser. Toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime when a playground, visual editor or deployed content introduces previously unknown class names. [Rendering Modes](/guide/rendering-modes) explains static, runtime and progressive delivery, including server pre-rendering.
-
----
-
-## Keep going
-Start with [Installation](/guide/installation), then follow the [Syntax Tutorial](/guide/syntax-tutorial) to build and verify a card with interaction states, responsive conditions and a project token.
-
-As the interface grows, use [Theme Tokens](/guide/theme) and [Global Styles](/guide/global-styles) to organize shared decisions. Add [Language Service](/guide/language-service) for editor feedback and [Code Linting](/guide/code-linting) for checks you can repeat during development and review.
+Start with [Installation](/guide/installation), then follow the [Syntax Tutorial](/guide/syntax-tutorial) to build a card with interaction states, responsive conditions and a project token.

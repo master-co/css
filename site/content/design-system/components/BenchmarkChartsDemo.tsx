@@ -44,7 +44,7 @@ export default function BenchmarkChartsDemo() {
           <tbody>{outputItems.map(item => <tr key={item.id}><th scope="row">{item.label}</th><td>100 kB</td><td>{item.value} kB</td><td>148 ms</td><td>10</td><td>Illustrative local fixture</td></tr>)}</tbody>
         </table>
       </BenchmarkDataTable>
-      <BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/guide/benchmarks" label="See real benchmark sources (this date is illustrative)" />
+      <BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/benchmarks" label="See real benchmark sources (this date is illustrative)" />
 
       <BenchmarkFigure
         title="Delta labels"

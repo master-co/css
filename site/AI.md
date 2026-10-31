@@ -111,19 +111,19 @@ MCP Guide and README may list `migrate-to-mastercss` and its purpose of converti
 
 ### Guide and Reference ownership
 
-The 2026-09-29 content decision keeps Design Foundations in Guide and makes Reference the complete lookup source for styling contracts. Package APIs, CLI and MCP use concise source catalogs. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented Reference catalog and the disposition of all existing first-level pages. Its size follows current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
+The 2026-11-01 consolidation keeps Guide small and Master-specific: fewer, denser task pages, with Reference as the complete lookup source for styling contracts, tokens, recipes, directives, tools and packages. Package APIs, CLI and MCP use concise source catalogs. Syntax Tutorial teaches reusable syntax; Guide teaches design and implementation decisions; Reference defines names, values, mappings and behavior. The [content inventory](../.ai/reports/reference-content-inventory.md) records the audited baseline, the implemented Reference catalog and the disposition of all existing first-level pages. Its size follows current capabilities, not a permanent page budget. The public source migration implements this catalog; retired Reference routes are removed without redirect compatibility, per the user’s implementation clarification. Update active links and exports to their actual content owners.
 
 | Content | Primary owner | Use in Guide |
 | --- | --- | --- |
 | Complete token names, values, scopes, modes and dependencies | Token Reference | Select the keys needed for the current example |
 | Complete canonical prefix / property / namespace mappings | Family index and namespace Reference | Explain the example's mappings and link to the full index |
 | Mixin parameters, output, defaults and restrictions | Recipe or directive Reference | Apply the recipe to a concrete task |
-| Visual palettes, type specimens and shadow/radius scales | Shared presentation | Keep a useful comparison beside the lesson; Reference also provides full lookup data |
-| Choosing, combining and customizing tokens | Design Foundations Guide | Explain tradeoffs with working examples |
+| Visual palettes, type specimens and shadow/radius scales | Token Reference | Show one composed usage; link to the complete scale |
+| Choosing and combining tokens in a composition | Design Foundations Guide | One decision and one working composition per subject |
 | Component, page and responsive compositions | Guide | Keep the complete task and its demo together |
 | Grammar, exceptions and failure conditions | Syntax Reference | Explain the constraints needed to complete the task |
 
-Interactivity does not determine ownership. Guide must keep the visual comparisons readers need to understand a subject: a complete color palette or radius/shadow scale may be more useful than an arbitrary small selection. Render these from shared preset facts and keep the same facts in search/Markdown exports. Reference owns exhaustive value, scope, dependency and consumer tables. Guide examples remain self-contained, with practical markup and inspectable generated CSS; avoid repeating the same lesson in multiple previews or sending readers to Reference before they can see the result.
+Interactivity does not determine ownership. Reference owns complete scales, palettes, values, namespaces, customization blocks and formal contracts; Guide does not repeat them. Guide examples remain self-contained, with practical markup and inspectable generated CSS. Teach each lesson once: when another page owns it, link to that page instead of repeating its example.
 
 ### Guide reading flow
 
@@ -158,9 +158,9 @@ restore per-symbol, per-package or per-tool pages to mirror the source.
 - Existing demos, another framework's page list, CSS property coverage and anticipated SEO exposure do not independently justify a page. The documentation catalog is not a browser or engine support whitelist.
 - A new Guide must serve a concrete task with an executable example and a verifiable result. Existing and new pages follow the same admission rules; retain content for its present purpose rather than prior production effort.
 
-Keep all ten Design Foundations guides focused on their practical tasks. Complete lookup tables and consumer mappings live in Reference; visual scales may also appear beside the Guide lesson when the comparison itself teaches the subject. Keep `/guide/containers`, with the title **Container queries**; place width-cap design choices in Sizing. Responsive Design owns the overall viewport/container strategy, and Layout System owns cross-foundation composition.
+Design Foundations has four guides: Color (roles, hue aliases, surfaces with radius and elevation, light/dark modes), Typography (text treatments vs font tokens, site typeface), Layout (composition, spacing and sizing decisions, page wrapper) and Responsive design (viewport breakpoints from custom media, container queries, strategy). Motion facts live in Reference `tokens/motion`. Complete lookup tables, scales and consumer mappings live in Reference only.
 
-Merge `/reference/tokens/containers` into the appropriate destinations: size values and consumers in `tokens/container`, query contracts in `rules/conditions`, and component adaptation in `/guide/containers`. Explicit container-query thresholds do not consume or track theme tokens. Preset breakpoints come from custom media, not theme custom properties. Keep color role lookup groups without implying alternate token prefixes or independent family resolution.
+Merge `/reference/tokens/containers` into the appropriate destinations: size values and consumers in `tokens/container`, query contracts in `rules/conditions`, and component adaptation in `/guide/responsive-design`. Explicit container-query thresholds do not consume or track theme tokens. Preset breakpoints come from custom media, not theme custom properties. Keep color role lookup groups without implying alternate token prefixes or independent family resolution.
 
 ### Shared facts and presentation
 
@@ -174,13 +174,13 @@ Use sentence case for public documentation headings in guide `content.mdx`: capi
 
 Guides should teach in this order:
 
-1. State the task and explain only the native concepts needed to complete it, with authoritative references such as MDN or web.dev.
+1. State the task. Do not teach native CSS, browser behavior or general design, UX or accessibility practice: link to MDN or web.dev and explain only what Master CSS adds or changes.
 2. Show the smallest Master CSS syntax needed.
 3. Provide a working in-page demo.
 4. Show generated CSS with `<Class2CSS>` when introducing new Master CSS classes.
-5. Cover constraints, fallbacks, browser support, and accessibility after the core flow is clear.
+5. Cover Master-specific constraints and failure conditions after the core flow is clear.
 
-Keep reduced-motion handling and progressive hardening after the primary example unless the guide is specifically about accessibility. For guide layout, visual design, responsive behavior, and token choices, inspect the current Design Foundations guide pages instead of duplicating their rules here.
+Keep reduced-motion handling and progressive hardening after the primary example unless the guide is specifically about accessibility. For guide layout, visual design, responsive behavior, and token choices, inspect the current Design Foundations guides and the Reference token pages instead of duplicating their rules here.
 
 ## Example Code
 

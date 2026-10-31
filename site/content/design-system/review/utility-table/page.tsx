@@ -39,7 +39,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="utility-real-use">
-      <div className="review-utility-table-sectionHeading"><div><h2 id="utility-real-use">Actual Guide use</h2><p>The live color namespace groups use manifest-filtered keys in the current shared component.</p></div><Link href="/guide/colors#namespaces-for-color">Open /guide/colors</Link></div>
+      <div className="review-utility-table-sectionHeading"><div><h2 id="utility-real-use">Actual Guide use</h2><p>The live color namespace groups use manifest-filtered keys in the current shared component.</p></div><Link href="/guide/colors#choose-a-color-token">Open /guide/colors</Link></div>
       <div className="review-utility-table-optionPreview"><DocumentNamespaceTable rows={variableNamespaceSources.filter(row => row.namespace === 'color')} /></div>
       <p className="review-utility-table-optionNote">The table and its source values remain beside the Guide’s explanation and complete palette.</p>
     </section>

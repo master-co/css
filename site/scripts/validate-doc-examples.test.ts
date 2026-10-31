@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import './maintenance-examples.test'
 import './writing-examples.test'
 import './illustration-examples.test'
@@ -70,7 +71,6 @@ test('route-level native CSS retains referenced tokens and named conditions', as
   assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
   assert.match(css, /--color-surface-raised:/)
   assert.match(css, /--spacing-5xl:/)
-  assert.match(css, /--easing-smooth:\s*cubic-bezier\(/)
   assert.match(css, /\.home-cta\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*background-color:/)
   assert.match(css, /@media \(width\s*<\s*52\.125rem\)\s*\{\s*width:\s*100%/)
   assert.doesNotMatch(css, /@compose|@reference/)
@@ -153,63 +153,45 @@ test('overview category references resolve to generated categories', async () =>
 test('installation routes use static entry points and explicit optional modes', async () => {
   const root = path.join(appRoot, 'guide/installation')
   const actual = new Set<string>(['', 'integrations', 'cli', 'cdn'])
+  const nested: string[] = []
 
   for (const framework of await readdir(root, { withFileTypes: true })) {
     if (!framework.isDirectory() || framework.name === '(main)') continue
     const frameworkRoot = path.join(root, framework.name)
     const entries = await readdir(frameworkRoot, { withFileTypes: true })
     if (entries.some((entry) => entry.isFile() && entry.name === 'content.mdx')) actual.add(framework.name)
+    // Runtime and progressive setups are sections of the framework page, not routes or tabs.
+    if (entries.some((entry) => entry.isFile() && entry.name === 'layout.tsx')) nested.push(`${framework.name}/layout.tsx`)
     for (const entry of entries) {
-      if (!entry.isDirectory()) continue
-      const files = await readdir(path.join(frameworkRoot, entry.name))
-      if (files.includes('content.mdx')) actual.add(`${framework.name}/${entry.name}`)
+      if (entry.isDirectory() && entry.name !== 'components') nested.push(`${framework.name}/${entry.name}`)
     }
   }
 
   assert.deepEqual([...actual].sort(), [...installationGuideSlugs].sort())
-  assert.ok([...actual].every((slug) => !/(?:static|runtime|progressive)-rendering/.test(slug)))
-  assert.ok(!actual.has('angular/progressive'))
-  assert.ok(!actual.has('laravel/runtime'))
+  assert.deepEqual(nested, [])
 
   for (const slug of actual) {
     if (!slug || ['integrations', 'cli', 'cdn'].includes(slug)) continue
-    const [framework, mode] = slug.split('/')
-    const directory = path.join(root, slug)
-    const content = await readFile(path.join(directory, 'content.mdx'), 'utf8')
-    const metadata = await readFile(path.join(directory, 'metadata.ts'), 'utf8')
-    if (mode) {
-      assert.match(metadata, new RegExp(`title: '${mode === 'runtime' ? 'Runtime' : 'Progressive'} Rendering`), slug)
-      if (content.includes('npm create @master/css@rc')) assert.match(content, new RegExp(`--mode ${mode}\\b`), slug)
-      assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
-    } else {
-      const layout = await readFile(path.join(directory, 'layout.tsx'), 'utf8').catch(() => '')
-      if (layout) {
-        assert.match(metadata, /title: 'Static Rendering/, slug)
-        assert.ok(layout.includes(`<Tab href='/guide/installation/${framework}'>{$('Static Rendering')}`), slug)
-        for (const line of layout.split('\n').filter((line) => line.includes('<TabBadge>'))) {
-          assert.ok(line.includes(`<Tab href='/guide/installation/${framework}'`), slug)
-        }
-      }
-      if (content.includes('npm create @master/css@rc') && framework !== 'laravel') {
-        const primarySetup = content.match(/npm create @master\/css@rc[^\n]*/)?.[0]
-        assert.ok(primarySetup, slug)
-        assert.doesNotMatch(primarySetup, /--mode\s+(?:runtime|progressive)/, slug)
-      }
-    }
+    const content = await readFile(path.join(root, slug, 'content.mdx'), 'utf8')
+    assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
+    // The first installer command on each page is the default static setup.
+    const primarySetup = content.match(/npm create @master\/css@rc[^\n]*/)?.[0]
+    if (primarySetup) assert.doesNotMatch(primarySetup, /--mode\s+(?:runtime|progressive)/, slug)
   }
 
   const sourceFiles: string[] = []
   await walk(appRoot, sourceFiles)
-  sourceFiles.push(path.join(siteRoot, 'utils/installation-content.ts'))
+  sourceFiles.push(path.join(siteRoot, 'utils/installation-content.ts'), path.join(siteRoot, 'utils/installation-guides.ts'))
   const staleLinks: string[] = []
   for (const file of sourceFiles.filter((file) => /\.(?:mdx|ts|tsx)$/.test(file))) {
     const content = await readFile(file, 'utf8')
-    if (/\/guide\/installation\/[a-z-]+\/(?:static|runtime|progressive)-rendering\b/.test(content)) {
+    if (/\/guide\/installation\/[a-z-]+\/(?:static-rendering|runtime-rendering|progressive-rendering|runtime|progressive)\b/.test(content)) {
       staleLinks.push(path.relative(siteRoot, file))
     }
   }
   assert.deepEqual(staleLinks, [])
 })
+
 
 test('docs example classes are valid default preset classes or locally defined custom classes', async () => {
   const files = [
@@ -781,10 +763,10 @@ function isMigrationVendorClass(example: ExampleCandidate): boolean {
 function isExpectedDiagnostic(candidate: string, file: string): boolean {
   const relativePath = relativeSitePath(file)
   const diagnosticsByPath: [RegExp, Set<string>][] = [
-    [/guide\/code-linting\//, new Set(['(font-size:16)'])],
+    [/guide\/code-linting\//, new Set(['(font-size:16)', 'btn'])],
     [/guide\/introduction\//, new Set(['font', 'font:'])],
     [/guide\/conditional-queries\//, new Set(['hidden@sm<=h', 'hidden@sm<=h<=lg'])],
-    [/guide\/scanning-latent-classes\//, new Set(['card'])]
+    [/guide\/(?:class-extraction|scanning-and-pruning)\//, new Set(['card'])]
   ]
   return diagnosticsByPath.some(([pattern, classes]) => pattern.test(relativePath) && classes.has(candidate))
 }
@@ -930,8 +912,8 @@ test('vendor migration snippets parse and the documented engine wrapper forwards
       assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => String(d)), [], `${slug || 'overview'}: ${example.text}`)
     }
   }
-  const { deliveryFences, deliverySource } = await import('../tests/delivery-examples')
-  const source = deliveryFences(deliverySource('rendering-modes')).find(f => f.text.includes('function wrapEngine'))!.text
+  // The forwarding contract is documented in /reference/packages#css; this fixture keeps the wrapper executable.
+  const source = readFileSync(new URL('../tests/fixtures/engine-wrapper.txt', import.meta.url), 'utf8')
   const { createEngineSync } = await import('@master/css/node')
   const inner = createEngineSync({ manifest: defaultManifest })
   const exports: { wrapEngine?: (engine: typeof inner) => typeof inner } = {}

@@ -4,14 +4,14 @@ import { FoundationAxes, FoundationContainerGrid, FoundationMedia, FoundationRad
 import { DemoPageViewport } from '~/site/components/demo/DemoBrowser'
 
 const examples = [
-  ['Viewport typography', '/guide/breakpoints#use-breakpoint-variants', FoundationBreakpoint],
-  ['Container grid', '/guide/containers#create-a-query-container', FoundationContainerGrid],
-  ['Container media object', '/guide/layout-system#choose-css-grid-or-flexbox', FoundationMedia],
-  ['Fluid wrapper and measured object', '/guide/sizing', FoundationSizing],
-  ['One axis or both', '/guide/sizing#pair-axes-deliberately', FoundationAxes],
-  ['Shrinkable content', '/guide/sizing#constrain-instead-of-forcing', FoundationShrink],
-  ['Radius scale', '/guide/corner-radius', FoundationRadius],
-  ['Shape shortcuts', '/guide/corner-radius#use-shape-shortcuts', FoundationShapes],
+  ['Viewport typography', '/guide/responsive-design#based-on-viewport-breakpoints', FoundationBreakpoint],
+  ['Container grid', '/guide/responsive-design#based-on-container-sizes', FoundationContainerGrid],
+  ['Container media object', '/guide/layout-system', FoundationMedia],
+  ['Fluid wrapper and measured object', '/guide/layout-system#use-container-tokens', FoundationSizing],
+  ['One axis or both', '/guide/layout-system#use-container-tokens', FoundationAxes],
+  ['Shrinkable content', '/guide/layout-system#add-explicit-tracks-only-when-needed', FoundationShrink],
+  ['Radius scale', '/guide/colors#raised-surfaces', FoundationRadius],
+  ['Shape shortcuts', '/guide/colors#raised-surfaces', FoundationShapes],
 ] as const
 
 export default function FoundationRecipes() {

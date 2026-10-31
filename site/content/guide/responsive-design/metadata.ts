@@ -1,9 +1,9 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Responsive Design',
-  description: 'Choose viewport queries for page layouts and container queries for reusable components, then test each content threshold.',
-  category: 'Fundamentals',
+  title: 'Responsive design',
+  description: 'Adapt pages with viewport breakpoints from custom media and components with container queries.',
+  category: 'Design Foundations',
   fileURL: import.meta.url
 })
 

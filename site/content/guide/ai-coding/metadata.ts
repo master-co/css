@@ -4,7 +4,7 @@ const metadata = define({
   title: {
     absolute: 'AI Coding with Master CSS'
   },
-  description: 'Use AI coding agents to write, review, and validate Master CSS classes with project context, prompts, linting, and visual checks.',
+  description: 'Connect coding agents to Master CSS project context through the MCP server, preview fixes safely, and review the impact of shared changes.',
   category: 'Agentic Workflows',
   other: {
     subject: 'AI Coding'

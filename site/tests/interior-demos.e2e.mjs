@@ -7,7 +7,7 @@ import { chromium, webkit } from '@playwright/test'
 const engine = process.env.MASTER_SITE_BROWSER ?? 'chromium'
 const base = process.env.MASTER_SITE_URL ?? 'http://127.0.0.1:3222'
 const output = new URL(`../test-results/interior-redesign/demos-${engine}/`, import.meta.url)
-const routes = ['typography', 'breakpoints', 'containers', 'colors', 'sizing', 'corner-radius', 'elevation', 'motion', 'layout-system', 'responsive-design']
+const routes = ['typography', 'colors', 'layout-system', 'responsive-design']
 const readings = []
 let browser
 before(async () => { await mkdir(output, { recursive: true }); browser = await ({ chromium, webkit })[engine].launch() })
@@ -75,7 +75,7 @@ for (const locale of ['en', 'tw']) for (const scene of [
   })
 }
 
-for (const slug of ['typography', 'breakpoints', 'motion', 'layout-system']) test(`${engine} 320 enlarged: ${slug} frame controls and content remain usable`, { timeout: 90000 }, async () => {
+for (const slug of ['typography', 'responsive-design', 'layout-system']) test(`${engine} 320 enlarged: ${slug} frame controls and content remain usable`, { timeout: 90000 }, async () => {
   const { context, page, errors } = await open(`/guide/${slug}`, { width: 320, enlarged: true })
   try {
     const frames = page.locator('iframe.demo-viewport')
@@ -97,7 +97,7 @@ for (const slug of ['typography', 'breakpoints', 'motion', 'layout-system']) tes
 })
 
 test(`${engine}: viewport slider changes the actual frame and Fit restores document width`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/breakpoints')
+  const { context, page, errors } = await open('/guide/responsive-design#based-on-viewport-breakpoints')
   try {
     const demo = page.locator('[data-foundation="breakpoint"]')
     const iframe = demo.locator('iframe')
@@ -141,7 +141,7 @@ test(`${engine}: example theme control updates the iframe and keeps the document
 })
 
 test(`${engine}: finite motion and native dialog preserve reduced-motion and focus behavior`, { timeout: 90000 }, async () => {
-  const { context, page, errors } = await open('/guide/motion', { motion: 'no-preference' })
+  const { context, page, errors } = await open('/reference/tokens/motion', { motion: 'no-preference' })
   try {
     const demo = page.locator('[data-foundation-type-motion="finite-motion"]')
     const frame = await readyFrame(demo.locator('iframe'))
@@ -174,7 +174,7 @@ test(`${engine}: finite motion and native dialog preserve reduced-motion and foc
 })
 
 test(`${engine}: enlarged sizing specimen retains the measured avatar while its text reflows`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/tw/guide/sizing', { width: 320, enlarged: true })
+  const { context, page, errors } = await open('/tw/guide/layout-system#use-container-tokens', { width: 320, enlarged: true })
   try {
     const demo = page.locator('[data-foundation="sizing"]')
     const avatar = demo.locator('.demo-item')
@@ -190,7 +190,7 @@ test(`${engine}: enlarged sizing specimen retains the measured avatar while its 
 })
 
 test(`${engine}: delivery payload bars compare complete responses on one scale`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/benchmarks', { width: 390, scheme: 'dark' })
+  const { context, page, errors } = await open('/benchmarks', { width: 390, scheme: 'dark' })
   try {
     const ratios = await page.locator('.benchmark-stacks .benchmark-meter-stacked').evaluateAll(elements => elements.map(element => {
       const style = getComputedStyle(element)
@@ -209,9 +209,10 @@ test(`${engine}: delivery payload bars compare complete responses on one scale`,
 })
 
 if (engine === 'chromium') test('chromium: forced colors retain palette samples and keyboard focus', { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/colors', { width: 390, enlarged: true })
+  // The complete palette lives on the Reference Color page.
+  const { context, page, errors } = await open('/reference/tokens/color', { width: 390, enlarged: true })
   try {
-    const palette = page.locator('[data-foundation-tokens="color"]').first()
+    const palette = page.locator('.ref-palette').first()
     const chips = palette.locator('.foundation-palette-chip')
     const colors = await chips.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor))
     assert.ok(new Set(colors).size > 20, 'the palette contains distinct color samples')
@@ -232,7 +233,8 @@ if (engine === 'chromium') test('chromium: forced colors retain palette samples 
 })
 
 if (engine === 'chromium') test('chromium: forced colors retain resource-discovery bar boundaries', { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/preload-critical-resources', { width: 390, scheme: 'dark' })
+  // The resource waterfall is kept as a design-system specimen.
+  const { context, page, errors } = await open('/design-system/review/waterfall', { width: 390, scheme: 'dark' })
   try {
     await page.emulateMedia({ forcedColors: 'active' })
     assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
@@ -248,7 +250,7 @@ if (engine === 'chromium') test('chromium: forced colors retain resource-discove
 })
 
 if (engine === 'chromium') test('chromium: forced colors preserve benchmark lengths, zero values and breakdown labels', { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/benchmarks', { width: 390, scheme: 'dark' })
+  const { context, page, errors } = await open('/benchmarks', { width: 390, scheme: 'dark' })
   try {
     const fills = page.locator('.benchmark-meter-fill,.benchmark-meter-stacked > div')
     const before = await fills.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width))

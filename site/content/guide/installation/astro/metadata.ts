@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Static Rendering in Astro',
-  description: 'Generate static CSS for Astro pages, import the project stylesheet, and verify generated utility rules in production.',
+  title: 'Set up Master CSS in Astro',
+  description: 'Set up the Master CSS Astro integration, with optional runtime or progressive rendering.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

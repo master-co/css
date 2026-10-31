@@ -6,7 +6,7 @@ import { projectStyleExample } from '../components/demo/project-style-examples'
 import { packageTreeMarkdown } from './package-trees'
 import { authoringExampleMarkdown } from './authoring-examples'
 
-export const projectStyleGuideSlugs = ['theme', 'variables-and-modes', 'global-styles', 'cascade-layers', 'monorepo', 'authoring-packages', 'compatibility', 'view-transitions'] as const
+export const projectStyleGuideSlugs = ['theme', 'global-styles', 'cascade-layers', 'monorepo', 'authoring-packages', 'compatibility', 'view-transitions'] as const
 
 export async function projectStyleGuideContent(siteRoot: string, slug: string) {
   if (!projectStyleGuideSlugs.includes(slug as typeof projectStyleGuideSlugs[number])) throw new Error(`Unsupported project style guide: ${slug}`)

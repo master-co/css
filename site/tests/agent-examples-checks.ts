@@ -45,7 +45,7 @@ export async function verifyAgentMCPExamples() {
     assert.equal(workspace.root, root)
     assert.equal(workspace.manifest.status, 'loaded')
     assert.ok(workspace.manifest.entries.includes(join(root, 'app.css')))
-    const input = JSON.parse(deliveryFences(deliverySource('mcp-server')).find(fence => fence.name === 'mastercss_preview_fixes')!.text)
+    const input = JSON.parse(deliveryFences(deliverySource('ai-coding')).find(fence => fence.name === 'mastercss_preview_fixes')!.text)
     const started = Date.now()
     const preview = value<PreviewReport>(await connection.call('mastercss_preview_fixes', input))
     assert.equal(preview.version, 1)

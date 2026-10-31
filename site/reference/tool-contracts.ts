@@ -5,7 +5,7 @@ import path from 'node:path'
 import { createHash } from 'node:crypto'
 import type { ReferenceDocument } from './types'
 import { documentHeadings } from './headings'
-import { mcpEditorial } from './mcp-editorial'
+import { mcpEditorial, mcpPrompts, mcpResultContract } from './mcp-editorial'
 import { cliEditorial } from './cli-editorial'
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
@@ -60,7 +60,7 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
   const mcpBin = await publicBin(repo, 'mcp', 'master-css-mcp')
   const tools = await listMCPTools(mcpBin)
   const mcp = [
-    'Use the [MCP setup guide](/guide/mcp-server) to connect a client to your project. Ask the connected server for `tools/list` to read its current input and output schemas. This catalog helps you choose a tool; complete registrations and schemas live in the [server source](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts).',
+    'Use the [MCP setup guide](/guide/ai-coding#connect-the-mcp-server) to connect a client to your project. Ask the connected server for `tools/list` to read its current input and output schemas. This catalog helps you choose a tool; complete registrations and schemas live in the [server source](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts).',
     'The server uses the workspace passed to `--root`. Start with `mastercss_workspace_info` to verify the root and stylesheet entries. A connected server does not by itself establish that the intended project manifest is loaded.'
   ]
   for (const tool of tools) {
@@ -68,8 +68,12 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
     if (!editorial) throw new Error(`Missing MCP guidance: ${tool.name}`)
     mcp.push(`## ${tool.name} {#${tool.name}}`, editorial.purpose, editorial.lifecycle)
   }
+  mcp.push('## Prompts {#prompts}',
+    'Request a prompt through `prompts/get` in a connected client.',
+    ['| Prompt | Use |', '| --- | --- |', ...mcpPrompts.map(prompt => `| \`${prompt.name}\` | ${prompt.use} |`)].join('\n'),
+    '## Results {#results}', ...mcpResultContract)
   mcp.push('## Read the full contract',
-    'Use `tools/list` in the same connected server session for accepted arguments. On GitHub, read the [tool registrations](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts), [output schemas](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts), and [result envelope](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts). The [workflow guide](/guide/mcp-server#safe-write-previews) shows a complete preview and apply sequence. Source links follow the `rc` branch; the connected server describes your installed version.')
+    'Use `tools/list` in the same connected server session for accepted arguments. On GitHub, read the [tool registrations](https://github.com/master-co/css/blob/rc/packages/mcp/src/server.ts), [output schemas](https://github.com/master-co/css/blob/rc/packages/mcp/src/output-schema.ts), and [result envelope](https://github.com/master-co/css/blob/rc/packages/mcp/src/result.ts). The [workflow guide](/guide/ai-coding#safe-write-previews) shows a complete preview and apply sequence. Source links follow the `rc` branch; the connected server describes your installed version.')
   const cliBin = await publicBin(repo, 'cli', 'master-css')
   const rootHelp = execFileSync(process.execPath, [cliBin, '--help'], { encoding: 'utf8', timeout: 15000 })
   const commandNames = [...(rootHelp.split('Commands:\n')[1] ?? '').matchAll(/^ {2}([a-z][a-z-]*)(?:\s|$)/gm)].map(match => match[1]).filter(name => name !== 'help')
@@ -91,10 +95,11 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
     const usage = help.split('\n')[0].replace(/^Usage: /, '')
     cli.push(`## master-css ${command} {#${command}}`, fence('text', usage), effects[command],
       editorial.examples[0].description, fence('sh', editorial.examples[0].command),
-      `Run \`master-css ${command} --help\` for every option. [Implementation](https://github.com/master-co/css/blob/rc/packages/cli/src/${command}.ts).`)
+      `Run \`master-css ${command} --help\` for every option. [Implementation](https://github.com/master-co/css/blob/rc/packages/cli/src/${command}.ts).`,
+      ...editorial.notes ?? [])
   }
   cli.push('## Check results',
-    'For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning latent classes](/guide/scanning-latent-classes) for troubleshooting. Source links follow the `rc` branch.')
+    'For lint and inspect, the default JSON report is written to stdout; `--format stylish` writes readable diagnostics to stderr. Diagnostic errors normally produce a nonzero exit status. `--exit-code never` suppresses diagnostic-based failure, so read the report before treating the run as successful. See [Code linting](/guide/code-linting) and [Scanning latent classes](/guide/scanning-and-pruning) for troubleshooting. Source links follow the `rc` branch.')
   return [
     document('tools/mcp', 'MCP tools', 'Choose a tool, understand its file effects, and find the current protocol contract.', mcp, tools.map(tool => tool.name), Object.fromEntries(tools.map(tool => [tool.name, tool.name])), 'packages/mcp/src/server.ts'),
     document('tools/cli', 'CLI commands', 'Choose a command, check its file effects, and find complete options in CLI help and source.', cli, commandNames.map(name => `master-css ${name}`), Object.fromEntries(commandNames.map(name => [`master-css ${name}`, name])), 'packages/cli/src/core.ts')
@@ -103,5 +108,5 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
 
 function document(id: string, title: string, description: string, sections: string[], aliases: string[], identifierAnchors: Record<string, string>, source: string): ReferenceDocument {
   const markdown = sections.join('\n\n')
-  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: 'en', aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/mcp-server' : '/guide/installation/cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
+  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: 'en', aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/ai-coding#connect-the-mcp-server' : '/guide/installation/cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
 }

@@ -44,7 +44,7 @@
     "project-settings",
     "complete-button"
   ],
-  "/guide/benchmarks": [
+  "/benchmarks": [
     "overview",
     "core-hypothesis",
     "how-to-read-these-results",

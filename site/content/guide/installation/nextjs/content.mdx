@@ -1,26 +1,15 @@
+import DeliveryFlow from '~/site/components/DeliveryFlow'
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
-This setup uses the Next.js App Router with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
+Add Master CSS to a Next.js App Router project with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a Next.js project
-      If you don't have a Next.js project, create one first.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npx create-next-app@latest my-app --ts --app --no-tailwind --no-src-dir
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Next.js project root. Static is the default and writes the generated stylesheet before Next.js loads the config.
+      In an existing [Next.js project](https://nextjs.org/docs/app/getting-started/installation), run the installer from the project root. Static is the default and writes the generated stylesheet before Next.js loads the config.
 
       (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
     </StepL>
@@ -30,20 +19,9 @@ This setup uses the Next.js App Router with a top-level `app` directory. Master 
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run the development server.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal&action=run
-      dev
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Now style your first page using Master CSS syntax.
+    Start the dev server and style your first page.
   </Step>
   <HelloWorld url="localhost:3000" />
 </StepSection>
@@ -68,7 +46,7 @@ On the Webpack path, generated theme resources are delivered through an ordinary
 
 ## Verify the loaded configuration
 
-The examples use a top-level `app` directory. Keep your global stylesheet imported by `app/layout.tsx`. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
+Keep your global stylesheet imported by `app/layout.tsx`. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
 
 ```ts name=next.config.ts
 import type { NextConfig } from 'next'
@@ -94,3 +72,50 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 Run `npm run build` and `npm run start` to check production delivery. The heading remains styled with JavaScript disabled because the generated stylesheet supplies its rules.
+
+---
+
+## Choose another rendering mode \{#rendering-modes\}
+Static mode is the default. The installer option sets the matching `withMasterCSS()` mode; keep the global stylesheet when changing modes:
+
+| Mode | Installer option | Delivery |
+| --- | --- | --- |
+| Static | None | Generated stylesheet from source scanning |
+| Runtime | `--mode runtime` | Browser runtime through Next.js client instrumentation |
+| Progressive | `--mode progressive` | Pre-rendered CSS plus a runtime handoff |
+
+<DocumentDisclosure title="Generate new classes in the browser">
+
+Runtime mode injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS:
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework nextjs --mode runtime --yes
+```
+
+The installer sets `withMasterCSS(nextConfig, { mode: 'runtime' })`. Run `npm run build` and `npm run start`, then add a class that was absent from the initial DOM:
+
+```js
+document.querySelector('h1').classList.add('underline')
+```
+
+The heading should gain an underline without a rebuild. Runtime mode does not supply those generated rules before JavaScript starts. Check the browser console and runtime program request if the update has no effect.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Include pre-rendered styles">
+
+Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages:
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework nextjs --mode progressive --yes
+```
+
+The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output, so their generated utility styles depend on the browser runtime. Use static mode if those routes must have utility styles without JavaScript.
+
+<DeliveryFlow name="nextjs" />
+
+After `npm run build` and `npm run start`, check a pre-rendered route's response source for `style#master-css` before JavaScript runs, then test a later class as above. Test a dynamic SSR route separately: this adapter does not add server-generated CSS to request-time HTML.
+
+</DocumentDisclosure>
+
+If a Turbopack production build in runtime or progressive mode reports that a generated `.master/stylesheets/...-entry.css` cannot be resolved, check the Webpack build with `npx next build --webpack` and verify the resulting page with `npm run start` before deployment. A successful Webpack build does not verify the Turbopack path.

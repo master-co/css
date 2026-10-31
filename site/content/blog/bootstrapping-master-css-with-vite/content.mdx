@@ -89,7 +89,7 @@ Run `npm run dev`. The heading should be large, heavy, italic, and separated fro
 
 Keep `masterCSS()` when the scanner can find the complete classes you use. State changes can still switch among those classes, and CSS variables, selectors, and media queries keep their native browser behavior. A changing interface alone does not require runtime generation.
 
-Constructed strings such as `` `bg-${tone}` `` need care: source scanning cannot infer every completed class. Prefer an explicit map of complete strings for a finite set of variants, or choose a mode that sees the final class names. See [Scanning latent classes](/guide/scanning-latent-classes) for source-scanning controls.
+Constructed strings such as `` `bg-${tone}` `` need care: source scanning cannot infer every completed class. Prefer an explicit map of complete strings for a finite set of variants, or choose a mode that sees the final class names. See [Scanning latent classes](/guide/scanning-and-pruning) for source-scanning controls.
 
 ### Runtime
 

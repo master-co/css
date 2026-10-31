@@ -1,0 +1,10 @@
+import define from '~/site/docs-shell/utils/metadata'
+
+const metadata = define({
+  title: 'Set up Master CSS in server-rendered apps',
+  description: 'Build Master CSS with Vite and load it from PHP, Laravel, Rails, WordPress, Shopify, ASP.NET Core, Blazor or Express templates.',
+  category: 'Integrations',
+  fileURL: import.meta.url
+})
+
+export default metadata

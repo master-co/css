@@ -19,7 +19,7 @@ Complete your framework's [installation guide](/guide/installation) first. Offic
 
 An interactive application can use static CSS. Switching among known classes, changing CSS variables, and using native selectors do not require a runtime engine. Runtime generation matters when a complete class name first becomes available after the build.
 
-Pre-rendering requires actual page markup. An empty root element in a client-rendered app gives the server renderer no application classes to process. Also check the integration's boundary: the [Next.js progressive adapter](/guide/installation/nextjs/progressive) processes build-time HTML, so request-time dynamic SSR responses rely on the browser runtime for generated rules.
+Pre-rendering requires actual page markup. An empty root element in a client-rendered app gives the server renderer no application classes to process. Also check the integration's boundary: the [Next.js progressive adapter](/guide/installation/nextjs#rendering-modes) processes build-time HTML, so request-time dynamic SSR responses rely on the browser runtime for generated rules.
 
 ---
 
@@ -44,33 +44,12 @@ To see the source-to-CSS process, add this utility definition after the import a
 
 The scanner finds `btn` and `(text-align:center)`. The engine recognizes the registered utility and the direct declaration, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
 
-Integrations discover ordinary application sources and update CSS during development. Use `@source` when you need to include files outside the normal scan path or define a scoped source set. See [Scanning latent classes](/guide/scanning-latent-classes) for discovery and safelist controls.
+Integrations discover ordinary application sources and update CSS during development. Keep complete class names in source and pass changing values through CSS variables; [Scanning and pruning](/guide/scanning-and-pruning) covers both, plus `@source` and safelist exceptions.
 
 ### Native CSS entries
 Native selectors in the CSS entry are preserved by default, even when their classes are absent from scanned source. Their `var(--*)` and animation references can retain the matching theme variables and keyframes.
 
-Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. Follow [Native CSS pruning](/guide/native-css-pruning) for a complete example and the limits of source-based usage detection.
-
-### Dynamic class limitations
-Static scanning cannot infer the results of string concatenation, helper functions, or remote content. Keep complete alternatives in source:
-
-(x) Do not construct partial class names.
-```tsx
-const className = 'bg-' + (error ? 'red' : 'green')
-```
-
-(o) Map states to complete class names.
-```tsx
-const className = error ? 'bg-red' : 'bg-green'
-```
-
-For a changing value, keep the class fixed and update a CSS variable. This class remains discoverable even when application code changes `--size`:
-
-```html
-<div class="(font-size:var(--size))@sm" style="--size: 2rem">Preview</div>
-```
-
-<Class2CSS>{'(font-size:var(--size))@sm'}</Class2CSS>
+Use `pruneNativeCSS: true` when you intend to prune project-owned native CSS, or `@prune native;` for one file. `@preserve native;` excludes a file from integration-level pruning. See [pruning unused native CSS](/guide/scanning-and-pruning#prune-native-css).
 
 ---
 
@@ -79,7 +58,7 @@ Use runtime rendering when class names become known in the browser, such as in a
 
 <DeliveryFlow name="runtime" />
 
-Select runtime mode through your integration, for example the [Vite runtime setup](/guide/installation/vite/runtime). Once it is running, execute these snippets one at a time in the browser console:
+Select runtime mode through your integration, for example the [Vite runtime setup](/guide/installation/vite#rendering-modes). Once it is running, execute these snippets one at a time in the browser console:
 
 <StepSection>
   <Step>
@@ -120,6 +99,39 @@ These are the rules used while both classes are present:
 <Class2CSS>{['(text-align:center)', '(font-size:3rem)']}</Class2CSS>
 
 Runtime generation depends on JavaScript startup. Use pre-rendered CSS when the page's initial rules must already be available in the response, and runtime support only when later class names require it.
+
+### Hide the page until the runtime starts \{#prevent-premature-rendering\}
+A runtime-only page has no rules until the runtime generates them. Add `hidden` to the root element so it is not painted unstyled:
+
+```html
+<html lang="en" hidden>
+  <!-- Load the stylesheet and runtime using your integration's setup. -->
+</html>
+```
+
+The runtime removes `hidden` after startup; its handled startup error path also unhides the root. If JavaScript is disabled, or the runtime script is blocked or fails to download, the page stays hidden. Use static or pre-rendered CSS for content that must remain readable then. Progressive pages already carry the first screen's CSS and stay visible.
+
+### Preload the runtime program \{#preload-runtime-engine\}
+The engine needs its program before it can generate the first rules. On a runtime-only page, preload the program so its request starts while the document is parsed. Match the runtime's request with `as="fetch"` and `crossorigin`, also on the same origin:
+
+```html
+<!DOCTYPE html>
+<html lang="en" hidden>
+<head>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
+</head>
+</html>
+```
+
+| File | Preload? |
+| --- | --- |
+| CDN `default-program.bin` | Yes, on CDN runtime-only pages that use the packaged default preset. |
+| Project program `master-css-program.<hash>.bin` | Yes, on runtime-only pages; official runtime integrations add the hint. No on progressive pages, where the engine and program wait until a class needs them. |
+| Page hydration manifest | No. It is handoff data the browser does not need to paint. |
+
+Confirm in DevTools that the runtime reuses the preloaded response instead of requesting it again. See [`rel="preload"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload) for the matching rules.
 
 ---
 
@@ -177,7 +189,7 @@ A typical output points the style element to an external manifest:
 
 The integration supplies the actual asset URL. Custom SSR hosts that cannot publish a stable JSON asset can use inline `script#master-css-hydration-manifest` instead. Pages without generated rules or managed resources do not need a manifest pointer.
 
-The browser can apply the inline CSS before the runtime or manifest loads. This describes when CSS is available; actual paint timing still depends on the page's other resources. Do not preload the page hydration manifest or the deferred project program. See [Critical resources](/guide/preload-critical-resources) for delivery timing.
+The browser can apply the inline CSS before the runtime or manifest loads. This describes when CSS is available; actual paint timing still depends on the page's other resources. Do not preload the page hydration manifest or the deferred project program; see [preloading](#preload-runtime-engine).
 
 A class listed in the manifest can be reused without starting the engine. This includes ordinary authored classes and rule-free state or theme classes referenced by generated or project selectors. Changing an attribute used by an already-rendered selector also needs no new class rule. A complete class absent from the manifest starts the engine, even if it appeared elsewhere in the project's source.
 
@@ -210,27 +222,13 @@ const sheet = document.querySelector('style#master-css').sheet
 console.log(sheet.cssRules)
 ```
 
-### Runtime state
-For application code or deeper debugging, keep the handle returned by `MasterCSSRuntime.start()` as `cssRuntime`; the [custom startup example](#project-manifest-delivery) below shows how. A snapshot distinguishes active DOM usage from cached generated rules:
-
-```js
-const snapshot = cssRuntime.snapshot()
-console.log(snapshot.usageCounts['(text-align:center)'])
-console.log(snapshot.classRules['(text-align:center)']?.retained)
-console.log(snapshot.classRules['(text-align:center)']?.rules)
-```
-
-`usageCounts` tracks connected DOM usage. `classRules` can also include warmed, hydrated, or temporarily retained rules, so a cached rule does not imply that a connected element still uses its class. `engine` reports `'deferred'`, `'loading'`, `'ready'`, or `'failed'`. Before a deferred engine starts, snapshots have usage counts but no generated rule entries in their class snapshots, and `layers` is empty.
-
-Direct rule APIs operate separately from DOM usage: `ensureClassRules([...])` generates or reuses rules, while `deleteClassRules([...])` removes them synchronously and bypasses retention. Calls made before the engine is ready throw `RUNTIME_ENGINE_NOT_READY` and start it; await `cssRuntime.ready()` before deliberately warming classes. See the [runtime API](/reference/packages#css-runtime) for the source of the snapshot and method contracts.
-
 ### Diagnose progressive startup
 
 | Observation | Meaning and next check |
 | --- | --- |
 | CSS is rebuilt after a warning | The existing rules do not match the hydration data, or the style has no manifest pointer. Check that HTML, CSS and manifest assets belong to the same build. |
 | Startup rejects with `INVALID_HYDRATION_MANIFEST` | A referenced inline or external manifest could not be loaded or validated. Check the asset URL, response and deployed files. |
-| Initial CSS works but new classes do not | The deferred engine may have failed to load. Inspect `onDiagnostic` and the program request. Existing pre-rendered CSS is retained; `refresh()` or a new `start()` can retry. |
+| Initial CSS works but new classes do not | The deferred engine may have failed to load. Inspect `onDiagnostic`, the program request and `cssRuntime.snapshot().engine`. Existing pre-rendered CSS is retained; `refresh()` or a new `start()` can retry. |
 
 When new classes are likely soon after load, `enginePrefetch: 'idle'` starts the engine during idle time. Use `engine: 'eager'` to start it during `start()`. Both change the default deferral tradeoff and should be chosen for the page's actual interactions.
 
@@ -242,104 +240,13 @@ An interaction that adds many first-time classes asks the browser to process bot
 - Use CSS variables or inline styles for volatile per-element values such as coordinates or user-generated colors.
 - Use native selectors for repeated states that do not need a distinct generated class for every value.
 
-To warm the predictable classes for a view:
+To warm the predictable classes for a view, use the handle returned by `MasterCSSRuntime.start()`:
 
 ```js
 await cssRuntime.ready()
 cssRuntime.ensureClassRules(['grid', 'gap-md'])
 ```
 
-Measure runtime JavaScript, program delivery, initialization, DOM observation, and CSSOM work together. Compressed JavaScript size alone does not describe interaction cost. See [Benchmarks](/guide/benchmarks) for measurements and their conditions.
+Measure runtime JavaScript, program delivery, initialization, DOM observation, and CSSOM work together. Compressed JavaScript size alone does not describe interaction cost. See [Benchmarks](/benchmarks) for measurements and their conditions.
 
----
-
-## Shared rendering pipeline
-All modes use the same project CSS definitions and cascade layers. `@import '@master/css'` loads the preset through the CSS entry graph; its base stylesheet declares `@layer theme, base, defaults, components, utilities;`. Generated rules use those layers without redeclaring their global order. Use `@reference` when you need definition context without loading the referenced file's native CSS.
-
-The delivery artifacts have different roles:
-
-| Artifact | Role |
-| --- | --- |
-| Project CSS entry graph | Authoring source for tokens, utilities, mixins, conditions, native styles and source directives. |
-| `MasterCSSManifest` | Compiled definitions for the Node engine, server renderer and tooling. Build integrations expose it as `virtual:master-css-manifest`. |
-| `virtual:master-css-program` | Compiled executable bytes for the browser engine. Production browser builds can fetch a hashed `.bin` asset. |
-| `virtual:master-css-emitted-globals` | Variables and keyframes already emitted by the CSS entry, so runtime generation does not duplicate them. |
-| Page hydration manifest | Rendered classes, resource order and page-emitted globals used to adopt one page's existing CSS. |
-
-The project manifest and program define what can be generated. The page hydration manifest describes what a particular response already covers. A framework's build report is separate from all three.
-
-### Project program delivery \{#project-manifest-delivery\}
-Official integrations handle runtime startup. A custom bundled entry can use a loader so the project program is requested only when the engine needs it:
-
-```js name=src/runtime.js
-import { MasterCSSRuntime } from '@master/css-runtime'
-import emittedGlobals from 'virtual:master-css-emitted-globals'
-
-const cssRuntime = await MasterCSSRuntime.start({
-  program: () => import('virtual:master-css-program').then(module => module.default),
-  emittedGlobals
-})
-cssRuntime.observe()
-```
-
-This example assumes a build integration resolves both virtual modules and the application loads its CSS entry. Do not add a second startup entry to an integration that already injects one. On runtime-only pages the engine needs the program during startup; progressive pages with a valid manifest can defer it.
-
-Let the integration supply hashed program URLs and any runtime-mode preload. Development and server builds may inline program bytes. The `emittedGlobals` object applies to every page using the runtime bundle; integrations with separate page-CSS and runtime builds must account for the CSS those pages deliver. Progressive pages additionally provide their page-specific globals through hydration data.
-
-## Shared execution contract
-Build-time and server generation use Rust semantics. The browser's JavaScript engine executes compiled programs and must produce the same CSS for the same definitions and classes. Transport and hydration metadata can differ without changing the styling language.
-
-### Manifest compatibility
-Compile project CSS with matching compiler, server and runtime packages. Unsupported execution or language versions are rejected; changing version fields by hand does not make a manifest compatible.
-
-For stored manifests, use `MasterCSSManifest` and `serializeMasterCSSManifest` from the [schema API](/reference/packages#css-schema). Serialization normalizes derived fields; it does not replace engine validation or preserve comments and editable CSS source formatting. Unknown fields are not a general extension mechanism: retention in an outer envelope does not imply that nested fields are accepted or that the engine executes a new capability.
-
-## Engine state for custom hosts
-Most applications can use the integrations above. A custom engine host that tracks rule ownership can query stored rule references after ensuring its classes:
-
-```ts
-import { createEngine } from '@master/css'
-import manifest from 'virtual:master-css-manifest'
-
-using engine = await createEngine({ manifest })
-engine.ensureClassRules(['block', 'hidden'])
-const state = engine.executionState(['block', 'missing'])
-// state.classes[0].references: [{ layer: 'utilities', key: 'block' }]
-// state.classes[1].references: []
-// state.resources: current theme, variable and animation state
-```
-
-`executionState()` preserves request order, including repeated names, and reads stored references without generating rules. Unknown or never-ensured classes have empty references. Use `snapshot()` for complete rules and CSS; use Node inspection or tooling when you need class diagnostics. Recognition alone does not establish that a CSS value or browser feature is supported. The browser engine does not provide inspection or render sessions.
-
-Hosts must synchronize resource state even when a transition contains no CSS mutations. Follow the [engine source links](/reference/packages#css) and [schema source links](/reference/packages#css-schema) for current types rather than maintaining a separate copy of those interfaces in application code.
-
-### Forward the public engine surface
-
-A wrapper around an official engine must forward state queries as well as rule changes. This example keeps disposal with the owning engine:
-
-```ts
-import type { MasterCSSEngine } from '@master/css'
-
-function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
-  return {
-    binding: inner.binding,
-    ensureClassRules: names => inner.ensureClassRules(names),
-    deleteClassRules: names => inner.deleteClassRules(names),
-    registerEmittedGlobals: globals => inner.registerEmittedGlobals(globals),
-    replaceEmittedGlobals: globals => inner.replaceEmittedGlobals(globals),
-    refresh: manifest => inner.refresh(manifest),
-    executionState: names => inner.executionState(names),
-    inspect: name => inner.inspect(name),
-    snapshot: () => inner.snapshot(),
-    dispose: () => inner.dispose(),
-    [Symbol.dispose]: () => inner.dispose()
-  }
-}
-```
-
-Read stored references through `executionState()` instead of regenerating a class to inspect ownership. Keep compiler and binding artifacts compatible; their version checks remain part of loading.
-
-### Animation resource placement
-Native keyframes stay where their stylesheet declares them. Keyframes of a `@prune native` stylesheet are on-demand definitions: static output, the server and the runtime emit each one with the generated CSS that uses it, wrapped in its declared conditions and layers; see the [keyframe contract](/reference/directives/theme#native-keyframes) and [Native CSS pruning](/guide/native-css-pruning). Runtime and server rendering track each definition independently, including same-name definitions in different layers or conditions.
-
-Delivered stylesheets are ordinary CSS: nothing besides the build output needs deploying, and the runtime never writes to linked stylesheets. Custom server hosts can pass the final `stylesheets` a page may link, as `{ href, css, imports }` from `describeLinkedStylesheet()`, with the `documentURL` that resolves the links; theme variables and native keyframes they already deliver are not repeated in `style#master-css`. See the [runtime](/reference/packages#css-runtime) and [server](/reference/packages#css-server) APIs for the host options.
+For runtime state, delivery artifacts, custom startup entries and engine hosts, see the [runtime](/reference/packages#css-runtime), [server](/reference/packages#css-server) and [engine](/reference/packages#css) packages.

@@ -5,35 +5,13 @@ import Footer from './footer.mdx'
 ## Installation [sr-only]
 Add Master CSS to an existing project with the installer. It detects common frameworks, applies the matching setup, and can install the required packages. Supported build integrations use static rendering by default: complete class names in source become ordinary CSS without a browser engine.
 
-## Before installing
-Use a matching Master CSS release for the installer, integration and runtime packages. The commands below select the `rc` release-candidate channel. Check that both the installer and your chosen integration are published for that channel; for the Vite setup below:
-
-```bash name=Terminal
-npm view @master/create-css@rc version
-npm view @master/css-vite@rc version
-```
-
-An installer tag can exist before every integration is published. If a required package or tag returns 404, that setup cannot yet be installed from the registry. Choose a published matching release and its documentation before continuing.
-
 ## Install in your project
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a project
-      Start from a Vite project when you do not have an app yet.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm create vite@latest my-app
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the project root. It updates the project setup and installs the packages with the detected package manager.
+      Run the installer from the root of an existing project, such as a [Vite app](https://vite.dev/guide/). It detects the framework, updates the project setup and installs matching packages from the `rc` channel with the detected package manager.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -41,16 +19,9 @@ An installer tag can exist before every integration is published. If a required 
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Run and style
-      Start the dev server, then use Master CSS classes in your markup.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal&action=run
-      dev
-      ```
-    </StepR>
+  <Step>
+    ### <StepNum />Start using Master CSS
+    Start the dev server, then use Master CSS classes in your markup.
   </Step>
   <HelloWorld url="localhost:5173" />
 </StepSection>

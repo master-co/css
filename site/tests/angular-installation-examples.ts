@@ -39,7 +39,7 @@ export function angularInstallationFixture(mode: 'runtime' | 'static') {
       mkdirSync(dirname(destination), { recursive: true })
       symlinkSync(dependency(name), destination, 'dir')
     }
-    const source = installationSource(`/angular/${mode}-rendering`)
+    const source = installationSource('/angular')
     const fences = deliveryFences(source)
     const fence = (name: string) => {
       const found = fences.find(fence => fence.name === name)

@@ -4,7 +4,7 @@ import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import AppearanceControl from '../../components/AppearanceControl'
 import { BenchmarkBars, BenchmarkChartGroup, type BenchmarkBarItem } from '~/site/components/benchmarks'
-import { StaticCSSOutputChart } from '~/site/content/guide/benchmarks/components/StaticTailwindComparison'
+import { StaticCSSOutputChart } from '~/site/content/benchmarks/components/StaticTailwindComparison'
 import './page.css'
 
 export { metadata }
@@ -37,7 +37,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="chart-real-use">
-      <div className="review-chart-group-sectionHeading"><div><h2 id="chart-real-use">Actual Guide use</h2><p>The real `docs` fixture chart uses committed measurements and keeps its explanation in the document.</p></div><Link href="/guide/benchmarks#static-css-output-structure-and-production-build">Open /guide/benchmarks</Link></div>
+      <div className="review-chart-group-sectionHeading"><div><h2 id="chart-real-use">Actual Guide use</h2><p>The real `docs` fixture chart uses committed measurements and keeps its explanation in the document.</p></div><Link href="/benchmarks#static-css-output-structure-and-production-build">Open /benchmarks</Link></div>
       <div className="review-chart-group-realUse"><StaticCSSOutputChart /></div>
       <p className="review-chart-group-optionNote">This original chart is not converted into a group by the review. Its nearby figure caption, sources and limitations stay in the Guide.</p>
     </section>

@@ -46,7 +46,7 @@ export default function Page() {
     <section aria-labelledby="support-real-use">
       <div className="review-feature-support-sectionHeading">
         <div><h2 id="support-real-use">Actual Guide example</h2><p>A native property example uses the Guide rule: generated CSS is useful only when the target browser supports it.</p></div>
-        <Link href="/guide/compatibility#browser-support">Open /guide/compatibility</Link>
+        <Link href="/reference/rules/declarations#vendor-prefixes">Open /guide/compatibility</Link>
       </div>
       <div className="review-feature-support-realGuide"><ProjectStyleExample name="nativeField" /></div>
       <p className="review-feature-support-optionNote">This preview uses the same field-sizing example as the Design System. The Compatibility Guide keeps its original prose and generated-CSS explanation.</p>

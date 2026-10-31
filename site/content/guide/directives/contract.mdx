@@ -800,7 +800,115 @@ Use `@preserve native;` when a Master-managed stylesheet contains native CSS cla
 
 The stylesheet is still processed by Master CSS. Native class rules are retained even when no scanned source uses their classes; ordinary compiler normalization still applies. This policy does not force unused managed classes into the generated output and does not mean that the original CSS bytes are preserved.
 
-For the full native CSS pruning model, see [Native CSS pruning](/guide/native-css-pruning).
+### Import graph \{#import-graph\}
+Resolved CSS imports keep their own source boundaries, so each file's policy
+applies to that file alone. An importing file cannot enable pruning in its
+dependencies. Under `pruneNativeCSS: true`, project-owned dependencies participate
+unless they declare `@preserve native;`; package and remote styles do not become
+project-owned because the project imports them. Qualified imports keep their
+media, supports and layer wrappers.
+
+```css name=src/style.css
+@prune native;
+@import "@master/css";
+@import "./cards.css";
+```
+
+```css name=src/cards.css
+@prune native;
+.card { border: 1px solid rgb(0 0 0 / 12%); }
+.unused-card { color: red; }
+```
+
+With `card` in scanned source, the output keeps `.card` and removes `.unused-card`.
+Without the directive in `cards.css`, both rules stay.
+
+### Root scope \{#root-scope\}
+Activation belongs to each source file; filtering uses the usage scope of the root
+that imports it. An opted-in shared file can therefore keep different classes under
+different roots. A file imported directly by JavaScript or a framework route
+becomes its own root only when that import enters the Master CSS pipeline.
+
+By default a root uses the global scanner scope. `@source`, `@source not`,
+`@safelist` and `@blocklist` anywhere in the root's import graph narrow or widen
+it; directives in an imported file merge into every root that imports it, and
+relative patterns resolve from the declaring file.
+
+```css name=app/a/a.css
+@prune native;
+@import "@master/css";
+@source "./page.html";
+@import "../shared.css";
+```
+
+```css name=app/shared.css
+@prune native;
+@blocklist "debug-*";
+.shared-card { border: 1px solid rgb(0 0 0 / 12%); }
+.only-used-in-b { color: blue; }
+.debug-outline { outline: 1px solid red; }
+```
+
+If `app/a/page.html` uses only `shared-card`, the `a.css` output keeps
+`.shared-card` and removes `.only-used-in-b` and `.debug-outline`. A sibling root
+`b.css` whose page uses `only-used-in-b` keeps that rule from the same file.
+
+### Rule filtering \{#rule-filtering\}
+A class selector rule is kept when any class in one of its selector branches is
+used; unused branches are removed from selector lists. The check is by class name,
+not by DOM relationship: for `.card .title`, finding either `card` or `title`
+retains the branch, so a retained rule can still match no element.
+
+```css
+@prune native;
+body { margin: 0; }
+.card, .unused:hover { border: 1px solid rgb(0 0 0 / 12%); }
+@media (width >= 48rem) {
+  .card .title { font-weight: 700; }
+  .debug-card { outline: 1px solid red; }
+}
+```
+
+With `card` and `title` used, the output keeps `body`, `.card` and
+`.card .title`, and removes `.unused:hover` and `.debug-card`. Rules without class
+selectors, such as `body`, `html` and `:root`, are always kept. At-rule blocks left
+empty by pruning are removed.
+
+### Manifest references \{#manifest-references\}
+A kept native rule that reads `var(--*)` or names a manifest animation retains the
+matching theme variables and keyframes from the project entry graph. A removed
+rule keeps nothing alive.
+
+```css
+@prune native;
+@import "@master/css";
+@theme { --color-primary: #175cff; }
+
+.notice { color: var(--color-primary); }
+.unused-notice { color: var(--color-primary); }
+```
+
+If only `notice` is used, `--color-primary` is emitted because `.notice` is kept;
+`.unused-notice` is removed.
+
+### Included classes \{#included-classes\}
+`@safelist` marks native classes as used when they come from a bounded external
+source, so pruning keeps their rules. It does not replace application classes
+written in scanned source.
+
+```css
+@prune native;
+@safelist "dialog-open dialog-closing";
+.dialog-open { overflow: hidden; }
+.dialog-closing { pointer-events: none; }
+```
+
+### Keyframes \{#prune-animation-definitions\}
+Keyframes follow their file's policy. Under `@prune native;` they become
+on-demand definitions emitted with the output that uses them, wrapped in their
+declared conditions and named layers; `@safelist keyframes` keeps a name for
+JavaScript consumers. See [native keyframes](/reference/directives/theme#native-keyframes)
+for usage roots, layer and `url()` restrictions, and runtime tracking.
 
 ## Native queries and validation \{#native-queries-and-validation\}
 

@@ -2,49 +2,17 @@ import Class2CSS from '~/site/components/Class2CSS'
 import DemoViewTransition from '~/site/components/demo/DemoViewTransition'
 
 ## Overview [sr-only]
-The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) creates animated transitions between two visual states. It can handle same-document updates in an SPA and same-origin navigation between documents in an MPA.
+The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) animates between two visual states of a page; MDN's [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) explains `startViewTransition()`, snapshot naming, cross-document navigation and fallbacks. Master CSS covers the CSS side: name and group snapshots with classes, and style the transition pseudo-elements with selector suffixes on `html`.
 
-In a same-document transition, call `document.startViewTransition()` and update the DOM inside its callback. The browser snapshots the old state, runs the update, snapshots the new state, then animates the old and new snapshots. Without custom CSS, the default transition is a smooth cross-fade.
-
-(click) Select a view to run a same-document transition.
-<DemoViewTransition example="views" />
-
-```js name=transition.js
-const update = () => {
-  document.querySelector('[data-current-view]').textContent = 'Product detail'
-}
-
-if (!document.startViewTransition) {
-  update()
-} else {
-  document.startViewTransition(update)
-}
-```
-
-Start with this markup, then run the script above after the elements exist. The heading changes from Overview to Product detail. The classes name snapshots that can transition independently:
-
-```html
-<section class="(view-transition-name:panel)">
-  <h3 data-current-view class="(view-transition-name:title)">Overview</h3>
-</section>
-```
-
-<Class2CSS>
-  {['(view-transition-name:panel)', '(view-transition-name:title)']}
-</Class2CSS>
-
-Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and native view-transition pseudo-elements directly in class names:
-
-| Class syntax          | Use                                                              |
-| --------------------- | ---------------------------------------------------------------- |
-| `view-transition-name`             | Names an element snapshot so it can animate apart from the root. |
-| `view-transition-class`            | Groups named snapshots for shared pseudo-element styling.        |
-| `::view-transition`   | Targets the root view-transition pseudo-element tree.            |
-| `::view-transition-group()`        | Styles the group box for a named snapshot.                       |
-| `::view-transition-image-pair()`   | Styles the wrapper around the old and new snapshot images.       |
-| `::view-transition-old()`          | Styles the outgoing snapshot image.                              |
-| `::view-transition-new()`          | Styles the incoming snapshot image.                              |
-
+| Class syntax | Use |
+| --- | --- |
+| `(view-transition-name:…)` | Names an element snapshot so it can animate apart from the root. |
+| `(view-transition-class:…)` | Groups named snapshots for shared pseudo-element styling. |
+| `…::view-transition` | Targets the root view-transition pseudo-element tree. |
+| `…::view-transition-group()` | Styles the group box for a named snapshot or `.class`. |
+| `…::view-transition-image-pair()` | Styles the wrapper around the old and new snapshot images. |
+| `…::view-transition-old()` | Styles the outgoing snapshot image. |
+| `…::view-transition-new()` | Styles the incoming snapshot image. |
 
 ---
 
@@ -143,42 +111,12 @@ Apply the shared timing to the document root:
     ]}
 </Class2CSS>
 
-(i) Only one rendered element can use the same `view-transition-name` at a time. The list uses article-specific names such as `article-aurora-image` and `article-studio-image` so the selected card can match the detail page without colliding with other cards.
-
----
-
-## Naming snapshots
-By default, a view transition animates the `root` snapshot. Use `view-transition-name`, the [`view-transition-name`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-name) property, when one element needs to move, resize, or fade separately from the rest of the page.
-
-```html
-<!-- @MARK (view-transition-name:hero) -->
-<article class="(view-transition-name:hero)">
-  ...
-</article>
-```
-
-The same `view-transition-name` must be unique in the rendered document. If two rendered elements have the same name at the same time, the transition is skipped. For lists that need automatic per-element names in same-document transitions, native CSS also provides `match-element`.
-
-```html
-<!-- @MARK (view-transition-name:match-element) -->
-<li class="(view-transition-name:match-element)">...</li>
-```
-
-`match-element` follows the identity of the same DOM element. Replacing it with a new element does not preserve that match; use an explicit name when separate list and detail elements should share a transition.
-
-Use `(view-transition-name:none)` to keep an element out of its own separate snapshot.
-
-```html
-<!-- @MARK (view-transition-name:none) -->
-<video class="(view-transition-name:none)">...</video>
-```
+(i) The same `view-transition-name` must be unique in the rendered document, or the browser skips the transition. The list uses article-specific names such as `article-aurora-image` and `article-studio-image` so the selected card can match the detail page without colliding with other cards.
 
 ---
 
 ## Styling transition pseudo-elements
-The browser exposes transition snapshots through pseudo-elements such as `::view-transition-group()`, `::view-transition-old()`, and `::view-transition-new()`. MDN recommends styling the group when the same duration or timing should apply to both the old and new snapshots.
-
-In Master CSS, write the pseudo-element after the declaration:
+Write the pseudo-element after the declaration, and put these classes on the `html` element: the pseudo-element tree is generated from the document root, so a class on an ordinary descendant generates CSS that never matches.
 
 ```html
 <html class="
@@ -198,78 +136,17 @@ In Master CSS, write the pseudo-element after the declaration:
 
 The group supplies one duration for its movement and both image animations. The outgoing `fade` runs in reverse; the incoming `fade` runs forward.
 
-(i) Apply these classes to the `html` element when you style global view-transition pseudo-elements. The pseudo-element tree is generated from the document root, so a class on an ordinary descendant will generate CSS but will not match the root transition pseudo-elements.
-
-You can also group related named snapshots with `view-transition-class` and then target the class selector in the pseudo-element argument:
-
-```html
-<article class="(view-transition-class:shared-card) (view-transition-name:product-card)">
-  ...
-</article>
-
-<html class="(animation-duration:.36s)::view-transition-group(.shared-card)">
-```
-
----
-
-## Cross-document transitions
-For same-origin MPA navigation, opt in with native CSS in both the current and destination documents. Keep the opt-in inside the motion preference query so reduced-motion readers use ordinary navigation:
-
-```css name=app.css
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
-}
-```
-
-Follow a same-origin link to test it; entering a URL in the address bar does not trigger this transition. Unsupported browsers keep normal navigation. You can still use Master CSS on elements that should become named snapshots across pages:
-
-```html
-<!-- page A and page B both render one matching hero -->
-<header class="(view-transition-name:product-hero)">
-  ...
-</header>
-```
-
-If both documents render one `product-hero` snapshot, the browser can animate between its two states. A name present only in the destination gets an entering snapshot; a name present only in the outgoing page gets an exiting snapshot. Duplicate rendered names in either document cause the transition to be skipped. See the native [cross-document transition conditions](https://www.w3.org/TR/css-view-transitions-2/#cross-doc-overview).
-
----
-
-## Fallbacks
-View transitions are progressive enhancement. Always keep the DOM update valid without animation:
-
-```js
-const update = () => renderNextState()
-
-if (!document.startViewTransition) {
-  update()
-} else {
-  document.startViewTransition(update)
-}
-```
-
 ---
 
 ## Reduced motion
-After the core transition works, check the motion preference before starting it. You can scope custom animation classes with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`:
+Scope custom transition timing with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`:
 
 ```html
 <html class="(animation-duration:.42s)::view-transition-group(root)@motion-safe">
 ```
 
-This condition controls only your duration override. It does not disable the browser's default transition animation. For same-document updates, skip the transition in JavaScript when reduced motion is requested:
+<Class2CSS>
+  {['(animation-duration:.42s)::view-transition-group(root)@motion-safe']}
+</Class2CSS>
 
-```js
-const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-if (!document.startViewTransition || shouldReduceMotion) {
-  update()
-} else {
-  document.startViewTransition(update)
-}
-```
-
-For cross-document navigation, use the conditional `@view-transition` rule above in both pages. A JavaScript check around `startViewTransition()` affects only same-document updates.
-
-See MDN's [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) and web.dev's [View transitions for single page applications](https://web.dev/learn/css/view-transitions-spas) for deeper API behavior and browser examples.
+This condition controls only your duration override; it does not disable the browser's default transition. The article example also skips `startViewTransition()` when reduced motion is requested.

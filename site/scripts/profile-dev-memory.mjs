@@ -38,7 +38,7 @@ async function browser(base) {
   try {
     const page = await instance.newPage()
     page.on('pageerror', error => errors.push(error.message))
-    for (const route of ['/', '/guide/view-transitions', '/reference/grid-columns', '/reference/rules/declarations', '/reference/tokens/color', '/tw/guide/view-transitions', '/design-system/review/package-api', '/guide/benchmarks']) {
+    for (const route of ['/', '/guide/view-transitions', '/reference/grid-columns', '/reference/rules/declarations', '/reference/tokens/color', '/tw/guide/view-transitions', '/design-system/review/package-api', '/benchmarks']) {
       const response = await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 })
       if (response.status() !== 200) throw new Error(`${route}: HTTP ${response.status()}`)
       await page.waitForFunction(() => [...document.querySelectorAll('site-island')].filter(island => {

@@ -5,17 +5,8 @@ import { deliveryFlowMarkdown } from './delivery-flows'
 
 export const installationGuideSlugs = [
   '', 'integrations', 'cli', 'cdn',
-  'vite', 'vite/runtime', 'vscode',
-  'react', 'react/runtime', 'vuejs', 'vuejs/runtime', 'lit',
-  'webpack', 'webpack/runtime', 'rspack', 'rspack/runtime', 'rsbuild', 'rsbuild/runtime',
-  'astro', 'astro/runtime', 'astro/progressive', 'svelte',
-  'express', 'express/progressive', 'php', 'php/runtime', 'rails', 'rails/runtime',
-  'laravel', 'wordpress', 'wordpress/runtime', 'shopify',
-  'aspnet-core', 'aspnet-core/runtime', 'blazor', 'blazor/runtime',
-  'storybook', 'angular', 'angular/runtime',
-  'nextjs', 'nextjs/runtime', 'nextjs/progressive',
-  'nuxtjs', 'nuxtjs/runtime', 'nuxtjs/progressive',
-  'react-router', 'react-router/runtime', 'tanstack-start', 'tanstack-start/runtime'
+  'vite', 'webpack', 'server-rendered',
+  'nextjs', 'nuxtjs', 'astro', 'svelte', 'angular', 'lit', 'storybook'
 ] as const
 
 export async function installationGuideContent(siteRoot: string, slug: string) {
@@ -26,8 +17,6 @@ export async function installationGuideContent(siteRoot: string, slug: string) {
     component(name, attributes) {
       if (name === 'InstallationGuides') return installationGuidesMarkdown()
       if (name === 'DeliveryFlow') return deliveryFlowMarkdown(String(attributes.name))
-      if (name === 'IconButtons' && slug === 'integrations') return installationGuidesMarkdown()
-      if (name === 'VSCodeSvg') return ''
     }
   })
   if (result.notes.length) throw new Error(`Incomplete installation/${slug} export: ${result.notes.join('; ')}`)

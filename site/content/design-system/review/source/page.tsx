@@ -4,7 +4,7 @@ import ComponentDocumentation from './content.mdx'
 import Link from '~/site/docs-shell/components/Link'
 import AppearanceControl from '../../components/AppearanceControl'
 import { BenchmarkSource } from '~/site/components/benchmarks'
-import { benchmarkSnapshots } from '~/site/content/guide/benchmarks/components/BenchmarkSnapshots'
+import { benchmarkSnapshots } from '~/site/content/benchmarks/components/BenchmarkSnapshots'
 import './page.css'
 
 export { metadata }
@@ -41,7 +41,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="source-real-use">
-      <div className="review-source-sectionHeading"><div><h2 id="source-real-use">Actual Guide source</h2><p>The published data-sources section lists this snapshot with its regeneration commands and the limits of the measurements.</p></div><Link href="/guide/benchmarks#data-sources">Open /guide/benchmarks</Link></div>
+      <div className="review-source-sectionHeading"><div><h2 id="source-real-use">Actual Guide source</h2><p>The published data-sources section lists this snapshot with its regeneration commands and the limits of the measurements.</p></div><Link href="/benchmarks#data-sources">Open /benchmarks</Link></div>
       <div className="review-source-realUse"><GuideSourceRow /></div>
       <p className="review-source-optionNote">The source footer does not replace the Guide’s full methodology or source table.</p>
     </section>

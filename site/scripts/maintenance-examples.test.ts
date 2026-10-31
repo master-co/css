@@ -8,14 +8,12 @@ import preset from '@master/css-preset/default-manifest.json' with { type: 'json
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
-import { deliveryFences, deliverySource, deliveryFixture, deliverySection } from '../tests/delivery-examples'
+import { deliveryFences, deliverySource, deliveryFixture, pruningFixture } from '../tests/delivery-examples'
 import { compileMigrationExample } from '../tests/migration-examples'
 import { projectStyleExample } from '../components/demo/project-style-examples'
 
-const document = readFileSync(new URL('../content/guide/global-styles/content.mdx', import.meta.url), 'utf8')
-test('the maintenance guide compiles its actual CSS and markup examples', async () => {
+test('the maintenance example compiles and compares snapshots by changed token consumers', async () => {
   // The universal compiler receives the imported preset as resolved context.
-  assert.match(document, /<ProjectStyleExample name="maintenance"/u)
   const { source, html } = projectStyleExample('maintenance')
   const { manifest, css } = await compileManifest(source, { baseManifest: preset as unknown as MasterCSSManifest })
   const tooling = createToolingSessionSync({ manifest })
@@ -68,7 +66,7 @@ test('native pruning examples retain each route’s authored HTML and shared saf
   const scanner = new MasterCSSScanner({ manifest: preset as unknown as MasterCSSManifest }, fixture.root)
   const collection = createStylesheetCollection()
   try {
-    const fences = deliveryFences(deliverySection('native-css-pruning', 'Scoped scanning'))
+    const fences = deliveryFences(pruningFixture('Scoped scanning'))
     // The final a.css fence demonstrates exclusions separately from the two-route graph.
     for (const fence of fences.filter(fence => /^(css|html)$/.test(fence.language)).slice(0, 5)) fixture.write(fence.name, fence.text)
     await scanner.init()
@@ -91,7 +89,7 @@ test('the shared native source has independent outputs under each documented roo
   const scanner = new MasterCSSScanner({ manifest: preset as unknown as MasterCSSManifest }, fixture.root)
   const collection = createStylesheetCollection()
   try {
-    const fences = deliveryFences(deliverySection('native-css-pruning', 'Root scope'))
+    const fences = deliveryFences(pruningFixture('Root scope'))
     for (const fence of fences.filter(fence => /^(css|html)$/.test(fence.language))) fixture.write(fence.name, fence.text)
     await scanner.init()
     for (const name of ['app/a/a.css', 'app/b/b.css']) {

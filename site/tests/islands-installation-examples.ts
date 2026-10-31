@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationPage, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -27,7 +27,7 @@ export async function islandsInstallationFixture(route: typeof islandsInstallati
   const mode = route.endsWith('runtime-rendering') ? 'runtime' : route.endsWith('static-rendering') ? 'static' : 'progressive'
   const dispose = () => rmSync(root, { recursive: true, force: true })
   const write = (name: string, text: string) => { mkdirSync(dirname(join(root, name)), { recursive: true }); writeFileSync(join(root, name), text) }
-  const source = installationSource(route)
+  const source = installationSource(installationPage(route))
   const fences = deliveryFences(source)
   const file = (name: string) => {
     const fence = fences.find(fence => decodeURIComponent(fence.name ?? '') === name)

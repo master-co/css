@@ -30,7 +30,7 @@ export default function BenchmarkSection() {
           label={$('CSS size')}
           title={$('Only the CSS a page uses.')}
           body={$('The total CSS each documentation page delivers, measured raw and with Brotli. Master CSS ships only the rules a page uses.')}>
-          <Link className="home-section-link" href="/guide/benchmarks#page-css-size">
+          <Link className="home-section-link" href="/benchmarks#page-css-size">
             {$('View benchmark details')}
             <IconArrowRight aria-hidden="true" size={16} stroke={1.75} />
           </Link>

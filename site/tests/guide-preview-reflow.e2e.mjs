@@ -5,10 +5,9 @@ import { chromium, webkit } from '@playwright/test'
 
 const base = process.env.MASTER_SITE_URL ?? 'http://localhost:3000'
 const routes = [
-  'authoring-packages', 'cascade-layers', 'colors', 'containers', 'corner-radius',
-  'elevation', 'flash-of-unstyled-content', 'global-styles', 'installation/lit',
-  'migration/css', 'motion', 'route-level-styles', 'sizing', 'spacing', 'syntax-tutorial', 'theme',
-  'typography', 'variables-and-modes', 'view-transitions',
+  'authoring-packages', 'cascade-layers', 'colors', 'global-styles', 'installation/lit',
+  'layout-system', 'migration/css', 'responsive-design', 'route-level-styles', 'syntax-tutorial', 'theme',
+  'typography', 'view-transitions',
 ]
 const browsers = new Map()
 before(async () => {

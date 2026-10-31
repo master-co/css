@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationDisclosure, installationSection, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -34,7 +34,8 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     const cssEntry = framework === 'react' ? 'src/index.css' : framework === 'vue' ? 'src/assets/main.css' : 'src/index.css'
     write(cssEntry, 'body { margin: 0; }\n')
     const component = framework === 'react' ? 'src/App.tsx' : framework === 'vue' ? 'src/App.vue' : 'src/my-element.ts'
-    const source = installationSource(route)
+    // React and Vue are sections of the Vite guide; their runtime mode is its disclosure.
+    const source = framework === 'lit' ? installationSource('/lit') : installationSection('/vite', framework)
     const authored = deliveryFences(source).find(fence => fence.name === component)!.text
     // Keep normal template input for the installer; then use the complete authored component.
     write(component, framework === 'lit' ? "import { LitElement, html } from 'lit'\nimport { customElement } from 'lit/decorators.js'\n@customElement('my-element')\nexport class MyElement extends LitElement { render() { return html`Hello` } }\n" : authored)
@@ -44,8 +45,13 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
       : framework === 'vue' ? "import './assets/main.css'\nimport { createApp } from 'vue'\nimport App from './App.vue'\ncreateApp(App).mount('#app')\n"
         : "import './my-element'\n")
     write('index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installation fixture</title></head><body>${framework === 'lit' ? '<my-element></my-element>' : '<div id="app"></div>'}<script type="module" src="/${main}"></script></body></html>`)
-    const command = deliveryFences(source).find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
-    assert.equal(command, `npm create @master/css@rc -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
+    if (framework === 'lit') {
+      const command = deliveryFences(source).find(fence => fence.text.includes('npm create @master/css@rc'))!.text.trim()
+      assert.equal(command, `npm create @master/css@rc -- --framework ${framework}${staticMode ? '' : ' --mode runtime'} --yes`)
+    } else {
+      assert.ok(installationSection('/vite', 'frameworks').includes(`| \`${framework}\` |`), `${route}: framework table`)
+      if (!staticMode) assert.match(installationDisclosure('/vite', 'Generate new classes in the browser'), /--mode runtime/)
+    }
     const plan = planMasterCSSSetup({ root, framework, mode: staticMode ? undefined : 'runtime', install: false, yes: true })
     applyMasterCSSSetupPlan(plan, { install: false })
     const config = readFileSync(join(root, 'vite.config.ts'), 'utf8')

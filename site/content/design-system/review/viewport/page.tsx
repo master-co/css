@@ -61,7 +61,7 @@ export default function Page() {
     <section aria-labelledby="viewport-real-use">
       <div className="review-viewport-sectionHeading">
         <div><h2 id="viewport-real-use">Actual Reference use</h2><p>The padding reference crosses the same breakpoint inside an iframe, preserving the class and its browser behavior.</p></div>
-        <Link href="/guide/spacing">Open /guide/spacing</Link>
+        <Link href="/guide/layout-system#namespace-for-spacing">Open /guide/layout-system#namespace-for-spacing</Link>
       </div>
       <DemoExample page="padding" section="apply-conditionally" />
       <p className="review-viewport-optionNote">The Reference keeps control of its teaching geometry. Viewport decoration must not make an outer container query look like a real media query.</p>

@@ -8,7 +8,7 @@ export const surfaceModeValues = [
 
 /** The guide each figure points to for details; the tests check every page exists. */
 export const designSystemGuides = {
-  'theme-modes': '/guide/variables-and-modes',
+  'theme-modes': '/guide/theme',
   'theme-variables': '/guide/theme',
   'p3-palette': '/guide/colors',
   'art-gallery': '/guide/view-transitions',

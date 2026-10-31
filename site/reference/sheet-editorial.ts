@@ -79,7 +79,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --color-brand: oklch(56% .2 262);\n}',
       html: '<button class="bg-brand">…</button>',
     },
-    guide: { label: 'Colors', href: '/guide/colors' },
+    guide: { label: 'Color', href: '/guide/colors' },
   },
   {
     id: 'color-roles',
@@ -91,7 +91,7 @@ export const tokenPages: TokenPageEditorial[] = [
       { namespace: 'color-line', title: 'Line', prefix: 'b' },
     ],
     primary: ['fg', 'bg', 'b'],
-    note: 'A role is part of the color name, so every color family accepts every role, such as `bg-text-link` or `outline-line-control`.',
+    note: 'A role is part of the color name, so every color family accepts every role, such as `bg-text-link` or `outline-line-control`. On the base and inset surfaces, `fg-text-body`, `fg-text-strong` and `fg-text-muted` keep at least 4.5:1 contrast in both schemes, and `b-line-control` keeps at least 3:1; `line-divider` and `line-subtle` are decorative.',
     usage: {
       lead: 'Build a card from roles: a raised surface, a divider line, and strong, body and muted text.',
       html: '<article class="p-lg r-xl b(1) b-solid b-line-divider bg-surface-raised">\n  <h3 class="m(0) text-lg font-regular fg-text-strong">Make space for ideas</h3>\n  <p class="mt-xs mb(0) text-sm fg-text-body">A steady rhythm keeps the focus on the content.</p>\n  <p class="mt-md mb(0) pt-sm bt(1) bt-solid bt-line-divider text-xs fg-text-muted">4 min read</p>\n</article>',
@@ -101,7 +101,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --color-text-brand: light-dark(\n    var(--color-indigo-60),\n    var(--color-indigo-30)\n  );\n}',
       html: '<p class="fg-text-brand">…</p>',
     },
-    guide: { label: 'Colors', href: '/guide/colors' },
+    guide: { label: 'Color', href: '/guide/colors#choose-a-color-token' },
   },
   {
     id: 'spacing',
@@ -118,7 +118,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --spacing-card: 1.25rem;\n}',
       html: '<div class="p-card">…</div>',
     },
-    guide: { label: 'Spacing', href: '/guide/spacing' },
+    guide: { label: 'Layout', href: '/guide/layout-system#namespace-for-spacing' },
   },
   {
     id: 'container',
@@ -136,7 +136,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --container-prose: 40rem;\n}',
       html: '<article class="max-w-prose">…</article>',
     },
-    guide: { label: 'Sizing', href: '/guide/sizing' },
+    guide: { label: 'Layout', href: '/guide/layout-system#use-container-tokens' },
   },
   {
     id: 'radius',
@@ -153,7 +153,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --radius-md: .5rem;\n  --radius-card: 1.25rem;\n}',
       html: '<div class="r-card">…</div>',
     },
-    guide: { label: 'Corner radius', href: '/guide/corner-radius' },
+    guide: { label: 'Color', href: '/guide/colors#raised-surfaces' },
   },
   {
     id: 'shadow',
@@ -169,7 +169,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --shadow-card:\n    0 1px 2px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .4)),\n    0 12px 24px -12px light-dark(oklch(0% 0 none / .2), oklch(0% 0 none / .5));\n}',
       html: '<article class="shadow-card">…</article>',
     },
-    guide: { label: 'Elevation', href: '/guide/elevation' },
+    guide: { label: 'Color', href: '/guide/colors#raised-surfaces' },
   },
   {
     id: 'font',
@@ -224,7 +224,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --leading-prose: 1.7;\n}',
       html: '<p class="leading-prose">…</p>',
     },
-    guide: { label: 'Typography', href: '/guide/typography#line-height' },
+    guide: { label: 'Typography', href: '/guide/typography#without-vs-with-text-token' },
   },
   {
     id: 'tracking',
@@ -240,7 +240,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --tracking-tight: -.03em;\n  --tracking-display: -.05em;\n}',
       html: '<h1 class="tracking-display">…</h1>',
     },
-    guide: { label: 'Typography', href: '/guide/typography#letter-spacing' },
+    guide: { label: 'Typography', href: '/guide/typography#without-vs-with-text-token' },
   },
   {
     id: 'motion',
@@ -251,7 +251,7 @@ export const tokenPages: TokenPageEditorial[] = [
       { namespace: 'duration', title: 'Durations', placeholder: 'duration', prefix: 'transition' },
       { namespace: 'easing', title: 'Easing', placeholder: 'easing', prefix: 'transition' },
     ],
-    note: 'Durations and easing share the `animation-` and `transition-` prefixes, so their names stay distinct. Each `--animate-*` token is a complete `animation` shorthand; `animate-<name>` emits `animation: var(--animate-<name>)` and retains the keyframes it names.',
+    note: 'Durations and easing share the `animation-` and `transition-` prefixes, so their names stay distinct. Each `--animate-*` token is a complete `animation` shorthand; `animate-<name>` emits `animation: var(--animate-<name>)` and retains the keyframes it names. With the same conditions, `animation-*` longhand classes sort before `animate-*`, so the shorthand resets them: override with a native declaration such as `(animation-duration:var(--duration-fast))`. Preset `animate-*` tokens repeat infinitely; add `(animation-iteration-count:1)` or define a custom token for a single run, and pair the class with `@motion-safe`.',
     usage: {
       lead: 'Pulse a live marker only when motion is allowed, and ease a hover change.',
       html: '<div class="flex items-center gap-md">\n  <span class="relative flex w(10) h(10)">\n    <span class="absolute (inset:0) pill bg-green-40 (opacity:.6) animate-ping@motion-safe"></span>\n    <span class="relative w(10) h(10) pill bg-green-50"></span>\n  </span>\n  <button class="px-md py-xs pill b(1) b-solid b-line-control bg-surface-raised text-sm fg-text-strong (transition-property:background-color) transition-fast transition-smooth bg-surface-inset:hover">Live preview</button>\n</div>',
@@ -261,7 +261,7 @@ export const tokenPages: TokenPageEditorial[] = [
       theme: '@theme {\n  --animate-reveal:\n    reveal var(--duration-slow) var(--easing-crisp) both;\n}\n\n@keyframes reveal {\n  from { opacity: 0; translate: 0 .5rem; }\n}',
       html: '<section class="animate-reveal@motion-safe">…</section>',
     },
-    guide: { label: 'Motion', href: '/guide/motion' },
+    guide: { label: 'Theme tokens', href: '/guide/theme#define-motion-tokens' },
   },
 ]
 
@@ -276,7 +276,7 @@ export const recipePages: RecipePageEditorial[] = [
       lead: 'Lay out three equal columns and let a feature span two columns and two rows.',
       html: '<div class="grid-cols(3) gap-xs">\n  <div class="grid-col-span(2) grid-row-span(2) flex items-end min-h(120) p-sm r-lg bg-line-subtle text-sm fg-text-strong">Feature</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Notes</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Drafts</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Archive</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Shared</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Trash</div>\n</div>',
     },
-    guide: { label: 'Layout system', href: '/guide/layout-system' },
+    guide: { label: 'Layout', href: '/guide/layout-system#build-column-grids' },
   },
   {
     id: 'truncation',

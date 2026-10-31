@@ -4,13 +4,13 @@ import { FoundationColorRoles, FoundationSurfaces, FoundationLines, FoundationTe
 
 const examples = [
   ['Color roles', '/guide/colors#choose-a-color-token', FoundationColorRoles],
-  ['Surface hierarchy', '/guide/colors#surfaces', FoundationSurfaces],
-  ['Line roles', '/guide/colors#line-roles', FoundationLines],
-  ['Text roles', '/guide/colors#text-roles', FoundationTextRoles],
-  ['Base hue', '/guide/colors#base-hue-aliases', FoundationHue],
-  ['Text hue', '/guide/colors#text-hue-aliases', FoundationTextHue],
-  ['Quiet elevation', '/guide/elevation#pair-elevation-with-color-roles', FoundationElevation],
-  ['Interactive elevation', '/guide/elevation#change-elevation-by-state', FoundationElevationState],
+  ['Surface hierarchy', '/reference/tokens/color-roles#color-surface', FoundationSurfaces],
+  ['Line roles', '/reference/tokens/color-roles#color-line', FoundationLines],
+  ['Text roles', '/reference/tokens/color-roles#color-text', FoundationTextRoles],
+  ['Base hue', '/guide/colors#mode-aware-hue-aliases', FoundationHue],
+  ['Text hue', '/guide/colors#mode-aware-hue-aliases', FoundationTextHue],
+  ['Quiet elevation', '/guide/colors#raised-surfaces', FoundationElevation],
+  ['Interactive elevation', '/guide/colors#raised-surfaces', FoundationElevationState],
 ] as const
 
 export default function PaintRecipes() {

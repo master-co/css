@@ -1,0 +1,18 @@
+// Behavior fixture: a host forwarding the public engine surface (see /reference/packages#css).
+import type { MasterCSSEngine } from '@master/css'
+
+function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
+  return {
+    binding: inner.binding,
+    ensureClassRules: names => inner.ensureClassRules(names),
+    deleteClassRules: names => inner.deleteClassRules(names),
+    registerEmittedGlobals: globals => inner.registerEmittedGlobals(globals),
+    replaceEmittedGlobals: globals => inner.replaceEmittedGlobals(globals),
+    refresh: manifest => inner.refresh(manifest),
+    executionState: names => inner.executionState(names),
+    inspect: name => inner.inspect(name),
+    snapshot: () => inner.snapshot(),
+    dispose: () => inner.dispose(),
+    [Symbol.dispose]: () => inner.dispose()
+  }
+}

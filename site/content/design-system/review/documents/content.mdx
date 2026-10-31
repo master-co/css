@@ -66,7 +66,7 @@ See the [complete utility table specimen](/design-system/review/utility-table).
 ]} />
 ```
 
-Provide reader-facing group names and source keys from the manifest; `namespace` or `namespaces` filters unsupported keys. With no descriptions the table uses two columns. The table is a document aid, outside the measured layout of a demo. See its actual uses in [Colors](/guide/colors#namespaces-for-color), [Spacing](/guide/spacing#namespace-for-spacing) and [Typography](/guide/typography), and the [utility table review](/design-system/review/utility-table).
+Provide reader-facing group names and source keys from the manifest; `namespace` or `namespaces` filters unsupported keys. With no descriptions the table uses two columns. The table is a document aid, outside the measured layout of a demo. See its actual uses in [Colors](/guide/colors#choose-a-color-token), [Spacing](/guide/layout-system#namespace-for-spacing) and [Typography](/guide/typography), and the [utility table review](/design-system/review/utility-table).
 
 ### Numeric token table \{#numeric-token-table\}
 
@@ -78,7 +78,7 @@ See the [complete spacing table specimen](/design-system/review/numeric-table).
 <ThemeNumberVariableTable namespace="spacing" representation="spacing" />
 ```
 
-The `representation` prop is optional. [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) use the same data-driven table with descriptions, without the spacing specimen. Keep the native token value and reference unit visible in text, and place this inventory outside a measured layout demo. The [numeric table review](/design-system/review/numeric-table) shows the current shared table.
+The `representation` prop is optional. [Breakpoints](/guide/responsive-design#based-on-viewport-breakpoints) and [Containers](/guide/responsive-design#based-on-container-sizes) use the same data-driven table with descriptions, without the spacing specimen. Keep the native token value and reference unit visible in text, and place this inventory outside a measured layout demo. The [numeric table review](/design-system/review/numeric-table) shows the current shared table.
 
 ### File structure
 Use `DocumentFileTree` for a static directory structure. Native nested lists preserve the hierarchy; monochrome icons are decorative. Entries can have a short description and nested children.
@@ -122,7 +122,7 @@ Use the same entry data when exporting a plain-text tree. See [Monorepo](/guide/
 
 <DemoWaterfall title="A dependency discovered later" description="The second request becomes known after the first resource loads." rows={[{ label: 'Entry', start: 0, end: 40, tone: 'violet' }, { label: 'Dependency', start: 50, end: 90, tone: 'blue' }]} caption="A compact two-resource diagram." />
 
-Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/preload-critical-resources#preload-runtime-engine).
+Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/rendering-modes#preload-runtime-engine).
 The [waterfall review](/design-system/review/waterfall) shows the current request-order diagram.
 
 ### Before and after CSS
@@ -141,7 +141,7 @@ The [waterfall review](/design-system/review/waterfall) shows the current reques
 
 <DemoStyleComparison html={'<p class="message">Saved to your workspace.</p>'} css=".message { padding: 1rem; font: 500 1rem/1.5 system-ui; }" height={160} />
 
-By default, the previews use the same fixed height, with native scrolling when needed. For normal-flow content such as the first-paint comparison above, pass `sizing="content"` so each frame grows and shrinks with its document, including native margins. Keep the default viewport sizing for fixed, sticky or viewport-dependent geometry. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/flash-of-unstyled-content).
+By default, the previews use the same fixed height, with native scrolling when needed. For normal-flow content such as the first-paint comparison above, pass `sizing="content"` so each frame grows and shrinks with its document, including native margins. Keep the default viewport sizing for fixed, sticky or viewport-dependent geometry. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/rendering-modes#prevent-premature-rendering).
 
 ### Document flow
 
@@ -163,7 +163,7 @@ By default, the previews use the same fixed height, with native scrolling when n
 
 Use two to four concise stages. An optional caption explains shared constraints below the stages. The component owns its grid, spacing and border; keep it outside any layout being measured. No controls, focus stops or animation are added.
 
-`DeliveryFlow` supplies shared, exportable recipes for [runtime and hydration](/guide/rendering-modes#runtime-rendering), [source scanning](/guide/scanning-latent-classes), [native pruning](/guide/native-css-pruning) and [route styles](/guide/route-level-styles). Their ordered text is included in search and Markdown.
+`DeliveryFlow` supplies shared, exportable recipes for [runtime and hydration](/guide/rendering-modes#runtime-rendering), [source scanning](/guide/scanning-and-pruning), [native pruning](/guide/scanning-and-pruning#prune-native-css) and [route styles](/guide/route-level-styles). Their ordered text is included in search and Markdown.
 
 ### Document choices
 

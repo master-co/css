@@ -1,0 +1,420 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets.
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Install Vite and Master CSS
+      In the existing project root or theme directory, install Vite and the Master CSS Vite integration. Run `npm init -y` first if the directory has no `package.json`.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm install @master/css@rc
+      npm install -D vite @master/css-vite@rc
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Configure Vite
+      Build the asset entry into the host's public asset directory. Set `outDir` from the [host table](#hosts); `emptyOutDir: false` keeps the host's other files.
+    </StepL>
+    <StepR>
+      ```ts name=vite.config.ts
+      import { defineConfig } from 'vite'
+      import masterCSS from '@master/css-vite'
+
+      export default defineConfig({
+        base: './',
+        plugins: [
+          masterCSS({ mode: 'static' })
+        ],
+        build: {
+          outDir: 'public/assets',
+          emptyOutDir: false,
+          rollupOptions: {
+            input: 'src/master.ts',
+            output: {
+              entryFileNames: '[name].js',
+              assetFileNames: '[name][extname]'
+            }
+          }
+        }
+      })
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create the asset entry
+      Import Master CSS from the entry. Templates are not part of Vite's module graph, so append the `@source` lines from the host's [section](#hosts) to this stylesheet.
+    </StepL>
+    <StepR>
+      ```ts name=src/master.ts
+      import './master.css'
+      ```
+
+      ```css name=src/master.css
+      @import "@master/css";
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add build scripts
+      Merge these scripts into `package.json`. Build before starting or publishing the host, and keep the watcher running beside the host's server during development.
+    </StepL>
+    <StepR>
+      ```json name=package.json
+      {
+        "scripts": {
+          "build:assets": "vite build",
+          "watch:assets": "vite build --watch"
+        }
+      }
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Load the stylesheet
+    Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the heading to a rendered template.
+  </Step>
+  <HelloWorld url="localhost" />
+</StepSection>
+
+```html
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+  Hello World
+</h1>
+```
+
+Deploy `master.css` and every CSS file it imports together, preserving their names and relative paths. The heading should stay large, heavy and italic with JavaScript disabled. If the stylesheet loads but the classes have no effect, check the `@source` paths, which are relative to `src/master.css`, and rebuild. Static rendering needs complete class strings in those files: map states or database and editor values to complete class names, or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist).
+
+## Load the built assets \{#hosts\}
+
+| Host | `outDir` | Template sources |
+| --- | --- | --- |
+| [PHP](#php) | `public/assets` | `.php` files |
+| [Rails](#rails) | `public/assets` | ERB views |
+| [WordPress](#wordpress) | `assets` in the theme | Theme `.php` templates |
+| [Shopify](#shopify) | `assets` in the theme | Liquid files and template JSON |
+| [ASP.NET Core](#aspnet-core) | `wwwroot/assets` | Razor Pages and MVC views |
+| [Blazor](#blazor) | `wwwroot/assets` | `.razor`, `.cshtml` and host HTML |
+| [Express](#express) | `public/assets` | Template engine views |
+
+### PHP \{#php\}
+Scan the PHP templates and link the stylesheet from the page head. For CodeIgniter, scan `app/Views/**/*.php` and load `/assets/master.css` with the normal asset helper.
+
+```css name=src/master.css
+@source "../app/**/*.php";
+@source "../public/**/*.php";
+```
+
+```html name=public/index.php
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+For a plain PHP project, run `php -S localhost:8000 -t public` after building, assuming `public` is the web root.
+
+### Rails \{#rails\}
+Scan ERB views and reference the stylesheet from the application layout:
+
+```css name=src/master.css
+@source "../app/views/**/*.erb";
+```
+
+```erb name=app/views/layouts/application.html.erb
+<%= stylesheet_link_tag "/assets/master.css", "data-turbo-track": "reload" %>
+```
+
+Render the heading from a view that a route and controller reach, then start `bin/rails server`. These URLs serve the files under `public/assets` directly. For a new release, version the URLs, such as `/assets/master.css?v=2`: Turbo's [asset tracking](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) compares the tags, so overwriting files at the same URLs does not trigger a reload.
+
+### WordPress \{#wordpress\}
+Work in the active theme or child theme directory and set `outDir: 'assets'`. Scan the theme's PHP templates, including overrides such as `woocommerce/**/*.php`, but not plugin internals:
+
+```css name=src/master.css
+@source "../**/*.php";
+@source not "../vendor/**";
+@source not "../node_modules/**";
+```
+
+Enqueue the stylesheet from `functions.php`, keeping its existing setup. The [stylesheet-directory helpers](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/) point to the child theme when one is active:
+
+```php name=functions.php
+add_action('wp_enqueue_scripts', function () {
+  wp_enqueue_style(
+    'master-css',
+    get_stylesheet_directory_uri() . '/assets/master.css',
+    [],
+    filemtime(get_stylesheet_directory() . '/assets/master.css')
+  );
+});
+```
+
+Build before loading the page so `filemtime()` can read the file, and keep `wp_head()` and `wp_footer()` in the theme so WordPress prints enqueued assets.
+
+### Shopify \{#shopify\}
+Work in the local theme directory and set `outDir: 'assets'`. Scan the theme's [Liquid templates, sections, blocks and snippets](https://shopify.dev/docs/storefronts/themes/architecture):
+
+```css name=src/master.css
+@source "../layout/**/*.liquid";
+@source "../sections/**/*.liquid";
+@source "../blocks/**/*.liquid";
+@source "../snippets/**/*.liquid";
+@source "../templates/**/*.liquid";
+@source "../templates/**/*.json";
+```
+
+Add the tag inside the theme layout's `<head>`, preserving `content_for_header`, `content_for_layout` and the theme's other assets:
+
+```liquid name=layout/theme.liquid
+{{ 'master.css' | asset_url | stylesheet_tag }}
+```
+
+Put the heading in a section that the current template renders, and run the Vite watcher beside `shopify theme dev`; a preview update does not rebuild the CSS. The preset includes global base styles, so check existing storefront components and use [Cascade layers](/guide/cascade-layers) to decide which theme styles to keep. A theme without an asset build can use the [CLI](/guide/installation/cli) with the same sources.
+
+### ASP.NET Core \{#aspnet-core\}
+Set `outDir: 'wwwroot/assets'`, scan Razor Pages and MVC views, and reference the stylesheet from the shared layout:
+
+```css name=src/master.css
+@source "../Pages/**/*.cshtml";
+@source "../Views/**/*.cshtml";
+@source not "../bin/**";
+@source not "../obj/**";
+```
+
+```html name=Pages/Shared/_Layout.cshtml
+<link rel="stylesheet" href="~/assets/master.css" asp-append-version="true">
+```
+
+Build the Vite assets before `dotnet build` or `dotnet publish` so .NET includes them in its static asset output. New .NET templates can include Bootstrap, whose unlayered declarations can override layered Master CSS utilities; see [Cascade layers](/guide/cascade-layers).
+
+### Blazor \{#blazor\}
+Blazor follows the ASP.NET Core setup with `outDir: 'wwwroot/assets'`, scanning components and host pages:
+
+```css name=src/master.css
+@source "../**/*.{razor,cshtml,html}";
+@source not "../bin/**";
+@source not "../obj/**";
+@source not "../node_modules/**";
+@source not "../wwwroot/assets/**";
+```
+
+Add the stylesheet to the `<head>` of the [host document for your Blazor model](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0), such as `Components/App.razor`, `wwwroot/index.html` or `Pages/_Host.cshtml`. Preserve its `<base>`, `<HeadOutlet />`, routes and Blazor bootstrap script; the relative path resolves against `<base>`.
+
+```html name=Components/App.razor
+<link rel="stylesheet" href="assets/master.css">
+```
+
+Server-rendered components stay styled with JavaScript disabled. A WebAssembly-only app still needs its framework JavaScript to render the component.
+
+### Express \{#express\}
+Scan the template engine's views, serve the public directory, and link the stylesheet from the layout that renders the page:
+
+```css name=src/master.css
+@source "../views/**/*.{ejs,hbs,pug}";
+```
+
+```js name=app.js
+app.use(express.static('public'))
+```
+
+```html name=views/layout.ejs
+<link rel="stylesheet" href="/assets/master.css">
+```
+
+In the Network panel, `/assets/master.css` must return CSS rather than a fallback HTML page.
+
+### Laravel \{#laravel\}
+Laravel already builds assets with Vite, so skip the steps above. In an existing [Laravel project](https://laravel.com/docs/installation), run the installer; it adds Master CSS to `resources/css/app.css` and registers the plugin beside `laravel-vite-plugin`:
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework laravel --mode static --yes
+```
+
+Scan Blade views from the CSS entry, and keep it in the Laravel plugin's `input` list. Existing apps keep their JavaScript entries and other plugins:
+
+```css name=resources/css/app.css
+@import '@master/css';
+@source '../views/**/*.blade.php';
+```
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import masterCSS from '@master/css-vite'
+
+export default defineConfig({
+  plugins: [
+    laravel({ input: ['resources/css/app.css'], refresh: true }),
+    masterCSS({ mode: 'static' })
+  ]
+})
+```
+
+Load the entry with `@vite`, which resolves the versioned file from Laravel's build manifest, then run `npm run build` and load the page through Laravel:
+
+```html name=resources/views/app.blade.php
+<head>
+  @vite('resources/css/app.css')
+</head>
+```
+
+If the application imports CSS from a JavaScript entry instead, keep that entry and avoid loading the same CSS through both paths. See [Laravel's Vite integration](https://laravel.com/docs/vite).
+
+---
+
+## Choose another rendering mode \{#rendering-modes\}
+Static mode is the default. Keep the asset entry when changing modes:
+
+| Mode | Hosts | What changes |
+| --- | --- | --- |
+| Static | All hosts | Nothing at runtime |
+| Runtime | PHP, Rails, WordPress, ASP.NET Core, Blazor, Express | `mode: 'runtime'`, a runtime entry and a module script |
+| Progressive | Express | The server renders first-response CSS; the runtime handles later classes |
+
+<DocumentDisclosure title="Generate new classes in the browser">
+
+Install the runtime, set `masterCSS({ mode: 'runtime' })` in `vite.config.ts`, and start it from the asset entry. Runtime generation does not need the `@source` lines:
+
+```bash name=Terminal
+npm install @master/css-runtime@rc
+```
+
+```ts name=src/master.ts
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+runtime.observe()
+```
+
+Load `master.js` as a module beside the stylesheet, keeping the layout's other tags:
+
+| Host | Module script |
+| --- | --- |
+| PHP, Express | `<script type="module" src="/assets/master.js"></script>` before `</body>` |
+| Rails | `<%= javascript_include_tag "/assets/master.js", type: "module", "data-turbo-track": "reload" %>` |
+| ASP.NET Core | `<script type="module" src="~/assets/master.js" asp-append-version="true"></script>` |
+| Blazor | `<script type="module" src="assets/master.js"></script>` after the Blazor bootstrap script |
+
+WordPress 6.5 or later loads the module with [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/) inside the same hook:
+
+```php name=functions.php
+wp_enqueue_script_module(
+  'master-css-runtime',
+  get_stylesheet_directory_uri() . '/assets/master.js',
+  [],
+  filemtime(get_stylesheet_directory() . '/assets/master.js')
+);
+```
+
+Blazor Web Apps patch the DOM during [enhanced navigation](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0), which can remove the runtime's stylesheet. Restart the runtime after each `enhancedload`, serializing streamed updates. Standalone WebAssembly and older Blazor Server hosts use the entry above.
+
+```ts name=src/master.ts
+import { MasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+declare const Blazor: {
+  addEventListener(name: 'enhancedload', listener: () => void): void
+}
+
+async function startRuntime() {
+  const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+  runtime.observe()
+  return runtime
+}
+
+let runtime = await startRuntime()
+let navigation = Promise.resolve()
+
+Blazor.addEventListener('enhancedload', () => {
+  navigation = navigation.then(async () => {
+    runtime.dispose()
+    runtime = await startRuntime()
+  }).catch(console.error)
+})
+```
+
+Deploy every generated stylesheet, import and program asset together. Runtime styling starts after JavaScript loads; keep the document visible when scripts are unavailable, as described in [Rendering modes](/guide/rendering-modes#prevent-premature-rendering). After startup, run this in the browser console. The heading should gain an underline without rebuilding:
+
+```js
+document.querySelector('h1').classList.add('underline')
+```
+
+The runtime observes the page document; content inside a separate iframe or shadow root needs its own CSS delivery.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Include server-rendered styles with Express">
+
+For progressive rendering, Express renders the template, `@master/css-server` injects the first-response CSS, and the runtime adopts it for later classes. Install the server renderer and preset beside the runtime:
+
+```bash name=Terminal
+npm install @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
+```
+
+Keep `masterCSS({ mode: 'runtime' })` and let the entry load the program lazily, so a fully covered page defers the engine until a new class needs it:
+
+```ts name=src/master.ts
+import { MasterCSSRuntime } from '@master/css-runtime'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import './master.css'
+
+const runtime = await MasterCSSRuntime.start({
+  program: () => import('virtual:master-css-program').then(module => module.default),
+  emittedGlobals
+})
+runtime.observe()
+```
+
+Render the template first, then pass the full document to the renderer. The ES module server needs `"type": "module"` in `package.json`:
+
+```js name=app.js
+import express from 'express'
+import ejs from 'ejs'
+import { createServerRenderer } from '@master/css-server'
+import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
+
+const app = express()
+const renderer = createServerRenderer({ manifest })
+
+app.use('/assets', express.static('public/assets'))
+
+app.get('/', async (_request, response) => {
+  const body = await ejs.renderFile('views/index.ejs')
+  const document = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/assets/master.css">
+</head>
+<body>
+  ${body}
+  <script type="module" src="/assets/master.js"></script>
+</body>
+</html>`
+
+  const rendered = renderer.renderHTML(document, {
+    hydrationManifest: 'inject'
+  })
+  response.send(rendered.html)
+})
+
+const server = app.listen(3000)
+server.on('close', () => renderer.dispose())
+```
+
+The first response carries `style#master-css` and a small hydration record; the server manifest stays on the server. This example renders with the default preset manifest, matching the preset in `src/master.css`. If you add project tokens or utilities, compile the project manifest for the server too, or the initial CSS will not match the browser's definitions.
+
+With JavaScript disabled, the heading should already be styled. Re-enable JavaScript, reload, and add `underline` from the console; it should apply without a new server response.
+
+</DocumentDisclosure>

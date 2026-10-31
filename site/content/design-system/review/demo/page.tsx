@@ -61,7 +61,7 @@ export default async function Page() {
       <section aria-labelledby="optional-chrome">
         <h2 id="optional-chrome">Optional title, guidance and focus</h2>
         <div className="review-demo-optionalUsage">
-          <Demo title="Inspect the spacing" description="The annotation sits outside the teaching canvas." controls={<Link href="/guide/spacing">Read spacing guide</Link>}>
+          <Demo title="Inspect the spacing" description="The annotation sits outside the teaching canvas." controls={<Link href="/guide/layout-system#namespace-for-spacing">Read spacing guide</Link>}>
             {specimen()}
           </Demo>
         </div>

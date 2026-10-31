@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationDisclosure, installationSection } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -33,10 +33,12 @@ export function routerInstallationFixture(mode: RouterInstallationMode) {
     assert.match(readFileSync(join(root, 'vite.config.ts'), 'utf8'), /@master\/css-vite/)
     assert.match(readFileSync(join(root, 'app/app.css'), 'utf8'), /@import '@master\/css'/)
     assert.match(readFileSync(join(root, 'app/root.tsx'), 'utf8'), /import '\.\/app.css'/)
-    const route = '/react-router' + (mode === 'static' ? '/static-rendering' : '')
-    const source = installationSource(route)
+    // react-router is a section of the Vite guide; its runtime bootstrap is in the guide's disclosure.
+    const route = '/vite#react-router'
+    const source = installationSection('/vite', 'react-router') + (mode === 'runtime' ? installationDisclosure('/vite', 'Generate new classes in the browser') : '')
+    if (mode === 'runtime') write('app/master-css.d.ts', "/// <reference types=\"@master/css/client\" />\n")
     const fences = deliveryFences(source)
-    for (const name of ['vite.config.ts', 'app/app.css', 'app/root.tsx', 'app/routes/home.tsx', ...(mode === 'runtime' ? ['app/master-css.d.ts'] : [])]) {
+    for (const name of ['app/routes/home.tsx', ...(mode === 'runtime' ? ['app/root.tsx'] : [])]) {
       const found = fences.find(fence => fence.name === name)
       assert.ok(found, `${route}: ${name}`)
       const lines = found.text.trimEnd().split('\n')
@@ -49,7 +51,7 @@ export function routerInstallationFixture(mode: RouterInstallationMode) {
       }
       write(name, text)
     }
-    assert.ok(source.includes(`npm create @master/css@rc -- --framework react-router${mode === 'static' ? ' --mode static' : ''} --yes`))
+    assert.ok(installationSection('/vite', 'frameworks').includes('| `react-router` |'))
     write('tsconfig.json', JSON.stringify({ compilerOptions: { target: 'ES2022', module: 'ESNext', jsx: 'react-jsx' } }))
     for (const name of ['vite', 'react', 'react-dom', 'react-router', '@master/css', '@master/css-vite', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)

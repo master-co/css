@@ -1,0 +1,93 @@
+import DeliveryFlow from '~/site/components/DeliveryFlow'
+import Class2CSS from '~/site/components/Class2CSS'
+
+## Overview [sr-only]
+Static rendering generates CSS only for complete classes it finds in source. Keep known states in source, pass changing values through CSS variables, and opt stylesheets into pruning when unused native class rules should leave the output.
+
+## Keep complete classes in source
+
+The scanner reads source text; it does not run your application. When a component selects a status color, write each complete class:
+
+```js
+const className = error ? 'bg-red-60' : 'bg-green-60'
+```
+
+Do not assemble a class from fragments such as `'bg-' + tone`: neither result exists in source, so neither rule is generated. Map variants to complete class strings instead.
+
+<DeliveryFlow name="scanning" />
+
+Both branches are visible even though only one is used at a time. The active project definitions determine what each class generates:
+
+<Class2CSS>{['bg-red-60', 'bg-green-60']}</Class2CSS>
+
+## Keep changing values out of class names
+
+Suppose a heading's size comes from an editor control. Keep its class complete and change the custom property on the element:
+
+```html
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS>{'(font-size:var(--headline-size))'}</Class2CSS>
+
+After a static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. A local custom property needs no `@theme` registration or Master CSS runtime. If a class name itself first exists after startup, use [runtime or progressive rendering](/guide/rendering-modes#comparisons).
+
+## Prune unused native CSS \{#prune-native-css\}
+
+Native class rules in a Master-managed stylesheet are preserved by default. Add `@prune native;` to remove the ones scanned source never uses:
+
+<DeliveryFlow name="pruning" />
+
+```css name=src/style.css
+@prune native;
+@import "@master/css";
+
+.card {
+  border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.unused {
+  color: red;
+}
+```
+
+```html name=src/index.html
+<article class="card">Card</article>
+```
+
+The output keeps `.card` and removes `.unused`. The directive applies only to the file that declares it; imported files keep their own policy. To prune every project-owned stylesheet, set the integration option `pruneNativeCSS: true` instead. Package styles stay preserved unless they opt in.
+
+Pruning checks class names, not DOM structure, and keeps rules without class selectors. See [Native CSS pruning](/reference/directives/pruning) for import graphs, root scope, rule filtering and keyframes.
+
+### Preserve a vendor stylesheet \{#preserve-native-css\}
+
+Classes added by a CMS or third-party widget never appear in scanned source. Keep the native rules of a stylesheet your entry imports with `@preserve native;`, which also overrides `pruneNativeCSS: true`:
+
+```css name=src/vendor-overrides.css
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+For a few known external classes in a pruned file, [list them with `@safelist`](/reference/directives/pruning#included-classes) instead of preserving the whole file.
+
+### Verify the output \{#verify-pruning\}
+
+Build for production and search the emitted stylesheet: a pruned class such as `.unused` is absent, and `.card` remains. Check a vendor file's classes the same way after enabling `pruneNativeCSS`.
+
+## Find why a style is missing
+
+1. Inspect the complete class against the active project manifest with the [class inspection tool](/reference/tools/mcp#mastercss_inspect_class).
+2. Confirm the source file is part of the scan. Ordinary app files use integration or CLI defaults; add [`@source`](/reference/directives/scanning) only for an explicit exception.
+3. Check candidate policy. `@source not` can exclude a file, and `@blocklist` can remove a class. Use `@safelist` for a bounded set of known external classes.
+4. For a missing native rule, check whether its file or the integration enables pruning, and whether the class appears in scanned source.
+
+See [Extraction](/reference/rules/extraction) for source boundaries, candidate scanning and validation.

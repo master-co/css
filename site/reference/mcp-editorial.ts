@@ -147,3 +147,20 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     "lifecycle": "The server validates all original file hashes and writable paths before writing the proposed contents. Successful application consumes the token. File writes are sequential; this is not a transactional multi-file rollback mechanism. Run project checks and inspect the changed UI afterward."
   }
 }
+
+/** Built-in MCP prompts (`prompts/list`); the fixtures compare names with the server. */
+export const mcpPrompts: { name: string, use: string }[] = [
+  { name: 'debug-missing-css', use: 'Inspect scanner coverage, manifest loading, syntax, native CSS pruning and stylesheet entry configuration when classes do not produce CSS.' },
+  { name: 'review-mastercss-classes', use: 'Run class diagnostics and propose only safe, scoped write previews.' },
+  { name: 'migrate-to-mastercss', use: 'Audit an external styling system and plan incremental batches with a rendering mode, validation commands and visual risks; it does not edit files.' }
+]
+
+/** The result contract shared by every tool; complete schemas come from `tools/list`. */
+export const mcpResultContract: string[] = [
+  'Every tool returns a version 3 object with `metadata`, `diagnostics` and a required `result`. Success has `result: { status: \'success\', data }`; failure has `result: { status: \'error\', error: { code, message } }` and also sets MCP `isError`. JSON text and `structuredContent` contain the same object; validate both branches with the tool\'s `outputSchema`.',
+  '`metadata` reports package, language and binding versions, the context actually used, the manifest fingerprint, entries and dependencies; unavailable values are null or empty arrays. Project context is the default: a missing entry or failed compilation is an error, never a silent switch to the preset. Pass `context: \'preset\'` explicitly for preset-only queries.',
+  'Class inspection reports `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately, and each check record names its version, phase and scope. A CSS grammar error differs from an unknown future capability, `var()` does not establish a computed value, and `browserSupport` stays `not-checked` unless a browser check ran. Known CSS math types are checked without computing lengths or converting units; distinct token definitions stay ambiguous even when their values are equal.',
+  'Markdown and MDX extraction separates live markup and code from display text and returns original UTF-16 ranges with inclusion or exclusion reasons; the CLI, editor and MCP share the same Rust extraction and matching. CLI report versions are independent of this envelope. In MCP payloads `root` is the configured workspace root; in CLI reports `cwd` is the command root.',
+  'Project comparison: call `mastercss_scan_project` with `includeSnapshot: true` before and after editing, then pass both `result.data.snapshot` objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`; they cannot be mixed with class, content, `filePath` or `context` inputs. The result is `{ version: 3, mode: \'project\', comparison }`, where `comparison.version` is 1 and lists changed definitions, known consumers and files, before/after rules, native references, output assets, delivery order and `coverage`. Native consumers are conservative at stylesheet granularity.',
+  'Design-system inspection: `mastercss_scan_project.designSystem` takes the [design-system options](/reference/tools/cli#design-system-options) object and cannot be combined with `context: \'preset\'`. The version 1 report in `result.data.designSystem` lists authored `var()` references with source ranges, selector and at-rule ancestry, importers, token-family collisions and policy diagnostics; read `project.excluded` and `coverage`. An unregistered custom property can still resolve through native CSS and is not automatically an error.'
+]

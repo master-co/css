@@ -11,7 +11,6 @@ import type { ReferenceExample, SyntaxRow } from './types'
 import { tokenValuesMarkdown } from './TokenValues'
 import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
-import { variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses, configuredMarkupMarkdown } from './configured-example'
 import { stylesheetExampleMarkdown } from './stylesheet-example'
 
@@ -166,8 +165,6 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         return `${configuration ? `\`\`\`css\n${configuration}\n\`\`\`\n\n` : ''}\`\`\`html\n${html ?? configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css disclosure=generated-css\n${css}\n\`\`\``
       }
       if (name === 'TextHeirs') return getVariableNamespacePublicKeys('color-text').map(key => `\`${key}:\``).join(', ')
-      if (name === 'VariableNamespaceSources') return variableNamespaceSourcesMarkdown()
-      if (name === 'LayersDefault') return 'The base stylesheet declares `@layer theme, base, defaults, components, utilities;`. Theme tokens, base rules, defaults, component definitions and utilities are emitted in their corresponding layers. See the examples below for their interactions.'
       if (name === 'StartingStyleExample' || name === 'AnimationDirectionBasicDemo') return '' // Visual demos accompany the adjacent complete code examples.
       if (name === 'Class2CSS') {
         const value = await expression(inner)

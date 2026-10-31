@@ -1,60 +1,7 @@
 import Class2CSS from '~/site/components/Class2CSS'
 
 ## Overview [sr-only]
-Master CSS is designed to work with modern browser features, existing CSS files, component libraries, and third-party stylesheets. Compatibility mostly depends on the CSS features your project uses and the way external styles enter the cascade.
-
-Static extraction and server rendering generate regular CSS ahead of time. Runtime rendering uses the browser [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) API to track class changes on connected elements and update their generated rules. Authored native CSS keeps its own delivery and pruning policy.
-
-The default stylesheet uses native [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to keep theme, base, defaults, components, and utilities predictable:
-
-```css
-@layer theme, base, defaults, components, utilities;
-```
-
-The preset also uses OKLCH palette values and `light-dark()` for adaptive colors and shadows. Check these features together when choosing browser targets; cascade layer support alone does not cover the whole preset. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for the color-scheme baseline.
-
----
-
-## Browser support
-The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
-
-For example, `(background-color:red)` uses a native named color, `bg-red` also needs support for its preset OKLCH value, and `bg-surface-raised` uses `light-dark()`. `(backdrop-filter:blur(16px))` needs the filter feature itself. Check the complete generated declaration in [Can I use](https://caniuse.com/) or MDN.
-
-Recognition, CSS validity and browser support are separate checks. A recognized class can generate a rule even when tooling reports an invalid or unknown value. Inspect its diagnostics and generated output; use a feature query or a native fallback when the browser feature is optional.
-
-Use this rule of thumb:
-
-- If the browser supports the generated CSS, Master CSS can use it.
-- If the browser does not support the generated CSS, use a fallback, avoid that class for that target, or gate it behind a feature query when appropriate.
-- If the class relies on a Master CSS runtime workflow, make sure the target browser supports the runtime APIs required by that workflow.
-
----
-
-## Vendor prefixes
-Master CSS emits compatibility declarations for selected native properties. Write the standard property name, then inspect the generated CSS to see which declarations are included.
-
-### CSS properties
-Write the unprefixed class:
-
-```html
-<div class="(backdrop-filter:blur(16px))">…</div>
-```
-
-<Class2CSS>
-  {['(backdrop-filter:blur(16px))']}
-</Class2CSS>
-
-### CSS selectors
-
-Write a vendor-specific selector explicitly when the feature requires one. In this example, [`::-webkit-scrollbar`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::-webkit-scrollbar) passes through as written; its support remains browser-specific.
-
-```html
-<div class="(background-color:#000)::-webkit-scrollbar">…</div>
-```
-
-<Class2CSS>
-  {['(background-color:#000)::-webkit-scrollbar']}
-</Class2CSS>
+Master CSS works alongside new CSS features, existing stylesheets and third-party CSS. Any valid declaration can be written as a class, and external styles keep their place in the cascade through the preset's layer order. Browser support follows the generated CSS; the [browser baseline and vendor prefixes](/reference/rules/declarations#vendor-prefixes) lists what the preset relies on and which compatibility declarations Master emits.
 
 ---
 
@@ -83,41 +30,7 @@ Custom properties can use the same direct declaration form:
   {['(--card-gap:1rem)']}
 </Class2CSS>
 
-### Native declarations and Master utilities
-Complete CSS properties such as `(margin:1rem)` keep their native value semantics. Native declarations such as `(margin-top:1rem)` target that property, while named classes such as `mt-md` select theme tokens. Functional utilities use their declared parameters. Colon values retain native CSS value semantics.
-
-```html
-<!-- @MARK (margin-top:1rem) --><!-- @MARK (margin:1rem) --><!-- @MARK bg-red-60 -->
-<div class="(margin-top:1rem)">Native top margin</div>
-<div class="(margin:1rem)">Native margin on every side</div>
-<div class="bg-red-60">Theme color</div>
-```
-
-<Class2CSS>
-  {['(margin-top:1rem)', '(margin:1rem)', 'bg-red-60']}
-</Class2CSS>
-
-This preserves the expected syntax model:
-
-- `(margin-top:1rem)` uses the full native property name and emits `margin-top:1rem`.
-- `(margin:1rem)` writes the native property value as-is and emits `margin:1rem`.
-- `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
-- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `(field-sizing:content)` or `(interpolate-size:allow-keywords)`.
-- Tooling can distinguish known-invalid values, such as the unitless length in `(font-size:16)`, from values its grammar cannot fully check. Treat `unknown` as unverified. A generated rule alone does not establish validity or browser support.
-
-### Arbitrary properties
-Arbitrary properties need no special form. If the declaration is valid CSS, write it directly as `(property:value)`:
-
-```html
-<!-- @MARK (interpolate-size:allow-keywords) --><!-- @MARK (scroll-timeline-name:--cards) --><!-- @MARK (paint-order:stroke|fill) -->
-<div class="(scroll-timeline-name:--cards) (interpolate-size:allow-keywords) (paint-order:stroke|fill)">…</div>
-```
-
-<Class2CSS>
-  {['(interpolate-size:allow-keywords)', '(scroll-timeline-name:--cards)', '(paint-order:stroke|fill)']}
-</Class2CSS>
-
-Each class holds one declaration; repeat the selector or query suffix on each class that needs it. Tooling may report the newest CSS grammar as unknown until its syntax data catches up. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply. Check support explicitly when an optional feature needs a fallback.
+Each class holds one declaration; repeat the selector or query suffix on each class that needs it. A token class such as `mt-md` still selects a theme value, while `(margin-top:1rem)` keeps the native value as written. Tooling may report the newest CSS grammar as `unknown` until its syntax data catches up; treat that as unverified rather than invalid. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply.
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
@@ -134,9 +47,7 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 ---
 
 ## Third-party styles
-Third-party libraries often ship CSS with their own selector strategy. Put vendor styles in a lower cascade layer when you want normal Master CSS components and utilities to override normal vendor declarations.
-
-For example, declare the shared layer order before importing Swiper styles into `defaults`. This places vendor styles after the base reset and before components and utilities:
+Put vendor styles in a lower cascade layer when you want normal Master CSS components and utilities to override normal vendor declarations. Declare the shared layer order before importing them into `defaults`, after the base reset and before components and utilities:
 
 ```css name=index.css
 @layer theme, base, defaults, components, utilities;
@@ -146,13 +57,7 @@ For example, declare the shared layer order before importing Swiper styles into 
 @import '@master/css';
 ```
 
-An unlayered vendor rule outranks a normal layered utility. An `!important` vendor declaration also outranks normal declarations; moving it to `defaults` does not remove that importance. Inspect the competing declaration before changing layers.
-
-Keep these imports in the project CSS entry processed by Master CSS. Check the production stylesheet for the `defaults` layer and test an override against the built page.
-
-Master CSS is meant to sit in the CSS build workflow, so you usually do not need a separate preprocessor just to bundle imports, share variables, add prefixes, or generate utility classes. Prefer native CSS imports, cascade layers, CSS variables, and Master CSS tokens before reaching for Sass, Less, or Stylus.
-
-If your project already uses a preprocessor, keep it at the edge of the workflow: compile it to regular CSS first, then make sure the resulting vendor rules enter the intended layer. Avoid making preprocessor-only features the recommended path for third-party compatibility.
+Unlayered vendor rules and `!important` vendor declarations still outrank normal layered utilities; moving them to `defaults` does not change that. Keep these imports in the project CSS entry processed by Master CSS, so they share its layer order and extraction context.
 
 Then define your application overrides in the `components` layer or use utilities in markup:
 
@@ -180,37 +85,4 @@ Then define your application overrides in the `components` layer or use utilitie
 
 The first slide keeps the component's surface color. The second uses a blue background and white text from its utilities. This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
 
----
-
-## Existing CSS workflows
-Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, and extraction context. Each imported file retains its own native CSS preserve/prune policy.
-
-Use native CSS variables from your theme when module-scoped or component-scoped CSS needs shared design values:
-
-```css name=Button.module.css
-.button {
-  background-color: var(--color-blue);
-  color: var(--color-white);
-  border-radius: var(--radius-md);
-}
-```
-
-Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
-
-```html
-<button type="button" class="h(40) px-md r-md bg-blue fg-white">Save</button>
-```
-
-When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#explicit-pruning).
-
----
-
-## Checklist
-- Check browser support for the generated CSS feature, not just the Master CSS class.
-- Check cascade layers, OKLCH and `light-dark()` when using the default preset.
-- Inspect generated CSS for compatibility declarations, and write required vendor-specific selectors explicitly.
-- Use native declaration syntax for valid CSS declarations; use separate classes for combinations, or `@utility` for reusable class recipes and ordered declarations.
-- Use named utilities for tokens and direct declarations for explicit CSS values. Colon values retain native CSS value semantics.
-- Test experimental declarations in the browsers and rendering mode you ship.
-- Put third-party CSS in `defaults` when you want components and utilities to override it.
-- Keep externally injected classes visible to extraction, outside pruned sources, or protected from native CSS pruning.
+Native vendor, CMS and externally injected selectors in a Master-managed stylesheet are preserved by default. If you enable native pruning, keep those selectors outside pruned sources or protect the file with [`@preserve native`](/reference/directives/pruning#preserve-native). [Cascade layers](/guide/cascade-layers) covers the complete layer order.

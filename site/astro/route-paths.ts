@@ -1,7 +1,7 @@
 import i18n from '../docs-shell/common/i18n.config.js'
 import type { PageParams } from '../docs-shell/types/Props'
 
-export type Section = 'home' | 'guide' | 'reference' | 'blog' | 'brand' | 'design-system' | 'examples'
+export type Section = 'home' | 'guide' | 'reference' | 'blog' | 'brand' | 'benchmarks' | 'design-system' | 'examples'
 export type RouteParams = Record<string, string | string[]>
 export interface RouteProps {
   file: string

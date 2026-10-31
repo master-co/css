@@ -43,7 +43,7 @@ Selectors work with every condition:
 <button class="bg-blue-60:hover@sm">Save</button>
 ```
 
-See [breakpoints](/guide/breakpoints) and [responsive design](/guide/responsive-design).
+See [breakpoints](/guide/responsive-design#based-on-viewport-breakpoints) and [responsive design](/guide/responsive-design).
 
 ### Modes \{#light--dark--and-custom-modes\}
 `@light` and `@dark` use the preset's explicit system-preference definitions. Manual theme activation uses explicit selector mixins, for example `@apply(--manual-dark)`; the preset does not insert an ancestor selector. `@theme` supplies the token values; it does not choose how a mode activates.
@@ -94,7 +94,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <Class2CSS>{['grid@supports((display:grid))']}</Class2CSS>
 
 ### Containers \{#containersize\}
-Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but `(width>=28rem)` remains a literal condition. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/containers) for choosing a component boundary.
+Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but `(width>=28rem)` remains a literal condition. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
 
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
 

@@ -6,7 +6,7 @@ import AppearanceControl from '../../components/AppearanceControl'
 
 import { BenchmarkDataTable } from '~/site/components/benchmarks'
 
-import { StaticCSSBytesTable } from '~/site/content/guide/benchmarks/components/StaticTailwindComparison'
+import { StaticCSSBytesTable } from '~/site/content/benchmarks/components/StaticTailwindComparison'
 import './page.css'
 
 export { metadata }
@@ -44,7 +44,7 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="data-table-real-use">
-      <div className="review-data-table-sectionHeading"><div><h2 id="data-table-real-use">Actual Guide use</h2><p>The live static CSS table still uses its original expansion control and committed measurements.</p></div><Link href="/guide/benchmarks#static-css-output-structure-and-production-build">Open /guide/benchmarks</Link></div>
+      <div className="review-data-table-sectionHeading"><div><h2 id="data-table-real-use">Actual Guide use</h2><p>The live static CSS table still uses its original expansion control and committed measurements.</p></div><Link href="/benchmarks#static-css-output-structure-and-production-build">Open /benchmarks</Link></div>
       <div className="review-data-table-realUse"><StaticCSSBytesTable /></div>
       <p className="review-data-table-optionNote">The complete measurements stay in the table; the native disclosure controls when they appear.</p>
     </section>

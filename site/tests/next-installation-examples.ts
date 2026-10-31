@@ -30,7 +30,8 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
     assert.match(installed, /import withMasterCSS from '@master\/css-next'/)
     if (mode !== 'static') assert.ok(installed.includes(`mode: '${mode}'`))
     assert.match(readFileSync(join(root, 'app/globals.css'), 'utf8'), /@import '@master\/css'/)
-    const route = '/nextjs' + (mode === 'static' ? '' : `/${mode}`)
+    // Every mode is documented on one page; optional modes change only the installer and adapter option.
+    const route = '/nextjs'
     const source = installationSource(route)
     const fences = deliveryFences(source)
     for (const name of ['next.config.ts', 'app/globals.css', 'app/layout.tsx', 'app/page.tsx']) {
@@ -39,7 +40,7 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
       const lines = found.text.trimEnd().split('\n')
       const indent = Math.min(...lines.filter(line => line.trim()).map(line => line.match(/^ */)![0].length))
       let text = lines.map(line => line.slice(indent)).join('\n') + '\n'
-      if (name === 'next.config.ts') text = text.replace('const nextConfig: NextConfig = {}', 'const nextConfig: NextConfig = { experimental: { cpus: 2 } }')
+      if (name === 'next.config.ts') text = text.replace('const nextConfig: NextConfig = {}', 'const nextConfig: NextConfig = { experimental: { cpus: 2 } }').replace("mode: 'static'", `mode: '${mode}'`)
       write(name, text)
     }
     assert.ok(source.includes(`npm create @master/css@rc -- --framework nextjs${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))

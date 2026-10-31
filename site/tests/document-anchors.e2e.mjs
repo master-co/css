@@ -43,9 +43,9 @@ async function growArticle(page, height) {
 
 for (const engine of ['chromium', 'webkit']) for (const width of [390, 1280]) {
   for (const route of [
-    '/guide/variables-and-modes#namespace-resolution',
-    '/guide/scanning-latent-classes#complete-classes',
-    '/guide/cascade-layers#priority-matrix',
+    '/reference/rules/modes#namespace-resolution',
+    '/reference/rules/extraction#complete-classes',
+    '/reference/rules/layers#priority-matrix',
     '/guide/theme#alias-and-override-tokens',
   ]) {
     test(`${engine} ${width}: initial ${route} survives late article growth`, async () => {
@@ -63,7 +63,7 @@ for (const engine of ['chromium', 'webkit']) for (const width of [390, 1280]) {
     test(`${engine} ${width}: ${intent} releases the initial fragment`, async () => {
       const page = await browsers.get(engine).newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' })
       try {
-        await page.goto(base + '/guide/variables-and-modes#namespace-resolution', { waitUntil: 'networkidle' })
+        await page.goto(base + '/reference/rules/modes#namespace-resolution', { waitUntil: 'networkidle' })
         await aligned(page)
         if (intent === 'wheel') await page.mouse.wheel(0, 200)
         if (intent === 'keyboard') await page.keyboard.press('PageDown')

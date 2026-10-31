@@ -1,27 +1,14 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
 Generate a stylesheet for an Astro site from complete class names in its sources. The installer configures the integration and creates the CSS entry; the page below imports that entry.
 
-Verify generated utility rules in the production output before deployment. The [setup check](#check-the-setup) includes a CLI static alternative if the integration emits only base CSS.
-
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a project
-      If you don't have an Astro project, create one first.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm create astro@latest my-app
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Astro project root. Static is the default: it scans complete class strings and emits ordinary CSS.
+      In an existing [Astro project](https://docs.astro.build/en/install-and-setup/), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -29,20 +16,9 @@ Verify generated utility rules in the production output before deployment. The [
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Start dev server
-      Run the command to start the Astro dev server.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal&action=run
-      dev
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
+    Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
   </Step>
   <HelloWorld url="localhost:4321" />
 </StepSection>
@@ -72,8 +48,43 @@ Keep the entry in a standalone CSS file. [Importing CSS from Astro frontmatter](
 ```
 
 ## Check the setup
-Run the project's build and preview scripts, then disable JavaScript and reload. Check that the heading retains its large, heavy italic styling. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration.
+Run the project's build and preview scripts, then disable JavaScript and reload. Check that the heading retains its large, heavy italic styling. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration. For custom definitions and scoped styles, see [Global styles](/guide/global-styles).
 
-Keep complete conditional class names in source so static scanning can find each branch. For details on custom definitions and scoped styles, see [Global styles](/guide/global-styles).
+If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `italic`. Use the [CLI static workflow](/guide/installation/cli) when you need to generate and verify the stylesheet independently, or choose progressive rendering when a runtime handoff fits the application.
 
-If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `italic`. Use the [CLI static workflow](/guide/installation/cli) when you need to generate and verify the stylesheet independently, or choose [progressive rendering](/guide/installation/astro/progressive) when a runtime handoff fits the application.
+---
+
+## Choose another rendering mode \{#rendering-modes\}
+Static mode is the default. The integration injects the runtime page script for the other modes, so they need no separate browser bootstrap:
+
+| Mode | Installer option | Delivery |
+| --- | --- | --- |
+| Static | None | Generated stylesheet from source scanning |
+| Runtime | `--mode runtime` | Browser runtime, without Astro middleware pre-rendering |
+| Progressive | `--mode progressive` | Middleware-rendered CSS plus a runtime handoff |
+
+<DocumentDisclosure title="Generate new classes in the browser">
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework astro --mode runtime --yes
+```
+
+Run the build and preview scripts; the heading should be styled after the runtime starts. Runtime mode depends on JavaScript and its compiled program loading successfully, so check the console and network requests if it stays unstyled. To test a class introduced after the page was generated, run:
+
+```js
+document.querySelector('h1').classList.add('underline')
+```
+
+The heading should gain an underline without rebuilding.
+
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Include server-rendered styles">
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework astro --mode progressive --yes
+```
+
+Astro middleware renders the CSS into prerendered pages and server HTML responses, then the runtime handles later class changes. Disable JavaScript and reload: the heading should still be styled. Re-enable JavaScript, reload, and add `underline` from the console as above.
+
+</DocumentDisclosure>

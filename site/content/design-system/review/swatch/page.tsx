@@ -42,7 +42,7 @@ export default function Page() {
       <section aria-labelledby="swatch-real-use">
         <div className="review-swatch-sectionHeading">
           <div><h2 id="swatch-real-use">Role inventory</h2><p>Each color is identified by text as well as paint.</p></div>
-          <Link href="/guide/colors#default-color-palette">Open /guide/colors</Link>
+          <Link href="/reference/tokens/color">Open /guide/colors</Link>
         </div>
         <div className="review-swatch-actualUse">
           <div><span>Shared role inventory</span><Demo><div className="review-swatch-currentRoleRow">{(['Canvas', 'Surface', 'Subject', 'Comparison'] as const).map((label, index) => <DemoSwatch key={label} label={label} className={['bg-demo-canvas', 'bg-demo-surface', 'bg-demo-blue', 'bg-demo-violet'][index]} />)}</div></Demo></div>

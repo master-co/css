@@ -4,10 +4,7 @@ import { sizingRoles } from '../common/foundation-data/sizing/scale-data'
 import { paletteKeys } from '../common/foundation-data/tokens'
 import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-content'
 
-export const foundationGuideSlugs = [
-  'spacing', 'sizing', 'breakpoints', 'containers', 'corner-radius', 'responsive-design',
-  'layout-system', 'colors', 'elevation', 'typography', 'motion'
-] as const
+export const foundationGuideSlugs = ['colors', 'typography', 'layout-system', 'responsive-design'] as const
 
 // These visual specimens have complete authored explanations and portable examples
 // beside them. Data-bearing components below always receive a text adapter.

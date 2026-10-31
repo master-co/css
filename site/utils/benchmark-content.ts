@@ -5,12 +5,12 @@ import { BenchmarkBars, BenchmarkMetricTable, BenchmarkStackedBars } from '../co
 import type { BenchmarkBarItem, BenchmarkMetric, BenchmarkStackedBarItem } from '../components/benchmarks'
 import { formatMetricValue } from '../components/benchmarks/utils'
 import pageCssSnapshot from '../.generated/benchmarks/docs-page-css-size.json'
-import * as staticCharts from '../content/guide/benchmarks/components/StaticTailwindComparison'
-import * as buildCharts from '../content/guide/benchmarks/components/BuildPathDiagnosticsBenchmark'
-import * as browserCharts from '../content/guide/benchmarks/components/BrowserCSSCostBenchmark'
-import * as deliveryCharts from '../content/guide/benchmarks/components/MasterDeliveryModesBenchmark'
-import * as interactionCharts from '../content/guide/benchmarks/components/InteractionCostBenchmark'
-import * as lifecycleCharts from '../content/guide/benchmarks/components/BrowserLifecycleBenchmark'
+import * as staticCharts from '../content/benchmarks/components/StaticTailwindComparison'
+import * as buildCharts from '../content/benchmarks/components/BuildPathDiagnosticsBenchmark'
+import * as browserCharts from '../content/benchmarks/components/BrowserCSSCostBenchmark'
+import * as deliveryCharts from '../content/benchmarks/components/MasterDeliveryModesBenchmark'
+import * as interactionCharts from '../content/benchmarks/components/InteractionCostBenchmark'
+import * as lifecycleCharts from '../content/benchmarks/components/BrowserLifecycleBenchmark'
 
 /** Only these authored, static chart models may be evaluated. MDX is never executed. */
 export const benchmarkContentComponents = {
@@ -80,7 +80,7 @@ export function benchmarkMarkdown(node: ReactNode): string {
 }
 
 export async function benchmarkContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'content/guide/benchmarks/content.mdx'), [], [], {
+  const result = await extractReferenceMdx(path.join(siteRoot, 'content/benchmarks/content.mdx'), [], [], {
     component(name, attrs) {
       if (name === 'PageCSSSizeBenchmark') {
         return table(['Site', 'Raw CSS', 'Brotli CSS'], pageCssSnapshot.pages.map(page => [

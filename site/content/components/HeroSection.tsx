@@ -14,7 +14,7 @@ export default function HeroSection() {
     <section data-glyph-host id={homeSections.hero} className="relative overflow-hidden isolate home-hero">
       <HeroCanvas className="home-hero-field" />
       <div className="relative app-wrapper home-hero-body home-section-wrap">
-        <Link className="home-glass home-hero-pill" href="/guide/mcp-server">
+        <Link className="home-glass home-hero-pill" href="/guide/ai-coding#connect-the-mcp-server">
           <span className="home-hero-pill-badge">{$('New')}</span>
           <span className="home-hero-pill-label">{$('An MCP server for your AI agents')}</span>
           <IconArrowRight aria-hidden="true" size={14} stroke={1.75} />

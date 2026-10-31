@@ -1,133 +1,60 @@
-import BodyText from './components/BodyText.mdx'
-import Headings from './components/Headings.mdx'
-import PageTitles from './components/PageTitles.mdx'
 import Class2CSS from '~/site/components/Class2CSS'
 import { FoundationTypography, FoundationTypeComparison } from '~/site/components/demo/FoundationTypeMotion'
-import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 
 ## Overview [sr-only]
 
-Use `text-<token>` for a complete type treatment: font size, line height and letter spacing. Add a weight or family separately. Start with readable body copy, then choose headings and supporting text around it.
+Use `text-<token>` for a complete type treatment: font size, line height and letter spacing in one class. Add the weight, family and color as separate classes.
 
 <FoundationTypography />
 
 ```html
-<!-- @MARK text-lg --><!-- @MARK font-medium -->
-<p class="text-lg font-medium">Readable product copy</p>
+<!-- @MARK text-xs --><!-- @MARK text-2xl --><!-- @MARK text-sm --><!-- @MARK font-semibold -->
+<p class="text-xs font-medium fg-text-blue">Field notes / 024</p>
+<h2 class="text-2xl font-semibold fg-text-strong">Make room for the details.</h2>
+<p class="text-sm">A consistent type scale helps readers move from the main idea to the supporting detail.</p>
 ```
 
-<Class2CSS>
-  {['text-lg', 'font-medium']}
-</Class2CSS>
+<Class2CSS>{['text-2xl', 'font-semibold']}</Class2CSS>
+
+See [Text](/reference/tokens/text) for every treatment and how to add one.
 
 ---
 
-## Namespaces for typography
-Typography is built from [theme tokens](/guide/theme) organized into focused namespaces.
+## Text treatments and font sizes \{#without-vs-with-text-token\}
 
-`text-` applies a size, line height and tracking treatment. `font-`, `leading-` and `tracking-` change one property. See the [complete family index](/reference/tokens/families).
-
-The shared `font-` prefix registers three explicit namespaces:
-
-| Class | Token | Property |
-| --- | --- | --- |
-| `font-sans` | `--font-family-sans` | `font-family` |
-| `font-sm` | `--font-size-sm` | `font-size` |
-| `font-bold` | `--font-weight-bold` | `font-weight` |
-
-Each key must identify one namespace. If a custom key such as `brand` occurs in both family and size tokens, `font-brand` reports an ambiguity and emits no CSS. Select the property explicitly with `(font-size:var(--font-size-brand))`. Line height and letter spacing remain independent through `leading-` and `tracking-`.
-
----
-
-## All-in-one text scale
-The preset scale runs from `text-3xs` to `text-10xl`. Each step pairs its font size with line height and letter spacing.
-
-Use `text-<token>` to apply the tuned font size, line height, and letter spacing with one class.
-
-* `text-3xs ~ text-xs` — For fine print, annotations, captions, or table labels
-* `text-sm ~ text-lg` — Standard text sizes for body copy, paragraphs, and buttons
-* `text-xl ~ text-3xl` — Ideal for subheadings, lead paragraphs, or callouts
-* `text-4xl ~ text-10xl` — Reserved for large headings, page titles, and hero sections
-
-These roles are starting points, not readability guarantees. Keep essential text legible at the intended viewing size and with enlarged text; reserve the smallest steps for nonessential annotations.
-
-Use a size token such as `font-sm` when you only want to set `font-size`. Use `(line-height:*)` and `(letter-spacing:*)` when the design intentionally adjusts line height or letter spacing separately.
-
-### Body text
-<BodyText />
-
-### Headings
-<Headings />
-
-### Page titles
-<PageTitles />
-
-### Without vs with `text-<token>`
-Changing font size alone leaves line height and letter spacing inherited. Compare the same sentence at the same size: `font-3xl` keeps the parent's leading and tracking, while `text-3xl` supplies all three properties.
+`font-<token>` changes only the font size and keeps the inherited line height and letter spacing. `text-<token>` sets all three. Compare the same size in both forms:
 
 <FoundationTypeComparison />
 
-Use a font-size token when the inherited treatment is intentional:
-
 ```html
-<div class="leading-md tracking-normal wrap-anywhere">
-  <p class="m(0) font-3xl font-regular">Designing for a clearer reading experience.</p>
+<!-- @MARK font-3xl --><!-- @MARK text-3xl -->
+<div class="leading-md tracking-normal">
+  <p class="font-3xl">Designing for a clearer reading experience.</p>
+  <p class="text-3xl">Designing for a clearer reading experience.</p>
 </div>
 ```
 
-Use a text token when the size, leading and tracking should travel together:
+<Class2CSS>{['font-3xl', 'text-3xl']}</Class2CSS>
 
-```html
-<div class="leading-md tracking-normal wrap-anywhere">
-  <p class="m(0) text-3xl font-regular">Designing for a clearer reading experience.</p>
-</div>
+Use `text-<token>` for body, heading and display styles. Use `font-<token>`, `leading-<token>` or `tracking-<token>` only when the design deliberately departs from a treatment.
+
+The `font-` prefix reads three namespaces: `font-sans` reads `--font-family-sans`, `font-sm` reads `--font-size-sm`, and `font-bold` reads `--font-weight-bold`. A key must belong to only one of them. If a custom `brand` key exists as both a family and a size, `font-brand` reports an ambiguity and generates no CSS; write `(font-size:var(--font-size-brand))` instead. See [Font](/reference/tokens/font).
+
+---
+
+## Site typeface \{#site-typeface\}
+
+Set the app typeface once in `@theme`. The preset base layer applies it to the document, so markup needs no font classes.
+
+```css name=globals.css
+@import "@master/css";
+
+@theme {
+  --font-sans: "Geist", "Noto Sans TC";
+  --font-mono: "IBM Plex Mono";
+  --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --font-feature-mono: "cv01", "cv02", "cv29";
+}
 ```
 
-Inspect the preview's computed values, then compare the generated declarations. Both use the same size token; only `text-3xl` sets line height and letter spacing on the paragraph.
-
-<Class2CSS>{['font-3xl', 'text-3xl', 'leading-md', 'tracking-normal', 'wrap-anywhere']}</Class2CSS>
-
-Prefer `text-<token>` for repeated body, heading, and display styles. Reach for lower-level typography utilities only when the design intentionally departs from the text scale.
-
----
-
-## Type scale
-Use `font-*` to change font size while preserving the inherited line height and tracking. Compare it with the complete `text-*` treatments above.
-<FoundationTokens namespace="font-size" keys={["sm", "md", "3xl"]} />
-
-See the complete [values and consumers](/reference/tokens/font#font-size) in Reference.
-
----
-
-## Font families
-Choose `font-sans` for interface text and `font-mono` for code or aligned numeric specimens. Load the chosen font files separately; the token only declares a fallback stack.
-
-<FoundationTokens namespace="font-family" keys={["sans", "mono"]} />
-See the [font family](/reference/tokens/font#font-family) reference for more details on how to add custom fonts.
-
----
-
-## Font weights
-Use `font-regular` for body copy and `font-semibold` for headings or labels that need emphasis. Check that the loaded face supports the requested weight.
-
-<FoundationTokens namespace="font-weight" keys={["regular", "semibold"]} />
-
-See the complete [values and consumers](/reference/tokens/font#font-weight) in Reference.
-
----
-
-## Line height
-Give paragraphs more breathing room than short headings. A complete `text-md` treatment already supplies leading; use `leading-lg` only when the content needs a deliberate override.
-
-<FoundationTokens namespace="leading" keys={["sm", "lg"]} />
-
-See the complete [values and consumers](/reference/tokens/leading) in Reference.
-
----
-
-## Letter spacing
-Use `tracking-widest` with short uppercase labels sparingly, and check the result in the actual font. Keep body text on the treatment’s default tracking.
-
-<FoundationTokens namespace="tracking" keys={["normal", "widest"]} />
-
-See the complete [values and consumers](/reference/tokens/tracking) in Reference.
+The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp` and `pre`. The `--font-feature-*` tokens are optional and fall back to `normal`; form controls inherit the surrounding font. Load the font files with `@font-face` or a provider stylesheet. For a single element, use a class such as `font-mono` instead.

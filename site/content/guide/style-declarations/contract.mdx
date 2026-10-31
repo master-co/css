@@ -163,6 +163,20 @@ Within the same layer, conditions and selector, recipes sort first, then single-
 ### Important \{#important\}
 <Important />
 
+### Vendor prefixes and browser baseline \{#vendor-prefixes\}
+Write the standard property name. Master CSS emits the prefixed compatibility declaration beside it for selected native properties, such as `-webkit-backdrop-filter`; inspect the generated CSS to see which are included. Vendor-specific selectors are never added for you: write them explicitly, and they pass through as written.
+
+```html
+<!-- @MARK (backdrop-filter:blur(16px)) --><!-- @MARK (background-color:#000)::-webkit-scrollbar -->
+<div class="(backdrop-filter:blur(16px)) (background-color:#000)::-webkit-scrollbar">…</div>
+```
+
+<Class2CSS>
+  {['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']}
+</Class2CSS>
+
+Master CSS does not polyfill CSS features: browser support follows the generated property, value, selector or at-rule. The default preset itself relies on native [cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer), [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) palette values and [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) for adaptive colors and shadows, so target browsers need all three. Runtime rendering additionally uses [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to follow class changes.
+
 
 ## Values \{#values\}
 ### Decimal \{#decimal\}

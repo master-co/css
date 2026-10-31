@@ -72,7 +72,7 @@ npx @master/css-cli generate "index.html" --output master.css
 
 Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by the generated stylesheet. Preserve their relative paths: copying only `master.css` can leave its imported styles missing. Keep each generated asset set together when publishing a new build.
 
-Load the deployed page and check that every stylesheet request succeeds. The heading should use the generated font, color and spacing with JavaScript disabled. [Scanning latent classes](/guide/scanning-latent-classes) explains how to include sources outside the ordinary application scope.
+Load the deployed page and check that every stylesheet request succeeds. The heading should use the generated font, color and spacing with JavaScript disabled. [Scanning and pruning](/guide/scanning-and-pruning) explains how to include sources outside the ordinary application scope.
 
 import Footer from '../footer.mdx'
 

@@ -1,35 +1,8 @@
-import IconButtons from '~/site/docs-shell/components/IconButtons'
-import brands from '~/site/docs-shell/data/brands'
+import InstallationGuides from '~/site/components/InstallationGuides'
 
-Installation guides for popular frameworks and build tools integrated with Master CSS. Each framework page starts with static rendering where supported; runtime and progressive setups are explicit choices linked from that page. Check [release availability](/guide/installation#before-installing) for the selected integration before running its installer.
-<IconButtons url="/guide/installation" className="my-xl grid-cols(6)@sm grid-cols(8)@lg">
-  {[
-    brands['vscode'],
-    brands['react'],
-    brands['vite'],
-    brands['nextjs'],
-    brands['express'],
-    brands['aspnet-core'],
-    brands['php'],
-    brands['webpack'],
-    brands['angular'],
-    brands['vuejs'],
-    brands['wordpress'],
-    brands['laravel'],
-    brands['svelte'],
-    brands['blazor'],
-    brands['rails'],
-    brands['astro'],
-    brands['nuxtjs'],
-    brands['storybook'],
-    brands['shopify'],
-    brands['react-router'],
-    brands['lit'],
-    brands['rspack'],
-    brands['rsbuild'],
-    brands['tanstack-start'],
-  ]}
-</IconButtons>
+Installation guides for frameworks, build tools and server-rendered hosts integrated with Master CSS. Each guide starts with static rendering where supported; runtime and progressive setups are explicit choices on the same page.
+
+<InstallationGuides />
 
 ## Rendering support by adapter
 
@@ -44,7 +17,7 @@ Static rendering is the default for these official adapters. Runtime generation 
 | [Nuxt](/guide/installation/nuxtjs) | Build-time extraction through Vite | Nuxt client plugin | Nitro HTML responses with string bodies; streaming bodies are not transformed | Nitro HTML rendering plus client runtime |
 | [SvelteKit](/guide/installation/svelte) | Build-time extraction through Vite | Requires the documented client hook | Requires the Master CSS server handle; it processes page chunks during SSR and prerendering | Requires both the server handle and client hook |
 
-Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path.
+Vite and Webpack cannot add server behavior to a framework merely because it uses that bundler. Webpack's HTML injection also does not rewrite files served directly from a development server's static directory. Astro middleware reads the complete HTML response before returning it; SvelteKit uses its page-chunk hook. Follow the framework guide when choosing the delivery path. PHP, Rails, CMS and .NET hosts build the asset with Vite and load it from their templates; see [Server-rendered apps](/guide/installation/server-rendered).
 
 ---
 

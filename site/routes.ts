@@ -44,6 +44,7 @@ const sectionShells: Record<Section, string> = {
   reference: 'reference',
   blog: 'blog',
   brand: 'page',
+  benchmarks: 'page',
   'design-system': 'design-system',
   examples: 'examples'
 }

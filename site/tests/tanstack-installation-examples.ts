@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
-import { installationSource } from './installation-examples'
+import { installationDisclosure, installationSection } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -31,10 +31,12 @@ export function tanstackInstallationFixture(mode: TanstackInstallationMode) {
     assert.match(readFileSync(join(root, 'vite.config.ts'), 'utf8'), /@master\/css-vite/)
     assert.match(readFileSync(join(root, 'src/styles/app.css'), 'utf8'), /@import '@master\/css'/)
     assert.match(readFileSync(join(root, 'src/routes/__root.tsx'), 'utf8'), /import '\.\.\/styles\/app.css'/)
-    const route = '/tanstack-start' + (mode === 'static' ? '/static-rendering' : '')
-    const source = installationSource(route)
+    // tanstack-start is a section of the Vite guide; its runtime bootstrap is in the guide's disclosure.
+    const route = '/vite#tanstack-start'
+    const source = installationSection('/vite', 'tanstack-start') + (mode === 'runtime' ? installationDisclosure('/vite', 'Generate new classes in the browser') : '')
+    if (mode === 'runtime') write('src/master-css.d.ts', "/// <reference types=\"@master/css/client\" />\n")
     const fences = deliveryFences(source)
-    for (const name of ['vite.config.ts', 'src/styles/app.css', 'src/routes/__root.tsx', 'src/routes/index.tsx', ...(mode === 'runtime' ? ['src/master-css.d.ts'] : [])]) {
+    for (const name of ['src/routes/index.tsx', ...(mode === 'runtime' ? ['src/routes/__root.tsx'] : [])]) {
       const found = fences.find(fence => fence.name === name)
       assert.ok(found, `${route}: ${name}`)
       const lines = found.text.trimEnd().split('\n')
@@ -42,7 +44,7 @@ export function tanstackInstallationFixture(mode: TanstackInstallationMode) {
       const text = lines.map(line => line.slice(indent)).join('\n') + '\n'
       write(name, text)
     }
-    assert.ok(source.includes(`npm create @master/css@rc -- --framework tanstack-start${mode === 'static' ? ' --mode static' : ''} --yes`))
+    assert.ok(installationSection('/vite', 'frameworks').includes('| `tanstack-start` |'))
     write('tsconfig.json', JSON.stringify({ compilerOptions: { target: 'ES2022', module: 'ESNext', jsx: 'react-jsx' } }))
     for (const name of ['vite', 'react', 'react-dom', '@tanstack/react-start', '@tanstack/react-router', '@vitejs/plugin-react', '@master/css', '@master/css-vite', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)

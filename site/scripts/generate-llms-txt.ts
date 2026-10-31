@@ -212,7 +212,7 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
       description: metadata.description,
       body: normalizeRoutePath(rel) === 'guide/syntax-tutorial'
         ? (await syntaxTutorialContent(path.resolve(localeRoot, '..'))).markdown
-        : normalizeRoutePath(rel) === 'guide/benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
+        : normalizeRoutePath(rel) === 'benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '..'))).markdown
         : normalizeRoutePath(rel) === 'brand' ? (await brandContent(path.resolve(localeRoot, '..'))).markdown
         : designSystemRoutes.includes(`/${normalizeRoutePath(rel)}`) ? (await designSystemContent(path.resolve(localeRoot, '..'), `/${normalizeRoutePath(rel)}`)).markdown

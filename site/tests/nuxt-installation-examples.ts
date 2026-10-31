@@ -29,7 +29,8 @@ export function nuxtInstallationFixture(mode: NuxtInstallationMode) {
     assert.match(installed, /@master\/css-nuxt/)
     if (mode !== 'static') assert.ok(installed.includes(`mode: '${mode}'`))
     assert.match(readFileSync(join(root, 'assets/css/master.css'), 'utf8'), /@import '@master\/css'/)
-    const route = '/nuxtjs' + (mode === 'static' ? '' : `/${mode}`)
+    // Every mode is documented on one page; optional modes change only the installer and adapter option.
+    const route = '/nuxtjs'
     const source = installationSource(route)
     const fences = deliveryFences(source)
     for (const name of ['nuxt.config.ts', 'assets/css/master.css', 'app/app.vue']) {
@@ -37,7 +38,7 @@ export function nuxtInstallationFixture(mode: NuxtInstallationMode) {
       assert.ok(found, `${route}: ${name}`)
       const lines = found.text.trimEnd().split('\n')
       const indent = Math.min(...lines.filter(line => line.trim()).map(line => line.match(/^ */)![0].length))
-      write(name, lines.map(line => line.slice(indent)).join('\n') + '\n')
+      write(name, lines.map(line => line.slice(indent)).join('\n').replace("mode: 'static'", `mode: '${mode}'`) + '\n')
     }
     assert.ok(source.includes(`npm create @master/css@rc -- --framework nuxt${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
     for (const name of ['nuxt', 'vue', '@master/css', '@master/css-nuxt', '@master/css-runtime']) {

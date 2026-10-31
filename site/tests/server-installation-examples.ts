@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
 import { createServer } from 'node:net'
-import { installationSource } from './installation-examples'
+import { installationPage, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -29,7 +29,7 @@ export async function serverInstallationFixture(route: typeof serverInstallation
   const root = mkdtempSync(join(tmpdir(), 'master-server-install-'))
   const host = route.split('/')[1]
   const isStatic = route.endsWith('/static-rendering')
-  const source = installationSource(route)
+  const source = installationSource(installationPage(route))
   const fences = deliveryFences(source)
   let child: ChildProcess | undefined
   let errors = ''

@@ -20,6 +20,6 @@ export default function BreakpointsSheetView({ sheet }: { sheet: BreakpointsShee
 
     <SheetHeading id="customize">Customize</SheetHeading>
     <SheetExampleBlock example={sheet.customize} preview={false} />
-    <SheetLinks>See <Link href="/reference/rules/conditions">conditions</Link> and <Link href="/guide/breakpoints">Breakpoints</Link>.</SheetLinks>
+    <SheetLinks>See <Link href="/reference/rules/conditions">conditions</Link> and <Link href="/guide/responsive-design#based-on-viewport-breakpoints">Responsive design</Link>.</SheetLinks>
   </>
 }

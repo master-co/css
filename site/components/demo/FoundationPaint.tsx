@@ -1,7 +1,7 @@
 import DemoThemeComparison from './DemoThemeComparison'
 
 export function FoundationColorRoles() {
-  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={"<article id=\"color-role\" class=\"p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Project updates</h2>\n<p class=\"mt-xs mb-md fg-text-muted\">Three milestones changed this week.</p>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/guide/colors#preset-color-roles\" target=\"_top\">Explore color roles</a>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"color-role\" data-style-property=\"color\"></p>\n</article>"} caption="Both documents use identical classes. The active mode supplies the surface, line and text values." />
+  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={"<article id=\"color-role\" class=\"p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Project updates</h2>\n<p class=\"mt-xs mb-md fg-text-muted\">Three milestones changed this week.</p>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/guide/colors#choose-a-color-token\" target=\"_top\">Explore color roles</a>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"color-role\" data-style-property=\"color\"></p>\n</article>"} caption="Both documents use identical classes. The active mode supplies the surface, line and text values." />
 }
 
 export function FoundationSurfaces() {
@@ -13,7 +13,7 @@ export function FoundationLines() {
 }
 
 export function FoundationTextRoles() {
-  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={"<article class=\"grid gap-sm p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Quarterly report</h2>\n<p class=\"m(0)\">The current cycle is on track.</p>\n<p class=\"m(0) text-sm fg-text-muted\">Updated 12 minutes ago</p>\n<button type=\"button\" class=\"fg-text-disabled (cursor:not-allowed)\" disabled>Archive unavailable</button>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/guide/colors#text-roles\" target=\"_top\">Explore text roles</a>\n<span class=\"w-fit px-sm py-2xs r-sm bg-surface-inverse fg-text-inverse\">Private note</span>\n</article>"} caption="The archive action is natively disabled. Inverse text is paired with its inverse surface." />
+  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={"<article class=\"grid gap-sm p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Quarterly report</h2>\n<p class=\"m(0)\">The current cycle is on track.</p>\n<p class=\"m(0) text-sm fg-text-muted\">Updated 12 minutes ago</p>\n<button type=\"button\" class=\"fg-text-disabled (cursor:not-allowed)\" disabled>Archive unavailable</button>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/reference/tokens/color-roles#color-text\" target=\"_top\">Explore text roles</a>\n<span class=\"w-fit px-sm py-2xs r-sm bg-surface-inverse fg-text-inverse\">Private note</span>\n</article>"} caption="The archive action is natively disabled. Inverse text is paired with its inverse surface." />
 }
 
 export function FoundationHue() {
@@ -29,5 +29,5 @@ export function FoundationElevation() {
 }
 
 export function FoundationElevationState() {
-  return <DemoThemeComparison name="elevation-state" print title="Depth follows interaction" html={"<a class=\"block m-sm p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover@media(screen) shadow-md:focus-visible@media(screen) (box-shadow:none)@media(print) (text-decoration:none)\" href=\"/guide/elevation#change-elevation-by-state\" target=\"_top\">\n<strong class=\"block fg-text-strong\">Collection guide ↗</strong>\n<span class=\"block mt-xs fg-text-muted\">Hover or focus this link to lift its surface.</span>\n</a>"} caption="A native link supports pointer and keyboard focus. The focus outline remains visible; printing removes the shadow." />
+  return <DemoThemeComparison name="elevation-state" print title="Depth follows interaction" html={"<a class=\"block m-sm p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover@media(screen) shadow-md:focus-visible@media(screen) (box-shadow:none)@media(print) (text-decoration:none)\" href=\"/guide/colors#raised-surfaces\" target=\"_top\">\n<strong class=\"block fg-text-strong\">Collection guide ↗</strong>\n<span class=\"block mt-xs fg-text-muted\">Hover or focus this link to lift its surface.</span>\n</a>"} caption="A native link supports pointer and keyboard focus. The focus outline remains visible; printing removes the shadow." />
 }

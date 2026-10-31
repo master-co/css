@@ -300,6 +300,6 @@ export function breakpointsSheetMarkdown(sheet: BreakpointsSheet) {
     exampleMarkdown(sheet.usage),
     '## Customize {#customize}',
     exampleMarkdown(sheet.customize, false),
-    seeAlso(['[conditions](/reference/rules/conditions)', '[Breakpoints](/guide/breakpoints)']),
+    seeAlso(['[conditions](/reference/rules/conditions)', '[Breakpoints](/guide/responsive-design#based-on-viewport-breakpoints)']),
   ].join('\n\n')
 }

@@ -7,20 +7,8 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Create a project
-      If you don't have a Svelte project, create one first. It's recommended to refer to [SvelteKit](https://svelte.dev/docs/kit).
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npx sv create my-app --template minimal --types ts --no-add-ons --install npm
-      cd my-app
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
       ### <StepNum />Add Master CSS
-      Run the Svelte CLI add-on from the SvelteKit project root. It installs static rendering and leaves existing server hooks unchanged.
+      In an existing [SvelteKit project](https://svelte.dev/docs/kit/creating-a-project), run the Svelte CLI add-on from the project root. It installs static rendering and leaves existing server hooks unchanged.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -28,20 +16,9 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run `npm run dev -- --open` to start your Svelte development server
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm run dev -- --open
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Replace `src/routes/+page.svelte` with this heading. Keep the stylesheet import added to `src/routes/+layout.svelte`.
+    Start the dev server and replace `src/routes/+page.svelte` with this heading. Keep the stylesheet import added to `src/routes/+layout.svelte`.
   </Step>
   <HelloWorld url="localhost:5173" />
 </StepSection>
@@ -59,7 +36,7 @@ Component `<style>` blocks can use project tokens in native declarations. Keep t
 
 ---
 
-## Choose another rendering mode
+## Choose another rendering mode \{#rendering-modes\}
 Static mode is the default and needs no Master CSS hooks. Keep the CSS entry when changing modes:
 
 | Mode | Vite mode | Master CSS hooks |

@@ -5,7 +5,7 @@ import Link from '~/site/docs-shell/components/Link'
 
 import Demo from '~/site/components/demo/Demo'
 import { DemoComparison } from '~/site/components/demo'
-import { ShadowScaleDemo } from '~/site/content/guide/elevation/components/ShadowTokens'
+import ShadowScaleDemo from '~/site/components/demo/foundations/ShadowScaleDemo'
 import './page.css'
 
 export { metadata }
@@ -52,7 +52,7 @@ export default function Page() {
     <section aria-labelledby="comparison-real-use">
       <div className="review-comparison-sectionHeading">
         <div><h2 id="comparison-real-use">Actual Guide use</h2><p>The elevation guide keeps its original six-card shadow scale.</p></div>
-        <Link href="/guide/elevation">Open /guide/elevation</Link>
+        <Link href="/guide/colors#raised-surfaces">Open /guide/colors#raised-surfaces</Link>
       </div>
       <ShadowScaleDemo />
       <p className="review-comparison-optionNote">The shared layout is available for future comparisons. The existing Guide grid remains intact.</p>

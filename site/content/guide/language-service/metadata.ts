@@ -4,7 +4,7 @@ const metadata = define({
   title: {
     absolute: 'Language Service for Master CSS'
   },
-  description: 'Use manifest-aware editor intelligence for Master CSS classes, directives, project tokens, generated CSS previews, colors, and workspace-specific configuration.',
+  description: 'Set up Visual Studio Code and use manifest-aware completion, generated CSS previews, highlighting, colors and directive formatting for Master CSS.',
   category: 'Agentic Workflows',
   other: {
     subject: 'Language Service'

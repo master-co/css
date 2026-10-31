@@ -100,7 +100,7 @@ Concurrent applies coordinate across MCP processes for the same OS user through 
 
 ## Related docs
 
-- [MCP Server guide](https://rc.css.master.co/guide/mcp-server)
+- [MCP Server guide](https://rc.css.master.co/guide/ai-coding#connect-the-mcp-server)
 - [AI Coding guide](https://rc.css.master.co/guide/ai-coding)
 
 

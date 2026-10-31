@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
-import { installationSource } from './installation-examples'
+import { installationPage, installationSource } from './installation-examples'
 import { deliveryFences } from './delivery-examples'
 
 const repository = fileURLToPath(new URL('../../', import.meta.url))
@@ -16,7 +16,7 @@ export const dotnetInstallationRoutes = ['/aspnet-core', '/aspnet-core/static-re
  */
 export function dotnetInstallationFixture(route: typeof dotnetInstallationRoutes[number]) {
   const root = mkdtempSync(join(tmpdir(), 'master-dotnet-install-'))
-  const source = installationSource(route)
+  const source = installationSource(installationPage(route))
   const fences = deliveryFences(source)
   const dispose = () => rmSync(root, { recursive: true, force: true })
   const write = (name: string, text: string) => { mkdirSync(dirname(join(root, name)), { recursive: true }); writeFileSync(join(root, name), text) }

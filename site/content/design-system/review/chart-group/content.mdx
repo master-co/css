@@ -1,6 +1,6 @@
 import BenchmarkChartsDemo from '../../components/BenchmarkChartsDemo'
 
-Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. Pass the same `max` to a stacked chart when its row totals also need a shared scale, as in the delivery payload comparison. The examples below use **illustrative data**, not measured results. See [Benchmarks](/guide/benchmarks) for real fixtures, sources, and limits.
+Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. Pass the same `max` to a stacked chart when its row totals also need a shared scale, as in the delivery payload comparison. The examples below use **illustrative data**, not measured results. See [Benchmarks](/benchmarks) for real fixtures, sources, and limits.
 
 `BenchmarkChartGroup` pairs a clearer metric heading with its unit and sample context, while leaving the established bars intact. The [chart group review](/design-system/review/chart-group) shows the current chart heading. `BenchmarkMetrics` renders a refined definition list for short summaries, with tabular values and a detail line that stacks in narrow columns; its [metrics review](/design-system/review/metrics) shows the current metric rows. `BenchmarkDataTable` uses a refined native disclosure and a named, keyboard-focusable scroll region, so long tables retain complete rows and columns; its [data table review](/design-system/review/data-table) shows the current disclosure. `BenchmarkSource` marks a committed snapshot beside its recorded date; the [source review](/design-system/review/source) shows the current evidence footer. `BenchmarkFigure`, `BenchmarkDelta`, and `BenchmarkSampleSummary` provide captions, contextual deltas, and sample statistics.
 
@@ -17,7 +17,7 @@ import { BenchmarkChartGroup, BenchmarkDataTable, BenchmarkSource } from '~/site
     <tbody><tr><th scope="row">Fixture A</th><td>12.5 ms</td></tr></tbody>
   </table>
 </BenchmarkDataTable>
-<BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/guide/benchmarks#data-sources" />
+<BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/benchmarks#data-sources" />
 ```
 
 Charts and summaries render on the server and do not animate or change measurements. The table adds a small keyboard handler for consistent arrow-key scrolling, including mobile WebKit; disclosure remains native. Use nonnegative finite values with one unit per chart; use delta labels for signed changes. A `max` smaller than an item clips the visual scale and should be avoided. Tables may scroll horizontally inside their own region, never the document.
