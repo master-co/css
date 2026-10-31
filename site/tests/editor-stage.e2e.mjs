@@ -76,9 +76,10 @@ async function geometry(view) {
       fileClipped: file.scrollWidth > file.clientWidth + 1 || fileBox.right > box.right + 1 || fileBox.left < box.left - 1 || fileBox.bottom > tabBox.bottom + 1 || fileBox.top < tabBox.top - 1,
       overlay,
       clipped: overlay.filter(pane => pane.left < box.left - 1 || pane.right > box.right + 1 || pane.top < box.top - 1 || pane.bottom > box.bottom + 1),
-      titles: [...document.querySelectorAll('.home-editor-chapter-title, .home-editor-chapter-body')].map(title => {
+      // Two-column layouts show the selected description on one shared line below the chapters instead.
+      titles: [...document.querySelectorAll('.home-editor-chapter-title, .home-editor-chapter-body, .home-editor-chapter-note > [data-active]')].filter(title => getComputedStyle(title).display !== 'none').map(title => {
         const rect = title.getBoundingClientRect()
-        const chapter = title.closest('.home-editor-chapter')
+        const chapter = title.closest('.home-editor-chapter') ?? title.parentElement
         const parent = chapter.getBoundingClientRect()
         const style = getComputedStyle(chapter)
         return { text: title.textContent, clipped: title.scrollWidth > title.clientWidth + 1 || rect.right > parent.right - parseFloat(style.paddingRight) + 1 || rect.left < parent.left + parseFloat(style.paddingLeft) - 1 }

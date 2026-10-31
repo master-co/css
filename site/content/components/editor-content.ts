@@ -38,7 +38,7 @@ export const editorFeatures = [
     id: 'color',
     label: 'Colors',
     title: 'Color tools',
-    body: 'A swatch beside every color class that resolves to one color. Edit literal colors with the native picker.'
+    body: 'A swatch beside each color class. Edit literal colors in the native picker.'
   }
 ] as const satisfies readonly EditorFeature[]
 
