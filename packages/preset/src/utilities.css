@@ -536,6 +536,229 @@
   max-block-size: none;
 }
 
+/* Full and intrinsic sizes. */
+@utility w-full {
+  width: 100%;
+}
+
+@utility w-fit {
+  width: fit-content;
+}
+
+@utility w-max {
+  width: max-content;
+}
+
+@utility w-min {
+  width: min-content;
+}
+
+@utility h-full {
+  height: 100%;
+}
+
+@utility h-fit {
+  height: fit-content;
+}
+
+@utility h-max {
+  height: max-content;
+}
+
+@utility h-min {
+  height: min-content;
+}
+
+@utility size-x-full {
+  inline-size: 100%;
+}
+
+@utility size-x-fit {
+  inline-size: fit-content;
+}
+
+@utility size-x-max {
+  inline-size: max-content;
+}
+
+@utility size-x-min {
+  inline-size: min-content;
+}
+
+@utility size-y-full {
+  block-size: 100%;
+}
+
+@utility size-y-fit {
+  block-size: fit-content;
+}
+
+@utility size-y-max {
+  block-size: max-content;
+}
+
+@utility size-y-min {
+  block-size: min-content;
+}
+
+@utility min-w-full {
+  min-width: 100%;
+}
+
+@utility min-w-fit {
+  min-width: fit-content;
+}
+
+@utility min-w-max {
+  min-width: max-content;
+}
+
+@utility min-w-min {
+  min-width: min-content;
+}
+
+@utility min-h-full {
+  min-height: 100%;
+}
+
+@utility min-h-fit {
+  min-height: fit-content;
+}
+
+@utility min-h-max {
+  min-height: max-content;
+}
+
+@utility min-h-min {
+  min-height: min-content;
+}
+
+@utility min-size-x-full {
+  min-inline-size: 100%;
+}
+
+@utility min-size-x-fit {
+  min-inline-size: fit-content;
+}
+
+@utility min-size-x-max {
+  min-inline-size: max-content;
+}
+
+@utility min-size-x-min {
+  min-inline-size: min-content;
+}
+
+@utility min-size-y-full {
+  min-block-size: 100%;
+}
+
+@utility min-size-y-fit {
+  min-block-size: fit-content;
+}
+
+@utility min-size-y-max {
+  min-block-size: max-content;
+}
+
+@utility min-size-y-min {
+  min-block-size: min-content;
+}
+
+@utility max-w-full {
+  max-width: 100%;
+}
+
+@utility max-w-fit {
+  max-width: fit-content;
+}
+
+@utility max-w-max {
+  max-width: max-content;
+}
+
+@utility max-w-min {
+  max-width: min-content;
+}
+
+@utility max-h-full {
+  max-height: 100%;
+}
+
+@utility max-h-fit {
+  max-height: fit-content;
+}
+
+@utility max-h-max {
+  max-height: max-content;
+}
+
+@utility max-h-min {
+  max-height: min-content;
+}
+
+@utility max-size-x-full {
+  max-inline-size: 100%;
+}
+
+@utility max-size-x-fit {
+  max-inline-size: fit-content;
+}
+
+@utility max-size-x-max {
+  max-inline-size: max-content;
+}
+
+@utility max-size-x-min {
+  max-inline-size: min-content;
+}
+
+@utility max-size-y-full {
+  max-block-size: 100%;
+}
+
+@utility max-size-y-fit {
+  max-block-size: fit-content;
+}
+
+@utility max-size-y-max {
+  max-block-size: max-content;
+}
+
+@utility max-size-y-min {
+  max-block-size: min-content;
+}
+
+@utility basis-full {
+  flex-basis: 100%;
+}
+
+@utility basis-fit {
+  flex-basis: fit-content;
+}
+
+@utility basis-max {
+  flex-basis: max-content;
+}
+
+@utility basis-min {
+  flex-basis: min-content;
+}
+
+/* Flex and grid ordering. */
+@utility order-first {
+  order: -999999;
+}
+
+@utility order-last {
+  order: 999999;
+}
+
+/* Fully rounded corners; only the radius, never a size or ratio. */
+@utility pill {
+  border-radius: calc(infinity * 1px);
+}
+
 /* Border and outline styles; widths and colors stay independent. */
 @utility b-solid {
   border-style: solid;
@@ -1229,11 +1452,11 @@
   gap: calc(var(--value) * 1px);
 }
 
-@utility gap-x(--value <number>) {
+@utility col-gap(--value <number>) {
   column-gap: calc(var(--value) * 1px);
 }
 
-@utility gap-y(--value <number>) {
+@utility row-gap(--value <number>) {
   row-gap: calc(var(--value) * 1px);
 }
 
@@ -1419,7 +1642,7 @@
   border-spacing: var(--spacing);
 }
 
-@utility gap-x-(--spacing) {
+@utility col-gap-(--spacing) {
   column-gap: var(--spacing);
 }
 
@@ -1555,7 +1778,7 @@
   right: var(--spacing);
 }
 
-@utility gap-y-(--spacing) {
+@utility row-gap-(--spacing) {
   row-gap: var(--spacing);
 }
 
@@ -1877,8 +2100,4 @@
 
 @utility leading-(--leading) {
   line-height: var(--leading);
-}
-
-@utility order-(--order) {
-  order: var(--order);
 }

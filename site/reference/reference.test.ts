@@ -61,11 +61,11 @@ test('Reference and shared search styles use defined site theme variables', asyn
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
   const { recipePages } = await import('./sheet-editorial')
-  assert.equal(catalog.documents.length, 32)
+  assert.equal(catalog.documents.length, 31)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, recipePages.length)
-  // Fixed utilities emit one literal declaration; the declarations contract lists them all.
-  const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration' && utility.body[0].value.every(part => part.type === 'text'))
-  assert.equal(fixed.length, 237)
+  // Fixed utilities emit one declaration; the declarations contract lists them all.
+  const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration')
+  assert.equal(fixed.length, 292)
   const declarations = catalog.documents.find(doc => doc.id === 'rules/declarations')!
   for (const { name } of fixed) assert.ok(declarations.markdown.includes(`\`${name}\``), name)
   for (const page of recipePages) {
@@ -82,7 +82,7 @@ test('catalog covers every public family and preset recipe without indexing reti
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
     assert.ok(documentAnchors(families).has(`family-${family.prefix}`))
   }
-  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient', 'text-size', 'tokens/animate', 'tokens/color-text', 'tokens/font-size', 'clamp-lines', 'grid-columns', 'directives/entry']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'tokens/order', 'font-smooth', 'text-gradient', 'text-size', 'tokens/animate', 'tokens/color-text', 'tokens/font-size', 'clamp-lines', 'grid-columns', 'directives/entry']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)
@@ -184,9 +184,9 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   }
   const modes = catalog.documents.find(doc => doc.id === 'rules/modes')!
   assert.ok(modes.markdown.includes('/reference/tokens/families'))
-  // A registry-backed consumer may have no value in the preset: order was missing
-  // when this index was incorrectly derived from the defined variable inventory.
-  assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order-'])
+  // Consumers come from the utility registry: fixed order values register no namespace.
+  assert.equal(variableNamespaceSources.find(row => row.namespace === 'order'), undefined)
+  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('col-gap-'))
   assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-pxe-'))
   assert.ok(!variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.some(key => key.startsWith('@')))
   const layers = catalog.documents.find(doc => doc.id === 'rules/layers')!

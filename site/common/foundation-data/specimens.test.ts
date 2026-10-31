@@ -41,14 +41,13 @@ test('selected Guide specimens and portable output preserve the same facts and m
   assert.doesNotMatch(selectedSpecimensMarkdown('color', ['yellow']), /[Cc]opy/)
   assert.match(selectedSpecimensMarkdown('color', ['yellow']), /fixed swatch/)
 })
-test('text, line, leading and order specimens show their actual effect', () => {
+test('text, line and leading specimens show their actual effect; radius shows only scale tokens', () => {
   assert.match(foundationScene('color-text', ['body']).html, /data-role-preview="text"[^>]+fg-text-body/)
   assert.match(foundationScene('color-line', ['control']).html, /data-role-preview="line"[^>]+border-style:solid[^>]+b-line-control/)
   assert.ok(foundationScene('leading').html.includes('from one line to the next'))
-  const order = foundationScene('order')
-  assert.ok(namespaceTokens('order').length > 0)
-  assert.match(order.html, /order-first/)
-  assert.match(configuredExampleCSS(order.css!, configuredMarkupClasses(order.html)), /order:var\(--order-first\)/)
+  // Pill is a fixed utility, and the preset has no order tokens.
+  assert.doesNotMatch(foundationScene('radius').html, /pill/)
+  assert.equal(namespaceTokens('order').length, 0)
 })
 test('motion is managed and uses actual per-token duration or timing values', () => {
   for (const namespace of ['animate', 'duration', 'easing']) {

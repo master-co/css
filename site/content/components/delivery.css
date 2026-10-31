@@ -328,7 +328,7 @@
     left: calc(clamp(0, var(--home-delivery-t) - var(--i), 1) * 100% - 3.5px);
     width: 7px;
     height: 7px;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: var(--home-text);
     box-shadow: 0 0 0 3px var(--home-ground);
     content: '';
@@ -340,7 +340,7 @@
     box-sizing: border-box;
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
 
     /* Before hydration and under reduced motion the button is absent but keeps its place. */
     &[hidden] {

@@ -199,7 +199,7 @@
     & .home-command-copy {
       width: 2.75rem;
       height: 2.75rem;
-      border-radius: var(--radius-pill);
+      border-radius: calc(infinity * 1px);
       color: var(--home-text);
 
       &:hover {

@@ -47,7 +47,7 @@ A layout system should answer five questions before individual components start 
 | Canvas width | Container sizes and sizing | `w-full`, `max-w-7xl`, `mx-auto` |
 | Outer margin | Spacing | `px-md`, `px-xl@md` |
 | Columns | Grid | `grid-cols(4)`, `grid-cols(12)@md` |
-| Gutters | Spacing | `gap-md`, `gap-x-lg`, `gap-y-xl` |
+| Gutters | Spacing | `gap-md`, `col-gap-lg`, `row-gap-xl` |
 | Region behavior | Grid, Flex, and queries | `grid-col-span(8)@md`, `flex-row@2xs`, `@container((width>=28rem))` |
 
 These decisions are separate on purpose. A page can keep the same maximum width while changing column count. A component can keep the same columns while increasing its gutter. A reusable card can respond to its container instead of the viewport.
@@ -98,17 +98,17 @@ Start with the smallest layout that works, then add breakpoint-specific column c
 ## Use gutters from spacing
 Gutters are the spaces between columns and rows. They should come from spacing tokens so grid rhythm matches component padding, form spacing, and section separation.
 
-Use `gap-md` when both axes share the same rhythm. Use `gap-x-lg` and `gap-y-xl` when horizontal gutters and vertical stacking need different spacing tokens.
+Use `gap-md` when both axes share the same rhythm. Use `col-gap-lg` and `row-gap-xl` when horizontal gutters and vertical stacking need different spacing tokens.
 
 ```html
-<!-- @MARK gap-md --><!-- @MARK gap-x-lg@md --><!-- @MARK gap-y-xl@md -->
-<section class="grid-cols(1) gap-md grid-cols(3)@md gap-x-lg@md gap-y-xl@md">
+<!-- @MARK gap-md --><!-- @MARK col-gap-lg@md --><!-- @MARK row-gap-xl@md -->
+<section class="grid-cols(1) gap-md grid-cols(3)@md col-gap-lg@md row-gap-xl@md">
   ...
 </section>
 ```
 
 <Class2CSS>
-  {['grid-cols(1)', 'grid-cols(3)@md', 'gap-md', 'gap-x-lg@md', 'gap-y-xl@md']}
+  {['grid-cols(1)', 'grid-cols(3)@md', 'gap-md', 'col-gap-lg@md', 'row-gap-xl@md']}
 </Class2CSS>
 
 (x) Do not use arbitrary gutters as the default language of a design system.

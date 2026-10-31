@@ -1,7 +1,7 @@
 [
   {"prefix":"bottom","property":"bottom","namespace":"spacing","css":".bottom-proof{bottom:var(--spacing-proof)}"},
   {"prefix":"border-spacing","property":"border-spacing","namespace":"spacing","css":".border-spacing-proof{border-spacing:var(--spacing-proof)}"},
-  {"prefix":"gap-x","property":"column-gap","namespace":"spacing","css":".gap-x-proof{column-gap:var(--spacing-proof)}"},
+  {"prefix":"col-gap","property":"column-gap","namespace":"spacing","css":".col-gap-proof{column-gap:var(--spacing-proof)}"},
   {"prefix":"gap","property":"gap","namespace":"spacing","css":".gap-proof{gap:var(--spacing-proof)}"},
   {"prefix":"inset","property":"inset","namespace":"spacing","css":".inset-proof{inset:var(--spacing-proof)}"},
   {"prefix":"iy","property":"inset-block","namespace":"spacing","css":".iy-proof{inset-block:var(--spacing-proof)}"},
@@ -35,7 +35,7 @@
   {"prefix":"pr","property":"padding-right","namespace":"spacing","css":".pr-proof{padding-right:var(--spacing-proof)}"},
   {"prefix":"pt","property":"padding-top","namespace":"spacing","css":".pt-proof{padding-top:var(--spacing-proof)}"},
   {"prefix":"right","property":"right","namespace":"spacing","css":".right-proof{right:var(--spacing-proof)}"},
-  {"prefix":"gap-y","property":"row-gap","namespace":"spacing","css":".gap-y-proof{row-gap:var(--spacing-proof)}"},
+  {"prefix":"row-gap","property":"row-gap","namespace":"spacing","css":".row-gap-proof{row-gap:var(--spacing-proof)}"},
   {"prefix":"scroll-m","property":"scroll-margin","namespace":"spacing","css":".scroll-m-proof{scroll-margin:var(--spacing-proof)}"},
   {"prefix":"scroll-my","property":"scroll-margin-block","namespace":"spacing","css":".scroll-my-proof{scroll-margin-block:var(--spacing-proof)}"},
   {"prefix":"scroll-mye","property":"scroll-margin-block-end","namespace":"spacing","css":".scroll-mye-proof{scroll-margin-block-end:var(--spacing-proof)}"},
@@ -115,6 +115,5 @@
   {"prefix":"font-size","property":"font-size","namespace":"font-size","css":".font-size-proof{font-size:var(--font-size-proof)}"},
   {"prefix":"font-weight","property":"font-weight","namespace":"font-weight","css":".font-weight-proof{font-weight:var(--font-weight-proof)}"},
   {"prefix":"tracking","property":"letter-spacing","namespace":"tracking","css":".tracking-proof{letter-spacing:var(--tracking-proof)}"},
-  {"prefix":"leading","property":"line-height","namespace":"leading","css":".leading-proof{line-height:var(--leading-proof)}"},
-  {"prefix":"order","property":"order","namespace":"order","css":".order-proof{order:var(--order-proof)}"}
+  {"prefix":"leading","property":"line-height","namespace":"leading","css":".leading-proof{line-height:var(--leading-proof)}"}
 ]

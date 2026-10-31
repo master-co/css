@@ -163,7 +163,7 @@
         left: 0.75rem;
         width: 2px;
         height: 50%;
-        border-radius: var(--radius-pill);
+        border-radius: calc(infinity * 1px);
         background-color: var(--home-signal);
         content: '';
       }
@@ -784,7 +784,7 @@
     right: 0.125rem;
     width: 0.1875rem;
     height: calc(var(--editor-suggest-thumb) * (100% - var(--editor-row)));
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: var(--home-rule);
   }
 
@@ -928,7 +928,7 @@
     position: absolute;
     width: 0.75rem;
     height: 0.75rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     box-shadow: 0 0 0 2px white, 0 1px 4px rgb(0 0 0 / 0.45);
     translate: -50% -50%;
   }
@@ -1044,7 +1044,7 @@
     inset: 0 0.75rem auto;
     overflow: hidden;
     height: 2px;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: var(--home-rule);
   }
 

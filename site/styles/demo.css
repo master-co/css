@@ -203,10 +203,10 @@
     outline: 2px solid var(--color-focus); outline-offset: 3px;
   }
   .demo-controls input[type="range"] { appearance: none; min-width: 0; height: 2.25rem; margin: 0; background: transparent; accent-color: var(--color-accent); cursor: ew-resize; }
-  .demo-controls input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: var(--radius-pill); background: var(--color-line-divider); }
+  .demo-controls input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: calc(infinity * 1px); background: var(--color-line-divider); }
   /* Small handles need a legible edge against both the track and its surrounding surface. */
   .demo-controls input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -5px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
-  .demo-controls input[type="range"]::-moz-range-track { height: 4px; border-radius: var(--radius-pill); background: var(--color-line-divider); }
+  .demo-controls input[type="range"]::-moz-range-track { height: 4px; border-radius: calc(infinity * 1px); background: var(--color-line-divider); }
   .demo-controls input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: 1px solid var(--color-text-muted); border-radius: 50%; background: var(--color-surface-raised); box-shadow: var(--shadow-contact); }
   .demo-controls input[type="range"]:active::-webkit-slider-thumb { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }
   .demo-controls input[type="range"]:active::-moz-range-thumb { background: var(--color-surface-shell); box-shadow: var(--shadow-pressed-contact); }

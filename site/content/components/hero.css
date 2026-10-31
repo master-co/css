@@ -164,7 +164,7 @@
     max-width: 100%;
     min-height: 2rem;
     padding: 0.25rem var(--spacing-sm) 0.25rem 0.25rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     font-size: var(--home-caption);
     line-height: 1.5;
     color: var(--home-text);
@@ -197,7 +197,7 @@
     align-items: center;
     gap: 0.375rem;
     padding: 0.125rem var(--spacing-xs);
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     font-family: var(--home-mono);
     font-size: var(--home-label);
     letter-spacing: 0.06em;
@@ -210,7 +210,7 @@
     &::before {
       width: 0.4375rem;
       height: 0.4375rem;
-      border-radius: var(--radius-pill);
+      border-radius: calc(infinity * 1px);
       background-color: var(--home-signal);
       background-image: radial-gradient(circle at clamp(25%, var(--lit-x), 75%) 28%, rgb(255 255 255 / 0.85), transparent 42%),
         radial-gradient(circle at 50% 80%, color-mix(in oklab, var(--home-signal), white 25%), transparent 60%);
@@ -390,7 +390,7 @@
     & .home-command-copy {
       width: 2.75rem;
       height: 2.75rem;
-      border-radius: var(--radius-pill);
+      border-radius: calc(infinity * 1px);
       color: var(--home-text);
 
       &:hover {

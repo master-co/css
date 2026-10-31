@@ -20,7 +20,7 @@ Most applications should import preset styles through `@master/css`. Use this pa
 @import '@master/css-preset/utilities.css';
 ```
 
-`utilities.css` defines 119 direct-value families and 7 recipes. A custom theme needs this entry or its own utilities to enable named classes.
+`utilities.css` defines 118 token families, 100 direct-value functions, 292 fixed utilities and 7 recipes. A custom theme needs this entry or its own utilities to enable named classes.
 
 `font-sans`, `font-sm`, and `font-bold` share the `font-` prefix while reading the independent `--font-family-*`, `--font-size-*`, and `--font-weight-*` namespaces. Duration and easing similarly use `transition-*` and `animation-*`; delays use `transition-delay-*` and `animation-delay-*`. A key present in multiple namespaces under the same prefix is ambiguous and requires an explicit native declaration, such as `(font-size:var(--font-size-brand))`.
 

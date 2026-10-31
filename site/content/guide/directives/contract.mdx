@@ -286,7 +286,7 @@ Declare the class form explicitly at the top level:
   &:hover { outline: 1px solid currentColor; }
 }
 
-@utility gap-x-(--spacing) {
+@utility col-gap-(--spacing) {
   column-gap: var(--spacing);
 }
 
@@ -296,14 +296,14 @@ Declare the class form explicitly at the top level:
 }
 ```
 
-Use `card-layout`, `gap-x-sm`, and `grid-cols(3)@sm` in markup. The header determines whether a definition registers a fixed class, a token pattern, or a function. Each form registers only that form. A token pattern does not also create a function call. Adding declarations or supported nested rules does not change the registration.
+Use `card-layout`, `col-gap-sm`, and `grid-cols(3)@sm` in markup. The header determines whether a definition registers a fixed class, a token pattern, or a function. Each form registers only that form. A token pattern does not also create a function call. Adding declarations or supported nested rules does not change the registration.
 
 A utility name or token prefix cannot contain `_`, because `_` begins a descendant selector in classes; such a definition reports an error at its source. Token keys may contain `_`: they remain valid variables for `var()`, but they do not create bare token classes or completions. Mixin names, custom properties and native stylesheet classes may still use `_`.
 
 ### Direct declarations and recipes \{#named-and-enumerated-classes\}
-Write a direct value as one `(property:value)` head with the full native property name: `(padding:1rem)`, `(color:red)`, `(background:#fff)`. Genuine native names such as SVG `r` retain their native meaning. The preset also registers 237 [fixed utilities](/reference/rules/declarations#fixed-utilities), such as `block`, `hidden`, `text-center`, `mx-auto` and `b-solid`, as ordinary static `@utility` definitions that each emit one declaration, the `truncate` recipe, and 100 [direct-value functions](/reference/rules/declarations#direct-values) such as `m(4)`, `b(1)` and `grow(1)`: 97 lengths that emit `calc(var(--value) * 1px)` for a `<number>` and the unitless `grow`, `shrink` and `order`.
+Write a direct value as one `(property:value)` head with the full native property name: `(padding:1rem)`, `(color:red)`, `(background:#fff)`. Genuine native names such as SVG `r` retain their native meaning. The preset also registers 292 [fixed utilities](/reference/rules/declarations#fixed-utilities), such as `block`, `hidden`, `text-center`, `mx-auto`, `b-solid`, `w-full`, `order-first` and `pill`, as ordinary static `@utility` definitions that each emit one declaration, the `truncate` recipe, and 100 [direct-value functions](/reference/rules/declarations#direct-values) such as `m(4)`, `b(1)` and `grow(1)`: 97 lengths that emit `calc(var(--value) * 1px)` for a `<number>` and the unitless `grow`, `shrink` and `order`.
 
-Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 463 definitions: 119 token definitions (118 direct-value families and the `text` recipe), 105 function utilities and 239 static utilities (237 fixed utilities, `sr-only` and `truncate`); the [family catalog](/reference/tokens/families) lists the token prefixes, native properties and namespaces. Keyword constants such as `--container-full: 100%` and `--order-first: -999999` are `@theme inline` tokens, so `w-full` and `order-first` emit their values directly.
+Named tokens use spellings such as `p-md`, `fg-red-60`, `font-sm`, `font-sans`, and `font-bold`. The preset defines these families with `@utility` and their values in `@theme`. A theme alone registers no classes; import `"@master/css/utilities.css"` or author utilities. The full `"@master/css"` import includes both tokens and utilities. The preset contains 517 definitions: 118 token definitions (117 direct-value families and the `text` recipe), 105 function utilities and 294 static utilities (292 fixed utilities, `sr-only` and `truncate`); the [family catalog](/reference/tokens/families) lists the token prefixes, native properties and namespaces. Fixed values such as `w-full`, `order-first` and `pill` are static utilities, not tokens: they emit `100%`, `-999999` and `calc(infinity * 1px)` directly, and a same-named theme token such as `--container-full` or `--radius-pill` never changes them. The preset has no order token family; declare a project utility such as `@utility order-pinned { order: -1; }`, or your own `@utility order-(--order)` family, for named positions.
 
 ### Token patterns \{#named-token-patterns\}
 A pattern has one trailing placeholder. Its parameter names the token namespace; the fixed part names the class prefix. An untyped placeholder binds the token value:

@@ -69,7 +69,15 @@ const ADDED_UTILITIES = [
   ['ellipsis', 'text-overflow', 'ellipsis']
 ] as const
 
-const SHORT_UTILITIES = [...FIXED_UTILITIES, ...ADDED_UTILITIES]
+/** The 54 keyword statics: full and intrinsic sizes and the two ordering extremes. */
+const KEYWORD_UTILITIES = [
+  ...[...SIZES, ...MAX_SIZES, ['basis', 'flex-basis'] as const].flatMap(([name, property]) => [['full', '100%'], ['fit', 'fit-content'], ['max', 'max-content'], ['min', 'min-content']]
+    .map(([key, value]) => [`${name}-${key}`, property, value] as const)),
+  ['order-first', 'order', '-999999'],
+  ['order-last', 'order', '999999']
+] as const
+
+const SHORT_UTILITIES = [...FIXED_UTILITIES, ...ADDED_UTILITIES, ...KEYWORD_UTILITIES]
 
 /** The 97 pixel-length functions and 3 unitless functions. */
 const LENGTH_FUNCTIONS = [
@@ -78,7 +86,7 @@ const LENGTH_FUNCTIONS = [
   ...MARGIN.map(([name, property]) => [`scroll-${name}`, `scroll-${property}`] as const),
   ...PADDING.map(([name, property]) => [`scroll-${name}`, `scroll-${property}`] as const),
   ...INSET,
-  ['gap', 'gap'], ['gap-x', 'column-gap'], ['gap-y', 'row-gap'], ['border-spacing', 'border-spacing'], ['outline-offset', 'outline-offset'], ['shape-margin', 'shape-margin'], ['translate', 'translate'], ['word-spacing', 'word-spacing'],
+  ['gap', 'gap'], ['col-gap', 'column-gap'], ['row-gap', 'row-gap'], ['border-spacing', 'border-spacing'], ['outline-offset', 'outline-offset'], ['shape-margin', 'shape-margin'], ['translate', 'translate'], ['word-spacing', 'word-spacing'],
   ...SIZES, ...MAX_SIZES, ['basis', 'flex-basis'],
   ['r', 'border-radius'], ['rtl', 'border-top-left-radius'], ['rtr', 'border-top-right-radius'], ['rbl', 'border-bottom-left-radius'], ['rbr', 'border-bottom-right-radius'], ['rss', 'border-start-start-radius'], ['rse', 'border-start-end-radius'], ['res', 'border-end-start-radius'], ['ree', 'border-end-end-radius'],
   ...BORDER_SIDES.map(([name, side]) => [name, border(side, 'width')] as const),
@@ -105,20 +113,24 @@ const order = (classes: string[]) => {
 }
 
 describe('preset short utilities', () => {
-  it('registers 237 single-declaration statics, two recipes, 105 functions and 119 token definitions', () => {
+  it('registers 292 single-declaration statics, two recipes, 105 functions and 118 token definitions', () => {
     const names = SHORT_UTILITIES.map(([name]) => name)
     expect(FIXED_UTILITIES).toHaveLength(94)
     expect(ADDED_UTILITIES).toHaveLength(143)
-    expect(new Set(names).size).toBe(237)
+    expect(KEYWORD_UTILITIES).toHaveLength(54)
+    expect(new Set([...names, 'pill']).size).toBe(292)
     const utilities = manifest.utilities ?? []
-    expect(utilities).toHaveLength(463)
-    expect(utilities.filter(({ kind }) => kind === 'static').map(({ name }) => name).sort()).toEqual(['sr-only', 'truncate', ...names].sort())
+    expect(utilities).toHaveLength(517)
+    expect(utilities.filter(({ kind }) => kind === 'static').map(({ name }) => name).sort()).toEqual(['sr-only', 'truncate', 'pill', ...names].sort())
     expect(utilities.filter(({ kind }) => kind === 'function')).toHaveLength(105)
-    expect(utilities.filter(({ kind }) => kind === 'token')).toHaveLength(119)
+    expect(utilities.filter(({ kind }) => kind === 'token')).toHaveLength(118)
     for (const [name, property, value] of SHORT_UTILITIES) {
       const definition = utilities.find((utility) => utility.kind === 'static' && utility.name === name)
       expect(definition?.body, name).toEqual([{ type: 'declaration', property, value: [{ type: 'text', value }] }])
     }
+    expect(utilities.find((utility) => utility.kind === 'static' && utility.name === 'pill')?.body).toEqual([
+      { type: 'declaration', property: 'border-radius', value: [{ type: 'function', name: 'calc', value: [{ type: 'text', value: 'infinity * 1px' }] }] }
+    ])
     expect(LENGTH_FUNCTIONS).toHaveLength(97)
     for (const [name, property] of LENGTH_FUNCTIONS) {
       const definition = utilities.find((utility) => utility.kind === 'function' && utility.name === name)
@@ -177,14 +189,90 @@ describe('preset short utilities', () => {
     }
   })
 
-  it('substitutes the inline keyword constants', () => {
+  it('declares keyword sizes, ordering extremes and pill as tokenless statics', () => {
     expect(engine.inspect('w-full').rules[0].text).toBe('.w-full{width:100%}')
     expect(engine.inspect('max-w-fit').rules[0].text).toBe('.max-w-fit{max-width:fit-content}')
     expect(engine.inspect('basis-min').rules[0].text).toBe('.basis-min{flex-basis:min-content}')
     expect(engine.inspect('h-max').rules[0].text).toBe('.h-max{height:max-content}')
     expect(engine.inspect('order-first').rules[0].text).toBe('.order-first{order:-999999}')
     expect(engine.inspect('order-last').rules[0].text).toBe('.order-last{order:999999}')
-    for (const className of ['w-full', 'order-first']) expect(engine.inspect(className).rules[0].variableNames ?? []).toEqual([])
+    // Pill sets only the radius: no size, ratio or overflow.
+    expect(engine.inspect('pill').rules[0].text).toBe('.pill{border-radius:calc(infinity * 1px)}')
+    expect(engine.inspect('pill:hover@sm').rules[0].text).toBe('@media (width >= 52.125rem){.pill\\:hover\\@sm:hover{border-radius:calc(infinity * 1px)}}')
+    for (const className of ['w-full', 'order-first', 'pill']) expect(engine.inspect(className).rules[0].variableNames ?? []).toEqual([])
+    const variables = manifest.variables as Record<string, { key: string }[]>
+    for (const key of ['full', 'fit', 'max', 'min']) expect(variables.container.map(({ key }) => key)).not.toContain(key)
+    expect(variables.radius.map(({ key }) => key)).not.toContain('pill')
+    expect(variables).not.toHaveProperty('order')
+    // Removed families and keys emit nothing; the integer function remains.
+    for (const absent of ['r-pill', 'rtl-pill', 'rss-pill', 'order-1', 'order-pinned']) expect(engine.inspect(absent).rules, absent).toEqual([])
+    expect(engine.inspect('order(3)').rules[0].text).toBe('.order\\(3\\){order:3}')
+  })
+
+  it('keeps keyword statics ahead of same-named project tokens', () => {
+    const variables = structuredClone(manifest.variables) as Record<string, object[]>
+    const token = (key: string, value: string) => ({ key, values: [{ path: [':root,:host'], value }], dependencies: [] })
+    variables.container.push(token('full', '50%'), token('fit', '10rem'))
+    variables.radius.push(token('pill', '2px'))
+    variables.order = [token('first', '3'), token('pinned', '-1')]
+    // A project-declared `@utility order-(--order)` family.
+    const orderFamily = { kind: 'token', name: 'order', parameters: [{ name: '--order' }], body: [{ type: 'declaration', property: 'order', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--order' }] }] }] }
+    const utilities = [...manifest.utilities ?? [], orderFamily]
+    const session = createEngineBindingSessionSync({ manifest: { ...manifest, utilities, variables } as MasterCSSManifest })
+    try {
+      const text = (className: string) => session.inspect(className).rules.map((rule) => rule.text).join('')
+      expect(text('w-full')).toBe('.w-full{width:100%}')
+      expect(text('max-w-fit')).toBe('.max-w-fit{max-width:fit-content}')
+      expect(text('order-first')).toBe('.order-first{order:-999999}')
+      expect(text('pill')).toBe('.pill{border-radius:calc(infinity * 1px)}')
+      // Project tokens stay reachable through their own token families.
+      expect(text('r-pill')).toBe('.r-pill{border-radius:var(--radius-pill)}')
+      expect(text('rtl-pill')).toBe('.rtl-pill{border-top-left-radius:var(--radius-pill)}')
+      expect(text('order-pinned')).toBe('.order-pinned{order:var(--order-pinned)}')
+    } finally {
+      session.dispose()
+    }
+  })
+
+  it('names the gap axes col-gap and row-gap', () => {
+    const variables = structuredClone(manifest.variables) as Record<string, object[]>
+    variables.spacing.push({ key: 'gutter', values: [{ path: [':root,:host'], value: '18px' }], dependencies: [], type: 'number', numeric: { value: 18, unit: 'px' } })
+    const session = createEngineBindingSessionSync({ manifest: { ...manifest, variables } as MasterCSSManifest })
+    try {
+      const text = (className: string) => session.inspect(className).rules.map((rule) => rule.text).join('')
+      for (const [className, expected] of [
+        ['gap-md', '.gap-md{gap:var(--spacing-md)}'],
+        ['col-gap-md', '.col-gap-md{column-gap:var(--spacing-md)}'],
+        ['row-gap-md', '.row-gap-md{row-gap:var(--spacing-md)}'],
+        ['col-gap-gutter', '.col-gap-gutter{column-gap:var(--spacing-gutter)}'],
+        ['row-gap-gutter', '.row-gap-gutter{row-gap:var(--spacing-gutter)}'],
+        ['col-gap(0)', '.col-gap\\(0\\){column-gap:calc(0 * 1px)}'],
+        ['row-gap(1.5)', '.row-gap\\(1\\.5\\){row-gap:calc(1.5 * 1px)}'],
+        ['col-gap(8)@sm', '@media (width >= 52.125rem){.col-gap\\(8\\)\\@sm{column-gap:calc(8 * 1px)}}'],
+        ['row-gap-md:hover', '.row-gap-md\\:hover:hover{row-gap:var(--spacing-md)}'],
+        ['col-gap-sm_li', '.col-gap-sm_li li{column-gap:var(--spacing-sm)}'],
+        ['(column-gap:1rem)', '.\\(column-gap\\:1rem\\){column-gap:1rem}'],
+        ['(row-gap:var(--gutter))', '.\\(row-gap\\:var\\(--gutter\\)\\){row-gap:var(--gutter)}'],
+        ['(gap:1rem|2rem)', '.\\(gap\\:1rem\\|2rem\\){gap:1rem 2rem}']
+      ] as const) {
+        expect(text(className), className).toBe(expected)
+      }
+      // Functions take one static pixel number; units, variables and pairs stay native declarations.
+      for (const invalid of ['col-gap(1rem)', 'row-gap(var(--x))', 'col-gap(1,2)', 'row-gap(auto)', 'gap(1rem)']) {
+        const inspection = session.inspect(invalid)
+        expect(inspection.rules, invalid).toEqual([])
+        expect(inspection.diagnostics?.length, invalid).toBeGreaterThan(0)
+      }
+      // The former axis names are not registered.
+      for (const absent of ['gap-x-md', 'gap-y-md', 'gap-x-gutter', 'gap-x(4)', 'gap-y(4)']) expect(session.inspect(absent).rules, absent).toEqual([])
+    } finally {
+      session.dispose()
+    }
+    // The shorthand precedes both longhands, which share one coverage tier.
+    const expected = ['gap(8)', 'col-gap-md', 'row-gap(4)']
+    expect(order(['row-gap(4)', 'col-gap-md', 'gap(8)'])).toEqual(expected)
+    expect(order(['gap(8)', 'row-gap(4)', 'col-gap-md'])).toEqual(expected)
+    expect(order(['row-gap-md', 'gap-sm', 'col-gap(2)'])).toEqual(['gap-sm', 'row-gap-md', 'col-gap(2)'])
   })
 
   it('keeps the native start/end and flex-start/flex-end distinction', () => {
@@ -225,7 +313,14 @@ describe('preset short utilities', () => {
       ['grid-cols(3)', 'grid-template-columns:repeat(3, minmax(0, 1fr))'],
       ['text-sm', 'font-size:var(--text-sm)'],
       ['font-bold', 'font-weight:var(--font-weight-bold)'],
-      ['r-pill', 'border-radius:var(--radius-pill)'],
+      ['r-4xl', 'border-radius:var(--radius-4xl)'],
+      ['size-x-md', 'inline-size:var(--container-md)'],
+      ['min-size-y-xs', 'min-block-size:var(--container-xs)'],
+      ['mx-md', 'margin-inline:var(--spacing-md)'],
+      ['py-sm', 'padding-block:var(--spacing-sm)'],
+      ['ix-md', 'inset-inline:var(--spacing-md)'],
+      ['bx-red-60', 'border-inline-color:var(--color-red-60)'],
+      ['overflow-x-auto', 'overflow-x:auto'],
       ['sr-only', 'position:absolute'],
       ['clamp-lines(2)', '-webkit-line-clamp:2'],
       ['b-red-60', 'border-color:var(--color-red-60)'],
@@ -261,7 +356,7 @@ describe('preset short utilities', () => {
     expect(order(['(margin:2rem)', 'm(4)'])).toEqual(['m(4)', '(margin:2rem)'])
     // Recipes precede the atomics they combine with.
     expect(order(['whitespace-normal', 'truncate'])).toEqual(['truncate', 'whitespace-normal'])
-    const classes = ['m(8)', 'mx(4)', 'ml(0)', 'b-solid', 'b(2)', 'bt(0)', 'truncate', '(margin:1px)', 'm-md', 'overflow-x-auto', 'overflow-hidden', 'gap-y(4)', 'gap(8)', 'r(4)', 'rtl-md']
+    const classes = ['m(8)', 'mx(4)', 'ml(0)', 'b-solid', 'b(2)', 'bt(0)', 'truncate', '(margin:1px)', 'm-md', 'overflow-x-auto', 'overflow-hidden', 'row-gap(4)', 'gap(8)', 'r(4)', 'rtl-md']
     const expected = order(classes)
     expect(order([...classes].reverse())).toEqual(expected)
     const session = createEngineBindingSessionSync({ manifest })

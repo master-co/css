@@ -619,7 +619,7 @@
     display: block;
     width: 0.625rem;
     height: 0.625rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: var(--home-rule);
     opacity: 0.56;
   }
@@ -706,7 +706,7 @@
     align-items: center;
     width: fit-content;
     padding: var(--home-segment-pad);
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: color-mix(in oklab, var(--home-text) 4%, var(--home-ground));
     box-shadow: inset 0 0 0 1px var(--home-hairline);
   }
@@ -718,7 +718,7 @@
     left: 0;
     z-index: -1;
     width: var(--home-segment-width, 0);
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: light-dark(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 86%, white));
     /* The thumb is lit by the page lamp, like the hero's glass: its shadow falls away from the lamp. */
     box-shadow:
@@ -755,7 +755,7 @@
     min-width: 3.75rem;
     padding-inline: 0.875rem;
     border: 0;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     font-size: 0.8125rem;
     font-weight: var(--font-weight-medium);
     line-height: 1;

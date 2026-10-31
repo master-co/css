@@ -57,7 +57,7 @@ A native declaration is one parenthesized head. Master CSS finds its closing par
 - A bare `property:value` is not a declaration. `flex:hover` applies the `flex` utility while hovered, and `display:block` generates nothing.
 
 ### Fixed utilities \{#fixed-utilities\}
-The preset names 237 common fixed values. Each class emits exactly the one declaration in this table, with no implied `display`, width, color or reset of related properties:
+The preset names 292 common fixed values. Each class emits exactly the one declaration in this table, with no implied `display`, width, color or reset of related properties:
 
 | Property | Classes |
 | --- | --- |
@@ -80,6 +80,9 @@ The preset names 237 common fixed values. Each class emits exactly the one decla
 | margins | `m-auto`, `mt-auto`, `mr-auto`, `mb-auto`, `ml-auto`, `mx-auto`, `mxs-auto`, `mxe-auto`, `my-auto`, `mys-auto`, `mye-auto` |
 | insets | `top-auto`, `right-auto`, `bottom-auto`, `left-auto`, `inset-auto`, `ix-auto`, `ixs-auto`, `ixe-auto`, `iy-auto`, `iys-auto`, `iye-auto` |
 | sizes | `w-auto`, `h-auto`, `size-x-auto`, `size-y-auto`, `min-w-auto`, `min-h-auto`, `min-size-x-auto`, `min-size-y-auto`, `basis-auto`; `max-w-none`, `max-h-none`, `max-size-x-none`, `max-size-y-none` |
+| full and intrinsic sizes | `w-full`, `w-fit`, `w-max`, `w-min`, `h-full`, `h-fit`, `h-max`, `h-min`, `size-x-full`, `size-x-fit`, `size-x-max`, `size-x-min`, `size-y-full`, `size-y-fit`, `size-y-max`, `size-y-min`, `min-w-full`, `min-w-fit`, `min-w-max`, `min-w-min`, `min-h-full`, `min-h-fit`, `min-h-max`, `min-h-min`, `min-size-x-full`, `min-size-x-fit`, `min-size-x-max`, `min-size-x-min`, `min-size-y-full`, `min-size-y-fit`, `min-size-y-max`, `min-size-y-min`, `max-w-full`, `max-w-fit`, `max-w-max`, `max-w-min`, `max-h-full`, `max-h-fit`, `max-h-max`, `max-h-min`, `max-size-x-full`, `max-size-x-fit`, `max-size-x-max`, `max-size-x-min`, `max-size-y-full`, `max-size-y-fit`, `max-size-y-max`, `max-size-y-min`, `basis-full`, `basis-fit`, `basis-max`, `basis-min` (`-full` is `100%`; `-fit`, `-max` and `-min` are `fit-content`, `max-content` and `min-content`) |
+| `order` | `order-first` (`-999999`), `order-last` (`999999`) |
+| `border-radius` | `pill` (`calc(infinity * 1px)`) |
 | `border-style` | `b-solid`, `b-dashed`, `b-dotted`, `b-double`, `b-none` |
 | `border-top-style` | `bt-solid`, `bt-dashed`, `bt-dotted`, `bt-double`, `bt-none` |
 | `border-right-style` | `br-solid`, `br-dashed`, `br-dotted`, `br-double`, `br-none` |
@@ -104,7 +107,7 @@ The preset names 237 common fixed values. Each class emits exactly the one decla
 | `overflow-wrap` | `wrap-anywhere`, `wrap-break-word`, `wrap-normal` |
 | `text-overflow` | `ellipsis` |
 
-`start` and `end` keep their native meaning, distinct from `flex-start` and `flex-end`. `flex-col` only sets the direction; combine it with `flex` on the container. Border and outline styles set only the style: `b-none` never removes a width, and `b(0)` never changes the style. `truncate` is the one multi-declaration recipe in this family: `overflow: hidden`, `text-overflow: ellipsis` and `white-space: nowrap`, without any width or display. `underline` sets `text-decoration-line` alone; use `(text-decoration:underline)` when you need the shorthand to reset color, style and thickness as well. Fixed utilities are ordinary static utilities: they accept selectors, conditions and `!`, and generate CSS only when used.
+`start` and `end` keep their native meaning, distinct from `flex-start` and `flex-end`. `flex-col` only sets the direction; combine it with `flex` on the container. Border and outline styles set only the style: `b-none` never removes a width, and `b(0)` never changes the style. `truncate` is the one multi-declaration recipe in this family: `overflow: hidden`, `text-overflow: ellipsis` and `white-space: nowrap`, without any width or display. `pill` sets only the radius, never a size or aspect ratio. These are complete static names rather than token keys, so a same-named theme token such as `--container-full`, `--order-first` or `--radius-pill` never changes them; declare a project utility such as `@utility order-pinned { order: -1; }` for another named value. `underline` sets `text-decoration-line` alone; use `(text-decoration:underline)` when you need the shorthand to reset color, style and thickness as well. Fixed utilities are ordinary static utilities: they accept selectors, conditions and `!`, and generate CSS only when used.
 
 
 ### Direct values \{#direct-values\}
@@ -115,13 +118,13 @@ A direct value passes one static number to a preset function. Length functions e
 | margin and padding | `m`, `mt`, `mr`, `mb`, `ml`, `mx`, `mxs`, `mxe`, `my`, `mys`, `mye` and the same with `p` |
 | scroll margin and padding | the margin and padding functions prefixed with `scroll-`, such as `scroll-mt(8)` |
 | insets | `top`, `right`, `bottom`, `left`, `inset`, `ix`, `ixs`, `ixe`, `iy`, `iys`, `iye` |
-| other lengths | `gap`, `gap-x` (`column-gap`), `gap-y` (`row-gap`), `border-spacing`, `outline-offset`, `shape-margin`, `translate`, `word-spacing` |
+| other lengths | `gap`, `col-gap` (`column-gap`), `row-gap` (`row-gap`), `border-spacing`, `outline-offset`, `shape-margin`, `translate`, `word-spacing` |
 | sizes | `w`, `h`, `size-x`, `size-y`, `min-w`, `min-h`, `min-size-x`, `min-size-y`, `max-w`, `max-h`, `max-size-x`, `max-size-y`, `basis` |
 | radii | `r`, `rtl`, `rtr`, `rbl`, `rbr`, `rss`, `rse`, `res`, `ree` |
 | border and outline widths | `b`, `bt`, `br`, `bb`, `bl`, `bx`, `bxs`, `bxe`, `by`, `bys`, `bye` (`border-*-width`) and `outline` (`outline-width`) |
 | unitless | `grow(1)` (`flex-grow`), `shrink(0)` (`flex-shrink`), `order(2)` (`order`, an integer) |
 
-`x` names the inline axis, `y` the block axis and `t`, `r`, `b`, `l` the physical sides; the two letters of a logical corner name its block edge, then its inline edge. A function and a token family share a prefix without merging: `b(1)` sets the width, `b-red-60` the color and `b-solid` the style. Other units and dynamic values use a native declaration, such as `(margin:1rem)` or `(margin:var(--gap))`; `m(1px)` and `b(var(--x))` are invalid rather than a fallback.
+`x` names the inline axis, `y` the block axis and `t`, `r`, `b`, `l` the physical sides; gaps name their native property, `col-gap` and `row-gap`; the two letters of a logical corner name its block edge, then its inline edge. A function and a token family share a prefix without merging: `b(1)` sets the width, `b-red-60` the color and `b-solid` the style. Other units and dynamic values use a native declaration, such as `(margin:1rem)` or `(margin:var(--gap))`; `m(1px)` and `b(var(--x))` are invalid rather than a fallback.
 
 ### Independent properties \{#independent-properties\}
 

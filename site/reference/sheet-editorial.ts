@@ -126,7 +126,7 @@ export const tokenPages: TokenPageEditorial[] = [
     summary: 'Width caps for max-width, width and the other size classes.',
     groups: [{ namespace: 'container', prefix: 'max-w' }],
     primary: ['max-w', 'w'],
-    note: 'Container tokens set lengths only. Changing `--container-md` does not change a container query threshold such as `@container(width>=28rem)`.',
+    note: 'Container tokens set lengths only. Changing `--container-md` does not change a container query threshold such as `@container(width>=28rem)`. Full and intrinsic sizes such as `w-full`, `max-w-fit` and `basis-min` are fixed utilities, not container tokens.',
     usage: {
       lead: 'Cap a dialog and the measure of its text.',
       html: '<div class="max-w-xs mx-auto p-lg r-xl b(1) b-solid b-line-divider bg-surface-floating shadow-lg">\n  <p class="m(0) fg-text-strong">Leave this page?</p>\n  <p class="mt-xs mb(0) max-w-3xs text-sm fg-text-muted">Changes you made will not be saved.</p>\n</div>',
@@ -143,9 +143,10 @@ export const tokenPages: TokenPageEditorial[] = [
     title: 'Radius',
     summary: 'The preset corner radius scale, for whole elements or single corners.',
     groups: [{ namespace: 'radius', prefix: 'r' }],
+    note: 'Fully rounded corners use the fixed `pill` utility, not a radius token: it sets only `border-radius: calc(infinity * 1px)`.',
     usage: {
-      lead: 'Round a sheet, its thumbnail and its action, from large to fully rounded.',
-      html: '<div class="flex items-center gap-md p-md r-2xl b(1) b-solid b-line-divider bg-surface-raised shadow-xs">\n  <div class="shrink(0) flex items-center justify-center w(56) h(56) r-lg bg-line-subtle text-sm fg-text-muted">FN</div>\n  <div class="grow(1) min-w(0)">\n    <p class="m(0) fg-text-strong">Field notes</p>\n    <p class="mt-3xs mb(0) text-sm fg-text-muted">Every Friday</p>\n  </div>\n  <button class="shrink(0) px-md py-xs r-pill b(0) bg-surface-inverse fg-text-inverse text-sm">Subscribe</button>\n</div>',
+      lead: 'Step the radius down from a sheet to the thumbnail inside it.',
+      html: '<div class="flex items-center gap-md p-md r-2xl b(1) b-solid b-line-divider bg-surface-raised shadow-xs">\n  <div class="shrink(0) flex items-center justify-center w(56) h(56) r-lg bg-line-subtle text-sm fg-text-muted">FN</div>\n  <div class="grow(1) min-w(0)">\n    <p class="m(0) fg-text-strong">Field notes</p>\n    <p class="mt-3xs mb(0) text-sm fg-text-muted">Every Friday</p>\n  </div>\n  <button class="shrink(0) px-md py-xs pill b(0) bg-surface-inverse fg-text-inverse text-sm">Subscribe</button>\n</div>',
     },
     customize: {
       lead: 'Change a preset value or add a token: `--radius-card` creates `r-card` and each single-corner class.',
@@ -253,7 +254,7 @@ export const tokenPages: TokenPageEditorial[] = [
     note: 'Durations and easing share the `animation-` and `transition-` prefixes, so their names stay distinct. Each `--animate-*` token is a complete `animation` shorthand; `animate-<name>` emits `animation: var(--animate-<name>)` and retains the keyframes it names.',
     usage: {
       lead: 'Pulse a live marker only when motion is allowed, and ease a hover change.',
-      html: '<div class="flex items-center gap-md">\n  <span class="relative flex w(10) h(10)">\n    <span class="absolute (inset:0) r-pill bg-green-40 (opacity:.6) animate-ping@motion-safe"></span>\n    <span class="relative w(10) h(10) r-pill bg-green-50"></span>\n  </span>\n  <button class="px-md py-xs r-pill b(1) b-solid b-line-control bg-surface-raised text-sm fg-text-strong (transition-property:background-color) transition-fast transition-smooth bg-surface-inset:hover">Live preview</button>\n</div>',
+      html: '<div class="flex items-center gap-md">\n  <span class="relative flex w(10) h(10)">\n    <span class="absolute (inset:0) pill bg-green-40 (opacity:.6) animate-ping@motion-safe"></span>\n    <span class="relative w(10) h(10) pill bg-green-50"></span>\n  </span>\n  <button class="px-md py-xs pill b(1) b-solid b-line-control bg-surface-raised text-sm fg-text-strong (transition-property:background-color) transition-fast transition-smooth bg-surface-inset:hover">Live preview</button>\n</div>',
     },
     customize: {
       lead: 'Compose an animation from duration and easing tokens, and declare its keyframes in native CSS: `--animate-reveal` creates `animate-reveal`.',
@@ -261,22 +262,6 @@ export const tokenPages: TokenPageEditorial[] = [
       html: '<section class="animate-reveal@motion-safe">…</section>',
     },
     guide: { label: 'Motion', href: '/guide/motion' },
-  },
-  {
-    id: 'order',
-    title: 'Order',
-    summary: 'Move a flex or grid item to the start or end without changing the document.',
-    groups: [{ namespace: 'order', prefix: 'order' }],
-    usage: {
-      lead: 'Pin a featured item first while the markup keeps its order.',
-      html: '<ul class="flex gap-xs m(0) p(0) (list-style:none)">\n  <li class="px-sm py-xs r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Notes</li>\n  <li class="px-sm py-xs r-lg bg-surface-inverse text-sm fg-text-inverse order-first">Featured</li>\n  <li class="px-sm py-xs r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Archive</li>\n</ul>',
-    },
-    customize: {
-      lead: 'Add a token: `--order-pinned` creates `order-pinned`.',
-      theme: '@theme {\n  --order-pinned: -1;\n}',
-      html: '<li class="order-pinned">…</li>',
-    },
-    guide: { label: 'Layout system', href: '/guide/layout-system' },
   },
 ]
 
@@ -312,7 +297,7 @@ export const recipePages: RecipePageEditorial[] = [
     names: ['sr-only'],
     usage: {
       lead: 'Name an icon-only button for assistive technology.',
-      html: '<button class="flex items-center justify-center w(40) h(40) r-pill b(1) b-solid b-line-control bg-surface-raised text-lg fg-text-strong">\n  <span aria-hidden="true">+</span>\n  <span class="sr-only">Add collection</span>\n</button>',
+      html: '<button class="flex items-center justify-center w(40) h(40) pill b(1) b-solid b-line-control bg-surface-raised text-lg fg-text-strong">\n  <span aria-hidden="true">+</span>\n  <span class="sr-only">Add collection</span>\n</button>',
     },
     caption: 'The button reads as “Add collection”; the plus sign is hidden from assistive technology.',
   },
@@ -320,7 +305,7 @@ export const recipePages: RecipePageEditorial[] = [
     id: 'direct-values',
     title: 'Direct values',
     summary: 'Pass one static number to a length or numeric property.',
-    names: ['m', 'mt', 'mr', 'mb', 'ml', 'mx', 'mxs', 'mxe', 'my', 'mys', 'mye', 'p', 'pt', 'pr', 'pb', 'pl', 'px', 'pxs', 'pxe', 'py', 'pys', 'pye', 'scroll-m', 'scroll-mt', 'scroll-mr', 'scroll-mb', 'scroll-ml', 'scroll-mx', 'scroll-mxs', 'scroll-mxe', 'scroll-my', 'scroll-mys', 'scroll-mye', 'scroll-p', 'scroll-pt', 'scroll-pr', 'scroll-pb', 'scroll-pl', 'scroll-px', 'scroll-pxs', 'scroll-pxe', 'scroll-py', 'scroll-pys', 'scroll-pye', 'top', 'right', 'bottom', 'left', 'inset', 'ix', 'ixs', 'ixe', 'iy', 'iys', 'iye', 'gap', 'gap-x', 'gap-y', 'border-spacing', 'outline-offset', 'shape-margin', 'translate', 'word-spacing', 'w', 'h', 'size-x', 'size-y', 'min-w', 'min-h', 'min-size-x', 'min-size-y', 'max-w', 'max-h', 'max-size-x', 'max-size-y', 'basis', 'r', 'rtl', 'rtr', 'rbl', 'rbr', 'rss', 'rse', 'res', 'ree', 'b', 'bt', 'br', 'bb', 'bl', 'bx', 'bxs', 'bxe', 'by', 'bys', 'bye', 'outline', 'grow', 'shrink', 'order'],
+    names: ['m', 'mt', 'mr', 'mb', 'ml', 'mx', 'mxs', 'mxe', 'my', 'mys', 'mye', 'p', 'pt', 'pr', 'pb', 'pl', 'px', 'pxs', 'pxe', 'py', 'pys', 'pye', 'scroll-m', 'scroll-mt', 'scroll-mr', 'scroll-mb', 'scroll-ml', 'scroll-mx', 'scroll-mxs', 'scroll-mxe', 'scroll-my', 'scroll-mys', 'scroll-mye', 'scroll-p', 'scroll-pt', 'scroll-pr', 'scroll-pb', 'scroll-pl', 'scroll-px', 'scroll-pxs', 'scroll-pxe', 'scroll-py', 'scroll-pys', 'scroll-pye', 'top', 'right', 'bottom', 'left', 'inset', 'ix', 'ixs', 'ixe', 'iy', 'iys', 'iye', 'gap', 'col-gap', 'row-gap', 'border-spacing', 'outline-offset', 'shape-margin', 'translate', 'word-spacing', 'w', 'h', 'size-x', 'size-y', 'min-w', 'min-h', 'min-size-x', 'min-size-y', 'max-w', 'max-h', 'max-size-x', 'max-size-y', 'basis', 'r', 'rtl', 'rtr', 'rbl', 'rbr', 'rss', 'rse', 'res', 'ree', 'b', 'bt', 'br', 'bb', 'bl', 'bx', 'bxs', 'bxe', 'by', 'bys', 'bye', 'outline', 'grow', 'shrink', 'order'],
     primary: ['m', 'p', 'gap', 'w', 'h', 'r', 'b', 'grow', 'shrink', 'order'],
     note: 'Length functions multiply the number by `1px`; `grow()`, `shrink()` and `order()` pass it through. Write a native declaration such as `(margin:1rem)` for other units or dynamic values.',
     usage: {

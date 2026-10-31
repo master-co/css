@@ -34,7 +34,7 @@
   .brand-hero-signature, .brand-hero-subject { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
   .brand-hero-signature { flex: none; white-space: nowrap; }
   .brand-hero-subject { min-width: 0; }
-  .brand-signal { flex: none; width: .375rem; height: .375rem; border-radius: var(--radius-pill); background: var(--brand-gold); box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-gold) 12%, transparent); }
+  .brand-signal { flex: none; width: .375rem; height: .375rem; border-radius: calc(infinity * 1px); background: var(--brand-gold); box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-gold) 12%, transparent); }
   .brand-hero h1 { margin: var(--spacing-xl) 0 var(--spacing-lg); color: var(--brand-ink); font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 460; line-height: 1.04; letter-spacing: -.055em; }
   /* Han titles keep their phrases whole: they break at punctuation, and only an overlong phrase wraps inside. */
   .brand-hero h1:lang(zh), .brand-next h2:lang(zh) { letter-spacing: 0; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
@@ -225,7 +225,7 @@
   .brand-segmented input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .brand-segmented label > span { display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-height: 44px; padding: .5rem .875rem; border: 1px solid transparent; border-radius: var(--radius-lg); color: var(--brand-quiet); font-size: .75rem; }
   .brand-segmented input:checked + span { border-color: var(--brand-contour); background: var(--brand-sheet); color: var(--brand-ink); box-shadow: var(--shadow-contact); }
-  .brand-segmented label > span::after { flex: none; width: .25rem; height: .25rem; border-radius: var(--radius-pill); background: currentColor; opacity: 0; content: ''; }
+  .brand-segmented label > span::after { flex: none; width: .25rem; height: .25rem; border-radius: calc(infinity * 1px); background: currentColor; opacity: 0; content: ''; }
   .brand-segmented input:checked + span::after { opacity: 1; }
   .brand-segmented input:focus-visible + span { outline: 2px solid var(--color-focus); outline-offset: 2px; }
   .brand-control-preview { display: grid; align-content: center; gap: var(--spacing-xs); min-height: 14rem; margin-block: var(--spacing-lg); padding: var(--brand-demo-inset); border: 1px solid var(--brand-line); border-radius: var(--radius-lg); background: var(--brand-ground); }

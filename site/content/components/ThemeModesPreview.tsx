@@ -59,7 +59,7 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
           <span className="font-sm font-medium">{$('Shop')}</span>
           <span className="relative grid">
             <IconShoppingBag size={18} stroke={1.75} />
-            <span className="absolute (right:-0.125rem) (top:-0.125rem) (height:0.4375rem) (width:0.4375rem) r-pill bg-surface-inverse" />
+            <span className="absolute (right:-0.125rem) (top:-0.125rem) (height:0.4375rem) (width:0.4375rem) pill bg-surface-inverse" />
           </span>
         </div>
         <div>
@@ -67,7 +67,7 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
           <p className="mt-2xs font-2xl (line-height:1.1) tracking-tight fg-text-strong">{$('Find your daily kit.')}</p>
         </div>
         <div className="flex items-center gap-md font-xs">
-          <span className="inline-flex items-center (height:1.75rem) px-sm r-pill font-medium bg-surface-inverse fg-text-inverse">{$('All')}</span>
+          <span className="inline-flex items-center (height:1.75rem) px-sm pill font-medium bg-surface-inverse fg-text-inverse">{$('All')}</span>
           <span className="fg-text-muted">{$('Bags')}</span>
           <span className="fg-text-muted">{$('Shoes')}</span>
         </div>

@@ -10,12 +10,12 @@ Use `(width:*)` and `(height:*)` for native dimensions, and `min-*` or `max-*` t
 
 ```html
 <article class="flex items-center gap-md w-full max-w-sm">
-  <span class="grid (place-content:center) shrink(0) (width:3rem) (height:3rem) r-pill">FN</span>
+  <span class="grid (place-content:center) shrink(0) (width:3rem) (height:3rem) pill">FN</span>
   <p class="min-w(0)">Fluid content, measured avatar.</p>
 </article>
 ```
 
-<Class2CSS>{['w-full', 'max-w-sm', '(width:3rem)', '(height:3rem)', 'shrink(0)', 'min-w(0)', 'r-pill']}</Class2CSS>
+<Class2CSS>{['w-full', 'max-w-sm', '(width:3rem)', '(height:3rem)', 'shrink(0)', 'min-w(0)', 'pill']}</Class2CSS>
 
 ---
 
@@ -76,6 +76,8 @@ Percentage widths and heights follow native CSS behavior. The parent needs a def
 
 ## Use container tokens
 Sizing utilities read the `container` namespace contextually. `w-md`, `max-w-5xl`, `h-sm`, `min-w-xs`, and `basis-lg` use `--container-*` tokens without repeating the namespace in markup.
+
+The full and intrinsic sizes are fixed utilities, not container tokens: `w-full`, `w-fit`, `w-max`, and `w-min` set `100%`, `fit-content`, `max-content`, and `min-content`, and so do the same suffixes on `h`, `size-x`, `size-y`, their `min-` and `max-` forms, and `basis`. A project `--container-full` token does not change them.
 
 <FoundationTokens namespace="container" keys={["md", "5xl", "7xl"]} />
 

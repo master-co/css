@@ -81,11 +81,12 @@ test('ShadowRoot tracks keyframes independently from Document', async ({ page })
 })
 
 for (const width of [390, 1280]) {
-  test(`pill radius preserves independent dimensions at ${width}px`, async ({ page }) => {
+  test(`pill preserves independent dimensions at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 })
-    await page.setContent('<div class="(width:96px) (height:48px) r-pill"></div><img class="(width:48px) (aspect-ratio:1/1) r-pill">')
+    await page.setContent('<div class="(width:96px) (height:48px) pill"></div><img class="(width:48px) (aspect-ratio:1/1) pill">')
     await init(page)
     await expect.poll(() => page.locator('div').evaluate(element => getComputedStyle(element).borderTopLeftRadius)).not.toBe('0px')
+    expect(await page.locator('img').evaluate(element => getComputedStyle(element).borderBottomRightRadius)).not.toBe('0px')
     expect(await page.locator('div').evaluate(element => [element.getBoundingClientRect().width, element.getBoundingClientRect().height])).toEqual([96, 48])
     expect(await page.locator('img').evaluate(element => [element.getBoundingClientRect().width, element.getBoundingClientRect().height])).toEqual([48, 48])
   })

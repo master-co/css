@@ -274,7 +274,10 @@ const EXPECTED: [classes: string[], texts: string[]][] = [
   [['m(4)', 'm-md'], ['.m-md{margin:var(--spacing-md)}', '.m\\(4\\){margin:calc(4 * 1px)}']],
   [['(margin:2rem)', 'm(4)'], ['.m\\(4\\){margin:calc(4 * 1px)}', '.\\(margin\\:2rem\\){margin:2rem}']],
   [['whitespace-normal', 'truncate'], ['.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}', '.whitespace-normal{white-space:normal}']],
-  [['w-full', 'order-first'], ['.order-first{order:-999999}', '.w-full{width:100%}']]
+  [['w-full', 'order-first'], ['.order-first{order:-999999}', '.w-full{width:100%}']],
+  [['row-gap(4)', 'col-gap-md', 'gap(8)'], ['.gap\\(8\\){gap:calc(8 * 1px)}', '.col-gap-md{column-gap:var(--spacing-md)}', '.row-gap\\(4\\){row-gap:calc(4 * 1px)}']],
+  [['row-gap-md', 'gap-sm', 'col-gap(2)'], ['.gap-sm{gap:var(--spacing-sm)}', '.row-gap-md{row-gap:var(--spacing-md)}', '.col-gap\\(2\\){column-gap:calc(2 * 1px)}']],
+  [['pill', 'r-md', 'rtl(4)'], ['.r-md{border-radius:var(--radius-md)}', '.pill{border-radius:calc(infinity * 1px)}', '.rtl\\(4\\){border-top-left-radius:calc(4 * 1px)}']]
 ]
 
 function checkExpected(name: string, engine: 'rust' | 'js', create: () => Promise<{ ensureClassRules(classes: string[]): unknown, snapshot(): unknown, dispose(): void }>) {

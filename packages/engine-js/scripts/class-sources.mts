@@ -372,7 +372,7 @@ export function noiseClasses(count: number, seed: number) {
   return classes
 }
 
-const STATE_BASES = ['(color:red)', 'fg-red-60', 'm-md', 'flex', '-m-md', '(width:calc(1px+2px))', 'gap-x-md', 'bg-blue-50/.5', '(content:"a_b")', '(opacity:.5)', '(font:12px|sans)', 'items-center', '(background-image:url(/a{b.svg))']
+const STATE_BASES = ['(color:red)', 'fg-red-60', 'm-md', 'flex', '-m-md', '(width:calc(1px+2px))', 'col-gap-md', 'bg-blue-50/.5', '(content:"a_b")', '(opacity:.5)', '(font:12px|sans)', 'items-center', '(background-image:url(/a{b.svg))']
 const SELECTORS = [
   ':hover', ':focus', ':focus-visible', ':active', ':disabled', ':hover:focus', '::before', '::after', '::placeholder', ':first-child',
   ':nth-child(2n+1)', ':nth-child(2n+1_of_.item)', ':nth-last-child(odd_of_li_a)', ':not(.disabled)', ':not(:hover)', ':is(_h1,_h2)',

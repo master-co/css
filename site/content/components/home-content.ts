@@ -64,7 +64,7 @@ export const installCommand = 'npm create @master/css@rc'
 export const ctaClassRows = [
   ['grid', 'gap-lg', 'grid-cols(3)@md', 'p-xl', 'r-3xl', 'bg-surface-raised', 'shadow-lg', 'fg-text-strong'],
   ['text-2xl', 'font-semibold', 'tracking-tight', 'fg-blue-60:hover', 'outline(2):focus-visible', 'transition-normal', '(opacity:0)@starting-style'],
-  ['container-inline', 'hidden@media(print)', 'bg-blue-60/0.2', '-mt-sm', 'clamp-lines(2)', 'fg-text-muted', 'r-pill', 'px-lg']
+  ['container-inline', 'hidden@media(print)', 'bg-blue-60/0.2', '-mt-sm', 'clamp-lines(2)', 'fg-text-muted', 'pill', 'px-lg']
 ] as const
 
 /** Rows of class text for the floor of the MCP figure: the project the server reads. */

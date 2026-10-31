@@ -5,7 +5,7 @@ import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys, tokenFamil
 test('spacing token namespace public keys contain only loaded family prefixes', () => {
   const keys = getTokenNamespacePublicKeys('spacing')
 
-  for (const expected of ['m', 'mt', 'p', 'px', 'gap', 'gap-x', 'inset', 'scroll-mt', 'text-indent']) {
+  for (const expected of ['m', 'mt', 'p', 'px', 'gap', 'col-gap', 'row-gap', 'inset', 'scroll-mt', 'text-indent']) {
     assert.ok(keys.includes(expected), expected)
   }
   assert.equal(keys.some((key) => !key), false)

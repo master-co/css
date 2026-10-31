@@ -45,7 +45,7 @@
   .home-illustration-dark { display: var(--delivery-artwork-dark, none); }
   .demo[data-applied] .home-illustration-light { display: block; }
   .demo[data-applied] .home-illustration-dark { display: none; }
-  .mode-default { padding: 4px 7px; border: 1px solid var(--demo-line); border-radius: var(--radius-pill); font-size: 10px; color: var(--demo-body); }
+  .mode-default { padding: 4px 7px; border: 1px solid var(--demo-line); border-radius: calc(infinity * 1px); font-size: 10px; color: var(--demo-body); }
   h1 { margin: 0; font-size: clamp(27px, 6.5cqw, 36px); line-height: 1.15; font-weight: 500; letter-spacing: -.04em; text-wrap: balance; }
   h1:lang(zh) { letter-spacing: -.015em; word-break: keep-all; }
   .description { max-width: 36ch; margin: 14px 0 0; font-size: 15px; line-height: 1.7; color: var(--demo-body); text-wrap: pretty; }

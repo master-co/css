@@ -132,7 +132,7 @@
     width: 1.125rem;
     height: 2.75rem;
     margin: -1.375rem 0 0 -0.5625rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background:
       linear-gradient(var(--home-grip), var(--home-grip)) calc(50% - 2px) 50% / 1px 0.875rem no-repeat padding-box,
       linear-gradient(var(--home-grip), var(--home-grip)) calc(50% + 2px) 50% / 1px 0.875rem no-repeat padding-box,

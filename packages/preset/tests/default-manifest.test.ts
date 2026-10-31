@@ -58,8 +58,8 @@ describe('@master/css-preset defaultManifest', () => {
  expect(manifest).toEqual(defaultManifest)
  expect(manifest.version).toBe(6)
  expect(manifest.languageVersion).toBe(18)
- expect(manifest.utilities).toHaveLength(463)
- expect(new Set(manifest.utilities?.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(463)
+ expect(manifest.utilities).toHaveLength(517)
+ expect(new Set(manifest.utilities?.map(utility => JSON.stringify([utility.kind, utility.name, utility.kind === 'token' ? utility.parameters?.[0]?.name : null]))).size).toBe(517)
  for (const field of ['mixins', 'functions', 'settings', 'keyAliases']) expect(manifest).not.toHaveProperty(field)
  expect(JSON.stringify(manifest)).not.toContain('/Users/')
  expect(manifest.utilities?.find(utility => utility.name === 'text')?.parameters).toEqual([{ name: '--text', syntax: 'string' }])
@@ -111,12 +111,14 @@ describe('@master/css-preset defaultManifest', () => {
   it('reads explicit preset token families, including empty namespaces', () => {
     using tooling = createLanguageSessionSync({ manifest: defaultManifest })
     const families = tooling.tokenFamilies().families
-    expect(families.filter(family => family.argument === 'value')).toHaveLength(118)
+    expect(families.filter(family => family.argument === 'value')).toHaveLength(117)
     expect(families).toEqual(expect.arrayContaining([
       { utility: 'p', prefix: 'p', properties: ['padding'], namespace: 'spacing', argument: 'value' },
       { utility: 'bg', prefix: 'bg', properties: ['background-color'], namespace: 'color', argument: 'value' },
-      { utility: 'order', prefix: 'order', properties: ['order'], namespace: 'order', argument: 'value' }
+      { utility: 'col-gap', prefix: 'col-gap', properties: ['column-gap'], namespace: 'spacing', argument: 'value' },
+      { utility: 'row-gap', prefix: 'row-gap', properties: ['row-gap'], namespace: 'spacing', argument: 'value' }
     ]))
+    for (const prefix of ['order', 'gap-x', 'gap-y']) expect(families.map(family => family.prefix)).not.toContain(prefix)
   })
 
   it('preserves the compiled default registry', () => {
@@ -151,7 +153,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('(display:block)')?.text).toBe('.\\(display\\:block\\){display:block}')
     expect(css.createRule('(bottom:0)')?.text).toBe('.\\(bottom\\:0\\){bottom:0}')
     for (const name of ['fit', 'full', 'center', 'middle', 'round', 'surface-base']) expect(css.createRule(name)).toBeUndefined()
-    expect(css.createRule('r-pill')?.text).toBe('.r-pill{border-radius:var(--radius-pill)}')
+    expect(css.createRule('pill')?.text).toBe('.pill{border-radius:calc(infinity * 1px)}')
+    expect(css.createRule('r-pill')).toBeUndefined()
     expect(css.createRule('(border-radius:1e9em)')?.text).toBe('.\\(border-radius\\:1e9em\\){border-radius:1e9em}')
     expect(css.createRule('font-antialiased')).toBeUndefined()
     expect(css.createRule('(text-align:center)')?.text).toBe('.\\(text-align\\:center\\){text-align:center}')

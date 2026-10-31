@@ -14,6 +14,6 @@ Direct values always use complete native CSS property names:
 
 Use `font-sm`, `font-mono`, or `font-bold` for typography tokens. `text-*` is a named typography recipe with companion tokens, not an alternative spelling for font size.
 
-Logical token prefixes keep CSS writing-mode semantics: `mx`/`px` refer to the inline axis and `my`/`py` to the block axis. `gap-x` is column gap; `gap-y` is row gap. Families without an existing short name retain their full name as their only prefix.
+Logical token prefixes keep CSS writing-mode semantics: `mx`/`px` refer to the inline axis and `my`/`py` to the block axis. Gaps follow their native properties instead: `col-gap` sets `column-gap` and `row-gap` sets `row-gap`. Families without an existing short name retain their full name as their only prefix.
 
 Different properties can share a token namespace: `fg-red` and `bg-red` both read `--color-red` but set different properties. See the token reference for the canonical prefix and namespace of each family.

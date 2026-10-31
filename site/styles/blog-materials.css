@@ -157,7 +157,7 @@
     flex: none;
     width: 0.3125rem;
     height: 0.3125rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     background-color: var(--blog-signal);
   }
 
@@ -182,7 +182,7 @@
     flex: none;
     width: 1.5rem;
     height: 1.5rem;
-    border-radius: var(--radius-pill);
+    border-radius: calc(infinity * 1px);
     box-shadow: 0 0 0 2px var(--blog-avatar-ring, var(--blog-sheet));
 
     & + & {

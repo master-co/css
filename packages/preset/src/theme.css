@@ -117,7 +117,6 @@
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
   --radius-4xl: 2rem;
-  --radius-pill: calc(infinity * 1px);
 
   /* Spacing */
   --spacing-4xs: 0.125rem;
@@ -328,15 +327,4 @@
   --shadow-lg: 0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)), 0 4px 8px -4px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .42)), 0 16px 32px -8px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .34));
   --shadow-xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 8px 16px -6px light-dark(oklch(0% 0 none / .10), oklch(0% 0 none / .46)), 0 24px 48px -12px light-dark(oklch(0% 0 none / .14), oklch(0% 0 none / .38));
   --shadow-2xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 12px 24px -8px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .50)), 0 32px 64px -16px light-dark(oklch(0% 0 none / .18), oklch(0% 0 none / .44));
-}
-
-/* Keyword constants, substituted into the utilities that use them. */
-@theme inline {
-  --container-full: 100%;
-  --container-fit: fit-content;
-  --container-max: max-content;
-  --container-min: min-content;
-
-  --order-first: -999999;
-  --order-last: 999999;
 }

@@ -27,7 +27,7 @@ export const specimenCaption: Record<string, string> = {
   'color-surface': 'Compare complete surfaces in light and dark. Inverse surfaces use inverse text. Role descriptions are design guidance, not component restrictions.',
   'color-line': 'Each token paints a boundary, with identical line width in both modes. Divider and subtle are decorative; control is intended for required boundaries.',
   'color-text': 'Each token paints real text, on its intended surface, in both modes. Check contrast in your actual composition.',
-  radius: 'The highlighted corner shows the radius on equal-sized shapes. The pill token rounds a wide control and makes an equal-sided control circular.',
+  radius: 'The highlighted corner shows the radius on equal-sized shapes.',
   shadow: 'The same raised surface, radius and padding at every level. The full shadow has room to spread. Suggested uses are design guidance.',
   spacing: 'Pink stripes show the actual gap between equal blocks. Pixel equivalents assume a 16px root; authored rem values follow the root font size.',
   container: 'Bars show relative width caps on one shared scale. Exact values remain in the table; changing a size token does not change a container-query threshold.',
@@ -40,7 +40,6 @@ export const specimenCaption: Record<string, string> = {
   animate: 'Every animation specimen starts paused. Play, Pause and Replay control the native timelines; reduced motion keeps the content still. Complete shorthand values are listed below.',
   duration: 'All markers travel the same path with linear timing; only duration changes. Start paused, then Play or Replay together. Reduced motion keeps them still.',
   easing: 'All markers travel the same path over one second; only timing changes. Overshoot and rewind may pass the endpoints. Reduced motion keeps them still.',
-  order: 'Compare each preset order token on the middle item. Visual arrangement changes; DOM, reading and keyboard order stay 1, 2, 3.',
 }
 const label = (namespace: string, token: FoundationToken) => namespace === 'shadow'
   ? `<div data-ui="label"><code>${escape(tokenClass(namespace, token.key))}</code><span class="sr-only"> · --${escape(token.name)}</span></div>`
@@ -70,8 +69,8 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
     }).join('')}</div>`
     scene.css = '[data-foundation="roles"] { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; overflow-wrap:anywhere; }'
   } else if (namespace === 'radius') {
-    scene.html = `<div data-foundation="radius">${tokens.map(token => `<section><div data-ui="label"><code>r-${escape(token.key)}</code></div><div data-radius-shape class="r-${token.key}"${token.key === 'pill' ? ' data-pill' : ''}></div><div data-ui="label">${token.key === 'pill' ? 'Fully rounded' : `<code>${escape(defaultValue(token))}</code>`}</div><span class="sr-only">--${escape(token.name)}</span></section>`).join('')}${tokens.some(token => token.key === 'pill') ? '<section><div data-ui="label">Circle</div><div data-radius-shape data-radius-circle class="r-pill"></div><div data-ui="label">Equal sides + r-pill</div></section>' : ''}</div>`
-    scene.css = 'body { padding:32px 24px; } [data-foundation="radius"] { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px 20px; } @media (min-width:528px) { [data-foundation="radius"] { grid-template-columns:repeat(5,minmax(0,1fr)); } } [data-foundation="radius"] section { display:grid; align-content:start; justify-items:start; gap:12px; } [data-foundation="radius"] [data-ui="label"] { margin:0; font-size:12px; } [data-radius-shape] { position:relative; width:76px; height:76px; border:4px solid var(--color-line-divider); } [data-radius-shape]::after { content:""; position:absolute; inset:-4px; border:4px solid var(--color-text-pink); border-radius:inherit; mask-image:conic-gradient(black 0deg 90deg,transparent 90deg 360deg); } [data-radius-shape][data-pill] { height:38px; } [data-radius-shape]:is([data-pill],[data-radius-circle])::after { mask-image:none; }'
+    scene.html = `<div data-foundation="radius">${tokens.map(token => `<section><div data-ui="label"><code>r-${escape(token.key)}</code></div><div data-radius-shape class="r-${token.key}"></div><div data-ui="label"><code>${escape(defaultValue(token))}</code></div><span class="sr-only">--${escape(token.name)}</span></section>`).join('')}</div>`
+    scene.css = 'body { padding:32px 24px; } [data-foundation="radius"] { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px 20px; } @media (min-width:528px) { [data-foundation="radius"] { grid-template-columns:repeat(4,minmax(0,1fr)); } } [data-foundation="radius"] section { display:grid; align-content:start; justify-items:start; gap:12px; } [data-foundation="radius"] [data-ui="label"] { margin:0; font-size:12px; } [data-radius-shape] { position:relative; width:76px; height:76px; border:4px solid var(--color-line-divider); } [data-radius-shape]::after { content:""; position:absolute; inset:-4px; border:4px solid var(--color-text-pink); border-radius:inherit; mask-image:conic-gradient(black 0deg 90deg,transparent 90deg 360deg); }'
   } else if (namespace === 'shadow') {
     scene.html = `<div data-foundation="shadow">${tokens.map(token => `<section>${label(namespace, token)}<article data-shadow-card class="p-lg r-lg bg-surface-raised shadow-${token.key}"><div class="text-md font-medium fg-text-strong">${escape(getShadowRows().find(row => row.key === token.key)?.role ?? token.key)}</div><p class="mt-xs mb(0) text-sm fg-text-muted">${escape(getShadowRows().find(row => row.key === token.key)?.description ?? '')}</p></article></section>`).join('')}</div>`
     scene.css = 'body { padding:32px 32px 64px; } [data-foundation="shadow"] { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,192px),1fr)); gap:48px 40px; } [data-shadow-card] { min-height:144px; } [data-foundation="shadow"] [data-ui="label"] { font-size:12px; }'
@@ -91,14 +90,6 @@ export function foundationScene(namespace: string, selected?: string[]): DemoSce
     const max = Math.max(...tokens.map(token => token.numeric?.value ?? 0))
     scene.html = tokens.map(token => `<section>${label(namespace, token)}<div data-size-bar style="width:${(token.numeric?.value ?? 0) / max * 100}%" class="bg-blue-60 r-xs"></div></section>`).join('')
     scene.css = '[data-size-bar] { height:16px; margin-bottom:24px; }'
-  } else if (namespace === 'order') {
-    if (tokens.length) {
-      scene.html = tokens.map(token => `<section>${label(namespace, token)}<p>DOM order: 1, 2, 3.</p><div class="flex flex-wrap gap-sm"><div data-ui="tile">1 · Notes</div><div data-ui="tile" class="order-${token.key}">2 · Featured</div><div data-ui="tile">3 · Archive</div></div></section>`).join('')
-      scene.css = 'section + section { margin-top:32px; }'
-    } else {
-      scene.css = '@theme { --order-featured: -1;  }'
-      scene.html = '<p>No preset values. Project-defined example:</p><div class="flex gap-sm"><span>Notes</span><span class="order-featured">Featured</span></div>'
-    }
   }
   if (namespace === 'radius' || namespace === 'shadow') scene.css += ' body { background-image:linear-gradient(135deg,var(--color-line-subtle) 4.5%,transparent 0,transparent 50%,var(--color-line-subtle) 0,var(--color-line-subtle) 54.5%,transparent 0); background-size:7.5px 7.5px; }'
   return scene
