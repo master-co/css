@@ -28,7 +28,7 @@ export default function HomeFooter() {
             <div className="home-footer-group" key={group.name}>
               <h2 className="home-footer-heading">{$(group.name)}</h2>
               <ul className="home-footer-links">
-                {group.links.filter((link) => !footerLegalLinks.some((legal) => legal.href === link.href)).map((link) => (
+                {group.links.map((link) => (
                   <li key={link.href}>
                     <Link className="home-footer-link" href={link.href}>{$(link.name)}</Link>
                   </li>

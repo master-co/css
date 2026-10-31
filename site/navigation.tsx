@@ -49,7 +49,6 @@ export const footerNavGroups = [
     name: 'More',
     links: [
       { name: 'Brand', href: '/brand' },
-      ...footerLegalLinks,
     ]
   },
 ] satisfies FooterNavGroup[]
