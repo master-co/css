@@ -273,10 +273,3 @@ export function alphaPercentage(alpha: string) {
   if (point >= digits.length) return digits + '0'.repeat(point - digits.length)
   return `${digits.slice(0, point)}.${digits.slice(point)}`
 }
-
-/** A dynamic value with Master separators decoded and math normalized, and the program variables it references. */
-export function resolveValueComponents(value: string, program: Program): [value: string, variableNames: string[]] {
-  const output = decodeNativeContent(value) ?? value
-  const variableNames = collectCssVariableReferences(output).filter((name) => program.variables.has(name))
-  return [normalizeCssMathFunctions(output), variableNames]
-}

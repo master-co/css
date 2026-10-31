@@ -599,19 +599,27 @@ fn trim_candidate(source: &str) -> String {
 }
 
 fn should_exclude(candidate: &str) -> bool {
-    if !balanced_brackets(candidate) {
+    // A native declaration head is a complete CSS component-value structure: its
+    // value may hold brackets, braces, quotes and `:[`, so only the suffix after it
+    // takes the source heuristics. Other parenthesized code is never a candidate.
+    let suffix = match mastercss_lexer::parse_native_declaration(candidate) {
+        Some(Ok(head)) => &candidate[head.suffix_start..],
+        Some(Err(_)) => return true,
+        None => candidate,
+    };
+    if !balanced_brackets(suffix) {
         return true;
     }
     if candidate.starts_with("${") && candidate.ends_with('}') {
         return false;
     }
-    if candidate.ends_with(';')
-        || candidate.contains("</")
-        || contains_tag_like_pair(candidate)
-        || candidate.ends_with('>')
-        || candidate.contains("{{")
-        || candidate.contains(":[")
-        || candidate.contains("**")
+    if suffix.ends_with(';')
+        || suffix.contains("</")
+        || contains_tag_like_pair(suffix)
+        || suffix.ends_with('>')
+        || suffix.contains("{{")
+        || suffix.contains(":[")
+        || suffix.contains("**")
         || candidate.starts_with("http://")
         || candidate.starts_with("https://")
         || candidate.starts_with("~/")
@@ -620,10 +628,10 @@ fn should_exclude(candidate: &str) -> bool {
     {
         return true;
     }
-    candidate
-        .chars()
-        .next()
-        .is_none_or(|character| !(character.is_alphanumeric() || matches!(character, '-' | '_')))
+    suffix.len() == candidate.len()
+        && candidate.chars().next().is_none_or(|character| {
+            !(character.is_alphanumeric() || matches!(character, '-' | '_'))
+        })
 }
 
 fn contains_tag_like_pair(source: &str) -> bool {
@@ -693,21 +701,21 @@ mod tests {
     fn extracts_mixed_source_candidates_in_insertion_order() {
         let source = r#"
             import styles from './style.css'
-            const cls = "fg:red hover:bg:blue"
-            const nested = { class: 'content:"a;b" bg:url("/logo.png")' }
+            const cls = "fg-red flex:hover"
+            const nested = { class: '(content:"a;b") (background:url("/logo.png"))' }
         "#;
         assert_eq!(
             extract_class_candidates(source),
             vec![
                 "const",
                 "cls",
-                "fg:red",
-                "hover:bg:blue",
+                "fg-red",
+                "flex:hover",
                 "nested",
                 "class",
-                "content:\"a;b\"",
+                "(content:\"a;b\")",
                 "a;b",
-                "bg:url(\"/logo.png\")",
+                "(background:url(\"/logo.png\"))",
             ]
         );
     }
@@ -715,7 +723,9 @@ mod tests {
     #[test]
     fn excludes_groups_and_keeps_interpolation_candidates() {
         assert_eq!(
-            extract_class_candidates(r#"<div class="{fg:red;bg:blue}" data-id="${id}"></div>"#),
+            extract_class_candidates(
+                r#"<div class="{color:red;background:blue} (color:red;background:blue)" data-id="${id}"></div>"#
+            ),
             vec!["${id}"]
         );
     }
@@ -723,8 +733,8 @@ mod tests {
     #[test]
     fn keeps_native_custom_properties_but_not_dollar_prefixed_words() {
         assert_eq!(
-            extract_class_candidates(r#"<div class="--token:1rem $token:1rem"></div>"#),
-            vec!["--token:1rem"]
+            extract_class_candidates(r#"<div class="(--token:1rem) $token:1rem"></div>"#),
+            vec!["(--token:1rem)"]
         );
     }
 
@@ -732,13 +742,13 @@ mod tests {
     fn keeps_query_and_selector_suffixes_but_rejects_bracket_values_and_markup_tails() {
         assert_eq!(
             extract_class_candidates(
-                r#"font:1rem@<789 font:1rem@<=789 font:1rem@>=789 font:1rem@>789 block>li:hover {fg:red;block}>li .something{bg:white} font-size:[clamp(1rem,2vw,3rem)] document.querySelector<HTMLButtonElement>('#counter') html> {data}>"#
+                r#"(font:1rem)@<789 (font:1rem)@<=789 (font:1rem)@>=789 (font:1rem)@>789 block>li:hover {color:red;block}>li .something{bg:white} font-size:[clamp(1rem,2vw,3rem)] document.querySelector<HTMLButtonElement>('#counter') html> {data}>"#
             ),
             vec![
-                "font:1rem@<789",
-                "font:1rem@<=789",
-                "font:1rem@>=789",
-                "font:1rem@>789",
+                "(font:1rem)@<789",
+                "(font:1rem)@<=789",
+                "(font:1rem)@>=789",
+                "(font:1rem)@>789",
                 "block>li:hover",
             ]
         );
@@ -747,17 +757,23 @@ mod tests {
     #[test]
     fn extracts_static_javascript_and_typescript_strings_with_oxc() {
         let source = r#"
-            const classes = 'block mx:auto'
-            const active = clsx('fg:red', { 'p:4x': ok })
+            const classes = 'block mx-auto'
+            const active = clsx('fg-red', { '(padding:4px)': ok })
             element.classList.add('flex')
             export function App() {
-                return <div className="hidden m:2x" />
+                return <div className="hidden (margin:2px)" />
             }
         "#;
         assert_eq!(
             extract_oxc_classes("component.tsx", source),
             vec![
-                "block", "mx:auto", "fg:red", "p:4x", "flex", "hidden", "m:2x"
+                "block",
+                "mx-auto",
+                "fg-red",
+                "(padding:4px)",
+                "flex",
+                "hidden",
+                "(margin:2px)"
             ]
         );
     }
@@ -768,25 +784,25 @@ mod tests {
             'use client'
             import React from 'react'
             export { helper } from 'pkg'
-            export { helper as "p:4x" } from 'mx:auto'
+            export { helper as "p-md" } from 'mx-auto'
             export * from 'hidden'
             async function load() { await import('lazy-module') }
             const fs = require('fs')
-            const classes = 'block fg:red'
+            const classes = 'block fg-red'
             export const exportedClasses = 'flex'
         "#;
         assert_eq!(
             extract_oxc_classes("component.tsx", source),
-            vec!["block", "fg:red", "flex"]
+            vec!["block", "fg-red", "flex"]
         );
     }
 
     #[test]
     fn extracts_html_class_attributes_and_delegates_scripts_to_oxc() {
         let source = r#"
-            <div class="block mx:auto"></div>
+            <div class="block (margin:auto)"></div>
             <script>
-                element.classList.add('fg:red', 'p:4x')
+                element.classList.add('fg-red', 'p-md')
                 const classes = 'flex hidden'
             </script>
             <main class="grid"></main>
@@ -794,7 +810,13 @@ mod tests {
         assert_eq!(
             extract_html_classes("index.html", source),
             vec![
-                "block", "mx:auto", "fg:red", "p:4x", "flex", "hidden", "grid"
+                "block",
+                "(margin:auto)",
+                "fg-red",
+                "p-md",
+                "flex",
+                "hidden",
+                "grid"
             ]
         );
     }
@@ -803,8 +825,44 @@ mod tests {
     fn extracts_astro_frontmatter_scripts_and_markup_but_not_styles() {
         let classes = extract_astro_classes(
             "Page.astro",
-            "---\nconst frontmatterClasses = 'fg:red'\n---\n<script>const scriptClasses = 'p:4x'</script><style>.ignored { color: red; }</style><main class=\"block mx:auto\">Hello</main>",
+            "---\nconst frontmatterClasses = 'fg-red'\n---\n<script>const scriptClasses = 'p-md'</script><style>.ignored { color: red; }</style><main class=\"block (margin:auto)\">Hello</main>",
         );
-        assert_eq!(classes, ["fg:red", "p:4x", "block", "mx:auto"]);
+        assert_eq!(classes, ["fg-red", "p-md", "block", "(margin:auto)"]);
+    }
+
+    #[test]
+    fn extracts_native_declaration_heads_alike_in_every_source_kind() {
+        let classes = [
+            "(display:block)[aria-expanded=true]:hover@sm",
+            "(grid-template-columns:[start]|1fr|[end])",
+            "(content:')')::before",
+            "(background-image:url(/a{b.svg))",
+            "(--x:{a;b})",
+            "(flex:1|1|auto):hover",
+            "flex:hover",
+        ];
+        let list = classes.join(" ");
+        let expected = classes.to_vec();
+        assert_eq!(extract_class_candidates(&list), expected);
+        assert_eq!(
+            extract_html_classes("index.html", &format!(r#"<div class="{list}"></div>"#)),
+            expected
+        );
+        assert_eq!(
+            extract_oxc_classes(
+                "component.tsx",
+                &format!("const a = <div className=\"{list}\" />; el.classList.add(`{list}`)")
+            ),
+            expected
+        );
+        assert_eq!(
+            extract_astro_classes("Page.astro", &format!("<main class=\"{list}\"></main>")),
+            expected
+        );
+        // Parenthesized code is never a declaration head unless it is one.
+        assert_eq!(
+            extract_class_candidates("(a) (a,b) (x.y) (fn()) ({a:b}) (a?b:c) (display:block"),
+            Vec::<String>::new()
+        );
     }
 }

@@ -11,11 +11,11 @@ Use motion to explain a state change or show progress. Choose a short duration f
 Press Play to compare the two entrances. The preview uses separate name, duration and easing declarations; each animation runs once because it keeps the native iteration-count default:
 
 ```html
-<div class="animation-name:fade@media(screen)@motion-safe animation-slow@media(screen)@motion-safe animation-smooth@media(screen)@motion-safe">Collection saved</div>
-<div class="animation-name:zoom@media(screen)@motion-safe animation-fast@media(screen)@motion-safe animation-overshoot@media(screen)@motion-safe">New collection</div>
+<div class="(animation-name:fade)@media(screen)@motion-safe animation-slow@media(screen)@motion-safe animation-smooth@media(screen)@motion-safe">Collection saved</div>
+<div class="(animation-name:zoom)@media(screen)@motion-safe animation-fast@media(screen)@motion-safe animation-overshoot@media(screen)@motion-safe">New collection</div>
 ```
 
-<Class2CSS>{['animation-name:fade@media(screen)@motion-safe', 'animation-slow@media(screen)@motion-safe', 'animation-smooth@media(screen)@motion-safe', 'animation-name:zoom@media(screen)@motion-safe', 'animation-fast@media(screen)@motion-safe', 'animation-overshoot@media(screen)@motion-safe']}</Class2CSS>
+<Class2CSS>{['(animation-name:fade)@media(screen)@motion-safe', 'animation-slow@media(screen)@motion-safe', 'animation-smooth@media(screen)@motion-safe', '(animation-name:zoom)@media(screen)@motion-safe', 'animation-fast@media(screen)@motion-safe', 'animation-overshoot@media(screen)@motion-safe']}</Class2CSS>
 
 These classes start their animation when applied. The preview adds Play, Pause and Replay controls so you can inspect the movement. The `@motion-safe` condition keeps the content still when reduced motion is requested; `@media(screen)` leaves it still in print.
 
@@ -47,22 +47,22 @@ Both `animation-` and `transition-` register the `duration` and `easing` namespa
 Set an animation name and its timing independently:
 
 ```html
-<div class="animation-name:fade animation-fast animation-smooth animation-fill-mode:both">Ready</div>
+<div class="(animation-name:fade) animation-fast animation-smooth (animation-fill-mode:both)">Ready</div>
 ```
 
-<Class2CSS>{['animation-name:fade', 'animation-fast', 'animation-smooth', 'animation-fill-mode:both']}</Class2CSS>
+<Class2CSS>{['(animation-name:fade)', 'animation-fast', 'animation-smooth', '(animation-fill-mode:both)']}</Class2CSS>
 
 ## Use motion tokens
 Use a named animation token and override individual settings with full-property declarations when needed. Preset animations repeat indefinitely by default; set an iteration count for a single entrance.
 
 ```html
-<div class="animate-fade animation-duration:var(--duration-fast) animation-iteration-count:1">Ready</div>
-<svg class="animate-rotate@motion-safe animation-duration:var(--duration-slowest)@motion-safe">...</svg>
+<div class="animate-fade (animation-duration:var(--duration-fast)) (animation-iteration-count:1)">Ready</div>
+<svg class="animate-rotate@motion-safe (animation-duration:var(--duration-slowest))@motion-safe">...</svg>
 ```
 
-<Class2CSS>{['animate-fade', 'animation-duration:var(--duration-fast)', 'animation-iteration-count:1', 'animate-rotate@motion-safe', 'animation-duration:var(--duration-slowest)@motion-safe']}</Class2CSS>
+<Class2CSS>{['animate-fade', '(animation-duration:var(--duration-fast))', '(animation-iteration-count:1)', 'animate-rotate@motion-safe', '(animation-duration:var(--duration-slowest))@motion-safe']}</Class2CSS>
 
-Token classes follow the general declaration order. At the same layer and conditions, `animation-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `animation-duration:var(--duration-fast)` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
+Token classes follow the general declaration order. At the same layer and conditions, `animation-fast` sorts before `animate-fade`, so the shorthand resets that duration. Use `(animation-duration:var(--duration-fast))` as above, or customize the complete `--animate-fade` value. Match condition suffixes when combining classes.
 
 ## Transition properties
 
@@ -73,10 +73,10 @@ Select the property, duration and timing function independently. A transition ru
 Toggle the preview's checkbox: it changes the layer's position, and the transition interpolates between the two values. The same pattern applies to opacity on an interactive control:
 
 ```html
-<button type="button" class="opacity:.7 opacity:1:hover opacity:1:focus-visible transition-property:opacity@motion-safe transition-fast@motion-safe transition-smooth@motion-safe">Save</button>
+<button type="button" class="(opacity:.7) (opacity:1):hover (opacity:1):focus-visible (transition-property:opacity)@motion-safe transition-fast@motion-safe transition-smooth@motion-safe">Save</button>
 ```
 
-<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'opacity:1:focus-visible', 'transition-property:opacity@motion-safe', 'transition-fast@motion-safe', 'transition-smooth@motion-safe']}</Class2CSS>
+<Class2CSS>{['(opacity:.7)', '(opacity:1):hover', '(opacity:1):focus-visible', '(transition-property:opacity)@motion-safe', 'transition-fast@motion-safe', 'transition-smooth@motion-safe']}</Class2CSS>
 
 The state change remains available with reduced motion; only its interpolation is conditional. Check the control's text contrast in both opacity states.
 
@@ -106,8 +106,8 @@ Store the keyframe name and playback settings together in one shorthand token. D
   to { translate: 0; opacity: 1; }
 }`} html={`<button id="open-details" type="button">Open details</button>
 <dialog id="details" aria-labelledby="dialog-title" aria-describedby="dialog-description"
-  class="width:calc(100%-32px) max-w-xs margin:auto p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe">
-  <h2 id="dialog-title" class="margin:0 text-lg font-semibold">Collection details</h2>
+  class="(width:calc(100%-32px)) max-w-xs (margin:auto) p-md r-lg (border-width:1px) (border-style:solid) b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe">
+  <h2 id="dialog-title" class="(margin:0) text-lg font-semibold">Collection details</h2>
   <p id="dialog-description">This dialog enters once on opening. Closing it is immediate.</p>
   <form method="dialog"><button autofocus>Close details</button></form>
 </dialog>`} />

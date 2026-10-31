@@ -6,7 +6,7 @@ import { generatePresetCSS } from './generate-preset-css'
 test('reused examples match fresh engines without retaining rules or resources', () => {
   const cases = [
     ['bg-blue-60', 'block', 'block'],
-    ['animation:fade|1s'],
+    ['(animation:fade|1s)'],
     ['fg-red:hover', 'unknown'],
     [],
     ['block'],

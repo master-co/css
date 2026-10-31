@@ -581,8 +581,8 @@ mod encoding {
             .map(|name| &program.compiled_variables[name])
             .collect::<Vec<_>>()
             .encode(&mut writer);
-        // Registered utilities in match order; `finish_program` appends the built-in
-        // native ones again.
+        // Registered utilities in match order. Native declarations are class heads,
+        // so no utility is a native fallback.
         let mut utilities = program
             .utilities
             .iter()

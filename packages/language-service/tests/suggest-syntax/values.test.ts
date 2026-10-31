@@ -9,11 +9,11 @@ function labels(target: string, settings?: ConstructorParameters<typeof CSSLangu
   return hint(target, settings)?.map(({ label }) => label) ?? []
 }
 
-it('does not insert unencoded whitespace into values', () => expect(labels('font-family:')).not.toContain('Arial, Helvetica, sans-serif'))
-it('continues native border values after a space delimiter', () => expect(labels("border:1px|")).toContain('solid'))
-it('continues native shadow values after a comma', () => expect(labels('box-shadow:1px|1px|2px|black,')).toContain('inset'))
-it('offers conditions after a named style', () => expect(labels("text-align:center@")).not.toContain('sr-only'))
-it('offers states after a named style', () => expect(labels("text-align:center:")).not.toContain('sr-only'))
+it('does not insert unencoded whitespace into values', () => expect(labels('(font-family:')).not.toContain('Arial, Helvetica, sans-serif'))
+it('continues native border values after a space delimiter', () => expect(labels("(border:1px|")).toContain('solid'))
+it('continues native shadow values after a comma', () => expect(labels('(box-shadow:1px|1px|2px|black,')).toContain('inset'))
+it('offers conditions after a named style', () => expect(labels("(text-align:center)@")).not.toContain('sr-only'))
+it('offers states after a named style', () => expect(labels("(text-align:center):")).not.toContain('sr-only'))
 
 describe('named token completion', () => {
   test('describes the token identity and actual CSS', () => {
@@ -25,8 +25,8 @@ describe('named token completion', () => {
     })
   })
   test('keeps native font values separate from font tokens', () => {
-    expect(labels('font:')).not.toContain('sans')
-    expect(labels('font-family:')).not.toContain('mono')
+    expect(labels('(font:')).not.toContain('sans')
+    expect(labels('(font-family:')).not.toContain('mono')
     expect(labels('font-')).toEqual(expect.arrayContaining(['font-mono', 'font-bold', 'font-sm']))
   })
   test('offers only canonical token prefixes', () => {
@@ -43,8 +43,8 @@ describe('named token completion', () => {
   test('keeps custom colors out of native value completion', () => {
     const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
     expect(labels('bg-', settings)).toEqual(expect.arrayContaining(['bg-accent', 'bg-blue']))
-    expect(labels("background:", settings)).not.toContain('accent')
-    expect(labels("background:", settings)).toContain('cover')
+    expect(labels("(background:", settings)).not.toContain('accent')
+    expect(labels("(background:", settings)).toContain('cover')
   })
   test('offers named colors inside safelist', () => {
     const settings = { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'accent', values: [{ path: [':root,:host'], value: '#123456' }] }] }) }
@@ -58,17 +58,17 @@ describe('named token completion', () => {
 
 describe('native declaration completion', () => {
   test('documents the native property without shorthand inference', () => {
-    expect(hint('font-style:')?.find(({ label }) => label === 'italic')).toMatchObject({
+    expect(hint('(font-style:')?.find(({ label }) => label === 'italic')).toMatchObject({
       detail: 'font-style: italic', label: 'italic',
       documentation: { kind: 'markdown', value: expect.stringContaining('font-style: italic') }
     })
   })
   test('continues typing a native keyword', () => {
-    expect(hint('display:b')?.find(({ label }) => label === 'block')).toMatchObject({ label: 'block', detail: 'display: block' })
+    expect(hint('(display:b')?.find(({ label }) => label === 'block')).toMatchObject({ label: 'block', detail: 'display: block' })
   })
   test('uses native syntax data for vendor-prefixed properties', () => {
     for (const property of ['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust']) {
-      expect(labels(property + ':')).toEqual(expect.arrayContaining(['auto', 'none']))
+      expect(labels(`(${property}:`)).toEqual(expect.arrayContaining(['auto', 'none']))
     }
   })
 })

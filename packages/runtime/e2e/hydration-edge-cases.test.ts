@@ -64,7 +64,7 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
   })
 
   await page.evaluate(() => {
-    document.body.innerHTML = "<div class=\"display:block\"></div>"
+    document.body.innerHTML = "<div class=\"(display:block)\"></div>"
   })
   await init(page, '@layer utilities{.unknown{color:red}}')
 
@@ -77,10 +77,10 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
 
   expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
   expect(result.progressive).toBe(false)
-  expect(result.ruleNames).toEqual(["display:block"])
+  expect(result.ruleNames).toEqual(["(display:block)"])
   expect(result.nativeRules.some((text) => text.includes('.unknown'))).toBe(false)
-  expect(result.nativeRules.some((text) => text.includes(".display\\:block"))).toBe(true)
-  expect(result.text).toBe("@layer utilities{.display\\:block{display:block}}")
+  expect(result.nativeRules.some((text) => text.includes(".\\(display\\:block\\)"))).toBe(true)
+  expect(result.text).toBe("@layer utilities{.\\(display\\:block\\){display:block}}")
 })
 
 test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
@@ -116,11 +116,11 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   })
 
   await page.evaluate(() => {
-    document.body.innerHTML = "<p class=\"display:block\"></p>"
+    document.body.innerHTML = "<p class=\"(display:block)\"></p>"
   })
-  await init(page, "@layer utilities{.display\\:block{display:block}}", undefined, {
+  await init(page, "@layer utilities{.\\(display\\:block\\){display:block}}", undefined, {
   "version": 5 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "classNames": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
@@ -134,8 +134,8 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   expect(consoleWarnings.some((message) => message.includes('Hydration manifest has no rendered classes'))).toBe(true)
   expect(result).toEqual({
     progressive: false,
-    utilityRules: ["display:block"],
-    text: "@layer utilities{.display\\:block{display:block}}"
+    utilityRules: ["(display:block)"],
+    text: "@layer utilities{.\\(display\\:block\\){display:block}}"
   })
 })
 
@@ -325,7 +325,7 @@ test(`external hydration rejects unsupported version ${invalid.version}/${invali
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = "@layer utilities{.display\\:block{display:block}}"
+    style.textContent = "@layer utilities{.\\(display\\:block\\){display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {
@@ -377,7 +377,7 @@ test('external hydration does not fetch after a JSON import request fails', asyn
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = "@layer utilities{.display\\:block{display:block}}"
+    style.textContent = "@layer utilities{.\\(display\\:block\\){display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {
@@ -422,7 +422,7 @@ test('external hydration reports HTTP failures as structured diagnostics', async
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = "@layer utilities{.display\\:block{display:block}}"
+    style.textContent = "@layer utilities{.\\(display\\:block\\){display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {
@@ -466,7 +466,7 @@ test('runtime start does not import a hydration manifest without a runtime style
     })
   })
   await page.evaluate(() => {
-    document.body.innerHTML = "<p class=\"display:block\"></p>"
+    document.body.innerHTML = "<p class=\"(display:block)\"></p>"
   })
   await startCSSRuntimeAsync(page, undefined, loaderURL)
 
@@ -480,7 +480,7 @@ test('runtime start does not import a hydration manifest without a runtime style
   expect(result).toEqual({
     progressive: false,
     observing: true,
-    text: "@layer utilities{.display\\:block{display:block}}"
+    text: "@layer utilities{.\\(display\\:block\\){display:block}}"
   })
 })
 
@@ -494,10 +494,10 @@ test('progressive hydration fails open when an external style hydration manifest
     body: 'not found'
   }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
-    document.body.innerHTML = "<p class=\"display:block\"></p>"
+    document.body.innerHTML = "<p class=\"(display:block)\"></p>"
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = "@layer utilities{.display\\:block{display:block}}"
+    style.textContent = "@layer utilities{.\\(display\\:block\\){display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {
@@ -524,7 +524,7 @@ test('progressive hydration fails open when an external style hydration manifest
     code: 'INVALID_HYDRATION_MANIFEST',
     hidden: false,
     runtimeStarted: false,
-    styleText: "@layer utilities{.display\\:block{display:block}}"
+    styleText: "@layer utilities{.\\(display\\:block\\){display:block}}"
   })
 })
 
@@ -539,10 +539,10 @@ test('progressive hydration rejects an invalid external hydration manifest paylo
     body: '{invalid'
   }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
-    document.body.innerHTML = "<p class=\"display:block\"></p>"
+    document.body.innerHTML = "<p class=\"(display:block)\"></p>"
     const style = document.createElement('style')
     style.id = runtimeStyleId
-    style.textContent = "@layer utilities{.display\\:block{display:block}}"
+    style.textContent = "@layer utilities{.\\(display\\:block\\){display:block}}"
     style.setAttribute(attr, source)
     document.head.append(style)
   }, {
@@ -688,7 +688,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
 
   await page.evaluate(() => {
     const el = document.createElement('p')
-    el.classList.add("color:var(--brand)", 'background-color:var(--brand)')
+    el.classList.add("(color:var(--brand))", '(background-color:var(--brand))')
     document.body.append(el)
   })
   await waitForRuntimeRuleFlush(page)
@@ -705,7 +705,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
   })
 
   await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove("color:var(--brand)")
+    document.querySelector('p')?.classList.remove("(color:var(--brand))")
   })
   await waitForRuntimeRemovalFlush(page)
   const afterOneRemoval = await page.evaluate(() => ({
@@ -719,11 +719,11 @@ test('removes shared alias variable dependencies when classes disappear', async 
       brand: 2,
       surface: 2
     },
-    retainedClassNames: ["color:var(--brand)"]
+    retainedClassNames: ["(color:var(--brand))"]
   })
 
   await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove('background-color:var(--brand)')
+    document.querySelector('p')?.classList.remove('(background-color:var(--brand))')
   })
   await waitForRuntimeRemovalFlush(page)
   const afterAllRemoved = await page.evaluate(() => ({
@@ -738,7 +738,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
       brand: 2,
       surface: 2
     },
-    retainedClassNames: ["color:var(--brand)", 'background-color:var(--brand)'],
+    retainedClassNames: ["(color:var(--brand))", '(background-color:var(--brand))'],
     nativeAttached: true
   })
 

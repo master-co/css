@@ -7,31 +7,31 @@ fn decimal_conditions_keep_a_single_numeric_value() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     for (class_name, condition) in [
         (
-            "display:block@media((width>=600.5px))",
+            "(display:block)@media((width>=600.5px))",
             "@media (width>=600.5px)",
         ),
         (
-            "display:block@media((width>=.5rem))",
+            "(display:block)@media((width>=.5rem))",
             "@media (width>=.5rem)",
         ),
         (
-            "display:block@media((width>=-0.5px))",
+            "(display:block)@media((width>=-0.5px))",
             "@media (width>=-0.5px)",
         ),
         (
-            "display:block@container((width>=600.5px))",
+            "(display:block)@container((width>=600.5px))",
             "@container (width>=600.5px)",
         ),
         (
-            "display:block@media((width>=37.5rem))",
+            "(display:block)@media((width>=37.5rem))",
             "@media (width>=37.5rem)",
         ),
         (
-            "display:block@media((width:37.5rem))",
+            "(display:block)@media((width:37.5rem))",
             "@media (width:37.5rem)",
         ),
         (
-            "display:block@media((600.5px<=height<800.5px))",
+            "(display:block)@media((600.5px<=height<800.5px))",
             "@media (600.5px<=height<800.5px)",
         ),
     ] {
@@ -78,7 +78,9 @@ fn native_selectors_preserve_attribute_literals_and_escaped_identifiers() {
     ] {
         assert_eq!(engine.resolve_style_selector(selector).unwrap(), expected);
         if !selector.starts_with('.') {
-            let result = engine.inspect(&format!("display:block{selector}")).unwrap();
+            let result = engine
+                .inspect(&format!("(display:block){selector}"))
+                .unwrap();
             assert!(
                 result.match_status == mastercss_schema::MatchStatus::Matched,
                 "{selector}"
@@ -100,7 +102,7 @@ fn native_selectors_preserve_attribute_literals_and_escaped_identifiers() {
 fn native_data_urls_preserve_semicolons_and_resolution_descriptors() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     let result = engine
-        .inspect("background-image:image-set(url(data:image/gif;base64,AAAA)|1x)")
+        .inspect("(background-image:image-set(url(data:image/gif;base64,AAAA)|1x))")
         .unwrap();
     assert_eq!(
         result.match_status,

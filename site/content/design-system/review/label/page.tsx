@@ -27,7 +27,7 @@ function Specimen({ Label }: { Label: typeof DemoLabel }) {
       </DemoSurface>
     </div>
     <div>
-      <Label>width:100% min-width:0 @container((width&gt;=28rem))</Label>
+      <Label>(width:100%) (min-width:0) @container((width&gt;=28rem))</Label>
       <DemoSurface className="review-label-card">
         <strong>Long class string</strong>
         <p>The annotation wraps inside a narrow document column.</p>

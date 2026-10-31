@@ -112,33 +112,33 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_render_css',
         arguments: {
           context: 'preset',
-          classList: 'display:block'
+          classList: '(display:block)'
         }
       }))
-      expect(rendered.classes).toEqual(["display:block"])
+      expect(rendered.classes).toEqual(["(display:block)"])
       expect(rendered.css.text).toContain('display:block')
 
       const renderedNative = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_render_css',
         arguments: {
           context: 'preset',
-          classList: 'display:block field-sizing:content display:16px display:banana'
+          classList: '(display:block) (field-sizing:content) (display:16px) (display:banana)'
         }
       }))
       expect(renderedNative.invalid).toEqual([])
-      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
-      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:banana')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'unknown' })
-      expect(renderedNative.css.text).toContain(".display\\:block{display:block}")
-      expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
-      expect(renderedNative.css.text).toContain('.display\\:16px{display:16px}')
-      expect(renderedNative.css.text).toContain('.display\\:banana{display:banana}')
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === '(display:16px)')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === '(display:banana)')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'unknown' })
+      expect(renderedNative.css.text).toContain(".\\(display\\:block\\){display:block}")
+      expect(renderedNative.css.text).toContain('.\\(field-sizing\\:content\\){field-sizing:content}')
+      expect(renderedNative.css.text).toContain('.\\(display\\:16px\\){display:16px}')
+      expect(renderedNative.css.text).toContain('.\\(display\\:banana\\){display:banana}')
       expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
 
       const suggestions = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_suggest_syntax',
         arguments: {
           context: 'preset',
-          content: '<div class="display:block"></div>',
+          content: '<div class="(display:block)"></div>',
           filePath: 'index.html',
           position: { line: 0, character: 21 },
           limit: 200
@@ -233,7 +233,7 @@ describe('@master/css-mcp', () => {
 
   it('traces, extracts, queries, and compares Master CSS classes through MCP', async () => {
     const root = createTempDir('master-css-mcp-class-tools-')
-    writeFileSync(join(root, 'index.html'), "<div class=\"display:block fg-red\"></div>")
+    writeFileSync(join(root, 'index.html'), "<div class=\"(display:block) fg-red\"></div>")
 
     const connection = await connect(root)
     try {
@@ -241,7 +241,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_trace_class',
         arguments: {
           context: 'preset',
-          className: "display:block",
+          className: "(display:block)",
           patterns: ['index.html']
         }
       }))
@@ -255,13 +255,13 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_inspect_class',
         arguments: {
           context: 'preset',
-          className: "display:block@dark"
+          className: "(display:block)@dark"
         }
       }))
       expect(inspected).toMatchObject({
-        className: "display:block@dark",
+        className: "(display:block)@dark",
         matchStatus: 'matched',
-        base: 'display:block',
+        base: '(display:block)',
         suffix: '@dark',
         matcherTypes: ['key']
       })
@@ -273,7 +273,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_extract_classes',
         arguments: {
           context: 'preset',
-          content: '<div className="display:block fg-red"></div>',
+          content: '<div className="(display:block) fg-red"></div>',
           filePath: 'src/App.tsx'
         }
       }))
@@ -281,7 +281,7 @@ describe('@master/css-mcp', () => {
       expect(extracted.files[0].languageId).toBe('typescriptreact')
       expect(extracted.files[0].classes).toEqual(expect.arrayContaining([
         expect.objectContaining({
-          token: "display:block",
+          token: "(display:block)",
           matchStatus: 'matched'
         })
       ]))
@@ -302,21 +302,21 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_css_compare',
         arguments: {
           context: 'preset',
-          beforeClassList: 'display:block',
-          afterClassList: 'display:block display:inline'
+          beforeClassList: '(display:block)',
+          afterClassList: '(display:block) (display:inline)'
         }
       }))
       expect(compare.version).toBe(2)
       expect(compare.summary.changed).toBe(true)
-      expect(compare.classes.added).toEqual(["display:inline"])
+      expect(compare.classes.added).toEqual(["(display:inline)"])
       expect(compare.rules.added.length).toBeGreaterThan(0)
 
       const nativeCompare = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_css_compare',
         arguments: {
           context: 'preset',
-          beforeClassList: 'display:block display:16px display:banana',
-          afterClassList: 'display:block field-sizing:content'
+          beforeClassList: '(display:block) (display:16px) (display:banana)',
+          afterClassList: '(display:block) (field-sizing:content)'
         }
       }))
       expect(nativeCompare.invalid).toEqual({
@@ -326,8 +326,8 @@ describe('@master/css-mcp', () => {
         removed: []
       })
       expect(nativeCompare.css.after.text).toContain('field-sizing:content')
-      expect(nativeCompare.css.before.text).toContain('.display\\:16px{display:16px}')
-      expect(nativeCompare.css.before.text).toContain('.display\\:banana{display:banana}')
+      expect(nativeCompare.css.before.text).toContain('.\\(display\\:16px\\){display:16px}')
+      expect(nativeCompare.css.before.text).toContain('.\\(display\\:banana\\){display:banana}')
     } finally {
       await connection.close()
     }
@@ -336,7 +336,7 @@ describe('@master/css-mcp', () => {
   it('previews directive formatting without writing until the preview is applied', async () => {
     const root = createTempDir('master-css-mcp-format-')
     const file = join(root, 'style.css')
-    writeFileSync(file, '@safelist "display:block   display:inline";')
+    writeFileSync(file, '@safelist "(display:block)   (display:inline)";')
 
     const connection = await connect(root)
     try {
@@ -344,12 +344,12 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_preview_directive_format',
         arguments: {
           context: 'preset',
-          content: '@safelist "display:block   display:inline";',
+          content: '@safelist "(display:block)   (display:inline)";',
           filePath: 'style.css'
         }
       }))
       expect(contentFormat.mode).toBe('content')
-      expect(contentFormat.formatted).toBe('@safelist "display:block display:inline";')
+      expect(contentFormat.formatted).toBe('@safelist "(display:block) (display:inline)";')
 
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
@@ -361,7 +361,7 @@ describe('@master/css-mcp', () => {
       expect(preview.mode).toBe('files')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe('@safelist "display:block   display:inline";')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "(display:block)   (display:inline)";')
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -370,7 +370,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).toBe('@safelist "display:block display:inline";')
+      expect(readFileSync(file, 'utf8')).toBe('@safelist "(display:block) (display:inline)";')
     } finally {
       await connection.close()
     }
@@ -379,7 +379,7 @@ describe('@master/css-mcp', () => {
   it('previews and applies lint fixes only with a confirmation token', async () => {
     const root = createTempDir('master-css-mcp-fix-')
     const file = join(root, 'index.html')
-    writeFileSync(file, "<div class=\"fg-white margin:0.5rem\"></div>")
+    writeFileSync(file, "<div class=\"fg-white (margin:0.5rem)\"></div>")
 
     const connection = await connect(root)
     try {
@@ -394,7 +394,7 @@ describe('@master/css-mcp', () => {
       expect(preview.mode).toBe('lint-fixes')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe("<div class=\"fg-white margin:0.5rem\"></div>")
+      expect(readFileSync(file, 'utf8')).toBe("<div class=\"fg-white (margin:0.5rem)\"></div>")
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -403,7 +403,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).not.toBe("<div class=\"fg-white margin:0.5rem\"></div>")
+      expect(readFileSync(file, 'utf8')).not.toBe("<div class=\"fg-white (margin:0.5rem)\"></div>")
     } finally {
       await connection.close()
     }
@@ -411,7 +411,7 @@ describe('@master/css-mcp', () => {
 
   it('lints cjs files with the shared script language mapping', async () => {
     const root = createTempDir('master-css-mcp-cjs-')
-    writeFileSync(join(root, 'component.cjs'), "const view = <div className=\"fg-white margin:0.5rem\" />")
+    writeFileSync(join(root, 'component.cjs'), "const view = <div className=\"fg-white (margin:0.5rem)\" />")
 
     const connection = await connect(root)
     try {
@@ -435,7 +435,7 @@ describe('@master/css-mcp', () => {
 
   it('scans project sources with missing CSS classification', async () => {
     const root = createTempDir('master-css-mcp-scan-')
-    writeFileSync(join(root, 'index.html'), "<div class=\"display:block p-missing\"></div>")
+    writeFileSync(join(root, 'index.html'), "<div class=\"(display:block) p-missing\"></div>")
 
     const connection = await connect(root)
     try {
@@ -444,16 +444,16 @@ describe('@master/css-mcp', () => {
         arguments: {
           context: 'preset',
           patterns: ['index.html'],
-          classes: ["display:block", 'never-generated-class']
+          classes: ["(display:block)", 'never-generated-class']
         }
       }))
 
       expect(report.version).toBe(5)
       expect(report.root).toBe(root)
-      expect(report.files[0].discovered.valid).toContain("display:block")
+      expect(report.files[0].discovered.valid).toContain("(display:block)")
       expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
-        className: "display:block",
+        className: "(display:block)",
         reason: 'generated'
       }))
       expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
@@ -475,7 +475,7 @@ describe('@master/css-mcp', () => {
         arguments: {
           context: 'preset',
           filePath: 'src/Component.tsx',
-          content: "export function Component() { return <div className=\"fg-white margin:0.5rem\" /> }"
+          content: "export function Component() { return <div className=\"fg-white (margin:0.5rem)\" /> }"
         }
       }))
 
@@ -495,7 +495,7 @@ describe('@master/css-mcp', () => {
   it('rejects root escape patterns and stale preview writes', async () => {
     const root = createTempDir('master-css-mcp-safety-')
     const file = join(root, 'index.html')
-    writeFileSync(file, "<div class=\"display:block\"></div>")
+    writeFileSync(file, "<div class=\"(display:block)\"></div>")
     const context = new MasterCSSMCPContext({ root })
 
     expect(() => context.validateGlobPatterns(['../outside.html'])).toThrow('escape')
@@ -503,13 +503,13 @@ describe('@master/css-mcp', () => {
     const preview = await context.createPreview([
       {
         filePath: resolve(root, 'index.html'),
-        afterText: '<div class="display:inline"></div>'
+        afterText: '<div class="(display:inline)"></div>'
       }
     ])
     expect(preview.confirmToken).toEqual(expect.any(String))
-    writeFileSync(file, "<div class=\"display:flex\"></div>")
+    writeFileSync(file, "<div class=\"(display:flex)\"></div>")
     await expect(context.applyPreview(preview.confirmToken!)).rejects.toThrow('changed')
-    expect(readFileSync(file, 'utf8')).toBe("<div class=\"display:flex\"></div>")
+    expect(readFileSync(file, 'utf8')).toBe("<div class=\"(display:flex)\"></div>")
   })
 
   it('accepts writable files addressed through the configured root path alias', async () => {

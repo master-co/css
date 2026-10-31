@@ -5,7 +5,7 @@ Master CSS is a markup-driven CSS language and framework. It lets users write co
 Example:
 
 ```html
-<h1 class="color:indigo color:red:hover font-size:2rem font-size:2.5rem@sm font-weight:700 text-align:center">
+<h1 class="flex items-center fg-indigo fg-red:hover (font-size:2rem) (font-size:2.5rem)@sm font-bold uppercase">
   Hello World
 </h1>
 ```
@@ -34,7 +34,7 @@ Compared with native CSS:
 
 Compared with Tailwind:
 
-- Direct declarations use native property names, such as `font-size:1.5rem`, `color:red`, and `background:blue:hover@sm`.
+- Native declarations are parenthesized heads with full property names, such as `(font-size:1.5rem)` and `(background:blue):hover@sm`; common fixed values use short utilities such as `flex`, `hidden` and `items-center`.
 - Selectors and conditions are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
 - CSS entries define theme tokens, native scoped overrides, custom media, utilities, native mixins and managed keyframes. Native component rules use `@layer components`. Mixin contents provide reusable wrappers without a variant registry.

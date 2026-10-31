@@ -6,19 +6,19 @@
   },
   "artifacts": {
     "packages/runtime/dist/global.min.js": {
-      "raw": 123473,
-      "gzip": 38576,
-      "brotli": 33931
+      "raw": 124500,
+      "gzip": 39160,
+      "brotli": 34407
     },
     "packages/runtime/dist/default-program.bin": {
-      "raw": 52492,
-      "gzip": 14918,
-      "brotli": 10651
+      "raw": 59888,
+      "gzip": 17012,
+      "brotli": 12239
     },
     "packages/runtime/dist/index.js (progressive critical path)": {
-      "raw": 46233,
-      "gzip": 12841,
-      "brotli": 11596
+      "raw": 46200,
+      "gzip": 12882,
+      "brotli": 11582
     }
   }
 }

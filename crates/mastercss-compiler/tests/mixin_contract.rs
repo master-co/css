@@ -144,8 +144,8 @@ fn invalid_and_dynamic_arguments_fail_explicitly() {
         !css(
             "",
             &[
-                "display:grid",
-                "grid-template-columns:repeat(var(--cols),minmax(0,1fr))"
+                "(display:grid)",
+                "(grid-template-columns:repeat(var(--cols),minmax(0,1fr)))"
             ]
         )
         .is_empty()
@@ -234,7 +234,7 @@ fn token_maps_require_explicit_utility_definitions() {
 
 #[test]
 fn direct_declarations_follow_recipe_declarations() {
-    let output = css(GRID, &["display:block", "grid-cols(3)"]);
+    let output = css(GRID, &["(display:block)", "grid-cols(3)"]);
     assert!(
         output.find("display:grid").unwrap() < output.find("display:block").unwrap(),
         "{output}"
@@ -243,12 +243,12 @@ fn direct_declarations_follow_recipe_declarations() {
 
 #[test]
 fn svg_properties_are_native_declarations() {
-    assert!(css("", &["r:2px"]).contains("r:2px"));
+    assert!(css("", &["(r:2px)"]).contains("r:2px"));
 }
 
 #[test]
 fn vendor_pairs_are_native_engine_output_policy() {
-    let output = css("", &["user-select:none", "backdrop-filter:blur(3px)!"]);
+    let output = css("", &["(user-select:none)", "(backdrop-filter:blur(3px))!"]);
     assert!(
         output.contains("-webkit-user-select:none;user-select:none"),
         "{output}"

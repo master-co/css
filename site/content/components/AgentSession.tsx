@@ -200,7 +200,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
     manifest: { summary: $('{count} tokens').replace('{count}', String(tokens.length)), response: <>{tokens[0].name} … {tokens[tokens.length - 1].name}</>, tone: 'ok' },
     inspect: {
       summary: inspection.matchStatus,
-      response: inspection.declarations.map(({ property, value }) => <Fragment key={property}>{property}: <span className="white-space:nowrap">{value}</span></Fragment>),
+      response: inspection.declarations.map(({ property, value }) => <Fragment key={property}>{property}: <span className="(white-space:nowrap)">{value}</span></Fragment>),
       tone: 'ok'
     },
     lint: {
@@ -365,7 +365,7 @@ export default function AgentSession({ classRows, code, editIcon, file, fixedCod
                 {problems.map((problem) => (
                   <li className="home-agent-problem" key={problem.location}>
                     <IconAlertTriangle aria-hidden="true" className="home-tone-warn" {...icon} />
-                    <span className="min-width:0">
+                    <span className="(min-width:0)">
                       <span className="home-agent-problem-message">{keepWords(problem.message)}</span>
                       <span className="home-agent-problem-meta">{problem.source.replace('@master/css/', '')} · {problem.location.replace(`${file}:`, $('Ln') + ' ')}</span>
                     </span>

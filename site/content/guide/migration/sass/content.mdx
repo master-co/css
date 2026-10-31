@@ -74,7 +74,7 @@ $radius-card: .75rem;
 ```
 
 ```html
-<article class="border-width:1px border-style:solid b-line-divider r-card bg-white fg-body p-card">
+<article class="(border-width:1px) (border-style:solid) b-line-divider r-card bg-white fg-body p-card">
   ...
 </article>
 ```
@@ -100,7 +100,7 @@ Move local visual rules into markup when the style belongs to one element or one
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="display:grid gap-md r-card bg-white fg-body p-card">
+    <section className="grid gap-md r-card bg-white fg-body p-card">
       {children}
     </section>
   )
@@ -197,7 +197,7 @@ Keep Sass mixins when they generate many selectors, encode browser workarounds, 
 Nested Sass can map cleanly to Master CSS states when the target is a single element.
 
 ```html
-<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
   Save
 </button>
 ```

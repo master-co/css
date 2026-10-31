@@ -1,13 +1,13 @@
 {
   "version": 3,
-  "semanticBaseline": "language-v16",
+  "semanticBaseline": "language-v17",
   "publicBaseline": "v2-theme-token-modes",
   "projectManifest": {
     "bytes": 247899,
     "sha256": "16fe8ca4edf3fd1da3653ecad1cae702ec9a8e8c1ace0e55f176fe34a576edf9",
     "value": {
       "version": 6,
-      "languageVersion": 16,
+      "languageVersion": 17,
       "theme": [
         {
           "type": "rule",

@@ -5,7 +5,7 @@ import { getRuntimeLoaderURL } from './init'
 
 test('compiler-owned cross-origin CSS stays writable at its original position with qualified imports and resource URLs', async ({ page }) => {
   const result = await compileRenderedStylesheet('/owned.css', '@prune native;@layer{@keyframes probe{to{opacity:.25;background-image:url("./animated.svg")}}}', {
-    baseManifest: { version: 6, languageVersion: 16 }, classes: []
+    baseManifest: { version: 6, languageVersion: 17 }, classes: []
   })
   const assets = new Map([
     ['/entry.css', '@import "./child.css" layer;#probe{background-image:url("./pixel.svg")}'],
@@ -36,7 +36,7 @@ test('compiler-owned cross-origin CSS stays writable at its original position wi
     const { startCSSRuntime } = await import(loader)
     await startCSSRuntime({ manifest, emittedGlobals, stylesheetDelivery: { base: 'https://owned.example/' } })
   }, { loader: await getRuntimeLoaderURL(), manifest: result.manifest, emittedGlobals: result.emittedGlobals })
-  await page.locator('#probe').evaluate(element => { element.className = 'animation:probe|1ms|both' })
+  await page.locator('#probe').evaluate(element => { element.className = '(animation:probe|1ms|both)' })
   await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity)).toBe('0.25')
   expect(await page.locator('#probe').evaluate(element => getComputedStyle(element).backgroundImage)).toContain('https://owned.example/animated.svg')
   expect(await page.evaluate(() => document.querySelector('style[data-master-css-stylesheet]')!.nextElementSibling?.localName)).toBe('link')
@@ -57,7 +57,7 @@ test('compiler-owned cross-origin CSS stays writable at its original position wi
 test('SSR materializes qualified imports before startup and hydration adopts the same native layer', async ({ page }) => {
   const { renderHTML } = await import('@master/css-server')
   const result = await compileRenderedStylesheet('/ssr-owned.css', '@prune native;@layer{@keyframes probe{to{opacity:.2;background-image:url("./image.svg")}}}', {
-    baseManifest: { version: 6, languageVersion: 16 }, classes: []
+    baseManifest: { version: 6, languageVersion: 17 }, classes: []
   })
   const assets = new Map([
     ['https://owned.example/root.css', '@import "./child.css" layer;'],
@@ -67,7 +67,7 @@ test('SSR materializes qualified imports before startup and hydration adopts the
   const stylesheets = [...assets].map(([href, css]) => ({ href, asset: createRuntimeStylesheetAsset(compiler, css, href, [...assets.keys()]) }))
   const loader = await getRuntimeLoaderURL()
   const published = new Map<string, string>()
-  const rendered = renderHTML('<html><head><link rel="stylesheet" href="https://owned.example/root.css"></head><body><div id="probe" class="animation:probe|1ms|both"></div></body></html>', {
+  const rendered = renderHTML('<html><head><link rel="stylesheet" href="https://owned.example/root.css"></head><body><div id="probe" class="(animation:probe|1ms|both)"></div></body></html>', {
     manifest: result.manifest, emittedGlobals: result.emittedGlobals, stylesheets, hydrationManifest: 'inject',
     stylesheetImportSource(css) { const url = new URL(`/ssr-owned/${published.size}.css`, loader).href; published.set(url, css); return url }
   })

@@ -32,14 +32,14 @@ describe('Rust-backed language service', () => {
 
   test('uses the Rust completion index', () => {
     const service = createService()
-    expect(service.session.completionIndex().classEntries.some(({ label }) => label === "color:")).toBe(true)
+    expect(service.session.completionIndex().classEntries.some(({ label }) => label === "(color:")).toBe(true)
 
-    const document = TextDocument.create('file:///index.html', 'html', 1, "<div class=\"color:\"></div>")
-    const items = service.suggestSyntax(document, document.positionAt(18), {
+    const document = TextDocument.create('file:///index.html', 'html', 1, "<div class=\"(color:\"></div>")
+    const items = service.suggestSyntax(document, document.positionAt('<div class="(color:'.length), {
       triggerKind: CompletionTriggerKind.Invoked
     })
 
-    expect(items?.some(({ label }) => label === 'red')).toBe(true)
+    expect(items?.find(({ label }) => label === 'red')?.textEdit?.newText).toBe('red)')
   })
 
   test('does not render static theme modifier semantic tokens', () => {
@@ -130,7 +130,7 @@ describe('Rust-backed language service', () => {
 })
 
 test('keyframe safelists complete and inspect exact names without class semantics', () => {
-  const service = createService({ version: 6, languageVersion: 16, keyframes: [
+  const service = createService({ version: 6, languageVersion: 17, keyframes: [
     { id: 'light', name: 'with space', text: '@keyframes "with space"{to{opacity:1}}', source: { file: 'light.css', range: { start: 0, end: 40 } } },
     { id: 'dark', name: 'with space', text: '@keyframes "with space"{to{opacity:.5}}', source: { file: 'dark.css', range: { start: 0, end: 41 } } }
   ] })

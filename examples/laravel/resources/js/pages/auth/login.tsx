@@ -39,9 +39,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
       <Head title="Log in" />
 
-      <form className="display:flex flex-direction:column gap-6" onSubmit={submit}>
-        <div className="display:grid gap-6">
-          <div className="display:grid gap-2">
+      <form className="flex flex-col gap-6" onSubmit={submit}>
+        <div className="grid gap-6">
+          <div className="grid gap-2">
             <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
@@ -57,8 +57,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <InputError message={errors.email} />
           </div>
 
-          <div className="display:grid gap-2">
-            <div className="display:flex align-items:center">
+          <div className="grid gap-2">
+            <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
               {canResetPassword && (
                 <TextLink href={route('password.request')} className="text-sm ml-auto" tabIndex={5}>
@@ -79,7 +79,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             <InputError message={errors.password} />
           </div>
 
-          <div className="display:flex align-items:center space-x-3">
+          <div className="flex items-center space-x-3">
             <Checkbox
               id="remember"
               name="remember"
@@ -96,7 +96,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
           </Button>
         </div>
 
-        <div className="text-sm text-align:center text-muted-foreground">
+        <div className="text-sm (text-align:center) text-muted-foreground">
           Don't have an account?{' '}
           <TextLink href={route('register')} tabIndex={5}>
             Sign up

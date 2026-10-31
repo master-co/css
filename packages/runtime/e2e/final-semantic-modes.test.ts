@@ -39,11 +39,11 @@ const compiled = compileManifestSync(`
 [data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
 `, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest })
 const { manifest } = compiled
-const classes = ['bg-probe', 'padding:11px@apply(--dark)', 'color:red@apply(--ocean)', 'padding:9px@media((width>=800px))@media((hover:hover))']
-const html = '<!doctype html><html class="bg-probe padding:11px@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style>' + `<style>${compiled.nativeCSS}</style></head><body>`
-  + '<div id="outside" class="bg-probe padding:11px@apply(--dark)">Outside</div>'
-  + '<section data-theme="ocean" id="ocean" class="bg-probe color:red@apply(--ocean)"><div id="nested" class="bg-probe padding:11px@apply(--dark) color:red@apply(--ocean)">Nested</div></section>'
-  + '<div id="query" class="padding:9px@media((width>=800px))@media((hover:hover))">Query</div></body></html>'
+const classes = ['bg-probe', '(padding:11px)@apply(--dark)', '(color:red)@apply(--ocean)', '(padding:9px)@media((width>=800px))@media((hover:hover))']
+const html = '<!doctype html><html class="bg-probe (padding:11px)@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style>' + `<style>${compiled.nativeCSS}</style></head><body>`
+  + '<div id="outside" class="bg-probe (padding:11px)@apply(--dark)">Outside</div>'
+  + '<section data-theme="ocean" id="ocean" class="bg-probe (color:red)@apply(--ocean)"><div id="nested" class="bg-probe (padding:11px)@apply(--dark) (color:red)@apply(--ocean)">Nested</div></section>'
+  + '<div id="query" class="(padding:9px)@media((width>=800px))@media((hover:hover))">Query</div></body></html>'
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: explicit mode branches, inheritance and repeated query wrappers`, async ({ page }) => {
@@ -84,11 +84,11 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
 }
 
 test('explicit host mode guards apply to shadow descendants without crossing boundaries', async ({ page }) => {
-  const generated = renderClassNamesSync(['bg-probe', 'color:red@apply(--ocean)'], { manifest })
+  const generated = renderClassNamesSync(['bg-probe', '(color:red)@apply(--ocean)'], { manifest })
   await page.setContent('<div id="host" data-theme="ocean"></div><div id="outside">Outside</div>')
   await page.locator('#host').evaluate((element, css) => {
     const root = element.attachShadow({ mode: 'open' })
-    root.innerHTML = `<style>${css}</style><div id="inside" class="bg-probe color:red@apply(--ocean)">Inside</div>`
+    root.innerHTML = `<style>${css}</style><div id="inside" class="bg-probe (color:red)@apply(--ocean)">Inside</div>`
   }, compiled.nativeCSS + generated.cssText)
   await expect(page.locator('#inside')).toHaveCSS('background-color', 'rgb(0, 0, 255)')
   await expect(page.locator('#inside')).toHaveCSS('color', 'rgb(255, 0, 0)')

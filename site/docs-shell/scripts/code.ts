@@ -20,7 +20,7 @@ function selectTab(root: HTMLElement, name: string) {
   root.querySelectorAll<HTMLElement>('[data-code-tabs-panel-name]').forEach(panel => {
     const active = panel.dataset.codeTabsPanelName === name
     panel.hidden = !active
-    panel.classList.toggle('display:none', !active)
+    panel.classList.toggle('hidden', !active)
   })
   const copy = root.querySelector<HTMLButtonElement>('[data-code-copy]')
   if (copy) {

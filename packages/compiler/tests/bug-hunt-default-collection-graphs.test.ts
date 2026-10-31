@@ -29,7 +29,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
       await scanner.init()
       await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })
       expect(collection.snapshot().sources[0].isMasterCSS).toBe(true)
-      await scanner.scan(join(f.root, 'index.html'), "<div class=\"project composed from-master from-master-child display:block custom package-custom\"></div>")
+      await scanner.scan(join(f.root, 'index.html'), "<div class=\"project composed from-master from-master-child (display:block) custom package-custom\"></div>")
       const result = await collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: f.root, preserveNativeCSS, includeNativeCSS, includeMasterBaseCSS, includeGeneratedCSS })
       const css = result.css
       expect(css.includes('.project')).toBe(includeNativeCSS && preserveNativeCSS)
@@ -38,7 +38,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
       expect(css.includes('.composed')).toBe(includeNativeCSS)
       expect(css.includes('.from-master {')).toBe(includeMasterBaseCSS && preserveNativeCSS)
       expect(css.includes('.from-master-child')).toBe(includeMasterBaseCSS && preserveNativeCSS)
-      expect(css.includes(".display\\:block{display:block}")).toBe(includeGeneratedCSS)
+      expect(css.includes(".\\(display\\:block\\){display:block}")).toBe(includeGeneratedCSS)
       expect(css.includes('.custom{color:purple}')).toBe(includeGeneratedCSS)
       expect(css.includes('.package-custom{color:orange}')).toBe(includeGeneratedCSS)
       expect(css).not.toMatch(/@(?:import|source|safelist|master)\b/)

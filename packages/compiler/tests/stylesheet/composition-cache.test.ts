@@ -7,7 +7,7 @@ import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { compileRenderedStylesheet, createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-const manifest: MasterCSSManifest = { version: 6, languageVersion: 16 }
+const manifest: MasterCSSManifest = { version: 6, languageVersion: 17 }
 
 async function fixture(source: string, files: Record<string, string> = {}) {
   const root = mkdtempSync(join(tmpdir(), 'master-composition-cache-'))
@@ -32,7 +32,7 @@ test('reuses class-independent output while observing dependencies and isolating
     const first = await f.stylesheets.compose(f.options)
     const calls = f.resourceURL.mock.calls.length
     f.dependency.mockClear()
-    await f.scanner.scanModule(join(f.root, 'page.tsx'), '<div className="display:flex"></div>')
+    await f.scanner.scanModule(join(f.root, 'page.tsx'), '<div className="(display:flex)"></div>')
     first.emittedGlobals.keyframeSlots!.push('not-owned')
     const second = await f.stylesheets.compose(f.options)
     expect(second.css).toBe(first.css)

@@ -6,10 +6,10 @@ import { FoundationContainerGrid } from '~/site/components/demo/FoundationExampl
 A reusable card should adapt to the space its parent gives it. Create an ancestor query container, then change the card's layout when its content has room for a second column. Use [Breakpoints](/guide/breakpoints) for viewport-wide decisions.
 
 ## Create a query container
-Add `container-type:inline-size` to an ancestor whose inline size comes from the surrounding layout. Then apply full `@container((width>=28rem))` queries to its descendants. A [size query](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries) cannot select the element itself as its query container.
+Add `(container-type:inline-size)` to an ancestor whose inline size comes from the surrounding layout. Then apply full `@container((width>=28rem))` queries to its descendants. A [size query](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries) cannot select the element itself as its query container.
 
 ```html
-<section class="container-type:inline-size">
+<section class="(container-type:inline-size)">
   <!-- @MARK grid-cols(2)@container((width>=28rem)) -->
   <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
     <div>
@@ -27,7 +27,7 @@ Add `container-type:inline-size` to an ancestor whose inline size comes from the
 <FoundationContainerGrid />
 
 <Class2CSS>
-  {['container-type:inline-size', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
+  {['(container-type:inline-size)', 'grid-cols(1)', 'grid-cols(2)@container((width>=28rem))', 'gap-lg']}
 </Class2CSS>
 
 Resize the preview across `28rem`: the two child regions form one column below that width and two columns at or above it.
@@ -53,12 +53,12 @@ Resize the component in both a sidebar and a wide content region. Add a second c
 Use native CSS range and logical operators when a component needs a bounded range.
 
 ```html
-<!-- @MARK display:none@container((24rem<=width<=28rem)) -->
-<div class="display:none@container((24rem<=width<=28rem))">...</div>
+<!-- @MARK hidden@container((24rem<=width<=28rem)) -->
+<div class="hidden@container((24rem<=width<=28rem))">...</div>
 ```
 
 <Class2CSS>
-  {['display:none@container((24rem<=width<=28rem))']}
+  {['hidden@container((24rem<=width<=28rem))']}
 </Class2CSS>
 
 Keep a one-off threshold beside the class that uses it. Share a repeated condition with a [mixin wrapper](/reference/directives/definitions#contents). A container name belongs inside the full query; an unknown `@name` does not select a container.
@@ -69,20 +69,20 @@ Keep a one-off threshold beside the class that uses it. Share a repeated conditi
 Use a name when a descendant should query an outer container instead of the nearest eligible one.
 
 ```html
-<!-- @MARK container-name:card container-type:inline-size -->
-<section class="container-name:card container-type:inline-size">
+<!-- @MARK (container-name:card) (container-type:inline-size) -->
+<section class="(container-name:card) (container-type:inline-size)">
   <!-- @MARK @container(card|(width>=16rem)) -->
   <article class="grid-cols(2)@container(card|(width>=16rem))">...</article>
 </section>
 ```
 
 <Class2CSS>
-  {['container-name:card container-type:inline-size', 'grid-cols(2)@container(card|(width>=16rem))']}
+  {['(container-name:card) (container-type:inline-size)', 'grid-cols(2)@container(card|(width>=16rem))']}
 </Class2CSS>
 
 In this nested example, both query results live inside a container capped at `14rem`. The first query selects that nearest container. The second selects the ancestor named `outer`, whose width changes with the preview.
 
-<DemoConfiguredExample name="named-container" title="Choose the ancestor to measure" source="" responsive widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} previewFirst html={'<section class="container-name:outer container-type:inline-size p-md r-lg border-width:1px border-style:solid b-line-divider">\n  <p class="margin-top:0 text-sm fg-text-muted">Outer container</p>\n  <div class="container-type:inline-size max-width:14rem">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-surface-inset b-line-divider border-width:1px border-style:solid b-text-blue@container((width>=28rem))">\n      <h3 class="margin:0 text-sm font-semibold">Nearest container</h3>\n      <p class="mt-xs margin-bottom:0 text-sm">\n        <span class="display:none@container((width>=28rem))">Below 28rem</span>\n        <span class="display:none display:inline@container((width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-surface-inset b-line-divider border-width:1px border-style:solid b-text-blue@container(outer|(width>=28rem))">\n      <h3 class="margin:0 text-sm font-semibold">Named outer container</h3>\n      <p class="mt-xs margin-bottom:0 text-sm">\n        <span class="display:none@container(outer|(width>=28rem))">Below 28rem</span>\n        <span class="display:none display:inline@container(outer|(width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Switch between Narrow outer and Wide outer. The inner container stays below 28rem, so only the named query changes its result when the outer container becomes wide enough." />
+<DemoConfiguredExample name="named-container" title="Choose the ancestor to measure" source="" responsive widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} previewFirst html={'<section class="(container-name:outer) (container-type:inline-size) p-md r-lg (border-width:1px) (border-style:solid) b-line-divider">\n  <p class="(margin-top:0) text-sm fg-text-muted">Outer container</p>\n  <div class="(container-type:inline-size) (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-surface-inset b-line-divider (border-width:1px) (border-style:solid) b-text-blue@container((width>=28rem))">\n      <h3 class="(margin:0) text-sm font-semibold">Nearest container</h3>\n      <p class="mt-xs (margin-bottom:0) text-sm">\n        <span class="hidden@container((width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container((width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-surface-inset b-line-divider (border-width:1px) (border-style:solid) b-text-blue@container(outer|(width>=28rem))">\n      <h3 class="(margin:0) text-sm font-semibold">Named outer container</h3>\n      <p class="mt-xs (margin-bottom:0) text-sm">\n        <span class="hidden@container(outer|(width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container(outer|(width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Switch between Narrow outer and Wide outer. The inner container stays below 28rem, so only the named query changes its result when the outer container becomes wide enough." />
 
 The browser [selects an eligible ancestor before evaluating the query](https://drafts.csswg.org/css-conditional-5/#container-rule). A false size condition does not make an unnamed query keep searching wider ancestors. A name filters that ancestor selection; if several eligible ancestors share the name, the nearest one is selected. Use names for boundaries that need to be addressed from deeper components, and omit them when the nearest container already owns the decision.
 
@@ -100,7 +100,7 @@ Use [Sizing](/guide/sizing#use-container-tokens) to limit a wrapper's width. Use
 (o) The card depends on the space it receives.
 
 ```html
-<section class="container-type:inline-size">
+<section class="(container-type:inline-size)">
   <article class="grid-cols(2)@container((width>=28rem))">...</article>
 </section>
 ```

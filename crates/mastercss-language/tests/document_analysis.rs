@@ -16,7 +16,7 @@ fn prepared_analysis_preserves_positions_and_tokens_across_unicode_and_line_endi
     let mut session = session();
     for source in [
         "😀\r\n<div class=\"block fg-red-60\"/>\n<div class=\"flex\"/>",
-        "\r<div class=\"block\"/>\r\n<div class=\"font-size:16px\"/>",
+        "\r<div class=\"block\"/>\r\n<div class=\"(font-size:16px)\"/>",
         "<div class=\"fg-red-60\"/>".repeat(2_000).as_str(),
     ] {
         let request = request(source);
@@ -46,7 +46,7 @@ fn prepared_analysis_consumes_or_cancels_pending_state_and_rejects_stale_ids() {
     ));
     assert!(session.finish_document(b.id, &[]).is_ok());
     let c = session
-        .prepare_document(&request("<div class=\"accent-color:red\"/>"))
+        .prepare_document(&request("<div class=\"(accent-color:red)\"/>"))
         .unwrap();
     assert!(session.finish_document(c.id, &[]).is_ok());
     assert!(session.finish_document(c.id, &[true]).is_err());
@@ -65,10 +65,10 @@ fn prepared_analysis_consumes_or_cancels_pending_state_and_rejects_stale_ids() {
 
 #[test]
 fn host_support_does_not_remove_native_declaration_semantics() {
-    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
     let prepared = session
         .prepare_document(&request(
-            "<div class=\"display:banana display:block display:block\"/>",
+            "<div class=\"(display:banana) (display:block) (display:block)\"/>",
         ))
         .unwrap();
     assert_eq!(prepared.native_candidates.len(), 2);

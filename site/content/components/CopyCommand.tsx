@@ -28,7 +28,7 @@ export default function CopyCommand({ className, command, wrap = false }: { clas
   return (
     <div className={clsx('home-command home-glass', className)} data-status={status}>
       <span aria-hidden="true" className="fg-text-muted">$</span>
-      <code className={wrap ? 'overflow-wrap:anywhere min-width:0 white-space:normal' : 'overflow:hidden min-width:0 text-overflow:ellipsis white-space:nowrap'}>{command}</code>
+      <code className={wrap ? '(overflow-wrap:anywhere) (min-width:0) (white-space:normal)' : '(overflow:hidden) (min-width:0) (text-overflow:ellipsis) (white-space:nowrap)'}>{command}</code>
       <button
         aria-label={status === 'copied' ? $('Copied') : $('Copy command')}
         className="home-command-copy"

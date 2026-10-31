@@ -8,8 +8,8 @@ const wasm = { input: readFileSync(new URL('../../../binding-wasm-tooling/artifa
 
 test.each(['native', 'wasm'] as const)('%s scanner keeps native validation aligned across files', async (binding) => {
   const sources = [
-    '<div class="made-up:bad"></div>',
-    '<div class="blocked:value made-up:bad accent-color:red accent-color:blue caret-color:red"></div>'
+    '<div class="(made-up:bad)"></div>',
+    '<div class="(blocked:value) (made-up:bad) (accent-color:red) (accent-color:blue) (caret-color:red)"></div>'
   ]
   let expectedCSS: string | undefined
   for (const order of [[0, 1], [1, 0]]) {
@@ -17,16 +17,16 @@ test.each(['native', 'wasm'] as const)('%s scanner keeps native validation align
       manifest: defaultManifest as unknown as MasterCSSManifest,
       binding,
       wasm,
-      blocklist: ['blocked:value'],
+      blocklist: ['(blocked:value)'],
       verbose: 0
     }).init()
     try {
       for (const index of order) await scanner.scan(`${index}.html`, sources[index])
       expect([...scanner.validClasses].sort()).toEqual([
-        'accent-color:blue',
-        'accent-color:red',
-        'caret-color:red',
-        'made-up:bad'
+        '(accent-color:blue)',
+        '(accent-color:red)',
+        '(caret-color:red)',
+        '(made-up:bad)'
       ])
       expect([...scanner.invalidClasses]).toEqual([])
       expectedCSS ??= scanner.css.text

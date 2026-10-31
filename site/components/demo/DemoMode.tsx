@@ -5,10 +5,10 @@ import { IconMoon, IconSun } from '@tabler/icons-react'
 function DemoMode({ mode, children }: { mode: 'light' | 'dark', children: ReactNode }) {
   const dark = mode === 'dark'
   return <div className={`demo-mode ${mode}`}>
-    <div className={`position:relative overflow:hidden background-image:var(--stripe-image) background-position:0 background-size:7.5px|7.5px ${dark ? 'bg-surface-base' : 'bg-surface-raised'}`}>
+    <div className={`relative (overflow:hidden) (background-image:var(--stripe-image)) (background-position:0) (background-size:7.5px|7.5px) ${dark ? 'bg-surface-base' : 'bg-surface-raised'}`}>
       {dark
-        ? <IconMoon className="position:absolute right-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />
-        : <IconSun className="position:absolute left-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />}
+        ? <IconMoon className="absolute right-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />
+        : <IconSun className="absolute left-md top-md font-xs fg-text-muted" strokeWidth={1} width={24} height={24} aria-hidden="true" />}
       <div className="py-2xl demo-mode-preview">
         {children}
       </div>

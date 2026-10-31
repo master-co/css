@@ -89,11 +89,11 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
     let mut engine = engine(source);
     engine
         .ensure_class_rules([
-            "display:block@small",
-            "color:red@outside",
-            "display:none@off",
+            "(display:block)@small",
+            "(color:red)@outside",
+            "(display:none)@off",
             "visible-wide",
-            "opacity:.5@media((--small))",
+            "(opacity:.5)@media((--small))",
         ])
         .unwrap();
     let text = engine.css_text();
@@ -162,7 +162,7 @@ fn custom_media_type_conjunction_uses_resolved_boolean_logic() {
     "#,
     );
     engine
-        .ensure_class_rules(["color:red@b", "color:blue@apply(--named)", "box"])
+        .ensure_class_rules(["(color:red)@b", "(color:blue)@apply(--named)", "box"])
         .unwrap();
     let text = engine.css_text();
     assert!(
@@ -197,7 +197,7 @@ fn same_category_condition_redefinitions_replace_the_entire_definition() {
         "@custom-media --wide false;@custom-media --wide (width>1px);@mixin --named{@media print{@contents;}} @utility named {@media print{@contents;}}@mixin --named{&:hover{@contents;}} @utility named {&:hover{@contents;}}",
     );
     engine
-        .ensure_class_rules(["color:red@wide", "color:blue@apply(--named)"])
+        .ensure_class_rules(["(color:red)@wide", "(color:blue)@apply(--named)"])
         .unwrap();
     let text = engine.css_text();
     assert!(text.contains("@media (width>1px)"), "{text}");
@@ -234,7 +234,7 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
     let error =
         compile_manifest_input(&directives.manifest_input, &Default::default()).unwrap_err();
     assert!(error.to_string().contains("4096 branches"), "{error}");
-    let manifest = r#"{"version":6,"languageVersion":16,"customMedia":{"wide":{"type":"true"}}}"#;
+    let manifest = r#"{"version":6,"languageVersion":17,"customMedia":{"wide":{"type":"true"}}}"#;
     assert!(EngineSession::create(manifest).is_err(), "{manifest}");
 }
 
@@ -242,7 +242,7 @@ fn custom_media_rejects_excessive_expansion_and_conflicting_wire_names() {
 fn theme_retains_important_and_escaped_custom_property_identifiers() {
     let mut engine = engine(r"@theme { --color-br\61 nd: red !important; --color-brand: blue; }");
     engine
-        .ensure_class_rules(["color:var(--color-brand)"])
+        .ensure_class_rules(["(color:var(--color-brand))"])
         .unwrap();
     assert!(
         engine

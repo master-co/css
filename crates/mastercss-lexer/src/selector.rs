@@ -77,6 +77,24 @@ pub fn valid_selector_structure(source: &str) -> bool {
                 return false;
             }
             CssSyntaxKind::Delim('<' | ';' | '{' | '}' | '@') => return false,
+            // A pseudo-class or pseudo-element names an identifier or function, so
+            // `:1|1|auto` is never a selector (it was a declaration value).
+            CssSyntaxKind::Delim(':') => {
+                let element = index > 0
+                    && tokens[index - 1].kind == CssSyntaxKind::Delim(':')
+                    && tokens[index - 1].bytes.end == token.bytes.start;
+                let named = tokens.get(index + 1).is_some_and(|next| {
+                    next.bytes.start == token.bytes.end
+                        && match &next.kind {
+                            CssSyntaxKind::Ident(_) | CssSyntaxKind::Function(_) => true,
+                            CssSyntaxKind::Delim(':') => !element,
+                            _ => false,
+                        }
+                });
+                if !named {
+                    return false;
+                }
+            }
             _ => {}
         }
         index += 1;
@@ -261,5 +279,29 @@ mod rule_tests {
             selector_class_names(r#".group[data-label=".peer"] > .a\:b :is(. c)"#),
             ["group", "a:b"]
         );
+    }
+}
+
+#[cfg(test)]
+mod structure_tests {
+    use super::valid_selector_structure;
+
+    #[test]
+    fn pseudo_selectors_name_an_identifier_or_function() {
+        for selector in [
+            "&:hover",
+            "&::before",
+            "&::part(label)",
+            "&:is(.a,:focus)",
+            "&:has(>img)",
+            "&[data-x=':1']",
+            r"&.a\:1",
+            "&:-webkit-autofill",
+        ] {
+            assert!(valid_selector_structure(selector), "{selector}");
+        }
+        for selector in ["&:1|1|auto", "&:", "&:::before", "&:'a'", "&:(x)"] {
+            assert!(!valid_selector_structure(selector), "{selector}");
+        }
     }
 }

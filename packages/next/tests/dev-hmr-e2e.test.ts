@@ -107,14 +107,14 @@ function writePage(fixtureDir: string, padding: number) {
     `export default function Page() {`,
     `  const [hydrated, setHydrated] = useState(false)`,
     `  useEffect(() => setHydrated(true), [])`,
-    "  return <main data-hydrated={hydrated}><div id=\"cascade\" className=\"box display:block\">Cascade</div><div id=\"probe\" className=\"probe\">Probe</div>",
-    `<div id="incremental" className="padding:${padding}px">Incremental</div>`,
+    "  return <main data-hydrated={hydrated}><div id=\"cascade\" className=\"box (display:block)\">Cascade</div><div id=\"probe\" className=\"probe\">Probe</div>",
+    `<div id="incremental" className="(padding:${padding}px)">Incremental</div>`,
     ...Array.from({ length: 10 }, (_, index) => `<div id="module-${index}" className={value${index}}>Module</div>`),
     `</main>`, `}`
   ].join('\n'))
 }
 function writeModules(fixtureDir: string, padding: number) {
-  for (let index = 0; index < 10; index++) writeFileSync(join(fixtureDir, `app/value-${index}.jsx`), `export const value = 'padding:${padding + index}px'`)
+  for (let index = 0; index < 10; index++) writeFileSync(join(fixtureDir, `app/value-${index}.jsx`), `export const value = '(padding:${padding + index}px)'`)
 }
 
 function buildPackage() {
@@ -231,11 +231,11 @@ describe('Next dev HMR', () => {
       writePage(fixture, 77)
       await page.waitForFunction(() => getComputedStyle(document.getElementById('incremental')!).padding === '77px')
       const added = join(fixture, 'app/unimported.jsx')
-      writeFileSync(added, "export const hidden = 'margin:37px'")
+      writeFileSync(added, "export const hidden = '(margin:37px)'")
       await page.evaluate(() => {
         const probe = document.createElement('div')
         probe.id = 'new-source-probe'
-        probe.className = "margin:37px"
+        probe.className = "(margin:37px)"
         document.body.append(probe)
       })
       await page.waitForFunction(() => getComputedStyle(document.getElementById('new-source-probe')!).marginTop === '37px')

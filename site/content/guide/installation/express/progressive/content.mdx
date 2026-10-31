@@ -150,7 +150,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 </StepSection>
 
 ```html name=views/index.ejs
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
@@ -168,5 +168,5 @@ Build the assets and start Express. With JavaScript disabled, the heading should
 Re-enable JavaScript, reload, and add a class in the browser console. The heading should gain an underline without a new server response:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```

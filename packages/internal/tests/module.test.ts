@@ -29,7 +29,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":6,"languageVersion":16}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":6,"languageVersion":17}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -44,12 +44,12 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":16}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":17}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] };')
     expect(toManifestJSON({
   "version": 6 as const,
-  "languageVersion": 16 as const
-})).toBe('{"version":6,"languageVersion":16}')
+  "languageVersion": 17 as const
+})).toBe('{"version":6,"languageVersion":17}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{},"keyframeSlots":[],"suppressedKeyframes":[]};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
   })
@@ -64,7 +64,7 @@ describe('@master/css-internal module helpers', () => {
     ]
     const manifest = {
       version: 6 as const,
-      languageVersion: 16 as const,
+      languageVersion: 17 as const,
       theme: [{ type: 'declaration', name: '--color-primary', value: '#123' }],
       keyframes: [{ id: 'k1-o0', ownerId: 'k1', slotId: 'k1', occurrence: 0, name: 'fade', text: '@keyframes fade{}', source: source(6) }],
       mixins: [{ name: '--card', parameters: [{ name: '--tone', source: source(7) }], body, source: source(8) }],
@@ -77,7 +77,7 @@ describe('@master/css-internal module helpers', () => {
       : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'source').map(([key, entry]) => [key, strip(entry)]))
         : value
     expect(JSON.parse(json)).toEqual(strip(JSON.parse(toManifestJSON(manifest))))
-    expect(toProductionManifestJSON({ version: 6, languageVersion: 16 })).toBe(EMPTY_MANIFEST_JSON)
+    expect(toProductionManifestJSON({ version: 6, languageVersion: 17 })).toBe(EMPTY_MANIFEST_JSON)
   })
 
   it('counts emittedGlobals of separate stylesheet hosts', () => {
@@ -144,7 +144,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 })
     expect(fetch).not.toHaveBeenCalled()
   })
@@ -156,7 +156,7 @@ describe('@master/css-internal module helpers', () => {
       status: 200,
       json: async () => ({
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
@@ -171,7 +171,7 @@ describe('@master/css-internal module helpers', () => {
 
     expect(module.default).toEqual({
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)

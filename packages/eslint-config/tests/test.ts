@@ -37,10 +37,10 @@ test('ESLint Configuration is valid', async () => {
   expect(result[0].warningCount).toBe(4)
   expect(result[0].messages.map((eachMessage) => eachMessage.message)).toEqual(
     [
-      "Remove classes \"margin:0.625rem margin:1.25rem margin:2.5rem@sm\"; they are overridden by classes \"margin:1.875rem margin:3.125rem@sm\" in generated CSS.",
-      "Sort classes into the expected order: \"display:block margin-bottom:3rem margin:2rem font-size:.75rem font-size:1.5rem@sm font-size:2rem@md\".",
-      'Class "margin:2rem" overrides declarations from "margin-bottom:3rem" in generated CSS.',
-      'Sort classes into the expected order: "width:error bg-indigo".',
+      "Remove classes \"(margin:0.625rem) (margin:1.25rem) (margin:2.5rem)@sm\"; they are overridden by classes \"(margin:1.875rem) (margin:3.125rem)@sm\" in generated CSS.",
+      "Sort classes into the expected order: \"(display:block) (margin-bottom:3rem) (margin:2rem) (font-size:.75rem) (font-size:1.5rem)@sm (font-size:2rem)@md\".",
+      'Class "(margin:2rem)" overrides declarations from "(margin-bottom:3rem)" in generated CSS.',
+      'Sort classes into the expected order: "(width:error) bg-indigo".',
     ]
   )
 })

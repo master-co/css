@@ -731,7 +731,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     ;(plugin as any).programAssets.set('master-css-program.12345678.bin', new Uint8Array([1, 2, 3]))
     const assets: Record<string, { source: () => string }> = {
       'index.html': {
-        source: () => "<html><head></head><body><main class=\"box display:block\"></main></body></html>"
+        source: () => "<html><head></head><body><main class=\"box (display:block)\"></main></body></html>"
       }
     }
     const { compiler, compilation } = makeFakeCompiler({

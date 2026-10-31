@@ -52,7 +52,12 @@ test('catalog covers every public family and preset recipe without indexing reti
   const { recipes } = await import('./recipes')
   assert.equal(catalog.documents.length, 44)
   assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 7)
-  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
+  // Fixed utilities emit one literal declaration; the declarations contract lists them all.
+  const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration' && utility.body[0].value.every(part => part.type === 'text'))
+  assert.equal(fixed.length, 94)
+  const declarations = catalog.documents.find(doc => doc.id === 'rules/declarations')!
+  for (const { name } of fixed) assert.ok(declarations.markdown.includes(`\`${name}\``), name)
+  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !fixed.includes(mixin) && !foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name)).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
   for (const namespace of ['font-family', 'font-size', 'font-weight']) assert.ok(families.markdown.includes(`[${namespace}](/reference/tokens/${namespace})`))
@@ -168,13 +173,13 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.ok(layers.headings.some(heading => heading.id === 'summary' && heading.title === 'Defaults stay below local decisions'))
   assert.ok(layers.headings.some(heading => heading.id === 'layer-checklist'))
   assert.match(layers.markdown, /!important` reverses the order between layers/)
-  const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@layer(base)'))!
+  const base = layers.examples.find(example => example.classes.includes('(list-style:none)_ul@layer(base)'))!
   assert.match(base.css, /@layer base\{.*list-style:none/)
   const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@layer(defaults)'))!
   assert.match(fonts.css, /--font-family-mono:/)
   assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
-  assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])
-  assert.throws(() => configuredExampleCSS('', ['list-style:10px']), /Invalid configured documentation class/)
+  assert.deepEqual(configuredMarkupClasses('<ul class="(list-style:none) p-card"><li class="p-card">One</li></ul>'), ['(list-style:none)', 'p-card'])
+  assert.throws(() => configuredExampleCSS('', ['(list-style:10px)']), /Invalid configured documentation class/)
 })
 
 test('compact token lists preserve every native value, heading and identifier in the normalized body', () => {
@@ -221,7 +226,7 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.match(extraction, /setAttribute\('aria-valuenow'/)
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
-  assert.match(conditions, /container-name:card container-type:inline-size/)
+  assert.match(conditions, /\(container-name:card\) \(container-type:inline-size\)/)
   assert.match(conditions, /@supports\(\(display:grid\)\)/)
   assert.doesNotMatch(conditions, /`css @/)
 })
@@ -306,7 +311,7 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
   assert.match(animation, /animation:var\(--animate-reveal\)/)
   assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
   assert.match(animation, /@keyframes note-reveal/)
-  assert.match(used('display:grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
+  assert.match(used('grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
   const priority = used('inset').css
   assert.ok(priority.indexOf('padding:2rem') < priority.indexOf('padding:var(--spacing-md)'))
   assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:12px'))

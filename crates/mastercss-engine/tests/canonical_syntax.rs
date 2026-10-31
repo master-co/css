@@ -90,7 +90,7 @@ fn every_preset_value_family_keeps_its_builtin_contract() {
         assert!(labels.contains(&canonical), "{canonical}");
         assert_eq!(
             engine
-                .inspect(&format!("{property}:initial"))
+                .inspect(&format!("({property}:initial)"))
                 .unwrap()
                 .match_status,
             MatchStatus::Matched
@@ -132,15 +132,15 @@ fn literal_values_and_math_are_separate() {
             "calc(var(--a-b) + env(safe-area-inset-top))",
         ),
         ("'calc(1+2)'", "'calc(1+2)'"),
-        ("url(calc(1+2))", "url(calc(1+2))"),
+        ("url(/calc-1+2.svg)", "url(/calc-1+2.svg)"),
         ("var(--x,calc(1px+2px))", "var(--x,calc(1px + 2px))"),
         ("'clamp(1+2,3,4)'", "'clamp(1+2,3,4)'"),
         ("calc(1px/*+*/+2px)", "calc(1px/*+*/ + 2px)"),
     ] {
-        let class = format!("--example:{input}");
+        let class = format!("(--example:{input})");
         let rules = engine.composition_rules(&class).unwrap();
         assert_eq!(rules[0].declarations[0].value, output, "{class}");
-        let normalized = format!("--example:{}", output.replace(' ', "|"));
+        let normalized = format!("(--example:{})", output.replace(' ', "|"));
         if !output.starts_with('\'') {
             assert_eq!(
                 engine.composition_rules(&normalized).unwrap()[0].declarations[0].value,
@@ -174,7 +174,7 @@ fn native_selectors_keep_literal_spelling() {
             ":is(:first-child,[data-id=':first'])",
         ),
     ] {
-        let result = engine.inspect(&format!("display:block{suffix}")).unwrap();
+        let result = engine.inspect(&format!("(display:block){suffix}")).unwrap();
         assert_eq!(result.match_status, MatchStatus::Matched, "{suffix}");
         assert!(
             result.rules[0]
@@ -192,7 +192,7 @@ fn native_properties_accept_unicode_and_escapes() {
     let engine = engine();
     for property in ["--色", r"--\008272", r"--a\:b", r"c\00006flor"] {
         let rules = engine
-            .composition_rules(&format!("{property}:red:hover"))
+            .composition_rules(&format!("({property}:red):hover"))
             .unwrap();
         assert_eq!(rules.len(), 1, "{property}");
         assert_eq!(rules[0].declarations[0].property, property);

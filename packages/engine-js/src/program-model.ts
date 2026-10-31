@@ -125,11 +125,9 @@ export interface Program {
   variables: Map<string, Variable>
   variableOrder: string[]
   hasInlineTokens: boolean
-  /** Registered utilities in priority order, then the built-in native ones; static ones first. */
+  /** Registered utilities in priority order; static ones first. */
   utilities: Utility[]
   staticUtilities: Map<string, number[]>
-  /** `Key` matcher keys to utility indexes. */
-  keyUtilities: Map<string, number[]>
   tokenUtilities: Map<string, number[]>
   functionUtilities: Map<string, number>
   /** Token prefixes bucketed by first character, longest first, for prefix matching. */

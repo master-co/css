@@ -18,7 +18,7 @@ The preset also uses OKLCH palette values and `light-dark()` for adaptive colors
 ## Browser support
 The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
 
-For example, `background-color:red` uses a native named color, `bg-red` also needs support for its preset OKLCH value, and `bg-surface-raised` uses `light-dark()`. `backdrop-filter:blur(16px)` needs the filter feature itself. Check the complete generated declaration in [Can I use](https://caniuse.com/) or MDN.
+For example, `(background-color:red)` uses a native named color, `bg-red` also needs support for its preset OKLCH value, and `bg-surface-raised` uses `light-dark()`. `(backdrop-filter:blur(16px))` needs the filter feature itself. Check the complete generated declaration in [Can I use](https://caniuse.com/) or MDN.
 
 Recognition, CSS validity and browser support are separate checks. A recognized class can generate a rule even when tooling reports an invalid or unknown value. Inspect its diagnostics and generated output; use a feature query or a native fallback when the browser feature is optional.
 
@@ -37,11 +37,11 @@ Master CSS emits compatibility declarations for selected native properties. Writ
 Write the unprefixed class:
 
 ```html
-<div class="backdrop-filter:blur(16px)">…</div>
+<div class="(backdrop-filter:blur(16px))">…</div>
 ```
 
 <Class2CSS>
-  {['backdrop-filter:blur(16px)']}
+  {['(backdrop-filter:blur(16px))']}
 </Class2CSS>
 
 ### CSS selectors
@@ -49,11 +49,11 @@ Write the unprefixed class:
 Write a vendor-specific selector explicitly when the feature requires one. In this example, [`::-webkit-scrollbar`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::-webkit-scrollbar) passes through as written; its support remains browser-specific.
 
 ```html
-<div class="background-color:#000::-webkit-scrollbar">…</div>
+<div class="(background-color:#000)::-webkit-scrollbar">…</div>
 ```
 
 <Class2CSS>
-  {['background-color:#000::-webkit-scrollbar']}
+  {['(background-color:#000)::-webkit-scrollbar']}
 </Class2CSS>
 
 ---
@@ -64,71 +64,71 @@ Write a vendor-specific selector explicitly when the feature requires one. In th
 Write a property-like class when the declaration is already valid CSS:
 
 ```html
-<!-- @MARK field-sizing:content --><!-- @MARK interpolate-size:allow-keywords --><!-- @MARK view-transition-name:card --><!-- @MARK transition-behavior:allow-discrete -->
-<article class="transition-behavior:allow-discrete field-sizing:content interpolate-size:allow-keywords view-transition-name:card">…</article>
+<!-- @MARK (field-sizing:content) --><!-- @MARK (interpolate-size:allow-keywords) --><!-- @MARK (view-transition-name:card) --><!-- @MARK (transition-behavior:allow-discrete) -->
+<article class="(transition-behavior:allow-discrete) (field-sizing:content) (interpolate-size:allow-keywords) (view-transition-name:card)">…</article>
 ```
 
 <Class2CSS>
-  {['field-sizing:content', 'interpolate-size:allow-keywords', 'view-transition-name:card', 'transition-behavior:allow-discrete']}
+  {['(field-sizing:content)', '(interpolate-size:allow-keywords)', '(view-transition-name:card)', '(transition-behavior:allow-discrete)']}
 </Class2CSS>
 
 Custom properties can use the same direct declaration form:
 
 ```html
-<!-- @MARK --card-gap:1rem -->
-<section class="--card-gap:1rem">…</section>
+<!-- @MARK (--card-gap:1rem) -->
+<section class="(--card-gap:1rem)">…</section>
 ```
 
 <Class2CSS>
-  {['--card-gap:1rem']}
+  {['(--card-gap:1rem)']}
 </Class2CSS>
 
 ### Native declarations and Master utilities
-Complete CSS properties such as `margin:1rem` keep their native value semantics. Native declarations such as `margin-top:1rem` target that property, while named classes such as `mt-md` select theme tokens. Functional utilities use their declared parameters. Colon values retain native CSS value semantics.
+Complete CSS properties such as `(margin:1rem)` keep their native value semantics. Native declarations such as `(margin-top:1rem)` target that property, while named classes such as `mt-md` select theme tokens. Functional utilities use their declared parameters. Colon values retain native CSS value semantics.
 
 ```html
-<!-- @MARK margin-top:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
-<div class="margin-top:1rem">Native top margin</div>
-<div class="margin:1rem">Native margin on every side</div>
+<!-- @MARK (margin-top:1rem) --><!-- @MARK (margin:1rem) --><!-- @MARK bg-red-60 -->
+<div class="(margin-top:1rem)">Native top margin</div>
+<div class="(margin:1rem)">Native margin on every side</div>
 <div class="bg-red-60">Theme color</div>
 ```
 
 <Class2CSS>
-  {['margin-top:1rem', 'margin:1rem', 'bg-red-60']}
+  {['(margin-top:1rem)', '(margin:1rem)', 'bg-red-60']}
 </Class2CSS>
 
 This preserves the expected syntax model:
 
-- `margin-top:1rem` uses the full native property name and emits `margin-top:1rem`.
-- `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
+- `(margin-top:1rem)` uses the full native property name and emits `margin-top:1rem`.
+- `(margin:1rem)` writes the native property value as-is and emits `margin:1rem`.
 - `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
-- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
-- Tooling can distinguish known-invalid values, such as the unitless length in `font-size:16`, from values its grammar cannot fully check. Treat `unknown` as unverified. A generated rule alone does not establish validity or browser support.
+- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `(field-sizing:content)` or `(interpolate-size:allow-keywords)`.
+- Tooling can distinguish known-invalid values, such as the unitless length in `(font-size:16)`, from values its grammar cannot fully check. Treat `unknown` as unverified. A generated rule alone does not establish validity or browser support.
 
 ### Arbitrary properties
-Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it directly with `property:value` syntax:
+Arbitrary properties need no special form. If the declaration is valid CSS, write it directly as `(property:value)`:
 
 ```html
-<!-- @MARK interpolate-size:allow-keywords --><!-- @MARK scroll-timeline-name:--cards --><!-- @MARK paint-order:stroke|fill -->
-<div class="scroll-timeline-name:--cards interpolate-size:allow-keywords paint-order:stroke|fill">…</div>
+<!-- @MARK (interpolate-size:allow-keywords) --><!-- @MARK (scroll-timeline-name:--cards) --><!-- @MARK (paint-order:stroke|fill) -->
+<div class="(scroll-timeline-name:--cards) (interpolate-size:allow-keywords) (paint-order:stroke|fill)">…</div>
 ```
 
 <Class2CSS>
-  {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
+  {['(interpolate-size:allow-keywords)', '(scroll-timeline-name:--cards)', '(paint-order:stroke|fill)']}
 </Class2CSS>
 
-Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Tooling may report the newest CSS grammar as unknown until its syntax data catches up. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply. Check support explicitly when an optional feature needs a fallback.
+Each class holds one declaration; repeat the selector or query suffix on each class that needs it. Tooling may report the newest CSS grammar as unknown until its syntax data catches up. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply. Check support explicitly when an optional feature needs a fallback.
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
 
 ```html
 <!-- @MARK :has(:checked) -->
-<form class="outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)">…</form>
+<form class="(outline-width:2px):has(:checked) (outline-style:solid):has(:checked) outline-red:has(:checked)">…</form>
 ```
 
 <Class2CSS>
-  {['outline-width:2px:has(:checked) outline-style:solid:has(:checked) outline-red:has(:checked)']}
+  {['(outline-width:2px):has(:checked) (outline-style:solid):has(:checked) outline-red:has(:checked)']}
 </Class2CSS>
 
 ---
@@ -198,7 +198,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button type="button" class="height:40px px-md r-md bg-blue fg-white">Save</button>
+<button type="button" class="(height:40px) px-md r-md bg-blue fg-white">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#explicit-pruning).

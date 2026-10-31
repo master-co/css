@@ -52,7 +52,7 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
 - **Manifest diagnostics**: Reports project manifest loading errors without taking over ESLint class policy warnings.
-- **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `background-color:transparent !` to `background-color:transparent!`.
+- **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `(background-color:transparent) !` to `(background-color:transparent)!`.
 - **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect project tokens, utility recipes, mixins, and named conditions.
 - **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
 

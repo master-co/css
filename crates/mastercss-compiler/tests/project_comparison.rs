@@ -129,7 +129,7 @@ fn source_offset_changes_do_not_report_recipe_behavior_changes() {
 #[test]
 fn inline_tokens_remain_authoring_dependencies_after_substitution() {
     let source = "@theme inline{--color-brand:red}@mixin --button{color:var(--color-brand)} @utility button {color:var(--color-brand)}";
-    let classes = &["fg-brand", "color:var(--color-brand)", "button"];
+    let classes = &["fg-brand", "(color:var(--color-brand))", "button"];
     let report = compare(
         snapshot(source, classes),
         snapshot(&source.replace("red", "blue"), classes),
@@ -186,7 +186,7 @@ fn nested_recipe_dependencies_and_usage_moves_are_visible() {
 fn keyframes_follow_transitive_values_and_dynamic_names() {
     let source =
         "@prune native;@theme{--color-brand:red;}@keyframes pulse{to{color:var(--color-brand)}}";
-    let classes = &["animation:pulse|1s", "animation-name:var(--motion)"];
+    let classes = &["(animation:pulse|1s)", "(animation-name:var(--motion))"];
     let report = compare(
         snapshot(source, classes),
         snapshot(&source.replace("red", "blue"), classes),

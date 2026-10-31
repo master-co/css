@@ -19,7 +19,7 @@ export default async function ArticleHeader(props: any) {
         ? (
           <Link href={typeof categoryLink === 'string' ? categoryLink : './'} lang={languageOf(metadata.category)} className={clsx(
             'doc-article-category',
-            center && 'margin-inline:auto'
+            center && '(margin-inline:auto)'
           )}>
             <ChevronLeftSvg aria-hidden="true" />
             {children}
@@ -30,17 +30,17 @@ export default async function ArticleHeader(props: any) {
   }
   return (
     <>
-      <div className="display:flex flex-wrap:nowrap gap-xl flex-direction:column@media((width<37.5rem))">
-        <div className='flex:1 min-width:0'>
+      <div className="flex flex-nowrap gap-xl flex-col@media((width<37.5rem))">
+        <div className='(flex:1) (min-width:0)'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
           <h1 className={clsx('doc-article-title', h1ClassName)} lang={languageOf(metadata.title.absolute || metadata.title)}>
             {$(metadata.title.absolute || metadata.title)}
-            {metadata.type === 'entity' && locale !== 'en' && <span className='margin-left:.25em' lang={sourceLanguage}>{metadata.title}</span>}
-            {metadata.unfinished && <span className='margin-left:.5em font-size:.5em vertical-align:top'>🚧</span>}
+            {metadata.type === 'entity' && locale !== 'en' && <span className='(margin-left:.25em)' lang={sourceLanguage}>{metadata.title}</span>}
+            {metadata.unfinished && <span className='(margin-left:.5em) (font-size:.5em) (vertical-align:top)'>🚧</span>}
           </h1>
         </div >
-        <div className={clsx('display:flex gap-xs display:none:empty', center ? 'align-items:center' : 'align-items:start')}>
+        <div className={clsx('flex gap-xs hidden:empty', center ? 'items-center' : 'items-start')}>
           {end}
         </div>
         {icon && <div className="doc-article-icon">
@@ -53,8 +53,8 @@ export default async function ArticleHeader(props: any) {
       <p className="doc-article-description" lang={languageOf(metadata.description)}>{$(metadata.description)}</p>
       {
         (metadata.unfinished || metadata.disabled) &&
-        <div className="margin-block:1.25rem padding-bottom:0.797rem padding-left:1.25rem padding-right:1.25rem padding-top:0.797rem r-lg text-xs font-weight:460 bg-accent/.1 fg-accent">
-          <span className='margin-right:0.625rem'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
+        <div className="(margin-block:1.25rem) (padding-bottom:0.797rem) (padding-left:1.25rem) (padding-right:1.25rem) (padding-top:0.797rem) r-lg text-xs (font-weight:460) bg-accent/.1 fg-accent">
+          <span className='(margin-right:0.625rem)'>🚧</span>{$('This page is still under construction and some content may not be complete.')}
         </div>
       }
       {/* The header closes on a hairline, as a blog post's does; the contents disclosure, where it shows, draws it. */}

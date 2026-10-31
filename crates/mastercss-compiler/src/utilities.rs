@@ -20,5 +20,12 @@ pub(crate) fn definition(prelude: &str, body: &str) -> Result<UtilityDefinition,
     if kind == UtilityKind::Token {
         recipe.name.pop();
     }
+    // Classes read `_` as a descendant selector, so it can never end a utility name.
+    if recipe.name.contains('_') {
+        return Err(format!(
+            "Utility names cannot contain _, which begins a descendant selector in classes: {}",
+            recipe.name
+        ));
+    }
     Ok(UtilityDefinition { kind, recipe })
 }

@@ -7,7 +7,7 @@ fn definition(name: &str, property: &str, value: &str) -> Value {
 }
 fn engine(mixins: Vec<Value>, variables: Value) -> EngineSession {
     let theme = variables.as_object().unwrap().iter().flat_map(|(namespace, entries)| entries.as_array().unwrap().iter().flat_map(move |entry| entry["values"].as_array().unwrap().iter().map(move |value| json!({"type":"rule","prelude":value["path"][0],"children":[{"type":"declaration","name":format!("{namespace}-{}",entry["key"].as_str().unwrap()),"value":value["value"]}]})))).collect::<Vec<_>>();
-    EngineSession::create(&json!({"version":6,"languageVersion":16,"utilities":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
+    EngineSession::create(&json!({"version":6,"languageVersion":17,"utilities":mixins,"variables":variables,"theme":theme}).to_string()).unwrap()
 }
 
 #[test]
@@ -72,8 +72,8 @@ fn shared_font_prefix_reports_ambiguous_keys() {
         assert_eq!(result.match_status, MatchStatus::Ambiguous);
         assert!(result.rules.is_empty());
         for name in [
-            "font-family:var(--font-family-brand)",
-            "font-size:var(--font-size-brand)",
+            "(font-family:var(--font-family-brand))",
+            "(font-size:var(--font-size-brand))",
         ] {
             assert_eq!(
                 session.inspect(name).unwrap().match_status,
@@ -84,11 +84,15 @@ fn shared_font_prefix_reports_ambiguous_keys() {
 }
 
 #[test]
-fn static_mixin_names_do_not_override_native_properties() {
+fn static_names_and_native_properties_never_share_a_head() {
     let session = engine(vec![definition("--display", "color", "red")], json!({}));
     assert_eq!(
-        session.inspect("display:block").unwrap().rules[0].text,
-        ".display\\:block{display:block}"
+        session.inspect("(display:block)").unwrap().rules[0].text,
+        ".\\(display\\:block\\){display:block}"
+    );
+    assert_eq!(
+        session.inspect("display:hover").unwrap().rules[0].text,
+        ".display\\:hover:hover{color:red}"
     );
     assert!(
         session.inspect("display").unwrap().rules[0]

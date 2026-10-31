@@ -13,10 +13,11 @@ import Class2CSS from '~/site/components/Class2CSS'
   <p>Published today.</p>
 </details>
 ```
-State selectors let one declaration apply only when a selector matches. Append the selector after the declaration value:
+State selectors let one class apply only when a selector matches. Append the selector after the utility name or after the closing parenthesis of a declaration:
 
 ```txt
-property:value<selector>
+name<selector>
+(property:value)<selector>
 ```
 
 Common examples include interaction states such as `:hover`, validation states such as `:invalid`, and attributes such as `[disabled]` or `[open]`.
@@ -119,7 +120,7 @@ Use pseudo-classes for browser-managed states.
 Use pseudo-elements such as `::before` and `::after` when the style should target generated content.
 ```html
 <!-- @MARK ::before -->
-<div class="content:'“'::before">quotes</div>
+<div class="(content:'“')::before">quotes</div>
 ```
 
 ## Combinators \{#combinators\}
@@ -177,21 +178,21 @@ Use `~` to style later siblings that share the same parent.
 Use `,` when the same declaration should apply to several selectors.
 ```html
 <!-- @MARK , -->
-<div class="content:'“'::before,::after">quotes</div>
+<div class="(content:'“')::before,::after">quotes</div>
 ```
 <Class2CSS>
-  {[`content:'“'::before,::after`]}
+  {[`(content:'“')::before,::after`]}
 </Class2CSS>
 Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
 ```html
 <!-- @MARK , -->
-<div class="display:block>div,>span">
+<div class="block>div,>span">
   <div>First child</div>
   <span>Second child</span>
 </div>
 ```
 <Class2CSS>
-  {['display:block>div,>span']}
+  {['block>div,>span']}
 </Class2CSS>
 
 ## Pseudo-classes \{#pseudo-classes\}
@@ -201,13 +202,13 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 Hover or press the button to match the corresponding state. Include an explicit keyboard focus treatment.
 ```html
 <!-- @MARK :hover --><!-- @MARK :active --><!-- @MARK :focus-visible -->
-<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible bg-blue-80:active">Preview</button>
+<button type="button" class="bg-blue-60 fg-white bg-blue-70:hover (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible bg-blue-80:active">Preview</button>
 ```
 
 Use `:focus-visible` when the browser should decide whether to show a focus ring, including keyboard navigation. Keep focus visible instead of removing outlines without a replacement.
 ```html
 <!-- @MARK :focus-visible -->
-<button type="button" class="outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible">Submit</button>
+<button type="button" class="(outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible">Submit</button>
 ```
 
 ### `:first-child`, `:last-child`, `:nth-child()` \{#first--last--odd--even\}
@@ -231,7 +232,7 @@ The required field is invalid while empty or while its value fails native email 
 <!-- @MARK :valid --><!-- @MARK :invalid --><!-- @MARK :required -->
 <label for="contact-email">Email</label>
 <input id="contact-email" type="email" required
-  class="border-width:1px border-style:solid border-color:currentcolor b-green:valid b-red:invalid outline-width:2px:focus-visible outline-style:solid:focus-visible outline-blue:focus-visible" />
+  class="(border-width:1px) (border-style:solid) (border-color:currentcolor) b-green:valid b-red:invalid (outline-width:2px):focus-visible (outline-style:solid):focus-visible outline-blue:focus-visible" />
 ```
 
 Use `:required` to select required controls regardless of whether their current value is valid. Avoid communicating validation through color alone; production forms should also explain the error in text.
@@ -240,7 +241,7 @@ Use `:required` to select required controls regardless of whether their current 
 Use `:disabled` for controls that cannot be interacted with.
 ```html
 <!-- @MARK :disabled -->
-<button type="button" class="opacity:.5:disabled" disabled>Submit</button>
+<button type="button" class="(opacity:.5):disabled" disabled>Submit</button>
 ```
 
 ### `:checked`, `:indeterminate` \{#checked--indeterminate\}
@@ -248,7 +249,7 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 ```html
 <!-- @MARK :checked -->
 <label>
-  <input class="outline-width:2px:checked outline-style:solid:checked outline-blue:checked" type="checkbox" checked />
+  <input class="(outline-width:2px):checked (outline-style:solid):checked outline-blue:checked" type="checkbox" checked />
   Include archived items
 </label>
 ```
@@ -256,7 +257,7 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 `indeterminate` is a DOM property, not an HTML attribute. Set it from JavaScript when a checkbox represents a partially selected group; style that state with `:indeterminate`. It does not change the checkbox's submitted checked value.
 
 ```html
-<label><input id="select-all" type="checkbox" class="outline-width:2px:indeterminate outline-style:solid:indeterminate outline-blue:indeterminate" /> Select all</label>
+<label><input id="select-all" type="checkbox" class="(outline-width:2px):indeterminate (outline-style:solid):indeterminate outline-blue:indeterminate" /> Select all</label>
 ```
 ```js
 document.querySelector('#select-all').indeterminate = true
@@ -308,7 +309,7 @@ Use a mixin with a native selector and `@contents` when the same relationship sh
 Use `::before` and `::after` to style generated content attached to the element.
 ```html
 <!-- @MARK ::before --><!-- @MARK ::after -->
-<span class="content:close-quote::after content:open-quote::before">
+<span class="(content:close-quote)::after (content:open-quote)::before">
   Keep the interface clear.
 </span>
 ```
@@ -319,7 +320,7 @@ Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-
 ```html
 <!-- @MARK scrollbar --><!-- @MARK ::-webkit-scrollbar-thumb -->
 <div tabindex="0" role="region" aria-label="Scrollable schedule"
-  class="overflow-x:auto max-width:100% width:0.375rem::-webkit-scrollbar height:0.375rem::-webkit-scrollbar bg-neutral-50/.2::-webkit-scrollbar-thumb">
+  class="(overflow-x:auto) (max-width:100%) (width:0.375rem)::-webkit-scrollbar (height:0.375rem)::-webkit-scrollbar bg-neutral-50/.2::-webkit-scrollbar-thumb">
   <p class="w-7xl">Monday · Tuesday · Wednesday · Thursday · Friday</p>
 </div>
 ```
@@ -364,14 +365,14 @@ Match values that start with a specific string.
 This matches links whose attribute starts with `http`; it does not distinguish same-origin from external links.
 ```html
 <!-- @MARK [href^=http] -->
-<a class="content:'↗'[href^=http]::after" href="https://example.com">External</a>
+<a class="(content:'↗')[href^=http]::after" href="https://example.com">External</a>
 ```
 
 ### `[<attr>$=<value>]` \{#attrvalue-2\}
 Match values that end with a specific string.
 ```html
 <!-- @MARK [href$='.pdf'] -->
-<a class="content:'⬇'[href$='.pdf']::after" href="https://example.com/report.pdf">PDF</a>
+<a class="(content:'⬇')[href$='.pdf']::after" href="https://example.com/report.pdf">PDF</a>
 ```
 
 ### `[<attr>*=<value>]` \{#attrvalue-3\}

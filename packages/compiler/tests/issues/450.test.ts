@@ -5,7 +5,7 @@ import { serializeMasterCSSManifest, type MasterCSSManifest } from '@master/css-
 
 const minimal: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--audit-block",

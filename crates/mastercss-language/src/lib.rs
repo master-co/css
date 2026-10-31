@@ -286,7 +286,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
         .iter()
         .filter(|entry| entry.kind == LanguageCompletionKind::Property)
         .filter_map(|entry| {
-            let key = entry.label.strip_suffix(':')?;
+            let key = entry.label.strip_prefix('(')?.strip_suffix(':')?;
             let property = entry
                 .detail
                 .as_deref()
@@ -315,7 +315,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
             continue;
         };
         for value in property_values {
-            let label = format!("{key}:{}", value.label);
+            let label = format!("({key}:{})", value.label);
             let detail = format!("{property}: {}", value.label);
             let sort_text = format!("ccccc{}", value.label);
             if let Some(index) = by_label.get(&label).copied() {
@@ -338,8 +338,6 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
             }
         }
     }
-
-    entries.retain(|entry| !matches!(entry.label.as_str(), "text:capitalize" | "text:center"));
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -349,6 +347,8 @@ pub struct LanguageColorPresentationIr {
     pub editable: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replacement_prefix: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replacement_suffix: Option<String>,
     pub color_token: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_format: Option<LanguageColorFormatIr>,

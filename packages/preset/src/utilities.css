@@ -11,6 +11,383 @@
   border-width: 0;
 }
 
+/* Fixed native expressions. Each emits exactly one declaration. */
+@utility block {
+  display: block;
+}
+
+@utility inline {
+  display: inline;
+}
+
+@utility inline-block {
+  display: inline-block;
+}
+
+@utility flow-root {
+  display: flow-root;
+}
+
+@utility flex {
+  display: flex;
+}
+
+@utility inline-flex {
+  display: inline-flex;
+}
+
+@utility grid {
+  display: grid;
+}
+
+@utility inline-grid {
+  display: inline-grid;
+}
+
+@utility contents {
+  display: contents;
+}
+
+@utility list-item {
+  display: list-item;
+}
+
+@utility table {
+  display: table;
+}
+
+@utility inline-table {
+  display: inline-table;
+}
+
+@utility table-caption {
+  display: table-caption;
+}
+
+@utility table-cell {
+  display: table-cell;
+}
+
+@utility table-column {
+  display: table-column;
+}
+
+@utility table-column-group {
+  display: table-column-group;
+}
+
+@utility table-header-group {
+  display: table-header-group;
+}
+
+@utility table-footer-group {
+  display: table-footer-group;
+}
+
+@utility table-row {
+  display: table-row;
+}
+
+@utility table-row-group {
+  display: table-row-group;
+}
+
+@utility hidden {
+  display: none;
+}
+
+@utility static {
+  position: static;
+}
+
+@utility relative {
+  position: relative;
+}
+
+@utility absolute {
+  position: absolute;
+}
+
+@utility fixed {
+  position: fixed;
+}
+
+@utility sticky {
+  position: sticky;
+}
+
+@utility visible {
+  visibility: visible;
+}
+
+@utility invisible {
+  visibility: hidden;
+}
+
+@utility isolate {
+  isolation: isolate;
+}
+
+@utility box-border {
+  box-sizing: border-box;
+}
+
+@utility box-content {
+  box-sizing: content-box;
+}
+
+@utility italic {
+  font-style: italic;
+}
+
+@utility oblique {
+  font-style: oblique;
+}
+
+@utility uppercase {
+  text-transform: uppercase;
+}
+
+@utility lowercase {
+  text-transform: lowercase;
+}
+
+@utility capitalize {
+  text-transform: capitalize;
+}
+
+@utility underline {
+  text-decoration-line: underline;
+}
+
+@utility overline {
+  text-decoration-line: overline;
+}
+
+@utility line-through {
+  text-decoration-line: line-through;
+}
+
+@utility flex-row {
+  flex-direction: row;
+}
+
+@utility flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+@utility flex-col {
+  flex-direction: column;
+}
+
+@utility flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+@utility flex-wrap {
+  flex-wrap: wrap;
+}
+
+@utility flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+@utility flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+
+@utility items-normal {
+  align-items: normal;
+}
+
+@utility items-start {
+  align-items: start;
+}
+
+@utility items-end {
+  align-items: end;
+}
+
+@utility items-flex-start {
+  align-items: flex-start;
+}
+
+@utility items-flex-end {
+  align-items: flex-end;
+}
+
+@utility items-center {
+  align-items: center;
+}
+
+@utility items-baseline {
+  align-items: baseline;
+}
+
+@utility items-stretch {
+  align-items: stretch;
+}
+
+@utility content-normal {
+  align-content: normal;
+}
+
+@utility content-start {
+  align-content: start;
+}
+
+@utility content-end {
+  align-content: end;
+}
+
+@utility content-flex-start {
+  align-content: flex-start;
+}
+
+@utility content-flex-end {
+  align-content: flex-end;
+}
+
+@utility content-center {
+  align-content: center;
+}
+
+@utility content-baseline {
+  align-content: baseline;
+}
+
+@utility content-stretch {
+  align-content: stretch;
+}
+
+@utility content-between {
+  align-content: space-between;
+}
+
+@utility content-around {
+  align-content: space-around;
+}
+
+@utility content-evenly {
+  align-content: space-evenly;
+}
+
+@utility self-auto {
+  align-self: auto;
+}
+
+@utility self-normal {
+  align-self: normal;
+}
+
+@utility self-start {
+  align-self: start;
+}
+
+@utility self-end {
+  align-self: end;
+}
+
+@utility self-flex-start {
+  align-self: flex-start;
+}
+
+@utility self-flex-end {
+  align-self: flex-end;
+}
+
+@utility self-center {
+  align-self: center;
+}
+
+@utility self-baseline {
+  align-self: baseline;
+}
+
+@utility self-stretch {
+  align-self: stretch;
+}
+
+@utility justify-normal {
+  justify-content: normal;
+}
+
+@utility justify-start {
+  justify-content: start;
+}
+
+@utility justify-end {
+  justify-content: end;
+}
+
+@utility justify-flex-start {
+  justify-content: flex-start;
+}
+
+@utility justify-flex-end {
+  justify-content: flex-end;
+}
+
+@utility justify-center {
+  justify-content: center;
+}
+
+@utility justify-between {
+  justify-content: space-between;
+}
+
+@utility justify-around {
+  justify-content: space-around;
+}
+
+@utility justify-evenly {
+  justify-content: space-evenly;
+}
+
+@utility justify-stretch {
+  justify-content: stretch;
+}
+
+@utility object-cover {
+  object-fit: cover;
+}
+
+@utility object-contain {
+  object-fit: contain;
+}
+
+@utility object-fill {
+  object-fit: fill;
+}
+
+@utility object-none {
+  object-fit: none;
+}
+
+@utility object-scale-down {
+  object-fit: scale-down;
+}
+
+@utility object-center {
+  object-position: center;
+}
+
+@utility object-top {
+  object-position: top;
+}
+
+@utility object-bottom {
+  object-position: bottom;
+}
+
+@utility object-left {
+  object-position: left;
+}
+
+@utility object-right {
+  object-position: right;
+}
+
 @utility grid-cols(--n <integer>) {
   display: grid;
   grid-template-columns: repeat(var(--n), minmax(0, 1fr));

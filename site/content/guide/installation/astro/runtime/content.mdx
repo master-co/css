@@ -56,7 +56,7 @@ import '../styles/global.css'
     <title>Hello Master CSS</title>
   </head>
   <body>
-    <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
   </body>
@@ -71,7 +71,7 @@ Run the project's build and preview scripts. The heading should have a large, he
 Inspect the browser console and network requests if the heading remains unstyled. Runtime mode depends on JavaScript and its compiled program loading successfully. To test a later class change, run:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 The heading should gain an underline without rebuilding. This checks a class introduced after the initial page was generated.

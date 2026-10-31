@@ -21,7 +21,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
     const initialCSS = ".example{color:red;background-image:url('./image.svg')}"
     writeFileSync(entry, mode === 'initial-import' ? "@import './new/nested.css';@import \"@master/css\";" : "@import './child.css';@import \"@master/css\";")
     writeFileSync(imported, initialCSS)
-    writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block\"></div>")
+    writeFileSync(join(cwd, 'index.html'), "<div class=\"example (display:block)\"></div>")
     if (mode !== 'initial-resource') writeFileSync(resource, image('red'))
     const child = spawn(process.execPath, ['--import', pathToFileURL(require.resolve('tsx')).href, cli, 'generate', '--watch', '--output', 'dist/output.css', '--verbose', '0'], { cwd, env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig } })
     let stderr = ''
@@ -61,7 +61,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       await wait(() => stderr.includes('Cannot rebuild CSS:'))
       if (before) expect(output()).toEqual(before)
       const errors = (stderr.match(/Cannot rebuild CSS:/g) || []).length
-      writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block fg-blue\"></div>")
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"example (display:block) fg-blue\"></div>")
       await wait(() => (stderr.match(/Cannot rebuild CSS:/g) || []).length > errors)
       if (before) expect(output()).toEqual(before)
       const beforeRecovery = restartCount()
@@ -78,7 +78,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       // before checking that a later markup edit is scanned and watch settles.
       await waitForQuiet()
       // A later app edit must still be scanned after recovery.
-      writeFileSync(join(cwd, 'index.html'), "<div class=\"example display:block fg-red\"></div>")
+      writeFileSync(join(cwd, 'index.html'), "<div class=\"example (display:block) fg-red\"></div>")
       await wait(() => readFileSync(join(cwd, 'dist/output.css'), 'utf8').includes('.fg-red'))
       await waitForQuiet()
       expect(child.exitCode, stderr).toBeNull()

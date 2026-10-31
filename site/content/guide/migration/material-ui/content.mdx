@@ -78,7 +78,7 @@ export const theme = createTheme({
 ```
 
 ```html
-<section class="border-width:1px border-style:solid b-line-divider fg-body bg-surface r-control">
+<section class="(border-width:1px) (border-style:solid) b-line-divider fg-body bg-surface r-control">
   ...
 </section>
 ```
@@ -111,7 +111,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="display:grid gap-md p-lg bg-surface fg-body r-panel">
+    <section className="grid gap-md p-lg bg-surface fg-body r-panel">
       {children}
     </section>
   )
@@ -123,7 +123,7 @@ With the theme above, [MUI’s `borderRadius: 2`](https://mui.com/system/getting
 Keep Material UI components for their behavior and style app-owned wrappers first:
 
 ```tsx
-<div className="display:flex justify-content:flex-end">
+<div className="flex justify-flex-end">
   <Button variant="contained">Save</Button>
 </div>
 ```
@@ -181,7 +181,7 @@ Translate static responsive `sx` into conditions with the same threshold. The de
 ```
 
 ```html
-<section class="display:grid grid-template-columns:1fr gap-md grid-template-columns:repeat(3,1fr)@mui-md">
+<section class="grid (grid-template-columns:1fr) gap-md (grid-template-columns:repeat(3,1fr))@mui-md">
   ...
 </section>
 ```
@@ -189,7 +189,7 @@ Translate static responsive `sx` into conditions with the same threshold. The de
 For component state, prefer the native state or attribute when it belongs to your markup.
 
 ```html
-<button class="bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
+<button class="bg-blue-60 fg-white bg-blue-70:hover (opacity:.5):disabled">
   Save
 </button>
 ```

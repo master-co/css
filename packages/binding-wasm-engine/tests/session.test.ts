@@ -41,7 +41,7 @@ it('normalizes Wasm initialization failures', async () => {
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--block",
@@ -83,7 +83,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
     }
   ],
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "variables": {
     "": [
       {
@@ -102,10 +102,10 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
     ]
   }
 }))
-  nativeDeclarationSession.ensureClassRules(["background:var(--stripe)"])
+  nativeDeclarationSession.ensureClassRules(["(background:var(--stripe))"])
   expect(nativeDeclarationSession.snapshot().text).toBe(
     '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
-    + "@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+    + "@layer utilities{.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}}"
   )
   nativeDeclarationSession.dispose()
 })
@@ -131,7 +131,7 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     }
   ],
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [{ name: "--fg", parameters: [{ name: "--color" }], body: [{ type: "declaration", property: "color", value: [{ type: "function", name: "var", value: [{ type: "text", value: "--color" }] }] }] }],
   "variables": {
     "color": [
@@ -180,7 +180,7 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     }
   ],
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [{ name: "--fg", parameters: [{ name: "--color" }], body: [{ type: "declaration", property: "color", value: [{ type: "function", name: "var", value: [{ type: "text", value: "--color" }] }] }] }],
   "variables": {
     "color": [
@@ -221,33 +221,33 @@ it('preserves native declarations independently of browser CSS.supports', async 
   const session = await createWasmEngineSession(
     JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 }),
     {},
     { input }
   )
 
-  const transition = session.ensureClassRules(['display:block', 'made-up:nope'])
+  const transition = session.ensureClassRules(['(display:block)', '(made-up:nope)'])
   expect(transition.mutations).toHaveLength(2)
   expect(session.snapshot().text).toBe(
-    '@layer utilities{.display\\:block{display:block}.made-up\\:nope{made-up:nope}}'
+    '@layer utilities{.\\(display\\:block\\){display:block}.\\(made-up\\:nope\\){made-up:nope}}'
   )
   session.dispose()
 
   const renderSession = await createWasmRenderSession(
     JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 }),
     {},
     { input }
   )
 
-  expect(renderSession.nativeDeclarationCandidates(['accent-color:transparent'])).toHaveLength(1)
-  renderSession.ensureClassRules(['accent-color:transparent'])
+  expect(renderSession.nativeDeclarationCandidates(['(accent-color:transparent)'])).toHaveLength(1)
+  renderSession.ensureClassRules(['(accent-color:transparent)'])
   const snapshot = renderSession.snapshot() as { snapshot: { text: string } }
   expect(snapshot.snapshot.text).toBe(
-    '@layer utilities{.accent-color\\:transparent{accent-color:transparent}}'
+    '@layer utilities{.\\(accent-color\\:transparent\\){accent-color:transparent}}'
   )
   renderSession.dispose()
 })

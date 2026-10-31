@@ -27,23 +27,23 @@ export default function DocHeader(props: any) {
   return (
     <Header aria-label={tw ? '主要導覽' : 'Main navigation'} {...headerProps}>
       <HeaderContent>
-        <DocMenuButton className="margin-left:-1.25rem display:none@md app-header-icon app-header-menu" documentNavigation={documentNavigation} documentNavigationTitle={documentNavigationTitle} />
-        <Link href={'/'} className="margin-inline:auto@media((width<64rem)) app-header-logo" aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'} onContextMenu={(e: any) => {
+        <DocMenuButton className="(margin-left:-1.25rem) hidden@md app-header-icon app-header-menu" documentNavigation={documentNavigation} documentNavigationTitle={documentNavigationTitle} />
+        <Link href={'/'} className="(margin-inline:auto)@media((width<64rem)) app-header-logo" aria-label={tw ? 'Master CSS 首頁' : 'Master CSS home'} onContextMenu={(e: any) => {
           e.preventDefault()
           location.assign('/brand')
         }}>
           {<app.Logotype style={{ height: 20, width: 'auto' }} aria-hidden="true" />}
         </Link>
-        <label className={clsx('position:relative gap:0.313rem margin-left:1.875rem font-weight:460 display:none@media((width<64rem)) app-header-nav app-header-version', !app.versions.length && 'fg-text-body:hover!')}>
+        <label className={clsx('relative (gap:0.313rem) (margin-left:1.875rem) (font-weight:460) hidden@media((width<64rem)) app-header-nav app-header-version', !app.versions.length && 'fg-text-body:hover!')}>
           {app.versions.length
             ? <>
               v{import.meta.env.PUBLIC_VERSION}
               <DocVersionSelect />
-              <IconChevronDown aria-hidden="true" className="height:1em width:1em margin-right:-0.188rem stroke-width:1.5" />
+              <IconChevronDown aria-hidden="true" className="(height:1em) (width:1em) (margin-right:-0.188rem) (stroke-width:1.5)" />
             </>
             : <>v{import.meta.env.PUBLIC_VERSION}</>}
         </label>
-        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('display:none@media((width<64rem)) app-header-primary-nav', primaryNavClassName)} key={eachLink.name} {...eachLink}>
+        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('hidden@media((width<64rem)) app-header-primary-nav', primaryNavClassName)} key={eachLink.name} {...eachLink}>
           {$(eachLink.name)}
           {eachLink.date && isDateWithinSevenDays(eachLink.date) && <DocBadge className="ml-3xs" $color="primary" $size="xs">New</DocBadge>}
         </HeaderNav>)}
@@ -58,9 +58,9 @@ export default function DocHeader(props: any) {
             {Icon && <Icon width="22" height="22" strokeWidth="1.2" aria-hidden="true" />}
           </Link>
         ))}
-        {app.communityNavs?.length ? <div className='height:1em width:1px mx-md bg-line-divider display:none@media((width<64rem)) app-header-divider'></div> : null}
-        <LanguageButton className={clsx('display:none@media((width<64rem)) app-header-icon app-header-language', (documentNavigation || home) && 'margin-right:-0.188rem')} />
-        <SearchButton className={clsx('margin-right:-1.25rem@media((width<64rem)) app-header-icon app-header-search', (documentNavigation || home) && 'display:none@md')}>
+        {app.communityNavs?.length ? <div className='(height:1em) (width:1px) mx-md bg-line-divider hidden@media((width<64rem)) app-header-divider'></div> : null}
+        <LanguageButton className={clsx('hidden@media((width<64rem)) app-header-icon app-header-language', (documentNavigation || home) && '(margin-right:-0.188rem)')} />
+        <SearchButton className={clsx('(margin-right:-1.25rem)@media((width<64rem)) app-header-icon app-header-search', (documentNavigation || home) && 'hidden@md')}>
           <IconListSearch width="22" height="22" strokeWidth="1.2" aria-hidden="true" />
         </SearchButton>
       </HeaderContent>

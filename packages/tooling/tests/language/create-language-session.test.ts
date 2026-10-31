@@ -7,7 +7,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--block",
@@ -36,7 +36,7 @@ const factories = {
 it('derives readonly family metadata from the effective manifest in both bindings', async () => {
   const preset = createPresetManifest()
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 16,
+    version: 6, languageVersion: 17,
     utilities: [
       ...(preset.utilities ?? []),
       { kind: 'token', name: 'space', parameters: [{ name: '--custom-space' }], body: [
@@ -59,13 +59,13 @@ it('derives readonly family metadata from the effective manifest in both binding
   expect(Object.isFrozen(result.families)).toBe(true)
   expect(result.families.every(family => Object.isFrozen(family) && Object.isFrozen(family.properties))).toBe(true)
   expect(native.inspectClassName('p-md').rules).toEqual([])
-  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 16 } })
+  using empty = createLanguageSessionSync({ manifest: { version: 6, languageVersion: 17 } })
   expect(empty.tokenFamilies().families).toEqual([])
 })
 
 it('inline tokens have identical native and Wasm language behavior', async () => {
   const manifest: MasterCSSManifest = {
-    version: 6, languageVersion: 16,
+    version: 6, languageVersion: 17,
     utilities: createPresetManifest().utilities,
     variables: { color: [{ name: 'color-brand', key: 'brand', values: [{ path: [':root,:host'], value: 'red', inline: true }] }] }
   }
@@ -82,16 +82,16 @@ for (const [name, create] of Object.entries(factories)) {
       const session = await create()
       const full = createToolingSessionSync({ manifest })
       try {
-        const request = { source: '😀 <div class="block block display:flex unknown"></div>', languageId: 'html' }
+        const request = { source: '😀 <div class="block block (display:flex) unknown"></div>', languageId: 'html' }
         const result = session.analyzeDocument(request)
         expect(result).toEqual(full.analyzeDocument(request))
         expect(Object.isFrozen(result)).toBe(true)
         expect(Object.isFrozen(result.classPositions)).toBe(true)
         const saved = JSON.stringify(result)
-        const other = session.analyzeDocument({ source: '<div class="display:grid"></div>', languageId: 'html' })
-        expect(other.classPositions.map(({ token }) => token)).toEqual(['display:grid'])
+        const other = session.analyzeDocument({ source: '<div class="(display:grid)"></div>', languageId: 'html' })
+        expect(other.classPositions.map(({ token }) => token)).toEqual(['(display:grid)'])
         expect(JSON.stringify(result)).toBe(saved)
-        const classes = ['block', 'display:flex', 'unknown']
+        const classes = ['block', '(display:flex)', 'unknown']
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
         expect(session.tokenFamilies()).toEqual(full.tokenFamilies())
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
@@ -124,7 +124,7 @@ it('keeps native and Wasm v2 semantic token ranges identical', async () => {
   const native = createLanguageSessionSync({ manifest: tokenManifest })
   const wasm = await createLanguageSession({ manifest: tokenManifest, binding: 'wasm' })
   const request = {
-    source: '😀 <div class="fg-brand/0.5 -m-sm color:red block:hover@sm"></div>',
+    source: '😀 <div class="fg-brand/0.5 -m-sm (color:red) block:hover@sm"></div>',
     languageId: 'html'
   }
   try {

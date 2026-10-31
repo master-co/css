@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import { compileProgram, getRuntimeLoaderURL } from './init'
 
-const baseManifest = { version: 6 as const, languageVersion: 16 as const }
+const baseManifest = { version: 6 as const, languageVersion: 17 as const }
 const source = '@prune native;@layer before;@layer{@keyframes probe{to{opacity:.2}}@media(width>600px){@keyframes probe{to{opacity:.4}}}}@supports(display:grid){@keyframes probe{to{opacity:.6}}}@keyframes probe{to{opacity:.8}}'
 
 async function setup(page: Page, css = source) {
@@ -36,12 +36,12 @@ test('dynamic resources occupy original native slots and release without replaci
   await page.evaluate(() => {
     const owned = document.querySelector<HTMLStyleElement>('#owned')!.sheet!
     ;(globalThis as any).originalLayer = [...owned.cssRules].find(rule => rule.constructor.name === 'CSSLayerBlockRule')
-    globalThis.masterCSSRuntime.ensureClassRules(['animation-name:probe', 'animation:probe|1s'])
+    globalThis.masterCSSRuntime.ensureClassRules(['(animation-name:probe)', '(animation:probe|1s)'])
   })
   expect(await frames(page)).toEqual(['probe', 'probe', 'probe', 'probe'])
-  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['animation-name:probe']))
+  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['(animation-name:probe)']))
   expect(await frames(page)).toHaveLength(4)
-  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['animation:probe|1s']))
+  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['(animation:probe|1s)']))
   expect(await frames(page)).toEqual([])
   expect(await page.evaluate(() => [...document.querySelector<HTMLStyleElement>('#owned')!.sheet!.cssRules].includes((globalThis as any).originalLayer))).toBe(true)
   expect(await page.locator('#master-css').textContent()).not.toContain('@keyframes')
@@ -52,8 +52,8 @@ for (const width of [390, 1280]) {
     const conditionalSource = source + '@media(width>600px){@keyframes probe{to{opacity:.9}}}'
     await page.setViewportSize({ width, height: 800 })
     await setup(page, conditionalSource)
-    await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['animation:probe|1s|linear|both']))
-    await page.locator('#probe').evaluate(element => { element.className = 'animation:probe|1s|linear|both' })
+    await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['(animation:probe|1s|linear|both)']))
+    await page.locator('#probe').evaluate(element => { element.className = '(animation:probe|1s|linear|both)' })
     const compiled = await page.locator('#probe').evaluate(element => {
       const animation = element.getAnimations()[0]
       animation.pause(); animation.currentTime = 1000
@@ -74,26 +74,26 @@ test('safelist and preserve roots survive the last DOM consumer', async ({ page 
   await setup(page, '@prune native;@safelist keyframes "probe";@keyframes probe{to{opacity:.5}}')
   expect(await frames(page)).toEqual(['probe'])
   await page.evaluate(() => {
-    globalThis.masterCSSRuntime.ensureClassRules(['animation-name:probe'])
-    globalThis.masterCSSRuntime.deleteClassRules(['animation-name:probe'])
+    globalThis.masterCSSRuntime.ensureClassRules(['(animation-name:probe)'])
+    globalThis.masterCSSRuntime.deleteClassRules(['(animation-name:probe)'])
   })
   expect(await frames(page)).toEqual(['probe'])
 })
 
 test('the last DOM consumer releases animation resources independently of the warm utility cache', async ({ page }) => {
   await setup(page)
-  await page.locator('#probe').evaluate(element => { element.className = 'animation-name:probe' })
+  await page.locator('#probe').evaluate(element => { element.className = '(animation-name:probe)' })
   await expect.poll(() => frames(page)).toHaveLength(4)
   await page.locator('#probe').evaluate(element => { element.className = '' })
   await expect.poll(() => frames(page)).toEqual([])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animation-name:probe']?.retained)).not.toBe(true)
-  await page.locator('#probe').evaluate(element => { element.className = 'animation-name:probe' })
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['(animation-name:probe)']?.retained)).not.toBe(true)
+  await page.locator('#probe').evaluate(element => { element.className = '(animation-name:probe)' })
   await expect.poll(() => frames(page)).toHaveLength(4)
 })
 
 test('HMR atomically replaces native owners, conditions, names and retention policies', async ({ page }) => {
   await setup(page)
-  await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['animation-name:probe']))
+  await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['(animation-name:probe)']))
   const next = await compileRenderedStylesheet('/slots.css', '@preserve native;@media(width>600px){@keyframes replacement{to{opacity:.25}}}', { baseManifest, classes: [] })
   await page.evaluate(({ css, program, emittedGlobals }) => {
     document.querySelector<HTMLStyleElement>('#owned')!.textContent = css
@@ -111,7 +111,7 @@ test('HMR atomically replaces native owners, conditions, names and retention pol
 test('late stylesheet attachment and same-content HMR restore only active resources', async ({ page }) => {
   const result = await setup(page)
   await page.locator('#owned').evaluate(style => { style.remove() })
-  await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['animation-name:probe']))
+  await page.evaluate(() => globalThis.masterCSSRuntime.ensureClassRules(['(animation-name:probe)']))
   expect(await frames(page)).toEqual([])
   await page.evaluate(css => {
     const style = document.createElement('style')
@@ -122,14 +122,14 @@ test('late stylesheet attachment and same-content HMR restore only active resour
   await expect.poll(() => frames(page)).toHaveLength(4)
   await page.locator('#owned').evaluate((style, css) => { style.textContent = css }, result.nativeCSS)
   await expect.poll(() => frames(page)).toHaveLength(4)
-  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['animation-name:probe']))
+  await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['(animation-name:probe)']))
   expect(await frames(page)).toEqual([])
 })
 
 test('SSR hydration adopts native positions and releases the same definitions', async ({ page }) => {
   const { renderHTML } = await import('@master/css-server')
   const compiled = await compileRenderedStylesheet('/ssr-slots.css', source, { baseManifest, classes: [] })
-  const rendered = renderHTML(`<html><head><style id="owned">${compiled.nativeCSS}</style></head><body><div id="probe" class="animation:probe|1ms|both"></div></body></html>`, {
+  const rendered = renderHTML(`<html><head><style id="owned">${compiled.nativeCSS}</style></head><body><div id="probe" class="(animation:probe|1ms|both)"></div></body></html>`, {
     manifest: compiled.manifest, emittedGlobals: compiled.emittedGlobals, hydrationManifest: 'inject'
   })
   await page.setContent(rendered.html)
@@ -157,7 +157,7 @@ test('Shadow DOM uses explicitly bound constructable sheets and preserves native
     const sheet = new CSSStyleSheet()
     sheet.replaceSync(nativeCSS)
     root.adoptedStyleSheets = [sheet]
-    root.innerHTML = '<div id="probe" class="animation:probe|1ms|both"></div>'
+    root.innerHTML = '<div id="probe" class="(animation:probe|1ms|both)"></div>'
     await startCSSRuntime({ root, manifest, emittedGlobals, stylesheets: () => [{ sheet, ownerIds: manifest.keyframes!.map(frame => frame.ownerId!) }] })
   }, { loader: await getRuntimeLoaderURL(), ...compiled })
   await expect.poll(() => page.locator('#host #probe').evaluate(element => getComputedStyle(element).opacity)).toBe('0.25')

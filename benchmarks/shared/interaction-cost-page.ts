@@ -148,7 +148,7 @@ function renderInteractionItems(classes: InteractionClassModel, count: number) {
 }
 
 function renderStaticClassSource(classes: InteractionClassModel) {
-  return `        <div style="display:none" aria-hidden="true" class="${classAttribute(getAllInteractionClasses(classes))}"></div>`
+  return `        <div style="hidden" aria-hidden="true" class="${classAttribute(getAllInteractionClasses(classes))}"></div>`
 }
 
 function renderInteractionScript(options: {
@@ -293,7 +293,7 @@ function renderInteractionScript(options: {
     '                cleanupValid: scratch.children.length === 0,',
     '                appendedCount,',
     '                appendStyle: { minHeight, textAlign },',
-    '                styleValidation: "Alignment probe and first appended element min-height:72px"',
+    '                styleValidation: "Alignment probe and first appended element (min-height:72px)"',
     '            };',
     '        }',
     '        function runThemeSwitch(config) {',

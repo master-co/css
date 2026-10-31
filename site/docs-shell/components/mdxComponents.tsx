@@ -116,7 +116,7 @@ export const mdxComponents: MDXComponents = {
   //     newChildren = rehypeChildren(props.children, 'New ')
   //     if (newChildren) {
   //         return <DocH3 {...props}>
-  //             <IconSparkles className='app-icon-primary stroke-width:1 margin-block:-0.375rem margin-right:0.5rem width:1.5em height:1.5em' />
+  //             <IconSparkles className='app-icon-primary (stroke-width:1) (margin-block:-0.375rem) (margin-right:0.5rem) (width:1.5em) (height:1.5em)' />
   //             New {newChildren}
   //         </DocH3>
   //     }
@@ -124,7 +124,7 @@ export const mdxComponents: MDXComponents = {
   //     newChildren = rehypeChildren(props.children, 'Deprecated ')
   //     if (newChildren) {
   //         return <DocH3 {...props}>
-  //             <IconFileX className='app-icon-red stroke-width:1 margin-block:-0.375rem margin-right:0.5rem width:1.5em height:1.5em' />
+  //             <IconFileX className='app-icon-red (stroke-width:1) (margin-block:-0.375rem) (margin-right:0.5rem) (width:1.5em) (height:1.5em)' />
   //             Deprecated {newChildren}
   //         </DocH3>
   //     }

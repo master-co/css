@@ -78,7 +78,7 @@ fn suppressed_native_styles_never_add_roots_or_custom_property_overrides() {
     )
     .unwrap();
     engine
-        .ensure_class_rules(["animation:var(--animate-run)"])
+        .ensure_class_rules(["(animation:var(--animate-run))"])
         .unwrap();
     let resources = engine.snapshot().unwrap().resources;
     assert_eq!(resources.keyframes.len(), 1);

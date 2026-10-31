@@ -54,7 +54,7 @@ fn custom_recipes_and_canonical_token_keys_match_their_utilities() {
 #[test]
 fn escaped_theme_names_and_unicode_have_the_same_dependency_identity() {
     let mut engine = engine(r"@theme { --色: 1rem; --大小: var(--\008272); --a\:b: 2rem;  }");
-    for class in [r"width:var(--\005927\005c0f)", r"height:var(--a\:b)"] {
+    for class in [r"(width:var(--\005927\005c0f))", r"(height:var(--a\:b))"] {
         let result = engine.inspect(class).unwrap();
         assert_eq!(result.match_status, MatchStatus::Matched);
         engine.ensure_class_rules([class]).unwrap();
@@ -64,7 +64,7 @@ fn escaped_theme_names_and_unicode_have_the_same_dependency_identity() {
     assert!(css.contains("--大小:"), "{css}");
     assert!(css.contains(r"--a\:b:2rem"), "{css}");
     engine
-        .delete_class_rules([r"width:var(--\005927\005c0f)", r"height:var(--a\:b)"])
+        .delete_class_rules([r"(width:var(--\005927\005c0f))", r"(height:var(--a\:b))"])
         .unwrap();
     assert!(engine.css_text().is_empty());
 }

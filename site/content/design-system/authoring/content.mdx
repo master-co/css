@@ -195,13 +195,13 @@ Every specimen below is available directly in MDX. The surrounding example owns 
   <DemoItem tone="violet" variant="outline" className="p-md">After</DemoItem>
 </DemoComparison>
 
-<DemoMedia className="width:100%" />
+<DemoMedia className="(width:100%)" />
 <DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
 <DemoSwatch label="Subject" className="bg-demo-blue" />
 
 <DemoAxes>
   <DemoMeasure label="Container">
-    <div className="display:flex gap-sm">{/* measured layout */}</div>
+    <div className="flex gap-sm">{/* measured layout */}</div>
   </DemoMeasure>
 </DemoAxes>
 <DemoLegend items={[{ tone: 'blue', label: 'Subject' }]} />
@@ -209,11 +209,11 @@ Every specimen below is available directly in MDX. The surrounding example owns 
 <DemoControls label="Alignment">
   <button type="button" className="demo-button">Start</button>
 </DemoControls>
-<DemoScrollArea aria-label="Layers" className="height:10rem">
+<DemoScrollArea aria-label="Layers" className="(height:10rem)">
   {/* overflowing content */}
 </DemoScrollArea>
 <DemoMotion>
-  <DemoItem className="width:4rem height:4rem animation-name:rotate animation-duration:2s animation-timing-function:linear animation-iteration-count:infinite" />
+  <DemoItem className="(width:4rem) (height:4rem) (animation-name:rotate) (animation-duration:2s) (animation-timing-function:linear) (animation-iteration-count:infinite)" />
 </DemoMotion>
 <DemoViewport title="Responsive layout" document={htmlDocument} responsive />
 ```

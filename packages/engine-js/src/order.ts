@@ -9,8 +9,6 @@ export interface StoredRule {
   /** The condition features rules sort by. The reported ones write `-0` as `0`, as the Rust JSON does. */
   features: ConditionFeature[]
   manifestOrder: number
-  declarations: string
-  nativeFallback: boolean
 }
 
 const sign = (value: number) => value < 0 ? -1 : value > 0 ? 1 : 0

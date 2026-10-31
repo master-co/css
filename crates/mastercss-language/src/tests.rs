@@ -82,7 +82,7 @@ fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
         ["fg-brand:hover@sm", "{background:blue;color:white}"]
     );
 
-    let html = "<!-- <div class=\"color:red\"></div> --><div class=\"color:blue\"></div>";
+    let html = "<!-- <div class=\"(color:red)\"></div> --><div class=\"(color:blue)\"></div>";
     let contexts = collect_document_contexts(html, "html", &LanguageDocumentSettingsIr::default());
     assert_eq!(
         collect_class_positions(html, &contexts)
@@ -90,13 +90,13 @@ fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["color:blue"]
+        ["(color:blue)"]
     );
 }
 
 #[test]
 fn applies_document_context_settings_in_rust() {
-    let markup = r#"<div data-class="color:red"></div>"#;
+    let markup = r#"<div data-class="(color:red)"></div>"#;
     let contexts = collect_document_contexts(
         markup,
         "html",
@@ -111,10 +111,10 @@ fn applies_document_context_settings_in_rust() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["color:red"]
+        ["(color:red)"]
     );
 
-    let script = r#"twMerge("color:blue"); const styles = "block";"#;
+    let script = r#"twMerge("(color:blue)"); const styles = "block";"#;
     let contexts = collect_document_contexts(
         script,
         "typescript",
@@ -130,17 +130,17 @@ fn applies_document_context_settings_in_rust() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["color:blue", "block"]
+        ["(color:blue)", "block"]
     );
 }
 
 #[test]
 fn tokenizes_selector_combinators_without_class_group_tokens() {
     let session = LanguageSession::create(
-        r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+        r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
     )
     .unwrap();
-    let source = "<div class=\"color:red>li:hover block>li:hover\"></div>";
+    let source = "<div class=\"(color:red)>li:hover block>li:hover\"></div>";
     let result = session
         .analyze_document(&AnalyzeDocumentRequestIr {
             source: source.into(),
@@ -208,11 +208,11 @@ fn skips_overlapping_and_multiline_tokens() {
 #[test]
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
-            r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
+            r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"p","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"padding","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#,
         )
         .unwrap();
     let batch = session
-        .classify_class_names(["card:hover", "width:10px", "p-md", "unknown"], None)
+        .classify_class_names(["card:hover", "(width:10px)", "p-md", "unknown"], None)
         .unwrap();
     assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
     assert_eq!(
@@ -220,7 +220,7 @@ fn batches_manifest_driven_class_semantics() {
         mastercss_engine::ClassSemanticKind::Semantic
     );
     assert_eq!(batch.classes[0].state_token.as_deref(), Some(":hover"));
-    assert_eq!(batch.classes[1].key_token.as_deref(), Some("width:"));
+    assert_eq!(batch.classes[1].key_token.as_deref(), Some("(width:"));
     assert_eq!(batch.classes[1].value_token.as_deref(), Some("10px"));
     assert_eq!(batch.variable_names, ["spacing-md"]);
     assert_eq!(
@@ -236,22 +236,22 @@ fn batches_manifest_driven_class_semantics() {
 #[test]
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
-            r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}]}"#,
+            r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}],"variables":{"spacing":[{"key":"md","type":"number","numeric":{"value":1,"unit":"rem"},"values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]}]}"#,
         )
         .unwrap();
     let entries = session.completion_index().unwrap().class_entries;
 
     for label in [
-        "display:",
-        "position:",
-        "object-fit:",
-        "position:absolute",
-        "object-fit:cover",
-        "r:",
+        "(display:",
+        "(position:",
+        "(object-fit:",
+        "(position:absolute)",
+        "(object-fit:cover)",
+        "(r:",
     ] {
         assert!(entries.iter().any(|entry| entry.label == label), "{label}");
     }
-    for label in ["p:", "fg:", "bg:", "block", "hidden"] {
+    for label in ["(p:", "(fg:", "(bg:", "p:", "display:", "block", "hidden"] {
         assert!(!entries.iter().any(|entry| entry.label == label), "{label}");
     }
 
@@ -259,7 +259,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
         entry.label == ":has()" && entry.sort_text.as_deref() == Some("yyyhas()")
     }));
     assert!(entries.iter().any(|entry| {
-        entry.label == "display:block"
+        entry.label == "(display:block)"
             && entry.detail.as_deref() == Some("display: block")
             && entry.sort_text.as_deref() == Some("cccccblock")
     }));
@@ -269,7 +269,7 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 
 #[test]
 fn completion_owns_mixin_wrappers_and_native_query_templates() {
-    let session = LanguageSession::create(r#"{"version":6,"languageVersion":16,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":6,"languageVersion":17,"customMedia":{},"mixins":[{"name":"--quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"name":"--ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"quiet","body":[{"type":"condition","condition":"@media (prefers-reduced-motion:reduce)","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"ocean","body":[{"type":"rule","selector":"&:where(.ocean,.ocean *)","body":[{"type":"contents","fallback":[]}]}]}]}"#).unwrap();
     let entries = session.completion_index().unwrap().class_entries;
     for label in [
         "@apply(--ocean)",
@@ -289,8 +289,8 @@ fn completion_owns_mixin_wrappers_and_native_query_templates() {
 
 #[test]
 fn classifies_native_structure_independently_of_host_support() {
-    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
-    let class_names = ["display:block", "made-up:nope"];
+    let mut session = LanguageSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
+    let class_names = ["(display:block)", "(made-up:nope)"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
     let batch = session
@@ -306,14 +306,14 @@ fn classifies_native_structure_independently_of_host_support() {
     );
     assert_eq!(
         session
-            .inspect_class_name("display:block", None)
+            .inspect_class_name("(display:block)", None)
             .unwrap()
             .kind,
         ClassSemanticKind::Declaration
     );
     assert_eq!(
         session
-            .inspect_class_name("made-up:nope", None)
+            .inspect_class_name("(made-up:nope)", None)
             .unwrap()
             .kind,
         ClassSemanticKind::Declaration
@@ -323,7 +323,7 @@ fn classifies_native_structure_independently_of_host_support() {
 #[test]
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
-        r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{},"utilities":[{"kind":"function","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}]}"#,
+        r#"{"version":6,"languageVersion":17,"variables":{"color":[{"key":"brand","values":[{"path":[":root,:host"],"value":"oklch(50% .1 20)"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color-brand","value":"oklch(50% .1 20)"}]}],"mixins":[{"name":"--fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"name":"--card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}],"customMedia":{},"utilities":[{"kind":"function","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"token","name":"fg","parameters":[{"name":"--color"}],"body":[{"type":"declaration","property":"color","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--color"}]}]}]},{"kind":"static","name":"card","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"static","name":"dark","body":[{"type":"rule","selector":"&:where(.dark,.dark *)","body":[{"type":"contents","fallback":[]}]}]}]}"#,
     )
     .unwrap();
     let inspection = session.inspect_class_name("card:hover", None).unwrap();
@@ -366,7 +366,7 @@ fn renders_isolated_hover_inspection_css() {
             && entry.documentation_text.as_deref() == Some("@layer utilities{.card{display:block}}")
     }));
     assert!(completion_index.class_entries.iter().any(|entry| {
-        entry.label == "filter:blur()"
+        entry.label == "(filter:blur())"
             && entry.kind == LanguageCompletionKind::Function
             && entry.detail.as_deref() == Some("filter: blur()")
     }));
@@ -394,8 +394,9 @@ fn renders_isolated_hover_inspection_css() {
     assert!(named_presentation.editable);
     assert_eq!(
         named_presentation.replacement_prefix.as_deref(),
-        Some("color:")
+        Some("(color:")
     );
+    assert_eq!(named_presentation.replacement_suffix.as_deref(), Some(")"));
     let color_tokens = session
         .color_tokens(&[
             LanguageColorCandidateInputIr {
@@ -403,7 +404,7 @@ fn renders_isolated_hover_inspection_css() {
                 start: 2,
             },
             LanguageColorCandidateInputIr {
-                class_name: "color:linear-gradient(#000,var(--color-brand))".into(),
+                class_name: "(color:linear-gradient(#000,var(--color-brand)))".into(),
                 start: 20,
             },
         ])
@@ -420,14 +421,14 @@ fn renders_isolated_hover_inspection_css() {
                 },
             },
             LanguageColorTokenIr {
-                range: SourceRange { start: 42, end: 46 },
+                range: SourceRange { start: 43, end: 47 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "#000".into(),
                     alpha: None,
                 },
             },
             LanguageColorTokenIr {
-                range: SourceRange { start: 47, end: 65 },
+                range: SourceRange { start: 48, end: 66 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "oklch(50% .1 20)".into(),
                     alpha: None,
@@ -436,7 +437,7 @@ fn renders_isolated_hover_inspection_css() {
         ]
     );
     assert!(completion_index.class_entries.iter().any(|entry| {
-        entry.label == "color:"
+        entry.label == "(color:"
             && entry.kind == LanguageCompletionKind::Property
             && entry.trigger_suggest
     }));
@@ -490,11 +491,38 @@ fn named_tokens_keep_their_full_name_and_split_only_opacity() {
             ],
         ),
         (
-            "color:red",
+            "(color:red)",
             vec![
+                ("(", "operator"),
                 ("color", "property"),
                 (":", "operator"),
                 ("red", "enumMember"),
+                (")", "operator"),
+            ],
+        ),
+        (
+            "(color:red!important)!",
+            vec![
+                ("(", "operator"),
+                ("color", "property"),
+                (":", "operator"),
+                ("red", "enumMember"),
+                ("!", "operator"),
+                ("important", "enumMember"),
+                (")", "operator"),
+                ("!", "operator"),
+            ],
+        ),
+        (
+            "(content:'😀')",
+            vec![
+                ("(", "operator"),
+                ("content", "property"),
+                (":", "operator"),
+                ("'", "string"),
+                ("😀", "string"),
+                ("'", "string"),
+                (")", "operator"),
             ],
         ),
     ] {
@@ -516,7 +544,7 @@ fn named_tokens_keep_their_full_name_and_split_only_opacity() {
 
 #[test]
 fn comparisons_inside_class_expressions_are_not_class_positions() {
-    let source = "const view = <div className={side === 'left' ? 'display:block' : clsx('right' !== side && 'display:none')} />;";
+    let source = "const view = <div className={side === 'left' ? 'block' : clsx('right' !== side && 'hidden')} />;";
     let contexts =
         crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
     let values = contexts
@@ -528,41 +556,41 @@ fn comparisons_inside_class_expressions_are_not_class_positions() {
         "{values:?}"
     );
     assert!(
-        values.contains(&"display:block") && values.contains(&"display:none"),
+        values.contains(&"block") && values.contains(&"hidden"),
         "{values:?}"
     );
 }
 
 #[test]
 fn closed_class_calls_do_not_claim_later_function_strings() {
-    let source = "document.documentElement.classList.toggle('dark(', active); const query = window.matchMedia('(prefers-color-scheme: dark)'); const classes = clsx('display:block', nested('ignored'));";
+    let source = "document.documentElement.classList.toggle('dark(', active); const query = window.matchMedia('(prefers-color-scheme: dark)'); const classes = clsx('block', nested('ignored'));";
     let contexts =
         crate::document::collect_document_contexts(source, "typescriptreact", &Default::default());
     let values = contexts
         .iter()
         .map(|context| &source[context.start as usize..context.end as usize])
         .collect::<Vec<_>>();
-    assert_eq!(values, ["dark(", "display:block", "ignored"]);
+    assert_eq!(values, ["dark(", "block", "ignored"]);
 }
 
 #[test]
 fn comments_inside_class_calls_do_not_change_call_depth_or_add_strings() {
     for (source, expected) in [
         (
-            "const classes = clsx('display:block' /* ) 'not-a-class' */, 'grid');",
-            vec!["display:block", "grid"],
+            "const classes = clsx('block' /* ) 'not-a-class' */, 'grid');",
+            vec!["block", "grid"],
         ),
         (
-            "const classes = clsx('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
-            vec!["display:block"],
+            "const classes = clsx('block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["block"],
         ),
         (
-            "const classes = clsx('display:block' // ( 'not-a-class'\n); window.matchMedia('(prefers-color-scheme: dark)');",
-            vec!["display:block"],
+            "const classes = clsx('block' // ( 'not-a-class'\n); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["block"],
         ),
         (
-            "const component = styled.button('display:block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
-            vec!["display:block"],
+            "const component = styled.button('block' /* ( */); window.matchMedia('(prefers-color-scheme: dark)');",
+            vec!["block"],
         ),
     ] {
         let contexts = crate::document::collect_document_contexts(
@@ -581,7 +609,7 @@ fn comments_inside_class_calls_do_not_change_call_depth_or_add_strings() {
 #[test]
 fn javascript_line_comments_end_at_unicode_line_separators() {
     for separator in ['\u{2028}', '\u{2029}'] {
-        let source = format!("const classes=clsx('display:block' // ({separator}, 'grid');");
+        let source = format!("const classes=clsx('block' // ({separator}, 'grid');");
         let contexts =
             crate::document::collect_document_contexts(&source, "typescript", &Default::default());
         assert_eq!(contexts.len(), 2, "{source}");
@@ -591,20 +619,20 @@ fn javascript_line_comments_end_at_unicode_line_separators() {
 #[test]
 fn unquoted_html_urls_do_not_hide_later_class_calls() {
     let source =
-        "<a href=https://example.com/a//b></a><script>const classes=clsx('display:block')</script>";
+        "<a href=https://example.com/a//b></a><script>const classes=clsx('block')</script>";
     let contexts = crate::document::collect_document_contexts(source, "html", &Default::default());
     let values = contexts
         .iter()
         .map(|context| &source[context.start as usize..context.end as usize])
         .collect::<Vec<_>>();
-    assert_eq!(values, ["display:block"]);
+    assert_eq!(values, ["block"]);
 }
 
 #[test]
 fn jsx_text_slashes_do_not_hide_later_class_calls() {
     for source in [
-        "const view=<p>https://example.com</p>; const classes=clsx('display:block');",
-        "const view=<p>//</p>; const classes=clsx('display:block');",
+        "const view=<p>https://example.com</p>; const classes=clsx('block');",
+        "const view=<p>//</p>; const classes=clsx('block');",
     ] {
         let contexts = crate::document::collect_document_contexts(
             source,
@@ -615,6 +643,43 @@ fn jsx_text_slashes_do_not_hide_later_class_calls() {
             .iter()
             .map(|context| &source[context.start as usize..context.end as usize])
             .collect::<Vec<_>>();
-        assert_eq!(values, ["display:block"], "{source}");
+        assert_eq!(values, ["block"], "{source}");
     }
+}
+
+#[test]
+fn incomplete_declarations_report_their_property_and_value_prefix() {
+    let session = LanguageSession::create(include_str!(
+        "../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
+    for (class_name, key, value) in [
+        ("(disp", Some("disp"), None),
+        ("(display:", Some("display"), Some("")),
+        ("(display:bl", Some("display"), Some("bl")),
+        (
+            "(grid-template-columns:[a]|1f",
+            Some("grid-template-columns"),
+            Some("[a]|1f"),
+        ),
+    ] {
+        let inspection = session.inspect_class_name(class_name, None).unwrap();
+        assert!(inspection.rules.is_empty(), "{class_name}");
+        assert_eq!(inspection.key.as_deref(), key, "{class_name}");
+        assert_eq!(inspection.value.as_deref(), value, "{class_name}");
+    }
+    let complete = session
+        .inspect_class_name("(display:block)[open]:hover", None)
+        .unwrap();
+    assert_eq!(complete.kind, ClassSemanticKind::Declaration);
+    assert_eq!(complete.base, "(display:block)");
+    assert_eq!(complete.suffix, "[open]:hover");
+    assert_eq!(complete.key.as_deref(), Some("display"));
+    assert_eq!(complete.value.as_deref(), Some("block"));
+    let short = session.inspect_class_name("flex:hover", None).unwrap();
+    assert_eq!(short.kind, ClassSemanticKind::Semantic);
+    assert_eq!(
+        short.text,
+        "@layer utilities{.flex\\:hover:hover{display:flex}}"
+    );
 }

@@ -36,7 +36,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
               <th scope="col"><Translate>{namespace === 'breakpoint' ? 'Minimum width' : 'Value'}</Translate></th>
               {referenceUnits && <th scope="col">{referenceUnit.toUpperCase()}</th>}
               {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
-              {hasDescriptions && <th scope="col" className="min-width:12rem"><Translate>Description</Translate></th>}
+              {hasDescriptions && <th scope="col" className="(min-width:12rem)"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
@@ -60,9 +60,9 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string) {
   return (
-    <div aria-hidden="true" className="display:inline-flex width:fit-content outline-line-subtle outline-offset:-1px outline-style:solid outline-width:1px background:var(--stripe-pink) vertical-align:middle" style={{ gap: value }}>
-      <div className="display:inline-block height:1.5em width:1.5em bg-surface-raised"></div>
-      <div className="display:inline-block height:1.5em width:1.5em bg-surface-raised"></div>
+    <div aria-hidden="true" className="inline-flex (width:fit-content) outline-line-subtle (outline-offset:-1px) (outline-style:solid) (outline-width:1px) (background:var(--stripe-pink)) (vertical-align:middle)" style={{ gap: value }}>
+      <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
+      <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
     </div>
   )
 }

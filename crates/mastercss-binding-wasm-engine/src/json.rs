@@ -554,9 +554,9 @@ mod tests {
             "fg-red-60:hover@sm",
             "bg-blue-60/.5",
             "p-md@md&<lg",
-            "content:'a\"b\\\\c\\n'",
-            "animation:fade|1s",
-            "display:grid!",
+            "(content:'a\"b\\\\c\\n')",
+            "(animation:fade|1s)",
+            "(display:grid)!",
             "unknown-class",
         ];
         assert_same_json(&session.ensure_class_rules(classes).unwrap());

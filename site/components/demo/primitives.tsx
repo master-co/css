@@ -113,7 +113,7 @@ export function DemoControls({ label = 'Demo controls', variant = 'plain', class
 }
 
 export function DemoPanel({ className, ...props }: DivProps) {
-  return <DemoSurface {...props} className={clsx('width:100% p-md p-lg@sm', className)} />
+  return <DemoSurface {...props} className={clsx('(width:100%) p-md p-lg@sm', className)} />
 }
 
 /** The default size sits below utilities so specimens can pass their own `font-*` or `text-*`. */

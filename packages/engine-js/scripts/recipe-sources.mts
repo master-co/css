@@ -121,7 +121,8 @@ const HEADS = [
   'run(spin)', 'run(wiggle)', 'run(nope)', 'run(pulse)', 'run("spin")', 'run(hop)',
   'spin-for(2s)', 'spin-for(var(--x))',
   'pad()', 'pad(3px)', 'pad(var(--spacing-md))', 'hov(red)', 'hov(var(--color-brand))', 'sized("sm")', 'sized("nope")', 'sized(sm)',
-  'animation:spin|1s', 'animation-name:wiggle', 'animation:var(--animate-spin)', 'animation-name:var(--x)', 'animation:glow|1s,pulse|2s', 'animation-name:hop', '-webkit-animation:tile|1s'
+  '(animation:spin|1s)', '(animation-name:wiggle)', '(animation:var(--animate-spin))', '(animation-name:var(--x))', '(animation:glow|1s,pulse|2s)', '(animation-name:hop)', '(-webkit-animation:tile|1s)',
+  '(animation:spin|1s!important)', 'animation:spin|1s'
 ]
 const STATES = ['', ':hover', '!', ':hover!', '@sm', '@dark', ':focus@sm', '@layer(components)', '@media(print)', '@starting-style', '@either', '_span', '::before', '.x', '@sm@dark', '!@md', '@layer(base)@layer(utilities)']
 
@@ -136,8 +137,9 @@ function mulberry32(seed: number) {
 }
 
 const APPLY_HEADS = [
-  'color:red', 'color:red:hover', 'btn', 'card', 'tint-red-60', 'paint(blue)', 'size-sm', 'animation:spin|1s', 'color:var(--color-ink)', 'p:1px', 'padding:var(--spacing-md)',
-  'stack', 'fg:red', 'color:red!', 'nope', 'color:red_.x', 'color:red::before', 'paint(attr(x))', 'cols(0)', 'gap-md:focus', 'themed', 'text-decoration:underline', 'ink-brand'
+  '(color:red)', '(color:red):hover', 'btn', 'card', 'tint-red-60', 'paint(blue)', 'size-sm', '(animation:spin|1s)', '(color:var(--color-ink))', '(p:1px)', '(padding:var(--spacing-md))',
+  'stack', 'fg:red', '(color:red)!', 'nope', '(color:red)_.x', '(color:red)::before', 'paint(attr(x))', 'cols(0)', 'gap-md:focus', 'themed', '(text-decoration:underline)', 'ink-brand',
+  '(color:red!important)', '(background-image:url(/a{b.svg))', '(content:\'@apply(--x)\')', 'color:red'
 ]
 const APPLY_CALLS = [
   '@apply(--hocus)', '@apply(--dark)', '@apply(--wide)', '@apply(--motion)', '@apply(--pad(2px))', '@apply(--pad)', '@apply(--pad())', '@apply(--pad(1px|2px))',
@@ -171,13 +173,13 @@ export async function recipeSources(count: number, seed: number) {
   }
 
   const id = (manifest: Manifest, name: string) => manifest.keyframes.find((keyframe) => keyframe.name === name)!.id as string
-  const keyframeClasses = ['spinner', 'animate-spin', 'run(spin)', 'run(wiggle)', 'animation-name:hop', 'animate-pulse', 'glowing', 'animation-name:var(--x)', 'card', 'animation:glow|1s,pulse|2s',
-    'color:red@apply(--spin)', 'color:red@apply(--dyn)', 'spin-for(1s)@sm', 'animate-pair', '-webkit-animation:tile|1s', 'animation:var(--animate-pair)']
+  const keyframeClasses = ['spinner', 'animate-spin', 'run(spin)', 'run(wiggle)', '(animation-name:hop)', 'animate-pulse', 'glowing', '(animation-name:var(--x))', 'card', '(animation:glow|1s,pulse|2s)',
+    '(color:red)@apply(--spin)', '(color:red)@apply(--dyn)', 'spin-for(1s)@sm', 'animate-pair', '(-webkit-animation:tile|1s)', '(animation:var(--animate-pair))']
   const lifecycle: EngineCaseStep[] = [
     { op: 'ensure', classes: keyframeClasses.slice(0, 4) },
     { op: 'ensure', classes: keyframeClasses },
     { op: 'delete', classes: keyframeClasses.filter((_, index) => index % 2) },
-    { op: 'delete', classes: ['spinner', 'animation-name:var(--x)'] },
+    { op: 'delete', classes: ['spinner', '(animation-name:var(--x))'] },
     { op: 'ensure', classes: keyframeClasses.toReversed() },
     { op: 'delete', classes: keyframeClasses }
   ]

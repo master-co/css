@@ -47,7 +47,7 @@ Use this setup for a Vue application built with Vite. The installer keeps the Vu
 
 ```vue name=src/App.vue
 <template>
-  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
     Hello World
   </h1>
 </template>
@@ -61,7 +61,7 @@ Open the URL printed by Vite. The heading should have a large, heavy italic face
 Build and preview the app, then add a class from the browser console:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 The heading should gain an underline without rebuilding. The Vite plugin starts the runtime and emits its compiled program, so do not add a second manual runtime import. If the class has no effect, check the console and program request.

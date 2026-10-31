@@ -45,11 +45,11 @@ describe('@master/css-compiler/stylesheet/browser', () => {
       }
     `, {
       baseManifest: defaultManifest,
-      classNames: ["display:block"]
+      classNames: ["(display:block)"]
     })
 
     expect(result.css).toMatch(/\.native\s*\{\s*color:\s*var\(--color-card\);\s*\}/)
-    expect(result.css).toContain(".display\\:block{display:block}")
+    expect(result.css).toContain(".\\(display\\:block\\){display:block}")
     expect(result.css).toContain('--color-card:#fff')
   })
 

@@ -48,7 +48,7 @@ Add Master CSS to a React application built with Vite. The installer keeps the R
 ```tsx name=src/App.tsx
 export default function App() {
   return (
-    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
   )
@@ -67,7 +67,7 @@ Open the URL printed by Vite. The heading should have a large, heavy italic face
 The Vite plugin starts the runtime and emits its compiled program; this setup does not require a second manual runtime import. Build and preview the app, then run this in the browser console:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 The heading should gain an underline even though that class was added after the build. If it does not, check the browser console and the emitted program request before changing the class syntax.

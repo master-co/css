@@ -66,7 +66,7 @@ Write browser normalization and structural baselines in `@layer base`. Put broad
 }
 ```
 
-`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography and includes platform-specific font-smoothing declarations. It leaves document height and button text selection to the application. Use `min-height:100dvh` for a screen that needs it or `user-select:none` on a particular interaction surface.
+`defaults` means the project's broad visual defaults, not browser default styles. Keep named UI roles in `@layer components` and local adjustments in utilities. The preset base layer connects the configured font tokens to the document's baseline typography and includes platform-specific font-smoothing declarations. It leaves document height and button text selection to the application. Use `(min-height:100dvh)` for a screen that needs it or `(user-select:none)` on a particular interaction surface.
 
 Use the split base import only when a stylesheet needs the default layer order and browser normalization without the full Master CSS entry:
 
@@ -113,7 +113,7 @@ Choose the abstraction by what is shared:
 Start with utilities when the style belongs to one element or one usage site:
 
 ```html
-<button class="display:inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
+<button class="inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
   Save changes
 </button>
 ```

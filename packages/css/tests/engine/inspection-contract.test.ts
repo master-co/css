@@ -8,7 +8,7 @@ const manifest = defaultManifest as unknown as MasterCSSManifest
 test.each(['native', 'wasm'] as const)('%s exposes typed syntax status and optional inspection diagnostics', async (binding) => {
   using engine = await createEngine({ manifest, binding })
   const before = engine.snapshot()
-  const valid: MasterCSSEngineInspection = engine.inspect('padding:red')
+  const valid: MasterCSSEngineInspection = engine.inspect('(padding:red)')
   expectTypeOf(valid.cssSyntaxStatus).toEqualTypeOf<'valid' | 'invalid' | 'unknown' | 'not-checked'>()
   // Inspection recognizes the declaration syntax without validating its value.
   expect(valid.matchStatus).toBe('matched')
@@ -17,14 +17,14 @@ test.each(['native', 'wasm'] as const)('%s exposes typed syntax status and optio
   expect(valid.browserSupport).toBe('not-checked')
   expect(valid.diagnostics).toBeUndefined()
 
-  const invalid: MasterCSSEngineInspection = engine.inspect('padding:1px.<br')
+  const invalid: MasterCSSEngineInspection = engine.inspect('(padding:1px).<br')
   expect(invalid.matchStatus).toBe('syntax-error')
   expect(invalid.cssSyntaxStatus).toBe('invalid')
   expect(invalid.diagnostics?.map(({ code }) => code)).toContain('CLASS_SYNTAX_ERROR')
   expect(Object.isFrozen(invalid.diagnostics)).toBe(true)
   expect(Object.isFrozen(invalid.diagnostics?.[0])).toBe(true)
 
-  const unknown = engine.inspect("display:block@inspection-undefined")
+  const unknown = engine.inspect("(display:block)@inspection-undefined")
   expect(unknown.cssSyntaxStatus).toBe('not-checked')
   expect(unknown.diagnostics?.map(({ code }) => code)).toContain('UNKNOWN_CONDITION')
   expect(engine.snapshot()).toEqual(before)

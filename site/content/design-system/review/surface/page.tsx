@@ -16,10 +16,10 @@ function ReferenceExample() {
   return (
     <Demo title="Column span" caption="The surface contains real columns. Padding and columns belong to the lesson.">
       <DemoSurface className="p-md font-sm">
-        <div className="gap-md columns:2">
-          <DemoText className="mb-sm margin-inline:0 margin-top:0">Start with the collection overview and its key details.</DemoText>
+        <div className="gap-md (columns:2)">
+          <DemoText className="mb-sm (margin-inline:0) (margin-top:0)">Start with the collection overview and its key details.</DemoText>
           <DemoItem tone="blue" className="my-sm p-sm font-medium">Collection notes</DemoItem>
-          <DemoText className="margin:0">Continue through each column in reading order, then move to the next section.</DemoText>
+          <DemoText className="(margin:0)">Continue through each column in reading order, then move to the next section.</DemoText>
         </div>
       </DemoSurface>
     </Demo>

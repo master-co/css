@@ -46,7 +46,7 @@ test('brand downloads preserve approved background variants, source geometry and
 
 test('the displayed brand composition compiles with the current public preset', () => {
   const css = configuredExampleCSS('', configuredMarkupClasses(brandExampleMarkup))
-  assert.ok(css.includes('display:grid'))
+  assert.ok(css.includes('grid'))
   assert.ok(css.includes('var(--spacing-md)'))
   assert.ok(css.includes('var(--color-surface-raised)'))
 })

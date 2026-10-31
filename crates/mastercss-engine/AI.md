@@ -32,6 +32,8 @@ emitted globals as `EmittedGlobals` values; hosts that receive JSON use
 Exact CSS bytes, layer placement, priority, selectors, resources, and native/Wasm
 parity are behavioral contracts. Do not add host filesystem, DOM, or editor policy.
 
+A `(property:value)` head is a native declaration (`resources.rs` `native_declaration`), never a utility; other heads match function, static (the name up to the first suffix delimiter) and token utilities. No built-in native utilities or key matchers exist; the program's `Key` matcher tag is reserved. Token keys containing `_` have no bare token utility.
+
 Token utility identity is (form, decoded prefix, namespace); same-branch replacement is complete. Select the longest prefix, then a unique namespace by key before checking sign or opacity. Ambiguous keys emit no CSS. Retain requested classes without rules so refresh can restore them after ambiguity or missing-token changes. Metadata consumers use the resolved branch, never prefix alone.
 
 A token key resolves to its variable on demand through `utility::utility_variable`: explicit aliases first, then each `~namespace` reference in order, where the earliest declared variable whose namespace key is the key wins (`namespace_variable_names` inverts `get_variable_key_by_namespace`, and every candidate is checked forward). `finish_program` builds no per-utility token maps: mapping every variable of every token utility was nearly all of session creation. Tooling lists a utility's tokens with `utility_variable_entries`, which must keep the same precedence.

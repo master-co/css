@@ -64,7 +64,7 @@ describe('MasterCSSScanner lifecycle', () => {
     expect(scanner.initializing).toBeUndefined()
     expect(disposeStates).toEqual([{ initialized: false, stateCleared: true }])
     expect(scanner.listenerCount('dispose')).toBe(0)
-    await expect(scanner.scan('index.html', "<div class=\"display:block\"></div>"))
+    await expect(scanner.scan('index.html', "<div class=\"(display:block)\"></div>"))
       .rejects.toThrow('must be initialized')
   })
 

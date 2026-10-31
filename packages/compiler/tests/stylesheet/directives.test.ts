@@ -64,8 +64,8 @@ describe('stylesheet CSS directives', () => {
 
   it('loads scanner directives from a managed CSS entry graph', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/page.tsx'), "<div class=\"display:block\"></div>")
-    writeFileSync(join(root, 'app/skip.test.tsx'), "<div class=\"text-align:center\"></div>")
+    writeFileSync(join(root, 'app/page.tsx'), "<div class=\"(display:block)\"></div>")
+    writeFileSync(join(root, 'app/skip.test.tsx'), "<div class=\"(text-align:center)\"></div>")
     writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg-red"></div>')
 
     const scanner = new MasterCSSScanner({}, root)
@@ -79,7 +79,7 @@ describe('stylesheet CSS directives', () => {
       projectDir: root
     })
 
-    expect(css).toContain(".display\\:block{display:block}")
+    expect(css).toContain(".\\(display\\:block\\){display:block}")
     expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
     expect(css).not.toContain('.fg-red')
     expect(css).not.toContain('.text\\:center')
@@ -89,8 +89,8 @@ describe('stylesheet CSS directives', () => {
   it('loads source directives from server template extensions', async () => {
     const root = createFixture()
     mkdirSync(join(root, 'app/templates'), { recursive: true })
-    writeFileSync(join(root, 'app/templates/product.liquid'), "<h1 class=\"display:block\"></h1>")
-    writeFileSync(join(root, 'app/templates/index.cshtml'), "<h1 class=\"margin:0\"></h1>")
+    writeFileSync(join(root, 'app/templates/product.liquid'), "<h1 class=\"(display:block)\"></h1>")
+    writeFileSync(join(root, 'app/templates/index.cshtml'), "<h1 class=\"(margin:0)\"></h1>")
     writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font-semibold"></h1>')
 
     const scanner = new MasterCSSScanner({}, root)
@@ -104,15 +104,15 @@ describe('stylesheet CSS directives', () => {
       projectDir: root
     })
 
-    expect(css).toContain(".display\\:block{display:block}")
-    expect(css).toContain(".margin\\:0{margin:0}")
+    expect(css).toContain(".\\(display\\:block\\){display:block}")
+    expect(css).toContain(".\\(margin\\:0\\){margin:0}")
     expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
   })
 
   it('unions source directives and subtracts source not directives', async () => {
     const root = createFixture()
-    writeFileSync(join(root, 'app/a/page.tsx'), "<div class=\"display:block\"></div>")
-    writeFileSync(join(root, 'app/b/page.tsx'), "<div class=\"margin:0\"></div>")
+    writeFileSync(join(root, 'app/a/page.tsx'), "<div class=\"(display:block)\"></div>")
+    writeFileSync(join(root, 'app/b/page.tsx'), "<div class=\"(margin:0)\"></div>")
     writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg-red"></div>')
     writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text:center"></div>')
 
@@ -127,8 +127,8 @@ describe('stylesheet CSS directives', () => {
       projectDir: root
     })
 
-    expect(css).toContain(".display\\:block{display:block}")
-    expect(css).toContain(".margin\\:0{margin:0}")
+    expect(css).toContain(".\\(display\\:block\\){display:block}")
+    expect(css).toContain(".\\(margin\\:0\\){margin:0}")
     expect(css).not.toContain('.fg-red')
     expect(css).not.toContain('.text\\:center')
   })

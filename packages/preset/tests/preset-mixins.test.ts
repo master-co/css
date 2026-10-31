@@ -51,13 +51,13 @@ describe('preset mixins', () => {
 
   it('preserves explicit native font smoothing declarations', () => {
     const css = createTestCSS(manifest)
-    expect(css.createRule('-webkit-font-smoothing:antialiased')?.text).toContain('{-webkit-font-smoothing:antialiased}')
-    expect(css.createRule('-moz-osx-font-smoothing:grayscale')?.text).toContain('{-moz-osx-font-smoothing:grayscale}')
+    expect(css.createRule('(-webkit-font-smoothing:antialiased)')?.text).toContain('{-webkit-font-smoothing:antialiased}')
+    expect(css.createRule('(-moz-osx-font-smoothing:grayscale)')?.text).toContain('{-moz-osx-font-smoothing:grayscale}')
   })
 
   it('supports native declarations for gradient text', () => {
     const css = createTestCSS(manifest)
-    expect(css.createRule('background-clip:text')?.text).toBe('.background-clip\\:text{background-clip:text}')
-    expect(css.createRule('-webkit-text-fill-color:transparent')?.text).toBe('.-webkit-text-fill-color\\:transparent{-webkit-text-fill-color:transparent}')
+    expect(css.createRule('(background-clip:text)')?.text).toBe('.\\(background-clip\\:text\\){background-clip:text}')
+    expect(css.createRule('(-webkit-text-fill-color:transparent)')?.text).toBe('.\\(-webkit-text-fill-color\\:transparent\\){-webkit-text-fill-color:transparent}')
   })
 })

@@ -59,12 +59,12 @@ test('uses explicit compiled manifests', async () => {
     scanner.collectCandidates('test.tsx',
       `
       <>
-        <h1 className={'position:relative ' + styles.title} />
+        <h1 className={'(position:relative) ' + styles.title} />
         <h1 className={styles.title + ' ' + ' blue-btn'} />
         <button className="test btn" />
       </>
     `)
-  ).resolves.toEqual(["position:relative", 'blue-btn', 'test', 'btn'])
+  ).resolves.toEqual(["(position:relative)", 'blue-btn', 'test', 'btn'])
   await scanner.reset({ manifest })
   await scanner.scan('button.html', '<button class="blue-btn"></button>')
   expect(scanner.css.text).toContain('background-color:oklch')

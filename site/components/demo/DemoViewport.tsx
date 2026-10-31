@@ -194,7 +194,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
           const options: ScrollIntoViewOptions & { container: 'nearest' } = {
             block: edge(alignment[0]), inline: edge(alignment[1] ?? alignment[0]), container: 'nearest',
           }
-          // Safari versions that ignore container:nearest also scroll the host page.
+          // Safari versions that ignore (container:nearest) also scroll the host page.
           // Restore only host ancestors; the specimen keeps its native CSS alignment.
           const ancestors: { element: HTMLElement, top: number, left: number }[] = []
           for (let element = frame.parentElement; element; element = element.parentElement) {
@@ -275,7 +275,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
             {print && <button type="button" disabled={!ready} className="demo-button" onClick={() => ref.current?.contentWindow?.print()}><IconPrinter size={14} aria-hidden="true" />Print preview</button>}
           </DemoControls>}
           <output className="demo-viewport-status">{measurement}</output>
-          {properties && <output className="width:100% demo-label" aria-live="polite">{properties}</output>}
+          {properties && <output className="(width:100%) demo-label" aria-live="polite">{properties}</output>}
         </div>
       )}
     </div>

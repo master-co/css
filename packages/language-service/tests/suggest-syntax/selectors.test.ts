@@ -3,11 +3,11 @@ import dedent from 'ts-dedent'
 import { hint } from './helper'
 
 describe.concurrent('pseudo-class', () => {
-  test.concurrent(':', () => expect(hint("text-align:center:")?.map(({ label }) => label)).toContain(':active'))
-  test.concurrent('two', () => expect(hint("text-align:center:hover:")?.map(({ label }) => label)).toContain(':active'))
-  test.concurrent('utility', () => expect(hint("display:block:")?.map(({ label }) => label)).toContain(':active'))
+  test.concurrent(':', () => expect(hint("(text-align:center):")?.map(({ label }) => label)).toContain(':active'))
+  test.concurrent('two', () => expect(hint("(text-align:center):hover:")?.map(({ label }) => label)).toContain(':active'))
+  test.concurrent('utility', () => expect(hint("block:")?.map(({ label }) => label)).toContain(':active'))
   test.concurrent('functional labels', () => {
-    const labels = hint("display:block:")?.map(({ label }) => label)
+    const labels = hint("(display:block):")?.map(({ label }) => label)
 
     expect(labels).toEqual(expect.arrayContaining([
       ':current()',
@@ -32,17 +32,17 @@ describe.concurrent('pseudo-class', () => {
       ':nth-last()'
     ]))
   })
-  it.concurrent('should take into account trigger character :', () => expect(hint("text-align:center:")?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
-  it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint("text-align:center:")?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
-  it.concurrent('should take into account trigger character +', () => expect(hint("text-align:center+")?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
-  test.concurrent('info', () => expect(hint("display:block:")?.find(({ label }) => label === ':first-child')).toEqual({
+  it.concurrent('should take into account trigger character :', () => expect(hint("(text-align:center):")?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
+  it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint("(text-align:center):")?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
+  it.concurrent('should take into account trigger character +', () => expect(hint("(text-align:center)+")?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
+  test.concurrent('info', () => expect(hint("(display:block):")?.find(({ label }) => label === ':first-child')).toEqual({
     'detail': undefined,
     'documentation': {
       'kind': 'markdown',
       'value': dedent`
         \`\`\`css
         @layer utilities {
-          .display\\:block\\:first-child:first-child {
+          .\\(display\\:block\\)\\:first-child:first-child {
             display: block
           }
         }
@@ -57,24 +57,24 @@ describe.concurrent('pseudo-class', () => {
 })
 
 describe.concurrent('pseudo-element', () => {
-  test.concurrent('::', () => expect(hint("text-align:center::")?.map(({ label }) => label)).toContain('::after'))
-  test.concurrent('two', () => expect(hint("text-align:center::after::")?.map(({ label }) => label)).toContain('::after'))
-  test.concurrent('utility', () => expect(hint("display:block::")?.map(({ label }) => label)).toContain('::after'))
+  test.concurrent('::', () => expect(hint("(text-align:center)::")?.map(({ label }) => label)).toContain('::after'))
+  test.concurrent('two', () => expect(hint("(text-align:center)::after::")?.map(({ label }) => label)).toContain('::after'))
+  test.concurrent('utility', () => expect(hint("block::")?.map(({ label }) => label)).toContain('::after'))
   test.concurrent('removed aliases', () => {
-    expect(hint("display:block::")?.map(({ label }) => label)).not.toEqual(expect.arrayContaining([
+    expect(hint("(display:block)::")?.map(({ label }) => label)).not.toEqual(expect.arrayContaining([
       '::scrollbar-corner',
       '::vt-new'
     ]))
   })
-  it.concurrent('should take into account trigger character :', () => expect(hint("text-align:center:")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' }))
-  it.concurrent('should take into account trigger character ::', () => expect(hint("text-align:center::")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' }))
-  it.concurrent('should take into account trigger character +', () => expect(hint("text-align:center+")?.find(({ label }) => label === '::after')?.insertText).toBeUndefined())
-  test.concurrent('info', () => expect(hint("display:block::")?.find(({ label }) => label === '::placeholder')).toEqual({
+  it.concurrent('should take into account trigger character :', () => expect(hint("(text-align:center):")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' }))
+  it.concurrent('should take into account trigger character ::', () => expect(hint("(text-align:center)::")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' }))
+  it.concurrent('should take into account trigger character +', () => expect(hint("(text-align:center)+")?.find(({ label }) => label === '::after')?.insertText).toBeUndefined())
+  test.concurrent('info', () => expect(hint("(display:block)::")?.find(({ label }) => label === '::placeholder')).toEqual({
     'documentation': {
       'kind': 'markdown',
       'value': dedent`\`\`\`css
         @layer utilities {
-          .display\\:block\\:\\:placeholder::placeholder {
+          .\\(display\\:block\\)\\:\\:placeholder::placeholder {
             display: block
           }
         }
@@ -89,20 +89,36 @@ describe.concurrent('pseudo-element', () => {
 })
 
 test.concurrent('sorting', () => {
-  expect(hint("text-align:center:")?.length).toBeGreaterThan(100)
+  expect(hint("(text-align:center):")?.length).toBeGreaterThan(100)
 })
 
 test('types _ should hint', () => {
-  expect(hint("display:block_")?.map(({ label }) => label)).toContain(':active')
+  expect(hint("(display:block)_")?.map(({ label }) => label)).toContain(':active')
 })
 
-it('reserves native colon entries and suggests display states through an explicit declaration', () => {
-  expect(hint("flex:")?.map(item => item.label)).not.toContain(':hover')
-  expect(hint("grid:")?.map(item => item.label)).not.toContain(':hover')
-  expect(hint('display:flex:')?.map(item => item.label)).toContain(':hover')
+it('reserves the head colon for values and suggests states after a complete class', () => {
+  expect(hint("(flex:")?.map(item => item.label)).not.toContain(':hover')
+  expect(hint("(grid:")?.map(item => item.label)).not.toContain(':hover')
+  expect(hint("flex:")?.map(item => item.label)).toContain(':hover')
+  expect(hint("grid:")?.map(item => item.label)).toContain(':hover')
+  expect(hint('(display:flex):')?.map(item => item.label)).toContain(':hover')
+})
+
+test('suggests selectors after a complete declaration head', () => {
+  const items = hint('(display:block):')
+  expect(items?.find(({ label }) => label === ':hover')).toMatchObject({ insertText: 'hover' })
+  expect(items?.find(({ label }) => label === '::before')).toMatchObject({ insertText: ':before' })
+  expect(items?.every(({ label }) => label.startsWith(':'))).toBe(true)
+  expect(hint('(display:block)::')?.find(({ label }) => label === '::before')).toMatchObject({ insertText: 'before' })
+  for (const trigger of ['_', '>', '+', '~']) {
+    expect(hint(`(display:block)${trigger}`)?.map(({ label }) => label)).toContain(':hover')
+  }
+  const headLabels = hint('(display:block')?.map(({ label }) => label)
+  expect(headLabels).toContain('block')
+  expect(headLabels).not.toContain(':hover')
 })
 
 test('removed selector shortcuts are absent', () => {
-  const labels = hint('display:block:')?.map(item => item.label) ?? []
+  const labels = hint('(display:block):')?.map(item => item.label) ?? []
   for (const label of [':first', ':last', ':even', ':odd', ':only', ':rtl', ':ltr', ':of']) expect(labels).not.toContain(label)
 })

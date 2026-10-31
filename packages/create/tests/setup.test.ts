@@ -612,7 +612,7 @@ export default defineConfig({
 })
 `)
     writeProjectFile(root, 'src/assets/main.css', 'body { margin: 0; }\n')
-    writeProjectFile(root, 'src/App.vue', "<template><h1 class=\"display:block\">Hello</h1></template>\n")
+    writeProjectFile(root, 'src/App.vue', "<template><h1 class=\"(display:block)\">Hello</h1></template>\n")
 
     const plan = planMasterCSSSetup({ root })
 

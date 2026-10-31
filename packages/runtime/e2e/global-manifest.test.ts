@@ -105,7 +105,7 @@ test('uses the preloaded default program', async ({ page }) => {
       <link rel="preload" as="fetch" crossorigin href="${assetBase}/default-program.bin">
       <link rel="stylesheet" href="${assetBase}/base.css">
       <script src="${assetBase}/global.min.js"></script>
-      </head><body><h1 class="font-size:40px">Hello</h1></body></html>`)
+      </head><body><h1 class="(font-size:40px)">Hello</h1></body></html>`)
   })
   try {
     await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
@@ -179,7 +179,7 @@ test('renders under a strict CSP that disallows Wasm compilation', async ({ page
     headers: {
       'content-security-policy': "default-src 'none'; script-src https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net; style-src 'unsafe-inline'"
     },
-    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body><h1 class="font-size:40px">Hello</h1></body></html>`
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body><h1 class="(font-size:40px)">Hello</h1></body></html>`
   }))
 
   await page.goto(consumerURL)

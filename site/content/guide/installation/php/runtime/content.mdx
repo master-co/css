@@ -112,7 +112,7 @@ Use Vite runtime rendering when PHP renders pages directly from templates. PHP s
   <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
-  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
     Hello World
   </h1>
   <script type="module" src="/assets/app.js"></script>
@@ -132,5 +132,5 @@ Runtime styling starts after the browser loads JavaScript. The example keeps the
 After startup, run this in the browser console. The heading should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```

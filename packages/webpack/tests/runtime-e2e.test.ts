@@ -16,7 +16,7 @@ function createFixture(root: string) {
   writeFileSync(join(root, 'entry.js'), 'console.log("webpack runtime fixture")\n')
   writeFileSync(join(root, 'app.css'), "@import \"@master/css\";\n@import \"@master/css\";\n")
   return {
-    html: '<!doctype html><html><head><link rel="stylesheet" href="./global.css"></head><body><main id="probe" class="box display:block">Probe</main></body></html>',
+    html: '<!doctype html><html><head><link rel="stylesheet" href="./global.css"></head><body><main id="probe" class="box (display:block)">Probe</main></body></html>',
     css: [
       baseCSS,
       '',
@@ -194,12 +194,12 @@ describe('Webpack progressive mode', () => {
     try {
       writeFileSync(join(root, 'entry.js'), 'console.log("webpack progressive fixture")\n')
       writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@utility probe-grid { display: grid; }\n')
-      const hydrationManifest = { version: 5, languageVersion: 16, classNames: ['display:block'], resourceOrder: { variables: [], keyframes: [] } }
+      const hydrationManifest = { version: 5, languageVersion: 17, classNames: ['(display:block)'], resourceOrder: { variables: [], keyframes: [] } }
       const html = [
         '<!doctype html><html><head>',
-        '<style id="master-css">@layer utilities{.display\\:block{display:block}}</style>',
+        '<style id="master-css">@layer utilities{.\\(display\\:block\\){display:block}}</style>',
         `<script id="master-css-hydration-manifest" type="application/json">${JSON.stringify(hydrationManifest)}</script>`,
-        '</head><body><main id="probe" class="display:block">Probe</main></body></html>'
+        '</head><body><main id="probe" class="(display:block)">Probe</main></body></html>'
       ].join('')
       await runWebpack({
         mode: 'production',

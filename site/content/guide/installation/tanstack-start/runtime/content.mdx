@@ -56,7 +56,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return (
-    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
   )
@@ -91,7 +91,7 @@ Build the application and serve it using the deployment adapter selected for the
 Run this in the browser console after the page is ready:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 The heading should gain an underline without rebuilding. If no runtime-generated classes appear, check that the guarded virtual import executes in the browser and that its program request succeeds.

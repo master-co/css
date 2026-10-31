@@ -75,7 +75,17 @@ pub(crate) fn canonical_class_parts(
     semantics: &ClassSemanticInspection,
 ) -> CanonicalClassParts {
     let value = semantics.value_token.clone();
-    let base_end = if let (Some(key_token), Some(value_token)) =
+    let declaration = (semantics.kind == mastercss_engine::ClassSemanticKind::Declaration)
+        .then(|| {
+            mastercss_lexer::parse_native_declaration(
+                class_name.strip_suffix('!').unwrap_or(class_name),
+            )
+        })
+        .flatten()
+        .and_then(Result::ok);
+    let base_end = if let Some(head) = declaration {
+        head.suffix_start
+    } else if let (Some(key_token), Some(value_token)) =
         (&semantics.key_token, &semantics.value_token)
     {
         (key_token.len() + value_token.len()).min(class_name.len())

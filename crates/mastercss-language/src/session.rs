@@ -118,7 +118,19 @@ impl LanguageSession {
             .as_deref()
             .map(utf16_len)
             .unwrap_or_default();
-        let important_length = u32::from(semantics.important);
+        let declaration = (semantics.kind == ClassSemanticKind::Declaration)
+            .then(|| {
+                mastercss_lexer::parse_native_declaration(
+                    class_name.strip_suffix('!').unwrap_or(class_name),
+                )
+            })
+            .flatten()
+            .and_then(Result::ok);
+        // A native `!important` inside the parentheses is highlighted with the value.
+        let suffix_important = declaration.as_ref().map_or(semantics.important, |head| {
+            class_name.ends_with('!') || class_name[head.suffix_start..].starts_with('!')
+        });
+        let important_length = u32::from(suffix_important);
         let base_end = token_start
             .saturating_add(utf16_len(class_name))
             .saturating_sub(state_length + important_length);
@@ -174,33 +186,40 @@ impl LanguageSession {
                 }
             }
             ClassSemanticKind::Declaration => {
-                if let Some(key) = semantics.key_token.as_deref() {
-                    let key_length = utf16_len(key.trim_end_matches([':', '-']));
+                if let Some(head) = &declaration {
+                    let at = |byte: usize| token_start + utf16_len(&class_name[..byte]);
+                    push_semantic_token(tokens, at(0), at(1), "operator", &["blockBrace"]);
                     push_semantic_token(
                         tokens,
-                        token_start,
-                        token_start + key_length,
+                        at(head.property.start),
+                        at(head.property.end),
                         "property",
                         &[],
                     );
-                    if key.ends_with([':', '-']) {
-                        push_semantic_token(
-                            tokens,
-                            token_start + key_length,
-                            token_start + key_length + 1,
-                            "operator",
-                            &["declarationSeparator"],
-                        );
-                    }
-                    if let Some(value) = semantics.value_token.as_deref() {
-                        let value_start = token_start + utf16_len(key);
-                        push_value_semantic_tokens(tokens, value, value_start);
-                    }
+                    push_semantic_token(
+                        tokens,
+                        at(head.property.end),
+                        at(head.body.start),
+                        "operator",
+                        &["declarationSeparator"],
+                    );
+                    push_value_semantic_tokens(
+                        tokens,
+                        &class_name[head.body.clone()],
+                        at(head.body.start),
+                    );
+                    push_semantic_token(
+                        tokens,
+                        at(head.body.end),
+                        at(head.suffix_start),
+                        "operator",
+                        &["blockBrace"],
+                    );
                 }
             }
             ClassSemanticKind::Unknown => {}
         }
-        if semantics.important {
+        if suffix_important {
             push_semantic_token(tokens, base_end, base_end + 1, "operator", &["important"]);
         }
         if let Some(state) = semantics.state_token.as_deref() {
@@ -313,14 +332,17 @@ impl LanguageSession {
                         .unwrap_or(class_name)
                         .to_owned()
                 };
-                let key_value = semantics
-                    .key_token
-                    .as_deref()
-                    .and_then(|key| key.strip_suffix(':').or_else(|| key.strip_suffix('-')))
-                    .zip(semantics.value_token.as_deref());
-                let (key, value) = key_value
-                    .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
-                    .unwrap_or_default();
+                let (key, value) = if semantics.kind == ClassSemanticKind::Declaration {
+                    (fallback_key, fallback_value)
+                } else {
+                    semantics
+                        .key_token
+                        .as_deref()
+                        .and_then(|key| key.strip_suffix('-'))
+                        .zip(semantics.value_token.as_deref())
+                        .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
+                        .unwrap_or_default()
+                };
                 (base, suffix, key, value)
             } else {
                 (fallback_base, fallback_suffix, fallback_key, fallback_value)
@@ -469,11 +491,13 @@ impl LanguageSession {
         } else {
             Vec::new()
         };
+        // A named color becomes the one native declaration it emits.
         let replacement_prefix = (rules.len() == 1 && rules[0].declarations.len() == 1)
-            .then(|| format!("{}:", rules[0].declarations.first().unwrap().property));
+            .then(|| format!("({}:", rules[0].declarations.first().unwrap().property));
         Ok(LanguageColorPresentationIr {
             version: LANGUAGE_BATCH_VERSION,
             editable: !named || replacement_prefix.is_some(),
+            replacement_suffix: replacement_prefix.as_ref().map(|_| ")".to_owned()),
             replacement_prefix,
             color_token: color_token.to_owned(),
             source_format: color_source_format(&self.engine, color_token)?,

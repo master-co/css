@@ -20,7 +20,7 @@ const compiled = compileManifestSync(`
 @mixin --aligned-end { text-align:left; } @utility aligned-end { text-align:left; }
 @layer base { .stroke { color:blue; -webkit-text-stroke:3px red; } }
 `, {})
-const classes = ['panel', 'cleared', 'aligned-start', 'aligned-end', 'p-md', 'p(var(--spacing-md))', "-webkit-text-stroke:1px", "-webkit-text-stroke-width:1px"]
+const classes = ['panel', 'cleared', 'aligned-start', 'aligned-end', 'p-md', 'p(var(--spacing-md))', "(-webkit-text-stroke:1px)", "(-webkit-text-stroke-width:1px)"]
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: fixed utility intent, replacement and vendor reset semantics`, async ({ page }) => {
@@ -28,11 +28,11 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     <span id="panel" style="--dimension:24px" class="panel">Panel</span>
     <section id="tokens"><div id="token" class="p-md"></div><div id="function" class="p(var(--spacing-md))"></div><div id="apply" class="applied"></div><div id="caller" class="caller"></div></section>
     <span id="empty" class="cleared">Empty</span><div id="replaced" class="aligned-start"></div><div id="static" class="aligned-end"></div>
-    <span id="shorthand" class="stroke -webkit-text-stroke:1px">A</span><span id="longhand" class="stroke -webkit-text-stroke-width:1px">B</span></body></html>`
+    <span id="shorthand" class="stroke (-webkit-text-stroke:1px)">A</span><span id="longhand" class="stroke (-webkit-text-stroke-width:1px)">B</span></body></html>`
     const rendered = renderClassNamesSync(classes, { manifest: compiled.manifest })
     expect(rendered.cssText).not.toContain('--color-obsolete')
     expect(rendered.cssText).not.toContain('padding:100px')
-    expect(rendered.hydrationManifest.languageVersion).toBe(16)
+    expect(rendered.hydrationManifest.languageVersion).toBe(17)
     if (mode === "static") await page.setContent(html.replace('</head>', `<style>${rendered.cssText}</style></head>`))
     else if (mode === 'runtime') await page.setContent(html)
     else {

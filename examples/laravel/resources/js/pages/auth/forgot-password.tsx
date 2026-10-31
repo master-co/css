@@ -25,11 +25,11 @@ export default function ForgotPassword({ status }: { status?: string }) {
     <AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
       <Head title="Forgot password" />
 
-      {status && <div className="text-sm font-medium text-align:center mb-4 text-green-600">{status}</div>}
+      {status && <div className="text-sm font-medium (text-align:center) mb-4 text-green-600">{status}</div>}
 
       <div className="space-y-6">
         <form onSubmit={submit}>
-          <div className="display:grid gap-2">
+          <div className="grid gap-2">
             <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
@@ -45,7 +45,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <InputError message={errors.email} />
           </div>
 
-          <div className="display:flex align-items:center justify-content:start my-6">
+          <div className="flex items-center justify-start my-6">
             <Button className="w-full" disabled={processing}>
               {processing && <LoaderCircle className="animate-spin h-4 w-4" />}
               Email password reset link
@@ -53,7 +53,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
           </div>
         </form>
 
-        <div className="text-sm text-align:center space-x-1 text-muted-foreground">
+        <div className="text-sm (text-align:center) space-x-1 text-muted-foreground">
           <span>Or, return to</span>
           <TextLink href={route('login')}>log in</TextLink>
         </div>

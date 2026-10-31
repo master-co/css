@@ -19,7 +19,7 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
   const resolvedMax = max ?? Math.max(0, ...items.map((item) => item.max ?? item.value))
 
   return (
-    <div className={clsx('display:grid gap-md benchmark-bars', className)}>
+    <div className={clsx('grid gap-md benchmark-bars', className)}>
       {items.map((item, index) => {
         const labelId = `${labelPrefix}-label-${index}`
         const valueId = `${labelPrefix}-value-${index}`
@@ -30,14 +30,14 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
         const colorClasses = benchmarkColorClasses[color]
 
         return (
-          <div key={item.id} className="display:grid gap-sm">
-            <div className="display:flex flex-wrap:wrap align-items:baseline justify-content:space-between gap-sm">
-              <div className="display:flex align-items:center gap-xs min-width:0">
+          <div key={item.id} className="grid gap-sm">
+            <div className="flex flex-wrap items-baseline justify-between gap-sm">
+              <div className="flex items-center gap-xs (min-width:0)">
                 {item.icon}
-                <span id={labelId} className="min-width:0 font-sm font-weight:460 fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="(min-width:0) font-sm (font-weight:460) fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="display:flex flex-wrap:wrap align-items:baseline gap-xs min-width:0">
-                <strong id={valueId} className="font-sm font-weight:460 white-space:nowrap fg-text-strong">{valueLabel}</strong>
+              <div className="flex flex-wrap items-baseline gap-xs (min-width:0)">
+                <strong id={valueId} className="font-sm (font-weight:460) (white-space:nowrap) fg-text-strong">{valueLabel}</strong>
                 {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>

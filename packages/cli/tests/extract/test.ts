@@ -13,7 +13,7 @@ it('basic extract', async () => {
   const cwd = fs.mkdtempSync(join(os.tmpdir(), 'master-css-cli-extract-'))
   try {
     fs.writeFileSync(join(cwd, 'a.html'), '<h1 class="bg-primary fg-primary">Hello World</h1>', { flag: 'w' })
-    fs.writeFileSync(join(cwd, 'b.html'), "<h1 class=\"margin:3rem text-align:center font-sans font-heavy font-size:48px\">Hello World</h1>", { flag: 'w' })
+    fs.writeFileSync(join(cwd, 'b.html'), "<h1 class=\"(margin:3rem) (text-align:center) font-sans font-heavy (font-size:48px)\">Hello World</h1>", { flag: 'w' })
     fs.writeFileSync(join(cwd, 'main.css'), `
       @import "@master/css";
       @theme {
@@ -31,7 +31,7 @@ it('basic extract', async () => {
 it('prints CSS without exporting', async () => {
   const cwd = fs.mkdtempSync(join(os.tmpdir(), 'master-css-cli-no-export-'))
   try {
-    fs.writeFileSync(join(cwd, 'index.html'), "<h1 class=\"text-align:center\">Hello World</h1>", { flag: 'w' })
+    fs.writeFileSync(join(cwd, 'index.html'), "<h1 class=\"(text-align:center)\">Hello World</h1>", { flag: 'w' })
     const output = execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'generate', '--no-export'], {
       cwd,
       encoding: 'utf8'

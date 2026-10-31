@@ -28,7 +28,7 @@ describe('Rust lint session', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       const result = lint.analyzeLintClassList('fg-red block fg-blue unknown', [
-        'fg-red', "display:block", 'fg-blue', 'unknown'
+        'fg-red', "(display:block)", 'fg-blue', 'unknown'
       ], { disallowUnknownClass: true })
       expect(result.diagnostics.map(({ ruleId }) => ruleId)).toEqual(expect.arrayContaining([
         'sort-classes',
@@ -69,10 +69,10 @@ describe('Rust lint session', () => {
       expect(lint.rawValueCandidates([
         'font-md',
         'm-md',
-        "margin:var(--spacing-md)|var(--spacing-lg)",
+        "(margin:var(--spacing-md)|var(--spacing-lg))",
         'fg-red-60',
-        "text-align:center",
-        'font:16px',
+        "(text-align:center)",
+        '(font:16px)',
         'unknown-class',
         'btn'
       ])).toEqual([])
@@ -85,8 +85,8 @@ describe('Rust lint session', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       expect(lint.canonicalClassNames([
-        'text-align:center:hover@sm',
-        'font-size:16px',
+        '(text-align:center):hover@sm',
+        '(font-size:16px)',
         'margin-md'
       ])).toEqual([])
     } finally {
@@ -98,12 +98,12 @@ describe('Rust lint session', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
       expect(lint.canonicalClassNames([
-        'position:relative',
-        'display:none',
-        'visibility:hidden',
-        'height:100vh',
-        'width:100vw',
-        'aspect-ratio:1/1'
+        '(position:relative)',
+        '(display:none)',
+        '(visibility:hidden)',
+        '(height:100vh)',
+        '(width:100vw)',
+        '(aspect-ratio:1/1)'
       ])).toEqual([])
     } finally {
       lint.dispose()
@@ -113,7 +113,7 @@ describe('Rust lint session', () => {
   it('lints and fixes source files without a TypeScript engine', () => {
     const lintSession = createTestToolingSession(createPresetManifest())
     const options = {
-      content: '<div class="fg-red display:block fg-blue"></div>',
+      content: '<div class="fg-red (display:block) fg-blue"></div>',
       filePath: '/workspace/index.html',
       lintSession
     }
@@ -130,7 +130,7 @@ describe('Rust lint session', () => {
 it('does not autofix entity-decoded MDX class lists using decoded offsets', () => {
   const session = createTestToolingSession(createPresetManifest())
   try {
-    const content = "<div className=\"padding:2px&#32;flex\" />"
+    const content = "<div className=\"(padding:2px)&#32;flex\" />"
     const options = { content, filePath: 'page.mdx', lintSession: session }
     expect(fixMasterCSSContent(options)).toBe(content)
     const diagnostics = lintMasterCSSContent(options).diagnostics

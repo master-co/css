@@ -33,7 +33,7 @@ fn variant_and_breakpoint_wrappers_survive_manifest_roundtrip_and_batch_order() 
     assert_eq!(original, reloaded);
     let classes = [
         "paint-brand@apply(--dark)@apply(--sm)",
-        "padding:8px@apply(--sm)@apply(--dark)",
+        "(padding:8px)@apply(--sm)@apply(--dark)",
     ];
     let mut batched = EngineSession::create(&encoded).unwrap();
     let mut incremental = EngineSession::create(&reloaded.to_json().unwrap()).unwrap();

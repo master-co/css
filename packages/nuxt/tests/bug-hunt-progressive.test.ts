@@ -25,7 +25,7 @@ it('loads its runtime program only when a new runtime class needs the engine', a
         await page.evaluate(() => {
             const probe = document.createElement('div')
             probe.id = 'bh-0023-probe'
-            probe.className = "display:none"
+            probe.className = "(display:none)"
             document.body.append(probe)
         })
         const styled = await page.waitForFunction(() => getComputedStyle(document.getElementById('bh-0023-probe')!).display === 'none', undefined, { timeout: 5000 }).then(() => true, () => false)

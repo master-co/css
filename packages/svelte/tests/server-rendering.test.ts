@@ -45,16 +45,16 @@ describe('Svelte server hook renderer with external hydration', () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
-        "<html><head><meta class=\"display:block\">",
+        "<html><head><meta class=\"(display:block)\">",
         '</head><body><div class="fg-red"></div></body></html>'
       ]
     )
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-    expect(html).toContain('"classNames":["fg-red","display:block"]')
+    expect(html).toContain('"classNames":["fg-red","(display:block)"]')
     expect(countManifestScripts(html)).toBe(1)
-    expect(html).toContain(".display\\:block")
+    expect(html).toContain(".\\(display\\:block\\)")
     expect(html).toContain('.fg-red')
     expect(html).toContain('</script></head>')
   })
@@ -63,12 +63,12 @@ describe('Svelte server hook renderer with external hydration', () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
-        "<html><head><meta class=\"display:block\"></head>",
+        "<html><head><meta class=\"(display:block)\"></head>",
         '<body><div class="fg-red"></div></body></html>'
       ]
     )
 
-    expect(html).toContain(".display\\:block")
+    expect(html).toContain(".\\(display\\:block\\)")
     expect(html).toContain('.fg-red')
     expect(html).toContain('<body><div class="fg-red"></div>')
   })
@@ -87,12 +87,12 @@ describe('Svelte server hook renderer with external hydration', () => {
         }
       }
     }), [
-      "<html><head></head><body><div class=\"display:block\"></div></body></html>"
+      "<html><head></head><body><div class=\"(display:block)\"></div></body></html>"
     ])
 
     expect(manifestHash).toMatch(/^[0-9a-f]{8}$/)
     expect(JSON.parse(manifestJSON).classNames)
-      .toEqual(["display:block"])
+      .toEqual(["(display:block)"])
     expect(html).toContain(
       `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/master-css-hydration.${manifestHash}.json"`
     )
@@ -137,7 +137,7 @@ describe('Svelte server hook renderer with external hydration', () => {
           }
         }
       }), [
-        "<html><head></head><body><div class=\"display:block\"></div></body></html>"
+        "<html><head></head><body><div class=\"(display:block)\"></div></body></html>"
       ])
       const source = html.match(
         new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`)
@@ -146,7 +146,7 @@ describe('Svelte server hook renderer with external hydration', () => {
 
       expect(source).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
       expect(existsSync(file)).toBe(true)
-      expect(JSON.parse(readFileSync(file, 'utf8')).classNames).toEqual(['display:block'])
+      expect(JSON.parse(readFileSync(file, 'utf8')).classNames).toEqual(['(display:block)'])
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -155,10 +155,10 @@ describe('Svelte server hook renderer with external hydration', () => {
   test('replaces an existing master style in the current chunk', async () => {
     const html = await renderWithHandle(
       createMasterCSSHandle({ manifest: defaultManifest }),
-      ["<html><head><style id=\"master-css\"></style></head><body class=\"display:block\"></body></html>"]
+      ["<html><head><style id=\"master-css\"></style></head><body class=\"(display:block)\"></body></html>"]
     )
 
-    expect(html).toContain("<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>")
+    expect(html).toContain("<style id=\"master-css\">@layer utilities{.\\(display\\:block\\){display:block}}</style>")
     expect(html.match(/id="master-css"/g)).toHaveLength(1)
   })
 
@@ -168,12 +168,12 @@ describe('Svelte server hook renderer with external hydration', () => {
       [[
         '<html><head><style id="master-css"></style>',
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script>`,
-        "</head><body class=\"display:block\"></body></html>"
+        "</head><body class=\"(display:block)\"></body></html>"
       ].join('')]
     )
 
     expect(html).not.toContain('"rules":[]')
-    expect(html).toContain('"classNames":["display:block"]')
+    expect(html).toContain('"classNames":["(display:block)"]')
     expect(countManifestScripts(html)).toBe(1)
   })
 })

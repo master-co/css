@@ -60,17 +60,17 @@ function classValues(source: string) {
 }
 
 const expressions = [
-  String.raw`:class="'color:white&#32;\u0062ackground:black'"`,
-  `:class="&quot;color:white&#32;background:black&quot;"`,
-  `:class='&quot;color:white&#32;background:black&quot;'`,
-  `:class="&#39;color:white&Tab;background:black&#39;"`,
-  `:class="['color:white&#32;bg-black', &quot;color:black&#32;background:white&quot;]"`,
-  `:class="'fg-white content:&quot;a&amp;b&quot; bg-black'"`,
-  `:class='"fg-white content:&#39;a&amp;b&#39; bg-black"'`,
-  ':class="`color:white&NewLine;bg-black`"',
-  ':class="`color:white\r\nbackground:black`"',
-  ':class="`fg-white content:\'\\${value}\'&#32;bg-black`"',
-  ':class="\'fg-white content:&quot;&amp;not=literal&quot; background:black\'"'
+  String.raw`:class="'(color:white)&#32;(\u0062ackground:black)'"`,
+  `:class="&quot;(color:white)&#32;(background:black)&quot;"`,
+  `:class='&quot;(color:white)&#32;(background:black)&quot;'`,
+  `:class="&#39;(color:white)&Tab;(background:black)&#39;"`,
+  `:class="['(color:white)&#32;bg-black', &quot;(color:black)&#32;(background:white)&quot;]"`,
+  `:class="'fg-white (content:&quot;a&amp;b&quot;) bg-black'"`,
+  `:class='"fg-white (content:&#39;a&amp;b&#39;) bg-black"'`,
+  ':class="`(color:white)&NewLine;bg-black`"',
+  ':class="`(color:white)\r\n(background:black)`"',
+  ':class="`fg-white (content:\'\\${value}\')&#32;bg-black`"',
+  ':class="\'fg-white (content:&quot;&amp;not=literal&quot;) (background:black)\'"'
 ]
 it.each(expressions)('preserves AST class values, attribute boundaries and fix stability for %s', async expression => {
   const source = `<template><div ${expression} data-sentinel="unchanged"></div></template>`

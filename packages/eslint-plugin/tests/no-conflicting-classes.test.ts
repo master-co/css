@@ -3,8 +3,8 @@ import { jsxTester } from './testers'
 
 jsxTester.run('collision', rule, {
   valid: [
-{ code: "<div class=\"margin:10px margin:30px:hover margin:40px@dark\">Simple, basic</div>" },
-{ code: "<div class=\"a c d hello:world font:error margin-top:0 margin-top:0@sm\">Error class</div>" },
+{ code: "<div class=\"(margin:10px) (margin:30px):hover (margin:40px)@dark\">Simple, basic</div>" },
+{ code: "<div class=\"a c d (hello:world) (font:error) (margin-top:0) (margin-top:0)@sm\">Error class</div>" },
 { code: `<div class="mx-md ml-lg@sm"></div>` },
 { code: `<div class="mx-md m-lg"></div>` },
 {
@@ -26,7 +26,7 @@ output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
 {
-code: "<div class=\"display:block margin:2rem font-size:.75rem margin-bottom:3rem\"></div>",
+code: "<div class=\"(display:block) (margin:2rem) (font-size:.75rem) (margin-bottom:3rem)\"></div>",
 output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
@@ -41,7 +41,7 @@ output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
 {
-code: `<div class="border-width:1px border-top-width:2px">partial border width conflict</div>`,
+code: `<div class="(border-width:1px) (border-top-width:2px)">partial border width conflict</div>`,
 output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
@@ -51,17 +51,17 @@ output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
 {
-code: `<div class="border-style:solid border-top-style:dashed">partial border style conflict</div>`,
+code: `<div class="(border-style:solid) (border-top-style:dashed)">partial border style conflict</div>`,
 output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
 {
-code: `<div class="mx-md ml-lg border-width:1px border-top-width:2px">mixed partial conflicts</div>`,
+code: `<div class="mx-md ml-lg (border-width:1px) (border-top-width:2px)">mixed partial conflicts</div>`,
 output: null,
 errors: [{ messageId: 'partialCollisionClass' }]
 },
 {
-code: `<template><div class="border-style:solid border-top-style:dashed">Vue</div></template>`,
+code: `<template><div class="(border-style:solid) (border-top-style:dashed)">Vue</div></template>`,
 output: null,
 errors: [{ messageId: 'partialCollisionClass' }],
 filename: 'test.vue',
@@ -70,28 +70,28 @@ languageOptions: {
       }
 },
 {
-      code: "<div class=\"margin:10px margin:20px margin:30px:hover margin:40px@dark\">collision</div>",
-      output: "<div class=\"margin:20px margin:30px:hover margin:40px@dark\">collision</div>",
+      code: "<div class=\"(margin:10px) (margin:20px) (margin:30px):hover (margin:40px)@dark\">collision</div>",
+      output: "<div class=\"(margin:20px) (margin:30px):hover (margin:40px)@dark\">collision</div>",
       errors: [
         {
           messageId: 'collisionClass',
           data: {
-            message: "Remove class \"margin:10px\"; it is overridden by class \"margin:20px\" in generated CSS."
+            message: "Remove class \"(margin:10px)\"; it is overridden by class \"(margin:20px)\" in generated CSS."
           }
         }
       ]
     },
 {
-      code: "<div class=\"a c d hello:world font:error margin-top:0 margin-top:0@sm margin:10px margin:20px margin:30px:hover margin:40px@dark\">Error class</div>",
-      output: "<div class=\"a c d hello:world font:error margin-top:0 margin-top:0@sm margin:20px margin:30px:hover margin:40px@dark\">Error class</div>",
+      code: "<div class=\"a c d (hello:world) (font:error) (margin-top:0) (margin-top:0)@sm (margin:10px) (margin:20px) (margin:30px):hover (margin:40px)@dark\">Error class</div>",
+      output: "<div class=\"a c d (hello:world) (font:error) (margin-top:0) (margin-top:0)@sm (margin:20px) (margin:30px):hover (margin:40px)@dark\">Error class</div>",
       errors: [
         { messageId: 'partialCollisionClass' },
         { messageId: 'collisionClass' },
       ]
     },
 {
-      code: "<div class=\"margin:10px margin:20px margin:30px\">generated CSS winner</div>",
-      output: "<div class=\"margin:30px\">generated CSS winner</div>",
+      code: "<div class=\"(margin:10px) (margin:20px) (margin:30px)\">generated CSS winner</div>",
+      output: "<div class=\"(margin:30px)\">generated CSS winner</div>",
       errors: [
         { messageId: 'collisionClass' },
       ]

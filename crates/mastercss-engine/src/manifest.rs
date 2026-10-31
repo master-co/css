@@ -1,7 +1,4 @@
-use super::{
-    CompiledVariable, EngineVariableIr, Program, UtilityLayerName, UtilityMatcher,
-    append_builtin_native_declaration_utilities, split_top_level,
-};
+use super::{CompiledVariable, EngineVariableIr, Program, UtilityLayerName, UtilityMatcher};
 use super::{EngineError, HashMap, Map, MasterCssManifest, Value};
 use mastercss_lexer::concat_text;
 
@@ -113,7 +110,6 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
         let paths = crate::custom_media_branches(query)?;
         program.custom_media_paths.insert(name.clone(), paths);
     }
-    append_builtin_native_declaration_utilities(&mut program.utilities);
     let count = program.utilities.len() as i32;
     for (index, utility) in program.utilities.iter_mut().enumerate() {
         if utility.name.is_none() {
@@ -139,15 +135,7 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
                         .or_default()
                         .push(index);
                 }
-                UtilityMatcher::Key { keys } => {
-                    for key in keys {
-                        program
-                            .raw_utilities
-                            .entry(key.clone())
-                            .or_default()
-                            .push(index);
-                    }
-                }
+                UtilityMatcher::Key { .. } => {}
                 UtilityMatcher::Function { name } => {
                     program.function_utilities.insert(name.clone(), index);
                 }
@@ -278,24 +266,6 @@ pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableI
         values: variable.values.clone(),
         dependencies: variable.dependencies.clone(),
     }
-}
-
-pub(crate) fn single_native_declaration(declarations: &str) -> Option<(String, String)> {
-    let declarations = split_top_level(declarations, ';')
-        .into_iter()
-        .filter(|declaration| !declaration.is_empty())
-        .collect::<Vec<_>>();
-    let [declaration] = declarations.as_slice() else {
-        return None;
-    };
-    let (colon, _) = super::native_declaration_head(declaration)?;
-    let (property, value) = (&declaration[..colon], &declaration[colon + 1..]);
-    let value = value
-        .trim_end()
-        .strip_suffix("!important")
-        .map(str::trim_end)
-        .unwrap_or(value);
-    Some((property.to_owned(), value.to_owned()))
 }
 
 pub(crate) fn add_unique_string(target: &mut Vec<String>, value: &str) {

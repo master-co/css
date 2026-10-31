@@ -12,7 +12,7 @@ export default function CodeTabsView(props: { children: CodeTab[], tabbarClassNa
   const current = props.children[0]
   return (
     <div
-      className={clsx('display:flex flex-direction:column margin-top:1.25rem codeTabs', props.className)}
+      className={clsx('flex flex-col (margin-top:1.25rem) codeTabs', props.className)}
       data-code-tabs=""
       data-code-tabs-current-name={current.name}
       data-code-tabs-storage-key={props.localStorageKey}
@@ -25,7 +25,7 @@ export default function CodeTabsView(props: { children: CodeTab[], tabbarClassNa
         idPrefix={idPrefix} />
       {props.children.map((tab, index) => (
         <div
-          className={clsx('code', { 'display:none': index !== 0 })}
+          className={clsx('code', { 'hidden': index !== 0 })}
           role="tabpanel"
           id={`${idPrefix}-panel-${index}`}
           aria-labelledby={`${idPrefix}-tab-${index}`}

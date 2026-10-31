@@ -58,7 +58,7 @@ function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<n
 }
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
-  const source = "<div class=\"text-align:center fg-brand sr-only btn\"></div>"
+  const source = "<div class=\"(text-align:center) fg-brand sr-only btn\"></div>"
   const tokens = collectBrowserSemanticTokenItems(source, 'html', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),

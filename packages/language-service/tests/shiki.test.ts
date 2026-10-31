@@ -243,7 +243,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 test('keeps v2 named classes whole in the colors guide example across both themes', async () => {
   const code = [
     '<main class="bg-surface-base fg-text-body">',
-    "  <section class=\"border:1px|solid|var(--color-line-divider) bg-surface-raised\">",
+    "  <section class=\"(border:1px|solid|var(--color-line-divider)) bg-surface-raised\">",
     '    <h2 class="fg-text-strong">Project updates</h2>',
     '    <p class="fg-text-muted">Three milestones changed this week.</p>',
     '    <a class="fg-text-link" href="#">Continue</a>',
@@ -270,6 +270,8 @@ test('keeps v2 named classes whole in the colors guide example across both theme
     expect(semantic('px')[0]?.properties?.['data-highlight-role']).toBe('value.unit')
     expect(semantic('var')[0]?.properties?.['data-highlight-role']).toBe('value.function')
     expect(semantic('|').every((element) => element.properties?.['data-highlight-role'] === 'value.separator')).toBe(true)
+    expect(semantic('(').map((element) => element.properties?.['data-highlight-role'])).toEqual(['block.brace', 'value.function.punctuation'])
+    expect(semantic(')').map((element) => element.properties?.['data-highlight-role'])).toEqual(['value.function.punctuation', 'block.brace'])
     expect(collectHastElementsByClass(hast, 'line').map(getHastText)).toEqual(code.split('\n'))
 
     const blockHast = highlighter.codeToHast("sr-only", {
@@ -294,8 +296,8 @@ test.concurrent('separates named opacity and native values without coloring unre
   const samples = [
     { lang: 'html', code: "<!-- fg-red -->\n<div class=\"fg-red/0.5! sr-only:hover@sm unknown-widget\"></div>" },
     { lang: 'tsx', code: 'const label = "fg-blue";\n<div className="-m-sm fg-red/0.5" />' },
-    { lang: 'css', code: "@mixin --card { @safelist \"fg-red/0.5 border:1px|solid|var(--color-line-divider) unknown-widget\"; } @utility card { @safelist \"fg-red/0.5 border:1px|solid|var(--color-line-divider) unknown-widget\"; }" },
-    { lang: 'mcss', code: "fg-red/0.5 sr-only:hover@sm color:red unknown-widget" }
+    { lang: 'css', code: "@mixin --card { @safelist \"fg-red/0.5 (border:1px|solid|var(--color-line-divider)) unknown-widget\"; } @utility card { @safelist \"fg-red/0.5 (border:1px|solid|var(--color-line-divider)) unknown-widget\"; }" },
+    { lang: 'mcss', code: "fg-red/0.5 sr-only:hover@sm (color:red) unknown-widget" }
   ]
   for (const { lang, code } of samples) {
     const tokens = createMasterCSSShikiDecorations(code, { lang })
@@ -335,11 +337,15 @@ test.concurrent('keeps UTF-16 offsets aligned after Unicode and raw escaped clas
 })
 
 test.concurrent('assigns distinct highlight roles to native declaration value parts', () => {
-  const code = "content:\"hello\" width:calc(100%-1px) border:1px|solid|var(--color-line-divider)"
+  const code = "(content:\"hello\") (width:calc(100%-1px)) (border:1px|solid|var(--color-line-divider))"
   const tokens = createMasterCSSShikiDecorations(code, { lang: 'mcss' })
     .map(({ start, end, role }) => ({ text: code.slice(start, end), role }))
 
   for (const token of [
+    { text: '(', role: 'block.brace' },
+    { text: 'width', role: 'declaration.property' },
+    { text: ':', role: 'declaration.separator' },
+    { text: ')', role: 'block.brace' },
     { text: 'hello', role: 'value.string' },
     { text: 'calc', role: 'value.function' },
     { text: '(', role: 'value.function.punctuation' },
@@ -526,7 +532,7 @@ test('marks markup attribute values without marking helper strings in the same d
   })
   const cases = [
     ['html', '<div class="fg-red"></div><span class="bg-blue"></span>', ['fg-red', 'bg-blue']],
-    ['html', '<article class="fg-red">\n  <img class="aspect-ratio:16/9 object-fit:cover" ...>\n  <div class="p-lg">\n</article>', ['fg-red', 'aspect-ratio:16/9 object-fit:cover', 'p-lg']],
+    ['html', '<article class="fg-red">\n  <img class="(aspect-ratio:16/9) (object-fit:cover)" ...>\n  <div class="p-lg">\n</article>', ['fg-red', '(aspect-ratio:16/9) (object-fit:cover)', 'p-lg']],
     ['angular-html', '<div class="fg-red"></div>', ['fg-red']],
     ['tsx', 'const helper = clsx("fg-red"); const view = <div className="bg-blue" />', ['bg-blue']],
     ['tsx', 'const view = <div className="fg-red" />;\nconst helper = clsx("bg-blue");\nconst next = <span className="sr-only" />', ['fg-red', 'sr-only']],
@@ -672,8 +678,8 @@ test('matches native CSS string body and quote colors in both Shiki themes', asy
 
   try {
     for (const [quote, lang, code] of [
-      ["'", 'html', '<div class="content:\'hello\'"></div>'],
-      ['"', 'plaintext', 'content:"hello"']
+      ["'", 'html', '<div class="(content:\'hello\')"></div>'],
+      ['"', 'plaintext', '(content:"hello")']
     ] as const) {
       const native = highlighter.codeToHast(`.x{content:${quote}hello${quote};}`, { ...options, lang: 'css' })
       const semantic = highlighter.codeToHast(code, {

@@ -108,7 +108,7 @@
 >
   <a class="how-to-play" href="/sverdle/how-to-play">How to play</a>
 
-  <div class="grid" class:playing={!won} class:bad-guess={form?.badGuess}>
+  <div class="sverdle-grid" class:playing={!won} class:bad-guess={form?.badGuess}>
     {#each Array.from(Array(6).keys()) as row (row)}
       {@const current = row === i}
       <h2 class="visually-hidden">Row {row + 1}</h2>
@@ -232,7 +232,7 @@
     top: -0.05em;
   }
 
-  .grid {
+  .sverdle-grid {
     --width: min(100vw, 40vh, 380px);
     max-width: var(--width);
     align-self: center;
@@ -244,7 +244,7 @@
     justify-content: flex-start;
   }
 
-  .grid .row {
+  .sverdle-grid .row {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-gap: 0.2rem;
@@ -252,12 +252,12 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .grid.bad-guess .row.current {
+    .sverdle-grid.bad-guess .row.current {
       animation: wiggle 0.5s;
     }
   }
 
-  .grid.playing .row.current {
+  .sverdle-grid.playing .row.current {
     filter: drop-shadow(3px 3px 10px var(--color-bg-0));
   }
 

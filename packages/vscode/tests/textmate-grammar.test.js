@@ -94,7 +94,7 @@ test('keeps shared grammar asset in sync with the language Shiki registration', 
 })
 
 test('highlights class lists and static mixin parameters', () => {
-  const tokens = tokenizeWith(injectedCSSGrammar, `@safelist "fg-red/0.5 fg-blue/.5 center:hover@sm color:red";
+  const tokens = tokenizeWith(injectedCSSGrammar, `@safelist "fg-red/0.5 fg-blue/.5 center:hover@sm (color:red)";
 @mixin --size(--value <integer>) { width: var(--value); }
 .card { @apply --size(3); }`)
   expectScope(tokens, 'fg-red', 'entity.other.attribute-name.class.master-css')
@@ -102,10 +102,25 @@ test('highlights class lists and static mixin parameters', () => {
   expectScope(tokens, '0.5', 'constant.numeric.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
   expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, '(', 'punctuation.section.declaration.begin.master-css')
+  expectScope(tokens, 'color', 'support.type.property-name.master-css')
+  expectScope(tokens, 'red', 'support.constant.property-value.master-css')
+  expectScope(tokens, ')', 'punctuation.section.declaration.end.master-css')
   expectScope(tokens, '--size', 'variable.css.custom-property.master-css')
   expectScope(tokens, '--value', 'variable.css.custom-property.master-css')
   expectScope(tokens, '<integer>', 'support.function.misc.master-css')
   expectScope(tokens, '@apply', 'keyword.control.at-rule.master-css')
+})
+
+test('closes declaration heads and keeps class names before selector suffixes', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, '@safelist "fg-red:first-of-type (color:red):hover (width:calc(1px+2px))@sm";')
+  expectScope(tokens, 'fg-red', 'entity.other.attribute-name.class.master-css')
+  expectNoScope(tokens, 'fg-red', 'support.type.property-name.master-css')
+  expectScope(tokens, 'first-of-type', 'entity.other.attribute-name.pseudo-class.master-css')
+  expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
+  expectScope(tokens, 'width', 'support.type.property-name.master-css')
+  expect(tokens.filter((token) => token.text === ')' && token.scopes.includes('punctuation.section.declaration.end.master-css'))).toHaveLength(2)
+  expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
 })
 
 test('does not change native CSS TextMate scopes when injected', () => {

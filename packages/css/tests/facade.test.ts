@@ -4,7 +4,7 @@ import { createEngine } from '../src'
 it('@master/css exposes only the Rust-backed async engine facade', async () => {
   const engine = await createEngine({ manifest: {
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 } })
   expect(engine.binding).toBe('native')
   expect(engine.snapshot().text).toBe('')
@@ -14,7 +14,7 @@ it('@master/css exposes only the Rust-backed async engine facade', async () => {
 it('@master/css re-exports the manifest-driven engine facade', async () => {
   const engine = await createEngine({ manifest: {
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 } })
   expect(engine.binding).toBe('native')
   expect(engine.snapshot().text).toBe('')
@@ -25,7 +25,7 @@ it('executes compiled runtime programs with native and Wasm bindings', async () 
   const { compileRuntimeProgram, compileRuntimeProgramSync } = await import('../src/node')
   const manifest = {
     version: 6 as const,
-    languageVersion: 16 as const,
+    languageVersion: 17 as const,
     keyframes: [{ id: 'fade', name: 'fade', text: '@keyframes fade{to{opacity:0}}' }],
     utilities: [{
       kind: 'static' as const,

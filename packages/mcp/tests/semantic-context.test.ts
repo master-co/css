@@ -43,7 +43,7 @@ it('distinguishes missing entries from failed entries without selecting a preset
   try {
     expect(await loadWorkspaceManifest(missing)).toMatchObject({ status: 'error', reason: 'entry-not-found', context: 'project' })
     expect(await loadWorkspaceManifest(failed)).toMatchObject({ status: 'error', reason: 'entry-load-failed', context: 'project' })
-    const result = await executeTool(() => inspectClass(failed, { className: "display:block" }))
+    const result = await executeTool(() => inspectClass(failed, { className: "(display:block)" }))
     expect(result.isError).toBe(true)
     expect(result.structuredContent).toMatchObject({ version: 3, result: { status: 'error' }, metadata: { context: 'project', manifestFingerprint: null } })
     expect(result.content[0]).toEqual({ type: 'text', text: JSON.stringify(result.structuredContent, null, 2) })
@@ -53,16 +53,16 @@ it('distinguishes missing entries from failed entries without selecting a preset
 it('explicit preset context reports matching separately from validity and browser support', async () => {
   const context = project()
   try {
-    const result = await inspectClass(context, { className: 'font:16px', context: 'preset' })
+    const result = await inspectClass(context, { className: '(font:16px)', context: 'preset' })
     expect(result).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid', browserSupport: 'not-checked' })
-    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 16, bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION } })
+    expect(result.manifest).toMatchObject({ context: 'preset', fingerprint: expect.stringMatching(/^[a-f0-9]{64}$/), versions: { languageVersion: 17, bindingAbiVersion: MASTER_CSS_BINDING_ABI_VERSION } })
     const response = jsonToolResult(result)
     expect(JSON.parse((response.content[0] as { text: string }).text)).toEqual(response.structuredContent)
-    const rendered = await renderCSS(context, { context: 'preset', classList: 'font:16px width:--space(2)' })
+    const rendered = await renderCSS(context, { context: 'preset', classList: '(font:16px) (width:--space(2))' })
     expect(rendered.css.text).toContain('font:16px')
     expect(rendered.inspections.map(inspection => inspection.cssValueStatus)).toEqual(['invalid', 'unknown'])
     expect(rendered.diagnostics.map(diagnostic => diagnostic.code)).toEqual(['CSS_VALUE_INVALID', 'CSS_VALUE_UNKNOWN'])
-    const math = await inspectClass(context, { className: 'width:calc(1px|+|1s)', context: 'preset' })
+    const math = await inspectClass(context, { className: '(width:calc(1px|+|1s))', context: 'preset' })
     expect(math.cssValueStatus).toBe('invalid')
   } finally { context.dispose() }
 })

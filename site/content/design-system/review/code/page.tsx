@@ -20,7 +20,7 @@ export default function Page() {
         { name: 'Card.tsx', lang: 'tsx', code: `// A small, reusable component\ntype CardProps = { title: string; featured?: boolean }\n\nexport function Card({ title, featured = false }: CardProps) {\n  const count = 3\n  return (\n    <article className="p-lg r-lg bg-surface-raised">\n      <h2>{title}</h2>\n      <p data-featured={featured}>{count} new ideas</p>\n    </article>\n  )\n}` },
         { name: 'settings.json', lang: 'json', code: `{\n  "name": "Collection",\n  "featured": true,\n  "limit": 12,\n  "tags": ["design", "development"],\n  "cursor": null\n}` },
         { name: 'Terminal', lang: 'bash', code: `# Build and preview the project\npnpm run build\npnpm run preview -- --host "localhost"` },
-        { name: 'Classes', lang: 'mcss', code: `display:flex gap-md p-lg\nfg-text-strong bg-surface-raised\nfg-text-blue:hover@sm\npadding:1rem width:calc(100%-2rem)` }
+        { name: 'Classes', lang: 'mcss', code: `flex gap-md p-lg\nfg-text-strong bg-surface-raised\nfg-text-blue:hover@sm\npadding:1rem (width:calc(100%-2rem))` }
       ]}</CodeTabs>
     </section>
     <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>

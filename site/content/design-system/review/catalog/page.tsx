@@ -13,8 +13,8 @@ export { metadata }
 function groups(prefix: string) {
   return [{
     id: `${prefix}-flow`, title: 'Document flow', entries: [
-      { id: `${prefix}-clear`, title: 'Clear a right float', label: 'clear:right', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-right-floats" /> },
-      { id: `${prefix}-clear-both`, title: 'Clear both sides', label: 'clear:both', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-both-left-and-right-floats" /> }
+      { id: `${prefix}-clear`, title: 'Clear a right float', label: '(clear:right)', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-right-floats" /> },
+      { id: `${prefix}-clear-both`, title: 'Clear both sides', label: '(clear:both)', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear', children: <DemoExample page="clear" section="clearing-both-left-and-right-floats" /> }
     ]
   }]
 }

@@ -20,7 +20,7 @@ fn engine(source: &str) -> EngineSession {
 fn theme_modes_and_ordered_defaults() {
     let (_, manifest) =
         compile("@theme static inline{--color-brand:red;--color-brand:blue;--spacing-card:2rem}");
-    assert_eq!(manifest["languageVersion"], 16);
+    assert_eq!(manifest["languageVersion"], 17);
     assert_eq!(manifest["theme"][0]["prelude"], ":root,:host");
     assert_eq!(manifest["theme"][0]["children"][0]["inline"], true);
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
@@ -73,7 +73,7 @@ fn inline_is_one_pass_and_recomputes_dependencies() {
     let mut e = engine(
         "@theme{--color-base:red}@theme inline{--color-brand:var(--color-base);--color-alias:var(--color-brand)}",
     );
-    e.ensure_class_rules(["bg-brand", "color:var(--color-alias)"])
+    e.ensure_class_rules(["bg-brand", "(color:var(--color-alias))"])
         .unwrap();
     let css = e.css_text().replace(' ', "");
     assert!(css.contains("background-color:var(--color-base)"));
@@ -81,7 +81,8 @@ fn inline_is_one_pass_and_recomputes_dependencies() {
     assert!(css.contains("--color-base:red"));
     assert!(css.contains("--color-brand:var(--color-base)"));
     assert!(!css.contains("--color-alias:"));
-    e.delete_class_rules(["color:var(--color-alias)"]).unwrap();
+    e.delete_class_rules(["(color:var(--color-alias))"])
+        .unwrap();
     assert!(!e.css_text().contains("--color-brand:"));
     e.delete_class_rules(["bg-brand"]).unwrap();
     assert!(e.css_text().is_empty());
@@ -241,7 +242,7 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
     e.ensure_class_rules([
         "bg-alias@apply(--hover)",
         "paint@apply(--hover)",
-        "color:var(--color-alias)@apply(--hover)",
+        "(color:var(--color-alias))@apply(--hover)",
     ])
     .unwrap();
     let css = e.css_text();
@@ -253,7 +254,7 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
 #[test]
 fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
     let base = serde_json::json!({
-        "version":6,"languageVersion":16,
+        "version":6,"languageVersion":17,
         "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
         "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
     });

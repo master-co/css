@@ -10,7 +10,7 @@ export const sizingRoles = [
     description: 'Set the height of fixed regions, viewport sections, media slots, and controls.'
   },
   {
-    utility: 'width:*, height:*',
+    utility: '(width:*), (height:*)',
     role: 'Equal axes',
     description: 'Set both dimensions explicitly when the element is square by design.'
   },
@@ -25,7 +25,7 @@ export const sizingRoles = [
     description: 'Cap growth for page wrappers, readable measures, panels, menus, and media.'
   },
   {
-    utility: 'flex-basis:*',
+    utility: '(flex-basis:*)',
     role: 'Flex starting size',
     description: 'Give flex items a shared starting main-axis size before free space is distributed.'
   },

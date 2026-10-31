@@ -5,23 +5,23 @@ import { createEngineSync } from '../../src/node'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const runtimeClassNames = [
-  "display:block",
-  'text-align:center',
+  "(display:block)",
+  '(text-align:center)',
   'bg-red-60',
   'fg-blue',
-  "margin:1rem",
-  "padding-bottom:2rem:not(:last-child)",
-  "width:calc(var(--h)|/|var(--w)*100%)",
+  "(margin:1rem)",
+  "(padding-bottom:2rem):not(:last-child)",
+  "(width:calc(var(--h)|/|var(--w)*100%))",
   "grid-cols(3)",
-  "display:none@sm",
-  'border:1px|solid|var(--color-line-divider)',
-  'font-size:.75rem',
+  "(display:none)@sm",
+  '(border:1px|solid|var(--color-line-divider))',
+  '(font-size:.75rem)',
   'round',
-  "position:fixed",
-  'animation:fade|1s',
+  "(position:fixed)",
+  '(animation:fade|1s)',
   '-translate-md',
-  'background-image:linear-gradient(currentColor,oklch(0%|0|none))',
-  "display:flex@sm"
+  '(background-image:linear-gradient(currentColor,oklch(0%|0|none)))',
+  "(display:flex)@sm"
 ]
 
 // Use time budgets even when one iteration creates 100 native sessions.
@@ -31,7 +31,7 @@ let sink = 0
 function createFixedBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
   return {
     version: 6,
-    languageVersion: 16,
+    languageVersion: 17,
     mixins: Array.from({ length: 100 }, (_, index) => ['left', 'right'].map(value => ({
       name: `--icon-${index}${separator}${value}`,
       body: [{ type: 'declaration' as const, property: 'grid-area', value: [{ type: 'text' as const, value }] }]

@@ -10,7 +10,7 @@ const [baseline, output] = process.argv.slice(2)
 if (!baseline || !output) throw new Error('Expected BASELINE_DIRECTORY OUTPUT.json; preserve current-release.node there.')
 const classes = ['size:20px', 'min-size:10px', 'max-size:40px', 'size-sm', 'min-size-md', 'max-size-lg']
 const migrated = [
-  'width:20px', 'height:20px', 'min-width:10px', 'min-height:10px', 'max-width:40px', 'max-height:40px',
+  '(width:20px)', '(height:20px)', '(min-width:10px)', '(min-height:10px)', '(max-width:40px)', '(max-height:40px)',
   'width-sm', 'height-sm', 'min-width-md', 'min-height-md', 'max-width-lg', 'max-height-lg'
 ]
 const sizes = value => {

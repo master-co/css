@@ -78,7 +78,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
 </head>
 <body>
-  <h1 class="margin:3rem color:#111827 font-size:40px font-style:italic font-weight:800">Hello World</h1>
+  <h1 class="(margin:3rem) (color:#111827) (font-size:40px) italic (font-weight:800)">Hello World</h1>
 </body>
 </html>
 ```

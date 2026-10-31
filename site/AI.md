@@ -189,7 +189,8 @@ Visible documentation examples should be as framework-neutral as practical:
 - Prefer native `html`, `css`, and `js` blocks.
 - Use `class`, not React `className`, in visible HTML examples.
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
-- Use native CSS references such as `width:var(--size)` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference. Preserve native resolution `x`.
+- Prefer the preset's fixed utilities (`block`, `flex`, `hidden`, `relative`, `items-center`, `justify-between`, `flex-col`, `box-border` and the rest of the declarations contract table) for those exact declarations; write every other native declaration as `(property:value)`. Keep `(property:value)` where a page teaches native syntax or needs a shorthand's resets, such as `(text-decoration:underline)`.
+- Use native CSS references such as `(width:var(--size))` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference. Preserve native resolution `x`.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing React state, `flushSync`, or site image components in visible examples unless the section is about that framework integration.
 - Implementation demos may use React and `flushSync`; displayed code does not need to match exactly.
@@ -219,12 +220,12 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `fg-text-body`, `fg-text-muted`, `fg-text-blue`, `bg-surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border-width:1px b-line-divider border-style:solid`.
+- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `fg-text-body`, `fg-text-muted`, `fg-text-blue`, `bg-surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `(border-width:1px) b-line-divider (border-style:solid)`.
 - Use project semantic tokens such as `divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
-- Preserve typography semantics: use `font-size:<value>` for raw font-only replacements, and `text-<token>` only when the complete type treatment is intended.
+- Preserve typography semantics: use `(font-size:<value>)` for raw font-only replacements, and `text-<token>` only when the complete type treatment is intended.
 - Prefer scale tokens such as `p-sm`, `gap-md`, and `mt-lg` over routine raw spacing, color, shadow, or timing values.
-- Author Master CSS classes around independent styling decisions. Single-setting native declarations such as `animation:none@media(print)`, `transition:none` and `white-space:nowrap` are allowed; do not mechanically expand them into reset declarations because CSS categorizes their property as a shorthand. Keep single-aspect, uniform-value families such as `p-sm`, `gap-md`, and `b-line-divider`; split different edge or axis values without changing physical/logical meaning. Use `border-width:1px b-line-control border-style:solid`, not a compound border class. Native CSS files, CSS examples and inline style objects may use ordinary CSS shorthands. Do not expand native CSS as part of class migrations.
-- Low-level values are acceptable when teaching syntax, no token exists, the value is local measured geometry, or the value is structural layout such as `width:50%`, `height:100dvh`, `margin:0`, `margin:1px`, `z-index:1`, or `opacity:.64`.
+- Author Master CSS classes around independent styling decisions. Single-setting native declarations such as `(animation:none)@media(print)`, `(transition:none)` and `(white-space:nowrap)` are allowed; do not mechanically expand them into reset declarations because CSS categorizes their property as a shorthand. Keep single-aspect, uniform-value families such as `p-sm`, `gap-md`, and `b-line-divider`; split different edge or axis values without changing physical/logical meaning. Use `(border-width:1px) b-line-control (border-style:solid)`, not a compound border class. Native CSS files, CSS examples and inline style objects may use ordinary CSS shorthands. Do not expand native CSS as part of class migrations.
+- Low-level values are acceptable when teaching syntax, no token exists, the value is local measured geometry, or the value is structural layout such as `(width:50%)`, `(height:100dvh)`, `(margin:0)`, `(margin:1px)`, `(z-index:1)`, or `(opacity:.64)`.
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.
 

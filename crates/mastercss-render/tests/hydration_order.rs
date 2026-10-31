@@ -5,7 +5,7 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version":6,"languageVersion":16,
+        "version":6,"languageVersion":17,
         "variables": { "": [
             { "name": "x", "key": "x", "values":[{"path":[":root,:host"],"value":"red"}] },
             { "name": "y", "key": "y", "values":[{"path":[":root,:host"],"value":"blue"}] },
@@ -50,15 +50,15 @@ fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
 fn warmed_subsets_restore_authored_theme_order_with_host_globals() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let classes = [
-        "animation:rotate|1s",
-        "background:blue-60",
-        "animation:fade|1s",
-        "color:red-60",
+        "(animation:rotate|1s)",
+        "(background:blue-60)",
+        "(animation:fade|1s)",
+        "(color:red-60)",
     ];
     for emitted in [None, Some(r#"{"variables":{"color-red-60":1}}"#)] {
         let mut renderer = RenderSession::create(manifest, emitted).unwrap();
         renderer
-            .ensure_classes(["color:green-60", "hidden"])
+            .ensure_classes(["(color:green-60)", "hidden"])
             .unwrap();
         for class_name in classes.iter().rev() {
             renderer.ensure_classes([class_name]).unwrap();

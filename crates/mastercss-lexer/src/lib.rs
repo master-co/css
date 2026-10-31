@@ -4,6 +4,11 @@ pub mod text;
 mod utf16_index;
 pub use utf16_index::Utf16Index;
 
+mod class_head;
+pub use class_head::{
+    NativeDeclarationHead, decode_native_value, is_class_suffix_start, native_declaration_prefix,
+    parse_native_declaration,
+};
 mod functional_class;
 pub use functional_class::{FunctionalClassHead, parse_functional_class, parse_mixin_call};
 

@@ -70,10 +70,10 @@ test('keeps a fully pre-rendered page off the engine and the program', async ({ 
   const { loaderURL, requests } = await openPrerenderedPage(
     page,
     '<p id="target" class="fg-red-60"></p><p id="other"></p>',
-    ['fg-red-60', 'display:block']
+    ['fg-red-60', '(display:block)']
   )
   await startDeferredRuntime(page, loaderURL)
-  await page.evaluate(() => document.getElementById('other')!.classList.add('display:block'))
+  await page.evaluate(() => document.getElementById('other')!.classList.add('(display:block)'))
   await waitForFrames(page)
 
   expect(await page.evaluate(() => {
@@ -95,15 +95,84 @@ test('keeps a fully pre-rendered page off the engine and the program', async ({ 
     binding: null,
     observing: true,
     hydration: 'progressive',
-    usageCounts: { 'display:block': 1, 'fg-red-60': 1 },
+    usageCounts: { '(display:block)': 1, 'fg-red-60': 1 },
     // Rules come from the engine, so a deferred runtime reports usage only.
-    ruleCounts: { 'display:block': 0, 'fg-red-60': 0 },
+    ruleCounts: { '(display:block)': 0, 'fg-red-60': 0 },
     prerendered: true,
     programLoads: 0,
     color: expect.not.stringMatching(/^rgb\(0, 0, 0\)$/),
     display: 'block'
   })
   expect(engineRequests(requests)).toEqual([])
+})
+
+test('keeps a page of short utilities and parenthesized declarations deferred until an uncovered class appears', async ({ page }) => {
+  const classNames = ['flex', 'items-center', 'hidden', 'block', '(padding:8px)', '(color:red)']
+  const { cssText } = renderClassNamesSync(classNames, { manifest: defaultManifest })
+  const { loaderURL, requests } = await openPrerenderedPage(
+    page,
+    '<div id="panel" class="flex items-center (padding:8px)"></div><span id="target" class="hidden (color:red)">Target</span><span id="other" class="block">Other</span>',
+    classNames
+  )
+  const programRequests = () => requests.filter(url => url.endsWith('/@master-css/runtime-program'))
+  await startDeferredRuntime(page, loaderURL)
+  // Page script toggles classes the hydration manifest covers.
+  await page.evaluate(() => {
+    const other = document.getElementById('other')!
+    other.classList.add('hidden', '(color:red)')
+    other.classList.remove('block')
+    document.getElementById('target')!.classList.toggle('hidden')
+  })
+  await waitForFrames(page)
+
+  const read = () => page.evaluate(() => {
+    const snapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
+    const display = (id: string) => getComputedStyle(document.getElementById(id)!).display
+    return {
+      engine: snapshot.engine,
+      binding: snapshot.binding ?? null,
+      hydration: snapshot.hydration.state,
+      cssText: snapshot.cssText,
+      usageCounts: snapshot.usageCounts,
+      programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__,
+      displays: [display('panel'), display('target'), display('other')]
+    }
+  })
+  expect(await read()).toEqual({
+    engine: 'deferred',
+    binding: null,
+    hydration: 'progressive',
+    cssText,
+    usageCounts: { '(color:red)': 2, '(padding:8px)': 1, flex: 1, hidden: 1, 'items-center': 1 },
+    programLoads: 0,
+    displays: ['flex', 'inline', 'none']
+  })
+  expect(engineRequests(requests)).toEqual([])
+  expect(programRequests()).toEqual([])
+
+  // The first class pre-rendered CSS lacks imports the engine and requests the program once.
+  await page.evaluate(() => document.getElementById('target')!.classList.add('invisible'))
+  await waitForEngine(page, 'ready')
+  await waitForFrames(page)
+  expect(await read()).toMatchObject({
+    binding: 'js',
+    hydration: 'progressive',
+    usageCounts: { '(color:red)': 2, '(padding:8px)': 1, flex: 1, hidden: 1, invisible: 1, 'items-center': 1 },
+    programLoads: 1,
+    displays: ['flex', 'inline', 'none']
+  })
+  expect(await page.evaluate(() => {
+    const { classRules } = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
+    return {
+      invisible: classRules.invisible?.rules.map(rule => rule.text),
+      hidden: classRules.hidden?.rules.length,
+      // Removed while deferred: the engine retains it until cleanup.
+      blockRetained: classRules.block?.retained,
+      visibility: getComputedStyle(document.getElementById('target')!).visibility
+    }
+  })).toEqual({ invisible: ['.invisible{visibility:hidden}'], hidden: 1, blockRetained: true, visibility: 'hidden' })
+  expect(engineRequests(requests)).not.toEqual([])
+  expect(programRequests()).toHaveLength(1)
 })
 
 test('keeps the engine deferred when a page script adds a mode class from manifest selectors', async ({ page }) => {
@@ -139,7 +208,7 @@ test('starts the engine once for the first class pre-rendered CSS lacks', async 
   const { loaderURL, requests } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60"></p>', ['fg-red-60'])
   await startDeferredRuntime(page, loaderURL)
   await page.evaluate(() => {
-    document.getElementById('target')!.classList.add('display:flex')
+    document.getElementById('target')!.classList.add('(display:flex)')
     const other = document.createElement('p')
     other.className = 'fg-blue-60'
     document.body.append(other)
@@ -151,7 +220,7 @@ test('starts the engine once for the first class pre-rendered CSS lacks', async 
     return {
       binding: snapshot.binding,
       hydration: snapshot.hydration.state,
-      generated: ['display:flex', 'fg-blue-60', 'fg-red-60'].map(className => snapshot.classRules[className]?.rules.length),
+      generated: ['(display:flex)', 'fg-blue-60', 'fg-red-60'].map(className => snapshot.classRules[className]?.rules.length),
       programLoads: globalThis.__MASTER_CSS_RUNTIME_PROGRAM_LOADS__,
       display: getComputedStyle(document.getElementById('target')!).display
     }
@@ -219,7 +288,7 @@ test('keeps pre-rendered CSS and waits for a retry when the deferred engine fail
   })
   const { loaderURL } = await openPrerenderedPage(page, '<p id="target" class="fg-red-60"></p>', ['fg-red-60'])
   await startDeferredRuntime(page, loaderURL)
-  await page.evaluate(() => document.getElementById('target')!.classList.add('display:flex'))
+  await page.evaluate(() => document.getElementById('target')!.classList.add('(display:flex)'))
   await waitForEngine(page, 'failed')
 
   expect(await page.evaluate(async () => {

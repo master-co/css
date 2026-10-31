@@ -3,16 +3,16 @@ use super::*;
 #[test]
 fn validates_current_manifest_fields_only() {
     let source =
-        r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"red","values":[]}]}}"#;
+        r#"{"version":6,"languageVersion":17,"variables":{"color":[{"key":"red","values":[]}]}}"#;
     let manifest = MasterCssManifest::parse(source).unwrap();
     assert_eq!(manifest.to_json().unwrap(), source);
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":6,"languageVersion":16,"future":{}}"#),
+        MasterCssManifest::parse(r#"{"version":6,"languageVersion":17,"future":{}}"#),
         Err(SchemaError::UnknownField(field)) if field == "future"
     ));
     assert!(matches!(
         MasterCssManifest::parse(
-            r#"{"version":6,"languageVersion":16,"variables":{"color":[{"key":"red","values":[],"future":1}]}}"#
+            r#"{"version":6,"languageVersion":17,"variables":{"color":[{"key":"red","values":[],"future":1}]}}"#
         ),
         Err(SchemaError::UnknownField(field)) if field == "variables.*.future"
     ));
@@ -29,7 +29,7 @@ fn rejects_unsupported_manifest_versions_and_shapes() {
         Err(SchemaError::UnsupportedManifestVersion)
     ));
     assert!(matches!(
-        MasterCssManifest::parse(r#"{"version":6,"languageVersion":16,"variables":[]}"#),
+        MasterCssManifest::parse(r#"{"version":6,"languageVersion":17,"variables":[]}"#),
         Err(SchemaError::UnsupportedVariablesFormat)
     ));
 }

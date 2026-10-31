@@ -9,14 +9,14 @@ import { atomicClassIssue, createAtomicClassAudit } from './atomic-class-authori
 const root = fileURLToPath(new URL('../../', import.meta.url))
 
 test('policy distinguishes class composition from native CSS and structured values', () => {
-  for (const value of ['border:1px|solid|red', 'animation:fade|1s', 'margin:1px|2px', 'grid-column:1/3', 'overflow:hidden|auto']) assert.ok(atomicClassIssue(value), value)
-  for (const value of ['animation:none@media(print)', 'transition:none', 'outline:none', 'white-space:nowrap', 'text-decoration:underline', 'p-sm', 'b-line-control', 'margin:1px|1px', 'margin:var(--space,1px)', 'gap:1rem', 'grid-area:main', 'grid-column:span|2', 'transform:translate(1px,2px)', 'background-image:linear-gradient(red,blue)', 'box-shadow:0|0|2px|red']) assert.equal(atomicClassIssue(value), undefined, value)
+  for (const value of ['(border:1px|solid|red)', '(animation:fade|1s)', '(margin:1px|2px)', '(grid-column:1/3)', '(overflow:hidden|auto)']) assert.ok(atomicClassIssue(value), value)
+  for (const value of ['(animation:none)@media(print)', '(transition:none)', '(outline:none)', '(white-space:nowrap)', '(text-decoration:underline)', 'p-sm', 'b-line-control', '(margin:1px|1px)', '(margin:var(--space,1px))', '(gap:1rem)', '(grid-area:main)', '(grid-column:span|2)', '(transform:translate(1px,2px))', '(background-image:linear-gradient(red,blue))', '(box-shadow:0|0|2px|red)']) assert.equal(atomicClassIssue(value), undefined, value)
   const audit = createAtomicClassAudit()
   try {
     assert.deepEqual(audit.inspect('<style>.x{border:1px solid red;margin:1px 2px}</style><div style="border:1px solid red"></div>', 'html'), [])
     assert.deepEqual(audit.inspect(`const x = <div style={{border: '1px solid red', margin: '1px 2px'}}/>`, 'typescriptreact'), [])
     assert.equal(audit.inspect('<div class="p-sm pt-lg"></div>', 'html').length, 1)
-    assert.equal(audit.inspect('<div class="border:1px|solid|red:hover"></div>', 'html').length, 1)
+    assert.equal(audit.inspect('<div class="(border:1px|solid|red):hover"></div>', 'html').length, 1)
   } finally { audit.dispose() }
 })
 

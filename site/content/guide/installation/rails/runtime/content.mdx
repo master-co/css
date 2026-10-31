@@ -116,7 +116,7 @@ Use Vite runtime rendering when Rails owns the page lifecycle. Rails renders ERB
 </StepSection>
 
 ```html name=app/views/home/index.html.erb
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
@@ -137,5 +137,5 @@ Runtime styling starts after the browser loads JavaScript. The example keeps the
 After startup, run this in the browser console. The heading should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```

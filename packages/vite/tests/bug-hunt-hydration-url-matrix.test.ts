@@ -19,7 +19,7 @@ test.each([
   try {
     for (const name of names) {
       mkdirSync(dirname(join(root, name)), { recursive: true })
-      writeFileSync(join(root, name), "<html><head></head><body><div class=\"display:block\"></div><script type=\"module\" src=\"/main.ts\"></script></body></html>")
+      writeFileSync(join(root, name), "<html><head></head><body><div class=\"(display:block)\"></div><script type=\"module\" src=\"/main.ts\"></script></body></html>")
     }
     writeFileSync(join(root, 'main.ts'), 'import "./master.css"')
     writeFileSync(join(root, 'master.css'), '@import url("@master/css");')
@@ -37,7 +37,7 @@ test.each([
       const hrefs = [...html.matchAll(/data-master-css-hydration-manifest="([^"]+)"/g)].map(match => match[1])
       if (mode === 'pre-render') {
         expect(hrefs, name).toHaveLength(0)
-        expect(html).toContain(".display\\:block{display:block}")
+        expect(html).toContain(".\\(display\\:block\\){display:block}")
         expect(html).not.toContain('master-css-hydration-manifest')
         continue
       }
@@ -49,7 +49,7 @@ test.each([
       const asset = url.pathname.slice('/app/'.length)
       expect(asset).toMatch(new RegExp(`^${assetsDir ? assetsDir + '/' : ''}_master-css/hydration/master-css-hydration\\.[a-f0-9]{8}\\.json$`))
       const manifest = JSON.parse(readFileSync(join(root, 'dist', asset), 'utf8'))
-      expect(manifest.classNames).toContain("display:block")
+      expect(manifest.classNames).toContain("(display:block)")
       assets.add(asset)
     }
     // Same classes share JSON bytes, but each page gets its own relative URL.

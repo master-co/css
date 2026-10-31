@@ -20,7 +20,7 @@ const compiled = compileManifestSync(`
 
   [data-theme=ocean], :host([data-theme=ocean]) { --color-brand: blue; }
 }
-`, { baseManifest: { version: 6, languageVersion: 16 } })
+`, { baseManifest: { version: 6, languageVersion: 17 } })
 const { manifest } = compiled
 const nativeCSS = compiled.css
 const classes = ['bg-alias', 'bg-brand', 'p-card']
@@ -87,7 +87,7 @@ const staticResourceSource = '@mixin --bg(--color){background-color:var(--color)
 
 for (const hydrate of [false, true]) {
   test(`static resources survive zero classes, mutation and HMR (hydrate=${hydrate})`, async ({ page }) => {
-    const { manifest } = compileManifestSync(staticResourceSource, { baseManifest: { version: 6, languageVersion: 16 } })
+    const { manifest } = compileManifestSync(staticResourceSource, { baseManifest: { version: 6, languageVersion: 17 } })
     const content = '<!doctype html><html><head></head><body><div id="target"></div></body></html>'
     using renderer = createServerRenderer({ manifest })
     const rendered = renderer.renderHTML(content, { hydrationManifest: 'inject' })
@@ -113,14 +113,14 @@ for (const hydrate of [false, true]) {
     await expect.poll(() => page.evaluate(() => globalThis.masterCSSRuntime.snapshot().classRules['animate-enter']?.retained ?? false)).toBe(false)
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
     expect(await resources()).toEqual({ names: ['enter'], fixed: 'red' })
-    const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 16 } }).manifest
+    const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), { baseManifest: { version: 6, languageVersion: 17 } }).manifest
     await page.evaluate(program => globalThis.masterCSSRuntime.refresh(program), compileProgram(refreshed))
     expect(await resources()).toEqual({ names: [], fixed: '' })
   })
 }
 
 test('HMR releases class rules whose deferred removal has not flushed', async ({ page }) => {
-  const options = { baseManifest: { version: 6, languageVersion: 16 } }
+  const options = { baseManifest: { version: 6, languageVersion: 17 } }
   const { manifest } = compileManifestSync(staticResourceSource, options)
   const refreshed = compileManifestSync(staticResourceSource.replace('static inline', 'inline'), options).manifest
   await page.setContent('<!doctype html><html><head></head><body><div id="target" class="bg-fixed animate-enter"></div></body></html>')

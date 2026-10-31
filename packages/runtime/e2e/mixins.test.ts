@@ -14,11 +14,11 @@ const source = `@theme { --text-hero: 30px; --text-unused: 100px; }
 @utility nested(--count <integer>) { @apply --grid(var(--count)); }
 @utility unused { @apply --text("unused"); }`
 const manifest = compileManifestSync(source, { baseManifest }).manifest
-const classes = ['nested(3)', 'text-hero', 'font-size:24px']
+const classes = ['nested(3)', 'text-hero', '(font-size:24px)']
 
 for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: named and nested parameter mixins generate on demand and hydrate consistently`, async ({ page }) => {
-    const html = '<html><head></head><body><div id="grid" class="nested(3)"></div><p id="text" class="text-hero font-size:24px">Hero</p></body></html>'
+    const html = '<html><head></head><body><div id="grid" class="nested(3)"></div><p id="text" class="text-hero (font-size:24px)">Hero</p></body></html>'
     const generated = renderClassNamesSync(classes, { manifest })
     expect(generated.cssText).toContain('--text-hero:30px')
     expect(generated.cssText).not.toContain('--text-unused')

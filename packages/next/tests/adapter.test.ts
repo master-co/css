@@ -180,7 +180,7 @@ describe('renderNextBuildOutputs', () => {
     const distDir = join(projectDir, '.next')
     const htmlFile = join(distDir, 'server/app/index.html')
     mkdirSync(join(distDir, 'server/app'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="font-size:40px fg-red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="(font-size:40px) fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile),
@@ -189,7 +189,7 @@ describe('renderNextBuildOutputs', () => {
     const html = readFileSync(htmlFile, 'utf-8')
 
     expect(outputs).toHaveLength(1)
-    expect(outputs[0].classes).toEqual(['font-size:40px', 'fg-red'])
+    expect(outputs[0].classes).toEqual(['(font-size:40px)', 'fg-red'])
     expect(outputs[0].rendered).toBe(true)
     expect(outputs[0].hydrationManifestBytes).toBeGreaterThan(0)
     const hydrationManifestFile = outputs[0].hydrationManifestFile
@@ -199,13 +199,13 @@ describe('renderNextBuildOutputs', () => {
     expect(readHydrationManifestSource(html)).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(countHydrationManifestScripts(html)).toBe(0)
-    expect(html).toContain('.font-size\\:40px')
+    expect(html).toContain('.\\(font-size\\:40px\\)')
     expect(html).toContain('.fg-red')
     expect(existsSync(join(distDir, 'master-css-build-report.json'))).toBe(true)
     expect(existsSync(hydrationManifestFile)).toBe(true)
     const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
     expect(hydrationManifest.version).toBe(5)
-    expect(hydrationManifest.classNames).toEqual(expect.arrayContaining(['font-size:40px', 'fg-red']))
+    expect(hydrationManifest.classNames).toEqual(expect.arrayContaining(['(font-size:40px)', 'fg-red']))
     // Rule metadata stays with the engine; the manifest only names rendered classes.
     expect(hydrationManifest.rules).toBeUndefined()
   })

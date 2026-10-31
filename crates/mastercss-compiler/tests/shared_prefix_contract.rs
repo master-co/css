@@ -158,7 +158,7 @@ fn static_longest_prefix_native_and_function_precedence_remain_independent() {
     assert!(e.inspect("font-big-sm").unwrap().rules.is_empty());
     assert_eq!(declarations(&e, "font-big-md"), "width:var(--other-md)");
     assert_eq!(
-        declarations(&e, "font-size:var(--font-size-sm)"),
+        declarations(&e, "(font-size:var(--font-size-sm))"),
         "font-size:var(--font-size-sm)"
     );
     assert_eq!(declarations(&e, "font(16px|serif)"), "font:16px serif");

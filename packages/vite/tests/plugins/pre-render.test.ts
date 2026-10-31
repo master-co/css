@@ -42,7 +42,7 @@ describe('PreRenderPlugin', () => {
     expect(preRenderPlugin).toBeDefined()
     const result = await (preRenderPlugin as any).transformIndexHtml.call(
       {},
-      "<html><head></head><body><section class=\"card padding:0.125rem\">Content</section></body></html>",
+      "<html><head></head><body><section class=\"card (padding:0.125rem)\">Content</section></body></html>",
     )
     const html = typeof result === 'string' ? result : result.html
     const hydrationManifestSource = html.match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
@@ -52,7 +52,7 @@ describe('PreRenderPlugin', () => {
     if (mode === 'progressive') expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
     expect(html).toContain('@layer utilities{.card{background-color:var(--color-brand)}@media (width >= 48rem){.card{font-size:1.125rem}}.card{border-color:#456}')
     expect(html).toContain('@media (width >= 48rem){.card{font-size:1.125rem}}')
-    expect(html).toContain(".padding\\:0\\.125rem{padding:0.125rem}}")
+    expect(html).toContain(".\\(padding\\:0\\.125rem\\){padding:0.125rem}}")
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
 
@@ -85,7 +85,7 @@ describe('PreRenderPlugin', () => {
     expect(headers.get('Content-Type')).toContain('application/json')
     const hydrationManifest = JSON.parse(body)
     expect(hydrationManifest.version).toBe(5)
-    expect(hydrationManifest.classNames).toEqual(['card', "padding:0.125rem"])
+    expect(hydrationManifest.classNames).toEqual(['card', "(padding:0.125rem)"])
     expect(hydrationManifest.rules).toBeUndefined()
   })
 

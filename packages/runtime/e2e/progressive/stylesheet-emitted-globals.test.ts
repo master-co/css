@@ -18,7 +18,7 @@ test('hydrates tokens a linked stylesheet emits when the runtime bundle does not
   expect(result.emittedGlobals.variables['color-text-body']).toBeGreaterThan(0)
   using compiler = createCompilerSync()
   const { renderHTML } = await import('@master/css-server')
-  const rendered = renderHTML(`<html><head><link rel="stylesheet" href="${href}"></head><body><main id="probe" class="card fg-text-body margin-top:12px">Probe</main></body></html>`, {
+  const rendered = renderHTML(`<html><head><link rel="stylesheet" href="${href}"></head><body><main id="probe" class="card fg-text-body (margin-top:12px)">Probe</main></body></html>`, {
     manifest: result.manifest,
     emittedGlobals: result.emittedGlobals,
     stylesheets: [{ href, asset: createRuntimeStylesheetAsset(compiler, result.css, href, [href]) }],

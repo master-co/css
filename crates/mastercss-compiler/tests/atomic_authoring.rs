@@ -24,13 +24,13 @@ fn engine() -> EngineSession {
 fn declarations_use_one_priority_without_shorthand_interpretation() {
     let engine = engine();
     for class in [
-        "margin:1px|1px",
-        "border:1px|solid|red",
-        "padding-top:2px",
+        "(margin:1px|1px)",
+        "(border:1px|solid|red)",
+        "(padding-top:2px)",
         "p-sm",
-        "border-width:1px",
-        "animation:fade|1s",
-        "--custom:a|b",
+        "(border-width:1px)",
+        "(animation:fade|1s)",
+        "(--custom:a|b)",
     ] {
         let inspection = engine.inspect(class).unwrap();
         assert_eq!(inspection.match_status, MatchStatus::Matched, "{class}");
@@ -40,11 +40,11 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
         );
     }
     assert!(
-        engine.inspect("margin:1px|1px").unwrap().rules[0]
+        engine.inspect("(margin:1px|1px)").unwrap().rules[0]
             .text
             .contains("margin:1px 1px")
     );
-    let disabled = engine.inspect("animation:none@media(print)").unwrap();
+    let disabled = engine.inspect("(animation:none)@media(print)").unwrap();
     assert_eq!(disabled.match_status, MatchStatus::Matched);
     let rule = &disabled.rules[0];
     assert!(rule.text.contains("@media print"), "{}", rule.text);
@@ -65,7 +65,7 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
         );
     }
     let conditional = engine
-        .inspect("border-width:calc(1px+1px):hover@media((width>=40rem))!")
+        .inspect("(border-width:calc(1px+1px)):hover@media((width>=40rem))!")
         .unwrap();
     assert_eq!(conditional.match_status, MatchStatus::Matched);
     assert!(
@@ -111,16 +111,16 @@ fn atomic_overrides_follow_general_value_source_order() {
     let mut right = engine();
     left.ensure_class_rules([
         "pt-sm",
-        "padding:8px",
+        "(padding:8px)",
         "animate-float",
-        "animation-duration:2s",
+        "(animation-duration:2s)",
     ])
     .unwrap();
     right
         .ensure_class_rules([
-            "animation-duration:2s",
+            "(animation-duration:2s)",
             "animate-float",
-            "padding:8px",
+            "(padding:8px)",
             "pt-sm",
         ])
         .unwrap();
@@ -135,8 +135,8 @@ fn animation_token_and_longhand_order_does_not_depend_on_class_order() {
     let classes = [
         "animate-fade",
         "animation-fast",
-        "animation-duration:var(--duration-slow)",
-        "animation-iteration-count:1",
+        "(animation-duration:var(--duration-slow))",
+        "(animation-iteration-count:1)",
     ];
     let mut left = engine();
     let mut right = engine();

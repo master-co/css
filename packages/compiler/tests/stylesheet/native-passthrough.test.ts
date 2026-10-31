@@ -7,7 +7,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 test('optionally preserves unchanged native text while keeping the default delivery contract', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-native-passthrough-'))
-  const baseManifest: MasterCSSManifest = { version: 6, languageVersion: 16 }
+  const baseManifest: MasterCSSManifest = { version: 6, languageVersion: 17 }
   const source = '/* native */\n.card { color: var(--foreign); background: url("./pixel.svg") }'
   writeFileSync(join(root, 'pixel.svg'), '<svg/>')
   const options = {

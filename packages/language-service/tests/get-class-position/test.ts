@@ -61,18 +61,18 @@ test.concurrent('valid classes', () => {
 
 test.concurrent('class in CSS @safelist', () => {
   const target = 'bg-primary'
-  const contents = ['.btn { @safelist "display:inline-flex ', target, '"; }']
+  const contents = ['.btn { @safelist "(display:inline-flex) ', target, '"; }']
   expectClassPosition(target, contents, 'css')
 })
 
 test.concurrent('class in Vue style @safelist', () => {
   const target = 'bg-primary'
-  const contents = ['<template><button /></template><style>.btn { @safelist "display:inline-flex ', target, '"; }</style>']
+  const contents = ['<template><button /></template><style>.btn { @safelist "(display:inline-flex) ', target, '"; }</style>']
   expectClassPosition(target, contents, 'vue')
 })
 
 test.concurrent('quote in class', () => {
-  const target = `content:''`
+  const target = `(content:'')`
   const contents = ['<div class="class-a ', target, '"></div>']
   expectClassPosition(target, contents)
 })
@@ -94,7 +94,7 @@ test.concurrent('ignores class attributes inside HTML comments', () => {
 })
 
 test.concurrent('nested strings and literals', () => {
-  const target = `content:\\'\\'`
+  const target = `(content:\\'\\')`
   const contents = [`export default () => <div className={'block `, target, `'}>hello world</div>`]
   expectClassPosition(target, contents, 'tsx')
 })

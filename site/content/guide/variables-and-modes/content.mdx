@@ -7,7 +7,7 @@ CSS custom properties let multiple declarations share a value. A Master CSS them
 
 <DemoConfiguredExample name="shared-spacing-value" title="Give a repeated value a name" source={`@theme {
   --spacing-card: 1.5rem;
-}`} html={'<article class="p-card r-lg bg-surface-raised fg-text-body"><h2 class="margin:0 text-lg font-semibold">Collection notes</h2><p class="mt-sm margin-bottom:0 text-sm fg-text-muted">The card padding comes from --spacing-card.</p></article>'} theme previewFirst caption="p-card generates padding:var(--spacing-card). The browser resolves that custom property on the card." />
+}`} html={'<article class="p-card r-lg bg-surface-raised fg-text-body"><h2 class="(margin:0) text-lg font-semibold">Collection notes</h2><p class="mt-sm (margin-bottom:0) text-sm fg-text-muted">The card padding comes from --spacing-card.</p></article>'} theme previewFirst caption="p-card generates (padding:var(--spacing-card)). The browser resolves that custom property on the card." />
 
 This example compiles the theme with the current preset before generating the class. Change the theme value when every consumer should change together; choose a local value when the change belongs to one element.
 
@@ -23,7 +23,7 @@ A color can keep the same name while following the element's color scheme. The o
 @layer base {
   [data-theme="light"] { color-scheme: light; }
   [data-theme="dark"] { color-scheme: dark; }
-}`} html={'<section data-theme="dark" class="p-card r-lg bg-surface-notes fg-text-body overflow-wrap:anywhere"><h2 class="margin:0 text-lg font-semibold">Dark notes</h2><p class="mt-sm mb-md text-sm">This region explicitly chooses dark.</p><article data-theme="light" class="p-card r-md bg-surface-notes fg-text-body"><h3 class="margin:0 text-md font-semibold">A light region inside</h3><p class="mt-sm margin-bottom:0 text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} previewFirst caption="Both regions use bg-surface-notes. Their data-theme attributes select different native color schemes, so light-dark() supplies a dark outer surface and a light inner surface." />
+}`} html={'<section data-theme="dark" class="p-card r-lg bg-surface-notes fg-text-body (overflow-wrap:anywhere)"><h2 class="(margin:0) text-lg font-semibold">Dark notes</h2><p class="mt-sm mb-md text-sm">This region explicitly chooses dark.</p><article data-theme="light" class="p-card r-md bg-surface-notes fg-text-body"><h3 class="(margin:0) text-md font-semibold">A light region inside</h3><p class="mt-sm (margin-bottom:0) text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} previewFirst caption="Both regions use bg-surface-notes. Their data-theme attributes select different native color schemes, so light-dark() supplies a dark outer surface and a light inner surface." />
 
 The native selectors connect `data-theme` to `color-scheme`. The preset already supplies these light/dark selectors and enables `color-scheme: light dark` at the root; they are shown here to make activation explicit. The same `bg-surface-notes` class adapts in both regions. A nested region inherits its parent's values unless it explicitly overrides them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for system, manual and nested themes.
 

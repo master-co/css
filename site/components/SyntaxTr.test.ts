@@ -6,8 +6,8 @@ import { createSyntaxTrPlaceholderContext, type SyntaxTrHastNode } from './synta
 
 test('proxies size with a px value and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('width:`size`')
-  assert.equal(proxy, 'width:100000000px')
+  const proxy = placeholders.proxy('(width:`size`)')
+  assert.equal(proxy, '(width:100000000px)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.width, '100000000px')
@@ -19,8 +19,8 @@ test('proxies size with a px value and restores the placeholder in generated dec
 
 test('restores syntax placeholders without styling the whole text token', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('margin-top:`size`')
-  assert.equal(proxy, 'margin-top:100000000px')
+  const proxy = placeholders.proxy('(margin-top:`size`)')
+  assert.equal(proxy, '(margin-top:100000000px)')
 
   const root: SyntaxTrHastNode = {
     type: 'root',
@@ -37,19 +37,20 @@ test('restores syntax placeholders without styling the whole text token', () => 
   const token = root.children?.[0]
   const placeholder = token?.children?.[1]
 
-  assert.equal(collectText(root), 'margin-top:<size>')
+  assert.equal(collectText(root), '(margin-top:<size>)')
   assert.equal(token?.properties?.class, 'syntax-token')
-  assert.deepEqual(token?.children?.[0], { type: 'text', value: 'margin-top:' })
+  assert.deepEqual(token?.children?.[0], { type: 'text', value: '(margin-top:' })
+  assert.deepEqual(token?.children?.[2], { type: 'text', value: ')' })
   assert.equal(placeholder?.type, 'element')
   assert.equal(placeholder?.tagName, 'span')
-  assert.equal(placeholder?.properties?.class, 'fg-text-muted font-style:italic margin-right:0.125rem:not(:last)')
+  assert.equal(placeholder?.properties?.class, 'fg-text-muted italic (margin-right:0.125rem):not(:last)')
   assert.equal(collectText(placeholder ?? {}), '<size>')
 })
 
 test('proxies length without a unit and restores length and color placeholders', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('-webkit-text-stroke:`length`|`color`')
-  assert.equal(proxy, '-webkit-text-stroke:123456789|#12345678')
+  const proxy = placeholders.proxy('(-webkit-text-stroke:`length`|`color`)')
+  assert.equal(proxy, '(-webkit-text-stroke:123456789|#12345678)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations['-webkit-text-stroke'], '123456789 #12345678')
@@ -75,8 +76,8 @@ test('proxies integer without a unit and restores the placeholder in generated d
 
 test('proxies number without a unit and restores the placeholder in generated declarations', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('border-image-slice:`number`')
-  assert.equal(proxy, 'border-image-slice:246813579')
+  const proxy = placeholders.proxy('(border-image-slice:`number`)')
+  assert.equal(proxy, '(border-image-slice:246813579)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations['border-image-slice'], '246813579')
@@ -88,8 +89,8 @@ test('proxies number without a unit and restores the placeholder in generated de
 
 test('proxies hex placeholders inside color literals', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('fill:#`hex`')
-  assert.equal(proxy, 'fill:#123456')
+  const proxy = placeholders.proxy('(fill:#`hex`)')
+  assert.equal(proxy, '(fill:#123456)')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.fill, '#123456')
@@ -101,8 +102,8 @@ test('proxies hex placeholders inside color literals', () => {
 
 test('proxies URL placeholders with valid URL values', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('filter:url(`svg`)')
-  assert.equal(proxy, 'filter:url(#mcss-syntax-svg)')
+  const proxy = placeholders.proxy('(filter:url(`svg`))')
+  assert.equal(proxy, '(filter:url(#mcss-syntax-svg))')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.filter, 'url(#mcss-syntax-svg)')
@@ -132,8 +133,8 @@ test('proxies preset namespace placeholders and restores declaration values', ()
 
 test('restores generic placeholders split across text nodes', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('scroll-snap-align:`value`')
-  assert.equal(proxy, 'scroll-snap-align:var(--mcss-syntax-value)')
+  const proxy = placeholders.proxy('(scroll-snap-align:`value`)')
+  assert.equal(proxy, '(scroll-snap-align:var(--mcss-syntax-value))')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations['scroll-snap-align'], 'var(--mcss-syntax-value)')
@@ -156,7 +157,7 @@ test('uses the current syntax declarations before falling back to preview syntax
     'var(--color-red)'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('background-color:#12345678', 'bg-blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('(background-color:#12345678)', 'bg-blue-60')?.['background-color'],
     '#12345678'
   )
   assert.equal(
@@ -166,8 +167,8 @@ test('uses the current syntax declarations before falling back to preview syntax
 })
 
 test('preserves native values and only falls back for unmatched Master names', () => {
-  assert.equal(generateSyntaxTrDeclarations('appearance:push-button').appearance, 'push-button')
-  assert.equal(generateSyntaxTrDeclarations('future-property:new-value', 'bg-blue-60')['future-property'], 'new-value')
+  assert.equal(generateSyntaxTrDeclarations('(appearance:push-button)').appearance, 'push-button')
+  assert.equal(generateSyntaxTrDeclarations('(future-property:new-value)', 'bg-blue-60')['future-property'], 'new-value')
   assert.throws(
     () => generateSyntaxTrDeclarations('unknown-token'),
     /SyntaxTr generated empty CSS declarations for `unknown-token`\./

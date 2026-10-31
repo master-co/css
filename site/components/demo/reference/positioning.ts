@@ -63,7 +63,7 @@ export function stacking(section: ReferenceDemoSection): DemoScene {
   const layer = (text: string, classes: string, tone: string) => tile(text, classes, tone, 'display:grid;align-content:end;text-align:right;padding:4px 12px')
   if (id.includes('local')) {
     return {
-      html: `${label('Context 0 contains child 99 · sibling 1 paints above both')}${context(`<article data-ui="local-context" class="${classValue(lists[1])}">${tile('Child 99', lists[2], 'blue', 'text-align:left')}</article>${layer('Sibling 1', lists[3], 'violet')}`, lists[0])}`,
+      html: `${label('Context 0 contains child 99 · sibling 1 paints above both')}${context(`<article data-ui="local-context" class="${classValue(lists[1])}">${tile('Child 99', lists[2], 'blue', '(text-align:left)')}</article>${layer('Sibling 1', lists[3], 'violet')}`, lists[0])}`,
       caption: 'Z-index values are compared within their own stacking context. Raising the child to 99 cannot lift its parent above sibling 1.', sizing: 'content',
     }
   }
@@ -81,7 +81,7 @@ export function isolation(section: ReferenceDemoSection): DemoScene {
   const { id, classLists: lists } = section
   if (id === 'protect-layered-components') return negativeLayer(lists)
   const conditional = id === 'apply-conditionally'
-  const sample = (baseline: boolean) => `<div data-ui="isolation-backdrop" class="${classValue(lists[0])}"><section${baseline ? '' : ' data-target'} class="${classValue(baseline ? 'isolation:auto' : lists[1])}"${conditional && !baseline ? ' tabindex="0"' : ''}><div data-ui="blend-layer" class="${classValue(lists[2])}">${conditional && !baseline ? 'Focus with Tab' : 'Blend layer'}</div></section></div>`
+  const sample = (baseline: boolean) => `<div data-ui="isolation-backdrop" class="${classValue(lists[0])}"><section${baseline ? '' : ' data-target'} class="${classValue(baseline ? '(isolation:auto)' : lists[1])}"${conditional && !baseline ? ' tabindex="0"' : ''}><div data-ui="blend-layer" class="${classValue(lists[2])}">${conditional && !baseline ? 'Focus with Tab' : 'Blend layer'}</div></section></div>`
   return {
     html: comparison([{ name: 'Automatic · external blend', content: sample(true) }, { name: 'With class', content: sample(false) }]),
     caption: 'Both blue backgrounds sit outside the tested section. An isolated section prevents its purple child from blending with that external backdrop.',

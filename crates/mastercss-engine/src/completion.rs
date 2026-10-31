@@ -79,7 +79,7 @@ pub(crate) fn push_property_completion_candidate(
         candidates,
         labels,
         EngineClassCompletionCandidate {
-            label: format!("{key}:"),
+            label: format!("({key}:"),
             kind: EngineClassCompletionKind::Property,
             detail,
             documentation_class_name: None,
@@ -241,7 +241,7 @@ pub(crate) fn collect_class_completion_candidates(
             push_value_completion_candidate(
                 &mut candidates,
                 &mut labels,
-                format!("{property}:{value}"),
+                format!("({property}:{value})"),
                 Some("managed keyframes".into()),
             );
         }
@@ -264,14 +264,6 @@ pub(crate) fn collect_class_completion_candidates(
                                 static_detail.clone()
                             },
                         );
-                        if mastercss_schema::is_native_css_property(name) {
-                            push_property_completion_candidate(
-                                &mut candidates,
-                                &mut labels,
-                                name,
-                                None,
-                            );
-                        }
                     }
                     UtilityMatcher::Function { name } => {
                         if !utility
@@ -622,16 +614,14 @@ pub(crate) fn collect_engine_color_tokens(
             alpha,
         }];
     }
-    let Some(colon) = semantic_class_name.find(':') else {
+    let Some(Ok(head)) = mastercss_lexer::parse_native_declaration(semantic_class_name) else {
         return Vec::new();
     };
-    let raw_value = &semantic_class_name[colon + 1..];
-    let (value, _) = split_dynamic_value_state(raw_value);
-    let value_offset = colon + 1;
+    let value = &semantic_class_name[head.value.clone()];
     let mut tokens = Vec::new();
     scan_color_value(
-        &value,
-        value_offset,
+        value,
+        head.value.start,
         semantic_class_name,
         manifest,
         &mut tokens,

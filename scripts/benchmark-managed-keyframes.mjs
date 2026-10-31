@@ -10,7 +10,7 @@ const manifest = readFileSync('packages/preset/src/default-manifest.json', 'utf8
 const bytes = input => ({ raw: Buffer.byteLength(input), gzip: gzipSync(input, { level: 9 }).length, brotli: brotliCompressSync(input).length })
 const baseline = execFileSync('git', ['rev-parse', process.argv[2] || 'HEAD'], { encoding: 'utf8' }).trim()
 const samples = 40
-const scenarios = { none: ['display:block'], one: ['animate-fade'], multiple: ['animate-fade', 'animate-rotate', 'animate-zoom'], dynamic: ['animation-name:var(--external)'] }
+const scenarios = { none: ['block'], one: ['animate-fade'], multiple: ['animate-fade', 'animate-rotate', 'animate-zoom'], dynamic: ['(animation-name:var(--external))'] }
 const timings = {}
 // CLI facade names are part of the native public artifact metadata.
 for (const [name, classes] of Object.entries(scenarios)) {

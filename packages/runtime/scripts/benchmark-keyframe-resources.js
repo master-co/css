@@ -36,11 +36,11 @@ function traceResources(module, manifest) {
   }
   try {
     capture('empty')
-    engine.ensureClassRules(['animate-fade', 'animation-name:fade'])
+    engine.ensureClassRules(['animate-fade', '(animation-name:fade)'])
     capture('two consumers')
     engine.deleteClassRules(['animate-fade'])
     capture('one consumer')
-    engine.deleteClassRules(['animation-name:fade'])
+    engine.deleteClassRules(['(animation-name:fade)'])
     capture('last removed')
   } finally { engine.free() }
   const preserved = structuredClone(manifest)

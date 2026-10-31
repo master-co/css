@@ -19,7 +19,7 @@ fn compile(
         },
         &mastercss_compiler::LowerCssDirectivesOptions {
             base_manifest: Some(
-                serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}),
+                serde_json::json!({"version":6,"languageVersion":17,"mixins":[{"name":"--always","body":[{"type":"contents","fallback":[]}]}],"utilities":[{"kind":"static","name":"always","body":[{"type":"contents","fallback":[]}]}]}),
             ),
             resolution_manifest: None,
         },
@@ -169,6 +169,44 @@ fn replacing_named_recipe_keeps_primary_token_identity() {
     );
     assert!(
         generated.contains("padding:var(--gutter-md)") && !generated.contains("margin:"),
+        "{generated}"
+    );
+}
+
+#[test]
+fn utility_names_reject_descendant_markers_with_a_source_diagnostic() {
+    for source in [
+        "@utility card_title {color:red}",
+        "@utility card_title(--n <integer>) {order:var(--n)}",
+        "@utility tint_-(--color) {color:var(--color)}",
+    ] {
+        let error = compile(source).unwrap_err();
+        let diagnostic = error.diagnostic();
+        assert!(
+            diagnostic.message.contains("cannot contain _"),
+            "{source}: {diagnostic:?}"
+        );
+        assert!(diagnostic.range.is_some(), "{source}");
+    }
+    // Mixins, custom properties and token keys keep `_`; only bare token classes skip it.
+    let source = "@theme{--color-brand_ink:#123;--color-ink:#456} @mixin --card_title{color:red} @utility fg-(--color){color:var(--color)} @utility title {@apply --card_title;}";
+    let generated = css(
+        source,
+        &[
+            "title",
+            "fg-ink",
+            "fg-brand_ink",
+            "(color:var(--color-brand_ink))",
+        ],
+    );
+    assert!(generated.contains(".title{color:red}"), "{generated}");
+    assert!(
+        generated.contains(".fg-ink{color:var(--color-ink)}"),
+        "{generated}"
+    );
+    assert!(!generated.contains(".fg-brand_ink"), "{generated}");
+    assert!(
+        generated.contains("color:var(--color-brand_ink)"),
         "{generated}"
     );
 }

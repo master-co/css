@@ -47,7 +47,7 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
 </StepSection>
 
 ```svelte name=src/routes/%2Bpage.svelte
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
@@ -90,7 +90,7 @@ SvelteKit renders its own HTML, so the Vite mode option alone does not insert a 
 After startup, run this in the browser console. The heading should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 </DocumentDisclosure>

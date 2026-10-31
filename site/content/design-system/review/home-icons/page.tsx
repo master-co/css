@@ -24,9 +24,9 @@ import '~/site/assets/images/home/icons/artwork.css'
 
 <span aria-hidden="true">
   <Image src={light} width={96} height={96} alt=""
-    className="home-icon-artwork display:none@apply(--site-dark)" />
+    className="home-icon-artwork hidden@apply(--site-dark)" />
   <Image src={dark} width={96} height={96} alt=""
-    className="home-icon-artwork display:none@apply(--site-light)" />
+    className="home-icon-artwork hidden@apply(--site-light)" />
 </span>`
 
 const compactExample = `import HomeCompactIcon from '~/site/content/components/HomeCompactIcon'

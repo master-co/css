@@ -13,6 +13,6 @@ test('loads an explicit tooling artifact file URL in Node', async () => {
 
   expect(provider.extractOxcClasses(
     'component.tsx',
-    "const classes = \"display:block margin-inline:auto\""
-  )).toEqual(["display:block", "margin-inline:auto"])
+    "const classes = \"(display:block) (margin-inline:auto)\""
+  )).toEqual(["(display:block)", "(margin-inline:auto)"])
 })

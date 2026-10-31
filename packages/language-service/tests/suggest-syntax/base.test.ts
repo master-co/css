@@ -13,18 +13,18 @@ function suggestInSource(source: string, marker: string) {
 }
 
 it.concurrent('types " should hint completions', () => expect(hint('')?.length).toBeGreaterThan(0))
-it.concurrent('types   should hint completions', () => expect(hint("text-align:center ")?.length).toBeGreaterThan(0))
+it.concurrent('types   should hint completions', () => expect(hint("(text-align:center) ")?.length).toBeGreaterThan(0))
 it.concurrent('types dynamic enum key should hint enum values', () => {
-  expect(hint('user-select:')?.some(({ label }) => label === 'none')).toBe(true)
-  expect(hint('line-clamp:')?.some(({ label }) => label === 'none')).toBe(true)
+  expect(hint('(user-select:')?.some(({ label }) => label === 'none')).toBe(true)
+  expect(hint('(line-clamp:')?.some(({ label }) => label === 'none')).toBe(true)
 })
 
 test('types any trigger character in "" should not hint', () => {
-  expect(suggestInSource('const value = "text:c"', 'text:c')).toBeUndefined()
+  expect(suggestInSource('const value = "(text-align:c"', '(text-align:c')).toBeUndefined()
 })
 
 test(`types any trigger character in '' should not hint`, () => {
-  expect(suggestInSource("const value = 'text:c'", 'text:c')).toBeUndefined()
+  expect(suggestInSource("const value = '(text-align:c'", '(text-align:c')).toBeUndefined()
 })
 
 test('emit class="" should hint completions', () => {

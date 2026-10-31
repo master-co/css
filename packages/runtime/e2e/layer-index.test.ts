@@ -15,7 +15,7 @@ test('1,000 single-node insertions avoid repeated key searches and prefix reads'
         return Reflect.get(target, property, receiver)
       }
     }) })
-    const classes = Array.from({ length: 1000 }, (_, index) => `width:${1000 + index}px`)
+    const classes = Array.from({ length: 1000 }, (_, index) => `(width:${1000 + index}px)`)
     runtime.ensureClassRules(classes)
     const result = { indexedReads, linearSearches, rules: layer.rules.length }
     runtime.deleteClassRules(classes.slice(-1))
@@ -84,19 +84,19 @@ test('shared rule ownership only updates referring classes', async ({ page }) =>
       utilitiesLayer: { get(key: string): Rule }
       syncClassReferences(classes: { className: string, references: { layer: string, key: string }[] }[]): void
     }
-    runtime.ensureClassRules(["display:block", "display:none"])
+    runtime.ensureClassRules(["(display:block)", "(display:none)"])
     // Exercise the host contract for bindings whose classes share stored rules.
-    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'display:block' }] }])
+    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: '(display:block)' }] }])
     host.syncClassReferences([{ className: 'shared', references: [] }])
-    const singleOwnerPreserved = host.classUtilities.get("display:block")?.[0] === host.utilitiesLayer.get("display:block")
-    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: 'display:block' }] }])
-    const unrelated = host.classUtilities.get("display:none")
-    runtime.deleteClassRules(["display:block"])
+    const singleOwnerPreserved = host.classUtilities.get("(display:block)")?.[0] === host.utilitiesLayer.get("(display:block)")
+    host.syncClassReferences([{ className: 'shared', references: [{ layer: 'utilities', key: '(display:block)' }] }])
+    const unrelated = host.classUtilities.get("(display:none)")
+    runtime.deleteClassRules(["(display:block)"])
     return {
-      removed: !host.classUtilities.has('shared') && !host.classUtilities.has("display:block"),
+      removed: !host.classUtilities.has('shared') && !host.classUtilities.has("(display:block)"),
       singleOwnerPreserved,
-      unrelatedPreserved: host.classUtilities.get("display:none") === unrelated,
-      hiddenIndexed: host.utilitiesLayer.get("display:none") === unrelated?.[0]
+      unrelatedPreserved: host.classUtilities.get("(display:none)") === unrelated,
+      hiddenIndexed: host.utilitiesLayer.get("(display:none)") === unrelated?.[0]
     }
   })
   expect(result).toEqual({ removed: true, singleOwnerPreserved: true, unrelatedPreserved: true, hiddenIndexed: true })

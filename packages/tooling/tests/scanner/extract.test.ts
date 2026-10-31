@@ -6,8 +6,8 @@ it('extract latent classes from js raw', () => {
         import { setupCounter } from './counter'
 
         const counterElement = document.querySelector<HTMLButtonElement>('#counter')
-        const syntax = 'display:block'
-        counterElement?.classList.add('transition:transform|.3s', 'transform:translateY(-5):hover', syntax)
+        const syntax = '(display:block)'
+        counterElement?.classList.add('(transition:transform|.3s)', '(transform:translateY(-5)):hover', syntax)
 
         setupCounter(counterElement!)
     `
@@ -17,9 +17,9 @@ it('extract latent classes from js raw', () => {
             'const',
             'counterElement',
             'syntax',
-            "display:block",
-            'transition:transform|.3s',
-            'transform:translateY(-5):hover',
+            "(display:block)",
+            '(transition:transform|.3s)',
+            '(transform:translateY(-5)):hover',
             'setupCounter(counterElement!)',
         ])
 })
@@ -27,44 +27,44 @@ it('extract latent classes from js raw', () => {
 test('basic js object', () => {
     expect(extractClassCandidates(`
     const test = {
-        'font-size:1.5rem': true
+        '(font-size:1.5rem)': true
     }
     `)).toEqual([
         'const',
         'test',
-        'font-size:1.5rem',
+        '(font-size:1.5rem)',
         'true',
     ])
 })
 
 test('basic html', () => {
-    expect(extractClassCandidates(`<div class="font-size:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font-size:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
+    expect(extractClassCandidates(`<div class="(font-size:1rem) (filter:blur(2px)) (animation:shake|1s|infinite)>li"></div>`)).toEqual(['(font-size:1rem)', '(filter:blur(2px))', '(animation:shake|1s|infinite)>li'])
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {
-    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-fast transition-duration:var(--duration-fast)')).toEqual(['animation-fast', 'transition-duration:var(--duration-fast)'])
+    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-fast (transition-duration:var(--duration-fast))')).toEqual(['animation-fast', '(transition-duration:var(--duration-fast))'])
 })
 
 test('content', () => {
-    expect(extractClassCandidates(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`))
+    expect(extractClassCandidates(`<div class="(content:'I\\'m_string') (content:'I\\'m_string2')"></div>`))
         .toEqual([
-            'content:\'I\\\'m_string\'',
+            '(content:\'I\\\'m_string\')',
             'I',
             'm_string',
-            'content:\'I\\\'m_string2\'',
+            '(content:\'I\\\'m_string2\')',
             'm_string2'
         ])
 })
 
 test('url', () => {
-    expect(extractClassCandidates("<div class=\"background:url('https://master.co/test_logo.png')\"></div>")).toEqual(["background:url('https://master.co/test_logo.png')"])
+    expect(extractClassCandidates("<div class=\"(background:url('https://master.co/test_logo.png'))\"></div>")).toEqual(["(background:url('https://master.co/test_logo.png'))"])
 })
 
 test('comment', () => {
     expect(extractClassCandidates(`<!-- comment -->
     /* bg-black */
     /*
-        font-size:1rem
+        (font-size:1rem)
     */
     `)).toEqual([])
 })
@@ -73,29 +73,29 @@ test('=', () => {
     expect(extractClassCandidates(`
     this={components[0]}
     data={data_0}>
-    content:'='
-    content:"="
+    (content:'=')
+    (content:"=")
     `)).toEqual([
-        'content:\'=\'',
-        'content:"="'
+        '(content:\'=\')',
+        '(content:"=")'
     ])
 })
 
 test('media', () => {
     expect(extractClassCandidates(`
     bg-black@xl
-    font-size:1.5rem@media(min-width:1024px)
-    font-size:1rem@<789
-    font-size:1rem@<=789
-    font-size:1rem@>=789
-    font-size:1rem@>789
+    (font-size:1.5rem)@media(min-width:1024px)
+    (font-size:1rem)@<789
+    (font-size:1rem)@<=789
+    (font-size:1rem)@>=789
+    (font-size:1rem)@>789
     `)).toEqual([
         'bg-black@xl',
-        'font-size:1.5rem@media(min-width:1024px)',
-        'font-size:1rem@<789',
-        'font-size:1rem@<=789',
-        'font-size:1rem@>=789',
-        'font-size:1rem@>789',
+        '(font-size:1.5rem)@media(min-width:1024px)',
+        '(font-size:1rem)@<789',
+        '(font-size:1rem)@<=789',
+        '(font-size:1rem)@>=789',
+        '(font-size:1rem)@>789',
     ])
 })
 
@@ -245,15 +245,15 @@ test('home path', () => {
     expect(extractClassCandidates(`
         ~/site/assets/master.svg
         ~/site/master.svg
-        transition:padding|300ms|ease-in
-        transition-delay:0ms
-        transition-duration:.5ms
-        transition-timing-function:steps(6,end)
+        (transition:padding|300ms|ease-in)
+        (transition-delay:0ms)
+        (transition-duration:.5ms)
+        (transition-timing-function:steps(6,end))
     `)).toEqual([
-        'transition:padding|300ms|ease-in',
-        'transition-delay:0ms',
-        'transition-duration:.5ms',
-        'transition-timing-function:steps(6,end)'
+        '(transition:padding|300ms|ease-in)',
+        '(transition-delay:0ms)',
+        '(transition-duration:.5ms)',
+        '(transition-timing-function:steps(6,end))'
     ])
 })
 

@@ -6,63 +6,36 @@ use mastercss_lexer::concat_text;
 
 /// Select a family before looking up a token. Missing qualified tokens never
 /// fall through to a shorter prefix, and exact named utilities reserve names.
+/// Native declaration heads are never utilities; their parentheses end the head.
 pub(crate) fn matching_utilities(source: &str, manifest: &Program) -> Vec<(usize, UtilityMatch)> {
+    if source.starts_with('(') {
+        return Vec::new();
+    }
     if let Some(found) = super::utility_matching::matching(source, manifest) {
         return found;
     }
-    let native = is_native_declaration(source);
-    if !native {
-        for entries in [&manifest.static_utilities] {
-            for end in std::iter::once(source.len())
-                .chain(source.char_indices().map(|(index, _)| index).rev())
-            {
-                if super::utility::is_match_state_boundary(&source[end..])
-                    && let Some(indexes) = entries.get(&source[..end])
-                {
-                    let matches = indexes
-                        .iter()
-                        .filter_map(|index| {
-                            match_utility_filtered(
-                                source,
-                                &manifest.utilities[*index],
-                                manifest,
-                                |matcher| matches!(matcher, UtilityMatcher::Static { .. }),
-                            )
-                            .map(|matched| (*index, matched))
-                        })
-                        .collect::<Vec<_>>();
-                    if !matches.is_empty() {
-                        return matches;
-                    }
-                }
-            }
+    // Utility names cannot contain suffix delimiters, so a static head ends at the
+    // first one without consulting the registry for its boundary.
+    let end = source
+        .find(mastercss_lexer::is_class_suffix_start)
+        .unwrap_or(source.len());
+    if let Some(indexes) = manifest.static_utilities.get(&source[..end]) {
+        let matches = indexes
+            .iter()
+            .filter_map(|index| {
+                match_utility_filtered(source, &manifest.utilities[*index], manifest, |matcher| {
+                    matches!(matcher, UtilityMatcher::Static { .. })
+                })
+                .map(|matched| (*index, matched))
+            })
+            .collect::<Vec<_>>();
+        if !matches.is_empty() {
+            return matches;
         }
     }
-
-    if let Some(prefix) = token_prefix(source, manifest) {
-        return token_candidates(source, prefix, manifest);
-    }
-    let Some((key, _)) = source.split_once(':') else {
-        return Vec::new();
-    };
-    let indexes = manifest
-        .raw_utilities
-        .get(key)
-        .map(Vec::as_slice)
-        .unwrap_or_default();
-    let has_explicit = indexes
-        .iter()
-        .any(|index| !manifest.utilities[*index].native_fallback);
-    indexes
-        .iter()
-        .filter(|index| !has_explicit || !manifest.utilities[**index].native_fallback)
-        .filter_map(|index| {
-            match_utility_filtered(source, &manifest.utilities[*index], manifest, |matcher| {
-                matches!(matcher, UtilityMatcher::Key { .. })
-            })
-            .map(|matched| (*index, matched))
-        })
-        .collect()
+    token_prefix(source, manifest)
+        .map(|prefix| token_candidates(source, prefix, manifest))
+        .unwrap_or_default()
 }
 
 pub(crate) fn token_candidates(
@@ -126,23 +99,39 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         }),
         notes: Vec::new(),
     };
-    if let Some(message) = super::utility_matching::diagnostic(source, manifest) {
+    // A declaration head is validated structurally; only its suffix remains.
+    let declaration = match mastercss_lexer::parse_native_declaration(source) {
+        Some(Err(message)) => {
+            return vec![error(super::ErrorCode::ClassSyntaxError, message.into())];
+        }
+        Some(Ok(head)) => Some(head),
+        None => None,
+    };
+    let state_source = declaration
+        .as_ref()
+        .map_or(source, |head| &source[head.suffix_start..]);
+    if declaration.is_none()
+        && let Some(message) = super::utility_matching::diagnostic(source, manifest)
+    {
         return vec![error(super::ErrorCode::CssDirectiveError, message)];
     }
-    if mastercss_lexer::decode_native_content(source).is_none() {
+    if mastercss_lexer::decode_native_content(state_source).is_none() {
         return vec![error(
             super::ErrorCode::ClassSyntaxError,
             format!("Unbalanced or invalid Master class structure: {source}"),
         )];
     }
-    let native_state = super::native_declaration_head(source)
-        .map(|(colon, _)| super::split_dynamic_value_state(&source[colon + 1..]).1);
-    for state in matching_utilities(source, manifest)
-        .into_iter()
-        .map(|(_, matched)| matched.state_token)
-        .chain(native_state)
-    {
-        let selector = super::state::split_state_token(&state).0;
+    let states = if declaration.is_some() {
+        vec![state_source.to_owned()]
+    } else {
+        matching_utilities(source, manifest)
+            .into_iter()
+            .map(|(_, matched)| matched.state_token)
+            .collect()
+    };
+    for state in states {
+        let state = state.strip_prefix('!').unwrap_or(&state);
+        let selector = super::state::split_state_token(state).0;
         if !selector.is_empty()
             && super::state::selector_token_to_template(&selector, manifest)
                 .is_none_or(|template| !mastercss_lexer::valid_selector_structure(&template))
@@ -154,7 +143,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
         }
     }
     let mut explicit_layer = None;
-    for token in super::state::split_state_token(source).1 {
+    for token in super::state::split_state_token(state_source).1 {
         if let Some(call) = super::class_apply::invocation(&token) {
             let result = call.and_then(|(name, arguments)| {
                 super::expand_mixin_with_contents(&manifest.mixins, &name, &arguments, Some(&[]))
@@ -221,7 +210,7 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             )];
         }
     }
-    if !matching_utilities(source, manifest).is_empty() {
+    if declaration.is_some() || !matching_utilities(source, manifest).is_empty() {
         return Vec::new();
     }
     let prefix = token_prefix(source, manifest);
@@ -317,11 +306,7 @@ fn ambiguous_token_message(
 }
 
 pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a Program) -> Option<&'a str> {
-    // A registered declaration key owns its colon, even if a shorter named
-    // family exists (font-family:mono must never mean font-family:hover).
-    if let Some((key, _)) = source.split_once(':')
-        && (is_native_declaration(source) || mastercss_schema::is_listed_native_css_property(key))
-    {
+    if source.starts_with('(') {
         return None;
     }
     [source, source.strip_prefix('-').unwrap_or(source)]
@@ -335,14 +320,6 @@ pub(crate) fn token_prefix<'a>(source: &str, manifest: &'a Program) -> Option<&'
             })
         })
         .max_by_key(|prefix| prefix.len())
-}
-
-fn is_native_declaration(source: &str) -> bool {
-    let Some((_, key)) = super::native_declaration_head(source) else {
-        return false;
-    };
-    // Built-in native utilities exist exactly for registered properties.
-    mastercss_schema::is_native_css_property(&key)
 }
 
 pub(crate) fn sort_key(

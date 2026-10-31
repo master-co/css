@@ -10,20 +10,20 @@ interface AuthLayoutProps {
 
 export default function AuthSimpleLayout({ children, title, description }: PropsWithChildren<AuthLayoutProps>) {
   return (
-    <div className="display:flex flex-direction:column align-items:center justify-content:center md:p-10 bg-background gap-6 min-h-svh p-6">
+    <div className="flex flex-col items-center justify-center md:p-10 bg-background gap-6 min-h-svh p-6">
       <div className="max-w-sm w-full">
-        <div className="display:flex flex-direction:column gap-8">
-          <div className="display:flex flex-direction:column align-items:center gap-4">
-            <Link href={route('home')} className="display:flex flex-direction:column align-items:center font-medium gap-2">
-              <div className="display:flex align-items:center justify-content:center h-9 mb-1 rounded-md w-9">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center gap-4">
+            <Link href={route('home')} className="flex flex-col items-center font-medium gap-2">
+              <div className="flex items-center justify-center h-9 mb-1 rounded-md w-9">
                 <AppLogoIcon className="fill-current dark:text-white size-9 text-[var(--foreground)]" />
               </div>
               <span className="sr-only">{title}</span>
             </Link>
 
-            <div className="text-align:center space-y-2">
+            <div className="(text-align:center) space-y-2">
               <h1 className="text-xl font-medium">{title}</h1>
-              <p className="text-sm text-align:center text-muted-foreground">{description}</p>
+              <p className="text-sm (text-align:center) text-muted-foreground">{description}</p>
             </div>
           </div>
           {children}

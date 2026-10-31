@@ -12,8 +12,8 @@ const fixtureDir = join(packageDir, 'tests/fixtures/theme-reference')
 it('renders first visits while their classes are discovered', async () => {
   const directory = mkdtempSync(join(packageDir, 'tests/fixtures/dev-first-visit-'))
   cpSync(fixtureDir, directory, { recursive: true, filter: source => !source.includes('/.svelte-kit') && !source.includes('/node_modules') })
-  writeFileSync(join(directory, 'src/routes/+page.svelte'), "<script>import './globals.css'</script><main class=\"probe display:grid\">First visit</main>")
-  writeFileSync(join(directory, 'src/routes/unloaded/+page.svelte'), "<script>import '../globals.css'</script><main class=\"display:flex\">Other route</main>")
+  writeFileSync(join(directory, 'src/routes/+page.svelte'), "<script>import './globals.css'</script><main class=\"probe (display:grid)\">First visit</main>")
+  writeFileSync(join(directory, 'src/routes/unloaded/+page.svelte'), "<script>import '../globals.css'</script><main class=\"(display:flex)\">Other route</main>")
   let server: Awaited<ReturnType<typeof createViteServer>> | undefined
   const previousDirectory = process.cwd()
   try {

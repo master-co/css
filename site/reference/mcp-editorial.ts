@@ -36,7 +36,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   "mastercss_extract_classes": {
     "purpose": "Find exact class tokens and source positions in a buffer, or inspect extraction across selected project files.",
     "example": {
-      "content": "<button class=\"display:flex gap-sm p-md\">Save</button>",
+      "content": "<button class=\"flex gap-sm p-md\">Save</button>",
       "filePath": "src/button.html",
       "includeRules": true
     },
@@ -53,7 +53,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   "mastercss_render_css": {
     "purpose": "Generate CSS for a small literal class list or HTML fragment using the connected project context.",
     "example": {
-      "classList": "display:flex gap-sm"
+      "classList": "flex gap-sm"
     },
     "lifecycle": "This operation does not write workspace files."
   },
@@ -101,7 +101,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   "mastercss_lint_content": {
     "purpose": "Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest.",
     "example": {
-      "content": "<button class=\"p-md display:flex\">Save</button>",
+      "content": "<button class=\"p-md flex\">Save</button>",
       "filePath": "src/button.html",
       "rules": "sort-classes"
     },
@@ -110,7 +110,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   "mastercss_suggest_syntax": {
     "purpose": "Request language-service completion candidates and hover information at a position in an unsaved document.",
     "example": {
-      "content": "<div class=\"padding:\"></div>",
+      "content": "<div class=\"(padding:\"></div>",
       "filePath": "src/card.html",
       "position": {
         "line": 0,
@@ -134,7 +134,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   "mastercss_preview_directive_format": {
     "purpose": "Format directives in a source buffer or create a file-formatting preview. Content mode returns formatted text directly and does not create an apply token.",
     "example": {
-      "content": "@safelist \"background-color:transparent !\";",
+      "content": "@safelist \"(background-color:transparent) !\";",
       "filePath": "card.css"
     },
     "lifecycle": "Content mode does not write files or store a token. In file mode, workspace files stay unchanged until `mastercss_apply_preview`. A nonempty preview stores a token in this server process; expiry, restart, or successful application requires a new preview. An unchanged result has no confirmation token."

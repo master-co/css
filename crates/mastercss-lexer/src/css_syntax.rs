@@ -38,7 +38,7 @@ pub fn is_name_code_point(c: char) -> bool {
     c.is_ascii_alphanumeric() || c == '-' || c == '_' || !c.is_ascii()
 }
 
-fn starts_identifier(source: &str) -> bool {
+pub(crate) fn starts_identifier(source: &str) -> bool {
     let mut chars = source.chars();
     let Some(first) = chars.next() else {
         return false;
@@ -127,7 +127,7 @@ fn escape(source: &str, cursor: &mut usize) -> Option<char> {
     }
 }
 
-fn name<'a>(source: &'a str, cursor: &mut usize) -> Cow<'a, str> {
+pub(crate) fn name<'a>(source: &'a str, cursor: &mut usize) -> Cow<'a, str> {
     let start = *cursor;
     let mut decoded: Option<String> = None;
     while let Some(c) = source[*cursor..].chars().next() {

@@ -64,7 +64,7 @@ Use `shadow-<token>` for common elevation levels. The utility resolves values fr
   {['shadow-sm', 'shadow-lg']}
 </Class2CSS>
 
-Use `shadow-<token>` for named product tokens. Use the explicit `box-shadow:*` form when documenting native property mapping or when surrounding code benefits from the native property name.
+Use `shadow-<token>` for named product tokens. Use the explicit `(box-shadow:*)` form when documenting native property mapping or when surrounding code benefits from the native property name.
 
 ---
 
@@ -82,16 +82,16 @@ For example, `shadow-card` reads a custom `--shadow-card` token: `shadow` is the
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
-<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover@media(screen) --><!-- @MARK shadow-md:focus-visible@media(screen) --><!-- @MARK box-shadow:none@media(print) -->
-<a class="display:block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover@media(screen) shadow-md:focus-visible@media(screen) box-shadow:none@media(print) text-decoration:none"
+<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover@media(screen) --><!-- @MARK shadow-md:focus-visible@media(screen) --><!-- @MARK (box-shadow:none)@media(print) -->
+<a class="block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover@media(screen) shadow-md:focus-visible@media(screen) (box-shadow:none)@media(print) (text-decoration:none)"
   href="/guide/elevation#change-elevation-by-state">
-  <strong class="display:block fg-text-strong">Collection guide</strong>
-  <span class="display:block mt-xs fg-text-muted">Hover or focus this link to lift its surface.</span>
+  <strong class="block fg-text-strong">Collection guide</strong>
+  <span class="block mt-xs fg-text-muted">Hover or focus this link to lift its surface.</span>
 </a>
 ```
 
 <Class2CSS>
-  {['shadow-sm', 'shadow-md:hover@media(screen)', 'shadow-md:focus-visible@media(screen)', 'box-shadow:none@media(print)']}
+  {['shadow-sm', 'shadow-md:hover@media(screen)', 'shadow-md:focus-visible@media(screen)', '(box-shadow:none)@media(print)']}
 </Class2CSS>
 
 Hover the link, then reach it with Tab. Both states increase its shadow; keyboard focus also keeps the browser's focus outline. Print preview removes the shadow, including while the link is focused.

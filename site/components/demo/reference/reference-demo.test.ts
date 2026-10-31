@@ -42,10 +42,10 @@ test('clear uses different float heights and real side-specific clearing', async
     const section = sections.find(value => value.id === `clearing-${side}-floats`)!
     const scene = referenceScenes.clear(section)
     const document = demoDocument(section, scene)
-    assert.ok(document.includes(`clear:${side}`))
-    assert.ok(document.includes('height:4.5rem'))
-    assert.ok(document.includes('height:8.5rem'))
-    assert.match(document, new RegExp(`clear:${side}`))
+    assert.ok(document.includes(`(clear:${side})`))
+    assert.ok(document.includes('(height:4.5rem)'))
+    assert.ok(document.includes('(height:8.5rem)'))
+    assert.match(document, new RegExp(`\\(clear:${side}\\)`))
   }
 })
 
@@ -62,7 +62,7 @@ test('native demo rules retain theme variables used without utility classes', ()
 })
 
 test('isolated documents include the shared material values referenced by demo tokens', () => {
-  const html = '<div class="bg-demo-canvas border-width:1px border-style:solid b-demo-line">Preview</div>'
+  const html = '<div class="bg-demo-canvas (border-width:1px) (border-style:solid) b-demo-line">Preview</div>'
   const document = demoDocument({ page: 'materials', id: 'surface', title: 'Shared materials', html: [html], css: '', classes: [], classLists: [], highlighted: [] }, { html, caption: 'A single shared source' })
   assert.match(document, /--color-demo-canvas:var\(--color-surface-canvas\)/)
   assert.match(document, /--color-surface-canvas:light-dark\(/)

@@ -39,7 +39,7 @@
     },
     {
       "id": "syntax-0bbbdda1aeee",
-      "title": "grid-column-start:2 grid-column-end:4",
+      "title": "(grid-column-start:2) (grid-column-end:4)",
       "depth": 3
     },
     {
@@ -113,7 +113,7 @@
     },
     {
       "id": "syntax-363d2e6199a2",
-      "title": "grid-row-start:1 grid-row-end:3",
+      "title": "(grid-row-start:1) (grid-row-end:3)",
       "depth": 3
     },
     {
@@ -123,12 +123,12 @@
     },
     {
       "id": "syntax-73006c97dd8c",
-      "title": "grid-row-start:1",
+      "title": "(grid-row-start:1)",
       "depth": 3
     },
     {
       "id": "syntax-28bd0b1042d7",
-      "title": "grid-row-end:3",
+      "title": "(grid-row-end:3)",
       "depth": 3
     },
     {

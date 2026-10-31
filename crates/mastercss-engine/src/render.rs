@@ -184,10 +184,10 @@ pub(crate) fn emit_declarations(
         UtilityEmit::Recipe { definition, .. } => {
             super::utility_matching::emit(manifest, *definition, matched, important)
         }
+        // Only `(--name:)` declares an empty value; token values are never empty.
         UtilityEmit::Property { property } => matched
             .value
             .as_deref()
-            .filter(|value| !value.is_empty())
             .map(|value| {
                 vec![(
                     0,

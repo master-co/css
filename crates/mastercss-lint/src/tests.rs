@@ -8,26 +8,26 @@ use super::{
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
-const MANIFEST: &str = r#"{"version":6,"languageVersion":16,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"function","name":"physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
+const MANIFEST: &str = r#"{"version":6,"languageVersion":17,"variables":{"spacing":[{"key":"md","type":"number","values":[{"path":[":root,:host"],"value":"1rem"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"spacing-md","value":"1rem"}]}],"mixins":[{"name":"--m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"name":"--physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}],"utilities":[{"kind":"function","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"token","name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration","property":"margin","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--spacing"}]}]}]},{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]},{"kind":"function","name":"physical-mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration","property":"margin-right","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]},{"type":"declaration","property":"margin-left","value":[{"type":"function","name":"var","value":[{"type":"text","value":"--value"}]}]}]}]}"#;
 
 #[test]
 fn wrapper_conflicts_compare_expanded_selectors_and_keep_branch_order() {
-    let manifest = serde_json::json!({"version":6,"languageVersion":16,"mixins":[{"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"name":"--multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}]});
+    let manifest = serde_json::json!({"version":6,"languageVersion":17,"mixins":[{"name":"--a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"name":"--c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"name":"--multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}],"utilities":[{"kind":"static","name":"a","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"b","body":[{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"c","body":[{"type":"rule","selector":"&:focus","body":[{"type":"contents","fallback":[]}]}]},{"kind":"static","name":"multiple","body":[{"type":"contents","fallback":[]},{"type":"rule","selector":"&:hover","body":[{"type":"contents","fallback":[]}]}]}]});
     let mut session = LintSession::create(&manifest.to_string()).unwrap();
     let equivalent = session
         .analyze(
-            ["color:red@apply(--a)", "color:blue@apply(--b)"],
+            ["(color:red)@apply(--a)", "(color:blue)@apply(--b)"],
             None,
             &HashSet::new(),
         )
         .unwrap();
     assert_eq!(equivalent.conflicts.len(), 1);
     for classes in [
-        ["color:red@apply(--a)", "color:blue@apply(--c)"],
-        ["color:red@apply(--multiple)", "color:blue@apply(--a)"],
+        ["(color:red)@apply(--a)", "(color:blue)@apply(--c)"],
+        ["(color:red)@apply(--multiple)", "(color:blue)@apply(--a)"],
         [
-            "color:red@apply(--a)@apply(--c)",
-            "color:blue@apply(--c)@apply(--a)",
+            "(color:red)@apply(--a)@apply(--c)",
+            "(color:blue)@apply(--c)@apply(--a)",
         ],
     ] {
         let result = session.analyze(classes, None, &HashSet::new()).unwrap();
@@ -87,7 +87,7 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
     let mut session = LintSession::create(MANIFEST).unwrap();
     let batch = session
         .analyze(
-            ["color:white", "margin:2px", "margin:3px", "unknown"],
+            ["(color:white)", "(margin:2px)", "(margin:3px)", "unknown"],
             None,
             &HashSet::new(),
         )
@@ -95,27 +95,27 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
     assert_eq!(batch.version, 4);
     assert_eq!(
         batch.sorted_class_names,
-        ["margin:2px", "margin:3px", "color:white", "unknown"]
+        ["(margin:2px)", "(margin:3px)", "(color:white)", "unknown"]
     );
-    assert_eq!(batch.conflicts[0].class_name, "margin:2px");
-    assert_eq!(batch.conflicts[0].conflicts, ["margin:3px"]);
+    assert_eq!(batch.conflicts[0].class_name, "(margin:2px)");
+    assert_eq!(batch.conflicts[0].conflicts, ["(margin:3px)"]);
 
     let mut default_session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let conditional = default_session
         .analyze(
-            ["margin:2.5rem@sm", "margin:3.125rem@sm"],
+            ["(margin:2.5rem)@sm", "(margin:3.125rem)@sm"],
             None,
             &HashSet::new(),
         )
         .unwrap();
     assert_eq!(
         conditional.sorted_class_names,
-        ["margin:2.5rem@sm", "margin:3.125rem@sm"]
+        ["(margin:2.5rem)@sm", "(margin:3.125rem)@sm"]
     );
 
     let partial = session
         .analyze(
-            ["physical-mx:2px", "margin-left:3px"],
+            ["physical-mx(2px)", "(margin-left:3px)"],
             None,
             &HashSet::new(),
         )
@@ -131,7 +131,7 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
     let mut session = LintSession::create(MANIFEST).unwrap();
     let class_names = vec![
         "m-md".into(),
-        "margin:var(--spacing-md)|17px".into(),
+        "(margin:var(--spacing-md)|17px)".into(),
         "block".into(),
     ];
     let candidates = session
@@ -140,7 +140,7 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
     assert_eq!(
         candidates.candidates,
         [RawValueCandidateIr {
-            class_name: "margin:var(--spacing-md)|17px".into(),
+            class_name: "(margin:var(--spacing-md)|17px)".into(),
             key: "margin".into(),
             segments: vec!["17px".into()],
             properties: vec!["margin".into()],
@@ -149,8 +149,8 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
 
     let ir = session
         .analyze_class_list(
-            "😀 margin:var(--spacing-md)|17px",
-            &["😀".into(), "margin:var(--spacing-md)|17px".into()],
+            "😀 (margin:var(--spacing-md)|17px)",
+            &["😀".into(), "(margin:var(--spacing-md)|17px)".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -167,10 +167,10 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
         .iter()
         .find(|diagnostic| diagnostic.code == "unapproved-raw-value")
         .unwrap();
-    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 32 });
+    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 34 });
     assert_eq!(
         diagnostic.message,
-        "Raw value \"17px\" is not approved for class \"margin:var(--spacing-md)|17px\". Use a token or allow the value explicitly."
+        "Raw value \"17px\" is not approved for class \"(margin:var(--spacing-md)|17px)\". Use a token or allow the value explicitly."
     );
     assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
     assert_eq!(
@@ -182,8 +182,8 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
 
     let approved = session
         .analyze_class_list(
-            "margin:var(--spacing-md)|17px",
-            &["margin:var(--spacing-md)|17px".into()],
+            "(margin:var(--spacing-md)|17px)",
+            &["(margin:var(--spacing-md)|17px)".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -208,7 +208,7 @@ fn suggests_canonical_classes_from_engine_facts() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let class_names = [
         "text-align:center:hover@sm",
-        "font-size:16px",
+        "(font-size:16px)",
         "margin-md",
         "position:relative",
         "margin:1rem|1.5rem",
@@ -289,10 +289,10 @@ fn unknown_tokens_are_not_autofixed_and_conflicts_follow_engine_order() {
     let names = [
         "margin-md",
         "-margin-md",
-        "margin:16px",
-        "padding:1rem",
-        "padding:16px",
-        "font-size:16px",
+        "(margin:16px)",
+        "(padding:1rem)",
+        "(padding:16px)",
+        "(font-size:16px)",
     ]
     .map(str::to_owned);
     let support = vec![true; session.native_declaration_candidates(&names).unwrap().len()];
@@ -304,21 +304,21 @@ fn unknown_tokens_are_not_autofixed_and_conflicts_follow_engine_order() {
         )
         .unwrap();
     assert!(result.suggestions.is_empty());
-    for names in [["p-md", "padding:8px"], ["padding:8px", "p-md"]] {
+    for names in [["p-md", "(padding:8px)"], ["(padding:8px)", "p-md"]] {
         let support = vec![true; session.native_declaration_candidates(names).unwrap().len()];
         let result = session
             .analyze(names, Some(&support), &HashSet::new())
             .unwrap();
         assert_eq!(result.conflicts.len(), 1);
         assert_eq!(result.conflicts[0].class_name, "p-md");
-        assert_eq!(result.conflicts[0].conflicts, ["padding:8px"]);
+        assert_eq!(result.conflicts[0].conflicts, ["(padding:8px)"]);
     }
 }
 
 #[test]
 fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
     let classes = (0..80)
-        .flat_map(|i| [format!("padding:{i}px"), format!("unknown-{i}")])
+        .flat_map(|i| [format!("(padding:{i}px)"), format!("unknown-{i}")])
         .collect::<Vec<_>>();
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     for input in [classes.clone(), classes.into_iter().rev().collect()] {
@@ -330,7 +330,7 @@ fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
             result
                 .conflicts
                 .iter()
-                .all(|conflict| conflict.conflicts == ["padding:79px"])
+                .all(|conflict| conflict.conflicts == ["(padding:79px)"])
         );
     }
 }

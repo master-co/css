@@ -1,6 +1,6 @@
 /** Fixed acceptance queries: names, aliases, properties, examples, tokens, rules and tools. */
 export const searchTasks = [
-  ['opacity', 'rules/declarations'], ['opacity:.5', 'rules/declarations'], ['padding', 'tokens/families'],
+  ['opacity', 'rules/declarations'], ['(opacity:.5)', 'rules/declarations'], ['padding', 'tokens/families'],
   ['p', 'tokens/families'], ['padding-inline:', 'tokens/families'], ['padding-block:', 'tokens/families'], ['padding-inline-start:', 'tokens/families'],
   ['padding-inline-end:', 'tokens/families'], ['padding-block-start:', 'tokens/families'], ['padding-block-end:', 'tokens/families'],
   ['padding-inline-start', 'tokens/families'], ['padding-block', 'tokens/families'], ['padding-right', 'tokens/families'],

@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import type { CSSProperties } from 'react'
 import brands from '../data/brands'
 
-const headerIconClassName = 'display:block width:100% height:100% max-width:100% max-height:100%'
+const headerIconClassName = 'block (width:100%) (height:100%) (max-width:100%) (max-height:100%)'
 const headerIconStyle = {
   display: 'block',
   width: '100%',

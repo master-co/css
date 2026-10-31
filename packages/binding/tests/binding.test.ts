@@ -8,7 +8,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest: MasterCSSManifest = {
-  version: 6, languageVersion: 16,
+  version: 6, languageVersion: 17,
   mixins: [{ name: '--block', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }]
 , utilities: [{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const}] }
 
@@ -46,7 +46,7 @@ describe('binding loader', () => {
     }
   ],
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "variables": {
     "": [
       {
@@ -67,10 +67,10 @@ describe('binding loader', () => {
 }
     }, { binding: 'native' })
     try {
-      nativeDeclarationSession.ensureClassRules(["background:var(--stripe)"])
+      nativeDeclarationSession.ensureClassRules(["(background:var(--stripe))"])
       expect(nativeDeclarationSession.snapshot().text).toBe(
         '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
-        + "@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+        + "@layer utilities{.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}}"
       )
     } finally {
       nativeDeclarationSession.dispose()

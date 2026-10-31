@@ -29,7 +29,7 @@ export function codeTabsBootstrap() {
     root.querySelectorAll<HTMLElement>('[data-code-tabs-panel-name]').forEach((panel) => {
       const active = panel.dataset.codeTabsPanelName === storedName
       panel.hidden = !active
-      panel.classList.toggle('display:none', !active)
+      panel.classList.toggle('hidden', !active)
     })
   })
 }

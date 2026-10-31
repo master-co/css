@@ -101,7 +101,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 
-    const managed = highlighter.codeToTokens("@mixin --btn { @media (width > 30rem) { @safelist \"display:block\"; } } @utility btn { @media (width > 30rem) { @safelist \"display:block\"; } }", options).tokens[0]
+    const managed = highlighter.codeToTokens("@mixin --btn { @media (width > 30rem) { @safelist \"(display:block)\"; } } @utility btn { @media (width > 30rem) { @safelist \"(display:block)\"; } }", options).tokens[0]
     expect(colors(managed.find((token) => token.content === '@media'))).toEqual(colors(nativeKeyword))
     expect(managed.some((token) => token.content === '@safelist' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
   } finally {

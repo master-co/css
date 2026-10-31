@@ -1,11 +1,11 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
 
-test.concurrent('breakpoint', () => expect(hint("display:none@")?.map(({ label }) => label)).toContain('@sm'))
-test.concurrent('registered mode', () => expect(hint("display:none@")?.map(({ label }) => label)).toContain('@dark'))
+test.concurrent('breakpoint', () => expect(hint("(display:none)@")?.map(({ label }) => label)).toContain('@sm'))
+test.concurrent('registered mode', () => expect(hint("(display:none)@")?.map(({ label }) => label)).toContain('@dark'))
 
 describe.concurrent('sorting', () => {
-  test.concurrent('@', () => expect(hint("display:none@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply('))).toEqual([
+  test.concurrent('@', () => expect(hint("(display:none)@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply('))).toEqual([
     '@2xl',
     '@2xs',
     '@3xl',
@@ -35,6 +35,6 @@ describe.concurrent('sorting', () => {
 })
 
 test('preset utilities do not become native apply completions', () => {
-  const labels = hint("display:none@")?.map(({ label }) => label).filter(label => label.startsWith('@apply(')) ?? []
+  const labels = hint("(display:none)@")?.map(({ label }) => label).filter(label => label.startsWith('@apply(')) ?? []
   expect(labels).toEqual([])
 })

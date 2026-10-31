@@ -4,7 +4,7 @@ import { createToolingBinding, type MasterCSSDesignSystemRequest } from '../src/
 
 const manifest: MasterCSSManifest = {
   version: 6,
-  languageVersion: 16,
+  languageVersion: 17,
   variables: { color: [{ key: 'brand', type: 'string', values: [{ path: [':root,:host'], value: 'red' }] }] },
   utilities: [{ kind: 'token', name: 'fg', parameters: [{ name: '--color' }], body: [{ type: 'declaration', property: 'color', value: [{ type: 'function', name: 'var', value: [{ type: 'text', value: '--color' }] }] }] }]
 }
@@ -39,7 +39,7 @@ test('native and Wasm design-system inspection agree on authored evidence and si
     const invalidPolicy = { allowRawValues: false, requireProperty: ['color'] }
     expect(() => session.inspectDesignSystem({ ...request, rawValuePolicy: invalidPolicy })).toThrow(/unknown field/)
     expect(() => session.analyzeClassListPolicy({
-      version: 4, classList: 'color:red', classNames: ['color:red'], rawValuePolicy: invalidPolicy
+      version: 4, classList: '(color:red)', classNames: ['(color:red)'], rawValuePolicy: invalidPolicy
     })).toThrow(/unknown field/)
     session.dispose()
     expect(() => session.inspectDesignSystem(request)).toThrow()

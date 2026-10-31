@@ -9,7 +9,7 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
     "@theme {",
     '    :root { --color-primary: var(--color-blue-60); }',
     '}',
-    '@safelist "display:inline-flex fg-text-red:hover@md";',
+    '@safelist "inline-flex fg-text-red:hover@md";',
     '@layer components {',
     '    .btn { display:inline-flex; }',
     '}'
@@ -71,11 +71,11 @@ test('highlightCode leaves guide theme native values to TextMate without marking
 })
 
 test('highlightCode renders Master CSS semantic spans in HTML class attributes', async () => {
-  const hast = await highlightCode("<div class=\"fg-text-red:hover@md display:block\"></div>", { lang: 'html' })
+  const hast = await highlightCode("<div class=\"fg-text-red:hover@md block\"></div>", { lang: 'html' })
   const hostWrapper = collectElementsByClass(hast, 'mcss-host-role-class-attribute-value')[0]
 
   assert.ok(hostWrapper)
-  assert.equal(getTextContent(hostWrapper), 'fg-text-red:hover@md display:block')
+  assert.equal(getTextContent(hostWrapper), 'fg-text-red:hover@md block')
   assert.equal(hostWrapper.properties?.['data-master-css-host-role'], 'class-attribute-value')
   assert.ok(hasClassName(hostWrapper, 'mcss-host-active-on-hover'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
@@ -86,10 +86,10 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
 
 test('highlightCode marks every class value in the introduction example for hover', async () => {
   const source = [
-    '<article class="overflow:hidden r-lg bg-surface-raised shadow-lg">',
-    '  <img class="aspect-ratio:16/9 object-fit:cover" ...>',
+    '<article class="(overflow:hidden) r-lg bg-surface-raised shadow-lg">',
+    '  <img class="(aspect-ratio:16/9) object-cover" ...>',
     '  <div class="p-lg">',
-    '    <p class="text-2xs font-semibold text-transform:uppercase fg-text-blue">Launch panel</p>',
+    '    <p class="text-2xs font-semibold uppercase fg-text-blue">Launch panel</p>',
     '    <h2 class="text-md font-medium fg-text-strong">Build the first screen in markup</h2>',
     '    <a class="bg-blue-60 fg-white bg-blue-70:hover">Start building</a>',
     '  </div>',
@@ -99,10 +99,10 @@ test('highlightCode marks every class value in the introduction example for hove
 
   assert.equal(highlightedCodeText(hast), source)
   assert.deepEqual(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent), [
-    'overflow:hidden r-lg bg-surface-raised shadow-lg',
-    'aspect-ratio:16/9 object-fit:cover',
+    '(overflow:hidden) r-lg bg-surface-raised shadow-lg',
+    '(aspect-ratio:16/9) object-cover',
     'p-lg',
-    'text-2xs font-semibold text-transform:uppercase fg-text-blue',
+    'text-2xs font-semibold uppercase fg-text-blue',
     'text-md font-medium fg-text-strong',
     'bg-blue-60 fg-white bg-blue-70:hover'
   ])
@@ -111,7 +111,7 @@ test('highlightCode marks every class value in the introduction example for hove
 test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
   const source = [
     "<main class=\"bg-surface-base fg-text-body\">",
-    "  <section class=\"border:1px|solid|var(--color-line-divider) bg-surface-raised\">",
+    "  <section class=\"(border:1px|solid|var(--color-line-divider)) bg-surface-raised\">",
     "    <h2 class=\"fg-text-strong\">Project updates</h2>",
     "    <p class=\"fg-text-muted\">Three milestones changed this week.</p>",
     "    <a class=\"fg-text-link\" href=\"#\">Continue</a>",
@@ -131,11 +131,11 @@ test('highlightCode keeps every named class in the colors guide whole and copyab
 })
 
 test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
-  const hast = await highlightCode("const helper = clsx('fg-white'); const view = <div className=\"fg-text-red:hover@md display:block\" />", { lang: 'tsx' })
+  const hast = await highlightCode("const helper = clsx('fg-white'); const view = <div className=\"fg-text-red:hover@md block\" />", { lang: 'tsx' })
 
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
-  assert.equal(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent).join(''), 'fg-text-red:hover@md display:block')
+  assert.equal(collectElementsByClass(hast, 'mcss-host-active-on-hover').map(getTextContent).join(''), 'fg-text-red:hover@md block')
 })
 
 test('highlightCode treats mcss snippets as plaintext with class-list semantic overlay', async () => {

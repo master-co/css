@@ -17,20 +17,20 @@ it('should not encode entities', () => {
 
 test('>', () => {
   expect(renderHTML(
-    "<div class=\"margin-top:0&gt;div\"></div>",
+    "<div class=\"(margin-top:0)&gt;div\"></div>",
     { manifest: defaultManifest }
   ).html).toEqual([
-    "<style id=\"master-css\">@layer utilities{.margin-top\\:0\\>div>div{margin-top:0}}</style>",
-    "<div class=\"margin-top:0&gt;div\"></div>"
+    "<style id=\"master-css\">@layer utilities{.\\(margin-top\\:0\\)\\>div>div{margin-top:0}}</style>",
+    "<div class=\"(margin-top:0)&gt;div\"></div>"
   ].join(''))
 })
 
 test('\'', () => {
   expect(renderHTML(
-    `<div class="font-feature-settings:'salt'"></div>`,
+    `<div class="(font-feature-settings:'salt')"></div>`,
     { manifest: defaultManifest }
   ).html).toEqual([
-    `<style id="master-css">@layer utilities{.font-feature-settings\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
-    `<div class="font-feature-settings:'salt'"></div>`
+    `<style id="master-css">@layer utilities{.\\(font-feature-settings\\:\\'salt\\'\\){font-feature-settings:'salt'}}</style>`,
+    `<div class="(font-feature-settings:'salt')"></div>`
   ].join(''))
 })

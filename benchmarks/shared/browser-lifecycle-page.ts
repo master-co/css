@@ -376,7 +376,7 @@ function renderLifecycleItems(classes: LifecycleClassModel, count: number) {
 }
 
 function renderStaticClassSource(classes: LifecycleClassModel) {
-  return `        <div style="display:none" aria-hidden="true" class="${classAttribute(getAllLifecycleClasses(classes))} lifecycle-data-card lifecycle-variable-card"></div>`
+  return `        <div style="hidden" aria-hidden="true" class="${classAttribute(getAllLifecycleClasses(classes))} lifecycle-data-card lifecycle-variable-card"></div>`
 }
 
 function getAllLifecycleClasses(classes: LifecycleClassModel) {

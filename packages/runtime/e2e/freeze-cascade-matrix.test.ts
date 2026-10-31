@@ -8,20 +8,20 @@ import { getRuntimeLoaderURL } from './init'
 
 const manifest = compileManifestSync('@mixin --layout { display:flex; } @utility layout { display:flex; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
 const cases = [
-  { classes: "p-md padding:8px", padding: '8px' },
-  { classes: "padding:8px p-md", padding: '8px' },
-  { classes: "p-md! padding:8px", padding: '16px' },
-  { classes: "p-md! padding:8px!", padding: '8px' },
-  { classes: "padding:8px@layer(base)! padding:12px!", padding: '8px' },
-  { classes: "padding:8px@layer(base) padding:12px", padding: '12px' },
-  { classes: "outside padding:8px", padding: '32px' },
-  { classes: "outside padding:8px!", padding: '8px' },
-  { classes: "component padding:8px", padding: '8px' },
-  { classes: "component-important padding:8px!", padding: '24px' },
-  { classes: "padding:8px padding-top:12px", padding: '8px' },
-  { classes: "p-md padding-top:12px padding:8px", padding: '8px' }
+  { classes: "p-md (padding:8px)", padding: '8px' },
+  { classes: "(padding:8px) p-md", padding: '8px' },
+  { classes: "p-md! (padding:8px)", padding: '16px' },
+  { classes: "p-md! (padding:8px)!", padding: '8px' },
+  { classes: "(padding:8px)@layer(base)! (padding:12px)!", padding: '8px' },
+  { classes: "(padding:8px)@layer(base) (padding:12px)", padding: '12px' },
+  { classes: "outside (padding:8px)", padding: '32px' },
+  { classes: "outside (padding:8px)!", padding: '8px' },
+  { classes: "component (padding:8px)", padding: '8px' },
+  { classes: "component-important (padding:8px)!", padding: '24px' },
+  { classes: "(padding:8px) (padding-top:12px)", padding: '8px' },
+  { classes: "p-md (padding-top:12px) (padding:8px)", padding: '8px' }
 ]
-const classes = [...cases.flatMap(item => item.classes.split(' ')), 'display:block', 'layout']
+const classes = [...cases.flatMap(item => item.classes.split(' ')), '(display:block)', 'layout']
 const html = `<!doctype html><html><head><style>
 @layer theme,base,defaults,components,utilities;
 html { font-size:16px; }
@@ -29,7 +29,7 @@ html { font-size:16px; }
 @layer components { .component { padding:24px; } .component-important { padding:24px!important; } }
 </style></head><body>
 ${cases.map((item, index) => `<div id="case-${index}" class="${item.classes}"></div>`).join('')}
-<div id="raw" class="display:block layout"></div><div id="named" class="layout display:block"></div>
+<div id="raw" class="(display:block) layout"></div><div id="named" class="layout (display:block)"></div>
 </body></html>`
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
@@ -62,7 +62,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
       // exercises incremental CSSOM updates rather than only HTML class order.
       await page.locator('#case-11').evaluate(element => { element.className = '' })
       await expect(page.locator('#case-11')).toHaveCSS('padding', '0px')
-      await page.locator('#case-11').evaluate(element => { element.className = "padding:8px padding-top:12px p-md" })
+      await page.locator('#case-11').evaluate(element => { element.className = "(padding:8px) (padding-top:12px) p-md" })
       await expect(page.locator('#case-11')).toHaveCSS('padding', '8px')
     }
   })

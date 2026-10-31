@@ -7,7 +7,7 @@ import * as projectLoader from '../src/project/manifest'
 import { loadProjectManifest } from '../src/project/manifest'
 import { loadProjectManifestSync } from '../src/project/manifest-sync'
 
-const manifest = { version: 6, languageVersion: 16 } as const
+const manifest = { version: 6, languageVersion: 17 } as const
 
 function fixture() {
   const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'master-design-system-')))

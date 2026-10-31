@@ -44,7 +44,7 @@ test('does not install the removed devtools hook global', async ({ page }) => {
 test('dispose on progressive', async ({ page }) => {
   await init(page, '@layer utilities{}')
   await page.evaluate(() => {
-    document.body.classList.add("text-align:center")
+    document.body.classList.add("(text-align:center)")
   })
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() =>
@@ -64,7 +64,7 @@ test('dispose on progressive', async ({ page }) => {
   await page.evaluate(async (program) => {
     const nextRuntime = await globalThis.MasterCSSRuntime.start({ program })
     nextRuntime.observe()
-    document.body.classList.add("display:block")
+    document.body.classList.add("(display:block)")
     document.body.classList.add('font-bold')
   }, compileProgram())
   await waitForRuntimeRuleFlush(page)
@@ -73,7 +73,7 @@ test('dispose on progressive', async ({ page }) => {
     return Object.fromEntries(Object.entries(classRules || {})
       .map(([className, snapshot]) => [className, snapshot.rules.length]))
   })).toMatchObject({
-    'display:block': 1,
+    '(display:block)': 1,
     'font-bold': 1
   })
 })
@@ -169,7 +169,7 @@ test('insert semantic utility with multiple native rules into existing layer', a
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = "<div class=\"display:block multi-rule\"></div>"
+    document.body.innerHTML = "<div class=\"(display:block) multi-rule\"></div>"
   })
   await init(page, '', {
     utilities: [
@@ -244,21 +244,21 @@ test('inserts native functional pseudo-class selectors into CSSOM', async ({ pag
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = "<div class=\"padding-bottom:2rem:not(:last-child) text-align:center_td:not(:first-child)\"></div>"
+    document.body.innerHTML = "<div class=\"(padding-bottom:2rem):not(:last-child) (text-align:center)_td:not(:first-child)\"></div>"
   })
   await init(page)
 
   expect(await page.evaluate(() => Array.from(globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.native?.cssRules || [])
     .map((cssRule) => cssRule.cssText)
   )).toEqual([
-    ".padding-bottom\\:2rem\\:not\\(\\:last-child\\):not(:last-child) { padding-bottom: 2rem; }",
-    '.text-align\\:center_td\\:not\\(\\:first-child\\) td:not(:first-child) { text-align: center; }'
+    ".\\(padding-bottom\\:2rem\\)\\:not\\(\\:last-child\\):not(:last-child) { padding-bottom: 2rem; }",
+    '.\\(text-align\\:center\\)_td\\:not\\(\\:first-child\\) td:not(:first-child) { text-align: center; }'
   ])
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
 test('refresh leaves native stylesheets and keyframes under browser ownership', async ({ page }) => {
-  await page.setContent('<style id="native">:root{--color-static:#123}@keyframes steady{to{opacity:1}}</style><div class="animation:steady|1s"></div>')
+  await page.setContent('<style id="native">:root{--color-static:#123}@keyframes steady{to{opacity:1}}</style><div class="(animation:steady|1s)"></div>')
   await init(page)
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.refresh())
   expect(await page.locator('#native').textContent()).toBe(':root{--color-static:#123}@keyframes steady{to{opacity:1}}')
@@ -268,8 +268,8 @@ test('refresh leaves native stylesheets and keyframes under browser ownership', 
 test('preserves native declarations independently of browser support', async ({ page }) => {
   await page.evaluate(() => {
     document.body.innerHTML = [
-      '<div class="float:left display:block field-sizing:content transition-behavior:allow-discrete color:oklch(63.7%|0.237|25.331)"></div>',
-      '<div class="made-up:left float:banana display:banana"></div>'
+      '<div class="(float:left) (display:block) (field-sizing:content) (transition-behavior:allow-discrete) (color:oklch(63.7%|0.237|25.331))"></div>',
+      '<div class="(made-up:left) (float:banana) (display:banana)"></div>'
     ].join('')
   })
   await init(page)
@@ -287,36 +287,36 @@ test('preserves native declarations independently of browser support', async ({ 
       .map((cssRule) => cssRule.cssText)
   }))
 
-  expect(result.classUtilities).toContain('float:left')
-  expect(result.classUtilities).toContain('display:block')
-  expect(result.classUtilities).toContain('color:oklch(63.7%|0.237|25.331)')
+  expect(result.classUtilities).toContain('(float:left)')
+  expect(result.classUtilities).toContain('(display:block)')
+  expect(result.classUtilities).toContain('(color:oklch(63.7%|0.237|25.331))')
   expect(result.cssRules.some((cssRule) => cssRule.includes('float: left'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('display: block'))).toBe(true)
   expect(result.cssRules.some((cssRule) => cssRule.includes('oklch'))).toBe(true)
-  expect(result.rustText).toContain('.float\\:left{float:left}')
-  expect(result.rustText).toContain('.display\\:block{display:block}')
+  expect(result.rustText).toContain('.\\(float\\:left\\){float:left}')
+  expect(result.rustText).toContain('.\\(display\\:block\\){display:block}')
   expect(result.rustText).toContain('made-up:left')
   expect(result.rustText).toContain('display:banana')
 
-  expect(result.classUtilities).toContain('field-sizing:content')
-  expect(result.classUtilities).toContain('transition-behavior:allow-discrete')
+  expect(result.classUtilities).toContain('(field-sizing:content)')
+  expect(result.classUtilities).toContain('(transition-behavior:allow-discrete)')
   if (result.supports.fieldSizing) {
-    expect(result.classUtilities).toContain('field-sizing:content')
+    expect(result.classUtilities).toContain('(field-sizing:content)')
     expect(result.cssRules.some((cssRule) => cssRule.includes('field-sizing: content'))).toBe(true)
   }
   if (result.supports.transitionBehavior) {
-    expect(result.classUtilities).toContain('transition-behavior:allow-discrete')
+    expect(result.classUtilities).toContain('(transition-behavior:allow-discrete)')
     expect(result.cssRules.some((cssRule) => cssRule.includes('transition-behavior: allow-discrete'))).toBe(true)
   }
 
-  expect(result.classUtilities).toContain('made-up:left')
-  expect(result.classUtilities).toContain('float:banana')
-  expect(result.classUtilities).toContain('display:banana')
+  expect(result.classUtilities).toContain('(made-up:left)')
+  expect(result.classUtilities).toContain('(float:banana)')
+  expect(result.classUtilities).toContain('(display:banana)')
 })
 
 test('progressive hydration leaves unconditional native CSS in its own stylesheet', async ({ page }) => {
-  await page.setContent("<style id=\"native\">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class=\"display:block\"></div>")
-  await init(page, "@layer utilities{.display\\:block{display:block}}", {}, 'auto')
+  await page.setContent("<style id=\"native\">@layer theme{:root{--color-static:#123}}@keyframes steady{to{opacity:1}}</style><div class=\"(display:block)\"></div>")
+  await init(page, "@layer utilities{.\\(display\\:block\\){display:block}}", {}, 'auto')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.progressive)).toBe(true)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain('--color-static')
   expect(await page.locator('#native').textContent()).toContain('@keyframes steady')
@@ -325,7 +325,7 @@ test('progressive hydration leaves unconditional native CSS in its own styleshee
 test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
   await init(page)
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
+    document.body.innerHTML = '<div class="fg-red-60 (animation:fade|1s)"></div>'
   })
   await waitForRuntimeRuleFlush(page)
   const result = await page.evaluate(async (program) => {
@@ -351,7 +351,7 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
   expect(result.before).toContain('--color-red-60:')
   expect(result.before).not.toContain('@keyframes fade{')
   expect(result.after).toContain('.fg-red-60')
-  expect(result.after).toContain('.animation\\:fade\\|1s')
+  expect(result.after).toContain('.\\(animation\\:fade\\|1s\\)')
   expect(result.after).not.toContain('--color-red-60:')
   expect(result.after).not.toContain('@keyframes fade{')
   expect(result.variables).toMatchObject({ 'color-red-60': 1 })
@@ -364,7 +364,7 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     const host = document.createElement('div')
     document.body.append(host)
     const root = host.attachShadow({ mode: 'open' })
-    root.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
+    root.innerHTML = '<div class="fg-red-60 (animation:fade|1s)"></div>'
     const first = globalThis.MasterCSSRuntime.start({ program, root })
     const second = globalThis.MasterCSSRuntime.start({
       program,
@@ -400,14 +400,14 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
 
   expect(result.same).toBe(true)
   expect(result.counts).toEqual({
-    'animation:fade|1s': 1,
+    '(animation:fade|1s)': 1,
     'fg-red-60': 1
   })
   expect(result.emittedGlobals).toEqual({
     variables: { 'color-red-60': 3 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: []
   })
   expect(result.text).toContain('.fg-red-60')
-  expect(result.text).toContain('.animation\\:fade\\|1s')
+  expect(result.text).toContain('.\\(animation\\:fade\\|1s\\)')
   expect(result.text).not.toContain('--color-red-60:')
   expect(result.text).toContain('@keyframes fade')
 })

@@ -8,12 +8,12 @@ export interface Props {
 const { href, title, body } = Astro.props;
 ---
 
-<li class="list-style:none">
-    <a class="display:block height:100% padding:1.25rem border-radius:8px bg-white border:1px|solid|#e2e8f0 text-decoration:none color:#0f172a" href={href}>
-      <h2 class="margin:0 font-size:18px font-weight:600">
+<li class="(list-style:none)">
+    <a class="block (height:100%) (padding:1.25rem) (border-radius:8px) bg-white (border:1px|solid|#e2e8f0) (text-decoration:none) (color:#0f172a)" href={href}>
+      <h2 class="(margin:0) (font-size:18px) (font-weight:600)">
       {title}
     </h2>
-    <p class="margin-top:0.5rem margin-bottom:0 color:#475569 line-height:1.6">
+    <p class="(margin-top:0.5rem) (margin-bottom:0) (color:#475569) (line-height:1.6)">
       {body}
     </p>
   </a>

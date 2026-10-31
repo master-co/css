@@ -180,7 +180,7 @@ mod tests {
             ]
         }).to_string()).unwrap();
         let source =
-            "/* 😀 */@safelist keyframes \"with space\" \"\\66 ade\";@safelist \"opacity:1\";";
+            "/* 😀 */@safelist keyframes \"with space\" \"\\66 ade\";@safelist \"(opacity:1)\";";
         let result = session
             .analyze_document(&AnalyzeDocumentRequestIr {
                 source: source.into(),
@@ -195,7 +195,7 @@ mod tests {
                 .iter()
                 .map(|position| position.token.as_str())
                 .collect::<Vec<_>>(),
-            ["opacity:1"]
+            ["(opacity:1)"]
         );
         let names = result
             .keyframe_positions

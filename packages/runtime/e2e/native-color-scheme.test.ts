@@ -11,7 +11,7 @@ const surfaces = ['base', 'inset', 'raised', 'floating']
 const textTokens = flattenMasterCSSManifestVariables(manifest.variables)
   .filter(({ namespace, key }) => namespace === 'color-text' && !['muted', 'disabled', 'inverse'].includes(key))
   .map(({ key }) => key)
-const classes = ['fg-text-body', 'bg-surface-base', 'shadow-sm', 'bg-surface-floating/.8', 'fg-blue', "color:red@dark",
+const classes = ['fg-text-body', 'bg-surface-base', 'shadow-sm', 'bg-surface-floating/.8', 'fg-blue', "(color:red)@dark",
   'b-line-control', 'fg-text-muted', ...surfaces.map(key => `bg-surface-${key}`), ...textTokens.map(key => `fg-text-${key}`)]
 const rendered = renderClassNamesSync(classes, { manifest })
 
@@ -21,7 +21,7 @@ for (const mode of ['light', 'dark'] as const) {
     await page.setContent(`<style>${nativeCSS}${rendered.cssText}</style>
       <div id="sample" class="bg-surface-base fg-text-body shadow-sm">Body</div>
       <div data-theme="light"><div id="nested" data-theme="dark" class="bg-surface-base fg-text-body">Nested</div><div id="host"></div></div>
-      <div id="variant" class="color:red@dark">System variant</div>`)
+      <div id="variant" class="(color:red)@dark">System variant</div>`)
     const data = await page.evaluate(({ surfaces, textTokens, css }) => {
       const sample = document.querySelector<HTMLElement>('#sample')!
       const read = (element: Element) => { const s = getComputedStyle(element); return { fg: s.color, bg: s.backgroundColor, shadow: s.boxShadow, scheme: s.colorScheme } }

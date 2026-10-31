@@ -4,21 +4,21 @@
     "id": "create-a-stacking-context",
     "title": "Create a stacking context",
     "html": [
-      "<div class=\"p-md bg-blue-20\">\n  <section class=\"isolation:isolate\">\n    <div class=\"p-lg bg-violet-50 mix-blend-mode:multiply\">Blend layer</div>\n  </section>\n</div>"
+      "<div class=\"p-md bg-blue-20\">\n  <section class=\"isolate\">\n    <div class=\"p-lg bg-violet-50 (mix-blend-mode:multiply)\">Blend layer</div>\n  </section>\n</div>"
     ],
     "css": "",
     "classes": [
       "p-md",
       "bg-blue-20",
-      "isolation:isolate",
+      "isolate",
       "p-lg",
       "bg-violet-50",
-      "mix-blend-mode:multiply"
+      "(mix-blend-mode:multiply)"
     ],
     "classLists": [
       "p-md bg-blue-20",
-      "isolation:isolate",
-      "p-lg bg-violet-50 mix-blend-mode:multiply"
+      "isolate",
+      "p-lg bg-violet-50 (mix-blend-mode:multiply)"
     ],
     "highlighted": []
   }

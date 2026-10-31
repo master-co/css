@@ -7,21 +7,21 @@ export const compositeClassProperties = new Set(`all animation animation-range b
 const axisProperties = new Set(`background-position background-repeat border-block-color border-block-style border-block-width border-color border-inline-color border-inline-style border-inline-width border-radius border-style border-width contain-intrinsic-size gap grid-area grid-column grid-row inset inset-block inset-inline margin margin-block margin-inline mask-position mask-repeat overflow overscroll-behavior padding padding-block padding-inline place-content place-items place-self scroll-margin scroll-margin-block scroll-margin-inline scroll-padding scroll-padding-block scroll-padding-inline -webkit-mask-position -webkit-mask-repeat`.split(' '))
 
 export function atomicClassIssue(className: string): string | undefined {
-  const match = /^([a-z-]+):(.+)$/.exec(className)
+  const match = /^\(([a-z-]+):(.+)$/.exec(className)
   if (!match) return
   const [, property, tail] = match
   if (!compositeClassProperties.has(property) && !axisProperties.has(property)) return
   let depth = 0
   let value = ''
   let quote = ''
+  // The value ends at the closing parenthesis of the `(property:value)` head.
   for (let index = 0; index < tail.length; index++) {
     const char = tail[index]
     if (char === '\\') { value += char + (tail[++index] ?? ''); continue }
     if (quote) { if (char === quote) quote = ''; value += char; continue }
     if (char === '"' || char === "'") { quote = char; value += char; continue }
     if (char === '(') depth++
-    if (char === ')') depth--
-    if (!depth && /[:@!_>+~\[]/.test(char)) break
+    if (char === ')' && !depth--) break
     value += !depth && (char === '|' || char === '/' || char === ',') ? '\0' : char
   }
   // A single grid line, named area, or span is one placement setting.

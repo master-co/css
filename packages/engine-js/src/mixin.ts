@@ -7,7 +7,7 @@ import type { MixinDefinition, MixinNode, MixinValuePart, Program, RecipeDefinit
 import { cssEscape } from './program'
 import { replaceNestingSelector } from './selector'
 import { asciiLowercase, isWhitespace, trim } from './text'
-import { isNativeCssProperty } from './utility'
+import { NATIVE_CSS_PROPERTY_SET } from './native-properties'
 import { decimalIsFinite, parseDecimal } from './value'
 
 type MixinParameter = MixinDefinition['parameters'][number]
@@ -205,7 +205,7 @@ function directValue({ parameters, body }: MixinDefinition) {
   const [declaration] = body
   if (parameters.length !== 1 || parameter.syntax !== undefined || parameter.default !== undefined) return false
   if (body.length !== 1 || declaration.type !== 'declaration') return false
-  if (declaration.property.startsWith('--') || !isNativeCssProperty(declaration.property)) return false
+  if (declaration.property.startsWith('--') || !NATIVE_CSS_PROPERTY_SET.has(declaration.property)) return false
   const parts = declaration.value.filter((part) => part.type !== 'text' || trim(part.value))
   const [call] = parts
   if (parts.length !== 1 || call.type !== 'function' || asciiLowercase(call.name) !== 'var') return false

@@ -7,7 +7,7 @@ test('property-scoped policy and explainable token families agree across native 
   const results = []
   for (const binding of ['native', 'wasm'] as const) {
     using tooling = await createToolingSession({ manifest: preset as unknown as MasterCSSManifest, binding })
-    const names = ['color:#123456', 'font-size:15px', 'color:var(--color-brand)']
+    const names = ['(color:#123456)', '(font-size:15px)', '(color:var(--color-brand))']
     const result = tooling.analyzeLintClassList(names.join(' '), names, { rawValuePolicy: { requireProperties: ['color'] } })
     const diagnostics = result.diagnostics.filter(item => item.ruleId === 'no-unapproved-raw-values')
     expect(diagnostics).toHaveLength(1)

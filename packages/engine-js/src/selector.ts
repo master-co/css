@@ -55,6 +55,14 @@ export function validSelectorStructure(source: string) {
       if (tokens[index + 1]?.kind !== IDENT) return false
     } else if ('<;{}@'.includes(token.value)) {
       return false
+    } else if (token.value === ':') {
+      // A pseudo selector names an identifier or function: `:1|1|auto` never is one.
+      const previous = tokens[index - 1]
+      const element = previous?.kind === DELIM && previous.value === ':' && previous.end === token.start
+      const next = tokens[index + 1]
+      const named = next !== undefined && next.start === token.end
+        && (next.kind === IDENT || next.kind === FUNCTION || (next.kind === DELIM && next.value === ':' && !element))
+      if (!named) return false
     }
   }
   return true

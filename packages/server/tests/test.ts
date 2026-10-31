@@ -41,11 +41,11 @@ describe.concurrent('server fixture CSS parity', () => {
 })
 
 test('preserves structurally valid native CSS without a host support filter', () => {
-  const html = '<div class="float:left field-sizing:content display:banana made-up:left"></div>'
+  const html = '<div class="(float:left) (field-sizing:content) (display:banana) (made-up:left)"></div>'
   const result = renderHTML(html, { manifest: defaultManifest })
 
-  expect(result.cssText).toContain('.float\\:left{float:left}')
-  expect(result.cssText).toContain('.field-sizing\\:content{field-sizing:content}')
-  expect(result.cssText).toContain('display\\:banana')
-  expect(result.cssText).toContain('made-up\\:left')
+  expect(result.cssText).toContain('.\\(float\\:left\\){float:left}')
+  expect(result.cssText).toContain('.\\(field-sizing\\:content\\){field-sizing:content}')
+  expect(result.cssText).toContain('.\\(display\\:banana\\){display:banana}')
+  expect(result.cssText).toContain('.\\(made-up\\:left\\){made-up:left}')
 })

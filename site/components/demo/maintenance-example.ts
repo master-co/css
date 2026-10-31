@@ -40,16 +40,16 @@ const maintenanceExample = {
   html: `<section class="card-region p-lg r-lg bg-surface-raised">
   <article class="card">
     <div class="panel-stack(1.5)">
-      <h2 class="margin:0 fg-brand">Workspace</h2>
+      <h2 class="(margin:0) fg-brand">Workspace</h2>
       <p class="fg-information">Your files stay available during updates.</p>
-      <div class="display:flex flex-wrap:wrap gap-sm">
+      <div class="flex flex-wrap gap-sm">
         <button class="button" type="button">Save</button>
         <button class="button" type="button" disabled>Saving</button>
       </div>
     </div>
-    <div aria-hidden="true" class="display:grid align-items:center">
-      <div class="height:.5rem bg-surface-inset">
-        <div class="progress-fill height:.5rem bg-brand" style="--progress:.4"></div>
+    <div aria-hidden="true" class="grid items-center">
+      <div class="(height:.5rem) bg-surface-inset">
+        <div class="progress-fill (height:.5rem) bg-brand" style="--progress:.4"></div>
       </div>
     </div>
   </article>

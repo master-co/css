@@ -10,7 +10,7 @@ The card combines shared colors, spacing and type with local layout choices. Its
 ## What is Master CSS?
 Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS.
 
-Its class language combines native declarations such as `display:grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. You can start with the supplied theme and write local styles without designing a complete system first.
+Its class language combines native declarations such as `grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. You can start with the supplied theme and write local styles without designing a complete system first.
 
 As values and patterns become shared, define them in your project CSS. Theme tokens, native component classes and custom utilities give those decisions names that you can reuse. Your stylesheets can also contain ordinary selectors, media queries, cascade layers and keyframes.
 
@@ -52,7 +52,7 @@ Share a token because its consumers should change together. An informational col
 ---
 
 ## Understand the next change
-Suppose the brand color changes. Before editing `--color-brand`, inspect the project definitions and their known uses. After the edit, compare project snapshots to see which classes, stylesheets and outputs are affected. A class such as `bg-brand` can be affected even when its generated declaration still reads `background-color:var(--color-brand)`.
+Suppose the brand color changes. Before editing `--color-brand`, inspect the project definitions and their known uses. After the edit, compare project snapshots to see which classes, stylesheets and outputs are affected. A class such as `bg-brand` can be affected even when its generated declaration still reads `(background-color:var(--color-brand))`.
 
 The tools can also locate token references in project CSS and check configured policies, such as requiring tokens for selected properties. [Code Linting](/guide/code-linting) explains the checks; the [project review workflow](/guide/ai-coding#review-the-second-change) shows how to inspect and compare changes.
 

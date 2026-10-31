@@ -108,13 +108,22 @@ interface ManifestLike {
   keyframes: { name: string }[]
 }
 
-const NATIVE_DECLARATIONS = [
+const DECLARATIONS = [
   'display:block', 'display:flex', 'display:grid', 'width:10px', 'width:calc(100%-2rem)', 'height:50%',
   'margin:-.25rem', 'margin:0.25rem', 'padding:1rem|2rem', 'color:#fff', 'color:rgb(0,0,0,0.75)',
   'background-color:oklch(60%|.2|240/.5)', 'border:1px|solid|var(--color-red-60)', 'font-size:min(.625rem,calc(1.5625rem-.625rem))',
   'transition:opacity|300ms|ease|100ms', 'animation:fade|1s', 'opacity:.5', 'z-index:10', 'gap:1.5rem', 'inset:0',
   'content:\'a_b\'', 'grid-template-columns:repeat(3,1fr)', 'transform:translate(1px,2px)', 'line-height:1.2',
-  'width:clamp(1px,2px+3px,4px)', 'top:1', 'margin-top:2', 'font-weight:600', '--x:1', 'aspect-ratio:16/9'
+  'width:clamp(1px,2px+3px,4px)', 'top:1', 'margin-top:2', 'font-weight:600', '--x:1', 'aspect-ratio:16/9',
+  'flex:1|1|auto', 'grid-template-columns:[start]|1fr|[end]', 'animation-name:slide_in', 'content:\')\'', '--payload:a:b@c_foo',
+  'background-image:url(/a{b.svg)', 'background:url(/a]b/*c|d.png)', '--x:{a;b}', '--x:', 'color:red!important', 'color:red|!|IMPORTANT',
+  'color:red!/**/\\69mportant', 'content:\'!important\'', '--x:var(--y,!important)', '--x:!important', 'unknown-prop:1', 'color:red/*a)b*/'
+]
+/** Native declaration heads; the bare legacy spelling is kept as input both engines must reject alike. */
+const NATIVE_DECLARATIONS = DECLARATIONS.map((declaration) => `(${declaration})`)
+const MALFORMED_DECLARATIONS = [
+  '(display:block', '(display:block;)', '(display:block;color:red)', '(color:red)(display:block)', '(width:calc(1px])',
+  '(content:\'a)', '(width:)', '(width:!important)', '(color:{red})', '(flex)', '(:block)', '(background:url(a(b)))', '(width:1px\\'
 ]
 const STATES = [':hover', ':focus', ':active', ':first', '::before', '::after', ':nth-child(2n+1)', '.active', '[disabled]', ':not(.disabled)', ':is(_foo)', ':of(.active>)', '_button', ':where(h1,h2)']
 const PRIMITIVE_CONDITIONS = ['@layer(base)', '@layer(defaults)', '@layer(components)', '@starting-style', '@print']
@@ -129,6 +138,8 @@ export function fuzzClasses(manifest: ManifestLike, count: number, seed: number)
   const keyframes = manifest.keyframes.map((keyframe) => keyframe.name)
   const bases: (() => string)[] = [
     () => pick(NATIVE_DECLARATIONS),
+    () => pick(DECLARATIONS),
+    () => pick(MALFORMED_DECLARATIONS),
     () => {
       const utility = pick(manifest.utilities.filter((entry) => entry.kind === 'token'))
       const [, values] = pick(namespaces)
@@ -139,8 +150,9 @@ export function fuzzClasses(manifest: ManifestLike, count: number, seed: number)
       return `${utility.name}(${1 + Math.floor(random() * 12)})`
     },
     () => pick(manifest.utilities.filter((entry) => entry.kind === 'static')).name,
-    () => `animation:${pick(keyframes)}|${pick(['1s', '300ms', '2s|infinite'])}`,
-    () => `{${pick(NATIVE_DECLARATIONS)};${pick(NATIVE_DECLARATIONS)}}`
+    () => `(animation:${pick(keyframes)}|${pick(['1s', '300ms', '2s|infinite'])})`,
+    () => `{${pick(DECLARATIONS)};${pick(DECLARATIONS)}}`,
+    () => `(${pick(DECLARATIONS)};${pick(DECLARATIONS)})`
   ]
   const classes = new Set<string>()
   for (let attempt = 0; classes.size < count && attempt < count * 10; attempt++) {
@@ -216,7 +228,11 @@ export function valueClasses(count: number, seed: number) {
   }
   const classes = new Set<string>()
   for (let attempt = 0; classes.size < count && attempt < count * 10; attempt++) {
-    let className = `${pick(PROPERTIES)}:${expression(0)}`
+    // Mostly declaration heads; a few bare legacy spellings and unclosed heads.
+    const roll = random()
+    const declaration = `${pick(PROPERTIES)}:${expression(0)}`
+    let className = roll < 0.85 ? `(${declaration})` : roll < 0.93 ? declaration : `(${declaration}`
+    if (random() < 0.15) className += pick([':hover', '_div', '@media(print)', '[open]', '::before', '@layer(base)'])
     if (random() < 0.1) className += '!'
     if (random() < 0.03) className += '!'
     classes.add(className)
@@ -267,7 +283,7 @@ export function themeEngineCases(): EngineCase[] {
     .map((value) => ({ type: 'declaration', name: 'name' in entry ? entry.name : `${namespace}-${entry.key}`, value: value.value }))))
   const manifest = {
     version: 6,
-    languageVersion: 16,
+    languageVersion: 17,
     variables,
     theme: [':root,:host', '.dark', '.x'].map((prelude) => ({ type: 'rule', prelude, children: declarations(prelude) })),
     customMedia: {},
@@ -275,8 +291,9 @@ export function themeEngineCases(): EngineCase[] {
   }
   const classes = [
     'gap-sm', 'gap-md', 'gap-lg', 'gap-xl', 'gap-xs', 'gap-2x', 'm-sm', '-m-md', '-m-sm', 'm-lg!', 'fg-red', 'fg-red/.5', 'fg-blue',
-    'fg-a', 'fg-b', 'fg-c', 'fg-ü', 'fg-9', 'fg-x_y', 'fg-a/.25', 'gap:var(--spacing-sm)', 'margin:calc(var(--spacing-lg)*2)',
-    'color:var(--color-red,blue)', 'background:var(--stripe)', 'width:var(--spacing-xs)', 'color:var(--color-a)', 'gap:var(--gutter)'
+    'fg-a', 'fg-b', 'fg-c', 'fg-ü', 'fg-9', 'fg-x_y', 'fg-a/.25', '(gap:var(--spacing-sm))', '(margin:calc(var(--spacing-lg)*2))',
+    '(color:var(--color-red,blue))', '(background:var(--stripe))', '(width:var(--spacing-xs))', '(color:var(--color-a))', '(gap:var(--gutter))',
+    '(color:var(--color-x_y))'
   ]
   const steps: EngineCaseStep[] = [
     { op: 'ensure', classes: classes.slice(0, 10) },
@@ -304,7 +321,7 @@ export function themeEngineCases(): EngineCase[] {
   }
   const media = ['@wide', '@screen-wide', '@not-print', '@either', '@never', '@always', '@mixed', '@odd-type', '@media((--wide))', '@media((--either))',
     '@media((--never))', '@media((--mixed))', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media((width>=40rem))@wide']
-  const mediaClasses = ['fg-red', 'gap-md', 'color:red:hover'].flatMap((base) => media.map((condition) => base + condition))
+  const mediaClasses = ['fg-red', 'gap-md', '(color:red):hover'].flatMap((base) => media.map((condition) => base + condition))
   const mediaSteps: EngineCaseStep[] = [
     { op: 'ensure', classes: mediaClasses },
     { op: 'delete', classes: mediaClasses.filter((_, index) => index % 3 === 0) },
@@ -322,7 +339,7 @@ const NOISE = [
   ...':;{}()[]"\'\\|!@_.-+*/#,~>%=&?<$^`', 'a', 'z', 'A', '0', '9', 'e', 'E', ' ', '\t', '\n', '\r', '\f', '\0', '\x7f',
   'é', 'ü', '✓', '😀', '\ud800', '\udc00', '\ufffd', '\u0085', '\ufeff', '\u00a0', '\u2028', 'calc(', 'var(--', '--', '/*', '*/', 'url('
 ]
-const NOISE_HEADS = ['', '', 'color:', 'margin:', 'fg-', 'm-', '-m-', 'content:', 'width:calc(', '--x:', 'gap-', 'bg-red-60']
+const NOISE_HEADS = ['', '', '(color:', '(margin:', 'color:', 'fg-', 'm-', '-m-', '(content:', '(width:calc(', '(--x:', '(', 'gap-', 'bg-red-60', '(background:url(']
 
 /** Arbitrary text around class syntax: controls, lone surrogates and Unicode whitespace included. */
 export function noiseClasses(count: number, seed: number) {
@@ -337,7 +354,7 @@ export function noiseClasses(count: number, seed: number) {
   return classes
 }
 
-const STATE_BASES = ['color:red', 'fg-red-60', 'm-md', '-m-md', 'width:calc(1px+2px)', 'gap-x-md', 'bg-blue-50/.5', 'content:"a_b"', 'opacity:.5', 'font:12px|sans']
+const STATE_BASES = ['(color:red)', 'fg-red-60', 'm-md', 'flex', '-m-md', '(width:calc(1px+2px))', 'gap-x-md', 'bg-blue-50/.5', '(content:"a_b")', '(opacity:.5)', '(font:12px|sans)', 'items-center', '(background-image:url(/a{b.svg))']
 const SELECTORS = [
   ':hover', ':focus', ':focus-visible', ':active', ':disabled', ':hover:focus', '::before', '::after', '::placeholder', ':first-child',
   ':nth-child(2n+1)', ':nth-child(2n+1_of_.item)', ':nth-last-child(odd_of_li_a)', ':not(.disabled)', ':not(:hover)', ':is(_h1,_h2)',

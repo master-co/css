@@ -5,7 +5,7 @@ async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
   const blankURL = new URL('/__master-css-runtime-engine-startup.html', loaderURL).href
   await page.route(blankURL, route => route.fulfill({
     contentType: 'text/html',
-    body: '<!doctype html><html hidden><head></head><body><p class="display:block"></p></body></html>'
+    body: '<!doctype html><html hidden><head></head><body><p class="(display:block)"></p></body></html>'
   }))
   await page.goto(blankURL, { waitUntil: 'domcontentloaded' })
 }
@@ -32,7 +32,7 @@ test('executes the program with the JavaScript engine without fetching Wasm', as
   expect(result).toEqual({
     binding: 'js',
     hidden: false,
-    text: "@layer utilities{.display\\:block{display:block}}"
+    text: "@layer utilities{.\\(display\\:block\\){display:block}}"
   })
 })
 

@@ -23,7 +23,11 @@ pub fn parse_functional_class(source: &str) -> Option<Result<FunctionalClassHead
     };
     let suffix_start = tokens[close].bytes.end;
     let tail = &source[suffix_start..];
-    if !tail.is_empty() && !tail.starts_with(['!', '*', '>', '+', '~', ':', '[', '@', '_', '.']) {
+    if tail
+        .chars()
+        .next()
+        .is_some_and(|character| !crate::is_class_suffix_start(character))
+    {
         return Some(Err("Invalid suffix after mixin arguments".into()));
     }
     let arguments_range = first.bytes.end..tokens[close].bytes.start;

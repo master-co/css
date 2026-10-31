@@ -171,9 +171,9 @@ describe('@master/css-astro integration', () => {
     try {
       writeFileSync(htmlFile, [
         '<html><head>',
-        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
+        "<style id=\"master-css\">@layer utilities{.block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
-        "</head><body><div class=\"display:block\"></div></body></html>"
+        "</head><body><div class=\"block\"></div></body></html>"
       ].join(''))
 
       const files = await externalizeAstroHydrationManifests(dir)
@@ -200,9 +200,9 @@ describe('@master/css-astro integration', () => {
     try {
       writeFileSync(htmlFile, [
         '<html><head>',
-        "<style id=\"master-css\">@layer utilities{.display\\:block{display:block}}</style>",
+        "<style id=\"master-css\">@layer utilities{.block{display:block}}</style>",
         `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
-        "</head><body><div class=\"display:block\"></div></body></html>"
+        "</head><body><div class=\"block\"></div></body></html>"
       ].join(''))
       const integration = masterCSS({ mode: 'progressive' })
 

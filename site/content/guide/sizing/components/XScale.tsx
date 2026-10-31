@@ -4,9 +4,9 @@ import { sizingRoles } from '~/site/common/foundation-data/sizing/scale-data'
 
 function renderInlineCodes(values: string[]) {
   return (
-    <div className="display:flex flex-wrap:wrap gap-xs">
+    <div className="flex flex-wrap gap-xs">
       {values.map((value) => (
-        <InlineCode key={value} className="white-space:nowrap">{value}</InlineCode>
+        <InlineCode key={value} className="(white-space:nowrap)">{value}</InlineCode>
       ))}
     </div>
   )

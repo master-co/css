@@ -66,12 +66,12 @@ export const toolingExamples = {
   },
   invalid: {
     title: 'A recognized class with an invalid value', language: 'html',
-    source: '<span class="text-decoration:bad()">Note</span>',
-    diagnostic: { severity: 'Error', rule: '@master/css/no-invalid-classes', message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration` property.' }
+    source: '<span class="(text-decoration:bad())">Note</span>',
+    diagnostic: { severity: 'Error', rule: '@master/css/no-invalid-classes', message: 'Class "(text-decoration:bad())" emits invalid CSS: Invalid value for `text-decoration` property.' }
   },
   canonical: {
     title: 'Use the project vocabulary', language: 'mcss', sourceLabel: 'Before canonicalization', resultLabel: 'After canonicalization',
-    source: 'margin:1rem fg-red@dark@sm', result: 'm:1rem fg-red@dark@sm'
+    source: '(margin:1rem) fg-red@dark@sm', result: 'm:1rem fg-red@dark@sm'
   },
   conflict: {
     title: 'One intended margin', language: 'mcss', sourceLabel: 'Before fix', resultLabel: 'After fix',
@@ -79,8 +79,8 @@ export const toolingExamples = {
     diagnostic: { severity: 'Warning', rule: '@master/css/no-conflicting-classes', message: 'Remove class "m-lg"; it is overridden by class "m-sm" in generated CSS.' }
   },
   raw: {
-    title: 'A value that needs a token or an exception', language: 'mcss', source: 'font-size:15px',
-    diagnostic: { severity: 'Warning', rule: '@master/css/no-unapproved-raw-values', message: 'Raw value "15px" is not approved for class "font-size:15px". Use a token or allow the value explicitly.' }
+    title: 'A value that needs a token or an exception', language: 'mcss', source: '(font-size:15px)',
+    diagnostic: { severity: 'Warning', rule: '@master/css/no-unapproved-raw-values', message: 'Raw value "15px" is not approved for class "(font-size:15px)". Use a token or allow the value explicitly.' }
   },
   hover: {
     title: 'CSS reported by hover', language: 'html', resultLanguage: 'css', resultLabel: 'Hover output',

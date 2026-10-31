@@ -1,12 +1,11 @@
 // Class rule generation, as the engine's generation.rs and render.rs build it: match
 // the class, take each utility's emitted state branches, and render one stored rule
-// per key and layer. A native declaration is the fallback when no registered utility
-// matches. `@apply` classes expand in apply.ts from the composition rules built here.
+// per key and layer. A `(property:value)` head is a native declaration and never a
+// utility. `@apply` classes expand in apply.ts from the composition rules built here.
 import { analyzeAnimations, stylesheetDeclarations, type AnimationReferences } from './animation'
 import { applicationRules } from './apply'
-import { decodeNativeContent, splitDynamicValueState, splitTopLevel } from './class-syntax'
+import { decodeNativeValue, parseNativeDeclaration, splitTopLevel, validClassStructure } from './class-syntax'
 import { conditionPriority } from './condition'
-import { leadingDeclarationName } from './css-syntax'
 import { expandUtility } from './mixin'
 import type { StoredRule } from './order'
 import { cssEscape } from './program'
@@ -15,8 +14,8 @@ import { replaceNestingSelector, selectorPriority } from './selector'
 import { resolveStateBranches, type StateBranch } from './state'
 import { trim } from './text'
 import type { ConditionFeature, GeneratedRule, RulePriority } from './types'
-import { matchingUtilities, tokenCandidates, tokenPrefix, type UtilityMatch } from './utility'
-import { collectCssVariableReferences, resolveValueComponents, substituteInlineTokens } from './value'
+import { matchingUtilities, type UtilityMatch } from './utility'
+import { collectCssVariableReferences, normalizeCssMathFunctions, substituteInlineTokens } from './value'
 
 export function formatDeclaration(property: string, value: string, important: boolean) {
   return important && !value.endsWith('!important') ? `${property}:${value}!important` : `${property}:${value}`
@@ -35,7 +34,8 @@ type EmittedRule = [declarations: string, selector: string | undefined, conditio
 
 function emitDeclarations(utility: Utility, matched: UtilityMatch, important: boolean, program: Program): EmittedRule[] {
   const { emit } = utility
-  if (emit.type === 'property') return matched.value ? [[formatNativeDeclaration(emit.property, matched.value, important), undefined, []]] : []
+  // Only `(--name:)` declares an empty value; token values are never empty.
+  if (emit.type === 'property') return matched.value === undefined ? [] : [[formatNativeDeclaration(emit.property, matched.value, important), undefined, []]]
   if (matched.expansion === undefined) matched.expansion = expandUtility(program, program.utilityDefinitions[emit.definition], matched.arguments) ?? null
   return (matched.expansion ?? []).map(({ selector, conditions, declarations }) => [
     declarations.map(([property, value]) => formatDeclaration(property, value, important)).join(';'),
@@ -50,24 +50,13 @@ function sortKey(utility: Utility, matched: UtilityMatch, program: Program) {
   return emitDeclarations(utility, matched, false, program).map(([declarations]) => declarations).join(';')
 }
 
-function parseNativeDeclarationCandidate(className: string, program: Program) {
-  if (decodeNativeContent(className) === undefined) return
-  const source = className.endsWith('!') ? className.slice(0, -1) : className
-  const prefix = tokenPrefix(source, program)
-  if (prefix !== undefined && tokenCandidates(source, prefix, program).length) return
-  const head = leadingDeclarationName(source)
+/** The declaration of a `(property:value)` head as a property utility, its match and whether its value ends with `!important`. */
+export function nativeDeclaration(className: string): [Utility, UtilityMatch, important: boolean] | undefined {
+  const head = parseNativeDeclaration(className)
   if (!head) return
-  const [raw] = splitDynamicValueState(source.slice(head[0] + 1))
-  if (!raw) return
-  return { property: source.slice(0, head[0]), value: resolveValueComponents(raw, program)[0] }
-}
-
-/** A native `property:value` declaration; only consulted when no registered utility matched. */
-export function nativeDeclarationFallback(className: string, program: Program): [Utility, UtilityMatch] | undefined {
-  const candidate = parseNativeDeclarationCandidate(className, program)
-  const head = leadingDeclarationName(className)
-  if (!candidate || !head || decodeNativeContent(candidate.value) === undefined) return
-  const id = `native:${candidate.property}`
+  const property = className.slice(...head.property)
+  const value = normalizeCssMathFunctions(decodeNativeValue(className.slice(...head.value)))
+  const id = `native:${property}`
   return [
     {
       id,
@@ -80,10 +69,11 @@ export function nativeDeclarationFallback(className: string, program: Program): 
       variableAliases: [],
       variableAliasRefs: [],
       nativeFallback: true,
-      emit: { type: 'property', property: candidate.property },
+      emit: { type: 'property', property },
       matchers: []
     },
-    { value: candidate.value, arguments: [], stateToken: splitDynamicValueState(className.slice(head[0] + 1))[1], variableNames: [], matcherType: 'key' }
+    { value, arguments: [], stateToken: className.slice(head.suffixStart), variableNames: [], matcherType: 'key' },
+    head.important
   ]
 }
 
@@ -147,21 +137,17 @@ interface GeneratedBranch {
 }
 
 /**
- * Matches a class and visits each state branch that emits declarations. A native
- * fallback only applies when no registered utility emitted a branch.
+ * Matches a class and visits each state branch that emits declarations. A
+ * `(property:value)` head is a native declaration and never a utility.
  */
 function generatedBranches(className: string, program: Program, visit: (generated: GeneratedBranch) => void) {
-  const important = className.endsWith('!')
-  const source = important ? className.slice(0, -1) : className
-  const candidates = matchingUtilities(source, program).map(([index, matched]): [Utility, UtilityMatch] => [program.utilities[index], matched])
-  if (!candidates.length) {
-    const fallback = nativeDeclarationFallback(source, program)
-    if (fallback) candidates.push(fallback)
-  }
+  const classImportant = className.endsWith('!')
+  const source = classImportant ? className.slice(0, -1) : className
+  const candidates = matchingUtilities(source, program).map(([index, matched]): [Utility, UtilityMatch, boolean] => [program.utilities[index], matched, classImportant])
+  const native = nativeDeclaration(source)
+  if (native) candidates.push([native[0], native[1], classImportant || native[2]])
   const seen = new Set<string>()
-  let emitted = false
-  for (const [utility, matched] of candidates) {
-    if (utility.nativeFallback && emitted) break
+  for (const [utility, matched, important] of candidates) {
     // The sort key ignores the branch; it is computed once, for the first emitted one.
     let branchSortKey: string | undefined
     for (const [index, branch] of resolveStateBranches(matched.stateToken, important, program).entries()) {
@@ -174,7 +160,6 @@ function generatedBranches(className: string, program: Program, visit: (generate
       const wrappers = branch.conditionWrappers
       const [features, conditions] = conditionPriority(wrappers)
       branchSortKey ??= sortKey(utility, matched, program)
-      emitted = true
       visit({
         utility,
         matched,
@@ -193,7 +178,7 @@ function generatedBranches(className: string, program: Program, visit: (generate
 export function generateClassRules(className: string, program: Program): StoredRule[] {
   const application = applicationRules(className, program)
   if (application) return application
-  if (decodeNativeContent(className) === undefined) return []
+  if (!validClassStructure(className)) return []
   const rules: StoredRule[] = []
   generatedBranches(className, program, ({ utility, matched, branch, key, layer, emitted, sortTier, features, priority }) => {
     const selectorText = createSelectorText(className, branch)
@@ -214,7 +199,7 @@ export function generateClassRules(className: string, program: Program): StoredR
     if (texts.length > 1) ir.nodes = texts.map((text) => ({ text }))
     if (variableNames.length) ir.variableNames = variableNames
     addAnimationReferences(ir, declarations, program)
-    rules.push({ ir, features, manifestOrder: utility.order, declarations, nativeFallback: utility.nativeFallback })
+    rules.push({ ir, features, manifestOrder: utility.order })
   })
   return rules
 }
@@ -266,7 +251,7 @@ function parseSerializedDeclarations(source: string) {
 
 /** The rules of a class without `@apply` suffixes, before inline theme substitution. */
 export function compositionRules(className: string, program: Program): CompositionRule[] {
-  if (decodeNativeContent(className) === undefined) return []
+  if (!validClassStructure(className)) return []
   const rules: CompositionRule[] = []
   generatedBranches(className, program, ({ utility, branch, layer, emitted, priority }) => {
     const template = branch.selectorTemplate

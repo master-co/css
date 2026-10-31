@@ -15,8 +15,8 @@ const expectEditedColors = async ({
   source: RegExp
   named?: boolean
 }) => {
-  const beforeContent = `export default () => <div className='${named ? 'fg-' : 'color:'}${before}'></div>`
-  const afterContent = `export default () => <div className='color:${after}'></div>`
+  const beforeContent = `export default () => <div className='${named ? `fg-${before}` : `(color:${before})`}'></div>`
+  const afterContent = `export default () => <div className='(color:${after})'></div>`
   const beforeDoc = createDoc('tsx', beforeContent)
   const afterDoc = createDoc('tsx', afterContent)
   const languageService = new CSSLanguageService({ manifest: createPresetManifest() })
@@ -37,7 +37,7 @@ const expectEditedColors = async ({
   ]))
   expect(new Set(labels).size).toBe(labels.length)
   expect(presentations.every(({ label, textEdit }) =>
-    textEdit?.newText === (named ? 'color:' : '') + label && textEdit.range === beforeColorInformation.range
+    textEdit?.newText === (named ? `(color:${label})` : label) && textEdit.range === beforeColorInformation.range
   )).toBe(true)
 }
 
@@ -47,6 +47,18 @@ test.concurrent('hex', async () => {
 
 test.concurrent('variable', async () => {
   await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0|none/0.5)', source: /^oklch\(/u, named: true })
+})
+
+test('replaces a named color class with a complete declaration head', async () => {
+  const document = createDoc('tsx', "export default () => <div className='fg-white/.5 (color:#333333):hover'></div>")
+  const languageService = new CSSLanguageService({ manifest: createPresetManifest() })
+  const [named, native] = await languageService.renderSyntaxColors(document) ?? []
+  expect(document.getText(named.range)).toBe('fg-white/.5')
+  expect(languageService.editSyntaxColors(document, named.color, named.range)?.map(({ textEdit }) => textEdit?.newText))
+    .toContain('(color:#ffffff80)')
+  expect(document.getText(native.range)).toBe('#333333')
+  expect(languageService.editSyntaxColors(document, native.color, native.range)?.map(({ textEdit }) => textEdit?.newText))
+    .toContain('#333333')
 })
 
 test.concurrent('rgb', async () => {

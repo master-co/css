@@ -24,7 +24,7 @@
         "opacity"
       ],
       "expectedClasses": [
-        "opacity:.5"
+        "(opacity:.5)"
       ],
       "checks": [
         "opacity is 0.5",

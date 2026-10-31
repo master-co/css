@@ -28,7 +28,7 @@ export default function Resizable({
   handlerStyle,
   children,
   rulerPlacement = 'top',
-  ruleClassName = 'position:fixed',
+  ruleClassName = 'fixed',
   onResize,
   originX = 'left',
   originY = 'top',
@@ -131,7 +131,7 @@ export default function Resizable({
       {(resizing && showRuler || showRuler === 'always') &&
         <div className={clsx(
           ruleClassName,
-          'left:0 z-index:1070 display:flex align-items:center justify-content:center height:32px width:100% bb-line-subtle border-bottom-style:solid border-bottom-width:1px font-xs bg-surface-base fg-text-strong',
+          '(left:0) (z-index:1070) flex items-center justify-center (height:32px) (width:100%) bb-line-subtle (border-bottom-style:solid) (border-bottom-width:1px) font-xs bg-surface-base fg-text-strong',
           rulerPlacement + ':0'
         )}>
           {
@@ -139,27 +139,27 @@ export default function Resizable({
               const last = i === sortedBreakpoints.length - 1
               const width = +currentWidth?.replace('px', '')
               return (
-                <div key={eachBreakpoint.name} className={clsx('position:absolute bottom:0 top:0 display:flex align-items:center height:100% margin:auto bx-line-subtle border-inline-style:solid border-inline-width:1px',
+                <div key={eachBreakpoint.name} className={clsx('absolute (bottom:0) (top:0) flex items-center (height:100%) (margin:auto) bx-line-subtle (border-inline-style:solid) (border-inline-width:1px)',
                   (eachBreakpoint.value - 0.02 >= width && (last || width >= sortedBreakpoints[i + 1]?.value))
                     ? 'bg-surface-base'
                     : 'fg-text-muted'
                 )} style={{ width: eachBreakpoint.value }}>
-                  <div className="position:absolute left-xs">{eachBreakpoint.name}</div>
-                  <div className="position:absolute right-xs">{eachBreakpoint.name}</div>
+                  <div className="absolute left-xs">{eachBreakpoint.name}</div>
+                  <div className="absolute right-xs">{eachBreakpoint.name}</div>
                 </div>
               )
             })
           }
-          <div className="position:relative">{currentWidth?.replace('px', '')}{showHeight ? ' × ' + currentHeight?.replace('px', '') : ''}</div>
+          <div className="relative">{currentWidth?.replace('px', '')}{showHeight ? ' × ' + currentHeight?.replace('px', '') : ''}</div>
         </div>
       }
       <div ref={ref} {...props}
-        className={clsx('position:relative display:flex flex-basis:auto flex-direction:column flex-grow:0 flex-shrink:0', props.className, {
-          'z-index:1060 user-select:none resizing': resizing,
+        className={clsx('relative flex flex-col (flex-basis:auto) (flex-grow:0) (flex-shrink:0)', props.className, {
+          '(z-index:1060) (user-select:none) resizing': resizing,
         })}
         style={{ width: currentWidth, height: currentHeight }}
       >
-        <div className={clsx('display:contents', { 'pointer-events:none': resizing })}>
+        <div className={clsx('contents', { '(pointer-events:none)': resizing })}>
           {children}
         </div>
         {!(showHandler !== true && showHandler === false
@@ -169,10 +169,10 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[3] !== true) &&
           <Handler  {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom:0 left:0 top:0 align-items:center cursor:col-resize display:none@media((width<52.125rem))',
+              '(bottom:0) (left:0) (top:0) items-center (cursor:col-resize) hidden@media((width<52.125rem))',
               {
-                'transform:translateX(-100%) height:40px.active>svg transform:translateX(-50%).active': !handlerStyle,
-                'transform:translateX(-50%)': handlerStyle === 'hidden'
+                '(transform:translateX(-100%)) (height:40px).active>svg (transform:translateX(-50%)).active': !handlerStyle,
+                '(transform:translateX(-50%))': handlerStyle === 'hidden'
               }
             )}
             currentHandler="left" />
@@ -184,10 +184,10 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[1] !== true) &&
           <Handler {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom:0 right:0 top:0 align-items:center cursor:col-resize display:none@media((width<52.125rem))',
+              '(bottom:0) (right:0) (top:0) items-center (cursor:col-resize) hidden@media((width<52.125rem))',
               {
-                'transform:translateX(100%) height:40px.active>svg transform:translateX(50%).active': !handlerStyle,
-                'transform:translateX(50%)': handlerStyle === 'hidden'
+                '(transform:translateX(100%)) (height:40px).active>svg (transform:translateX(50%)).active': !handlerStyle,
+                '(transform:translateX(50%))': handlerStyle === 'hidden'
               }
             )}
             currentHandler="right" />
@@ -199,10 +199,10 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[0] !== true) &&
           <Handler  {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'left:0 right:0 top:0 justify-content:center cursor:row-resize',
+              '(left:0) (right:0) (top:0) justify-center (cursor:row-resize)',
               {
-                'transform:translateY(-100%) width:40px.active>svg transform:translateY(-50%).active': !handlerStyle,
-                'transform:translateY(-50%)': handlerStyle === 'hidden'
+                '(transform:translateY(-100%)) (width:40px).active>svg (transform:translateY(-50%)).active': !handlerStyle,
+                '(transform:translateY(-50%))': handlerStyle === 'hidden'
               },
             )}
             currentHandler="top" />
@@ -214,17 +214,17 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[2] !== true) &&
           <Handler {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom:0 left:0 right:0 justify-content:center cursor:row-resize',
+              '(bottom:0) (left:0) (right:0) justify-center (cursor:row-resize)',
               {
-                'transform:translateY(100%) width:2.5rem>svg transform:translateY(0%).active>svg transform:translateY(50%).active': !handlerStyle,
-                'transform:translateY(50%)': handlerStyle === 'hidden'
+                '(transform:translateY(100%)) (width:2.5rem)>svg (transform:translateY(0%)).active>svg (transform:translateY(50%)).active': !handlerStyle,
+                '(transform:translateY(50%))': handlerStyle === 'hidden'
               }
             )}
             currentHandler="bottom" />
         }
       </div>
       {resizing &&
-        <Portal><div className={clsx('position:fixed left:0 top:0 z-index:1040 height:100% width:100% animation-duration:0.2s animation-name:fade contain:strict', {
+        <Portal><div className={clsx('fixed (left:0) (top:0) (z-index:1040) (height:100%) (width:100%) (animation-duration:0.2s) (animation-name:fade) (contain:strict)', {
           'bg-black/.5': overlay // prevent mouse move into iframe
         })}></div></Portal>
       }
@@ -240,9 +240,9 @@ const Handler = (({ className, currentHandler, resizing, handlerStyle, setResizi
   }, [currentHandler, setCurrentHandler, setResizing])
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-    <div className={clsx(`${className} position:absolute display:flex margin:auto user-drag:none user-select:none z-index:1020`,
+    <div className={clsx(`${className} absolute flex (margin:auto) (user-drag:none) (user-select:none) (z-index:1020)`,
       {
-        'padding:0.625rem transition-duration:.2s transition-property:transform': !handlerStyle,
+        '(padding:0.625rem) (transition-duration:.2s) (transition-property:transform)': !handlerStyle,
         'p-xs bg-line-subtle:hover': handlerStyle === 'hidden',
         'active': resizing
       }
@@ -251,11 +251,11 @@ const Handler = (({ className, currentHandler, resizing, handlerStyle, setResizi
       onTouchStart={startResize}>
       {!handlerStyle &&
         <svg className={clsx(
-          'border-radius:1e9em bg-line-subtle',
+          '(border-radius:1e9em) bg-line-subtle',
           {
             'bg-white!': overlay && resizing,
-            'height:24px width:5px transition-duration:.2s transition-property:transform,height': currentHandler === 'left' || currentHandler === 'right',
-            'height:5px width:24px transition-duration:.2s transition-property:transform,width': currentHandler === 'top' || currentHandler === 'bottom',
+            '(height:24px) (width:5px) (transition-duration:.2s) (transition-property:transform,height)': currentHandler === 'left' || currentHandler === 'right',
+            '(height:5px) (width:24px) (transition-duration:.2s) (transition-property:transform,width)': currentHandler === 'top' || currentHandler === 'bottom',
           }
         )}>
         </svg>

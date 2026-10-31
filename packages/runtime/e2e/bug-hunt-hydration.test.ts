@@ -9,7 +9,7 @@ test('BH-0008: external hydration works with modules allowed but unsafe-eval and
     headers: { 'Access-Control-Allow-Origin': '*' },
     body: JSON.stringify({
   "version": 5 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "classNames": [],
   "resourceOrder": { variables: [], keyframes: [] }
 })
@@ -17,7 +17,7 @@ test('BH-0008: external hydration works with modules allowed but unsafe-eval and
   await page.setContent(`<html><head>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' http://127.0.0.1:*">
     <style id="master-css" data-master-css-hydration-manifest="${manifestURL}"></style>
-    </head><body class="display:block"></body></html>`)
+    </head><body class="(display:block)"></body></html>`)
   const result = await page.evaluate(async ({ loaderURL, manifestURL }) => {
     const response = await fetch(manifestURL)
     const directImport = await import(manifestURL, { with: { type: 'json' as const } })

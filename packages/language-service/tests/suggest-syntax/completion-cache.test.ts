@@ -26,9 +26,9 @@ test.concurrent('returns fresh class completion items from cached skeletons', ()
 
 test.concurrent('does not leak selector insertText mutations between requests', () => {
   const languageService = new CSSLanguageService()
-  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
-  expect(suggest(languageService, "text-align:center::")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' })
-  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
+  expect(suggest(languageService, "(text-align:center):")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
+  expect(suggest(languageService, "(text-align:center)::")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' })
+  expect(suggest(languageService, "(text-align:center):")?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
 })
 
 function snapshotLanguageCSS(languageService: CSSLanguageService) {
@@ -46,7 +46,7 @@ test.concurrent('documentation CSS generation does not mutate language service s
   expect(before.font.text).toContain('.font-bold')
   expect(before.animation.text).toContain('@keyframes fade')
   expect(suggest(languageService, '')?.find(({ label }) => label === 'sr-only')?.documentation).toBeTruthy()
-  expect(suggest(languageService, "text-align:center:")?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
+  expect(suggest(languageService, "(text-align:center):")?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
 
   expect(snapshotLanguageCSS(languageService)).toEqual(before)
 })

@@ -102,7 +102,7 @@ export const deliveryIllustrations = {
   },
   runtime: {
     alt: 'Connected DOM class usage flows through the browser engine into native stylesheet rules.',
-    labels: { dom: 'Connected DOM', heading: '<h2>', paragraph: '<p>', candidate: 'text-align:center', engine: 'Engine + program', insert: 'Insert / reuse', rules: 'CSS rules' }
+    labels: { dom: 'Connected DOM', heading: '<h2>', paragraph: '<p>', candidate: '(text-align:center)', engine: 'Engine + program', insert: 'Insert / reuse', rules: 'CSS rules' }
   },
   hydration: {
     alt: 'Existing CSS is compared with engine replay of the page manifest; matching rules are adopted and a mismatch rebuilds CSS.',

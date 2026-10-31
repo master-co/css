@@ -47,7 +47,7 @@ Write custom properties as `--<namespace>-<key>`. Reference groups role values s
 ```
 
 ```html
-<article class="r-card p-card border-width:1px border-style:solid b-line-divider">
+<article class="r-card p-card (border-width:1px) (border-style:solid) b-line-divider">
   <a class="fg-text-action" href="/settings">Settings</a>
 </article>
 ```
@@ -66,7 +66,7 @@ Use the [complete family index](/reference/tokens/families) to look up every pre
 | `fg-text-action` | `--color-text-action` |
 | `bg-brand` | `--color-brand` |
 
-Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare primary tokens in a parameter namespace and register an explicit token pattern with a `<string>` parameter. Use direct native values such as `padding:1rem` for values without a project token.
+Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare primary tokens in a parameter namespace and register an explicit token pattern with a `<string>` parameter. Use direct native values such as `(padding:1rem)` for values without a project token.
 
 ## Inline and static tokens \{#inline-and-static-variables\}
 Use `inline` to substitute a token's value in generated declarations and `static` to keep its custom property even without references:
@@ -78,7 +78,7 @@ Use `inline` to substitute a token's value in generated declarations and `static
 .dark { --app-brand: #818cf8; }
 ```
 
-`bg-brand` uses `background-color:var(--app-brand)`, resolving on the consuming element. The token is replaced once; references inside its value retain native semantics. `--spacing-integration` always emits in the theme layer. Combine both behaviors with `@theme static inline`. Handwritten native CSS retains its original `var()` references. See [theme directives](/reference/directives/theme).
+`bg-brand` uses `(background-color:var(--app-brand))`, resolving on the consuming element. The token is replaced once; references inside its value retain native semantics. `--spacing-integration` always emits in the theme layer. Combine both behaviors with `@theme static inline`. Handwritten native CSS retains its original `var()` references. See [theme directives](/reference/directives/theme).
 
 ## Authored scopes \{#mode-buckets\}
 Native selectors and queries outside `@theme` express alternate values. The same class follows the browser's cascade:
@@ -119,7 +119,7 @@ Theme selectors activate values. A separate selector `@mixin` defines where an `
 [data-theme="ocean"] { --color-surface: #082f49; }
 ```
 
-`bg-surface` follows the variable wherever it inherits. `padding:1rem@apply(--ocean)` uses the explicitly authored mixin selector.
+`bg-surface` follows the variable wherever it inherits. `(padding:1rem)@apply(--ocean)` uses the explicitly authored mixin selector.
 
 ### System preference with a manual override
 The full preset uses native `light-dark()` and `color-scheme`. Choose `data-theme="light"` or `data-theme="dark"` on the root or a nested region; the preset's native stylesheet sets that region's scheme. A custom adaptive token needs only one declaration:

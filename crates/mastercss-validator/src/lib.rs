@@ -76,7 +76,7 @@ impl ValidatorSession {
 mod tests {
     use super::*;
 
-    const MANIFEST: &str = r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
+    const MANIFEST: &str = r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}],"utilities":[{"kind":"static","name":"block","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"block"}]}]}]}"#;
 
     #[test]
     fn generates_batches_without_retaining_class_rules() {
@@ -96,13 +96,16 @@ mod tests {
     #[test]
     fn preserves_native_declarations_regardless_of_host_support() {
         let mut session =
-            ValidatorSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+            ValidatorSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
         let candidates = session
-            .native_declaration_candidates(["display:block", "display:banana"])
+            .native_declaration_candidates(["(display:block)", "(display:banana)"])
             .unwrap();
         assert_eq!(candidates.len(), 2);
         let result = session
-            .generate_classes(["display:block", "display:banana"], Some(&[true, false]))
+            .generate_classes(
+                ["(display:block)", "(display:banana)"],
+                Some(&[true, false]),
+            )
             .unwrap();
         assert!(result.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
         assert!(result.classes[1].match_status == mastercss_schema::MatchStatus::Matched);
@@ -117,12 +120,12 @@ mod tests {
         let mut session = ValidatorSession::create(MANIFEST).unwrap();
         assert!(
             session
-                .native_declaration_candidates(["{text-wrap:pretty;block}"])
+                .native_declaration_candidates(["{(text-wrap:pretty);block}"])
                 .unwrap()
                 .is_empty()
         );
         let result = session
-            .generate_classes(["{text-wrap:pretty;block}"], None)
+            .generate_classes(["{(text-wrap:pretty);block}"], None)
             .unwrap();
         assert_eq!(
             result.classes[0].match_status,

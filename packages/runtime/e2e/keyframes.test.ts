@@ -19,7 +19,7 @@ test('animation shorthand tokens preserve preset timing and support direct overr
   await target.evaluate(element => { element.className = 'animate-fade animation-fast' })
   await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('animation-fast'))).toBe(true)
   await expect(target).toHaveCSS('animation-duration', '1s')
-  await target.evaluate(element => { element.className = 'animate-fade animation-duration:var(--duration-fast) animation-iteration-count:1' })
+  await target.evaluate(element => { element.className = 'animate-fade (animation-duration:var(--duration-fast)) (animation-iteration-count:1)' })
   await expect(target).toHaveCSS('animation-duration', '0.15s')
   await expect(target).toHaveCSS('animation-iteration-count', '1')
 })
@@ -41,7 +41,7 @@ test('custom animation shorthand uses native defaults through hydration and redu
 })
 
 test('animation utilities emit only their managed keyframes', async ({ page }) => {
-  await page.setContent('<div class="animate-fade animation:zoom|1s"></div>')
+  await page.setContent('<div class="animate-fade (animation:zoom|1s)"></div>')
   await init(page)
   const text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).toContain('--animate-fade:fade')
@@ -75,10 +75,10 @@ test('the native preset delivers no managed animations and runtime releases unus
 })
 
 test('native animations keep running while generated classes are replaced', async ({ page }) => {
-  await page.setContent('<style id="native">@keyframes steady{from{opacity:.5}to{opacity:.5}}</style><div id="target" class="animation:steady|1s|infinite"></div>')
+  await page.setContent('<style id="native">@keyframes steady{from{opacity:.5}to{opacity:.5}}</style><div id="target" class="(animation:steady|1s|infinite)"></div>')
   await init(page)
   await expect(page.locator('#target')).toHaveCSS('opacity', '0.5')
-  await page.locator('#target').evaluate(element => { element.className = 'animation:steady|2s|infinite' })
+  await page.locator('#target').evaluate(element => { element.className = '(animation:steady|2s|infinite)' })
   await expect(page.locator('#target')).toHaveCSS('animation-duration', '2s')
   await expect(page.locator('#target')).toHaveCSS('opacity', '0.5')
   expect(await page.locator('#native').textContent()).toContain('@keyframes steady')

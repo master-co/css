@@ -25,7 +25,7 @@ export default function DemoWaterfall({ title, description, rows, marker, captio
   return <figure className="demo-waterfall" aria-label={title}>
     <Demo title={title} description={description} caption={caption} background="plain" padding="md">
       <div className="demo-waterfall-axis" aria-hidden="true"><span>Earlier</span><span>Later</span>{marker && <span className="demo-waterfall-marker-label" style={{ left: `${marker.position}%` }}>{marker.label}</span>}</div>
-      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics with list-style:none. */}
+      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics with (list-style:none). */}
       <ul role="list" className="demo-waterfall-rows">
         {rows.map(({ label, start, end, tone = 'blue' }) => {
           if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end > 100 || end <= start) throw new Error(`Invalid waterfall interval: ${label}`)

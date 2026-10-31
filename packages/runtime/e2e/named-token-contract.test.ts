@@ -8,16 +8,16 @@ import init, { getRuntimeLoaderURL } from './init'
 
 const manifest = compileManifestSync('@mixin --solid-edges { border-style:solid; outline-style:solid; } @utility solid-edges { border-style:solid; outline-style:solid; }', { baseManifest: defaultManifest as unknown as MasterCSSManifest }).manifest
 const classLists = [
-  "p-md padding:8px",
-  "padding:8px p-md",
-  "p-md padding-top:12px padding:8px",
-  "padding:8px padding-top:12px p-md",
-  "p-md padding:8px@sm",
-  'font-mono font-family:mono',
-  "bg-red background-color:transparent solid-edges border:2px outline:2px",
-  'fg-red color:red',
-  "background-size:cover",
-  "background:transparent"
+  "p-md (padding:8px)",
+  "(padding:8px) p-md",
+  "p-md (padding-top:12px) (padding:8px)",
+  "(padding:8px) (padding-top:12px) p-md",
+  "p-md (padding:8px)@sm",
+  'font-mono (font-family:mono)',
+  "bg-red (background-color:transparent) solid-edges (border:2px) (outline:2px)",
+  'fg-red (color:red)',
+  "(background-size:cover)",
+  "(background:transparent)"
 ]
 const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;html{font-size:16px}@layer defaults{#target-9{background-color:red;background-image:linear-gradient(red,blue);background-size:cover}}</style></head><body>'
   + classLists.map((classes, i) => `<div id="target-${i}" class="${classes}">test</div>`).join('') + '</body></html>'
@@ -70,9 +70,9 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     await page.setViewportSize({ width: 500, height: 720 })
     expect((await computed(page))[4].padding).toBe('16px')
     if (mode === 'runtime' || mode === 'progressive') {
-      await page.locator('#target-0').evaluate(element => { element.className = "p-md padding:10px" })
+      await page.locator('#target-0').evaluate(element => { element.className = "p-md (padding:10px)" })
       await expect(page.locator('#target-0')).toHaveCSS('padding', '10px')
-      await page.locator('#target-2').evaluate(element => { element.className = "p-md padding-top:14px padding:8px" })
+      await page.locator('#target-2').evaluate(element => { element.className = "p-md (padding-top:14px) (padding:8px)" })
       await expect(page.locator('#target-2')).toHaveCSS('padding-top', '8px')
       await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('padding-top:14px')
     }
@@ -80,7 +80,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
 }
 
 test('native resolution descriptors survive runtime compilation', async ({ page }) => {
-  const className = 'background-image:image-set(url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)|1x)'
+  const className = '(background-image:image-set(url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)|1x))'
   await page.setContent(`<div id="image" class="${className}"></div>`)
   await init(page, undefined, { utilities: manifest.utilities })
   const css = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)

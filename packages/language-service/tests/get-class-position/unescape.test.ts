@@ -8,7 +8,7 @@ test.concurrent('single quote', () => {
 })
 
 test.concurrent('escaped backticks', () => {
-  const target = 'content:\\`\\`'
+  const target = '(content:\\`\\`)'
   const contents = ['const className = ctl(`', target, '`)']
   expectClassPosition(target, contents, 'ts')
 })

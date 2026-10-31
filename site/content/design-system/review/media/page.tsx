@@ -11,9 +11,9 @@ export { metadata }
 function FloatExample() {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
-      <DemoSurface className="display:flow-root p-md font-sm">
-        <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
-        <DemoText className="margin:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
+      <DemoSurface className="flow-root p-md font-sm">
+        <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="(float:left) (height:auto) (width:7rem) mb-sm mr-md r-sm" />
+        <DemoText className="(margin:0)">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
       </DemoSurface>
     </Demo>
   )
@@ -57,7 +57,7 @@ export default function Page() {
         <div className="review-media-actualUse">
           <div><span className="review-media-useLabel">Shared media</span><FloatExample /></div>
         </div>
-        <p className="review-media-optionNote">The image uses a real <code>float:left</code> class and a 112 × 70 displayed box. Its visual edge does not change text flow.</p>
+        <p className="review-media-optionNote">The image uses a real <code>(float:left)</code> class and a 112 × 70 displayed box. Its visual edge does not change text flow.</p>
       </section>
     <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
     </main>

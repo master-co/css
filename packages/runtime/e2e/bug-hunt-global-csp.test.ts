@@ -9,10 +9,10 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
   let text: string
   let hydration: string
   try {
-    engine.ensureClassRules(["display:block"])
+    engine.ensureClassRules(["(display:block)"])
     const snapshot = engine.snapshot()
     text = snapshot.text
-    hydration = JSON.stringify({ version: 5, languageVersion: 16, classNames: [...new Set(snapshot.rules.map(rule => rule.className))], resourceOrder: { variables: snapshot.resources.variables.map(resource => resource.name), keyframes: snapshot.resources.keyframes.map(resource => resource.id) } })
+    hydration = JSON.stringify({ version: 5, languageVersion: 17, classNames: [...new Set(snapshot.rules.map(rule => rule.className))], resourceOrder: { variables: snapshot.resources.variables.map(resource => resource.name), keyframes: snapshot.resources.keyframes.map(resource => resource.id) } })
   } finally { engine.dispose() }
   const requests: string[] = []
   const errors: string[] = []
@@ -33,7 +33,7 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
     if (path === '/') return route.fulfill({
       contentType: 'text/html',
       headers: { 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'" },
-      body: `<!doctype html><html><head><style id="master-css" data-master-css-hydration-manifest="/hydration.json">${text}</style><script defer src="/runtime/global.min.js"></script></head><body><div id="probe" class="display:block"></div></body></html>`
+      body: `<!doctype html><html><head><style id="master-css" data-master-css-hydration-manifest="/hydration.json">${text}</style><script defer src="/runtime/global.min.js"></script></head><body><div id="probe" class="(display:block)"></div></body></html>`
     })
     return route.fulfill(assets[path] ?? { status: 404, body: 'not found' })
   })
@@ -41,10 +41,10 @@ test('BH-0008 built global runtime hydrates and updates under CSP without unsafe
   await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
   const initial = await page.evaluate(() => globalThis.masterCSSRuntime!.snapshot())
   expect(initial.hydration.state).toBe('progressive')
-  expect(initial.usageCounts).toEqual({ 'display:block': 1 })
-  await page.locator('#probe').evaluate(element => element.className = "display:none")
+  expect(initial.usageCounts).toEqual({ '(display:block)': 1 })
+  await page.locator('#probe').evaluate(element => element.className = "(display:none)")
   await expect(page.locator('#probe')).toHaveCSS('display', 'none')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime!.snapshot().usageCounts)).toEqual({ 'display:none': 1 })
+  expect(await page.evaluate(() => globalThis.masterCSSRuntime!.snapshot().usageCounts)).toEqual({ '(display:none)': 1 })
   expect(requests.filter(path => path === '/hydration.json')).toHaveLength(1)
   expect(requests.filter(path => path.endsWith('.wasm'))).toEqual([])
   expect(await page.evaluate(() => (globalThis as typeof globalThis & { auditCSPViolations: string[] }).auditCSPViolations)).toEqual([])

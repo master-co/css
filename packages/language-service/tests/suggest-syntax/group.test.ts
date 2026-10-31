@@ -6,5 +6,5 @@ test.each(['{text-align:', '{block;text-align:', '{block;text-center:', '{block;
 })
 
 test('does not offer the removed pseudo class', () => {
-  expect(hint('display:block:')?.map(({ label }) => label)).not.toContain(':of()')
+  expect(hint('(display:block):')?.map(({ label }) => label)).not.toContain(':of()')
 })

@@ -98,9 +98,9 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
 }
 
 @mixin --btn {
-        @safelist "display:inline-flex fg-primary:hover@md";
+        @safelist "(display:inline-flex) fg-primary:hover@md";
     } @utility btn {
-        @safelist "display:inline-flex fg-primary:hover@md";
+        @safelist "(display:inline-flex) fg-primary:hover@md";
     }
 @keyframes fade {
     from { opacity: 0; }
@@ -144,3 +144,31 @@ test('preserves guide theme source through TextMate tokenization', async () => {
   }
 })
 
+
+test('scopes a parenthesized declaration head like its semantic tokens', async () => {
+  const highlighter = await createHighlighter({
+    themes: [shikiSmokeTheme],
+    langs: ['css', masterCSSShikiLanguage]
+  })
+
+  try {
+    const code = '@safelist "(color:red):hover (--x:1)";'
+    const parts = highlighter.codeToTokens(code, { lang: 'css', theme: shikiSmokeTheme, includeExplanation: 'scopeName' }).tokens
+      .flat()
+      .flatMap(token => token.explanation ?? [])
+      .map(({ content, scopes }) => ({ content, scopes: scopes.map(({ scopeName }) => scopeName) }))
+    const head = parts.slice(parts.findIndex(({ content }) => content === '('))
+
+    // Semantic tokens: `(` blockBrace, property, `:` declarationSeparator, value, then the selector suffix.
+    expect(head.slice(0, 4)).toEqual([
+      { content: '(', scopes: expect.arrayContaining(['punctuation.section.declaration.begin.master-css']) },
+      { content: 'color', scopes: expect.arrayContaining(['support.type.property-name.master-css']) },
+      { content: ':', scopes: expect.arrayContaining(['keyword.operator.master-css']) },
+      { content: 'red', scopes: expect.arrayContaining(['support.constant.property-value.master-css']) }
+    ])
+    expect(head.find(({ content }) => content === 'hover')?.scopes).toContain('entity.other.attribute-name.pseudo-class.master-css')
+    expect(head.find(({ content }) => content === '--x')?.scopes).toContain('support.type.property-name.master-css')
+  } finally {
+    await highlighter.dispose?.()
+  }
+})

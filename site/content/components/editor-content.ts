@@ -45,18 +45,18 @@ export const editorFeatures = [
 export const editorFileName = 'usage-alerts.html'
 
 /** The file in the editor, as it reads once the completion below is accepted. Valid and sorted. */
-export const editorSource = `<article class="display:grid gap-lg p-xl b-line-divider r-2xl border-style:solid border-width:1px bg-surface-raised shadow-sm">
-  <header class="display:flex align-items:center justify-content:space-between gap-md">
+export const editorSource = `<article class="grid gap-lg p-xl b-line-divider r-2xl (border-style:solid) (border-width:1px) bg-surface-raised shadow-sm">
+  <header class="flex items-center justify-between gap-md">
     <h3 class="text-lg font-medium fg-text-strong">Usage alerts</h3>
     <a class="text-sm font-medium fg-blue-60 fg-blue-70:hover@sm" href="/settings/alerts">Manage</a>
   </header>
   <p class="text-sm fg-text-muted">Email the team before a project reaches its monthly limit.</p>
-  <ul class="display:grid gap-xs p-md r-lg bg-surface-base grid-cols(2)@md">
-    <li class="display:flex align-items:center justify-content:space-between gap-sm text-sm">
+  <ul class="grid gap-xs p-md r-lg bg-surface-base grid-cols(2)@md">
+    <li class="flex items-center justify-between gap-sm text-sm">
       Builds
-      <span class="px-xs r-md text-xs font-semibold bg-blue-60/.1 color:#4f46e5">80%</span>
+      <span class="px-xs r-md text-xs font-semibold bg-blue-60/.1 (color:#4f46e5)">80%</span>
     </li>
-    <li class="display:flex align-items:center justify-content:space-between gap-sm text-sm">
+    <li class="flex items-center justify-between gap-sm text-sm">
       Bandwidth
       <span class="px-xs r-md text-xs font-semibold bg-surface-raised fg-text-muted">42%</span>
     </li>
@@ -125,7 +125,7 @@ export const editorSwatches = [
   { className: 'fg-blue-60', at: 0, token: ['blue', 60] },
   { className: 'fg-blue-70:hover@sm', at: 0, token: ['blue', 70] },
   { className: 'bg-blue-60/.1', at: 0, token: ['blue', 60], alpha: 0.1 },
-  { className: 'color:#4f46e5', at: 'color:'.length, literal: '#4f46e5' }
+  { className: '(color:#4f46e5)', at: '(color:'.length, literal: '#4f46e5' }
 ] as const satisfies readonly EditorSwatch[]
 
 export interface EditorSwatch {

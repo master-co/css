@@ -1,40 +1,8 @@
 use super::{
     ConditionFeature, GeneratedRuleIr, HashSet, Ordering, Program, StoredRule, UtilityDefinition,
     UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher, UtilityMatcherType,
-    collect_css_variable_names, normalize_css_math_functions,
 };
 use mastercss_lexer::concat_text;
-
-pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    let mut ids = utilities
-        .iter()
-        .map(|utility| utility.id.clone())
-        .collect::<super::HashSet<_>>();
-    for property in mastercss_schema::native_css_properties() {
-        let id = concat_text!("native:", property);
-        if !ids.insert(id.clone()) {
-            continue;
-        }
-        utilities.push(UtilityDefinition {
-            id,
-            name: Some(property.into()),
-            utility_type: 0,
-            order: Some(0),
-            layer: UtilityLayerName::Utilities,
-            keys: Vec::new(),
-            alias_groups: Vec::new(),
-            variable_aliases: Vec::new(),
-            variable_alias_refs: Vec::new(),
-            native_fallback: true,
-            emit: UtilityEmit::Property {
-                property: property.into(),
-            },
-            matchers: vec![UtilityMatcher::Key {
-                keys: vec![property.into()],
-            }],
-        });
-    }
-}
 
 /// The variable a utility's token `key` names: an explicit alias first, then the
 /// first `~namespace` reference that declares `namespace-key`. Resolving on demand
@@ -48,11 +16,11 @@ pub(crate) fn utility_variable<'a>(
     if let Some((_, name)) = utility
         .variable_aliases
         .iter()
-        .find(|(alias, name)| alias == key && variables.contains_key(name))
+        .find(|(alias, name)| alias == key && !alias.contains('_') && variables.contains_key(name))
     {
         return Some(name);
     }
-    if excludes_key(utility, key) || !is_variable_key(key) {
+    if excludes_key(utility, key) || !is_utility_key(key) {
         return None;
     }
     utility.variable_alias_refs.iter().find_map(|reference| {
@@ -72,7 +40,10 @@ pub(crate) fn utility_variable_entries(
     let mut entries = Vec::new();
     let mut seen = HashSet::default();
     for (key, name) in &utility.variable_aliases {
-        if manifest.compiled_variables.contains_key(name) && seen.insert(key.clone()) {
+        if !key.contains('_')
+            && manifest.compiled_variables.contains_key(name)
+            && seen.insert(key.clone())
+        {
             entries.push((key.clone(), name.clone()));
         }
     }
@@ -80,6 +51,7 @@ pub(crate) fn utility_variable_entries(
         let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
         for name in &manifest.compiled_variable_order {
             if let Some(key) = get_variable_key_by_namespace(name, namespace)
+                && is_utility_key(&key)
                 && !excludes_key(utility, &key)
                 && seen.insert(key.clone())
             {
@@ -99,6 +71,12 @@ fn excludes_key(utility: &UtilityDefinition, key: &str) -> bool {
 /// such variable keys or names fail to compile.
 pub(crate) fn is_variable_key(key: &str) -> bool {
     !key.is_empty() && !key.starts_with('-') && !key.ends_with('-')
+}
+
+/// A `_` begins a descendant selector in classes, so such a token remains a valid
+/// variable without a bare token utility; use it through `var()`.
+pub(crate) fn is_utility_key(key: &str) -> bool {
+    is_variable_key(key) && !key.contains('_')
 }
 
 /// The token key of `variable_name` in `namespace`: the part after `namespace-`.
@@ -251,9 +229,11 @@ pub(crate) fn match_utility_filtered(
     for matcher in utility.matchers.iter().filter(|matcher| accepts(matcher)) {
         match matcher {
             UtilityMatcher::Static { name }
-                if class_name
-                    .strip_prefix(name)
-                    .is_some_and(is_match_state_boundary) =>
+                if class_name.strip_prefix(name).is_some_and(|rest| {
+                    rest.chars()
+                        .next()
+                        .is_none_or(mastercss_lexer::is_class_suffix_start)
+                }) =>
             {
                 return Some(UtilityMatch {
                     value: None,
@@ -263,29 +243,6 @@ pub(crate) fn match_utility_filtered(
                     variable_names: Vec::new(),
                     matcher_type: UtilityMatcherType::Static,
                 });
-            }
-            UtilityMatcher::Key { keys } => {
-                for key in keys {
-                    let Some(raw_value) = class_name
-                        .strip_prefix(key)
-                        .and_then(|rest| rest.strip_prefix(':'))
-                    else {
-                        continue;
-                    };
-                    let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if !value.is_empty() {
-                        let (value, variable_names) =
-                            resolve_value_components(&value, Some(utility), manifest);
-                        return Some(UtilityMatch {
-                            value: Some(value),
-                            arguments: Vec::new(),
-                            expansion: Default::default(),
-                            state_token,
-                            variable_names,
-                            matcher_type: UtilityMatcherType::Key,
-                        });
-                    }
-                }
             }
             UtilityMatcher::Token { prefix } => {
                 let (negative, raw_value) = if let Some(value) = class_name.strip_prefix(prefix) {
@@ -423,31 +380,6 @@ pub(crate) fn resolve_utility_alias_value(
     let key = key.strip_prefix('-').unwrap_or(key);
     utility_variable(utility, key, manifest)?;
     resolve_utility_value(value, utility, manifest)
-}
-
-pub(crate) fn resolve_value_components(
-    value: &str,
-    _utility: Option<&UtilityDefinition>,
-    manifest: &Program,
-) -> (String, Vec<String>) {
-    let output = mastercss_lexer::decode_native_content(value).unwrap_or_else(|| value.to_owned());
-    let mut variable_names = Vec::new();
-    for name in collect_css_variable_names(&output) {
-        if manifest.compiled_variables.contains_key(&name) && !variable_names.contains(&name) {
-            variable_names.push(name);
-        }
-    }
-    (normalize_css_math_functions(&output), variable_names)
-}
-
-pub(crate) fn is_match_state_boundary(rest: &str) -> bool {
-    rest.is_empty()
-        || rest.chars().next().is_some_and(|character| {
-            matches!(
-                character,
-                '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_' | '.'
-            )
-        })
 }
 
 pub(crate) fn split_dynamic_value_state(value: &str) -> (String, String) {

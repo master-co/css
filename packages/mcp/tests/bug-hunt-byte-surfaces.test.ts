@@ -9,7 +9,7 @@ import { renderCSS } from '../src/scan'
 test('BH-0020 directive formatting reports UTF-8 sizes in content and file previews', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-css-format-bytes-'))
   const context = new MasterCSSMCPContext({ root })
-  const content = '/* 中文😀 */\n@safelist "display:block   display:inline";'
+  const content = '/* 中文😀 */\n@safelist "(display:block)   (display:inline)";'
   try {
     const result = await previewDirectiveFormat(context, { context: 'preset', content })
     expect(result.mode).toBe('content')
@@ -32,7 +32,7 @@ test('BH-0020 rendered CSS bytes count UTF-8 Unicode output', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-css-render-bytes-'))
   const context = new MasterCSSMCPContext({ root })
   try {
-    const result = await renderCSS(context, { context: 'preset', classList: "content:'中文😀'" })
+    const result = await renderCSS(context, { context: 'preset', classList: "(content:'中文😀')" })
     expect(result.invalid).toEqual([])
     expect(result.css.text).toContain('中文😀')
     expect(result.css.bytes).toBe(Buffer.byteLength(result.css.text, 'utf8'))

@@ -7,10 +7,10 @@ fn bh_0014_semantic_ranges_follow_raw_escape_sequences() {
     ))
     .unwrap();
     for source in [
-        r#"clsx("content:\"x\":hover")"#,
-        r#"clsx('content:\'x\':hover')"#,
-        r#"/* 😀 */ clsx("content:\"😀\":hover")"#,
-        r#"clsx("content:'x':hover")"#,
+        r#"clsx("(content:\"x\"):hover")"#,
+        r#"clsx('(content:\'x\'):hover')"#,
+        r#"/* 😀 */ clsx("(content:\"😀\"):hover")"#,
+        r#"clsx("(content:'x'):hover")"#,
     ] {
         let request: AnalyzeDocumentRequestIr = serde_json::from_value(serde_json::json!({
             "source": source,

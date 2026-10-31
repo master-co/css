@@ -11,7 +11,7 @@ const mixins: NonNullable<MasterCSSManifest['mixins']> = [
   { name: '--discard', body: [{ type: 'declaration', property: 'display', value: [{ type: 'text', value: 'block' }] }] }
 ]
 const keyframes = [{ id: 'contents-fade', name: 'contents-fade', text: '@keyframes contents-fade{to{opacity:0}}' }]
-const className = 'animation-name:contents-fade@apply(--repeat)@layer(components)'
+const className = '(animation-name:contents-fade)@apply(--repeat)@layer(components)'
 
 test('wrapper nodes hydrate, survive refresh, and release resources on DOM removal', async ({ page }) => {
   const manifest = createRuntimeProjectManifest({ mixins, keyframes })
@@ -31,7 +31,7 @@ test('wrapper nodes hydrate, survive refresh, and release resources on DOM remov
     globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules()
     return globalThis.masterCSSRuntime.snapshot().cssText
   })).not.toContain('@keyframes contents-fade')
-  await page.locator('div').evaluate(element => element.className = 'animation-name:contents-fade@apply(--discard)')
+  await page.locator('div').evaluate(element => element.className = '(animation-name:contents-fade)@apply(--discard)')
   await expect.poll(read).toContain('display:block')
   expect(await read()).not.toContain('@keyframes contents-fade')
   await page.locator('div').evaluate((element, name) => element.className = name, className)

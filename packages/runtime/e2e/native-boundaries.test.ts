@@ -17,10 +17,10 @@ const compiled = compileManifestSync(`
 .native { --pipe:a|b; --money:$100; }
 `, { baseManifest: preset as unknown as MasterCSSManifest })
 const manifest = compiled.manifest
-const classes = ['p-md@media((width>=1px))', "padding:8px@media((min-width:1px))", 'color:red@apply(--amp)', 'bg-probe', 'margin:3px@apply(--ocean)']
+const classes = ['p-md@media((width>=1px))', "(padding:8px)@media((min-width:1px))", '(color:red)@apply(--amp)', 'bg-probe', '(margin:3px)@apply(--ocean)']
 const html = '<!doctype html><html><head><style>@layer theme,base,defaults,components,utilities;</style></head><body>'
   + `<div id="probe" class="native ${classes.slice(0, 3).join(' ')}" data-label="&">Probe</div>`
-  + '<section class="blue bg-probe margin:3px@apply(--ocean)" id="mode"><div class="bg-probe margin:3px@apply(--ocean)" id="child">Child</div></section>'
+  + '<section class="blue bg-probe (margin:3px)@apply(--ocean)" id="mode"><div class="bg-probe (margin:3px)@apply(--ocean)" id="child">Child</div></section>'
   + '</body></html>'
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
@@ -52,7 +52,7 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
     await page.locator('#probe').evaluate(element => { element.className = element.className.split(' ').reverse().join(' ') })
     await expect(page.locator('#probe')).toHaveCSS('padding', '8px')
     if (mode === 'runtime' || mode === 'progressive') {
-      await page.locator('#probe').evaluate(element => { element.className = "padding:9px@media((width>=1px))" })
+      await page.locator('#probe').evaluate(element => { element.className = "(padding:9px)@media((width>=1px))" })
       await expect(page.locator('#probe')).toHaveCSS('padding', '9px')
       await page.locator('#mode').evaluate(element => { element.classList.remove('blue') })
       await expect(page.locator('#child')).toHaveCSS('background-color', 'rgb(255, 255, 255)')
@@ -61,9 +61,9 @@ for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
 }
 
 test('hydration manifests from older packages are rejected before hydration', async ({ page }) => {
-  const rendered = renderClassNamesSync(["padding:8px@media((width>=1px))"], { manifest })
+  const rendered = renderClassNamesSync(["(padding:8px)@media((width>=1px))"], { manifest })
   const old = { ...rendered.hydrationManifest, version: 4, rules: rendered.rules }
-  await page.setContent("<div class=\"padding:8px@media((width>=1px))\"></div>")
+  await page.setContent("<div class=\"(padding:8px)@media((width>=1px))\"></div>")
   const error = await page.evaluate(async ({ loader, manifest, old }) => {
     const { startCSSRuntime } = await import(loader)
     try { await startCSSRuntime({ manifest, hydrationManifest: old }); return null }

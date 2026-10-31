@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "languageVersion": 16,
+  "languageVersion": 17,
   "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem;  }\n\n@utility erased { color:red; }\n@utility erased {}\n@utility pair(--value) { width:var(--value); height:var(--value); }\n",
   "cases": [
     {
@@ -11,14 +11,14 @@
       "cssSyntaxStatus": "not-checked"
     },
     {
-      "className": "padding:red",
+      "className": "(padding:red)",
       "matchStatus": "matched",
       "cssValueStatus": "invalid",
       "code": "CSS_VALUE_INVALID",
       "cssSyntaxStatus": "valid"
     },
     {
-      "className": "font:16px",
+      "className": "(font:16px)",
       "matchStatus": "matched",
       "cssValueStatus": "invalid",
       "code": "CSS_VALUE_INVALID",
@@ -39,13 +39,13 @@
       "cssSyntaxStatus": "not-checked"
     },
     {
-      "className": "future-property:future(1furlong)",
+      "className": "(future-property:future(1furlong))",
       "matchStatus": "matched",
       "cssValueStatus": "unknown",
       "cssSyntaxStatus": "valid"
     },
     {
-      "className": "width:var(--dynamic)",
+      "className": "(width:var(--dynamic))",
       "matchStatus": "matched",
       "cssValueStatus": "unknown",
       "cssSyntaxStatus": "valid"
@@ -57,34 +57,34 @@
       "cssSyntaxStatus": "not-checked"
     },
     {
-      "className": "display:block@missing",
+      "className": "(display:block)@missing",
       "matchStatus": "syntax-error",
       "cssValueStatus": "not-checked",
       "code": "UNKNOWN_CONDITION",
       "cssSyntaxStatus": "not-checked"
     },
     {
-      "className": "padding:1px.<br",
+      "className": "(padding:1px).<br",
       "matchStatus": "syntax-error",
       "cssSyntaxStatus": "invalid",
       "cssValueStatus": "not-checked",
       "code": "CLASS_SYNTAX_ERROR"
     },
     {
-      "className": "display:display:block@supports(selector([lang|=en]))",
+      "className": "(display:block)@supports(selector([lang|=en]))",
       "matchStatus": "syntax-error",
       "cssSyntaxStatus": "not-checked",
       "cssValueStatus": "not-checked",
       "code": "MASTER_QUERY_REQUIRES_CSS"
     },
     {
-      "className": "--money:$100",
+      "className": "(--money:$100)",
       "matchStatus": "matched",
       "cssSyntaxStatus": "valid",
       "cssValueStatus": "unknown"
     },
     {
-      "className": "padding:1px@media((40rem<=width<64rem))",
+      "className": "(padding:1px)@media((40rem<=width<64rem))",
       "matchStatus": "matched",
       "cssSyntaxStatus": "valid",
       "cssValueStatus": "valid"
@@ -111,7 +111,7 @@
       "code": "CSS_VALUE_INVALID"
     },
     {
-      "className": "display:block:state(open)",
+      "className": "(display:block):state(open)",
       "matchStatus": "matched",
       "cssSyntaxStatus": "valid",
       "cssValueStatus": "valid"

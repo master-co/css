@@ -115,7 +115,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
 </StepSection>
 
 ```html name=index.php
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
@@ -131,4 +131,4 @@ Build the assets before loading the page so `filemtime()` can read them. Confirm
 
 Keep `wp_head()` and `wp_footer()` in the theme: WordPress uses its hooks to print enqueued assets. The example heading is a template fragment, not a replacement for the complete theme index.
 
-After the heading is styled, add `text-decoration-line:underline` to it in browser developer tools. The runtime should generate the rule without a new build. This observes the page document; plugin content inside a separate iframe or shadow root needs its own CSS delivery.
+After the heading is styled, add `underline` to it in browser developer tools. The runtime should generate the rule without a new build. This observes the page document; plugin content inside a separate iframe or shadow root needs its own CSS delivery.

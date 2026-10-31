@@ -56,7 +56,7 @@ test('reuses discovery and native sessions across source files', async () => {
   const create = vi.spyOn(nativeTooling, 'createToolingSessionSync')
   const eslint = linter(root)
   for (const filePath of ['first.jsx', 'second.jsx']) {
-    const [result] = await eslint.lintText('<div className="color:red" />', { filePath })
+    const [result] = await eslint.lintText('<div className="(color:red)" />', { filePath })
     expect(result.messages).toEqual([])
   }
   expect(discover).toHaveBeenCalledTimes(1)
@@ -76,7 +76,7 @@ test('analyzes each MDX document once across four rules and refreshes on the nex
     return session
   })
   const eslint = linter(workspace())
-  const [first] = await eslint.lintText('中文😀\r\n\r\n<div className="color:red" />', { filePath: 'guide.mdx' })
+  const [first] = await eslint.lintText('中文😀\r\n\r\n<div className="(color:red)" />', { filePath: 'guide.mdx' })
   expect(first.messages).toEqual([])
   expect(analyses).toHaveBeenCalledTimes(1)
   const [second] = await eslint.lintText('<div className="fixture-unknown" />', { filePath: 'guide.mdx' })
@@ -218,8 +218,8 @@ test('native sessions survive active sources and are disposed after the last rel
 test('autofix passes use fresh source analysis and converge', async () => {
   const root = workspace()
   const eslint = linter(root, true)
-  const [result] = await eslint.lintText('<div className="color:red margin:0 color:blue" />', { filePath: 'fix.mdx' })
-  expect(result.output).toBe('<div className="margin:0 color:red" />')
+  const [result] = await eslint.lintText('<div className="(color:red) (margin:0) (color:blue)" />', { filePath: 'fix.mdx' })
+  expect(result.output).toBe('<div className="(margin:0) (color:red)" />')
   const [again] = await eslint.lintText(result.output!, { filePath: 'fix.mdx' })
   expect(again.messages).toEqual([])
   expect(again.output).toBeUndefined()

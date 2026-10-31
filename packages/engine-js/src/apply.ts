@@ -2,10 +2,10 @@
 // and execute like native `@apply`, stored as one atomic rule, as the engine's
 // class_apply.rs expands them. A class with any diagnostic, as named.rs reports them,
 // expands to nothing.
-import { decodeNativeContent, parseFunctionalClass, splitDynamicValueState, splitStateToken } from './class-syntax'
+import { decodeNativeContent, parseFunctionalClass, parseNativeDeclaration, splitStateToken } from './class-syntax'
 import { conditionPriority, parseCustomMediaQuery, parseNativeQuery, parseRawConditionWrapper, queryRequiresCss, renderConditionToken, resolveLayerCondition } from './condition'
-import { IDENT, leadingDeclarationName, tokenize } from './css-syntax'
-import { addAnimationReferences, compositionRules, formatDeclaration, nativeDeclarationFallback, rulePriority, wrapRawConditions } from './generate'
+import { IDENT, tokenize } from './css-syntax'
+import { addAnimationReferences, compositionRules, formatDeclaration, nativeDeclaration, rulePriority, wrapRawConditions } from './generate'
 import { expandBody, expandMixin, expandUtility } from './mixin'
 import type { StoredRule } from './order'
 import { cssEscape } from './program'
@@ -48,17 +48,20 @@ function hasExpansionError(source: string, program: Program) {
 /** Whether the Rust engine reports any error diagnostic for a class. */
 function hasDiagnostics(className: string, program: Program) {
   const source = className.endsWith('!') ? className.slice(0, -1) : className
-  if (hasExpansionError(source, program) || decodeNativeContent(source) === undefined) return true
-  const matches = matchingUtilities(source, program)
-  const states = matches.map(([, matched]) => matched.stateToken)
-  const head = leadingDeclarationName(source)
-  if (head) states.push(splitDynamicValueState(source.slice(head[0] + 1))[1])
+  // A declaration head is validated structurally; only its suffix remains.
+  const declaration = parseNativeDeclaration(source)
+  if (declaration === null) return true
+  const stateSource = declaration ? source.slice(declaration.suffixStart) : source
+  if (!declaration && hasExpansionError(source, program)) return true
+  if (decodeNativeContent(stateSource) === undefined) return true
+  const matches = declaration ? [] : matchingUtilities(source, program)
+  const states = declaration ? [stateSource] : matches.map(([, matched]) => matched.stateToken)
   for (const state of states) {
-    const [selector] = splitStateToken(state)
+    const [selector] = splitStateToken(state[0] === '!' ? state.slice(1) : state)
     if (selector && !validSelectorStructure(selectorTokenToTemplate(selector))) return true
   }
   let layer: UtilityLayer | undefined
-  for (const token of splitStateToken(source)[1]) {
+  for (const token of splitStateToken(stateSource)[1]) {
     const call = applyInvocation(token)
     if (call !== undefined) {
       if (!call || !expandMixin(program, call[0], call[1], [])) return true
@@ -76,7 +79,7 @@ function hasDiagnostics(className: string, program: Program) {
     if (!program.customMedia.has(`--${token}`) && !renderConditionToken(token)) return true
   }
   // Unmatched token classes are ambiguous or unknown tokens.
-  return !matches.length && tokenPrefix(source, program) !== undefined
+  return !declaration && !matches.length && tokenPrefix(source, program) !== undefined
 }
 
 interface ApplicationRule {
@@ -94,7 +97,7 @@ function expandApplication(className: string, head: string, suffixes: string[], 
   if (hasDiagnostics(className, program)) return
   const important = className.endsWith('!')
   const [first] = matchingUtilities(head, program)
-  const state = first ? first[1].stateToken : nativeDeclarationFallback(head, program)?.[1].stateToken ?? ''
+  const state = first ? first[1].stateToken : nativeDeclaration(head)?.[1].stateToken ?? ''
   const base = head.endsWith(state) ? head.slice(0, head.length - state.length) : head
   if (hasDiagnostics(base, program)) return
   const originals = compositionRules(base, program)
@@ -181,13 +184,24 @@ function storeApplication(className: string, expansion: NonNullable<ReturnType<t
   if (selectors.length === 1) ir.selectorText = selectors[0]
   if (variableNames.length) ir.variableNames = variableNames
   addAnimationReferences(ir, declarations, program)
-  return [{ ir, features, manifestOrder: 0, declarations, nativeFallback: false }]
+  return [{ ir, features, manifestOrder: 0 }]
 }
 
 /** The rule of an `@apply` class, or undefined when the class has no `@apply` suffix. */
 export function applicationRules(className: string, program: Program): StoredRule[] | undefined {
   if (!className.includes('@apply(')) return
-  const [head, suffixes] = splitStateToken(className.endsWith('!') ? className.slice(0, -1) : className)
+  const source = className.endsWith('!') ? className.slice(0, -1) : className
+  // A declaration head is opaque: only the text after it holds conditions.
+  const declaration = parseNativeDeclaration(source)
+  let head: string
+  let suffixes: string[]
+  if (declaration) {
+    const [selector, conditions] = splitStateToken(source.slice(declaration.suffixStart))
+    head = source.slice(0, declaration.suffixStart) + selector
+    suffixes = conditions
+  } else {
+    [head, suffixes] = splitStateToken(source)
+  }
   if (!suffixes.some((suffix) => suffix.startsWith('apply('))) return
   const expansion = expandApplication(className, head, suffixes, program)
   return expansion ? storeApplication(className, expansion, program) : []

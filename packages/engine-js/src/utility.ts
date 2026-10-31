@@ -1,14 +1,13 @@
 // Utility matching: which registered utilities a class names and with what value, as
 // the engine's named.rs, utility.rs and utility_matching.rs select them. Token
 // variables resolve on demand instead of from a precomputed table.
-import { hasTopLevelValueSeparator, isMatchStateBoundary, isQuote, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
-import { leadingDeclarationName, leadingFunctionName } from './css-syntax'
+import { hasTopLevelValueSeparator, isClassSuffixStart, isMatchStateBoundary, isQuote, parseFunctionalClass, splitDynamicValueState } from './class-syntax'
+import { leadingFunctionName } from './css-syntax'
 import { expandUtility, type ExpandedRule } from './mixin'
-import { NATIVE_CSS_PROPERTY_SET } from './native-properties'
 import { cssEscape } from './program'
 import type { Program, RecipeDefinition, Utility, UtilityMatcher } from './program-model'
 import { trim } from './text'
-import { alphaPercentage, resolveValueComponents } from './value'
+import { alphaPercentage } from './value'
 
 export type MatcherType = 'function' | 'static' | 'key' | 'token'
 
@@ -24,16 +23,11 @@ export interface UtilityMatch {
   matcherType: MatcherType
 }
 
-export const isNativeCssProperty = (property: string) => property.startsWith('--') || NATIVE_CSS_PROPERTY_SET.has(property)
-
-/** Whether a class is a `property:value` declaration of a native property. */
-export function isNativeDeclaration(source: string) {
-  const head = leadingDeclarationName(source)
-  return head !== undefined && isNativeCssProperty(head[1])
-}
-
 /** Token keys are non-empty and neither start nor end with `-`. */
 export const isVariableKey = (key: string) => key !== '' && key[0] !== '-' && key[key.length - 1] !== '-'
+
+/** A `_` begins a descendant selector in classes, so such a token has no bare utility. */
+const isUtilityKey = (key: string) => isVariableKey(key) && !key.includes('_')
 
 /** Recipe keys that are CSS strings never take a custom property as their key. */
 const excludesKey = (utility: Utility, key: string) => utility.emit.type === 'recipe' && utility.emit.key && key.includes('--')
@@ -41,8 +35,8 @@ const excludesKey = (utility: Utility, key: string) => utility.emit.type === 're
 /** The variable a token `key` of a utility names: an explicit alias, then the first `~namespace` that declares `namespace-key`. */
 export function utilityVariable(utility: Utility, key: string, program: Program) {
   const { variables } = program
-  for (const [alias, name] of utility.variableAliases) if (alias === key && variables.has(name)) return name
-  if (excludesKey(utility, key) || !isVariableKey(key)) return
+  for (const [alias, name] of utility.variableAliases) if (alias === key && !alias.includes('_') && variables.has(name)) return name
+  if (excludesKey(utility, key) || !isUtilityKey(key)) return
   for (const reference of utility.variableAliasRefs) {
     const name = `${reference[0] === '~' ? reference.slice(1) : reference}-${key}`
     if (variables.has(name)) return name
@@ -105,14 +99,6 @@ function matchUtility(className: string, utility: Utility, program: Program, typ
       const rest = className.slice(matcher.name.length)
       if (className.startsWith(matcher.name) && isMatchStateBoundary(rest)) {
         return { arguments: [], stateToken: rest, variableNames: [], matcherType: 'static' }
-      }
-    } else if (matcher.type === 'key') {
-      for (const key of matcher.keys) {
-        if (!className.startsWith(key) || className.charCodeAt(key.length) !== 0x3a) continue
-        const [value, stateToken] = splitDynamicValueState(className.slice(key.length + 1))
-        if (!value) continue
-        const [resolved, variableNames] = resolveValueComponents(value, program)
-        return { value: resolved, arguments: [], stateToken, variableNames, matcherType: 'key' }
       }
     } else if (matcher.type === 'token') {
       const { prefix } = matcher
@@ -178,9 +164,7 @@ export function functionInvocation(source: string, program: Program): [index: nu
 
 /** The longest registered token prefix of a class, with or without its negative sign. */
 export function tokenPrefix(source: string, program: Program) {
-  // A native declaration key owns its colon (font-family:mono never means font-family:hover).
-  const colon = source.indexOf(':')
-  if (colon >= 0 && (isNativeDeclaration(source) || NATIVE_CSS_PROPERTY_SET.has(source.slice(0, colon)))) return
+  if (source[0] === '(') return
   let longest: string | undefined
   for (const candidate of source[0] === '-' ? [source, source.slice(1)] : [source]) {
     for (const prefix of program.tokenPrefixes.get(candidate[0]) ?? []) {
@@ -219,10 +203,12 @@ export function tokenCandidates(source: string, prefix: string, program: Program
 /**
  * The utilities a class (without `!`) matches, in priority order. A family is selected
  * before its token is looked up, so a missing qualified token never falls back to a
- * shorter prefix, and static names reserve their spelling.
+ * shorter prefix, and static names reserve their spelling. Native declaration heads
+ * are never utilities.
  */
 export function matchingUtilities(source: string, program: Program): [number, UtilityMatch][] {
   const matches: [number, UtilityMatch][] = []
+  if (source[0] === '(') return matches
   // A class that starts with a function token only names function utilities.
   const invocation = functionInvocation(source, program)
   if (invocation !== undefined) {
@@ -232,28 +218,14 @@ export function matchingUtilities(source: string, program: Program): [number, Ut
     if (expansion) matches.push([index, { arguments: args, expansion, stateToken, variableNames: [], matcherType: 'function' }])
     return matches
   }
-  if (!isNativeDeclaration(source)) {
-    for (let end = source.length; end >= 0; end--) {
-      if (end < source.length && !isMatchStateBoundary(source.slice(end, end + 1))) continue
-      const indexes = program.staticUtilities.get(source.slice(0, end))
-      if (!indexes) continue
-      for (const index of indexes) {
-        const matched = matchUtility(source, program.utilities[index], program, 'static')
-        if (matched) matches.push([index, matched])
-      }
-      if (matches.length) return matches
-    }
-  }
-  const prefix = tokenPrefix(source, program)
-  if (prefix !== undefined) return tokenCandidates(source, prefix, program)
-  const colon = source.indexOf(':')
-  if (colon < 0) return matches
-  const indexes = program.keyUtilities.get(source.slice(0, colon)) ?? []
-  const explicit = indexes.some((index) => !program.utilities[index].nativeFallback)
-  for (const index of indexes) {
-    if (explicit && program.utilities[index].nativeFallback) continue
-    const matched = matchUtility(source, program.utilities[index], program, 'key')
+  // Utility names cannot contain suffix delimiters, so a static head ends at the first one.
+  let end = 0
+  while (end < source.length && !isClassSuffixStart(source[end])) end++
+  for (const index of program.staticUtilities.get(source.slice(0, end)) ?? []) {
+    const matched = matchUtility(source, program.utilities[index], program, 'static')
     if (matched) matches.push([index, matched])
   }
-  return matches
+  if (matches.length) return matches
+  const prefix = tokenPrefix(source, program)
+  return prefix === undefined ? matches : tokenCandidates(source, prefix, program)
 }

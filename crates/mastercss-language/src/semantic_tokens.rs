@@ -11,14 +11,27 @@ pub(crate) fn inspect_class_name_parts(
             Some(class_name[head.arguments_range].into()),
         );
     }
-    if let Some(colon) = class_name.find(':').filter(|colon| *colon > 0) {
-        let end = find_class_modifier_index(class_name, colon + 1);
-        return (
-            class_name[..end].to_owned(),
-            class_name[end..].to_owned(),
-            Some(class_name[..colon].to_owned()),
-            Some(class_name[colon + 1..end].to_owned()),
+    // Declarations are structural; an incomplete one still names its property and
+    // value prefix for editors, without becoming a complete head.
+    if let Some(head) = mastercss_lexer::parse_native_declaration(class_name) {
+        if let Ok(head) = head {
+            return (
+                class_name[..head.suffix_start].to_owned(),
+                class_name[head.suffix_start..].to_owned(),
+                Some(class_name[head.property].to_owned()),
+                Some(class_name[head.value].to_owned()),
+            );
+        }
+        let (property, value) = mastercss_lexer::native_declaration_prefix(class_name).map_or(
+            (None, None),
+            |(property, value)| {
+                (
+                    Some(class_name[property].to_owned()),
+                    value.map(|start| class_name[start..].to_owned()),
+                )
+            },
         );
+        return (class_name.to_owned(), String::new(), property, value);
     }
     let end = find_class_modifier_index(class_name, 0);
     (

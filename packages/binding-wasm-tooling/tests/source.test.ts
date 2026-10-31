@@ -44,16 +44,16 @@ test('loads the isolated source tooling Wasm surface', async () => {
   const tooling = await initToolingWasm({ input })
   expect(tooling.extractOxcClasses(
     'component.tsx',
-    "const classes = \"block margin-inline:auto\"; import value from \"ignored\""
-  )).toEqual(['block', "margin-inline:auto"])
+    "const classes = \"block (margin-inline:auto)\"; import value from \"ignored\""
+  )).toEqual(['block', "(margin-inline:auto)"])
   expect(tooling.extractHTMLClasses(
     'index.html',
-    "<main class=\"display:grid\"><script>const classes = \"fg-red\"</script></main>"
-  )).toEqual(["display:grid", 'fg-red'])
+    "<main class=\"(display:grid)\"><script>const classes = \"fg-red\"</script></main>"
+  )).toEqual(["(display:grid)", 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--block",
@@ -86,7 +86,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--block",
@@ -130,7 +130,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ],
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "variables": {
     "spacing": [
       {
@@ -192,17 +192,17 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }
   ]
 , utilities: [{"name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration" as const,"property":"margin","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--spacing"}]}]}],"kind":"function" as const},{"name":"m","parameters":[{"name":"--spacing"}],"body":[{"type":"declaration" as const,"property":"margin","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--spacing"}]}]}],"kind":"token" as const},{"name":"block","body":[{"type":"declaration" as const,"property":"display","value":[{"type":"text" as const,"value":"block"}]}],"kind":"static" as const},{"name":"mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration" as const,"property":"margin-inline","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--value"}]}]}],"kind":"function" as const},{"name":"mx","parameters":[{"name":"--value"}],"body":[{"type":"declaration" as const,"property":"margin-inline","value":[{"type":"function" as const,"name":"var","value":[{"type":"text" as const,"value":"--value"}]}]}],"kind":"token" as const}] }))
-  expect(lint.analyze(['block', "margin:2px", "margin:3px", 'unknown'], undefined, [])).toEqual({
+  expect(lint.analyze(['block', "(margin:2px)", "(margin:3px)", 'unknown'], undefined, [])).toEqual({
     version: 4 as const,
-    sortedClassNames: ['block', "margin:2px", "margin:3px", 'unknown'],
-    conflicts: [{ className: "margin:2px", conflicts: ["margin:3px"] }],
+    sortedClassNames: ['block', "(margin:2px)", "(margin:3px)", 'unknown'],
+    conflicts: [{ className: "(margin:2px)", conflicts: ["(margin:3px)"] }],
     partialConflicts: []
   })
-  expect(lint.analyze(["margin-inline:2px", "margin-inline-start:3px"], undefined, [])).toEqual({
+  expect(lint.analyze(["(margin-inline:2px)", "(margin-inline-start:3px)"], undefined, [])).toEqual({
     version: 4 as const,
-    sortedClassNames: ["margin-inline-start:3px", "margin-inline:2px"],
+    sortedClassNames: ["(margin-inline-start:3px)", "(margin-inline:2px)"],
     conflicts: [],
-    partialConflicts: [{ className: "margin-inline-start:3px", conflict: "margin-inline:2px" }]
+    partialConflicts: [{ className: "(margin-inline-start:3px)", conflict: "(margin-inline:2px)" }]
   })
   expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
     version: 4 as const,
@@ -212,18 +212,18 @@ test('loads the isolated source tooling Wasm surface', async () => {
     version: 4 as const,
     suggestions: []
   })
-  expect(lint.rawValueCandidates(["margin:var(--spacing-md)|17px"], undefined, [])).toEqual({
+  expect(lint.rawValueCandidates(["(margin:var(--spacing-md)|17px)"], undefined, [])).toEqual({
     version: 4 as const,
     candidates: [
-      { className: "margin:var(--spacing-md)|17px", key: 'margin', segments: ['17px'], properties: ['margin'] }
+      { className: "(margin:var(--spacing-md)|17px)", key: 'margin', segments: ['17px'], properties: ['margin'] }
     ]
   })
   // Partial conflicts are diagnostic only; authored values are never decomposed.
-  const partial = lint.analyzeClassList("margin-inline:2px  margin-inline-start:3px", ["margin-inline:2px", "margin-inline-start:3px"], undefined, []) as { version: number, diagnostics: { code: string }[] }
+  const partial = lint.analyzeClassList("(margin-inline:2px)  (margin-inline-start:3px)", ["(margin-inline:2px)", "(margin-inline-start:3px)"], undefined, []) as { version: number, diagnostics: { code: string }[] }
   expect(partial.version).toBe(4)
   expect(partial.diagnostics.filter(item => item.code === 'partially-conflicting-class')).toEqual([expect.objectContaining({
     code: 'partially-conflicting-class',
-    message: 'Class "margin-inline:2px" overrides declarations from "margin-inline-start:3px" in generated CSS.'
+    message: 'Class "(margin-inline:2px)" overrides declarations from "(margin-inline-start:3px)" in generated CSS.'
   })])
   expect(partial.diagnostics.find(item => item.code === 'partially-conflicting-class')).not.toHaveProperty('fix')
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
@@ -250,8 +250,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
     version: 4 as const,
-    classList: "😀 margin:var(--spacing-md)|17px",
-    classNames: ['😀', "margin:var(--spacing-md)|17px"],
+    classList: "😀 (margin:var(--spacing-md)|17px)",
+    classNames: ['😀', "(margin:var(--spacing-md)|17px)"],
     rawValuePolicy: {
       allowedPatterns: []
     }
@@ -259,10 +259,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
   expect(rawPolicy.diagnostics).toContainEqual({
     ruleId: 'no-unapproved-raw-values',
     code: 'unapproved-raw-value',
-    message: "Raw value \"17px\" is not approved for class \"margin:var(--spacing-md)|17px\". Use a token or allow the value explicitly.",
-    range: { start: 3, end: 32 },
+    message: "Raw value \"17px\" is not approved for class \"(margin:var(--spacing-md)|17px)\". Use a token or allow the value explicitly.",
+    range: { start: 3, end: 34 },
     data: {
-      className: "margin:var(--spacing-md)|17px",
+      className: "(margin:var(--spacing-md)|17px)",
       value: '17px',
       key: 'margin',
       properties: ['margin'],
@@ -275,7 +275,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   "mixins": [
     {
       "name": "--block",
@@ -311,7 +311,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     version: 7 as const,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
-      expect.objectContaining({ label: "color:", kind: 'property', triggerSuggest: true })
+      expect.objectContaining({ label: "(color:", kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
@@ -320,10 +320,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
     editable: true,
     sourceFormat: { syntax: 'rgb' as const }
   })
-  expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
+  expect(language.colorTokens([{ className: '(color:#123)', start: 2 }])).toEqual({
     version: 7 as const,
     tokens: [{
-      range: { start: 8, end: 12 },
+      range: { start: 9, end: 13 },
       expression: { kind: 'literal', value: '#123' }
     }]
   })

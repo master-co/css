@@ -26,13 +26,13 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
     let output = css(
         &mut e,
         &[
-            "width:10px@sm",
-            "width:20px@media((width>=800px))",
-            "width:30px@media((aspect-ratio>=1.5))",
-            "width:40px@media((resolution>=2x))",
-            "width:50px@apply(--has-selector)@supports((display:grid))",
-            "width:60px@container(card|(width>=40rem))",
-            "width:70px@container(style(--density:compact))",
+            "(width:10px)@sm",
+            "(width:20px)@media((width>=800px))",
+            "(width:30px)@media((aspect-ratio>=1.5))",
+            "(width:40px)@media((resolution>=2x))",
+            "(width:50px)@apply(--has-selector)@supports((display:grid))",
+            "(width:60px)@container(card|(width>=40rem))",
+            "(width:70px)@container(style(--density:compact))",
         ],
     );
     assert!(output.contains("@media (width>=800px)"), "{output}");
@@ -50,8 +50,8 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
         output.contains("@container style(--density:compact)"),
         "{output}"
     );
-    let named = e.inspect("width:10px@sm").unwrap();
-    let native = e.inspect("width:20px@media((width>=800px))").unwrap();
+    let named = e.inspect("(width:10px)@sm").unwrap();
+    let native = e.inspect("(width:20px)@media((width>=800px))").unwrap();
     assert_eq!(
         named.rules[0].priority.features,
         native.rules[0].priority.features
@@ -62,10 +62,10 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
 fn invalid_conditions_and_unknown_names_do_not_generate() {
     let e = engine("").unwrap();
     for class in [
-        "width:1px@>=800",
-        "width:1px@>=800px",
-        "width:1px@typo",
-        "width:1px@media((width>=1px)",
+        "(width:1px)@>=800",
+        "(width:1px)@>=800px",
+        "(width:1px)@typo",
+        "(width:1px)@media((width>=1px)",
     ] {
         assert!(e.inspect(class).unwrap().rules.is_empty(), "{class}");
     }
@@ -87,7 +87,7 @@ fn scoped_theme_and_variant_activation_are_independent() {
         .replace([' ', '\n', '"'], "")
         .replace(";}", "}");
     let mut e = engine(source).unwrap();
-    let output = css(&mut e, &["fg-surface", "padding:1px@apply(--ocean)"]);
+    let output = css(&mut e, &["fg-surface", "(padding:1px)@apply(--ocean)"]);
     assert!(
         output.contains(":root,:host{--color-surface:white}"),
         "{output}"
@@ -116,7 +116,7 @@ fn variant_redefinition_preserves_authored_theme_order() {
         .replace([' ', '\n', '"'], "")
         .replace(";}", "}");
     let mut e = engine(source).unwrap();
-    let output = css(&mut e, &["fg-x", "padding:1px@apply(--a)"]);
+    let output = css(&mut e, &["fg-x", "(padding:1px)@apply(--a)"]);
     assert!(!output.contains(".old"));
     assert!(output.contains(".new"), "{output}");
     assert!(
@@ -131,10 +131,10 @@ fn native_generation_does_not_depend_on_host_value_support() {
     let output = css(
         &mut e,
         &[
-            "width:--space(2)",
-            "future-property:future(2qu)",
-            "font:16px",
-            "padding:nonsense",
+            "(width:--space(2))",
+            "(future-property:future(2qu))",
+            "(font:16px)",
+            "(padding:nonsense)",
         ],
     );
     for declaration in [
@@ -175,9 +175,9 @@ fn native_pruning_requires_an_explicit_policy_and_preserve_wins() {
 fn quoted_markers_remain_native_literals() {
     let e = engine("").unwrap();
     for class in [
-        r#"content:'$(value)'"#,
-        r#"content:'$name'"#,
-        r#"content:'a|b'"#,
+        r#"(content:'$(value)')"#,
+        r#"(content:'$name')"#,
+        r#"(content:'a|b')"#,
     ] {
         let result = e.inspect(class).unwrap();
         assert_eq!(
@@ -188,7 +188,7 @@ fn quoted_markers_remain_native_literals() {
         assert!(
             result.rules[0]
                 .text
-                .contains(class.split_once(':').unwrap().1),
+                .contains(class[1..class.len() - 1].split_once(':').unwrap().1),
             "{}",
             result.rules[0].text
         );
@@ -204,7 +204,7 @@ fn manifest_modes_cannot_bypass_activation_validation() {
         ("0ocean", ".x"),
         ("ocean", ".x:has("),
     ] {
-        let manifest = serde_json::json!({"version":6,"languageVersion":16,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
+        let manifest = serde_json::json!({"version":6,"languageVersion":17,"modes":[{"name":name,"branches":[{"selector":selector}]}]});
         assert!(
             EngineSession::create(&manifest.to_string()).is_err(),
             "{manifest}"
@@ -217,10 +217,13 @@ fn match_diagnostics_have_stable_codes_independent_of_message_text() {
     let e = engine("").unwrap();
     for (class, code) in [
         (
-            "width:1px@typo",
+            "(width:1px)@typo",
             mastercss_schema::ErrorCode::UnknownCondition,
         ),
-        ("width:calc(", mastercss_schema::ErrorCode::ClassSyntaxError),
+        (
+            "(width:calc()",
+            mastercss_schema::ErrorCode::ClassSyntaxError,
+        ),
     ] {
         let result = e.inspect(class).unwrap();
         assert_eq!(

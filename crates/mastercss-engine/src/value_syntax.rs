@@ -1,10 +1,18 @@
 use super::normalize_dynamic_value;
 use mastercss_lexer::concat_text;
 use mastercss_lexer::{CssSyntaxKind as Kind, tokenize_css_syntax};
-use std::borrow::Cow;
 
-pub(crate) fn native_declaration_head(source: &str) -> Option<(usize, Cow<'_, str>)> {
-    mastercss_lexer::leading_declaration_name(source)
+/// Whether a class has a complete head and a structurally balanced suffix. Native
+/// declaration heads follow CSS component-value rules, including URL tokens.
+pub(crate) fn valid_class_structure(class_name: &str) -> bool {
+    let source = class_name.strip_suffix('!').unwrap_or(class_name);
+    match mastercss_lexer::parse_native_declaration(source) {
+        Some(Ok(head)) => {
+            mastercss_lexer::decode_native_content(&source[head.suffix_start..]).is_some()
+        }
+        Some(Err(_)) => false,
+        None => mastercss_lexer::decode_native_content(class_name).is_some(),
+    }
 }
 
 pub(crate) fn normalize_unmanaged_value(value: &str) -> String {

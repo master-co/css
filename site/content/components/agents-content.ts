@@ -33,8 +33,8 @@ export const agentSessionCalls: Record<AgentSessionCallId, AgentSessionCall> = {
  * summary, and the preview lifetime the server uses unless `--preview-ttl` sets another.
  */
 export const agentSessionResults = {
-  beforeHash: 'c238aec536b04fa1c8ad4543d54805b34000eeeb1f1f15905699d65b224f2a50',
-  afterHash: 'ced444b5fb7d379fd6b49a77b98a00956604b994e47209b1494940dd3cde8cca',
+  beforeHash: '5a969adddf3f31c94ae383e9403693343e2a84267812546e768d6140fd10e0a1',
+  afterHash: '4e0a1aab8f63b4435ad852e2f61c950fee505330f2c26d2fbaef34fd557ec9c0',
   lint: { diagnostics: 4, warnings: 4, fixable: 4 },
   relint: { diagnostics: 0, warnings: 0, fixable: 0 },
   previewMinutes: 5

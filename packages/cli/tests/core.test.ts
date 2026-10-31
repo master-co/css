@@ -66,9 +66,9 @@ describe('root command', () => {
       fs.writeFileSync(resolve(cwd, 'index.css'), `@import "@master/css";
 @theme { --color-brand: red; }
 `)
-      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block fg-brand\"></div>")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"(display:block) fg-brand\"></div>")
       const output = runCLI(['generate', '--no-export'], { cwd })
-      expect(output).toContain(".display\\:block{display:block}")
+      expect(output).toContain(".\\(display\\:block\\){display:block}")
       expect(output).toContain('.fg-brand{color:var(--color-brand)}')
       expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
     } finally {
@@ -99,24 +99,24 @@ describe('inspect command', () => {
   it('prints scanner state and missing CSS diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block p-missing\"></div>")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"(display:block) p-missing\"></div>")
       const error = runFailedCLI([
         'inspect',
         '--classes',
-        'display:block never-generated-class',
+        '(display:block) never-generated-class',
         'index.html'
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
       expect(report.version).toBe(5)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
-      expect(report.scanner.classes.valid).toContain("display:block")
+      expect(report.scanner.classes.valid).toContain("(display:block)")
       expect(report.scanner.classes.invalid).toContain('p-missing')
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].discovered.valid).toContain("display:block")
+      expect(report.files[0].discovered.valid).toContain("(display:block)")
       expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
-        className: "display:block",
+        className: "(display:block)",
         reason: 'generated'
       }))
       expect(report.missingCSS.missing).toContainEqual(expect.objectContaining({
@@ -144,11 +144,11 @@ describe('inspect command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-css-'))
     try {
       fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";")
-      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block\"></div>")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"(display:block)\"></div>")
       const output = runCLI([
         'inspect',
         '--classes',
-        "display:block",
+        "(display:block)",
         '--include-css',
         '--exit-code',
         'never',
@@ -174,7 +174,7 @@ describe('inspect command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-entry-error-'))
     try {
       fs.writeFileSync(resolve(cwd, 'index.css'), "@import \"@master/css\";\n@import \"./missing.css\";")
-      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"display:block\"></div>")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"(display:block)\"></div>")
       const error = runFailedCLI(['inspect', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -224,7 +224,7 @@ describe('lint command', () => {
   it('prints machine-readable diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"fg-white margin:0.5rem padding:red\"></div>")
+      fs.writeFileSync(resolve(cwd, 'index.html'), "<div class=\"fg-white (margin:0.5rem) (padding:red)\"></div>")
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -254,7 +254,7 @@ describe('lint command', () => {
         'never'
       ], {
         cwd,
-        input: "<div className=\"fg-white margin:0.5rem\"></div>"
+        input: "<div className=\"fg-white (margin:0.5rem)\"></div>"
       })
       const report = JSON.parse(output)
       expect(report.files).toHaveLength(1)
@@ -289,9 +289,9 @@ describe('lint command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-fix-'))
     try {
       const file = resolve(cwd, 'index.html')
-      fs.writeFileSync(file, "<div class=\"fg-white margin:0.5rem\"></div>")
+      fs.writeFileSync(file, "<div class=\"fg-white (margin:0.5rem)\"></div>")
       runCLI(['lint', '--fix', 'index.html'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe("<div class=\"margin:0.5rem fg-white\"></div>")
+      expect(fs.readFileSync(file, 'utf8')).toBe("<div class=\"(margin:0.5rem) fg-white\"></div>")
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
     }

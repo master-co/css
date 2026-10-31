@@ -50,7 +50,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    "<div className=\"fg-brand:hover@sm sr-only sr-only:hover sr-only:is(:state-name) sr-only_div::before:is(.active) margin:1rem background-color:rgb(0|0|0) width:0.625rem::scrollbar btn btn:hover@sm btn_div::before\"></div>",
+    "<div className=\"fg-brand:hover@sm sr-only sr-only:hover sr-only:is(:state-name) sr-only_div::before:is(.active) (margin:1rem) (background-color:rgb(0|0|0)) (width:0.625rem)::scrollbar btn btn:hover@sm btn_div::before\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -122,7 +122,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
   const { tokens } = renderTokens(
-    "<div className=\"height:var(--size-sm) color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@layer(base) font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
+    "<div className=\"(height:var(--size-sm)) (color:color-mix(in|oklab,var(--color-blue-50)|50%,transparent)) (content:x)::before (background-color:rgb(0|0|0)) fg-red_:where(a:hover) font-mono_:is(code,pre)@layer(base) font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)\"></div>",
     'tsx',
     {
       manifest: createPresetManifest({
@@ -165,7 +165,7 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
 
 test.concurrent('renders semantic tokens for vendor-prefixed native declarations', () => {
   const { tokens } = renderTokens(
-    '<div className="-webkit-text-size-adjust:none -moz-text-size-adjust:none -ms-text-size-adjust:none"></div>',
+    '<div className="(-webkit-text-size-adjust:none) (-moz-text-size-adjust:none) (-ms-text-size-adjust:none)"></div>',
     'tsx'
   )
 
@@ -178,7 +178,7 @@ test.concurrent('renders semantic tokens for vendor-prefixed native declarations
 
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
   const { tokens } = renderTokens(
-    "<div className=\"sr-only@container(sm&<=md) container:card/inline-size grid-cols(2)@card(3xs) background-position:center background-size:cover background-image:url(/hero.jpg) sr-only@media(pointer:coarse) sr-only@h>=sm&h<lg\"></div>",
+    "<div className=\"sr-only@container(sm&<=md) (container:card/inline-size) grid-cols(2)@card(3xs) (background-position:center) (background-size:cover) (background-image:url(/hero.jpg)) sr-only@media(pointer:coarse) sr-only@h>=sm&h<lg\"></div>",
     'html'
   )
 
@@ -218,7 +218,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 })
 
 test.concurrent('renders semantic tokens for internal styles dogfood directives', () => {
-  const { tokens } = renderTokens("@mixin --monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    } @utility monaco-editor {\n        @safelist \"--vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px))\";\n    }", 'css')
+  const { tokens } = renderTokens("@mixin --monaco-editor {\n        @safelist \"(--vscode-editor-background:transparent)! bg-blue (filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px)))\";\n    } @utility monaco-editor {\n        @safelist \"(--vscode-editor-background:transparent)! bg-blue (filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px)))\";\n    }", 'css')
 
   expectToken(tokens, '--vscode-editor-background', 'property')
   expectToken(tokens, 'transparent', 'enumMember')
@@ -233,7 +233,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
 
 test.concurrent('renders semantic tokens for independent declarations, strings, units, and important marks', () => {
   const { tokens } = renderTokens(
-    '<div class="fg-red bg-blue transform:translate(2.5rem|20px) content:\'a|b\' size:2.5rem fg-red!"></div>',
+    '<div class="fg-red bg-blue (transform:translate(2.5rem|20px)) (content:\'a|b\') (size:2.5rem) fg-red!"></div>',
     'html'
   )
 
@@ -255,11 +255,33 @@ test.concurrent('renders semantic tokens for independent declarations, strings, 
   expectToken(tokens, 'a|b', 'string', ['quoted'])
   expectToken(tokens, 'rem', 'enumMember', ['unit'])
   expectToken(tokens, '!', 'operator', ['important'])
+  expectToken(tokens, '(', 'operator', ['blockBrace'])
+  expectToken(tokens, ')', 'operator', ['blockBrace'])
+})
+
+test.concurrent('renders declaration head parentheses as block braces around the declaration', () => {
+  const { tokens } = renderTokens('<div class="(color:red):hover (width:calc(1px|+|2px))!"></div>', 'html')
+
+  expect(tokens.slice(0, 7)).toEqual([
+    { text: '(', type: 'operator', modifiers: ['blockBrace'] },
+    { text: 'color', type: 'property', modifiers: [] },
+    { text: ':', type: 'operator', modifiers: ['declarationSeparator'] },
+    { text: 'red', type: 'enumMember', modifiers: [] },
+    { text: ')', type: 'operator', modifiers: ['blockBrace'] },
+    { text: ':', type: 'operator', modifiers: ['pseudoClass', 'selector', 'pseudoClassDelimiter'] },
+    { text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] }
+  ])
+  const width = tokens.slice(7)
+  expect(width[0]).toEqual({ text: '(', type: 'operator', modifiers: ['blockBrace'] })
+  expect(width.filter(({ text }) => text === '(' || text === ')').map(({ modifiers }) => modifiers)).toEqual([
+    ['blockBrace'], ['functionPunctuation'], ['functionPunctuation'], ['blockBrace']
+  ])
+  expect(width.at(-1)).toEqual({ text: '!', type: 'operator', modifiers: ['important'] })
 })
 
 test.concurrent('renders native-aligned semantic tokens for independent classes with selector suffixes', () => {
   const { tokens } = renderTokens(
-    "<div class=\"text-align:center>li:hover@sm sr-only>li:hover@sm\"></div>",
+    "<div class=\"(text-align:center)>li:hover@sm sr-only>li:hover@sm\"></div>",
     'html'
   )
 

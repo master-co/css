@@ -29,7 +29,18 @@ impl EngineSession {
             return None;
         }
         let source = class.strip_suffix('!').unwrap_or(class);
-        let (head, suffixes) = super::state::split_state_token(source);
+        // A declaration head is opaque: only the text after it holds conditions.
+        let (head, suffixes) = match mastercss_lexer::parse_native_declaration(source) {
+            Some(Ok(declaration)) => {
+                let (selector, conditions) =
+                    super::state::split_state_token(&source[declaration.suffix_start..]);
+                (
+                    concat_text!(&source[..declaration.suffix_start], selector),
+                    conditions,
+                )
+            }
+            _ => super::state::split_state_token(source),
+        };
         if !suffixes.iter().any(|suffix| suffix.starts_with("apply(")) {
             return None;
         }
@@ -50,8 +61,8 @@ impl EngineSession {
             .first()
             .map(|(_, matched)| matched.state_token.clone())
             .or_else(|| {
-                self.native_declaration_fallback(head)
-                    .map(|(_, matched)| matched.state_token)
+                self.native_declaration(head)
+                    .map(|(_, matched, _)| matched.state_token)
             })
             .unwrap_or_default();
         let base = head.strip_suffix(&state).unwrap_or(head);
@@ -286,8 +297,6 @@ impl EngineSession {
                 retain_all_keyframes: animation.retain_all,
             },
             manifest_order: 0,
-            declarations,
-            native_fallback: false,
             matcher_type: None,
             state_token: String::new(),
         }]

@@ -28,22 +28,22 @@ fn executes_language_v2_parser_cases() {
 fn creates_sorted_rule_transitions_and_css() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
     let transition = engine
-        .ensure_class_rules(["block", "width:10px", "bg-origin-border"])
+        .ensure_class_rules(["block", "(width:10px)", "bg-origin-border"])
         .unwrap();
     assert_eq!(transition.mutations.len(), 3);
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.width\\:10px{width:10px}}"
+        "@layer utilities{.bg-origin-border{background-origin:border-box}.block{display:block}.\\(width\\:10px\\){width:10px}}"
     );
     let snapshot = engine.snapshot().unwrap();
     assert_eq!(snapshot.rules.len(), 3);
-    assert_eq!(snapshot.rules[2].class_name, "width:10px");
+    assert_eq!(snapshot.rules[2].class_name, "(width:10px)");
 }
 
 #[test]
 fn ensure_is_idempotent_and_delete_reports_exact_index() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    engine.ensure_class_rules(["block", "width:10px"]).unwrap();
+    engine.ensure_class_rules(["block", "(width:10px)"]).unwrap();
     assert!(
         engine
             .ensure_class_rules(["block"])
@@ -55,7 +55,7 @@ fn ensure_is_idempotent_and_delete_reports_exact_index() {
     assert_eq!(deleted.mutations.len(), 1);
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.width\\:10px{width:10px}}"
+        "@layer utilities{.\\(width\\:10px\\){width:10px}}"
     );
 }
 
@@ -124,12 +124,12 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
         }
     );
     assert_eq!(
-        engine.inspect_class_semantics("width:10px!:hover").unwrap(),
+        engine.inspect_class_semantics("(width:10px)!:hover").unwrap(),
         ClassSemanticInspection {
-            class_name: "width:10px!:hover".into(),
+            class_name: "(width:10px)!:hover".into(),
             kind: ClassSemanticKind::Declaration,
             matcher_types: vec![UtilityMatcherType::Key],
-            key_token: Some("width:".into()),
+            key_token: Some("(width:".into()),
             value_token: Some("10px".into()),
             state_token: Some(":hover".into()),
             important: true,
@@ -147,7 +147,7 @@ fn exposes_manifest_driven_class_semantics_without_mutating_the_session() {
 
 #[test]
 fn groups_multi_node_utilities_into_one_hydration_rule() {
-    let manifest = r#"{"version":6,"languageVersion":16,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
+    let manifest = r#"{"version":6,"languageVersion":17,"mixins":[{"name":"--multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}],"utilities":[{"kind":"static","name":"multi","body":[{"type":"declaration","property":"display","value":[{"type":"text","value":"grid"}]},{"type":"rule","selector":"&:hover","body":[{"type":"declaration","property":"color","value":[{"type":"text","value":"red"}]}]}]}]}"#;
     let engine = EngineSession::create(manifest).unwrap();
     let inspection = engine.inspect("multi").unwrap();
     assert_eq!(inspection.rules.len(), 1);
@@ -305,27 +305,27 @@ fn validates_and_saturates_host_globals_before_classes_are_ensured() {
 
 #[test]
 fn commits_native_declarations_without_host_support_filtering() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
     let candidates = engine
-        .native_declaration_candidates(["display:block", "made-up:nope"])
+        .native_declaration_candidates(["(display:block)", "(made-up:nope)"])
         .unwrap();
     assert_eq!(candidates.len(), 2);
     assert_eq!(candidates[0].property, "display");
     engine
-        .ensure_class_rules(["display:block", "made-up:nope"])
+        .ensure_class_rules(["(display:block)", "(made-up:nope)"])
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.display\\:block{display:block}.made-up\\:nope{made-up:nope}}"
+        "@layer utilities{.\\(display\\:block\\){display:block}.\\(made-up\\:nope\\){made-up:nope}}"
     );
 }
 
 #[test]
 // Native declarations are preserved; value validation is tooling-only.
 fn preserves_native_values_and_distinguishes_named_tokens() {
-    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
     let candidates = engine
-        .native_declaration_candidates(["width:error", "width:10px"])
+        .native_declaration_candidates(["(width:error)", "(width:10px)"])
         .unwrap();
     assert_eq!(candidates.len(), 2);
     assert_eq!(candidates[0].property, "width");
@@ -334,14 +334,14 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
     assert_eq!(candidates[1].value, "10px");
 
     engine
-        .ensure_class_rules(["width:error", "width:10px"])
+        .ensure_class_rules(["(width:error)", "(width:10px)"])
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.width\\:10px{width:10px}.width\\:error{width:error}}"
+        "@layer utilities{.\\(width\\:10px\\){width:10px}.\\(width\\:error\\){width:error}}"
     );
     assert!(
-        engine.inspect("width:error").unwrap().match_status
+        engine.inspect("(width:error)").unwrap().match_status
             == mastercss_schema::MatchStatus::Matched
     );
 
@@ -361,15 +361,15 @@ fn preserves_native_values_and_distinguishes_named_tokens() {
 
 #[test]
 fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
-    let engine = EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+    let engine = EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
     let candidates = engine
-        .native_declaration_candidates(["padding-left:calc(5x-2px)"])
+        .native_declaration_candidates(["(padding-left:calc(5x-2px))"])
         .unwrap();
     assert_eq!(candidates.len(), 1);
     assert_eq!(candidates[0].property, "padding-left");
     assert_eq!(candidates[0].value, "calc(5x - 2px)");
     assert_eq!(
-        engine.inspect("padding-left:calc(5x-2px)").unwrap().rules[0].text,
-        ".padding-left\\:calc\\(5x-2px\\){padding-left:calc(5x - 2px)}"
+        engine.inspect("(padding-left:calc(5x-2px))").unwrap().rules[0].text,
+        ".\\(padding-left\\:calc\\(5x-2px\\)\\){padding-left:calc(5x - 2px)}"
     );
 }

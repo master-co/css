@@ -40,9 +40,9 @@ To see the source-to-CSS process, add this utility definition after the import a
 <ConfiguredExample source={`@utility btn {
   display: inline-flex;
   padding-inline: var(--spacing-md);
-}`} html={'<button class="btn text-align:center">Save</button>'} />
+}`} html={'<button class="btn (text-align:center)">Save</button>'} />
 
-The scanner finds `btn` and `text-align:center`. The engine recognizes the registered utility and the direct declaration, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
+The scanner finds `btn` and `(text-align:center)`. The engine recognizes the registered utility and the direct declaration, then generates their rules and referenced resources. Defining `btn` alone does not emit its rule: a scanned class or explicit safelist must request it.
 
 Integrations discover ordinary application sources and update CSS during development. Use `@source` when you need to include files outside the normal scan path or define a scoped source set. See [Scanning latent classes](/guide/scanning-latent-classes) for discovery and safelist controls.
 
@@ -67,10 +67,10 @@ const className = error ? 'bg-red' : 'bg-green'
 For a changing value, keep the class fixed and update a CSS variable. This class remains discoverable even when application code changes `--size`:
 
 ```html
-<div class="font-size:var(--size)@sm" style="--size: 2rem">Preview</div>
+<div class="(font-size:var(--size))@sm" style="--size: 2rem">Preview</div>
 ```
 
-<Class2CSS>{'font-size:var(--size)@sm'}</Class2CSS>
+<Class2CSS>{'(font-size:var(--size))@sm'}</Class2CSS>
 
 ---
 
@@ -86,7 +86,7 @@ Select runtime mode through your integration, for example the [Vite runtime setu
     #### <StepNum />Insert an element
     ```js
     const h1 = document.createElement('h1')
-    h1.className = 'text-align:center'
+    h1.className = '(text-align:center)'
     h1.textContent = 'Hello World'
     document.body.append(h1)
     ```
@@ -95,14 +95,14 @@ Select runtime mode through your integration, for example the [Vite runtime setu
   <Step>
     #### <StepNum />Add a class
     ```js
-    h1.classList.add('font-size:3rem')
+    h1.classList.add('(font-size:3rem)')
     ```
     The heading grows to `3rem`. Its existing alignment rule remains in use.
   </Step>
   <Step>
     #### <StepNum />Remove a class
     ```js
-    h1.classList.remove('text-align:center')
+    h1.classList.remove('(text-align:center)')
     ```
     The heading stops matching the alignment rule. It returns to its inherited alignment, even if the runtime temporarily retains the unused rule.
   </Step>
@@ -117,7 +117,7 @@ Select runtime mode through your integration, for example the [Vite runtime setu
 
 These are the rules used while both classes are present:
 
-<Class2CSS>{['text-align:center', 'font-size:3rem']}</Class2CSS>
+<Class2CSS>{['(text-align:center)', '(font-size:3rem)']}</Class2CSS>
 
 Runtime generation depends on JavaScript startup. Use pre-rendered CSS when the page's initial rules must already be available in the response, and runtime support only when later class names require it.
 
@@ -215,9 +215,9 @@ For application code or deeper debugging, keep the handle returned by `MasterCSS
 
 ```js
 const snapshot = cssRuntime.snapshot()
-console.log(snapshot.usageCounts['text-align:center'])
-console.log(snapshot.classRules['text-align:center']?.retained)
-console.log(snapshot.classRules['text-align:center']?.rules)
+console.log(snapshot.usageCounts['(text-align:center)'])
+console.log(snapshot.classRules['(text-align:center)']?.retained)
+console.log(snapshot.classRules['(text-align:center)']?.rules)
 ```
 
 `usageCounts` tracks connected DOM usage. `classRules` can also include warmed, hydrated, or temporarily retained rules, so a cached rule does not imply that a connected element still uses its class. `engine` reports `'deferred'`, `'loading'`, `'ready'`, or `'failed'`. Before a deferred engine starts, snapshots have usage counts but no generated rule entries in their class snapshots, and `layers` is empty.
@@ -246,7 +246,7 @@ To warm the predictable classes for a view:
 
 ```js
 await cssRuntime.ready()
-cssRuntime.ensureClassRules(['display:grid', 'gap-md'])
+cssRuntime.ensureClassRules(['grid', 'gap-md'])
 ```
 
 Measure runtime JavaScript, program delivery, initialization, DOM observation, and CSSOM work together. Compressed JavaScript size alone does not describe interaction cost. See [Benchmarks](/guide/benchmarks) for measurements and their conditions.

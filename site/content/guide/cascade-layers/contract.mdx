@@ -71,7 +71,7 @@ Notice the shape of the output:
 - `@master/css/base.css` defines the global layer order once.
 - Theme variables are emitted in `@layer theme`.
 - The `.btn` definition is emitted in `@layer components`.
-- `display:flex` and `animation-name:fade animation-duration:1s` are emitted in `@layer utilities`.
+- `flex` and `(animation-name:fade) (animation-duration:1s)` are emitted in `@layer utilities`.
 - The example’s preset keyframes are top-level. Keyframes authored inside a native layer or condition retain that container and source order.
 
 ## Base is for normalization \{#base-is-for-normalization\}
@@ -110,16 +110,16 @@ Base should normalize. Defaults should express broad design defaults.
 ## Utilities can override components \{#utilities-can-override-components\}
 With the base order loaded, normal utility declarations take precedence over normal component declarations, independently of selector specificity between those layers.
 
-Here, `btn` defines `display: inline-flex`. The same button also uses `display:flex`, so the utilities layer sets its final display to `flex`:
+Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
 
-<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'display:flex']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
 ## Defaults stay below local decisions \{#summary\}
 Defaults rules are useful for descendants because they can establish defaults without blocking local classes.
 
-For example, set paragraph text to `1rem` across an article, then override one paragraph with `font-size:1.5rem`.
+For example, set paragraph text to `1rem` across an article, then override one paragraph with `(font-size:1.5rem)`.
 
 <ConfiguredExample source="" html={overridingDefaultsTemplate} />
 
@@ -179,13 +179,13 @@ size is 16px:
 
 | Competing classes or rules | Result | Reason |
 | --- | --- | --- |
-| `p-md padding:8px`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
-| `p-md! padding:8px` | `padding: 1rem` | Importance takes precedence over value source. |
-| `p-md! padding:8px!` | `padding: 8px` | With equal importance, the direct value wins. |
-| `padding:8px@layer(base) padding:12px` | `padding: 12px` | Normal utilities take precedence over the base layer. |
-| `padding:8px@layer(base)! padding:12px!` | `padding: 8px` | Important declarations reverse layer precedence. |
-| Unlayered `.outside { padding: 32px; }` and `padding:8px` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
-| Component-layer `padding: 24px !important` and `padding:8px!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `p-md (padding:8px)`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
+| `p-md! (padding:8px)` | `padding: 1rem` | Importance takes precedence over value source. |
+| `p-md! (padding:8px)!` | `padding: 8px` | With equal importance, the direct value wins. |
+| `(padding:8px)@layer(base) (padding:12px)` | `padding: 12px` | Normal utilities take precedence over the base layer. |
+| `(padding:8px)@layer(base)! (padding:12px)!` | `padding: 8px` | Important declarations reverse layer precedence. |
+| Unlayered `.outside { padding: 32px; }` and `(padding:8px)` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
+| Component-layer `padding: 24px !important` and `(padding:8px)!` | `padding: 24px` | The earlier component layer wins for important declarations. |
 
 Selector and condition scope still matter. A hover or breakpoint rule only
 participates while its selector and conditions match. Direct values do not

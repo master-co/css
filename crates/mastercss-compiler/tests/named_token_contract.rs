@@ -61,12 +61,12 @@ fn named_tokens_and_native_values_are_separate_sources() {
         ("p-md", "padding:var(--spacing-md)"),
         ("p-card-body", "padding:var(--spacing-card-body)"),
         ("fg-red", "color:var(--color-red)"),
-        ("color:red", "color:red"),
-        ("color:red", "color:red"),
-        ("font-family:mono", "font-family:mono"),
-        ("padding:md", "padding:md"),
+        ("(color:red)", "color:red"),
+        ("(color:red)", "color:red"),
+        ("(font-family:mono)", "font-family:mono"),
+        ("(padding:md)", "padding:md"),
         (
-            "margin:var(--spacing-sm)|var(--spacing-md)",
+            "(margin:var(--spacing-sm)|var(--spacing-md))",
             "margin:var(--spacing-sm) var(--spacing-md)",
         ),
     ] {
@@ -82,12 +82,12 @@ fn named_tokens_and_native_values_are_separate_sources() {
 fn native_shorthands_are_never_reinterpreted() {
     let engine = engine();
     for (class, expected) in [
-        ("font:16px", "font:16px"),
-        ("background:#fff", "background:#fff"),
-        ("border:2px", "border:2px"),
-        ("outline:2px", "outline:2px"),
-        ("stroke:2px", "stroke:2px"),
-        ("line-clamp:3", "line-clamp:3"),
+        ("(font:16px)", "font:16px"),
+        ("(background:#fff)", "background:#fff"),
+        ("(border:2px)", "border:2px"),
+        ("(outline:2px)", "outline:2px"),
+        ("(stroke:2px)", "stroke:2px"),
+        ("(line-clamp:3)", "line-clamp:3"),
     ] {
         assert_eq!(declarations(&engine, class), expected, "{class}");
     }
@@ -127,7 +127,7 @@ fn reserved_names_longest_prefix_and_ambiguity_are_deterministic() {
         mastercss_schema::ErrorCode::ClassSyntaxError
     );
     assert_eq!(
-        declarations(&engine, "font-size:var(--font-size-brand)"),
+        declarations(&engine, "(font-size:var(--font-size-brand))"),
         "font-size:var(--font-size-brand)"
     );
     assert!(
@@ -169,14 +169,16 @@ fn signs_opacity_and_variants_preserve_token_identity() {
 
 #[test]
 fn raw_values_win_only_after_existing_priority_tiers() {
-    for classes in [["p-md", "padding:8px"], ["padding:8px", "p-md"]] {
+    for classes in [["p-md", "(padding:8px)"], ["(padding:8px)", "p-md"]] {
         let mut engine = engine();
         engine.ensure_class_rules(classes).unwrap();
         let css = engine.css_text();
         assert!(css.find("padding:var(--spacing-md)").unwrap() < css.find("padding:8px").unwrap());
     }
     let mut engine = engine();
-    engine.ensure_class_rules(["pt-sm", "padding:8px"]).unwrap();
+    engine
+        .ensure_class_rules(["pt-sm", "(padding:8px)"])
+        .unwrap();
     let css = engine.css_text();
     assert!(css.find("padding-top:var(--spacing-sm)").unwrap() < css.find("padding:8px").unwrap());
 }
@@ -187,18 +189,18 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
     assert_eq!(
         declarations(
             &engine,
-            "background-image:image-set(url(a.png)|1x,url(b.png)|2x)"
+            "(background-image:image-set(url(a.png)|1x,url(b.png)|2x))"
         ),
         "background-image:image-set(url(a.png) 1x,url(b.png) 2x)"
     );
-    assert_eq!(declarations(&engine, "padding:4x"), "padding:4x"); // Invalid CSS is a host validation concern.
+    assert_eq!(declarations(&engine, "(padding:4x)"), "padding:4x"); // Invalid CSS is a host validation concern.
     let resolution = engine
-        .inspect("padding:1px@media((resolution>=2x))")
+        .inspect("(padding:1px)@media((resolution>=2x))")
         .unwrap();
     assert!(resolution.rules[0].text.contains("resolution>=2x"));
-    assert_eq!(declarations(&engine, "padding:4px"), "padding:4px");
+    assert_eq!(declarations(&engine, "(padding:4px)"), "padding:4px");
     assert_eq!(
-        declarations(&engine, "margin:calc(var(--spacing-sm)+2px)"),
+        declarations(&engine, "(margin:calc(var(--spacing-sm)+2px))"),
         "margin:calc(var(--spacing-sm) + 2px)"
     );
 }
@@ -206,8 +208,8 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
 #[test]
 fn independent_classes_preserve_value_source_scope_and_importance() {
     for class in [
-        "p-md:hover@sm! padding:8px:hover@sm!",
-        "padding:8px:hover@sm! p-md:hover@sm!",
+        "p-md:hover@sm! (padding:8px):hover@sm!",
+        "(padding:8px):hover@sm! p-md:hover@sm!",
     ] {
         let mut engine = engine();
         engine.ensure_class_rules(class.split_whitespace()).unwrap();
@@ -227,7 +229,9 @@ fn independent_classes_preserve_value_source_scope_and_importance() {
         assert!(css.contains("@media"));
     }
     let mut engine = engine();
-    engine.ensure_class_rules(["p-md", "padding:8px"]).unwrap();
+    engine
+        .ensure_class_rules(["p-md", "(padding:8px)"])
+        .unwrap();
     assert!(
         engine.css_text().find("padding:var(--spacing-md)").unwrap()
             < engine.css_text().find("padding:8px").unwrap()
@@ -238,13 +242,13 @@ fn independent_classes_preserve_value_source_scope_and_importance() {
 fn native_property_names_do_not_become_token_prefixes() {
     let mut engine = engine();
     for (class, property, value) in [
-        ("font-optical-sizing:auto", "font-optical-sizing", "auto"),
+        ("(font-optical-sizing:auto)", "font-optical-sizing", "auto"),
         (
-            "background-position-x:left",
+            "(background-position-x:left)",
             "background-position-x",
             "left",
         ),
-        ("text-wrap:pretty", "text-wrap", "pretty"),
+        ("(text-wrap:pretty)", "text-wrap", "pretty"),
     ] {
         let candidates = engine.native_declaration_candidates([class]).unwrap();
         assert_eq!(candidates[0].property, property);
@@ -260,7 +264,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":6,"languageVersion":16,"utilities":[utility]}).to_string();
+        let source = json!({"version":6,"languageVersion":17,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source).is_err(),
             "legacy matcher entries must be rejected"

@@ -357,7 +357,7 @@ mod tests {
     use super::*;
 
     fn session() -> EngineSession {
-        EngineSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap()
+        EngineSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap()
     }
 
     #[test]
@@ -365,7 +365,7 @@ mod tests {
         let session = session();
         let expression = color_expression(
             &session,
-            "fg:color-mix(in|oklch|longer|hue,red|20%,blue|40%)",
+            "(color:color-mix(in|oklch|longer|hue,red|20%,blue|40%))",
             "color-mix(in oklch longer hue,red 20%,blue 40%)",
             None,
         )
@@ -389,7 +389,7 @@ mod tests {
         assert!(matches!(
             color_expression(
                 &session,
-                "fg:COLOR-MIX(IN|OKLCH|LONGER|HUE,red,blue)",
+                "(color:COLOR-MIX(IN|OKLCH|LONGER|HUE,red,blue))",
                 "COLOR-MIX(IN OKLCH LONGER HUE,red,blue)",
                 None,
             )
@@ -408,7 +408,7 @@ mod tests {
             "color-mix(in unknown,red,blue)",
         ] {
             assert_eq!(
-                color_expression(&session, "fg:test", value, None).unwrap(),
+                color_expression(&session, "(color:test)", value, None).unwrap(),
                 None
             );
         }

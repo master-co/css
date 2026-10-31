@@ -61,7 +61,7 @@ if (cpuThrottleRate !== 1 && browserName !== 'chromium') {
 function createClassNames(count) {
   return Array.from({ length: count }, (_, index) => {
     const key = utilityKeys[index % utilityKeys.length]
-    return `${key}:${index + 1}px`
+    return `(${key}:${index + 1}px)`
   })
 }
 
@@ -405,7 +405,7 @@ try {
       browser,
       server.url,
       scriptURL,
-      '<div class="fg-red-60 animation:fade|1s"></div>',
+      '<div class="fg-red-60 (animation:fade|1s)"></div>',
       { preloadProgram: true }
     )
     try {
@@ -423,7 +423,7 @@ try {
       if (cssText.includes('--color-red-60:') || cssText.includes('@keyframes fade{')) {
         throw new Error('Late emitted globals were not removed from runtime CSS.')
       }
-      if (!cssText.includes('.fg-red-60') || !cssText.includes('.animation\\:fade\\|1s')) {
+      if (!cssText.includes('.fg-red-60') || !cssText.includes('.\\(animation\\:fade\\|1s\\)')) {
         throw new Error('Late emitted globals rebuild removed utility CSS.')
       }
       return elapsed
@@ -551,7 +551,7 @@ try {
     try {
       await loadRuntime(page, scriptURL)
       return await page.evaluate(async () => {
-        const className = 'outline-offset:13px'
+        const className = '(outline-offset:13px)'
         const startedAt = performance.now()
         const element = document.createElement('p')
         element.className = className

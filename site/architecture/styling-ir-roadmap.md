@@ -30,7 +30,7 @@ workflow is `packages/compiler/examples/inspect-project.ts`. From a project
 directory, run it with an explicit CSS entry and complete class names:
 
 ```sh
-node /path/to/css/packages/compiler/examples/inspect-project.ts app.css color:red padding:red
+node /path/to/css/packages/compiler/examples/inspect-project.ts app.css (color:red) (padding:red)
 ```
 
 It prints `status: "ready"` with token names, per-class engine inspection and
@@ -159,7 +159,7 @@ must come from fixtures and measured editing needs.
 
 ### Semantic comparison: bounded claim
 
-For `display:block flex` versus `block flex`, a comparison over that specific
+For `block flex` versus `block flex`, a comparison over that specific
 class list must report the changed winner. Identical declaration sets or a
 shorter spelling are insufficient evidence. The comparison input must name the
 manifest pair, class lists and relevant layer/importance/condition context. Its

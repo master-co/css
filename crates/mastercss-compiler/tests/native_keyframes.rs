@@ -66,7 +66,7 @@ fn exact_keyframe_safelist_does_not_generate_classes() {
     assert!(!css.contains("@keyframes Fade"));
     assert!(engine.snapshot().unwrap().rules.is_empty());
     let parsed = compile_css_directives(
-        r#"@safelist keyframes "\66 ade" "with space";@safelist "display:flex opacity:1";"#,
+        r#"@safelist keyframes "\66 ade" "with space";@safelist "(display:flex) (opacity:1)";"#,
         &Default::default(),
     )
     .unwrap();
@@ -76,7 +76,7 @@ fn exact_keyframe_safelist_does_not_generate_classes() {
     );
     assert_eq!(
         parsed.extraction_policy.safelist,
-        ["display:flex", "opacity:1"]
+        ["(display:flex)", "(opacity:1)"]
     );
 }
 
@@ -107,7 +107,7 @@ fn keyframes_inside_theme_and_malformed_safelists_are_errors() {
 #[test]
 fn same_names_keep_conditions_layers_and_original_positions() {
     let source = "@prune native;@layer before;@layer{.kept{opacity:1}@keyframes fade{to{opacity:.2}}@media(width>50rem){@keyframes fade{to{opacity:.4}}}}@supports(display:grid){@keyframes fade{to{opacity:.6}}}@keyframes fade{to{opacity:.8}}.after{opacity:.9}";
-    let (engine, css) = compile(source, Some(&["kept", "after", "animation-name:fade"]));
+    let (engine, css) = compile(source, Some(&["kept", "after", "(animation-name:fade)"]));
     let frames = engine.snapshot().unwrap().resources.keyframes;
     assert_eq!(frames.len(), 4, "{css}");
     let ids = frames
@@ -127,12 +127,14 @@ fn last_dynamic_use_releases_all_definitions_and_body_tokens() {
     let source = "@prune native;@theme{--color-frame:red}@keyframes fade{to{color:var(--color-frame)}}@media(width>30rem){@keyframes fade{to{opacity:.5}}}";
     let (mut engine, _) = compile(source, Some(&[]));
     engine
-        .ensure_class_rules(["animation-name:fade", "animation:fade|1s"])
+        .ensure_class_rules(["(animation-name:fade)", "(animation:fade|1s)"])
         .unwrap();
     assert_eq!(engine.snapshot().unwrap().resources.keyframes.len(), 2);
-    engine.delete_class_rules(["animation-name:fade"]).unwrap();
+    engine
+        .delete_class_rules(["(animation-name:fade)"])
+        .unwrap();
     assert_eq!(engine.snapshot().unwrap().resources.keyframes.len(), 2);
-    engine.delete_class_rules(["animation:fade|1s"]).unwrap();
+    engine.delete_class_rules(["(animation:fade|1s)"]).unwrap();
     let snapshot = engine.snapshot().unwrap();
     assert!(snapshot.resources.keyframes.is_empty());
     assert!(snapshot.resources.variables.is_empty());
@@ -193,7 +195,9 @@ fn suppressed_delivery_keeps_metadata_without_retaining_frame_body_tokens() {
         Some(&serde_json::json!({"suppressedKeyframes":parsed.suppressed_keyframes}).to_string()),
     )
     .unwrap();
-    engine.ensure_class_rules(["animation-name:fade"]).unwrap();
+    engine
+        .ensure_class_rules(["(animation-name:fade)"])
+        .unwrap();
     assert!(engine.snapshot().unwrap().resources.keyframes.is_empty());
     assert!(engine.snapshot().unwrap().resources.variables.is_empty());
     assert_eq!(engine.keyframe_definitions().unwrap().len(), 1);
@@ -203,7 +207,7 @@ fn suppressed_delivery_keeps_metadata_without_retaining_frame_body_tokens() {
 fn vendor_definitions_keep_their_identity_and_order() {
     let (_, css) = compile(
         "@prune native;@-webkit-keyframes fade{to{opacity:.5}}@keyframes fade{to{opacity:1}}",
-        Some(&["animation-name:fade"]),
+        Some(&["(animation-name:fade)"]),
     );
     assert!(css.find("@-webkit-keyframes").unwrap() < css.find("@keyframes").unwrap());
 }
@@ -212,7 +216,7 @@ fn vendor_definitions_keep_their_identity_and_order() {
 fn atomic_refresh_replaces_definitions_and_external_ownership() {
     let (mut engine, _) = compile(
         "@prune native;@keyframes fade{to{opacity:1}}",
-        Some(&["animation-name:fade"]),
+        Some(&["(animation-name:fade)"]),
     );
     let parsed = compile_css_directives(
         "@preserve native;@keyframes next{to{opacity:.5}}",
@@ -272,9 +276,11 @@ fn server_snapshots_keep_transported_urls_without_retaining_inactive_slot_bodies
     server
         .ensure_stylesheet_resources(&css.replace("./original.svg", "/assets/final.svg"))
         .unwrap();
-    server.ensure_class_rules(["animation-name:probe"]).unwrap();
+    server
+        .ensure_class_rules(["(animation-name:probe)"])
+        .unwrap();
     let used = server
-        .snapshot_for_classes(["animation-name:probe"])
+        .snapshot_for_classes(["(animation-name:probe)"])
         .unwrap();
     assert_eq!(used.stylesheets.len(), 1);
     assert!(used.stylesheets[0].contains("background:url('/assets/final.svg')"));
@@ -300,9 +306,11 @@ fn reference_resource_transport_has_no_animation_or_layer_roots() {
     server.ensure_stylesheet_resources(&metadata).unwrap();
     assert!(server.snapshot().unwrap().resources.keyframes.is_empty());
     assert!(!server.snapshot().unwrap().text.contains("@layer reference"));
-    server.ensure_class_rules(["animation-name:probe"]).unwrap();
+    server
+        .ensure_class_rules(["(animation-name:probe)"])
+        .unwrap();
     let used = server
-        .snapshot_for_classes(["animation-name:probe"])
+        .snapshot_for_classes(["(animation-name:probe)"])
         .unwrap();
     assert!(
         used.text.contains("background:url('/assets/final.svg')"),

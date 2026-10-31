@@ -4,13 +4,13 @@ import InlineCode from './InlineCode'
 
 export default function DocFn({ children }: any) {
   return (
-    <div className="text-xs_code vertical-align:middle_td doc-table">
+    <div className="text-xs_code (vertical-align:middle)_td doc-table">
       <table>
         <thead>
           <tr>
-            <th className="width:0 text-xs white-space:nowrap">Argument</th>
+            <th className="(width:0) text-xs (white-space:nowrap)">Argument</th>
             <th className="text-xs">Type</th>
-            <th className="width:100% text-xs">Default</th>
+            <th className="(width:100%) text-xs">Default</th>
           </tr>
         </thead>
         <tbody>
@@ -21,13 +21,13 @@ export default function DocFn({ children }: any) {
               </td>
               <td>
                 {Array.isArray(arg.type)
-                  ? <DocBadgeGroup>{arg.type.map((type: string,) => <DocType className="vertical-align:middle" type={type} key={type} />)}</DocBadgeGroup>
-                  : <DocType className="vertical-align:middle" type={arg.type} />
+                  ? <DocBadgeGroup>{arg.type.map((type: string,) => <DocType className="(vertical-align:middle)" type={type} key={type} />)}</DocBadgeGroup>
+                  : <DocType className="(vertical-align:middle)" type={arg.type} />
                 }
               </td>
               <td>
                 {arg.defaultValue !== undefined
-                  ? <DocDefaultValue className="vertical-align:middle">
+                  ? <DocDefaultValue className="(vertical-align:middle)">
                     <InlineCode lang="ts">{arg.defaultValue}</InlineCode>
                   </DocDefaultValue>
                   : <code className="fg-text-muted!">-</code>

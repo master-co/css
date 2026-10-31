@@ -127,6 +127,14 @@ function name() {
   return decoded ?? text.slice(start, at)
 }
 
+/** The end and decoded name of the identifier starting at `index`. */
+export function readName(source: string, index: number): [end: number, name: string] {
+  text = source
+  at = index
+  const value = name()
+  return [at, value]
+}
+
 /** The colon offset and decoded name of a leading `name:`, read as the first two tokens would be. */
 export function leadingDeclarationName(source: string): [colon: number, name: string] | undefined {
   if (numberEnd(source, 0) >= 0 || !startsIdentifier(source, 0)) return

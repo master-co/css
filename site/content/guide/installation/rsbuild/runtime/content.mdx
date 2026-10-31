@@ -70,7 +70,7 @@ export default defineConfig({
 ```tsx name=src/App.tsx
 export default function App() {
   return (
-    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
   )
@@ -90,5 +90,5 @@ Replace `src/App.tsx` with the example above. Keep the React plugin and the entr
 Build and serve the production output. Confirm the heading is styled and the emitted HTML loads the Master CSS runtime script. After startup, add a new class in the browser console; it should underline the heading without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```

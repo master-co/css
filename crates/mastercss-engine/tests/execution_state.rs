@@ -5,11 +5,11 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut engine = EngineSession::create(manifest).unwrap();
     assert!(
-        engine.inspect("display:block").unwrap().match_status
+        engine.inspect("(display:block)").unwrap().match_status
             == mastercss_schema::MatchStatus::Matched
     );
     let initial = engine
-        .execution_state(["display:block", "unknown"])
+        .execution_state(["(display:block)", "unknown"])
         .unwrap();
     assert!(
         initial
@@ -19,10 +19,10 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
     );
     let classes = [
         "fg-red-60",
-        "display:block",
-        "display:block@layer(base)",
+        "(display:block)",
+        "(display:block)@layer(base)",
         "unknown",
-        "display:block",
+        "(display:block)",
     ];
     engine.ensure_class_rules(classes).unwrap();
     let state = engine.execution_state(classes).unwrap();
@@ -47,31 +47,31 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
         );
     }
     assert_eq!(engine.snapshot().unwrap(), snapshot);
-    engine.delete_class_rules(["display:block"]).unwrap();
+    engine.delete_class_rules(["(display:block)"]).unwrap();
     assert!(
-        engine.execution_state(["display:block"]).unwrap().classes[0]
+        engine.execution_state(["(display:block)"]).unwrap().classes[0]
             .references
             .is_empty()
     );
     engine
-        .refresh(r#"{"version":6,"languageVersion":16}"#)
+        .refresh(r#"{"version":6,"languageVersion":17}"#)
         .unwrap();
     assert!(
         !engine
-            .execution_state(["display:block@layer(base)"])
+            .execution_state(["(display:block)@layer(base)"])
             .unwrap()
             .classes[0]
             .references
             .is_empty()
     );
     engine.dispose();
-    assert!(engine.execution_state(["display:block"]).is_err());
+    assert!(engine.execution_state(["(display:block)"]).is_err());
 }
 
 #[test]
 fn execution_state_tracks_resource_counts_without_css_mutations() {
     let mut engine = EngineSession::create(
-        r#"{"version":6,"languageVersion":16,"variables":{"":[{"name":"x","key":"x","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"x","value":"red"}]}]}"#,
+        r#"{"version":6,"languageVersion":17,"variables":{"":[{"name":"x","key":"x","values":[{"path":[":root,:host"],"value":"red"}]}]},"theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"x","value":"red"}]}]}"#,
     )
     .unwrap();
     engine

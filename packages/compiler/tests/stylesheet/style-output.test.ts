@@ -154,7 +154,7 @@ describe('style CSS extraction helpers', () => {
         color: var(--color-primary);
       }
     `, { baseManifest: defaultManifest })
-    await scanner.scan(join(root, 'app/page.tsx'), "<main class=\"btn display:block main fg-red\"></main>")
+    await scanner.scan(join(root, 'app/page.tsx'), "<main class=\"btn (display:block) main fg-red\"></main>")
 
     const css = await createExtractedCSS({
       scanner,
@@ -173,7 +173,7 @@ describe('style CSS extraction helpers', () => {
     expect(css.match(/@keyframes native-fade/g) || []).toHaveLength(1)
     expect(css).toContain('.btn')
     expect(css).toContain('display: grid')
-    expect(css).toContain(".display\\:block{display:block}")
+    expect(css).toContain(".\\(display\\:block\\){display:block}")
     expect(css).toContain('.fg-red{color:var(--color-red)}')
     expect(css).not.toContain('@master')
     expect(css).not.toContain('virtual:master-utilities.css')
@@ -447,7 +447,7 @@ describe('style CSS extraction helpers', () => {
 
     const stylesheetSources = new Map()
     await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/globals.css'), "\n      @import \"@master/css\";\n\n      .card {\n        display: grid;\n      }\n    ", { baseManifest: defaultManifest })
-    await scanner.scan(join(root, 'app/page.html'), "<div class=\"card display:block\"></div>")
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"card (display:block)\"></div>")
 
     const css = await createExtractedCSS({
       scanner,
@@ -460,7 +460,7 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('.card')
     expect(css).toContain('@layer base')
     expect(css).not.toContain('text-rendering: geometricprecision')
-    expect(css).not.toContain(".display\\:block{display:block}")
+    expect(css).not.toContain(".\\(display\\:block\\){display:block}")
   })
 
   it('keeps package base CSS without generated utilities for Master CSS imports', async () => {
@@ -476,7 +476,7 @@ describe('style CSS extraction helpers', () => {
       '@import "@master/css";',
       { baseManifest: defaultManifest }
     )
-    await scanner.scan(join(root, 'app/page.html'), "<div class=\"display:block\"></div>")
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"(display:block)\"></div>")
 
     const css = await createExtractedCSS({
       scanner,
@@ -489,7 +489,7 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('@layer base')
     expect(css).not.toContain('text-rendering: geometricprecision')
     expect(css).toMatch(/font-family:\s*var\(--font-family-sans\)/)
-    expect(css).not.toContain(".display\\:block{display:block}")
+    expect(css).not.toContain(".\\(display\\:block\\){display:block}")
     expect(css).not.toContain('@master/css')
   })
 
@@ -497,7 +497,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
-    await scanner.scan(join(root, 'app/page.html'), "<div class=\"display:block\"></div>")
+    await scanner.scan(join(root, 'app/page.html'), "<div class=\"(display:block)\"></div>")
 
     const css = await createExtractedCSS({
       scanner,

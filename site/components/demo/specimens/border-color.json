@@ -4,31 +4,31 @@
     "id": "set-border-color",
     "title": "Set border color",
     "html": [
-      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-blue font-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>",
-      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"display:flex align-items:center justify-content:center height:96px\n         width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor\n         b-violet font-md bg-surface-inset\n         fg-text-body box-sizing:border-box\">\n  Preview panel\n</div>"
+      "<!-- Primary · blue -->\n<div id=\"target\"\n  class=\"flex items-center justify-center (height:96px)\n         (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor)\n         b-blue font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>",
+      "<!-- Comparison · violet -->\n<div id=\"target\"\n  class=\"flex items-center justify-center (height:96px)\n         (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor)\n         b-violet font-md bg-surface-inset\n         fg-text-body box-border\">\n  Preview panel\n</div>"
     ],
     "css": "",
     "classes": [
-      "display:flex",
-      "align-items:center",
-      "justify-content:center",
-      "height:96px",
-      "width:240px",
-      "max-width:100%",
+      "flex",
+      "items-center",
+      "justify-center",
+      "(height:96px)",
+      "(width:240px)",
+      "(max-width:100%)",
       "p-md",
-      "border-width:2px",
-      "border-style:solid",
-      "border-color:currentcolor",
+      "(border-width:2px)",
+      "(border-style:solid)",
+      "(border-color:currentcolor)",
       "b-blue",
       "font-md",
       "bg-surface-inset",
       "fg-text-body",
-      "box-sizing:border-box",
+      "box-border",
       "b-violet"
     ],
     "classLists": [
-      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-blue font-md bg-surface-inset fg-text-body box-sizing:border-box",
-      "display:flex align-items:center justify-content:center height:96px width:240px max-width:100% p-md border-width:2px border-style:solid border-color:currentcolor b-violet font-md bg-surface-inset fg-text-body box-sizing:border-box"
+      "flex items-center justify-center (height:96px) (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor) b-blue font-md bg-surface-inset fg-text-body box-border",
+      "flex items-center justify-center (height:96px) (width:240px) (max-width:100%) p-md (border-width:2px) (border-style:solid) (border-color:currentcolor) b-violet font-md bg-surface-inset fg-text-body box-border"
     ],
     "highlighted": []
   }

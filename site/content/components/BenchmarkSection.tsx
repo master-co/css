@@ -18,11 +18,11 @@ export default function BenchmarkSection() {
     const brand: { className?: string, src: typeof brands.mastercss.src } | undefined = Object.values(brands).find((eachBrand) => eachBrand.name === row.name)
     const Icon = brand?.src
     return [row.name, {
-      icon: Icon && <Icon className={clsx('flex:none', brand?.className)} height={22} width={22} />
+      icon: Icon && <Icon className={clsx('(flex:none)', brand?.className)} height={22} width={22} />
     }]
   }))
   return (
-    <section id={homeSections.cssCost} className="position:relative home-section">
+    <section id={homeSections.cssCost} className="relative home-section">
       <div className="app-wrapper home-section-wrap">
         <HomeSectionHeader
           icon="section-css-size"

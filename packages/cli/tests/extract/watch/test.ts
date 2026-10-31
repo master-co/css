@@ -23,7 +23,7 @@ const originHTMLText = dedent`
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1 class="font-heavy font-size:48px btn hmr-test">Hello World</h1>
+    <h1 class="font-heavy (font-size:48px) btn hmr-test">Hello World</h1>
     <button class="bg-primary">Submit</button>
   </body>
   </html>
@@ -104,12 +104,12 @@ it('start watch process', async () => {
   ])
   const fileCSSText = await waitForCSSContent((css) => [
     'font-heavy',
-    'font-size:48px',
+    '(font-size:48px)',
     'bg-primary',
     'btn'
   ].every((eachClass) => css.includes(cssEscape(eachClass))))
   expect(fileCSSText).toContain(cssEscape('font-heavy'))
-  expect(fileCSSText).toContain(cssEscape('font-size:48px'))
+  expect(fileCSSText).toContain(cssEscape('(font-size:48px)'))
   expect(fileCSSText).toContain(cssEscape('bg-primary'))
   expect(fileCSSText).toContain(cssEscape('btn'))
 })
@@ -128,9 +128,9 @@ it('change config file utilities and reset process', async () => {
 })
 
 it('change html file class attr and update', async () => {
-  fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', "text-decoration:underline"))
-  const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape("text-decoration:underline")))
-  expect(fileCSSText).toContain(cssEscape("text-decoration:underline"))
+  fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', "(text-decoration:underline)"))
+  const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape("(text-decoration:underline)")))
+  expect(fileCSSText).toContain(cssEscape("(text-decoration:underline)"))
 })
 
 afterAll(async () => {

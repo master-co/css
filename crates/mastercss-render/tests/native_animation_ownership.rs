@@ -3,7 +3,7 @@ use serde_json::json;
 
 #[test]
 fn native_animation_values_never_register_or_synthesize_keyframes() {
-    let manifest = json!({"version":6,"languageVersion":16}).to_string();
+    let manifest = json!({"version":6,"languageVersion":17}).to_string();
     for css in [
         ".x{animation:fade 1s}",
         ".x{animation-name:\"fade\"}",
@@ -32,7 +32,7 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut session = RenderSession::create(manifest, None).unwrap();
     session
-        .ensure_classes(["animation:fade|1s", "animation-name:rotate"])
+        .ensure_classes(["(animation:fade|1s)", "(animation-name:rotate)"])
         .unwrap();
     let rendered = session.snapshot().unwrap();
     assert!(rendered.snapshot.text.contains("animation:fade 1s"));
@@ -43,8 +43,8 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
     // Keyframe metadata stays in the runtime engine; the manifest only names classes.
     assert!(hydration.get("rules").is_none());
     let class_names = hydration["classNames"].as_array().unwrap();
-    assert!(class_names.contains(&json!("animation:fade|1s")));
-    assert!(class_names.contains(&json!("animation-name:rotate")));
+    assert!(class_names.contains(&json!("(animation:fade|1s)")));
+    assert!(class_names.contains(&json!("(animation-name:rotate)")));
     assert_eq!(
         hydration["resourceOrder"]["keyframes"],
         json!(
@@ -64,7 +64,7 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
 #[test]
 fn materialized_stylesheet_slots_preserve_empty_and_duplicate_asset_positions() {
     let mut session =
-        RenderSession::create(&json!({"version":6,"languageVersion":16}).to_string(), None)
+        RenderSession::create(&json!({"version":6,"languageVersion":17}).to_string(), None)
             .unwrap();
     for css in [
         "",

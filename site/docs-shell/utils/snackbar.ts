@@ -9,10 +9,10 @@ export async function snackbar(text: string, { placement }: any = {}) {
   }
   const element = document.createElement('div')
   element.className = clsx(
-    'position:fixed left:0 right:0 z-index:1060 width:fit-content margin:auto padding-bottom:var(--spacing-sm) padding-left:var(--spacing-md) padding-right:var(--spacing-md) padding-top:var(--spacing-sm) r-lg outline-line-subtle outline-style:solid outline-width:1px font-xs background-color:var(--color-float) fg-text-strong cursor:pointer',
+    'fixed (left:0) (right:0) (z-index:1060) (width:fit-content) (margin:auto) (padding-bottom:var(--spacing-sm)) (padding-left:var(--spacing-md)) (padding-right:var(--spacing-md)) (padding-top:var(--spacing-sm)) r-lg outline-line-subtle (outline-style:solid) (outline-width:1px) font-xs (background-color:var(--color-float)) fg-text-strong (cursor:pointer)',
     {
-      'top:20px': placement === 'top',
-      'bottom:20px': !placement
+      '(top:20px)': placement === 'top',
+      '(bottom:20px)': !placement
     }
   )
   element.style.boxShadow = `0px 0.2px 0.6px rgba(0, 0, 0, 0.015), 0px 0.5px 1.3px rgba(0, 0, 0, 0.022), 0px 1px 2.3px rgba(0, 0, 0, 0.028), 0px 1.6px 3.9px rgba(0, 0, 0, 0.032), 0px 2.6px 6.3px rgba(0, 0, 0, 0.038), 0px 4.6px 11.1px rgba(0, 0, 0, 0.045), 0px 10px 24px rgba(0, 0, 0, 0.06)`

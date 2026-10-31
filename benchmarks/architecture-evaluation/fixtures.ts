@@ -23,18 +23,18 @@ export function fixture(arm: Arm, task: TaskId, solved = false) {
     information: native ? 'information' : 'bg-information',
     cards: native ? 'cards' : tailwind
       ? `grid grid-cols-1 ${done('responsive-layout') ? 'min-[768px]:grid-cols-2' : 'min-[1024px]:grid-cols-3'}`
-      : `display:grid grid-template-columns:repeat(1,minmax(0,1fr)) ${done('responsive-layout') ? 'grid-template-columns:repeat(2,minmax(0,1fr))@media((width>=768px))' : 'grid-template-columns:repeat(3,minmax(0,1fr))@media((width>=1024px))'}`,
+      : `grid (grid-template-columns:repeat(1,minmax(0,1fr))) ${done('responsive-layout') ? '(grid-template-columns:repeat(2,minmax(0,1fr)))@media((width>=768px))' : '(grid-template-columns:repeat(3,minmax(0,1fr)))@media((width>=1024px))'}`,
     danger: native ? 'danger' : tailwind
       ? `bg-[#2563eb] ${done('scoped-hover') ? 'hover:bg-[#dc2626]' : ''}`
-      : `background-color:#2563eb ${done('scoped-hover') ? 'background-color:#dc2626:hover' : ''}`,
+      : `(background-color:#2563eb) ${done('scoped-hover') ? '(background-color:#dc2626):hover' : ''}`,
     fill: native ? 'fill' : tailwind
       ? done('dynamic-value') ? 'w-[clamp(0%,var(--progress),100%)]' : 'w-[40%]'
-      : done('dynamic-value') ? 'width:clamp(0%,var(--progress),100%)' : 'width:40%',
+      : done('dynamic-value') ? '(width:clamp(0%,var(--progress),100%))' : '(width:40%)',
     pulse: native ? 'pulse' : tailwind
       ? `animate-[pulse_2s_linear_infinite] ${done('reduced-motion') ? 'motion-reduce:animate-none' : ''}`
-      : `animation:pulse|2s|linear|infinite ${done('reduced-motion') ? 'animation:none@motion-reduce' : ''}`,
-    neutral: native ? 'neutral' : tailwind ? 'bg-[#e5e7eb] text-[#111827]' : 'background-color:#e5e7eb color:#111827',
-    warning: native ? 'warning' : tailwind ? 'bg-[#fef3c7] text-[#78350f]' : 'background-color:#fef3c7 color:#78350f'
+      : `(animation:pulse|2s|linear|infinite) ${done('reduced-motion') ? '(animation:none)@motion-reduce' : ''}`,
+    neutral: native ? 'neutral' : tailwind ? 'bg-[#e5e7eb] text-[#111827]' : '(background-color:#e5e7eb) (color:#111827)',
+    warning: native ? 'warning' : tailwind ? 'bg-[#fef3c7] text-[#78350f]' : '(background-color:#fef3c7) (color:#78350f)'
   }
   const common = `
 * { box-sizing: border-box; }

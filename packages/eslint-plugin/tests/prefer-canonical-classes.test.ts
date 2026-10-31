@@ -74,24 +74,24 @@ const customManifest = createPresetManifest({
 
 jsxTester.run('prefer canonical classes', rule, {
     valid: [
-{ code: `<div class="text-align:center font-md m-md r-md fg-red-60">Recommended classes</div>` },
-{ code: "<div class=\"btn width:futurekeyword unknown-class\">Unknown classes are ignored</div>" },
+{ code: `<div class="(text-align:center) font-md m-md r-md fg-red-60">Recommended classes</div>` },
+{ code: "<div class=\"btn (width:futurekeyword) unknown-class\">Unknown classes are ignored</div>" },
 { code: `<div class="text-muted grid-col-span:4">Custom classes are left to validation</div>` },
 {
-            code: `<div class="font-size:16px">Literal values are preserved</div>`,
+            code: `<div class="(font-size:16px)">Literal values are preserved</div>`,
         },
 {
             code: `<div class="margin-md">Unknown token names have no autofix</div>`,
         },
 {
-            code: `<div class="display:block">Static utilities disabled</div>`,
+            code: `<div class="(display:block)">Static utilities disabled</div>`,
             options: [{ preferStaticUtilities: false }]
         },
 {
-            code: "<div class=\"margin:var(--spacing-md)\">Explicit variable references are preserved</div>",
+            code: "<div class=\"(margin:var(--spacing-md))\">Explicit variable references are preserved</div>",
         },
 {
-            code: "<div class=\"margin:1rem|1.5rem\">Literal multi-values are preserved</div>",
+            code: "<div class=\"(margin:1rem|1.5rem)\">Literal multi-values are preserved</div>",
         },
 {
             code: `<div class="w-md h-md">Composition utilities disabled</div>`,
@@ -102,31 +102,31 @@ jsxTester.run('prefer canonical classes', rule, {
             options: [{ preferCompositionUtilities: false }]
         },
 {
-            code: `<div class="display:block@dark@sm">Authored condition order</div>`,
+            code: `<div class="(display:block)@dark@sm">Authored condition order</div>`,
         },
 {
-            code: `<div class="font-size:16px@dark@sm">Authored condition order preserves literals</div>`,
+            code: `<div class="(font-size:16px)@dark@sm">Authored condition order preserves literals</div>`,
         },
 {
             code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@media(print)@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
         },
 {
-code: `<div class="text-align:center:hover@sm">Static pattern utility with variants</div>`
+code: `<div class="(text-align:center):hover@sm">Static pattern utility with variants</div>`
 },
 {
-code: `<div class="display:block align-items:center">Static utilities</div>`
+code: `<div class="(display:block) (align-items:center)">Static utilities</div>`
 },
 {
-code: `<div class="font-size:16px font-size:1rem r:.375rem">Variables</div>`
+code: `<div class="(font-size:16px) (font-size:1rem) (r:.375rem)">Variables</div>`
 },
 {
-code: "<div class=\"margin:1rem|1.5rem padding:.5rem|1rem r:.25rem|.375rem\">Multi-value tokens</div>"
+code: "<div class=\"(margin:1rem|1.5rem) (padding:.5rem|1rem) (r:.25rem|.375rem)\">Multi-value tokens</div>"
 },
 {
-code: "<div class=\"margin:var(--spacing-md) r:var(--radius-md) color:var(--color-red-60)\">Variable references</div>"
+code: "<div class=\"(margin:var(--spacing-md)) (r:var(--radius-md)) (color:var(--color-red-60))\">Variable references</div>"
 },
 {
-code: `<div class="font-size:16px@dark@sm">Authored condition order keeps theme token fix</div>`,
+code: `<div class="(font-size:16px)@dark@sm">Authored condition order keeps theme token fix</div>`,
 },
 {
 code: `<div class="w-md h-md min-w-md min-h-md max-w-md max-h-md">Composition utilities</div>`
@@ -135,45 +135,45 @@ code: `<div class="w-md h-md min-w-md min-h-md max-w-md max-h-md">Composition ut
 code: `<div class="mt-md mb-md ml-md mr-md pt-md pb-md pl-md pr-md">Axis composition utilities</div>`
 },
 {
-code: `clsx('display:block font-size:16px')`
+code: `clsx('(display:block) (font-size:16px)')`
 },
 {
-code: 'ctl(`font-size:1rem r:.375rem`)'
+code: 'ctl(`(font-size:1rem) (r:.375rem)`)'
 },
 {
-code: "ctl(`width:1rem height:1rem`)"
+code: "ctl(`(width:1rem) (height:1rem)`)"
 },
 {
 code: `<div class="font-md bg-red-60">Named token keys</div>`
 },
 {
-code: `<div class="display:block@dark@sm display:block:hover@dark@sm block!@dark@sm">Condition order</div>`
+code: `<div class="(display:block)@dark@sm (display:block):hover@dark@sm block!@dark@sm">Condition order</div>`
 },
 {
-code: `<div class="font-size:16px@dark@sm text-align:center@dark@sm">Condition order with canonical classes</div>`
+code: `<div class="(font-size:16px)@dark@sm (text-align:center)@dark@sm">Condition order with canonical classes</div>`
 },
 {
-code: `<div class="font-size:16px@dark@sm">Literal values are preserved preserves condition nesting</div>`
+code: `<div class="(font-size:16px)@dark@sm">Literal values are preserved preserves condition nesting</div>`
 },
 {
 code: `<div class="margin-md@dark@sm">Unknown token names have no autofix, with conditions</div>`,
 },
 {
-code: "<div class=\"margin:var(--spacing-md)@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"
+code: "<div class=\"(margin:var(--spacing-md))@dark@sm\">Explicit variable references are preserved preserves condition nesting</div>"
 },
 {
-code: "<div class=\"margin:1rem|1.5rem@dark@sm\">Literal multi-values are preserved preserves condition nesting</div>"
+code: "<div class=\"(margin:1rem|1.5rem)@dark@sm\">Literal multi-values are preserved preserves condition nesting</div>"
 },
 {
 code: `<div class="mt-md@dark@sm mb-md@dark@sm">Axis composition with condition order</div>`
 },
 {
-code: `clsx('display:block@dark@sm font-size:16px@dark@sm')`
+code: `clsx('(display:block)@dark@sm (font-size:16px)@dark@sm')`
 },
 {
-code: 'ctl(`display:block:hover@dark@sm`)'
+code: 'ctl(`(display:block):hover@dark@sm`)'
 }
-, { code: 'ctl(`padding-left:1rem padding-right:1rem`)' }
+, { code: 'ctl(`(padding-left:1rem) (padding-right:1rem)`)' }
 ],
     invalid: []
 
@@ -220,7 +220,7 @@ createTester({
     valid: [
 { code: `<div class="block@apply(--midnight)@apply(--wide) btn@apply(--midnight)@tablet">Custom variants and components</div>` },
 {
-code: "<div class=\"margin:1.25rem@apply(--midnight)@tablet content-visibility:auto\">Custom manifest</div>"
+code: "<div class=\"(margin:1.25rem)@apply(--midnight)@tablet (content-visibility:auto)\">Custom manifest</div>"
 }
 ],
     invalid: [
@@ -260,21 +260,21 @@ languageOptions: {
             }
 },
 {
-code: `<template><div class="display:block@dark@sm">Vue condition</div></template>`,
+code: `<template><div class="(display:block)@dark@sm">Vue condition</div></template>`,
 filename: 'test.vue',
 languageOptions: {
                 parser: await import('vue-eslint-parser')
             }
 },
 {
-code: `<div class="display:block@dark@sm">Svelte condition</div>`,
+code: `<div class="(display:block)@dark@sm">Svelte condition</div>`,
 filename: 'test.svelte',
 languageOptions: {
                 parser: await import('svelte-eslint-parser')
             }
 },
 {
-code: `<div class="display:block@dark@sm">Angular condition</div>`,
+code: `<div class="(display:block)@dark@sm">Angular condition</div>`,
 languageOptions: {
                 parser: await import('@angular-eslint/template-parser')
             }
@@ -282,7 +282,7 @@ languageOptions: {
 {
 code: `
             # Test
-            <div class="display:block@dark@sm">MDX condition</div>`,
+            <div class="(display:block)@dark@sm">MDX condition</div>`,
 filename: 'test.mdx',
 languageOptions: {
                 parser: await import('eslint-mdx')

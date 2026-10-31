@@ -2,7 +2,7 @@ use mastercss_scanner::{ScannerSession, ScannerSourceOptions};
 use mastercss_schema::CssDirectiveBlocklistEntry;
 
 fn scan(scanner: &mut ScannerSession, source: &str, candidates: &[&str]) {
-    let blocklist = [CssDirectiveBlocklistEntry::Exact("blocked:value".into())];
+    let blocklist = [CssDirectiveBlocklistEntry::Exact("(blocked:value)".into())];
     scanner
         .scan_candidates(
             source,
@@ -18,10 +18,14 @@ fn scan(scanner: &mut ScannerSession, source: &str, candidates: &[&str]) {
 fn unknown_native_capabilities_are_preserved_without_host_support() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut scanner = ScannerSession::create(manifest).unwrap();
-    scan(&mut scanner, "a.html", &["made-up:bad"]);
-    scan(&mut scanner, "b.html", &["accent-color:red", "made-up:bad"]);
+    scan(&mut scanner, "a.html", &["(made-up:bad)"]);
+    scan(
+        &mut scanner,
+        "b.html",
+        &["(accent-color:red)", "(made-up:bad)"],
+    );
     let state = scanner.state().unwrap();
-    assert_eq!(state.valid_classes, ["accent-color:red", "made-up:bad"]);
+    assert_eq!(state.valid_classes, ["(accent-color:red)", "(made-up:bad)"]);
     assert!(state.invalid_classes.is_empty());
     assert!(state.engine.text.contains("accent-color:"));
 }
@@ -29,22 +33,22 @@ fn unknown_native_capabilities_are_preserved_without_host_support() {
 #[test]
 fn output_is_stable_with_duplicate_declarations_blocklists_and_source_order() {
     let inputs: [&[&str]; 3] = [
-        &["made-up:bad", "color:red"],
+        &["(made-up:bad)", "(color:red)"],
         &[
-            "blocked:value",
-            "made-up:bad",
-            "border-color:red",
-            "outline-color:blue",
-            "border-color:red",
-            "outline-color:blue",
-            "made-up:other",
-            "background-color:blue",
+            "(blocked:value)",
+            "(made-up:bad)",
+            "(border-color:red)",
+            "(outline-color:blue)",
+            "(border-color:red)",
+            "(outline-color:blue)",
+            "(made-up:other)",
+            "(background-color:blue)",
         ],
-        &["color:red", "background-color:blue"],
+        &["(color:red)", "(background-color:blue)"],
     ];
     let mut expected = None;
     for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
-        let mut scanner = ScannerSession::create(r#"{"version":6,"languageVersion":16}"#).unwrap();
+        let mut scanner = ScannerSession::create(r#"{"version":6,"languageVersion":17}"#).unwrap();
         for index in order {
             scan(&mut scanner, &format!("{index}.html"), inputs[index]);
         }
@@ -55,7 +59,7 @@ fn output_is_stable_with_duplicate_declarations_blocklists_and_source_order() {
         assert_eq!(
             valid
                 .iter()
-                .filter(|name| name.starts_with("made-up"))
+                .filter(|name| name.starts_with("(made-up"))
                 .count(),
             2
         );

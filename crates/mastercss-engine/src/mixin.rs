@@ -766,6 +766,13 @@ pub fn validate_utilities(
         {
             return Err(format!("Invalid utility name {}", recipe.name));
         }
+        // `_` begins a descendant selector in classes; mixin names may still use it.
+        if recipe.name.contains('_') {
+            return Err(format!(
+                "Utility name {} cannot contain _, which begins a descendant selector in classes",
+                recipe.name
+            ));
+        }
         match definition.kind {
             UtilityKind::Static if !recipe.parameters.is_empty() => {
                 return Err("Static utilities cannot have parameters".into());

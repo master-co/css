@@ -108,7 +108,7 @@ struct Program {
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
     /// The `custom_media_branches` paths of each named custom media query.
     custom_media_paths: HashMap<String, Vec<Vec<String>>>,
-    /// Registered utilities in priority order, followed by the built-in native ones.
+    /// Registered utilities in priority order.
     utilities: Vec<UtilityDefinition>,
     mixins: Vec<mastercss_schema::MixinDefinition>,
     utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
@@ -119,7 +119,6 @@ struct Program {
     compiled_variable_order: Vec<String>,
     token_utilities: HashMap<String, Vec<usize>>,
     static_utilities: HashMap<String, Vec<usize>>,
-    raw_utilities: HashMap<String, Vec<usize>>,
 }
 
 #[derive(Debug, Clone)]
@@ -140,10 +139,20 @@ struct UtilityDefinition {
 
 #[derive(Debug, Clone)]
 enum UtilityMatcher {
-    Static { name: String },
-    Key { keys: Vec<String> },
-    Token { prefix: String },
-    Function { name: String },
+    Static {
+        name: String,
+    },
+    /// A program format tag no registration produces: native declarations are
+    /// `(property:value)` heads, never key utilities.
+    Key {
+        keys: Vec<String>,
+    },
+    Token {
+        prefix: String,
+    },
+    Function {
+        name: String,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -239,8 +248,6 @@ struct StateBranch {
 struct StoredRule {
     ir: GeneratedRuleIr,
     manifest_order: i32,
-    declarations: String,
-    native_fallback: bool,
     matcher_type: Option<UtilityMatcherType>,
     state_token: String,
 }
@@ -401,21 +408,16 @@ pub(crate) use condition::{
     render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::compile_manifest;
-pub(crate) use manifest::{
-    add_unique_string, engine_variable_ir, finish_program, layer_name, single_native_declaration,
-};
+pub(crate) use manifest::{add_unique_string, engine_variable_ir, finish_program, layer_name};
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
 };
 pub(crate) use state::{resolve_state_branches, split_top_level};
 pub(crate) use stylesheet_resources::is_css_identifier_character;
-pub(crate) use utility::{
-    append_builtin_native_declaration_utilities, compare_stored_rules, layer_index,
-    resolve_value_components, split_dynamic_value_state,
-};
+pub(crate) use utility::{compare_stored_rules, layer_index, split_dynamic_value_state};
 pub(crate) use value_syntax::{
-    find_matching_parenthesis, native_declaration_head, normalize_css_math_functions,
+    find_matching_parenthesis, normalize_css_math_functions, valid_class_structure,
 };
 
 pub use condition::{condition_priority, native_query_features};

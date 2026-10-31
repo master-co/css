@@ -62,7 +62,7 @@ function items(kind: 'rawBytes' | 'brotliBytes'): BenchmarkBarItem[] {
       valueLabel: `${formatKilobytes(page.css.total[kind])} kB`,
       detail: page.name === 'Master CSS' ? formatMasterCSSBreakdown(kind) : `${formatRatio(page.css.total[kind], masterCSSPage.css.total[kind])}× Master CSS`,
       color: page.name === 'Master CSS' ? 'blue' : 'neutral',
-    icon: image && <img src={image} alt="" width={20} height={20} className={clsx('flex:none height:20px width:20px margin-inline:0 object-fit:contain', brand?.className)} />
+    icon: image && <img src={image} alt="" width={20} height={20} className={clsx('(flex:none) (height:20px) (width:20px) (margin-inline:0) object-contain', brand?.className)} />
     }
   })
 }

@@ -765,7 +765,10 @@ impl EngineSession {
         let (state_token, state_important) = raw_state_token
             .strip_prefix('!')
             .map_or((raw_state_token.as_str(), false), |state| (state, true));
-        let important = trailing_important || state_important;
+        let native_important = kind == ClassSemanticKind::Declaration
+            && mastercss_lexer::parse_native_declaration(semantic_class_name)
+                .is_some_and(|head| head.is_ok_and(|head| head.important));
+        let important = trailing_important || state_important || native_important;
         let state_token = (!state_token.is_empty()).then(|| state_token.to_owned());
         let (key_token, value_token) = if kind == ClassSemanticKind::Token {
             let prefix =
@@ -792,17 +795,14 @@ impl EngineSession {
                     )
                 })
         } else if kind == ClassSemanticKind::Declaration {
-            let value_end = semantic_class_name
-                .len()
-                .saturating_sub(raw_state_token.len());
-            semantic_class_name[..value_end]
-                .find(':')
-                .map_or((None, None), |colon| {
-                    (
-                        Some(semantic_class_name[..=colon].to_owned()),
-                        Some(semantic_class_name[colon + 1..value_end].to_owned()),
-                    )
-                })
+            // `(property:` and the parenthesized value, including a native `!important`.
+            match mastercss_lexer::parse_native_declaration(semantic_class_name) {
+                Some(Ok(head)) => (
+                    Some(semantic_class_name[..head.body.start].to_owned()),
+                    Some(semantic_class_name[head.body].to_owned()),
+                ),
+                _ => (None, None),
+            }
         } else {
             (None, None)
         };

@@ -105,9 +105,9 @@ Bootstrap's default [`md` breakpoint](https://getbootstrap.com/docs/5.3/layout/b
 ```
 
 ```html
-<section class="width:100% max-w-6xl margin-inline:auto px-md py-2xl">
-  <div class="display:grid gap-lg grid-cols(3)@bootstrap-md">
-    <article class="p-lg border-width:1px border-style:solid b-line-divider r-lg bg-white fg-body">
+<section class="(width:100%) max-w-6xl (margin-inline:auto) px-md py-2xl">
+  <div class="grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg (border-width:1px) (border-style:solid) b-line-divider r-lg bg-white fg-body">
       ...
     </article>
   </div>
@@ -120,7 +120,7 @@ Use native declaration syntax when it is clearer than a utility alias:
 
 { }
 ```html
-<div class="scroll-margin-top:4rem display:contents@md">
+<div class="(scroll-margin-top:4rem) contents@md">
   ...
 </div>
 ```
@@ -179,7 +179,7 @@ Bootstrap JavaScript components are not just CSS. They can manage focus, ARIA at
 Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
 
 ```html
-<section class="display:grid gap-md">
+<section class="grid gap-md">
   <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
 </section>
 ```
@@ -202,7 +202,7 @@ Keep the override as CSS when it targets Bootstrap internals:
 Move the override to Master CSS only after the markup is app-owned:
 
 ```html
-<nav class="display:flex align-items:center gap-md">
+<nav class="flex items-center gap-md">
   <div class="min-w-3xs">...</div>
 </nav>
 ```

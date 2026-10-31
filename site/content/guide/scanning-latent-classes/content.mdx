@@ -25,7 +25,7 @@ Both branches are available to the scanner even though only one is used at a tim
 Suppose a heading's size comes from an editor control. Keep its class complete and change the custom property on the element:
 
 ```html
-<h1 id="headline" class="font-size:var(--headline-size)" style="--headline-size: 2rem">
+<h1 id="headline" class="(font-size:var(--headline-size))" style="--headline-size: 2rem">
   Launch notes
 </h1>
 ```
@@ -34,7 +34,7 @@ Suppose a heading's size comes from an editor control. Keep its class complete a
 document.getElementById('headline').style.setProperty('--headline-size', '3rem')
 ```
 
-<Class2CSS>{'font-size:var(--headline-size)'}</Class2CSS>
+<Class2CSS>{'(font-size:var(--headline-size))'}</Class2CSS>
 
 After your static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. `--headline-size` is a native custom property, so this local value needs no `@theme` registration or Master CSS runtime.
 

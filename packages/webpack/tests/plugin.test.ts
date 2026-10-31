@@ -335,12 +335,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       compilation.hooks.succeedModule.call({
         resource: path.join(root, 'src/main.js'),
         originalSource: () => ({
-          source: () => 'document.body.className = "display:block"'
+          source: () => 'document.body.className = "(display:block)"'
         })
       })
       await compilation.hooks.finishModules.promise([])
 
-      expect([...plugin.validClasses]).toContain("display:block")
+      expect([...plugin.validClasses]).toContain("(display:block)")
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

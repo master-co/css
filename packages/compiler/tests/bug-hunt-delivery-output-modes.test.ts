@@ -30,7 +30,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
     try {
       await scanner.init()
       await collection.register(scanner, join(cwd, 'entry.css'), readFileSync(join(cwd, 'entry.css'), 'utf8'), { baseManifest, projectDir: cwd, delivery })
-      await scanner.scan(join(cwd, 'index.html'), "<div class=\"project nested composed from-master from-master-child display:block custom package-custom\"></div>")
+      await scanner.scan(join(cwd, 'index.html'), "<div class=\"project nested composed from-master from-master-child (display:block) custom package-custom\"></div>")
       const result = await collection.compose({ scanner, baseManifest, projectDir: cwd, delivery, includeNativeCSS, includeMasterBaseCSS, includeGeneratedCSS, preserveNativeCSS })
       const css = [result.css, ...(result.stylesheets || []).map(asset => asset.css)].join('\n')
       expect(css.includes('.project')).toBe(includeNativeCSS && preserveNativeCSS)
@@ -39,7 +39,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
       expect(css.includes('https://remote.test/a.css')).toBe(includeNativeCSS && preserveNativeCSS)
       expect(css.includes('.from-master {')).toBe(includeMasterBaseCSS && preserveNativeCSS)
       expect(css.includes('.from-master-child')).toBe(includeMasterBaseCSS && preserveNativeCSS)
-      expect(css.includes(".display\\:block{display:block}")).toBe(includeGeneratedCSS)
+      expect(css.includes(".\\(display\\:block\\){display:block}")).toBe(includeGeneratedCSS)
       expect(css.includes('.custom{color:purple}')).toBe(includeGeneratedCSS)
       expect(css.includes('.package-custom{color:orange}')).toBe(includeGeneratedCSS)
       // Even a suppressed project wrapper must retain links to selected base assets.

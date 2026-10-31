@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import init from './init'
 
-for (const reference of ['fg-brand', 'color:var(--color-brand)']) {
+for (const reference of ['fg-brand', '(color:var(--color-brand))']) {
   test(`BH-0003: native dependency remains through DOM removal and explicit rule deletion, reference=${reference}`, async ({ page }) => {
     await page.setContent('<style>:root{--color-brand:var(--color-mid);--color-mid:var(--color-base);--color-base:red}.probe{color:var(--color-brand,green)}</style><div class="probe">probe</div>')
     await init(page, '', {

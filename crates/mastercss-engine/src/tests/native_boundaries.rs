@@ -8,17 +8,17 @@ fn simple_query_diagnostics_and_selectors_are_shared_by_generation() {
         assert!(inspection.diagnostics[0].notes[0].contains("@mixin"));
         assert!(engine.generate_composition_rules(class).is_empty());
     }
-    for class in ["padding:1px.<br", "padding:1px.foo()"] {
+    for class in ["(padding:1px).<br", "(padding:1px).foo()"] {
         let inspection = engine.inspect(class).unwrap();
         assert!(inspection.rules.is_empty(), "{class}");
         assert_eq!(inspection.diagnostics[0].code, super::ErrorCode::ClassSyntaxError);
     }
-    assert!(!engine.inspect("padding:1px:future-pseudo(foo)").unwrap().rules.is_empty());
+    assert!(!engine.inspect("(padding:1px):future-pseudo(foo)").unwrap().rules.is_empty());
 }
 
 #[test]
 fn equivalent_conditions_sort_tokens_before_direct_values() {
-    let classes = ["p-md@media((width>=50rem))", "padding:8px@media((min-width:50rem))"];
+    let classes = ["p-md@media((width>=50rem))", "(padding:8px)@media((min-width:50rem))"];
     for ordered in [classes.to_vec(), classes.into_iter().rev().collect()] {
         let mut engine = EngineSession::create(MANIFEST).unwrap();
         engine.ensure_class_rules(&ordered).unwrap();
@@ -78,10 +78,10 @@ fn selectors_replace_only_nesting_tokens_through_mixin_composition() {
 fn token_streams_keep_native_dollars() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     for class in [
-        "--money:$100",
-        "--identifier:$name",
-        "content:'$100'",
-        "width:$size",
+        "(--money:$100)",
+        "(--identifier:$name)",
+        "(content:'$100')",
+        "(width:$size)",
     ] {
         let result = engine.inspect(class).unwrap();
         assert_eq!(result.rules.len(), 1, "{class}");

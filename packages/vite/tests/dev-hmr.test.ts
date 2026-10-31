@@ -49,7 +49,7 @@ describe('Vite dev HMR', () => {
       '<html>',
       '<head><title>Master CSS Vite runtime layer order</title></head>',
       '<body>',
-      "<main id=\"probe\" class=\"box display:block\"></main>",
+      "<main id=\"probe\" class=\"box (display:block)\"></main>",
       '<script type="module" src="/src/main.ts"></script>',
       '</body>',
       '</html>'

@@ -141,6 +141,8 @@ export interface MasterCSSLanguageColorPresentation {
   readonly version: 6
   readonly editable: boolean
   readonly replacementPrefix?: string
+  /** Text after the color, such as the `)` closing a `(property:` replacement prefix. */
+  readonly replacementSuffix?: string
   readonly colorToken: string
   readonly sourceFormat?: MasterCSSLanguageColorFormat
 }

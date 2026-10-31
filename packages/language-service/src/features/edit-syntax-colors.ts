@@ -36,7 +36,7 @@ export default function editSyntaxColors(
       tokens.add(targetColorToken)
       colorPresentations.push({
         label: targetColorToken,
-        textEdit: { range, newText: (rustPresentation.replacementPrefix || '') + targetColorToken }
+        textEdit: { range, newText: (rustPresentation.replacementPrefix || '') + targetColorToken + (rustPresentation.replacementSuffix || '') }
       })
     } catch { }
   }

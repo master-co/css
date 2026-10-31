@@ -24,13 +24,13 @@ if (!document.startViewTransition) {
 Start with this markup, then run the script above after the elements exist. The heading changes from Overview to Product detail. The classes name snapshots that can transition independently:
 
 ```html
-<section class="view-transition-name:panel">
-  <h3 data-current-view class="view-transition-name:title">Overview</h3>
+<section class="(view-transition-name:panel)">
+  <h3 data-current-view class="(view-transition-name:title)">Overview</h3>
 </section>
 ```
 
 <Class2CSS>
-  {['view-transition-name:panel', 'view-transition-name:title']}
+  {['(view-transition-name:panel)', '(view-transition-name:title)']}
 </Class2CSS>
 
 Master CSS keeps the CSS side concise by expressing `view-transition-name`, `view-transition-class`, and native view-transition pseudo-elements directly in class names:
@@ -61,11 +61,11 @@ In the list view, every article gets unique names for its shared elements. Use a
   <article>
     <img
       alt="A mountain ridge under soft light"
-      class="view-transition-class:article view-transition-name:article-aurora-image"
+      class="(view-transition-class:article) (view-transition-name:article-aurora-image)"
       src="/images/article-aurora.jpg"
     />
-    <time class="view-transition-class:article view-transition-name:article-aurora-date">May 12, 2026</time>
-    <h3 class="view-transition-class:article view-transition-name:article-aurora-title">
+    <time class="(view-transition-class:article) (view-transition-name:article-aurora-date)">May 12, 2026</time>
+    <h3 class="(view-transition-class:article) (view-transition-name:article-aurora-title)">
       Designing transitions that preserve context
     </h3>
     <p>Keep the selected image and heading connected to their destination.</p>
@@ -81,11 +81,11 @@ Keep the detail markup in a template. Its matching image, date and heading use t
   <article>
     <img
       alt="A mountain ridge under soft light"
-      class="view-transition-class:article view-transition-name:article-aurora-image"
+      class="(view-transition-class:article) (view-transition-name:article-aurora-image)"
       src="/images/article-aurora.jpg"
     />
-    <time class="view-transition-class:article view-transition-name:article-aurora-date">May 12, 2026</time>
-    <h1 tabindex="-1" class="view-transition-class:article view-transition-name:article-aurora-title">
+    <time class="(view-transition-class:article) (view-transition-name:article-aurora-date)">May 12, 2026</time>
+    <h1 tabindex="-1" class="(view-transition-class:article) (view-transition-name:article-aurora-title)">
       Designing transitions that preserve context
     </h1>
     <p>The image, date and heading keep their snapshot names.</p>
@@ -130,16 +130,16 @@ root.addEventListener('click', (event) => {
 Apply the shared timing to the document root:
 
 ```html
-<html class="animation-duration:.52s::view-transition-group(.article)">
+<html class="(animation-duration:.52s)::view-transition-group(.article)">
 ```
 
 <Class2CSS>
   {[
-      'view-transition-name:article-aurora-image',
-      'view-transition-name:article-aurora-date',
-      'view-transition-name:article-aurora-title',
-      'view-transition-class:article',
-      'animation-duration:.52s::view-transition-group(.article)'
+      '(view-transition-name:article-aurora-image)',
+      '(view-transition-name:article-aurora-date)',
+      '(view-transition-name:article-aurora-title)',
+      '(view-transition-class:article)',
+      '(animation-duration:.52s)::view-transition-group(.article)'
     ]}
 </Class2CSS>
 
@@ -151,8 +151,8 @@ Apply the shared timing to the document root:
 By default, a view transition animates the `root` snapshot. Use `view-transition-name`, the [`view-transition-name`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-name) property, when one element needs to move, resize, or fade separately from the rest of the page.
 
 ```html
-<!-- @MARK view-transition-name:hero -->
-<article class="view-transition-name:hero">
+<!-- @MARK (view-transition-name:hero) -->
+<article class="(view-transition-name:hero)">
   ...
 </article>
 ```
@@ -160,17 +160,17 @@ By default, a view transition animates the `root` snapshot. Use `view-transition
 The same `view-transition-name` must be unique in the rendered document. If two rendered elements have the same name at the same time, the transition is skipped. For lists that need automatic per-element names in same-document transitions, native CSS also provides `match-element`.
 
 ```html
-<!-- @MARK view-transition-name:match-element -->
-<li class="view-transition-name:match-element">...</li>
+<!-- @MARK (view-transition-name:match-element) -->
+<li class="(view-transition-name:match-element)">...</li>
 ```
 
 `match-element` follows the identity of the same DOM element. Replacing it with a new element does not preserve that match; use an explicit name when separate list and detail elements should share a transition.
 
-Use `view-transition-name:none` to keep an element out of its own separate snapshot.
+Use `(view-transition-name:none)` to keep an element out of its own separate snapshot.
 
 ```html
-<!-- @MARK view-transition-name:none -->
-<video class="view-transition-name:none">...</video>
+<!-- @MARK (view-transition-name:none) -->
+<video class="(view-transition-name:none)">...</video>
 ```
 
 ---
@@ -182,8 +182,8 @@ In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-  animation-name:fade::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)
-  animation-name:fade::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)
+  (animation-name:fade)::view-transition-new(hero) (animation-fill-mode:both)::view-transition-new(hero)
+  (animation-name:fade)::view-transition-old(hero) (animation-direction:reverse)::view-transition-old(hero) (animation-fill-mode:both)::view-transition-old(hero)
   animation-slow::view-transition-group(hero)
 ">
 ```
@@ -191,8 +191,8 @@ In Master CSS, write the pseudo-element after the declaration:
 <Class2CSS>
   {[
       'animation-slow::view-transition-group(hero)',
-      'animation-name:fade::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)',
-      'animation-name:fade::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)'
+      '(animation-name:fade)::view-transition-old(hero) (animation-direction:reverse)::view-transition-old(hero) (animation-fill-mode:both)::view-transition-old(hero)',
+      '(animation-name:fade)::view-transition-new(hero) (animation-fill-mode:both)::view-transition-new(hero)'
     ]}
 </Class2CSS>
 
@@ -203,11 +203,11 @@ The group supplies one duration for its movement and both image animations. The 
 You can also group related named snapshots with `view-transition-class` and then target the class selector in the pseudo-element argument:
 
 ```html
-<article class="view-transition-class:shared-card view-transition-name:product-card">
+<article class="(view-transition-class:shared-card) (view-transition-name:product-card)">
   ...
 </article>
 
-<html class="animation-duration:.36s::view-transition-group(.shared-card)">
+<html class="(animation-duration:.36s)::view-transition-group(.shared-card)">
 ```
 
 ---
@@ -227,7 +227,7 @@ Follow a same-origin link to test it; entering a URL in the address bar does not
 
 ```html
 <!-- page A and page B both render one matching hero -->
-<header class="view-transition-name:product-hero">
+<header class="(view-transition-name:product-hero)">
   ...
 </header>
 ```
@@ -255,7 +255,7 @@ if (!document.startViewTransition) {
 After the core transition works, check the motion preference before starting it. You can scope custom animation classes with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`:
 
 ```html
-<html class="animation-duration:.42s::view-transition-group(root)@motion-safe">
+<html class="(animation-duration:.42s)::view-transition-group(root)@motion-safe">
 ```
 
 This condition controls only your duration override. It does not disable the browser's default transition animation. For same-document updates, skip the transition in JavaScript when reduced motion is requested:

@@ -31,7 +31,7 @@ export const cliEditorial: Record<string, CLIEditorial> = {
       },
       {
         "description": "Inspect a source buffer on stdin without modifying its virtual file:",
-        "command": "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md display:flex\">\n  Save\n</button>\nHTML"
+        "command": "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md flex\">\n  Save\n</button>\nHTML"
       }
     ]
   },

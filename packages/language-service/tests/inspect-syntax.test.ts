@@ -25,15 +25,15 @@ test('animation token hover shows the complete shorthand', () => {
   })
 })
 
-test.concurrent("text-align:center", async () => {
-  const target = "text-align:center"
+test.concurrent("(text-align:center)", async () => {
+  const target = "(text-align:center)"
   const hover = inspect(target)
   expect(hover?.contents).toEqual({
     'kind': 'markdown',
     'value': dedent`
       \`\`\`css
       @layer utilities {
-        .text-align\\:center {
+        .\\(text-align\\:center\\) {
           text-align: center
         }
       }
@@ -42,15 +42,15 @@ test.concurrent("text-align:center", async () => {
   })
 })
 
-test.concurrent("display:none", async () => {
-  const target = "display:none"
+test.concurrent("(display:none)", async () => {
+  const target = "(display:none)"
   const hover = inspect(target)
   expect(hover?.contents).toEqual({
     'kind': 'markdown',
     'value': dedent`
       \`\`\`css
       @layer utilities {
-        .display\\:none {
+        .\\(display\\:none\\) {
           display: none
         }
       }
@@ -61,11 +61,11 @@ test.concurrent("display:none", async () => {
 
 test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover syntax', () => {
   for (const property of ['-webkit-text-size-adjust', '-moz-text-size-adjust', '-ms-text-size-adjust']) {
-    const hover = inspect(property + ':none')
+    const hover = inspect(`(${property}:none)`)
     const contents = hover?.contents as { value?: string } | undefined
 
     expect(contents?.value).toContain(`${property}: none`)
-    expect(contents?.value).toContain(`.${property}\\:none`)
+    expect(contents?.value).toContain(`.\\(${property}\\:none\\)`)
   }
 })
 

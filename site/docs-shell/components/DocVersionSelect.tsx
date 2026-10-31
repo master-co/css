@@ -12,7 +12,7 @@ export default function DocVersionSelect({ className, ...props }: Omit<SelectHTM
   }, [])
   return (
     <select {...props} name="version" defaultValue={currentURL}
-      className={clsx('position:absolute inset:0 height:100% width:100% opacity:0 cursor:pointer doc-preference-select', className)}
+      className={clsx('absolute (inset:0) (height:100%) (width:100%) (opacity:0) (cursor:pointer) doc-preference-select', className)}
       onChange={navigate}>
       <option value={currentURL}>v{import.meta.env.PUBLIC_VERSION}</option>
       {app.versions.map(({ name, href }) => <option key={href} value={href}>{name}</option>)}

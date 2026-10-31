@@ -37,22 +37,22 @@ export default defineConfig([
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-bg-white font-md display:flex px-md position:relative width:100% shadow-lg r-md z-index:10 gap:0.5rem <!-- [!code --] -->
-position:relative z-index:10 display:flex gap:0.5rem width:100% px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
+bg-white font-md flex px-md relative (width:100%) shadow-lg r-md (z-index:10) (gap:0.5rem) <!-- [!code --] -->
+relative (z-index:10) flex (gap:0.5rem) (width:100%) px-md r-md font-md bg-white shadow-lg <!-- [!code ++] -->
 ```
 
 Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
 
 ```mcss
-bg-black:hover display:flex p-sm width:100% display:block@dark text-align:center <!-- [!code --] -->
-display:flex width:100% p-sm text-align:center bg-black:hover display:block@dark <!-- [!code ++] -->
+bg-black:hover flex p-sm (width:100%) block@dark (text-align:center) <!-- [!code --] -->
+flex (width:100%) p-sm (text-align:center) bg-black:hover block@dark <!-- [!code ++] -->
 ```
 
 Sorting also removes duplicate class values in the same class string.
 
 ```mcss
-display:inline-flex px-md display:inline-flex <!-- [!code --] -->
-display:inline-flex px-md <!-- [!code ++] -->
+inline-flex px-md inline-flex <!-- [!code --] -->
+inline-flex px-md <!-- [!code ++] -->
 ```
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
@@ -61,14 +61,14 @@ Ordering is a formatting policy. It does not change generated CSS, but it makes 
 `@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
 
 ```html
-<button class="font-size:16">Save</button>
+<button class="(font-size:16)">Save</button>
 ```
 
-(x) `font-size:16` has a unitless nonzero length. Use a native length such as `font-size:16px` or a configured size token such as `font-md`.
+(x) `(font-size:16)` has a unitless nonzero length. Use a native length such as `(font-size:16px)` or a configured size token such as `font-md`.
 
 By default, unmatched classes are ignored so teams can mix Master CSS with native global classes.
 
-An unknown CSS value is a different case: the class can match the language while the validator cannot fully check its value. For example, the current validator reports `display:banana` as `unknown`, and this rule does not flag it. A clean lint result therefore does not establish browser support or the intended appearance.
+An unknown CSS value is a different case: the class can match the language while the validator cannot fully check its value. For example, the current validator reports `(display:banana)` as `unknown`, and this rule does not flag it. A clean lint result therefore does not establish browser support or the intended appearance.
 
 Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest. It rejects unmatched class names; it does not change unknown CSS-value diagnostics:
 
@@ -111,7 +111,7 @@ Define project classes in the CSS entry when they are intentional:
 These classes remain unchanged:
 
 ```mcss
-margin:16px display:block@dark@sm
+(margin:16px) block@dark@sm
 ```
 
 The rule does not replace a literal with a token that currently has the same value, convert units, or reorder the authored conditions. Choose semantic tokens deliberately, and use the raw-value policy below when the team requires them.
@@ -120,24 +120,24 @@ The rule does not replace a literal with a token that currently has the same val
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
 ```mcss
-margin:0.625rem margin:1.25rem <!-- [!code --] -->
-margin:1.25rem <!-- [!code ++] -->
+(margin:0.625rem) (margin:1.25rem) <!-- [!code --] -->
+(margin:1.25rem) <!-- [!code ++] -->
 ```
 
-(!) `"margin:0.625rem" is overridden by "margin:1.25rem".`
+(!) `"(margin:0.625rem)" is overridden by "(margin:1.25rem)".`
 
 Variant scope matters. Classes with different selectors, modes, or conditions do not conflict with each other.
 
 ```mcss
-margin:2.5rem@sm margin:3.125rem@md
+(margin:2.5rem)@sm (margin:3.125rem)@md
 ```
 
-A fully overridden class can be removed automatically. The winner follows generated CSS ordering, not the order of class names in the HTML. Reversing the two margin classes above still leaves `margin:1.25rem` as the winner.
+A fully overridden class can be removed automatically. The winner follows generated CSS ordering, not the order of class names in the HTML. Reversing the two margin classes above still leaves `(margin:1.25rem)` as the winner.
 
 Partial declaration overlaps need review. For example, the top border override below is reported, but the rule does not split the shorthand or remove the other three borders:
 
 ```mcss
-border-style:solid border-top-style:dashed
+(border-style:solid) (border-top-style:dashed)
 ```
 
 Use the generated CSS preview to decide whether the override is intentional before changing it.
@@ -215,10 +215,10 @@ export default defineConfig([
 ```
 
 ```mcss
-font-size:15px margin:17px color:#123456
+(font-size:15px) (margin:17px) (color:#123456)
 ```
 
-(!) Unexpected raw value `"15px"` in `"font-size:15px"`. Use a token or allow it explicitly.
+(!) Unexpected raw value `"15px"` in `"(font-size:15px)"`. Use a token or allow it explicitly.
 
 To regulate selected native properties, set `requireProperties: ['color', 'background-color']`. Omit it or use an empty array to check every token-backed property. `allowProperties` and `allowedPatterns` remain explicit exceptions; `allowRawValues` disables this policy. Native custom-property references remain valid.
 

@@ -5,20 +5,20 @@ import Class2CSS from '~/site/components/Class2CSS'
 <div style="--color: red; --size: 5rem">
 ```
 
-(o) Use `--<name>:<value>` when a variable needs the same selector and query power as any other Master CSS declaration.
+(o) Use `(--<name>:<value>)` when a variable needs the same selector and query power as any other Master CSS declaration.
 ```html
-<!-- @MARK --color:red:hover --><!-- @MARK --size:5rem@sm -->
-<div class="--color:red:hover --size:5rem@sm">
+<!-- @MARK (--color:red):hover --><!-- @MARK (--size:5rem)@sm -->
+<div class="(--color:red):hover (--size:5rem)@sm">
 ```
 Generated CSS:
 <Class2CSS>
-  {['--color:red:hover', '--size:5rem@sm']}
+  {['(--color:red):hover', '(--size:5rem)@sm']}
 </Class2CSS>
 
 Use the variable from another declaration with native CSS `var()`.
 ```html
-<!-- @MARK --button-bg:var(--color-red-60) --><!-- @MARK background-color:var(--button-bg) -->
-<button class="background-color:var(--button-bg) --button-bg:var(--color-red-60)">
+<!-- @MARK (--button-bg:var(--color-red-60)) --><!-- @MARK (background-color:var(--button-bg)) -->
+<button class="(background-color:var(--button-bg)) (--button-bg:var(--color-red-60))">
   Save
 </button>
 ```

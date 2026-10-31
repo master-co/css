@@ -147,7 +147,7 @@ Use Vite to build the browser runtime entry for a Blazor Web App using `blazor.w
 ```html name=Components/Pages/Home.razor
 @page "/"
 
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
@@ -173,7 +173,7 @@ Build Vite assets before `dotnet build` or `dotnet publish`, so .NET includes th
 After startup, add a new class in the browser console; the heading should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 Runtime styling begins after JavaScript loads. Keep the document visible when scripts are unavailable; see [Flash of Unstyled Content](/guide/flash-of-unstyled-content) before adding page hiding.

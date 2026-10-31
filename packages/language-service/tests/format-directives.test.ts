@@ -20,20 +20,20 @@ function format(ext: Parameters<typeof createDoc>[0], source: string, settings?:
 }
 
 test.concurrent('formats CSS @safelist important markers', () => {
-  expect(format('css', ".btn { @safelist \"background-color:transparent ! fg-red !@sm\"; }"))
-    .toBe(".btn { @safelist \"background-color:transparent! fg-red!@sm\"; }")
+  expect(format('css', ".btn { @safelist \"(background-color:transparent) ! fg-red !@sm\"; }"))
+    .toBe(".btn { @safelist \"(background-color:transparent)! fg-red!@sm\"; }")
 })
 
 test.concurrent('formats SCSS and LESS directive class lists', () => {
-  expect(format('scss', ".btn { @safelist \"background-color:transparent !\"; }")).toBe(".btn { @safelist \"background-color:transparent!\"; }")
-  expect(format('less', ".btn { @safelist \"background-color:transparent !\"; }")).toBe(".btn { @safelist \"background-color:transparent!\"; }")
+  expect(format('scss', ".btn { @safelist \"(background-color:transparent) !\"; }")).toBe(".btn { @safelist \"(background-color:transparent)!\"; }")
+  expect(format('less', ".btn { @safelist \"(background-color:transparent) !\"; }")).toBe(".btn { @safelist \"(background-color:transparent)!\"; }")
 })
 
 test.concurrent('formats CSS-family SFC style blocks only', () => {
   const source = [
     '<template><div class="bg-red !"></div></template>',
     '<style>',
-    ".btn { @safelist \"background-color:transparent !\"; }",
+    ".btn { @safelist \"(background-color:transparent) !\"; }",
     '</style>',
     '<style lang="postcss">',
     ".postcss { @safelist \"bg-red !\"; }",
@@ -45,7 +45,7 @@ test.concurrent('formats CSS-family SFC style blocks only', () => {
   expect(format('vue', source)).toBe([
     '<template><div class="bg-red !"></div></template>',
     '<style>',
-    ".btn { @safelist \"background-color:transparent!\"; }",
+    ".btn { @safelist \"(background-color:transparent)!\"; }",
     '</style>',
     '<style lang="postcss">',
     ".postcss { @safelist \"bg-red !\"; }",
@@ -57,20 +57,20 @@ test.concurrent('formats CSS-family SFC style blocks only', () => {
 })
 
 test.concurrent('locates SFC style content after matching attribute text', () => {
-  const directive = ".btn { @safelist \"background-color:transparent !\"; }"
+  const directive = ".btn { @safelist \"(background-color:transparent) !\"; }"
   const source = `<style data-source='${directive}'>${directive}</style>`
   expect(format('vue', source))
-    .toBe(`<style data-source='${directive}'>.btn { @safelist "background-color:transparent!"; }</style>`)
+    .toBe(`<style data-source='${directive}'>.btn { @safelist "(background-color:transparent)!"; }</style>`)
 })
 
 test.concurrent('formats safelist quoted class lists', () => {
-  expect(format('css', '@safelist "background-color:transparent !  fg-red !@sm";'))
-    .toBe('@safelist "background-color:transparent! fg-red!@sm";')
+  expect(format('css', '@safelist "(background-color:transparent) !  fg-red !@sm";'))
+    .toBe('@safelist "(background-color:transparent)! fg-red!@sm";')
 })
 
 test.concurrent('returns no edits when directive formatting is disabled', () => {
-  expect(format('css', ".btn { @safelist \"background-color:transparent !\"; }", { formatDirectives: false }))
-    .toBe(".btn { @safelist \"background-color:transparent !\"; }")
+  expect(format('css', ".btn { @safelist \"(background-color:transparent) !\"; }", { formatDirectives: false }))
+    .toBe(".btn { @safelist \"(background-color:transparent) !\"; }")
 })
 
 test.concurrent('respects range formatting', () => {

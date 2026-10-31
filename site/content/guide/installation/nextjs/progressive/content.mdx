@@ -54,7 +54,7 @@ Progressive rendering adds pre-rendered CSS and a hydration manifest to static o
 ```tsx name=app/page.tsx
 export default function Home() {
   return (
-    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
       Hello World
     </h1>
   )
@@ -101,7 +101,7 @@ If a Turbopack production build reports that a generated `.master/stylesheets/..
 After the page is ready, add a class that was absent from its initial DOM:
 
 ```js
-document.querySelector('h1').classList.add('text-decoration-line:underline')
+document.querySelector('h1').classList.add('underline')
 ```
 
 The heading should gain an underline without a rebuild. Check the browser console and runtime program request if the update has no effect.

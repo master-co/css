@@ -61,7 +61,7 @@ export type MasterCSSMediaQueryExpression =
 export interface MasterCSSManifest {
   /** MasterCSSManifest IR schema/codec version; engines reject any other version. */
   version: 6
-  languageVersion: 16
+  languageVersion: 17
   keyframes?: MasterCSSKeyframeDefinition[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]

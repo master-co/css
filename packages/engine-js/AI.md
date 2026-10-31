@@ -6,19 +6,19 @@ The browser engine: it executes compiled runtime programs (Rust still compiles m
 
 `@master/css-binding`'s browser entry (`engine-binding-browser.ts`) creates every browser engine session from it, reporting binding `'js'`, so bundler applications through `@master/css` and the runtime's CDN bundle run this engine. The package is repository-private: the shared tsdown config bundles it into its published consumers, like `@master/css-internal`, and published artifacts must not import it.
 
-`decodeProgram` (`src/program.ts`) decodes the binary program field for field as `crates/mastercss-engine/src/program.rs` does, returns `{ ok: false, error }` for malformed or unsupported input instead of throwing, and derives what Rust's `finish_program` does: built-in native utilities from `src/native-properties.ts` (generated from the Rust registry by `scripts/generate-native-properties.mjs`), default names and orders, static-first match order, custom media branches, and lookup indexes (static, key, token and function utilities, token prefixes bucketed by first character). Variables carry no order field; `variableOrder` is declaration order.
+`decodeProgram` (`src/program.ts`) decodes the binary program field for field as `crates/mastercss-engine/src/program.rs` does, returns `{ ok: false, error }` for malformed or unsupported input instead of throwing, and derives what Rust's `finish_program` does: default names and orders, static-first match order, custom media branches, and lookup indexes (static, token and function utilities, token prefixes bucketed by first character). Native declarations are `(property:value)` class heads, not utilities; `src/native-properties.ts` (generated from the Rust registry by `scripts/generate-native-properties.mjs`) only identifies direct-value mixins, as Rust's `direct_value_mixin` does. Variables carry no order field; `variableOrder` is declaration order.
 
 `createEngineSession` executes everything browsers ask of the Rust session: ensure, delete, execution state, snapshot, keyframe definitions, emitted globals and refresh:
 
 - `src/css-syntax.ts`: the CSS tokenizer and statement walker of `mastercss-lexer`.
-- `src/class-syntax.ts`: native content, value, state and functional-class boundaries.
+- `src/class-syntax.ts`: `(property:value)` declaration heads (CSS strings, comments, escapes, URL tokens and `!important`), native content, value, state and functional-class boundaries.
 - `src/value.ts`: math normalization, `var()` references, inline theme tokens, `!important`, decimal opacity.
-- `src/utility.ts`: static, key and token matching; token variables resolve on demand (an alias, then `namespace-key` per `~namespace`; invalid keys have none).
+- `src/utility.ts`: static and token matching; token variables resolve on demand (an alias, then `namespace-key` per `~namespace`; invalid keys and keys with `_` have none).
 - `src/selector.ts`: selector templates (descendant `_`, nesting `&`), their structure check and state priority.
 - `src/condition.ts`: native queries, layers, `@starting-style`, inline custom media and the range features that order conditional rules.
 - `src/state.ts`: the state branches of a class, one per custom media path.
 - `src/mixin.ts`: the static mixin subset: utility recipes, mixin calls with `@contents`, parameters, `ident()` and the argument checks.
-- `src/generate.ts`: class rules from each utility's emitted rules (several for recipes), the native declaration fallback, and the composition rules `@apply` starts from.
+- `src/generate.ts`: class rules from each utility's emitted rules (several for recipes) or a native declaration head, and the composition rules `@apply` starts from.
 - `src/apply.ts`: `@apply(--mixin)` classes, expanded into one atomic rule, and the class diagnostics that make one expand to nothing.
 - `src/order.ts`: rule order in a layer. Rules sort by their own condition features; the reported ones write `-0` as `0`, as the Rust JSON does.
 - `src/animation.ts`: keyframe references of declarations.

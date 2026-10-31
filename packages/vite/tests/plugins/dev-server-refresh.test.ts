@@ -44,7 +44,7 @@ test.each(['static', 'progressive'] as const)('%s class discovery updates CSS wi
   try {
     writeFileSync(join(root, 'style.css'), '@import "@master/css";')
     writeFileSync(join(root, 'server.js'), 'import "./style.css";export {default as globals} from "virtual:master-css-emitted-globals"')
-    for (const [index, value] of ['flex', 'grid', 'block'].entries()) writeFileSync(join(root, `page-${index}.js`), `export const html='<p class="display:${value}"></p>'`)
+    for (const [index, value] of ['flex', 'grid', 'block'].entries()) writeFileSync(join(root, `page-${index}.js`), `export const html='<p class="(display:${value})"></p>'`)
     server = await createServer({ root, configFile: false, logLevel: 'silent', optimizeDeps: { noDiscovery: true }, plugins: masterCSS({ mode, runtime: { avoidFOUC: false } }), server: { host: '127.0.0.1', port: 0 } })
     await server.listen()
     const ssr = server.environments.ssr

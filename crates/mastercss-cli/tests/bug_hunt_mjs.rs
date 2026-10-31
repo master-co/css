@@ -22,7 +22,7 @@ fn bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path() {
     fs::create_dir(&root.0).unwrap();
     fs::write(
         root.0.join("entry.mjs"),
-        "export const classes = 'display:block'",
+        "export const classes = '(display:block)'",
     )
     .unwrap();
     fs::write(root.0.join("ignored.json"), r#"{"class":"hidden"}"#).unwrap();
@@ -41,7 +41,7 @@ fn bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path() {
         );
         let css = String::from_utf8(result.stdout).unwrap();
         assert!(
-            css.contains(".display\\:block{display:block}"),
+            css.contains(".\\(display\\:block\\){display:block}"),
             "{paths:?}: {css}"
         );
         assert!(!css.contains(".hidden{display:none}"), "{paths:?}: {css}");

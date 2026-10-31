@@ -55,14 +55,14 @@ const semanticParityCorpus = JSON.parse(readFileSync(
   new URL('../../../../parity/v2-language-corpus.json', import.meta.url),
   'utf8'
 )) as SemanticParityCorpus
-const selectorVariantClassName = 'display:flex_:is(h4,.app-nav)@layer(defaults)'
-const selectorVariantSelector = '.display\\:flex_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)'
+const selectorVariantClassName = '(display:flex)_:is(h4,.app-nav)@layer(defaults)'
+const selectorVariantSelector = '.\\(display\\:flex\\)_\\:is\\(h4\\,\\.app-nav\\)\\@layer\\(defaults\\) :is(h4,.app-nav)'
 const selectorVariantRuleTexts = [
   `${selectorVariantSelector}{display:flex}`
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const scopedThemeManifest = { theme: [{ type: 'rule' as const, prelude: ':root,:host', children: [{ type: 'declaration' as const, name: 'color-white', value: 'oklch(100% 0 none)' }, { type: 'declaration' as const, name: 'color-gray-90', value: 'oklch(23.5% 0 none)' }] }, { type: 'rule' as const, prelude: '.light', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-white)' }] }, { type: 'rule' as const, prelude: '.dark', children: [{ type: 'declaration' as const, name: 'color-surface-raised', value: 'var(--color-gray-90)' }] }],
-  version: 6 as const, languageVersion: 16 as const,
+  version: 6 as const, languageVersion: 17 as const,
   utilities: typedDefaultManifest.utilities,
   variables: {
     color: [
@@ -99,7 +99,7 @@ const scopedThemeCSS = [
 
 const manifest: MasterCSSManifest = {
   "version": 6 as const,
-  "languageVersion": 16 as const,
+  "languageVersion": 17 as const,
   customMedia: { "--sm": { type: "feature", value: "(width>=52.125rem)" } },
   "mixins": [
   {
@@ -263,8 +263,8 @@ describe('Rust engine session', () => {
       const engine = await createEngine({ manifest, binding: 'auto' })
       try {
         expect(engine.binding).toBe('wasm')
-        engine.ensureClassRules(['display:block'])
-        expect(engine.snapshot().text).toBe('@layer utilities{.display\\:block{display:block}}')
+        engine.ensureClassRules(['(display:block)'])
+        expect(engine.snapshot().text).toBe('@layer utilities{.\\(display\\:block\\){display:block}}')
       } finally {
         engine.dispose()
       }
@@ -289,19 +289,19 @@ describe('Rust engine session', () => {
 
   it('keeps transitions synchronous after session creation', () => {
     const engine = createEngineSync({ manifest })
-    expect(engine.ensureClassRules(['display:block', "width:10px"]).mutations).toHaveLength(2)
-    expect(engine.snapshot().text).toBe("@layer utilities{.display\\:block{display:block}.width\\:10px{width:10px}}")
-    expect(engine.ensureClassRules(['display:block']).mutations).toEqual([])
-    expect(engine.deleteClassRules(['display:block']).mutations).toHaveLength(1)
-    expect(engine.snapshot().text).toBe("@layer utilities{.width\\:10px{width:10px}}")
+    expect(engine.ensureClassRules(['(display:block)', "(width:10px)"]).mutations).toHaveLength(2)
+    expect(engine.snapshot().text).toBe("@layer utilities{.\\(display\\:block\\){display:block}.\\(width\\:10px\\){width:10px}}")
+    expect(engine.ensureClassRules(['(display:block)']).mutations).toEqual([])
+    expect(engine.deleteClassRules(['(display:block)']).mutations).toHaveLength(1)
+    expect(engine.snapshot().text).toBe("@layer utilities{.\\(width\\:10px\\){width:10px}}")
     engine.dispose()
   })
 
   it('inspects without mutating state and rejects use after disposal', () => {
     const engine = createEngineSync({ manifest })
-    expect(engine.inspect('display:block:hover')).toMatchObject({
+    expect(engine.inspect('(display:block):hover')).toMatchObject({
       version: 2 as const,
-      className: 'display:block:hover',
+      className: '(display:block):hover',
       matchStatus: 'matched',
       cssValueStatus: 'not-checked',
       browserSupport: 'not-checked'
@@ -320,7 +320,7 @@ describe('Rust engine session', () => {
     }))
 
     const engine = createEngineSync({ manifest })
-    engine.ensureClassRules(['display:block'])
+    engine.ensureClassRules(['(display:block)'])
     const before = engine.snapshot().text
     expect(() => engine.refresh({ version: 3 as const } as unknown as MasterCSSManifest))
       .toThrow(MasterCSSError)
@@ -331,15 +331,15 @@ describe('Rust engine session', () => {
   it('serializes manifests when refreshing a Wasm engine', async () => {
     const engine = await createEngine({ manifest, binding: 'wasm' })
     try {
-      engine.ensureClassRules(['display:block'])
+      engine.ensureClassRules(['(display:block)'])
       expect(engine.refresh(manifest)).toMatchObject({
         version: 4 as const,
         mutations: [
-          { op: 'delete', key: 'display:block' },
-          { op: 'insert', key: 'display:block' }
+          { op: 'delete', key: '(display:block)' },
+          { op: 'insert', key: '(display:block)' }
         ]
       })
-      expect(engine.snapshot().text).toBe('@layer utilities{.display\\:block{display:block}}')
+      expect(engine.snapshot().text).toBe('@layer utilities{.\\(display\\:block\\){display:block}}')
     } finally {
       engine.dispose()
     }
@@ -348,7 +348,7 @@ describe('Rust engine session', () => {
   it('registers emitted globals through native and Wasm engines', async () => {
     const native = createEngineSync({ manifest: typedDefaultManifest })
     const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
-    const classNames = ['fg-red-60', 'animation:fade|1s']
+    const classNames = ['fg-red-60', '(animation:fade|1s)']
 
     try {
       native.ensureClassRules(classNames)
@@ -363,7 +363,7 @@ describe('Rust engine session', () => {
         .toEqual(native.registerEmittedGlobals(emittedGlobals))
       expect(wasm.snapshot()).toEqual(native.snapshot())
       expect(native.snapshot().text).toContain('.fg-red-60')
-      expect(native.snapshot().text).toContain('.animation\\:fade\\|1s')
+      expect(native.snapshot().text).toContain('.\\(animation\\:fade\\|1s\\)')
       expect(native.snapshot().text).not.toContain('--color-red-60:')
       expect(native.snapshot().text).not.toContain('@keyframes fade{')
     } finally {
@@ -377,19 +377,19 @@ describe('Rust engine session', () => {
   it('renders representative default-manifest classes without a TypeScript oracle', () => {
     const engine = createEngineSync({ manifest: typedDefaultManifest })
     const transition = engine.ensureClassRules([
-      'display:block',
+      '(display:block)',
       'fg-red-60',
-      "width:calc(100%-2rem)",
+      "(width:calc(100%-2rem))",
       'bg-blue-20:hover@sm',
-      "fg-black!", "border-bottom:2px|solid"
+      "fg-black!", "(border-bottom:2px|solid)"
     ])
     expect(transition.mutations.length).toBeGreaterThanOrEqual(5)
     expect(engine.snapshot().rules.map((rule) => rule.className)).toEqual(expect.arrayContaining([
-      'display:block',
+      '(display:block)',
       'fg-red-60',
-      "width:calc(100%-2rem)",
+      "(width:calc(100%-2rem))",
       'bg-blue-20:hover@sm',
-      "fg-black!", "border-bottom:2px|solid"
+      "fg-black!", "(border-bottom:2px|solid)"
     ]))
     engine.dispose()
   })

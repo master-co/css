@@ -31,12 +31,12 @@ function format(source: string, range?: { start: number, end: number }) {
 }
 
 test('formats safelist class lists and repairs detached important suffixes', () => {
-  expect(format('@safelist "background-color:transparent !   fg-red !@sm";'))
-    .toBe('@safelist "background-color:transparent! fg-red!@sm";')
+  expect(format('@safelist "(background-color:transparent) !   fg-red !@sm";'))
+    .toBe('@safelist "(background-color:transparent)! fg-red!@sm";')
 })
 
 test('preserves safelist quote style', () => {
-  expect(format("@safelist  'display:block  bg-blue !' ;")).toBe("@safelist 'display:block bg-blue!';")
+  expect(format("@safelist  '(display:block)  bg-blue !' ;")).toBe("@safelist '(display:block) bg-blue!';")
 })
 
 test('normalizes directive spacing without changing block contents', () => {

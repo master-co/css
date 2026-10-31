@@ -3,7 +3,7 @@ import { compileCSSManifest } from '../src/node-compiler'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import { createTestCSS } from './helpers/rust-engine'
 
-const baseManifest = { version: 6 as const, languageVersion: 16 as const, mixins: [] }
+const baseManifest = { version: 6 as const, languageVersion: 17 as const, mixins: [] }
 const compile = (source: string) => compileCSSManifest(source, { baseManifest })
 
 describe('directive language v13 authoring contracts', () => {
@@ -18,7 +18,7 @@ describe('directive language v13 authoring contracts', () => {
       @mixin --align-right { text-align: right; } @utility align-right { text-align: right; }
     `)
     expect(manifest.version).toBe(6)
-    expect(manifest.languageVersion).toBe(16)
+    expect(manifest.languageVersion).toBe(17)
     const css = createTestCSS(manifest)
     expect(css.createRule('card')?.text).toContain('.card:hover{color:blue}')
     expect(css.createRule('pair(2px)')?.text).toContain('width:2px;height:2px')
@@ -62,7 +62,7 @@ describe('directive language v13 authoring contracts', () => {
     expect(text).toContain('(width >= 40rem)')
     expect(text).toContain('(orientation: landscape)')
     expect(text).toContain(':focus-visible')
-    expect(css.createRule('padding:1px@screen-card')?.text).toContain('@media screen')
+    expect(css.createRule('(padding:1px)@screen-card')?.text).toContain('@media screen')
     css.dispose()
   })
 
@@ -71,7 +71,7 @@ describe('directive language v13 authoring contracts', () => {
     expect(flattenMasterCSSManifestVariables(manifest.variables)).toHaveLength(1)
     expect(manifest.customMedia).toBeUndefined()
     const css = createTestCSS(manifest)
-    expect(css.createRule('padding:1px@card')).toBeUndefined()
+    expect(css.createRule('(padding:1px)@card')).toBeUndefined()
     css.dispose()
   })
 

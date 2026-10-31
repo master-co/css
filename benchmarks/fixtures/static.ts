@@ -26,18 +26,18 @@ export const staticFixtureSources = [
     expectedCSSMarkers: ['text-center'],
     masterHtml: page(`
       <main class="min-h:100vh bg:white fg:slate-90 flex items-center justify-center p:6x">
-        <section class="w:full max-w:720px text-center grid gap:4x">
-          <p class="m:0 font:14px font:semibold fg:blue-60 uppercase letter-spacing:.08em">Benchmark fixture</p>
-          <h1 class="m:0 font:48px font:heavy leading:1.05 tracking:-.02em">Small useful landing page</h1>
-          <p class="m:0 font:18px leading:1.65 fg:slate-60">A compact page with typography, spacing, rounded controls, and one responsive content block.</p>
-          <div class="inline-flex justify-center gap:3x flex-wrap">
-            <a class="inline-flex items-center justify-center h:44px px:5x r:8px bg:blue-60 fg:white font:14px font:semibold text-decoration:none" href="#start">Start</a>
-            <a class="inline-flex items-center justify-center h:44px px:5x r:8px border:1px|solid|gray-20 fg:slate-80 font:14px font:semibold text-decoration:none" href="#docs">Docs</a>
+        <section class="w:full max-w:720px text-center grid (gap:4x)">
+          <p class="m:0 (font:14px) (font:semibold) fg:blue-60 uppercase (letter-spacing:.08em)">Benchmark fixture</p>
+          <h1 class="m:0 (font:48px) (font:heavy) leading:1.05 tracking:-.02em">Small useful landing page</h1>
+          <p class="m:0 (font:18px) leading:1.65 fg:slate-60">A compact page with typography, spacing, rounded controls, and one responsive content block.</p>
+          <div class="inline-flex justify-center (gap:3x) flex-wrap">
+            <a class="inline-flex items-center justify-center h:44px px:5x (r:8px) bg:blue-60 fg:white (font:14px) (font:semibold) (text-decoration:none)" href="#start">Start</a>
+            <a class="inline-flex items-center justify-center h:44px px:5x (r:8px) (border:1px|solid|gray-20) fg:slate-80 (font:14px) (font:semibold) (text-decoration:none)" href="#docs">Docs</a>
           </div>
-          <div class="grid grid-cols:3 gap:3x mt:5x">
-            <div class="p:4x r:10px bg:gray-5 text-center"><strong class="block font:22px">24</strong><span class="font:12px fg:slate-50">rules</span></div>
-            <div class="p:4x r:10px bg:gray-5 text-center"><strong class="block font:22px">3</strong><span class="font:12px fg:slate-50">states</span></div>
-            <div class="p:4x r:10px bg:gray-5 text-center"><strong class="block font:22px">1</strong><span class="font:12px fg:slate-50">page</span></div>
+          <div class="grid grid-cols:3 (gap:3x) mt:5x">
+            <div class="p:4x (r:10px) bg:gray-5 text-center"><strong class="block (font:22px)">24</strong><span class="(font:12px) fg:slate-50">rules</span></div>
+            <div class="p:4x (r:10px) bg:gray-5 text-center"><strong class="block (font:22px)">3</strong><span class="(font:12px) fg:slate-50">states</span></div>
+            <div class="p:4x (r:10px) bg:gray-5 text-center"><strong class="block (font:22px)">1</strong><span class="(font:12px) fg:slate-50">page</span></div>
           </div>
         </section>
       </main>
@@ -66,50 +66,50 @@ export const staticFixtureSources = [
     expectedCSSMarkers: ['text-center'],
     masterHtml: page(`
       <div class="min-h:100vh bg:white fg:slate-90">
-        <header class="sticky top:0 z:1 bg:white/.9 backdrop-filter:blur(12px) bb:1px|solid|gray-20">
+        <header class="sticky (top:0) z:1 bg:white/.9 (backdrop-filter:blur(12px)) bb:1px|solid|gray-20">
           <nav class="max-w:1120px mx:auto px:6x py:3x flex items-center justify-between">
-            <a class="font:18px font:heavy fg:slate-90 text-decoration:none" href="#">Docs</a>
-            <div class="flex items-center gap:4x font:14px">
-              <a class="fg:slate-60 text-decoration:none" href="#guide">Guide</a>
-              <a class="fg:slate-60 text-decoration:none" href="#api">API</a>
-              <a class="fg:slate-60 text-decoration:none" href="#bench">Benchmarks</a>
+            <a class="(font:18px) (font:heavy) fg:slate-90 (text-decoration:none)" href="#">Docs</a>
+            <div class="flex items-center (gap:4x) (font:14px)">
+              <a class="fg:slate-60 (text-decoration:none)" href="#guide">Guide</a>
+              <a class="fg:slate-60 (text-decoration:none)" href="#api">API</a>
+              <a class="fg:slate-60 (text-decoration:none)" href="#bench">Benchmarks</a>
             </div>
           </nav>
         </header>
-        <main class="max-w:1120px mx:auto px:6x py:8x grid grid-cols:220px|1fr gap:8x">
-          <aside class="display:none display:block@lg">
-            <div class="sticky top:72px grid gap:2x font:14px">
-              <a class="fg:blue-60 font:semibold text-decoration:none" href="#intro">Introduction</a>
-              <a class="fg:slate-60 text-decoration:none" href="#install">Installation</a>
-              <a class="fg:slate-60 text-decoration:none" href="#config">Configuration</a>
-              <a class="fg:slate-60 text-decoration:none" href="#limits">Limits</a>
+        <main class="max-w:1120px mx:auto px:6x py:8x grid grid-cols:220px|1fr (gap:8x)">
+          <aside class="hidden block@lg">
+            <div class="sticky (top:72px) grid (gap:2x) (font:14px)">
+              <a class="fg:blue-60 (font:semibold) (text-decoration:none)" href="#intro">Introduction</a>
+              <a class="fg:slate-60 (text-decoration:none)" href="#install">Installation</a>
+              <a class="fg:slate-60 (text-decoration:none)" href="#config">Configuration</a>
+              <a class="fg:slate-60 (text-decoration:none)" href="#limits">Limits</a>
             </div>
           </aside>
-          <article class="min-w:0 grid gap:7x">
-            <section class="grid gap:4x">
-              <p class="m:0 font:14px font:semibold fg:blue-60 uppercase letter-spacing:.08em">Guide</p>
-              <h1 class="m:0 font:44px font:heavy leading:1.1 tracking:-.02em">Building a dense documentation page</h1>
-              <p class="m:0 font:18px leading:1.7 fg:slate-60">This fixture models article typography, side navigation, code samples, tables, callouts, and repeated inline states.</p>
+          <article class="min-w:0 grid (gap:7x)">
+            <section class="grid (gap:4x)">
+              <p class="m:0 (font:14px) (font:semibold) fg:blue-60 uppercase (letter-spacing:.08em)">Guide</p>
+              <h1 class="m:0 (font:44px) (font:heavy) leading:1.1 tracking:-.02em">Building a dense documentation page</h1>
+              <p class="m:0 (font:18px) leading:1.7 fg:slate-60">This fixture models article typography, side navigation, code samples, tables, callouts, and repeated inline states.</p>
             </section>
-            <section id="install" class="grid gap:4x">
-              <h2 class="m:0 font:28px font:bold">Installation</h2>
+            <section id="install" class="grid (gap:4x)">
+              <h2 class="m:0 (font:28px) (font:bold)">Installation</h2>
               <p class="m:0 leading:1.7 fg:slate-70">Install the package, import the stylesheet, and keep source detection explicit so generated CSS remains reproducible.</p>
-              <pre class="m:0 p:5x r:10px bg:slate-95 fg:white overflow:auto font:14px leading:1.6"><code>npm install @master/css
+              <pre class="m:0 p:5x (r:10px) bg:slate-95 fg:white (overflow:auto) (font:14px) leading:1.6"><code>npm install @master/css
 import '@master/css'</code></pre>
             </section>
-            <section id="api" class="grid gap:4x">
-              <h2 class="m:0 font:28px font:bold">API surface</h2>
-              <table class="w:full border-collapse:collapse font:14px">
+            <section id="api" class="grid (gap:4x)">
+              <h2 class="m:0 (font:28px) (font:bold)">API surface</h2>
+              <table class="w:full (border-collapse:collapse) (font:14px)">
                 <thead class="bg:gray-5 text:left"><tr><th class="p:3x bb:1px|solid|gray-20">Name</th><th class="p:3x bb:1px|solid|gray-20">Purpose</th><th class="p:3x bb:1px|solid|gray-20 text-center">Stable</th></tr></thead>
                 <tbody>
-                  <tr><td class="p:3x bb:1px|solid|gray-20 font:semibold">runtime</td><td class="p:3x bb:1px|solid|gray-20">DOM class discovery</td><td class="p:3x bb:1px|solid|gray-20 text-center">Yes</td></tr>
-                  <tr><td class="p:3x bb:1px|solid|gray-20 font:semibold">static</td><td class="p:3x bb:1px|solid|gray-20">Generated stylesheet output</td><td class="p:3x bb:1px|solid|gray-20 text-center">Yes</td></tr>
-                  <tr><td class="p:3x bb:1px|solid|gray-20 font:semibold">progressive</td><td class="p:3x bb:1px|solid|gray-20">Inline first page CSS and adopt runtime</td><td class="p:3x bb:1px|solid|gray-20 text-center">Planned</td></tr>
+                  <tr><td class="p:3x bb:1px|solid|gray-20 (font:semibold)">runtime</td><td class="p:3x bb:1px|solid|gray-20">DOM class discovery</td><td class="p:3x bb:1px|solid|gray-20 text-center">Yes</td></tr>
+                  <tr><td class="p:3x bb:1px|solid|gray-20 (font:semibold)">static</td><td class="p:3x bb:1px|solid|gray-20">Generated stylesheet output</td><td class="p:3x bb:1px|solid|gray-20 text-center">Yes</td></tr>
+                  <tr><td class="p:3x bb:1px|solid|gray-20 (font:semibold)">progressive</td><td class="p:3x bb:1px|solid|gray-20">Inline first page CSS and adopt runtime</td><td class="p:3x bb:1px|solid|gray-20 text-center">Planned</td></tr>
                 </tbody>
               </table>
             </section>
-            <section class="p:5x r:10px bg:blue-5 border:1px|solid|blue-20">
-              <h2 class="m:0|0|2x font:22px font:bold">Benchmark note</h2>
+            <section class="p:5x (r:10px) bg:blue-5 (border:1px|solid|blue-20)">
+              <h2 class="m:0|0|2x (font:22px) (font:bold)">Benchmark note</h2>
               <p class="m:0 leading:1.7 fg:slate-70">Numbers are advisory and must pass correctness checks before being compared.</p>
             </section>
           </article>
@@ -174,27 +174,27 @@ import '@master/css'</code></pre>
     expectedCSSMarkers: ['text-center'],
     masterHtml: page(`
       <main class="min-h:100vh bg:gray-5 fg:slate-90 p:6x">
-        <section class="max-w:1180px mx:auto grid gap:6x">
-          <header class="flex items-center justify-between gap:4x">
+        <section class="max-w:1180px mx:auto grid (gap:6x)">
+          <header class="flex items-center justify-between (gap:4x)">
             <div>
-              <p class="m:0 font:13px font:semibold fg:blue-60 uppercase letter-spacing:.08em">Operations</p>
-              <h1 class="m:1x|0|0 font:34px font:heavy tracking:-.02em">Revenue dashboard</h1>
+              <p class="m:0 (font:13px) (font:semibold) fg:blue-60 uppercase (letter-spacing:.08em)">Operations</p>
+              <h1 class="m:1x|0|0 (font:34px) (font:heavy) tracking:-.02em">Revenue dashboard</h1>
             </div>
-            <button class="h:40px px:4x r:8px bg:slate-90 fg:white border:0 font:14px font:semibold">Export</button>
+            <button class="h:40px px:4x (r:8px) bg:slate-90 fg:white (border:0) (font:14px) (font:semibold)">Export</button>
           </header>
-          <section class="grid grid-cols:4 gap:4x">
+          <section class="grid grid-cols:4 (gap:4x)">
             ${masterCards()}
           </section>
-          <section class="grid grid-cols:280px|1fr gap:4x">
-            <aside class="p:5x r:12px bg:white border:1px|solid|gray-20 grid gap:4x">
-              <h2 class="m:0 font:20px font:bold">Filters</h2>
-              <label class="grid gap:2x font:13px fg:slate-60">Region<input class="h:38px px:3x r:8px border:1px|solid|gray-20 fg:slate-90" value="North America" /></label>
-              <label class="grid gap:2x font:13px fg:slate-60">Status<select class="h:38px px:3x r:8px border:1px|solid|gray-20 fg:slate-90"><option>Active</option></select></label>
-              <button class="h:38px r:8px bg:blue-60 fg:white border:0 font:14px font:semibold text-center">Apply</button>
+          <section class="grid grid-cols:280px|1fr (gap:4x)">
+            <aside class="p:5x (r:12px) bg:white (border:1px|solid|gray-20) grid (gap:4x)">
+              <h2 class="m:0 (font:20px) (font:bold)">Filters</h2>
+              <label class="grid (gap:2x) (font:13px) fg:slate-60">Region<input class="h:38px px:3x (r:8px) (border:1px|solid|gray-20) fg:slate-90" value="North America" /></label>
+              <label class="grid (gap:2x) (font:13px) fg:slate-60">Status<select class="h:38px px:3x (r:8px) (border:1px|solid|gray-20) fg:slate-90"><option>Active</option></select></label>
+              <button class="h:38px (r:8px) bg:blue-60 fg:white (border:0) (font:14px) (font:semibold) text-center">Apply</button>
             </aside>
-            <div class="r:12px bg:white border:1px|solid|gray-20 overflow:hidden">
-              <div class="p:4x bb:1px|solid|gray-20 flex items-center justify-between"><h2 class="m:0 font:20px font:bold">Accounts</h2><span class="font:13px fg:slate-50">12 rows</span></div>
-              <table class="w:full border-collapse:collapse font:14px">
+            <div class="(r:12px) bg:white (border:1px|solid|gray-20) (overflow:hidden)">
+              <div class="p:4x bb:1px|solid|gray-20 flex items-center justify-between"><h2 class="m:0 (font:20px) (font:bold)">Accounts</h2><span class="(font:13px) fg:slate-50">12 rows</span></div>
+              <table class="w:full (border-collapse:collapse) (font:14px)">
                 <thead class="bg:gray-5 text:left"><tr><th class="p:3x">Account</th><th class="p:3x">Plan</th><th class="p:3x text-center">Health</th><th class="p:3x text:right">MRR</th></tr></thead>
                 <tbody>${masterRows()}</tbody>
               </table>
@@ -240,7 +240,7 @@ import '@master/css'</code></pre>
     expectedCSSMarkers: ['text-center'],
     masterHtml: page(`
       <main class="p:6x bg:white fg:slate-90">
-        <h1 class="m:0|0|4x font:32px font:heavy text-center">Stress CSS fixture</h1>
+        <h1 class="m:0|0|4x (font:32px) (font:heavy) text-center">Stress CSS fixture</h1>
         <section class="grid grid-cols:6 gap:2x">${masterStressNodes()}</section>
       </main>
     `),
@@ -271,10 +271,10 @@ function page(body: string) {
 
 function masterCards() {
   return ['Revenue', 'Activation', 'Retention', 'Expansion'].map((label, index) => `
-    <article class="p:5x r:12px bg:white border:1px|solid|gray-20">
-      <p class="m:0 font:13px fg:slate-50">${label}</p>
-      <strong class="block mt:2x font:28px font:heavy">${index === 0 ? '$128.4k' : `${64 + index * 7}%`}</strong>
-      <span class="inline-flex mt:3x px:2x py:1x r:999px bg:green-10 fg:green-70 font:12px font:semibold">+${index + 4}.2%</span>
+    <article class="p:5x (r:12px) bg:white (border:1px|solid|gray-20)">
+      <p class="m:0 (font:13px) fg:slate-50">${label}</p>
+      <strong class="block mt:2x (font:28px) font:heavy">${index === 0 ? '$128.4k' : `${64 + index * 7}%`}</strong>
+      <span class="inline-flex mt:3x px:2x py:1x (r:999px) bg:green-10 fg:green-70 (font:12px) font:semibold">+${index + 4}.2%</span>
     </article>
   `).join('\n')
 }
@@ -292,9 +292,9 @@ function tailwindCards() {
 function masterRows() {
   return Array.from({ length: 12 }, (_, index) => `
     <tr class="bg:white bg:gray-5:hover">
-      <td class="p:3x bt:1px|solid|gray-20 font:semibold">Account ${index + 1}</td>
+      <td class="p:3x bt:1px|solid|gray-20 (font:semibold)">Account ${index + 1}</td>
       <td class="p:3x bt:1px|solid|gray-20 fg:slate-60">${index % 3 === 0 ? 'Enterprise' : 'Growth'}</td>
-      <td class="p:3x bt:1px|solid|gray-20 text-center"><span class="inline-flex px:2x py:1x r:999px bg:blue-5 fg:blue-70 font:12px font:semibold">${88 - index}%</span></td>
+      <td class="p:3x bt:1px|solid|gray-20 text-center"><span class="inline-flex px:2x py:1x (r:999px) bg:blue-5 fg:blue-70 (font:12px) font:semibold">${88 - index}%</span></td>
       <td class="p:3x bt:1px|solid|gray-20 text:right">$${(index + 2) * 920}</td>
     </tr>
   `).join('\n')

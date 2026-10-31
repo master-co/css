@@ -1,8 +1,7 @@
 use super::{
     EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashSet,
     NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
-    UtilityLayerName, native_declaration_head, resolve_value_components, single_native_declaration,
-    split_dynamic_value_state,
+    UtilityLayerName,
 };
 use mastercss_lexer::concat_text;
 
@@ -128,45 +127,35 @@ impl EngineSession {
         self.keyframe_floors = self.keyframe_counts.clone();
     }
 
+    /// The native declaration of a `(property:value)` head, or `None` for other heads
+    /// and malformed declarations. Values decode Master spaces and normalize math.
     pub(crate) fn parse_native_declaration_candidate(
         &self,
         class_name: &str,
     ) -> Option<NativeDeclarationCandidate> {
-        mastercss_lexer::decode_native_content(class_name)?;
         let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
-        if super::named::token_prefix(semantic_class_name, &self.compiled).is_some_and(|prefix| {
-            !super::named::token_candidates(semantic_class_name, prefix, &self.compiled).is_empty()
-        }) {
-            return None;
-        }
-        let (colon, _) = native_declaration_head(semantic_class_name)?;
-        let property = &semantic_class_name[..colon];
-        let (raw_value, _) = split_dynamic_value_state(&semantic_class_name[colon + 1..]);
-        if raw_value.is_empty() {
-            return None;
-        }
-        let (value, _) = resolve_value_components(&raw_value, None, &self.compiled);
+        let head = mastercss_lexer::parse_native_declaration(semantic_class_name)?.ok()?;
+        let value = native_value(&semantic_class_name[head.value.clone()]);
         Some(NativeDeclarationCandidate {
             ir: NativeDeclarationCandidateIr {
                 class_name: class_name.to_owned(),
-                property: property.to_owned(),
+                property: semantic_class_name[head.property].to_owned(),
                 value,
             },
         })
     }
 
-    // Called only after registered utility matching returned no candidates.
-    pub(crate) fn native_declaration_fallback(
+    /// The declaration of a `(property:value)` head as a property utility, its match
+    /// and whether the value ends with a native `!important`.
+    pub(crate) fn native_declaration(
         &self,
         class_name: &str,
-    ) -> Option<(UtilityDefinition, super::UtilityMatch)> {
-        let candidate = self.parse_native_declaration_candidate(class_name)?;
-        let (colon, _) = native_declaration_head(class_name)?;
-        let (_, state) = split_dynamic_value_state(&class_name[colon + 1..]);
-        let value = candidate.ir.value;
-        mastercss_lexer::decode_native_content(&value)?;
+    ) -> Option<(UtilityDefinition, super::UtilityMatch, bool)> {
+        let head = mastercss_lexer::parse_native_declaration(class_name)?.ok()?;
+        let value = native_value(&class_name[head.value.clone()]);
+        let property = class_name[head.property.clone()].to_owned();
         let utility = UtilityDefinition {
-            id: concat_text!("native:", candidate.ir.property),
+            id: concat_text!("native:", property),
             name: None,
             utility_type: 0,
             order: Some(0),
@@ -176,9 +165,7 @@ impl EngineSession {
             variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
             native_fallback: true,
-            emit: UtilityEmit::Property {
-                property: candidate.ir.property,
-            },
+            emit: UtilityEmit::Property { property },
             matchers: Vec::new(),
         };
         Some((
@@ -187,10 +174,11 @@ impl EngineSession {
                 value: Some(value),
                 arguments: Vec::new(),
                 expansion: Default::default(),
-                state_token: state,
+                state_token: class_name[head.suffix_start..].to_owned(),
                 variable_names: Vec::new(),
                 matcher_type: super::UtilityMatcherType::Key,
             },
+            head.important,
         ))
     }
 
@@ -206,29 +194,8 @@ impl EngineSession {
         {
             return Vec::new();
         }
-        let source_candidate = self.parse_native_declaration_candidate(class_name);
-        let generated = self.generate_class_rules(class_name);
-        if generated.is_empty() {
-            return source_candidate.into_iter().collect();
-        }
-        if generated.iter().any(|rule| !rule.native_fallback) {
-            return Vec::new();
-        }
-        let Some(_source_candidate) = source_candidate else {
-            return Vec::new();
-        };
-        let mut seen = HashSet::default();
-        generated
+        self.parse_native_declaration_candidate(class_name)
             .into_iter()
-            .filter_map(|rule| single_native_declaration(&rule.declarations))
-            .filter(|declaration| seen.insert(declaration.clone()))
-            .map(|(property, value)| NativeDeclarationCandidate {
-                ir: NativeDeclarationCandidateIr {
-                    class_name: class_name.to_owned(),
-                    property,
-                    value,
-                },
-            })
             .collect()
     }
 
@@ -302,4 +269,10 @@ impl EngineSession {
             }
         }
     }
+}
+
+/// A declaration value with Master spaces decoded outside protected text and math
+/// normalized. Generation collects its variable references from the declaration.
+fn native_value(value: &str) -> String {
+    super::normalize_css_math_functions(&mastercss_lexer::decode_native_value(value))
 }

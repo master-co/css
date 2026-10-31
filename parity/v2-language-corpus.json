@@ -398,11 +398,11 @@
         {
           "op": "ensure",
           "classes": [
-            "display:block",
-            "width:10px",
-            "background-origin:border-box"
+            "(display:block)",
+            "(width:10px)",
+            "(background-origin:border-box)"
           ],
-          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
+          "expectedCss": "@layer utilities{.\\(background-origin\\:border-box\\){background-origin:border-box}.\\(display\\:block\\){display:block}.\\(width\\:10px\\){width:10px}}"
         }
       ]
     },
@@ -413,11 +413,11 @@
         {
           "op": "ensure",
           "classes": [
-            "width:10px",
-            "display:block",
-            "background-origin:border-box"
+            "(width:10px)",
+            "(display:block)",
+            "(background-origin:border-box)"
           ],
-          "expectedCss": "@layer utilities{.background-origin\\:border-box{background-origin:border-box}.display\\:block{display:block}.width\\:10px{width:10px}}"
+          "expectedCss": "@layer utilities{.\\(background-origin\\:border-box\\){background-origin:border-box}.\\(display\\:block\\){display:block}.\\(width\\:10px\\){width:10px}}"
         }
       ]
     },
@@ -442,12 +442,12 @@
         {
           "op": "ensure",
           "classes": [
-            "display:block:hover",
-            "display:block_button@layer(base)",
+            "(display:block):hover",
+            "(display:block)_button@layer(base)",
             "{display:flex;position:relative}_:is(h4,.app-nav)@layer(defaults)",
-            "display:block@starting-style"
+            "(display:block)@starting-style"
           ],
-          "expectedCss": "@layer base{.display\\:block_button\\@layer\\(base\\) button{display:block}}@layer utilities{.display\\:block\\:hover:hover{display:block}@starting-style{.display\\:block\\@starting-style{display:block}}}"
+          "expectedCss": "@layer base{.\\(display\\:block\\)_button\\@layer\\(base\\) button{display:block}}@layer utilities{.\\(display\\:block\\)\\:hover:hover{display:block}@starting-style{.\\(display\\:block\\)\\@starting-style{display:block}}}"
         }
       ]
     },
@@ -572,7 +572,7 @@
             }
           ]
         },
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -767,11 +767,11 @@
         {
           "op": "ensure",
           "classes": [
-            "width:calc(100%-2rem)",
-            "background-color:oklch(60%|.2|240/.5)",
+            "(width:calc(100%-2rem))",
+            "(background-color:oklch(60%|.2|240/.5))",
             "-m-md"
           ],
-          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.width\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.\\(background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\)\\){background-color:oklch(60% .2 240/.5)}.\\(width\\:calc\\(100\\%-2rem\\)\\){width:calc(100% - 2rem)}}"
         }
       ]
     },
@@ -782,12 +782,12 @@
         {
           "op": "ensure",
           "classes": [
-            "margin:0.25rem",
-            "margin:-0.25rem",
-            "margin:.25rem",
-            "margin:-.25rem"
+            "(margin:0.25rem)",
+            "(margin:-0.25rem)",
+            "(margin:.25rem)",
+            "(margin:-.25rem)"
           ],
-          "expectedCss": "@layer utilities{.margin\\:-\\.25rem{margin:-.25rem}.margin\\:-0\\.25rem{margin:-0.25rem}.margin\\:\\.25rem{margin:.25rem}.margin\\:0\\.25rem{margin:0.25rem}}"
+          "expectedCss": "@layer utilities{.\\(margin\\:-\\.25rem\\){margin:-.25rem}.\\(margin\\:-0\\.25rem\\){margin:-0.25rem}.\\(margin\\:\\.25rem\\){margin:.25rem}.\\(margin\\:0\\.25rem\\){margin:0.25rem}}"
         }
       ]
     },
@@ -812,16 +812,16 @@
         {
           "op": "ensure",
           "classes": [
-            "display:block:before",
-            "display:block::before",
-            "display:block:after",
-            "display:block::after",
-            "display:block:first-letter",
-            "display:block::first-letter",
-            "display:block:first-line",
-            "display:block::first-line"
+            "(display:block):before",
+            "(display:block)::before",
+            "(display:block):after",
+            "(display:block)::after",
+            "(display:block):first-letter",
+            "(display:block)::first-letter",
+            "(display:block):first-line",
+            "(display:block)::first-line"
           ],
-          "expectedCss": "@layer utilities{.display\\:block\\:\\:after::after{display:block}.display\\:block\\:\\:before::before{display:block}.display\\:block\\:\\:first-letter::first-letter{display:block}.display\\:block\\:\\:first-line::first-line{display:block}.display\\:block\\:after:after{display:block}.display\\:block\\:before:before{display:block}.display\\:block\\:first-letter:first-letter{display:block}.display\\:block\\:first-line:first-line{display:block}}"
+          "expectedCss": "@layer utilities{.\\(display\\:block\\)\\:\\:after::after{display:block}.\\(display\\:block\\)\\:\\:before::before{display:block}.\\(display\\:block\\)\\:\\:first-letter::first-letter{display:block}.\\(display\\:block\\)\\:\\:first-line::first-line{display:block}.\\(display\\:block\\)\\:after:after{display:block}.\\(display\\:block\\)\\:before:before{display:block}.\\(display\\:block\\)\\:first-letter:first-letter{display:block}.\\(display\\:block\\)\\:first-line:first-line{display:block}}"
         }
       ]
     },
@@ -831,7 +831,7 @@
       "steps": [
         {
           "op": "inspect",
-          "className": "display:block.active",
+          "className": "(display:block).active",
           "expectedValid": true,
           "expectedPriorities": [
             {
@@ -843,7 +843,7 @@
         },
         {
           "op": "inspect",
-          "className": "display:block:hover:not(.disabled)",
+          "className": "(display:block):hover:not(.disabled)",
           "expectedValid": true,
           "expectedPriorities": [
             {
@@ -855,7 +855,7 @@
         },
         {
           "op": "inspect",
-          "className": "display:block[disabled]",
+          "className": "(display:block)[disabled]",
           "expectedValid": true,
           "expectedPriorities": [
             {
@@ -871,7 +871,7 @@
       "id": "engine-animation-resource-metadata",
       "manifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--float-left",
@@ -1011,12 +1011,12 @@
         {
           "op": "ensure",
           "classes": [
-            "border:2px|solid|var(--color-red-60)",
-            "border-top:1px|solid|var(--color-blue-60)",
+            "(border:2px|solid|var(--color-red-60))",
+            "(border-top:1px|solid|var(--color-blue-60))",
             "r-md",
             "rtl-lg"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.rtl-lg{border-top-left-radius:var(--radius-lg)}.border-top\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.border\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1);--color-red-60:oklch(60.94% .2501 29.2)}:root,:host{--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.rtl-lg{border-top-left-radius:var(--radius-lg)}.\\(border-top\\:1px\\|solid\\|var\\(--color-blue-60\\)\\){border-top:1px solid var(--color-blue-60)}.\\(border\\:2px\\|solid\\|var\\(--color-red-60\\)\\){border:2px solid var(--color-red-60)}}"
         }
       ]
     },
@@ -1027,10 +1027,10 @@
         {
           "op": "ensure",
           "classes": [
-            "display:block:nth-child(2n+1)",
+            "(display:block):nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
-          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.display\\:block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.\\(display\\:block\\)\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}@media (width >= 52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
         }
       ]
     },
@@ -1042,12 +1042,12 @@
           "op": "ensure",
           "classes": [
             "grid-col-span(2)",
-            "max-width:max-content",
-            "min-height:min-content",
-            "transition:opacity|300ms|ease|100ms",
-            "font-feature-settings:\"kern\""
+            "(max-width:max-content)",
+            "(min-height:min-content)",
+            "(transition:opacity|300ms|ease|100ms)",
+            "(font-feature-settings:\"kern\")"
           ],
-          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.font-feature-settings\\:\\\"kern\\\"{font-feature-settings:\"kern\"}.max-width\\:max-content{max-width:max-content}.min-height\\:min-content{min-height:min-content}.transition\\:opacity\\|300ms\\|ease\\|100ms{transition:opacity 300ms ease 100ms}}"
+          "expectedCss": "@layer utilities{.grid-col-span\\(2\\){grid-column:span 2/span 2}.\\(font-feature-settings\\:\\\"kern\\\"\\){font-feature-settings:\"kern\"}.\\(max-width\\:max-content\\){max-width:max-content}.\\(min-height\\:min-content\\){min-height:min-content}.\\(transition\\:opacity\\|300ms\\|ease\\|100ms\\){transition:opacity 300ms ease 100ms}}"
         }
       ]
     },
@@ -1058,12 +1058,12 @@
         {
           "op": "ensure",
           "classes": [
-            "margin-top:0",
-            "margin-top:2",
-            "margin-top:1@sm",
-            "margin-top:3@lg"
+            "(margin-top:0)",
+            "(margin-top:2)",
+            "(margin-top:1)@sm",
+            "(margin-top:3)@lg"
           ],
-          "expectedCss": "@layer utilities{.margin-top\\:0{margin-top:0}.margin-top\\:2{margin-top:2}@media (width >= 52.125rem){.margin-top\\:1\\@sm{margin-top:1}}@media (width >= 80rem){.margin-top\\:3\\@lg{margin-top:3}}}"
+          "expectedCss": "@layer utilities{.\\(margin-top\\:0\\){margin-top:0}.\\(margin-top\\:2\\){margin-top:2}@media (width >= 52.125rem){.\\(margin-top\\:1\\)\\@sm{margin-top:1}}@media (width >= 80rem){.\\(margin-top\\:3\\)\\@lg{margin-top:3}}}"
         }
       ]
     },
@@ -1082,7 +1082,7 @@
       "id": "engine-semantic-manifest-layer",
       "manifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--card",
@@ -1180,7 +1180,7 @@
       "id": "engine-same-class-across-layers",
       "manifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--demo-default",
@@ -1281,7 +1281,7 @@
             }
           ]
         },
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -1301,9 +1301,9 @@
         {
           "op": "ensure",
           "classes": [
-            "background:var(--stripe)"
+            "(background:var(--stripe))"
           ],
-          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}}"
         }
       ]
     },
@@ -1328,7 +1328,7 @@
             }
           ]
         },
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -1348,16 +1348,16 @@
         {
           "op": "ensure",
           "classes": [
-            "background:var(--stripe)"
+            "(background:var(--stripe))"
           ],
-          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}}"
         },
         {
           "op": "ensure",
           "classes": [
-            "background:var(--stripe)"
+            "(background:var(--stripe))"
           ],
-          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.\\(background\\:var\\(--stripe\\)\\){background:var(--stripe)}}"
         }
       ]
     },
@@ -1367,7 +1367,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "accent-color:transparent",
+          "className": "(accent-color:transparent)",
           "expectedRuleContains": "accent-color:transparent"
         }
       ]
@@ -1378,12 +1378,12 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "width:100%",
+          "className": "(width:100%)",
           "expectedRuleContains": "width:100%"
         },
         {
           "op": "inspectContains",
-          "className": "height:100%",
+          "className": "(height:100%)",
           "expectedRuleContains": "height:100%"
         }
       ]
@@ -1399,17 +1399,17 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "background-color:light-dark(#000,#fff)",
+          "className": "(background-color:light-dark(#000,#fff))",
           "expectedRuleContains": "background-color:light-dark(#000,#fff)"
         },
         {
           "op": "inspectContains",
-          "className": "background-color:#fff",
+          "className": "(background-color:#fff)",
           "expectedRuleContains": "background-color:#fff"
         },
         {
           "op": "inspectContains",
-          "className": "background-color:transparent",
+          "className": "(background-color:transparent)",
           "expectedRuleContains": "background-color:transparent"
         },
         {
@@ -1419,17 +1419,17 @@
         },
         {
           "op": "inspectContains",
-          "className": "background-clip:border-box",
+          "className": "(background-clip:border-box)",
           "expectedRuleContains": "background-clip:border-box"
         },
         {
           "op": "inspectContains",
-          "className": "background-image:url('#test')",
+          "className": "(background-image:url('#test'))",
           "expectedRuleContains": "background-image:url('#test')"
         },
         {
           "op": "inspectContains",
-          "className": "background-image:linear-gradient(45deg,#f3ec78,#af4261)",
+          "className": "(background-image:linear-gradient(45deg,#f3ec78,#af4261))",
           "expectedRuleContains": "background-image:linear-gradient(45deg,#f3ec78,#af4261)"
         }
       ]
@@ -1445,17 +1445,17 @@
         },
         {
           "op": "inspectContains",
-          "className": "border-color:rgb(0,0,0,0.75)",
+          "className": "(border-color:rgb(0,0,0,0.75))",
           "expectedRuleContains": "border-color:rgb(0,0,0,0.75)"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-color:rgb(0,0,0,0.75)",
+          "className": "(border-bottom-color:rgb(0,0,0,0.75))",
           "expectedRuleContains": "border-bottom-color:rgb(0,0,0,0.75)"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-color:rgb(0,0,0,0.75)",
+          "className": "(border-top-color:rgb(0,0,0,0.75))",
           "expectedRuleContains": "border-top-color:rgb(0,0,0,0.75)"
         },
         {
@@ -1465,12 +1465,12 @@
         },
         {
           "op": "inspectContains",
-          "className": "border-left-color:rgb(0,0,0,0.75)",
+          "className": "(border-left-color:rgb(0,0,0,0.75))",
           "expectedRuleContains": "border-left-color:rgb(0,0,0,0.75)"
         },
         {
           "op": "inspectContains",
-          "className": "border-right-color:rgb(0,0,0,0.75)",
+          "className": "(border-right-color:rgb(0,0,0,0.75))",
           "expectedRuleContains": "border-right-color:rgb(0,0,0,0.75)"
         }
       ]
@@ -1481,32 +1481,32 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "border-radius:1rem",
+          "className": "(border-radius:1rem)",
           "expectedRuleContains": "border-radius:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "border-radius:1rem",
+          "className": "(border-radius:1rem)",
           "expectedRuleContains": "border-radius:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-left-radius:1rem",
+          "className": "(border-top-left-radius:1rem)",
           "expectedRuleContains": "border-top-left-radius:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-right-radius:1rem",
+          "className": "(border-top-right-radius:1rem)",
           "expectedRuleContains": "border-top-right-radius:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-left-radius:1rem",
+          "className": "(border-bottom-left-radius:1rem)",
           "expectedRuleContains": "border-bottom-left-radius:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-right-radius:1rem",
+          "className": "(border-bottom-right-radius:1rem)",
           "expectedRuleContains": "border-bottom-right-radius:1rem"
         }
       ]
@@ -1517,57 +1517,57 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "border-style:solid",
+          "className": "(border-style:solid)",
           "expectedRuleContains": "border-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-style:solid",
+          "className": "(border-style:solid)",
           "expectedRuleContains": "border-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-style:solid",
+          "className": "(border-bottom-style:solid)",
           "expectedRuleContains": "border-bottom-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-style:solid",
+          "className": "(border-bottom-style:solid)",
           "expectedRuleContains": "border-bottom-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-style:solid",
+          "className": "(border-top-style:solid)",
           "expectedRuleContains": "border-top-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-style:solid",
+          "className": "(border-top-style:solid)",
           "expectedRuleContains": "border-top-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-left-style:solid",
+          "className": "(border-left-style:solid)",
           "expectedRuleContains": "border-left-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-left-style:solid",
+          "className": "(border-left-style:solid)",
           "expectedRuleContains": "border-left-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-right-style:solid",
+          "className": "(border-right-style:solid)",
           "expectedRuleContains": "border-right-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-right-style:solid",
+          "className": "(border-right-style:solid)",
           "expectedRuleContains": "border-right-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border:solid|1px",
+          "className": "(border:solid|1px)",
           "expectedRuleContains": "border:solid 1px"
         }
       ]
@@ -1578,32 +1578,32 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "border-width:1px",
+          "className": "(border-width:1px)",
           "expectedRuleContains": "border-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom-width:1px",
+          "className": "(border-bottom-width:1px)",
           "expectedRuleContains": "border-bottom-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-width:1px",
+          "className": "(border-top-width:1px)",
           "expectedRuleContains": "border-top-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-left-width:1px",
+          "className": "(border-left-width:1px)",
           "expectedRuleContains": "border-left-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-right-width:1px",
+          "className": "(border-right-width:1px)",
           "expectedRuleContains": "border-right-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border:2px|solid",
+          "className": "(border:2px|solid)",
           "expectedRuleContains": "border:2px solid"
         }
       ]
@@ -1614,77 +1614,77 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "border:transparent",
+          "className": "(border:transparent)",
           "expectedRuleContains": "border:transparent"
         },
         {
           "op": "inspectContains",
-          "className": "border:1px|solid",
+          "className": "(border:1px|solid)",
           "expectedRuleContains": "border:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-style:solid",
+          "className": "(border-style:solid)",
           "expectedRuleContains": "border-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "border:1rem|solid",
+          "className": "(border:1rem|solid)",
           "expectedRuleContains": "border:1rem solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-style:none",
+          "className": "(border-style:none)",
           "expectedRuleContains": "border-style:none"
         },
         {
           "op": "inspectContains",
-          "className": "border:unset",
+          "className": "(border:unset)",
           "expectedRuleContains": "border:unset"
         },
         {
           "op": "inspectContains",
-          "className": "border:inherit",
+          "className": "(border:inherit)",
           "expectedRuleContains": "border:inherit"
         },
         {
           "op": "inspectContains",
-          "className": "border:initial",
+          "className": "(border:initial)",
           "expectedRuleContains": "border:initial"
         },
         {
           "op": "inspectContains",
-          "className": "border:revert",
+          "className": "(border:revert)",
           "expectedRuleContains": "border:revert"
         },
         {
           "op": "inspectContains",
-          "className": "border:revert-layer",
+          "className": "(border:revert-layer)",
           "expectedRuleContains": "border:revert-layer"
         },
         {
           "op": "inspectContains",
-          "className": "border:calc(100%-1.25rem)|solid",
+          "className": "(border:calc(100%-1.25rem)|solid)",
           "expectedRuleContains": "border:calc(100% - 1.25rem) solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-width:1px",
+          "className": "(border-width:1px)",
           "expectedRuleContains": "border-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-top-width:1px",
+          "className": "(border-top-width:1px)",
           "expectedRuleContains": "border-top-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-inline-width:1px",
+          "className": "(border-inline-width:1px)",
           "expectedRuleContains": "border-inline-width:1px"
         },
         {
           "op": "inspectContains",
-          "className": "border-block-width:1px",
+          "className": "(border-block-width:1px)",
           "expectedRuleContains": "border-block-width:1px"
         },
         {
@@ -1704,52 +1704,52 @@
         },
         {
           "op": "inspectContains",
-          "className": "border:1px|solid",
+          "className": "(border:1px|solid)",
           "expectedRuleContains": "border:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border:1px|solid",
+          "className": "(border:1px|solid)",
           "expectedRuleContains": "border:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-top:1px|solid",
+          "className": "(border-top:1px|solid)",
           "expectedRuleContains": "border-top:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-top:1px|solid",
+          "className": "(border-top:1px|solid)",
           "expectedRuleContains": "border-top:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom:1px|solid",
+          "className": "(border-bottom:1px|solid)",
           "expectedRuleContains": "border-bottom:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-bottom:1px|solid",
+          "className": "(border-bottom:1px|solid)",
           "expectedRuleContains": "border-bottom:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-left:1px|solid",
+          "className": "(border-left:1px|solid)",
           "expectedRuleContains": "border-left:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-left:1px|solid",
+          "className": "(border-left:1px|solid)",
           "expectedRuleContains": "border-left:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-right:1px|solid",
+          "className": "(border-right:1px|solid)",
           "expectedRuleContains": "border-right:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "border-right:1px|solid",
+          "className": "(border-right:1px|solid)",
           "expectedRuleContains": "border-right:1px solid"
         }
       ]
@@ -1760,12 +1760,12 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "box-shadow:8px|8px|10px|#00b0de",
+          "className": "(box-shadow:8px|8px|10px|#00b0de)",
           "expectedRuleContains": "box-shadow:8px 8px 10px #00b0de"
         },
         {
           "op": "inspectContains",
-          "className": "box-shadow:8px|8px|10px|var(--my-shadow,#00b0de)",
+          "className": "(box-shadow:8px|8px|10px|var(--my-shadow,#00b0de))",
           "expectedRuleContains": "box-shadow:8px 8px 10px var(--my-shadow,#00b0de)"
         },
         {
@@ -1781,7 +1781,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "box-sizing:content-box",
+          "className": "(box-sizing:content-box)",
           "expectedRuleContains": "box-sizing:content-box"
         }
       ]
@@ -1792,7 +1792,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "caret-color:transparent",
+          "className": "(caret-color:transparent)",
           "expectedRuleContains": "caret-color:transparent"
         }
       ]
@@ -1803,12 +1803,12 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "color:rgb(255,255,255)",
+          "className": "(color:rgb(255,255,255))",
           "expectedRuleContains": "color:rgb(255,255,255)"
         },
         {
           "op": "inspectContains",
-          "className": "color:#fff",
+          "className": "(color:#fff)",
           "expectedRuleContains": "color:#fff"
         },
         {
@@ -1818,17 +1818,17 @@
         },
         {
           "op": "inspectContains",
-          "className": "color:transparent",
+          "className": "(color:transparent)",
           "expectedRuleContains": "color:transparent"
         },
         {
           "op": "inspectContains",
-          "className": "color:inherit",
+          "className": "(color:inherit)",
           "expectedRuleContains": "color:inherit"
         },
         {
           "op": "inspectContains",
-          "className": "color:light-dark(#000,#fff)",
+          "className": "(color:light-dark(#000,#fff))",
           "expectedRuleContains": "color:light-dark(#000,#fff)"
         }
       ]
@@ -1849,17 +1849,17 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "font-size:1rem",
+          "className": "(font-size:1rem)",
           "expectedRuleContains": "font-size:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "font-size:.5rem",
+          "className": "(font-size:.5rem)",
           "expectedRuleContains": "font-size:.5rem"
         },
         {
           "op": "inspectContains",
-          "className": "font-size:min(.625rem,calc(1.5625rem-.625rem))",
+          "className": "(font-size:min(.625rem,calc(1.5625rem-.625rem)))",
           "expectedRuleContains": "font-size:min(.625rem, calc(1.5625rem - .625rem))"
         }
       ]
@@ -1870,7 +1870,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "gap:1rem",
+          "className": "(gap:1rem)",
           "expectedRuleContains": "gap:1rem"
         }
       ]
@@ -1881,72 +1881,72 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "margin-block-start:1rem",
+          "className": "(margin-block-start:1rem)",
           "expectedRuleContains": "margin-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-block-end:1rem",
+          "className": "(margin-block-end:1rem)",
           "expectedRuleContains": "margin-block-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-block:1rem",
+          "className": "(margin-block:1rem)",
           "expectedRuleContains": "margin-block:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-block-start:1rem",
+          "className": "(padding-block-start:1rem)",
           "expectedRuleContains": "padding-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-block-end:1rem",
+          "className": "(padding-block-end:1rem)",
           "expectedRuleContains": "padding-block-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-block:1rem",
+          "className": "(padding-block:1rem)",
           "expectedRuleContains": "padding-block:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-inline-start:1rem",
+          "className": "(inset-inline-start:1rem)",
           "expectedRuleContains": "inset-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-inline-end:1rem",
+          "className": "(inset-inline-end:1rem)",
           "expectedRuleContains": "inset-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-inline:1rem",
+          "className": "(inset-inline:1rem)",
           "expectedRuleContains": "inset-inline:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-block-start:1rem",
+          "className": "(inset-block-start:1rem)",
           "expectedRuleContains": "inset-block-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-block-end:1rem",
+          "className": "(inset-block-end:1rem)",
           "expectedRuleContains": "inset-block-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "inset-block:1rem",
+          "className": "(inset-block:1rem)",
           "expectedRuleContains": "inset-block:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "contain-intrinsic-inline-size:1rem",
+          "className": "(contain-intrinsic-inline-size:1rem)",
           "expectedRuleContains": "contain-intrinsic-inline-size:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "contain-intrinsic-block-size:1rem",
+          "className": "(contain-intrinsic-block-size:1rem)",
           "expectedRuleContains": "contain-intrinsic-block-size:1rem"
         }
       ]
@@ -1957,47 +1957,47 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "margin-left:1rem",
+          "className": "(margin-left:1rem)",
           "expectedRuleContains": "margin-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-right:1rem",
+          "className": "(margin-right:1rem)",
           "expectedRuleContains": "margin-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-top:1rem",
+          "className": "(margin-top:1rem)",
           "expectedRuleContains": "margin-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-bottom:1rem",
+          "className": "(margin-bottom:1rem)",
           "expectedRuleContains": "margin-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin:1rem",
+          "className": "(margin:1rem)",
           "expectedRuleContains": "margin:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin:1px",
+          "className": "(margin:1px)",
           "expectedRuleContains": "margin:1px"
         },
         {
           "op": "inspectContains",
-          "className": "margin-inline-start:1rem",
+          "className": "(margin-inline-start:1rem)",
           "expectedRuleContains": "margin-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-inline-end:1rem",
+          "className": "(margin-inline-end:1rem)",
           "expectedRuleContains": "margin-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "margin-inline:1rem",
+          "className": "(margin-inline:1rem)",
           "expectedRuleContains": "margin-inline:1rem"
         }
       ]
@@ -2008,7 +2008,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "outline-color:transparent",
+          "className": "(outline-color:transparent)",
           "expectedRuleContains": "outline-color:transparent"
         },
         {
@@ -2018,77 +2018,77 @@
         },
         {
           "op": "inspectContains",
-          "className": "outline:1px|solid",
+          "className": "(outline:1px|solid)",
           "expectedRuleContains": "outline:1px solid"
         },
         {
           "op": "inspectContains",
-          "className": "outline-style:solid",
+          "className": "(outline-style:solid)",
           "expectedRuleContains": "outline-style:solid"
         },
         {
           "op": "inspectContains",
-          "className": "outline-width:medium",
+          "className": "(outline-width:medium)",
           "expectedRuleContains": "outline-width:medium"
         },
         {
           "op": "inspectContains",
-          "className": "outline-width:thick",
+          "className": "(outline-width:thick)",
           "expectedRuleContains": "outline-width:thick"
         },
         {
           "op": "inspectContains",
-          "className": "outline-width:thin",
+          "className": "(outline-width:thin)",
           "expectedRuleContains": "outline-width:thin"
         },
         {
           "op": "inspectContains",
-          "className": "outline:1rem|solid",
+          "className": "(outline:1rem|solid)",
           "expectedRuleContains": "outline:1rem solid"
         },
         {
           "op": "inspectContains",
-          "className": "outline-style:none",
+          "className": "(outline-style:none)",
           "expectedRuleContains": "outline-style:none"
         },
         {
           "op": "inspectContains",
-          "className": "outline-style:auto",
+          "className": "(outline-style:auto)",
           "expectedRuleContains": "outline-style:auto"
         },
         {
           "op": "inspectContains",
-          "className": "outline:medium",
+          "className": "(outline:medium)",
           "expectedRuleContains": "outline:medium"
         },
         {
           "op": "inspectContains",
-          "className": "outline:unset",
+          "className": "(outline:unset)",
           "expectedRuleContains": "outline:unset"
         },
         {
           "op": "inspectContains",
-          "className": "outline:inherit",
+          "className": "(outline:inherit)",
           "expectedRuleContains": "outline:inherit"
         },
         {
           "op": "inspectContains",
-          "className": "outline:initial",
+          "className": "(outline:initial)",
           "expectedRuleContains": "outline:initial"
         },
         {
           "op": "inspectContains",
-          "className": "outline:revert",
+          "className": "(outline:revert)",
           "expectedRuleContains": "outline:revert"
         },
         {
           "op": "inspectContains",
-          "className": "outline:revert-layer",
+          "className": "(outline:revert-layer)",
           "expectedRuleContains": "outline:revert-layer"
         },
         {
           "op": "inspectContains",
-          "className": "outline:auto|1px",
+          "className": "(outline:auto|1px)",
           "expectedRuleContains": "outline:auto 1px"
         }
       ]
@@ -2099,17 +2099,17 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "overflow:visible",
+          "className": "(overflow:visible)",
           "expectedRuleContains": "overflow:visible"
         },
         {
           "op": "inspectContains",
-          "className": "overflow:hidden",
+          "className": "(overflow:hidden)",
           "expectedRuleContains": "overflow:hidden"
         },
         {
           "op": "inspectContains",
-          "className": "overflow:overlay",
+          "className": "(overflow:overlay)",
           "expectedRuleContains": "overflow:overlay"
         }
       ]
@@ -2120,42 +2120,42 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "padding-left:1rem",
+          "className": "(padding-left:1rem)",
           "expectedRuleContains": "padding-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-right:1rem",
+          "className": "(padding-right:1rem)",
           "expectedRuleContains": "padding-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-top:1rem",
+          "className": "(padding-top:1rem)",
           "expectedRuleContains": "padding-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-bottom:1rem",
+          "className": "(padding-bottom:1rem)",
           "expectedRuleContains": "padding-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding:1rem",
+          "className": "(padding:1rem)",
           "expectedRuleContains": "padding:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-inline-start:1rem",
+          "className": "(padding-inline-start:1rem)",
           "expectedRuleContains": "padding-inline-start:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-inline-end:1rem",
+          "className": "(padding-inline-end:1rem)",
           "expectedRuleContains": "padding-inline-end:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "padding-inline:1rem",
+          "className": "(padding-inline:1rem)",
           "expectedRuleContains": "padding-inline:1rem"
         }
       ]
@@ -2166,27 +2166,27 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "scroll-margin-left:1rem",
+          "className": "(scroll-margin-left:1rem)",
           "expectedRuleContains": "scroll-margin-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-margin-right:1rem",
+          "className": "(scroll-margin-right:1rem)",
           "expectedRuleContains": "scroll-margin-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-margin-top:1rem",
+          "className": "(scroll-margin-top:1rem)",
           "expectedRuleContains": "scroll-margin-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-margin-bottom:1rem",
+          "className": "(scroll-margin-bottom:1rem)",
           "expectedRuleContains": "scroll-margin-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-margin:1rem",
+          "className": "(scroll-margin:1rem)",
           "expectedRuleContains": "scroll-margin:1rem"
         }
       ]
@@ -2197,27 +2197,27 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "scroll-padding-left:1rem",
+          "className": "(scroll-padding-left:1rem)",
           "expectedRuleContains": "scroll-padding-left:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-padding-right:1rem",
+          "className": "(scroll-padding-right:1rem)",
           "expectedRuleContains": "scroll-padding-right:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-padding-top:1rem",
+          "className": "(scroll-padding-top:1rem)",
           "expectedRuleContains": "scroll-padding-top:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-padding-bottom:1rem",
+          "className": "(scroll-padding-bottom:1rem)",
           "expectedRuleContains": "scroll-padding-bottom:1rem"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-padding:1rem",
+          "className": "(scroll-padding:1rem)",
           "expectedRuleContains": "scroll-padding:1rem"
         }
       ]
@@ -2228,17 +2228,17 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "scroll-snap-type:x",
+          "className": "(scroll-snap-type:x)",
           "expectedRuleContains": "scroll-snap-type:x"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-snap-type:x",
+          "className": "(scroll-snap-type:x)",
           "expectedRuleContains": "scroll-snap-type:x"
         },
         {
           "op": "inspectContains",
-          "className": "scroll-snap-type:x|mandatory",
+          "className": "(scroll-snap-type:x|mandatory)",
           "expectedRuleContains": "scroll-snap-type:x mandatory"
         }
       ]
@@ -2249,7 +2249,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "stroke-width:.75!",
+          "className": "(stroke-width:.75)!",
           "expectedRuleContains": "stroke-width:.75!important"
         }
       ]
@@ -2260,22 +2260,22 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "text-overflow:clip",
+          "className": "(text-overflow:clip)",
           "expectedRuleContains": "text-overflow:clip"
         },
         {
           "op": "inspectContains",
-          "className": "text-overflow:clip",
+          "className": "(text-overflow:clip)",
           "expectedRuleContains": "text-overflow:clip"
         },
         {
           "op": "inspectContains",
-          "className": "text-overflow:ellipsis",
+          "className": "(text-overflow:ellipsis)",
           "expectedRuleContains": "text-overflow:ellipsis"
         },
         {
           "op": "inspectContains",
-          "className": "text-overflow:ellipsis",
+          "className": "(text-overflow:ellipsis)",
           "expectedRuleContains": "text-overflow:ellipsis"
         }
       ]
@@ -2286,7 +2286,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "-webkit-text-stroke-width:thin",
+          "className": "(-webkit-text-stroke-width:thin)",
           "expectedRuleContains": "-webkit-text-stroke-width:thin"
         }
       ]
@@ -2297,22 +2297,22 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "text-wrap:wrap",
+          "className": "(text-wrap:wrap)",
           "expectedRuleContains": "text-wrap:wrap"
         },
         {
           "op": "inspectContains",
-          "className": "text-wrap:nowrap",
+          "className": "(text-wrap:nowrap)",
           "expectedRuleContains": "text-wrap:nowrap"
         },
         {
           "op": "inspectContains",
-          "className": "text-wrap:balance",
+          "className": "(text-wrap:balance)",
           "expectedRuleContains": "text-wrap:balance"
         },
         {
           "op": "inspectContains",
-          "className": "text-wrap:pretty",
+          "className": "(text-wrap:pretty)",
           "expectedRuleContains": "text-wrap:pretty"
         }
       ]
@@ -2328,12 +2328,12 @@
         },
         {
           "op": "inspectContains",
-          "className": "-webkit-text-stroke-color:#fff",
+          "className": "(-webkit-text-stroke-color:#fff)",
           "expectedRuleContains": "-webkit-text-stroke-color:#fff"
         },
         {
           "op": "inspectContains",
-          "className": "-webkit-text-stroke-color:transparent",
+          "className": "(-webkit-text-stroke-color:transparent)",
           "expectedRuleContains": "-webkit-text-stroke-color:transparent"
         }
       ]
@@ -2344,7 +2344,7 @@
       "steps": [
         {
           "op": "inspectContains",
-          "className": "transform-box:content-box",
+          "className": "(transform-box:content-box)",
           "expectedRuleContains": "transform-box:content-box"
         }
       ]
@@ -2360,7 +2360,7 @@
         },
         {
           "op": "inspectContains",
-          "className": "width:25%",
+          "className": "(width:25%)",
           "expectedRuleContains": "width:25%"
         },
         {
@@ -2449,53 +2449,225 @@
         },
         {
           "op": "inspectContains",
-          "className": "--色:red",
+          "className": "(--色:red)",
           "expectedRuleContains": "--色:red"
         },
         {
           "op": "inspectContains",
-          "className": "--a\\:b:red",
+          "className": "(--a\\:b:red)",
           "expectedRuleContains": "--a\\:b:red"
         },
         {
           "op": "inspectContains",
-          "className": "c\\00006flor:red",
+          "className": "(c\\00006flor:red)",
           "expectedRuleContains": "c\\00006flor:red"
         },
         {
           "op": "inspectContains",
-          "className": "width:calc(1px-2e-3px)",
+          "className": "(width:calc(1px-2e-3px))",
           "expectedRuleContains": "width:calc(1px - 2e-3px)"
         },
         {
           "op": "inspectContains",
-          "className": "width:clamp(1px,2px+3px,4px)",
+          "className": "(width:clamp(1px,2px+3px,4px))",
           "expectedRuleContains": "width:clamp(1px, 2px + 3px, 4px)"
         },
         {
           "op": "inspectContains",
-          "className": "content:'calc(1+2)'",
+          "className": "(content:'calc(1+2)')",
           "expectedRuleContains": "content:'calc(1+2)'"
         },
         {
           "op": "inspectContains",
-          "className": "display:block[data-id='a_b']",
+          "className": "(display:block)[data-id='a_b']",
           "expectedRuleContains": "[data-id='a_b']"
         },
         {
           "op": "inspectContains",
-          "className": "display:block:before",
+          "className": "(display:block):before",
           "expectedRuleContains": ":before{display:block}"
         },
         {
           "op": "inspectContains",
-          "className": "display:block.foo_",
+          "className": "(display:block).foo_",
           "expectedRuleContains": ".foo_{display:block}"
         },
         {
           "op": "inspectContains",
-          "className": "display:block:is(_foo)",
+          "className": "(display:block):is(_foo)",
           "expectedRuleContains": ":is(_foo){display:block}"
+        }
+      ]
+    },
+    {
+      "id": "engine-native-declaration-heads",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "inspectContains",
+          "className": "(flex:1|1|auto):hover",
+          "expectedRuleContains": ".\\(flex\\:1\\|1\\|auto\\)\\:hover:hover{flex:1 1 auto}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "flex:hover",
+          "expectedRuleContains": ".flex\\:hover:hover{display:flex}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(display:block)[aria-expanded=true]:hover@sm",
+          "expectedRuleContains": "[aria-expanded=true]:hover{display:block}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(color:red)::before",
+          "expectedRuleContains": "::before{color:red}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(color:red):has(>img)",
+          "expectedRuleContains": ":has(>img){color:red}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(grid-template-columns:[start]|1fr|[end])",
+          "expectedRuleContains": "{grid-template-columns:[start] 1fr [end]}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(animation-name:slide_in)",
+          "expectedRuleContains": "{animation-name:slide_in}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(content:')')::before",
+          "expectedRuleContains": "::before{content:')'}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(--payload:a:b@c_foo)",
+          "expectedRuleContains": "{--payload:a:b@c_foo}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(background-image:url(/a{b.svg))",
+          "expectedRuleContains": "{background-image:url(/a{b.svg)}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(--x:{a;b})",
+          "expectedRuleContains": "{--x:{a;b}}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(--x:)",
+          "expectedRuleContains": "{--x:}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(color:red!important)!",
+          "expectedRuleContains": "{color:red!important}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "(unknown-property:1):unknown-state",
+          "expectedRuleContains": ":unknown-state{unknown-property:1}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "hidden@sm",
+          "expectedRuleContains": "{display:none}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "items-center",
+          "expectedRuleContains": ".items-center{align-items:center}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "justify-between",
+          "expectedRuleContains": ".justify-between{justify-content:space-between}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "underline",
+          "expectedRuleContains": ".underline{text-decoration-line:underline}"
+        },
+        {
+          "op": "inspectContains",
+          "className": "flex-col",
+          "expectedRuleContains": ".flex-col{flex-direction:column}"
+        },
+        {
+          "op": "inspect",
+          "className": "display:block",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "flex:1|1|auto",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(display:block",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(display:block;)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(display:block;color:red)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(color:red)(display:block)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(width:)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(width:!important)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(color:{red})",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(content:'a)",
+          "expectedValid": false
+        },
+        {
+          "op": "inspect",
+          "className": "(width:calc(1px])",
+          "expectedValid": false
+        }
+      ]
+    },
+    {
+      "id": "engine-short-utility-order",
+      "manifest": "default",
+      "steps": [
+        {
+          "op": "ensure",
+          "classes": [
+            "(display:contents)",
+            "inline-flex",
+            "hidden",
+            "block"
+          ],
+          "expectedCss": "@layer utilities{.block{display:block}.hidden{display:none}.inline-flex{display:inline-flex}.\\(display\\:contents\\){display:contents}}"
         }
       ]
     }
@@ -2776,12 +2948,12 @@
       "source": "@mixin --light { &:where(.light, .light *) { @contents; } } @mixin --dark { &:where(.dark, .dark *) { @contents; } } @theme { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50);  }\n .dark { --color-brand: #123; }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -2937,12 +3109,12 @@
       "source": "@theme { --color-brand: $color-blue-50;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -2981,12 +3153,12 @@
       "source": "@keyframes fade { to { opacity: 1; } }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "keyframes": [
           {
             "id": "k96349710441b4a62-00000000",
@@ -3020,12 +3192,12 @@
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -3093,12 +3265,12 @@
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem;  }\n",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "theme": [
           {
             "type": "rule",
@@ -3237,12 +3409,12 @@
       "source": "@mixin --motion-safe { @media (prefers-reduced-motion:no-preference) { @contents; } } @mixin --hocus { &:is(:hover,:focus) { display: block; } @apply --motion-safe { display: grid; } }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--motion-safe",
@@ -3390,12 +3562,12 @@
       "source": "@mixin --card { display: grid; color: var(--color-primary); }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--card",
@@ -3487,12 +3659,12 @@
       "source": "@mixin --btn { display: flex; color: red; }",
       "baseManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "customMedia": {}
       },
       "expectedManifest": {
         "version": 6,
-        "languageVersion": 16,
+        "languageVersion": 17,
         "mixins": [
           {
             "name": "--btn",

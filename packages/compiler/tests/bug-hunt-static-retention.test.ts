@@ -26,7 +26,7 @@ for (const entry of cases) {
   }
 ],
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 , utilities: [{"name":"all","body":[{"type":"condition" as const,"condition":"@media all","body":[{"type":"contents" as const,"fallback":[]}]}],"kind":"static" as const}] } })
     const snapshots = []
     for (const binding of ['native', 'wasm'] as const) {
@@ -35,11 +35,11 @@ for (const entry of cases) {
         const initial = engine.snapshot()
         expect(initial.resources.variables).toEqual([])
         expect(initial.text).toBe('')
-        engine.ensureClassRules(['color:var(--color-brand)'])
+        engine.ensureClassRules(['(color:var(--color-brand))'])
         const live = engine.snapshot()
         expect(live.resources.variables.map(variable => variable.name).sort()).toEqual(entry.names)
         for (const name of [...entry.names, ...entry.nativeNames ?? []]) expect(compiled.generatedCSS).toContain(`--${name}:`)
-        engine.deleteClassRules(['color:var(--color-brand)'])
+        engine.deleteClassRules(['(color:var(--color-brand))'])
         expect(engine.snapshot()).toEqual(initial)
         snapshots.push(live)
       } finally { engine.dispose() }

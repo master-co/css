@@ -25,7 +25,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns document formatting edits for CSS directives', async ({ expect }) => {
-    const textDocument = context.createDocument('@safelist "background-color:transparent ! fg-red !@sm";', { lang: 'css' })
+    const textDocument = context.createDocument('@safelist "(background-color:transparent) ! fg-red !@sm";', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const edits = await context.clientConnection.sendRequest<TextEdit[]>(DocumentFormattingRequest.method, {
       textDocument: {
@@ -37,7 +37,7 @@ withFixture('basic', async (context) => {
       }
     })
 
-    expect(applyTextEdits(textDocument, edits)).toBe('@safelist "background-color:transparent! fg-red!@sm";')
+    expect(applyTextEdits(textDocument, edits)).toBe('@safelist "(background-color:transparent)! fg-red!@sm";')
     await context.server.onDidClose({ document: textDocument })
   })
 

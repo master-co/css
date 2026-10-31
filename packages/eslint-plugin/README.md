@@ -163,7 +163,7 @@ export default defineConfig([
 ])
 ```
 
-For example, condition sorting changes `display:block@dark@sm` to `display:block@sm@dark`. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`w-sm h-sm`).
+For example, condition sorting changes `block@dark@sm` to `block@sm@dark`. Canonical fixes preserve value source and ordering: they do not replace literals with currently equal tokens or convert pixels to rem. Keep paired dimensions explicit (`w-sm h-sm`).
 
 Canonicalization applies to class lists in markup and class builders; stylesheet declarations use native CSS.
 
@@ -233,7 +233,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule reports `font-size:15px`, `margin:17px`, and `color:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
+For example, this rule reports `(font-size:15px)`, `(margin:17px)`, and `(color:#123456)` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
 
 ## Settings
 

@@ -6,7 +6,7 @@ use serde_json::json;
 fn manifest() -> String {
     let color = |name: &str| json!({"type":"declaration","property":"color","value":[{"type":"text","value":format!("var(--{name})")}]});
     json!({
-        "version":6,"languageVersion":16,
+        "version":6,"languageVersion":17,
         "variables":{"color":[
             {"key":"primary","values":[{"path":[":root,:host"],"value":"red"}]},
             {"key":"secondary","values":[{"path":[":root,:host"],"value":"blue"},{"path":[".dark,:host(.dark)"],"value":"navy"}]}
@@ -125,7 +125,7 @@ fn keyframes_a_stylesheet_uses_through_its_own_slot_are_hosted() {
     let rendered = render(
         manifest,
         &[&css, ".toast{animation:fade 1s}"],
-        &["animation:fade|2s"],
+        &["(animation:fade|2s)"],
     );
     let emitted_globals = &rendered.hydration_manifest.emitted_globals;
     assert_eq!(emitted_globals.keyframes.get(id), Some(&1));

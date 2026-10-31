@@ -1,7 +1,6 @@
 // Decoder for the binary runtime program, matching `decode` in
 // crates/mastercss-engine/src/program.rs field for field. Every bound is checked, and
 // malformed input yields an error result instead of an exception.
-import { NATIVE_CSS_PROPERTIES } from './native-properties'
 import {
   MIXIN_PARAMETER_SYNTAXES,
   UTILITY_KINDS,
@@ -25,7 +24,7 @@ import {
 import { selectedInlineValue } from './value'
 
 export const PROGRAM_VERSION = 1
-export const LANGUAGE_VERSION = 16
+export const LANGUAGE_VERSION = 17
 const MAGIC = [0x4d, 0x43, 0x53, 0x50] // MCSP
 const MAX_DEPTH = 512
 // The Rust engine runs as wasm32, where `usize` is 32 bits wide.
@@ -308,28 +307,8 @@ function push<K, V>(map: Map<K, V[]>, key: K, value: V) {
   else map.set(key, [value])
 }
 
-/** What `finish_program` derives: native utilities, defaults, match order and indexes. */
+/** What `finish_program` derives: defaults, match order and indexes. */
 function finish(program: Program, encoded: EncodedUtility[]) {
-  const ids = new Set(encoded.map((entry) => entry.id))
-  for (const property of NATIVE_CSS_PROPERTIES) {
-    const id = `native:${property}`
-    if (ids.has(id)) continue
-    ids.add(id)
-    encoded.push({
-      id,
-      name: property,
-      utilityType: 0,
-      order: 0,
-      layer: 'utilities',
-      keys: [],
-      aliasGroups: [],
-      variableAliases: [],
-      variableAliasRefs: [],
-      nativeFallback: true,
-      emit: { type: 'property', property },
-      matchers: [{ type: 'key', keys: [property] }]
-    })
-  }
   const count = encoded.length
   const utilities = encoded.map((entry, index): Utility => ({
     ...entry,
@@ -341,7 +320,8 @@ function finish(program: Program, encoded: EncodedUtility[]) {
   for (const [index, entry] of program.utilities.entries()) {
     for (const item of entry.matchers) {
       if (item.type === 'token') push(program.tokenUtilities, item.prefix, index)
-      else if (item.type === 'key') for (const key of item.keys) push(program.keyUtilities, key, index)
+      // A key matcher is a program tag no registration produces; it never matches.
+      else if (item.type === 'key') continue
       else if (item.type === 'function') program.functionUtilities.set(item.name, index)
       else push(program.staticUtilities, item.name, index)
     }
@@ -388,7 +368,6 @@ export function decodeProgram(input: Uint8Array): DecodeResult {
       hasInlineTokens: false,
       utilities: [],
       staticUtilities: new Map(),
-      keyUtilities: new Map(),
       tokenUtilities: new Map(),
       functionUtilities: new Map(),
       tokenPrefixes: new Map()

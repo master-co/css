@@ -53,21 +53,21 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
   const $ = useTranslation()
   return (
     <div className={clsx('home-theme-screen', mode)}>
-      <div className="display:flex flex-direction:column gap-md p-lg r-3xl bg-surface-base fg-text-strong">
-        <div className="display:flex align-items:center justify-content:space-between height:2rem">
+      <div className="flex flex-col gap-md p-lg r-3xl bg-surface-base fg-text-strong">
+        <div className="flex items-center justify-between (height:2rem)">
           <IconChevronLeft size={18} stroke={1.75} />
           <span className="font-sm font-medium">{$('Shop')}</span>
-          <span className="position:relative display:grid">
+          <span className="relative grid">
             <IconShoppingBag size={18} stroke={1.75} />
-            <span className="position:absolute right:-0.125rem top:-0.125rem height:0.4375rem width:0.4375rem r-pill bg-surface-inverse" />
+            <span className="absolute (right:-0.125rem) (top:-0.125rem) (height:0.4375rem) (width:0.4375rem) r-pill bg-surface-inverse" />
           </span>
         </div>
         <div>
-          <p className="font-mono font-2xs tracking-wider text-transform:uppercase fg-text-muted">{$('Sunday drop')}</p>
-          <p className="mt-2xs font-2xl line-height:1.1 tracking-tight fg-text-strong">{$('Find your daily kit.')}</p>
+          <p className="font-mono font-2xs tracking-wider uppercase fg-text-muted">{$('Sunday drop')}</p>
+          <p className="mt-2xs font-2xl (line-height:1.1) tracking-tight fg-text-strong">{$('Find your daily kit.')}</p>
         </div>
-        <div className="display:flex align-items:center gap-md font-xs">
-          <span className="display:inline-flex align-items:center height:1.75rem px-sm r-pill font-medium bg-surface-inverse fg-text-inverse">{$('All')}</span>
+        <div className="flex items-center gap-md font-xs">
+          <span className="inline-flex items-center (height:1.75rem) px-sm r-pill font-medium bg-surface-inverse fg-text-inverse">{$('All')}</span>
           <span className="fg-text-muted">{$('Bags')}</span>
           <span className="fg-text-muted">{$('Shoes')}</span>
         </div>
@@ -83,10 +83,10 @@ function ShopScreen({ mode }: { mode: 'light' | 'dark' }) {
 /** A product as a picture and a line of text, with no card around it. */
 function Product({ icon, label, price }: { icon: ReactNode, label: string, price: string }) {
   return (
-    <div className="min-width:0">
-      <div className="display:grid place-content:center height:5rem r-xl bg-surface-inset fg-text-muted">{icon}</div>
-      <div className="display:flex align-items:baseline justify-content:space-between gap-xs mt-xs">
-        <p className="overflow:hidden font-xs font-medium text-overflow:ellipsis white-space:nowrap fg-text-strong">{label}</p>
+    <div className="(min-width:0)">
+      <div className="grid (place-content:center) (height:5rem) r-xl bg-surface-inset fg-text-muted">{icon}</div>
+      <div className="flex items-baseline justify-between gap-xs mt-xs">
+        <p className="(overflow:hidden) font-xs font-medium (text-overflow:ellipsis) (white-space:nowrap) fg-text-strong">{label}</p>
         <span className="font-mono font-2xs fg-text-muted">{price}</span>
       </div>
     </div>

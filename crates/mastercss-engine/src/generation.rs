@@ -43,7 +43,7 @@ impl EngineSession {
         if let Some(result) = self.application_rules(class_name) {
             return result.unwrap_or_default();
         }
-        if mastercss_lexer::decode_native_content(class_name).is_none() {
+        if !super::valid_class_structure(class_name) {
             return Vec::new();
         }
         let mut generated = Vec::new();
@@ -92,7 +92,7 @@ impl EngineSession {
         if let Some(result) = self.application_rules(class_name) {
             return self.store_application(class_name, result.unwrap_or_default());
         }
-        if mastercss_lexer::decode_native_content(class_name).is_none() {
+        if !super::valid_class_structure(class_name) {
             return Vec::new();
         }
         let mut generated = Vec::new();
@@ -168,8 +168,6 @@ impl EngineSession {
                     retain_all_keyframes: animation.retain_all,
                 },
                 manifest_order: utility.order.unwrap_or_default(),
-                declarations,
-                native_fallback: utility.native_fallback,
                 matcher_type: Some(matched.matcher_type),
                 state_token: matched.state_token.clone(),
             });
@@ -177,31 +175,24 @@ impl EngineSession {
         generated
     }
 
-    /// Matches a class and visits each state branch that emits declarations. A native
-    /// fallback only applies when no registered utility emitted a branch.
+    /// Matches a class and visits each state branch that emits declarations. A
+    /// `(property:value)` head is a native declaration and never a utility.
     fn generated_branches(&self, class_name: &str, mut visit: impl FnMut(GeneratedBranch<'_>)) {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
+        let native = self.native_declaration(semantic_class_name);
         let matches = super::named::matching_utilities(semantic_class_name, &self.compiled);
-        let fallback = matches
-            .is_empty()
-            .then(|| self.native_declaration_fallback(semantic_class_name))
-            .flatten();
         let mut seen = HashSet::default();
-        let mut emitted = false;
-        for (utility, matched) in matches
+        for (utility, matched, important) in matches
             .iter()
-            .map(|(index, matched)| (&self.compiled.utilities[*index], matched))
+            .map(|(index, matched)| (&self.compiled.utilities[*index], matched, important))
             .chain(
-                fallback
+                native
                     .as_ref()
-                    .map(|(utility, matched)| (utility, matched)),
+                    .map(|(utility, matched, inner)| (utility, matched, important || *inner)),
             )
         {
-            if utility.native_fallback && emitted {
-                break;
-            }
             // The sort key ignores the branch; compute it once for the first emitted one.
             let mut sort_key = None;
             for (branch_index, branch) in
@@ -247,7 +238,6 @@ impl EngineSession {
                     conditions,
                     selector: selector_priority(branch.selector_template.as_deref()),
                 };
-                emitted = true;
                 visit(GeneratedBranch {
                     utility,
                     matched,

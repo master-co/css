@@ -44,7 +44,7 @@ describe('Rust-owned default preset', () => {
     })
     try {
       engine.ensureClassRules([
-        'display:block',
+        '(display:block)',
         'fg-red-60',
         'bg-surface-base',
         'grid-cols(3)',

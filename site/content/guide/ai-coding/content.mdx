@@ -142,7 +142,7 @@ Keep project-specific commands in the same file so the agent does not have to in
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 
 ```html
-<button class="display:inline-flex align-items:center gap-xs height:2.5rem px-md r-md fg-white bg-blue-70:hover opacity:.5:disabled bg-brand">
+<button class="inline-flex items-center gap-xs (height:2.5rem) px-md r-md fg-white bg-blue-70:hover (opacity:.5):disabled bg-brand">
   Save
 </button>
 ```
@@ -151,7 +151,7 @@ Readable Master CSS usually follows these habits:
 
 - Use complete class strings instead of building classes from small string fragments.
 - Prefer project tokens such as `bg-brand`, `p-card`, and `r-card` when they exist.
-- Use native declaration syntax such as `scroll-margin-top:4rem` when it is clearer than a custom abstraction.
+- Use native declaration syntax such as `(scroll-margin-top:4rem)` when it is clearer than a custom abstraction.
 - Keep selector states and conditions attached to the class they affect, such as `bg-blue-70:hover` and `grid-cols(3)@md`.
 - Move repeated product values into `@theme`; move repeated product patterns into `@layer components` only when a named abstraction improves maintainability.
 
@@ -209,7 +209,7 @@ Leave these alone unless there is a clear benefit:
 For dynamic values, prefer stable classes plus CSS variables or inline styles at the boundary.
 
 ```html
-<div class="opacity:var(--opacity) transform:translateX(var(--x))">
+<div class="(opacity:var(--opacity)) (transform:translateX(var(--x)))">
   ...
 </div>
 ```
@@ -223,9 +223,9 @@ Use existing token names and inspect generated CSS before accepting unfamiliar s
 <DocumentDisclosure title="Token and condition syntax checks">
 Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Use native CSS units for lengths and resolution descriptors in `image-set()`. Do not invent numeric names such as `p-4` unless the project defines that token.
 
-For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `font-family:var(--font-family-brand)` or `font-size:var(--font-size-brand)`. Check compiler diagnostics and generated declarations.
+For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `(font-family:var(--font-family-brand))` or `(font-size:var(--font-size-brand))`. Check compiler diagnostics and generated declarations.
 
-Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. Write `display:flex` for a flex layout and `flex:1` for the native flex shorthand on an item. To change display on hover, write `display:flex:hover`.
+Use explicit dimensions: `(width:20px) (height:20px)` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. Write `flex` for a flex layout and `(flex:1)` for the native flex shorthand on an item. To change display on hover, write `(flex:hover)`.
 
 Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
 

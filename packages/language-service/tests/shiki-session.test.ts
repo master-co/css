@@ -19,10 +19,10 @@ it('batch classifies unique classes without requesting CSS inspections or dispos
   const dispose = vi.spyOn(session, 'dispose')
   const highlighter = await createHighlighter({ langs: ['html'], themes: ['github-dark'] })
   try {
-    highlighter.codeToHast("<div class=\"display:block display:block fg-red invalid\"></div>", {
+    highlighter.codeToHast("<div class=\"(display:block) (display:block) fg-red invalid\"></div>", {
       lang: 'html', theme: 'github-dark', transformers: [transformer({ session })]
     })
-    expect(classify).toHaveBeenCalledExactlyOnceWith(["display:block", 'fg-red', 'invalid'])
+    expect(classify).toHaveBeenCalledExactlyOnceWith(["(display:block)", 'fg-red', 'invalid'])
     expect(inspect).not.toHaveBeenCalled()
     expect(dispose).not.toHaveBeenCalled()
   } finally {
@@ -67,10 +67,10 @@ it('preserves complete HAST across host languages compared with full inspection 
     code(node) { node.properties['data-custom-transformer'] = 'preserved' }
   }
   const cases = [
-    ['html', "<div class=\"brand display:block display:block fg-red:hover invalid\"></div>"],
-    ['tsx', '<div className="brand display:flex" />'],
-    ['mdx', "# Example\n\n<div className=\"display:block fg-red\" />"],
-    ['css', ".x { @safelist \"brand display:block fg-red:hover\"; }"],
+    ['html', "<div class=\"brand (display:block) (display:block) fg-red:hover invalid\"></div>"],
+    ['tsx', '<div className="brand (display:flex)" />'],
+    ['mdx', "# Example\n\n<div className=\"(display:block) fg-red\" />"],
+    ['css', ".x { @safelist \"brand (display:block) fg-red:hover\"; }"],
     ['plaintext', 'brand block fg-red:hover invalid']
   ]
   try {

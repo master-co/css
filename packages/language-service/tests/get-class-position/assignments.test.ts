@@ -14,7 +14,7 @@ test.concurrent('styled', () => {
 })
 
 test.concurrent('escaped single quotes', () => {
-  const target = `content:\\'\\'`
+  const target = `(content:\\'\\')`
   const contents = [`export default () => <div className={'block `, target, `'}></div>`]
   expectClassPosition(target, contents, 'tsx')
 })

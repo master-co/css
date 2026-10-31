@@ -23,14 +23,14 @@ test('public project, codec, query and validation APIs preserve execution contex
       entries: [join(root, 'app.css')],
       baseManifest: {
   "version": 6 as const,
-  "languageVersion": 16 as const
+  "languageVersion": 17 as const
 }
     })
     const manifest: MasterCSSManifest = JSON.parse(serializeMasterCSSManifest(project.manifest))
     expect(flattenMasterCSSManifestVariables(manifest.variables).map(token => token.name)).toContain('color-brand')
     using original = createEngineSync({ manifest: project.manifest })
     using reloaded = createEngineSync({ manifest })
-    const classNames = ['paint-brand', 'color:red', 'padding:red', 'width:var(--dynamic)', 'ordinary-card']
+    const classNames = ['paint-brand', '(color:red)', '(padding:red)', '(width:var(--dynamic))', 'ordinary-card']
     const validation = await validateClassNames(classNames, { manifest })
     for (const result of validation.classes) {
       const inspected = original.inspect(result.className)
@@ -38,10 +38,10 @@ test('public project, codec, query and validation APIs preserve execution contex
       expect(result.matchStatus).toBe(inspected.matchStatus)
       expect(result.browserSupport).toBe('not-checked')
     }
-    expect(validation.classes.find(item => item.className === 'padding:red')).toMatchObject({
+    expect(validation.classes.find(item => item.className === '(padding:red)')).toMatchObject({
       matchStatus: 'matched', cssValueStatus: 'invalid'
     })
-    expect(validation.classes.find(item => item.className === 'width:var(--dynamic)')).toMatchObject({
+    expect(validation.classes.find(item => item.className === '(width:var(--dynamic))')).toMatchObject({
       matchStatus: 'matched', cssValueStatus: 'unknown'
     })
     expect(validation.classes.find(item => item.className === 'ordinary-card')?.matchStatus).toBe('unmatched')
@@ -52,7 +52,7 @@ test('public project, codec, query and validation APIs preserve execution contex
 
 test('canonical suggestions do not replace raw display with a different cascade identity', async () => {
   using tooling = await createToolingSession({ manifest: defaultManifest as unknown as MasterCSSManifest })
-  expect(tooling.canonicalClassNames(['display:block', "display:flex"])).toEqual([])
+  expect(tooling.canonicalClassNames(['(display:block)', "(display:flex)"])).toEqual([])
 })
 
 test('public inspection example distinguishes an empty result, validation states and a failed project', async () => {
@@ -62,14 +62,14 @@ test('public inspection example distinguishes an empty result, validation states
     const empty = await inspectProject(root, 'app.css', [])
     expect(empty).toMatchObject({ status: 'ready', tokens: expect.arrayContaining(['color-brand']), classes: [], diagnostics: [] })
 
-    const report = await inspectProject(root, 'app.css', ['color:red', 'padding:red', 'ordinary-card'])
+    const report = await inspectProject(root, 'app.css', ['(color:red)', '(padding:red)', 'ordinary-card'])
     expect(report.status).toBe('ready')
     if (report.status !== 'ready') throw new Error('Expected a loaded project')
     expect(report.classes.map(item => item.inspection.matchStatus)).toEqual(['matched', 'matched', 'unmatched'])
     expect(report.classes.map(item => item.validation.cssValueStatus)).toEqual(['valid', 'invalid', 'not-checked'])
 
     writeFileSync(join(root, 'app.css'), '@import "@master/css"; @theme dark { --color-brand: red; }')
-    const failure = await inspectProject(root, 'app.css', ['color:red'])
+    const failure = await inspectProject(root, 'app.css', ['(color:red)'])
     expect(failure).toMatchObject({ status: 'error' })
     expect(failure).not.toHaveProperty('classes')
     expect(failure).not.toHaveProperty('tokens')

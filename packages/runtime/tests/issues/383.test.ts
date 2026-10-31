@@ -15,7 +15,7 @@ async function waitForRuntimeRemovalFlush(page: Page) {
 
 test('383', async ({ page }) => {
   await page.evaluate(() => {
-    document.body.innerHTML = "\n      <div class=\"text-align:center\"></div>\n    "
+    document.body.innerHTML = "\n      <div class=\"(text-align:center)\"></div>\n    "
   })
   await init(page)
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
@@ -25,17 +25,17 @@ test('383', async ({ page }) => {
   await waitForRuntimeRemovalFlush(page)
   const retained = await page.evaluate(() => ({
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("text-align:center"),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("(text-align:center)"),
     utilitiesStyleSheet: globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer?.native?.parentStyleSheet
   }))
-  expect(retained.retainedClassNames).toEqual(["text-align:center"])
+  expect(retained.retainedClassNames).toEqual(["(text-align:center)"])
   expect(retained.hasClassUtility).toBe(true)
   expect(retained.utilitiesStyleSheet).toBeDefined()
 
   const afterForcedCleanup = await page.evaluate(() => ({
     removedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(),
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("text-align:center"),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has("(text-align:center)"),
     utilitiesStyleSheet: globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer?.native?.parentStyleSheet
   }))
   expect(afterForcedCleanup).toEqual({

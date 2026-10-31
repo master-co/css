@@ -46,7 +46,7 @@ fn preset_normalization_cannot_upgrade_old_executable_data_silently() {
         "containerConditions",
         "breakpointConditions",
     ] {
-        let mut manifest = serde_json::json!({"version":6,"languageVersion":16});
+        let mut manifest = serde_json::json!({"version":6,"languageVersion":17});
         manifest[field] = serde_json::json!([]);
         assert!(mastercss_compiler::normalize_default_manifest_for_json(&manifest).is_err());
     }
@@ -97,8 +97,8 @@ fn wrapper_ordering_uses_emitted_declarations_when_contents_are_discarded() {
     let mut e = engine(
         "@mixin --blue{color:blue} @utility blue {color:blue}@mixin --red{color:red} @utility red {color:red}",
     );
-    let red = "color:blue@apply(--red)";
-    let blue = "color:red@apply(--blue)";
+    let red = "(color:blue)@apply(--red)";
+    let blue = "(color:red)@apply(--blue)";
     e.ensure_class_rules([red, blue]).unwrap();
     let snapshot = e.snapshot().unwrap();
     assert_eq!(snapshot.rules[0].class_name, blue);
@@ -190,7 +190,7 @@ fn class_contents_wrap_mixins_once_and_preserve_wrapper_order() {
 fn builtin_layers_and_starting_style_work_without_a_preset() {
     let mut e = engine("");
     for layer in ["base", "defaults", "components", "utilities"] {
-        let class = format!("opacity:0@starting-style@layer({layer})@layer({layer})");
+        let class = format!("(opacity:0)@starting-style@layer({layer})@layer({layer})");
         e.ensure_class_rules([class.as_str()]).unwrap();
         assert!(
             e.snapshot()
@@ -200,9 +200,9 @@ fn builtin_layers_and_starting_style_work_without_a_preset() {
         );
     }
     for class in [
-        "color:red@layer(theme)",
-        "color:red@layer(custom)",
-        "color:red@layer(base)@layer(utilities)",
+        "(color:red)@layer(theme)",
+        "(color:red)@layer(custom)",
+        "(color:red)@layer(base)@layer(utilities)",
     ] {
         let result = e.inspect(class).unwrap();
         assert!(result.rules.is_empty(), "{class}");
@@ -210,7 +210,7 @@ fn builtin_layers_and_starting_style_work_without_a_preset() {
     }
     assert!(compile("@custom-media --starting-style (width>1px);").is_err());
     assert!(mastercss_engine::EngineSession::create(
-        r#"{"version":6,"languageVersion":16,"customMedia":{"--starting-style":{"type":"true"}}}"#
+        r#"{"version":6,"languageVersion":17,"customMedia":{"--starting-style":{"type":"true"}}}"#
     ).is_err());
 }
 
@@ -220,9 +220,9 @@ fn named_media_and_mixin_names_are_independent_and_false_discards_contents() {
         "@custom-media --x (width>1px); @custom-media --never false; @mixin --x{&:hover{@contents;}} @utility x {&:hover{@contents;}} @mixin --drop{@contents;} @utility drop {@contents;}",
     );
     e.ensure_class_rules([
-        "color:red@x",
-        "color:blue@apply(--x)",
-        "color:green@never@apply(--drop)",
+        "(color:red)@x",
+        "(color:blue)@apply(--x)",
+        "(color:green)@never@apply(--drop)",
     ])
     .unwrap();
     let output = e.snapshot().unwrap().text;
@@ -251,7 +251,7 @@ fn contents_urls_and_spans_retain_the_calling_file_across_imports() {
         "graph":{"entry":"entry","files":{"entry":caller,"defs":definitions},"edges":[{"from":"entry","specifier":"./defs.css","resolved":"defs"}]},
         "urls":{"entry":"/output/entry.css","defs":"/output/defs.css"},
         "resourceURLs":{"entry":{"card.png":"/caller/card.png"},"defs":{"mask.svg":"/definition/mask.svg","unused.png":"/definition/unused.png"}},
-        "baseManifest":{"version":6,"languageVersion":16}
+        "baseManifest":{"version":6,"languageVersion":17}
     })).unwrap();
     let result = mastercss_compiler::compile_css_stylesheet_graph(&request).unwrap();
     let output = result
@@ -281,9 +281,9 @@ fn supplied_content_suppresses_invalid_fallback_execution_and_keeps_parameters_s
     let mut e = engine(
         "@mixin --needs(--x <integer>){order:var(--x)} @utility needs(--x <integer>) {order:var(--x)} @mixin --wrap{@contents{@apply --needs(nope);}} @utility wrap {@contents{@apply --needs(nope);}} @mixin --parameter(--x:1){@apply --wrap{order:var(--x)}} @utility parameter(--x:1) {@apply --wrap{order:var(--x)}}",
     );
-    let result = e.inspect("color:red@apply(--wrap)").unwrap();
+    let result = e.inspect("(color:red)@apply(--wrap)").unwrap();
     assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
-    e.ensure_class_rules(["color:red@apply(--wrap)"]).unwrap();
+    e.ensure_class_rules(["(color:red)@apply(--wrap)"]).unwrap();
     assert!(e.css_text().contains("color:red"));
     assert!(compile("@mixin --child{& .child{@contents;}} @utility child {& .child{@contents;}} @mixin --wrap(--x:1){@apply --child{order:var(--x)}} @utility wrap(--x:1) {@apply --child{order:var(--x)}} .a{@apply --wrap;}").is_err());
     assert!(compile(".a{@contents;}").is_err());

@@ -17,8 +17,8 @@ export default function BenchmarkFigure(props: BenchmarkFigureProps) {
     <figure className={className}>
       {(title || description) && (
         <div className="mb-md">
-          {title && <h3 className="margin:0 font-lg font-weight:460 fg-text-strong"><Translate>{title}</Translate></h3>}
-          {description && <p className="mt-2xs margin-bottom:0 margin-inline:0 font-sm fg-text-muted"><Translate>{description}</Translate></p>}
+          {title && <h3 className="(margin:0) font-lg (font-weight:460) fg-text-strong"><Translate>{title}</Translate></h3>}
+          {description && <p className="mt-2xs (margin-bottom:0) (margin-inline:0) font-sm fg-text-muted"><Translate>{description}</Translate></p>}
         </div>
       )}
       {children}

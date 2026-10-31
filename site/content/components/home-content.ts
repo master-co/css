@@ -62,9 +62,9 @@ export const installCommand = 'npm create @master/css@rc'
 
 /** Real classes, linted by the tests, that the MCP floor is written in. */
 export const ctaClassRows = [
-  ['display:grid', 'gap-lg', 'grid-cols(3)@md', 'p-xl', 'r-3xl', 'bg-surface-raised', 'shadow-lg', 'fg-text-strong'],
-  ['text-2xl', 'font-semibold', 'tracking-tight', 'fg-blue-60:hover', 'outline-width:2px:focus-visible', 'transition-normal', 'opacity:0@starting-style'],
-  ['container-type:inline-size', 'display:none@media(print)', 'bg-blue-60/0.2', '-mt-sm', 'clamp-lines(2)', 'fg-text-muted', 'r-pill', 'px-lg']
+  ['grid', 'gap-lg', 'grid-cols(3)@md', 'p-xl', 'r-3xl', 'bg-surface-raised', 'shadow-lg', 'fg-text-strong'],
+  ['text-2xl', 'font-semibold', 'tracking-tight', 'fg-blue-60:hover', '(outline-width:2px):focus-visible', 'transition-normal', '(opacity:0)@starting-style'],
+  ['(container-type:inline-size)', 'hidden@media(print)', 'bg-blue-60/0.2', '-mt-sm', 'clamp-lines(2)', 'fg-text-muted', 'r-pill', 'px-lg']
 ] as const
 
 /** Rows of class text for the floor of the MCP figure: the project the server reads. */
@@ -162,15 +162,15 @@ export const lintRules: readonly LintRuleContent[] = [
   {
     title: 'Invalid classes',
     file: 'button.html',
-    mark: 'color:12px',
+    mark: '(color:12px)',
     code: `
-<button class="display:inline-flex color:12px">
+<button class="inline-flex (color:12px)">
   Save changes
 </button>
 `,
     problem: {
-      location: 'button.html:1:36',
-      message: 'Class "color:12px" emits invalid CSS: Invalid CSS value: color:12px.',
+      location: 'button.html:1:28',
+      message: 'Class "(color:12px)" emits invalid CSS: Invalid CSS value: color:12px.',
       severity: 'error',
       source: '@master/css/no-invalid-classes'
     }
@@ -178,20 +178,20 @@ export const lintRules: readonly LintRuleContent[] = [
   {
     title: 'Class order',
     file: 'card.html',
-    mark: 'bg-white font-md display:flex px-md position:relative',
+    mark: 'bg-white font-md flex px-md relative',
     code: `
-<article class="bg-white font-md display:flex px-md position:relative">
+<article class="bg-white font-md flex px-md relative">
   Preview card
 </article>
 `,
     fixPreviewCode: `
-<article class="position:relative display:flex px-md font-md bg-white">
+<article class="relative flex px-md font-md bg-white">
   Preview card
 </article>
 `,
     problem: {
       location: 'card.html:1:17',
-      message: 'Sort classes into the expected order: "position:relative display:flex px-md font-md bg-white".',
+      message: 'Sort classes into the expected order: "relative flex px-md font-md bg-white".',
       severity: 'warning',
       source: '@master/css/sort-classes'
     }
@@ -201,17 +201,17 @@ export const lintRules: readonly LintRuleContent[] = [
     file: 'settings.html',
     mark: 'm-md',
     code: `
-<section class="display:grid gap-md m-md m-sm">
+<section class="grid gap-md m-md m-sm">
   Settings
 </section>
 `,
     fixPreviewCode: `
-<section class="display:grid gap-md m-sm">
+<section class="grid gap-md m-sm">
   Settings
 </section>
 `,
     problem: {
-      location: 'settings.html:1:37',
+      location: 'settings.html:1:29',
       message: 'Remove class "m-md"; it is overridden by class "m-sm" in generated CSS.',
       severity: 'warning',
       source: '@master/css/no-conflicting-classes'
@@ -236,15 +236,15 @@ export const lintRules: readonly LintRuleContent[] = [
   {
     title: 'Theme tokens',
     file: 'alert.html',
-    mark: 'color:#dc2626',
+    mark: '(color:#dc2626)',
     code: `
-<p class="color:#dc2626">
+<p class="(color:#dc2626)">
   Destructive action
 </p>
 `,
     problem: {
       location: 'alert.html:1:11',
-      message: 'Raw value "#dc2626" is not approved for class "color:#dc2626". Use a token or allow the value explicitly.',
+      message: 'Raw value "#dc2626" is not approved for class "(color:#dc2626)". Use a token or allow the value explicitly.',
       severity: 'warning',
       source: '@master/css/no-unapproved-raw-values'
     }
@@ -253,8 +253,8 @@ export const lintRules: readonly LintRuleContent[] = [
     title: 'Fix previews',
     file: 'card.html',
     code: `
-<article class="bg-white font-md display:flex px-md position:relative"> <!-- [!code --] -->
-<article class="position:relative display:flex px-md font-md bg-white"> <!-- [!code ++] -->
+<article class="bg-white font-md flex px-md relative"> <!-- [!code --] -->
+<article class="relative flex px-md font-md bg-white"> <!-- [!code ++] -->
   Preview card
 `,
     problem: {
@@ -270,19 +270,19 @@ export const lintRules: readonly LintRuleContent[] = [
 export const agentSession = {
   file: 'plan-card.html',
   code: `
-<article class="bg-surface-raised p-lg display:grid gap-md r-xl">
+<article class="bg-surface-raised p-lg grid gap-md r-xl">
   <h3 class="text-xl font-medium mt-sm mt-md">Pro plan</h3>
   <p class="fg-text-muted text-sm">Unlimited projects</p>
 </article>
 `,
   fixedCode: `
-<article class="display:grid gap-md p-lg r-xl bg-surface-raised">
+<article class="grid gap-md p-lg r-xl bg-surface-raised">
   <h3 class="mt-sm text-xl font-medium">Pro plan</h3>
   <p class="text-sm fg-text-muted">Unlimited projects</p>
 </article>
 `,
   problems: [
-    { location: 'plan-card.html:1:17', message: 'Sort classes into the expected order: "display:grid gap-md p-lg r-xl bg-surface-raised".', severity: 'warning', source: '@master/css/sort-classes' },
+    { location: 'plan-card.html:1:17', message: 'Sort classes into the expected order: "grid gap-md p-lg r-xl bg-surface-raised".', severity: 'warning', source: '@master/css/sort-classes' },
     { location: 'plan-card.html:2:14', message: 'Sort classes into the expected order: "mt-md mt-sm text-xl font-medium".', severity: 'warning', source: '@master/css/sort-classes' },
     { location: 'plan-card.html:2:40', message: 'Remove class "mt-md"; it is overridden by class "mt-sm" in generated CSS.', severity: 'warning', source: '@master/css/no-conflicting-classes' },
     { location: 'plan-card.html:3:13', message: 'Sort classes into the expected order: "text-sm fg-text-muted".', severity: 'warning', source: '@master/css/sort-classes' }

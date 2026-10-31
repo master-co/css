@@ -21,7 +21,7 @@ describe('browser engine binding', () => {
     const node = await createNodeEngineBindingSession({ program, emittedGlobals }, { binding: 'wasm' })
     try {
       expect(browser.binding).toBe('js')
-      const classes = ['fg-red-60', 'p-md:hover@sm', 'animate-fade', 'grid-cols(3)', 'color:red!']
+      const classes = ['fg-red-60', 'p-md:hover@sm', 'animate-fade', 'grid-cols(3)', '(color:red)!']
       expect(browser.ensureClassRules(classes)).toEqual(node.ensureClassRules(classes))
       expect(browser.executionState(classes)).toEqual(node.executionState(classes))
       expect(browser.registerEmittedGlobals({ keyframes: { fade: 1 } })).toEqual(node.registerEmittedGlobals({ keyframes: { fade: 1 } }))

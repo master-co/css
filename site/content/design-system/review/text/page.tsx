@@ -15,9 +15,9 @@ function FloatExample() {
     <Demo title="Text flow" caption="The width and float belong to the lesson; text stays in normal flow. Scroll the preview horizontally when space is limited.">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard focus enables native horizontal scrolling. */}
       <div className="review-text-flow-viewport" role="region" aria-label="Text flow preview" tabIndex={0} data-preview-scroll="">
-        <DemoSurface className="display:flow-root p-md font-sm review-text-flow-content">
-          <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left height:auto width:7rem mb-sm mr-md r-sm" />
-          <DemoText className="margin:0">{bodyCopy}</DemoText>
+        <DemoSurface className="flow-root p-md font-sm review-text-flow-content">
+          <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="(float:left) (height:auto) (width:7rem) mb-sm mr-md r-sm" />
+          <DemoText className="(margin:0)">{bodyCopy}</DemoText>
         </DemoSurface>
       </div>
     </Demo>

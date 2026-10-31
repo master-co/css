@@ -32,9 +32,9 @@ export function verifyLintExamples() {
     assert.match(invalidMessages[0].message, /font-size:16.*invalid CSS/)
     assert.equal(lint.verifyAndFix(invalid.text, config('no-invalid-classes')).fixed, false)
     assert.deepEqual(lint.verify(html('font-md'), config('no-invalid-classes')), [])
-    assert.deepEqual(lint.verify(html('font-size:16px'), config('no-invalid-classes')), [])
+    assert.deepEqual(lint.verify(html('(font-size:16px)'), config('no-invalid-classes')), [])
     assert.equal(lint.verify(html('btn'), config('no-invalid-classes', { disallowUnknownClass: true })).length, 1)
-    assert.deepEqual(lint.verify(html('margin:2.5rem@sm margin:3.125rem@md'), config('no-conflicting-classes')), [])
+    assert.deepEqual(lint.verify(html('(margin:2.5rem)@sm (margin:3.125rem)@md'), config('no-conflicting-classes')), [])
     let pairsChecked = 0
     for (const [heading, rule] of [['Sort classes', 'sort-classes'], ['Prefer canonical classes', 'prefer-canonical-classes'], ['No conflicting classes', 'no-conflicting-classes']]) {
       for (const fence of deliveryFences(section(heading)).filter(fence => fence.language === 'mcss')) {
@@ -46,7 +46,7 @@ export function verifyLintExamples() {
       }
     }
     assert.equal(pairsChecked, 4, 'Every displayed before/after lint example is exercised')
-    assert.equal(lint.verifyAndFix(html('margin:1.25rem margin:0.625rem'), config('no-conflicting-classes')).output, html('margin:1.25rem'))
+    assert.equal(lint.verifyAndFix(html('(margin:1.25rem) (margin:0.625rem)'), config('no-conflicting-classes')).output, html('(margin:1.25rem)'))
     const partial = deliveryFences(section('No conflicting classes')).find(fence => fence.text.includes('border-style:solid'))!
     const partialResult = lint.verifyAndFix(html(partial.text.trim()), config('no-conflicting-classes'))
     assert.equal(partialResult.messages.length, 1)
@@ -67,8 +67,8 @@ export function verifyLintExamples() {
     // ESLint arrays replace defaults; service arrays below extend them.
     const custom = config('sort-classes')
     custom[0].settings = { '@master/css': { manifest: preset, classFunctions: ['cn'] } }
-    assert.equal(lint.verify("clsx('bg-white display:flex')", custom).length, 0)
-    assert.equal(lint.verify("cn('bg-white display:flex')", custom).length, 1)
+    assert.equal(lint.verify("clsx('bg-white flex')", custom).length, 0)
+    assert.equal(lint.verify("cn('bg-white flex')", custom).length, 1)
   } finally { rmSync(root, { recursive: true, force: true }) }
 }
 

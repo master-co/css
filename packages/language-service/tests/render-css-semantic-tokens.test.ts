@@ -187,7 +187,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
     @mixin --headings { @media (--all) { @contents; } } @utility headings { @media (--all) { @contents; } }
 
     @mixin --btn {
-        @safelist "fg-blue align-items:center fg-primary:hover@md";
+        @safelist "fg-blue (align-items:center) fg-primary:hover@md";
 
         @media (--h)>=sm&h<lg {
           @safelist "sr-only";
@@ -199,7 +199,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
           }
         }
       } @utility btn {
-        @safelist "fg-blue align-items:center fg-primary:hover@md";
+        @safelist "fg-blue (align-items:center) fg-primary:hover@md";
 
         @media (--h)>=sm&h<lg {
           @safelist "sr-only";

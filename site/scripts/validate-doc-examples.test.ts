@@ -781,7 +781,7 @@ function isMigrationVendorClass(example: ExampleCandidate): boolean {
 function isExpectedDiagnostic(candidate: string, file: string): boolean {
   const relativePath = relativeSitePath(file)
   const diagnosticsByPath: [RegExp, Set<string>][] = [
-    [/guide\/code-linting\//, new Set(['font-size:16'])],
+    [/guide\/code-linting\//, new Set(['(font-size:16)'])],
     [/guide\/introduction\//, new Set(['font', 'font:'])],
     [/guide\/conditional-queries\//, new Set(['hidden@sm<=h', 'hidden@sm<=h<=lg'])],
     [/guide\/scanning-latent-classes\//, new Set(['card'])]
@@ -940,12 +940,12 @@ test('vendor migration snippets parse and the documented engine wrapper forwards
   const wrapper = exports.wrapEngine!(inner)
   try {
     assert.equal(wrapper.binding, inner.binding)
-    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
-    wrapper.ensureClassRules(['display:block'])
-    assert.deepEqual(wrapper.executionState(['display:block']), inner.executionState(['display:block']))
-    assert.ok(wrapper.executionState(['display:block']).classes[0].references.length)
-    wrapper.deleteClassRules(['display:block'])
-    assert.deepEqual(wrapper.executionState(['display:block']).classes[0].references, [])
+    assert.deepEqual(wrapper.executionState(['(display:block)']).classes[0].references, [])
+    wrapper.ensureClassRules(['(display:block)'])
+    assert.deepEqual(wrapper.executionState(['(display:block)']), inner.executionState(['(display:block)']))
+    assert.ok(wrapper.executionState(['(display:block)']).classes[0].references.length)
+    wrapper.deleteClassRules(['(display:block)'])
+    assert.deepEqual(wrapper.executionState(['(display:block)']).classes[0].references, [])
     assert.deepEqual(wrapper.snapshot(), inner.snapshot())
   } finally { wrapper[Symbol.dispose]() }
   assert.throws(() => inner.executionState([]), /disposed/)

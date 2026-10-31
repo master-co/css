@@ -89,7 +89,7 @@ impl LintSession {
         let expected = normalize_composition_declarations(&merged_declarations, recipe);
         let mut candidates = Vec::new();
         for entry in [left, right] {
-            let candidate = format!("{}:{}{}", recipe.target_key, entry.value, entry.suffix);
+            let candidate = format!("({}:{}){}", recipe.target_key, entry.value, entry.suffix);
             let candidate = self
                 .suggest_canonical_class_name(&candidate, options)?
                 .unwrap_or(candidate);
@@ -196,17 +196,15 @@ impl LintSession {
             if semantics.kind != mastercss_engine::ClassSemanticKind::Declaration {
                 continue;
             }
-            let (Some(key_token), Some(value)) = (semantics.key_token, semantics.value_token)
-            else {
+            let source = class_name.strip_suffix('!').unwrap_or(class_name);
+            let Some(Ok(head)) = mastercss_lexer::parse_native_declaration(source) else {
                 continue;
             };
-            if !self
-                .engine
-                .has_named_tokens_for_key(key_token.trim_end_matches(':'))
-            {
+            let key = &source[head.property.clone()];
+            if !self.engine.has_named_tokens_for_key(key) {
                 continue;
             }
-            let segments = split_top_level(&value, '|')
+            let segments = split_top_level(&source[head.value.clone()], '|')
                 .into_iter()
                 .filter(|segment| !(segment.starts_with("var(--") && segment.ends_with(')')))
                 .map(str::to_owned)
@@ -225,7 +223,7 @@ impl LintSession {
             properties.dedup();
             candidates.push(RawValueCandidateIr {
                 class_name: class_name.clone(),
-                key: key_token.trim_end_matches(':').to_owned(),
+                key: key.to_owned(),
                 segments,
                 properties,
             });

@@ -429,6 +429,24 @@
           }
         },
         {
+          "match": "(?<![_a-zA-Z0-9-])(\\()(-{0,2}[_a-zA-Z][_a-zA-Z0-9-]*)(:)",
+          "captures": {
+            "1": {
+              "name": "punctuation.section.declaration.begin.master-css"
+            },
+            "2": {
+              "name": "support.type.property-name.master-css"
+            },
+            "3": {
+              "name": "keyword.operator.master-css"
+            }
+          }
+        },
+        {
+          "match": "\\)(?=[:@!_\\[\\s'\"]|$)",
+          "name": "punctuation.section.declaration.end.master-css"
+        },
+        {
           "begin": "\\b(var)(\\()",
           "beginCaptures": {
             "1": {
@@ -467,15 +485,8 @@
           "name": "entity.other.attribute-name.pseudo-class.master-css"
         },
         {
-          "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(?![_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
-          "captures": {
-            "1": {
-              "name": "support.type.property-name.master-css"
-            },
-            "2": {
-              "name": "keyword.operator.master-css"
-            }
-          }
+          "match": "(?<![:@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?=:(?![_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{))",
+          "name": "entity.other.attribute-name.class.master-css"
         },
         {
           "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)",
