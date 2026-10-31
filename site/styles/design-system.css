@@ -1,7 +1,10 @@
 
 @layer components {
   .ds-overview { width: 100%; min-width: 0; max-width: 74rem; margin-inline: auto; padding: 6rem 1.25rem 5rem; }
-  .ds-overview-header { max-width: 48rem; margin-bottom: 2.5rem; }
+  .ds-overview-header { margin-bottom: 2rem; }
+  .ds-overview-header > :not(.doc-article-rule) { max-width: 48rem; }
+  /* A wide page, not a reading column: the header's hairline starts on the text edge and runs the page's width, with less room than an article's. */
+  .ds-overview-header .doc-article-rule { margin: 1.75rem 0 0; }
   .ds-overview-header h1 { margin-bottom: .75rem; }
   .ds-overview-header p { color: var(--color-text-muted); font-size: 1rem; line-height: 1.7; }
   .ds-overview > h2 { margin: 4rem 0 .75rem; font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 560; letter-spacing: -.025em; line-height: 1.3; }
