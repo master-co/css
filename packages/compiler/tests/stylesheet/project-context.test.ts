@@ -96,11 +96,12 @@ test('standalone transformation remains opt-in and keeps unrelated CSS byte-for-
   expect(used.code).not.toContain('--color-brand:red')
 })
 
-test('native styles animating their own keyframes anchor them and receive the tokens those frames read', async () => {
+test('native styles keep their own keyframes verbatim and receive the tokens those frames read', async () => {
   const f = fixture()
-  const own = await transformStylesheet(f.file, '.card{animation:spin 1s}@keyframes spin{to{opacity:.5}}', f.options)
-  expect(own.transformed).toBe(true)
-  expect(own.code).toMatch(/@media only all,\(master-css-keyframe-[^)]+\)\{:not\(\*\)\{--master-css-slot:0\}@keyframes spin\{/)
+  const ownSource = '.card{animation:spin 1s}@keyframes spin{to{opacity:.5}}'
+  const own = await transformStylesheet(f.file, ownSource, f.options)
+  expect(own.transformed).toBe(false)
+  expect(own.code).toBe(ownSource)
   const themed = await transformStylesheet(f.file, '.card{animation:spin 1s}@keyframes spin{to{color:var(--color-action)}}', f.options)
   expect(themed.transformed).toBe(true)
   expect(themed.code).toContain('--color-brand:red')

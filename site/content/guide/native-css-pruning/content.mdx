@@ -391,11 +391,11 @@ Keyframes use the same file policy as native classes:
 @keyframes external-enter { from { opacity: 0; } to { opacity: 1; } }
 ```
 
-Using `animate-reveal` retains the `reveal` definition. The safelist retains `external-enter` for a JavaScript consumer without generating an animation declaration. Definitions used only by a pruned class or unused mixin are removed. Retained definitions keep tokens referenced in their frame bodies.
+Pruned keyframes become on-demand definitions, like tokens: they leave the native output, and the output that uses one emits it with the generated CSS. Using `animate-reveal` emits `reveal`. The safelist emits `external-enter` for a JavaScript consumer without generating an animation declaration. Definitions used only by a pruned class or unused mixin are not emitted. An emitted definition brings the tokens its frames read.
 
-Without a pruning policy, native classes and keyframes remain in the output. `@preserve native;` takes precedence within its file. Neither directive changes imported files' policies; package styles preserve their existing default unless they opt in. `preserveNativeCSS: false` suppresses native delivery even when a name is safelisted. Definition metadata remains available for compilation and inspection.
+Without a pruning policy, native classes and keyframes remain in the output in place. `@preserve native;` takes precedence within its file. Neither directive changes imported files' policies; package styles preserve their existing default unless they opt in. `preserveNativeCSS: false` suppresses native delivery; on-demand definitions are still emitted where they are used.
 
-Same-name definitions keep their conditions, layers and document order. Runtime resource slots can be empty while preserving the containing layer's identity and order. See the [keyframe contract](/reference/directives/theme#native-keyframes).
+Emitted definitions keep their conditions, named layers and declaration order. Declare on-demand keyframes in named layers and with absolute `url()` values; see the [keyframe contract](/reference/directives/theme#native-keyframes).
 
 ---
 
@@ -405,5 +405,5 @@ Same-name definitions keep their conditions, layers and document order. Runtime 
 - Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
 - Check every source boundary: `@prune native;` does not propagate to imports.
 - Use `@safelist` for native classes used by bounded external systems.
-- Keep animation definitions with their owning stylesheet and check retained keyframe dependencies.
+- Keep animation definitions with their owning stylesheet; on-demand keyframes need named layers and absolute URLs.
 - Use `@preserve native;` for files with external class vocabularies when project-wide pruning is enabled.

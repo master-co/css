@@ -7,7 +7,7 @@ use mastercss_compiler::{
     analyze_standalone_directives, compile_css_stylesheet_graph_input, lower_css_directives,
     resolve_prepared_css_stylesheet_graph,
 };
-use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition};
+use mastercss_schema::CssDirectiveManifestInput;
 use serde_json::Value;
 
 use super::{push_unique, resolve_source_pattern};
@@ -117,24 +117,13 @@ pub(super) fn compile_manifest_graph_with_output(
         // `css` is positioned delivery output. Preserve the separate legacy
         // generatedCSS metadata view, whose definitions retain individual
         // containers rather than merging anonymous-layer identity.
-        let native = result
-            .directives
-            .style_definitions
-            .as_deref()
-            .unwrap_or_default()
-            .iter()
-            .filter(|definition| {
-                matches!(
-                    definition,
-                    CssDirectiveStyleDefinition::Native { name: None, .. }
-                        | CssDirectiveStyleDefinition::Apply { .. }
-                )
-            })
-            .cloned()
-            .collect::<Vec<_>>();
         result.directives.generated_css = lower_css_directives(
             &CssDirectiveManifestInput::default(),
-            &native,
+            result
+                .directives
+                .style_definitions
+                .as_deref()
+                .unwrap_or_default(),
             &[],
             &LowerCssDirectivesOptions {
                 base_manifest: Some(result.manifest.clone()),

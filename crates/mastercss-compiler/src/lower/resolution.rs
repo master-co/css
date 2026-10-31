@@ -1,9 +1,8 @@
 use super::{
-    CompileManifestOptions, CompilerError, CssDirectiveConditionPathEntry,
-    CssDirectiveManifestInput, EngineSession, ResolvedStyleBranch, UtilityLayerName, Value,
+    CompileManifestOptions, CompilerError, CssDirectiveManifestInput, EngineSession, Value,
 };
 
-pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
+pub(crate) fn directive_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {
         message: message.into(),
         filename: "manifest.css".into(),
@@ -11,7 +10,7 @@ pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
     }
 }
 
-pub(super) fn engine_for_manifest(manifest: &Value) -> Result<EngineSession, CompilerError> {
+pub(crate) fn engine_for_manifest(manifest: &Value) -> Result<EngineSession, CompilerError> {
     let json = serde_json::to_string(manifest)
         .map_err(|error| directive_error(format!("Cannot serialize compiler manifest: {error}")))?;
     EngineSession::create(&json).map_err(|error| directive_error(error.to_string()))
@@ -79,31 +78,4 @@ pub(super) fn delivered_mixins(
             .filter(|item| needed.contains(&item.name))
             .collect(),
     ))
-}
-
-pub(super) fn resolve_configured_branches(
-    path: &[CssDirectiveConditionPathEntry],
-    engine: &mut EngineSession,
-    selector: &str,
-    _layer: Option<UtilityLayerName>,
-) -> Result<Vec<ResolvedStyleBranch>, CompilerError> {
-    let mut branches = vec![ResolvedStyleBranch {
-        selector: selector.into(),
-        conditions: Vec::new(),
-    }];
-    for entry in path {
-        match entry {
-            CssDirectiveConditionPathEntry::Condition { value } => {
-                for branch in &mut branches {
-                    branch.conditions.push(value.clone());
-                }
-            }
-        }
-    }
-    for branch in &mut branches {
-        branch.selector = engine
-            .resolve_style_selector(&branch.selector)
-            .map_err(|error| directive_error(error.to_string()))?;
-    }
-    Ok(branches)
 }

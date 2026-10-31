@@ -173,9 +173,6 @@ pub struct EngineSnapshotIr {
     pub rules: Vec<GeneratedRuleIr>,
     pub resources: EngineResourcesIr,
     pub text: String,
-    /// Materialized native stylesheet inputs in ensureStylesheetResources order.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub stylesheets: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -290,8 +287,6 @@ pub struct EngineKeyframeResourceIr {
     pub text: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub containers: Vec<crate::KeyframeContainer>,
-    #[serde(default)]
-    pub anchored: bool,
     pub ref_count: u32,
     pub dependencies: Vec<String>,
 }

@@ -104,10 +104,6 @@ function normalizeStylesheetModuleIds() {
   return new Set<string>(MASTER_CSS_MODULE_IDS)
 }
 
-function createStylesheetImportPattern() {
-  return /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)/
-}
-
 export function cleanStyleRequest(id: string) {
   // Virtual module queries are part of the host's opaque source identity.
   if (id.startsWith('\0')) return id
@@ -216,10 +212,6 @@ export function removeStylesheetImports(source: string) {
 }
 
 
-export function hasStylesheetImport(source: string) {
-  return removeStylesheetImports(source).replaced
-}
-
 export function hasMasterStyleEntrypoint(source: string) {
   return inspectCSS(source).hasMasterEntry
 }
@@ -242,10 +234,6 @@ export function resolveMasterStyleSource(
   }
   if (!isMasterStyleSource(unresolvedPackageSource.source)) return
   return resolveStylesheetImportGraph(file, source, projectDir)
-}
-
-export function isMasterCSSModuleId(id: string) {
-  return normalizeStylesheetModuleIds().has(id)
 }
 
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
@@ -299,31 +287,6 @@ function resolveMasterCSSPackageCompileSource(projectDir?: string) {
     source: removeMasterStyleDirectives(removeStylesheetImports(graph.source).code).code,
     dependencies: graph.dependencies
   }
-}
-
-export async function createMasterCSSPackageHostSource(
-  projectDir: string | undefined,
-  options: CompileStylesheetOptions
-) {
-  const graph = resolveMasterCSSPackageCompileSource(projectDir)
-  const result = await compileStylesheet(graph.dependencies[0] || '@master/css', graph.source, {
-    ...options,
-    preserveNativeCSS: true
-  })
-  const nativeCSS = getNativeCSS(result)
-  const finalizedResult = createManifestFromCSSResult(result, options)
-  return {
-    source: renderCompiledManifestCSS({
-      manifest: finalizedResult.manifest,
-      nativeCSS
-    }).css,
-    dependencies: graph.dependencies
-  }
-}
-
-export function hasPreserveNativeDirective(source: string) {
-  return findStylesheetDirectiveStatements(source)
-    .some((statement) => statement.atRuleName === 'preserve' && statement.modifiers.includes('native'))
 }
 
 export function isMasterStyleSource(source: string) {
@@ -389,7 +352,7 @@ export async function compileRenderedStylesheet(
     // Include expanded native mixin applications as well as parsed native CSS.
     nativeCSS: finalizedResult.css,
     classNames: compileOptions.classes,
-    emittedGlobals: { ...options.emittedGlobals, suppressedKeyframes: finalizedResult.suppressedKeyframes }
+    emittedGlobals: options.emittedGlobals
   })
   return {
     ...result,
@@ -397,7 +360,7 @@ export async function compileRenderedStylesheet(
     warnings: finalizedResult.warnings,
     notices: finalizedResult.notices,
     css: renderedCSS.css,
-    sourceMap: outputMap(renderedCSS.css, renderedCSS.outputMappings, renderedCSS.stylesheetEdits[0]),
+    sourceMap: outputMap(renderedCSS.css, renderedCSS.outputMappings),
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     emittedGlobals: renderedCSS.emittedGlobals,
@@ -407,17 +370,12 @@ export async function compileRenderedStylesheet(
 }
 
 function createEmptyStyleEntryEmittedGlobals(): Required<MasterCSSEmittedGlobals> {
-  return {
-    variables: {},
-    keyframes: {},
-    keyframeSlots: [],
-    suppressedKeyframes: []
-  }
+  return { variables: {}, keyframes: {} }
 }
 
 function hasEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals | undefined) {
   return Boolean(
-    Object.keys(emittedGlobals?.variables || {}).length || Object.keys(emittedGlobals?.keyframes || {}).length || emittedGlobals?.keyframeSlots?.length
+    Object.keys(emittedGlobals?.variables || {}).length || Object.keys(emittedGlobals?.keyframes || {}).length
   )
 }
 
@@ -524,7 +482,7 @@ export async function transformLocalStylesheet(
     warnings: finalizedResult.warnings,
     notices: finalizedResult.notices,
     css: generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css,
-    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css, generatedGlobals === 'separate' ? [] : renderedCSS.outputMappings, renderedCSS.stylesheetEdits[0]),
+    sourceMap: outputMap(generatedGlobals === 'separate' ? renderedCSS.nativeCSS : renderedCSS.css, generatedGlobals === 'separate' ? [] : renderedCSS.outputMappings),
     generatedCSS: renderedCSS.generatedCSS
   }
   return {
@@ -645,12 +603,7 @@ async function compileMasterCSSPackage(projectDir: string | undefined, options: 
 function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
   return {
     css,
-    emittedGlobals: {
-      variables: {},
-    keyframes: {},
-    keyframeSlots: [],
-    suppressedKeyframes: []
-    }
+    emittedGlobals: { variables: {}, keyframes: {} }
   }
 }
 

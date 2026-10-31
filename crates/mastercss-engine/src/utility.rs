@@ -4,22 +4,15 @@ use super::{
 };
 use mastercss_lexer::concat_text;
 
-/// The variable a utility's token `key` names: an explicit alias first, then the
-/// first `~namespace` reference that declares `namespace-key`. Resolving on demand
-/// spares session creation from mapping every token of every utility.
+/// The variable a utility's token `key` names: the first `~namespace` reference
+/// that declares `namespace-key`. Resolving on demand spares session creation from
+/// mapping every token of every utility.
 pub(crate) fn utility_variable<'a>(
     utility: &'a UtilityDefinition,
     key: &str,
     manifest: &'a Program,
 ) -> Option<&'a str> {
     let variables = &manifest.compiled_variables;
-    if let Some((_, name)) = utility
-        .variable_aliases
-        .iter()
-        .find(|(alias, name)| alias == key && !alias.contains('_') && variables.contains_key(name))
-    {
-        return Some(name);
-    }
     if excludes_key(utility, key) || !is_utility_key(key) {
         return None;
     }
@@ -39,14 +32,6 @@ pub(crate) fn utility_variable_entries(
 ) -> Vec<(String, String)> {
     let mut entries = Vec::new();
     let mut seen = HashSet::default();
-    for (key, name) in &utility.variable_aliases {
-        if !key.contains('_')
-            && manifest.compiled_variables.contains_key(name)
-            && seen.insert(key.clone())
-        {
-            entries.push((key.clone(), name.clone()));
-        }
-    }
     for reference in &utility.variable_alias_refs {
         let namespace = reference.strip_prefix('~').unwrap_or(reference.as_str());
         for name in &manifest.compiled_variable_order {
@@ -99,7 +84,6 @@ pub(crate) fn layer_index(layer: UtilityLayerName) -> usize {
 
 pub(crate) fn compare_stored_rules(left: &StoredRule, right: &StoredRule) -> Ordering {
     compare_rule_priority(&left.ir, &right.ir)
-        .then_with(|| left.manifest_order.cmp(&right.manifest_order))
 }
 
 /// Compare generated rule order within one CSS layer. Hosts that reason about

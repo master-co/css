@@ -1,6 +1,6 @@
 // Rule order within a CSS layer, as `compare_stored_rules` in the engine's utility.rs
 // sorts it: sort tier, condition features and text, selector priority, utility type,
-// value source, declarations, key, then manifest order.
+// value source, declarations, then key.
 import { compareText, isAsciiDigit } from './text'
 import type { ConditionBound, ConditionFeature, GeneratedRule } from './types'
 
@@ -8,7 +8,6 @@ export interface StoredRule {
   ir: GeneratedRule
   /** The condition features rules sort by. The reported ones write `-0` as `0`, as the Rust JSON does. */
   features: ConditionFeature[]
-  manifestOrder: number
 }
 
 const sign = (value: number) => value < 0 ? -1 : value > 0 ? 1 : 0
@@ -95,5 +94,4 @@ export function compareStoredRules(left: StoredRule, right: StoredRule) {
     || sign((a.priority.valuePriority ?? 0) - (b.priority.valuePriority ?? 0))
     || naturalCompare(a.priority.sortKey ?? '', b.priority.sortKey ?? '')
     || naturalCompare(a.key, b.key)
-    || sign(left.manifestOrder - right.manifestOrder)
 }

@@ -1,7 +1,6 @@
 use super::{
     EngineError, EngineResourcesIr, EngineSession, EngineVariableResourceIr, HashSet,
     NativeDeclarationCandidate, NativeDeclarationCandidateIr, UtilityDefinition, UtilityEmit,
-    UtilityLayerName,
 };
 use mastercss_lexer::concat_text;
 
@@ -78,29 +77,25 @@ impl EngineSession {
                 self.variable_counts.insert(name.clone(), *count);
             }
         }
-        for (name, count) in self.emitted_globals.keyframes.clone() {
-            if count > 0 && !self.emitted_globals.suppressed_keyframes.contains(&name) {
-                self.keyframe_counts.insert(name.clone(), count);
-                if let Some(definition) = self
-                    .compiled
-                    .keyframes
-                    .iter()
-                    .find(|definition| definition.id == name)
-                {
-                    let dependencies = definition.dependencies.clone();
-                    self.register_rule_variables(&dependencies);
-                }
+        // Keyframes the host emitted register their dependencies in id order, then
+        // safelisted ones in definition order.
+        for (id, count) in self.emitted_globals.keyframes.clone() {
+            let Some(definition) = self
+                .compiled
+                .keyframes
+                .iter()
+                .find(|definition| definition.id == id)
+            else {
+                continue;
+            };
+            if count > 0 {
+                let dependencies = definition.dependencies.clone();
+                self.keyframe_counts.insert(id, count);
+                self.register_rule_variables(&dependencies);
             }
         }
         for definition in self.compiled.keyframes.clone() {
-            if self
-                .emitted_globals
-                .suppressed_keyframes
-                .contains(&definition.id)
-            {
-                continue;
-            }
-            if definition.retained && !self.keyframe_counts.contains_key(&definition.id) {
+            if definition.safelisted && !self.keyframe_counts.contains_key(&definition.id) {
                 self.keyframe_counts.insert(definition.id, 1);
                 self.register_rule_variables(&definition.dependencies);
             }
@@ -158,11 +153,6 @@ impl EngineSession {
             id: concat_text!("native:", property),
             name: None,
             utility_type: 0,
-            order: Some(0),
-            layer: UtilityLayerName::Utilities,
-            keys: Vec::new(),
-            alias_groups: Vec::new(),
-            variable_aliases: Vec::new(),
             variable_alias_refs: Vec::new(),
             native_fallback: true,
             emit: UtilityEmit::Property { property },

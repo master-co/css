@@ -39,7 +39,7 @@ function invalidEmittedGlobals(message: string): never {
   })
 }
 
-const EMITTED_GLOBALS_FIELDS = new Set(['variables', 'keyframes', 'keyframeSlots', 'suppressedKeyframes'])
+const EMITTED_GLOBALS_FIELDS = new Set(['variables', 'keyframes'])
 
 /** Accepts what the engine's emitted globals schema accepts, as the Wasm engine binding does. */
 function emittedGlobals(globals: MasterCSSEmittedGlobals | undefined) {

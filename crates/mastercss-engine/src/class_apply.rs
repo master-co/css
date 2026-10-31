@@ -296,7 +296,6 @@ impl EngineSession {
                 keyframe_names: animation.names,
                 retain_all_keyframes: animation.retain_all,
             },
-            manifest_order: 0,
             matcher_type: None,
             state_token: String::new(),
         }]

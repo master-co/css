@@ -184,7 +184,7 @@ function storeApplication(className: string, expansion: NonNullable<ReturnType<t
   if (selectors.length === 1) ir.selectorText = selectors[0]
   if (variableNames.length) ir.variableNames = variableNames
   addAnimationReferences(ir, declarations, program)
-  return [{ ir, features, manifestOrder: 0 }]
+  return [{ ir, features }]
 }
 
 /** The rule of an `@apply` class, or undefined when the class has no `@apply` suffix. */

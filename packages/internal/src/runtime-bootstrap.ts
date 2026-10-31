@@ -2,13 +2,11 @@ export const MASTER_CSS_RUNTIME_BOOTSTRAP_ID = 'virtual:master-css-runtime'
 export const RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID = `\0${MASTER_CSS_RUNTIME_BOOTSTRAP_ID}`
 
 export interface MasterCSSRuntimeBootstrapOptions {
-  /** Expression for the runtime `stylesheetDelivery` option. */
-  readonly stylesheetDelivery?: string
   /** Progressive pages defer the engine, so the runtime program loads only if it starts. */
   readonly progressive?: boolean
 }
 
-export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, progressive }: MasterCSSRuntimeBootstrapOptions = {}) {
+export function createMasterCSSRuntimeBootstrapSource({ progressive }: MasterCSSRuntimeBootstrapOptions = {}) {
   return [
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
     ...(progressive
@@ -44,7 +42,6 @@ export function createMasterCSSRuntimeBootstrapSource({ stylesheetDelivery, prog
     `    const nextRuntime = await MasterCSSRuntime.start({`,
     `      program,`,
     `      emittedGlobals,`,
-    ...(stylesheetDelivery ? [`      stylesheetDelivery: ${stylesheetDelivery},`] : []),
     `      onDiagnostic: diagnostic => console.error(diagnostic)`,
     `    })`,
     `    if (generation !== startGeneration) {`,

@@ -60,8 +60,6 @@ fn identities(project: &ProjectManifestIr, root: &Path) -> Vec<Value> {
             let file = definition["source"]["file"].as_str().unwrap();
             json!({
                 "id": definition["id"],
-                "ownerId": definition["ownerId"],
-                "slotId": definition["slotId"],
                 "file": file.strip_prefix(root.as_ref()).unwrap(),
             })
         })
@@ -75,9 +73,8 @@ fn keyframe_identity_is_independent_of_the_checkout_path() {
     let keyframes = identities(&first.load(), &first.0);
     assert_eq!(keyframes, identities(&second.load(), &second.0));
     assert_eq!(keyframes.len(), 2);
-    // Same text in different files of one package keeps independent owners,
+    // Same text in different files of one package keeps independent identities,
     // including below a nameless nested manifest.
-    assert_ne!(keyframes[0]["ownerId"], keyframes[1]["ownerId"]);
     assert_ne!(keyframes[0]["id"], keyframes[1]["id"]);
 }
 
@@ -88,6 +85,5 @@ fn renaming_the_package_changes_keyframe_identity() {
     second.file("package.json", r#"{"name":"other"}"#);
     let (a, b) = (first.load(), second.load());
     let (a, b) = (identities(&a, &first.0), identities(&b, &second.0));
-    assert_ne!(a[0]["ownerId"], b[0]["ownerId"]);
-    assert_ne!(a[0]["slotId"], b[0]["slotId"]);
+    assert_ne!(a[0]["id"], b[0]["id"]);
 }

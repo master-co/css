@@ -60,7 +60,6 @@ import StyleEntryPlugin from './plugins/style-entry'
 import RuntimeEntryPlugin from './plugins/runtime-entry'
 import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
 import GeneratedCSSAssetsPlugin from './plugins/generated-css-assets'
-import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
 import RuntimeMetadataPlugin, { finalEmittedGlobalsModule } from './plugins/runtime-metadata'
 import { getBuildStylesheetDelivery } from './utils/build-stylesheet-delivery'
 import { stylesheetSlot } from './utils/stylesheet-slot'
@@ -592,7 +591,6 @@ export class MasterCSSWebpackPlugin {
       StyleEntryPlugin(context),
       UsageGraphPlugin(context),
       GeneratedCSSAssetsPlugin(context),
-      RuntimeStylesheetsPlugin(context),
       RuntimeMetadataPlugin(context),
       ...context.shouldInjectRuntime()
         ? [

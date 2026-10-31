@@ -4,7 +4,6 @@ import RuntimeBootstrapPlugin from '../../src/plugins/runtime-bootstrap'
 
 function loadBootstrap(progressive: boolean) {
   const plugin = RuntimeBootstrapPlugin(progressive) as any
-  plugin.configResolved({ base: '/', command: 'build' })
   return plugin.load(RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID) as string
 }
 

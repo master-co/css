@@ -12,7 +12,7 @@ import {
 } from './options'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
 import { preloadAstroRuntimeAssets } from './runtime-preload'
-import { describeOutputStylesheets, publishNativeStylesheet, writeRuntimeStylesheetSidecars } from './output-stylesheets'
+import { describeOutputStylesheets } from './output-stylesheets'
 import { providePrerenderStylesheets } from './prerender-stylesheets'
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css-astro/middleware'
 export const ASTRO_SSR_EXTERNAL = ['@master/css-server']
@@ -185,16 +185,11 @@ export function createMasterCSSAstroIntegration(
         outputStylesheets = undefined
         if (options.mode !== 'pre-render' && options.mode !== 'progressive') return
         providePrerenderStylesheets({
-          stylesheets: () => outputStylesheets ??= describeOutputStylesheets(clientDir!, astroBase),
-          publishImport: css => publishNativeStylesheet(clientDir!, astroBase ?? '/', css)
+          stylesheets: () => outputStylesheets ??= describeOutputStylesheets(clientDir!, astroBase)
         })
       },
       'astro:build:done': async ({ dir }) => {
         providePrerenderStylesheets(undefined)
-        if (options.injectRuntime) {
-          // Describe again: prerendering may have published native stylesheet imports.
-          await writeRuntimeStylesheetSidecars(await describeOutputStylesheets(dir, astroBase))
-        }
         if (options.mode === 'runtime' && options.injectRuntime && buildOutput !== 'server') {
           await preloadAstroRuntimeAssets(dir, astroBase)
         }

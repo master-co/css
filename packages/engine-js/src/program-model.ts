@@ -14,14 +14,12 @@ export type ThemeNode =
 
 export interface KeyframeDefinition {
   id: string
-  ownerId?: string
-  slotId?: string
-  occurrence?: number
   name: string
   text: string
-  resources: { start: number, end: number, value: string }[]
   containers: { id: string, prelude: string }[]
-  retained: boolean
+  /** Delivered by its native stylesheet; never emitted. */
+  native: boolean
+  safelisted: boolean
   dependencies: string[]
   source?: SourceReference
 }
@@ -89,7 +87,6 @@ export type UtilityLayer = typeof UTILITY_LAYERS[number]
 
 export type UtilityMatcher =
   | { type: 'static', name: string }
-  | { type: 'key', keys: string[] }
   | { type: 'token', prefix: string }
   | { type: 'function', name: string }
 
@@ -100,13 +97,11 @@ export type UtilityEmit =
 export interface Utility {
   id: string
   name: string
+  /** `-2` for recipes and `0` for property utilities; equal priorities sort on it. */
   utilityType: number
-  order: number
-  layer: UtilityLayer
-  keys: string[]
-  aliasGroups: string[]
-  variableAliases: [alias: string, variable: string][]
+  /** The `~namespace` references a token key resolves through, in order. */
   variableAliasRefs: string[]
+  /** The utility of a `(property:value)` head, which programs never register. */
   nativeFallback: boolean
   emit: UtilityEmit
   matchers: UtilityMatcher[]

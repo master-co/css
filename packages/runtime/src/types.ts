@@ -5,12 +5,6 @@ import type { MasterCSSManifestUtilityLayerName } from '@master/css-schema/manif
 import type { MasterCSSHydrationManifest } from '@master/css-schema/hydration-manifest'
 import { LAYER_ORDER } from './host'
 
-/** A writable stylesheet supplied by its delivery adapter, in document order. */
-export interface MasterCSSRuntimeStylesheet {
-  readonly sheet: CSSStyleSheet
-  readonly ownerIds: readonly string[]
-}
-
 /** A runtime program that `compileRuntimeProgram()` from `@master/css/node` compiled. */
 export type MasterCSSRuntimeProgram = Uint8Array | ArrayBuffer
 
@@ -28,10 +22,6 @@ export interface MasterCSSRuntimeOptions {
   readonly root?: Document | ShadowRoot
   readonly emittedGlobals?: MasterCSSEmittedGlobals
   readonly hydrationManifest?: MasterCSSHydrationManifest
-  /** Resolve current compiler-owned sheets after attachment or HMR. */
-  readonly stylesheets?: () => readonly MasterCSSRuntimeStylesheet[]
-  /** Official adapter asset root; linked assets include a compiler-issued sidecar. */
-  readonly stylesheetDelivery?: { readonly base: string, readonly development?: boolean }
 }
 
 export type MasterCSSRuntimeBinding = 'auto' | 'native' | 'wasm'

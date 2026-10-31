@@ -5,8 +5,6 @@ const PRERENDER_STYLESHEETS = Symbol.for('@master/css-astro:prerender-stylesheet
 export interface PrerenderStylesheets {
   /** Final stylesheets in the client output. */
   stylesheets(): Promise<readonly MasterCSSServerStylesheet[]>
-  /** Publish CSS the renderer imports from a stylesheet, returning its URL. */
-  publishImport(css: string): string
 }
 
 /**

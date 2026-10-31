@@ -15,13 +15,11 @@ import {
   compileRenderedStylesheet,
   createStyleEntryEmittedGlobals,
   createStylesheetHostSource,
-  createMasterCSSPackageHostSource,
   createExtractedCSS,
   createExtractedCSSResult,
   collectStylesheetDependencies,
   cleanStyleRequest,
   getNativeCSS,
-  hasPreserveNativeDirective,
   hasMasterStyleEntrypoint,
   hasLocalStyleDirectives,
   isMasterStyleSource,
@@ -94,7 +92,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.emittedGlobals.variables['color-green-60']).toBe(2)
 
     expect(result.nativeCSS).toContain('@keyframes fade')
-    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
+    expect(result.emittedGlobals).toEqual({ variables: { 'color-green-60': 2 }, keyframes: {} })
   })
 
   it('replaces @master/css imports with CSS import modifiers', () => {
@@ -173,7 +171,6 @@ describe('style CSS extraction helpers', () => {
     expect(isMasterStyleSource('@master no-shake;')).toBe(false)
     expect(isMasterStyleSource('@preserve native;')).toBe(false)
     expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
-    expect(hasPreserveNativeDirective('@preserve native;\n.card { color: red; }')).toBe(true)
   })
 
   it('detects local compose styles without treating them as Master entries', () => {
@@ -443,40 +440,6 @@ describe('style CSS extraction helpers', () => {
       "@import \"@master/css\";\n@import \"./missing.css\";",
       root
     )).toThrow('CSS file not found')
-  })
-
-  it('derives package host CSS from the package entry graph', async () => {
-    const hostSource = await createMasterCSSPackageHostSource(process.cwd(), {
-      baseManifest: defaultManifest,
-      projectDir: process.cwd()
-    })
-    const graph = resolveMasterCSSPackageImportGraph(process.cwd())
-    const compileSource = removeMasterStyleDirectives(removeStylesheetImports(graph.source).code).code
-    const compiledResult = await compileStylesheet(graph.dependencies[0] || '@master/css', compileSource, {
-      baseManifest: defaultManifest,
-      projectDir: process.cwd(),
-      preserveNativeCSS: true
-    })
-    const finalizedResult = createManifestFromCSSResult(compiledResult, {
-      baseManifest: defaultManifest,
-      root: process.cwd()
-    })
-    const expectedCSS = renderCompiledManifestCSS({
-      manifest: finalizedResult.manifest,
-      nativeCSS: getNativeCSS(finalizedResult)
-    }).css
-
-    expect(hostSource.dependencies.length).toBeGreaterThan(1)
-    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-manifest.json'))).toBe(false)
-    expect(hostSource.dependencies.some((dependency) => dependency.endsWith('default-native.css'))).toBe(false)
-    expect(hostSource.source).toBe(expectedCSS)
-    expect(hostSource.source).toContain('@layer base')
-    expect(hostSource.source).not.toContain('text-rendering: geometricprecision')
-    expect(hostSource.source).toContain('--font-family-sans:var(--font-sans, ui-sans-serif)')
-    expect(hostSource.source).toContain('--font-family-mono:var(--font-mono, ui-monospace)')
-    expect(hostSource.source).not.toContain('@master/css/base.css')
-    expect(hostSource.source).not.toContain('virtual:master-utilities.css')
-    expect(hostSource.source).not.toContain('@master')
   })
 
   it('does not load preset artifacts implicitly while registering stylesheets', async () => {

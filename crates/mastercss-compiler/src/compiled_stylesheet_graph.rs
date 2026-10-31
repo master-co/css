@@ -5,9 +5,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::{
-    CompileCssDirectivesResult, CompileManifestOptions, CompileNativeCssOptions, CompilerError,
-    CssImportGraphRequest, CssStylesheetGraph, CssStylesheetNode, LowerCssDirectivesOptions,
-    compile_css_directives, compile_manifest_input, lower_css_directives,
+    CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssImportGraphRequest,
+    CssStylesheetGraph, CssStylesheetNode, LowerCssDirectivesOptions, compile_css_directives,
     merge_extraction_policies, resolve_prepared_css_stylesheet_graph,
 };
 
@@ -104,13 +103,6 @@ fn merge_input(target: &mut Map<String, Value>, next: &CssDirectiveManifestInput
                 target.insert(key, value);
             }
         }
-    }
-}
-
-fn is_managed(definition: &CssDirectiveStyleDefinition) -> bool {
-    match definition {
-        CssDirectiveStyleDefinition::Native { name, .. } => name.is_some(),
-        CssDirectiveStyleDefinition::Apply { .. } => false,
     }
 }
 
@@ -275,14 +267,7 @@ pub fn compile_css_stylesheet_graph(
                         reference.range.start,
                     )
                     .unwrap_or_default();
-                    let old = definition.id.clone();
                     definition.id = format!("{identity}-{start:08x}");
-                    for text in [&mut result.css, &mut result.native_css] {
-                        *text = text.replace(&old, &definition.id);
-                    }
-                    if let Some(output) = &mut result.native_output {
-                        output.css = output.css.replace(&old, &definition.id);
-                    }
                 }
             }
             for definition in result.manifest_input.mixins.iter_mut().flatten().chain(
@@ -319,7 +304,6 @@ pub fn compile_css_stylesheet_graph(
 
     let mut combined = compile_css_directives("", &request.options)?;
     let mut input = Map::new();
-    let mut definitions = Vec::new();
     let mut all_definitions = Vec::new();
     let mut policies = Vec::new();
     let mut occurrences = HashMap::<String, u32>::new();
@@ -358,24 +342,30 @@ pub fn compile_css_stylesheet_graph(
             .extend(result.definition_sources.clone());
         let mut delivered_input = result.manifest_input.clone();
         delivered_input.animation_variables = None;
-        let emit_native = request.options.preserve_native_css
-            && native_stylesheets
-                .as_ref()
-                .is_none_or(|selected| selected.contains(graph.stylesheets[index].id.as_str()));
         for definition in delivered_input.keyframes.iter_mut().flatten() {
-            let slot = definition.id.clone();
-            let occurrence = occurrences.entry(slot.clone()).or_default();
-            definition.id = format!("{slot}-o{occurrence}");
-            if !emit_native {
-                combined.suppressed_keyframes.push(definition.id.clone());
+            // A stylesheet imported repeatedly declares its keyframes once per import.
+            let occurrence = occurrences.entry(definition.id.clone()).or_default();
+            if *occurrence > 0 {
+                definition.id = format!("{}-o{occurrence}", definition.id);
             }
-            definition.slot_id = Some(slot);
-            definition.occurrence = Some(*occurrence);
             *occurrence += 1;
             for container in &mut definition.containers {
                 container.id = format!("{}-g{occurrence_order}", container.id);
             }
             definition.containers.splice(0..0, path.clone());
+            if !definition.native
+                && path.iter().any(|container| {
+                    crate::native_keyframes::is_anonymous_layer(&container.prelude)
+                })
+            {
+                return Err(graph_error(
+                    &graph.stylesheets[index].id,
+                    format!(
+                        "On-demand keyframes {} cannot be imported into an anonymous layer; name the layer or use @preserve native",
+                        definition.name
+                    ),
+                ));
+            }
         }
         occurrence_order += 1;
 
@@ -400,10 +390,7 @@ pub fn compile_css_stylesheet_graph(
                         .ok_or_else(|| graph_error(&graph.entry, "Too many style definitions"))?
                 }
             }
-            all_definitions.push(definition.clone());
-            if is_managed(&definition) {
-                definitions.push(definition);
-            }
+            all_definitions.push(definition);
         }
     }
     combined.manifest_input = serde_json::from_value(Value::Object(input))
@@ -416,32 +403,21 @@ pub fn compile_css_stylesheet_graph(
         .collect();
     combined.references = (!graph.references.is_empty()).then(|| graph.references.clone());
     combined.style_definitions = (!all_definitions.is_empty()).then_some(all_definitions);
-    let mut lowered = lower_css_directives(
+    let crate::lower::LoweredManifests {
+        manifest: mut delivered_manifest,
+        mut resolution_manifest,
+        warnings,
+    } = crate::lower::lower_manifests(
         &combined.manifest_input,
-        &definitions,
         &combined.warnings,
         &LowerCssDirectivesOptions {
             base_manifest: request.base_manifest.clone(),
             resolution_manifest: request.resolution_manifest.clone(),
         },
     )?;
-    combined.warnings = lowered.warnings;
-    // lower_css_directives resolves its own native rules after finalizing managed
-    // definitions, but its resolution_manifest field predates that finalization.
-    // The next per-file lowering pass needs all finalized managed definitions.
-    let mut resolution_manifest = compile_manifest_input(
-        &lowered.input,
-        &CompileManifestOptions {
-            base_manifest: request
-                .resolution_manifest
-                .clone()
-                .map(|manifest| {
-                    crate::manifest::reference_context(manifest, request.base_manifest.as_ref())
-                })
-                .or_else(|| request.base_manifest.clone()),
-        },
-    )?
-    .manifest;
+    combined.warnings = warnings;
+    // One engine expands every stylesheet's native @apply applications.
+    let engine = crate::lower::engine_for_manifest(&resolution_manifest)?;
 
     let mut generated = Vec::new();
     let mut raw_sources = Vec::new();
@@ -450,24 +426,9 @@ pub fn compile_css_stylesheet_graph(
             .as_ref()
             .is_none_or(|selected| selected.contains(node.id.as_str()));
         let mut replacements = Vec::new();
-        for slot in slots {
-            let native_lowered = lower_css_directives(
-                &CssDirectiveManifestInput::default(),
-                &slot.definitions,
-                &[],
-                &LowerCssDirectivesOptions {
-                    base_manifest: Some(lowered.manifest.clone()),
-                    resolution_manifest: Some(resolution_manifest.clone()),
-                },
-            )?;
-            append_unique(&mut combined.warnings, &native_lowered.warnings);
-            if emit_native {
-                replacements.push((
-                    slot.name.clone(),
-                    native_lowered.generated_css,
-                    native_lowered.generated_mappings,
-                ));
-            }
+        for slot in slots.iter().filter(|_| emit_native) {
+            let (css, mappings) = crate::lower::render_definitions(&slot.definitions, &engine)?;
+            replacements.push((slot.name.clone(), css, mappings));
         }
         raw_sources.push(
             (emit_native && request.options.preserve_native_css).then_some(&result.native_css),
@@ -655,63 +616,26 @@ pub fn compile_css_stylesheet_graph(
         .iter()
         .filter(|sheet| reachable.contains(sheet.id.as_str()))
     {
-        crate::keyframes::include_native_variables(&mut lowered.manifest, &sheet.css);
+        crate::keyframes::include_native_variables(&mut delivered_manifest, &sheet.css);
         crate::keyframes::include_native_variables(&mut resolution_manifest, &sheet.css);
     }
-    for sheet in stylesheets
+    // Animation variables of the delivered CSS resolve dynamic names, so notices
+    // analyze it with the final resolution manifest.
+    let animated = stylesheets
         .iter()
         .filter(|sheet| reachable.contains(sheet.id.as_str()))
-    {
-        combined.notices.extend(crate::keyframes::native_notices(
-            &sheet.css,
-            &sheet.id,
-            &resolution_manifest,
-            &sheet.output_mappings,
-        )?);
-    }
-    if request.options.preserve_native_css
-        && native_stylesheets
-            .as_ref()
-            .is_none_or(|selected| !selected.is_empty())
-    {
-        let metadata = crate::native_keyframes::reference_resources(
-            &lowered.manifest,
-            combined.manifest_input.keyframes.as_deref(),
-        );
-        let entry = &mut stylesheets[indexes[graph.entry.as_str()]];
-        entry.css.push_str(&metadata);
-        entry.native_css.push_str(&metadata);
-    }
-    let mut resource_engine = mastercss_engine::EngineSession::create_with_emitted_globals(
-        &lowered.manifest.to_string(),
-        Some(&serde_json::json!({"suppressedKeyframes":combined.suppressed_keyframes}).to_string()),
-    )
-    .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
-    if let Some(classes) = &request.options.classes {
-        resource_engine
-            .ensure_class_rules(classes)
-            .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
-    }
-    for classes in request.classes_by_stylesheet.values().flatten() {
-        resource_engine
-            .ensure_class_rules(classes)
-            .map_err(|cause| graph_error(&graph.entry, cause.to_string()))?;
-    }
-    for sheet in stylesheets
-        .iter()
-        .filter(|sheet| reachable.contains(sheet.id.as_str()))
-    {
-        resource_engine
-            .ensure_stylesheet_resources(&sheet.css)
-            .map_err(|cause| graph_error(&sheet.id, cause.to_string()))?;
-    }
-    for sheet in &mut stylesheets {
-        (sheet.css, sheet.output_mappings) = crate::native_keyframes::render_with_engine(
-            &sheet.css,
-            &sheet.output_mappings,
-            &resource_engine,
-        )?;
-        sheet.native_css = resource_engine.render_stylesheet_resources(&sheet.native_css);
+        .filter(|sheet| crate::keyframes::may_declare_animations(&sheet.css))
+        .collect::<Vec<_>>();
+    if !animated.is_empty() {
+        let engine = crate::lower::engine_for_manifest(&resolution_manifest)?;
+        for sheet in animated {
+            combined.notices.extend(crate::keyframes::native_notices(
+                &sheet.css,
+                &sheet.id,
+                &engine,
+                &sheet.output_mappings,
+            ));
+        }
     }
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
     combined
@@ -725,7 +649,7 @@ pub fn compile_css_stylesheet_graph(
     Ok(CompiledCssStylesheetGraph {
         entry: graph.entry,
         stylesheets,
-        manifest: lowered.manifest,
+        manifest: delivered_manifest,
         resolution_manifest,
         directives: combined,
     })

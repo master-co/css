@@ -91,7 +91,6 @@ export function toMasterCSSCompileResultInternal(
 ): MasterCSSCompileResult {
   return Object.freeze({
     css: result.css,
-    suppressedKeyframes: Object.freeze([...(result.suppressedKeyframes || [])]),
     ...(result.sourceMap ? { sourceMap: result.sourceMap } : {}),
     nativeCSS: result.nativeCSS,
     generatedCSS: result.generatedCSS,
@@ -126,7 +125,6 @@ export function toMasterCSSCompileManifestResultInternal(
 ): MasterCSSCompileManifestResult {
   return Object.freeze({
     css: result.css,
-    suppressedKeyframes: Object.freeze([...(result.directives.suppressedKeyframes || [])]),
     nativeCSS: result.nativeCSS,
     generatedCSS: result.generatedCSS,
     dependencies: Object.freeze([...result.dependencies]),
@@ -213,7 +211,6 @@ export class MasterCSSCompiler implements Disposable {
     const diagnostics = Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...noticeDiagnostics(lowered.notices, options.onDiagnostic), ...validateCompiledCSS([{ css, mappings: lowered.outputMappings ?? rawDirectives.nativeMappings, ...origin }], options)])
     return Object.freeze({
       css,
-      suppressedKeyframes: directives.suppressedKeyframes,
       nativeCSS: rawDirectives.nativeCSS,
       generatedCSS,
       classNames: Object.freeze([...rawDirectives.classNames]),

@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { compileRenderedStylesheet, createRuntimeStylesheetAsset } from '@master/css-compiler/stylesheet'
-import { createCompilerSync } from '@master/css-compiler/node'
+import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { getRuntimeLoaderURL } from '../init'
@@ -16,12 +15,11 @@ test('hydrates tokens a linked stylesheet emits when the runtime bundle does not
     baseManifest: defaultManifest, classes: []
   })
   expect(result.emittedGlobals.variables['color-text-body']).toBeGreaterThan(0)
-  using compiler = createCompilerSync()
   const { renderHTML } = await import('@master/css-server')
   const rendered = renderHTML(`<html><head><link rel="stylesheet" href="${href}"></head><body><main id="probe" class="card fg-text-body (margin-top:12px)">Probe</main></body></html>`, {
     manifest: result.manifest,
     emittedGlobals: result.emittedGlobals,
-    stylesheets: [{ href, asset: createRuntimeStylesheetAsset(compiler, result.css, href, [href]) }],
+    stylesheets: [{ href, css: result.css }],
     hydrationManifest: 'inject'
   })
   expect(rendered.cssText).not.toContain('--color-text-body:')
@@ -41,7 +39,7 @@ test('hydrates tokens a linked stylesheet emits when the runtime bundle does not
 
   await page.evaluate(async ({ loader, manifest }) => {
     const { startCSSRuntime } = await import(loader)
-    await startCSSRuntime({ manifest, emittedGlobals: {}, stylesheetDelivery: { base: 'https://owned.example/' } })
+    await startCSSRuntime({ manifest, emittedGlobals: {} })
   }, { loader, manifest: result.manifest })
 
   expect(warnings).toEqual([])

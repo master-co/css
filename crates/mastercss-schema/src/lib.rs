@@ -43,7 +43,7 @@ use thiserror::Error;
 pub const MANIFEST_VERSION: u32 = 6;
 pub const LANGUAGE_VERSION: u32 = 17;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 5;
-pub const BINDING_ABI_VERSION: u32 = 29;
+pub const BINDING_ABI_VERSION: u32 = 30;
 pub const ENGINE_TRANSITION_VERSION: u32 = 4;
 pub const VALIDATOR_BATCH_VERSION: u32 = 4;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 5;
@@ -53,7 +53,7 @@ pub const LEXER_BATCH_VERSION: u32 = 1;
 pub const SOURCE_BATCH_VERSION: u32 = 2;
 /// The encoding of compiled runtime programs, which browsers execute instead of
 /// Manifest v6 documents.
-pub const PROGRAM_VERSION: u32 = 1;
+pub const PROGRAM_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -111,10 +111,6 @@ pub struct EmittedGlobals {
     pub variables: NameCounts,
     #[serde(default)]
     pub keyframes: NameCounts,
-    #[serde(default)]
-    pub keyframe_slots: Vec<String>,
-    #[serde(default)]
-    pub suppressed_keyframes: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -147,10 +143,7 @@ impl EmittedGlobals {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.variables.is_empty()
-            && self.keyframes.is_empty()
-            && self.keyframe_slots.is_empty()
-            && self.suppressed_keyframes.is_empty()
+        self.variables.is_empty() && self.keyframes.is_empty()
     }
 }
 

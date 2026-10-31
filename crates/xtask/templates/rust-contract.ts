@@ -106,7 +106,6 @@ export interface MasterCSSEngineSnapshot {
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]
   resources: MasterCSSEngineResources
   text: string
-  stylesheets?: string[]
 }
 
 export interface MasterCSSEngineVariableResource {
@@ -118,7 +117,7 @@ export interface MasterCSSEngineVariableResource {
 export interface MasterCSSEngineResources {
   themeText?: string
   variables: MasterCSSEngineVariableResource[]
-  keyframes: (MasterCSSEngineVariableResource & { id: string, text: string, anchored: boolean, containers?: { id: string, prelude: string }[] })[]
+  keyframes: (MasterCSSEngineVariableResource & { id: string, text: string, containers?: { id: string, prelude: string }[] })[]
 }
 
 export type MasterCSSMatchStatus = 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
@@ -956,18 +955,9 @@ export interface MasterCSSLowerDirectivesResult {
   resolutionManifest: import('@master/css-schema/manifest').MasterCSSManifest
   warnings: string[]
   generatedCSS: string
-  diagnosticCounts: Record<string, number>
-}
-
-export interface MasterCSSStylesheetResourceEdit {
-  start: number
-  end: number
-  text: string
-  mappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
 }
 
 export interface MasterCSSServerRender {
-  stylesheetEdits: MasterCSSStylesheetResourceEdit[][]
   outputMappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
   classes: string[]
   snapshot: MasterCSSEngineSnapshot

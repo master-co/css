@@ -179,11 +179,31 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
     if !theme.is_empty() {
         manifest.insert("theme".into(), Value::Array(theme));
     }
-    let mut keyframes = base
+    // This compilation delivers only its own native keyframes. Base definitions are
+    // available on demand; emitted globals tell which ones another output delivers.
+    // Frames with relative URLs only resolve beside their own stylesheet.
+    let base_keyframes = base
         .get("keyframes")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
+        .cloned()
+        .map(|mut definition| {
+            if definition["native"] == true
+                && crate::native_keyframes::has_portable_urls(
+                    definition["text"].as_str().unwrap_or_default(),
+                )
+            {
+                definition
+                    .as_object_mut()
+                    .expect("keyframe definition")
+                    .shift_remove("native");
+            }
+            definition
+        })
+        .collect::<Vec<_>>();
+    let mut keyframes = base_keyframes
+        .iter()
         .chain(
             fragment
                 .get("keyframes")
@@ -343,7 +363,7 @@ pub(crate) fn compile_manifest_fragment(
                 .and_then(Value::as_str)
                 .is_some_and(|name| names.iter().any(|value| value == name))
             {
-                definition["retained"] = Value::Bool(true);
+                definition["safelisted"] = Value::Bool(true);
             }
         }
     }
@@ -453,12 +473,12 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
 /// Reference context supplies definitions, never additional unconditional roots.
 /// Local definitions are merged after this view; delivered base roots remain live.
 pub(crate) fn reference_context(mut resolution: Value, base: Option<&Value>) -> Value {
-    let retained_ids = base
+    // A referenced stylesheet's safelists are not roots of this stylesheet.
+    let base_ids = base
         .and_then(|base| base.get("keyframes"))
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-        .filter(|definition| definition["retained"] == true)
         .filter_map(|definition| definition["id"].as_str())
         .collect::<std::collections::HashSet<_>>();
     for definition in resolution
@@ -469,12 +489,12 @@ pub(crate) fn reference_context(mut resolution: Value, base: Option<&Value>) -> 
     {
         if !definition["id"]
             .as_str()
-            .is_some_and(|id| retained_ids.contains(id))
+            .is_some_and(|id| base_ids.contains(id))
         {
             definition
                 .as_object_mut()
                 .expect("keyframe definition")
-                .shift_remove("retained");
+                .shift_remove("safelisted");
         }
     }
     let mut roots = std::collections::HashSet::new();

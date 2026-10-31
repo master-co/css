@@ -5,7 +5,7 @@ import { expect, test } from 'vitest'
 import { prepareNextModule } from '../src/prepare-module'
 import loader from '../src/stylesheet-loader'
 
-test('native keyframes in CSS Modules pass Next purity after Master CSS adds tracking slots', async () => {
+test('native keyframes in CSS Modules stay verbatim and pass Next purity', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-css-next-keyframe-module-'))
   try {
     mkdirSync(join(root, 'app'))
@@ -18,11 +18,9 @@ test('native keyframes in CSS Modules pass Next purity after Master CSS adds tra
       async: () => (error: Error | null, output?: string) => error ? reject(error) : done(output!)
     }, source))
 
-    expect(code).toContain('.__master_css_slot:not(*){--master-css-slot:0')
-    expect(code).toContain('@keyframes spin')
+    expect(code).toContain('@keyframes spin{to{transform:rotate(1turn)}}')
+    expect(code).not.toMatch(/master-css-(keyframe|slot)|__master_css_slot/)
     const processed = await prepareNextModule({ resourcePath: file, rootContext: root }, code, root)
-    expect(processed.source).toContain('--master-css-slot:0')
-    expect(processed.source).toMatch(/__master_css_slot__[^:{}]+:not\(\*\)/)
     expect(processed.source).toContain('@keyframes card_spin__')
   } finally {
     rmSync(root, { recursive: true, force: true })

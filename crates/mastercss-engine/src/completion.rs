@@ -1,8 +1,7 @@
 use super::{
     CompiledVariable, EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken,
-    EngineError, EngineSession, HashSet, Program, UtilityDefinition, UtilityLayerName,
-    UtilityMatcher, add_unique_string, find_matching_parenthesis, split_dynamic_value_state,
-    utf16_len,
+    EngineError, EngineSession, HashSet, Program, UtilityDefinition, UtilityMatcher,
+    find_matching_parenthesis, split_dynamic_value_state, utf16_len,
 };
 
 impl EngineSession {
@@ -37,26 +36,6 @@ impl EngineSession {
         keys.dedup();
         Ok(keys)
     }
-}
-
-pub(crate) fn utility_completion_metadata(
-    utility: &UtilityDefinition,
-) -> (Vec<String>, Vec<String>) {
-    let mut keys = utility.keys.clone();
-    let alias_groups = utility.alias_groups.clone();
-    for matcher in &utility.matchers {
-        match matcher {
-            UtilityMatcher::Key { keys: matcher_keys } => {
-                for key in matcher_keys {
-                    add_unique_string(&mut keys, key);
-                }
-            }
-            UtilityMatcher::Static { .. }
-            | UtilityMatcher::Token { .. }
-            | UtilityMatcher::Function { .. } => {}
-        }
-    }
-    (keys, alias_groups)
 }
 
 pub(crate) fn push_class_completion_candidate(
@@ -205,7 +184,6 @@ pub(crate) fn collect_class_completion_candidates(
 ) -> Vec<EngineClassCompletionCandidate> {
     let mut candidates = Vec::new();
     let mut labels = HashSet::default();
-    let mut ambiguous_keys = Vec::new();
 
     // Native declarations are independent of the preset and token namespaces.
     for property in mastercss_schema::native_css_properties() {
@@ -249,8 +227,6 @@ pub(crate) fn collect_class_completion_candidates(
 
     for utility in &manifest.utilities {
         if matches!(utility.emit, super::UtilityEmit::Recipe { .. }) {
-            let is_component = utility.layer == UtilityLayerName::Components;
-            let static_detail = Some("utility".into());
             for matcher in &utility.matchers {
                 match matcher {
                     UtilityMatcher::Static { name } => {
@@ -258,11 +234,7 @@ pub(crate) fn collect_class_completion_candidates(
                             &mut candidates,
                             &mut labels,
                             name.clone(),
-                            if is_component {
-                                Some("component".into())
-                            } else {
-                                static_detail.clone()
-                            },
+                            Some("utility".into()),
                         );
                     }
                     UtilityMatcher::Function { name } => {
@@ -294,7 +266,7 @@ pub(crate) fn collect_class_completion_candidates(
                             );
                         }
                     }
-                    UtilityMatcher::Key { .. } | UtilityMatcher::Token { .. } => {}
+                    UtilityMatcher::Token { .. } => {}
                 }
             }
             push_utility_value_completion_candidates(
@@ -306,29 +278,9 @@ pub(crate) fn collect_class_completion_candidates(
             continue;
         }
 
-        let (keys, alias_groups) = utility_completion_metadata(utility);
-        let mut value_keys = keys.clone();
-        for alias_group in &alias_groups {
-            add_unique_string(&mut value_keys, alias_group);
-        }
         push_utility_value_completion_candidates(&mut candidates, &mut labels, manifest, utility);
-        for key in keys {
-            ambiguous_keys.retain(|ambiguous| ambiguous != &key);
-            push_property_completion_candidate(&mut candidates, &mut labels, &key, None);
-        }
-        for alias_group in alias_groups {
-            add_unique_string(&mut ambiguous_keys, &alias_group);
-        }
     }
 
-    for key in ambiguous_keys {
-        push_property_completion_candidate(
-            &mut candidates,
-            &mut labels,
-            &key,
-            Some("ambiguous key".into()),
-        );
-    }
     let mut suffixes = manifest
         .custom_media
         .keys()

@@ -235,8 +235,7 @@ describe('css manifest loader', () => {
     expect(emittedGlobals.variables['color-primary']).toBe(1)
     expect(emittedGlobals).not.toHaveProperty('animations')
     expect(Object.values(emittedGlobals.keyframes)).toEqual([1, 1])
-    expect(Object.keys(emittedGlobals.keyframes)).toEqual(expect.arrayContaining([expect.stringMatching(/^k.*-o\d+$/)]))
-    expect(emittedGlobals.keyframeSlots).toEqual(expect.arrayContaining(Object.keys(emittedGlobals.keyframes)))
+    expect(Object.keys(emittedGlobals.keyframes)).toEqual(expect.arrayContaining([expect.stringMatching(/^k[0-9a-f]+-[0-9a-f]{8}$/)]))
     expect(dependencies).toContain(entryPath)
   })
 

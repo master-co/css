@@ -1,6 +1,5 @@
 import type { Plugin, ViteDevServer } from 'vite'
 import { relative } from 'node:path'
-import { createHash } from 'node:crypto'
 import { MasterCSSVitePluginContext } from '../core'
 import { createServerRenderer, type MasterCSSServerStylesheet } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -15,8 +14,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
-import { collectStylesheetEmittedGlobals, createRuntimeStylesheetAsset } from '@master/css-compiler/stylesheet'
-import { createCompilerSync } from '@master/css-compiler/node'
+import { collectStylesheetEmittedGlobals, describeLinkedStylesheet } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 import { toAssetHref } from '../utils/html'
 import { createManifestRecovery } from '../utils/manifest-recovery'
@@ -32,7 +30,6 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
   let renderer: ReturnType<typeof createServerRenderer> | undefined
   let devServer: ViteDevServer | undefined
   const hydrationManifestAssets = new Map<string, string>()
-  const nativeStylesheetAssets = new Map<string, string>()
   const addServerAllow = (paths: string[]) => {
     const allow = context.config?.server.fs.allow
     if (!allow) return
@@ -116,15 +113,6 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
   const renderHTML = (html: string, htmlPath?: string, stylesheets?: readonly MasterCSSServerStylesheet[]) => renderer?.renderHTML(html, {
     stylesheets,
     documentURL: new URL(htmlPath || '/', 'https://master-css-render.invalid/').href,
-    stylesheetImportSource(css) {
-      const assetsDir = context.config?.build.assetsDir ?? 'assets'
-      const fileName = [assetsDir.replace(/\/$/, ''), '_master-css/native', `${createHash('sha256').update(css).digest('hex').slice(0, 16)}.css`].filter(Boolean).join('/')
-      nativeStylesheetAssets.set(fileName, css)
-      // SSR imports must remain same-origin and writable, even when other assets use a CDN.
-      const base = context.config?.base || '/'
-      const pathBase = /^https?:/.test(base) ? new URL(base).pathname : base
-      return toAssetHref(fileName, pathBase, htmlPath)
-    },
     hydrationManifest: options.mode === 'progressive' ? {
       type: 'external',
       source: json => addHydrationManifestAsset(json, htmlPath)
@@ -214,7 +202,6 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     },
     generateBundle(_options, bundle) {
       if (!enabled) return
-      using compiler = createCompilerSync()
       const cssAssets = Object.values(bundle).filter(asset => asset.type === 'asset' && asset.fileName.endsWith('.css'))
       for (const output of Object.values(bundle)) {
         if (output.type !== 'asset' || !output.fileName.endsWith('.html')) continue
@@ -222,7 +209,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
         const stylesheets = cssAssets.flatMap((asset, index) => {
           if (asset.type !== 'asset') return []
           const source = typeof asset.source === 'string' ? asset.source : new TextDecoder().decode(asset.source)
-          return [{ href: urls[index], asset: createRuntimeStylesheetAsset(compiler, source, urls[index], urls) }]
+          return [describeLinkedStylesheet(source, urls[index], urls)]
         })
         const source = typeof output.source === 'string' ? output.source : new TextDecoder().decode(output.source)
         const rendered = renderHTML(source, output.fileName, stylesheets)
@@ -235,7 +222,6 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
           source
         })
       }
-      for (const [fileName, source] of nativeStylesheetAssets) this.emitFile({ type: 'asset', fileName, source })
     },
     buildEnd(error) {
       if (error && context.config?.command === 'build') renderer?.dispose()

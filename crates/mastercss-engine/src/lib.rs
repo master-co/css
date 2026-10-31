@@ -125,13 +125,11 @@ struct Program {
 struct UtilityDefinition {
     id: String,
     name: Option<String>,
+    /// `-2` for recipes and `0` for property utilities; equal priorities sort on it.
     utility_type: i32,
-    order: Option<i32>,
-    layer: UtilityLayerName,
-    keys: Vec<String>,
-    alias_groups: Vec<String>,
-    variable_aliases: Vec<(String, String)>,
+    /// The `~namespace` references a token key resolves through, in order.
     variable_alias_refs: Vec<String>,
+    /// The utility of a `(property:value)` head, which programs never register.
     native_fallback: bool,
     emit: UtilityEmit,
     matchers: Vec<UtilityMatcher>,
@@ -139,20 +137,9 @@ struct UtilityDefinition {
 
 #[derive(Debug, Clone)]
 enum UtilityMatcher {
-    Static {
-        name: String,
-    },
-    /// A program format tag no registration produces: native declarations are
-    /// `(property:value)` heads, never key utilities.
-    Key {
-        keys: Vec<String>,
-    },
-    Token {
-        prefix: String,
-    },
-    Function {
-        name: String,
-    },
+    Static { name: String },
+    Token { prefix: String },
+    Function { name: String },
 }
 
 #[derive(Debug, Clone)]
@@ -247,7 +234,6 @@ struct StateBranch {
 #[derive(Debug, Clone)]
 struct StoredRule {
     ir: GeneratedRuleIr,
-    manifest_order: i32,
     matcher_type: Option<UtilityMatcherType>,
     state_token: String,
 }
@@ -341,15 +327,13 @@ pub struct EngineSession {
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
     keyframe_counts: HashMap<String, u32>,
-    stylesheet_keyframe_slots: HashSet<String>,
+    /// Native keyframes the registered stylesheets deliver verbatim.
+    delivered_keyframes: HashSet<String>,
     variable_floors: HashMap<String, u32>,
     keyframe_floors: HashMap<String, u32>,
-    keyframe_texts: Vec<(
-        String,
-        String,
-        bool,
-        Vec<mastercss_schema::KeyframeContainer>,
-    )>,
+    /// The emitted keyframes rules in order: id, text and containers.
+    keyframe_texts: Vec<(String, String, Vec<mastercss_schema::KeyframeContainer>)>,
+    /// Native stylesheets whose declarations are resource roots, in registration order.
     stylesheet_sources: Vec<String>,
     theme_variable_names: Vec<String>,
     theme_text: Option<String>,
@@ -373,8 +357,6 @@ mod completion;
 mod condition;
 mod custom_media;
 mod decimal;
-mod keyframe_slots;
-pub use keyframe_slots::KeyframeOutputEdit;
 mod keyframes;
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;
@@ -408,7 +390,7 @@ pub(crate) use condition::{
     render_condition_token, resolve_layer_condition,
 };
 pub(crate) use manifest::compile_manifest;
-pub(crate) use manifest::{add_unique_string, engine_variable_ir, finish_program, layer_name};
+pub(crate) use manifest::{engine_variable_ir, finish_program, layer_name};
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
     parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,

@@ -91,5 +91,4 @@ fn document_native_stylesheets_keep_hydration_resource_discovery_canonical() {
     let snapshot = browser.snapshot().unwrap();
     assert_eq!(snapshot.resources, rendered.snapshot.resources);
     assert_eq!(snapshot.text, rendered.snapshot.text);
-    assert_eq!(rendered.snapshot.stylesheets, ["html{font-size:16px}"]);
 }

@@ -177,16 +177,8 @@ function freezeEmittedGlobals(
 ): Required<MasterCSSEmittedGlobals> {
   return Object.freeze({
     variables: Object.freeze({ ...emittedGlobals.variables }),
-    keyframes: Object.freeze({ ...emittedGlobals.keyframes }),
-    keyframeSlots: [...(emittedGlobals.keyframeSlots || [])],
-    suppressedKeyframes: [...(emittedGlobals.suppressedKeyframes || [])]
+    keyframes: Object.freeze({ ...emittedGlobals.keyframes })
   })
-}
-
-function freezeCompilation(
-  result: ReturnType<typeof toMasterCSSCompileResultInternal>
-): MasterCSSCompileResult {
-  return result
 }
 
 export function resolveStylesheetSync(
@@ -353,9 +345,7 @@ export async function compileStylesheet(
     loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
   })
   options.signal?.throwIfAborted()
-  return freezeCompilation(
-    toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
-  )
+  return toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.validation, stylesheetValidationSource(result.css, id, result.sourceMap))
 }
 
 export async function compileRenderedStylesheet(

@@ -1,5 +1,5 @@
-//! A stylesheet delivered with a rendered page can already provide resources that
-//! generated CSS would otherwise define again. Rendering counts them as the page's
+//! A stylesheet delivered with a rendered page can already declare theme variables
+//! that generated CSS would otherwise define again. Rendering counts them as the page's
 //! emitted globals, which the hydration manifest hands to the runtime.
 use super::*;
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
@@ -109,11 +109,10 @@ fn declared_paths(css: &str) -> HashMap<String, HashSet<Vec<String>>> {
 }
 
 impl EngineSession {
-    /// Resources `native_css` provides that the host has not reported yet: variables
-    /// it declares on every theme path that defines them, and keyframes it uses
-    /// through a native slot on the page, whose frames rendering materializes there.
-    fn hosted_stylesheet_resources(&self, native_css: &str) -> EmittedGlobals {
-        let mut hosted = EmittedGlobals::default();
+    /// Variables `native_css` provides that the host has not reported yet: those it
+    /// declares on every theme path that defines them.
+    fn hosted_variables(&self, native_css: &str) -> mastercss_schema::NameCounts {
+        let mut hosted = mastercss_schema::NameCounts::default();
         let declared = declared_paths(native_css);
         if !declared.is_empty() {
             let mut paths = HashMap::default();
@@ -125,29 +124,8 @@ impl EngineSession {
                         .get(name)
                         .is_some_and(|theme| theme.iter().all(|chain| chains.contains(chain)))
                 {
-                    hosted.variables.insert(name.clone(), 1);
+                    hosted.insert(name.clone(), 1);
                 }
-            }
-        }
-        let slots = super::keyframe_slots::active_slot_ids(native_css);
-        let animation = super::animation::analyze(
-            &stylesheet_declarations(&self.keyframe_template(native_css)),
-            &self.compiled,
-        );
-        for definition in &self.compiled.keyframes {
-            let own_slot = slots.contains(definition.slot_id.as_ref().unwrap_or(&definition.id));
-            if own_slot && !self.emitted_globals.keyframe_slots.contains(&definition.id) {
-                hosted.keyframe_slots.push(definition.id.clone());
-            }
-            if (own_slot || self.keyframe_has_slot(&definition.id))
-                && (animation.retain_all || animation.names.contains(&definition.name))
-                && !self
-                    .emitted_globals
-                    .suppressed_keyframes
-                    .contains(&definition.id)
-                && !self.emitted_globals.keyframes.contains_key(&definition.id)
-            {
-                hosted.keyframes.insert(definition.id.clone(), 1);
             }
         }
         hosted
@@ -161,14 +139,12 @@ impl EngineSession {
         native_css: &str,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let hosted = self.hosted_stylesheet_resources(native_css);
+        let hosted = self.hosted_variables(native_css);
         if hosted.is_empty() {
             return self.ensure_stylesheet_resources(native_css);
         }
         let mut emitted_globals = self.emitted_globals.clone();
-        emitted_globals.variables.extend(hosted.variables);
-        emitted_globals.keyframes.extend(hosted.keyframes);
-        emitted_globals.keyframe_slots.extend(hosted.keyframe_slots);
+        emitted_globals.variables.extend(hosted);
         self.stylesheet_sources.push(native_css.into());
         self.rebuild(emitted_globals)
     }

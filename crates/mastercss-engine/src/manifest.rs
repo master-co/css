@@ -110,13 +110,9 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
         let paths = crate::custom_media_branches(query)?;
         program.custom_media_paths.insert(name.clone(), paths);
     }
-    let count = program.utilities.len() as i32;
-    for (index, utility) in program.utilities.iter_mut().enumerate() {
+    for utility in &mut program.utilities {
         if utility.name.is_none() {
             utility.name = Some(utility.id.clone());
-        }
-        if utility.order.is_none() {
-            utility.order = Some(count - index as i32 - 1);
         }
     }
     // A stable partition by `static_last`, without the standard sort's code.
@@ -135,7 +131,6 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
                         .or_default()
                         .push(index);
                 }
-                UtilityMatcher::Key { .. } => {}
                 UtilityMatcher::Function { name } => {
                     program.function_utilities.insert(name.clone(), index);
                 }
@@ -265,11 +260,5 @@ pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableI
         variable_type: variable.variable_type.clone(),
         values: variable.values.clone(),
         dependencies: variable.dependencies.clone(),
-    }
-}
-
-pub(crate) fn add_unique_string(target: &mut Vec<String>, value: &str) {
-    if !target.iter().any(|existing| existing == value) {
-        target.push(value.to_owned());
     }
 }

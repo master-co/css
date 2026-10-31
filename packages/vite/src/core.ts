@@ -17,7 +17,6 @@ import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
 import RuntimeBootstrapPlugin from './plugins/runtime-bootstrap'
-import RuntimeStylesheetsPlugin from './plugins/runtime-stylesheets'
 import DevStylesheetPlugin from './plugins/dev-stylesheet'
 import { scopePlugins } from './utils/scoped-plugins'
 import {
@@ -76,8 +75,7 @@ function createPlugins(options: ResolvedMasterCSSVitePluginOptions, emittedGloba
     StyleEntryHMRPlugin(options, context),
     InlineStylesheetPlugin(context),
     DevStylesheetPlugin(context),
-    StyleEntryBuildPlugin(options, context),
-    RuntimeStylesheetsPlugin(options)
+    StyleEntryBuildPlugin(options, context)
   ]
   switch (options.mode) {
     case 'runtime':

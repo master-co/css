@@ -16,7 +16,6 @@ import RuntimeLayer, { getRuleNodeCount, type RuntimeLayerRule, type RuntimeReso
 import RuntimeThemeLayer from './theme-layer'
 import RuntimeUtilityLayer from './utility-layer'
 import { isDocumentRoot } from './hydration'
-import type { MasterCSSRuntimeOptions } from './types'
 
 export const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 
@@ -32,9 +31,7 @@ export function getGeneratedRuleNodeTexts(rule: RuntimeLayerRule) {
 function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required<MasterCSSEmittedGlobals> {
   return {
     variables: { ...(emittedGlobals?.variables || {}) },
-    keyframes: { ...(emittedGlobals?.keyframes || {}) },
-    keyframeSlots: [...(emittedGlobals?.keyframeSlots || [])],
-    suppressedKeyframes: [...(emittedGlobals?.suppressedKeyframes || [])]
+    keyframes: { ...(emittedGlobals?.keyframes || {}) }
   }
 }
 
@@ -42,8 +39,6 @@ function addEmittedGlobals(
   target: Required<MasterCSSEmittedGlobals>,
   source: MasterCSSEmittedGlobals
 ) {
-  target.suppressedKeyframes = [...new Set([...target.suppressedKeyframes, ...(source.suppressedKeyframes || [])])]
-  target.keyframeSlots = [...new Set([...target.keyframeSlots, ...(source.keyframeSlots || [])])]
   for (const kind of ['variables', 'keyframes'] as const) {
     for (const [name, count] of Object.entries(source[kind] || {})) {
       if (count) {
@@ -69,10 +64,6 @@ function missingEmittedGlobals(
         found = true
       }
     }
-  }
-  for (const kind of ['keyframeSlots', 'suppressedKeyframes'] as const) {
-    missing[kind] = (source[kind] || []).filter(id => !current[kind].includes(id))
-    found ||= missing[kind].length > 0
   }
   return found ? missing : undefined
 }
@@ -126,13 +117,9 @@ export default class RuntimeHost {
   constructor(
     protected readonly root: Document | ShadowRoot,
     emittedGlobals: MasterCSSEmittedGlobals | undefined,
-    protected hydrationManifest: MasterCSSHydrationManifest | undefined,
-    stylesheets?: MasterCSSRuntimeOptions['stylesheets'],
-    stylesheetDelivery?: MasterCSSRuntimeOptions['stylesheetDelivery']
+    protected hydrationManifest: MasterCSSHydrationManifest | undefined
   ) {
-    this.keyframeHost = new KeyframeHost(root,
-      () => this.getStyleSheet(), () => this.keyframeDefinitions, () => this.emittedGlobals.keyframeSlots, stylesheets,
-      stylesheetDelivery, () => this.reconcileKeyframeRules())
+    this.keyframeHost = new KeyframeHost(() => this.getStyleSheet(), () => this.keyframeDefinitions)
     this.emittedGlobals = cloneEmittedGlobals(emittedGlobals)
     this.host = isDocumentRoot(root) ? root.documentElement : root.host
     this.container = isDocumentRoot(root) ? root.head : root
@@ -302,15 +289,13 @@ export default class RuntimeHost {
     for (const rule of this.keyframes.rules) this.keyframeHost.remove(rule.native)
   }
 
-  protected disposeNativeStylesheets() { this.keyframeHost.dispose() }
-
+  /** Places keyframes rules the runtime stylesheet lost or could not take yet. */
   protected reconcileKeyframeRules() {
     // Keyframe rules come from the engine, which reconciles them when it starts.
     if (!this.bindingEngine) return
-    this.keyframeHost.reconcileOwners()
     const claimed = new Set<CSSRule>()
     for (const rule of this.keyframes.rules) {
-      if (this.keyframeHost.contains(rule.key, rule.native)) claimed.add(rule.native!)
+      if (this.keyframeHost.contains(rule.native)) claimed.add(rule.native!)
     }
     for (const rule of this.keyframes.rules) {
       if (rule.native && claimed.has(rule.native)) continue
@@ -444,10 +429,6 @@ export default class RuntimeHost {
     const state = this.engine.executionState(classNames)
     this.syncResourceSnapshot(state.resources)
     this.syncClassReferences(state.classes)
-  }
-
-  protected rebaseSnapshotResources(sheet: CSSStyleSheet, snapshot: MasterCSSEngineSnapshot) {
-    return this.keyframeHost.rebaseSnapshot(sheet, snapshot.resources.keyframes)
   }
 
   protected adoptSnapshot(snapshot: MasterCSSEngineSnapshot, preserveStyle = false) {

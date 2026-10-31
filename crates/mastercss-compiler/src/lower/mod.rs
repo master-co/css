@@ -1,9 +1,7 @@
-use std::collections::HashMap;
-
 use mastercss_engine::EngineSession;
 use mastercss_schema::{
-    CssDeclaration, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
-    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, UtilityLayerName,
+    CssDeclaration, CssDirectiveManifestInput, CssDirectiveSourceReference,
+    CssDirectiveStyleDefinition, CssOutputMapping,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -51,13 +49,6 @@ pub struct LowerCssDirectivesResult {
     pub warnings: Vec<String>,
     #[serde(rename = "generatedCSS")]
     pub generated_css: String,
-    pub diagnostic_counts: HashMap<String, u64>,
-}
-
-#[derive(Debug, Clone)]
-struct ResolvedStyleBranch {
-    selector: String,
-    conditions: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -74,7 +65,9 @@ mod output;
 mod render;
 mod resolution;
 
+pub(crate) use api::{LoweredManifests, lower_manifests, render_definitions};
 pub use api::{lower_css_directives, lower_css_directives_request};
+pub(crate) use resolution::engine_for_manifest;
 
 #[cfg(test)]
 mod tests;

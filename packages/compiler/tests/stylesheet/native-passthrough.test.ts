@@ -45,8 +45,14 @@ test('optionally preserves unchanged native text while keeping the default deliv
     const referenced = await transformStylesheet(join(root, 'reference-card.css'), '.card{color:var(--paint)}', { ...options, referenceFiles: [join(root, 'reference.css')], preserveUnchangedNativeCSS: true })
     expect(referenced.transformed).toBe(true)
     expect(referenced.code).toContain('--paint:blue')
+    // tokens.css delivers its native keyframes itself.
     const animation = await transformStylesheet(join(root, 'animation.css'), '.card{animation:pop 1s}', { ...options, baseManifest: context.manifest, preserveUnchangedNativeCSS: true })
-    expect(animation.transformed).toBe(true)
-    expect(animation.code).toContain('@keyframes pop')
+    expect(animation.transformed).toBe(false)
+    expect(animation.code).toBe('.card{animation:pop 1s}')
+    // On-demand keyframes join the stylesheet that uses them.
+    const onDemand = await compileRenderedStylesheet(join(root, 'motion.css'), '@prune native;@keyframes pop{to{opacity:.5}}', { baseManifest })
+    const used = await transformStylesheet(join(root, 'animation.css'), '.card{animation:pop 1s}', { ...options, baseManifest: onDemand.manifest, preserveUnchangedNativeCSS: true })
+    expect(used.transformed).toBe(true)
+    expect(used.code).toContain('@keyframes pop')
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

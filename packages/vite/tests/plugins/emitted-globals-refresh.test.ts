@@ -24,7 +24,7 @@ function server() {
 function fixture() {
   const host = server(), context = { config: host.config } as any
   const plugin = EmittedGlobalsVirtualModulePlugin(context) as any
-  let globals: MasterCSSEmittedGlobals = { variables: { a: 1, b: 2 }, keyframes: {}, keyframeSlots: ['one', 'two'], suppressedKeyframes: [] }
+  let globals: MasterCSSEmittedGlobals = { variables: { a: 1, b: 2 }, keyframes: { one: 1 } }
   vi.mocked(getExtractedCSSResult).mockImplementation(async () => {
     context.emittedGlobals = structuredClone(globals)
     context.onEmittedGlobalsChange?.()
@@ -38,13 +38,13 @@ function fixture() {
   }
 }
 
-test('initial loads and equivalent records never reload either environment; ordered metadata still updates', async () => {
+test('initial loads and equivalent records never reload either environment; changed counts still update', async () => {
   const f = fixture()
   for (const environment of Object.values(f.host.environments)) await f.load(environment)
-  f.set({ variables: { b: 2, a: 1 }, keyframeSlots: ['one', 'two'] })
+  f.set({ variables: { b: 2, a: 1 }, keyframes: { one: 1 } })
   await f.context.refreshEmittedGlobals()
   for (const environment of Object.values(f.host.environments)) expect(environment.reloadModule).not.toHaveBeenCalled()
-  f.set({ variables: { a: 1, b: 2 }, keyframeSlots: ['two', 'one'], suppressedKeyframes: ['hidden'] })
+  f.set({ variables: { a: 1, b: 2 }, keyframes: { one: 2 } })
   await f.context.refreshEmittedGlobals()
   for (const environment of Object.values(f.host.environments)) expect(environment.reloadModule).toHaveBeenCalledOnce()
   f.host.httpServer.emit('close')

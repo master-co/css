@@ -3,6 +3,8 @@ use mastercss_compiler::{
 };
 use mastercss_engine::EngineSession;
 
+/// The native output of one stylesheet followed by the CSS its engine generates for
+/// `classes`, as a static build delivers them.
 fn compile(source: &str, classes: Option<&[&str]>) -> (EngineSession, String) {
     let parsed = compile_css_directives(
         source,
@@ -17,14 +19,41 @@ fn compile(source: &str, classes: Option<&[&str]>) -> (EngineSession, String) {
             .unwrap()
             .manifest;
     let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
-    if let Some(classes) = classes {
-        engine.ensure_class_rules(classes).unwrap();
-    }
     engine
         .ensure_stylesheet_resources(&parsed.native_css)
         .unwrap();
-    let css = engine.snapshot().unwrap().stylesheets.concat();
+    if let Some(classes) = classes {
+        engine.ensure_class_rules(classes).unwrap();
+    }
+    let css = format!("{}\n{}", parsed.native_css, engine.css_text());
     (engine, css)
+}
+
+#[test]
+fn preserved_keyframes_stay_native_and_verbatim() {
+    let source = "@keyframes spin { to { rotate: 1turn } }\n@keyframes spin { to { rotate: -1turn } }\n.x { animation: spin 1s }";
+    let parsed = compile_css_directives(source, &Default::default()).unwrap();
+    // Lightning CSS would merge the same-name rules; native keyframes stay as authored.
+    let first = parsed
+        .native_css
+        .find("@keyframes spin { to { rotate: 1turn } }");
+    let second = parsed
+        .native_css
+        .find("@keyframes spin { to { rotate: -1turn } }");
+    assert!(
+        first
+            .zip(second)
+            .is_some_and(|(first, second)| first < second),
+        "{}",
+        parsed.native_css
+    );
+    assert!(!parsed.native_css.contains("master-css"));
+    let definitions = parsed.manifest_input.keyframes.as_deref().unwrap();
+    assert_eq!(definitions.len(), 2);
+    assert!(definitions.iter().all(|definition| definition.native));
+    let (engine, css) = compile(source, Some(&["(animation:spin|1s)"]));
+    assert_eq!(css.matches("@keyframes spin").count(), 2, "{css}");
+    assert!(engine.snapshot().unwrap().resources.keyframes.is_empty());
 }
 
 #[test]
@@ -36,8 +65,9 @@ fn native_keyframes_share_native_preservation_policy() {
         "@prune native;@preserve native;",
         "@preserve native;@prune native;",
     ] {
-        let (_, css) = compile(&format!("{policy}{frames}"), Some(&[]));
+        let (engine, css) = compile(&format!("{policy}{frames}"), Some(&[]));
         assert_eq!(css.matches("@keyframes").count(), 2, "{policy}: {css}");
+        assert!(engine.snapshot().unwrap().resources.keyframes.is_empty());
     }
     let (engine, css) = compile(&format!("@prune native;{frames}"), Some(&[]));
     assert!(!css.contains("@keyframes"), "{css}");
@@ -105,21 +135,48 @@ fn keyframes_inside_theme_and_malformed_safelists_are_errors() {
 }
 
 #[test]
-fn same_names_keep_conditions_layers_and_original_positions() {
-    let source = "@prune native;@layer before;@layer{.kept{opacity:1}@keyframes fade{to{opacity:.2}}@media(width>50rem){@keyframes fade{to{opacity:.4}}}}@supports(display:grid){@keyframes fade{to{opacity:.6}}}@keyframes fade{to{opacity:.8}}.after{opacity:.9}";
+fn same_names_are_emitted_in_their_conditions_and_layers() {
+    let source = "@prune native;@layer before;@layer motion{.kept{opacity:1}@keyframes fade{to{opacity:.2}}@media(width>50rem){@keyframes fade{to{opacity:.4}}}}@supports(display:grid){@keyframes fade{to{opacity:.6}}}@keyframes fade{to{opacity:.8}}.after{opacity:.9}";
     let (engine, css) = compile(source, Some(&["kept", "after", "(animation-name:fade)"]));
     let frames = engine.snapshot().unwrap().resources.keyframes;
-    assert_eq!(frames.len(), 4, "{css}");
     let ids = frames
         .iter()
         .map(|frame| &frame.id)
         .collect::<std::collections::HashSet<_>>();
-    assert_eq!(ids.len(), 4);
-    assert_eq!(css.matches("@layer {").count(), 1, "{css}");
-    assert!(css.find(".kept").unwrap() < css.find("@keyframes fade").unwrap());
-    assert!(css.rfind("@keyframes fade").unwrap() < css.find(".after").unwrap());
-    assert!(engine.css_text().contains("animation-name:fade"));
-    assert!(!engine.css_text().contains("@keyframes"));
+    assert_eq!(ids.len(), 4, "{css}");
+    assert!(css.find(".after").unwrap() < css.find("@keyframes fade").unwrap());
+    assert!(
+        engine.css_text().ends_with(
+            "@layer motion{@keyframes fade{to{opacity:.2}}@media(width>50rem){@keyframes fade{to{opacity:.4}}}}@supports(display:grid){@keyframes fade{to{opacity:.6}}}@keyframes fade{to{opacity:.8}}"
+        ),
+        "{}",
+        engine.css_text()
+    );
+}
+
+#[test]
+fn on_demand_keyframes_need_reenterable_containers_and_portable_urls() {
+    for source in [
+        "@prune native;@layer{@keyframes fade{to{opacity:1}}}",
+        "@prune native;@keyframes probe{to{background:url('./original.svg')}}",
+        "@prune native;@keyframes probe{to{background:url(icons/a.svg)}}",
+    ] {
+        let error = compile_css_directives(source, &Default::default()).unwrap_err();
+        assert!(error.to_string().contains("On-demand keyframes"), "{error}");
+        assert!(error.diagnostic().range.is_some());
+    }
+    // Native keyframes keep their URLs for the host's asset pipeline.
+    let parsed = compile_css_directives(
+        "@layer{@keyframes probe{to{background:url('./original.svg')}}}",
+        &Default::default(),
+    )
+    .unwrap();
+    assert!(parsed.native_css.contains("url('./original.svg')"));
+    let (_, css) = compile(
+        "@prune native;@keyframes probe{to{background:url('/assets/final.svg')}}",
+        Some(&["(animation-name:probe)"]),
+    );
+    assert!(css.contains("background:url('/assets/final.svg')"), "{css}");
 }
 
 #[test]
@@ -138,13 +195,15 @@ fn last_dynamic_use_releases_all_definitions_and_body_tokens() {
     let snapshot = engine.snapshot().unwrap();
     assert!(snapshot.resources.keyframes.is_empty());
     assert!(snapshot.resources.variables.is_empty());
-    assert!(!snapshot.stylesheets.concat().contains("@keyframes"));
+    assert!(!snapshot.text.contains("@keyframes"));
 }
 
 #[test]
-fn native_output_suppression_wins_over_safelist_and_preserve() {
+fn native_definitions_are_never_emitted_but_root_the_tokens_their_frames_read() {
+    let source =
+        "@theme{--color-frame:red}@preserve native;@keyframes fade{to{color:var(--color-frame)}}";
     let parsed = compile_css_directives(
-        "@preserve native;@safelist keyframes \"fade\";@keyframes fade{to{opacity:1}}",
+        source,
         &CompileNativeCssOptions {
             preserve_native_css: false,
             ..Default::default()
@@ -152,13 +211,53 @@ fn native_output_suppression_wins_over_safelist_and_preserve() {
     )
     .unwrap();
     assert!(parsed.native_css.is_empty());
-    assert_eq!(parsed.suppressed_keyframes.len(), 1);
-    assert_eq!(parsed.manifest_input.keyframes.unwrap().len(), 1);
+    let definitions = parsed.manifest_input.keyframes.clone().unwrap();
+    assert_eq!(definitions.len(), 1);
+    assert!(definitions[0].native);
+    let manifest = compile_manifest_input(&parsed.manifest_input, &Default::default())
+        .unwrap()
+        .manifest;
+    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
+    engine
+        .ensure_class_rules(["(animation-name:fade)"])
+        .unwrap();
+    // Whoever delivers the native stylesheet delivers its keyframes; a use roots
+    // the tokens its frames read.
+    let snapshot = engine.snapshot().unwrap();
+    assert!(snapshot.resources.keyframes.is_empty());
+    assert!(!snapshot.text.contains("@keyframes"));
+    assert_eq!(snapshot.resources.variables[0].name, "color-frame");
+    engine
+        .delete_class_rules(["(animation-name:fade)"])
+        .unwrap();
+    assert!(engine.snapshot().unwrap().resources.variables.is_empty());
+    assert_eq!(engine.keyframe_definitions().unwrap().len(), 1);
 }
 
 #[test]
-fn preserved_source_uses_the_same_resource_positions_and_utf16_maps() {
-    let source = "/* 😀 */\n@prune native;\n@layer { @keyframes fade { to { opacity:1 } } }\n.after {color:red}";
+fn undelivered_on_demand_keyframes_are_still_emitted_on_use() {
+    let parsed = compile_css_directives(
+        "@prune native;@keyframes fade{to{opacity:1}}",
+        &CompileNativeCssOptions {
+            preserve_native_css: false,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let manifest = compile_manifest_input(&parsed.manifest_input, &Default::default())
+        .unwrap()
+        .manifest;
+    let mut engine = EngineSession::create(&manifest.to_string()).unwrap();
+    assert!(!engine.css_text().contains("@keyframes"));
+    engine
+        .ensure_class_rules(["(animation-name:fade)"])
+        .unwrap();
+    assert!(engine.css_text().contains("@keyframes fade{to{opacity:1}}"));
+}
+
+#[test]
+fn preserved_source_removes_on_demand_keyframes_with_utf16_maps() {
+    let source = "/* 😀 */\n@prune native;\n@layer motion { @keyframes fade { to { opacity:1 } } }\n.after {color:red}";
     let parsed = compile_css_directives(
         source,
         &CompileNativeCssOptions {
@@ -185,25 +284,6 @@ fn preserved_source_uses_the_same_resource_positions_and_utf16_maps() {
 }
 
 #[test]
-fn suppressed_delivery_keeps_metadata_without_retaining_frame_body_tokens() {
-    let parsed = compile_css_directives("@theme{--color-frame:red}@preserve native;@safelist keyframes \"fade\";@keyframes fade{to{color:var(--color-frame)}}", &CompileNativeCssOptions { preserve_native_css: false, ..Default::default() }).unwrap();
-    let manifest = compile_manifest_input(&parsed.manifest_input, &Default::default())
-        .unwrap()
-        .manifest;
-    let mut engine = EngineSession::create_with_emitted_globals(
-        &manifest.to_string(),
-        Some(&serde_json::json!({"suppressedKeyframes":parsed.suppressed_keyframes}).to_string()),
-    )
-    .unwrap();
-    engine
-        .ensure_class_rules(["(animation-name:fade)"])
-        .unwrap();
-    assert!(engine.snapshot().unwrap().resources.keyframes.is_empty());
-    assert!(engine.snapshot().unwrap().resources.variables.is_empty());
-    assert_eq!(engine.keyframe_definitions().unwrap().len(), 1);
-}
-
-#[test]
 fn vendor_definitions_keep_their_identity_and_order() {
     let (_, css) = compile(
         "@prune native;@-webkit-keyframes fade{to{opacity:.5}}@keyframes fade{to{opacity:1}}",
@@ -219,7 +299,7 @@ fn atomic_refresh_replaces_definitions_and_external_ownership() {
         Some(&["(animation-name:fade)"]),
     );
     let parsed = compile_css_directives(
-        "@preserve native;@keyframes next{to{opacity:.5}}",
+        "@prune native;@safelist keyframes \"next\";@keyframes next{to{opacity:.5}}",
         &Default::default(),
     )
     .unwrap();
@@ -242,7 +322,7 @@ fn atomic_refresh_replaces_definitions_and_external_ownership() {
 }
 
 #[test]
-fn identical_text_in_different_sources_has_independent_resource_ownership() {
+fn identical_text_in_different_sources_has_independent_identity() {
     let source = "@keyframes same{to{opacity:1}}";
     let compile = |file: &str| {
         compile_css_directives(
@@ -261,62 +341,5 @@ fn identical_text_in_different_sources_has_independent_resource_ownership() {
     let a = compile("first.css");
     let b = compile("second.css");
     assert_ne!(a.id, b.id);
-    assert_ne!(a.owner_id, b.owner_id);
     assert_eq!(a.id, compile("first.css").id);
-}
-
-#[test]
-fn server_snapshots_keep_transported_urls_without_retaining_inactive_slot_bodies() {
-    let (engine, css) = compile(
-        "@prune native;@keyframes probe{to{background:url('./original.svg')}}",
-        Some(&[]),
-    );
-    let manifest = engine.manifest_json().unwrap();
-    let mut server = EngineSession::create(&manifest.to_string()).unwrap();
-    server
-        .ensure_stylesheet_resources(&css.replace("./original.svg", "/assets/final.svg"))
-        .unwrap();
-    server
-        .ensure_class_rules(["(animation-name:probe)"])
-        .unwrap();
-    let used = server
-        .snapshot_for_classes(["(animation-name:probe)"])
-        .unwrap();
-    assert_eq!(used.stylesheets.len(), 1);
-    assert!(used.stylesheets[0].contains("background:url('/assets/final.svg')"));
-    assert!(!used.stylesheets[0].contains("original.svg"));
-    let unused = server.snapshot_for_classes([] as [&str; 0]).unwrap();
-    assert!(!unused.stylesheets[0].contains("@keyframes"));
-    assert!(unused.resources.keyframes.is_empty());
-}
-
-#[test]
-fn reference_resource_transport_has_no_animation_or_layer_roots() {
-    let (engine, _) = compile(
-        "@prune native;@layer reference{@keyframes probe{to{background:url('./original.svg')}}}",
-        Some(&[]),
-    );
-    let manifest = engine.manifest_json().unwrap();
-    let parsed: serde_json::Value = serde_json::from_str(&manifest).unwrap();
-    let id = parsed["keyframes"][0]["id"].as_str().unwrap();
-    let metadata = format!(
-        "@media only all,(master-css-keyframe-resource-{id}){{:not(*){{--master-css-slot:0;--master-css-keyframe-resource-0:url('/assets/final.svg')}}}}"
-    );
-    let mut server = EngineSession::create(&manifest.to_string()).unwrap();
-    server.ensure_stylesheet_resources(&metadata).unwrap();
-    assert!(server.snapshot().unwrap().resources.keyframes.is_empty());
-    assert!(!server.snapshot().unwrap().text.contains("@layer reference"));
-    server
-        .ensure_class_rules(["(animation-name:probe)"])
-        .unwrap();
-    let used = server
-        .snapshot_for_classes(["(animation-name:probe)"])
-        .unwrap();
-    assert!(
-        used.text.contains("background:url('/assets/final.svg')"),
-        "{}",
-        used.text
-    );
-    assert!(!used.resources.keyframes[0].anchored);
-    assert_eq!(used.stylesheets, [metadata]);
 }

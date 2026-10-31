@@ -167,7 +167,6 @@ impl EngineSession {
                     keyframe_names: animation.names,
                     retain_all_keyframes: animation.retain_all,
                 },
-                manifest_order: utility.order.unwrap_or_default(),
                 matcher_type: Some(matched.matcher_type),
                 state_token: matched.state_token.clone(),
             });
@@ -210,7 +209,7 @@ impl EngineSession {
                 } else {
                     concat_text!(class_name, "\0", branch.key)
                 };
-                let layer = branch.layer.unwrap_or(utility.layer);
+                let layer = branch.layer.unwrap_or(UtilityLayerName::Utilities);
                 if !seen.insert((key.clone(), layer)) {
                     continue;
                 }

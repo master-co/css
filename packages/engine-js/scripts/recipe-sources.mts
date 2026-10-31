@@ -89,19 +89,15 @@ async function compileManifest(css: string): Promise<Manifest> {
 
 const MOTION = { id: 'c-motion', prelude: '@media (prefers-reduced-motion: no-preference)' }
 
-/** Keyframes in native containers, sharing a name with a managed one or retained, as stylesheet graphs compile them. */
+/** Keyframes in containers, sharing a name with an on-demand one, safelisted or native, as stylesheet graphs compile them. */
 const CONTAINED_KEYFRAMES = [
   { id: 'kx-wiggle', name: 'wiggle', text: '@keyframes wiggle{50%{rotate:6deg}}', containers: [MOTION] },
   { id: 'kx-spin', name: 'spin', text: '@keyframes spin{to{rotate:-1turn}}', containers: [MOTION, { id: 'c-rotate', prelude: '@supports (rotate: 1turn)' }], dependencies: ['color-blue-50'] },
   { id: 'kx-pulse', name: 'pulse', text: '@keyframes pulse{to{opacity:0}}', containers: [{ id: 'c-layer', prelude: '@layer motion' }] },
-  { id: 'kx-hop', name: 'hop', text: '@keyframes hop{to{translate:0 -1px}}', retained: true, containers: [MOTION] },
-  tileKeyframe('@keyframes tile{to{background-image:url(a.png)}}', 'url(a.png)')
+  { id: 'kx-hop', name: 'hop', text: '@keyframes hop{to{translate:0 -1px}}', safelisted: true, containers: [MOTION] },
+  { id: 'kx-tile', name: 'tile', text: '@keyframes tile{to{background-image:url(a.png)}}', native: true, safelisted: true },
+  { id: 'kx-spin-native', name: 'spin', text: '@keyframes spin{to{rotate:3turn}}', native: true, dependencies: ['color-red-60'] }
 ]
-
-function tileKeyframe(text: string, resource: string) {
-  const start = text.indexOf(resource)
-  return { id: 'kx-tile', name: 'tile', text, slotId: 'slot-tile', occurrence: 0, resources: [{ start, end: start + resource.length, value: resource }] }
-}
 
 const HEADS = [
   'btn', 'card', 'spinner', 'glowing', 'stack', 'themed',
@@ -155,7 +151,7 @@ const APPLY_EXTRAS = [
 
 export async function recipeSources(count: number, seed: number) {
   const managed = await compileManifest(`@prune native;${RECIPES_CSS}`)
-  const retained = await compileManifest(RECIPES_CSS)
+  const native = await compileManifest(RECIPES_CSS)
   const contained: Manifest = { ...managed, keyframes: [managed.keyframes[0], ...CONTAINED_KEYFRAMES.slice(0, 3), ...managed.keyframes.slice(1), ...CONTAINED_KEYFRAMES.slice(3)] }
   const changed = await compileManifest(`@prune native;${RECIPES_CSS.replace('rotate: 1turn', 'rotate: 2turn').replace('--color-brand: var(--color-red-60);', '--color-brand: var(--color-blue-50);')}`)
 
@@ -195,19 +191,19 @@ export async function recipeSources(count: number, seed: number) {
       step('register', { variables: { 'color-brand': 0, 'color-unknown': 2 } }),
       step('register', { keyframes: { [spin]: 1 } }),
       step('register', { keyframes: { [spin]: 2, [glow]: 0 } }),
-      step('register', { keyframeSlots: [pulse, 'kx-spin'] }),
-      step('register', { keyframeSlots: [pulse] }),
-      step('register', { suppressedKeyframes: [wiggle] }),
+      step('register', { keyframes: { [pulse]: 1, 'kx-spin': 1 } }),
+      step('register', { keyframes: { 'kx-tile': 1, 'kx-spin-native': 2 } }),
+      step('register', { keyframes: { [wiggle]: 1 } }),
       step('register', {}),
       { op: 'delete', classes: keyframeClasses.slice(0, 6) },
-      step('replace', { keyframeSlots: [pulse, 'kx-spin'], suppressedKeyframes: [wiggle] }),
-      step('replace', { keyframeSlots: [pulse, 'kx-spin'], suppressedKeyframes: [wiggle] }),
-      step('replace', { keyframeSlots: ['kx-spin', pulse], suppressedKeyframes: [wiggle] }),
-      step('replace', { variables: { 'color-red-60': 1, 'color-blue-50': 0 }, keyframes: { [glow]: 1, 'kx-hop': 2 }, suppressedKeyframes: ['kx-wiggle'] }),
+      step('replace', { keyframes: { [pulse]: 1, 'kx-spin': 1 } }),
+      step('replace', { keyframes: { [pulse]: 1, 'kx-spin': 1 } }),
+      step('replace', { keyframes: { 'kx-spin': 1, [pulse]: 2 } }),
+      step('replace', { variables: { 'color-red-60': 1, 'color-blue-50': 0 }, keyframes: { [glow]: 1, 'kx-hop': 2, 'kx-wiggle': 1 } }),
       { op: 'ensure', classes: keyframeClasses },
       step('replace', {}),
       { op: 'refresh', manifest: next },
-      { op: 'refresh', manifest: next, globals: { keyframes: { [id(next, 'spin')]: 1 }, keyframeSlots: ['kx-tile'] } },
+      { op: 'refresh', manifest: next, globals: { keyframes: { [id(next, 'spin')]: 1, 'kx-tile': 1 } } },
       { op: 'refresh', invalid: 'truncated' },
       { op: 'refresh', invalid: 'garbage' },
       { op: 'refresh', manifest, globals: {} },
@@ -219,12 +215,12 @@ export async function recipeSources(count: number, seed: number) {
   }
   const engineCases: EngineCase[] = [
     { id: 'keyframes-managed', manifest: managed, steps: lifecycle },
-    { id: 'keyframes-retained', manifest: retained, steps: lifecycle },
+    { id: 'keyframes-native', manifest: native, steps: lifecycle },
     { id: 'keyframes-contained', manifest: contained, steps: lifecycle },
-    { id: 'keyframes-emitted', manifest: contained, steps: lifecycle, emittedGlobals: { keyframes: { [id(managed, 'spin')]: 1, 'kx-spin': 0 }, keyframeSlots: [id(managed, 'pulse'), 'kx-hop'], suppressedKeyframes: [id(managed, 'glow')], variables: { 'color-brand': 1 } } },
+    { id: 'keyframes-emitted', manifest: contained, steps: lifecycle, emittedGlobals: { keyframes: { [id(managed, 'spin')]: 1, 'kx-spin': 0, 'kx-hop': 1, 'kx-spin-native': 1 }, variables: { 'color-brand': 1 } } },
     { id: 'globals-managed', manifest: managed, steps: globalsSteps(managed, changed) },
-    { id: 'globals-contained', manifest: contained, steps: globalsSteps(contained, retained) },
-    { id: 'globals-contained-emitted', manifest: contained, steps: globalsSteps(contained, changed), emittedGlobals: { keyframes: { 'kx-hop': 1 }, keyframeSlots: ['kx-wiggle'] } }
+    { id: 'globals-contained', manifest: contained, steps: globalsSteps(contained, native) },
+    { id: 'globals-contained-emitted', manifest: contained, steps: globalsSteps(contained, changed), emittedGlobals: { keyframes: { 'kx-hop': 1, 'kx-wiggle': 1 } } }
   ]
   return { manifest: managed, classes, applyClasses, engineCases }
 }

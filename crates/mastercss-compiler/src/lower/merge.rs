@@ -1,7 +1,6 @@
-use super::resolution::resolve_configured_branches;
 use super::{
-    CompilerError, CssDeclaration, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, EngineSession, MergedStyleDefinition, UtilityLayerName,
+    CompilerError, CssDeclaration, CssDirectiveSourceReference, CssDirectiveStyleDefinition,
+    EngineSession, MergedStyleDefinition,
 };
 
 fn append_style(output: &mut Vec<MergedStyleDefinition>, mut next: MergedStyleDefinition) {
@@ -36,10 +35,17 @@ fn sourced_declarations(
         .collect()
 }
 
+fn resolve_selector(engine: &EngineSession, selector: &str) -> Result<String, CompilerError> {
+    engine
+        .resolve_style_selector(selector)
+        .map_err(|error| super::resolution::directive_error(error.to_string()))
+}
+
+/// Native style definitions in authored order with their `@apply` applications
+/// expanded, adjacent rules of one selector and context sharing a block.
 pub(super) fn create_merged_style_definitions(
     definitions: &[CssDirectiveStyleDefinition],
-    engine: &mut EngineSession,
-    target_layer: Option<UtilityLayerName>,
+    engine: &EngineSession,
 ) -> Result<Vec<MergedStyleDefinition>, CompilerError> {
     let mut definitions = definitions.iter().collect::<Vec<_>>();
     definitions.sort_by_key(|definition| match definition {
@@ -47,9 +53,8 @@ pub(super) fn create_merged_style_definitions(
         | CssDirectiveStyleDefinition::Apply { order, .. } => *order,
     });
     let mut output = Vec::new();
-    let mut index = 0;
-    while index < definitions.len() {
-        match definitions[index] {
+    for definition in definitions {
+        match definition {
             CssDirectiveStyleDefinition::Apply {
                 selector,
                 name,
@@ -57,7 +62,7 @@ pub(super) fn create_merged_style_definitions(
                 contents,
                 selector_source,
                 source,
-                condition_path,
+                conditions,
                 ..
             } => {
                 let fail = |message: String| CompilerError::Directive {
@@ -80,70 +85,41 @@ pub(super) fn create_merged_style_definitions(
                     let selector =
                         mastercss_lexer::replace_nesting_selector(&rule.selector, selector)
                             .unwrap_or_else(|| rule.selector.clone());
-                    let mut path = condition_path.clone().unwrap_or_default();
-                    path.extend(rule.conditions.into_iter().map(|condition| {
-                        CssDirectiveConditionPathEntry::Condition { value: condition }
-                    }));
-                    for branch in
-                        resolve_configured_branches(&path, engine, &selector, target_layer)?
-                    {
-                        append_style(
-                            &mut output,
-                            MergedStyleDefinition {
-                                selector_source: selector_source.clone().or_else(|| source.clone()),
-                                selector: branch.selector,
-                                conditions: branch.conditions,
-                                declarations: rule
-                                    .declarations
-                                    .iter()
-                                    .map(|declaration| CssDeclaration {
-                                        property: declaration.property.clone(),
-                                        value: declaration.value.clone().into(),
-                                        source: declaration
-                                            .source
-                                            .clone()
-                                            .or_else(|| source.clone()),
-                                    })
-                                    .collect(),
-                            },
-                        );
-                    }
+                    append_style(
+                        &mut output,
+                        MergedStyleDefinition {
+                            selector_source: selector_source.clone().or_else(|| source.clone()),
+                            selector: resolve_selector(engine, &selector)?,
+                            conditions: conditions.iter().cloned().chain(rule.conditions).collect(),
+                            declarations: rule
+                                .declarations
+                                .iter()
+                                .map(|declaration| CssDeclaration {
+                                    property: declaration.property.clone(),
+                                    value: declaration.value.clone().into(),
+                                    source: declaration.source.clone().or_else(|| source.clone()),
+                                })
+                                .collect(),
+                        },
+                    );
                 }
-                index += 1;
             }
             CssDirectiveStyleDefinition::Native {
                 selector,
                 declarations,
                 conditions,
-                condition_path,
-                layer,
                 source,
                 selector_source,
                 ..
-            } => {
-                let path = condition_path.clone().unwrap_or_else(|| {
-                    conditions
-                        .clone()
-                        .unwrap_or_default()
-                        .into_iter()
-                        .map(|value| CssDirectiveConditionPathEntry::Condition { value })
-                        .collect()
-                });
-                for branch in
-                    resolve_configured_branches(&path, engine, selector, target_layer.or(*layer))?
-                {
-                    append_style(
-                        &mut output,
-                        MergedStyleDefinition {
-                            selector_source: selector_source.clone().or_else(|| source.clone()),
-                            selector: branch.selector,
-                            conditions: branch.conditions,
-                            declarations: sourced_declarations(declarations, source.as_ref()),
-                        },
-                    );
-                }
-                index += 1;
-            }
+            } => append_style(
+                &mut output,
+                MergedStyleDefinition {
+                    selector_source: selector_source.clone().or_else(|| source.clone()),
+                    selector: resolve_selector(engine, selector)?,
+                    conditions: conditions.clone(),
+                    declarations: sourced_declarations(declarations, source.as_ref()),
+                },
+            ),
         }
     }
     Ok(output)

@@ -438,6 +438,7 @@
         ],
         "./stylesheet": [
           "MasterCSSCompiledStylesheet",
+          "MasterCSSLinkedStylesheet",
           "MasterCSSPreparedStylesheet",
           "MasterCSSRenderedStylesheetCompileOptions",
           "MasterCSSSassCompiler",
@@ -465,8 +466,8 @@
           "compileRenderedStylesheet",
           "compileStylesheet",
           "composeStylesheetHost",
-          "createRuntimeStylesheetAsset",
           "createStylesheetCollection",
+          "describeLinkedStylesheet",
           "prepareStylesheet",
           "resolveStylesheet",
           "transformStylesheet"
@@ -505,7 +506,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "da6a7273d48be7a9"
+      "surface": "c35727cc3d5499c6"
     },
     "@master/create-css": {
       "directory": "create",
@@ -902,11 +903,9 @@
         "./css-directives": [
           "CSSCustomMediaDefinition",
           "CSSDefinitionSource",
-          "CSSDirectiveConditionPathEntry",
           "CSSDirectiveDeclarations",
           "CSSDirectiveError",
           "CSSDirectiveExtractionPolicy",
-          "CSSDirectiveLayerName",
           "CSSDirectiveManifestInput",
           "CSSDirectiveNotice",
           "CSSDirectiveReference",
@@ -943,9 +942,7 @@
           "UtilityType"
         ],
         "./runtime-style": [
-          "MASTER_CSS_RUNTIME_STYLE_ID",
-          "MASTER_CSS_STYLESHEET_ASSET_SUFFIX",
-          "MasterCSSRuntimeStylesheetAsset"
+          "MASTER_CSS_RUNTIME_STYLE_ID"
         ],
         "./emitted-globals": [
           "MasterCSSEmittedGlobals"
@@ -972,7 +969,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "3af4c47ab2fd2aa6"
+      "surface": "8e4261ff039704e2"
     },
     "@master/css-server": {
       "directory": "server",

@@ -14,18 +14,16 @@ const environment = (name: string, consumer: 'client' | 'server'): Environment =
 describe('Astro client emitted globals', () => {
   it('counts the stylesheets server environments deliver in the runtime client bundle', () => {
     const { finalize } = emittedGlobalsAPI('runtime')
-    const prerender = { variables: { 'color-text-body': 1 }, keyframes: {}, keyframeSlots: ['fade'], suppressedKeyframes: [] }
-    const ssr = { variables: { 'spacing-md': 1 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] }
-    const client = { variables: { 'color-text-body': 1 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] }
+    const prerender = { variables: { 'color-text-body': 1 }, keyframes: { fade: 1 } }
+    const ssr = { variables: { 'spacing-md': 1 }, keyframes: {} }
+    const client = { variables: { 'color-text-body': 1 }, keyframes: {} }
 
     // Server environments keep the emitted globals their own middleware renders against.
     expect(finalize!(environment('prerender', 'server'), prerender)).toBe(prerender)
     expect(finalize!(environment('ssr', 'server'), ssr)).toBe(ssr)
     expect(finalize!(environment('client', 'client'), client)).toEqual({
       variables: { 'color-text-body': 2, 'spacing-md': 1 },
-      keyframes: {},
-      keyframeSlots: ['fade'],
-      suppressedKeyframes: []
+      keyframes: { fade: 1 }
     })
   })
 

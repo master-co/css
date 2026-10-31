@@ -3162,10 +3162,9 @@
         "keyframes": [
           {
             "id": "k96349710441b4a62-00000000",
-            "ownerId": "k80f5f797de67c9c7",
             "name": "fade",
             "text": "@keyframes fade { to { opacity: 1; } }",
-            "retained": true,
+            "native": true,
             "source": {
               "file": "parity/compiler-static-animation.css",
               "range": {

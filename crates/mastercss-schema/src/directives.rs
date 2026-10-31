@@ -52,12 +52,6 @@ pub struct CssDirectiveReferenceStatement {
     pub file: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
-pub enum CssDirectiveConditionPathEntry {
-    Condition { value: String },
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CssDeclaration {
@@ -85,8 +79,9 @@ pub enum CssDirectiveStyleDefinition {
         source: Option<CssDirectiveSourceReference>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         selector_source: Option<CssDirectiveSourceReference>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        condition_path: Option<Vec<CssDirectiveConditionPathEntry>>,
+        /// The enclosing conditional and layer preludes, outermost first.
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        conditions: Vec<String>,
     },
     Native {
         order: u32,
@@ -94,16 +89,11 @@ pub enum CssDirectiveStyleDefinition {
         declarations: Vec<CssDeclaration>,
         #[serde(skip_serializing_if = "Option::is_none")]
         source: Option<CssDirectiveSourceReference>,
-        #[serde(skip_serializing_if = "Option::is_none")]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         selector_source: Option<CssDirectiveSourceReference>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        conditions: Option<Vec<String>>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        condition_path: Option<Vec<CssDirectiveConditionPathEntry>>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        layer: Option<UtilityLayerName>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        name: Option<String>,
+        /// The enclosing conditional and layer preludes, outermost first.
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        conditions: Vec<String>,
     },
 }
 

@@ -1,8 +1,7 @@
 use super::{
-    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssRule, StyleRule, ThemeAtRule, collect_ordered_declarations,
-    combine_managed_selectors, condition_properties, css_statement_delimiter, minified_css,
-    preserve_ordered_literal_spelling, printed_selectors,
+    CompilerError, CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, StyleRule,
+    ThemeAtRule, collect_ordered_declarations, combine_managed_selectors, css_statement_delimiter,
+    minified_css, preserve_ordered_literal_spelling, printed_selectors,
 };
 use crate::source_index::SourceIndex;
 
@@ -30,14 +29,13 @@ pub(crate) fn push_native_style_declarations(
     declarations: Vec<super::CssDeclaration>,
     source: Option<CssDirectiveSourceReference>,
     context: &NativeStyleContext,
-    condition_path: &[CssDirectiveConditionPathEntry],
+    condition_path: &[String],
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) {
     if declarations.is_empty() {
         return;
     }
-    let (conditions, condition_path) = condition_properties(condition_path);
     *style_order += 1;
     style_definitions.push(CssDirectiveStyleDefinition::Native {
         order: *style_order,
@@ -45,10 +43,7 @@ pub(crate) fn push_native_style_declarations(
         declarations,
         source,
         selector_source: context.selector_source.clone(),
-        conditions,
-        condition_path,
-        layer: None,
-        name: None,
+        conditions: condition_path.to_vec(),
     });
 }
 
@@ -59,7 +54,7 @@ pub(crate) fn lower_native_style_rule(
     rewritten: &SourceIndex<'_>,
     style: StyleRule<'_, ThemeAtRule>,
     context: NativeStyleContext,
-    condition_path: &[CssDirectiveConditionPathEntry],
+    condition_path: &[String],
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
@@ -110,7 +105,7 @@ pub(crate) fn lower_native_rule_list(
     rewritten: &SourceIndex<'_>,
     rules: Vec<CssRule<'_, ThemeAtRule>>,
     context: Option<NativeStyleContext>,
-    condition_path: &[CssDirectiveConditionPathEntry],
+    condition_path: &[String],
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
@@ -175,7 +170,7 @@ pub(crate) fn lower_native_rule_list(
                     contents,
                     selector_source: context.selector_source.clone(),
                     source: source.reference(filename, rule.start_byte, rule.start_byte + 6),
-                    condition_path: (!condition_path.is_empty()).then(|| condition_path.to_vec()),
+                    conditions: condition_path.to_vec(),
                 });
             }
             CssRule::Style(child) => {
@@ -232,9 +227,7 @@ pub(crate) fn lower_native_rule_list(
             }
             CssRule::Media(media) => {
                 let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: format!("@media {}", minified_css(&media.query, filename)?),
-                });
+                path.push(format!("@media {}", minified_css(&media.query, filename)?));
                 lower_native_rule_list(
                     source,
                     filename,
@@ -248,9 +241,10 @@ pub(crate) fn lower_native_rule_list(
             }
             CssRule::Supports(supports) => {
                 let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: format!("@supports {}", minified_css(&supports.condition, filename)?),
-                });
+                path.push(format!(
+                    "@supports {}",
+                    minified_css(&supports.condition, filename)?
+                ));
                 lower_native_rule_list(
                     source,
                     filename,
@@ -271,9 +265,7 @@ pub(crate) fn lower_native_rule_list(
                     prelude.push(minified_css(condition, filename)?);
                 }
                 let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: format!("@container {}", prelude.join(" ")),
-                });
+                path.push(format!("@container {}", prelude.join(" ")));
                 lower_native_rule_list(
                     source,
                     filename,
@@ -291,7 +283,7 @@ pub(crate) fn lower_native_rule_list(
                     None => "@layer".into(),
                 };
                 let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition { value });
+                path.push(value);
                 lower_native_rule_list(
                     source,
                     filename,
@@ -305,9 +297,7 @@ pub(crate) fn lower_native_rule_list(
             }
             CssRule::StartingStyle(starting_style) => {
                 let mut path = condition_path.to_vec();
-                path.push(CssDirectiveConditionPathEntry::Condition {
-                    value: "@starting-style".into(),
-                });
+                path.push("@starting-style".into());
                 lower_native_rule_list(
                     source,
                     filename,

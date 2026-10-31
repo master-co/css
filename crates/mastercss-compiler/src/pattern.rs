@@ -1,7 +1,4 @@
-use super::{
-    CompilerError, CssDirectiveConditionPathEntry, PrinterOptions, ToCss, css_comment_end,
-    css_quote_end, next_char_end,
-};
+use super::{CompilerError, PrinterOptions, ToCss, css_comment_end, css_quote_end, next_char_end};
 
 pub(crate) fn css_block_end(source: &str, open: usize, limit: usize) -> Option<usize> {
     let mut index = open + 1;
@@ -72,22 +69,4 @@ pub(crate) fn minified_css<T: ToCss>(value: &T, filename: &str) -> Result<String
             message: error.to_string(),
             filename: filename.to_owned(),
         })
-}
-
-pub(crate) fn condition_properties(
-    path: &[CssDirectiveConditionPathEntry],
-) -> (
-    Option<Vec<String>>,
-    Option<Vec<CssDirectiveConditionPathEntry>>,
-) {
-    if path.is_empty() {
-        return (None, None);
-    }
-    let conditions = path
-        .iter()
-        .map(|entry| match entry {
-            CssDirectiveConditionPathEntry::Condition { value } => Some(value.clone()),
-        })
-        .collect::<Option<Vec<_>>>();
-    (conditions, Some(path.to_vec()))
 }

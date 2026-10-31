@@ -18,10 +18,6 @@ import type {
   CSSDefinitionSource
 } from '@master/css-schema/css-directives'
 import {
-  setCompilerDiagnosticCount,
-  type CompilerDiagnosticRecorder
-} from './compiler-diagnostics'
-import {
   type CompileCSSOptions,
   type CSSReferenceStatement,
   type CompileCSSFileOptions,
@@ -99,7 +95,6 @@ type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
   definitionsOnly?: boolean
   referenceResources?: boolean
   referenceStack?: string[]
-  diagnostics?: CompilerDiagnosticRecorder
   sourceText?: string
   onDependency?: (file: string) => void
 }
@@ -374,7 +369,6 @@ interface BindingLowerCSSDirectivesResult {
   resolutionManifest: MasterCSSManifest
   warnings: string[]
   generatedCSS: string
-  diagnosticCounts: Record<string, number>
 }
 
 function lowerCSSDirectivesWithBinding(
@@ -383,7 +377,6 @@ function lowerCSSDirectivesWithBinding(
     baseManifest?: MasterCSSManifest
     resolutionManifest?: MasterCSSManifest
     onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
-    diagnostics?: CompilerDiagnosticRecorder
     sourceText?: string
   }
 ) {
@@ -403,9 +396,6 @@ function lowerCSSDirectivesWithBinding(
       options.sourceText
     )
   ))
-  for (const [metricId, value] of Object.entries(lowered.diagnosticCounts)) {
-    setCompilerDiagnosticCount(options.diagnostics, metricId, value)
-  }
   for (const warning of lowered.warnings) {
     options.onDiagnostic?.(compilerWarningDiagnostic(warning))
   }
@@ -491,7 +481,6 @@ function toCompileCSSManifestResult(
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onDiagnostic: options.onDiagnostic,
-    diagnostics: options.diagnostics,
     sourceText: options.sourceText
   })
   const dependencies: string[] = []

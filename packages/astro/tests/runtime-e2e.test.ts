@@ -35,14 +35,13 @@ beforeAll(() => buildAstroFixture(fixtureDir), 120_000)
 it('bundles the emitted globals of the CSS the server environments deliver', () => {
   const assetsDir = join(outDir, '_astro')
   const bundled = readdirSync(assetsDir).filter(file => file.endsWith('.js'))
-    .flatMap(file => readFileSync(join(assetsDir, file), 'utf8').match(/\{"variables":.*?"suppressedKeyframes":\[[^\]]*\]\}/g) ?? [])
+    .flatMap(file => readFileSync(join(assetsDir, file), 'utf8').match(/\{"variables":\{[^}]*\},"keyframes":\{[^}]*\}\}/g) ?? [])
   expect(bundled).toHaveLength(1)
   const emittedGlobals = JSON.parse(bundled[0]) as Required<MasterCSSEmittedGlobals>
   const css = readLinkedCSS()
   expect(emittedGlobals.variables).toHaveProperty('color-text-body')
   for (const name of Object.keys(emittedGlobals.variables)) expect(css).toContain(`--${name}:`)
-  expect(emittedGlobals.keyframeSlots.length).toBeGreaterThan(0)
-  expect(css).toContain('master-css-keyframe-')
+  expect(css).not.toMatch(/master-css-(keyframe|slot)/)
 })
 
 it('leaves tokens and keyframes the linked CSS delivers out of style#master-css', async () => {
@@ -60,11 +59,12 @@ it('leaves tokens and keyframes the linked CSS delivers out of style#master-css'
     expect(await runtimeCSS()).not.toContain('--color-text-body:')
     expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-text-body'))).not.toBe('')
 
-    // The runtime fills the native keyframe slot the linked CSS reserves.
+    // On-demand keyframes join the runtime stylesheet with their first use.
+    expect(await runtimeCSS()).not.toContain('@keyframes')
     await page.locator('#probe').evaluate(element => element.classList.add('animate-fade'))
     await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).animationName)).toBe('fade')
     expect(await runtimeCSS()).toContain('.animate-fade')
-    expect(await runtimeCSS()).not.toContain('@keyframes')
+    expect(await runtimeCSS()).toContain('@keyframes fade')
     expect(warnings).toEqual([])
   } finally {
     await browser.close()

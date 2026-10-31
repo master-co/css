@@ -86,13 +86,13 @@ test('expanded lowering diagnostics point to the authored child rather than flat
 })
 
 test('native and Wasm transports retain identical rule, compose and copied graph mappings', async () => {
-  const { createCompilerBindingSession } = await import('../src/session')
+  const { createCompilerBindingSession } = await import('@master/css-binding/compiler')
   const native = await createCompilerBindingSession({ binding: 'native' })
   const wasm = await createCompilerBindingSession({ binding: 'wasm' })
   try {
     const source = "@mixin --paint {padding:2rem} @utility paint {padding:2rem}\n.card{@apply --all {padding:2rem;}}\n.plain{color:red}"
-    const parsed = native.compileCSS(source, { from: '/entry.css' })
-    expect(wasm.compileCSS(source, { from: '/entry.css' })).toEqual(parsed)
+    const parsed = native.compileCSSDirectives(source, { from: '/entry.css' })
+    expect(wasm.compileCSSDirectives(source, { from: '/entry.css' })).toEqual(parsed)
     expect(parsed.nativeMappings?.length).toBeGreaterThan(0)
     const request = { manifestInput: parsed.manifestInput, styleDefinitions: parsed.styleDefinitions ?? [], warnings: parsed.warnings }
     const lowered = native.lowerCSSDirectives(request, { baseManifest })

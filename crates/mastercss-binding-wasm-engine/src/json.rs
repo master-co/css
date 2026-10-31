@@ -7,7 +7,7 @@ use mastercss_schema::{
     BindingInfo, ConditionBoundIr, ConditionRangeIr, Diagnostic, DiagnosticPhase,
     DiagnosticSeverity, EngineExecutionStateIr, EngineKeyframeResourceIr, EngineResourcesIr,
     EngineSnapshotIr, EngineTransitionIr, GeneratedRuleIr, KeyframeContainer, KeyframeDefinition,
-    KeyframeResource, RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
+    RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 
 pub(crate) trait WriteJson {
@@ -336,7 +336,6 @@ impl WriteJson for EngineKeyframeResourceIr {
             object.field("containers", &self.containers);
         }
         object
-            .field("anchored", &self.anchored)
             .field("refCount", &self.ref_count)
             .field("dependencies", &self.dependencies);
         object.end();
@@ -351,39 +350,21 @@ impl WriteJson for KeyframeContainer {
     }
 }
 
-impl WriteJson for KeyframeResource {
-    fn write_json(&self, out: &mut String) {
-        let mut object = Object::new(out);
-        object
-            .field("start", &self.start)
-            .field("end", &self.end)
-            .field("value", &self.value);
-        object.end();
-    }
-}
-
 impl WriteJson for KeyframeDefinition {
     fn write_json(&self, out: &mut String) {
         let mut object = Object::new(out);
-        object.field("id", &self.id);
-        if let Some(owner_id) = &self.owner_id {
-            object.field("ownerId", owner_id);
-        }
-        if let Some(slot_id) = &self.slot_id {
-            object.field("slotId", slot_id);
-        }
-        if let Some(occurrence) = &self.occurrence {
-            object.field("occurrence", occurrence);
-        }
-        object.field("name", &self.name).field("text", &self.text);
-        if !self.resources.is_empty() {
-            object.field("resources", &self.resources);
-        }
+        object
+            .field("id", &self.id)
+            .field("name", &self.name)
+            .field("text", &self.text);
         if !self.containers.is_empty() {
             object.field("containers", &self.containers);
         }
-        if self.retained {
-            object.field("retained", &true);
+        if self.native {
+            object.field("native", &true);
+        }
+        if self.safelisted {
+            object.field("safelisted", &true);
         }
         if !self.dependencies.is_empty() {
             object.field("dependencies", &self.dependencies);
@@ -459,9 +440,6 @@ impl WriteJson for EngineSnapshotIr {
             .field("rules", &self.rules)
             .field("resources", &self.resources)
             .field("text", &self.text);
-        if !self.stylesheets.is_empty() {
-            object.field("stylesheets", &self.stylesheets);
-        }
         object.end();
     }
 }
@@ -585,14 +563,11 @@ mod tests {
                 "keyframes": [
                     {
                         "id": "fade-1",
-                        "ownerId": "owner",
-                        "slotId": "slot",
-                        "occurrence": 2,
                         "name": "fade",
-                        "text": "@keyframes fade{from{background:url(a.png)}}",
-                        "resources": [{ "start": 30, "end": 35, "value": "b.png" }],
+                        "text": "@keyframes fade{from{opacity:0}}",
                         "containers": [{ "id": "media", "prelude": "@media print" }],
-                        "retained": true,
+                        "native": true,
+                        "safelisted": true,
                         "dependencies": ["color-red-60"],
                         "source": { "file": "a.css", "range": { "start": 0, "end": 4 } }
                     },
@@ -609,7 +584,7 @@ mod tests {
         }
         let written: serde_json::Value = serde_json::from_str(&definitions.to_json()).unwrap();
         assert_eq!(written, expected);
-        assert_eq!(written[0]["ownerId"], "owner");
+        assert_eq!(written[0]["safelisted"], true);
     }
 
     #[test]

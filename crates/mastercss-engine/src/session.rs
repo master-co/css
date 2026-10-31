@@ -86,7 +86,7 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::default(),
             keyframe_counts: HashMap::default(),
-            stylesheet_keyframe_slots: HashSet::default(),
+            delivered_keyframes: HashSet::default(),
             variable_floors: HashMap::default(),
             keyframe_floors: HashMap::default(),
             keyframe_texts: Vec::new(),
@@ -255,9 +255,8 @@ impl EngineSession {
             self.stylesheet_sources.push(String::new());
             return Ok(EngineTransitionIr::empty());
         }
-        let template = self.keyframe_template(native_css);
         let changes_variables =
-            crate::stylesheet_declarations(&template)
+            crate::stylesheet_declarations(native_css)
                 .iter()
                 .any(|(name, value)| {
                     name.strip_prefix("--").is_some_and(|name| {
@@ -280,14 +279,20 @@ impl EngineSession {
         &mut self,
         native_css: &str,
     ) -> Result<EngineTransitionIr, EngineError> {
-        let template = self.keyframe_template(native_css);
-        let native_css = template.as_str();
         self.with_theme_batch(|session| {
-            session.register_keyframe_slots(native_css);
             let animation = session.animation_references(native_css)?;
             session.register_keyframes(&animation.names, animation.retain_all);
-            let stylesheet_variables = mastercss_lexer::collect_css_variable_references(native_css);
-            let variable_names = stylesheet_variables
+            // The native keyframes of the program read their tokens through their
+            // definitions, only while an animation uses them; any other CSS roots
+            // every token it references.
+            let mut unknown = std::borrow::Cow::Borrowed(native_css);
+            for definition in &session.compiled.keyframes {
+                if definition.native && unknown.contains(definition.text.as_str()) {
+                    session.delivered_keyframes.insert(definition.id.clone());
+                    unknown = unknown.replace(definition.text.as_str(), "").into();
+                }
+            }
+            let variable_names = mastercss_lexer::collect_css_variable_references(&unknown)
                 .into_iter()
                 .filter(|name| session.compiled.compiled_variables.contains_key(name))
                 .collect::<Vec<_>>();
@@ -313,12 +318,9 @@ impl EngineSession {
         for definition in self.keyframe_snapshot() {
             emitted_globals.keyframes.get_or_insert(definition.id, 1);
         }
-        for id in &self.stylesheet_keyframe_slots {
-            if !emitted_globals.keyframe_slots.contains(id) {
-                emitted_globals.keyframe_slots.push(id.clone());
-            }
+        for id in &self.delivered_keyframes {
+            emitted_globals.keyframes.get_or_insert(id.clone(), 1);
         }
-        emitted_globals.keyframe_slots.sort();
         Ok(emitted_globals)
     }
 
@@ -331,12 +333,6 @@ impl EngineSession {
         self.ensure_active()?;
         let mut merged = self.emitted_globals.clone();
         let mut changed = false;
-        for id in &emitted_globals.suppressed_keyframes {
-            if !merged.suppressed_keyframes.contains(id) {
-                merged.suppressed_keyframes.push(id.clone());
-                changed = true;
-            }
-        }
         for (name, count) in emitted_globals.variables {
             if count == 0 {
                 continue;
@@ -354,12 +350,6 @@ impl EngineSession {
                 merged
                     .keyframes
                     .insert(name, previous.saturating_add(count));
-                changed = true;
-            }
-        }
-        for id in emitted_globals.keyframe_slots {
-            if !merged.keyframe_slots.contains(&id) {
-                merged.keyframe_slots.push(id);
                 changed = true;
             }
         }
@@ -431,12 +421,10 @@ impl EngineSession {
             session.theme_dirty = true;
             session.variable_counts.clear();
             session.keyframe_counts.clear();
-            session.stylesheet_keyframe_slots.clear();
+            session.delivered_keyframes.clear();
             session.theme_variable_names.clear();
             for source in &session.stylesheet_sources {
-                for (name, value) in
-                    crate::stylesheet_declarations(&session.keyframe_template(source))
-                {
+                for (name, value) in crate::stylesheet_declarations(source) {
                     if let Some(name) = name.strip_prefix("--") {
                         let values = session
                             .compiled
@@ -474,15 +462,7 @@ impl EngineSession {
             rules,
             resources: self.resource_snapshot(),
             text: self.css_text(),
-            stylesheets: self.rendered_stylesheets(),
         })
-    }
-
-    fn rendered_stylesheets(&self) -> Vec<String> {
-        self.stylesheet_sources
-            .iter()
-            .map(|source| self.render_stylesheet_resources(source))
-            .collect()
     }
 
     pub fn snapshot_for_classes<I, S>(
@@ -948,7 +928,8 @@ impl EngineSession {
                     } else {
                         concat_text!(class_name, "\0", branch.key)
                     };
-                    emitted |= seen.insert((key, branch.layer.unwrap_or(utility.layer)));
+                    emitted |=
+                        seen.insert((key, branch.layer.unwrap_or(UtilityLayerName::Utilities)));
                 }
                 if !emitted {
                     continue;
@@ -1039,7 +1020,7 @@ impl EngineSession {
             }
             output.push('}');
         }
-        output.push_str(&self.standalone_keyframe_text());
+        output.push_str(&self.keyframes_text());
         output
     }
 
@@ -1050,7 +1031,7 @@ impl EngineSession {
         self.rule_counts.clear();
         self.variable_counts.clear();
         self.keyframe_counts.clear();
-        self.stylesheet_keyframe_slots.clear();
+        self.delivered_keyframes.clear();
         self.variable_floors.clear();
         self.keyframe_floors.clear();
         self.keyframe_texts.clear();
@@ -1072,7 +1053,7 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::default(),
             keyframe_counts: HashMap::default(),
-            stylesheet_keyframe_slots: HashSet::default(),
+            delivered_keyframes: HashSet::default(),
             variable_floors: HashMap::default(),
             keyframe_floors: HashMap::default(),
             keyframe_texts: Vec::new(),

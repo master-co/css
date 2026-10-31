@@ -32,4 +32,4 @@ export {
   type MasterCSSStylesheetTransformResult
 } from './public'
 export { MasterCSSStylesheetCollection } from './public'
-export { createRuntimeStylesheetAsset } from './runtime-assets'
+export { describeLinkedStylesheet, type MasterCSSLinkedStylesheet } from './linked-stylesheet'

@@ -180,19 +180,21 @@ test('returns a complete final chunk when no prefix can be emitted safely', () =
   expect(ended.result.cssText).toBe("@layer utilities{.\\(display\\:block\\){display:block}}")
 })
 
-test('materializes compiled native slots in their original inline styles without leaking page roots', async () => {
+test('renders on-demand keyframes with the page CSS and leaves native ones to their stylesheet', async () => {
   const { compileRenderedStylesheet } = await import('@master/css-compiler/stylesheet')
-  const compiled = await compileRenderedStylesheet('/ssr.css', '@prune native;@layer{@keyframes probe{to{opacity:.25;background:url("./source.svg")}}}', {
+  const compiled = await compileRenderedStylesheet('/ssr.css', '@prune native;@layer motion{@keyframes probe{to{opacity:.25}}}@keyframes spin{to{rotate:1turn}}@layer motion{@keyframes spin{to{rotate:-1turn}}}', {
     baseManifest: { version: 6, languageVersion: 17 }, classes: []
   })
+  expect(compiled.nativeCSS).not.toContain('@keyframes')
   using renderer = createServerRenderer({ manifest: compiled.manifest, emittedGlobals: compiled.emittedGlobals })
-  const input = `<html><head><style id="native">${compiled.nativeCSS.replaceAll('./source.svg', '/assets/final.svg')}</style><style id="after">@layer after;</style></head><body><div class="(animation:probe|1ms|both)"></div></body></html>`
+  const input = `<html><head><style id="native">${compiled.nativeCSS}</style></head><body><div class="(animation:probe|1ms|both)"></div></body></html>`
   const first = renderer.renderHTML(input, { hydrationManifest: 'inject' })
-  expect(first.html).toContain('@keyframes probe')
-  expect(first.html).toContain('background:url("/assets/final.svg")')
-  expect(first.html.indexOf('@keyframes probe')).toBeLessThan(first.html.indexOf('id="after"'))
-  expect(first.cssText).not.toContain('@keyframes')
+  expect(first.cssText).toContain('@layer motion{@keyframes probe{to{opacity:.25}}}')
   expect(first.hydrationManifest?.resourceOrder.keyframes).toHaveLength(1)
-  expect(renderer.renderHTML(input.replace('(animation:probe|1ms|both)', '')).html).not.toContain('@keyframes')
+  expect(renderer.renderHTML(input.replace('(animation:probe|1ms|both)', '')).cssText).not.toContain('@keyframes')
   expect(renderer.renderHTML(first.html).html.match(/@keyframes probe/g)).toHaveLength(1)
+  // An inline stylesheet delivers its own native keyframes.
+  const native = renderer.renderHTML('<html><head><style>@keyframes local{to{opacity:0}}</style></head><body><div class="(animation:local|1s)"></div></body></html>')
+  expect(native.cssText).toContain('animation:local 1s')
+  expect(native.cssText).not.toContain('@keyframes')
 })

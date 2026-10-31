@@ -35,7 +35,6 @@ const excludesKey = (utility: Utility, key: string) => utility.emit.type === 're
 /** The variable a token `key` of a utility names: an explicit alias, then the first `~namespace` that declares `namespace-key`. */
 export function utilityVariable(utility: Utility, key: string, program: Program) {
   const { variables } = program
-  for (const [alias, name] of utility.variableAliases) if (alias === key && !alias.includes('_') && variables.has(name)) return name
   if (excludesKey(utility, key) || !isUtilityKey(key)) return
   for (const reference of utility.variableAliasRefs) {
     const name = `${reference[0] === '~' ? reference.slice(1) : reference}-${key}`

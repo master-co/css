@@ -9,8 +9,8 @@ pub(crate) struct PreservedSource {
     pub mappings: Vec<CssOutputMapping>,
 }
 
-/// Audit prototype: copy untouched source spans and replace only compiler-owned
-/// definitions and native lowering slots. The existing Rust lexer owns spans.
+/// Copy untouched source spans and replace only compiler-owned definitions and
+/// native lowering slots. The existing Rust lexer owns spans.
 pub(crate) fn preserve_native_source(
     source: &str,
     original: &str,
@@ -68,18 +68,14 @@ pub(crate) fn preserve_native_source(
             .ok_or_else(|| error("Lowered slot has no source statement"))?;
         edits.push((start, end, format!("@{};", slot.name), false));
     }
-    for definition in keyframes {
+    // On-demand keyframes leave native output; native ones stay as authored.
+    for definition in keyframes.iter().filter(|definition| !definition.native) {
         if let Some(reference) = &definition.source {
             let start = mastercss_lexer::utf16_to_byte_offset(original, reference.range.start)
                 .ok_or_else(|| error("Invalid keyframe range"))?;
             let end = mastercss_lexer::utf16_to_byte_offset(original, reference.range.end)
                 .ok_or_else(|| error("Invalid keyframe range"))?;
-            edits.push((
-                start,
-                end,
-                format!("@--master-css-keyframe-{};", definition.id),
-                true,
-            ));
+            edits.push((start, end, String::new(), true));
         }
     }
     edits.sort_by_key(|edit| edit.0);

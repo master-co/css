@@ -32,6 +32,7 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
       --color-root: red;
       --color-brand: var(--color-root);
      }
+    @prune native;
     @keyframes audit-fade { from { color: var(--color-brand); } to { opacity: 1; } }
     @mixin --audit-paint { color: var(--color-brand); display: block; display: flex; } @utility audit-paint { color: var(--color-brand); display: block; display: flex; }
     @mixin --audit-motion { animation: audit-fade 1s; } @utility audit-motion { animation: audit-fade 1s; }
@@ -50,14 +51,16 @@ test.each(['native', 'wasm'] as const)('450: %s codec reload preserves ordered d
   expect([...paintRules.matchAll(/display:([^;}]+)/g)].map(match => match[1])).toEqual(['block', 'flex'])
   expect(restored.snapshot().resources.variables.map(item => item.name)).toEqual(expect.arrayContaining(['color-root', 'color-brand']))
   expect(restored.snapshot().resources).not.toHaveProperty('animations')
-  expect(nativeCSS).toContain('@keyframes audit-fade')
+  // On-demand keyframes leave the native CSS for the engine that uses them.
+  expect(nativeCSS).not.toContain('@keyframes audit-fade')
   expect(restored.snapshot().text).toContain('@keyframes audit-fade')
   for (const className of classes) {
     expect(restored.deleteClassRules([className])).toEqual(original.deleteClassRules([className]))
     expect(restored.snapshot()).toEqual(original.snapshot())
   }
-  expect(restored.snapshot().resources.variables.map(value => value.name)).toEqual(['color-brand', 'color-root'])
-  expect(nativeCSS).toContain('@keyframes audit-fade')
+  // The last use releases the keyframes and the tokens their frames read.
+  expect(restored.snapshot().resources.variables).toEqual([])
+  expect(restored.snapshot().text).not.toContain('@keyframes audit-fade')
 })
 
 test.each(['native', 'wasm'] as const)('450: %s validates execution versions independently of codec serialization', async (binding) => {

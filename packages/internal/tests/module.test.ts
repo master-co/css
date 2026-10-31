@@ -45,13 +45,13 @@ describe('@master/css-internal module helpers', () => {
 
   it('serializes manifest and emittedGlobals modules', () => {
     expect(EMPTY_MANIFEST_JSON).toBe('{"version":6,"languageVersion":17}')
-    expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] };')
+    expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, keyframes: {} };')
     expect(toManifestJSON({
   "version": 6 as const,
   "languageVersion": 17 as const
 })).toBe('{"version":6,"languageVersion":17}')
-    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{},"keyframeSlots":[],"suppressedKeyframes":[]};')
-    expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] })
+    expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"keyframes":{}};')
+    expect(normalizeEmittedGlobals()).toEqual({ variables: {}, keyframes: {} })
   })
 
   it('omits source provenance from production manifests', () => {
@@ -82,14 +82,12 @@ describe('@master/css-internal module helpers', () => {
 
   it('counts emittedGlobals of separate stylesheet hosts', () => {
     expect(mergeEmittedGlobals(
-      { variables: { color: 1, unused: 0 }, keyframes: { fade: 1 }, keyframeSlots: ['fade'] },
-      { variables: { color: 2, spacing: 1 }, keyframeSlots: ['fade', 'ping'], suppressedKeyframes: ['shake'] },
+      { variables: { color: 1, unused: 0 }, keyframes: { fade: 1 } },
+      { variables: { color: 2, spacing: 1 }, keyframes: { fade: 2, ping: 0 } },
       { variables: { color: 0xffff_ffff } }
     )).toEqual({
       variables: { color: 0xffff_ffff, spacing: 1 },
-      keyframes: { fade: 1 },
-      keyframeSlots: ['fade', 'ping'],
-      suppressedKeyframes: ['shake']
+      keyframes: { fade: 3 }
     })
   })
 

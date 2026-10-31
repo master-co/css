@@ -118,7 +118,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   private readonly retainedClassNames = new Set<string>()
   private observer?: MutationObserver
   private observing = false
-  private readonly handleStylesheetLoad = () => this.reconcileKeyframeRules()
   private disposed = false
   private globalFacade?: MasterCSSRuntimeFacade
 
@@ -151,7 +150,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     hydrationManifest: MasterCSSHydrationManifest | undefined,
     loaded?: LoadedEngine
   ) {
-    super(root, options.emittedGlobals, hydrationManifest, options.stylesheets, options.stylesheetDelivery)
+    super(root, options.emittedGlobals, hydrationManifest)
     this.programSource = options.program
     this.renderedClassNames = getRenderedClassNames(hydrationManifest)
     this.engineBinding = options.binding || 'auto'
@@ -466,7 +465,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.container.append(expectedStyle)
     try {
       const expectedRules = expectedStyle.sheet?.cssRules
-      if (!expectedRules || !this.rebaseSnapshotResources(expectedStyle.sheet!, snapshot)) return false
+      if (!expectedRules) return false
       const checkedLayers = new Set<string>()
       for (const layer of expectedRules) {
         if (!isLayerBlockRule(layer) || layer.name === 'theme' || checkedLayers.has(layer.name)
@@ -780,13 +779,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   private handleMutationRecords(records: MutationRecord[]) {
-    if (records.some(record => {
-      const target = record.target.nodeType === 3 ? record.target.parentElement : record.target
-      if (target?.nodeType === 1 && (target as Element).matches('style') && target !== this.style) return true
-      return [...record.addedNodes, ...record.removedNodes].some(node =>
-        node.nodeType === 1 && node !== this.style
-        && ((node as Element).matches('style,link[rel="stylesheet"]') || (node as Element).querySelector('style,link[rel="stylesheet"]')))
-    })) this.reconcileKeyframeRules()
     const deltaCounts = this.classTracker.collectMutations(records, this.root)
     if (this.engineState !== 'ready') {
       const addedClassNames = applyDeferredMutationDelta(deltaCounts, this.classCounts)
@@ -828,7 +820,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.observer = new MutationObserver((records) => this.handleMutationRecords(records))
     this.observer.observe(this.root, {
       childList: true,
-      characterData: true,
       attributes: true,
       attributeFilter: ['class'],
       subtree: true
@@ -846,7 +837,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
       this.requestEngine()
     }
     this.startMutationObserver()
-    this.root.addEventListener('load', this.handleStylesheetLoad, true)
     this.observing = true
     if (process.env.NODE_ENV === 'development') debugRuntimeObserved(this)
     return this
@@ -859,7 +849,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (!this.observing) return this
     this.observer?.disconnect()
     this.observer = undefined
-    this.root.removeEventListener('load', this.handleStylesheetLoad, true)
     this.observing = false
     const activeClassNames = [...this.classUtilities.keys()]
     if (activeClassNames.length) this.bindingEngine?.deleteClassRules(activeClassNames)
@@ -978,7 +967,6 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.disconnect()
     this.bindingEngine?.dispose()
     this.unregister()
-    this.disposeNativeStylesheets()
     this.disposed = true
     if (process.env.NODE_ENV === 'development') debugRuntimeDestroyed(this)
   }

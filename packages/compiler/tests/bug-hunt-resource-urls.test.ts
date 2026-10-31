@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { createCompiler, type MasterCSSCompileStylesheetsRequest } from '../src/index'
-import { createCompilerBindingSession } from '../src/session'
+import { createCompilerBindingSession } from '@master/css-binding/compiler'
 
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: 'entry', files: {

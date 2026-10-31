@@ -302,7 +302,6 @@ export function composeDeliveredStylesheets(
   const rendered = renderCompiledManifestCSS({
     manifest: result.manifest as MasterCSSManifest,
     nativeCSS: result.stylesheets.map(asset => asset.css),
-    emittedGlobals: { suppressedKeyframes: result.directives.suppressedKeyframes },
     classNames: generatedClasses,
     includeGeneratedCSS: options.includeGeneratedCSS
   })
@@ -310,15 +309,15 @@ export function composeDeliveredStylesheets(
   // public manifest can generate markup utilities for this collection.
   const referenced = renderCompiledManifestCSS({
     manifest: result.resolutionManifest,
-    nativeCSS: [...rendered.stylesheets],
+    nativeCSS: result.stylesheets.map(asset => asset.css),
     includeGeneratedCSS: false,
     emittedGlobals: rendered.emittedGlobals
   })
-  const css = [referenced.stylesheets[result.stylesheets.findIndex(asset => asset.id === entry)], rendered.generatedCSS, referenced.generatedCSS].filter(Boolean).join('\n')
+  const css = [result.stylesheets.find(asset => asset.id === entry)?.css, rendered.generatedCSS, referenced.generatedCSS].filter(Boolean).join('\n')
   return {
     css,
     emittedGlobals: referenced.emittedGlobals,
-    stylesheets: result.stylesheets.map((asset, index) => ({ ...asset, css: referenced.stylesheets[index] ?? asset.css })).filter(asset => asset.id !== entry),
+    stylesheets: result.stylesheets.filter(asset => asset.id !== entry),
     resources: result.resources,
     dependencies: result.directives.dependencies.filter(file => file !== entry)
   }

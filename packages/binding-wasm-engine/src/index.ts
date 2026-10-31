@@ -12,9 +12,9 @@ export type MasterCSSWasmInput =
   | WebAssembly.Module
 
 /**
- * Emitted globals as the engine Wasm takes them: the variable, keyframe, keyframe
- * slot and suppressed keyframe names in that order, then the variable, keyframe and
- * slot totals followed by each variable's and each keyframe's count.
+ * Emitted globals as the engine Wasm takes them: the variable then the keyframe
+ * names, then the variable and keyframe totals followed by each variable's and each
+ * keyframe's count.
  */
 type GeneratedEmittedGlobals = [names: string[], counts: Uint32Array]
 
@@ -217,7 +217,7 @@ function emittedGlobalsJSON(options: MasterCSSWasmEngineSessionOptions) {
     : JSON.stringify(options.emittedGlobals)
 }
 
-const EMITTED_GLOBALS_FIELDS = new Set(['variables', 'keyframes', 'keyframeSlots', 'suppressedKeyframes'])
+const EMITTED_GLOBALS_FIELDS = new Set(['variables', 'keyframes'])
 
 function invalidEmittedGlobals(message: string): never {
   throw new MasterCSSError({
@@ -244,11 +244,10 @@ function generatedEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals = {}): 
   }
   const variables = counted('variables', emittedGlobals.variables)
   const keyframes = counted('keyframes', emittedGlobals.keyframes)
-  const slots = emittedGlobals.keyframeSlots ?? []
   const entries = [...variables, ...keyframes]
   return [
-    entries.map(([name]) => name).concat(slots, emittedGlobals.suppressedKeyframes ?? []),
-    Uint32Array.from([variables.length, keyframes.length, slots.length, ...entries.map(([, count]) => count)])
+    entries.map(([name]) => name),
+    Uint32Array.from([variables.length, keyframes.length, ...entries.map(([, count]) => count)])
   ]
 }
 

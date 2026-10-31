@@ -174,7 +174,7 @@ export function tokenClasses(program: Program) {
   const ALPHAS = ['/.5', '/0', '/1', '/.07', '/5e-1', '/50', '/1.5', '/-.5', '/']
   for (const utility of program.utilities) {
     if (utility.nativeFallback) continue
-    const keys = new Set(utility.variableAliases.map(([alias]) => alias))
+    const keys = new Set<string>()
     for (const reference of utility.variableAliasRefs) {
       const namespace = `${reference.replace(/^~/, '')}-`
       for (const name of program.variableOrder) if (name.startsWith(namespace)) keys.add(name.slice(namespace.length))

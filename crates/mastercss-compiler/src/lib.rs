@@ -43,10 +43,10 @@ use mastercss_lexer::{
     remove_standalone_css_directives, utf16_to_byte_offset,
 };
 use mastercss_schema::{
-    CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry,
-    CssDirectiveExtractionPolicy, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
-    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, Diagnostic,
-    ErrorCode, SourceLocation, SourceLocationRange, SourceRange,
+    CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveExtractionPolicy,
+    CssDirectiveManifestInput, CssDirectiveReferenceStatement, CssDirectiveSourceReference,
+    CssDirectiveStyleDefinition, CssOutputMapping, Diagnostic, ErrorCode, SourceLocation,
+    SourceLocationRange, SourceRange,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -114,8 +114,6 @@ pub struct CompileNativeCssResult {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub suppressed_keyframes: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub notices: Vec<mastercss_schema::CssDirectiveNotice>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -690,9 +688,7 @@ pub(crate) use native_selectors::{
 pub(crate) use native_style::{
     NativeStyleContext, lower_native_style_rule, native_rule_list_has_directives,
 };
-pub(crate) use pattern::{
-    condition_properties, css_block_end, css_statement_delimiter, minified_css,
-};
+pub(crate) use pattern::{css_block_end, css_statement_delimiter, minified_css};
 pub(crate) use syntax::{
     css_comment_end, css_quote_end, declaration_name, directive_error, next_char_end,
     ranged_directive_diagnostic,

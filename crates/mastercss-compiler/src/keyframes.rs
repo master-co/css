@@ -1,4 +1,4 @@
-use crate::{CompilerError, CssOutputMapping};
+use crate::CssOutputMapping;
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -7,9 +7,6 @@ pub(crate) fn native_variables(css: &str) -> BTreeMap<String, Vec<String>> {
     let mut output = BTreeMap::<String, Vec<String>>::new();
     for (name, value) in mastercss_engine::stylesheet_declarations(css) {
         if let Some(name) = name.strip_prefix("--") {
-            if name == "master-css-slot" || name.starts_with("master-css-keyframe-resource-") {
-                continue;
-            }
             let values = output.entry(name.into()).or_default();
             if !values.contains(&value) {
                 values.push(value);
@@ -46,27 +43,26 @@ pub(crate) fn include_native_variables(manifest: &mut Value, css: &str) {
     }
 }
 
+/// Whether `css` can contain an animation declaration, possibly escaped.
+pub(crate) fn may_declare_animations(css: &str) -> bool {
+    css.contains('\\') || css.to_ascii_lowercase().contains("animation")
+}
+
+/// Information notices for native animation declarations whose names cannot be
+/// resolved, which keep every candidate definition of `engine` in use.
 pub(crate) fn native_notices(
     css: &str,
     filename: &str,
-    manifest: &Value,
+    engine: &mastercss_engine::EngineSession,
     mappings: &[CssOutputMapping],
-) -> Result<Vec<mastercss_schema::CssDirectiveNotice>, CompilerError> {
-    if manifest
-        .get("keyframes")
-        .and_then(Value::as_array)
-        .is_none_or(Vec::is_empty)
+) -> Vec<mastercss_schema::CssDirectiveNotice> {
+    if !may_declare_animations(css)
+        || engine
+            .keyframe_definitions()
+            .is_ok_and(|definitions| definitions.is_empty())
     {
-        return Ok(Vec::new());
+        return Vec::new();
     }
-    let engine =
-        mastercss_engine::EngineSession::create(&manifest.to_string()).map_err(|cause| {
-            CompilerError::Directive {
-                message: cause.to_string(),
-                filename: filename.into(),
-                range: None,
-            }
-        })?;
     let mut notices = Vec::new();
     let tokens = tokenize_css_syntax(css);
     let statements = collect_css_syntax_statements(&tokens);
@@ -130,5 +126,5 @@ pub(crate) fn native_notices(
             source,
         });
     }
-    Ok(notices)
+    notices
 }

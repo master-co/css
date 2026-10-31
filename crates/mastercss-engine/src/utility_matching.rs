@@ -31,11 +31,6 @@ pub(crate) fn register(manifest: &mut Program) {
                 name.clone()
             }),
             utility_type: -2,
-            order: Some(0),
-            layer: mastercss_schema::UtilityLayerName::Utilities,
-            keys: Vec::new(),
-            alias_groups: Vec::new(),
-            variable_aliases: Vec::new(),
             variable_alias_refs: if token {
                 vec![concat_text!("~", &recipe.parameters[0].name[2..])]
             } else {

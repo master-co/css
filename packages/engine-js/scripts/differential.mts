@@ -237,7 +237,7 @@ function globalsCases(): EngineCase[] {
       { op: 'ensure', classes },
       { op: 'register', globals: { variables: { 'color-red-60': 1 } } },
       { op: 'register', globals: { keyframes: { fade: 1 } } },
-      { op: 'replace', globals: { variables: { 'spacing-md': 2 }, suppressedKeyframes: ['fade'] } },
+      { op: 'replace', globals: { variables: { 'spacing-md': 2 }, keyframes: { fade: 2 } } },
       { op: 'replace', globals: {} },
       { op: 'refresh', manifest: 'default', globals: { variables: { 'color-red-60': 1 } } },
       { op: 'delete', classes }

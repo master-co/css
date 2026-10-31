@@ -1,15 +1,11 @@
 import type { MasterCSSKeyframeDefinition } from './keyframes.js'
 import type { MasterCSSMixinDefinition, MasterCSSUtilityDefinition, MasterCSSMixinValue, MasterCSSMixinNode } from './mixin.js'
-import type {
-  MasterCSSThemeNode,
-  MasterCSSManifestUtilityLayerName
-} from './manifest.js'
+import type { MasterCSSThemeNode } from './manifest.js'
 
 export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
 
 export type CSSDirectiveDeclarations = Record<string, string>
 
-export type CSSDirectiveLayerName = MasterCSSManifestUtilityLayerName
 
 
 
@@ -99,9 +95,6 @@ export interface CSSCustomMediaDefinition {
   source?: CSSDirectiveSourceReference
 }
 
-export type CSSDirectiveConditionPathEntry =
-  | { type: 'condition'; value: string }
-
 export interface CSSDirectiveManifestInput {
   keyframes?: MasterCSSKeyframeDefinition[]
   keyframeSafelist?: string[]
@@ -140,10 +133,8 @@ export interface CSSDirectiveStyleNativeDefinition {
   declarations: CSSOrderedDeclaration[]
   source?: CSSDirectiveSourceReference
   selectorSource?: CSSDirectiveSourceReference
+  /** The enclosing conditional and layer preludes, outermost first. */
   conditions?: string[]
-  conditionPath?: CSSDirectiveConditionPathEntry[]
-  layer?: CSSDirectiveLayerName
-  name?: string
 }
 
 export interface CSSDirectiveStyleApplyDefinition {
@@ -155,7 +146,8 @@ export interface CSSDirectiveStyleApplyDefinition {
   contents?: MasterCSSMixinNode[]
   selectorSource?: CSSDirectiveSourceReference
   source?: CSSDirectiveSourceReference
-  conditionPath?: CSSDirectiveConditionPathEntry[]
+  /** The enclosing conditional and layer preludes, outermost first. */
+  conditions?: string[]
 }
 
 export type CSSDirectiveStyleDefinition =
@@ -191,7 +183,6 @@ export interface CSSDirectiveNotice {
 }
 
 export interface CSSDirectiveResult {
-  suppressedKeyframes?: string[]
   notices?: CSSDirectiveNotice[]
   definitionSources?: CSSDefinitionSource[]
   nativeOutput?: CSSNativeOutput

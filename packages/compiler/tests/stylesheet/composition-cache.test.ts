@@ -33,10 +33,11 @@ test('reuses class-independent output while observing dependencies and isolating
     const calls = f.resourceURL.mock.calls.length
     f.dependency.mockClear()
     await f.scanner.scanModule(join(f.root, 'page.tsx'), '<div className="(display:flex)"></div>')
-    first.emittedGlobals.keyframeSlots!.push('not-owned')
+    // Cached results are frozen, so one caller cannot change another's.
+    expect(Object.isFrozen(first.emittedGlobals.variables)).toBe(true)
     const second = await f.stylesheets.compose(f.options)
     expect(second.css).toBe(first.css)
-    expect(second.emittedGlobals.keyframeSlots).not.toContain('not-owned')
+    expect(second.emittedGlobals).toEqual(first.emittedGlobals)
     expect(f.resourceURL).toHaveBeenCalledTimes(calls)
     expect(f.dependency).toHaveBeenCalledWith(join(f.root, 'pixel.svg'))
     const controller = new AbortController()

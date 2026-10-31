@@ -60,31 +60,3 @@ fn animation_classes_hydrate_with_managed_keyframe_metadata() {
         )
     );
 }
-
-#[test]
-fn materialized_stylesheet_slots_preserve_empty_and_duplicate_asset_positions() {
-    let mut session =
-        RenderSession::create(&json!({"version":6,"languageVersion":17}).to_string(), None)
-            .unwrap();
-    for css in [
-        "",
-        ".same{color:red}",
-        "",
-        ".same{color:red}",
-        ".last{color:blue}",
-    ] {
-        session.ensure_stylesheet_resources(css).unwrap();
-    }
-    let result = session.snapshot().unwrap();
-    assert_eq!(
-        result.snapshot.stylesheets,
-        [
-            "",
-            ".same{color:red}",
-            "",
-            ".same{color:red}",
-            ".last{color:blue}"
-        ]
-    );
-    assert_eq!(result.stylesheet_edits.len(), 5);
-}

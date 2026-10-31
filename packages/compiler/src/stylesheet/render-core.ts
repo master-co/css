@@ -1,5 +1,3 @@
-import type { MasterCSSRenderBindingSession } from '@master/css-binding/engine/node'
-export type StylesheetResourceEdit = ReturnType<MasterCSSRenderBindingSession['snapshot']>['stylesheetEdits'][number][number]
 import type { CSSOutputMapping } from '@master/css-schema/css-directives'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -9,7 +7,6 @@ import type {
 import type { MasterCSSEngineSnapshot } from '@master/css'
 
 interface MasterCSSRenderBindingResult {
-  readonly stylesheetEdits: StylesheetResourceEdit[][]
   readonly outputMappings: CSSOutputMapping[]
   readonly classes: string[]
   readonly snapshot: MasterCSSEngineSnapshot
@@ -25,8 +22,6 @@ export interface RenderCompiledManifestCSSOptions {
 }
 
 export interface RenderCompiledManifestCSSResult {
-  stylesheetEdits: StylesheetResourceEdit[][]
-  stylesheets: readonly string[]
   css: string
   nativeCSS: string
   generatedCSS: string
@@ -53,20 +48,17 @@ export function renderCompiledManifestCSSWithSession(
   session: StylesheetRenderSession
 ): RenderCompiledManifestCSSResult {
   const nativeCSS = normalizeNativeCSS(options.nativeCSS)
-  let nativeCSSText = nativeCSS.filter(Boolean).join('\n\n')
+  const nativeCSSText = nativeCSS.filter(Boolean).join('\n\n')
   if (options.includeGeneratedCSS !== false) {
     const classNames = [...(options.classNames || [])]
     session.ensureClasses(classNames)
   }
   for (const css of nativeCSS) session.ensureStylesheetResources(css)
   const rendered = session.snapshot()
-  nativeCSSText = rendered.snapshot.stylesheets?.filter(Boolean).join('\n\n') ?? nativeCSSText
   const generatedCSS = rendered.snapshot.text
   const offset = nativeCSSText ? nativeCSSText.length + 2 : 0
 
   return {
-    stylesheetEdits: rendered.stylesheetEdits,
-    stylesheets: rendered.snapshot.stylesheets || nativeCSS,
     css: [nativeCSSText, generatedCSS].filter(Boolean).join('\n\n'),
     nativeCSS: nativeCSSText,
     generatedCSS,

@@ -38,7 +38,6 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 - `ready()`, `observe()`, `disconnect()`, `refresh()`, immutable `snapshot()` including its `engine` state
 - readonly-array rule ensure/delete methods; they throw `RUNTIME_ENGINE_NOT_READY` and start the engine until it is ready
 - `binding`, `undefined` until the engine is ready
-- Optional compiler-owned stylesheet bindings and official adapter asset delivery.
 - `dispose()` / `Symbol.dispose`
 - `withMasterCSSRuntime`
 - readonly global `MasterCSSRuntime` and `masterCSSRuntime` facades
@@ -66,7 +65,7 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 - `MutationObserver` diff logic.
 - `classCounts` increment/decrement behavior.
 - emittedGlobals variable counts preventing duplicate global insertion without suppressing utility insertion.
-- Hydrating generated `CSSLayerBlockRule` rules and keyframe resources by definition ID. Retain actual CSSOM parents and nodes for deletion. Native keyframes use compiler-owned slots at their original location; preserve anonymous-layer identity and conditional containers. HMR refreshes program and emitted-global ownership atomically.
+- Hydrating generated `CSSLayerBlockRule` rules and keyframe resources by definition ID. Retain actual CSSOM parents and nodes for deletion. On-demand keyframes live in the runtime stylesheet after its layers, wrapped in their declared containers; the runtime never writes to linked stylesheets. HMR refreshes program and emitted-global ownership atomically.
 - Matching generated rule text to native `CSSRule` text.
 - The deferred-to-ready handoff: class counts recorded before startup, classes removed before startup, queued `refresh()`/`emittedGlobals`/keyframe reconciliation, and dispose during loading.
 - Anything that loads the engine module or runtime program before a progressive page needs them.

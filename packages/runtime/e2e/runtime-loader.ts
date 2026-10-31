@@ -35,8 +35,6 @@ interface RuntimeLoaderOptions {
   emittedGlobals?: MasterCSSEmittedGlobals
   hydrationManifest?: MasterCSSHydrationManifest
   startupTimeoutMs?: number
-  stylesheetDelivery?: MasterCSSRuntimeStartOptions['stylesheetDelivery']
-  stylesheets?: MasterCSSRuntimeStartOptions['stylesheets']
 }
 
 declare global {
@@ -79,8 +77,6 @@ async function toStartOptions(options: RuntimeLoaderOptions): Promise<MasterCSSR
     hydrationManifest: options.hydrationManifest,
     emittedGlobals: options.emittedGlobals,
     startupTimeoutMs: options.startupTimeoutMs,
-    stylesheetDelivery: options.stylesheetDelivery,
-    stylesheets: options.stylesheets,
     onDiagnostic: diagnostic => globalThis.__MASTER_CSS_RUNTIME_DIAGNOSTICS__.push(diagnostic)
   }
 }

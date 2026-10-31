@@ -96,11 +96,9 @@ function encode(program: Program) {
     else { w.uint(1); s(node.name); s(node.value); w.bool(node.inline); w.bool(node.isStatic) }
   }
   const keyframe = (value: KeyframeDefinition) => {
-    s(value.id); w.option(value.ownerId, s); w.option(value.slotId, s); w.option(value.occurrence, (n) => w.uint(n))
-    s(value.name); s(value.text)
-    w.vec(value.resources, (resource) => { w.uint(resource.start); w.uint(resource.end); s(resource.value) })
+    s(value.id); s(value.name); s(value.text)
     w.vec(value.containers, (container) => { s(container.id); s(container.prelude) })
-    w.bool(value.retained); strings(value.dependencies); source(value.source)
+    w.bool(value.native); w.bool(value.safelisted); strings(value.dependencies); source(value.source)
   }
   const media = (query: MediaQuery): void => {
     const tags = ['true', 'false', 'feature', 'media-type', 'not', 'and', 'or']
@@ -152,18 +150,14 @@ function encode(program: Program) {
   })
   // Rust encodes registered utilities after `finish_program` named and ordered them.
   w.vec(program.utilities.filter((utility) => !utility.nativeFallback), (utility) => {
-    s(utility.id); w.option(utility.name, s); w.int(utility.utilityType); w.option(utility.order, (order) => w.int(order))
-    w.uint(['base', 'defaults', 'components', 'utilities'].indexOf(utility.layer))
-    strings(utility.keys); strings(utility.aliasGroups)
-    w.vec(utility.variableAliases, ([alias, variable]) => { s(alias); s(variable) })
-    strings(utility.variableAliasRefs); w.bool(utility.nativeFallback)
+    s(utility.id); w.option(utility.name, s); w.int(utility.utilityType)
+    strings(utility.variableAliasRefs)
     if (utility.emit.type === 'recipe') { w.uint(0); w.uint(utility.emit.definition); w.bool(utility.emit.key) }
     else { w.uint(1); s(utility.emit.property) }
     w.vec(utility.matchers, (matcher) => {
-      const tags = ['static', 'key', 'token', 'function']
+      const tags = ['static', 'token', 'function']
       w.uint(tags.indexOf(matcher.type))
-      if (matcher.type === 'key') strings(matcher.keys)
-      else s(matcher.type === 'token' ? matcher.prefix : matcher.name)
+      s(matcher.type === 'token' ? matcher.prefix : matcher.name)
     })
   })
   return w.finish()

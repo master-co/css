@@ -1,7 +1,6 @@
 use super::{
-    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashSet,
-    NativeStyleContext, ThemeAtRule, condition_properties, lower_native_style_rule, minified_css,
-    native_rule_list_has_directives, printed_selectors,
+    CompilerError, CssDirectiveStyleDefinition, CssRule, HashSet, NativeStyleContext, ThemeAtRule,
+    lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
 };
 use crate::directives::{NativeStyleSlot, native_style_slot};
 use crate::source_index::SourceIndex;
@@ -24,7 +23,7 @@ impl NativeConditionalLowerer<'_> {
     pub fn lower<'i>(
         &mut self,
         mut rule: CssRule<'i, ThemeAtRule>,
-        path: &[CssDirectiveConditionPathEntry],
+        path: &[String],
     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
         if let CssRule::Custom(directive) = &rule
             && directive.name == super::DirectiveName::Apply
@@ -102,7 +101,7 @@ impl NativeConditionalLowerer<'_> {
             _ => return Ok(Some(rule)),
         };
         let mut nested_path = path.to_vec();
-        nested_path.push(CssDirectiveConditionPathEntry::Condition { value: condition });
+        nested_path.push(condition);
         let mut retained = Vec::with_capacity(children.len());
         for child in std::mem::take(children) {
             if let Some(child) = self.lower(child, &nested_path)? {
@@ -124,22 +123,9 @@ impl NativeConditionalLowerer<'_> {
         // The graph slot remains inside its authored container. Only conditions
         // introduced within the replaced style/application belong in its replacement.
         for definition in &mut definitions {
-            if let CssDirectiveStyleDefinition::Apply { condition_path, .. } = definition {
-                let suffix =
-                    condition_path.as_deref().unwrap_or_default()[retained_prefix..].to_vec();
-                *condition_path = (!suffix.is_empty()).then_some(suffix);
-                continue;
-            }
-            let (conditions, path) = match definition {
-                CssDirectiveStyleDefinition::Native {
-                    conditions,
-                    condition_path,
-                    ..
-                } => (conditions, condition_path),
-                CssDirectiveStyleDefinition::Apply { .. } => unreachable!(),
-            };
-            let suffix = path.as_deref().unwrap_or_default()[retained_prefix..].to_vec();
-            (*conditions, *path) = condition_properties(&suffix);
+            let (CssDirectiveStyleDefinition::Apply { conditions, .. }
+            | CssDirectiveStyleDefinition::Native { conditions, .. }) = definition;
+            conditions.drain(..retained_prefix);
         }
         Some(native_style_slot(slots, self.occupied, &definitions, loc))
     }

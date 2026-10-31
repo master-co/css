@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { compileManifestFileSync } from '../src/node'
-import { createCompilerBindingSession } from '../src/session'
+import { createCompilerBindingSession } from '@master/css-binding/compiler'
 
 for (const binding of ['native', 'wasm'] as const) {
   test(`${binding}: BH-0004 keeps import conditions through graph and CSS compilation`, async () => {
@@ -24,7 +24,7 @@ for (const binding of ['native', 'wasm'] as const) {
       })
       expect(graph.dependencies).toEqual(['entry', 'child', 'grandchild'])
       expect(graph.source).toBe('@supports (display: grid){@media screen{@layer outer{@media (width >= 500px){@layer inner{.example{color:red}}}}}}')
-      const compiled = compiler.compileCSS(graph.source, { preserveNativeCSS: true, classes: ['example'] })
+      const compiled = compiler.compileCSSDirectives(graph.source, { from: 'master.css', preserveNativeCSS: true, classes: ['example'] })
       expect(compiled.css).toContain('@supports')
       expect(compiled.css).toContain('@media screen')
       expect(compiled.css).toContain('@layer outer')

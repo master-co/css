@@ -437,8 +437,7 @@ describe('withMasterCSS', () => {
       expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         program,
         emittedGlobals,
-        onDiagnostic: expect.any(Function),
-        stylesheetDelivery: { base: '/_next/', development: false }
+        onDiagnostic: expect.any(Function)
       })
       expect(runtime.observe).toHaveBeenCalled()
     } finally {
@@ -491,8 +490,7 @@ describe('withMasterCSS', () => {
       expect(runtimeModule.MasterCSSRuntime.start).toHaveBeenCalledWith({
         program,
         emittedGlobals,
-        onDiagnostic: expect.any(Function),
-        stylesheetDelivery: { base: '/_next/', development: false }
+        onDiagnostic: expect.any(Function)
       })
     } finally {
       rmSync(root, { recursive: true, force: true })

@@ -4,7 +4,6 @@
 import {
   MIXIN_PARAMETER_SYNTAXES,
   UTILITY_KINDS,
-  UTILITY_LAYERS,
   type DecodeResult,
   type KeyframeDefinition,
   type MediaQuery,
@@ -23,7 +22,7 @@ import {
 } from './program-model'
 import { selectedInlineValue } from './value'
 
-export const PROGRAM_VERSION = 1
+export const PROGRAM_VERSION = 2
 export const LANGUAGE_VERSION = 17
 const MAGIC = [0x4d, 0x43, 0x53, 0x50] // MCSP
 const MAX_DEPTH = 512
@@ -133,14 +132,11 @@ function themeNode(): ThemeNode {
 function keyframe(): KeyframeDefinition {
   return {
     id: string(),
-    ownerId: option(string),
-    slotId: option(string),
-    occurrence: option(u32),
     name: string(),
     text: string(),
-    resources: vec(() => ({ start: u32(), end: u32(), value: string() })),
     containers: vec(() => ({ id: string(), prelude: string() })),
-    retained: bool(),
+    native: bool(),
+    safelisted: bool(),
     dependencies: stringList(),
     source: source()
   }
@@ -217,16 +213,14 @@ function variable(): Variable {
   }
 }
 
-interface EncodedUtility extends Omit<Utility, 'name' | 'order'> {
+interface EncodedUtility extends Omit<Utility, 'name'> {
   name?: string
-  order?: number
 }
 
 function matcher(): UtilityMatcher {
-  switch (tag(4)) {
+  switch (tag(3)) {
     case 0: return { type: 'static', name: string() }
-    case 1: return { type: 'key', keys: stringList() }
-    case 2: return { type: 'token', prefix: string() }
+    case 1: return { type: 'token', prefix: string() }
     default: return { type: 'function', name: string() }
   }
 }
@@ -235,13 +229,8 @@ const utility = (): EncodedUtility => ({
   id: string(),
   name: option(string),
   utilityType: i32(),
-  order: option(i32),
-  layer: UTILITY_LAYERS[tag(4)],
-  keys: stringList(),
-  aliasGroups: stringList(),
-  variableAliases: vec(() => [string(), string()]),
   variableAliasRefs: stringList(),
-  nativeFallback: bool(),
+  nativeFallback: false,
   emit: tag(2) === 0
     ? { type: 'recipe', definition: u32(), key: bool() } satisfies UtilityEmit
     : { type: 'property', property: string() },
@@ -309,19 +298,12 @@ function push<K, V>(map: Map<K, V[]>, key: K, value: V) {
 
 /** What `finish_program` derives: defaults, match order and indexes. */
 function finish(program: Program, encoded: EncodedUtility[]) {
-  const count = encoded.length
-  const utilities = encoded.map((entry, index): Utility => ({
-    ...entry,
-    name: entry.name ?? entry.id,
-    order: entry.order ?? count - index - 1
-  }))
+  const utilities = encoded.map((entry): Utility => ({ ...entry, name: entry.name ?? entry.id }))
   const isStatic = (entry: Utility) => entry.matchers.some((item) => item.type === 'static')
   program.utilities = [...utilities.filter(isStatic), ...utilities.filter((entry) => !isStatic(entry))]
   for (const [index, entry] of program.utilities.entries()) {
     for (const item of entry.matchers) {
       if (item.type === 'token') push(program.tokenUtilities, item.prefix, index)
-      // A key matcher is a program tag no registration produces; it never matches.
-      else if (item.type === 'key') continue
       else if (item.type === 'function') program.functionUtilities.set(item.name, index)
       else push(program.staticUtilities, item.name, index)
     }

@@ -11,7 +11,6 @@ use serde::Serialize;
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ServerRenderIr {
-    pub stylesheet_edits: Vec<Vec<mastercss_engine::KeyframeOutputEdit>>,
     pub classes: Vec<String>,
     pub snapshot: EngineSnapshotIr,
     pub hydration_manifest: HydrationManifest,
@@ -23,7 +22,6 @@ pub struct RenderSession {
     engine: EngineSession,
     classes: Vec<String>,
     class_index: HashSet<String>,
-    stylesheets: Vec<String>,
     selector_classes: Vec<String>,
 }
 
@@ -39,7 +37,6 @@ impl RenderSession {
             engine,
             classes: Vec::new(),
             class_index: HashSet::new(),
-            stylesheets: Vec::new(),
         })
     }
 
@@ -77,7 +74,6 @@ impl RenderSession {
 
     pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
         self.engine.ensure_hosted_stylesheet_resources(native_css)?;
-        self.stylesheets.push(native_css.into());
         Ok(())
     }
 
@@ -89,11 +85,6 @@ impl RenderSession {
         let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
         let hydration_manifest = self.hydration_manifest(&snapshot, &self.classes)?;
         Ok(ServerRenderIr {
-            stylesheet_edits: self
-                .stylesheets
-                .iter()
-                .map(|css| self.engine.keyframe_output_edits(css))
-                .collect(),
             classes: self.classes.clone(),
             output_mappings: self.engine.keyframe_output_mappings(&snapshot),
             snapshot,
@@ -117,11 +108,6 @@ impl RenderSession {
         let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
         let hydration_manifest = self.hydration_manifest(&snapshot, &classes)?;
         Ok(ServerRenderIr {
-            stylesheet_edits: self
-                .stylesheets
-                .iter()
-                .map(|css| self.engine.keyframe_output_edits(css))
-                .collect(),
             classes,
             output_mappings: self.engine.keyframe_output_mappings(&snapshot),
             snapshot,
@@ -172,14 +158,13 @@ impl RenderSession {
         // The hydration manifest exposes sorted rules, not the original class insertion
         // order. Replay their classes so resource discovery has the same order on both
         // sides, including shared transitive dependencies and warmed renderer sessions.
-        // snapshot_for_classes also carries compiler-owned stylesheet roots and slots.
+        // snapshot_for_classes also carries the roots of the registered stylesheets.
         self.engine
             .snapshot_for_classes(snapshot.rules.iter().map(|rule| &rule.class_name))
     }
 
     pub fn dispose(&mut self) {
         self.engine.dispose();
-        self.stylesheets.clear();
         self.classes.clear();
         self.class_index.clear();
     }

@@ -55,10 +55,9 @@ describe('EmittedGlobalsVirtualModulePlugin', () => {
 
       const globals = parseDefaultExport(code)
       expect(globals.variables).toEqual({ 'color-primary': 1 })
+      // The stylesheet's native rule roots its own and the preset's on-demand `fade`.
       expect(Object.values(globals.keyframes)).toEqual([1, 1])
-      expect(globals.keyframeSlots).toHaveLength(1)
-      expect(globals.keyframes[globals.keyframeSlots[0]]).toBe(1)
-      expect(globals.suppressedKeyframes).toEqual([])
+      expect(Object.keys(globals)).toEqual(['variables', 'keyframes'])
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

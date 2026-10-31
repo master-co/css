@@ -10,7 +10,6 @@ import {
 import {
   cleanCSSManifestRequest,
   findCSSManifestEntryFiles,
-  findMasterCSSWorkspaceDirectories,
   hasMasterCSSManifestEntrypoint,
   isCSSManifestRequest,
   resolveMasterCSSPackageEntryFile
@@ -353,56 +352,6 @@ test('ignores generated stylesheets during implicit discovery but accepts explic
     expect(loadProjectManifestSync({ root: cwd, baseManifest: defaultManifest }).entries).toStrictEqual([entry])
     expect(loadProjectManifestSync({ root: cwd, entries: [generated], baseManifest: defaultManifest }).entries)
       .toStrictEqual([generated])
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('finds Master CSS workspace directories from package and CSS entries', async () => {
-  const cwd = createFixture()
-  try {
-    mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
-    mkdirSync(join(cwd, 'docs', 'styles'), { recursive: true })
-    writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
-      dependencies: {
-        '@master/css': 'workspace:*'
-      }
-    }))
-    writeFileSync(join(cwd, 'packages', 'app', 'index.css'), "@import \"@master/css\";")
-    writeFileSync(join(cwd, 'docs', 'styles', 'global.css'), '@import "@master/css";')
-    mkdirSync(join(cwd, '.master', 'stylesheets', 'revision'), { recursive: true })
-    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'entry.css'), "@import \"@master/css\";")
-    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'package.json'), JSON.stringify({
-      dependencies: { '@master/css': 'workspace:*' }
-    }))
-
-    await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
-      cwd,
-      join(cwd, 'docs', 'styles'),
-      join(cwd, 'packages', 'app')
-    ])
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('does not match sibling workspace path prefixes', async () => {
-  const cwd = createFixture()
-  try {
-    mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
-    mkdirSync(join(cwd, 'packages', 'app-kit'), { recursive: true })
-    writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
-      dependencies: {
-        '@master/css': 'workspace:*'
-      }
-    }))
-    writeFileSync(join(cwd, 'packages', 'app-kit', 'index.css'), "@import \"@master/css\";")
-
-    await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
-      cwd,
-      join(cwd, 'packages', 'app'),
-      join(cwd, 'packages', 'app-kit')
-    ])
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

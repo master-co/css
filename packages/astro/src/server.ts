@@ -46,8 +46,7 @@ export function createMasterCSSMiddleware(
     const prerender = context.isPrerendered ? prerenderStylesheets() : undefined
     const rendered = renderer.renderHTML(await response.text(), {
       hydrationManifest: hydrate ? 'inject' : false,
-      stylesheets: await prerender?.stylesheets(),
-      stylesheetImportSource: prerender?.publishImport
+      stylesheets: await prerender?.stylesheets()
     })
     return createResponse(response, rendered.html)
   }

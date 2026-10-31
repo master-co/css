@@ -62,11 +62,6 @@ export function nativeDeclaration(className: string): [Utility, UtilityMatch, im
       id,
       name: id,
       utilityType: 0,
-      order: 0,
-      layer: 'utilities',
-      keys: [],
-      aliasGroups: [],
-      variableAliases: [],
       variableAliasRefs: [],
       nativeFallback: true,
       emit: { type: 'property', property },
@@ -154,7 +149,7 @@ function generatedBranches(className: string, program: Program, visit: (generate
       const rules = emitDeclarations(utility, matched, branch.important, program)
       if (!rules.length) continue
       const key = index === 0 && !branch.key ? className : `${className}\0${branch.key}`
-      const layer = branch.layer ?? utility.layer
+      const layer = branch.layer ?? 'utilities'
       if (seen.has(`${layer} ${key}`)) continue
       seen.add(`${layer} ${key}`)
       const wrappers = branch.conditionWrappers
@@ -199,7 +194,7 @@ export function generateClassRules(className: string, program: Program): StoredR
     if (texts.length > 1) ir.nodes = texts.map((text) => ({ text }))
     if (variableNames.length) ir.variableNames = variableNames
     addAnimationReferences(ir, declarations, program)
-    rules.push({ ir, features, manifestOrder: utility.order })
+    rules.push({ ir, features })
   })
   return rules
 }

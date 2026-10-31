@@ -1,7 +1,7 @@
 // The engine session: class rules ordered per layer with reference counts, and the
 // theme variables and keyframes those rules reference, counted over what the host
 // already emits, as the Rust `EngineSession` (session.rs, resources.rs, keyframes.rs,
-// keyframe_slots.rs, theme_batch.rs) keeps them.
+// theme_batch.rs) keeps them.
 import { declarationAnimationReferences, generateClassRules } from './generate'
 import { compareStoredRules, type StoredRule } from './order'
 import { cssEscape, decodeProgram } from './program'
@@ -38,21 +38,15 @@ function decode(program: Uint8Array) {
 interface Globals {
   variables: Map<string, number>
   keyframes: Map<string, number>
-  keyframeSlots: string[]
-  suppressedKeyframes: string[]
 }
 
 const globalsOf = (emitted: EmittedGlobals = {}): Globals => ({
   variables: new Map(Object.entries(emitted.variables ?? {})),
-  keyframes: new Map(Object.entries(emitted.keyframes ?? {})),
-  keyframeSlots: [...emitted.keyframeSlots ?? []],
-  suppressedKeyframes: [...emitted.suppressedKeyframes ?? []]
+  keyframes: new Map(Object.entries(emitted.keyframes ?? {}))
 })
 
 const sameCounts = (left: Map<string, number>, right: Map<string, number>) => left.size === right.size && [...left].every(([name, count]) => right.get(name) === count)
-const sameList = (left: readonly unknown[], right: readonly unknown[]) => left.length === right.length && left.every((item, index) => item === right[index])
 const sameGlobals = (left: Globals, right: Globals) => sameCounts(left.variables, right.variables) && sameCounts(left.keyframes, right.keyframes)
-  && sameList(left.keyframeSlots, right.keyframeSlots) && sameList(left.suppressedKeyframes, right.suppressedKeyframes)
 
 /** Counts are `u32`, which adding saturates. */
 const addCount = (count: number, added: number) => Math.min(count + added, 0xffffffff)
@@ -76,23 +70,20 @@ const containersShape = (containers: ProgramKeyframe['containers']) => container
 function keyframeDefinitionShape(definition: ProgramKeyframe): KeyframeDefinition {
   return {
     id: definition.id,
-    ...definition.ownerId === undefined ? {} : { ownerId: definition.ownerId },
-    ...definition.slotId === undefined ? {} : { slotId: definition.slotId },
-    ...definition.occurrence === undefined ? {} : { occurrence: definition.occurrence },
     name: definition.name,
     text: definition.text,
-    ...definition.resources.length ? { resources: definition.resources.map(({ start, end, value }) => ({ start, end, value })) } : {},
     ...definition.containers.length ? { containers: containersShape(definition.containers) } : {},
-    ...definition.retained ? { retained: true } : {},
+    ...definition.native ? { native: true } : {},
+    ...definition.safelisted ? { safelisted: true } : {},
     ...definition.dependencies.length ? { dependencies: [...definition.dependencies] } : {}
   }
 }
 
 /** Where an emitted keyframes rule is placed; a change of any part replaces the rule. */
-type KeyframePlacement = [id: string, text: string, anchored: boolean, containers: ProgramKeyframe['containers']]
+type KeyframePlacement = [id: string, text: string, containers: ProgramKeyframe['containers']]
 
-const samePlacement = (left: KeyframePlacement, right: KeyframePlacement) => left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
-  && left[3].length === right[3].length && left[3].every((container, index) => container.id === right[3][index].id && container.prelude === right[3][index].prelude)
+const samePlacement = (left: KeyframePlacement, right: KeyframePlacement) => left[0] === right[0] && left[1] === right[1]
+  && left[2].length === right[2].length && left[2].every((container, index) => container.id === right[2][index].id && container.prelude === right[2][index].prelude)
 
 class Session implements EngineSession {
   /** Per layer, rules in CSS order. */
@@ -128,16 +119,16 @@ class Session implements EngineSession {
   private initializeResources() {
     const { globals, program } = this
     for (const [name, count] of globals.variables) if (count > 0) this.variableCounts.set(name, count)
-    // Emitted keyframes register their dependencies in name order.
+    // Keyframes the host emitted register their dependencies in id order, then
+    // safelisted ones in definition order.
     for (const [id, count] of [...globals.keyframes].sort(([left], [right]) => compareText(left, right))) {
-      if (count <= 0 || globals.suppressedKeyframes.includes(id)) continue
-      this.keyframeCounts.set(id, count)
       const definition = program.keyframes.find((keyframe) => keyframe.id === id)
-      if (definition) this.registerVariables(definition.dependencies)
+      if (!definition || count <= 0) continue
+      this.keyframeCounts.set(id, count)
+      this.registerVariables(definition.dependencies)
     }
     for (const definition of program.keyframes) {
-      if (globals.suppressedKeyframes.includes(definition.id)) continue
-      if (definition.retained && !this.keyframeCounts.has(definition.id)) {
+      if (definition.safelisted && !this.keyframeCounts.has(definition.id)) {
         this.keyframeCounts.set(definition.id, 1)
         this.registerVariables(definition.dependencies)
       }
@@ -206,11 +197,10 @@ class Session implements EngineSession {
     for (const name of names) this.unregisterVariable(name)
   }
 
-  /** The managed keyframes a rule references by name, or all of them; never suppressed ones. */
+  /** The keyframes a rule references by name, or all of them. */
   private referencedKeyframes(names: readonly string[], all: boolean) {
     if (!all && !names.length) return []
-    const { suppressedKeyframes } = this.globals
-    return this.program.keyframes.filter((definition) => (all || names.includes(definition.name)) && !suppressedKeyframes.includes(definition.id))
+    return this.program.keyframes.filter((definition) => all || names.includes(definition.name))
   }
 
   private registerKeyframes(names: readonly string[] = [], all = false) {
@@ -234,13 +224,18 @@ class Session implements EngineSession {
     }
   }
 
-  /** Keyframes this session emits: referenced, and not emitted by the host. */
+  /**
+   * Keyframes this session emits: referenced, on demand and not emitted by the host.
+   * Native definitions are counted for the tokens their frames read, but their
+   * stylesheet delivers them.
+   */
   private keyframeResources(): KeyframeResource[] {
     const resources: KeyframeResource[] = []
     for (const definition of this.program.keyframes) {
+      if (definition.native) continue
       const count = this.keyframeCounts.get(definition.id) ?? 0
       if (count <= 0 || (this.globals.keyframes.get(definition.id) ?? 0) !== 0) continue
-      const resource: KeyframeResource = { id: definition.id, name: definition.name, text: definition.text, anchored: this.globals.keyframeSlots.includes(definition.id), refCount: count, dependencies: [...definition.dependencies] }
+      const resource: KeyframeResource = { id: definition.id, name: definition.name, text: definition.text, refCount: count, dependencies: [...definition.dependencies] }
       if (definition.containers.length) resource.containers = containersShape(definition.containers)
       resources.push(resource)
     }
@@ -249,7 +244,7 @@ class Session implements EngineSession {
 
   /** The keyframes rule changes since the last sync. */
   private syncKeyframes(): RuleMutation[] {
-    const next = this.keyframeResources().map(({ id, text, anchored, containers }): KeyframePlacement => [id, text, anchored, containers ?? []])
+    const next = this.keyframeResources().map(({ id, text, containers }): KeyframePlacement => [id, text, containers ?? []])
     const texts = this.keyframeTexts
     const mutations: RuleMutation[] = []
     for (let index = texts.length - 1; index >= 0; index--) {
@@ -271,12 +266,11 @@ class Session implements EngineSession {
     return mutations
   }
 
-  /** Keyframes without a host slot, nested in their native containers. */
-  private standaloneKeyframeText() {
+  /** The emitted keyframes, each wrapped in the containers it was declared in. */
+  private keyframesText() {
     let text = ''
     let path: { id: string, prelude: string }[] = []
     for (const frame of this.keyframeResources()) {
-      if (frame.anchored) continue
       const containers = frame.containers ?? []
       let common = 0
       while (common < path.length && common < containers.length && path[common].id === containers[common].id) common++
@@ -433,16 +427,9 @@ class Session implements EngineSession {
     const added = globalsOf(emittedGlobals)
     const merged: Globals = {
       variables: new Map(this.globals.variables),
-      keyframes: new Map(this.globals.keyframes),
-      keyframeSlots: [...this.globals.keyframeSlots],
-      suppressedKeyframes: [...this.globals.suppressedKeyframes]
+      keyframes: new Map(this.globals.keyframes)
     }
     let changed = false
-    for (const id of added.suppressedKeyframes) {
-      if (merged.suppressedKeyframes.includes(id)) continue
-      merged.suppressedKeyframes.push(id)
-      changed = true
-    }
     for (const [name, count] of added.variables) {
       if (!count) continue
       const current = merged.variables.get(name) ?? 0
@@ -454,11 +441,6 @@ class Session implements EngineSession {
     for (const [id, count] of added.keyframes) {
       if (count <= 0) continue
       merged.keyframes.set(id, addCount(merged.keyframes.get(id) ?? 0, count))
-      changed = true
-    }
-    for (const id of added.keyframeSlots) {
-      if (merged.keyframeSlots.includes(id)) continue
-      merged.keyframeSlots.push(id)
       changed = true
     }
     return changed ? this.rebuild(merged) : { version: TRANSITION_VERSION, mutations: [] }
@@ -518,7 +500,7 @@ class Session implements EngineSession {
       version: TRANSITION_VERSION,
       rules: this.layers.flatMap((rules) => rules.map((rule) => rule.ir)),
       resources: this.resources(),
-      text: text + this.standaloneKeyframeText()
+      text: text + this.keyframesText()
     }
   }
 

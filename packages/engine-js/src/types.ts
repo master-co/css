@@ -1,13 +1,11 @@
 /**
- * Emitted globals the host already serves: variable and keyframe usage counts,
- * keyframe slots, and keyframes whose emission is suppressed. Structurally equal to
- * `@master/css-schema/emitted-globals`; redeclared so the engine stays dependency-free.
+ * Emitted globals the host already serves: variable and keyframe usage counts.
+ * Structurally equal to `@master/css-schema/emitted-globals`; redeclared so the
+ * engine stays dependency-free.
  */
 export interface EmittedGlobals {
   variables?: Record<string, number>
   keyframes?: Record<string, number>
-  keyframeSlots?: string[]
-  suppressedKeyframes?: string[]
 }
 
 export type UtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
@@ -66,13 +64,12 @@ export interface VariableResource {
   dependencies?: string[]
 }
 
-/** A keyframes rule the session emits; anchored ones fill a host keyframe slot instead of the keyframes sheet. */
+/** A keyframes rule the session emits, wrapped in the containers it was declared in. */
 export interface KeyframeResource {
   id: string
   name: string
   text: string
   containers?: { id: string, prelude: string }[]
-  anchored: boolean
   refCount: number
   dependencies: string[]
 }

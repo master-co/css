@@ -42,5 +42,5 @@ it('delivers referenced mixins and native variables through an Astro scoped styl
   expect(css).not.toContain('ident(')
   expect(css).not.toContain('@reference')
   expect(css).not.toContain('#master-css-slot')
-  expect(css).not.toContain('@--master-css-keyframe-')
+  expect(css).not.toContain('@--master-css-')
 })

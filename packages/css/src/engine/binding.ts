@@ -55,7 +55,7 @@ export interface MasterCSSEngineVariableResource {
 export interface MasterCSSEngineResources {
   readonly themeText?: string
   readonly variables: readonly MasterCSSEngineVariableResource[]
-  readonly keyframes: readonly (MasterCSSEngineVariableResource & { readonly id: string, readonly text: string, readonly anchored: boolean, readonly containers?: readonly { readonly id: string, readonly prelude: string }[] })[]
+  readonly keyframes: readonly (MasterCSSEngineVariableResource & { readonly id: string, readonly text: string, readonly containers?: readonly { readonly id: string, readonly prelude: string }[] })[]
 }
 
 export interface MasterCSSEngineExecutionState {

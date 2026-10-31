@@ -8,7 +8,7 @@ import { prepareBuildStylesheet } from '../../src/utils/build-stylesheet-deliver
 import { localStylesheets, registerLocalStylesheet } from '../../src/utils/local-stylesheet'
 import masterCSS from '../../src/core'
 
-const emittedGlobals = { variables: {}, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] }
+const emittedGlobals = { variables: {}, keyframes: {} }
 
 test('graph fragment names depend on rendered CSS, not on host stylesheet paths', () => {
   using compiler = createCompilerSync()

@@ -15,13 +15,11 @@ import {
   compileRenderedStylesheet,
   createStyleEntryEmittedGlobals,
   createStylesheetHostSource,
-  createMasterCSSPackageHostSource,
   createExtractedCSS,
   createExtractedCSSResult,
   collectStylesheetDependencies,
   cleanStyleRequest,
   getNativeCSS,
-  hasPreserveNativeDirective,
   hasMasterStyleEntrypoint,
   hasLocalStyleDirectives,
   isMasterStyleSource,
@@ -268,8 +266,8 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('--color-primary:red')
     expect(result.css).toContain('@keyframes native-fade')
     expect(result.emittedGlobals.variables).toEqual({ 'animation-main': 1, 'color-primary': 1 })
+    // The stylesheet delivers its native keyframes, which outputs elsewhere then skip.
     expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1, 1, 1])
-    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
   })
 
   it('emits referenced theme tokens without substituting their values', async () => {
@@ -319,7 +317,6 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('@keyframes static-fade')
     expect(result.emittedGlobals.variables).toEqual({})
     expect(Object.values(result.emittedGlobals.keyframes)).toEqual([1])
-    expect(result.emittedGlobals.keyframeSlots).toEqual(Object.keys(result.emittedGlobals.keyframes))
   })
 
   it('prunes local CSS imports from Master CSS import roots when explicitly enabled', async () => {

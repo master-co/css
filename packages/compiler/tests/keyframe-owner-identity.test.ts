@@ -33,8 +33,8 @@ function checkout(layout: string, name = 'app') {
 
 /** Source provenance keeps the checkout path; keyframe identities must not. */
 function projectKeyframes(manifest: MasterCSSManifest, root: string) {
-  return (manifest.keyframes ?? []).flatMap(({ id, ownerId, slotId, source }) => source?.file?.startsWith(root)
-    ? [{ id, ownerId, slotId, file: source.file.slice(root.length) }]
+  return (manifest.keyframes ?? []).flatMap(({ id, source }) => source?.file?.startsWith(root)
+    ? [{ id, file: source.file.slice(root.length) }]
     : [])
 }
 
@@ -57,18 +57,17 @@ test('project manifests produce identical keyframe IDs from different checkout r
   const keyframes = projectKeyframes(a.manifest, first.root)
   expect(keyframes).toHaveLength(2)
   expect(projectKeyframes(b.manifest, second.root)).toEqual(keyframes)
-  // Identical text in different files keeps independent definitions and owners.
-  expect(keyframes[0].ownerId).not.toBe(keyframes[1].ownerId)
+  // Identical text in different files keeps independent definitions.
   expect(keyframes[0].id).not.toBe(keyframes[1].id)
   // The native filesystem host derives the same owners as the Node host.
   const binding = createCompilerBindingSessionSync()
   try {
     const native = binding.loadProjectManifest(first.root, baseManifest, [first.entry]) as { manifest: MasterCSSManifest }
-    expect(projectKeyframes(native.manifest, first.root).map(({ ownerId }) => ownerId)).toEqual(keyframes.map(({ ownerId }) => ownerId))
+    expect(projectKeyframes(native.manifest, first.root).map(({ id }) => id)).toEqual(keyframes.map(({ id }) => id))
   } finally { binding.dispose() }
   const renamed = checkout('a', 'other')
   const other = await loadProjectManifest({ root: renamed.root, entries: [renamed.entry], baseManifest })
-  expect(projectKeyframes(other.manifest, renamed.root)[0].ownerId).not.toBe(keyframes[0].ownerId)
+  expect(projectKeyframes(other.manifest, renamed.root)[0].id).not.toBe(keyframes[0].id)
 })
 
 test('delivered stylesheet CSS is byte-identical across checkout roots', async () => {
@@ -82,6 +81,7 @@ test('delivered stylesheet CSS is byte-identical across checkout roots', async (
     return { graph: graph.stylesheets!.map(({ css }) => css), single: single.css }
   }
   const a = await compile(first)
-  expect(a.graph.join('\n')).toContain('master-css-keyframe-')
+  expect(a.graph.join('\n')).toContain('@keyframes slide')
+  expect(a.graph.join('\n')).not.toContain('master-css-')
   expect(await compile(second)).toEqual(a)
 })

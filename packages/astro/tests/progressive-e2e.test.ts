@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 import { beforeAll, expect, it } from 'vitest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
-import { MASTER_CSS_STYLESHEET_ASSET_SUFFIX } from '@master/css-schema/runtime-style'
 import { createEngineSync } from '@master/css/node'
 import { buildAstroFixture, serveStaticOutput } from './static-output-helper'
 
@@ -31,12 +30,12 @@ it('pre-renders progressive CSS through the middleware of a static Astro build',
   // Progressive pages defer the engine, so neither its Wasm nor the runtime program is preloaded.
   expect(html).not.toContain('application/wasm')
   expect(html).not.toMatch(/<link\b[^>]*master-css-program/)
-  // The runtime adopts linked stylesheets through their sidecars.
+  // Linked stylesheets stay ordinary CSS: no companion descriptors or markers.
   const stylesheets = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(([, href]) => href)
   expect(stylesheets.length).toBeGreaterThan(0)
   for (const href of stylesheets) {
-    const sidecar = JSON.parse(readFileSync(join(outDir, href + MASTER_CSS_STYLESHEET_ASSET_SUFFIX), 'utf8'))
-    expect(sidecar.version).toBe(1)
+    expect(existsSync(join(outDir, href + '.master-css.json'))).toBe(false)
+    expect(readFileSync(join(outDir, href), 'utf8')).not.toMatch(/master-css-(keyframe|slot)/)
   }
   // The entry re-imports the preset that the default build manifest already supplies.
   const assetsDir = join(outDir, '_astro')

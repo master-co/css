@@ -108,37 +108,33 @@ fn scoped_or_conditional_declarations_do_not_define_theme_variables() {
 }
 
 #[test]
-fn keyframes_a_stylesheet_uses_through_its_own_slot_are_hosted() {
+fn on_demand_keyframes_a_stylesheet_uses_render_with_the_generated_css() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
-    let fade = serde_json::from_str::<serde_json::Value>(manifest).unwrap()["keyframes"]
+    let id = serde_json::from_str::<serde_json::Value>(manifest).unwrap()["keyframes"]
         .as_array()
         .unwrap()
         .iter()
         .find(|definition| definition["name"] == "fade")
+        .unwrap()["id"]
+        .as_str()
         .unwrap()
-        .clone();
-    let id = fade["id"].as_str().unwrap();
-    let slot = fade["slotId"].as_str().unwrap_or(id);
-    let css =
-        format!("@media only all,(master-css-keyframe-{slot}){{:not(*){{--master-css-slot:0}}}}");
-    // A component stylesheet uses the keyframes through the entry's slot.
+        .to_owned();
+    // The preset delivers no keyframes natively: a stylesheet using one roots it,
+    // and the page's generated CSS emits it once, which the runtime adopts.
     let rendered = render(
         manifest,
-        &[&css, ".toast{animation:fade 1s}"],
+        &[".toast{animation:fade 1s}"],
         &["(animation:fade|2s)"],
     );
-    let emitted_globals = &rendered.hydration_manifest.emitted_globals;
-    assert_eq!(emitted_globals.keyframes.get(id), Some(&1));
-    assert!(emitted_globals.keyframe_slots.iter().any(|slot| slot == id));
-    // The frames render into the stylesheet's slot, so the runtime leaves them alone.
-    assert!(!rendered.snapshot.text.contains("@keyframes fade"));
-    assert!(rendered.snapshot.stylesheets[0].contains("@keyframes fade"));
     assert!(
         rendered
             .hydration_manifest
-            .resource_order
+            .emitted_globals
             .keyframes
-            .is_empty()
+            .get(&id)
+            .is_none()
     );
+    assert_eq!(rendered.snapshot.text.matches("@keyframes fade").count(), 1);
+    assert_eq!(rendered.hydration_manifest.resource_order.keyframes, [id]);
     assert_hydrates(manifest, &rendered);
 }

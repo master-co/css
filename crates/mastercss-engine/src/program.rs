@@ -10,10 +10,10 @@
 //! fields compressible. Decoding checks every bound and returns an error rather than
 //! panicking on malformed input.
 use mastercss_schema::{
-    CssDirectiveSourceReference, KeyframeContainer, KeyframeDefinition, KeyframeResource,
-    MediaQueryExpr, MixinDefinition, MixinNode, MixinParameter, MixinParameterSyntax,
-    MixinValuePart, PROGRAM_VERSION, ScopedThemeValue, SourceLocation, SourceLocationRange,
-    SourceRange, ThemeNode, UtilityKind,
+    CssDirectiveSourceReference, KeyframeContainer, KeyframeDefinition, MediaQueryExpr,
+    MixinDefinition, MixinNode, MixinParameter, MixinParameterSyntax, MixinValuePart,
+    PROGRAM_VERSION, ScopedThemeValue, SourceLocation, SourceLocationRange, SourceRange, ThemeNode,
+    UtilityKind,
 };
 
 use super::HashMap;
@@ -361,7 +361,6 @@ variants!(MixinParameterSyntax {
 });
 variants!(UtilityMatcher {
     Static { name },
-    Key { keys },
     Token { prefix },
     Function { name },
 });
@@ -374,18 +373,14 @@ record!(SourceRange { start, end });
 record!(SourceLocation { line, column });
 record!(SourceLocationRange { start, end });
 record!(CssDirectiveSourceReference { file, range, loc });
-record!(KeyframeResource { start, end, value });
 record!(KeyframeContainer { id, prelude });
 record!(KeyframeDefinition {
     id,
-    owner_id,
-    slot_id,
-    occurrence,
     name,
     text,
-    resources,
     containers,
-    retained,
+    native,
+    safelisted,
     dependencies,
     source,
 });
@@ -455,13 +450,8 @@ impl Decode for UtilityDefinition {
             id: Decode::decode(reader)?,
             name: Decode::decode(reader)?,
             utility_type: Decode::decode(reader)?,
-            order: Decode::decode(reader)?,
-            layer: Decode::decode(reader)?,
-            keys: Decode::decode(reader)?,
-            alias_groups: Decode::decode(reader)?,
-            variable_aliases: Decode::decode(reader)?,
             variable_alias_refs: Decode::decode(reader)?,
-            native_fallback: Decode::decode(reader)?,
+            native_fallback: false,
             emit: Decode::decode(reader)?,
             matchers: Decode::decode(reader)?,
         })
@@ -762,13 +752,7 @@ mod encoding {
             self.id.encode(writer);
             self.name.encode(writer);
             self.utility_type.encode(writer);
-            self.order.encode(writer);
-            self.layer.encode(writer);
-            self.keys.encode(writer);
-            self.alias_groups.encode(writer);
-            self.variable_aliases.encode(writer);
             self.variable_alias_refs.encode(writer);
-            self.native_fallback.encode(writer);
             self.emit.encode(writer);
             self.matchers.encode(writer);
         }

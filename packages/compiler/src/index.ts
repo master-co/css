@@ -31,7 +31,6 @@ export interface MasterCSSCompileOptions {
 }
 
 export interface MasterCSSCompileResult {
-  readonly suppressedKeyframes: readonly string[]
   /** Serialized map v3 for css when produced by a stylesheet host. */
   readonly sourceMap?: string
   readonly css: string

@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest'
 import getExtractedCSS, { getExtractedCSSResult } from '../../src/utils/extracted-css'
 import { clearDevStylesheets, devStylesheetState, getDevStylesheetDelivery } from '../../src/utils/dev-stylesheet-delivery'
 
-const result = (name: string) => ({ css: '.card{color:red}', diagnostics: [], emittedGlobals: { variables: { [name]: 1 }, keyframes: {}, keyframeSlots: [], suppressedKeyframes: [] } })
+const result = (name: string) => ({ css: '.card{color:red}', diagnostics: [], emittedGlobals: { variables: { [name]: 1 }, keyframes: {} } })
 function fixture() {
   return {
     config: { command: 'serve', root: process.cwd(), base: '/' },

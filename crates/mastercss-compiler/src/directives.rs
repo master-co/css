@@ -155,12 +155,9 @@ fn compile_css_directives_impl(
             options.resource_owner.as_deref().unwrap_or(&options.from),
             source,
         ),
-        owner_identity: crate::native_keyframes::identity(
-            options.resource_owner.as_deref().unwrap_or(&options.from),
-        ),
         source,
         filename: &options.from,
-        retained: extraction_policy.preserve_native
+        native: extraction_policy.preserve_native
             || !(options.prune_native_css || extraction_policy.prune_native),
         definitions: Vec::new(),
     };
@@ -321,6 +318,18 @@ fn compile_css_directives_impl(
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }
 
+    let keyframes = manifest_input.keyframes.clone().unwrap_or_default();
+    let print = |stylesheet: &mut StyleSheet<'_, ThemeAtRule>| {
+        let css = print_native_css(stylesheet, &options.from)?;
+        let mappings = crate::output_mappings::native_output_mappings(
+            source,
+            rewritten_source,
+            &options.from,
+            &stylesheet.rules.0,
+            &css,
+        );
+        crate::native_keyframes::restore(&css, &mappings, &keyframes, &options.from)
+    };
     let preserved = if options.preserve_native_source && options.preserve_native_css {
         Some(crate::native_source::preserve_native_source(
             &source_without_entry,
@@ -345,20 +354,9 @@ fn compile_css_directives_impl(
             stylesheet.rules.0 =
                 crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
         }
-        let css = match &preserved {
-            Some((ordered, _)) => ordered.css.clone(),
-            None => print_native_css(&mut stylesheet, &options.from)?,
-        };
-        let mappings = if let Some((ordered, _)) = &preserved {
-            ordered.mappings.clone()
-        } else {
-            crate::output_mappings::native_output_mappings(
-                source,
-                rewritten_source,
-                &options.from,
-                &stylesheet.rules.0,
-                &css,
-            )
+        let (css, mappings) = match &preserved {
+            Some((ordered, _)) => (ordered.css.clone(), ordered.mappings.clone()),
+            None => print(&mut stylesheet)?,
         };
         stylesheet.rules.0 = crate::native_output::strip_style_slots(rules, &names).0;
         Some(crate::native_output::prepare_native_output(
@@ -378,35 +376,13 @@ fn compile_css_directives_impl(
         let names = slots.iter().map(|slot| slot.name.as_str()).collect();
         stylesheet.rules.0 = crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
     }
-    let native_css = if options.preserve_native_css || external_slots {
-        match &preserved {
-            Some((ordered, plain)) => {
-                if external_slots {
-                    ordered.css.clone()
-                } else {
-                    plain.css.clone()
-                }
-            }
-            None => print_native_css(&mut stylesheet, &options.from)?,
+    let (native_css, native_mappings) = match &preserved {
+        Some((ordered, plain)) => {
+            let view = if external_slots { ordered } else { plain };
+            (view.css.clone(), view.mappings.clone())
         }
-    } else {
-        String::new()
-    };
-
-    let native_mappings = if let Some((ordered, plain)) = &preserved {
-        if external_slots {
-            ordered.mappings.clone()
-        } else {
-            plain.mappings.clone()
-        }
-    } else {
-        crate::output_mappings::native_output_mappings(
-            source,
-            rewritten_source,
-            &options.from,
-            &stylesheet.rules.0,
-            &native_css,
-        )
+        None if options.preserve_native_css || external_slots => print(&mut stylesheet)?,
+        None => (String::new(), Vec::new()),
     };
     if !external_slots && native_output.is_none() && !native_css.is_empty() {
         native_output = Some(crate::NativeCssOutput {
@@ -419,33 +395,7 @@ fn compile_css_directives_impl(
     if !variables.is_empty() {
         manifest_input.animation_variables = Some(variables);
     }
-    let (native_css, native_mappings) =
-        if !external_slots && !native_css.is_empty() && manifest_input.keyframes.is_some() {
-            let manifest = crate::compile_manifest_input(
-                &manifest_input,
-                &crate::CompileManifestOptions::default(),
-            )?
-            .manifest;
-            crate::native_keyframes::render(
-                &native_css,
-                &manifest,
-                options.classes.as_deref(),
-                &native_mappings,
-            )?
-        } else {
-            (native_css, native_mappings)
-        };
     Ok(CompileCssDirectivesResult {
-        suppressed_keyframes: if options.preserve_native_css {
-            Vec::new()
-        } else {
-            manifest_input
-                .keyframes
-                .iter()
-                .flatten()
-                .map(|frame| frame.id.clone())
-                .collect()
-        },
         notices: Vec::new(),
         definition_sources: crate::definition_sources::collect(source, &options.from),
         native_output,

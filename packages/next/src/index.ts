@@ -82,7 +82,7 @@ function resolveStylesheetLoaderPath() {
   return fileURLToPath(new URL('./stylesheet-loader.js', import.meta.url))
 }
 
-function createInstrumentationClientSource(stylesheetBase: string, progressive: boolean) {
+function createInstrumentationClientSource(progressive: boolean) {
   return [
     `import 'private-next-master-css-user-instrumentation-client'`,
     `import { MasterCSSRuntime } from '@master/css-runtime'`,
@@ -122,7 +122,6 @@ function createInstrumentationClientSource(stylesheetBase: string, progressive: 
     `        const nextRuntime = await MasterCSSRuntime.start({`,
     `            program,`,
     `            emittedGlobals,`,
-    `            stylesheetDelivery: { base: ${JSON.stringify(stylesheetBase)}, development: process.env.NODE_ENV === 'development' },`,
     `            onDiagnostic: diagnostic => console.error(diagnostic)`,
     `        })`,
     `        if (state.startToken !== startToken) {`,
@@ -163,10 +162,10 @@ function createInstrumentationClientSource(stylesheetBase: string, progressive: 
   ].join('\n')
 }
 
-function ensureInstrumentationClientPath(projectDir = process.cwd(), stylesheetBase = '/_next/', progressive = false) {
+function ensureInstrumentationClientPath(projectDir = process.cwd(), progressive = false) {
   return ensureVirtualModuleFile(
     join(projectDir, 'node_modules', '.master-css', INSTRUMENTATION_CLIENT_FILE),
-    createInstrumentationClientSource(stylesheetBase, progressive)
+    createInstrumentationClientSource(progressive)
   )
 }
 
@@ -700,7 +699,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
   })
   const toProjectPath = (file: string) => toTurbopackProjectPath(file, projectDir)
   const runtimeInstrumentationPath = resolvedOptions.injectRuntime && (resolvedOptions.mode === 'runtime' || resolvedOptions.mode === 'progressive')
-    ? ensureInstrumentationClientPath(projectDir, `${(nextConfig.assetPrefix || nextConfig.basePath || '').replace(/\/$/, '')}/_next/`, resolvedOptions.mode === 'progressive')
+    ? ensureInstrumentationClientPath(projectDir, resolvedOptions.mode === 'progressive')
     : undefined
   registerOptions(options)
 

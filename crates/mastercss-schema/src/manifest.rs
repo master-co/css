@@ -185,45 +185,38 @@ impl MasterCssManifest {
     }
 }
 
-/// Compiled native keyframes. Source metadata is compiler/tooling provenance;
-/// execution needs only ordered CSS and its custom-property dependencies.
+/// A native `@keyframes` rule of Master-compiled CSS.
+///
+/// A `native` definition is delivered in place by the stylesheet that declares it,
+/// or by the host; engines never emit it, and it stays in the manifest only so
+/// `@reference` and tooling can see it. Every other definition comes from a
+/// `@prune native` stylesheet and is emitted on demand, like a token, by the engine
+/// whose output references it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KeyframeDefinition {
     pub id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub owner_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub slot_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub occurrence: Option<u32>,
     pub name: String,
     pub text: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub resources: Vec<KeyframeResource>,
+    /// The enclosing conditional and layer rules an emitted definition is wrapped in.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub containers: Vec<KeyframeContainer>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub retained: bool,
+    pub native: bool,
+    /// `@safelist keyframes` emits the definition without a reference.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub safelisted: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dependencies: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source: Option<CssDirectiveSourceReference>,
 }
 
-/// Identity, rather than the prelude, distinguishes anonymous native containers.
+/// Identity, rather than the prelude, distinguishes separate containers, so the
+/// definitions of one authored container share one emitted wrapper.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KeyframeContainer {
     pub id: String,
     pub prelude: String,
-}
-
-/// UTF-16 edits into the definition text, transported through native URL tooling.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct KeyframeResource {
-    pub start: u32,
-    pub end: u32,
-    pub value: String,
 }

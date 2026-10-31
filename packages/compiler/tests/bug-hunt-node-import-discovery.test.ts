@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { compileManifestFileSync } from '../src/node'
-import { createCompilerBindingSession } from '../src/session'
+import { createCompilerBindingSession } from '@master/css-binding/compiler'
 
 for (const [name, statement, filename] of [
   ['bare relative filename', '@import "child.css";', 'child.css'],

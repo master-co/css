@@ -88,14 +88,6 @@ pub(crate) fn codegen(check: bool) -> Result<(), String> {
     let root = workspace_root();
     let outputs = [
         (
-            root.join("packages/schema/src/keyframes.ts"),
-            include_str!("../templates/keyframes.ts").to_owned(),
-        ),
-        (
-            root.join("packages/schema/src/mixin.ts"),
-            include_str!("../templates/mixin.ts").to_owned(),
-        ),
-        (
             root.join("packages/binding/src/protocol.ts"),
             generated_contract(),
         ),

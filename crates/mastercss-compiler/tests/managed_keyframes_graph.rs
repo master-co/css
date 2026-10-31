@@ -24,18 +24,12 @@ fn delivered_native_roots_resolve_all_files_and_preserve_definition_url_ownershi
     let frame = &engine.snapshot().unwrap().resources.keyframes[0];
     assert!(frame.text.contains("/assets/image.png"), "{}", frame.text);
     assert!(frame.text.contains("opacity:0;opacity:1"));
-    let definition = &result.manifest["keyframes"][0];
     assert!(
-        definition["resources"][0]["value"]
-            .as_str()
-            .unwrap()
-            .contains("/assets/image.png")
+        result
+            .stylesheets
+            .iter()
+            .all(|sheet| !sheet.css.contains("master-css") && !sheet.css.contains("@keyframes"))
     );
-    assert!(result.stylesheets.iter().any(|sheet| {
-        sheet
-            .css
-            .contains("--master-css-keyframe-resource-0:url(\"/assets/image.png\")")
-    }));
     assert_eq!(
         result.manifest["keyframes"][0]["source"]["file"],
         "child.css"
@@ -61,7 +55,7 @@ fn same_name_definitions_across_imports_keep_both_sources() {
 }
 
 #[test]
-fn suppressed_native_styles_never_add_roots_or_custom_property_overrides() {
+fn undelivered_native_styles_never_add_roots_or_custom_property_overrides() {
     let mut request = request(
         "@import './child.css';@prune native;@theme {--animate-run:one 1s;}@keyframes one{to{opacity:1}}@keyframes two{to{opacity:.5}}",
         ".hidden{--animate-run:two 1s;animation:var(--unknown)}@keyframes one{to{opacity:0}}",
@@ -69,20 +63,15 @@ fn suppressed_native_styles_never_add_roots_or_custom_property_overrides() {
     request.native_stylesheets = Some(vec!["entry.css".into()]);
     let result = compile_css_stylesheet_graph(&request).unwrap();
     assert!(result.manifest.get("animationVariables").is_none());
-    let mut engine = EngineSession::create_with_emitted_globals(
-        &result.manifest.to_string(),
-        Some(
-            &serde_json::json!({"suppressedKeyframes":result.directives.suppressed_keyframes})
-                .to_string(),
-        ),
-    )
-    .unwrap();
+    let mut engine = EngineSession::create(&result.manifest.to_string()).unwrap();
     engine
         .ensure_class_rules(["(animation:var(--animate-run))"])
         .unwrap();
     let resources = engine.snapshot().unwrap().resources;
+    // The child's own `one` is native: whoever delivers the child delivers it.
     assert_eq!(resources.keyframes.len(), 1);
     assert_eq!(resources.keyframes[0].name, "one");
+    assert!(resources.keyframes[0].text.contains("opacity:1"));
 }
 
 #[test]
@@ -93,14 +82,7 @@ fn apply_expansion_is_a_local_root_and_unused_mixins_are_not() {
         engine.ensure_stylesheet_resources(&sheet.css).unwrap();
     }
     assert_eq!(engine.snapshot().unwrap().resources.keyframes.len(), 1);
-    assert!(
-        engine
-            .snapshot()
-            .unwrap()
-            .stylesheets
-            .iter()
-            .any(|css| css.contains("@keyframes one"))
-    );
+    assert!(engine.css_text().contains("@keyframes one"));
     assert!(!engine.css_text().contains(".motion"));
 }
 
@@ -130,18 +112,22 @@ fn dynamic_native_roots_report_information_at_the_authored_source() {
 #[test]
 fn native_policies_stay_local_and_safelists_resolve_across_the_graph() {
     let mut input = request(
-        "@import './child.css' layer screen;@prune native;@safelist keyframes \"child\";@keyframes parent{to{opacity:1}}",
+        "@import './child.css' layer(screen);@prune native;@safelist keyframes \"child\";@keyframes parent{to{opacity:1}}",
         "@prune native;@keyframes child{to{opacity:.5}}@keyframes unused{to{opacity:0}}",
     );
     input.options.classes = Some(vec![]);
     let result = compile_css_stylesheet_graph(&input).unwrap();
     assert!(result.directives.warnings.is_empty());
-    let css = result
-        .stylesheets
-        .iter()
-        .map(|sheet| sheet.css.as_str())
-        .collect::<String>();
-    assert!(css.contains("@keyframes child"), "{css}");
+    assert!(
+        result
+            .stylesheets
+            .iter()
+            .all(|sheet| !sheet.css.contains("@keyframes"))
+    );
+    // The safelist roots the child's definition in its imported layer.
+    let engine = EngineSession::create(&result.manifest.to_string()).unwrap();
+    let css = engine.css_text();
+    assert!(css.contains("@layer screen{@keyframes child"), "{css}");
     assert!(!css.contains("@keyframes parent"), "{css}");
     assert!(!css.contains("@keyframes unused"), "{css}");
 
@@ -162,9 +148,9 @@ fn native_policies_stay_local_and_safelists_resolve_across_the_graph() {
 }
 
 #[test]
-fn repeated_imports_retain_distinct_definitions_and_anonymous_layer_identity() {
+fn repeated_imports_retain_distinct_definitions_and_container_identity() {
     let input = request(
-        "@import './child.css' layer;@import './child.css' layer;",
+        "@import './child.css' layer(motion);@import './child.css' layer(motion);",
         "@prune native;@safelist keyframes \"shared\";@keyframes shared{to{opacity:1}}",
     );
     let result = compile_css_stylesheet_graph(&input).unwrap();
@@ -175,7 +161,23 @@ fn repeated_imports_retain_distinct_definitions_and_anonymous_layer_identity() {
         frames[0]["containers"][0]["id"],
         frames[1]["containers"][0]["id"]
     );
-    assert_eq!(frames[0]["occurrence"], 0);
-    assert_eq!(frames[1]["occurrence"], 1);
-    assert_eq!(frames[0]["slotId"], frames[1]["slotId"]);
+    assert_eq!(frames[0]["containers"][0]["prelude"], "@layer motion");
+    let engine = EngineSession::create(&result.manifest.to_string()).unwrap();
+    assert_eq!(engine.css_text().matches("@layer motion{").count(), 2);
+}
+
+#[test]
+fn on_demand_keyframes_cannot_be_imported_into_an_anonymous_layer() {
+    let input = request(
+        "@import './child.css' layer;",
+        "@prune native;@keyframes shared{to{opacity:1}}",
+    );
+    let error = compile_css_stylesheet_graph(&input).unwrap_err();
+    assert!(error.to_string().contains("anonymous layer"), "{error}");
+    // Native keyframes stay where the import puts them.
+    let input = request(
+        "@import './child.css' layer;",
+        "@keyframes shared{to{opacity:1}}",
+    );
+    assert!(compile_css_stylesheet_graph(&input).is_ok());
 }

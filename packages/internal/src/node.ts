@@ -10,7 +10,6 @@ import {
   EMPTY_EMITTED_GLOBALS_MODULE,
   VIRTUAL_EMITTED_GLOBALS_FILE
 } from './emitted-globals-module'
-import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from '@master/css-schema/hydration-manifest'
 
 export const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = '\0master-css-manifest:'
 export const RESOLVED_MASTER_CSS_PROGRAM_QUERY_PREFIX = '\0master-css-program:'
@@ -28,10 +27,6 @@ export function toHashedManifestAssetFileName(json: string, basename = 'master-c
 export function toHashedProgramAssetFileName(program: Uint8Array) {
   const hash = createHash('sha256').update(program).digest('hex').slice(0, 8)
   return `master-css-program.${hash}.bin`
-}
-
-export function toHashedHydrationManifestAssetFileName(json: string) {
-  return toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
 }
 
 export function toResolvedMasterCSSManifestId(file: string) {

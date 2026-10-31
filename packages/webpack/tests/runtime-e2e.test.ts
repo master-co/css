@@ -1,5 +1,5 @@
 import { createServer, type Server } from 'node:http'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
@@ -240,22 +240,22 @@ describe('Webpack progressive mode', () => {
   }, 180000)
 })
 
-it('delivers dynamic keyframes through writable final CSS assets', async () => {
-  const root = mkdtempSync(join(tmpdir(), 'master-webpack-owned-'))
+it('inserts on-demand keyframes into the runtime stylesheet on first use', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'master-webpack-on-demand-'))
   const dist = join(root, 'dist')
   let browser: Browser | undefined
   let server: Server | undefined
   try {
     writeFileSync(join(root, 'entry.js'), 'import "./app.css"')
-    writeFileSync(join(root, 'app.css'), '@import "@master/css";@prune native;@theme{--animate-probe:probe 1ms both}@layer{@keyframes probe{to{opacity:.3;background-image:url("./pixel.svg")}}}')
-    writeFileSync(join(root, 'pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    writeFileSync(join(root, 'app.css'), '@import "@master/css";@prune native;@theme{--animate-probe:probe 1ms both}@layer motion{@keyframes probe{to{opacity:.3}}}')
     const plugin = new MasterCSSWebpackPlugin({ mode: 'runtime' }, root)
     await runWebpack({
       mode: 'production', context: root, entry: './entry.js', experiments: { css: true },
       output: { path: dist, filename: 'main.js', cssFilename: 'main.css', publicPath: '/' },
       plugins: [plugin, new EmitFixtureAssetsPlugin('<html><head><link rel="stylesheet" href="/main.css"></head><body><div id="probe"></div></body></html>', '')]
     })
-    expect(JSON.parse(readFileSync(join(dist, 'main.css.master-css.json'), 'utf8')).version).toBe(1)
+    expect(existsSync(join(dist, 'main.css.master-css.json'))).toBe(false)
+    expect(readFileSync(join(dist, 'main.css'), 'utf8')).not.toMatch(/master-css-(keyframe|slot)|@keyframes probe/)
     const served = await serveDirectory(dist)
     server = served.server
     browser = await chromium.launch()
@@ -264,14 +264,13 @@ it('delivers dynamic keyframes through writable final CSS assets', async () => {
     page.on('pageerror', error => errors.push(error.message))
     await page.goto(served.url)
     await page.waitForFunction(() => Boolean((globalThis as any).masterCSSRuntime))
+    const runtimeCSS = () => page.locator('#master-css').evaluate(element => [...(element as HTMLStyleElement).sheet!.cssRules].map(rule => rule.cssText).join(''))
     await page.locator('#probe').evaluate(element => element.setAttribute('class', 'animate-probe'))
     await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity), { timeout: 10000 }).toBe('0.3')
-    expect(await page.locator('#master-css').evaluate(element => [...(element as HTMLStyleElement).sheet!.cssRules].map(rule => rule.cssText).join(''))).not.toContain('@keyframes')
-    const image = await page.locator('#probe').evaluate(element => getComputedStyle(element).backgroundImage)
-    expect(image).toContain('.svg')
-    expect(image).not.toContain('/pixel.svg')
+    expect(await runtimeCSS()).toMatch(/@layer motion \{\s*@keyframes probe/)
     await page.locator('#probe').evaluate(element => element.removeAttribute('class'))
     await expect.poll(() => page.locator('#probe').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
+    await expect.poll(runtimeCSS).not.toContain('@keyframes')
     expect(errors).toEqual([])
   } finally {
     await browser?.close()

@@ -10,27 +10,18 @@ impl EngineSession {
         Ok(&self.compiled.keyframes)
     }
 
-    /// Authored resource anchors for server/compiler output maps. Generated class rules
+    /// Source maps of the keyframes the snapshot emits. Generated class rules
     /// intentionally have no stylesheet source attribution.
     pub fn keyframe_output_mappings(
         &self,
         snapshot: &EngineSnapshotIr,
     ) -> Vec<mastercss_schema::CssOutputMapping> {
-        let mut offset = snapshot.text.encode_utf16().count()
-            - self.standalone_keyframe_text().encode_utf16().count();
+        let mut offset =
+            snapshot.text.encode_utf16().count() - self.keyframes_text().encode_utf16().count();
         let mut mappings = Vec::new();
-        let mut path: Vec<mastercss_schema::KeyframeContainer> = Vec::new();
-        for frame in snapshot
-            .resources
-            .keyframes
-            .iter()
-            .filter(|frame| !frame.anchored)
-        {
-            let common = path
-                .iter()
-                .zip(&frame.containers)
-                .take_while(|(a, b)| a.id == b.id)
-                .count();
+        let mut path: &[mastercss_schema::KeyframeContainer] = &[];
+        for frame in &snapshot.resources.keyframes {
+            let common = shared_containers(path, &frame.containers);
             offset += path.len() - common;
             for container in &frame.containers[common..] {
                 offset += container.prelude.encode_utf16().count() + 1;
@@ -50,7 +41,7 @@ impl EngineSession {
                 });
             }
             offset = end;
-            path = frame.containers.clone();
+            path = &frame.containers;
         }
         mappings
     }
@@ -114,13 +105,7 @@ impl EngineSession {
             .compiled
             .keyframes
             .iter()
-            .filter(|definition| {
-                (all || names.contains(&definition.name))
-                    && !self
-                        .emitted_globals
-                        .suppressed_keyframes
-                        .contains(&definition.id)
-            })
+            .filter(|definition| all || names.contains(&definition.name))
             .cloned()
             .collect::<Vec<_>>();
         for definition in definitions {
@@ -140,13 +125,7 @@ impl EngineSession {
             .compiled
             .keyframes
             .iter()
-            .filter(|definition| {
-                (all || names.contains(&definition.name))
-                    && !self
-                        .emitted_globals
-                        .suppressed_keyframes
-                        .contains(&definition.id)
-            })
+            .filter(|definition| all || names.contains(&definition.name))
             .cloned()
             .collect::<Vec<_>>();
         for definition in definitions {
@@ -168,10 +147,14 @@ impl EngineSession {
         }
     }
 
+    /// The keyframes this session emits: referenced, on demand and not emitted by the
+    /// host. Native definitions are counted for the tokens their frames read, but
+    /// their stylesheet delivers them.
     pub(crate) fn keyframe_snapshot(&self) -> Vec<EngineKeyframeResourceIr> {
         self.compiled
             .keyframes
             .iter()
+            .filter(|definition| !definition.native)
             .filter_map(|definition| {
                 let count = self
                     .keyframe_counts
@@ -190,8 +173,7 @@ impl EngineSession {
                         id: definition.id.clone(),
                         name: definition.name.clone(),
                         containers: definition.containers.clone(),
-                        anchored: self.keyframe_has_slot(&definition.id),
-                        text: self.resolved_keyframe_text(definition),
+                        text: definition.text.clone(),
                         ref_count: count,
                         dependencies: definition.dependencies.clone(),
                     })
@@ -203,19 +185,12 @@ impl EngineSession {
         let next = self
             .keyframe_snapshot()
             .into_iter()
-            .map(|definition| {
-                (
-                    definition.id,
-                    definition.text,
-                    definition.anchored,
-                    definition.containers,
-                )
-            })
+            .map(|definition| (definition.id, definition.text, definition.containers))
             .collect::<Vec<_>>();
         let mut mutations = Vec::new();
         for index in (0..self.keyframe_texts.len()).rev() {
             if !next.contains(&self.keyframe_texts[index]) {
-                let (key, _, _, _) = self.keyframe_texts.remove(index);
+                let (key, _, _) = self.keyframe_texts.remove(index);
                 mutations.push(RuleMutationIr::Delete {
                     target: RuleTarget::Keyframes,
                     index: index as u32,
@@ -224,14 +199,14 @@ impl EngineSession {
             }
         }
         for (index, placement) in next.iter().enumerate() {
-            let (key, text, _, _) = placement;
+            let (key, text, _) = placement;
             if self.keyframe_texts.get(index) == Some(placement) {
                 continue;
             }
             if let Some(previous) = self
                 .keyframe_texts
                 .iter()
-                .position(|(name, _, _, _)| name == key)
+                .position(|(name, _, _)| name == key)
             {
                 self.keyframe_texts.remove(previous);
                 mutations.push(RuleMutationIr::Delete {
@@ -264,4 +239,33 @@ impl EngineSession {
         }
         self.rebuild(globals)
     }
+
+    /// The emitted keyframes, each wrapped in the containers it was declared in.
+    pub(crate) fn keyframes_text(&self) -> String {
+        let mut text = String::new();
+        let mut path = Vec::new();
+        for frame in self.keyframe_snapshot() {
+            let common = shared_containers(&path, &frame.containers);
+            text.extend(std::iter::repeat_n('}', path.len() - common));
+            for container in &frame.containers[common..] {
+                text.push_str(&container.prelude);
+                text.push('{');
+            }
+            text.push_str(&frame.text);
+            path = frame.containers;
+        }
+        text.extend(std::iter::repeat_n('}', path.len()));
+        text
+    }
+}
+
+/// The length of the container path two consecutive frames share.
+fn shared_containers(
+    left: &[mastercss_schema::KeyframeContainer],
+    right: &[mastercss_schema::KeyframeContainer],
+) -> usize {
+    left.iter()
+        .zip(right)
+        .take_while(|(left, right)| left.id == right.id)
+        .count()
 }

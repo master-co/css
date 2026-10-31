@@ -16,14 +16,13 @@ export function renderHTML(
     hydrationManifest,
     stylesheets,
     documentURL,
-    stylesheetImportSource,
     manifest,
     emittedGlobals,
     maxCachedClasses
   } = options
   const renderer = createServerRenderer({ manifest, emittedGlobals, maxCachedClasses })
   try {
-    return renderer.renderHTML(html, { hydrationManifest, stylesheets, documentURL, stylesheetImportSource })
+    return renderer.renderHTML(html, { hydrationManifest, stylesheets, documentURL })
   } finally {
     renderer.dispose()
   }
@@ -36,11 +35,10 @@ export function createHTMLRenderSession(
     hydrationManifest,
     stylesheets,
     documentURL,
-    stylesheetImportSource,
     manifest,
     emittedGlobals,
     maxCachedClasses
   } = options
   const renderer = createServerRenderer({ manifest, emittedGlobals, maxCachedClasses })
-  return bindHTMLRenderSessionInternal(renderer, { hydrationManifest, stylesheets, documentURL, stylesheetImportSource }, true)
+  return bindHTMLRenderSessionInternal(renderer, { hydrationManifest, stylesheets, documentURL }, true)
 }

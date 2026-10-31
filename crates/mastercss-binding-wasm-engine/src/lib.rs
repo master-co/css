@@ -16,36 +16,32 @@ fn js_error(error: EngineError) -> JsValue {
     JsValue::from_str(&error.diagnostic().to_json())
 }
 
-/// Decodes emitted globals from `names`, the variables, keyframes, keyframe slots and
-/// suppressed keyframes in that order, and `counts`: how many variables, keyframes
-/// and slots there are, then each variable's count and each keyframe's count.
+/// Decodes emitted globals from `names`, the variables then the keyframes, and
+/// `counts`: how many variables and keyframes there are, then each variable's count
+/// and each keyframe's count.
 fn emitted_globals(names: Vec<String>, counts: Vec<u32>) -> Result<EmittedGlobals, JsValue> {
     let invalid = || {
         js_error(EngineError::InvalidEmittedGlobals(
             "malformed arrays".into(),
         ))
     };
-    let &[variables, keyframes, slots, ref values @ ..] = counts.as_slice() else {
+    let &[variables, keyframes, ref values @ ..] = counts.as_slice() else {
         return Err(invalid());
     };
-    let (variables, keyframes, slots) = (variables as usize, keyframes as usize, slots as usize);
-    let counted = variables.saturating_add(keyframes);
-    if values.len() != counted || names.len() < counted.saturating_add(slots) {
+    let (variables, keyframes) = (variables as usize, keyframes as usize);
+    if values.len() != variables.saturating_add(keyframes) || names.len() != values.len() {
         return Err(invalid());
     }
     let (variable_counts, keyframe_counts) = values.split_at(variables);
     let mut names = names.into_iter();
     let mut globals = EmittedGlobals::default();
-    // Inserting needs no sort, unlike collecting into the maps. The counts lead each
-    // zip, so ending one consumes no extra name.
+    // Inserting needs no sort, unlike collecting into the maps.
     for (&count, name) in variable_counts.iter().zip(names.by_ref()) {
         globals.variables.insert(name, count);
     }
-    for (&count, id) in keyframe_counts.iter().zip(names.by_ref()) {
+    for (&count, id) in keyframe_counts.iter().zip(names) {
         globals.keyframes.insert(id, count);
     }
-    globals.keyframe_slots = names.by_ref().take(slots).collect();
-    globals.suppressed_keyframes = names.collect();
     Ok(globals)
 }
 
@@ -301,17 +297,13 @@ pub fn binding_info() -> String {
 mod tests {
     #[test]
     fn decodes_emitted_globals_from_names_and_counts() {
-        let names = ["a", "b", "fade", "slot", "hidden"]
-            .map(String::from)
-            .to_vec();
-        let globals = super::emitted_globals(names, vec![2, 1, 1, 3, 4, 5]).unwrap();
+        let names = ["a", "b", "fade"].map(String::from).to_vec();
+        let globals = super::emitted_globals(names, vec![2, 1, 3, 4, 5]).unwrap();
         assert_eq!(
             serde_json::to_value(&globals).unwrap(),
             serde_json::json!({
                 "variables": { "a": 3, "b": 4 },
-                "keyframes": { "fade": 5 },
-                "keyframeSlots": ["slot"],
-                "suppressedKeyframes": ["hidden"]
+                "keyframes": { "fade": 5 }
             })
         );
     }
