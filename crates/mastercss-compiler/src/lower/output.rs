@@ -1,17 +1,15 @@
-use super::{
-    CompilerError, EngineSession, LowerCssDirectivesResult, api::render_definitions,
-    resolution::directive_error,
-};
-use crate::NativeCssOutput;
+use super::{CompilerError, EngineSession, api::render_definitions, resolution::directive_error};
 use crate::output_edits::{OutputEdit, apply_output_edits};
+use crate::{CssOutputMapping, NativeCssOutput};
+use mastercss_schema::MasterCssManifest;
 
 /// Replaces the style slots of a native output with their rendered definitions,
-/// then lowers custom media and reports dynamic animation names.
+/// then lowers the custom media of the resolution manifest.
 pub(super) fn assemble_native_output(
     output: &NativeCssOutput,
     engine: &EngineSession,
-    result: &mut LowerCssDirectivesResult,
-) -> Result<(), CompilerError> {
+    resolution_manifest: &MasterCssManifest,
+) -> Result<(String, Vec<CssOutputMapping>), CompilerError> {
     let mut edits = Vec::with_capacity(output.slots.len());
     for slot in &output.slots {
         let start = crate::utf16_to_byte_offset(&output.css, slot.start);
@@ -44,13 +42,6 @@ pub(super) fn assemble_native_output(
     }
     let (css, mappings) =
         apply_output_edits(&output.css, &output.mappings, edits, "stylesheet.css")?;
-    let registry = crate::custom_media::registry(Some(&result.resolution_manifest))?;
-    let (css, mappings) =
-        crate::custom_media::lower_css(&css, &mappings, &registry, "stylesheet.css")?;
-    crate::keyframes::include_native_variables(&mut result.manifest, &css);
-    crate::keyframes::include_native_variables(&mut result.resolution_manifest, &css);
-    result.notices = crate::keyframes::native_notices(&css, "stylesheet.css", engine, &mappings);
-    result.css = Some(css);
-    result.output_mappings = mappings;
-    Ok(())
+    let registry = crate::custom_media::registry(Some(resolution_manifest));
+    crate::custom_media::lower_css(&css, &mappings, &registry, "stylesheet.css")
 }

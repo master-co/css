@@ -1,6 +1,5 @@
 use crate::CssOutputMapping;
 use mastercss_lexer::{CssSyntaxKind as Kind, collect_css_syntax_statements, tokenize_css_syntax};
-use serde_json::Value;
 use std::collections::BTreeMap;
 
 pub(crate) fn native_variables(css: &str) -> BTreeMap<String, Vec<String>> {
@@ -16,26 +15,18 @@ pub(crate) fn native_variables(css: &str) -> BTreeMap<String, Vec<String>> {
     output
 }
 
-pub(crate) fn include_native_variables(manifest: &mut Value, css: &str) {
+pub(crate) fn include_native_variables(
+    manifest: &mut mastercss_schema::MasterCssManifest,
+    css: &str,
+) {
     let variables = native_variables(css);
     if variables.is_empty() {
         return;
     }
-    let target = manifest
-        .as_object_mut()
-        .expect("manifest")
-        .entry("animationVariables")
-        .or_insert_with(|| serde_json::json!({}))
-        .as_object_mut()
-        .expect("variable values");
+    let target = manifest.animation_variables.get_or_insert_default();
     for (name, values) in variables {
-        let target = target
-            .entry(name)
-            .or_insert_with(|| serde_json::json!([]))
-            .as_array_mut()
-            .expect("values");
+        let target = target.get_or_insert_default(name);
         for value in values {
-            let value = Value::String(value);
             if !target.contains(&value) {
                 target.push(value);
             }

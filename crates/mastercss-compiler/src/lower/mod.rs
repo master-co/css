@@ -6,7 +6,7 @@ use mastercss_schema::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{CompileManifestOptions, CompilerError};
+use crate::CompilerError;
 
 #[derive(Debug, Clone, Default, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase")]

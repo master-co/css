@@ -253,11 +253,12 @@ fn inline_wrapper_applications_substitute_each_authored_reference_once() {
 
 #[test]
 fn reference_context_preserves_normalized_base_static_tokens_with_empty_keys() {
-    let base = serde_json::json!({
+    let base = mastercss_schema::MasterCssManifest::new(serde_json::json!({
         "version":6,"languageVersion":18,
         "variables":{"color":[{"key":"","values":[{"path":[":root,:host"],"value":"red","static":true}]}]},
         "theme":[{"type":"rule","prelude":":root,:host","children":[{"type":"declaration","name":"color","value":"red","static":true}]}]
-    });
+    }))
+    .unwrap();
     let context = crate::manifest::reference_context(base.clone(), Some(&base));
     assert_eq!(context, base);
 }

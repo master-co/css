@@ -57,11 +57,23 @@ impl EngineSession {
         manifest_json: &str,
         emitted_globals: EmittedGlobals,
     ) -> Result<Self, EngineError> {
-        let manifest = MasterCssManifest::parse(manifest_json)?;
-        let program = super::program::encode(&compile_manifest(&manifest)?);
-        let mut session = Self::with_program(decode_program(&program)?, emitted_globals);
-        session.manifest = Some(manifest);
+        let (manifest, json) = parse_manifest(manifest_json)?;
+        let mut session = Self::from_parsed_manifest(&manifest, emitted_globals)?;
+        session.manifest_json = Some(json);
         Ok(session)
+    }
+
+    /// [`from_manifest`](Self::from_manifest) for a manifest already parsed. The
+    /// session keeps no manifest JSON, like one created from a program.
+    pub fn from_parsed_manifest(
+        manifest: &MasterCssManifest,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<Self, EngineError> {
+        let program = super::program::encode(&compile_manifest(manifest)?);
+        Ok(Self::with_program(
+            decode_program(&program)?,
+            emitted_globals,
+        ))
     }
 
     /// Executes a program that [`compile_program`](crate::compile_program) encoded.
@@ -77,7 +89,7 @@ impl EngineSession {
 
     pub(crate) fn with_program(compiled: Program, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
-            manifest: None,
+            manifest_json: None,
             compiled,
             layers: std::array::from_fn(|_| Vec::new()),
             class_rules: HashMap::default(),
@@ -105,10 +117,9 @@ impl EngineSession {
 
     pub fn manifest_json(&self) -> Result<String, EngineError> {
         self.ensure_active()?;
-        let manifest = self.manifest.as_ref().ok_or_else(|| {
+        self.manifest_json.clone().ok_or_else(|| {
             EngineError::InvalidManifest("this session executes a program, not a manifest".into())
-        })?;
-        Ok(manifest.to_json()?)
+        })
     }
 
     pub fn ensure_class_rules<I, S>(
@@ -369,13 +380,13 @@ impl EngineSession {
         globals: Option<&str>,
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
-        let manifest = MasterCssManifest::parse(manifest_json)?;
+        let (manifest, json) = parse_manifest(manifest_json)?;
         let program = decode_program(&super::program::encode(&compile_manifest(&manifest)?))?;
         let emitted = match globals {
             Some(globals) => parse_emitted_globals(globals)?,
             None => self.emitted_globals.clone(),
         };
-        self.manifest = Some(manifest);
+        self.manifest_json = Some(json);
         self.compiled = program;
         self.rebuild(emitted)
     }
@@ -393,7 +404,7 @@ impl EngineSession {
         let program = decode_program(program)?;
         let emitted = emitted_globals.unwrap_or_else(|| self.emitted_globals.clone());
         {
-            self.manifest = None;
+            self.manifest_json = None;
         }
         self.compiled = program;
         self.rebuild(emitted)
@@ -1044,7 +1055,7 @@ impl EngineSession {
 
     pub(crate) fn fork_empty_with_emitted_globals(&self, emitted_globals: EmittedGlobals) -> Self {
         let mut session = Self {
-            manifest: self.manifest.clone(),
+            manifest_json: self.manifest_json.clone(),
             compiled: self.compiled.clone(),
             layers: std::array::from_fn(|_| Vec::new()),
             class_rules: HashMap::default(),
@@ -1073,6 +1084,15 @@ impl EngineSession {
     pub(crate) fn fork_empty(&self) -> Self {
         self.fork_empty_with_emitted_globals(EmittedGlobals::default())
     }
+}
+
+/// Parses a manifest, with the compact JSON of what it parsed, in its member order,
+/// which [`EngineSession::manifest_json`] returns.
+fn parse_manifest(manifest_json: &str) -> Result<(MasterCssManifest, String), EngineError> {
+    let value: serde_json::Value =
+        serde_json::from_str(manifest_json).map_err(mastercss_schema::SchemaError::from)?;
+    let json = serde_json::to_string(&value).map_err(mastercss_schema::SchemaError::from)?;
+    Ok((MasterCssManifest::new(value)?, json))
 }
 
 /// Validates a manifest and encodes the program that sessions execute.

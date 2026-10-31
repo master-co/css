@@ -1,4 +1,7 @@
 use super::*;
+use serde::Serializer;
+use serde::ser::SerializeStruct;
+use serde_json::Map;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -95,22 +98,33 @@ impl SchemaError {
     }
 }
 
-/// Validated, order-preserving representation of the public Manifest v6 wire format.
+/// A Manifest v6 document, field for field the TypeScript `MasterCSSManifest`.
 ///
-/// The domain crates deliberately keep the original JSON object intact while individual
-/// subsystems progressively replace `Value` access with strongly typed projections. This
-/// prevents an early Rust cutover from dropping fields it does not yet execute.
-#[derive(Debug, Clone, PartialEq)]
-pub struct MasterCssManifest(Value);
+/// Sections stay optional as on the wire: an absent section is not written back,
+/// and a present one is, even when it is empty. [`MasterCssManifest::new`] and
+/// [`MasterCssManifest::parse`] validate a document and parse it once.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct MasterCssManifest {
+    pub theme: Option<Vec<ThemeNode>>,
+    pub animation_variables: Option<Record<Vec<String>>>,
+    pub keyframes: Option<Vec<KeyframeDefinition>>,
+    pub custom_media: Option<Record<MediaQueryExpr>>,
+    /// Variables grouped by namespace; the empty namespace holds the others.
+    pub variables: Option<Record<Vec<ManifestVariable>>>,
+    pub mixins: Option<Vec<MixinDefinition>>,
+    pub utilities: Option<Vec<UtilityDefinition>>,
+    pub debug: Option<Map<String, Value>>,
+}
 
 impl MasterCssManifest {
     pub fn parse(source: &str) -> Result<Self, SchemaError> {
-        let value: Value = serde_json::from_str(source)?;
-        Self::new(value)
+        Self::new(serde_json::from_str(source)?)
     }
 
     pub fn new(value: Value) -> Result<Self, SchemaError> {
-        let object = value.as_object().ok_or(SchemaError::InvalidManifest)?;
+        let Value::Object(mut object) = value else {
+            return Err(SchemaError::InvalidManifest);
+        };
         if object.get("version").and_then(Value::as_u64) != Some(MANIFEST_VERSION.into()) {
             return Err(SchemaError::UnsupportedManifestVersion);
         }
@@ -123,34 +137,64 @@ impl MasterCssManifest {
         {
             return Err(SchemaError::UnknownField(field.clone()));
         }
-        if let Some(keyframes) = object.get("keyframes") {
-            serde_json::from_value::<Vec<KeyframeDefinition>>(keyframes.clone())?;
+        let keyframes = section(&mut object, "keyframes")?;
+        let utilities = section(&mut object, "utilities")?;
+        let mixins = section(&mut object, "mixins")?;
+        let theme = section(&mut object, "theme")?;
+        let custom_media: Option<Record<MediaQueryExpr>> = section(&mut object, "customMedia")?;
+        if custom_media
+            .as_ref()
+            .is_some_and(|media| media.contains_key("--starting-style"))
+        {
+            return Err(SchemaError::ReservedCustomMediaName);
         }
-        if let Some(utilities) = object.get("utilities") {
-            serde_json::from_value::<Vec<UtilityDefinition>>(utilities.clone())?;
-        }
-        if let Some(mixins) = object.get("mixins") {
-            serde_json::from_value::<Vec<MixinDefinition>>(mixins.clone())?;
-        }
-        if let Some(theme) = object.get("theme") {
-            serde_json::from_value::<Vec<ThemeNode>>(theme.clone())?;
-        }
-        if let Some(media) = object.get("customMedia") {
-            let media = serde_json::from_value::<BTreeMap<String, MediaQueryExpr>>(media.clone())?;
-            if media.contains_key("--starting-style") {
-                return Err(SchemaError::ReservedCustomMediaName);
-            }
-        }
-        if let Some(variables) = object.get("variables") {
-            let groups = variables
-                .as_object()
-                .ok_or(SchemaError::UnsupportedVariablesFormat)?;
-            for definitions in groups.values() {
-                for variable in definitions
-                    .as_array()
-                    .ok_or(SchemaError::UnsupportedVariablesFormat)?
-                {
-                    let fields = variable
+        let variables = object.remove("variables").map(variables).transpose()?;
+        Ok(Self {
+            theme,
+            animation_variables: section(&mut object, "animationVariables")?,
+            keyframes,
+            custom_media,
+            variables,
+            mixins,
+            utilities,
+            debug: section(&mut object, "debug")?,
+        })
+    }
+
+    pub fn to_json(&self) -> Result<String, SchemaError> {
+        Ok(serde_json::to_string(self)?)
+    }
+
+    /// The JSON value of the manifest.
+    pub fn to_value(&self) -> Value {
+        serde_json::to_value(self).expect("a manifest serializes to JSON")
+    }
+}
+
+fn section<T: serde::de::DeserializeOwned>(
+    object: &mut Map<String, Value>,
+    name: &str,
+) -> Result<Option<T>, SchemaError> {
+    Ok(object
+        .remove(name)
+        .map(serde_json::from_value)
+        .transpose()?)
+}
+
+fn variables(groups: Value) -> Result<Record<Vec<ManifestVariable>>, SchemaError> {
+    let Value::Object(groups) = groups else {
+        return Err(SchemaError::UnsupportedVariablesFormat);
+    };
+    groups
+        .into_iter()
+        .map(|(namespace, definitions)| {
+            let Value::Array(definitions) = definitions else {
+                return Err(SchemaError::UnsupportedVariablesFormat);
+            };
+            let definitions = definitions
+                .into_iter()
+                .map(|definition| {
+                    let fields = definition
                         .as_object()
                         .ok_or(SchemaError::UnsupportedVariablesFormat)?;
                     if let Some(field) = fields
@@ -159,30 +203,136 @@ impl MasterCssManifest {
                     {
                         return Err(SchemaError::UnknownField(format!("variables.*.{field}")));
                     }
-                    let values = fields
-                        .get("values")
-                        .ok_or(SchemaError::UnsupportedVariablesFormat)?;
-                    serde_json::from_value::<Vec<ScopedThemeValue>>(values.clone())?;
-                }
+                    if !fields.contains_key("values") {
+                        return Err(SchemaError::UnsupportedVariablesFormat);
+                    }
+                    Ok(serde_json::from_value(definition)?)
+                })
+                .collect::<Result<_, _>>()?;
+            Ok((namespace, definitions))
+        })
+        .collect()
+}
+
+impl Serialize for MasterCssManifest {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        fn field<S: SerializeStruct, T: Serialize>(
+            manifest: &mut S,
+            name: &'static str,
+            value: &Option<T>,
+        ) -> Result<(), S::Error> {
+            match value {
+                Some(value) => manifest.serialize_field(name, value),
+                None => manifest.skip_field(name),
             }
         }
-        if object.get("variables").is_some_and(Value::is_array) {
-            return Err(SchemaError::UnsupportedVariablesFormat);
+        let mut manifest = serializer.serialize_struct("MasterCssManifest", 10)?;
+        manifest.serialize_field("version", &MANIFEST_VERSION)?;
+        manifest.serialize_field("languageVersion", &LANGUAGE_VERSION)?;
+        field(&mut manifest, "theme", &self.theme)?;
+        field(
+            &mut manifest,
+            "animationVariables",
+            &self.animation_variables,
+        )?;
+        field(&mut manifest, "keyframes", &self.keyframes)?;
+        field(&mut manifest, "customMedia", &self.custom_media)?;
+        field(&mut manifest, "variables", &self.variables)?;
+        field(&mut manifest, "mixins", &self.mixins)?;
+        field(&mut manifest, "utilities", &self.utilities)?;
+        field(&mut manifest, "debug", &self.debug)?;
+        manifest.end()
+    }
+}
+
+/// A variable of a namespace group, field for field the TypeScript
+/// `MasterCSSManifestVariable`.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ManifestVariable {
+    /// Absent when it is the [`variable_name`] of its namespace and key.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default)]
+    pub key: String,
+    /// Carried only while variables are flattened; a group gives its namespace.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub namespace: Option<String>,
+    pub values: Vec<ScopedThemeValue>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dependencies: Option<Vec<String>>,
+    /// `string` when absent.
+    #[serde(default, rename = "type", skip_serializing_if = "Option::is_none")]
+    pub variable_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub numeric: Option<VariableNumeric>,
+}
+
+/// The number and unit that every value of a numeric variable declares.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct VariableNumeric {
+    /// `null` when the declared number is not finite.
+    pub value: Option<serde_json::Number>,
+    #[serde(default)]
+    pub unit: String,
+}
+
+/// The name of a variable that declares none: `namespace-key`, or whichever of
+/// the two is not empty.
+pub fn variable_name(namespace: &str, key: &str) -> String {
+    if namespace.is_empty() {
+        key.to_owned()
+    } else if key.is_empty() {
+        namespace.to_owned()
+    } else {
+        let mut name = String::with_capacity(namespace.len() + 1 + key.len());
+        name.push_str(namespace);
+        name.push('-');
+        name.push_str(key);
+        name
+    }
+}
+
+impl ManifestVariable {
+    /// The declared name, or the [`variable_name`] in `namespace`.
+    pub fn name_in(&self, namespace: &str) -> String {
+        self.name
+            .clone()
+            .unwrap_or_else(|| variable_name(namespace, &self.key))
+    }
+}
+
+/// The variables of every group in order, each with its name, its type, and its
+/// namespace when it has one.
+pub fn flatten_variables(groups: Record<Vec<ManifestVariable>>) -> Vec<ManifestVariable> {
+    let mut flattened = Vec::new();
+    for (namespace, variables) in groups {
+        for mut variable in variables {
+            variable.name = Some(variable.name_in(&namespace));
+            if !namespace.is_empty() {
+                variable.namespace = Some(namespace.clone());
+            }
+            variable
+                .variable_type
+                .get_or_insert_with(|| "string".into());
+            flattened.push(variable);
         }
-        Ok(Self(value))
     }
+    flattened
+}
 
-    pub fn as_value(&self) -> &Value {
-        &self.0
+/// Groups flattened variables by the namespace each carries, in first-seen order,
+/// removing it from the variable; `None` when there are no variables.
+pub fn group_variables(variables: Vec<ManifestVariable>) -> Option<Record<Vec<ManifestVariable>>> {
+    if variables.is_empty() {
+        return None;
     }
-
-    pub fn into_value(self) -> Value {
-        self.0
+    let mut groups = Record::<Vec<ManifestVariable>>::default();
+    for mut variable in variables {
+        let namespace = variable.namespace.take().unwrap_or_default();
+        groups.get_or_insert_default(namespace).push(variable);
     }
-
-    pub fn to_json(&self) -> Result<String, SchemaError> {
-        Ok(serde_json::to_string(&self.0)?)
-    }
+    Some(groups)
 }
 
 /// A native `@keyframes` rule of Master-compiled CSS.

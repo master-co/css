@@ -128,6 +128,7 @@ Before values are the checked-in budget; after values are measured.
   deserializing each section and discarding it. A typed manifest model in
   `mastercss-schema`, shared by compiler and engine, is the next refactor; it is a
   representation change with byte-identical output and belongs in its own change.
+  Done since; see [Follow-up: typed manifest](#follow-up-typed-manifest).
 - Two parallel lowering finishers remain (single-file `NativeCssOutput` and graph
   slot edits), now sharing one renderer and engine.
 - `@master/css-internal` barrel subpaths stay, as package exports need an explicit
@@ -143,3 +144,31 @@ default and a second seed. Package tests, lint and project-reference type checks
 runtime e2e passes in Chromium, Firefox and WebKit. Vite, Webpack, Next and Astro
 on-demand keyframe tests cover runtime insertion, HMR, progressive pre-rendering and
 hydration, and referenced definitions.
+
+## Follow-up: typed manifest
+
+`MasterCssManifest` in `mastercss-schema` is now the typed Manifest v6 document, field
+for field the TypeScript `MasterCSSManifest`. `new` and `parse` validate a document and
+parse each section once. The compiler builds, merges and lowers it, and the engine
+compiles it, without `serde_json::Value` maps; graph lowering merges the typed directive
+input. Variable name derivation, flattening and grouping exist only in the schema.
+Compiler request and result structs keep JSON at the binding boundary, so an invalid
+base manifest is still a compiler error.
+
+- Output: preset artifacts, CSS, program encodings, notices, errors and the engine's
+  `manifestJSON()` are unchanged. A before/after run of every tracked stylesheet
+  (5,508 compiler cases) and 37 fixture projects compared key-sorted JSON with no
+  difference.
+- Member order: compiled manifests are equal JSON whose members follow one order,
+  `version`, `languageVersion`, `theme`, `animationVariables`, `keyframes`,
+  `customMedia`, `variables`, `mixins`, `utilities`, `debug`, and for variables
+  `name`, `key`, `values`, `dependencies`, `type`, `numeric`. Before, the order
+  depended on the merge path; base variables gained `name` and `type` last.
+- Validation: variable fields, `animationVariables` and `debug` are type-checked like
+  the other sections, so a variable `name` that is not a string is rejected rather
+  than ignored. `normalizeManifest` validates its input.
+- Size: engine Wasm 573,525 → 572,502 bytes. A session keeps the compact manifest
+  JSON for `manifestJSON()`, not the parsed manifest.
+- Not changed: `project_comparison` still reads host snapshots as JSON and names
+  variables `namespace-key` itself, which gives `--color-` for an empty key and
+  ignores explicit names; aligning it changes comparison reports.

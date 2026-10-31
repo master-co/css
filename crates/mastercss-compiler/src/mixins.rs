@@ -260,16 +260,12 @@ pub(crate) fn definition(prelude: &str, source: &str) -> Result<MixinDefinition,
 
 /// Resolve definition overrides and named conditions once, before shipping IR.
 pub(crate) fn resolve_definitions(
-    manifest: &mut serde_json::Value,
+    manifest: &mut mastercss_schema::MasterCssManifest,
     registry: &crate::custom_media::Registry,
 ) -> Result<(), crate::CompilerError> {
-    let raw = manifest
-        .get("mixins")
-        .cloned()
-        .unwrap_or_else(|| serde_json::json!([]));
     let fail = crate::manifest::definition_error;
-    let mut definitions: Vec<MixinDefinition> =
-        serde_json::from_value(raw.clone()).map_err(|error| fail(error.to_string()))?;
+    let has_mixins = manifest.mixins.is_some();
+    let mut definitions = manifest.mixins.take().unwrap_or_default();
     let mut seen = std::collections::HashSet::new();
     definitions.reverse();
     definitions.retain(|definition| seen.insert(definition.name.clone()));
@@ -327,16 +323,8 @@ pub(crate) fn resolve_definitions(
     for definition in &mut definitions {
         definition.body = resolve(&definition.body, registry)?;
     }
-    if !definitions.is_empty() {
-        manifest["mixins"] = serde_json::to_value(&definitions).expect("mixins");
-    }
-    let mut utilities: Vec<mastercss_schema::UtilityDefinition> = serde_json::from_value(
-        manifest
-            .get("utilities")
-            .cloned()
-            .unwrap_or_else(|| serde_json::json!([])),
-    )
-    .map_err(|error| fail(error.to_string()))?;
+    let has_utilities = manifest.utilities.is_some();
+    let mut utilities = manifest.utilities.take().unwrap_or_default();
     seen.clear();
     utilities.reverse();
     utilities.retain(|definition| seen.insert(definition.identity()));
@@ -345,9 +333,8 @@ pub(crate) fn resolve_definitions(
     for definition in &mut utilities {
         definition.recipe.body = resolve(&definition.recipe.body, registry)?;
     }
-    if !utilities.is_empty() {
-        manifest["utilities"] = serde_json::to_value(utilities).expect("utilities");
-    }
+    manifest.mixins = has_mixins.then_some(definitions);
+    manifest.utilities = has_utilities.then_some(utilities);
     Ok(())
 }
 

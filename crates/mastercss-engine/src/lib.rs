@@ -16,7 +16,6 @@ use mastercss_schema::{
     UtilityLayerName,
 };
 use serde::Serialize;
-use serde_json::Map;
 use serde_json::Value;
 
 const LAYER_COUNT: usize = 4;
@@ -316,9 +315,9 @@ pub struct EngineCompositionRuleIr {
 
 #[derive(Debug)]
 pub struct EngineSession {
-    /// The manifest a session was created from; sessions created from an encoded
-    /// program have none.
-    manifest: Option<MasterCssManifest>,
+    /// The JSON of the manifest a session was created from; sessions created from
+    /// an encoded program or a parsed manifest have none.
+    manifest_json: Option<String>,
     compiled: Program,
     layers: [Vec<StoredRule>; LAYER_COUNT],
     class_rules: HashMap<String, Vec<(UtilityLayerName, String)>>,

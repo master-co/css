@@ -184,6 +184,7 @@ mod engine;
 mod manifest;
 mod mixin;
 mod name_counts;
+mod record;
 mod tagged;
 
 pub use directives::*;
@@ -191,6 +192,7 @@ pub use engine::*;
 pub use manifest::*;
 pub use mixin::*;
 pub use name_counts::NameCounts;
+pub use record::Record;
 
 #[cfg(test)]
 mod tests;

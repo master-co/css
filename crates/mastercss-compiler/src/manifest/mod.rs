@@ -1,8 +1,6 @@
-use mastercss_schema::{
-    CssDirectiveManifestInput, CssDirectiveStyleDefinition, MANIFEST_VERSION, MasterCssManifest,
-};
+use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition, MasterCssManifest};
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Number, Value, json};
+use serde_json::Value;
 
 use crate::CompilerError;
 
@@ -73,5 +71,5 @@ pub use preset::{compile_default_preset_manifest, compile_manifest_input_with_st
 #[cfg(test)]
 mod tests;
 
-pub(crate) use normalize::{compile_manifest_fragment, reference_context};
+pub(crate) use normalize::{compile_manifest, parse_manifest, reference_context};
 pub(crate) use variables::manifest_error as definition_error;

@@ -1,6 +1,7 @@
 use super::{CompiledVariable, EngineVariableIr, Program, UtilityLayerName, UtilityMatcher};
-use super::{EngineError, HashMap, Map, MasterCssManifest, Value};
+use super::{EngineError, HashMap, MasterCssManifest};
 use mastercss_lexer::concat_text;
+use mastercss_schema::{ManifestVariable, Record};
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     match layer {
@@ -11,60 +12,37 @@ pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     }
 }
 
-/// The engine fields of a Manifest v6 document.
-#[derive(serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ManifestInput {
-    #[serde(default)]
-    theme: Vec<mastercss_schema::ThemeNode>,
-    #[serde(default)]
-    keyframes: Vec<mastercss_schema::KeyframeDefinition>,
-    #[serde(default)]
-    animation_variables: HashMap<String, Vec<String>>,
-    #[serde(default)]
-    custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
-    version: u32,
-    #[serde(default)]
-    mixins: Vec<mastercss_schema::MixinDefinition>,
-    #[serde(default, rename = "utilities")]
-    utility_definitions: Vec<mastercss_schema::UtilityDefinition>,
-    #[serde(default)]
-    variables: Map<String, Value>,
-}
-
 /// Validates a manifest and compiles it into the encoded part of a program; decoding
 /// derives the rest with [`finish_program`].
 pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, EngineError> {
-    let mut input: ManifestInput = serde_json::from_value(manifest.as_value().clone())
-        .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
+    let mut keyframes = manifest.keyframes.clone().unwrap_or_default();
     let mut seen = super::HashSet::default();
-    input.keyframes.reverse();
-    input
-        .keyframes
-        .retain(|definition| seen.insert(definition.id.clone()));
-    input.keyframes.reverse();
+    keyframes.reverse();
+    keyframes.retain(|definition| seen.insert(definition.id.clone()));
+    keyframes.reverse();
     seen.clear();
-    input.mixins.reverse();
-    input
-        .mixins
-        .retain(|definition| seen.insert(definition.name.clone()));
-    input.mixins.reverse();
-    super::validate_mixins(&input.mixins).map_err(EngineError::InvalidManifest)?;
+    let mut mixins = manifest.mixins.clone().unwrap_or_default();
+    mixins.reverse();
+    mixins.retain(|definition| seen.insert(definition.name.clone()));
+    mixins.reverse();
+    super::validate_mixins(&mixins).map_err(EngineError::InvalidManifest)?;
     seen.clear();
-    input.utility_definitions.reverse();
-    input
-        .utility_definitions
+    let mut utility_definitions = manifest.utilities.clone().unwrap_or_default();
+    utility_definitions.reverse();
+    utility_definitions
         .retain(|definition| seen.insert(super::utility_matching::identity(definition)));
-    input.utility_definitions.reverse();
-    super::validate_utilities(&input.mixins, &input.utility_definitions)
+    utility_definitions.reverse();
+    super::validate_utilities(&mixins, &utility_definitions)
         .map_err(EngineError::InvalidManifest)?;
-    if input.version != mastercss_schema::MANIFEST_VERSION {
-        return Err(EngineError::InvalidManifest(
-            "unsupported projection version".into(),
-        ));
-    }
-    let (compiled_variables, compiled_variable_order) = compile_variables(&input.variables)?;
-    for name in input.custom_media.keys() {
+    let (compiled_variables, compiled_variable_order) =
+        compile_variables(manifest.variables.as_ref())?;
+    let custom_media = manifest
+        .custom_media
+        .iter()
+        .flatten()
+        .map(|(name, query)| (name.clone(), query.clone()))
+        .collect::<HashMap<_, _>>();
+    for name in custom_media.keys() {
         if !name.starts_with("--") || name.len() == 2 || name == "--starting-style" {
             return Err(EngineError::InvalidManifest(concat_text!(
                 "Invalid or reserved custom media name ",
@@ -73,12 +51,17 @@ pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, 
         }
     }
     let mut program = Program {
-        theme: input.theme,
-        keyframes: input.keyframes,
-        animation_variables: input.animation_variables,
-        custom_media: input.custom_media,
-        mixins: input.mixins,
-        utility_definitions: input.utility_definitions,
+        theme: manifest.theme.clone().unwrap_or_default(),
+        keyframes,
+        animation_variables: manifest
+            .animation_variables
+            .iter()
+            .flatten()
+            .map(|(name, values)| (name.clone(), values.clone()))
+            .collect(),
+        custom_media,
+        mixins,
+        utility_definitions,
         compiled_variables,
         compiled_variable_order,
         ..Program::default()
@@ -148,36 +131,14 @@ pub(crate) fn finish_program(program: &mut Program) -> Result<(), String> {
 }
 
 pub(crate) fn compile_variables(
-    groups: &Map<String, Value>,
+    groups: Option<&Record<Vec<ManifestVariable>>>,
 ) -> Result<(HashMap<String, CompiledVariable>, Vec<String>), EngineError> {
     let mut variables = HashMap::default();
     let mut order = Vec::new();
-    for (namespace, definitions) in groups {
-        let Some(definitions) = definitions.as_array() else {
-            return Err(EngineError::InvalidManifest(concat_text!(
-                "variables.",
-                namespace,
-                " must be an array"
-            )));
-        };
+    for (namespace, definitions) in groups.into_iter().flatten() {
         for definition in definitions {
-            let Some(object) = definition.as_object() else {
-                return Err(EngineError::InvalidManifest(concat_text!(
-                    "variables.",
-                    namespace,
-                    " entries must be objects"
-                )));
-            };
-            let key = object
-                .get("key")
-                .and_then(Value::as_str)
-                .unwrap_or_default()
-                .to_owned();
-            let name = object
-                .get("name")
-                .and_then(Value::as_str)
-                .map(str::to_owned)
-                .unwrap_or_else(|| default_variable_name(namespace, &key));
+            let key = definition.key.clone();
+            let name = definition.name_in(namespace);
             if name.is_empty() {
                 continue;
             }
@@ -191,25 +152,7 @@ pub(crate) fn compile_variables(
                     " must not have a key or name that starts or ends with -"
                 )));
             }
-            let values: Vec<mastercss_schema::ScopedThemeValue> =
-                serde_json::from_value(object.get("values").cloned().unwrap_or_default())
-                    .map_err(|error| EngineError::InvalidManifest(error.to_string()))?;
-            let variable_type = object
-                .get("type")
-                .and_then(Value::as_str)
-                .unwrap_or("string")
-                .to_owned();
-            let dependencies = object
-                .get("dependencies")
-                .and_then(Value::as_array)
-                .map(|values| {
-                    values
-                        .iter()
-                        .filter_map(Value::as_str)
-                        .map(str::to_owned)
-                        .collect()
-                })
-                .unwrap_or_default();
+            let values = definition.values.clone();
             if !variables.contains_key(&name) {
                 order.push(name.clone());
             }
@@ -222,34 +165,22 @@ pub(crate) fn compile_variables(
                     inline_value: super::inline_theme::selected_value(&values),
                     is_static: values.iter().any(|value| value.is_static),
                     values,
-                    numeric: object.get("numeric").and_then(|numeric| {
+                    numeric: definition.numeric.as_ref().and_then(|numeric| {
                         Some(super::VariableNumeric {
-                            value: numeric.get("value")?.as_f64()?,
-                            unit: numeric
-                                .get("unit")
-                                .and_then(Value::as_str)
-                                .unwrap_or_default()
-                                .to_owned(),
+                            value: numeric.value.as_ref()?.as_f64()?,
+                            unit: numeric.unit.clone(),
                         })
                     }),
-                    variable_type,
-                    dependencies,
+                    variable_type: definition
+                        .variable_type
+                        .clone()
+                        .unwrap_or_else(|| "string".into()),
+                    dependencies: definition.dependencies.clone().unwrap_or_default(),
                 },
             );
         }
     }
     Ok((variables, order))
-}
-
-/// The name of a variable that does not declare one.
-pub(crate) fn default_variable_name(namespace: &str, key: &str) -> String {
-    if namespace.is_empty() {
-        key.to_owned()
-    } else if key.is_empty() {
-        namespace.to_owned()
-    } else {
-        concat_text!(namespace, "-", key)
-    }
 }
 
 pub(crate) fn engine_variable_ir(variable: &CompiledVariable) -> EngineVariableIr {

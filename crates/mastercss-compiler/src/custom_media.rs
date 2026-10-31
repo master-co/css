@@ -2,8 +2,7 @@ use crate::{CompilerError, CssDirectiveManifestInput, CssOutputMapping};
 use mastercss_lexer::{
     CssSyntaxKind as Kind, byte_to_utf16_offset, collect_css_syntax_statements, tokenize_css_syntax,
 };
-use mastercss_schema::{CustomMediaDefinition, MediaQueryExpr, ThemeNode};
-use serde_json::Value;
+use mastercss_schema::{CustomMediaDefinition, MasterCssManifest, MediaQueryExpr, ThemeNode};
 use std::collections::HashMap;
 
 pub(crate) type Registry = std::collections::BTreeMap<String, MediaQueryExpr>;
@@ -55,20 +54,20 @@ pub(crate) fn collect(
     Ok((definitions, ranges))
 }
 
-pub(crate) fn registry(manifest: Option<&Value>) -> Result<Registry, CompilerError> {
+pub(crate) fn registry(manifest: Option<&MasterCssManifest>) -> Registry {
     manifest
-        .and_then(|manifest| manifest.get("customMedia"))
-        .map(|value| serde_json::from_value(value.clone()))
-        .transpose()
-        .map(|value| value.unwrap_or_default())
-        .map_err(|error| crate::manifest::definition_error(error.to_string()))
+        .and_then(|manifest| manifest.custom_media.as_ref())
+        .into_iter()
+        .flatten()
+        .map(|(name, query)| (name.clone(), query.clone()))
+        .collect()
 }
 
 pub(crate) fn resolve(
     input: &CssDirectiveManifestInput,
-    base: Option<&Value>,
+    base: Option<&MasterCssManifest>,
 ) -> Result<Registry, CompilerError> {
-    let mut resolved = registry(base)?;
+    let mut resolved = registry(base);
     let mut definitions = HashMap::new();
     for definition in input.custom_media.iter().flatten() {
         definitions.insert(definition.name.clone(), definition);

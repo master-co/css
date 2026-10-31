@@ -70,7 +70,7 @@ fn execution_rejects_missing_or_unsupported_versions_before_matching() {
     let original = manifest("@mixin --probe { color:red; } @utility probe { color:red; }");
     for field in ["version", "languageVersion"] {
         for value in [None, Some(serde_json::json!(999))] {
-            let mut invalid = original.as_value().clone();
+            let mut invalid = original.to_value();
             let object = invalid.as_object_mut().unwrap();
             match value {
                 Some(value) => {

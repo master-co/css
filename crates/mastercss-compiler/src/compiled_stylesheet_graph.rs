@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use mastercss_schema::{CssDirectiveManifestInput, CssDirectiveStyleDefinition};
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 use crate::{
     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssImportGraphRequest,
@@ -70,40 +70,36 @@ fn graph_error(filename: &str, message: impl Into<String>) -> CompilerError {
     }
 }
 
-// Concatenated authoring declarations append ordered definitions, merge named
-// records, and let the latest settings override earlier settings. Manifest
-// normalization and managed dependency resolution still happen in the existing
-// compiler, once all imported definitions are available.
-fn merge_input(target: &mut Map<String, Value>, next: &CssDirectiveManifestInput) {
-    let Value::Object(next) = serde_json::to_value(next).expect("directive input is serializable")
-    else {
-        unreachable!("directive input is an object")
-    };
-    for (key, value) in next {
-        if key == "animationVariables" {
-            let target = target
-                .entry(key)
-                .or_insert_with(|| Value::Object(Map::new()))
-                .as_object_mut()
-                .expect("native variable map");
-            for (name, values) in value.as_object().into_iter().flatten() {
-                target
-                    .entry(name.clone())
-                    .or_insert_with(|| Value::Array(Vec::new()))
-                    .as_array_mut()
-                    .expect("values")
-                    .extend(values.as_array().into_iter().flatten().cloned());
-            }
-            continue;
-        }
-        match (target.get_mut(&key), value) {
-            (Some(Value::Array(target)), Value::Array(next)) => target.extend(next),
-            (Some(Value::Object(target)), Value::Object(next)) => target.extend(next),
-            (_, value) => {
-                target.insert(key, value);
-            }
+// Concatenated authoring declarations append ordered definitions and merge named
+// records. Manifest normalization and managed dependency resolution still happen
+// in the existing compiler, once all imported definitions are available.
+fn merge_input(target: &mut CssDirectiveManifestInput, next: CssDirectiveManifestInput) {
+    fn append<T>(target: &mut Option<Vec<T>>, next: Option<Vec<T>>) {
+        if let Some(next) = next {
+            target.get_or_insert_default().extend(next);
         }
     }
+    let CssDirectiveManifestInput {
+        animation_variables,
+        keyframes,
+        keyframe_safelist,
+        mixins,
+        utilities,
+        theme,
+        custom_media,
+    } = next;
+    if let Some(variables) = animation_variables {
+        let target = target.animation_variables.get_or_insert_default();
+        for (name, values) in variables {
+            target.entry(name).or_default().extend(values);
+        }
+    }
+    append(&mut target.keyframes, keyframes);
+    append(&mut target.keyframe_safelist, keyframe_safelist);
+    append(&mut target.mixins, mixins);
+    append(&mut target.utilities, utilities);
+    append(&mut target.theme, theme);
+    append(&mut target.custom_media, custom_media);
 }
 
 fn append_unique(target: &mut Vec<String>, values: &[String]) {
@@ -303,7 +299,7 @@ pub fn compile_css_stylesheet_graph(
     }
 
     let mut combined = compile_css_directives("", &request.options)?;
-    let mut input = Map::new();
+    let mut input = CssDirectiveManifestInput::default();
     let mut all_definitions = Vec::new();
     let mut policies = Vec::new();
     let mut occurrences = HashMap::<String, u32>::new();
@@ -369,7 +365,7 @@ pub fn compile_css_stylesheet_graph(
         }
         occurrence_order += 1;
 
-        merge_input(&mut input, &delivered_input);
+        merge_input(&mut input, delivered_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
         append_unique(&mut combined.warnings, &result.warnings);
@@ -393,8 +389,7 @@ pub fn compile_css_stylesheet_graph(
             all_definitions.push(definition);
         }
     }
-    combined.manifest_input = serde_json::from_value(Value::Object(input))
-        .map_err(|error| graph_error(&graph.entry, error.to_string()))?;
+    combined.manifest_input = input;
     combined.extraction_policy = merge_extraction_policies(&policies);
     combined.dependencies = graph
         .stylesheets
@@ -592,7 +587,7 @@ pub fn compile_css_stylesheet_graph(
                 crate::output_edits::apply_output_edits(&asset.css, &mappings, edits, &asset.id)?;
             let (native_css, _) =
                 crate::output_edits::apply_output_edits(&asset.css, &[], empty_edits, &asset.id)?;
-            let registry = crate::custom_media::registry(Some(&resolution_manifest))?;
+            let registry = crate::custom_media::registry(Some(&resolution_manifest));
             let (css, output_mappings) =
                 crate::custom_media::lower_css(&css, &output_mappings, &registry, &asset.id)?;
             let (native_css, _) =
@@ -649,8 +644,8 @@ pub fn compile_css_stylesheet_graph(
     Ok(CompiledCssStylesheetGraph {
         entry: graph.entry,
         stylesheets,
-        manifest: delivered_manifest,
-        resolution_manifest,
+        manifest: delivered_manifest.to_value(),
+        resolution_manifest: resolution_manifest.to_value(),
         directives: combined,
     })
 }

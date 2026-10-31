@@ -418,7 +418,7 @@ impl Decode for CompiledVariable {
         let key: String = Decode::decode(reader)?;
         let namespace: String = Decode::decode(reader)?;
         let name = Option::<String>::decode(reader)?
-            .unwrap_or_else(|| super::manifest::default_variable_name(&namespace, &key));
+            .unwrap_or_else(|| mastercss_schema::variable_name(&namespace, &key));
         let values: Vec<ScopedThemeValue> = Decode::decode(reader)?;
         Ok(Self {
             name,
@@ -730,7 +730,7 @@ mod encoding {
         fn encode(&self, writer: &mut Writer) {
             self.key.encode(writer);
             self.namespace.encode(writer);
-            (self.name != crate::manifest::default_variable_name(&self.namespace, &self.key))
+            (self.name != mastercss_schema::variable_name(&self.namespace, &self.key))
                 .then_some(&self.name)
                 .encode(writer);
             self.values.encode(writer);

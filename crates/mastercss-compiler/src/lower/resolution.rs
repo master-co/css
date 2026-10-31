@@ -1,6 +1,5 @@
-use super::{
-    CompileManifestOptions, CompilerError, CssDirectiveManifestInput, EngineSession, Value,
-};
+use super::{CompilerError, CssDirectiveManifestInput, EngineSession};
+use mastercss_schema::{EmittedGlobals, MasterCssManifest, MixinDefinition, MixinNode};
 
 pub(crate) fn directive_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {
@@ -10,33 +9,21 @@ pub(crate) fn directive_error(message: impl Into<String>) -> CompilerError {
     }
 }
 
-pub(crate) fn engine_for_manifest(manifest: &Value) -> Result<EngineSession, CompilerError> {
-    let json = serde_json::to_string(manifest)
-        .map_err(|error| directive_error(format!("Cannot serialize compiler manifest: {error}")))?;
-    EngineSession::create(&json).map_err(|error| directive_error(error.to_string()))
+pub(crate) fn engine_for_manifest(
+    manifest: &MasterCssManifest,
+) -> Result<EngineSession, CompilerError> {
+    EngineSession::from_parsed_manifest(manifest, EmittedGlobals::default())
+        .map_err(|error| directive_error(error.to_string()))
 }
 
-pub(super) fn compile_with_base(
-    input: &CssDirectiveManifestInput,
-    base_manifest: Option<Value>,
-) -> Result<Value, CompilerError> {
-    crate::manifest::compile_manifest_fragment(input, &CompileManifestOptions { base_manifest })
-        .map(|result| result.manifest)
-}
-
+/// The resolution mixins that `input` delivers: its own, and those its mixins and
+/// utilities apply, transitively; `None` when there are none.
 pub(super) fn delivered_mixins(
     input: &CssDirectiveManifestInput,
-    resolution: &Value,
-) -> Result<Option<Vec<mastercss_schema::MixinDefinition>>, CompilerError> {
-    use mastercss_schema::{MixinDefinition, MixinNode};
+    resolution: &MasterCssManifest,
+) -> Option<Vec<MixinDefinition>> {
     let local = input.mixins.as_deref().unwrap_or_default();
-    let definitions: Vec<MixinDefinition> = serde_json::from_value(
-        resolution
-            .get("mixins")
-            .cloned()
-            .unwrap_or_else(|| serde_json::json!([])),
-    )
-    .map_err(|error| directive_error(error.to_string()))?;
+    let definitions = resolution.mixins.as_deref().unwrap_or_default();
     let mut needed: std::collections::HashSet<String> =
         local.iter().map(|item| item.name.clone()).collect();
     fn dependencies(nodes: &[MixinNode], needed: &mut std::collections::HashSet<String>) {
@@ -59,11 +46,11 @@ pub(super) fn delivered_mixins(
         dependencies(&utility.recipe.body, &mut needed);
     }
     if needed.is_empty() {
-        return Ok(None);
+        return None;
     }
     loop {
         let before = needed.len();
-        for definition in &definitions {
+        for definition in definitions {
             if needed.contains(&definition.name) {
                 dependencies(&definition.body, &mut needed);
             }
@@ -72,10 +59,11 @@ pub(super) fn delivered_mixins(
             break;
         }
     }
-    Ok(Some(
+    Some(
         definitions
-            .into_iter()
+            .iter()
             .filter(|item| needed.contains(&item.name))
+            .cloned()
             .collect(),
-    ))
+    )
 }
