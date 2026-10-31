@@ -1,8 +1,9 @@
 /*
- * Blog materials: the quiet essence of the homepage hero, for the blog index and its articles. One fixed,
- * soft light from above and slightly left; obsidian (light mode) and moonstone (dark mode) only as a tone in
- * titles. Effects should be felt more than seen. Semantics follow content/components/DESIGN.md: zinc neutrals,
- * 1px contours, an inner top light, soft contact shadows, gold only as a rare, tiny accent.
+ * Blog materials: the quiet essence of the homepage, for the blog index and its articles. One fixed, soft light
+ * from above and slightly left; obsidian (light mode) and moonstone (dark mode) only as a tone in titles; the
+ * homepage's drafting guides (rails, rulers, crosses, corner marks, hatch) as structure. Effects should be felt
+ * more than seen. Semantics follow content/components/DESIGN.md: zinc neutrals, 1px contours, an inner top light,
+ * soft contact shadows, gold only as a rare, tiny accent.
  *
  * Scope
  *   .blog-materials     Put on a page root. Defines the tokens below and paints the ground.
@@ -14,14 +15,30 @@
  *   .blog-stone-text    A title tone: obsidian / moonstone ink, each line lit from above by a barely-there sheen.
  *   .blog-authors       Overlapping portraits + names (components/blog/BlogAuthors.tsx); ring = --blog-avatar-ring.
  *   .blog-signal        A tiny gold dot: the page's rare accent (a live or newest state). Decorative; aria-hidden.
+ *   .blog-rails         Drafting rails with rulers just outside a box, as on the homepage (from md). Draws ::after.
+ *                       Knobs: --blog-rail-gap (box edge to rail, 1.25rem), --blog-tick-length (.75rem).
+ *   .blog-rails-rule    A drafting rule along a box's top, crossed where it meets the rails (from md). Draws ::before.
+ *                       Knob: --blog-rule-bleed (how far the rule runs past the crosses; the ruler's length).
+ *                       On an empty, aria-hidden element at a page's end it closes the drawing on whatever rule
+ *                       follows (the footer's): crosses where the rails stop, no fade (the blog index does this).
+ *                       With .blog-rails on the same box the crosses stay whole: the rails begin just below them.
+ *   .blog-marks         Artboard marks: four corner ticks just outside a box, as a design tool marks a frame.
+ *                       Draws ::before (position the box). Knobs: --blog-marks-inset (.375rem), --blog-marks-size.
+ *   .blog-hatch-text    Display letters engraved with the footer wordmark's diagonal hatch over a tint; legible as a
+ *                       title (glyphs average 3:1+, stripes 7:1+); selected, a soft wash. The hatch paints only
+ *                       inside the box: with text-box trim, pad it open past the trim (see the index's title).
+ *                       Knobs: --blog-hatch-ink, --blog-hatch-fill (the tint), --blog-hatch-size (the tile, scales
+ *                       with the type), --blog-hatch-line (stripe thickness, whatever the tile).
  *
  * Tokens (on .blog-materials)
  *   --blog-ground, --blog-sheet, --blog-text, --blog-title, --blog-text-body, --blog-text-quiet, --blog-text-faint,
  *   --blog-contour, --blog-rule, --blog-signal, --blog-highlight, --blog-shadow-rest, --blog-shadow-lifted,
  *   --blog-shadow-pressed, --blog-ease, --blog-quick, --blog-base, --blog-slow, --blog-radius-plate.
+ *   Drafting inks, opaque mixes on the ground so a line drawn over another reads as one line:
+ *   --blog-guide (rails, rules), --blog-tick / --blog-tick-major (rulers), --blog-cross (crosses), --blog-mark.
  *
- * Accessibility: reduced motion drops transitions; more contrast lifts quiet text and contours; forced colors
- * and print use Canvas / CanvasText.
+ * Accessibility: reduced motion drops transitions; more contrast lifts quiet text, contours and guides; forced
+ * colors and print use Canvas / CanvasText and drop the decorative guides.
  */
 @layer components {
   .blog-materials {
@@ -76,6 +93,15 @@
     --blog-base: 360ms;
     --blog-slow: 720ms;
     --blog-radius-plate: 1.25rem;
+    /*
+     * Drafting inks (DESIGN.md: guides, rulers, crosses, marks), mixed opaque into the ground. The guide matches the
+     * homepage's rails as painted (about 15 levels off the ground in light, 14 in dark).
+     */
+    --blog-guide: light-dark(color-mix(in oklab, var(--blog-text) 6%, var(--blog-ground)), color-mix(in oklab, var(--blog-text) 7%, var(--blog-ground)));
+    --blog-tick: color-mix(in oklab, var(--blog-text) 9%, var(--blog-ground));
+    --blog-tick-major: color-mix(in oklab, var(--blog-text) 20%, var(--blog-ground));
+    --blog-cross: color-mix(in oklab, var(--color-line-control) 55%, var(--blog-ground));
+    --blog-mark: var(--blog-cross);
     background-color: var(--blog-ground);
     color: var(--blog-text-body);
   }
@@ -189,6 +215,134 @@
     color: var(--blog-text-quiet);
   }
 
+  /*
+   * ---------- Drafting guides ----------
+   * The homepage's design-tool guides (content/home.css), for the blog. `.blog-rails` draws a rail
+   * `--blog-rail-gap` outside each side of the box from `md`, with a ruler outside each rail: a short tick every
+   * 16px and a long one every 128px, counted from the box's top. `.blog-rails-rule` draws a rule along the box's
+   * top with a cross where it meets each rail; `--blog-rule-bleed` carries the rule past the crosses. Both are
+   * decorative and sit behind the content. Tick colors are opaque mixes, so a long tick over a short one reads
+   * as one line.
+   */
+  .blog-rails,
+  .blog-rails-rule {
+    --blog-rail-gap: 1.25rem;
+    --blog-tick-length: 0.75rem;
+    --blog-rule-bleed: var(--blog-tick-length);
+    position: relative;
+    isolation: isolate;
+  }
+
+  @media (--md) {
+    /*
+     * Over the rule, as on the homepage, so the first long tick reads on it; each rail starts just below the top,
+     * so a cross drawn there by .blog-rails-rule stays whole.
+     */
+    .blog-rails::after {
+      position: absolute;
+      inset-block: 0;
+      inset-inline: calc(-1 * (var(--blog-rail-gap) + var(--blog-tick-length)));
+      z-index: -1;
+      background:
+        linear-gradient(var(--blog-tick-major) 0 1px, transparent 1px) left 0 top 0 / var(--blog-tick-length) 8rem repeat-y,
+        linear-gradient(var(--blog-tick-major) 0 1px, transparent 1px) right 0 top 0 / var(--blog-tick-length) 8rem repeat-y,
+        linear-gradient(var(--blog-tick) 0 1px, transparent 1px) left calc(var(--blog-tick-length) / 2) top 0 / calc(var(--blog-tick-length) / 2) 1rem repeat-y,
+        linear-gradient(var(--blog-tick) 0 1px, transparent 1px) right calc(var(--blog-tick-length) / 2) top 0 / calc(var(--blog-tick-length) / 2) 1rem repeat-y,
+        linear-gradient(var(--blog-guide), var(--blog-guide)) left var(--blog-tick-length) top 6px / 1px calc(100% - 6px) no-repeat,
+        linear-gradient(var(--blog-guide), var(--blog-guide)) right var(--blog-tick-length) top 6px / 1px calc(100% - 6px) no-repeat;
+      pointer-events: none;
+      content: '';
+    }
+
+    .blog-rails-rule::before {
+      position: absolute;
+      top: -5px;
+      inset-inline: calc(-1 * (var(--blog-rail-gap) + var(--blog-rule-bleed)));
+      z-index: -2;
+      height: 11px;
+      background:
+        linear-gradient(var(--blog-cross), var(--blog-cross)) left calc(var(--blog-rule-bleed) - 5px) top 5px / 11px 1px no-repeat,
+        linear-gradient(var(--blog-cross), var(--blog-cross)) left var(--blog-rule-bleed) top 0 / 1px 11px no-repeat,
+        linear-gradient(var(--blog-cross), var(--blog-cross)) right calc(var(--blog-rule-bleed) - 5px) top 5px / 11px 1px no-repeat,
+        linear-gradient(var(--blog-cross), var(--blog-cross)) right var(--blog-rule-bleed) top 0 / 1px 11px no-repeat,
+        linear-gradient(var(--blog-guide), var(--blog-guide)) 0 5px / 100% 1px no-repeat;
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /*
+   * ---------- Artboard marks ----------
+   * Four corner ticks `--blog-marks-inset` outside a box, the way a design tool marks a frame (`.home-marks`). For
+   * open content that needs an edge without a border; a box with its own border does not take them.
+   */
+  .blog-marks {
+    --blog-marks-inset: 0.375rem;
+    --blog-marks-size: 0.5rem;
+    position: relative;
+
+    &::before {
+      position: absolute;
+      inset: calc(var(--blog-marks-inset) * -1);
+      background:
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 0 0 / var(--blog-marks-size) 1px no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 0 0 / 1px var(--blog-marks-size) no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 100% 0 / var(--blog-marks-size) 1px no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 100% 0 / 1px var(--blog-marks-size) no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 0 100% / var(--blog-marks-size) 1px no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 0 100% / 1px var(--blog-marks-size) no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 100% 100% / var(--blog-marks-size) 1px no-repeat,
+        linear-gradient(var(--blog-mark), var(--blog-mark)) 100% 100% / 1px var(--blog-marks-size) no-repeat;
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /*
+   * ---------- Hatched letters ----------
+   * The homepage footer's engraved wordmark (content/components/footer.css): letters filled with the site's
+   * diagonal hatch over a tint. For display sizes only. The tint draws the letterforms and the hatch gives
+   * them their grain, so `--blog-hatch-fill` decides how clearly they read and `--blog-hatch-ink` how strongly the
+   * stripes show. The stripes keep `--blog-hatch-line` thickness at any tile size, and the tile follows the type
+   * (rounded to whole pixels, so stripes stay even). Without text clipping the letters keep their plain ink.
+   */
+  .blog-hatch-text {
+    /*
+     * A fine engraving rather than bold stripes: a dense, low-contrast hatch over a tint that carries the letters.
+     * At display sizes the glyphs average 3:1 or more against the ground (large-text AA; measured at 2x) and a
+     * stripe alone 7:1 or more, in both schemes. Dark needs less ink for the same reading.
+     */
+    --blog-hatch-ink: light-dark(color-mix(in oklab, var(--blog-text) 58%, transparent), color-mix(in oklab, var(--blog-text) 54%, transparent));
+    --blog-hatch-fill: light-dark(color-mix(in oklab, var(--blog-text) 38%, transparent), color-mix(in oklab, var(--blog-text) 24%, transparent));
+    --blog-hatch-size: 5px;
+    --blog-hatch-line: 1px;
+    color: var(--blog-text);
+
+    @supports (width: round(1em, 1px)) {
+      --blog-hatch-size: max(3px, round(0.05em, 1px));
+    }
+
+    @supports (background-clip: text) or (-webkit-background-clip: text) {
+      background-image:
+        linear-gradient(135deg, var(--blog-hatch-ink) 0 var(--blog-hatch-line), transparent 0 50%, var(--blog-hatch-ink) 0 calc(50% + var(--blog-hatch-line)), transparent 0),
+        linear-gradient(var(--blog-hatch-fill), var(--blog-hatch-fill));
+      background-size: var(--blog-hatch-size) var(--blog-hatch-size), auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      /*
+       * Selected, the letters sit on a soft wash of their own ink (as selected prose does) and, where the engine
+       * lets a selection recolor clipped text (Chromium), turn solid; elsewhere the engraving reads on the wash.
+       */
+      &::selection {
+        color: var(--blog-text);
+        background-color: color-mix(in oklab, var(--blog-text) 16%, transparent);
+        -webkit-text-fill-color: var(--blog-text);
+      }
+    }
+  }
+
   /* ---------- Preferences ---------- */
   @media (prefers-contrast: more) {
     .blog-materials {
@@ -196,6 +350,14 @@
       --blog-text-faint: var(--blog-text-body);
       --blog-contour: var(--color-line-control);
       --blog-rule: color-mix(in oklab, var(--color-line-control) 70%, transparent);
+      --blog-guide: color-mix(in oklab, var(--blog-text) 16%, var(--blog-ground));
+      --blog-cross: var(--color-line-control);
+    }
+
+    /* The engraving keeps its grain but reads as strongly as body text. */
+    .blog-hatch-text {
+      --blog-hatch-ink: var(--blog-text);
+      --blog-hatch-fill: color-mix(in oklab, var(--blog-text) 64%, transparent);
     }
   }
 
@@ -206,6 +368,13 @@
   }
 
   @media (forced-colors: active), print {
+    .blog-rails::after,
+    .blog-rails-rule::before,
+    .blog-marks::before {
+      display: none;
+    }
+
+    .blog-hatch-text,
     .blog-stone-text {
       color: CanvasText;
       background-image: none;

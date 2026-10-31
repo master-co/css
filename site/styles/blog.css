@@ -1,34 +1,51 @@
 /*
- * The blog index: a calm reading list. One centred column on the zinc ground, a soft light from above-left,
- * the title in a stone tone, the latest post on the one raised sheet, earlier posts as a ledger: one rule a year.
- * Two axes only, as on the article page: the text edge (title, lead, the featured post's text, the ledger's days)
- * and, from tablets up, a hanging edge one inset outside it (the featured sheet, a year's figure, a row's sheet).
- * Recipes and tokens come from blog-materials.css.
+ * The blog index: a timeline drawn with the homepage's drafting guides. A masthead whose title is engraved like the
+ * homepage footer's wordmark, then one section per year, each opened like a homepage section: a rule across its
+ * top, crossed where it meets the rails, with the rulers restarting there. A vertical time line runs beside the
+ * years; each year's rule crosses it, and each post hangs from it on a tick, so the line reads as a ruler that
+ * measures time. The newest post's tick carries the page's one gold mark. Recipes and tokens come from
+ * blog-materials.css.
+ *
+ * Every vertical size is a whole number of pixels (rounded where it scales with the viewport), and the frame is
+ * placed on whole pixels, so 1px guides stay crisp at 1x.
  */
 @layer components {
   .blog-index {
-    --blog-measure: 40rem;
+    /*
+     * The drawing's width: the homepage's content column (its 100rem wrapper minus gutters), so the title and the
+     * years hang on the same left edge as the header's logo and the rails run where the homepage's do, 20px outside
+     * the content edges with their rulers beyond.
+     */
+    --blog-frame: 95rem;
     --blog-gutter: 1.25rem;
-    /* The text inset inside a sheet; from tablets up, also how far a sheet hangs outside the text edge. */
-    --blog-inset: clamp(1.75rem, 1.1rem + 2vw, 2.75rem);
+    /* From the time line to an entry's text; the node tick takes the first .75rem of it. */
+    --blog-indent: 1.25rem;
+    --blog-node-y: 0.5rem;
+    /*
+     * The years' column, the posts' column beside the time line, and open ground to the right: the line sits about a
+     * quarter in on wide screens, and the spare width goes to air on both sides of the posts, never into the measure.
+     */
+    --blog-timeline-columns: minmax(10rem, 1fr) minmax(0, 44rem) minmax(0, 1fr);
+    /* A cross on the time line, drawn in an 11px box centred on the crossing, as the rails' crosses are. */
+    --blog-cross-mark:
+      linear-gradient(var(--blog-cross), var(--blog-cross)) 0 5px / 11px 1px no-repeat,
+      linear-gradient(var(--blog-cross), var(--blog-cross)) 5px 0 / 1px 11px no-repeat;
     position: relative;
     isolation: isolate;
     overflow-x: clip;
-    min-height: 70dvh;
-    padding: clamp(6.5rem, 4.5rem + 4vw, 9rem) var(--blog-gutter) clamp(3.5rem, 2.5rem + 3vw, 5rem);
+    padding-inline: var(--blog-gutter);
 
     @media (width >= 40rem) {
       --blog-gutter: 2.5rem;
     }
 
-    /*
-     * Wide enough to hang sheets outside the text edge: one fixed inset, so a year's figure and gap fill it, and a
-     * gutter wider than the hang, so enlarged text (which narrows the column to the gutters) never pushes a sheet
-     * off the screen. At normal text sizes the column is narrower than the screen here and the gutter never binds.
-     */
     @media (width >= 48rem) {
-      --blog-gutter: 3.5rem;
-      --blog-inset: 2.75rem;
+      --blog-indent: 1.5rem;
+    }
+
+    /* A Han date's ink ("6 月 15 日") centres a pixel higher than a Latin one's; the node follows it. */
+    &:lang(zh) {
+      --blog-node-y: calc(0.5rem - 1px);
     }
 
     /* Light falls from above and slightly left; on the ground it is felt more than seen. */
@@ -42,119 +59,321 @@
       content: '';
     }
 
+    /* Centred on a whole pixel, so the rails, rules and time line never straddle two. */
     & > * {
-      max-width: var(--blog-measure);
+      max-width: var(--blog-frame);
       margin-inline: auto;
+      margin-inline-start: max(0px, round(down, (100% - var(--blog-frame)) / 2, 1px));
     }
   }
 
+  /* Selected text sits on a soft wash of its own ink, as selected prose does on the articles (the hatched title
+     sets its own: solid letters on the same wash). */
+  .blog-index :not(.blog-hatch-text)::selection {
+    color: inherit;
+    background-color: color-mix(in oklab, var(--blog-text) 16%, transparent);
+  }
+
   /* ---------- Masthead ---------- */
+  /*
+   * The rulers here count from below the header, so a whole number of rems puts the title's cap height on a tick:
+   * on wide screens the long one, 128px down, as a section's first long tick meets its cross.
+   */
+  .blog-masthead {
+    padding-top: calc(3.75rem + round(clamp(4rem, 1rem + 8vw, 8rem), 1rem));
+    padding-bottom: round(clamp(3.5rem, 2rem + 4vw, 6rem), 1rem);
+  }
+
+  /* As in the homepage hero, the rails start below the fixed header (60px) and fade in. */
+  @media (--md) {
+    .blog-masthead.blog-rails::after {
+      top: 3.75rem;
+      mask-image: linear-gradient(transparent, black 6rem);
+    }
+  }
+
+  /*
+   * The footer wordmark's engraving (.blog-hatch-text), set as the page title: large and regular weight, a fine
+   * hatch over a tint that carries the letterforms. A real heading; the text stays selectable. On phones it keeps
+   * one line where it fits, as the Han title does.
+   */
   .blog-masthead-title {
-    max-width: 14em;
+    max-width: 12em;
     margin: 0;
-    /* Never larger than an article's title (both stop at 3rem), so the index is never the blog's loudest page. */
-    font-size: clamp(2.25rem, 1.5rem + 2.2vw, 3rem);
+    font-size: round(clamp(2.875rem, 1.5rem + 5.25vw, 7rem), 1px);
     font-weight: var(--font-weight-regular);
-    line-height: 1.06;
+    line-height: round(1.04em, 1px);
     letter-spacing: -0.03em;
     text-wrap: balance;
     word-break: keep-all;
     overflow-wrap: anywhere;
 
-    /* Optical alignment: the N's side bearing would set the display title's stem ~5px inside the column edge. */
+    /*
+     * Latin letters hang from their cap height, exactly on the ruler's tick, and stand on their baseline. The hatch
+     * is painted only inside the box, so padding opens it again past the trim (round overshoots and descenders
+     * keep their ink) and equal negative margins take the room back; the bottom padding also rounds the trimmed
+     * box back to whole pixels. The N's side bearing would set its stem inside the frame's edge, so it steps out.
+     */
     &:not(:lang(zh)) {
-      margin-inline-start: -0.0625em;
+      margin-block: calc(round(0.25em, 1px) * -1);
+      margin-inline-start: -0.06em;
+      padding-block: round(0.25em, 1px) calc(round(0.25em, 1px) + round(up, 1cap, 1px) - 1cap);
+      text-box: trim-both cap alphabetic;
     }
 
-    /* Han glyphs fill the em square: a smaller size, lightly tracked, carries the Latin title's weight. */
+    /*
+     * Han glyphs fill the em square: a smaller size, lightly tracked, carries the Latin title's weight. Their ink
+     * starts about 0.11em into the line and ends 0.18em above its foot, so the margins hang them from the same tick
+     * and leave the same air below as the Latin title (whole pixels, so the rules stay crisp).
+     */
     &:lang(zh) {
-      font-size: calc(clamp(2.25rem, 1.5rem + 2.2vw, 3rem) * 0.8);
-      line-height: 1.2;
-      letter-spacing: 0.02em;
+      margin-block: round(-0.11em, 1px) round(-0.18em, 1px);
+      font-size: round(calc(clamp(2.875rem, 1.5rem + 5.25vw, 7rem) * 0.84), 1px);
+      line-height: round(1.2em, 1px);
+      letter-spacing: 0.04em;
     }
   }
 
-  .blog-masthead-lead {
-    max-width: 32rem;
-    margin: var(--spacing-lg) 0 0;
-    font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
-    line-height: 1.65;
-    /* The article's dek tier: body ink. */
-    color: var(--blog-text-body);
-    text-wrap: pretty;
-  }
-
-  /* ---------- The latest post, on a quiet sheet ---------- */
-  .blog-feature {
-    container: blog-feature / inline-size;
-    min-width: 0;
-    margin-top: clamp(3.5rem, 2.5rem + 3vw, 5rem);
-  }
-
-  .blog-feature-link {
-    --blog-avatar-ring: var(--blog-sheet);
+  /* ---------- A year ---------- */
+  .blog-year {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    /* Enlarged text keeps its reading width: the inset never takes more than a sliver of a narrow sheet. */
-    padding: min(var(--blog-inset), 8cqi);
+    grid-template-columns: var(--blog-timeline-columns);
+    align-items: start;
+  }
+
+  /*
+   * The year, named once beside its posts: large but well below the title (about 1.8 : 1), quiet, and hung level
+   * with its first date: the list's 3.5rem, then 13px Geist's cap top in its 16px line, then the digits' round
+   * overshoot, so their ink starts where the date's does.
+   */
+  .blog-year-label {
+    position: sticky;
+    top: 6rem;
+    grid-area: 1 / 1;
+    /* The bottom margin keeps a held year clear of the next year's rule as it is pushed along. */
+    margin: calc(3.5rem + 0.1725rem + 0.016em) 0 3.5rem;
+    font-size: round(clamp(2rem, 1rem + 2.75vw, 3.5rem), 1px);
+    font-weight: var(--font-weight-regular);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    /* Large, so the faintest text ink (still 4.5:1) keeps it from outweighing the posts beside it. */
+    color: var(--blog-text-faint);
+    text-box: trim-both cap alphabetic;
+  }
+
+  /* The time line runs the year's full height, so consecutive years join into one line. */
+  .blog-year-posts {
+    position: relative;
+    container: blog-posts / inline-size;
+    grid-area: 1 / 2;
+    margin: 0;
+    padding: 3.5rem 0 5rem var(--blog-indent);
+    list-style: none;
+
+    /* A border, so forced colors keep the line. */
+    &::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-inline-start: 1px solid var(--blog-guide);
+      content: '';
+    }
+
+    /* Where the year's rule meets the time line, a cross. */
+    &::after {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      width: 11px;
+      height: 11px;
+      background: var(--blog-cross-mark);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /* The year's rule, on tablets (from md the rails' rule draws it, crossed at the rails). */
+  @media (48rem <= width < 64rem) {
+    .blog-year {
+      border-top: 1px solid var(--blog-guide);
+    }
+
+    /* The border sits above the list, so the cross centres one pixel higher. */
+    .blog-year-posts::after {
+      top: -6px;
+    }
+  }
+
+  /*
+   * The drawing's lower edge is the footer's rule, reached with a year's usual air, so it reads as the next rule:
+   * crosses where it meets the rails (the rule recipe, drawn on the footer's line) and the time line. Decorative
+   * and empty; it adds no height.
+   */
+  .blog-timeline-end {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--blog-timeline-columns);
+    height: 0;
+
+    &::after {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      grid-column: 2;
+      width: 11px;
+      height: 11px;
+      background: var(--blog-cross-mark);
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  /* ---------- A post on the line ---------- */
+  .blog-entry {
+    position: relative;
+
+    & + & {
+      margin-top: 3rem;
+    }
+
+    /* Its node: a long ruler tick from the time line, level with the date. */
+    &::before {
+      position: absolute;
+      top: var(--blog-node-y);
+      left: calc(var(--blog-indent) * -1);
+      width: 0.75rem;
+      border-top: 1px solid var(--blog-tick-major);
+      transition: border-color var(--blog-slow) var(--blog-ease);
+      content: '';
+    }
+
+    /* The newest post: the one gold mark, on the line itself (above it, where the line is drawn later). */
+    & > .blog-entry-signal {
+      position: absolute;
+      z-index: 1;
+      top: calc(var(--blog-node-y) - 2px);
+      left: calc(var(--blog-indent) * -1 - 2px);
+    }
+
+    &:has(> .blog-entry-link:focus-visible)::before {
+      border-color: var(--blog-text-quiet);
+      transition-duration: var(--blog-base);
+    }
+
+    /* Only a real pointer hovers: a tap on a touch screen must not leave a selection drawn behind on return. */
+    @media (hover: hover) {
+      &:has(> .blog-entry-link:hover)::before {
+        border-color: var(--blog-text-quiet);
+        transition-duration: var(--blog-base);
+      }
+    }
+  }
+
+  /*
+   * The whole entry is the link, as wide as its text's measure. On arrival a design tool's selection appears
+   * around it: artboard marks at the corners, 12px from the ink above (the date's cap top), below (the last
+   * baseline) and on the left, where the node's tick ends; on the right they follow the measure. A press draws
+   * them in a step and darker; keyboard focus closes them into the whole frame.
+   */
+  .blog-entry-link {
+    --blog-marks-inset: 0.75rem;
+    display: block;
+    width: fit-content;
+    /* One measure for title and excerpt, so the selection frame is never wider than the text it holds. */
+    max-width: 36rem;
     color: var(--blog-text-body);
     text-decoration: none;
+    /* Focus scrolled into view keeps its ring clear of the fixed header (60px) and the screen's foot. */
+    scroll-margin-block: 5.5rem 2rem;
 
-    /* From tablets up the sheet hangs outside the text edge by its own inset, so its text sits on that edge. */
-    @media (width >= 48rem) {
-      margin-inline: calc(min(var(--blog-inset), 8cqi) * -1);
+    &::before {
+      inset: calc(0.1725rem - var(--blog-marks-inset)) calc(var(--blog-marks-inset) * -1) calc(0.4125rem - var(--blog-marks-inset));
+      opacity: 0;
+      transition: opacity var(--blog-slow) var(--blog-ease), inset var(--blog-quick) var(--blog-ease);
     }
 
-    /* A quiet ring takes the place of the sheet's contour (one edge, never two); faint ink clears 3:1. */
+    &:is(:focus-visible, :active)::before {
+      opacity: 1;
+      transition-duration: var(--blog-base), var(--blog-quick);
+    }
+
+    @media (hover: hover) {
+      &:hover::before {
+        opacity: 1;
+        transition-duration: var(--blog-base), var(--blog-quick);
+      }
+
+      /* Hover intent: a pointer passing over the list on its way elsewhere leaves no trail of half-drawn marks. */
+      &:hover:not(:focus-visible, :active)::before {
+        transition-delay: 80ms;
+      }
+    }
+
+    &:active {
+      --blog-mark: var(--blog-text-faint);
+      --blog-marks-inset: calc(0.75rem - 2px);
+    }
+
+    /*
+     * The ring is the marks' own frame, so it sits as evenly on the ink as they do. The link's transparent outline
+     * is what forced colors paint, where the marks are hidden.
+     */
     &:focus-visible {
-      outline: 2px solid var(--blog-text-faint);
-      outline-offset: -1px;
+      outline: 2px solid transparent;
+      outline-offset: 0.5rem;
+
+      &::before {
+        background: none;
+        outline: 2px solid var(--blog-text-faint);
+        outline-offset: -2px;
+      }
     }
   }
 
-  .blog-feature-meta {
+  /* A Han excerpt's last baseline sits higher in its taller line. */
+  .blog-entry-link:has(> .blog-entry-description:lang(zh))::before {
+    inset-block-end: calc(0.5rem - var(--blog-marks-inset));
+  }
+
+  .blog-entry-meta {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-xs) 0.5rem;
+    column-gap: 0.5rem;
     font-size: 0.8125rem;
-    line-height: 1.5;
+    line-height: 1rem;
     color: var(--blog-text-quiet);
 
-    /* The gold mark hangs in the sheet's margin, so the date lines up with the title below it. */
-    & .blog-signal {
-      margin-inline-start: calc(-0.3125rem - 0.5rem);
-    }
-
-    & > :nth-child(n + 3)::before {
+    & > :nth-child(n + 2)::before {
       margin-inline-end: 0.5rem;
       color: var(--blog-text-faint);
       content: '·';
     }
   }
 
-  .blog-feature-title {
-    max-width: 22em;
-    margin: var(--spacing-md) 0 0;
-    /* Capped by the column's width (the .blog-feature container), so a long word in enlarged text still fits. */
-    font-size: min(clamp(1.5rem, 1.1rem + 1.6vw, 2.125rem), 10cqi);
+  .blog-entry-title {
+    margin: 0.75rem 0 0;
+    font-size: 1.5rem;
     font-weight: var(--font-weight-regular);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    line-height: 2rem;
+    letter-spacing: -0.015em;
     color: var(--blog-title);
     text-wrap: balance;
     overflow-wrap: break-word;
 
+    /* Geist's stems stand 0.09em inside the glyph box: a Latin title steps out by about half of that, so its first
+       stem lines up with the date and the excerpt at 24px and 20px alike. */
+    &:not(:lang(zh)) {
+      margin-inline-start: -0.04em;
+    }
+
     /*
      * Han lines need a little more air than Latin ones (an untranslated title is marked lang="en"). Breaks fall at
-     * the spaces around Latin terms and after punctuation, never inside a phrase, and a full-width colon at a line
-     * end gives up its blank half, as on the article page.
+     * the spaces around Latin terms and after punctuation, never inside a phrase.
      */
     &:lang(zh) {
-      line-height: 1.4;
+      line-height: 2.25rem;
       letter-spacing: 0;
       word-break: keep-all;
-      text-spacing-trim: trim-both;
       text-autospace: normal;
     }
   }
@@ -164,310 +383,121 @@
     display: block;
   }
 
-  /* Body sizes step by two pixels — 13 meta, 15 entry, 17 feature, 19 lead — so each tier reads as intended. */
-  .blog-feature-description {
-    max-width: 36rem;
-    margin: var(--spacing-sm) 0 0;
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--blog-text-body);
+  .blog-entry-description {
+    margin: 0.5rem 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
     text-wrap: pretty;
-  }
-
-  .blog-feature-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-md) var(--spacing-lg);
-    margin-top: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
-  }
-
-  /* A quiet small link, in the meta's size and ink, on the names' line. */
-  .blog-feature-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.8125rem;
-    color: var(--blog-text-quiet);
-    transition: color var(--blog-base) var(--blog-ease);
-
-    /* The action never outshines the title it leads to. */
-    .blog-feature-link:is(:hover, :focus-visible) & {
-      color: var(--blog-title);
-    }
-
-    /* Icons scale with the text, so enlarged text keeps the arrow in proportion. */
-    & > svg {
-      flex: none;
-      width: 1.0625em;
-      height: 1.0625em;
-      color: var(--blog-text-quiet);
-      transition: translate var(--blog-base) var(--blog-ease), color var(--blog-base) var(--blog-ease);
-    }
-
-    .blog-feature-link:is(:hover, :focus-visible) & > svg {
-      translate: 3px 0;
-      color: var(--blog-title);
-    }
-  }
-
-  /* ---------- Earlier posts, a ledger ---------- */
-  .blog-archive {
-    margin-top: clamp(4rem, 3rem + 3vw, 6rem);
-  }
-
-  .blog-archive-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    /* Entries within a year are held apart by air alone; the year's rule is the ledger's only line. */
-    & > li {
-      position: relative;
-      padding-block: 0.375rem;
-    }
 
     /*
-     * A year's first post keeps clear air from the year's figure: room for a laid sheet, or on a phone (no sheet)
-     * just enough that a focus ring never touches the figure, so the year stays with the entries below it.
+     * Han body text reads best with a taller line. It has no spaces to break at, so it breaks between characters,
+     * with the strict rules that keep closing punctuation off a line's start (titles keep their phrases whole).
      */
-    & > li:has(> .blog-row-year) {
-      padding-top: calc(0.75rem + 1px);
-
-      @media (width >= 48rem) {
-        padding-top: calc(1.5rem + 1px);
-      }
-    }
-
-    /* A new year is a new group: more air above its rule than below it, and more than between two posts. */
-    & > li:not(:first-child):has(> .blog-row-year) {
-      margin-top: clamp(3rem, 2rem + 2.5vw, 4rem);
-    }
-  }
-
-  /*
-   * A year is named once, on the rule that opens it. From tablets up the figure hangs outside the text edge, like
-   * the gold mark in the sheet's margin, and its rule runs the text column. A border, so forced colors keep it.
-   */
-  .blog-row-year {
-    position: absolute;
-    inset: 0 0 auto;
-    display: flex;
-    align-items: center;
-    column-gap: 0.625rem;
-    height: 1px;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
-    color: var(--blog-text-quiet);
-    pointer-events: none;
-
-    /* The figure and its breath fill the hang, so the rule starts on the text edge. */
-    @media (width >= 48rem) {
-      inset-inline-start: calc(var(--blog-inset) * -1);
-
-      & > span {
-        min-width: calc(var(--blog-inset) - 0.625rem);
-      }
-    }
-
-    &::after {
-      flex: 1;
-      border-top: 1px solid var(--blog-rule);
-      content: '';
-    }
-  }
-
-  /*
-   * A row is a ledger entry: the day on its title's baseline, the description below. On arrival a sheet is laid
-   * under it with the featured sheet's edges, radius and inset, so the two never disagree; it is laid flat, not
-   * lifted — a contour and a line of top light, no cast — so the featured post stays the only raised thing.
-   */
-  .blog-row {
-    --row-bleed: var(--blog-inset);
-    --row-sheet: inset 0 1px 0 var(--blog-highlight), 0 0 0 1px var(--blog-contour);
-    --row-sheet-pressed: inset 0 1px 0 var(--blog-highlight), 0 0 0 1px color-mix(in oklab, var(--blog-contour), var(--blog-text-faint) 30%);
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    /* The day column fits the longest day or category ("12 月 30 日", "New Feature") and no more, so a day stays
-       close to its title. */
-    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
-    align-items: baseline;
-    gap: var(--spacing-xs) var(--spacing-xl);
-    margin-inline: calc(var(--row-bleed) * -1);
-    padding: calc(var(--spacing-xl) - 0.375rem) var(--row-bleed);
-    border-radius: var(--blog-radius-plate);
-    color: var(--blog-text-body);
-    text-decoration: none;
-
-    /* At rest the row is open ground. */
-    &::before {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      border-radius: inherit;
-      background-color: var(--blog-sheet);
-      box-shadow: var(--row-sheet);
-      opacity: 0;
-      transition: opacity var(--blog-slow) var(--blog-ease), box-shadow var(--blog-base) var(--blog-ease);
-      pointer-events: none;
-      content: '';
-    }
-
-    &:is(:hover, :focus-visible, :active) {
-      &::before {
-        opacity: 1;
-        transition-duration: var(--blog-base);
-      }
-    }
-
-    /* Hover intent: a pointer passing over the list on its way elsewhere leaves no trail of half-lit sheets. */
-    &:hover:not(:focus-visible, :active)::before,
-    &:hover:not(:focus-visible, :active) .blog-row-arrow {
-      transition-delay: 80ms;
-    }
-
-    /* A press deepens the contour a step, quickly. */
-    &:active::before {
-      box-shadow: var(--row-sheet-pressed);
-      transition: opacity var(--blog-base) var(--blog-ease), box-shadow var(--blog-quick) var(--blog-ease);
-    }
-
-    /* The ring takes the place of the sheet's contour instead of floating outside it. */
-    &:focus-visible {
-      outline: 2px solid var(--blog-text-faint);
-      outline-offset: -1px;
-    }
-  }
-
-  /* The meta and main wrappers step aside, so the day sits in the row's grid on its title's baseline. */
-  .blog-row-meta,
-  .blog-row-main {
-    display: contents;
-  }
-
-  .blog-row-meta {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: var(--blog-text-quiet);
-
-    & time {
-      grid-area: 1 / 1;
-    }
-  }
-
-  /* A category, when posts differ, sits on the description's first line. */
-  .blog-row-category {
-    grid-area: 2 / 1;
-  }
-
-  .blog-row-title {
-    grid-area: 1 / 2;
-    margin: 0;
-    font-size: 1.375rem;
-    font-weight: var(--font-weight-regular);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: var(--blog-title);
-    text-wrap: balance;
-    overflow-wrap: break-word;
-
     &:lang(zh) {
-      line-height: 1.4;
-      letter-spacing: 0;
-      word-break: keep-all;
-      text-spacing-trim: trim-both;
-      text-autospace: normal;
+      line-height: 1.75rem;
+      line-break: strict;
     }
   }
 
-  .blog-row-description {
-    grid-area: 2 / 2;
-    max-width: 34rem;
-    margin: 0;
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    text-wrap: pretty;
-  }
-
-  /* Decorative (the whole row is the link): it arrives with the sheet, so a long archive has no column of arrows. */
-  .blog-row-arrow {
-    grid-area: 1 / 3;
-    width: 0.9375rem;
-    height: 0.9375rem;
-    align-self: start;
-    margin-top: 0.4375rem;
-    color: var(--blog-title);
-    opacity: 0;
-    transition: translate var(--blog-base) var(--blog-ease), opacity var(--blog-slow) var(--blog-ease);
-
-    .blog-row:is(:hover, :focus-visible) & {
-      translate: 3px 0;
-      opacity: 1;
-      transition-duration: var(--blog-base);
-    }
-  }
-
-  /* On a phone: the day (and a category) on one line, then the title and its description across the row. */
   /*
-   * On a phone the entries keep the column's edge: no sheet is laid (it would reach past the featured sheet's
-   * edges); a tap answers by dimming the entry for a moment. The bleed only gives the focus ring room.
+   * Only when the column is very narrow for its text (a small phone with enlarged text), Latin words hyphenate
+   * instead of breaking at an arbitrary letter; at normal sizes nothing is hyphenated.
+   */
+  @container blog-posts (width < 14em) {
+    .blog-entry :is(.blog-entry-title, .blog-entry-description):lang(en) {
+      hyphens: auto;
+    }
+  }
+
+  /* ---------- Phones ---------- */
+  /*
+   * One column: the time line keeps the column's left edge, the year sits above its posts on the line's right,
+   * and each year's rule crosses the line at the column's edge. A tap dims the entry for a moment.
    */
   @media (width < 48rem) {
-    .blog-row {
-      --row-bleed: 0.75rem;
-      grid-template-columns: auto auto minmax(0, 1fr);
-      column-gap: var(--spacing-md);
-      transition: opacity var(--blog-base) var(--blog-ease);
+    .blog-year {
+      display: block;
+      padding-inline-start: var(--blog-indent);
+      border-top: 1px solid var(--blog-guide);
 
       &::before {
-        display: none;
+        position: absolute;
+        top: -6px;
+        left: -5px;
+        width: 11px;
+        height: 11px;
+        background: var(--blog-cross-mark);
+        pointer-events: none;
+        content: '';
       }
 
+      &::after {
+        position: absolute;
+        inset: 0 auto 0 0;
+        border-inline-start: 1px solid var(--blog-guide);
+        content: '';
+      }
+    }
+
+    .blog-timeline-end {
+      display: block;
+    }
+
+    /* In the flow here, so its trimmed box is rounded back to whole pixels; its 2 steps out like the titles. */
+    .blog-year-label {
+      position: static;
+      height: round(up, 1cap, 1px);
+      margin-block: 2.5rem 0;
+      margin-inline-start: -0.02em;
+    }
+
+    /* The year sits closer to its posts than to the rule above it. */
+    .blog-year-posts {
+      position: static;
+      padding: 2rem 0 4rem;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+
+    /* At 46px the hatch's smallest tile is coarser for the letters, so they get a little more room. */
+    .blog-masthead-title:not(:lang(zh)) {
+      letter-spacing: -0.02em;
+    }
+
+    .blog-entry-title {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+
+      &:lang(zh) {
+        line-height: 2rem;
+      }
+    }
+
+    .blog-entry-link {
+      --blog-marks-inset: 0.5rem;
+      width: auto;
+      transition: opacity var(--blog-base) var(--blog-ease);
+
       &:active {
+        --blog-marks-inset: calc(0.5rem - 2px);
         opacity: 0.64;
         transition-duration: var(--blog-quick);
       }
     }
-
-    .blog-row-category {
-      grid-area: 1 / 2;
-    }
-
-    .blog-row-title {
-      grid-area: 2 / 1 / auto / -1;
-    }
-
-    .blog-row-description {
-      grid-area: 3 / 1 / auto / -1;
-    }
-
-    /* The whole row is plainly the link; an arrow under the excerpt would only dangle. */
-    .blog-row-arrow {
-      display: none;
-    }
   }
 
-  @media (width < 40rem) {
-    .blog-row {
-      padding-block: calc(var(--spacing-lg) - 0.375rem);
-    }
-
-    .blog-row-title {
-      font-size: 1.25rem;
-    }
-  }
-
+  /* ---------- Preferences ---------- */
   /* Same selectors as the rules they cancel, so specificity never lets a transition back in. */
   @media (prefers-reduced-motion: reduce) {
-    .blog-row,
-    .blog-row::before,
-    .blog-row:active::before,
-    .blog-row-arrow,
-    .blog-feature-action,
-    .blog-feature-action > svg {
+    .blog-entry::before,
+    .blog-entry:has(> .blog-entry-link:is(:hover, :focus-visible))::before,
+    .blog-entry-link,
+    .blog-entry-link::before,
+    .blog-entry-link:is(:hover, :focus-visible, :active)::before,
+    .blog-entry-link:hover:not(:focus-visible, :active)::before {
       transition: none;
     }
   }
@@ -476,35 +506,61 @@
   @media print {
     .blog-index {
       color-scheme: light;
-      padding-top: var(--spacing-xl);
       background-color: Canvas;
+    }
+
+    .blog-masthead {
+      padding-top: var(--spacing-xl);
+    }
+
+    .blog-year-label {
+      position: static;
+    }
+
+    /* A post is never split across two sheets of paper. */
+    .blog-entry {
+      break-inside: avoid;
     }
   }
 
   @media (forced-colors: active), print {
     .blog-index::before,
-    .blog-row::before {
+    .blog-year-posts::after,
+    .blog-timeline-end::after {
       display: none;
     }
 
-    .blog-row:hover:not(:focus-visible) {
+    .blog-entry-link:hover:not(:focus-visible) {
       outline: 1px solid CanvasText;
-    }
-
-    /* The sheet keeps a system-colour border here, so the ring steps outside it instead of covering it. */
-    .blog-feature-link:focus-visible {
-      outline-offset: 2px;
+      outline-offset: 0.375rem;
     }
   }
 
-  /*
-   * Han body text reads best with a taller line. These are short excerpts, so they also keep their phrases whole:
-   * lines break at the spaces around Latin terms and after punctuation (a clause rarely outgrows a line; one that
-   * does still wraps).
-   */
-  .blog-index :is(.blog-masthead-lead, .blog-feature-description, .blog-row-description):lang(zh) {
-    line-height: 1.75;
-    word-break: keep-all;
-    overflow-wrap: break-word;
+  @media (forced-colors: active), print {
+    @media (width < 48rem) {
+      .blog-year::before {
+        display: none;
+      }
+    }
+
+    /* Without the drawn guides, each year keeps its rule as a border (on paper, as light as the time line). */
+    @media (--md) {
+      .blog-year {
+        border-top: 1px solid CanvasText;
+
+        @media print {
+          border-top-color: var(--blog-guide);
+        }
+      }
+    }
   }
+}
+
+/*
+ * The header's and footer's rows share the drawing's column (--blog-frame), as the homepage's do, so the logo, the
+ * title, the years and the footer hang on one edge at every width, not only below 100rem. Unlayered: the footer
+ * rows carry a max-width utility, and utilities outrank the components layer.
+ */
+:root:has(.blog-index) :is(.app-header, .site-footer) > :not(hr) {
+  max-width: 95rem;
 }

@@ -8,9 +8,7 @@ import Link from '~/site/docs-shell/components/Link'
 import metadata from './metadata'
 import generate from '~/site/docs-shell/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
-import { IconArrowRight } from '@tabler/icons-react'
 import { createTranslation } from '~/site/docs-shell/utils/i18n'
-import BlogAuthors from '~/site/components/blog/BlogAuthors'
 
 /** A "Subject: question" title breaks at its colon, as the article does: each half is a span the stylesheet sets on its own line. */
 function titleHalves(title: string, className: string) {
@@ -43,14 +41,18 @@ export default async function Page(props: any) {
   const pages: BlogPage[] = pageCategories
     .flatMap(({ pages }) => pages)
     .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
-  const [latest, ...earlier] = pages
+  const latest = pages[0]
   // A category every post shares says nothing about any one of them.
   const showCategory = new Set(pages.map((page) => page.category ?? '')).size > 1
-  // The featured post names its date in full, as its article does. The archive reads like a ledger: each year is
-  // named once, on the rule that opens it, and each post carries only its day.
-  const longDate = (value: string) => dayjs(value).format(tw ? 'YYYY 年 M 月 D 日' : 'MMMM D, YYYY')
-  const day = (value: string) => dayjs(value).format(tw ? 'M 月 D 日' : 'MMM D')
-  const year = (value: string) => dayjs(value).format('YYYY')
+  // The timeline names each year once, beside its posts; a post shows only its day (its full date is still read).
+  const yearOf = (value: string) => dayjs(value).format('YYYY')
+  const day = (value: string) => dayjs(value).format(tw ? 'M 月 D 日' : 'MMMM D')
+  const years = pages.reduce<{ year: string, pages: BlogPage[] }[]>((groups, page) => {
+    const group = groups.at(-1)
+    if (group?.year === yearOf(page.date)) group.pages.push(page)
+    else groups.push({ year: yearOf(page.date), pages: [page] })
+    return groups
+  }, [])
   const slug = (page: BlogPage) => page.pathname.split('/').at(-1)
   // A post not yet translated keeps its English text on /tw; say so, so it is set and read as English.
   const lang = (text: string) => (tw && $(text) === text ? 'en' : undefined)
@@ -59,54 +61,32 @@ export default async function Page(props: any) {
 
   return <>
     <main className="blog-index blog-materials">
-      <header className="blog-masthead">
-        <h1 className="blog-masthead-title blog-stone-text">{tw ? <>最新消息<wbr />與筆記</> : 'News and notes'}</h1>
-        <p className="blog-masthead-lead">{tw ? 'Master\u00a0CSS 的產品更新與實作分享。' : 'Updates and practical guides from the Master\u00a0CSS team.'}</p>
+      <header className="blog-masthead blog-rails">
+        <h1 className="blog-hatch-text blog-masthead-title">{tw ? <>最新消息<wbr />與筆記</> : 'News and notes'}</h1>
       </header>
-      {latest && (
-        <article className="blog-feature" aria-labelledby={`post-${slug(latest)}`}>
-          <Link href={latest.pathname} className="blog-feature-link blog-plate" aria-labelledby={`post-${slug(latest)}`} aria-describedby={describedBy(latest)}>
-            <span className="blog-feature-meta">
-              <span className="blog-signal" aria-hidden="true" />
-              <time id={`post-${slug(latest)}-date`} dateTime={latest.date}>{longDate(latest.date)}</time>
-              {showCategory && latest.category && <span id={`post-${slug(latest)}-category`}>{$(latest.category)}</span>}
-            </span>
-            <h2 id={`post-${slug(latest)}`} className="blog-feature-title" lang={lang(latest.title)}>{titleHalves($(latest.title), 'blog-title-half')}</h2>
-            <p id={`post-${slug(latest)}-description`} className="blog-feature-description" lang={lang(latest.description)}>{$(latest.description)}</p>
-            <span className="blog-feature-footer">
-              <BlogAuthors names={latest.authors} />
-              <span className="blog-feature-action" aria-hidden="true">
-                {tw ? '閱讀文章' : 'Read article'}
-                <IconArrowRight size={15} stroke={1.5} />
-              </span>
-            </span>
-          </Link>
-        </article>
-      )}
-      {earlier.length > 0 && (
-        <section className="blog-archive" aria-labelledby="blog-archive-title">
-          <h2 id="blog-archive-title" className="sr-only">{tw ? '更早的文章' : 'Earlier'}</h2>
+      {years.map(({ year, pages: posts }) => (
+        // A year is a heading, not a landmark: a long archive would otherwise list one region per year.
+        <section key={year} className="blog-rails blog-rails-rule blog-year">
+          <h2 className="blog-year-label">{year}</h2>
           {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics when list-style is none. */}
-          <ol className="blog-archive-list" role="list">
-            {earlier.map((page, index) => (
-              <li key={page.pathname}>
-                {(index === 0 || year(earlier[index - 1].date) !== year(page.date)) && <span className="blog-row-year" aria-hidden="true"><span>{year(page.date)}</span></span>}
-                <Link href={page.pathname} className="blog-row" aria-labelledby={`post-${slug(page)}`} aria-describedby={describedBy(page)}>
-                  <span className="blog-row-meta">
-                    <time id={`post-${slug(page)}-date`} dateTime={page.date}>{day(page.date)}<span className="sr-only">{tw ? `，${year(page.date)} 年` : `, ${year(page.date)}`}</span></time>
-                    {showCategory && page.category && <span id={`post-${slug(page)}-category`} className="blog-row-category">{$(page.category)}</span>}
+          <ol className="blog-year-posts" role="list">
+            {posts.map((page) => (
+              <li key={page.pathname} className="blog-entry">
+                {page === latest && <span className="blog-entry-signal blog-signal" aria-hidden="true" />}
+                <Link href={page.pathname} className="blog-entry-link blog-marks" aria-labelledby={`post-${slug(page)}`} aria-describedby={describedBy(page)}>
+                  <span className="blog-entry-meta">
+                    <time id={`post-${slug(page)}-date`} dateTime={page.date}>{tw ? <><span className="sr-only">{year} 年 </span>{day(page.date)}</> : <>{day(page.date)}<span className="sr-only">, {year}</span></>}</time>
+                    {showCategory && page.category && <span id={`post-${slug(page)}-category`}>{$(page.category)}</span>}
                   </span>
-                  <div className="blog-row-main">
-                    <h3 id={`post-${slug(page)}`} className="blog-row-title" lang={lang(page.title)}>{titleHalves($(page.title), 'blog-title-half')}</h3>
-                    <p id={`post-${slug(page)}-description`} className="blog-row-description" lang={lang(page.description)}>{$(page.description)}</p>
-                  </div>
-                  <IconArrowRight className="blog-row-arrow" size={15} stroke={1.5} aria-hidden="true" />
+                  <h3 id={`post-${slug(page)}`} className="blog-entry-title" lang={lang(page.title)}>{titleHalves($(page.title), 'blog-title-half')}</h3>
+                  <p id={`post-${slug(page)}-description`} className="blog-entry-description" lang={lang(page.description)}>{$(page.description)}</p>
                 </Link>
               </li>
             ))}
           </ol>
         </section>
-      )}
+      ))}
+      {years.length > 0 && <div className="blog-rails-rule blog-timeline-end" aria-hidden="true" />}
     </main>
     <Footer {...footerProps} className="app-wrapper" />
   </>
