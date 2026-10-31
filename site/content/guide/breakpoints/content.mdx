@@ -23,6 +23,10 @@ Append `@<breakpoint>` to a utility when that declaration should start at a view
 
 <FoundationBreakpoint />
 
+Move the preview viewport across `md`. With the preset and a browser default font size of 16px, the heading changes from 24px to 32px at a viewport width of 1024px. The surrounding article keeps its own viewport width.
+
+The `rem` unit in a [media query](https://drafts.csswg.org/mediaqueries-5/#units) uses the browser's initial font size, including user preferences. Setting `font-size` on your page's `html` element changes `rem` lengths in declarations, but does not move this media-query threshold.
+
 <Class2CSS>
   {['font-2xl', 'font-3xl@md']}
 </Class2CSS>
@@ -32,7 +36,7 @@ Unqualified classes are the base state. Breakpoint variants layer changes on top
 ---
 
 ## Define named media queries
-Custom media definitions belong in your project CSS entry. Keep them product-wide and stable; they are part of the layout language shared by docs, components, designers, and tests.
+Custom media definitions belong in your project CSS entry. Add them only when the preset thresholds do not fit your content. The example below replaces the preset's `sm`, `md` and `lg` definitions for your project; it is not required setup.
 
 ```css name=index.css
 @custom-media --sm (width >= 48rem);
@@ -40,7 +44,7 @@ Custom media definitions belong in your project CSS entry. Keep them product-wid
 @custom-media --lg (width >= 80rem);
 ```
 
-Use native media query syntax and explicit units. Generated queries preserve the authored unit.
+Use native media query syntax and explicit units. Generated queries preserve the authored unit. Keep shared names stable so a change applies consistently across the page layouts that use them.
 
 ---
 
@@ -132,11 +136,17 @@ Here `@sm`, `@md`, and `@lg` come from custom media definitions. The `4xl`, `5xl
 (o) Page structure uses breakpoints, while reusable components use container queries.
 
 ```html
-<main class="grid-cols(12)@md">
-  <section class="container-type:inline-size">
-    <article class="grid-cols(2)@container((width>=28rem))">...</article>
+<main class="grid-cols(1) gap-lg grid-cols(12)@md">
+  <section class="container-type:inline-size grid-col-span(8)@md">
+    <article class="grid-cols(1) gap-md grid-cols(2)@container((width>=28rem))">
+      <div>Summary</div>
+      <div>Details</div>
+    </article>
   </section>
+  <aside class="grid-col-span(4)@md">Related content</aside>
 </main>
 ```
+
+At `@md`, the section and aside occupy eight and four page columns. The article inside the section switches columns only when that section reaches `28rem`.
 
 Use breakpoints sparingly, name them for layout meaning, and keep component-local responsiveness in [containers](/guide/containers).

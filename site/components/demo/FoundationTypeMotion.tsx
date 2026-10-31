@@ -18,8 +18,8 @@ export function FoundationTypography() {
 
 export function FoundationTypeComparison() {
   const authored = { ...section('type-comparison', 'Font size and text scale'), page: 'text-size', html: [
-    "<!-- font-3xl · inherited leading and tracking -->\n<div class=\"leading-md tracking-normal\"><p id=\"target\" class=\"margin:0 font-3xl font-regular\">Designing for a clearer reading experience.</p></div>",
-    "<!-- text-3xl · size, leading and tracking -->\n<div class=\"leading-md tracking-normal\"><p id=\"target\" class=\"margin:0 text-3xl font-regular\">Designing for a clearer reading experience.</p></div>",
+    "<!-- font-3xl · inherited leading and tracking -->\n<div class=\"leading-md tracking-normal overflow-wrap:anywhere\"><p id=\"target\" class=\"margin:0 font-3xl font-regular\">Designing for a clearer reading experience.</p></div>",
+    "<!-- text-3xl · size, leading and tracking -->\n<div class=\"leading-md tracking-normal overflow-wrap:anywhere\"><p id=\"target\" class=\"margin:0 text-3xl font-regular\">Designing for a clearer reading experience.</p></div>",
   ] }
   return <Specimen name="type-comparison" title="One size, two type treatments" scene={typeSpecimens(authored, { properties: ['font-size', 'line-height', 'letter-spacing'], appearance: 'plain', caption: 'Both specimens have the same font size and content. font-3xl inherits the parent’s leading and tracking; text-3xl sets all three properties.' })} />
 }

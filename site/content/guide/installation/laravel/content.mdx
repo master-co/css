@@ -1,11 +1,13 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+Use Master CSS with Laravel’s Vite pipeline. This example renders a Blade page with CSS generated at build time; keep Laravel’s Vite plugin responsible for development URLs and production asset names.
+
 <StepSection>
   <Step $row>
     <StepL>
       ### <StepNum />Create a project
-      If you don't have a Laravel project, create one first.
+      Follow [Laravel’s installation guide](https://laravel.com/framework/docs) to install PHP, Composer and the Laravel installer, then create a project.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -25,6 +27,30 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
       ```
     </StepR>
   </Step>
+  <Step>
+    ### <StepNum />Connect the stylesheet
+    The installer adds Master CSS to `resources/css/app.css` and registers its Vite plugin. For this standalone example, use the CSS entry below and keep it in the Laravel plugin’s `input` list. A starter may register other CSS plugins; keep each compiler responsible for its own source directives.
+
+    ```css name=resources/css/app.css
+    @import '@master/css';
+    @source '../views/**/*.blade.php';
+    ```
+
+    The configuration below is complete for this CSS-only example. Existing apps should retain their JavaScript entries and other framework plugins, and register Master CSS only once:
+
+    ```js name=vite.config.js
+    import { defineConfig } from 'vite'
+    import laravel from 'laravel-vite-plugin'
+    import masterCSS from '@master/css-vite'
+
+    export default defineConfig({
+      plugins: [
+        laravel({ input: ['resources/css/app.css'], refresh: true }),
+        masterCSS({ mode: 'static' })
+      ]
+    })
+    ```
+  </Step>
   <Step $row>
     <StepL>
       ### <StepNum />Launch server
@@ -38,13 +64,35 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   </Step>
   <Step>
     ### <StepNum />Hello world
-    Now style your first Blade view using Master CSS syntax.
+    Create the view below and add its route to `routes/web.php`. Visit `/master-css` to see the heading.
   </Step>
   <HelloWorld url="127.0.0.1:8000" />
 </StepSection>
 
 ```html name=resources/views/app.blade.php
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
-  Hello World
-</h1>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Master CSS with Laravel</title>
+  @vite('resources/css/app.css')
+</head>
+<body>
+  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    Hello World
+  </h1>
+</body>
+</html>
 ```
+
+Add this route to the existing PHP file, keeping its imports and other routes:
+
+```php name=routes/web.php
+Route::view('/master-css', 'app');
+```
+
+## Verify the production assets
+Run `npm run build`, stop the Vite development server, and load the page through Laravel. The heading should remain large, heavy and italic with JavaScript disabled. Keep the `@vite` directive: it resolves the versioned stylesheet from Laravel’s build manifest.
+
+If your application imports CSS from a JavaScript entry instead, retain that entry and its `@vite` call. Avoid loading the same CSS through both paths. See [Laravel’s Vite integration](https://laravel.com/framework/docs/vite) for entry ownership.

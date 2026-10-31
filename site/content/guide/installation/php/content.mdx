@@ -23,6 +23,7 @@ Use static rendering when PHP templates contain complete class strings and you w
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -83,13 +84,27 @@ Use static rendering when PHP templates contain complete class strings and you w
 </StepSection>
 
 ```html name=public/index.php
-<link rel="stylesheet" href="/assets/app.css">
-
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
-  Hello World
-</h1>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Master CSS with PHP</title>
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    Hello World
+  </h1>
+</body>
+</html>
 ```
 
 For CodeIgniter, scan `app/Views/**/*.php` and load `/assets/app.css` with your normal asset helper. Static rendering depends on complete class strings in scanned source files.
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
+
+## Check the page
+For a plain PHP project, run `php -S localhost:8000 -t public` after building the assets, then visit `http://localhost:8000`. Use your framework’s normal server for CodeIgniter. This example assumes `public` is the web root; adjust URLs if the app lives under a subpath.
+
+The heading should remain large, heavy and italic with JavaScript disabled. If the stylesheet loads but the classes have no effect, check the `@source` paths and regenerate the CSS.

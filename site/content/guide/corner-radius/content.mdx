@@ -23,11 +23,11 @@ Start with the role of the element, then choose the smallest radius that communi
 
 See the complete [values and consumers](/reference/tokens/radius) in Reference.
 
-Use related tokens for related surfaces. A card, its nested media, and an action group can share a radius or use a smaller inner radius. For a constant inset, choose the inner radius from the outer radius minus that inset rather than increasing it.
+Use related tokens for related surfaces. A card, its nested media, and an action group can share a radius or use a smaller inner radius. To keep two inset contours concentric, subtract the inset from the outer radius, down to a minimum of zero. Other nested controls can use a radius suited to their own role.
 
 <DemoConfiguredExample name="nested-radius" title="Related shapes, one composition" source="" theme previewFirst code={false}
-  html={'<article class="width:100% max-w-sm margin-inline:auto p-lg r-2xl bg-surface-raised shadow-sm"><div class="p-lg r-lg bg-surface-inset fg-text-body"><p class="margin:0 text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="margin:0 text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="display:grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
-  caption="The outer card uses r-2xl, its inset panel r-lg, and the input r-md. The pill action is a separate shape choice. This preview does not save data." />
+  html={'<article class="width:100% max-w-sm margin-inline:auto p-xs r-2xl overflow-wrap:anywhere bg-surface-raised shadow-sm"><div class="p-xs r-lg bg-surface-inset fg-text-body"><p class="margin:0 text-xs font-medium">FIELD NOTES / 024</p><h2 class="mt-sm mb-xs text-2xl font-semibold">Room for the details.</h2><p class="margin:0 text-sm">A quiet place for ideas, sketches, and unfinished thoughts.</p></div><label class="display:grid gap-sm mt-lg text-sm fg-text-body">Collection name<input class="min-width:0 width:100% p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><button type="button" class="mt-md px-md py-sm r-pill bg-surface-inverse fg-text-inverse">Save collection</button></article>'}
+  caption="The outer card uses r-2xl and p-xs; its inset panel uses r-lg. With the preset values, outer radius minus padding equals inner radius. The input and pill action have their own shapes. This preview does not save data." />
 
 ---
 

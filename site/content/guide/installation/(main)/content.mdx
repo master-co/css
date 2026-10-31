@@ -5,6 +5,18 @@ import Footer from './footer.mdx'
 ## Installation [sr-only]
 Add Master CSS to an existing project with the installer. It detects common frameworks, applies the matching setup, and can install the required packages. Supported build integrations use static rendering by default: complete class names in source become ordinary CSS without a browser engine.
 
+## Before installing
+Use a matching Master CSS release for the installer, integration and runtime packages. The commands below select the `rc` release-candidate channel. Check that both the installer and your chosen integration are published for that channel; for the Vite setup below:
+
+```bash name=Terminal
+npm view @master/create-css@rc version
+npm view @master/css-vite@rc version
+```
+
+An installer tag can exist before every integration is published. If a required package or tag returns 404, that setup cannot yet be installed from the registry. Choose a published matching release and its documentation before continuing.
+
+## Install in your project
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -49,6 +61,6 @@ Add Master CSS to an existing project with the installer. It detects common fram
 </h1>
 ```
 
-Continue with the [Syntax Tutorial](/guide/syntax-tutorial) to build one button and check its generated CSS step by step.
+Continue with the [Syntax Tutorial](/guide/syntax-tutorial) to build a card and check its generated CSS step by step.
 
 <Footer />

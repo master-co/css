@@ -1,6 +1,8 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+Use the Webpack plugin to process the CSS entry and emit styles with the HTML produced by `HtmlWebpackPlugin`.
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -53,19 +55,29 @@ export default {
 @import '@master/css';
 ```
 
-```html
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
-  Hello World
-</h1>
+```html name=index.html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Master CSS with Webpack</title>
+  </head>
+  <body>
+    <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+  </body>
+</html>
 ```
 
-## Load the CSS entry
+Import the CSS entry from the JavaScript entry:
 
 ```js name=src/index.js
 import './index.css'
 ```
 
-Create `index.html` for `HtmlWebpackPlugin` with the heading shown above inside its body. The plugin emits the HTML and stylesheet links; serving an unprocessed file from a static directory does not perform that injection.
+`HtmlWebpackPlugin` emits the HTML and stylesheet links; serving an unprocessed file from a static directory does not perform that injection.
 
 Run `npx webpack --config webpack.config.mjs --mode production` to verify production output. The emitted page loads generated CSS without a Master CSS runtime.
 
@@ -87,3 +99,6 @@ Run `npx webpack --config webpack.config.mjs --mode production` to verify produc
   </Step>
   <HelloWorld />
 </StepSection>
+
+## Verify the result
+Build and serve the production output. The heading should be large, heavy and italic. The generated utilities are ordinary CSS; a client-rendered framework may still need JavaScript to create the heading.

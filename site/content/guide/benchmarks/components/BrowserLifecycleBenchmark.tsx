@@ -176,13 +176,14 @@ function toSourceMetricId(metricId: ChartMetricId) {
 function LifecycleChart(props: {
   metricId: ChartMetricId
 }) {
+  const sampleCounts = [...new Set(evidenceVariants.map(variant => getMetric(variant, toSourceMetricId(props.metricId)).sampleCount))]
   const unit = props.metricId === 'cssomRuleCount' || props.metricId === 'longTaskCount' ? 'count' : 'ms'
 
   return (
     <div className="display:grid gap-sm">
       <div className="display:flex align-items:baseline justify-content:space-between gap-md">
         <h4 className="margin:0 font-sm font-weight:460 fg-text-strong">{chartMetricLabels[props.metricId]}</h4>
-        <span className="font-xs fg-text-muted">Five-minute median</span>
+        <span className="font-xs fg-text-muted">Five-minute runs · n={sampleCounts.join(', ')}</span>
       </div>
       <BenchmarkBars items={createChartItems(props.metricId)} unit={unit} />
     </div>
@@ -190,7 +191,7 @@ function LifecycleChart(props: {
 }
 
 export function BrowserLifecycleSummary() {
-  return <BenchmarkMetricTable metrics={createSummaryMetrics()} />
+  return <BenchmarkMetricTable label="Browser lifecycle metrics" metrics={createSummaryMetrics()} />
 }
 
 export function BrowserLifecycleLongSessionCharts() {
@@ -219,7 +220,7 @@ export function BrowserLifecycleLongSessionTable() {
           <thead>
             <tr>
               <th>Mode</th>
-              <th>INP-style latency</th>
+              <th>Session elapsed</th>
               <th>Style recalc</th>
               <th>Layout</th>
               <th>Paint</th>

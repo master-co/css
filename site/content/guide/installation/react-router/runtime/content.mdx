@@ -1,6 +1,8 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+Use this setup for [React Router framework mode](https://reactrouter.com/start/framework/installation). The installer adds the Master CSS Vite plugin and imports `app/app.css` from the root route.
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -67,8 +69,23 @@ if (!import.meta.env.SSR) {
 
 Add these imports to the existing file; retain its route definitions and component exports. The guard keeps the virtual runtime out of server execution. Load it once per document.
 
-```ts name=src/master-css.d.ts
+```ts name=app/master-css.d.ts
 /// <reference types="@master/css/client" />
 ```
 
 After startup, introduce a class absent from the initial DOM and check its computed style. Framework SSR alone does not supply runtime-generated CSS before JavaScript runs.
+
+---
+
+## Check the setup
+Replace the starter's home route with the component above, keeping the route registered in `app/routes.ts`. Retain `Links`, `Scripts`, `Outlet` and the document structure in `app/root.tsx`; they are part of React Router's page delivery.
+
+Build the app and start the production server using its existing scripts. If styles are missing, check the root CSS import and preserve the React Router Vite plugin alongside Master CSS.
+
+Run this in the browser console after startup:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+The underline should appear without a rebuild. The generated CSS depends on the browser runtime, even when React Router server-renders the HTML.

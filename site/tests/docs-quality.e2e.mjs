@@ -66,7 +66,7 @@ try {
         const stem = row.url.slice(1).replaceAll('/', '--') + `-${width}-${theme}`
         await page.screenshot({ path: new URL(`${stem}.png`, output).pathname, fullPage: true })
         // Keep a readable capture of each meaningful illustration and demo, beyond the opening.
-        const specimens = page.locator('.doc-illustration, .demo, .foundation-tokens, [data-demo-browser]')
+        const specimens = page.locator('.doc-illustration, .site-demo, .foundation-tokens, [data-demo-browser]')
         const specimensCount = await specimens.count()
         if (width === 390 || width === 1280) for (let i = 0; i < specimensCount; i++) {
           const specimen = specimens.nth(i)

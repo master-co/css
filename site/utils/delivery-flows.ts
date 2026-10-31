@@ -31,7 +31,7 @@ export const deliveryFlows = {
     steps: [
       { title: 'Discover', description: 'Find app sources through integration defaults or explicit source directives.' },
       { title: 'Extract', description: 'Read complete candidate strings without executing application code.' },
-      { title: 'Validate', description: 'Use the active manifest to generate supported utility and component rules.' }
+      { title: 'Resolve', description: 'Use the active manifest to generate rules for recognized Master CSS classes.' }
     ],
     caption: 'Native class usage also feeds pruning, even when a class is not a Master CSS utility.'
   },
@@ -43,6 +43,15 @@ export const deliveryFlows = {
       { title: 'Emit CSS', description: 'Keep surviving native rules. Under pruning, retained animation declarations and tokens retain required keyframes; same-name definitions keep their conditions, layers and order.' }
     ],
     caption: 'Source usage is a conservative signal; pruning does not evaluate the live DOM.'
+  },
+  'pruning-scope': {
+    title: 'One shared source, two pruning scopes',
+    steps: [
+      { title: 'Share definitions', description: 'Both a.css and b.css import shared.css, which opts into native pruning and defines shared-card and only-used-in-b.' },
+      { title: 'Select usage', description: 'Each root selects its own page.html. A uses shared-card; B uses shared-card and only-used-in-b.' },
+      { title: 'Emit separately', description: 'A retains only shared-card from the shared source. B retains both rules. The shared source file itself is unchanged.' }
+    ],
+    caption: 'Each root filters the same shared source with its own selected usage. Only the shared source’s portion of each output is shown.'
   },
   nextjs: {
     title: 'Next.js progressive boundary',
@@ -67,13 +76,21 @@ export type DeliveryFlowName = keyof typeof deliveryFlows
 
 /** Short figure labels and alternatives share the delivery content owner. */
 export const deliveryIllustrations = {
+  scanning: {
+    alt: 'Complete strings are extracted from source files, then resolved against project definitions to generate CSS.',
+    labels: { source: 'Source files', redSource: "'bg-red-60'", greenSource: "'bg-green-60'", extract: 'Extract', candidates: 'Candidates', red: 'bg-red-60', green: 'bg-green-60', definitions: 'Project definitions', context: 'Active manifest', resolve: 'Resolve', output: 'Generated CSS' }
+  },
   pruning: {
     alt: 'A root shares selected class usage with imported CSS; each file chooses its own pruning policy.',
-    labels: { usage: 'Selected sources', classes: 'Complete native class usage', entry: 'style.css', entryPolicy: '@prune native;', localPolicy: '@prune native;', imports: 'imports', local: 'cards.css', used: 'Used rules kept', external: 'vendor.css', default: 'No opt-in', all: 'Native rules kept', animation: 'retained animation', resources: 'Required keyframes', identity: 'Keep conditions, layers and order' }
+    labels: { usage: 'Selected sources', classes: 'Native class usage', entry: 'style.css', entryPolicy: '@prune native;', localPolicy: '@prune native;', imports: 'imports', local: 'cards.css', used: 'Used rules kept', external: 'vendor.css', default: 'No opt-in', all: 'Native rules kept', policy: 'Each file chooses its own policy' }
+  },
+  'pruning-scope': {
+    alt: 'Two roots import shared.css. A keeps shared-card; B also keeps only-used-in-b because its selected page uses that class.',
+    labels: { shared: 'shared.css', policy: '@prune native;', sharedCard: '.shared-card', sharedOnlyB: '.only-used-in-b', aUsage: 'A usage', bUsage: 'B usage', aOutput: 'A output', bOutput: 'B output', aCard: '.shared-card', bCard: '.shared-card', bOnlyB: '.only-used-in-b' }
   },
   route: {
     alt: 'Project definitions supply compile-time context to route CSS, whose output is loaded by the framework.',
-    labels: { project: 'Project definitions', definitions: 'Tokens · mixins · custom media', context: 'context', route: 'home.css', native: 'Native selectors and declarations', compile: 'compile', output: 'Route CSS output', resources: 'Rules + required resources', load: 'CSS import', page: 'Framework loads the stylesheet' }
+    labels: { project: 'Project definitions', definitions: 'Tokens · mixins · media', context: 'context', route: 'home.css', native: 'Native CSS rules', compile: 'compile', output: 'Route CSS', resources: 'Rules + resources', load: 'CSS import', page: 'Framework loads CSS' }
   },
   nextjs: {
     alt: 'The Next.js adapter processes build-time HTML; request-time dynamic SSR relies on browser rule generation.',

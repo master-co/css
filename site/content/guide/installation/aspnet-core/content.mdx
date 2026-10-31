@@ -24,6 +24,7 @@ Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -97,6 +98,9 @@ Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete
 </StepSection>
 
 ```html name=Pages/Index.cshtml
+@page
+@model IndexModel
+
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
@@ -104,4 +108,14 @@ Use static rendering when ASP.NET Core Razor Pages or MVC views contain complete
 
 Static rendering depends on complete class strings in scanned source files. If a Razor view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
+
+## Keep the page and layout connected
+The `@page` directive makes this Razor file a routable page. Keep the generated PageModel and shared layout. For MVC, put the heading in the view rendered by your controller instead.
+
+New .NET templates can include Bootstrap. Normal unlayered Bootstrap declarations can override layered Master CSS utilities, so check the loaded stylesheets and computed styles when a class appears ineffective. See [Cascade layers](/guide/cascade-layers) for precedence.
+
+## Verify the result
+Build Vite assets before `dotnet build` or `dotnet publish`, so .NET includes them in its static asset output. Run `dotnet run` and use the URL printed by the server. The heading should be large, heavy and italic.
+
+For server-rendered HTML, styling should remain with JavaScript disabled. A WebAssembly-only Blazor app still needs its framework JavaScript to render the component.

@@ -1,5 +1,9 @@
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DeliveryFlow from '~/site/components/DeliveryFlow'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+This setup uses the Next.js App Router with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
 
 <StepSection>
   <Step $row>
@@ -43,7 +47,9 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   <HelloWorld url="localhost:3000" />
 </StepSection>
 
-Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages. The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output.
+Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages. The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output. Their generated utility styles depend on the browser runtime. Choose [static CSS rendering](/guide/installation/nextjs) if those routes must have utility styles without JavaScript.
+
+<DeliveryFlow name="nextjs" />
 
 ```tsx name=app/page.tsx
 export default function Home() {
@@ -55,7 +61,11 @@ export default function Home() {
 }
 ```
 
+<DocumentDisclosure title="Using project tokens in CSS Modules">
+
 Local CSS and CSS Modules automatically receive project definitions in both Turbopack and Webpack. Use native declarations with project tokens directly, and native selectors for shared behavior. Their required theme resources are emitted globally, while local selectors retain the framework’s normal scope. Use `@reference` for additional definition files outside the project context.
+
+</DocumentDisclosure>
 
 ## Verify the loaded configuration
 
@@ -86,4 +96,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 Run `npm run build` and `npm run start` to check production delivery. For a pre-rendered route, check the response source for `style#master-css` before JavaScript runs. Test a dynamic SSR route separately: this adapter does not add server-generated CSS to request-time HTML.
 
-If a Turbopack production build reports that a generated `.master/stylesheets/...-entry.css` cannot be resolved, check the Webpack build with `npx next build --webpack`. This generated-asset failure is reproducible in the current workspace integration; verify the resulting page with `npm run start` before deployment. A successful Webpack build does not verify the Turbopack path.
+If a Turbopack production build reports that a generated `.master/stylesheets/...-entry.css` cannot be resolved, check the Webpack build with `npx next build --webpack`. Verify the resulting page with `npm run start` before deployment. A successful Webpack build does not verify the Turbopack path.
+
+After the page is ready, add a class that was absent from its initial DOM:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+The heading should gain an underline without a rebuild. Check the browser console and runtime program request if the update has no effect.

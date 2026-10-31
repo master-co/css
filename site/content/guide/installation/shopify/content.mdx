@@ -23,6 +23,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -43,13 +44,13 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
           masterCSS({ mode: 'static' })
         ],
         build: {
-          outDir: '.',
+          outDir: 'assets',
           emptyOutDir: false,
           rollupOptions: {
             input: 'src/master.ts',
             output: {
-              entryFileNames: 'assets/master.js',
-              assetFileNames: 'assets/[name][extname]'
+              entryFileNames: 'master.js',
+              assetFileNames: '[name][extname]'
             }
           }
         }
@@ -72,6 +73,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
 
       @source "../layout/**/*.liquid";
       @source "../sections/**/*.liquid";
+      @source "../blocks/**/*.liquid";
       @source "../snippets/**/*.liquid";
       @source "../templates/**/*.liquid";
       @source "../templates/**/*.json";
@@ -81,7 +83,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
   <Step $row>
     <StepL>
       ### <StepNum />Load the asset
-      Reference the generated stylesheet from the theme layout.
+      Add this tag inside the existing theme layout’s `<head>`. Preserve `content_for_header`, `content_for_layout`, and the theme’s other assets.
     </StepL>
     <StepR>
       ```liquid name=layout/theme.liquid
@@ -91,7 +93,7 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
   </Step>
   <Step>
     ### <StepNum />Hello world
-    Now style your first Liquid template using Master CSS syntax.
+    Add the heading to a section that the current template renders. Keep its existing Liquid logic and schema.
   </Step>
   <HelloWorld url="localhost:9292" />
 </StepSection>
@@ -102,6 +104,13 @@ Use Vite static rendering to build a CSS asset for Shopify Liquid themes. Shopif
 </h1>
 ```
 
-Run `vite build --watch` beside `shopify theme dev` while editing. If your theme has no asset build at all, use the [CLI guide](/guide/installation/cli) with the same Liquid globs and output to `assets/master.css`.
+Build with `npx vite build` before previewing or publishing the theme. While editing, run `npx vite build --watch` beside `shopify theme dev`. The configuration keeps other theme assets; upload `master.css` and every CSS file it imports together, preserving their names and relative paths.
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+If your theme has no asset build, use the [CLI guide](/guide/installation/cli) with the same Liquid source globs and output to `assets/master.css`.
+
+## Verify the theme preview
+Build the CSS and preview the theme with `shopify theme dev`. Navigate to the page containing the section; the heading should remain large, heavy and italic with JavaScript disabled. Creating a section file alone does not add it to a page—keep it referenced by the template or add it through the theme editor.
+
+The scan covers [Liquid templates, sections, theme blocks and snippets](https://shopify.dev/docs/storefronts/themes/architecture). Theme-editor values can produce class names absent from those files; map settings to complete class strings or safelist a bounded set. A preview update does not rerun the local CSS build, so keep the Vite watcher running.
+
+Master CSS’s preset includes global base styles. Check existing storefront components after adding it, and decide which resets and unlayered theme styles to retain. Use [Cascade layers](/guide/cascade-layers) to inspect precedence.

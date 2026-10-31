@@ -1,3 +1,5 @@
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+
 Regular CSS and CSS Modules can coexist with Master CSS for as long as the project needs. Treat migration as a cleanup pass, not a rule that every declaration must become a class.
 
 Move repeated, visual, markup-owned styles into Master CSS classes. Keep global resets, vendor styles, complex selectors, generated CSS, and hard-to-read one-off rules in regular CSS.
@@ -33,7 +35,7 @@ Inspect the CSS surface before changing files.
 ---
 
 ## Add Master CSS beside existing CSS
-Keep the current CSS files loaded while Master CSS starts generating rules for new or converted markup.
+Keep the current CSS files loaded while Master CSS starts generating rules for new or converted markup. Check the cascade before deleting a local rule: unlayered legacy declarations outrank normal layered utilities, even when the Master CSS import appears later. Retaining both selectors on the same element can therefore mask the conversion.
 
 ```css name=app.css
 @import "@master/css";
@@ -54,19 +56,55 @@ Move local visual declarations into markup when the class list is easier to revi
   gap: 1rem;
   padding: 1.5rem;
   border-radius: .75rem;
-  background: var(--color-surface);
+  background: #fff;
+  color: #172033;
 }
 ```
 
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="display:grid gap-md p-lg r-card bg-surface">
+    <section className="display:grid gap-md p-lg r-xl bg-white color:#172033">
       {children}
     </section>
   )
 }
 ```
+
+<DemoConfiguredExample
+  name="migration-card-equivalence"
+  title="The same card with two styling approaches"
+  source={`@layer components {
+  .legacy-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: .75rem;
+    background: #fff;
+    color: #172033;
+  }
+}`}
+  html={`<div class="display:grid gap-md grid-cols(2)@sm">
+  <div class="display:grid gap-xs">
+    <p class="margin:0 font-sm">CSS rule</p>
+    <section class="legacy-card">
+      <h3 class="margin:0 font-lg font-semibold">Account</h3>
+      <p class="margin:0">Review profile settings.</p>
+    </section>
+  </div>
+  <div class="display:grid gap-xs">
+    <p class="margin:0 font-sm">Markup classes</p>
+    <section class="display:grid gap-md p-lg r-xl bg-white color:#172033">
+      <h3 class="margin:0 font-lg font-semibold">Account</h3>
+      <p class="margin:0">Review profile settings.</p>
+    </section>
+  </div>
+</div>`}
+  caption="Both cards use the same gap, padding, radius and background. The literal .75rem radius maps to the preset r-xl token."
+  code={false}
+  theme
+  responsive
+/>
 
 Prefer named theme tokens such as `bg-surface`, `p-card`, or `r-card` when the value is a product decision. Prefer direct native declaration classes such as `scroll-margin-top:4rem` when the CSS property is clearer than inventing a new abstraction.
 
@@ -100,12 +138,16 @@ Vite, Next.js, and Webpack supply project theme definitions to local stylesheets
 import styles from './Button.module.css'
 
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { className, ...buttonProps } = props
-  return <button className={[styles.button, className].filter(Boolean).join(' ')} type="button" {...buttonProps} />
+  const { className, type = 'button', ...buttonProps } = props
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type={type} {...buttonProps} />
 }
 ```
 
 Use this pattern when removing the module would force too many call sites to change at once. Convert the module away later if the local class stops adding value.
+
+The module above is unlayered, so its normal declarations outrank layered utilities passed through `className`. If callers should override a component default with utilities, place those defaults in `@layer components` and verify the resulting [cascade](/guide/cascade-layers).
+
+This wrapper defaults to `type="button"`; pass `type="submit"` for form submission. Preserve an existing component's ref forwarding and event contract when adopting the wrapper.
 
 ---
 
@@ -125,7 +167,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 ```
 
 ```html
-<article class="r-card fg-body grid-cols(3)@md bg-surface p-card">
+<article class="display:grid r-card fg-body grid-cols(3)@md bg-surface p-card">
   ...
 </article>
 ```

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Integrations',
-  description: 'Master CSS allows you to install from package managers, copy-paste CDNs, and integrate with frameworks.',
+  description: 'Choose a framework integration and CSS delivery mode, then follow the matching installation guide.',
   category: 'Getting Started',
   fileURL: import.meta.url
 })

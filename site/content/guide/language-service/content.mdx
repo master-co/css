@@ -21,7 +21,7 @@ Suggestions include utilities, property values, color tokens, selectors, queries
 Hover inspection shows the generated CSS for a class at the cursor. This is useful when a class combines a declaration, value, selector state, and query in one compact string.
 
 ```html
-<button class="fg-white bg-blue-60:hover@sm">
+<button class="bg-blue-70 fg-white bg-blue-60:hover@sm">
   Save
 </button>
 ```
@@ -46,8 +46,10 @@ Each visible line of a multiline class value responds separately. Class strings 
 Color syntax can use VS Code color decorators and the color picker. This includes supported Master CSS color utilities and manifest colors that resolve through the active project.
 
 ```html
-<span class="bg-blue-60/.1 color:#4f46e5">Primary</span>
+<span class="bg-blue-5 color:#4f46e5">Primary</span>
 ```
+
+Keep both `masterCSS.renderSyntaxColors` and VS Code's [`editor.colorDecorators`](https://code.visualstudio.com/docs/languages/css) enabled. Color previews are independent of embedded semantic highlighting.
 
 ### Directive formatting
 Document and range formatting can repair Master CSS directive source without changing compiler semantics, cascade behavior, or generated CSS. It is enabled by default with `masterCSS.formatDirectives`.
@@ -81,11 +83,11 @@ The default settings cover common web, framework, and content files: HTML, PHP, 
 | `masterCSS.includedLanguages` | Common web and template language IDs | Languages that receive Master CSS language-service features. |
 | `masterCSS.classAttributes` | `class`, `className` | Markup attributes whose quoted values contain class strings. |
 | `masterCSS.classAttributeBindings` | Framework binding defaults | Bound attributes such as `:class`, `v-bind:class`, `[ngClass]`, and `class:list`. |
-| `masterCSS.classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.*` | JavaScript callees whose string arguments contain class strings. |
+| `masterCSS.classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | JavaScript callees whose string arguments contain class strings; `styled` also accepts member forms such as `styled.button`. |
 | `masterCSS.classDeclarations` | `[]` | Project-specific variables or object properties whose strings should be treated as class declarations. |
 | `masterCSS.exclude` | `.git`, `node_modules`, `.hg` | Files excluded from all Master CSS language-service features. |
 
-Customize the source settings when a project uses its own class helpers or naming conventions:
+Customize the source settings when a project uses its own class helpers or naming conventions. Language-service arrays extend the built-in class sources; this differs from ESLint settings, where arrays replace the defaults:
 
 ```json name=.vscode/settings.json
 {
@@ -200,7 +202,7 @@ same Rust inspection used by CLI and MCP; no browser result is implied.
 | Project variables, components, or utilities are missing. | Add a CSS entry that imports `@master/css`, or declare a Master CSS package dependency, then restart the language server. |
 | The wrong monorepo package is used. | Set `masterCSS.workspaces` to explicit workspace directories. |
 | Embedded highlighting is too noisy or too quiet. | Change `masterCSS.embeddedSyntaxHighlighting` to `active`, `always`, or `off`. |
-| Color decorators do not appear. | Keep `masterCSS.renderSyntaxColors` enabled and confirm the editor theme supports semantic highlighting. |
+| Color decorators do not appear. | Enable `masterCSS.renderSyntaxColors` and `editor.colorDecorators`; check for language-specific overrides in VS Code settings. |
 
 ---
 

@@ -28,7 +28,7 @@ export default defineConfig([
 | `@master/css/sort-classes` | `warn` | Yes | Sort classes into a stable generated-rule order. |
 | `@master/css/no-invalid-classes` | `error` | No | Report invalid Master CSS syntax and invalid generated CSS. |
 | `@master/css/no-conflicting-classes` | `warn` | Yes | Report full and partial declaration conflicts in the same variant scope. |
-| `@master/css/prefer-canonical-classes` | `warn` | Yes | Prefer semantic utilities, theme tokens, matching utility recipes, and condition order. |
+| `@master/css/prefer-canonical-classes` | `warn` | Yes | Suggest canonical forms only when token identity and generated-rule behavior are preserved. |
 
 ---
 
@@ -61,14 +61,16 @@ Ordering is a formatting policy. It does not change generated CSS, but it makes 
 `@master/css/no-invalid-classes` reports classes that match Master CSS syntax but generate invalid CSS.
 
 ```html
-<button class="font:">...</button>
+<button class="font-size:16">Save</button>
 ```
 
-(x) Invalid value for `font` property.
+(x) `font-size:16` has a unitless nonzero length. Use a native length such as `font-size:16px` or a configured size token such as `font-md`.
 
 By default, unmatched classes are ignored so teams can mix Master CSS with native global classes.
 
-Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest:
+An unknown CSS value is a different case: the class can match the language while the validator cannot fully check its value. For example, the current validator reports `display:banana` as `unknown`, and this rule does not flag it. A clean lint result therefore does not establish browser support or the intended appearance.
+
+Enable `disallowUnknownClass` when the project should only use classes known to the active Master CSS manifest. It rejects unmatched class names; it does not change unknown CSS-value diagnostics:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
@@ -104,16 +106,15 @@ Define project classes in the CSS entry when they are intentional:
 ```
 
 ### Prefer canonical classes
-`@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
+`@master/css/prefer-canonical-classes` checks for equivalent canonical forms while preserving token identity, value source, condition nesting and generated-rule ordering.
+
+These classes remain unchanged:
 
 ```mcss
-margin:16px display:block@dark@sm <!-- [!code --] -->
-margin:16px display:block@sm@dark <!-- [!code ++] -->
+margin:16px display:block@dark@sm
 ```
 
-
-Canonical linting preserves token identity, value source and ordering. It does not substitute currently equal tokens for literals or convert units.
-
+The rule does not replace a literal with a token that currently has the same value, convert units, or reorder the authored conditions. Choose semantic tokens deliberately, and use the raw-value policy below when the team requires them.
 
 ### No conflicting classes
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
@@ -131,32 +132,29 @@ Variant scope matters. Classes with different selectors, modes, or conditions do
 margin:2.5rem@sm margin:3.125rem@md
 ```
 
-When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
+A fully overridden class can be removed automatically. The winner follows generated CSS ordering, not the order of class names in the HTML. Reversing the two margin classes above still leaves `margin:1.25rem` as the winner.
 
-
-```mcss
-mx-md ml-lg <!-- [!code --] -->
-mr-md ml-lg <!-- [!code ++] -->
-```
+Partial declaration overlaps need review. For example, the top border override below is reported, but the rule does not split the shorthand or remove the other three borders:
 
 ```mcss
-border-style:solid border-top-style:dashed <!-- [!code --] -->
-border-right-style:solid border-bottom-style:solid border-left-style:solid border-top-style:dashed <!-- [!code ++] -->
+border-style:solid border-top-style:dashed
 ```
+
+Use the generated CSS preview to decide whether the override is intentional before changing it.
 
 ---
 
 ## Supported sources
-The default config checks class strings in common markup, JavaScript locations.
+The default config checks class strings in common markup and JavaScript locations.
 
 | Setting | Default | Use |
 | --- | --- | --- |
 | `classAttributes` | `['class', 'className']` | Markup attributes that contain class strings. |
-| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `classnames`, `styled`, `classList.*` | JavaScript callees whose arguments can contain class strings. |
+| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | JavaScript callees and tagged templates whose arguments can contain class strings; `styled` also accepts member forms such as `styled.button`. |
 | `classDeclarations` | `[]` | Project-specific variables or object properties that should be treated as class declarations. |
 | `ignoredKeys` | `['compoundVariants', 'defaultVariants']` | Object keys ignored while traversing variant config objects. |
 
-Customize settings under the `@master/css` settings key:
+Customize settings under the `@master/css` settings key. Arrays replace their defaults, so include every helper or attribute you want ESLint to inspect:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
@@ -191,24 +189,6 @@ export default defineConfig([
     rules: {
       '@master/css/no-invalid-classes': ['error', {
         disallowUnknownClass: true
-      }]
-    }
-  }
-])
-```
-
-Enable matching registered static utilities in canonical suggestions when the project uses named recipes:
-
-```js name=eslint.config.js
-import { defineConfig } from 'eslint/config'
-import masterCSS from '@master/eslint-config-css'
-
-export default defineConfig([
-  ...masterCSS,
-  {
-    rules: {
-      '@master/css/prefer-canonical-classes': ['warn', {
-        preferStaticUtilities: true,
       }]
     }
   }
@@ -267,18 +247,23 @@ Use editor sort-on-save for low-friction cleanup:
 
 ```json name=.vscode/settings.json
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
   "eslint.codeActionsOnSave.rules": [
     "@master/css/sort-classes"
   ]
 }
 ```
 
+The first setting enables ESLint fixes on an explicit save. The rule list restricts that save action to class sorting; it does not enable save actions by itself. Keep `eslint.codeActionsOnSave.mode` at its default `all` so the rule filter applies. See the [ESLint extension's save settings](https://github.com/microsoft/vscode-eslint#settings-options).
+
 See [Visual Studio Code setup](/guide/installation/vscode) for the full editor flow.
 
 ---
 
 ## Lint from scripts and AI tools
-Keep `eslint .` as the normal development and CI command for JavaScript and framework projects. When a script needs machine-readable diagnostics without loading an ESLint parser, use the CLI:
+Keep `eslint .` in the project's development and CI scripts for JavaScript and framework projects. When a script needs machine-readable diagnostics without loading an ESLint parser, use the CLI. It is a separate dependency: [install it locally](/guide/installation/cli) with the same Master CSS release as the project, then run:
 
 ```bash name=Terminal
 npx @master/css-cli lint --format json

@@ -97,7 +97,8 @@ const modeColors: Record<ModeId, BenchmarkColor> = {
   'master-progressive': 'green',
   'tailwind-static': 'cyan'
 }
-const payloadSegments = [
+// Embedded CSS and hydration JSON are already part of the complete HTML response.
+const responseSegments = [
   {
     id: 'html',
     label: 'HTML',
@@ -109,11 +110,6 @@ const payloadSegments = [
     color: 'cyan'
   },
   {
-    id: 'inlineCSS',
-    label: 'Inline CSS',
-    color: 'yellow'
-  },
-  {
     id: 'runtimeJS',
     label: 'Runtime JS',
     color: 'green'
@@ -122,11 +118,6 @@ const payloadSegments = [
     id: 'manifestJSON',
     label: 'Manifest JSON',
     color: 'red'
-  },
-  {
-    id: 'hydrationManifest',
-    label: 'Hydration manifest',
-    color: 'yellow'
   }
 ] satisfies { id: keyof DeliveryModeResult['payload']; label: string; color: BenchmarkColor }[]
 const loadMetricLabels: Record<TimingMetricId, string> = {
@@ -170,8 +161,8 @@ function formatNumber(value: number, maximumFractionDigits: number) {
   }).format(value)
 }
 
-function getPayloadTotal(payload: DeliveryModeResult['payload'], kind: keyof ByteSummary = 'brotliBytes') {
-  return Object.values(payload).reduce((total, summary) => total + summary[kind], 0)
+function getResponseTotal(payload: DeliveryModeResult['payload'], kind: keyof ByteSummary = 'brotliBytes') {
+  return responseSegments.reduce((total, { id }) => total + (payload[id].rawBytes > 0 ? payload[id][kind] : 0), 0)
 }
 
 function createSummaryMetrics(): BenchmarkMetric[] {
@@ -216,7 +207,8 @@ function createSummaryMetrics(): BenchmarkMetric[] {
 function createPayloadItems(result = getPrimaryResult()): BenchmarkStackedBarItem[] {
   return modes.map((mode) => {
     const modeResult = result.modes[mode.id]
-    const segments = payloadSegments
+    const segments = responseSegments
+      .filter(segment => modeResult.payload[segment.id].rawBytes > 0)
       .map((segment): BenchmarkSegment => {
         const value = modeResult.payload[segment.id].brotliBytes
         return {
@@ -233,7 +225,7 @@ function createPayloadItems(result = getPrimaryResult()): BenchmarkStackedBarIte
       id: `${result.fixtureId}-${mode.id}-payload`,
       label: mode.label,
       segments,
-      total: getPayloadTotal(modeResult.payload),
+      total: getResponseTotal(modeResult.payload),
       detail: `${formatCount(modeResult.timing.requestCount.median)} requests`
     }
   })
@@ -277,7 +269,9 @@ export function MasterDeliveryModesSummary() {
 }
 
 export function MasterDeliveryPayloadChart() {
-  return <BenchmarkStackedBars items={createPayloadItems()} valueFormatter={formatBytes} />
+  const items = createPayloadItems()
+  const max = Math.max(0, ...items.map(item => item.total ?? 0))
+  return <BenchmarkStackedBars items={items} max={max} valueFormatter={formatBytes} />
 }
 
 export function MasterDeliveryLoadChart() {
@@ -318,13 +312,13 @@ export function MasterDeliveryModesTables() {
             <tr>
               <th>Fixture</th>
               <th>Mode</th>
-              <th>Payload</th>
+              <th>Response assets</th>
               <th>HTML</th>
               <th>External CSS</th>
-              <th>Inline CSS</th>
+              <th>Inline CSS (in HTML)</th>
               <th>Runtime JS</th>
               <th>Manifest JSON</th>
-              <th>Hydration manifest</th>
+              <th>Hydration (in HTML)</th>
               <th>Rules</th>
               <th>Declarations</th>
               <th>Navigation ready</th>
@@ -344,7 +338,7 @@ export function MasterDeliveryModesTables() {
                 <tr key={`${result.fixtureId}-${mode.id}`}>
                   <th>{getFixtureName(result.fixtureId)}</th>
                   <td>{mode.label}</td>
-                  <td>{formatBytes(getPayloadTotal(modeResult.payload))}</td>
+                  <td>{formatBytes(getResponseTotal(modeResult.payload))}</td>
                   <td>{formatBytes(modeResult.payload.html.brotliBytes)}</td>
                   <td>{formatBytes(modeResult.payload.externalCSS.brotliBytes)}</td>
                   <td>{formatBytes(modeResult.payload.inlineCSS.brotliBytes)}</td>

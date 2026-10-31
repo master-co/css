@@ -7,29 +7,27 @@ export default {
     const { p, text, line, surface, svg } = drawing(theme)
     const l = deliveryIllustrations.pruning.labels
     const content = `
-      ${text(180, 30, l.usage, 18, p.ink, 500, 'text-anchor="middle"')}
-      ${text(180, 57, l.classes, 16, p.muted, 400, 'text-anchor="middle"')}
-      ${line('M180 74V104', 'marker-end="url(#arrow)"')}
-      ${surface(65, 116, 230, 78)}
-      ${text(85, 147, l.entry, 18, p.ink, 500)}
-      ${text(85, 175, l.entryPolicy, 16, p.muted)}
-      ${line('M180 206V222M180 222H88V256', 'marker-end="url(#arrow)"')}
-      ${line('M180 222H272V256', 'marker-end="url(#arrow)"')}
-      ${text(180, 247, l.imports, 15, p.muted, 400, 'text-anchor="middle"')}
-      ${surface(8, 268, 160, 120)}
-      ${text(24, 299, l.local, 18, p.ink, 500)}
-      ${text(24, 328, l.localPolicy, 16, p.muted)}
-      ${text(24, 366, l.used, 16)}
-      ${surface(192, 268, 160, 120)}
-      ${text(208, 299, l.external, 18, p.ink, 500)}
-      ${text(208, 328, l.default, 16, p.muted)}
-      ${text(208, 366, l.all, 16)}
-      ${line('M88 402V439', 'marker-end="url(#arrow)"')}
-      ${text(112, 427, l.animation, 16, p.muted)}
-      ${surface(8, 451, 344, 75)}
-      ${text(28, 481, l.resources, 18, p.ink, 500)}
-      ${text(28, 509, l.identity, 16, p.muted)}
+      ${text(8, 46, l.usage, 20, p.ink, 500)}
+      ${text(8, 82, l.classes, 18, p.muted)}
+      ${line('M258 65H306', 'marker-end="url(#arrow)"')}
+      ${surface(320, 12, 232, 106)}
+      ${text(340, 52, l.entry, 20, p.ink, 500)}
+      ${text(340, 89, l.entryPolicy, 18, p.muted)}
+
+      ${line('M436 132V160H128V200', 'marker-end="url(#arrow)"')}
+      ${line('M436 160V200', 'marker-end="url(#arrow)"')}
+      ${text(280, 192, l.imports, 18, p.muted, 400, 'text-anchor="middle"')}
+
+      ${surface(8, 214, 240, 112)}
+      ${text(28, 250, l.local, 20, p.ink, 500)}
+      ${text(28, 283, l.localPolicy, 18, p.muted)}
+      ${text(28, 313, l.used, 18)}
+      ${surface(312, 214, 240, 112)}
+      ${text(332, 250, l.external, 20, p.ink, 500)}
+      ${text(332, 283, l.default, 18, p.muted)}
+      ${text(332, 313, l.all, 18)}
+      ${text(280, 354, l.policy, 18, p.muted, 400, 'text-anchor="middle"')}
     `
-    return svg(360, 550, deliveryFlow('pruning').title, deliveryFlowDescription('pruning'), content, 20)
+    return svg(560, 360, deliveryFlow('pruning').title, deliveryFlowDescription('pruning'), content, 20)
   }
 }

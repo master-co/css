@@ -83,26 +83,19 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
   <Step $row>
     <StepL>
       ### <StepNum />Load the assets
-      Reference the Vite output from your shared layout. Add `hidden` so the runtime can avoid a flash of unstyled content before it injects class rules.
+      Add the stylesheet to the existing layout’s `<head>` and the module script before `</body>`. Keep the layout’s metadata, other scripts, `@RenderBody()` and section rendering.
     </StepL>
     <StepR>
       ```html name=Pages/Shared/_Layout.cshtml
-      <html lang="en" hidden>
-      <head>
-        <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
-      </head>
-      <body>
-        @RenderBody()
-        <script type="module" src="~/assets/app.js" asp-append-version="true"></script>
-      </body>
-      </html>
+      <link rel="stylesheet" href="~/assets/app.css" asp-append-version="true">
+      <script type="module" src="~/assets/app.js" asp-append-version="true"></script>
       ```
     </StepR>
   </Step>
   <Step $row>
     <StepL>
       ### <StepNum />Add build scripts
-      Build or watch the frontend assets beside the .NET server.
+      Merge these fields into the existing `package.json`, keeping the dependencies installed above. Build or watch the frontend assets beside the .NET server.
     </StepL>
     <StepR>
       ```json name=package.json
@@ -123,6 +116,9 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
 </StepSection>
 
 ```html name=Pages/Index.cshtml
+@page
+@model IndexModel
+
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
@@ -131,3 +127,19 @@ Use Vite runtime rendering when ASP.NET Core owns Razor Pages or MVC views. ASP.
 Use [ASP.NET Core static rendering](/guide/installation/aspnet-core) when Razor class strings are complete at build time and you want a generated CSS asset.
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+
+## Keep the page and layout connected
+The `@page` directive makes this Razor file a routable page. Keep the generated PageModel and shared layout. For MVC, put the heading in the view rendered by your controller instead.
+
+New .NET templates can include Bootstrap. Normal unlayered Bootstrap declarations can override layered Master CSS utilities, so check the loaded stylesheets and computed styles when a class appears ineffective. See [Cascade layers](/guide/cascade-layers) for precedence.
+
+## Verify the result
+Build Vite assets before `dotnet build` or `dotnet publish`, so .NET includes them in its static asset output. Run `dotnet run` and use the URL printed by the server. The heading should be large, heavy and italic.
+
+After startup, add a new class in the browser console; the heading should gain an underline without rebuilding:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+Runtime styling begins after JavaScript loads. Keep the document visible when scripts are unavailable; see [Flash of Unstyled Content](/guide/flash-of-unstyled-content) before adding page hiding.

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Runtime Rendering in Blazor',
-  description: 'Guide to setting up Master CSS runtime rendering in your Blazor project.',
+  description: 'Build browser runtime assets for Blazor Web Apps and keep generated styles working through enhanced navigation.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

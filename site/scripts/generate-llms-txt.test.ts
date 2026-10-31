@@ -129,7 +129,7 @@ test('project style guides retain complete configured examples in search and llm
     }
   }
   const compatibility = await projectStyleGuideContent(root, 'compatibility')
-  assert.ok(compatibility.markdown.includes('CSS.supports(property, value)'))
+  assert.ok(compatibility.markdown.includes('preserves direct native declarations without using `CSS.supports()` as an acceptance filter'))
   assert.doesNotMatch(compatibility.markdown, /```css\n\s*```/)
   const transitions = await projectStyleGuideContent(root, 'view-transitions')
   assert.ok(transitions.markdown.includes('[Interactive article transition preview](/guide/view-transitions#article-list-to-detail)'))
@@ -546,7 +546,8 @@ test('installation steps retain complete commands, stable headings and navigatio
     const normalizeFence = (value: string) => value.replace(/<!--\s*@MARK[\s\S]*?-->/g, '').split('\n').map(line => line.trim()).join('\n').trim()
     const exportedFences = deliveryFences(content.markdown).map(fence => normalizeFence(fence.text))
     for (const fence of deliveryFences(source)) assert.ok(exportedFences.includes(normalizeFence(fence.text)), `${slug}: ${fence.name}`)
-    assert.doesNotMatch(content.markdown, /<(?:Step(?:Section|L|R|Num|End)?\b|DocumentChoice|InstallationGuides|DemoConfiguredExample)|MCSS_EXPRESSION/)
+    for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
+    assert.doesNotMatch(content.markdown, /<(?:Step(?:Section|L|R|Num|End)?\b|DocumentChoice|InstallationGuides|DemoConfiguredExample|DeliveryFlow)|MCSS_EXPRESSION/)
     if (slug === 'integrations') assert.ok(content.markdown.includes(installationGuidesMarkdown()))
     const url = `/guide/installation${slug ? `/${slug}` : ''}`
     for (const heading of previous[url]) {
@@ -655,7 +656,7 @@ test('benchmarks export the same chart values and complete tables as the page', 
     assert.ok(rendered.includes('|'), name)
     assert.ok(content.markdown.includes(rendered.trim().replace(/\n{3,}/g, '\n\n')), name)
   }
-  for (const text of ['Five-minute lifecycle evidence', 'Complete interaction cost data', 'Static CSS output, structure, and production build', 'not real Web Vitals INP']) assert.ok(content.markdown.includes(text), text)
+  for (const text of ['Five-minute lifecycle evidence', 'Complete interaction cost data', 'Static CSS output, structure, and production build', 'It does not measure an individual input delay or Web Vitals INP', 'Session elapsed', 'one measured run']) assert.ok(content.markdown.includes(text), text)
   assert.doesNotMatch(content.markdown, /<Benchmark|<StaticCSS|\[object Object\]|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
@@ -666,4 +667,30 @@ test('benchmarks export the same chart values and complete tables as the page', 
   assert.equal(benchmarkLabel(fragment), 'Fixture A')
   assert.match(benchmarkMarkdown(createElement(BenchmarkBars, { items: [{ id: 'zero', label: fragment, value: 0 }], unit: 'ms' })), /Fixture A \| 0 ms/)
   assert.throws(() => benchmarkMarkdown(createElement(() => null)), /Unregistered benchmark presentation/)
+})
+
+test('delivery payload charts count complete responses once and omit absent assets', async () => {
+  const { MasterDeliveryPayloadChart, MasterDeliveryModesTables } = await import('../content/guide/benchmarks/components/MasterDeliveryModesBenchmark')
+  const { benchmarkMarkdown } = await import('../utils/benchmark-content')
+  const chart = MasterDeliveryPayloadChart()
+  const items = chart.props.items as import('../components/benchmarks').BenchmarkStackedBarItem[]
+  // Independently checked against the committed docs fixture: HTML already embeds CSS and hydration JSON.
+  const expected = [
+    { label: 'Master CSS static', bytes: 2996, parts: ['HTML', 'External CSS'] },
+    { label: 'Master CSS runtime', bytes: 34148, parts: ['HTML', 'Runtime JS', 'Manifest JSON'] },
+    { label: 'Master CSS progressive', bytes: 36138, parts: ['HTML', 'Runtime JS', 'Manifest JSON'] },
+    { label: 'Tailwind CSS static', bytes: 3698, parts: ['HTML', 'External CSS'] },
+  ]
+  assert.equal(items.length, expected.length)
+  assert.equal(chart.props.max, 36138, 'all rows use the largest complete-response total as their scale')
+  for (const [index, row] of expected.entries()) {
+    assert.equal(items[index].label, row.label)
+    assert.equal(items[index].total, row.bytes)
+    assert.deepEqual(items[index].segments.map(segment => segment.label), row.parts)
+    assert.equal(items[index].segments.reduce((sum, segment) => sum + segment.value, 0), row.bytes)
+  }
+  const table = benchmarkMarkdown(MasterDeliveryModesTables())
+  assert.match(table, /Response assets.*Inline CSS \(in HTML\).*Hydration \(in HTML\)/)
+  assert.match(table, /Docs \| Master CSS progressive \| 36\.1 kB/)
+  assert.match(benchmarkMarkdown(chart), /Master CSS progressive\*\* · 36\.1 kB/)
 })

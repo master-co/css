@@ -105,7 +105,7 @@ Use the same entry data when exporting a plain-text tree. See [Monorepo](/guide/
 
 ### Discovery waterfall
 
-`DemoWaterfall` shows illustrative request order with a text description and labeled resource rows. It has no time axis, FCP marker or animated playback. Keep measured results in the benchmark components.
+`DemoWaterfall` shows illustrative request order with a text description and labeled resource rows. It has no measured time scale or animated playback. An optional marker can identify a condition such as first paint; describe that condition in the caption. Keep measured results in the benchmark components.
 
 <ResourceWaterfall />
 
@@ -141,7 +141,7 @@ The [waterfall review](/design-system/review/waterfall) shows the current reques
 
 <DemoStyleComparison html={'<p class="message">Saved to your workspace.</p>'} css=".message { padding: 1rem; font: 500 1rem/1.5 system-ui; }" height={160} />
 
-The previews use the same fixed height, with native scrolling when needed. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/flash-of-unstyled-content).
+By default, the previews use the same fixed height, with native scrolling when needed. For normal-flow content such as the first-paint comparison above, pass `sizing="content"` so each frame grows and shrinks with its document, including native margins. Keep the default viewport sizing for fixed, sticky or viewport-dependent geometry. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/flash-of-unstyled-content).
 
 ### Document flow
 

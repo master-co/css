@@ -8,7 +8,7 @@
   .demo-waterfall-rows li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); align-items: center; gap: var(--spacing-md); margin: 0; padding: 0; }
   .demo-waterfall-label { color: var(--color-demo-text); font: 550 .75rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
   .demo-waterfall-track { position: relative; height: 1.75rem; border: 1px solid var(--color-demo-line); border-radius: var(--radius-xs); background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--color-demo-grid) calc(25% - 1px) 25%), var(--color-demo-surface); }
-  .demo-waterfall-bar { position: absolute; inset-block: .375rem; border-radius: 2px; background: var(--demo-tone); }
+  .demo-waterfall-bar { position: absolute; inset-block: .375rem; border: 1px solid transparent; border-radius: 2px; background: var(--demo-tone); }
   .demo-style-comparison > .site-demo { margin-block: 0; }
   .demo-style-comparison { margin-block: var(--spacing-lg); }
   @container demo-waterfall (width < 27rem) {

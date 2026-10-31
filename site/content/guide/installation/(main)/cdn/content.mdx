@@ -1,17 +1,27 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
-import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
 
-The CDN links below show the browser-only [runtime](/guide/rendering-modes#runtime-rendering) setup for a matching release and the default preset. Check that the published `@rc` packages use the same runtime program contract before copying the example.
+A browser-only [runtime](/guide/rendering-modes#runtime-rendering) page needs a base stylesheet, a runtime script and its compiled default program. Host the matching files together on your static host or CDN. The browser generates styles for connected classes; no application bundler is needed after those assets are available.
 
-<StepSection>
-  <Step>
-    ### <StepNum />Start in one step
-    Add the default stylesheet and runtime script to your document, then start using Master CSS classes.
+## Host matching assets
 
-    Open your browser to watch the changes.
-  </Step>
-  <HelloWorld />
-</StepSection>
+Start with matching runtime and preset packages installed in your project. The runtime build must contain both `dist/global.min.js` and `dist/default-program.bin`. Check for both files before choosing a public CDN URL: a moving npm tag does not establish that the program required by this guide is published.
+
+For an application that serves `public/` as its web root, copy the assets into one directory:
+
+```bash name=Terminal
+mkdir -p public/master-css
+cp node_modules/@master/css-preset/src/base.css public/master-css/base.css
+cp node_modules/@master/css-runtime/dist/global.min.js public/master-css/global.min.js
+cp node_modules/@master/css-runtime/dist/default-program.bin public/master-css/default-program.bin
+```
+
+Deploy all three files from the same matching package build. When using a CDN, keep `global.min.js` and `default-program.bin` in the same release directory. The script derives the program URL from its own directory; renaming or relocating only the program breaks startup.
+
+If your available package does not contain the program, use an [integration](/guide/installation/integrations) with a matching package build. Do not mix a script from one release with a program copied from another.
+
+## Load the page \{#start-in-one-step\}
+
+Save this document as `public/index.html` and serve the `public/` directory over HTTP. The paths below load the files copied above. For a CDN deployment, use their deployed URLs in both the preload hints and the consuming tags.
 
 ```html name=index.html
 <!DOCTYPE html>
@@ -19,11 +29,9 @@ The CDN links below show the browser-only [runtime](/guide/rendering-modes#runti
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js">
-  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin">
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
 </head>
 <body>
   <h1 class="margin:3rem color:#111827 font-size:40px font-style:italic font-weight:800">Hello World</h1>
@@ -31,7 +39,17 @@ The CDN links below show the browser-only [runtime](/guide/rendering-modes#runti
 </html>
 ```
 
-The CDN runtime only includes the default preset, compiled into `default-program.bin` beside the script. Keep the script and its program on the direct CDN origin; a redirect without CORS headers can block the program fetch, and a Content Security Policy must allow it in `connect-src`. The `@rc` URLs follow published npm packages, which can lag this repository's unreleased source. Use matching runtime and preset versions when testing source changes. Use a package-manager installation when you need custom theme tokens, utilities, mixins, named conditions, or framework integration. See [preload critical resources](/guide/preload-critical-resources#preload-runtime-engine) for the request preload details.
+<HelloWorld />
+
+The heading becomes visible with a `40px` italic font and `3rem` margin after runtime startup. Check the Network panel for successful stylesheet, script and program responses, and the console for startup errors. Confirm that the later fetch reuses the program preload with your deployed cache headers. [Preload critical resources](/guide/preload-critical-resources#preload-runtime-engine) explains the hint and how to verify it.
+
+## Check delivery and startup failures
+
+The script executes a program compiled for its engine. Keep the script and program on the direct CDN origin; a redirect without CORS headers can block the program fetch. A Content Security Policy must allow the script in `script-src` and the program fetch in `connect-src`.
+
+The `hidden` root prevents an unstyled first view. The runtime reveals it after startup and also unhides it on a handled startup error, which can leave the content without generated styles. If JavaScript is disabled or the runtime script never executes, the root stays hidden. Use [static rendering](/guide/rendering-modes#static-rendering) when the page must have styles without JavaScript, and test these failure paths before shipping a runtime-only page.
+
+This default program supplies the preset vocabulary. Use a matching [framework or bundler integration](/guide/installation/integrations) when you need a project program containing custom theme tokens, utilities, mixins or named conditions.
 
 import Footer from '../footer.mdx'
 

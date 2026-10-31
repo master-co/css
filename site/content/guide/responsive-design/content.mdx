@@ -9,10 +9,24 @@ Choose the boundary that owns the change: viewport queries adapt a page; contain
 (resize) Resize the gallery with the slider or its arrow keys. Its column count follows the preview viewport.
 
 <DemoPageViewport src="/examples/responsive-gallery" title="Responsive asset gallery" height={420} />
+
+The gallery starts at two columns, then grows to three at `2xs`, four at `sm`, and five at `md`. This smaller example keeps the same column rules and the featured image's two-by-two span. Replace the image paths with your own files.
+
 ```html
-<!-- @MARK @xs @sm @md -->
-<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
+<!-- @MARK @2xs @sm @md -->
+<div class="grid-cols(2) gap-md grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md">
+  <img class="grid-col-span(2) grid-row-span(2) width:100% height:100% min-height:0 object-fit:cover"
+    src="mountain1.jpg" alt="Snowy peaks above the clouds" />
+  <img class="width:100% aspect-ratio:2/1 object-fit:cover" src="mountain2.jpg" alt="A pyramid-shaped summit" />
+  <img class="width:100% aspect-ratio:2/1 object-fit:cover" src="mountain3.jpg" alt="Snowy ridges beneath stars" />
+  <img class="width:100% aspect-ratio:2/1 object-fit:cover" src="mountain4.jpg" alt="A forested range at dusk" />
+  <img class="width:100% aspect-ratio:2/1 object-fit:cover" src="mountain5.jpg" alt="Rocky towers above an alpine valley" />
+  <img class="width:100% aspect-ratio:2/1 object-fit:cover" src="mountain6.jpg" alt="Rock spires beneath heavy clouds" />
+</div>
 ```
+
+<Class2CSS>{['grid-cols(2)', 'grid-cols(3)@2xs', 'grid-cols(4)@sm', 'grid-cols(5)@md', 'gap-md', 'grid-col-span(2)', 'grid-row-span(2)']}</Class2CSS>
+
 Viewport queries use [named custom media](/guide/breakpoints). [Container queries](/guide/containers) measure an eligible ancestor at an explicit threshold.
 
 ---
@@ -22,10 +36,8 @@ Use viewport breakpoints when navigation, page columns, outer spacing or another
 
 ### Using responsive breakpoints
 The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [custom media name](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
-```html
-<!-- @MARK @xs @sm @md -->
-<div class="grid-cols(2) grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md …">…</div>
-```
+
+In the gallery above, the unqualified `grid-cols(2)` supplies the base layout. Wider conditions replace its column count. Test each threshold on both sides with the preview slider; changing the article's width is not required because the preview has its own viewport.
 
 ### Querying viewport ranges
 Use a complete [native media query](/reference/rules/conditions#mediafeature) to create more complex viewport range queries.
@@ -41,7 +53,9 @@ Use a complete [native media query](/reference/rules/conditions#mediafeature) to
 Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
 ```html
 <!-- @MARK max-w-4xl@sm max-w-5xl@md max-w-7xl@lg -->
-<div class="max-w-4xl@sm max-w-5xl@md max-w-7xl@lg …">…</div>
+<main class="width:100% margin-inline:auto px-md max-w-4xl@sm max-w-5xl@md max-w-7xl@lg">
+  Page content
+</main>
 ```
 
 ---
@@ -53,9 +67,10 @@ Use [container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_con
 The `container-type:inline-size` declaration establishes an inline-size query container, making it a query container for `@container((width>=18rem))` and other native container queries.
 
 (resize) Try making the container smaller.
-<DemoContainer title="Responsive media object">
-  <Demo>
-    <div className="overflow:hidden container-type:inline-size width:100% b-line-divider r-lg border-style:solid border-width:1px bg-surface-raised">
+<Demo title="Responsive media object" padding="none" frame="none" caption="The slider measures the query container. The card stacks at 18rem or less; the surrounding page keeps its own viewport.">
+  <DemoContainer title="Responsive media object">
+    <div className="container-type:inline-size">
+      <div className="overflow:hidden width:100% b-line-divider r-lg border-style:solid border-width:1px bg-surface-raised">
       <div className="display:flex flex-direction:column@container((width<=18rem))">
         <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))" width={300} height={200} alt="Soft blue and violet gradient" />
         <div className='py-lg px-xl'>
@@ -63,18 +78,28 @@ The `container-type:inline-size` declaration establishes an inline-size query co
           <div className='mt-3xs text-sm'>A collection of textures, places and quiet details. This card shares the available space with its image, then stacks when its own container becomes narrow.</div>
         </div>
       </div>
+      </div>
     </div>
-  </Demo>
-</DemoContainer>
+  </DemoContainer>
+</Demo>
 ```html
-<div class="container-type:inline-size …">
+<div class="container-type:inline-size">
   <!-- @MARK @container((width<=18rem)) -->
-  <div class="display:flex flex-direction:column@container((width<=18rem))">…</div>
+  <article class="display:flex flex-direction:column@container((width<=18rem))">
+    <img class="w-3xs aspect-ratio:3/2 object-fit:cover width:100%@container((width<=18rem)) aspect-ratio:16/9@container((width<=18rem))"
+      src="texture.jpg" width="300" height="200" alt="Soft blue and violet gradient" />
+    <div class="py-lg px-xl">
+      <h2 class="text-md font-medium">Field notes</h2>
+      <p class="text-sm">A collection of textures, places and quiet details.</p>
+    </div>
+  </article>
 </div>
 ```
 <Class2CSS>
-  {['container-type:inline-size', 'flex-direction:column@container((width<=18rem))']}
+  {['container-type:inline-size', 'display:flex', 'flex-direction:column@container((width<=18rem))', 'w-3xs', 'width:100%@container((width<=18rem))', 'aspect-ratio:3/2', 'aspect-ratio:16/9@container((width<=18rem))']}
 </Class2CSS>
+Use your own image for `texture.jpg`. At or below `18rem`, the content stacks and the image fills the card's width. Above that threshold, the image and text sit beside each other.
+
 Choose component thresholds from the space the content needs. Changing a [container size token](/reference/tokens/container) does not update a literal query. Reuse a condition with a CSS mixin wrapper when needed; see [Container queries](/guide/containers).
 
 ### Querying container ranges

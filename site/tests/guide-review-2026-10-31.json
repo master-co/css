@@ -1,0 +1,2101 @@
+{
+  "startedAt": "2026-10-30T21:00:00Z",
+  "minimumFinishAt": "2026-10-31T05:35:20Z",
+  "status": "complete",
+  "scope": "All current canonical Guide URLs, including installation and migration subpages; preserve changes present at start.",
+  "baseline": "/tmp/master-css-guide-review-20261031",
+  "method": "Read each article and relevant source/tests; repair concrete learning gaps; assess illustration need; verify changed examples, exports, and article visuals. Earlier review results are historical evidence, not completion of this pass.",
+  "sessions": [
+    {
+      "at": "2026-10-30T21:18:00Z",
+      "work": "Fresh inventory of 89 Guide URLs; first ten article reviews and illustration repairs. CDN publication mismatch verified live; replacement workflow and browser failure-path checks underway."
+    },
+    {
+      "at": "2026-10-30T21:25:51.027Z",
+      "work": "CDN and CLI production fixtures passed, including failure modes. Incorporated concurrent skill update without changing the other chat’s runtime/progressive/hydration art. Two additional authoring guides now have stronger executable examples."
+    },
+    {
+      "at": "2026-10-30T21:27:30.754Z",
+      "work": "First 16/89 Guide pages reviewed. 96 current browser profiles have no failures; two token demos also passed computed-value, keyboard and enlarged-text checks, and shared buttons passed hover/focus/motion checks. All work remains active until all pages and the eight-hour minimum are complete."
+    },
+    {
+      "at": "2026-10-30T21:42:13.456437+00:00",
+      "work": "Reviewed six further foundation articles; fixed typography/demo mismatch and shadow focus/print example. Responsive boundary test found preview chrome was included in slider measurement; repairing containment and completing motion/dialog examples next."
+    },
+    {
+      "at": "2026-10-30T21:46:06.776206+00:00",
+      "work": "27/89 pages reviewed. All ten design foundations and Responsive Design inspected; authored examples and real boundary checks passed. Now adding a source-scanning figure and reviewing runtime delivery/FOUC claims."
+    },
+    {
+      "at": "2026-10-30T21:54:23.272890+00:00",
+      "work": "36/89 pages reviewed. Added scanning scene and completed tooling/view-transition reviews; executable checks exposed and corrected four lint behavior claims. 27 docs tests and 36 transition behavior profiles pass. Benchmark review underway."
+    },
+    {
+      "at": "2026-10-30T22:05:38.995600+00:00",
+      "work": "46/89 pages reviewed. Six Vite/React/Vue apps built and passed 36 browser profiles. Astro runtime/progressive passed 24 profiles; static omission documented. Next.js three modes passed 72 production profiles with explicit bundler limits; final article visuals and Nuxt checks ongoing."
+    },
+    {
+      "at": "2026-10-30T22:12:46.794277+00:00",
+      "work": "52/89 pages reviewed. Next/Nuxt production and relocation checks complete. TanStack actual framework builds and 24 browser profiles pass; React Router full compiler verification and Svelte/Lit review underway."
+    },
+    {
+      "at": "2026-10-30T22:23:29.773351+00:00",
+      "work": "64/89 pages reviewed. Svelte four modes passed 48 browser profiles, Lit shadow runtime layer ordering corrected and verified, bundler six modes passed 72 profiles. Angular and Express underway."
+    },
+    {
+      "at": "2026-10-30T22:31:35.180347+00:00",
+      "work": "73/89 pages reviewed. Angular and Express complete; PHP/Rails/Laravel assets verified with native-server limits stated. Real Turbo navigation passed. .NET SDK installed only in temporary directory; four actual projects built. WordPress/Shopify/Storybook review underway."
+    },
+    {
+      "at": "2026-10-30T22:37:58.635967+00:00",
+      "work": "81/89 pages reviewed. All installation pages now reviewed, including real .NET, WordPress and Storybook runs. Blazor navigation and WordPress/Shopify output-root failures corrected in recipes. Migration guides and Guide overview remain; eight-hour minimum still active."
+    },
+    {
+      "at": "2026-10-30T22:54:53.638585+00:00",
+      "work": "89/89 current Guide pages have completed the first article-by-article pass. Migration actual-library comparisons exposed and corrected a default md mismatch. Production build, export/link QA, deeper accessibility and visual checks continue; the eight-hour minimum is not yet met."
+    },
+    {
+      "at": "2026-10-30T23:15:57.656586+00:00",
+      "work": "Second pass: production build passed (368 pages / 91 assets), all 178 Guide locale routes passed 15,820 internal links and export/search presence, and all 356 no-script profiles passed. Reframed and connected Next.js boundary illustration, repaired Marketplace ID, legacy migration anchor, swatch semantics, nested-brand contrast and layout label contrast. Full WebKit sweep and enlarged-text toolbar/step fixes are in progress. Goal remains active; eight-hour minimum is not met."
+    },
+    {
+      "at": "2026-10-30T23:23:32.907668+00:00",
+      "work": "Completed full WebKit visual sweep and 89-page enlarged-text reflow check. Repaired clipped copy controls and installation step width; 32 cross-browser keyboard-copy profiles passed. Print sweep found 285 clipped source blocks; print-only wrapping repaired and verified in 32 Chromium/WebKit profiles. Swiper real package layering passed 24 profiles. Export paragraph comparison is being reviewed; goal remains active."
+    },
+    {
+      "at": "2026-10-30T23:38:56.786683+00:00",
+      "work": "Full print sweep repaired all 285 previously clipped code blocks. Slow-network reading audit is running against an immutable production snapshot. Native fragment review exposed fixed-header overlap and WebKit preview-resize drift; CSS offsets are repaired and a reader-cancelable initial-fragment stabilization is under focused browser tests. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T00:07:53.224235+00:00",
+      "work": "Second-pass improvements: initial-fragment stabilization passed 28 production profiles and browser-native history comparison; Global Styles now has an executable maintenance panel verified in 24 actual contrast/cascade profiles. Replaced the low-contrast FOUC SVG with shared live HTML comparison; enlarged-text checks exposed native-margin sizing and the normal-flow frame calculation is repaired. Nested named-container teaching preview is now under browser verification. Eight-hour goal remains active."
+    },
+    {
+      "at": "2026-10-31T00:18:17.958895+00:00",
+      "work": "Second-pass foundation teaching: added a live nested named-container comparison; verified nearest-eligible selection, repeated names and the 28rem boundary in eight browser/theme/width profiles. Added clamp parent caps and explained media-query font baselines, verified in 12 actual generated-CSS profiles. Enlarged iframe audit covered 144 profiles across 18 Guide pages: no vertical clipping after root-box sizing repair; 22 narrow enlarged-text scenes exposed horizontal overflow. Removed duplicate embedded-frame gutters, corrected control sizing and selective wrapping, and all 22 now fit. Full two-engine reflow regression is running."
+    },
+    {
+      "at": "2026-10-31T00:31:35.814847+00:00",
+      "work": "Completed 58 Chromium/WebKit search and navigation cases, including IME handling. Production preview/fragment suite passed 68 cases; latest 178 locale routes have 15,826 valid internal links. Slow-network 178-route audit completed without page errors, image failures or horizontal overflow; known Chromium speculative import requests and untransformed local photos remain documented limitations. Second-pass route CSS teaching now adds a complete native CSS/HTML preview; verification is in progress. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T00:43:28.975896+00:00",
+      "work": "Second-pass delivery review: route-native preview is verified; shared iframe changes passed 44 Reference/design-system consumer profiles. Production rebuild passed 368 pages and 91 public assets. Found and corrected a stale Compatibility claim: actual Chromium/WebKit runtime preserves declarations without calling CSS.supports; native application remains browser-owned. Lifecycle benchmark entrypoint fails old text-center probe after temporary dependency-layout repair; historical snapshot checks pass and article now distinguishes those operations. Theme installation wording is being tightened; eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T01:09:06.145539+00:00",
+      "work": "Second-pass layout and accessibility: corrected exact grid-line positioning for narrow/enlarged views (16 browser profiles), clarified installation manifest merging and static asset deployment. Forced-colors audit found invisible waterfall bars, flattened color samples and benchmark fills; repaired targeted styling, verified 36 waterfall consumer, 16 palette, and 16 chart profiles plus three permanent regressions. Benchmark source review now repairs a presentation total that counted inline CSS/hydration twice; original snapshots remain untouched. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T01:24:24.597928+00:00",
+      "work": "Second-pass evidence and figures: response payload totals now exclude embedded duplicates and absent assets; payload bars now share a zero-based size scale, verified in 32 Guide/design-system profiles. Cross-document view transitions passed 40 cases, compiled snapshot timing passed 8, and reduced-motion opt-in/name identity descriptions are improved. Full text-spacing sweep completed 534 route profiles and 348 embedded frames without actual overflow; 40 blocked-image/font/no-script diagram cases passed. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T01:46:37.582024+00:00",
+      "work": "Deeper review: all 178 browser route profiles and 1,968 code-copy variants passed with clipboard API capture. Repaired migration button defaults (36 real form cases), route hover motion and missing easing token (four compiled browser cases), editor/AI terminology and motion readout live announcements. Added paired pruning-scope illustration and complete root HTML; actual independent root compilation and 24 visual profiles pass. Packed authoring package works in two isolated production apps and 32 browser profiles. Preload experiment records 24 cache/origin/browser cases; prose now emphasizes program discovery and verifies reuse rather than promising it. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T02:01:45.520833+00:00",
+      "work": "Deeper source and browser review: explicit monorepo source boundaries verified through actual Vite and CLI consumers (16 browser cases); native fetch control confirms recorded WebKit preload reuse behavior without Master CSS. New pruning-scope scene passed production and missing-image/no-script checks; latest production build and 178-route link audit passed. Verified 452 rendered preset color pairs and 108 shadow/native scheme cases. Migration class forwarding versus cascade checked in 20 browser cases; articles now explain unlayered CSS Module precedence, utility conflicts and native button defaults. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T02:33:01.371199+00:00",
+      "work": "Continued review: corrected migration className/cascade expectations and explicit local CLI prerequisites. Verified six actual Vite/React/Vue development setups; earlier transient React static discovery issue is preserved as a limitation. Improved authoring action text and focus colors, Global Styles focus contrast, and Material UI button foreground. Added precise Bootstrap 768px condition and verified 32 boundary/theme/text profiles. Extended two-engine reader sessions and repeated preview interactions are active; one WebKit module-load error is under isolated reproduction. Eight-hour minimum remains active."
+    },
+    {
+      "at": "2026-10-31T02:45:24.879217+00:00",
+      "work": "Final example palette pass repaired actual low-contrast fixed surfaces, adaptive neutral pairing and red/green button tones. Editor snippets retain their hover/hex-color lessons with readable defaults. Three extended WebKit Global Styles reproductions pass; full 178-profile long reader audit continues."
+    },
+    {
+      "at": "2026-10-31T02:56:29.562902+00:00",
+      "work": "Route media-query example now has a meaningful dark branch and explicit manual/system semantics. Blazor runtime hosting scope is clarified from primary .NET documentation; actual early navigation during delayed program delivery passes four browser cases. Long reading audit has completed 26/89 routes per engine; the minimum duration remains active."
+    },
+    {
+      "at": "2026-10-31T03:18:52.709731+00:00",
+      "work": "Completed focused framework lifecycle checks (Blazor early navigation, 40 Lit reconnect cycles, Turbo release asset tracking) and clarified their article implications. Added explicit Next.js dynamic-route/no-JavaScript delivery choice. Repaired article-transition dark focus outline and verified eight keyboard/visual profiles. Navigation inventory still matches all 89 reviewed pages; full two-engine reader audit continues."
+    },
+    {
+      "at": "2026-10-31T03:38:55.664593+00:00",
+      "work": "All 89 canonical pages remain accounted for. Public-registry audit found eight unavailable current package names; installation now includes a matching-release availability prerequisite, separately from successful local-artifact framework tests. Extended reader audit continues on its preserved 01:49 production baseline; final production rebuild is deferred until it completes."
+    },
+    {
+      "at": "2026-10-31T03:56:45.292720+00:00",
+      "work": "Reading-path review repaired four remaining fixed-background/hover examples; 40 actual color-state profiles and relevant source checks pass. Installation prerequisite visual/anchor checks pass at three widths. Deliberate module failure retains readable article/code; native modulepreload control identifies a WebKit failure-cache behavior without changing site architecture. The original spontaneous long-reader error remains separately unresolved. Extended reader now covers 56/89 routes per engine."
+    },
+    {
+      "at": "2026-10-31T04:05:00Z",
+      "work": "Final reading-path pass surfaces the Astro production verification/fallback early and clarifies six installation summaries for framework/delivery selection. All 89 ledger sources exist; Guide index and Rendering Modes intentionally retain their established content structures. Prepared focused production checks for three changed focus examples at 390/768/1280 widths; these will run only after the long reader releases its old production baseline."
+    },
+    {
+      "at": "2026-10-31T04:13:14.470400+00:00",
+      "work": "Latest metadata/export validation passes. CDN literal recipe verified in two engines under light/dark and failure modes without further edits. Long reader completed 64/89 routes per engine, reaching Language Service; final production rebuild remains queued until it completes."
+    },
+    {
+      "at": "2026-10-31T05:13:19.211904+00:00",
+      "work": "Root build:site passed: 368 routes and 91 referenced public assets. Final 178-route/15,880-link audit passed. All 70 new regressions, 36 focus profiles, 12 installation prerequisite profiles and 20 final illustration surfaces passed. Source/runtime asset hashes remained unchanged. Long old-baseline sweep ended with 175 raw-clean profiles and three separately documented observations. Latest production reader is still running."
+    },
+    {
+      "at": "2026-10-31T05:35:38.602971+00:00",
+      "work": "Completed the authorized 89-page Guide review after the required eight-hour duration. Final latest-build reader passed all 178 profiles; source checks, 70 regressions, 15,880 links, focused visual checks and cleanup are recorded. Public-release/integration/benchmark/CSS snapshot limitations remain explicit follow-ups. No commit or deployment performed."
+    }
+  ],
+  "checks": [
+    "26 docs-example tests passed including actual CDN asset copy",
+    "Focused package/monorepo fixture passed after new examples",
+    "Site lint passed without warnings",
+    "Site type-check passed",
+    "2 MDX import tests passed",
+    "AI context budget passed for 2638 files",
+    "prepare-app passed after final package and monorepo edits",
+    "33 llms tests passed after preparation",
+    "Illustration labels, dimensions and text equivalence passed after latest 20px/18px changes",
+    "27 documentation-example tests passed after migration component execution fixes",
+    "20 actual migration equivalence profiles passed",
+    "28 actual Bootstrap/Tailwind conversion profiles passed",
+    "Guide index keyboard/direct-anchor interaction passed in six profiles",
+    "Latest site lint and type-check passed",
+    "Current production output: 178 Guide locale routes / 15,820 internal links / no broken anchors or missing search/LLM records",
+    "356 no-JavaScript reading profiles passed",
+    "89 light and 89 dark axe scans reviewed; real issues repaired, 31 dark flags verified against actual composited backgrounds",
+    "Next.js paired 3:2 illustration labels and image dimensions passed",
+    "33 llms/export tests passed after installation prose ownership corrections",
+    "WebKit: 89 Guide pages × 6 width/theme profiles passed",
+    "All 89 Guide pages pass 320px / 200% root-text reflow after toolbar and step layout repairs",
+    "32 Chromium/WebKit width/font/theme profiles passed keyboard copy; Chromium clipboard content matches source",
+    "32 Chromium/WebKit portrait/landscape/theme print profiles preserve complete source lines and source text",
+    "24 real Swiper stylesheet cascade profiles passed",
+    "Current 27 documentation-example and 33 llms tests passed",
+    "All 89 Guide print views now retain every code block and reveal all source tabs; zero clipped blocks after the print-only repair",
+    "Compared 1,332 visible article paragraphs with portable exports; five visual/header-only captions reviewed as equivalent surrounding text",
+    "152 native disclosure-anchor combinations passed across Chromium/WebKit and JavaScript enabled/disabled",
+    "28 production Chromium/WebKit initial-fragment and reader-release tests passed; reload/back behavior matches helper-disabled browser control",
+    "24 actual maintenance panel profiles passed theme, semantic-role independence, button/text contrast and keyboard-focus checks",
+    "Maintenance preview at 320px with enlarged iframe text has no horizontal overflow",
+    "Normal-flow comparison grows, shrinks and includes margin-only changes in four Chromium/WebKit width profiles",
+    "27 documentation-example and 33 llms/export tests passed after FOUC and nested-container revisions",
+    "8 nested-container browser profiles passed presets, nearest eligible ancestor, repeated names and exact 447/448/449px query boundaries",
+    "12 actual compiled sizing/media profiles passed clamp caps and initial-font-size media behavior",
+    "16 radius profiles passed concentric outer/inset geometry and frame overflow checks",
+    "144 automatic-height preview profiles across 18 Guide pages have no vertical overflow",
+    "22 previously overflowing enlarged-text scenes now have no horizontal overflow in Chromium; two-engine regression is ongoing",
+    "36 actual responsive boundary, container, gallery, sizing and shadow/focus/print interaction checks passed after embedded-frame gutter repair",
+    "27 documentation-example and 33 llms/export tests passed after second-pass frame reflow repairs",
+    "Site lint and type-check passed after frame reflow repairs",
+    "AI context budget passed for 2661 files before the latest reflow regression file",
+    "36 two-engine 320px / 200% iframe-text reflow regressions passed for all 18 affected Guide routes",
+    "68 production browser regressions passed: 36 enlarged-preview reflow, 4 flow sizing, 28 initial-fragment/reader-release cases",
+    "Rebuilt production output passed 368 pages and 91 asset references; 178 Guide locale routes and 15,826 internal links have no errors",
+    "Completed 178 slow-network/CPU-throttled reading profiles: no page errors, horizontal overflow or broken images; 53 extra malformed speculative stylesheet requests match the isolated Chromium reproduction",
+    "Next.js 16.4.3 Turbopack development passed static/runtime/progressive page and dynamic-route styling plus authored-file hot updates; runtime modes also generate an added DOM class without rebuilding",
+    "58 production Chromium/WebKit search, IME and navigation checks passed",
+    "68 production enlarged-preview, normal-flow sizing and initial-fragment checks passed after reflow repairs",
+    "Latest production link scan: 178 locale routes, 15,826 internal links, zero errors",
+    "62 unique Markdown external URLs checked; GitHub prefixed fragment and MCP redirect verified; npm 403 limits automated package-page verification",
+    "Route preview: 24 behavior profiles plus two enlarged-outer-text reflow profiles passed",
+    "Documentation examples 27/27 and llms 33/33 passed after route preview integration and scanning description synchronization",
+    "44 shared Reference/design-system consumer profiles passed after frame/gutter changes, covering text growth/shrink and fixed viewport height",
+    "Actual CLI watch discovers index.html created after startup",
+    "Second delivery production build passed: 368 pages, 91 assets",
+    "Two actual browser-runtime checks override CSS.supports to false: zero calls, valid declarations applied, invalid declarations retained in engine snapshot and ignored by browser",
+    "Second delivery production link scan: 178 routes and 15,846 internal links, zero errors",
+    "Route preview production reflow: both browsers passed",
+    "Eight no-script route preview profiles passed with keyboard scrolling at enlarged text",
+    "16 generated-CSS page/container composition profiles passed",
+    "Public MCP and direct tooling classify font-size:16 invalid, field-sizing:banana/interpolate-size:banana unknown, with browser support not checked",
+    "Second-pass exact grid-line example: 16 Chromium/WebKit profiles passed",
+    "Forced-color fixes: 36 waterfall profiles, 16 palette profiles and 16 benchmark profiles passed; three focused browser regressions passed",
+    "Inline prose audit: 318 candidate identifiers reviewed; unmatched entries are custom vocabulary, syntax placeholders, CSS property names, tooling identifiers or migration source syntax after stale flex wording repair",
+    "Production build completed at 01:14 UTC: 368 pages, 91 assets; 178 locale routes / 15,848 links / no errors (before final transition and shared chart-scale edits).",
+    "34 llms tests and 27 documentation-example tests passed after transition and chart-scale revisions; site lint and type-check passed.",
+    "32 shared-chart-scale profiles retain numerical proportionality and existing design-system composition; Chromium and WebKit regression tests passed.",
+    "40 cross-document transition profiles: matched, entering/exiting-only, duplicate, destination opt-out and reduced-motion states. One Chromium native opt-out diagnostic remains recorded; navigation succeeds.",
+    "8 actual compiled snapshot animation profiles use one 300ms duration for group/old/new and expected directions.",
+    "534 text-spacing profiles / 348 embedded frames: no actual horizontal or vertical content overflow. Flagged 36px navigation summaries and 1px screen-reader headings reviewed as intentional.",
+    "40 diagram profiles with images/fonts blocked and JavaScript enabled/disabled retain one accessible image alternative and keyboard-operable full text descriptions.",
+    "All Guide code-copy controls: 178 Chromium/WebKit route profiles and 1,968 tab/source variants match visible source. Clipboard writeText was stubbed; earlier 32-profile subset includes real Chromium clipboard verification.",
+    "Motion readout CDP accessibility inspection confirms aria-live off removes live properties while preserving status text; five timeline changes remain visible. Chromium/WebKit finite-motion regressions pass; no actual screen reader was run.",
+    "Editor color preview: six semantic-highlighting/color-rendering settings combinations confirm independent color control. AI display/flex examples checked against current tooling.",
+    "Migration Button examples: 36 actual Chromium/WebKit form cases pass omitted/undefined/button/submit/reset/disabled types. Existing documentation regression covers undefined and reset.",
+    "Route motion: four compiled Chromium/WebKit no-preference/reduced-motion cases pass hover transform, duration and hero visibility; replaced nonexistent --easing-standard with --easing-smooth.",
+    "Packed authoring package contains CSS/README/exports and builds through two isolated Vite applications; 32 browser profiles pass tokens, exclusive classes, focus and motion preferences.",
+    "Preload experiment: 24 cold browser/origin/cache/hint combinations deliver styled content; exact request-order and reuse counts recorded. Chromium and WebKit differ for same-origin fetch preload reuse.",
+    "Pruning scope: repeated B/A/B compilation retains each root’s shared-source subset without mutating shared.css; 24 browser/width/theme/font profiles pass the new figure.",
+    "Latest scoped validation: 28 documentation examples, 34 llms/export tests, site lint/type-check and AI context budget pass after pruning-scope integration.",
+    "20 migration class forwarding/cascade browser cases passed in Chromium and WebKit; reversed class strings preserve the same computed winners",
+    "452 rendered preset color pairs checked, including 448 explicitly claimed text contrast combinations; all measured pairs meet 4.5:1",
+    "108 shadow-root/manual/system scheme combinations passed in two browser engines",
+    "16 actual monorepo shared-component source discovery cases passed across Vite/CLI and explicit/default policies",
+    "12 native fetch preload controls confirm browser reuse observations independently of Master CSS",
+    "Latest production build: 368 pages / 91 assets; 178 localized Guide routes / 15,856 internal links / zero errors",
+    "New pruning-scope illustration: 24 development profiles, 8 production profiles and 8 image/font-blocked or no-script profiles passed",
+    "138 successful Vite/React/Vue development browser checks across six static/runtime fixtures; source edits, theme edits, restoration, new imports and runtime-only classes. React static new-import reload had an intermittent stale CSS observation in earlier dual-browser attempts; single-browser and final dual-browser runs passed.",
+    "Authoring package dark focus outline improved from 2.57:1 to 8.09:1; light remains 6.29:1",
+    "Exported action text verified in 16 browser/scheme/surface combinations plus 4 inverse controls; minimum 5.67:1",
+    "Global Styles native button focus: 8 theme/width/browser profiles pass; dark outline contrast improved from 2.64:1 to 6.76:1",
+    "Material UI native state button: 4 actual browser/default/hover contrast cases pass after white foreground; 6.11:1 default and 8.19:1 hover",
+    "32 Bootstrap migration boundary/font/theme cases passed",
+    "30 rapid WebKit return/history cycles passed with operable theme controls and no request failures; a prior isolated extended-reader module error remains under investigation",
+    "16 migration fixed-surface contrast cases pass in Chromium/WebKit after explicit panel text, adaptive neutral surface and darker red/green variants; minimum 4.92:1. Additional fixed-pair probe confirms zinc-60 on zinc-5 at 5.76:1 and the editor hex example on blue-5 at 5.23:1.",
+    "Three full 120-second WebKit Global Styles reading/resize/theme/history sessions pass with operable theme controls and no page errors or failed requests. The single earlier long-sweep module-load observation remains recorded rather than suppressed.",
+    "28 documentation-example checks and site lint pass after fixed-color examples and matching scanning candidate list updates.",
+    "Sustained preview operation: Chromium and WebKit each passed 120 ten-second cycles (20 minutes) of replay completion, dialog open/close and focus return, local theme independence, responsive width changes and reduced-motion changes. Sampled Chromium post-GC counters stayed at 2 documents / 8,583 nodes / 1,028 event listeners; this is an observed stability result, not proof of zero memory leaks.",
+    "Latest source preparation, 34 llms/export checks and type-check passed after the final fixed-color article revisions.",
+    "8 compiled route media-query cases passed in Chromium/WebKit across all system/manual light/dark combinations. The dark branch now chooses blue-70 instead of repeating the blue alias (blue-60); prose distinguishes the system query from manual scheme selection.",
+    "4 actual Blazor Web App early-navigation cases passed: program request held until one or two enhanced navigations complete, then current-page dynamic styles apply with exactly one runtime stylesheet and no page errors.",
+    "Installation history self-navigation test artifact corrected in a separate two-engine 120-second profile using Introduction as the destination; both pass. Original raw long-sweep observations are retained.",
+    "40 actual Lit runtime detach/reconnect cycles passed across Chromium/WebKit, two widths and both schemes: detached shadow runtime stylesheet removed, newly added class styles regenerated after reconnect, exactly one shadow runtime stylesheet restored and document stylesheet count unchanged.",
+    "4 actual Turbo asset-update cases passed in Chromium/WebKit: same tracked URLs preserve the old document and stylesheet even with no-store headers; release-version URLs trigger a full reload and the new stylesheet. Both Rails guides now describe versioned deployment URLs and synchronized assets.",
+    "8 actual article-transition keyboard/focus profiles passed in Chromium/WebKit, light/dark and 390/1280 widths. Heading focus outline now measures 6.76:1 on dark (previously 2.64:1), with light unchanged at 6.11:1. Enter opens the article and restores focus on return; WebKit uses Option-Tab for its full keyboard traversal preference.",
+    "12 additional 768px focus profiles passed for authoring packages, Global Styles native component, and article-transition heading in both engines and themes. Together with prior 390/1280 profiles, all three changed examples cover the required three widths; six new Chromium light/dark screenshots were visually reviewed.",
+    "Guide navigation inventory matches the review ledger exactly: 89 unique canonical URLs, no missing or additional entries. Public registry matrix records 17 named-package checks separately from local build verification.",
+    "Final lifecycle/focus source validation: 24 Reference tests, 28 documentation-example tests, 34 llms/export checks, site lint, source preparation and type-check passed; AI context validation passed for 2,663 files (seven generated exclusions and one bounded exception). Site diff whitespace check passed.",
+    "Installation release prerequisite passed 12 Chromium/WebKit profiles across 390/768/1280 widths and light/dark: direct fragment, integration-index link, readable commands and no outer overflow. All six Chromium screenshots were visually inspected. The first fixed-delay dev assertion ran before fragment alignment; condition-based waiting passes without a source change.",
+    "Compatibility button example checked in Chromium/WebKit and both schemes: inherited body text measured 1.52:1 light / 3.04:1 dark against blue; explicit white text measures 6.11:1 in both. Added the matching foreground to the CSS Module sample and type=\"button\" to the standalone markup example.",
+    "Reading-path fixed-color examples passed 40 compiled Chromium/WebKit profiles across light/dark and base/hover states: Compatibility button, Sass button, Tailwind compact button and descendant heading, and scanning card. Minimum 5.08:1. Scanning example uses preset fg-zinc-90 (the migration-specific fg-body token is intentionally not assumed) and its candidate list matches. Updated source passes lint, 28 documentation-example tests and 24 Reference tests.",
+    "Eight deliberate DemoViewport-module failure profiles preserve Global Styles prose, 24 source blocks and the visible static preview. Chromium reload recovers in four profiles; WebKit reload does not in four, while a fresh context recovers in all eight. Native controls reproduce the WebKit persistence only when modulepreload is present, with both HTTP 503 and intercepted failure, with and without no-store. No site loader change was made.",
+    "Latest source preparation and 34 llms/export checks passed after final reading-path color changes; site whitespace validation passed. Re-read AI Coding/MCP and known-limitation installation paths. Astro now links its production-output check and CLI fallback before the setup steps; Next and Nuxt retain explicit production/deployment verification and alternatives.",
+    "Six clarified installation metadata summaries and the early Astro verification link pass site lint, source preparation and all 34 llms/export checks.",
+    "CDN article literal asset-copy commands and HTML passed 12 additional Chromium/WebKit environment cases: 390/1280 widths and light/dark preferences keep the fixed dark heading on the default white Canvas; missing-program handling reveals content with the expected diagnostic; JavaScript-disabled root remains hidden as explicitly documented. No CDN article change was needed."
+  ],
+  "limitations": [
+    "Published runtime @rc resolves to 2.0.0-rc.88 and its dist/default-program.bin URL still returns HTTP 404 at 2026-10-31T05:23:33.921Z. Local matching-build delivery is tested separately from public publication.",
+    "Historical environment issue: localhost:3000 requests stalled at the start. Review-owned development and production servers were used on verified checkout paths instead; they are stopped during final cleanup.",
+    "Astro 7.4.2 with local @master/css-astro: authored static fixture builds and delivers base CSS but omits generated utility rules. Source CLI inspection finds those classes. Runtime and progressive production delivery passed separately; core integration changes are outside this Guide-only review.",
+    "Next.js 16.4.3: static Turbopack fixture passes. Runtime/progressive Turbopack fail resolving .master/stylesheets/...-entry.css; Webpack fixtures pass all production browser profiles.",
+    "Nuxt progressive authored app passes in-place SSR/runtime tests with matching local native artifact supplied to scratch fixture. A copied .output (preserving relative symlinks, with native artifact included) fails ENOENT on original node_modules/.master-css/manifest path; static/runtime copied artifacts serve correctly.",
+    "Installed Playwright Firefox 1555 cannot launch: reports Could not find profile folder for both default and explicit temporary profiles. Chromium and WebKit are available for browser verification.",
+    "CSS contract comparison still differs from the committed snapshot. Its first mismatch, --opacity-media-ring in unchanged materials.css, is already present in HEAD; this review does not overwrite the shared snapshot to hide existing and concurrent visual changes. The two CSS variable-reference tests pass.",
+    "Chromium 157 makes a malformed speculative stylesheet request when an inline quoted @import is split across response chunks. A standalone native HTML/CSS reproduction, without Master CSS, shows the same extra 404 while the complete stylesheet loads and applies; WebKit does not reproduce it. Evidence: streaming-import-repro.json and the Chromium CSSPreloadScanner ScanCommon implementation.",
+    "Slow-network timings are local fixture observations, not deployed performance measurements. The snapshot disables Cloudflare image transformations and serves original photography (the responsive gallery has twelve JPEGs); its 101–114 second gallery completion cannot establish production loading time.",
+    "Current browser lifecycle benchmark reproduction fails before measurement: the helper assumes package-local node_modules, and after temporary dependency links resolve that environment mismatch, current preset output fails the legacy text-center probe. No benchmark source, package configuration or published data was changed. The 64-variant snapshot and four-mode five-minute evidence validators pass; these checks validate historical data, not current runner compatibility.",
+    "Cold preload probe: WebKit fetches the same-origin program twice even with matching anonymous preload and cacheable response headers, while cross-origin matching CORS preload is reused. Chromium matching cases reuse it. This is recorded browser behavior; the Guide now asks readers to verify their deployed waterfall rather than guaranteeing reuse.",
+    "Development probe: two early React static dual-browser runs left the first browser with stale CSS after a new import and rapid source/token edits. Single-browser and final dual-browser runs did not reproduce it. Retained diagnostic logs; no general HMR guarantee or core fix inferred. One Vue runtime probe initially hit an already occupied port; discarded that result and reran on a verified fixture server successfully.",
+    "Public registry availability rechecked at 2026-10-31T05:23:30.015Z: 8 of 17 Guide-referenced or installer-required package names return 404 (@master/css-astro, @master/css-next, @master/css-nuxt, @master/css-svelte, @master/css-svelte-addon, @master/css-tooling, @master/css-vite, @master/css-webpack). Existing published packages and installer rc tags do not establish availability or compatibility of the current checkout package set. Framework build/browser evidence uses matching local artifacts; public-registry end-to-end installation is not claimed. Publishing packages or changing release/package naming is outside this Guide review.",
+    "Extended reader recorded one WebKit Global Styles module-import failure without a captured failed request/stack; 30 rapid and three full isolated reading sessions did not reproduce its original cause. A separate artificial failure probe establishes that local Playwright 1.64.1 / WebKit 27.2 retains failed modulepreload resources across reload and document-URL change; a framework-free native control reproduces it, and a fresh context recovers. This matches the behavior described in https://bugs.webkit.org/show_bug.cgi?id=270357 (upstream marked fixed on 2026-10-10), but does not establish the cause of the earlier spontaneous observation or availability of the upstream fix in deployed Safari versions. Raw failures are retained."
+  ],
+  "next": [],
+  "pages": [
+    {
+      "url": "/guide/ai-coding",
+      "source": "site/content/guide/ai-coding/content.mdx",
+      "status": "reviewed",
+      "decision": "Read every workflow/prompt and verified native inspection examples against current contracts; fixed CSS indentation. Existing prompt and code examples serve the task without ornamental art. Corrected bare flex/display claim using current tooling evidence. Clarified that CLI fallback commands require a local CLI matching the project release; unqualified npm execution otherwise selects a different published tag when the dependency is absent.",
+      "evidence": [
+        "site/content/guide/ai-coding/content.mdx",
+        "site/scripts/validate-doc-examples.test.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "27 docs example tests passed",
+        "Actual display:flex, flex:1 and state syntax inspected."
+      ],
+      "visual": "Retain copyable prompts, working CSS and inspection examples. A separate workflow illustration would repeat the existing sequence."
+    },
+    {
+      "url": "/guide/authoring-packages",
+      "source": "site/content/guide/authoring-packages/content.mdx",
+      "status": "reviewed",
+      "decision": "Replaced the @reference example that did not consume package definitions with actual package spacing, radius and brand references. Strengthened the fixture to verify retained values and the absence of copied native .btn rules. Added packed-artifact verification guidance after building and rendering an actual tarball in two apps. Clarified that CLI fallback commands require a local CLI matching the project release; unqualified npm execution otherwise selects a different published tag when the dependency is absent. Added a separate mode-aware focus token and a dark action-text value. Actual shared-button focus outline was only 2.57:1 on the dark preview surface; the revised token measures 8.09:1. Exported action text now passes across all four preset surfaces.",
+      "evidence": [
+        "site/utils/authoring-examples.ts",
+        "site/tests/package-authoring-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Focused package/monorepo fixture passed after the edit",
+        "Final search/Markdown/llms export passed",
+        "All six button hover, keyboard focus and reduced-motion checks passed",
+        "32 actual packed-package browser profiles passed.",
+        "4 two-engine actual article focus cases; 20 action/inverse text contrast cases; packed consumers rebuilt and 32 profiles passed"
+      ],
+      "visual": "Keep the real shared button; route ownership already has a relevant context/delivery diagram."
+    },
+    {
+      "url": "/guide/benchmarks",
+      "source": "site/content/guide/benchmarks/content.mdx",
+      "status": "reviewed",
+      "decision": "Distinguished July snapshots from current measurements and declared ranges from pinned versions. Renamed whole-session elapsed metric, exposed n=1, and removed internal publication policy from reading flow. Second pass actually runs the documented lifecycle entrypoint, identifies its older fixture syntax incompatibility, and clarifies that default readiness validates committed data. Adds verified five-minute evidence command and descriptive lifecycle region label. Preserved bar lengths/zero values in forced colors. Found duplicated embedded CSS/hydration in payload totals; presentation now counts recorded response assets once and excludes empty compressed buffers, with diagnostics separately labelled. Third pass: replaced equal-length payload composition bars with a shared zero-based total scale; no snapshot data changed.",
+      "evidence": [
+        "benchmarks/browser-lifecycle/long-session-evidence.json",
+        "benchmarks/shared/browser-lifecycle-page.ts",
+        "site/content/guide/benchmarks/components/BrowserLifecycleBenchmark.tsx"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "33 llms tests passed including table/text equivalence",
+        "Source metric traced to complete session elapsedMs",
+        "Current initial-load reproduction fails before timing with legacy text-center probe after dependency-layout shim",
+        "Committed snapshot 64 variants and five-minute evidence four modes pass their distinct readiness profiles",
+        "32 shared-scale/composition consumer profiles passed",
+        "34 llms/export tests passed including independent response totals"
+      ],
+      "visual": "Retain charts generated from recorded data. Correct response accounting, the shared size scale and forced-color visibility; no decorative illustration is needed."
+    },
+    {
+      "url": "/guide/breakpoints",
+      "source": "site/content/guide/breakpoints/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified optional custom-media overrides versus preset setup; added concrete observation across md. Second pass: Explained that rem media thresholds use initial browser font size, while rem declarations follow the document root; verified both with actual generated CSS. Second pass repairs the final twelve-column example: main content and aside now span eight/four columns, while the inner article independently queries its parent. Complete children make the behavior observable.",
+      "evidence": [
+        "packages/preset/src/media.css",
+        "site/components/demo/FoundationBreakpoint.tsx"
+      ],
+      "checks": [
+        "6 browser profiles passed before final containment adjustment",
+        "Relevant authored example checks passed",
+        "36 live boundary/state checks passed",
+        "26 docs-example tests passed",
+        "16 actual generated-CSS profiles passed in Chromium/WebKit across four viewport widths and root font sizes 16/32px"
+      ],
+      "visual": "Retained the actual viewport-boundary preview."
+    },
+    {
+      "url": "/guide/cascade-layers",
+      "source": "site/content/guide/cascade-layers/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the complete article and shared layer contract; retained the direct normal component-versus-utility comparison. No body change needed. Second pass: Made the two-card comparison use a shrinkable single grid track with emergency word wrapping; normal component-versus-utility padding behavior is preserved.",
+      "evidence": [
+        "packages/preset/src/base.css",
+        "site/content/guide/cascade-layers/contract.mdx"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "All six computed padding comparisons passed (24px versus 12px)"
+      ],
+      "visual": "Keep the actual cascade comparison."
+    },
+    {
+      "url": "/guide/code-linting",
+      "source": "site/content/guide/code-linting/content.mdx",
+      "status": "reviewed",
+      "decision": "Replaced non-triggering invalid-class example; removed false canonical and partial-conflict autofix claims; corrected generated-CSS ordering and enabled save actions. Added tests for authored diagnostics/fixes. Second pass distinguishes unmatched class names from unknown CSS values: disallowUnknownClass changes only unmatched-name handling. Actual ESLint verification confirms font-size:16 errors while display:banana remains unknown and unflagged. Clarified that CLI fallback commands require a local CLI matching the project release; unqualified npm execution otherwise selects a different published tag when the dependency is absent.",
+      "evidence": [
+        "site/tests/tooling-examples-checks.ts",
+        "crates/mastercss-lint/src/session_canonical.rs",
+        "packages/eslint-plugin/tests"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "27 docs example tests passed",
+        "Site lint passed",
+        "Actual strict ESLint checks for known-invalid, unknown CSS values and unmatched class names passed"
+      ],
+      "visual": "Retain configuration, class inputs and diagnostic explanations so readers can reproduce the result; no separate diagram is needed."
+    },
+    {
+      "url": "/guide/colors",
+      "source": "site/content/guide/colors/content.mdx",
+      "status": "reviewed",
+      "decision": "Added inspectable generated CSS for color roles and a visible label in the control-boundary example. Verified palette, native color-scheme selection, browser support and preset contrast-test coverage. Second pass: Repaired intrinsic grid minimum sizing in shared color-role specimens, preserving the demonstrated color and text values. Color picker samples now retain actual values in forced colors while labels/controls follow the system palette; keyboard focus and copy success/failure UI verified.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "packages/preset/tests/design-tokens.test.ts",
+        "https://www.w3.org/TR/css-color-5/#light-dark"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed",
+        "16 forced-color palette profiles across Guide/Reference, light/dark and normal/enlarged text; one focused browser regression",
+        "452 actual browser color pairs checked with sRGB contrast calculation"
+      ],
+      "visual": "Retain same-data light/dark specimens, now reflowing under enlarged text."
+    },
+    {
+      "url": "/guide/compatibility",
+      "source": "site/content/guide/compatibility/content.mdx",
+      "status": "reviewed",
+      "decision": "Corrected the automatic-prefix claim: selected native properties receive compatibility declarations, while vendor-specific selectors are written explicitly. Verified actual output for backdrop-filter and ::placeholder. Second pass made vendor-layer ordering explicit and documented important declarations. Actual Swiper package builds and 24 Chromium/WebKit profiles confirm layer behavior; now contrasts a neutral component default with a visible local blue override. Second pass removes stale CSS.supports runtime-filter claim, verified against engine/runtime sources, existing lifecycle test and actual Chromium/WebKit global runtime. Distinguished runtime-generated class rules from authored native CSS delivery/pruning policy. Final reading-path review pairs the blue button background with explicit white text in both native CSS and markup examples, and gives the standalone button a non-submit type.",
+      "evidence": [
+        "crates/mastercss-engine/src/render.rs",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::-webkit-scrollbar",
+        "packages/runtime/e2e/lifecycle.test.ts: preserves native declarations independently of browser support",
+        "packages/engine-js/src/generate.ts",
+        "packages/runtime/src/core.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Public generation confirmed exact prefix output",
+        "Actual Chromium and WebKit runtime generated valid and invalid direct declarations with CSS.supports overridden to false and never called",
+        "Eight before/after button color profiles measured; corrected pair is 6.11:1 in both engines and schemes"
+      ],
+      "visual": "Generated CSS is the relevant comparison; an illustration would add no necessary relationship."
+    },
+    {
+      "url": "/guide/containers",
+      "source": "site/content/guide/containers/content.mdx",
+      "status": "reviewed",
+      "decision": "Read complete nearest/named container guidance and verified independent literal query thresholds; strengthened threshold advice for longer headings and enlarged text. Second pass: Added a working nested-container comparison and clarified nearest-eligible ancestor selection, including repeated names and false conditions.",
+      "evidence": [
+        "site/components/demo/FoundationExamples.tsx",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Containment/Container_queries"
+      ],
+      "checks": [
+        "6 browser profiles passed before final containment adjustment",
+        "Relevant authored example checks passed",
+        "36 live boundary/state checks passed",
+        "26 docs-example tests passed"
+      ],
+      "visual": "Prefer the live comparison over another box diagram: actual inner and outer query results respond independently to the same resize control."
+    },
+    {
+      "url": "/guide/corner-radius",
+      "source": "site/content/guide/corner-radius/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the complete radius scale, nested form, pills/circles and native corner examples. Retained scale-versus-geometry distinctions; no additional article edit needed. Second pass: Made the nested-radius example obey its concentric-radius teaching: r-2xl minus p-xs equals r-lg. Reduced nested insets, allowed emergency wrapping and gave the form field explicit shrinkable width.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "packages/preset/src/utilities.css",
+        "site/components/demo/FoundationExamples.tsx"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed"
+      ],
+      "visual": "The live nested surfaces now demonstrate the geometry they describe and fit enlarged text."
+    },
+    {
+      "url": "/guide/elevation",
+      "source": "site/content/guide/elevation/content.mdx",
+      "status": "reviewed",
+      "decision": "Aligned the surface example with its shadow-sm demo; replaced the hover-only noninteractive snippet with an operable link, keyboard focus and screen-scoped states so print removes all shadow. Clarified that raised-card roles are project choices and explained the custom shadow namespace/key directly.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "site/components/demo/FoundationPaint.tsx"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed"
+      ],
+      "visual": "Keep full shadow scale and actual light/dark link states; inspected narrow dark specimen."
+    },
+    {
+      "url": "/guide/flash-of-unstyled-content",
+      "source": "site/content/guide/flash-of-unstyled-content/content.mdx",
+      "status": "reviewed",
+      "decision": "Corrected embedded image to its native 3:2 aspect; distinguished handled runtime startup failures from blocked downloads. Second pass replaced its light-only SVG with the existing live identical-HTML comparison, including portable HTML/generated CSS. Kept the public legacy image asset URL; enlarged-text and no-script checks validate the new article preview.",
+      "evidence": [
+        "packages/runtime/src",
+        "site/components/demo/FirstPaintComparison.tsx",
+        "site/utils/first-paint-examples.ts",
+        "site/tests/demo-flow-sizing.e2e.mjs"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "24 live comparison profiles pass in Chromium/WebKit with JavaScript enabled/disabled",
+        "Four normal-flow resizing regressions pass, including enlarged text and native collapsed margins"
+      ],
+      "visual": "Prioritized real HTML before/after CSS over a new static image; native browser text remains readable in both themes and the frame follows normal-flow content."
+    },
+    {
+      "url": "/guide/global-styles",
+      "source": "site/content/guide/global-styles/content.mdx",
+      "status": "reviewed",
+      "decision": "Corrected the assertion that preset font smoothing is left entirely to the app: base.css explicitly sets platform-specific declarations. Retained entry, typeface, component, recipe and maintenance ownership guidance. Replaced the maintenance section’s static-only recipe with a shared-data live panel. The actual brand/action and informational roles remain independent; dark-mode and focus colors meet contrast checks. Native component focus now uses the adaptive text-link role so the outline remains visible on dark backgrounds.",
+      "evidence": [
+        "packages/preset/src/base.css",
+        "packages/preset/src/theme.css",
+        "site/scripts/maintenance-examples.test.ts",
+        "site/components/demo/maintenance-example.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Maintenance and print examples compiled",
+        "All six real hover and keyboard focus checks passed",
+        "24 actual palette/cascade/focus profiles passed",
+        "Six live article profiles and 320px enlarged-iframe text passed",
+        "8 actual two-engine focus contrast profiles and exported screenshots inspected"
+      ],
+      "visual": "Retained the shared button and added an executable panel for the maintenance lesson, using the same CSS/HTML in article, tests and exports."
+    },
+    {
+      "url": "/guide/installation/cdn",
+      "source": "site/content/guide/installation/(main)/cdn/content.mdx",
+      "status": "reviewed",
+      "decision": "Replaced an unverifiable moving-tag snippet after the live default-program URL returned 404. Added matching-build asset preparation, hosted HTML, observable startup checks, CSP/CORS conditions and distinct handled-error versus no-JavaScript behavior. Removed redundant adjacent stylesheet/script preload hints and added deployed-cache reuse verification.",
+      "evidence": [
+        "packages/runtime/src/global.min.ts",
+        "packages/runtime/src/core.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 browser article profiles passed",
+        "Real copied-asset runtime worked at 390/1280px",
+        "Program preload reused once and added DOM class generated CSS",
+        "Missing-program and disabled-JavaScript paths verified",
+        "Matching local CDN assets pass cold request checks in both browsers.",
+        "12 final environment/failure profiles passed with actual copied runtime assets"
+      ],
+      "visual": "Existing Hello World preview is sufficient; the essential evidence is actual asset delivery and computed styles."
+    },
+    {
+      "url": "/guide/installation/cli",
+      "source": "site/content/guide/installation/(main)/cli/content.mdx",
+      "status": "reviewed",
+      "decision": "Replaced an editorial-policy opening with the reader task. Added a one-shot production command and the requirement to deploy imported CSS assets alongside master.css.",
+      "evidence": [
+        "packages/cli/src/generate.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual CLI output used 9 CSS files",
+        "390/1280px production pages rendered correctly with JavaScript disabled"
+      ],
+      "visual": "Keep Hello World; actual generated CSS delivery is checked in a browser."
+    },
+    {
+      "url": "/guide/installation/integrations",
+      "source": "site/content/guide/installation/(main)/integrations/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the complete adapter table and source-backed boundary summaries. Updated the browser-prototype handoff to the full matching-runtime-asset workflow. Linked the release-availability prerequisite from the integration index. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "site/utils/installation-content.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "All installation destinations checked by existing fixtures"
+      ],
+      "visual": "Adapter comparison table and accessible brand navigation serve the directory task."
+    },
+    {
+      "url": "/guide/installation",
+      "source": "site/content/guide/installation/(main)/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the installer path and application-entry assumptions; retained the shortest Vite workflow and corrected the tutorial handoff from a button to a card. Added a release-availability prerequisite after verifying missing public integration packages; the installer tag alone is insufficient.",
+      "evidence": [
+        "site/tests/installation-examples.ts",
+        "site/scripts/writing-examples.test.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Installer/default static fixture passed",
+        "Public installer/integration registry availability checked; unresolved publication gaps recorded"
+      ],
+      "visual": "Existing Hello World preview is the observable result; no extra diagram."
+    },
+    {
+      "url": "/guide/installation/angular",
+      "source": "site/content/guide/installation/angular/content.mdx",
+      "status": "reviewed",
+      "decision": "Made the browser-rendered/CSS starter explicit, distinguished static CSS from HTML rendering, and added production/watcher checks. Actual Angular CLI 22.1.7 generated projects built with the public installer.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/angular-browser.json"
+      ],
+      "checks": [
+        "Actual Angular production build passed",
+        "6 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/angular/runtime",
+      "source": "site/content/guide/installation/angular/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Made the browser-rendered/CSS starter explicit, distinguished static CSS from HTML rendering, and added production/watcher checks. Actual Angular CLI 22.1.7 generated projects built with the public installer.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/angular-browser.json"
+      ],
+      "checks": [
+        "Actual Angular production build passed",
+        "6 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/aspnet-core",
+      "source": "site/content/guide/installation/aspnet-core/content.mdx",
+      "status": "reviewed",
+      "decision": "Preserved Razor routing and host layout/bootstrap; made asset build ordering and Bootstrap coexistence explicit. Blazor runtime now restarts through the public API on enhancedload after actual navigation exposed stylesheet removal/CSSOM invalidation.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/dotnet-browser.json"
+      ],
+      "checks": [
+        "Actual .NET 10.0.403 project build passed",
+        "12 actual .NET server browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/aspnet-core/runtime",
+      "source": "site/content/guide/installation/aspnet-core/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Preserved Razor routing and host layout/bootstrap; made asset build ordering and Bootstrap coexistence explicit. Blazor runtime now restarts through the public API on enhancedload after actual navigation exposed stylesheet removal/CSSOM invalidation.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/dotnet-browser.json"
+      ],
+      "checks": [
+        "Actual .NET 10.0.403 project build passed",
+        "12 actual .NET server browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/astro",
+      "source": "site/content/guide/installation/astro/content.mdx",
+      "status": "reviewed",
+      "decision": "Imported installer-created global.css in complete Astro page; added delivery verification and static fallback workflow. Final reading-path review surfaces the production-output check and CLI fallback before the setup steps. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "packages/astro/src/core.ts",
+        "site/content/guide/installation/astro/content.mdx"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Authored Astro production build passed",
+        "Known static utility omission recorded; browser expectation failed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/astro/progressive",
+      "source": "site/content/guide/installation/astro/progressive/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed page CSS import and verified mode-specific initial CSS and runtime updates.",
+      "evidence": [
+        "packages/astro/src/core.ts",
+        "site/content/guide/installation/astro/progressive/content.mdx"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Authored Astro production build passed",
+        "12 browser profiles passed including JS-disabled initial rendering"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/astro/runtime",
+      "source": "site/content/guide/installation/astro/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed page CSS import and verified mode-specific initial CSS and runtime updates.",
+      "evidence": [
+        "packages/astro/src/core.ts",
+        "site/content/guide/installation/astro/runtime/content.mdx"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Authored Astro production build passed",
+        "12 browser profiles passed including JS-disabled initial rendering"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/blazor",
+      "source": "site/content/guide/installation/blazor/content.mdx",
+      "status": "reviewed",
+      "decision": "Preserved Razor routing and host layout/bootstrap; made asset build ordering and Bootstrap coexistence explicit. Blazor runtime now restarts through the public API on enhancedload after actual navigation exposed stylesheet removal/CSSOM invalidation.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/dotnet-browser.json"
+      ],
+      "checks": [
+        "Actual .NET 10.0.403 project build passed",
+        "12 actual .NET server browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/blazor/runtime",
+      "source": "site/content/guide/installation/blazor/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Preserved Razor routing and host layout/bootstrap; made asset build ordering and Bootstrap coexistence explicit. Blazor runtime now restarts through the public API on enhancedload after actual navigation exposed stylesheet removal/CSSOM invalidation. Clarified the blazor.web.js enhanced-navigation scope and the simpler startup for other hosting models. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/blazor-runtime-browser.json"
+      ],
+      "checks": [
+        "Actual .NET 10.0.403 project build passed",
+        "12 actual .NET server browser profiles for this mode passed",
+        "6 article profiles passed",
+        "4 delayed-program/early-navigation cases passed in Chromium and WebKit"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/express",
+      "source": "site/content/guide/installation/express/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified existing server/template prerequisites and CSS paths. Progressive now distinguishes server manifest, hydration record and browser program, explains definition parity, and supplies both-phase checks.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/express-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite build and Express server passed",
+        "12 browser profiles for this mode passed, including JavaScript disabled",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/express/progressive",
+      "source": "site/content/guide/installation/express/progressive/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified existing server/template prerequisites and CSS paths. Progressive now distinguishes server manifest, hydration record and browser program, explains definition parity, and supplies both-phase checks.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/express-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite build and Express server passed",
+        "12 browser profiles for this mode passed, including JavaScript disabled",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/laravel",
+      "source": "site/content/guide/installation/laravel/content.mdx",
+      "status": "reviewed",
+      "decision": "Added missing CSS entry, Vite ownership, complete Blade document with @vite and an explicit route; explained starter CSS migration and production validation.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/laravel-browser.json"
+      ],
+      "checks": [
+        "Actual Laravel Vite plugin production build passed",
+        "12 generated-asset browser profiles passed",
+        "6 article profiles passed"
+      ],
+      "limitation": "Native Laravel/PHP server unavailable in this pass; @vite HTML was resolved from the actual emitted build manifest.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/lit",
+      "source": "site/content/guide/installation/lit/content.mdx",
+      "status": "reviewed",
+      "decision": "Replaced mismatched heading preview with the actual button in a real shadow root. Added complete runtime example; computed-style checks exposed adopted-sheet layer ordering, resolved by inserting base CSS before runtime styles. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/lit-browser.json"
+      ],
+      "checks": [
+        "Static and runtime actual authored components built",
+        "12 production browser profiles passed, including dynamic class generation",
+        "6 article profiles passed",
+        "40 actual runtime detach/reconnect cycles passed"
+      ],
+      "visual": "Keep the real shadow-root preview and adjacent static/runtime code; the browser demonstrates stylesheet scope directly."
+    },
+    {
+      "url": "/guide/installation/nextjs",
+      "source": "site/content/guide/installation/nextjs/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified HTML vs CSS rendering ownership, deferred CSS Module detail, and added concrete runtime mutation verification. Removed stale static Turbopack warning while retaining confirmed runtime/progressive fallback.",
+      "evidence": [
+        "packages/next/src/index.ts",
+        "site/tests/next-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "24 production browser profiles passed: Turbopack",
+        "Matching-version Next.js MCP project identity confirmed; default Turbopack development, both routes and hot CSS update passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/nextjs/progressive",
+      "source": "site/content/guide/installation/nextjs/progressive/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified HTML vs CSS rendering ownership, deferred CSS Module detail, and added concrete runtime mutation verification. Removed stale static Turbopack warning while retaining confirmed runtime/progressive fallback. Added the direct delivery choice for request-time SSR routes that need utility styles without JavaScript, consistent with the measured dynamic-route behavior and figure. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "packages/next/src/index.ts",
+        "site/tests/next-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "24 production browser profiles passed: Webpack",
+        "Added matching boundary illustration and verified all six article profiles; shared text export adapter retains its explanation",
+        "Matching-version Next.js MCP project identity confirmed; default Turbopack development, both routes and hot CSS update passed"
+      ],
+      "visual": "Add the paired boundary scene that separates pre-rendered build output from request-time dynamic SSR and browser generation."
+    },
+    {
+      "url": "/guide/installation/nextjs/runtime",
+      "source": "site/content/guide/installation/nextjs/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified HTML vs CSS rendering ownership, deferred CSS Module detail, and added concrete runtime mutation verification. Removed stale static Turbopack warning while retaining confirmed runtime/progressive fallback.",
+      "evidence": [
+        "packages/next/src/index.ts",
+        "site/tests/next-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "24 production browser profiles passed: Webpack",
+        "Matching-version Next.js MCP project identity confirmed; default Turbopack development, both routes and hot CSS update passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/nuxtjs",
+      "source": "site/content/guide/installation/nuxtjs/content.mdx",
+      "status": "reviewed",
+      "decision": "Updated starter command and explained CSS delivery separately from Nuxt HTML rendering; added observable setup checks.",
+      "evidence": [
+        "packages/nuxt/src/module.ts",
+        "site/tests/nuxt-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored Nuxt build passed",
+        "12 production browser profiles passed",
+        "Copied artifact served successfully without original source path"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/nuxtjs/progressive",
+      "source": "site/content/guide/installation/nuxtjs/progressive/content.mdx",
+      "status": "reviewed",
+      "decision": "Updated starter command, explained Nuxt 4 layout and CSS entry, and supplied console mutation check. Verified and explained copied progressive artifact dependence on build-machine manifest. Final metadata review replaces the generic summary with the specific delivery boundary or lifecycle covered by the article.",
+      "evidence": [
+        "packages/nuxt/src/module.ts",
+        "site/tests/nuxt-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored Nuxt build passed",
+        "12 production browser profiles passed",
+        "Copied artifact failed on absolute manifest path"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/nuxtjs/runtime",
+      "source": "site/content/guide/installation/nuxtjs/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Updated starter command and explained CSS delivery separately from Nuxt HTML rendering; added observable setup checks.",
+      "evidence": [
+        "packages/nuxt/src/module.ts",
+        "site/tests/nuxt-installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored Nuxt build passed",
+        "12 production browser profiles passed",
+        "Copied artifact served successfully without original source path"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/php",
+      "source": "site/content/guide/installation/php/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed the document metadata and clarified the public host root. Runtime content remains visible if scripts fail; both modes include observable checks.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/host-browser.json",
+        "site/test-results/guide-review-2026-10-31/php-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "12 generated-asset browser profiles for this mode passed",
+        "6 article profiles passed",
+        "12 actual PHP 8.5.10 Wasm server browser profiles passed for this mode"
+      ],
+      "limitation": "PHP executed through the official PHP Wasm host; a native PHP process was not installed.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/php/runtime",
+      "source": "site/content/guide/installation/php/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed the document metadata and clarified the public host root. Runtime content remains visible if scripts fail; both modes include observable checks.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/host-browser.json",
+        "site/test-results/guide-review-2026-10-31/php-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "12 generated-asset browser profiles for this mode passed",
+        "6 article profiles passed",
+        "12 actual PHP 8.5.10 Wasm server browser profiles passed for this mode"
+      ],
+      "limitation": "PHP executed through the official PHP Wasm host; a native PHP process was not installed.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rails",
+      "source": "site/content/guide/installation/rails/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed PHP document metadata and clarified host root. Rails preserves existing layout hooks and requires a real route. Runtime documents remain visible if scripts fail; both modes include observable checks. Clarified Turbo asset tracking: fixed filenames need release-version URLs to trigger a reload after deployment.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/host-browser.json",
+        "https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "12 generated-asset browser profiles for this mode passed",
+        "6 article profiles passed",
+        "4 actual Turbo fixed/versioned asset transition cases passed"
+      ],
+      "limitation": "PHP/Rails host not executed; asset builds and browser delivery verified separately. Rails Turbo behavior tested using actual Turbo library.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rails/runtime",
+      "source": "site/content/guide/installation/rails/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed PHP document metadata and clarified host root. Rails preserves existing layout hooks and requires a real route. Runtime documents remain visible if scripts fail; both modes include observable checks. Clarified Turbo asset tracking: fixed filenames need release-version URLs to trigger a reload after deployment.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/host-browser.json",
+        "https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "12 generated-asset browser profiles for this mode passed",
+        "6 article profiles passed",
+        "6 real Turbo visit/cache-restoration profiles passed",
+        "4 actual Turbo fixed/versioned asset transition cases passed"
+      ],
+      "limitation": "PHP/Rails host not executed; asset builds and browser delivery verified separately. Rails Turbo behavior tested using actual Turbo library.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/react",
+      "source": "site/content/guide/installation/react/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/react/runtime",
+      "source": "site/content/guide/installation/react/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/react-router",
+      "source": "site/content/guide/installation/react-router/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified framework root/CSS ownership, preserved route setup and added observable production/runtime checks. React Router type declaration location corrected; TanStack blank starter made explicit. Existing mode illustration and executable heading are sufficient.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/router-browser.json"
+      ],
+      "checks": [
+        "Actual framework production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/react-router/runtime",
+      "source": "site/content/guide/installation/react-router/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified framework root/CSS ownership, preserved route setup and added observable production/runtime checks. React Router type declaration location corrected; TanStack blank starter made explicit. Existing mode illustration and executable heading are sufficient.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/router-browser.json"
+      ],
+      "checks": [
+        "Actual framework production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rsbuild",
+      "source": "site/content/guide/installation/rsbuild/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rsbuild/runtime",
+      "source": "site/content/guide/installation/rsbuild/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rspack",
+      "source": "site/content/guide/installation/rspack/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/rspack/runtime",
+      "source": "site/content/guide/installation/rspack/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/shopify",
+      "source": "site/content/guide/installation/shopify/content.mdx",
+      "status": "reviewed",
+      "decision": "Fixed root output directory excluding theme sources; added block-directory scanning, retained layout hooks, explained section registration and editor-generated classes.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/theme-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "12 generated-asset browser profiles passed",
+        "Existing unrelated assets preserved",
+        "6 article profiles passed"
+      ],
+      "limitation": "No authenticated Shopify theme preview; Liquid asset URL expansion represented locally while the authored asset pipeline was executed.",
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/storybook",
+      "source": "site/content/guide/installation/storybook/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained preview iframe styling, prevented duplicate plugin registration, supplied story globs and a complete visible story. Distinguished Vite builder from Webpack.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/storybook-browser.json"
+      ],
+      "checks": [
+        "Storybook 10.6.5 actual app-config and viteFinal production builds passed",
+        "12 actual production story profiles passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/svelte",
+      "source": "site/content/guide/installation/svelte/content.mdx",
+      "status": "reviewed",
+      "decision": "Reorganized four modes into static default plus two disclosures with complete client/server hooks; preserved generated SvelteKit adapter configuration. Official Svelte autofixer passed.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/svelte-browser.json"
+      ],
+      "checks": [
+        "Four actual SvelteKit production builds passed",
+        "48 production browser profiles passed, including JavaScript disabled",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/tanstack-start",
+      "source": "site/content/guide/installation/tanstack-start/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified framework root/CSS ownership, preserved route setup and added observable production/runtime checks. React Router type declaration location corrected; TanStack blank starter made explicit. Existing mode illustration and executable heading are sufficient.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/tanstack-browser.json"
+      ],
+      "checks": [
+        "Actual framework production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/tanstack-start/runtime",
+      "source": "site/content/guide/installation/tanstack-start/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Clarified framework root/CSS ownership, preserved route setup and added observable production/runtime checks. React Router type declaration location corrected; TanStack blank starter made explicit. Existing mode illustration and executable heading are sufficient.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/tanstack-browser.json"
+      ],
+      "checks": [
+        "Actual framework production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/vite",
+      "source": "site/content/guide/installation/vite/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/vite/runtime",
+      "source": "site/content/guide/installation/vite/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/vscode",
+      "source": "site/content/guide/installation/vscode/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed ESLint installation prerequisite and save action trigger; verified source settings and extension responsibilities. Second pass verified published extension ID masterco.master-css-vscode against Marketplace and packaging source; corrected web/deep links.",
+      "evidence": [
+        "packages/vscode/package.json",
+        "site/tests/tooling-examples-checks.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "27 docs example tests passed"
+      ],
+      "visual": "Keep the extension entry links and complete settings/configuration blocks. No additional diagram is needed for this sequential setup."
+    },
+    {
+      "url": "/guide/installation/vuejs",
+      "source": "site/content/guide/installation/vuejs/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/vuejs/runtime",
+      "source": "site/content/guide/installation/vuejs/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed entry imports, replacement-file instructions and observable setup verification; runtime console example checks classes introduced after build. Existing Hello World preview is sufficient.",
+      "evidence": [
+        "packages/create/src/index.ts",
+        "site/tests/installation-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Actual authored framework app built",
+        "6 built browser profiles passed with correct static/runtime behavior",
+        "Actual two-engine development source/theme/new-import checks completed; intermittent earlier React static new-import observation retained separately"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/webpack",
+      "source": "site/content/guide/installation/webpack/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/webpack/runtime",
+      "source": "site/content/guide/installation/webpack/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained which configuration must be merged, supplied the missing CSS entry connection, and added observable production/runtime checks. Webpack HTML template is now complete; Rsbuild names the React starter used by the example.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/bundler-browser.json"
+      ],
+      "checks": [
+        "Actual authored configuration production build passed",
+        "12 production browser profiles for this mode passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/wordpress",
+      "source": "site/content/guide/installation/wordpress/content.mdx",
+      "status": "reviewed",
+      "decision": "Fixed root output directory that caused all templates to be excluded; assets now have a dedicated directory. Active/child-theme paths and hooks are explicit. Runtime no longer hides the document when scripts fail.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/wordpress-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "PHP 8.5.10 syntax check passed",
+        "12 actual WordPress/PHP browser profiles for this mode passed",
+        "12 independent generated-asset profiles passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/installation/wordpress/runtime",
+      "source": "site/content/guide/installation/wordpress/runtime/content.mdx",
+      "status": "reviewed",
+      "decision": "Fixed root output directory that caused all templates to be excluded; assets now have a dedicated directory. Active/child-theme paths and hooks are explicit. Runtime no longer hides the document when scripts fail.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/wordpress-browser.json"
+      ],
+      "checks": [
+        "Actual authored Vite production build passed",
+        "PHP 8.5.10 syntax check passed",
+        "12 actual WordPress/PHP browser profiles for this mode passed",
+        "12 independent generated-asset profiles passed",
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the copyable setup steps and styled-result preview. The framework-specific ownership, delivery checks and failure alternatives are clearer in adjacent code and prose than in a repeated installation flowchart."
+    },
+    {
+      "url": "/guide/introduction",
+      "source": "site/content/guide/introduction/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed the opening image markup and responsive sizing, clarified its image prerequisite, matched the action layout, and made the tutorial handoff describe the card it actually builds.",
+      "evidence": [
+        "packages/preset/src/base.css",
+        "site/content/guide/introduction/components/Overview.mdx"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Docs examples and portable export passed",
+        "All six image proportion/loading checks passed"
+      ],
+      "visual": "Keep the actual card; no abstract illustration is needed."
+    },
+    {
+      "url": "/guide/language-service",
+      "source": "site/content/guide/language-service/content.mdx",
+      "status": "reviewed",
+      "decision": "Verified completion/hover/formatting and settings; clarified source arrays extend service defaults unlike ESLint replacement. Separated color decorations from semantic-highlighting controls and named default classList functions explicitly. Final palette pass: paired fixed surfaces with explicit readable text and corrected red/green or neutral example colors where relevant; teaching syntax and source-list correspondence are preserved.",
+      "evidence": [
+        "packages/language-service/src/settings.ts",
+        "site/tests/tooling-examples-checks.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Authored language examples passed",
+        "Six real language-service configuration combinations verified.",
+        "Compiled Chromium/WebKit fixed-color pair verification; docs examples and lint passed"
+      ],
+      "visual": "Use the current class snippets, feature explanations and settings tables; avoid editor screenshots that would duplicate version-sensitive UI."
+    },
+    {
+      "url": "/guide/layout-system",
+      "source": "site/content/guide/layout-system/content.mdx",
+      "status": "reviewed",
+      "decision": "Restored the missing second metric in the reduced opening markup and explained each row at 2xs. Clarified that min-width:0 also needs a wrapping/truncation decision for unbroken strings. Replaced keyword-list summary with a task description. Second pass removed ambiguous container-class wording, made the reusable media recipe use its own container, and clarified the full-row intent behind the column-span mistake rather than treating unused columns as universally wrong. Second pass gives exact-line placement a single-column narrow base, removes stale bare flex syntax and aligns gutter examples with named tokens.",
+      "evidence": [
+        "site/content/examples/layout-system/page.tsx",
+        "packages/preset/src/utilities.css"
+      ],
+      "checks": [
+        "6 browser profiles passed before final containment adjustment",
+        "Relevant authored example checks passed",
+        "36 live boundary/state checks passed",
+        "26 docs-example tests passed",
+        "16 grid line placement profiles pass across Chromium/WebKit, four widths and 16/32px roots"
+      ],
+      "visual": "Keep the actual workspace and flex composition; authored snippet region geometry passed in all six profiles."
+    },
+    {
+      "url": "/guide/mcp-server",
+      "source": "site/content/guide/mcp-server/content.mdx",
+      "status": "reviewed",
+      "decision": "Checked tool contracts; linked verified Codex configuration and moved snapshot comparison before next steps. Tables remain useful lookup; no additional diagram needed. Clarified that CLI fallback commands require a local CLI matching the project release; unqualified npm execution otherwise selects a different published tag when the dependency is absent.",
+      "evidence": [
+        "packages/mcp/src",
+        "site/tests/tool-contract-examples.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "MCP contract requests passed in docs suite",
+        "Local CLI help and official Codex docs checked"
+      ],
+      "visual": "Keep the tool-purpose tables and preview/apply sequence beside copyable configuration. Do not replace concrete setup with a generic agent diagram."
+    },
+    {
+      "url": "/guide/migration/bootstrap",
+      "source": "site/content/guide/migration/bootstrap/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained important declarations during layered coexistence, avoided a vendor class collision with action-button, and paired fixed white panels with the explicit product foreground. Existing before/after code is the appropriate comparison. Preserved the Bootstrap 768px column threshold through an explicit bootstrap-md condition, distinguished container/gutter redesign from exact equivalence, and paired fixed white cards with product body text.",
+      "evidence": [
+        "site/content/guide/migration/bootstrap/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "12 actual Bootstrap cascade profiles passed for unlayered/layered entries and important utilities",
+        "32 actual Bootstrap/Master boundary, enlarged-text and theme comparisons passed"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/migration/css",
+      "source": "site/content/guide/migration/css/content.mdx",
+      "status": "reviewed",
+      "decision": "Added a live native-CSS/utility card comparison; corrected radius mapping, explicit card foreground and grid display, and explained layered utility precedence during coexistence. CSS-module wrapper now destructures a default type before forwarding remaining props. Clarified className forwarding versus cascade overrides; CSS Modules remain unlayered unless deliberately assigned a component layer.",
+      "evidence": [
+        "site/content/guide/migration/css/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "6 live card comparison profiles passed",
+        "20 actual CSS/Sass/styled-components/MUI comparison profiles passed",
+        "Undefined and reset type regressions pass.",
+        "20 cross-browser class conflict/cascade cases across both migration guides"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/migration/css-in-js",
+      "source": "site/content/guide/migration/css-in-js/content.mdx",
+      "status": "reviewed",
+      "decision": "Corrected radius and padding equivalence, documented button type behavior, repaired missing surface token, and made dynamic progress values finite and reduced-motion aware. Executable component examples carry the explanation. Default button type now survives an explicit undefined prop; clarified form behavior and broader wrapper contracts. Clarified className forwarding versus cascade overrides; CSS Modules remain unlayered unless deliberately assigned a component layer. Final palette pass: paired fixed surfaces with explicit readable text and corrected red/green or neutral example colors where relevant; teaching syntax and source-list correspondence are preserved.",
+      "evidence": [
+        "site/content/guide/migration/css-in-js/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "20 actual migration comparison profiles passed",
+        "Actual Meter native props, bounds and non-finite values verified",
+        "36 cross-browser form cases cover all three authored wrappers.",
+        "20 cross-browser class conflict/cascade cases across both migration guides",
+        "Compiled Chromium/WebKit fixed-color pair verification; docs examples and lint passed"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/migration/material-ui",
+      "source": "site/content/guide/migration/material-ui/content.mdx",
+      "status": "reviewed",
+      "decision": "Added missing theme import; preserves MUI internals and Emotion precedence, gives a real app-owned wrapper, and preserves the 900px breakpoint with a named condition. Explicit radius and foreground tokens preserve the custom theme. Added the missing white foreground to the blue button state example after measuring low contrast with the documented inherited body text. Final palette pass: paired fixed surfaces with explicit readable text and corrected red/green or neutral example colors where relevant; teaching syntax and source-list correspondence are preserved.",
+      "evidence": [
+        "site/content/guide/migration/material-ui/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "20 actual migration comparison profiles passed, including 899/900px and enlarged root text",
+        "4 native state-button text contrast cases pass",
+        "Compiled Chromium/WebKit fixed-color pair verification; docs examples and lint passed"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/migration",
+      "source": "site/content/guide/migration/content.mdx",
+      "status": "reviewed",
+      "decision": "Reorganized the entry around source styling systems and a first working slice; prompts now choose rendering mode and preserve compiler/cascade ownership before conversion. Text and system links are clearer than a decorative flow image.",
+      "evidence": [
+        "site/content/guide/migration/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed"
+      ],
+      "visual": "Keep the source-system icon index as navigation and the incremental conversion sequence as text."
+    },
+    {
+      "url": "/guide/migration/sass",
+      "source": "site/content/guide/migration/sass/content.mdx",
+      "status": "reviewed",
+      "decision": "Explained compile-time vs runtime values, added an actual Sass include-to-CSS mixin conversion, and completed fixed-surface foreground and token context. Native before/after code remains clearer than schematic art. Final reading-path pass supplies explicit readable foregrounds for fixed background examples, including matching hover foregrounds where needed.",
+      "evidence": [
+        "site/content/guide/migration/sass/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "20 actual migration comparison profiles passed, including real Sass compilation",
+        "Relevant base/hover color profiles included in 40-case reading-path color check; minimum 5.08:1"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/migration/tailwindcss",
+      "source": "site/content/guide/migration/tailwindcss/content.mdx",
+      "status": "reviewed",
+      "decision": "Separated compiler inputs; corrected grid examples, motion duration, progress behavior, theme surfaces and responsive mapping. A discovered 48rem/64rem md mismatch now uses explicit tailwind-md. Tables serve the comparison without ornamental figures. Final palette pass: paired fixed surfaces with explicit readable text and corrected red/green or neutral example colors where relevant; teaching syntax and source-list correspondence are preserved. Final reading-path pass supplies explicit readable foregrounds for fixed background examples, including matching hover foregrounds where needed.",
+      "evidence": [
+        "site/content/guide/migration/tailwindcss/content.mdx",
+        "site/test-results/guide-review-2026-10-31/migration-equivalence.json",
+        "site/test-results/guide-review-2026-10-31/migration-cascade.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "16 actual Tailwind conversion profiles passed across reduced motion, themes and the 767/768px boundary",
+        "Compiled Chromium/WebKit fixed-color pair verification; docs examples and lint passed",
+        "Relevant base/hover color profiles included in 40-case reading-path color check; minimum 5.08:1"
+      ],
+      "visual": "Keep the source/target code comparisons and mapping tables beside the conversion task. Actual library/browser fixtures establish behavior; a decorative before/after image would hide the relevant contracts."
+    },
+    {
+      "url": "/guide/monorepo",
+      "source": "site/content/guide/monorepo/content.mdx",
+      "status": "reviewed",
+      "decision": "Supplied the missing shared index.css, a complete shop entry, build-root instructions and an observable comparison of independent primary values. Extended the fixture to compile both roots and reject cross-app overrides. Added explicit shared-component scanning guidance: Vite imported modules and CLI filesystem discovery have different boundaries; each app can select sibling component sources with @source.",
+      "evidence": [
+        "site/tests/package-authoring-examples.ts",
+        "site/content/guide/monorepo/content.mdx"
+      ],
+      "checks": [
+        "Focused two-app fixture passed; own token values retained and cross-app values absent",
+        "Final six browser profiles passed",
+        "Search/Markdown/llms export passed",
+        "Four source policies verified with real Vite and CLI builds and 16 browser cases"
+      ],
+      "visual": "Keep the directory hierarchy and complete two-app code; check whether a further figure adds an unanswered relationship."
+    },
+    {
+      "url": "/guide/motion",
+      "source": "site/content/guide/motion/content.mdx",
+      "status": "reviewed",
+      "decision": "Matched the finite entrance code to the preview timing, explained the separate transition example, added focus/reduced-motion handling, and made the custom dialog reproducible with configured CSS, complete markup and actual open/close code.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "site/components/demo/FoundationTypeMotion.tsx",
+        "https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal"
+      ],
+      "checks": [
+        "6 browser profiles passed before final containment adjustment",
+        "Relevant authored example checks passed",
+        "36 live boundary/state checks passed",
+        "26 docs-example tests passed"
+      ],
+      "visual": "Keep real timelines, transition checkbox and native dialog. Authored animation count/timing, modal state, Escape, close-button focus return and reduced motion passed in all six profiles."
+    },
+    {
+      "url": "/guide/native-css-pruning",
+      "source": "site/content/guide/native-css-pruning/content.mdx",
+      "status": "reviewed",
+      "decision": "Read every policy, import, root, source, selector and animation section against compiler evidence. Replaced the portrait artwork with a 3:2 comparison of independent per-file policies; resource details remain in prose and text equivalent. Moved the checklist after animation pruning so it follows the complete workflow. Second pass makes the native-output excerpt explicit and explains conservative descendant-selector retention; authored CSS verified with neither, either and both class names. Added a second paired 3:2 scene for shared-source/root-usage differences and complete per-root HTML.",
+      "evidence": [
+        "crates/mastercss-compiler/src/lib.rs",
+        "crates/mastercss-compiler/src/directives.rs",
+        "site/scripts/maintenance-examples.test.ts"
+      ],
+      "checks": [
+        "Both exported themes inspected",
+        "6 browser profiles passed",
+        "Authored scoped pruning fixture passed",
+        "Root compilation and 24 responsive figure profiles passed."
+      ],
+      "visual": "600x400 scene; actual file branches, no implied DOM evaluation or inherited pruning policy. Updated to latest 20px/18px type scale; both final exported themes and final six browser profiles inspected."
+    },
+    {
+      "url": "/guide",
+      "source": "site/content/guide/content.mdx",
+      "status": "reviewed",
+      "decision": "Reviewed categorization, descriptions and all index links. Refined the overview description and verified category/A–Z keyboard operation and direct anchors. The index itself supplies the needed visual navigation.",
+      "evidence": [
+        "site/content/guide/content.mdx",
+        "site/test-results/guide-review-2026-10-31/guide-index.json"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "6 actual Guide index keyboard/hash interaction profiles passed"
+      ],
+      "visual": "The category and A–Z index is the visual navigation; retain it and verify keyboard/direct-anchor use."
+    },
+    {
+      "url": "/guide/preload-critical-resources",
+      "source": "site/content/guide/preload-critical-resources/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the preload/default-program/project-program/hydration guidance against runtime startup. Changed the main snippet to the matching hosted asset paths and linked the complete asset preparation workflow. Second pass scopes deferred startup wording to default options and notes deliberate eager/idle startup. Added transparent normal-mode bar boundaries that remain visible under forced-color remapping. Focused the CDN example on late-discovered program preload; preserved the old section anchor and qualified response reuse.",
+      "evidence": [
+        "packages/runtime/src/global.min.ts",
+        "packages/runtime/src/core.ts",
+        "site/utils/first-paint-examples.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Actual default-program preload produced one network request",
+        "Portable export passed",
+        "36 normal/forced-color profiles across Guide and two shared Design System consumers",
+        "24 actual preload request-order/reuse observations recorded.",
+        "12 plain native-fetch controls reproduce preload behavior without Master CSS"
+      ],
+      "visual": "Retain the explicitly illustrative request waterfall; it makes no measured timing claim."
+    },
+    {
+      "url": "/guide/rendering-modes",
+      "source": "site/content/guide/rendering-modes/content.mdx",
+      "status": "reviewed",
+      "decision": "Reviewed delivery decision flow, live source examples and current static/runtime/progressive ownership; retained existing focused figures.",
+      "evidence": [
+        "site/tests/delivery-examples.ts",
+        "packages/runtime/src",
+        "packages/server/src"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "27 docs example tests passed"
+      ],
+      "visual": "Retain the existing static/runtime/progressive figures and live comparisons; no additional standalone scene is needed."
+    },
+    {
+      "url": "/guide/responsive-design",
+      "source": "site/content/guide/responsive-design/content.mdx",
+      "status": "reviewed",
+      "decision": "Completed gallery/media markup and generated CSS, removed repeated shorthand-only gallery snippet, and repaired demo nesting so the slider measures the actual query container rather than preview padding.",
+      "evidence": [
+        "site/content/examples/responsive-gallery/page.tsx",
+        "site/components/demo/DemoContainer.tsx",
+        "packages/preset/src/media.css"
+      ],
+      "checks": [
+        "6 browser profiles passed before final containment adjustment",
+        "Relevant authored example checks passed",
+        "36 live boundary/state checks passed",
+        "26 docs-example tests passed",
+        "Final corrected container preview: 6 article profiles passed"
+      ],
+      "visual": "Keep real viewport and container previews; gallery boundaries, enlarged preview reflow, production delivery and text-spacing checks now pass."
+    },
+    {
+      "url": "/guide/route-level-styles",
+      "source": "site/content/guide/route-level-styles/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the whole route workflow against the project-context fixtures. Rebuilt the portrait figure as a 3:2 scene separating definition context, compilation output and framework delivery. Second pass adds the installation prerequisite, a complete native-card CSS/HTML preview with a local utility override, and the missing ancestor markup for its container example. Gated decorative hover movement by motion preference and replaced undefined easing token. Final condition pass: made the dark system branch visibly different and distinguished named media queries from manual theme selection.",
+      "evidence": [
+        "packages/compiler/tests/stylesheet/project-context.test.ts",
+        "site/tests/delivery-examples.ts"
+      ],
+      "checks": [
+        "Both exported themes inspected",
+        "6 browser profiles passed",
+        "Authored route stylesheet fixture passed",
+        "24 Chromium/WebKit preview profiles passed across three widths, themes and 100%/200% iframe text",
+        "Both engines passed 320px outer-and-frame 200% text reflow",
+        "33 llms tests and 27 docs tests passed after synchronized SVG description regeneration",
+        "Eight JavaScript-disabled browser/width/theme profiles retain CSS and allow keyboard scrolling at 200% iframe text",
+        "Four compiled motion-preference cases passed.",
+        "8 system/manual theme condition cases passed"
+      ],
+      "visual": "Keep ownership diagram and add real native CSS comparison; dark desktop and light narrow exported screenshots inspected."
+    },
+    {
+      "url": "/guide/scanning-latent-classes",
+      "source": "site/content/guide/scanning-latent-classes/content.mdx",
+      "status": "reviewed",
+      "decision": "Added editable paired-theme source-to-CSS figure and complete CSS-variable alternative; demonstrated full class names vs unmatched fragments. Final palette pass: paired fixed surfaces with explicit readable text and corrected red/green or neutral example colors where relevant; teaching syntax and source-list correspondence are preserved. Final reading-path pass supplies explicit readable foregrounds for fixed background examples, including matching hover foregrounds where needed.",
+      "evidence": [
+        "site/assets/images/rendering-modes/source/scanning.ts",
+        "site/utils/delivery-flows.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "Illustration labels and equivalent text passed",
+        "Compiled Chromium/WebKit fixed-color pair verification; docs examples and lint passed",
+        "Relevant base/hover color profiles included in 40-case reading-path color check; minimum 5.08:1"
+      ],
+      "visual": "Added a paired light/dark SVG and PNG source-to-CSS scene, with complete equivalent text and a distinct note for native-pruning usage. The text flow now says recognized classes rather than implying CSS-value validation."
+    },
+    {
+      "url": "/guide/sizing",
+      "source": "site/content/guide/sizing/content.mdx",
+      "status": "reviewed",
+      "decision": "Read complete article and checked width caps, rem-sized avatars, shrink constraints and independent container thresholds. Existing edits correctly distinguish automatic minimum width from wrapping. Second pass: Added a max-width parent cap to the clamp example so its lower bound cannot overflow a narrow parent. Applied the same parent-width cap to the later custom clamp token example and explained a fluid sidebar alternative.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "site/components/demo/FoundationExamples.tsx",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed"
+      ],
+      "visual": "Existing measured and fluid-size specimens are sufficient."
+    },
+    {
+      "url": "/guide/spacing",
+      "source": "site/content/guide/spacing/content.mdx",
+      "status": "reviewed",
+      "decision": "Read complete article, form example, custom token definitions and logical-axis mappings. Existing padding/gap comparison and form hierarchy teach the task without another figure. Second pass: Clarified the document root font-size basis and made the form fields/labels reflow in narrow enlarged-text previews.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "packages/preset/src/utilities.css"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed"
+      ],
+      "visual": "Keep the real form and its observable gap hierarchy."
+    },
+    {
+      "url": "/guide/syntax-tutorial",
+      "source": "site/content/guide/syntax-tutorial/content.mdx",
+      "status": "reviewed",
+      "decision": "Read the complete tutorial and examples. Corrected token-pattern replacement to require both prefix and namespace; added a real shared-prefix ambiguity case and preserved all anchors. Second pass clarifies browser runtime needs a compiled project program; a document or shadow root still owns CSS delivery.",
+      "evidence": [
+        "crates/mastercss-compiler/tests/shared_prefix_contract.rs",
+        "crates/mastercss-engine/src/named.rs"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "Public tooling confirmed AMBIGUOUS_TOKEN and explicit property resolution",
+        "26 docs-example checks passed"
+      ],
+      "visual": "Existing state, container, nested-theme and final-card demos carry the lessons; retain them."
+    },
+    {
+      "url": "/guide/theme",
+      "source": "site/content/guide/theme/content.mdx",
+      "status": "reviewed",
+      "decision": "Added a live comparison of a root-computed alias and a locally rebound alias, with paired colors, complete configuration and native inheritance evidence. Second pass made the preset import prerequisite explicit before the first copyable token example.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "https://www.w3.org/TR/css-variables-1/#defining-variables"
+      ],
+      "checks": [
+        "6 browser profiles passed",
+        "6 computed-color and keyboard theme checks passed",
+        "390px enlarged-text checks passed",
+        "Search/Markdown/llms passed"
+      ],
+      "visual": "Use actual browser-rendered colors and a local theme control instead of a static color diagram."
+    },
+    {
+      "url": "/guide/typography",
+      "source": "site/content/guide/typography/content.mdx",
+      "status": "reviewed",
+      "decision": "Aligned displayed markup with the live inherited-leading versus complete-text-treatment comparison; removed the unrelated manual numeric treatment. Second pass: Added emergency wrapping to both equivalent comparison contexts so enlarged words remain inside their frame without changing the measured font-size, line-height or tracking choices.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "packages/preset/src/utilities.css",
+        "site/components/demo/FoundationTypeMotion.tsx"
+      ],
+      "checks": [
+        "6 current browser profiles passed",
+        "26 docs-example tests passed",
+        "Site lint passed",
+        "MDX imports passed"
+      ],
+      "visual": "Keep actual computed-value previews; no static image can show those changes as well."
+    },
+    {
+      "url": "/guide/variables-and-modes",
+      "source": "site/content/guide/variables-and-modes/content.mdx",
+      "status": "reviewed",
+      "decision": "Added the installation/entry prerequisite and a complete live nested-scheme example. Made native activation explicit and adjusted nested padding and wrapping after enlarged-text inspection.",
+      "evidence": [
+        "packages/preset/src/theme.css",
+        "site/components/demo/reference/document.ts"
+      ],
+      "checks": [
+        "6 browser profiles passed before final spacing adjustment",
+        "6 final computed-scheme checks passed",
+        "390px enlarged text has no overflowing headings or paragraphs",
+        "108 manual/system/shadow scheme cases passed"
+      ],
+      "visual": "Dark outer and light inner regions demonstrate scope directly; no separate SVG."
+    },
+    {
+      "url": "/guide/view-transitions",
+      "source": "site/content/guide/view-transitions/content.mdx",
+      "status": "reviewed",
+      "decision": "Fixed no-op initial state; supplied root timing placement and image prerequisite; explained motion-safe duration does not suppress native animation. Retained working visual demos. Second pass: Allowed long enlarged text to wrap inside the actual transition scene; snapshot names and interaction behavior are unchanged. Third pass: corrected entering/exiting-only snapshot behavior, gated cross-document opt-in by motion preference, explained DOM identity matching, and aligned group/image durations. Final focus pass: replaced a fixed blue heading outline with the adaptive text-link color in the actual article preview.",
+      "evidence": [
+        "site/content/guide/view-transitions/components",
+        "site/components/demo/useDemoViewTransition.ts"
+      ],
+      "checks": [
+        "6 article profiles passed",
+        "36 authored/live interaction profiles passed across widths, themes, reduced motion and unavailable API",
+        "40 cross-document cases passed with the recorded Chromium opt-out diagnostic",
+        "8 compiled pseudo-element timing profiles passed",
+        "8 keyboard/focus/contrast profiles passed"
+      ],
+      "visual": "Keep actual transition with reduced-motion and unavailable-API fallbacks."
+    }
+  ],
+  "firstPassCompletedAt": "2026-10-30T22:54:53.638585+00:00",
+  "goalCreatedAt": "2026-10-30T21:35:20Z",
+  "illustrationPriorities": [
+    {
+      "priority": 1,
+      "reason": "Prevent incorrect mental models about source extraction, definition resolution, pruning ownership and server/browser delivery.",
+      "completed": [
+        "Added source-scanning paired SVG/PNG scene with equivalent text.",
+        "Separated per-file pruning policy from a new two-root/shared-source scope scene.",
+        "Reworked and connected Next.js build-time versus request-time boundary scene."
+      ]
+    },
+    {
+      "priority": 2,
+      "reason": "Connect an abstract rule to observable browser output.",
+      "completed": [
+        "Simplified route stylesheet context/import scene and supplied executable native CSS example.",
+        "Replaced low-contrast FOUC art with a live HTML comparison.",
+        "Added actual nested-container, token-alias and maintenance examples; strengthened keyboard, motion and theme behavior."
+      ]
+    },
+    {
+      "priority": 3,
+      "reason": "Avoid adding a second explanation where the real example already teaches the rule.",
+      "retained": [
+        "Foundation specimens, actual transitions and responsive comparisons remain interactive rather than gaining decorative diagrams.",
+        "Installation recipes keep copyable steps and explicit verification instead of repetitive setup flowcharts."
+      ]
+    }
+  ],
+  "latestSourceValidation": {
+    "at": "2026-10-31T04:26:02.859227+00:00",
+    "sourcePreparation": "passed",
+    "siteLint": "passed",
+    "siteTypeCheck": "passed",
+    "documentationExamples": {
+      "passed": 28,
+      "failed": 0
+    },
+    "reference": {
+      "passed": 24,
+      "failed": 0
+    },
+    "llmsAndExports": {
+      "passed": 34,
+      "failed": 0
+    },
+    "mdxImports": {
+      "passed": 2,
+      "failed": 0
+    },
+    "aiContext": {
+      "status": "passed",
+      "files": 2663,
+      "generatedExcluded": 7,
+      "boundedExceptions": 1
+    },
+    "siteWhitespace": "passed",
+    "logPrefix": "/tmp/master-css-guide-review-20261031/final-source-"
+  },
+  "extendedReadingFinal": {
+    "completedAt": "2026-10-31T05:02:26.794083+00:00",
+    "baseline": "Production build completed at 2026-10-31T01:49:40Z, before the last source edits",
+    "profiles": 178,
+    "secondsPerProfile": 120,
+    "rawClean": 175,
+    "rawExceptions": [
+      {
+        "engine": "chromium",
+        "route": "/guide/installation",
+        "errors": [
+          "history URL mismatch"
+        ]
+      },
+      {
+        "engine": "webkit",
+        "route": "/guide/global-styles",
+        "errors": [
+          "TypeError: Importing a module script failed."
+        ]
+      },
+      {
+        "engine": "webkit",
+        "route": "/guide/installation",
+        "errors": [
+          "history URL mismatch"
+        ]
+      }
+    ],
+    "interpretation": "Installation self-navigation history assertions were harness artifacts, with corrected installation-to-introduction-to-back cases passing in both engines. One WebKit Global Styles module failure remains an unreproduced observation; artificial failure/native controls are separate evidence."
+  },
+  "finalBuildValidation": {
+    "completedAt": "2026-10-31T05:03:46Z",
+    "command": "bun run build:site",
+    "exitCode": 0,
+    "staticPages": 368,
+    "verifiedPublicAssets": 91,
+    "sourceIntegrity": "All 250 recorded source files and all 3 tested runtime/preset assets unchanged",
+    "productionLinks": {
+      "localizedPages": 178,
+      "links": 15880,
+      "errors": 0
+    },
+    "regressionTests": {
+      "passed": 70,
+      "failed": 0
+    },
+    "keyboardFocusProfiles": {
+      "passed": 36,
+      "failed": 0
+    },
+    "installationPrerequisiteProfiles": {
+      "passed": 12,
+      "failed": 0
+    },
+    "cssContract": {
+      "variableReferenceTestsPassed": 2,
+      "snapshotStatus": "Existing mismatch retained; first difference opacity-media-ring from unchanged materials.css",
+      "htmlRoutes": 368,
+      "deduplicatedDeliveryContracts": 271,
+      "deduplicatedSegments": 3780
+    },
+    "fullReader": {
+      "completedAt": "2026-10-31T05:27:55.464066+00:00",
+      "baseline": "2026-10-31T05:03:46Z root build:site output",
+      "profiles": 178,
+      "routesPerEngine": 89,
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "secondsPerProfile": 15,
+      "failures": 0,
+      "httpFailureProfiles": 0,
+      "requestFailureProfiles": 0,
+      "conditions": "Fresh page context per route; alternating light/dark and reduced motion; widths 390/768/1280 distributed across routes; top/middle/bottom, open disclosures, no outer overflow, intact loaded images and nonempty main content",
+      "evidence": "site/test-results/guide-review-2026-10-31/final-production-reader/"
+    },
+    "illustrationSurfaces": {
+      "passed": 20,
+      "failed": 0,
+      "scope": "Five changed scenes at 390/1280 px in light/dark; decoded image, correct theme, 3:2 ratio and alt text verified",
+      "visualReview": [
+        "scanning-latent-classes-0-390-dark.png",
+        "native-css-pruning-1-1280-light.png",
+        "installation-nextjs-progressive-0-390-light.png",
+        "route-level-styles-0-1280-dark.png"
+      ]
+    },
+    "aiContextAfterFixtureCleanup": {
+      "passed": true,
+      "files": 2645,
+      "generatedExcluded": 7,
+      "boundedExceptions": 1
+    }
+  },
+  "finalPublicAvailability": {
+    "checkedAt": "2026-10-31T05:23:30.015Z",
+    "queriedPackages": 17,
+    "http404Packages": [
+      "@master/css-astro",
+      "@master/css-next",
+      "@master/css-nuxt",
+      "@master/css-svelte",
+      "@master/css-svelte-addon",
+      "@master/css-tooling",
+      "@master/css-vite",
+      "@master/css-webpack"
+    ],
+    "cdn": {
+      "checkedAt": "2026-10-31T05:23:33.921Z",
+      "url": "https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin",
+      "status": 404,
+      "rcVersion": "2.0.0-rc.88",
+      "headers": {
+        "contentType": "text/plain; charset=utf-8",
+        "x-jsd-version": null
+      }
+    },
+    "interpretation": "Matching local artifacts were used for integration verification; current public-registry installation is not established. Package publication and release work remain outside the Guide review."
+  },
+  "followUpPriorities": [
+    {
+      "priority": 1,
+      "area": "Public release availability",
+      "finding": "Eight Guide-referenced/installer-required package names return HTTP 404; the current public runtime rc default-program.bin path also returns 404.",
+      "impact": "Readers cannot establish a matching installation from the public registry/CDN.",
+      "guideMitigation": [
+        "site/content/guide/installation/(main)/content.mdx",
+        "site/content/guide/installation/(main)/cdn/content.mdx"
+      ],
+      "nextAction": "Publish and verify one compatible package set, then run public-registry installation and CDN delivery checks. Publication is separate authorized release work.",
+      "evidence": [
+        "site/test-results/guide-review-2026-10-31/public-package-matrix.json",
+        "site/test-results/guide-review-2026-10-31/final-public-cdn.json"
+      ]
+    },
+    {
+      "priority": 1,
+      "area": "Astro static output",
+      "finding": "The matching local Astro static fixture emits base CSS but omits generated utility rules.",
+      "impact": "A successful build can yield an unstyled utility example.",
+      "guideMitigation": [
+        "site/content/guide/installation/astro/content.mdx"
+      ],
+      "nextAction": "Investigate static integration output; retain the explicit output check and tested CLI/progressive alternatives until fixed."
+    },
+    {
+      "priority": 1,
+      "area": "Next.js production bundling",
+      "finding": "Runtime and progressive Turbopack production fixtures fail to resolve generated entry CSS; Webpack fixtures pass.",
+      "impact": "Development success does not establish production bundler compatibility.",
+      "guideMitigation": [
+        "site/content/guide/installation/nextjs/runtime/content.mdx",
+        "site/content/guide/installation/nextjs/progressive/content.mdx"
+      ],
+      "nextAction": "Fix generated entry resolution in the integration and validate both production bundler paths separately."
+    },
+    {
+      "priority": 1,
+      "area": "Nuxt progressive artifact portability",
+      "finding": "A copied progressive server artifact still requests a manifest path under the original build directory.",
+      "impact": "The in-place server works but the copied deployment is not self-contained.",
+      "guideMitigation": [
+        "site/content/guide/installation/nuxtjs/progressive/content.mdx"
+      ],
+      "nextAction": "Resolve manifest delivery in the deployable artifact; repeat moved-output verification independently of in-place SSR."
+    },
+    {
+      "priority": 2,
+      "area": "Site CSS contract baseline",
+      "finding": "The final contract comparison fails first on opacity-media-ring already present in unchanged materials.css.",
+      "impact": "The whole-site snapshot is not a passing release gate despite successful output graph and variable-reference checks.",
+      "nextAction": "Reconcile the broader existing/concurrent CSS changes before deliberately updating the shared snapshot; do not overwrite it from this Guide review."
+    },
+    {
+      "priority": 2,
+      "area": "Current benchmark runner",
+      "finding": "Historical evidence validators pass, but the current lifecycle runner fails its legacy text-center fixture probe before measurement.",
+      "impact": "Historical snapshot validity does not prove current runner reproducibility.",
+      "guideMitigation": [
+        "site/content/guide/benchmarks/content.mdx"
+      ],
+      "nextAction": "Update and independently validate benchmark fixtures in benchmark-owned work before publishing fresh measurements."
+    }
+  ],
+  "cleanup": {
+    "at": "2026-10-31T05:28:01.526295+00:00",
+    "ownedFixtureListeners": [
+      {
+        "port": 3191,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 3192,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 3193,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 31891,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 31892,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 31893,
+        "listening": false,
+        "output": ""
+      },
+      {
+        "port": 31895,
+        "listening": false,
+        "output": ""
+      }
+    ],
+    "removedWorkspaceFixtures": [
+      ".master-next-doc-B28GPU",
+      ".master-next-doc-eWgJfX",
+      ".master-next-doc-qEAiRA"
+    ],
+    "evidenceRetained": true
+  },
+  "completionSummary": {
+    "canonicalGuidePagesReviewed": 89,
+    "illustrationScenesAdded": 2,
+    "illustrationScenesReworked": 3,
+    "pairedEditableArtwork": true,
+    "mainImprovements": [
+      "Verified and revised installation/migration recipes, delivery boundaries and failure checks",
+      "Corrected benchmark interpretation and response-byte presentation",
+      "Improved paired-theme diagrams with equivalent article text",
+      "Fixed normal-flow preview sizing, fragment navigation, focus visibility, forced colors and print reading"
+    ],
+    "validation": {
+      "sourceChecks": "Passed; detailed results under latestSourceValidation",
+      "productionBuild": "Passed; 368 routes and 91 referenced public assets",
+      "finalProductionBrowserProfiles": 178,
+      "regressionTestsPassed": 70,
+      "internalLinksChecked": 15880,
+      "focusProfilesPassed": 36,
+      "installationPrerequisiteProfilesPassed": 12,
+      "illustrationSurfaceProfilesPassed": 20,
+      "cssContractSnapshot": "Known mismatch retained, not passed"
+    },
+    "scopeBoundary": "No package API/engine semantics, release configuration, dependencies or published benchmark data changed by this review",
+    "commitOrDeployment": "Not performed",
+    "reviewEvidence": "site/test-results/guide-review-2026-10-31/"
+  },
+  "completedAt": "2026-10-31T05:35:38.602971+00:00",
+  "elapsedSinceGoalSeconds": 28819,
+  "minimumDurationSatisfied": true
+}

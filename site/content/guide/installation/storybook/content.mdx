@@ -1,12 +1,16 @@
-## Storybook setup
+Use the application’s CSS entry in Storybook’s preview iframe, where stories render. This page shows React with the Vite builder; the same CSS ownership applies to other supported Vite frameworks.
 
+## Install in the application
 Install Storybook in the application that already uses Master CSS.
 
 ```bash name=Terminal
 npm create storybook@latest
 ```
 
-When Storybook uses the app's Vite configuration, keep Master CSS registered in `vite.config.ts` and import the app stylesheet from the Storybook preview.
+## Import the shared CSS entry
+Storybook’s [Vite builder](https://storybook.js.org/docs/builders/vite) normally reads the application’s Vite configuration. Keep Master CSS registered there once, then import the application stylesheet from `.storybook/preview.ts`. Preserve existing preview decorators and parameters.
+
+The import styles stories inside the preview iframe. It does not style Storybook’s sidebar or toolbar.
 
 ```ts name=.storybook/preview.ts
 import type { Preview } from '@storybook/react-vite'
@@ -20,13 +24,15 @@ const preview: Preview = {
 export default preview
 ```
 
-If Storybook does not load the app's Vite configuration, register Master CSS in `viteFinal`.
+## Register a separate Vite integration when needed
+If your Storybook configuration deliberately does not load the application’s Vite configuration, register Master CSS in `viteFinal`. Merge this into your existing configuration, retaining its story globs, addons and framework settings. Skip this registration when the application plugin is already loaded.
 
 ```ts name=.storybook/main.ts
 import type { StorybookConfig } from '@storybook/react-vite'
 
 const config: StorybookConfig = {
   framework: '@storybook/react-vite',
+  stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   async viteFinal(config) {
     const { mergeConfig } = await import('vite')
     const { default: masterCSS } = await import('@master/css-vite')
@@ -42,4 +48,28 @@ const config: StorybookConfig = {
 export default config
 ```
 
-Use the matching Storybook framework package for Vue, Svelte, Angular, or Web Components projects, and keep the stylesheet import pointed at the CSS entry used by your app.
+Use the matching Storybook package for your framework and builder. The `viteFinal` hook applies to the Vite builder; a Webpack-based Storybook needs its own [Webpack integration](/guide/installation/webpack).
+
+## Verify an actual story
+Create this story within the configured story glob:
+
+```tsx name=src/MasterCSS.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = { title: 'Master CSS/Heading' } satisfies Meta
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Heading: Story = {
+  render: () => (
+    <h1 className="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+  )
+}
+```
+
+Run `npm run storybook` and open **Master CSS / Heading**. The preview should show a large, heavy italic heading. Then run `npm run build-storybook` and serve its generated `storybook-static` directory to verify the production preview too.
+
+If the app is styled but stories are not, first check the CSS import in `preview.ts`, then confirm the Master CSS plugin runs in Storybook’s builder. With static rendering, keep complete class strings in story source or add the story directory to `@source` when it lies outside the application’s scanned files.

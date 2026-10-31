@@ -15,6 +15,8 @@ export function demoPlayback(doc: Document, managed: boolean, changed: (playing:
   }
   const read = (all: Animation[]) => {
     doc.querySelectorAll<HTMLOutputElement>('[data-animation-readout]').forEach(output => {
+      // Keep frequently changing timeline values readable without live announcements.
+      if (output.getAttribute('aria-live') !== 'off') output.setAttribute('aria-live', 'off')
       const target = doc.getElementById(output.dataset.animationReadout!)
       const animation = all.find(item => (item.effect as KeyframeEffect | null)?.target === target)
       const timing = animation?.effect?.getComputedTiming()

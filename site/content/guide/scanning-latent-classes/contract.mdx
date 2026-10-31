@@ -6,20 +6,20 @@ Static rendering starts by finding latent classes. A latent class is a possible 
 ```txt
 source text
   -> latent class candidates
-  -> validated classes
+  -> recognized Master CSS classes
   -> generated CSS
 ```
 
 The scanner does not run your app. Source extractors collect complete static strings from the relevant language structure, and the Rust engine decides which candidates produce CSS. A match does not establish CSS value validity or browser support.
 
 ```html name=src/index.html
-<!-- @MARK card p-md bg-white shadow-md -->
-<article class="p-md bg-white shadow-md card">
+<!-- @MARK card p-md bg-white fg-zinc-90 shadow-md -->
+<article class="p-md bg-white fg-zinc-90 shadow-md card">
   <h2 class="font-lg font-semibold">Release notes</h2>
 </article>
 ```
 
-The source contains `card`, `p-md`, `bg-white`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
+The source contains `card`, `p-md`, `bg-white`, `fg-zinc-90`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
 
 The generated result for `p-md` and `shadow-md` includes their theme dependencies:
 
@@ -54,8 +54,8 @@ JavaScript and TypeScript extraction includes static strings, object maps, condi
 
 ```js name=src/button.js
 const toneClasses = {
-  neutral: 'bg-white fg-text-neutral',
-  destructive: 'bg-red-60 fg-white'
+  neutral: 'bg-surface-base fg-text-neutral',
+  destructive: 'bg-red-70 fg-white'
 }
 
 function setDestructive(destructive) {
@@ -67,9 +67,9 @@ function setDestructive(destructive) {
 The scanner can see these complete class strings across the two files:
 
 ```txt
-bg-white
+bg-surface-base
 fg-text-neutral
-bg-red-60
+bg-red-70
 fg-white
 r-md
 px-md
@@ -149,8 +149,8 @@ Keep the supported variants in a static map:
 
 ```js
 const toneClasses = {
-  destructive: 'bg-red-60 fg-white',
-  confirmed: 'bg-green-60 fg-white',
+  destructive: 'bg-red-70 fg-white',
+  confirmed: 'bg-green-80 fg-white',
   neutral: 'bg-gray-10 fg-gray-90'
 }
 

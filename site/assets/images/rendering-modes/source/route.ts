@@ -7,23 +7,25 @@ export default {
     const { p, text, line, surface, svg } = drawing(theme)
     const l = deliveryIllustrations.route.labels
     const content = `
-      ${surface(24, 24, 312, 90)}
-      ${text(44, 59, l.project, 18, p.ink, 500)}
-      ${text(44, 88, l.definitions, 16, p.muted)}
-      ${line('M180 128V189', 'stroke-dasharray="3 5" marker-end="url(#arrow)"')}
-      ${text(202, 164, l.context, 16, p.muted)}
-      ${surface(24, 202, 312, 90)}
-      ${text(44, 237, l.route, 18, p.ink, 500)}
-      ${text(44, 266, l.native, 16, p.muted)}
-      ${line('M180 306V365', 'marker-end="url(#arrow)"')}
-      ${text(202, 342, l.compile, 16, p.muted)}
-      ${surface(24, 378, 312, 90)}
-      ${text(44, 413, l.output, 18, p.ink, 500)}
-      ${text(44, 442, l.resources, 16, p.muted)}
-      ${line('M180 482V541', 'marker-end="url(#arrow)"')}
-      ${text(202, 518, l.load, 16, p.muted)}
-      ${text(180, 571, l.page, 18, p.ink, 500, 'text-anchor="middle"')}
+      ${surface(8, 10, 260, 96)}
+      ${text(28, 47, l.project, 20, p.ink, 500)}
+      ${text(28, 80, l.definitions, 18, p.muted)}
+      ${line('M138 120V184', 'stroke-dasharray="3 5" marker-end="url(#arrow)"')}
+      ${text(158, 158, l.context, 18, p.muted)}
+
+      ${surface(8, 198, 260, 100)}
+      ${text(28, 237, l.route, 20, p.ink, 500)}
+      ${text(28, 273, l.native, 18, p.muted)}
+      ${line('M282 249H316', 'marker-end="url(#arrow)"')}
+      ${text(299, 180, l.compile, 18, p.muted, 400, 'text-anchor="middle"')}
+
+      ${surface(330, 198, 222, 100)}
+      ${text(350, 237, l.output, 20, p.ink, 500)}
+      ${text(350, 273, l.resources, 18, p.muted)}
+      ${line('M441 312V326', 'marker-end="url(#arrow)"')}
+      ${text(418, 324, l.load, 18, p.muted, 400, 'text-anchor="end"')}
+      ${text(552, 356, l.page, 20, p.ink, 500, 'text-anchor="end"')}
     `
-    return svg(360, 600, deliveryFlow('route').title, deliveryFlowDescription('route'), content, 20)
+    return svg(560, 360, deliveryFlow('route').title, deliveryFlowDescription('route'), content, 20)
   }
 }

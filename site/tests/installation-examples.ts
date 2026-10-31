@@ -48,7 +48,10 @@ export function verifyInstallationExamples() {
       mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
       for (const name of ['css', 'css-vite', 'css-runtime']) symlinkSync(fileURLToPath(new URL(`node_modules/@master/${name}`, rootURL)), join(root, 'node_modules/@master', name), 'dir')
       symlinkSync(fileURLToPath(new URL('node_modules/vite', rootURL)), join(root, 'node_modules/vite'), 'dir')
-      writeFileSync(join(root, 'index.html'), "<html><head><script type=\"module\" src=\"/src/main.js\"></script></head><body><h1 class=\"m-md font-style:italic font-3xl font-heavy fg-text-strong\">Hello World</h1></body></html>")
+      const authored = deliveryFences(installationSource(mode === 'runtime' ? '/vite/runtime' : '/vite')).find(fence => fence.name === 'src/main.js')!
+      assert.ok(authored, 'The Vite guide includes its complete application entry')
+      writeFileSync(join(root, 'src/main.js'), authored.text)
+      writeFileSync(join(root, 'index.html'), '<html><head><script type="module" src="/src/main.js"></script></head><body><div id="app"></div></body></html>')
       const built = spawnSync(process.execPath, [fileURLToPath(new URL('node_modules/vite/bin/vite.js', rootURL)), 'build'], { cwd: root, encoding: 'utf8', timeout: 30000 })
       assert.equal(built.status, 0, built.stderr)
       const assets = readdirSync(join(root, 'dist/assets'))
@@ -90,8 +93,23 @@ export function verifyInstallationExamples() {
   const settings = deliveryFences(installationSource('/vscode')).filter(f => f.name === '.vscode/settings.json').map(f => JSON.parse(f.text)).at(-1)
   assert.equal(settings['editor.quickSuggestions'].strings, true)
   assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
-  const cdn = deliveryFences(installationSource('/cdn')).find(f => f.name === 'index.html')!.text
-  assert.match(cdn, /<script src="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/global\.min\.js"><\/script>/)
-  assert.match(cdn, /<link rel="preload" as="fetch" crossorigin href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-runtime@rc\/dist\/default-program\.bin">/)
-  assert.match(cdn, /<link rel="stylesheet" href="https:\/\/cdn.jsdelivr.net\/npm\/@master\/css-preset@rc\/src\/base\.css">/)
+  const cdnExamples = deliveryFences(installationSource('/cdn'))
+  const cdn = cdnExamples.find(f => f.name === 'index.html')!.text
+  assert.match(cdn, /<script src="\/master-css\/global\.min\.js"><\/script>/)
+  assert.match(cdn, /<link rel="preload" as="fetch" crossorigin href="\/master-css\/default-program\.bin">/)
+  assert.match(cdn, /<link rel="stylesheet" href="\/master-css\/base\.css">/)
+  const cdnRoot = mkdtempSync(join(tmpdir(), 'master-doc-cdn-'))
+  try {
+    symlinkSync(fileURLToPath(new URL('node_modules', rootURL)), join(cdnRoot, 'node_modules'), 'dir')
+    const commands = cdnExamples.find(f => f.name === 'Terminal')!.text
+    const copied = spawnSync('/bin/sh', ['-c', commands], { cwd: cdnRoot, encoding: 'utf8', timeout: 15000 })
+    assert.equal(copied.status, 0, copied.stderr)
+    for (const [name, source] of [
+      ['base.css', 'packages/preset/src/base.css'],
+      ['global.min.js', 'packages/runtime/dist/global.min.js'],
+      ['default-program.bin', 'packages/runtime/dist/default-program.bin']
+    ]) {
+      assert.deepEqual(readFileSync(join(cdnRoot, 'public/master-css', name)), readFileSync(new URL(source, rootURL)), `CDN assets must come from the matching package build: ${name}`)
+    }
+  } finally { rmSync(cdnRoot, { recursive: true, force: true }) }
 }

@@ -65,7 +65,7 @@ Codex App can register stdio MCP servers through the Codex CLI:
 codex mcp add master-css -- npx -y @master/css-mcp@rc --root /absolute/path/to/project
 ```
 
-The server entry lives in `~/.codex/config.toml`. You can add `startup_timeout_sec` there when initial package startup needs more time:
+The CLI stores this entry in `~/.codex/config.toml`. Trusted projects can also use `.codex/config.toml`; see the [official Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp?surface=cli). You can add `startup_timeout_sec` when initial package startup needs more time:
 
 ```toml name=~/.codex/config.toml
 [mcp_servers.master-css]
@@ -211,7 +211,7 @@ Use each Master CSS tool surface for the workflow it owns.
 | ESLint | Human development workflow, editor diagnostics through ESLint extensions, team policy, and JavaScript/framework CI linting. |
 | Language Service | Editor completion, hover previews, color tools, directive formatting, highlighting, and manifest diagnostics. |
 
-When an AI client supports MCP, prefer the MCP server because it can call specific tools and keep write previews explicit. When a client cannot use MCP, use CLI JSON output as the fallback:
+When an AI client supports MCP, prefer the MCP server because it can call specific tools and keep write previews explicit. When a client cannot use MCP, use CLI JSON output as the fallback. [Install the CLI](/guide/installation/cli) locally with the same Master CSS release as the project before running these commands:
 
 ```bash name=Terminal
 npx @master/css-cli lint --format json --exit-code never
@@ -225,14 +225,6 @@ npx @master/css-cli inspect --format json --exit-code never
 
 ---
 
-## Next steps
-- Use [AI Coding](/guide/ai-coding) for prompts and review habits around AI-generated styling.
-- Use [Project agent rules](/guide/ai-coding#add-project-agent-rules) when you want a reusable rules block for local AI coding agents.
-- Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
-- Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
-- Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.
-
-
 ## Compare a project before and after editing
 
 Call `mastercss_scan_project` with `includeSnapshot: true` before editing and save `result.data.snapshot`. Repeat after editing, then pass the two objects to `mastercss_css_compare` as `beforeSnapshot` and `afterSnapshot`. Both are required; snapshot inputs cannot be mixed with class/content, `filePath` or `context` inputs.
@@ -240,3 +232,12 @@ Call `mastercss_scan_project` with `includeSnapshot: true` before editing and sa
 The project result is `{ version: 3, mode: 'project', comparison }` inside the usual version 3 envelope. `comparison.version` is 1. It reports changed definitions, known class consumers and files, before/after generated rules, native references, output assets and delivery order. Read `coverage` even when there are no differences: dynamic sources, remote content, binary assets and final browser behavior are not exhaustively checked. Native consumers are conservative at stylesheet granularity.
 
 These tools use the installed compiler. Check workspace package versions, language/binding versions and manifest metadata before using documentation or examples; use the project-local, lockfile-pinned MCP package for reproducible sessions.
+
+---
+
+## Next steps
+- Use [AI Coding](/guide/ai-coding) for prompts and review habits around AI-generated styling.
+- Use [Project agent rules](/guide/ai-coding#add-project-agent-rules) when you want a reusable rules block for local AI coding agents.
+- Use [Code Linting](/guide/code-linting) for the ESLint rules that enforce class policy in normal development.
+- Use [Language Service](/guide/language-service) for editor intelligence and generated CSS previews.
+- Use [Scanning latent classes](/guide/scanning-latent-classes) when generated CSS is missing because source discovery needs inspection.

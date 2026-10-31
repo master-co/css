@@ -15,7 +15,7 @@ export default function ViewTransitionScene() {
   const [activeId, setActiveId] = useState('overview')
   const active = views.find(view => view.id === activeId)!
   const { run, mode } = useDemoViewTransition(rootClasses)
-  return <main className="p-md bg-surface-base fg-text-body">
+  return <main className="overflow-wrap:anywhere p-md bg-surface-base fg-text-body">
     <DemoControls label="Choose a view">
       {views.map(view => <button key={view.id} type="button" className="demo-button" aria-pressed={activeId === view.id}
         onClick={() => { if (view.id !== activeId) run(() => setActiveId(view.id)) }}>{view.title}</button>)}

@@ -49,12 +49,19 @@ export async function verifyPackageAuthoringExamples() {
     const css = result.stylesheets!.map(sheet => sheet.css).join('\n')
     for (const text of ['--color-brand:#4f46e5', '&:hover', '&:focus-visible', '.content-auto{', 'prefers-reduced-motion: no-preference']) assert.ok(css.includes(text), text)
     assert.match(css, /\.btn\s*\{/)
+    assert.match(css, /--color-focus-action:\s*light-dark\(#4f46e5,\s*#a5b4fc\)/)
+    assert.match(css, /outline:\s*2px solid var\(--color-focus-action\)/)
     assert.doesNotMatch(css, /@compose|@custom-variant|@components|@utilities/)
 
     const local = fences.find(f => f.name === 'components/Button.module.css')!
     const compiled = await compileRenderedStylesheet(files.write(local.name, local.text), local.text, options)
     assert.deepEqual(compiled.diagnostics.filter(d => d.severity === 'error'), [])
-    assert.match(compiled.css.replace(/\s+/g, ''), /\.button\{content-visibility:auto;contain-intrinsic-size:auto32rem;?\}/)
+    assert.match(compiled.css, /padding-inline:\s*var\(--spacing-action-x\)/)
+    assert.match(compiled.css, /border-radius:\s*var\(--radius-action\)/)
+    assert.match(compiled.css, /background-color:\s*var\(--color-brand\)/)
+    assert.match(compiled.css, /--spacing-action-x:\s*1rem/)
+    assert.match(compiled.css, /--radius-action:\s*0?\.5rem/)
+    assert.match(compiled.css, /--color-brand:\s*#4f46e5/)
     assert.doesNotMatch(compiled.css, /\.btn\s*\{/)
     assert.doesNotMatch(compiled.css, /@reference|@compose/)
 
@@ -72,16 +79,19 @@ export async function verifyMonorepoExamples() {
   const files = fixture()
   try {
     const fences = deliveryFences(deliverySource('monorepo'))
-    files.write('index.css', '@theme { --color-primary: #123456;  }')
     for (const fence of fences.filter(f => f.language === 'css')) files.write(fence.name, fence.text)
-    files.write('projects/admin/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
-    const root = join(files.root, 'projects/admin')
-    const project = await loadProjectManifest({ root, baseManifest: preset })
-    assert.equal(project.entries.length, 1)
-    assert.ok(project.entries[0].endsWith('/projects/admin/index.css'))
-    const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: root, classes: ['bg-primary'] })
-    assert.match(rendered.css, /--color-primary:#4f46e5/)
-    assert.match(rendered.css, /\.app-shell\s*\{[^}]*background-color:\s*var\(--color-surface-base\)/)
-    assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
+    for (const [app, color, otherColor] of [['admin', '#4f46e5', '#0f766e'], ['shop', '#0f766e', '#4f46e5']]) {
+      files.write(`projects/${app}/package.json`, JSON.stringify({ dependencies: { '@master/css': '*' } }))
+      const root = join(files.root, `projects/${app}`)
+      const project = await loadProjectManifest({ root, baseManifest: preset })
+      assert.equal(project.entries.length, 1)
+      assert.ok(project.entries[0].endsWith(`/projects/${app}/index.css`))
+      const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: root, classes: ['bg-primary'] })
+      assert.ok(rendered.css.includes(`--color-primary:${color}`), `${app}: its own token override`)
+      assert.ok(!rendered.css.includes(otherColor), `${app}: another app's override must not leak`)
+      assert.match(rendered.css, /background-color:var\(--color-primary\)/)
+      if (app === 'admin') assert.match(rendered.css, /\.app-shell\s*\{[^}]*background-color:\s*var\(--color-surface-base\)/)
+      assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
+    }
   } finally { files.dispose() }
 }

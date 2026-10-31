@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Responsive Design',
-  description: 'Adapt your user interface to different devices with flexible responsive syntax.',
+  description: 'Choose viewport queries for page layouts and container queries for reusable components, then test each content threshold.',
   category: 'Fundamentals',
   fileURL: import.meta.url
 })

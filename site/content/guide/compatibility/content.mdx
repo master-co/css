@@ -3,7 +3,7 @@ import Class2CSS from '~/site/components/Class2CSS'
 ## Overview [sr-only]
 Master CSS is designed to work with modern browser features, existing CSS files, component libraries, and third-party stylesheets. Compatibility mostly depends on the CSS features your project uses and the way external styles enter the cascade.
 
-Static extraction and server rendering generate regular CSS ahead of time. Runtime rendering uses the browser [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) API to detect class changes and generate only the rules used by connected elements.
+Static extraction and server rendering generate regular CSS ahead of time. Runtime rendering uses the browser [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) API to track class changes on connected elements and update their generated rules. Authored native CSS keeps its own delivery and pruning policy.
 
 The default stylesheet uses native [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to keep theme, base, defaults, components, and utilities predictable:
 
@@ -31,7 +31,7 @@ Use this rule of thumb:
 ---
 
 ## Vendor prefixes
-Master CSS includes built-in vendor prefixes for common CSS properties and selectors, so you usually write the standard syntax and let the engine emit the compatibility form.
+Master CSS emits compatibility declarations for selected native properties. Write the standard property name, then inspect the generated CSS to see which declarations are included.
 
 ### CSS properties
 Write the unprefixed class:
@@ -45,6 +45,8 @@ Write the unprefixed class:
 </Class2CSS>
 
 ### CSS selectors
+
+Write a vendor-specific selector explicitly when the feature requires one. In this example, [`::-webkit-scrollbar`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::-webkit-scrollbar) passes through as written; its support remains browser-specific.
 
 ```html
 <div class="background-color:#000::-webkit-scrollbar">…</div>
@@ -86,7 +88,9 @@ Complete CSS properties such as `margin:1rem` keep their native value semantics.
 
 ```html
 <!-- @MARK margin-top:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
-<div class="mx-md mb-md margin-top:1rem bg-red-60">…</div>
+<div class="margin-top:1rem">Native top margin</div>
+<div class="margin:1rem">Native margin on every side</div>
+<div class="bg-red-60">Theme color</div>
 ```
 
 <Class2CSS>
@@ -99,7 +103,7 @@ This preserves the expected syntax model:
 - `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg-red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `field-sizing:content` or `interpolate-size:allow-keywords`.
-- Tooling reports values such as `field-sizing:banana` and `interpolate-size:banana` as invalid. A generated rule alone does not establish validity; the browser ignores unsupported declarations.
+- Tooling can distinguish known-invalid values, such as the unitless length in `font-size:16`, from values its grammar cannot fully check. Treat `unknown` as unverified. A generated rule alone does not establish validity or browser support.
 
 ### Arbitrary properties
 Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it directly with `property:value` syntax:
@@ -113,7 +117,7 @@ Arbitrary properties do not need `{}`. If the declaration is valid CSS, write it
   {['interpolate-size:allow-keywords', 'scroll-timeline-name:--cards', 'paint-order:stroke|fill']}
 </Class2CSS>
 
-Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Static tooling may reject the newest CSS grammar until its syntax data catches up, while the browser runtime follows `CSS.supports(property, value)` for direct native declarations.
+Use `{...}` only as an explicit raw escape hatch, or when several raw declarations should share one selector or query suffix. Tooling may report the newest CSS grammar as unknown until its syntax data catches up. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply. Check support explicitly when an optional feature needs a fallback.
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
@@ -130,21 +134,21 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 ---
 
 ## Third-party styles
-Third-party libraries often ship CSS with their own selector strategy. Put vendor styles in a lower cascade layer when you want Master CSS components and utilities to override them without `!important`.
+Third-party libraries often ship CSS with their own selector strategy. Put vendor styles in a lower cascade layer when you want normal Master CSS components and utilities to override normal vendor declarations.
 
-For example, import Swiper styles into the `defaults` layer:
+For example, declare the shared layer order before importing Swiper styles into `defaults`. This places vendor styles after the base reset and before components and utilities:
 
-```css
-@import 'swiper/css'; /* [!code --] */
-@import 'swiper/css/navigation'; /* [!code --] */
-@import 'swiper/css/pagination'; /* [!code --] */
-
+```css name=index.css
+@layer theme, base, defaults, components, utilities;
 @import 'swiper/css' layer(defaults);
 @import 'swiper/css/navigation' layer(defaults);
 @import 'swiper/css/pagination' layer(defaults);
+@import '@master/css';
 ```
 
-(!) Some bundlers may not support `@import ... layer(...)` for package CSS. Check your build tool before relying on layered package imports.
+An unlayered vendor rule outranks a normal layered utility. An `!important` vendor declaration also outranks normal declarations; moving it to `defaults` does not remove that importance. Inspect the competing declaration before changing layers.
+
+Keep these imports in the project CSS entry processed by Master CSS. Check the production stylesheet for the `defaults` layer and test an override against the built page.
 
 Master CSS is meant to sit in the CSS build workflow, so you usually do not need a separate preprocessor just to bundle imports, share variables, add prefixes, or generate utility classes. Prefer native CSS imports, cascade layers, CSS variables, and Master CSS tokens before reaching for Sass, Less, or Stylus.
 
@@ -163,28 +167,30 @@ Then define your application overrides in the `components` layer or use utilitie
   }
 
   .swiper-slide {
-    background-color: var(--color-blue-60);
+    background-color: var(--color-surface-raised);
   }
 }
 ```
 
 ```html
 <!-- @MARK bg-blue-60 -->
-<div class="bg-blue-60 swiper-slide">Slide 1</div>
+<div class="swiper-slide">Default surface</div>
+<div class="swiper-slide bg-blue-60 fg-white">Featured slide</div>
 ```
 
-This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
+The first slide keeps the component's surface color. The second uses a blue background and white text from its utilities. This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
 
 ---
 
 ## Existing CSS workflows
-Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, extraction context, and native CSS pruning behavior.
+Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, and extraction context. Each imported file retains its own native CSS preserve/prune policy.
 
 Use native CSS variables from your theme when module-scoped or component-scoped CSS needs shared design values:
 
 ```css name=Button.module.css
 .button {
   background-color: var(--color-blue);
+  color: var(--color-white);
   border-radius: var(--radius-md);
 }
 ```
@@ -192,7 +198,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="height:40px px-md r-md bg-blue">Save</button>
+<button type="button" class="height:40px px-md r-md bg-blue fg-white">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#explicit-pruning).
@@ -202,9 +208,9 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. N
 ## Checklist
 - Check browser support for the generated CSS feature, not just the Master CSS class.
 - Check cascade layers, OKLCH and `light-dark()` when using the default preset.
-- Write standard unprefixed properties and selectors when Master CSS already prefixes them.
+- Inspect generated CSS for compatibility declarations, and write required vendor-specific selectors explicitly.
 - Use native declaration syntax for valid CSS declarations; use separate classes for combinations, or `@utility` for reusable class recipes and ordered declarations.
 - Use named utilities for tokens and direct declarations for explicit CSS values. Colon values retain native CSS value semantics.
 - Test experimental declarations in the browsers and rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
-- Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.
+- Keep externally injected classes visible to extraction, outside pruned sources, or protected from native CSS pruning.

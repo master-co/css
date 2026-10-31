@@ -203,12 +203,18 @@
 
     :is(h1, h2, h3, h4, h5, h6) {
       margin-top: var(--spacing-lg);
+    }
+
+    :is(h1, h2, h3, h4, h5, h6, a[id]:not([href])) {
       scroll-margin-top: 60px;
     }
 
     @media (--sm) {
       :is(h1, h2, h3, h4, h5, h6) {
         margin-top: var(--spacing-2xl);
+      }
+
+      :is(h1, h2, h3, h4, h5, h6, a[id]:not([href])) {
         scroll-margin-top: 100px;
       }
     }

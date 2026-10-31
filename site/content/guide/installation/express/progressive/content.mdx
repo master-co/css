@@ -127,11 +127,12 @@ Use progressive rendering when Express owns the HTML response. Express renders t
   <Step $row>
     <StepL>
       ### <StepNum />Add build scripts
-      Build or watch the frontend assets beside the Express server.
+      Merge these fields into the existing `package.json`, keeping the dependencies installed above. Build or watch the frontend assets beside the Express server.
     </StepL>
     <StepR>
       ```json name=package.json
       {
+        "type": "module",
         "scripts": {
           "build:assets": "vite build",
           "watch:assets": "vite build --watch",
@@ -154,6 +155,18 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 </h1>
 ```
 
-Progressive rendering sends the first response with `style#master-css`, then the runtime reads the injected hydration manifest and keeps handling classes added after the initial response. The manifest loader keeps the project manifest out of the first page load: the runtime imports it, together with its engine, only when a class outside the hydration manifest appears. Use [Express static rendering](/guide/installation/express) when templates contain complete class strings and you want a generated CSS asset instead.
+Progressive rendering sends the first response with `style#master-css`, then the runtime reads the injected hydration manifest and keeps handling classes added after the initial response. The lazy program loader lets a fully covered page defer the browser engine and compiled runtime program until a new class needs generation. The server manifest stays on the server; it is distinct from the small hydration record injected into the HTML. Use [Express static rendering](/guide/installation/express) when templates contain complete class strings and you want a generated CSS asset instead.
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+
+## Keep server and browser definitions aligned
+This example uses the default preset manifest on the server and the same preset in `src/app.css`. If you add project tokens or utilities, compile the project manifest for the server too. Rendering with the preset manifest while the browser uses different definitions can produce mismatched initial CSS.
+
+## Check both phases
+Build the assets and start Express. With JavaScript disabled, the heading should already be large, heavy and italic. Inspect the response for `style#master-css` and its hydration record.
+
+Re-enable JavaScript, reload, and add a class in the browser console. The heading should gain an underline without a new server response:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```

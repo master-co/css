@@ -7,6 +7,7 @@ import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue
 
 interface BenchmarkStackedBarsProps {
   items: BenchmarkStackedBarItem[]
+  max?: number
   unit?: string
   valueFormatter?: (value: number) => ReactNode
   className?: string
@@ -14,7 +15,7 @@ interface BenchmarkStackedBarsProps {
 
 export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
   const labelPrefix = useId()
-  const { items, unit, valueFormatter, className } = props
+  const { items, max, unit, valueFormatter, className } = props
 
   return (
     <div className={clsx('display:grid gap-lg benchmark-bars benchmark-stacks', className)}>
@@ -38,7 +39,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
             </div>
             <div className="benchmark-meter benchmark-meter-stacked" role="img" aria-labelledby={`${labelId} ${valueId}`}>
               {item.segments.map((segment, index) => {
-                const percent = clampPercent(segment.value, total)
+                const percent = clampPercent(segment.value, max ?? total)
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
                 const colorClasses = benchmarkColorClasses[color]
 
@@ -63,7 +64,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
 
                 return (
                   <div key={segment.id} className="display:inline-flex align-items:center gap-2xs font-xs fg-text-muted">
-                    <span className={clsx('display:inline-block height:0.625rem width:0.625rem r-xs', colorClasses.background)} />
+                    <span className={clsx('display:inline-block height:0.625rem width:0.625rem r-xs benchmark-legend-swatch', colorClasses.background)} />
                     <span><Translate>{segment.label}</Translate></span>
                     <span className="fg-text-strong">{valueLabel}</span>
                   </div>

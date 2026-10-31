@@ -1,15 +1,17 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css` option. The module handles CSS delivery without changing Nuxt’s HTML rendering mode.
+
 <StepSection>
   <Step $row>
     <StepL>
       ### <StepNum />Create a project
-      If you don't have a Nuxt project, create one first.
+      If you don't have a Nuxt project, create one with the [Nuxt starter](https://nuxt.com/docs/4.x/api/commands/init). These examples use Nuxt 4's `app/` directory.
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npx nuxi@latest init my-app
+      npm create nuxt@latest my-app
       cd my-app
       ```
     </StepR>
@@ -67,3 +69,11 @@ export default defineNuxtConfig({
 ```
 
 Run `npm run build`, then serve the generated Nitro output with `node .output/server/index.mjs`. Nuxt still renders HTML on the server, while the Master CSS runtime supplies generated class rules in the browser. Check a later class mutation after startup.
+
+After startup, run this in the browser console:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+The heading should gain an underline without rebuilding. If it does not, inspect the runtime program request and console diagnostics.

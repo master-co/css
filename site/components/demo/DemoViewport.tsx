@@ -130,7 +130,11 @@ export default function DemoViewport({ title, document: source, src, responsive 
     const update = () => {
       if (!current()) return
       updateReadings()
-      if (sizing === 'content') setContentHeight(Math.max(96, Math.ceil(doc.body.getBoundingClientRect().height)))
+      if (sizing === 'content') {
+        // The root's normal-flow box includes collapsed body/child margins.
+        // scrollHeight is at least the current viewport and cannot shrink it.
+        setContentHeight(Math.max(96, Math.ceil(doc.documentElement.getBoundingClientRect().height)))
+      }
       setMeasurement(`${Math.round(frame.clientWidth)} × ${Math.round(frame.clientHeight)} px`)
       setFitWidth(Math.round(frame.clientWidth))
       setMinimumWidth(Math.min(240, frame.parentElement!.clientWidth, maxWidth))
@@ -147,7 +151,10 @@ export default function DemoViewport({ title, document: source, src, responsive 
     const resizeObserver = new ResizeObserver(update)
     resizeObserver.observe(frame)
     resizeObserver.observe(frame.parentElement!)
-    if (sizing === 'content') resizeObserver.observe(doc.body)
+    if (sizing === 'content') {
+      resizeObserver.observe(doc.body)
+      resizeObserver.observe(doc.documentElement)
+    }
     doc.querySelectorAll<HTMLElement>('[data-size-readout]').forEach(output => {
       const element = doc.getElementById(output.dataset.sizeReadout!)
       if (element) resizeObserver.observe(element)

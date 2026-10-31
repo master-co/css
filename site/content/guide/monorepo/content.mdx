@@ -31,7 +31,15 @@ For independent applications, use separate package projects such as `projects/ad
 ]}
 </ExplorerView>
 
-This keeps each application's generated CSS, source scanning, diagnostics, and editor state aligned with the same project root. Shared design tokens can still live at the repository root and be imported by each project workspace.
+Complete the appropriate [framework setup](/guide/installation/integrations) in each application. Start its development server and production build from that app's directory. This keeps generated CSS, source scanning, diagnostics and editor state aligned with its project root.
+
+Keep shared definitions in the root stylesheet. In this example it supplies tokens, while each application imports the full Master CSS entry itself:
+
+```css name=index.css
+@theme {
+  --color-primary: #123456;
+}
+```
 
 ### Share the project manifest source
 In each workspace, import shared project CSS files and add workspace-specific definitions after them.
@@ -52,4 +60,33 @@ In each workspace, import shared project CSS files and add workspace-specific de
 ```
 Definitions after the shared import can override shared tokens and utilities. Native component rules in the same layer follow CSS source order.
 
-Shared files define the vocabulary; each app's entry decides what to import. Keep separate entries for applications with independent scanning and output, while importing the same shared theme wherever it is needed.
+The shop imports the same shared source and makes its own color choice:
+
+```css name=projects/shop/index.css
+@import '@master/css';
+@import '../../index.css';
+
+@theme {
+  --color-primary: #0f766e;
+}
+```
+
+Both applications can use the same class:
+
+```html
+<button type="button" class="px-md py-sm r-md bg-primary fg-white">Save changes</button>
+```
+
+The admin build emits its `#4f46e5` primary value; the shop build emits `#0f766e`. Changing the admin override should not change the shop output. Build both apps and inspect `--color-primary` in each generated stylesheet to check that the boundary is working.
+
+Shared files define the vocabulary; each app's entry decides what to import. Keep app-specific scanning directives and delivery choices in the owning app rather than the shared stylesheet.
+
+---
+
+## Include shared component sources
+
+A shared CSS import supplies definitions. Class strings inside a shared component still need to reach the consuming app's scanner. Vite can scan imported workspace modules, while a CLI build started inside an app does not follow JavaScript imports into sibling packages.
+
+If components live in `packages/ui`, add `@source "../../packages/ui/**/*.{js,jsx,ts,tsx}";` to each consuming app's CSS entry. This explicit path includes the shared source in the app's build. It is relative to the CSS file that declares it, so adjust the path when the entry moves.
+
+Installed dependency directories are excluded from automatic scanning. A packaged component library may need a narrow `@source` pattern targeting its distributed source files. Check a class that appears only in that package against the app's production output. See [source boundaries](/reference/rules/extraction#source-boundaries) for exclusions and other source types.

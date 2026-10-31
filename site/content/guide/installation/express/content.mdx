@@ -7,12 +7,11 @@ Use static rendering when Express templates contain complete class strings and y
   <Step $row>
     <StepL>
       ### <StepNum />Open your project
-      Start from an Express project root.
+      Use an existing Express project with a template engine configured. The following additions connect its templates to the CSS build.
     </StepL>
     <StepR>
       ```bash name=Terminal
       cd my-express-app
-      npm init -y
       ```
     </StepR>
   </Step>
@@ -23,6 +22,7 @@ Use static rendering when Express templates contain complete class strings and y
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -78,7 +78,7 @@ Use static rendering when Express templates contain complete class strings and y
   <Step $row>
     <StepL>
       ### <StepNum />Serve the CSS
-      Serve `public` from Express and link the generated stylesheet from your layout.
+      Add the static middleware to your existing Express app and link the generated stylesheet from the layout that renders your page. The snippets below are additions to those files.
     </StepL>
     <StepR>
       ```js name=app.js
@@ -105,4 +105,9 @@ Use static rendering when Express templates contain complete class strings and y
 
 Static rendering depends on complete class strings in scanned source files. If a template assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
+
+## Verify the rendered page
+Build the assets, start Express, and load the route that renders the heading. It should be large, heavy and italic with JavaScript disabled. In the Network panel, `/assets/app.css` must return CSS rather than a fallback HTML page.
+
+If the CSS loads but the heading is unstyled, check that the template is under one of the `@source` paths. Those paths are relative to `src/app.css`, so `../views` points to the project's `views` directory.

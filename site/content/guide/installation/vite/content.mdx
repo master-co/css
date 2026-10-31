@@ -1,6 +1,8 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+This setup uses Vite with plain JavaScript. The [Vite starter](https://vite.dev/guide/#scaffolding-your-first-vite-project) below selects the `vanilla` template; use the framework-specific guide for React, Vue or another component framework.
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -9,7 +11,7 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm create vite@latest my-app
+      npm create vite@latest my-app -- --template vanilla
       cd my-app
       ```
     </StepR>
@@ -38,13 +40,24 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Now style your first element using Master CSS syntax.
+    Replace the starter contents of `src/main.js` with the example below. Keep the CSS import so Vite loads the stylesheet updated by the installer.
   </Step>
   <HelloWorld url="localhost:5173" />
 </StepSection>
 
-```html name=index.html
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
-  Hello World
-</h1>
+```js name=src/main.js
+import './style.css'
+
+document.querySelector('#app').innerHTML = `
+  <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+    Hello World
+  </h1>
+`
 ```
+
+---
+
+## Check the setup
+Open the URL printed by Vite. The heading should have a large, heavy italic face and generous margin. If starter styles obscure the result, remove the starter's appearance rules while keeping `@import '@master/css';` in the CSS entry.
+
+Run the project's build and preview scripts, then inspect the generated stylesheet. The heading's complete class names should produce CSS without a browser CSS-generation runtime. If the styles are missing, confirm the CSS entry is imported and the Vite configuration includes `masterCSS()`.

@@ -7,7 +7,7 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
   <Step $row>
     <StepL>
       ### <StepNum />Open your theme
-      Start from a theme directory inside your WordPress installation.
+      Start from the active theme or child theme directory. These examples add assets to an existing classic PHP theme.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -44,13 +44,13 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
           masterCSS({ mode: 'runtime' })
         ],
         build: {
-          outDir: '.',
+          outDir: 'assets',
           emptyOutDir: false,
           rollupOptions: {
             input: 'resources/master.ts',
             output: {
-              entryFileNames: 'assets/master.js',
-              assetFileNames: 'assets/[name][extname]'
+              entryFileNames: 'master.js',
+              assetFileNames: '[name][extname]'
             }
           }
         }
@@ -82,13 +82,13 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
   <Step $row>
     <StepL>
       ### <StepNum />Enqueue the assets
-      Load the generated stylesheet and runtime script from `functions.php`.
+      Add this hook inside the PHP code in `functions.php`, keeping its existing setup. The active-theme helpers also work for a child theme.
     </StepL>
     <StepR>
       ```php name=functions.php
       add_action('wp_enqueue_scripts', function () {
-        $theme_dir = get_template_directory();
-        $theme_uri = get_template_directory_uri();
+        $theme_dir = get_stylesheet_directory();
+        $theme_uri = get_stylesheet_directory_uri();
 
         wp_enqueue_style(
           'master-css',
@@ -107,20 +107,9 @@ Use Vite runtime rendering when WordPress owns the PHP template lifecycle. WordP
       ```
     </StepR>
   </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Prevent unstyled first paint
-      Add the `hidden` attribute to the root document in the theme header so the runtime can reveal the page after it starts.
-    </StepL>
-    <StepR>
-      ```php name=header.php
-      <html <?php language_attributes(); ?> hidden>
-      ```
-    </StepR>
-  </Step>
   <Step>
     ### <StepNum />Hello world
-    Now style your first PHP template using Master CSS syntax.
+    Add the heading inside an existing rendered template. Keep its header, footer and WordPress hooks.
   </Step>
   <HelloWorld url="localhost" />
 </StepSection>
@@ -135,4 +124,11 @@ Use [WordPress static rendering](/guide/installation/wordpress) when theme templ
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
 
-This runtime recipe requires WordPress 6.5 or later for [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/). A Vite ES module must be loaded as a module, including its generated imports. With JavaScript disabled, a hidden root stays hidden; choose static rendering when content must remain available without JavaScript.
+This runtime recipe requires WordPress 6.5 or later for [`wp_enqueue_script_module()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script_module/). A Vite ES module must be loaded as a module, including its generated imports. Runtime styling begins after JavaScript loads. Keep the document visible if scripts are unavailable; see [Flash of Unstyled Content](/guide/flash-of-unstyled-content) before adding page hiding.
+
+## Verify the theme output
+Build the assets before loading the page so `filemtime()` can read them. Confirm the active theme serves `assets/master.css`; the [stylesheet-directory helpers](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/) point to the child theme when one is active.
+
+Keep `wp_head()` and `wp_footer()` in the theme: WordPress uses its hooks to print enqueued assets. The example heading is a template fragment, not a replacement for the complete theme index.
+
+After the heading is styled, add `text-decoration-line:underline` to it in browser developer tools. The runtime should generate the rule without a new build. This observes the page document; plugin content inside a separate iframe or shadow root needs its own CSS delivery.

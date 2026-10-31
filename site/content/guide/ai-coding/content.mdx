@@ -22,7 +22,7 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
   --radius-card: 0.75rem;
- }
+}
 
 @layer components {
   .btn {
@@ -108,7 +108,7 @@ Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, 
 
 Keep complex selectors and container relationships in native CSS. Use `@custom-media` for shared media conditions and functional utilities for reusable class recipes and mixins for CSS reuse. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes.
 
-When an agent cannot use MCP, use the CLI JSON commands in the review workflow below.
+When an agent cannot use MCP, use the CLI JSON commands in the review workflow below. [Install the CLI](/guide/installation/cli) in the project first, matching the app's Master CSS release, so `npx @master/css-cli` uses the local dependency.
 
 ---
 
@@ -173,10 +173,10 @@ Check the class strings:
 - Are responsive conditions, mode conditions, selector states, and disabled states attached to the correct declarations?
 - Did the generated CSS preview match the intended CSS?
 
-Use linting for mechanical feedback:
+Run the project's lint script for mechanical feedback, or invoke its installed ESLint directly:
 
 ```bash name=Terminal
-eslint .
+npx eslint .
 ```
 
 When an agent needs machine-readable Master CSS preflight output without an MCP client, use the CLI's JSON output:
@@ -225,7 +225,7 @@ Use explicit `var(--name)` references inside raw values, including functions and
 
 For shared prefixes, inspect the registered token namespaces. If a key occurs in multiple branches, use an explicit native declaration such as `font-family:var(--font-family-brand)` or `font-size:var(--font-size-brand)`. Check compiler diagnostics and generated declarations.
 
-Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. `flex` means `display:flex`, while `flex:1` and `flex:hover` are native `flex` declarations. To apply display on hover, write `display:flex:hover`.
+Use explicit dimensions: `width:20px height:20px` or `w-sm h-sm`. A project can define a parameter mixin for paired dimensions. Do not infer token identity from equal values or invent an alternative prefix that the project does not register. Write `display:flex` for a flex layout and `flex:1` for the native flex shorthand on an item. To change display on hover, write `display:flex:hover`.
 
 Use native conditions and explicit mixin calls for wrappers. Define media names with `@custom-media --name …;` and use `@name` in classes. For selectors or other reusable conditions, define `@mixin --name { … @contents; … }` and call it with `@apply --name { … }` in CSS or `@apply(--name)` in a class. Preserve the left-to-right order of wrapper suffixes. Keep layer placement at the call site using outer native `@layer` blocks or `@layer(base|defaults|components|utilities)` class suffixes. Verify wrapper names against the project definitions.
 

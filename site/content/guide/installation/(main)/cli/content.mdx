@@ -1,7 +1,7 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
-Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-rendering) fallback when a project does not have a Vite asset build, framework integration, or server rendering hook. Integration guides should prefer the matching Vite, runtime, static, or progressive setup first.
+Generate a static stylesheet from your HTML without adding a bundler. The CLI scans complete class names and writes CSS that you load with a normal stylesheet link. Use this setup when your project does not have a matching [framework integration](/guide/installation/integrations).
 
 ## Installation [sr-only]
 <StepSection>
@@ -61,6 +61,18 @@ Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-ren
 </body>
 </html>
 ```
+
+## Build for deployment
+
+The watch command stays running and updates the output when a selected source changes. For a production build, omit `--watch` so the command writes its output and exits:
+
+```bash name=Terminal
+npx @master/css-cli generate "index.html" --output master.css
+```
+
+Deploy `index.html`, `master.css` and the neighboring CSS assets referenced by the generated stylesheet. Preserve their relative paths: copying only `master.css` can leave its imported styles missing. Keep each generated asset set together when publishing a new build.
+
+Load the deployed page and check that every stylesheet request succeeds. The heading should use the generated font, color and spacing with JavaScript disabled. [Scanning latent classes](/guide/scanning-latent-classes) explains how to include sources outside the ordinary application scope.
 
 import Footer from '../footer.mdx'
 

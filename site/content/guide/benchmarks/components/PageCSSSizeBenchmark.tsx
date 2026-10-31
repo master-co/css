@@ -69,11 +69,11 @@ function items(kind: 'rawBytes' | 'brotliBytes'): BenchmarkBarItem[] {
 
 export default () => (
   <figure className="page-css-benchmark">
-    <Segments label="CSS transfer size">{[
+    <Segments label="Recorded CSS body size">{[
       { name: 'Raw', content: <BenchmarkBars items={items('rawBytes')} max={maxTotalRawBytes / 1000} unit="kB" /> },
       { name: 'Brotli', content: <BenchmarkBars items={items('brotliBytes')} max={maxTotalRawBytes / 1000} unit="kB" /> }
     ]}</Segments>
     <p className="font-xs fg-text-muted">Both views use the same scale and the committed page snapshot.</p>
-    <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json">total size</Link> of inline and external styles on popular documentation sites.</figcaption>
+    <figcaption>The <Link href="https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json">recorded CSS body sizes</Link> from documentation page snapshots. Brotli sums independently compressed bodies.</figcaption>
   </figure>
 )
