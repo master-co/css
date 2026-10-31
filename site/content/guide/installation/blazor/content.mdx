@@ -134,7 +134,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
 </h1>
 ```
 
-Static rendering depends on complete class strings in scanned source files. If a Razor component assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
+Static rendering depends on complete class strings in scanned source files. If a Razor component assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist).
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
 

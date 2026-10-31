@@ -41,7 +41,7 @@ Use `@source` and `@source not` only when a stylesheet needs an explicit excepti
 
 `@source` explicitly includes files that may contain classes, including files excluded by default discovery or `.gitignore`. `@source not` takes precedence. Automatic discovery respects project and ancestor workspace `.gitignore` files, without using global Git ignores. Dependencies, declarations, binary files, VCS data and generated output are excluded automatically; Master output and the current bundler output never become scan inputs. Next uses its configured `distDir`.
 
-See [source directives](/reference/directives/source) for path syntax and [candidate policy](/reference/directives/candidates) for safelists and blocklists.
+See [source directives](/reference/directives/scanning) for path syntax and [candidate policy](/reference/directives/scanning) for safelists and blocklists.
 
 Integrations prefer original MDX, Vue and Svelte files rather than scanning their compiled display strings a second time. Updating, clearing or deleting a source replaces its contribution; a shared class remains until its last source or safelist reference disappears.
 
@@ -157,7 +157,6 @@ const toneClasses = {
 const className = `px-xs (border-radius:100%) ${toneClasses[tone] ?? toneClasses.neutral}`
 ```
 
-This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
 
 ## Runtime values \{#runtime-values\}
 When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
@@ -179,7 +178,7 @@ setHeadlineSize('3rem')
 The class `(font-size:var(--headline-size))` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which follows native CSS custom property behavior.
 
 
-Use the same pattern for a data-driven progress value. Keep an accessible numeric value alongside the visual width:
+Use the same pattern for a data-driven progress value:
 
 ```html
 <div id="progress" role="progressbar" aria-label="Upload progress"

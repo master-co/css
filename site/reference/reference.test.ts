@@ -22,8 +22,8 @@ import preset from '../utils/preset-manifest'
 import { compileManifestFileSync } from '@master/css-compiler/node'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
-import { tokenValueEntry } from './value-entry'
 import { documentHeadings } from './headings'
+import { ungroupedFamilies } from './sheets'
 import { documentationHygieneIssues } from '../tests/document-hygiene'
 import { createReferenceRenderDocument, referenceRenderVersion } from './render-document'
 import { referenceCodeProps, isStylesheetExample } from './code-block'
@@ -32,6 +32,17 @@ import { prepareCode } from '../docs-shell/utils/prepared-code'
 import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
+
+/** Ids a reader can land on: headings, explicit anchors and the rows of a structured sheet. */
+function documentAnchors(doc: ReferenceCatalog['documents'][number]) {
+  const ids = new Set([...doc.headings.map(heading => heading.id), ...[...doc.markdown.matchAll(/<a id="([^"]+)"><\/a>/g)].map(match => match[1])])
+  const sheet = doc.sheet
+  if (sheet?.kind === 'tokens') for (const group of sheet.groups) for (const value of group.values) ids.add(value.id)
+  if (sheet?.kind === 'families') for (const group of sheet.groups) for (const row of group.rows) ids.add(`family-${row.prefix}`)
+  if (sheet?.kind === 'families') for (const family of ungroupedFamilies(sheet)) ids.add(`family-${family.prefix}`)
+  if (sheet?.kind === 'breakpoints') for (const group of sheet.groups) for (const row of group.rows) ids.add(`condition-${row.name}`)
+  return ids
+}
 let catalog: ReferenceCatalog
 before(async () => {
   const pages = JSON.parse(await readFile(path.join(root, '.pages.json'), 'utf8'))
@@ -49,37 +60,43 @@ test('Reference and shared search styles use defined site theme variables', asyn
 
 test('catalog covers every public family and preset recipe without indexing retired pages', async () => {
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
-  const { recipes } = await import('./recipes')
-  assert.equal(catalog.documents.length, 46)
-  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, 9)
+  const { recipePages } = await import('./sheet-editorial')
+  assert.equal(catalog.documents.length, 32)
+  assert.equal(catalog.documents.filter(doc => doc.kind === 'utility').length, recipePages.length)
   // Fixed utilities emit one literal declaration; the declarations contract lists them all.
   const fixed = preset.utilities!.filter(utility => utility.kind === 'static' && utility.body.length === 1 && utility.body[0].type === 'declaration' && utility.body[0].value.every(part => part.type === 'text'))
   assert.equal(fixed.length, 237)
   const declarations = catalog.documents.find(doc => doc.id === 'rules/declarations')!
   for (const { name } of fixed) assert.ok(declarations.markdown.includes(`\`${name}\``), name)
-  assert.deepEqual(recipes.flatMap(recipe => recipe.names).sort(), preset.utilities!.filter(mixin => !fixed.includes(mixin) && !(mixin.kind === 'token' && foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name))).map(mixin => mixin.name).sort())
+  for (const page of recipePages) {
+    const doc = catalog.documents.find(doc => doc.id === page.id)!
+    for (const name of page.names) assert.match(doc.markdown, new RegExp(`\\| \`${name.replace(/[()]/g, '\\$&')}(?:\\(|\`)`), `${page.id}: ${name}`)
+  }
+  // The text recipe reads its own tokens, so the Text token page owns it.
+  assert.deepEqual([...recipePages.flatMap(page => page.names), 'text'].sort(), preset.utilities!.filter(mixin => !fixed.includes(mixin) && !(mixin.kind === 'token' && foundationFamilies.some(family => family.argument === 'value' && family.utility === mixin.name))).map(mixin => mixin.name).sort())
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
-  for (const namespace of ['font-family', 'font-size', 'font-weight']) assert.ok(families.markdown.includes(`[${namespace}](/reference/tokens/${namespace})`))
+  assert.ok(families.markdown.includes('[Font](/reference/tokens/font)'))
   for (const family of foundationFamilies) {
-    assert.ok(families.markdown.includes(`Property: \`${family.property}\``), family.prefix)
+    assert.ok(families.markdown.includes(`| \`${family.prefix}-\` | \`${family.property}\` |`), family.prefix)
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
-    assert.ok(families.headings.some(heading => heading.id === `family-${family.prefix}`))
+    assert.ok(documentAnchors(families).has(`family-${family.prefix}`))
   }
-  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
+  for (const slug of ['animate', 'display', 'padding', 'opacity', 'tokens/containers', 'tokens/content', 'tokens/font-feature', 'font-smooth', 'text-gradient', 'text-size', 'tokens/animate', 'tokens/color-text', 'tokens/font-size', 'clamp-lines', 'grid-columns', 'directives/entry']) assert.ok(!catalog.documents.some(doc => doc.id === slug), slug)
   assert.equal(new Set(catalog.documents.map(doc => doc.id)).size, catalog.documents.length)
   for (const doc of catalog.documents) {
     assert.deepEqual(doc.extractionNotes, [], doc.id)
     for (const id of doc.related) assert.ok(catalog.documents.some(doc => doc.id === id), `${doc.id} → ${id}`)
-    for (const [identifier, anchor] of Object.entries(doc.identifierAnchors ?? {})) assert.ok(doc.headings.some(heading => heading.id === anchor), `${doc.id}: ${identifier} → ${anchor}`)
+    const anchors = documentAnchors(doc)
+    for (const [identifier, anchor] of Object.entries(doc.identifierAnchors ?? {})) assert.ok(anchors.has(anchor), `${doc.id}: ${identifier} → ${anchor}`)
   }
 })
 
-test('animation lookup owns the shorthand family and all ten preset values', () => {
-  const animation = catalog.documents.find(doc => doc.id === 'tokens/animate')!
+test('motion lookup owns the animation shorthand family and all ten preset values', () => {
+  const animation = catalog.documents.find(doc => doc.id === 'tokens/motion')!
   assert.match(animation.markdown, /animation: var\(--animate-<name>\)/)
   assert.match(animation.markdown, /family-animate/)
-  assert.match(animation.markdown, /animation-duration:var\(--duration-fast\)/)
+  assert.match(animation.markdown, /transition-duration:var\(--duration-fast\)/)
   assert.doesNotMatch(animation.markdown, /companion|reference\/animate|@apply --animate/)
   for (const name of ['fade', 'flash', 'float', 'heart', 'jump', 'pulse', 'ping', 'rotate', 'shake', 'zoom']) {
     assert.ok(animation.identifierAnchors?.[`--animate-${name}`], name)
@@ -115,8 +132,11 @@ test('current Reference excludes upgrade workflows and obsolete syntax identifie
 
 test('namespace consumer tables cover the registry including color role groups', async () => {
   const { namespaceFamilies, foundationFamilies } = await import('../common/foundation-data/tokens')
+  const { tokenPages } = await import('./sheet-editorial')
   for (const namespace of [...new Set(foundationFamilies.flatMap(family => family.namespaces)), 'color-line', 'color-surface', 'color-text']) {
-    const doc = catalog.documents.find(doc => doc.id === `tokens/${namespace}`)!
+    const page = tokenPages.find(page => page.groups.some(group => group.namespace === namespace))
+    assert.ok(page, namespace)
+    const doc = catalog.documents.find(doc => doc.id === `tokens/${page.id}`)!
     for (const family of namespaceFamilies(namespace)) {
       assert.ok(doc.markdown.includes(`/reference/tokens/families#family-${family.prefix}`))
       assert.ok(doc.markdown.includes(`\`${family.property}\``))
@@ -182,27 +202,26 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.throws(() => configuredExampleCSS('', ['(list-style:10px)']), /Invalid configured documentation class/)
 })
 
-test('compact token lists preserve every native value, heading and identifier in the normalized body', () => {
+test('token pages list every preset value once, with its variable and a resolving anchor', async () => {
+  const { tokenPages } = await import('./sheet-editorial')
   const variables = flattenMasterCSSManifestVariables(preset.variables)
-  for (const doc of catalog.documents.filter(doc => doc.kind === 'tokens')) {
-    const nodes = markdownTree(doc.markdown).children
-    const rows = nodes.flatMap((node: any, index) => {
-      const entry = tokenValueEntry(nodes, index)
-      return entry ? [{ ...entry.row, title: node.children[0].value }] : []
-    })
-    const entries = variables.filter(variable => `tokens/${variable.namespace}` === doc.id)
-    assert.equal(rows.length, entries.length, doc.id)
-    if (!entries.length) continue // Named-condition documents retain complete CSS code blocks.
-    assert.deepEqual(rows.map(row => row.title), doc.headings.filter(heading => heading.depth === 3).map(heading => heading.title), doc.id)
-    for (const [index, variable] of entries.entries()) {
-      const row = rows[index]
-      assert.equal(row.title, variable.key)
-      assert.equal(row.identifier, `--${variable.name}`)
-      assert.equal(doc.identifierAnchors?.[row.identifier], doc.headings.find(heading => heading.title === row.title && heading.depth === 3)?.id)
-      assert.deepEqual(row.values, variable.values.map(({ path, value }) => ({ label: path.join(' → '), value })))
-      for (const value of row.values) assert.ok(renderDocumentMarkdown(doc, catalog).includes(`Scope: ${value.label}\nValue: ${value.value}`))
+  const listed = new Set<string>()
+  for (const page of tokenPages) {
+    const doc = catalog.documents.find(doc => doc.id === `tokens/${page.id}`)!
+    const markdown = renderDocumentMarkdown(doc, catalog)
+    const anchors = documentAnchors(doc)
+    for (const variable of variables.filter(variable => page.groups.some(group => group.namespace === variable.namespace))) {
+      assert.ok(!listed.has(variable.name), variable.name)
+      listed.add(variable.name)
+      // Every preset token has one :root,:host value; a scoped token would need its own column.
+      assert.deepEqual(variable.values.map(value => value.path.join(' → ')), [':root,:host'], variable.name)
+      const value = variable.values[0].value.replaceAll('|', '\\|')
+      assert.ok(markdown.includes(`\`--${variable.name}\``) || variable.key.includes('--'), `${doc.id}: --${variable.name}`)
+      assert.ok(markdown.includes(`\`${value}\``), `${doc.id}: ${variable.name} = ${value}`)
+      assert.ok(anchors.has(doc.identifierAnchors?.[`--${variable.name}`] ?? ''), `${doc.id}: --${variable.name}`)
     }
   }
+  assert.deepEqual([...listed].sort(), variables.map(variable => variable.name).sort())
 })
 
 test('language contracts export portable examples, complete CSS and stable section anchors', () => {
@@ -261,7 +280,7 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
       const [url, anchor] = match[1].split('#')
       const target = catalog.documents.find(doc => doc.url === url.replace(/\.md$/, ''))
       assert.ok(target, `${doc.id}: ${match[1]}`)
-      if (anchor) assert.ok(target.headings.some(heading => heading.id === anchor) || target.rows.some(row => row.id === anchor), `${doc.id}: ${match[1]}`)
+      if (anchor) assert.ok(documentAnchors(target).has(anchor) || target.rows.some(row => row.id === anchor), `${doc.id}: ${match[1]}`)
     }
   }
   for (const doc of catalog.documents.filter(doc => doc.kind === 'rule')) {
@@ -414,7 +433,7 @@ test('prepared Reference highlights match live code, declarations and source/res
         lang: props.lang, beautify: !!props.beautify, dedent: props.dedent
       })), `${id}: ${node.lang} ${node.meta ?? ''}`)
     }
-    await verify(payload.tree.children, doc.kind === 'tokens')
+    await verify(payload.tree.children)
   }
 })
 
@@ -501,10 +520,18 @@ test('directive contracts preserve stable entrances and complete compiled styles
   const { directiveExamples } = await import('../tests/directive-examples')
   const { stylesheetExampleMarkdown } = await import('./stylesheet-example')
   const docs = catalog.documents.filter(doc => doc.kind === 'directive')
-  assert.equal(docs.length, 8)
-  for (const doc of docs) {
+  assert.equal(docs.length, 5)
+  // Every earlier section entrance survives on the page that now holds its section.
+  const pages: Record<string, string> = { entry: 'imports', reference: 'imports', theme: 'theme', variant: 'theme', definitions: 'definitions', source: 'scanning', candidates: 'scanning', preserve: 'pruning' }
+  for (const [old, headings] of Object.entries(previous) as [string, { id: string }[]][]) {
+    // Settings and compose were retired before these pages were regrouped.
+    if (!pages[old.slice('directives/'.length)]) continue
+    const doc = docs.find(doc => doc.id === `directives/${pages[old.slice('directives/'.length)]}`)!
+    assert.ok(doc, old)
     const exported = renderDocumentMarkdown(doc, catalog)
-    for (const heading of previous[doc.id]) assert.ok(doc.headings.some(item => item.id === heading.id) || exported.includes(`id="${heading.id}"`), `${doc.id}#${heading.id}`)
+    for (const heading of headings.filter(heading => heading.id !== 'related-contracts')) assert.ok(doc.headings.some(item => item.id === heading.id) || exported.includes(`id="${heading.id}"`), `${old} → ${doc.id}#${heading.id}`)
+  }
+  for (const doc of docs) {
     assert.notEqual(doc.description, 'Stylesheet directives, their scope and effects.')
     assert.doesNotMatch(doc.markdown, /## Related contracts/)
   }

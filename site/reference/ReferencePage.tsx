@@ -17,16 +17,15 @@ export async function loadReferenceRoute(id: string, kind?: ReferenceDocument['k
   return loadReferenceDocument(id)
 }
 
-/** Route entries choose their specimen; the shared shell imports no specimen graph. */
-export default function ReferencePage({ document: doc, recipeSpecimen, tokenSpecimen, ...props }: {
+/** Route entries choose their body view; the shared shell imports no view graph. */
+export default function ReferencePage({ document: doc, body, ...props }: {
   document: ReferenceRenderDocument
   params: { locale: string }
-  recipeSpecimen?: React.ReactNode
-  tokenSpecimen?: React.ReactNode
+  /** A structured sheet view replaces the Markdown renderer. */
+  body?: React.ReactNode
 }) {
-  const introHeadingId = doc.kind === 'directive' ? doc.headings[0]?.id : undefined
-  const specimenNamespace = doc.kind === 'tokens' ? doc.id.slice(7) : undefined
-  return <Layout {...props} h1ClassName={doc.id.startsWith('tools/mcp/') ? 'reference-tool-title' : undefined} metadata={{ title: doc.title, description: doc.description, category: doc.category, pathname: doc.url, sourcePath: doc.source }} dictionaries={dictionaries} toc={doc.headings.filter(heading => heading.id !== introHeadingId && (!['tokens', 'package'].includes(doc.kind) || heading.depth === 2)).map(heading => ({ ...heading, level: introHeadingId ? Math.max(2, heading.depth - 1) : heading.depth }))} pageCategories={[]}>
-    <ReferenceMarkdown tree={doc.tree} headings={doc.headings} recipeSpecimen={recipeSpecimen} tokenSpecimen={tokenSpecimen} specimenNamespace={specimenNamespace} compactValues={doc.kind === 'tokens'} introHeadingId={introHeadingId} />
+  const toc = doc.headings.filter(heading => doc.kind !== 'package' || heading.depth === 2).map(heading => ({ ...heading, level: heading.depth }))
+  return <Layout {...props} metadata={{ title: doc.title, description: doc.description, category: doc.category, pathname: doc.url, sourcePath: doc.source }} dictionaries={dictionaries} toc={toc} pageCategories={[]}>
+    {body ?? <ReferenceMarkdown tree={doc.tree} headings={doc.headings} />}
   </Layout>
 }

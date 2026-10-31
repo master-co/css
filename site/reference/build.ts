@@ -8,7 +8,7 @@ import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
 import { tokenFamilies } from '../utils/manifest-utilities'
 import preset from '../utils/preset-manifest'
 import { extractReferenceMdx, portableMarkdown } from './markdown'
-import { ruleSources } from './editorial'
+import { directivePages, ruleSources } from './editorial'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
 import type { SearchPage } from '../docs-shell/utils/search-pages'
@@ -37,7 +37,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
   }
   documents.push(...await buildRecipeContracts(siteRoot))
   for (const rule of ruleSources) {
-    const doc: ReferenceDocument = await fromMdx(rule.id, 'rule', path.join(root, rule.source), rule.title, rule.description, 'Syntax & rules')
+    const doc: ReferenceDocument = await fromMdx(rule.id, 'rule', path.join(root, rule.source), rule.title, rule.description, 'Syntax')
     doc.guide = rule.guide
     doc.terms = rule.terms ?? []
     doc.related = ['rules/declarations', 'rules/selectors', 'rules/conditions', 'rules/modes', 'rules/layers'].filter(id => id !== rule.id)
@@ -53,29 +53,27 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     documents.push(doc)
   }
   documents.push(...buildTokenContracts())
-  // Directive sections share one authored source with all public exports.
-  const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Stylesheet directives')
-  const sections = directive.markdown.split(/(?=^## )/m)
-  const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Theme and conditions': 'theme', 'Utilities and native styles': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
-  const descriptions: Record<string, string> = {
-    'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
-    'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
-    'theme': 'Declare utility tokens, static and inline behavior, custom media, utility classes and reusable mixins.',
-    'definitions': 'Register on-demand utilities and author native defaults and components in CSS layers.',
-    'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
-    'candidates': 'Include known class names or reject unwanted scanning candidates.',
-    'variant': 'Use native conditions and explicit mixin wrappers inside style rules.',
-    'preserve': 'Keep a stylesheet’s native class rules when source-based pruning would remove them.'
-}
-  for (const section of sections) {
-    const title = section.match(/^## (.+)/)?.[1]?.replace(/\s+\{#[\w-]+\}$/, '')
-    const id = title && mapping[title]
-    if (!id) continue
-    const markdown = `${section.trim().replace(/\n---$/, '').trim()}\n\n<a id="related-contracts"></a>`
+  // Directive pages regroup the sections of one authored contract by what a reader looks up.
+  const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives')
+  const sections = new Map(directive.markdown.split(/(?=^## )/m).map(section => [section.match(/^## (.+)/)?.[1]?.replace(/\s+\{#[\w-]+\}$/, ''), section] as const))
+  for (const page of directivePages) {
+    const markdown = page.sections.map(title => {
+      const section = sections.get(title)
+      if (!section) throw new Error(`Missing directive section: ${title}`)
+      // The section heading repeats the page title; its subsections become the page's entries.
+      const [heading, ...body] = section.trim().replace(/\n---$/, '').trim().split('\n')
+      const anchor = heading.match(/\{#([\w-]+)\}$/)?.[1]
+      let fenced = false
+      const lines = body.map(line => {
+        if (line.startsWith('```')) fenced = !fenced
+        return !fenced && line.startsWith('### ') ? line.slice(1) : line
+      })
+      return `${anchor ? `<a id="${anchor}"></a>\n\n` : ''}${lines.join('\n').trim()}`
+    }).join('\n\n')
     const headings = documentHeadings(markdown)
     const identifiers = headings.filter(heading => heading.title.startsWith('@')).flatMap(heading => [[heading.title, heading.id], [heading.title.split(' ')[0], heading.id]])
     const identifierAnchors = Object.fromEntries(identifiers.reverse())
-    documents.push({ ...directive, id: `directives/${id}`, url: `/reference/directives/${id}`, title: title!, description: descriptions[id], markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/layers', 'rules/extraction'], guide: id === 'theme' ? '/guide/theme' : ['source', 'candidates'].includes(id) ? '/guide/scanning-latent-classes' : '/guide/global-styles' })
+    documents.push({ ...directive, id: `directives/${page.id}`, url: `/reference/directives/${page.id}`, title: page.title, description: page.description, markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/conditions'], terms: page.terms ?? [] })
   }
   let revision = 'unknown'
   let sourceState: ReferenceCatalog['sourceState'] = 'archive'
@@ -138,7 +136,7 @@ export async function generateReference(siteRoot: string, searchPages?: Record<s
       await writeIfChanged(searchFile, JSON.stringify(merged))
     }
   }
-  const index = { ...catalog, documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, ...doc }) => ({ ...doc, markdownUrl: `${doc.url}.md`, contentDigest: digest(markdown) })) }
+  const index = { ...catalog, documents: catalog.documents.map(({ markdown, rows, examples, headings, extractionNotes, sheet, ...doc }) => ({ ...doc, markdownUrl: `${doc.url}.md`, contentDigest: digest(markdown) })) }
   const referenceDir = path.join(siteRoot, 'public/reference')
   await mkdir(referenceDir, { recursive: true })
   const indexFile = path.join(referenceDir, 'index.json')

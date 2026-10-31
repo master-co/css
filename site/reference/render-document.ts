@@ -41,10 +41,10 @@ export async function createReferenceRenderDocument(document: ReferenceDocument,
   if (previous?.renderDigest === renderDigest) return { ...document, renderDigest, tree: previous.tree }
   const tree = markdownTree(document.markdown)
   const { default: highlightCode } = await import('../docs-shell/utils/highlight-code-core')
-  async function prepare(nodes: ReferenceMarkdownNode[], compactValues = false) {
+  async function prepare(nodes: ReferenceMarkdownNode[]) {
     for (let index = 0; index < nodes.length; index++) {
       const node = nodes[index]
-      if (!compactValues && isStylesheetExample(node, nodes[index + 1], nodes[index + 2])) {
+      if (isStylesheetExample(node, nodes[index + 1], nodes[index + 2])) {
         await prepareNode(nodes[++index], true)
         await prepareNode(nodes[++index], true)
       } else if (node.type === 'code') await prepareNode(node)
@@ -59,6 +59,6 @@ export async function createReferenceRenderDocument(document: ReferenceDocument,
       lang: props.lang, beautify: !!props.beautify, dedent: props.dedent
     })) }
   }
-  await prepare(tree.children, document.kind === 'tokens')
+  await prepare(tree.children)
   return { ...document, renderDigest, tree }
 }

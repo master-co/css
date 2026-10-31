@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { foundationTokens, namespaceTokens } from './tokens'
 import { foundationScene, specimenTokens, primaryTokens, defaultValue } from './specimens'
-import { recipeSpecimens } from './recipe-specimens'
 import { selectedSpecimensMarkdown } from './specimen-content'
 import { configuredExampleCSS, configuredMarkupClasses } from '../../reference/configured-example'
 import { demoDocument } from '../../components/demo/reference/document'
@@ -59,14 +58,4 @@ test('motion is managed and uses actual per-token duration or timing values', ()
     assert.match(scene.css!, /prefers-reduced-motion:reduce/)
     if (namespace !== 'animate') for (const token of namespaceTokens(namespace)) assert.ok(scene.html.includes(`var(--${token.name})`))
   }
-})
-test('seven recipe specimens preserve all seven mixins and visible native content', () => {
-  assert.equal(Object.keys(recipeSpecimens).length, 7)
-  for (const [id, scene] of Object.entries(recipeSpecimens)) {
-    assert.doesNotMatch(scene.html, />Example</)
-    assert.ok(demoDocument(section(id), scene).includes(scene.html), id)
-  }
-  assert.match(recipeSpecimens['screen-readers'].html, /<span class="sr-only">Add collection<\/span>/)
-  assert.match(recipeSpecimens['grid-column'].html, /grid-col-span\(2\)/)
-  assert.match(recipeSpecimens['clamp-lines'].html, /Complete paragraph/)
 })

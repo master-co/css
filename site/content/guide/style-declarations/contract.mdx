@@ -25,7 +25,7 @@ Use a hyphenated name for named styles (`font-mono`, `p-md`), a fixed utility fo
 
 
 ## Native properties
-Write a native declaration as `(property:value)` with the full property name. A common fixed value has a short utility instead: `block` generates `display: block`, and `(opacity:.5)` generates `opacity: .5`. The browser decides layout and paint behavior. Use [MDN’s CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) for native property semantics and [Layout System](/guide/layout-system) for composing a page.
+Write a native declaration as `(property:value)` with the full property name. A common fixed value has a short utility instead: `block` generates `display: block`, and `(opacity:.5)` generates `opacity: .5`. Use [MDN’s CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) for native property semantics and [Layout System](/guide/layout-system) for composing a page.
 
 ```html
 <div class="block (opacity:.5) (opacity:1):hover">Hover to reveal</div>
@@ -33,7 +33,6 @@ Write a native declaration as `(property:value)` with the full property name. A 
 
 <Class2CSS>{['block', '(opacity:.5)', '(opacity:1):hover']}</Class2CSS>
 
-Opacity changes paint, including descendants. It does not disable a control or remove it from keyboard navigation. Native CSS property coverage does not depend on whether a dedicated documentation page exists.
 
 ## Basic syntax \{#basic-syntax\}
 ### Utilities \{#utilities\}
@@ -136,7 +135,7 @@ A single value may express one decision, as with `p-sm`, `gap-md`, `overflow-hid
 
 ### Motion properties \{#motion-properties\}
 
-Use `(animation-name:*)`, `(animation-duration:*)`, `(transition-property:*)` and `(transition-duration:*)` to express independent settings. Named `animate-*` tokens contain complete animation shorthands. To override one field, combine them with a full-property declaration such as `(animation-duration:var(--duration-fast))`. See [animation tokens](/reference/tokens/animate) for ordering and defaults.
+Use `(animation-name:*)`, `(animation-duration:*)`, `(transition-property:*)` and `(transition-duration:*)` to express independent settings. Named `animate-*` tokens contain complete animation shorthands. To override one field, combine them with a full-property declaration such as `(animation-duration:var(--duration-fast))`. See [animation tokens](/reference/tokens/motion#animate) for ordering and defaults.
 
 ### Property abbreviations \{#property-abbreviations\}
 <Abbreviations />

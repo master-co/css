@@ -4,6 +4,15 @@
   .reference-document pre { max-width: 100%; overflow-x: auto; }
   .reference-document code { overflow-wrap: anywhere; }
   .reference-syntax-row:target { outline: 2px solid var(--color-blue); outline-offset: -2px; }
+  /* Every Reference table reads as one typographic grid: plain mono, the first column in strong ink. */
+  .reference-document .doc-table :is(th, td) code {
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: .8125rem;
+  }
+  .reference-document .doc-table tbody :is(th, td):first-child code { color: var(--color-text-strong); }
   @media (width < 48rem) {
     .reference-document .doc-table:has(.reference-syntax-row) { overflow: visible; }
     .reference-document table:has(.reference-syntax-row) { display: block; width: 100%; }
@@ -16,5 +25,3 @@
   }
 }
 
-/* Identifier titles keep the entire tool name readable in the narrow article column. */
-.reference-document .reference-tool-title { font-size: clamp(var(--font-size-md), 5vw, var(--font-size-2xl)); }

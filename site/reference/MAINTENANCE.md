@@ -8,7 +8,7 @@ The canonical content policy is [Guide and Reference ownership](../AI.md#guide-a
 
 | Content | Source | Generated facts |
 | --- | --- | --- |
-| Preset recipes | `reference/recipes.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
+| Recipes | `reference/sheet-editorial.ts`, preset `utilities.css` and manifest | Actual definitions, parameter syntax and complete generated CSS |
 | Language rules | `content/guide/*/contract.mdx`, routed by `editorial.ts` | Complete `Class2CSS` and configured examples |
 | Directives | `content/guide/directives/contract.mdx` | Named sections in the directive Reference |
 | Tokens | Public preset manifest and build-time language-session `tokenFamilies()` | Names, values, modes, conditions and consumers |
@@ -79,9 +79,9 @@ Completion requires full family/recipe coverage; successful property, prefix and
 ## Specimen restoration and maintenance
 
 - Move visual content and interactions with the lookup data; validate the public destination before removing the source presentation. Gallery-only retention is insufficient.
-- `components/demo/foundations/FoundationTokens.tsx` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to previews, Guide export adapters and Reference examples. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
+- `components/demo/foundations/FoundationTokens.tsx` selects a subject-specific presentation. `common/foundation-data/specimens.ts` supplies the same authored scenes to Guide previews and Guide export adapters. Palette rows preserve full hue groups and copy original CSS or variable references with truthful status feedback.
 - Reference uses complete collections; Guide passes explicit keys. Reuse typography, role, scale and numeric-table designs with equal care for either selection. A subset has no arbitrary count limit.
-- `recipe-specimens.ts` supplies the seven live recipe pages and their adjacent HTML/CSS. Configuration-aware examples must be validated through `configuredExampleCSS`, including native rules and project tokens.
+- `reference/sheet-editorial.ts` lists every token and recipe page, its groups and its Usage and Customize examples; `reference/sheets.ts` builds one model per page that renders the HTML view and the portable Markdown. Examples compile through `configuredExampleCSS`, which rejects any invalid class; the displayed source keeps the page's own classes and the generated CSS covers only them.
 - Verify semantic effects as well as layout: actual text and border colors, multi-line leading, unclipped actual font sizes, distinguishable shadows in both modes, and actual timing values. Keep animation controls paused initially and respect reduced motion.
 - [Restoration inventory](../../.ai/reports/foundation-visual-restoration.md) maps the pre-migration baseline to public destinations and records comparison evidence. Update it when a presentation moves.
 

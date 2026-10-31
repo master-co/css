@@ -100,7 +100,7 @@ Use static rendering when Rails ERB views contain complete class strings and you
 </h1>
 ```
 
-Static rendering depends on complete class strings in scanned source files. If an ERB view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
+Static rendering depends on complete class strings in scanned source files. If an ERB view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist).
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
 

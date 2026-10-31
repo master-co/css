@@ -197,18 +197,10 @@ Selector groups also work with combinators. In this example, the declaration app
 
 ## Pseudo-classes \{#pseudo-classes\}
 ### `:hover`, `:active`, `:focus` \{#hover--active--focus\}
-Use interaction pseudo-classes to give controls feedback as people hover, press, focus, or navigate with a keyboard.
-
-Hover or press the button to match the corresponding state. Include an explicit keyboard focus treatment.
+Hover or press the button to match the corresponding state.
 ```html
 <!-- @MARK :hover --><!-- @MARK :active --><!-- @MARK :focus-visible -->
 <button type="button" class="bg-blue-60 fg-white bg-blue-70:hover outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible bg-blue-80:active">Preview</button>
-```
-
-Use `:focus-visible` when the browser should decide whether to show a focus ring, including keyboard navigation. Keep focus visible instead of removing outlines without a replacement.
-```html
-<!-- @MARK :focus-visible -->
-<button type="button" class="outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible">Submit</button>
 ```
 
 ### `:first-child`, `:last-child`, `:nth-child()` \{#first--last--odd--even\}
@@ -220,22 +212,18 @@ Use `:focus-visible` when the browser should decide whether to show a focus ring
 </ul>
 ```
 
-Use `:nth-child(odd)` or `:nth-child(even)` for alternating rows. Positions count all element siblings, not only siblings that carry the same class.
+Use `:nth-child(odd)` or `:nth-child(even)` for alternating rows.
 
 <Class2CSS>{['bg-surface-inset:nth-child(even)', 'mt-sm:nth-child(odd)']}</Class2CSS>
 
 ### `:valid`, `:invalid`, `:required` \{#valid--invalid--required\}
-Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
-
-The required field is invalid while empty or while its value fails native email validation. The visible label supplies its accessible name.
+Match form validity with `:valid`, `:invalid` and `:required`:
 ```html
 <!-- @MARK :valid --><!-- @MARK :invalid --><!-- @MARK :required -->
 <label for="contact-email">Email</label>
 <input id="contact-email" type="email" required
   class="b(1) b-solid (border-color:currentcolor) b-green:valid b-red:invalid outline(2):focus-visible outline-solid:focus-visible outline-blue:focus-visible" />
 ```
-
-Use `:required` to select required controls regardless of whether their current value is valid. Avoid communicating validation through color alone; production forms should also explain the error in text.
 
 ### `:disabled` \{#disabled\}
 Use `:disabled` for controls that cannot be interacted with.
@@ -254,13 +242,10 @@ Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and
 </label>
 ```
 
-`indeterminate` is a DOM property, not an HTML attribute. Set it from JavaScript when a checkbox represents a partially selected group; style that state with `:indeterminate`. It does not change the checkbox's submitted checked value.
+Style a checkbox in its indeterminate state with `:indeterminate`:
 
 ```html
 <label><input id="select-all" type="checkbox" class="outline(2):indeterminate outline-solid:indeterminate outline-blue:indeterminate" /> Select all</label>
-```
-```js
-document.querySelector('#select-all').indeterminate = true
 ```
 
 ### `:dir(rtl)`, `:dir(ltr)` \{#rtl--ltr\}
@@ -316,7 +301,7 @@ Use `::before` and `::after` to style generated content attached to the element.
 
 ### `::-webkit-scrollbar` \{#scrollbar\}
 
-Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-scrollbar-thumb`. Their effect depends on browser support and the platform scrollbar settings; overlay scrollbars may remain hidden until scrolling.
+Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-scrollbar-thumb`.
 ```html
 <!-- @MARK scrollbar --><!-- @MARK ::-webkit-scrollbar-thumb -->
 <div tabindex="0" role="region" aria-label="Scrollable schedule"
@@ -327,7 +312,7 @@ Write vendor selectors explicitly, such as `::-webkit-scrollbar` and `::-webkit-
 
 ## Attribute selectors \{#attribute-selectors\}
 ### `[open]` \{#open\}
-Use `[open]` to style a `<details>` element while it is expanded. The browser updates the attribute when the user toggles its summary.
+Use `[open]` to style a `<details>` element while it is expanded.
 ```html
 <!-- @MARK [open] -->
 <details class="bg-surface-raised[open]" open>
@@ -343,7 +328,6 @@ Use [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attr
 <button type="button" class="bg-blue-60[aria-pressed=true] fg-white[aria-pressed=true]" aria-pressed="true">Bold</button>
 ```
 
-Choose an attribute that is valid for the control, and update it as part of the control behavior. A selector only reads state; it does not implement the interaction or make an arbitrary element accessible.
 
 ### `[data-<key>=<value>]` \{#data-keyvalue\}
 Use `data-*` attributes for component state that is not covered by native attributes or ARIA.
@@ -362,7 +346,6 @@ Match an exact attribute value. Attribute values remain literal: `[data-state=":
 ### `[<attr>^=<value>]` \{#attrvalue-1\}
 Match values that start with a specific string.
 
-This matches links whose attribute starts with `http`; it does not distinguish same-origin from external links.
 ```html
 <!-- @MARK [href^=http] -->
 <a class="(content:'↗')[href^=http]::after" href="https://example.com">External</a>

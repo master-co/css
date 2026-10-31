@@ -1,0 +1,105 @@
+/* Structured Reference sheets. Tables keep the shared .doc-table treatment and bleed;
+   these rules add only column geometry and the code treatment of each column. */
+@layer components {
+  .ref-table table { table-layout: fixed; }
+  .ref-table :is(thead, tbody, tr, th, td) { contain: none; }
+  .ref-table tbody :is(th, td) { vertical-align: baseline; }
+  .ref-table tbody th a { text-decoration: none; }
+  /* Both sheet tables share one class column, so their value columns align down the page. */
+  /* The first cell also carries the table's bleed gutter. */
+  .ref-table :is(thead th, tbody th):first-child { width: calc(var(--ref-key-width, 9.75rem) + var(--prose-table-gutter, 0rem)); }
+  /* Fixed tables resolve mixed percentage widths as auto, so phones get their own length. */
+  @media (width < 40rem) {
+    .ref-table:not([data-modes]) :is(thead th, tbody th):first-child { width: calc(min(var(--ref-key-width, 9.25rem), 11rem) + var(--prose-table-gutter, 0rem)); }
+    .ref-table tbody th { white-space: normal; overflow-wrap: anywhere; }
+    /* On phones a property may break after a hyphen and a long value anywhere. */
+    .ref-table :is(.ref-property, .ref-declaration-value) { white-space: normal; }
+    .ref-table .ref-declaration-value { overflow-wrap: anywhere; }
+  }
+  .ref-table var { color: var(--color-text-muted); font-style: italic; }
+  /* Both tables read as one typographic grid: plain mono, the class in strong ink. */
+  .reference-document .doc-table.ref-table :is(th, td) code {
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: .8125rem;
+    line-height: 1.6;
+  }
+  .reference-document .doc-table.ref-table tbody th code { color: var(--color-text-strong); }
+  .reference-document .doc-table.ref-table td code { font-size: var(--font-size-xs); }
+  .ref-table tbody th a:hover code { text-decoration: underline; text-decoration-color: var(--color-line-control); text-underline-offset: .2em; }
+
+  .ref-declarations {
+    display: grid;
+    color: var(--color-text-muted);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    line-height: 1.75;
+  }
+  /* A declaration breaks between its property and value, never inside a name. */
+  .ref-property, .ref-declaration-value { white-space: nowrap; }
+  .ref-property { color: var(--color-text-body); }
+
+  /* The class column fits the longest key, so most values stay on one line. Mid-length values
+     wrap; only long layered values collapse to one line and open in place. */
+  .ref-value-table tbody th { white-space: nowrap; }
+  /* Light/dark pairs keep one line and scroll inside the shared table edge on phones. */
+  .ref-value-table[data-modes] table { min-width: 36rem; }
+  .reference-document .doc-table.ref-value-table[data-modes] td code { white-space: nowrap; }
+  .reference-document .doc-table.ref-value-table td code {
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--color-text-body);
+    overflow-wrap: anywhere;
+  }
+  /* A rem value carries its pixel equivalent, quietly, on the same line. */
+  .ref-value-note { margin-inline-start: .75rem; color: var(--color-text-muted); font-size: var(--font-size-xs); white-space: nowrap; }
+  .ref-long-value { min-width: 0; margin: 0; }
+  .ref-long-value summary {
+    display: flex;
+    gap: .375rem;
+    align-items: baseline;
+    margin: 0;
+    text-indent: 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .ref-long-value summary::-webkit-details-marker { display: none; }
+  .ref-long-value summary::before { content: "▸"; flex: none; color: var(--color-text-muted); font-size: var(--font-size-xs); }
+  .reference-document .doc-table.ref-value-table .ref-long-value summary code { display: block; overflow: hidden; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
+  .ref-long-value summary:hover code { color: var(--color-text-strong); }
+  .ref-long-value summary:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; border-radius: var(--radius-xs); }
+  .reference-document .doc-table.ref-value-table :is(.ref-long-value[open] summary, .ref-long-value:not([open]) > code) { display: none; }
+  .reference-document .doc-table.ref-value-table .ref-long-value > code { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .ref-value-table tr:target :is(th, td) { background: color-mix(in oklab, var(--color-text-link) 7%, transparent); }
+
+  /* The stage centers one composition, the way the Guide frames a product scene. */
+  .ref-example-stage {
+    display: grid;
+    background: var(--color-demo-surface);
+    place-items: center;
+    min-height: 10rem;
+    padding: clamp(1.5rem, 7cqi, 3.5rem) clamp(1.25rem, 6cqi, 3rem);
+  }
+  .ref-example { container-type: inline-size; }
+  /* Stage and source share the shell: one 8px seam, radii concentric with the shell. */
+  .ref-example-figure { display: grid; gap: .5rem; }
+  .ref-example-figure > .code {
+    --code-frame-radius: var(--radius-2xl);
+    margin: 0;
+  }
+  /* One scene keeps the composition's own flow and left edge. */
+  .ref-example-scene { width: min(100%, 32rem); }
+
+  .reference-document .ref-links { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+  /* A rule the classes depend on reads as body text, set off by a hairline. */
+  .reference-document .ref-note { padding-inline-start: 1rem; border-inline-start: 2px solid var(--color-line-divider); color: var(--color-text-body); font-size: var(--font-size-sm); }
+  .reference-document .ref-note code { white-space: nowrap; }
+
+  /* The palette sits in the same shell as the examples. */
+  .ref-palette > .demo-container-shell { padding: var(--spacing-md); background: var(--color-demo-surface); }
+  .reference-document :is(.ref-links, .ref-lead) code { white-space: nowrap; }
+}

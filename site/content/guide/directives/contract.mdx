@@ -160,7 +160,7 @@ Register the default value in `@theme`, then override the variable using native 
 }
 ```
 
-Native overrides retain their authored scope, layer, and stylesheet delivery. The browser resolves the cascade and inheritance. Unlayered normal overrides outrank normal theme-layer declarations on the same element. A later layer such as `defaults` also gives overrides priority while allowing component and utility layers to take precedence. Import the native stylesheet wherever its overrides are needed; `@reference` supplies definitions without delivering those rules.
+Native overrides retain their authored scope, layer, and stylesheet delivery. Unlayered normal overrides outrank normal theme-layer declarations on the same element. A later layer such as `defaults` also gives overrides priority while allowing component and utility layers to take precedence. Import the native stylesheet wherever its overrides are needed; `@reference` supplies definitions without delivering those rules.
 
 The preset uses native `light-dark()` for adaptive colors and shadows. Both variable branches remain dependencies. Its native base CSS sets the root to `color-scheme: light dark`, with light/dark `data-theme` selectors for elements and shadow hosts. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
 
@@ -890,7 +890,7 @@ Use explicit width and height declarations for paired dimensions, or author a fu
 
 ### Animation recipes
 
-The preset’s direct-value `animate-*` family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/animate).
+The preset’s direct-value `animate-*` family maps `--animate-*` values to the native `animation` property. For example, `--animate-fade: fade 2s ease-out` makes `animate-fade` emit `animation: var(--animate-fade)`. Each token contains the complete shorthand; omitted fields use native CSS defaults. Inside stylesheets, use `animation: var(--animate-fade)` directly. See [animation tokens](/reference/tokens/motion#animate).
 
 ## Token family names
 

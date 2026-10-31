@@ -7,3 +7,12 @@ export const ruleSources = [
   { id: 'rules/layers', title: 'Cascade layers', source: 'guide/cascade-layers/contract.mdx', guide: '/guide/cascade-layers', description: 'Layer ownership, ordering and interactions with native CSS.' },
   { id: 'rules/extraction', title: 'Extraction', source: 'guide/scanning-latent-classes/contract.mdx', guide: '/guide/scanning-latent-classes', description: 'Source boundaries, complete class candidates and validation.', terms: ['樣式沒生成', 'missing CSS', 'dynamic classes'] }
 ]
+
+/** Directive pages group contract sections by the at-rules a reader looks up. */
+export const directivePages: { id: string, title: string, description: string, sections: string[], terms?: string[] }[] = [
+  { id: 'imports', title: 'Imports', description: 'Load the preset and other stylesheets, or reference their tokens and definitions without their CSS.', sections: ['Entry markers', 'Reference context'], terms: ['@import', '@reference'] },
+  { id: 'theme', title: 'Theme', description: 'Declare tokens, custom media, keyframes and mixin wrappers.', sections: ['Theme and conditions', 'Conditional blocks'], terms: ['@theme', '@custom-media', '@keyframes'] },
+  { id: 'definitions', title: 'Utilities and mixins', description: 'Define on-demand utilities, reusable mixins and layered native styles.', sections: ['Utilities and native styles'], terms: ['@utility', '@mixin', '@apply'] },
+  { id: 'scanning', title: 'Scanning', description: 'Include or exclude source files and specific class names.', sections: ['Source boundaries', 'Candidate policy'], terms: ['@source', '@safelist', '@blocklist'] },
+  { id: 'pruning', title: 'Native CSS pruning', description: 'Choose whether a stylesheet’s unused native class rules are removed.', sections: ['Native CSS preservation'], terms: ['@prune', '@preserve'] },
+]

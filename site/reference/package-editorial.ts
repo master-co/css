@@ -22,7 +22,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
   },
   '@master/css-compiler': {
     introduction: 'Compile stylesheet directives, load project manifests and compose generated CSS with authored styles. Choose the entrypoint that matches the work and execution environment.',
-    usage: 'Supply the base manifest explicitly when an API requires it. Inspect returned diagnostics before using the result. A delivery result is an asset set: publish every stylesheet and resource at its assigned URL. See [Stylesheet entrypoints](/reference/directives/entry) for resolution and delivery boundaries.',
+    usage: 'Supply the base manifest explicitly when an API requires it. Inspect returned diagnostics before using the result. A delivery result is an asset set: publish every stylesheet and resource at its assigned URL. See [Stylesheet entrypoints](/reference/directives/imports) for resolution and delivery boundaries.',
     entries: {
       '.': 'Asynchronous compiler sessions and in-memory directive compilation.',
       './node': 'Synchronous native compilation and filesystem resolution.',

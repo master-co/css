@@ -93,7 +93,7 @@ Native selectors and queries outside `@theme` express alternate values. The same
 ```
 
 ### Derived scoped values \{#derived-mode-aware-values\}
-Derived values remain CSS functions, including `var()` fallbacks and `color-mix()`. Place a derived declaration on the scopes where it should compute; CSS custom properties resolve references where they are declared and then inherit that value.
+Derived values remain CSS functions, including `var()` fallbacks and `color-mix()`. Place a derived declaration on the scopes where it should compute.
 
 ```css
 @theme {
@@ -131,7 +131,7 @@ The full preset uses native `light-dark()` and `color-scheme`. Choose `data-them
 Preset `@dark` and `@light` suffixes still test system media preferences. Manual token switching does not activate them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
 
 ### Local themes and overlap
-Local selectors participate in the normal cascade. If themes overlap or nest, selector specificity, layer order and source order decide which declaration wins. Master CSS retains those authored relationships.
+Local selectors participate in the normal cascade. Master CSS retains those authored relationships.
 
 ### Shadow DOM
 Default theme declarations already include `:host`. For scoped host overrides, write `:host(...)` explicitly. Load the native stylesheet, generated CSS and any native keyframes in the tree where they are consumed.

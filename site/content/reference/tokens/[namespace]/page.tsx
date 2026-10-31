@@ -1,5 +1,7 @@
 import ReferencePage, { loadReferenceRoute, referenceMetadata } from '~/site/reference/ReferencePage'
-import TokenSpecimens from '~/site/reference/TokenSpecimens'
+import TokenSheetView from '~/site/reference/TokenSheetView'
+import FamiliesSheetView from '~/site/reference/FamiliesSheetView'
+import BreakpointsSheetView from '~/site/reference/BreakpointsSheetView'
 
 type Props = { params: { locale: string; namespace: string } }
 
@@ -11,5 +13,10 @@ export async function generateMetadata({ params }: Props) {
 export default async function Page(props: Props) {
   const { namespace } = props.params
   const doc = await loadReferenceRoute(`tokens/${namespace}`, 'tokens')
-  return <ReferencePage {...props} document={doc} tokenSpecimen={<TokenSpecimens namespace={namespace} />} />
+  const sheet = doc.sheet
+  const body = sheet?.kind === 'tokens' ? <TokenSheetView sheet={sheet} />
+    : sheet?.kind === 'families' ? <FamiliesSheetView sheet={sheet} />
+      : sheet?.kind === 'breakpoints' ? <BreakpointsSheetView sheet={sheet} /> : undefined
+  if (!body) throw new Error(`Missing token sheet: ${doc.id}`)
+  return <ReferencePage {...props} document={doc} body={body} />
 }

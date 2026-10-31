@@ -11,21 +11,15 @@ import GeneratedCSS from '../components/GeneratedCSS'
 import DocumentOptions from '../components/DocumentOptions'
 import DocumentCodeExampleView from '../components/DocumentCodeExampleView'
 import type { ReferenceRenderDocument } from './render-document'
-import { tokenValueEntry } from './value-entry'
-import { DocumentCodeTable, DocumentKeyList, DocumentNamespaceTable, DocumentValueList, type DocumentValueRow } from '../components/DocumentValues'
+import { DocumentCodeTable, DocumentNamespaceTable } from '../components/DocumentValues'
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
-export default function ReferenceMarkdown({ tree, headings, compactValues = false, introHeadingId, specimenNamespace, recipeSpecimen, tokenSpecimen }: Pick<ReferenceRenderDocument, 'tree' | 'headings'> & { compactValues?: boolean, introHeadingId?: string, specimenNamespace?: string, recipeSpecimen?: React.ReactNode, tokenSpecimen?: React.ReactNode }) {
+export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRenderDocument, 'tree' | 'headings'>) {
   let headingIndex = 0
   let entrypoint = ''
-  let specimenSummary = false
   const definitions = new Map<string, any>()
   for (const node of tree.children) if (node.type === 'definition') definitions.set(node.identifier, node)
   function render(node: any, key: number): React.ReactNode {
-    // The complete visual already includes this same caption and per-token advice.
-    // Keep their text equivalent in portable Markdown without repeating it below the UI.
-    if (specimenNamespace && node.type === 'heading' && node.depth === 2) specimenSummary = node.children.some((child: any) => child.value === 'Specimens')
-    if (specimenNamespace && specimenNamespace !== 'breakpoints' && specimenSummary && ['paragraph', 'list'].includes(node.type)) return null
     const body = node.children?.map(render)
     const props = { key }
     switch (node.type) {
@@ -34,10 +28,7 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
         const anchor = node.children.every((child: any) => child.type === 'html')
           && node.children.map((child: any) => child.value).join('').match(/^<a id="([\w-]+)"><\/a>$/)?.[1]
         if (anchor) return <span key={key} id={anchor} />
-        const keys = node.children.filter((child: any) => child.type === 'inlineCode').map((child: any) => child.value)
-        const onlyKeys = keys.length && keys.every((key: string) => key.endsWith(':'))
-          && node.children.every((child: any) => child.type === 'inlineCode' || child.type === 'text' && /^[,\s]*$/.test(child.value))
-        return compactValues && onlyKeys ? <DocumentKeyList key={key} keys={keys} /> : <p key={key}>{body}</p>
+        return <p key={key}>{body}</p>
       }
       case 'strong': return <strong key={key}>{body}</strong>
       case 'emphasis': return <em key={key}>{body}</em>
@@ -54,13 +45,8 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
       case 'heading': {
         if (node.depth === 2) entrypoint = node.children.map((child: any) => child.value ?? '').join('').replace(/\s+\{#[\w-]+\}$/, '')
         const heading = node.depth === 2 || node.depth === 3 ? headings[headingIndex++] : undefined
-        if (heading && heading.id === introHeadingId) return <span key={key} id={heading.id} />
-        if (heading?.id === 'examples' && recipeSpecimen) return <Fragment key={key}><h2 id="examples">Example</h2>{recipeSpecimen}</Fragment>
-        if (heading?.id === 'specimens' && tokenSpecimen) return <Fragment key={key}><h2 id="specimens">Specimens</h2>{tokenSpecimen}</Fragment>
         const cleanBody = node.children.map((child: any, index: number) => render(child.type === 'text' ? { ...child, value: child.value.replace(/\s+\{#[\w-]+\}$/, '') } : child, index))
-        // A section page's own heading becomes the page title, so its subsections move up one level.
-        const level = introHeadingId ? Math.max(2, node.depth - 1) : node.depth
-        return createElement(`h${level}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
+        return createElement(`h${node.depth}`, { ...props, id: heading?.id }, heading && /^(entry|api)-[0-9a-f]{12}$/.test(heading.id)
           ? <DocumentIdentifier>{heading.title}</DocumentIdentifier> : cleanBody)
       }
       case 'link': return <Link key={key} href={node.url}>{body}</Link>
@@ -123,34 +109,17 @@ export default function ReferenceMarkdown({ tree, headings, compactValues = fals
       default: return <Fragment key={key}>{body}</Fragment>
     }
   }
-  if (!compactValues) {
-    const content: React.ReactNode[] = []
-    for (let index = 0; index < tree.children.length; index++) {
-      const [title, source, result] = tree.children.slice(index, index + 3) as any[]
-      if (isStylesheetExample(title, source, result)) {
-        content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')} source={source.value} result={result.value}
-          resultKind="generated-css"
-          sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}
-          resultCode={<CodeView {...referenceCodeProps(result, true)} prepared={result.data.prepared} />}
-        />)
-        index += 2
-      } else content.push(render(title, index))
-    }
-    return content
-  }
   const content: React.ReactNode[] = []
-  for (let index = 0; index < tree.children.length;) {
-    const rows: DocumentValueRow[] = []
-    const start = index
-    while (index < tree.children.length) {
-      const entry = tokenValueEntry(tree.children, index)
-      if (!entry) break
-      const heading = headings[headingIndex++]
-      rows.push({ ...entry.row, id: heading.id, title: heading.title })
-      index = entry.end
-    }
-    if (rows.length) content.push(<DocumentValueList key={start} rows={rows} />)
-    else content.push(render(tree.children[index], index++))
+  for (let index = 0; index < tree.children.length; index++) {
+    const [title, source, result] = tree.children.slice(index, index + 3) as any[]
+    if (isStylesheetExample(title, source, result)) {
+      content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')} source={source.value} result={result.value}
+        resultKind="generated-css"
+        sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}
+        resultCode={<CodeView {...referenceCodeProps(result, true)} prepared={result.data.prepared} />}
+      />)
+      index += 2
+    } else content.push(render(title, index))
   }
   return content
 }

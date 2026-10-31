@@ -517,7 +517,7 @@ test('directive references export every native CSS example and setting to both l
   const { renderDocumentMarkdown } = await import('../reference/build')
   const catalog = JSON.parse(await readFile(path.join(root, '.generated/reference.json'), 'utf8'))
   const docs = catalog.documents.filter((doc: any) => doc.kind === 'directive')
-  assert.equal(docs.length, 8)
+  assert.equal(docs.length, 5)
   for (const locale of ['en', 'tw']) {
     const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     for (const doc of docs) {

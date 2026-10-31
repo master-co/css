@@ -23,7 +23,8 @@ export function referenceCodeProps(node: Code, stylesheetExample = false): CodeP
   }
   return {
     lang: node.lang || 'plaintext',
-    name: node.meta?.match(/name=(\S+)/)?.[1] || node.lang?.toUpperCase(),
+    // Plain blocks like the Guide's; only an explicit file name earns a tab bar.
+    name: node.meta?.match(/name=(\S+)/)?.[1],
     beautify: node.lang === 'css' || node.lang === 'html',
     dedent: node.lang === 'sh' ? false : undefined,
     children: node.value

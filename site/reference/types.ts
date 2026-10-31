@@ -1,3 +1,5 @@
+import type { ReferenceSheet } from './sheets'
+
 export type ReferenceKind = 'utility' | 'rule' | 'tokens' | 'directive' | 'tool' | 'package'
 
 export interface SyntaxRow {
@@ -36,6 +38,8 @@ export interface ReferenceDocument {
   markdown: string
   headings: { id: string; title: string; depth: number }[]
   extractionNotes: string[]
+  /** Structured reading model for pages migrated to Reference sheets. */
+  sheet?: ReferenceSheet
 }
 
 export interface ReferenceCatalog {
@@ -48,9 +52,9 @@ export interface ReferenceCatalog {
 }
 
 export const referenceSections: { id: string; title: string; titleTW: string; kinds: ReferenceKind[]; description: string; descriptionTW: string }[] = [
-  { id: 'utilities', title: 'Preset recipes', titleTW: 'Preset 配方', kinds: ['utility'], description: 'Check recipe parameters, defaults and complete generated CSS.', descriptionTW: '查核配方參數、預設值與完整生成 CSS。' },
-  { id: 'rules', title: 'Syntax & rules', titleTW: '語法與規則', kinds: ['rule'], description: 'Check how values, selectors, conditions and layers combine.', descriptionTW: '查核值、選擇器、條件與 layer 的組合方式。' },
-  { id: 'tokens', title: 'Tokens & namespaces', titleTW: 'Tokens 與命名空間', kinds: ['tokens'], description: 'Inspect preset values and the utilities that consume them.', descriptionTW: '查看 preset 值及使用這些值的 utilities。' },
-  { id: 'directives', title: 'Stylesheet directives', titleTW: '樣式表指令', kinds: ['directive'], description: 'Check stylesheet authoring contracts and their scope.', descriptionTW: '查核樣式表指令的適用範圍。' },
-  { id: 'tools', title: 'Tools & APIs', titleTW: '工具與 APIs', kinds: ['tool', 'package'], description: 'Find commands, tools and public import paths, then follow their source links.', descriptionTW: '查找 CLI、MCP 工具與公開匯入路徑，再依連結閱讀來源。' }
+  { id: 'rules', title: 'Syntax', titleTW: '語法', kinds: ['rule'], description: 'How a class names its declarations, selectors, conditions and layer.', descriptionTW: 'class 如何寫出宣告、選擇器、條件與 layer。' },
+  { id: 'tokens', title: 'Tokens', titleTW: 'Tokens', kinds: ['tokens'], description: 'Every preset value, the classes that read it and how to change it.', descriptionTW: '每個 preset 值、讀取它的 class，以及如何調整。' },
+  { id: 'utilities', title: 'Recipes', titleTW: '配方', kinds: ['utility'], description: 'Preset classes that write several declarations or take a number.', descriptionTW: '一次寫出多條宣告或接收數值的 preset class。' },
+  { id: 'directives', title: 'Directives', titleTW: '指令', kinds: ['directive'], description: 'Stylesheet at-rules for imports, themes, definitions, scanning and pruning.', descriptionTW: '用於匯入、主題、定義、掃描與修剪的樣式表 at-rule。' },
+  { id: 'tools', title: 'Tools', titleTW: '工具', kinds: ['tool', 'package'], description: 'The CLI, the MCP server and the public packages.', descriptionTW: 'CLI、MCP server 與公開套件。' }
 ]

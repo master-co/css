@@ -2,7 +2,7 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 import { overviewTemplate, baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
 
 ## How layers control the cascade [sr-only] \{#how-layers-control-the-cascade\}
-Within the same origin and importance, [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer) order groups of declarations before selector specificity is compared. Master CSS assigns generated rules to five named layers. Load the base stylesheet, normally through `@import "@master/css"`, to establish their order.
+Master CSS assigns generated rules to five named [cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer). Load the base stylesheet, normally through `@import "@master/css"`, to establish their order.
 
 The default `@master/css/base.css` stylesheet declares the layer order:
 
@@ -190,9 +190,7 @@ size is 16px:
 | Unlayered `.outside { padding: 32px; }` and `p(8)` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
 | Component-layer `padding: 24px !important` and `p(8)!` | `padding: 24px` | The earlier component layer wins for important declarations. |
 
-Selector and condition scope still matter. A hover or breakpoint rule only
-participates while its selector and conditions match. Direct values do not
-universally override tokens in other layers or scopes.
+Direct values do not universally override tokens in other layers or scopes.
 
 Within one layer and scope, generated rules follow a fixed order: recipes with
 several declarations or inner selectors and conditions, then single-declaration
@@ -212,6 +210,5 @@ Use the five layers in their declared order:
 1. `components` holds project vocabulary from CSS-defined component classes.
 1. `utilities` holds utilities and final local adjustments.
 
-When a declaration loses, first confirm that its selector and conditions match. Then inspect importance, origin, layer and specificity in the browser. Include native unlayered rules in that check; layer order alone does not explain every result.
 
 `@layer(...)` selects one of the four generated style layers for the entire class. It never creates a sublayer. Repeated identical choices merge; different choices report a conflict. Keep stylesheet layers outside `@apply`; mixin bodies and contents cannot contain layer blocks.

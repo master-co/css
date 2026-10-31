@@ -50,7 +50,7 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
   return [{
     id: 'packages', kind: 'package', title: 'Packages',
     description: 'Choose a public package, find its import paths, and open its API source on GitHub.',
-    category: 'Packages', url: '/reference/packages', source: 'site/reference/package-editorial.ts',
+    category: 'Tools', url: '/reference/packages', source: 'site/reference/package-editorial.ts',
     sourceDigest: createHash('sha256').update(inputs.join('\n') + JSON.stringify(packageEditorial) + JSON.stringify(contract) + JSON.stringify(census)).digest('hex'),
     language: 'en', aliases: [...new Set(aliases)], identifierAnchors, terms: ['API', 'exports', 'TypeScript'],
     rows: [], examples: [], related: ['tools/cli', 'tools/mcp'], markdown,

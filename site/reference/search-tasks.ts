@@ -8,7 +8,7 @@ export const searchTasks = [
   ['--spacing-md', 'tokens/spacing'], ['spacing', 'tokens/spacing'],
   ['fg-red:hover@sm', 'rules/conditions'], ['Conditions', 'rules/conditions'],
   ['Variables & modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],
-  ['樣式沒生成', 'rules/extraction'], ['clamp-lines', 'clamp-lines'],
+  ['樣式沒生成', 'rules/extraction'], ['clamp-lines', 'truncation'],
   ['master-css generate', 'tools/cli'], ['master-css lint', 'tools/cli'],
   ['master-css inspect', 'tools/cli'], ['mastercss_inspect_class', 'tools/mcp'],
   ['createEngine', 'packages'], ['@master/css-tooling', 'packages']

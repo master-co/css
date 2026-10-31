@@ -96,7 +96,7 @@ const categories = [
 ] as const
 
 const documentation: Record<string, string> = {
-  'screen-readers': '/reference/screen-readers',
+  'screen-readers': '/reference/sr-only',
   padding: '/guide/spacing',
   'border-radius': '/reference/tokens/radius',
   'box-shadow': '/reference/tokens/shadow',
