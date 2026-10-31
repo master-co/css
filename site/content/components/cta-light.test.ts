@@ -2,12 +2,13 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { backingDensity, ctaLitProperties, litValues } from './cta-light'
 
-test('the closing silk stays within 2x density and about two million pixels', () => {
-  assert.equal(backingDensity(390, 256, 3), 2)
+test('the closing field stays within 3x density and about two million pixels', () => {
+  assert.equal(backingDensity(390, 256, 3), 3, 'a phone keeps its own density, so hairlines are not upscaled')
+  assert.equal(backingDensity(390, 256, 4), 3)
   assert.equal(backingDensity(1440, 345, 1), 1)
   for (const [width, height, ratio] of [[1440, 384, 2], [2560, 384, 2], [3840, 400, 3], [1024, 300, 2.5]]) {
     const density = backingDensity(width, height, ratio)
-    assert.ok(density <= 2)
+    assert.ok(density <= 3)
     assert.ok(Math.floor(width * density) * Math.floor(height * density) <= 2_000_000)
   }
   assert.equal(backingDensity(0, 100, 2), 1)

@@ -6,7 +6,7 @@ import CopyCommand from './CopyCommand'
 import CTACanvas from './CTACanvas'
 import { homeSections, installCommand } from './home-content'
 
-/** The close: one gold point lifts a sheet of silk below a centered invitation, under the section's own lamp. */
+/** The close: one gold point opens into a field of silk and stone threads below a centered invitation, under the section's own lamp. */
 export default function CTASection() {
   const $ = useTranslation()
   return (

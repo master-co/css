@@ -3,10 +3,10 @@ export interface Box { left: number, top: number, width: number, height: number 
 
 export const ctaLitProperties = ['--lit-x', '--lit-y', '--lit-angle', '--cast-x', '--cast-y', '--lit-near'] as const
 
-/** The largest backing store the field may use: at most 2× density and about two million pixels. */
+/** The largest backing store the field may use: at most 3× density, so phone hairlines stay one device pixel, and about two million pixels. */
 export function backingDensity(width: number, height: number, ratio: number, budget = 2_000_000) {
   if (!(width > 0 && height > 0)) return 1
-  return Math.max(0.5, Math.min(ratio || 1, 2, Math.sqrt(budget / (width * height))))
+  return Math.max(0.5, Math.min(ratio || 1, 3, Math.sqrt(budget / (width * height))))
 }
 
 /**
