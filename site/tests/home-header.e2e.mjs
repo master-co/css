@@ -15,6 +15,11 @@ async function open({ width = 1440, scheme = 'light', locale = '', motion = 'no-
   await page.routeWebSocket(socket => socket.hostname === new URL(url).hostname, socket => socket.onMessage(() => undefined))
   await page.addInitScript(enabled => {
     window.headerTransitions = []
+    // Canvases redraw when the root's class changes, so header transitions must not touch it.
+    window.rootClassChanges = 0
+    document.addEventListener('DOMContentLoaded', () => {
+      new MutationObserver(records => { window.rootClassChanges += records.length }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    })
     const start = document.startViewTransition?.bind(document)
     if (!enabled || !start) {
       document.startViewTransition = undefined
@@ -26,6 +31,7 @@ async function open({ width = 1440, scheme = 'light', locale = '', motion = 'no-
       window.headerTransitions.push(record)
       transition.ready.then(() => {
         record.ready = true
+        record.kind = document.documentElement.dataset.headerTransition
         record.rootName = getComputedStyle(document.documentElement).viewTransitionName
         record.groups = document.getAnimations().map(animation => animation.effect?.pseudoElement).filter(Boolean)
       }, () => {})
@@ -41,7 +47,7 @@ async function open({ width = 1440, scheme = 'light', locale = '', motion = 'no-
 async function scroll(page, y) {
   await page.evaluate(y => scrollTo(0, y), y)
   await page.waitForFunction(y => document.querySelector('.home-header').classList.contains('at-top') === (y <= 10), y)
-  await page.waitForFunction(() => !document.documentElement.classList.contains('app-header-transition'))
+  await page.waitForFunction(() => !('headerTransition' in document.documentElement.dataset))
 }
 
 for (const width of [390, 1440]) for (const scheme of ['light', 'dark']) {
@@ -92,12 +98,17 @@ test(`${browserName}: interrupted transitions and scroll direction finish in the
     }
     await scroll(page, 0)
     assert.equal(await header.locator('.app-header-primary-nav:visible').count(), 0)
+    const classChanges = await page.evaluate(() => window.rootClassChanges)
     await scroll(page, 500)
     await page.waitForFunction(() => document.querySelector('.home-header').style.transform === 'translateY(-100%)')
     await scroll(page, 300)
     await page.waitForFunction(() => document.querySelector('.home-header').style.transform === '')
     await scroll(page, 0)
     assert.equal(await header.getByRole('link', { name: 'GitHub', exact: true }).isVisible(), true)
+    const kinds = await page.evaluate(() => window.headerTransitions.filter(transition => transition.ready).map(transition => transition.kind))
+    assert.ok(kinds.includes('tuck'), 'tucking away and coming back run as view transitions too')
+    assert.equal(await page.evaluate(() => window.rootClassChanges), classChanges, 'header transitions leave the root class alone')
+    assert.equal(await header.evaluate(element => getComputedStyle(element).transitionDuration.split(',').every(value => parseFloat(value) === 0)), true, 'no CSS transition doubles the view transition')
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
@@ -122,7 +133,7 @@ test(`${browserName}: reducing motion cancels an active transition`, async () =>
     await page.evaluate(() => scrollTo(0, 80))
     await page.waitForFunction(() => window.headerTransitions.some(transition => transition.ready))
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.waitForFunction(() => !document.documentElement.classList.contains('app-header-transition'))
+    await page.waitForFunction(() => !('headerTransition' in document.documentElement.dataset))
     await scroll(page, 0)
     assert.equal(await header.locator('.app-header-primary-nav:visible').count(), 0)
     assert.equal(await page.evaluate(() => window.headerTransitions.length), 1)

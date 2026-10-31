@@ -926,50 +926,61 @@
 }
 
 /* Capture only the header, keeping the scrolling page live underneath its transition. */
-:root.app-header-transition {
+:root[data-header-transition] {
   view-transition-name: none;
 }
 
-.app-header-transition .home-header {
+[data-header-transition] .home-header {
   view-transition-name: home-header;
 }
 
-.app-header-transition .home-header .app-header-github {
+[data-header-transition] .home-header .app-header-github {
   view-transition-name: home-header-github;
 }
 
-.app-header-transition .home-header .app-header-logo {
+[data-header-transition] .home-header .app-header-logo {
   view-transition-name: home-header-logo;
 }
 
-.app-header-transition .home-header .app-header-version {
+[data-header-transition] .home-header .app-header-version {
   view-transition-name: home-header-version;
 }
 
-.app-header-transition .home-header .app-header-menu {
+[data-header-transition] .home-header .app-header-menu {
   view-transition-name: home-header-menu;
 }
 
-.app-header-transition::view-transition {
+[data-header-transition]::view-transition {
   pointer-events: none;
 }
 
-.app-header-transition::view-transition-group(home-header),
-.app-header-transition::view-transition-group(home-header-github),
-.app-header-transition::view-transition-group(home-header-logo),
-.app-header-transition::view-transition-group(home-header-version),
-.app-header-transition::view-transition-group(home-header-menu) {
+[data-header-transition]::view-transition-group(*) {
   animation-duration: var(--duration-slow);
   animation-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 
-.app-header-transition::view-transition-old(home-header) {
+/* Reaching the top re-forms the bar: the frosted bar fades out quickly, the bare one arrives as the pieces land. */
+[data-header-transition='top']::view-transition-old(home-header) {
   animation-duration: var(--duration-fastest);
 }
 
-.app-header-transition::view-transition-new(home-header) {
+[data-header-transition='top']::view-transition-new(home-header) {
   animation-duration: var(--duration-faster);
   animation-delay: var(--duration-normal);
+}
+
+/* Tucking away or coming back only moves the same bar, so it slides as one piece with no cross-fade. */
+[data-header-transition='tuck']::view-transition-group(*) {
+  animation-duration: var(--duration-normal);
+}
+
+[data-header-transition='tuck']::view-transition-old(*) {
+  animation: none;
+  opacity: 0;
+}
+
+[data-header-transition='tuck']::view-transition-new(*) {
+  animation: none;
 }
 
 /* Translation only: figures that measure themselves while they arrive keep their true size. */
