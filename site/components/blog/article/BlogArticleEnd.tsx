@@ -23,7 +23,7 @@ export default function BlogArticleEnd({ newer, older, showCategory = true }: { 
   // Written out in full, as on the post's own header and on the index's featured sheet.
   const date = (value: string) => dayjs(value).format(tw ? 'YYYY 年 M 月 D 日' : 'MMMM D, YYYY')
   return (
-    <nav className="blog-article-end" aria-labelledby="blog-article-end-title">
+    <nav className="blog-article-end blog-rails blog-rails-rule" aria-labelledby="blog-article-end-title">
       <p className="blog-article-end-title" id="blog-article-end-title">{$('Keep reading')}</p>
       {lead && (
         <Link className="blog-article-next blog-plate" href={lead.pathname}>

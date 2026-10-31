@@ -1,64 +1,53 @@
 'use client'
 
 import '~/site/styles/docs-shell/scrollbar.css'
-import ContentsSvg from '../../public/images/contents.svg'
+import '~/site/styles/docs-shell/page-content.css'
 import Link from './Link'
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef, type RefObject } from 'react'
 import clsx from 'clsx'
-import { useTranslation } from '../contexts/i18n'
+import { useI18n, useTranslation } from '../contexts/i18n'
+import { useLocale } from '../contexts/locale'
 import Image from './Image'
 import canIUseImg from '~/site/assets/images/references/caniuse.png'
 import mdnImg from '~/site/assets/images/references/mdn-web-docs.png'
-import { usePageContent } from './PageContentContext'
+import { usePageContent, type PageContentItem } from './PageContentContext'
+import PageContentTitle from './PageContentTitle'
 
 const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
 
+/** The documentation rail: the page's contents as a ruler, its references, and the source links. */
 export default function PageContent({ metadata }: any) {
-  const { activeTransitionsReady, currentId, currentParentId, items: pageContent } = usePageContent()
   const ref = useRef<HTMLElement>(null)
   const $ = useTranslation()
 
   return (
-    <aside ref={ref} aria-label={$('On this page')} className="position:sticky top:0 overflow-y:auto flex-basis:auto flex-grow:0 flex-shrink:0 height:100dvh width:calc(252/16*1rem) pb-2xl padding-top:8.75rem b-line-subtle:not(.top) display:none@media(print) display:none@media((width<80rem)) border-left-color:transparent@media((width<80rem)) border-left-style:solid@media((width<80rem)) border-left-width:1px@media((width<80rem)) bg-surface-raised/.8@media((width<80rem)) backdrop-filter:blur(25px)@media((width<80rem)) doc-page-contents scrollbar scrollbar-concealed">
-      <div className="display:flex align-items:center mb-md">
-        <ContentsSvg width="14" height="14" className="margin-block:-1px margin-left:-0.125rem" fill="currentColor" aria-hidden="true" />
-        <span className=" ml-3xs font-xs">{$('On this page')}</span>
-      </div>
+    <aside ref={ref} aria-label={$('On this page')} className="position:sticky top:0 overflow-y:auto flex-basis:auto flex-grow:0 flex-shrink:0 height:100dvh width:calc(252/16*1rem) pb-2xl padding-top:8.75rem display:none@media(print) display:none@media((width<80rem)) doc-page-contents page-content scrollbar scrollbar-concealed">
+      <span className="page-content-label">{$('On this page')}</span>
       {(metadata.canIUseLink || metadata.mdnLink) &&
-        <div className='display:flex gap:0.625rem mb-md'>
+        <div className="page-content-references">
           {
             metadata.canIUseLink &&
-            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="display:inline-flex overflow:hidden r-xs content:none::after">
+            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="content:none::after">
               <Image src={canIUseImg} loading='eager' width={24} height={24} alt={$('Can I use ?')} />
             </Link>
           }
           {
             metadata.mdnLink &&
-            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="display:inline-flex overflow:hidden r-xs content:none::after">
+            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="content:none::after">
               <Image src={mdnImg} loading='eager' width={24} height={24} alt={$('MDN Web Docs')} />
             </Link>
           }
         </div>
       }
-      <ul className='pl-md bl-line-subtle border-left-style:solid border-left-width:1px'>
-        {
-          pageContent.map((eachPageContentNav: any) => {
-            return <li key={eachPageContentNav.id}>
-              <PageContentNav {...eachPageContentNav} pageContent={pageContent} PageContentNav={eachPageContentNav} activeTransitionsReady={activeTransitionsReady} currentId={currentId} currentParentId={currentParentId} asideRef={ref}>
-                {$(eachPageContentNav.title)}
-              </PageContentNav>
-            </li>
-          })
-        }
-      </ul>
-      <ul className='mt-sm'>
+      <PageContentList scrollContainerRef={ref} />
+      <ul className="page-content-aside">
         {metadata.sourcePath && <li>
-          <Link className="display:block text-xs! line-height:1.5rem! fg-text-muted app-nav" href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
+          <Link href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
             {$('Edit this page')}
           </Link>
         </li>}
         <li>
-          <Link className="display:block text-xs! line-height:1.5rem! fg-text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
+          <Link href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
             {$('Issue on this page')}
           </Link>
         </li>
@@ -67,49 +56,58 @@ export default function PageContent({ metadata }: any) {
   )
 }
 
-function PageContentNav({ children, id, level, activeTransitionsReady, currentId, currentParentId, asideRef }: any) {
+/**
+ * The live list inside a `PageContentProvider`: the entry being read carries `aria-current` and the long tick. With a
+ * scroll container, the current entry is kept in view inside it. Titles are translated unless they come from the
+ * page's own (already localized) headings.
+ */
+export function PageContentList({ scrollContainerRef, lang, translate = true }: { scrollContainerRef?: RefObject<HTMLElement | null>, lang?: string, translate?: boolean }) {
+  const { activeTransitionsReady, currentId, currentParentId, items } = usePageContent()
+  return (
+    <ol className="page-content-list" lang={lang}>
+      {items.map((item) => (
+        <li key={item.id}>
+          <PageContentNav item={item} translate={translate} activeTransitionsReady={activeTransitionsReady} currentId={currentId} currentParentId={currentParentId} scrollContainerRef={scrollContainerRef} />
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+function PageContentNav({ item: { id, level, title }, translate, activeTransitionsReady, currentId, currentParentId, scrollContainerRef }: {
+  item: PageContentItem
+  translate: boolean
+  activeTransitionsReady: boolean
+  currentId: string
+  currentParentId?: string
+  scrollContainerRef?: RefObject<HTMLElement | null>
+}) {
   const ref = useRef<HTMLAnchorElement>(null)
   const active = useMemo(() => currentId === id, [currentId, id])
   const $ = useTranslation()
+  const { defaultLocale, hreflangOfLocale } = useI18n()
+  const locale = useLocale()
+  // A title the page's language has no translation for is read in its source language.
+  const lang = translate && locale !== defaultLocale && !title.startsWith('`') && $(title) === title ? hreflangOfLocale?.[defaultLocale] ?? defaultLocale : undefined
 
   useLayoutEffect(() => {
-    if (active && asideRef.current && ref.current) {
-      const behavior: ScrollBehavior = initializedPageContentScrollContainers.has(asideRef.current) && !matchMedia('(prefers-reduced-motion: reduce)').matches
+    const container = scrollContainerRef?.current
+    if (active && container && ref.current && container.scrollHeight > container.clientHeight) {
+      const behavior: ScrollBehavior = initializedPageContentScrollContainers.has(container) && !matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 'smooth'
         : 'instant' as ScrollBehavior
 
-      asideRef.current.scrollTo({
-        top: asideRef.current.scrollTop + ref.current.getBoundingClientRect().top - 180,
+      container.scrollTo({
+        top: container.scrollTop + ref.current.getBoundingClientRect().top - 180,
         behavior
       })
-      initializedPageContentScrollContainers.add(asideRef.current)
+      initializedPageContentScrollContainers.add(container)
     }
-  }, [active, asideRef, currentId, currentParentId])
+  }, [active, scrollContainerRef, currentId, currentParentId])
 
-  const Text = useMemo(() => {
-    if (typeof children === 'string') {
-      if (children?.startsWith('`')) {
-        return <code className='display:contents line-height:1'>{children.replace(/`/g, '')}</code>
-      } else {
-        return $(children)
-      }
-    } else {
-      return children
-    }
-  }, [$, children])
-
-  // Pre-render the transition and enable it with an attribute: a class added after
-  // hydration would start the Master CSS engine on every documentation page.
-  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('display:flex align-items:center fg-text-muted contain:content will-change:color transition-duration:.15s[data-transitions-ready] transition-property:color[data-transitions-ready] fg-accent.active! fill-accent.active_svg app-nav', {
-    'active': active || currentParentId === id,
-    'min-height:32px': level === 2,
-    'min-height:24px font-xs': level === 3,
-  })}>
-    <div className={clsx({
-      'min-height:32px py-4xs': level === 2,
-      'margin-left:1em padding-block:1px padding-left:1em text-indent:-1em': level === 3
-    })}>
-      {Text}
-    </div>
+  // The live state is pre-rendered and the transition enabled with an attribute: a class added after hydration would
+  // start the Master CSS engine on every documentation page.
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-level={level} lang={lang} data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('page-content-link', { active: active || currentParentId === id })}>
+    <PageContentTitle title={title} translate={translate ? $ : undefined} />
   </Link>
 }

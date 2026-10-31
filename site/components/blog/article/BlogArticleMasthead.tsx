@@ -8,7 +8,7 @@ import { titleLines } from './title-lines'
 import { sourceLanguageOf } from './language'
 
 /**
- * The post's own header, set on the reading column: a quiet line of category and date, the title in a soft
+ * The post's own header, the first section of the drawing: a quiet line of category and date, the title in a soft
  * stone tone, the description, and the authors. Nothing moves and nothing glows; the page's one light simply
  * falls on it from above and to the left.
  */
@@ -24,7 +24,7 @@ export default function BlogArticleMasthead({ metadata }: { metadata: any }) {
     .map(({ name }: { name: string }) => authors.find((author) => author.name === name))
     .filter(Boolean) as typeof authors
   return (
-    <header className="blog-article-masthead">
+    <header className="blog-article-masthead blog-rails">
       {(metadata.category || metadata.date) && (
         <p className="blog-article-meta">
           {metadata.category && <span>{$(metadata.category)}</span>}

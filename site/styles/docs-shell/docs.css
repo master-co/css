@@ -22,6 +22,15 @@
   .doc-table {
     border-bottom: 1px solid var(--color-line-subtle);
     overflow-x: auto;
+    /* Phones hide scrollbars: a soft shade at the right edge says the table continues, and a cover that scrolls
+       with it, painted in the page's own ground, lifts the shade at the end. */
+    background-image:
+      linear-gradient(to right, transparent, var(--prose-ground, var(--color-surface-base)) 70%),
+      radial-gradient(farthest-side at 100% 50%, light-dark(oklch(0% 0 none / 0.12), oklch(0% 0 none / 0.5)), transparent);
+    background-position: right center, right center;
+    background-size: 2.5rem 100%, 0.875rem 100%;
+    background-repeat: no-repeat;
+    background-attachment: local, scroll;
 
     :where(table) {
       width: 100%;
@@ -29,8 +38,9 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* Columns part by a narrow gutter, so prose cells keep a usable measure. */
     :where(th, td) {
-      padding: var(--spacing-xs) var(--spacing-md);
+      padding: var(--spacing-xs) 0.75rem;
       border-bottom: 1px solid var(--color-line-subtle);
       color: var(--color-text-body);
       font-size: var(--font-size-sm);
@@ -48,14 +58,15 @@
       padding-inline-end: var(--prose-table-gutter, 0);
     }
 
+    /* Column heads are small quiet labels in the reading face, like every other label on the page. */
     :where(thead th) {
-      padding-block: var(--spacing-xs);
+      padding-block: var(--spacing-xs) 0.625rem;
       border-bottom-color: var(--color-line-divider);
       color: var(--color-text-muted);
       font-family: inherit;
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      font-size: 0.8125rem;
+      font-weight: var(--font-weight-regular);
+      line-height: 1.45;
       text-transform: none;
       white-space: nowrap;
       vertical-align: bottom;

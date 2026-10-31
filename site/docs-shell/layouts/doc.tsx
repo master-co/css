@@ -3,7 +3,6 @@ import PageNavs from '../components/PageNavs'
 import DocMain from '../components/DocMain'
 import PageContent from '../components/PageContent'
 import PageContentBootstrap from '../components/PageContentBootstrap'
-import PageContentBlockMap from '../components/PageContentBlockMap'
 import { PageContentProvider } from '../components/PageContentContext'
 import DocArticle from '../components/DocArticle'
 
@@ -25,7 +24,6 @@ export default function DocLayout({ children, params, toc, pageCategories, metad
         <>
           <PageContentProvider items={pageContent}>
             <PageContent metadata={structuredClone(metadata)} />
-            <PageContentBlockMap />
           </PageContentProvider>
           <PageContentBootstrap items={pageContent} />
         </>

@@ -21,23 +21,28 @@
     position: static;
     margin: 0 0 var(--spacing-xs);
     font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
+    /* A step's name is a heading like any other: regular weight, set apart by its size and ink. */
+    font-weight: var(--font-weight-regular);
+    color: var(--prose-ink, var(--color-text-strong));
     line-height: 1.5;
   }
 
   .doc-install-step .doc-heading-icon { display: none; }
+  /* A step's text sits right under its name, as one group. */
+  .doc-install-step :is(h2, h3, h4) + p { margin-top: 0; }
   .doc-install-step :is(p, li) { font-size: var(--font-size-sm); }
   .doc-install-step :is(.code, .codeTabs) { margin-inline: 0; }
   .doc-install-step :is(.code, .codeTabs, p):first-child { margin-top: 0; }
   .doc-install-step :is(.code, .codeTabs, p):last-child { margin-bottom: 0; }
 
+  /* 25px wide, so its middle column of pixels is the rail's own pixel. */
   .doc-install-step-number {
     position: absolute;
-    inset-inline-start: -.75rem;
+    inset-inline-start: calc(-.75rem - 1px);
     top: 0;
     display: grid;
     place-items: center;
-    width: 1.5rem;
+    width: 1.5625rem;
     height: 1.5rem;
     border: 1px solid var(--color-line-contour);
     border-radius: var(--radius-md);
@@ -52,3 +57,7 @@
     .doc-install-step[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   }
 }
+
+/* A tab set carries its own top margin as a utility, which outranks every layer; as the first thing in a step it
+   aligns with the step's number like a single code window does. */
+.doc-install-step-body > .codeTabs:first-child { margin-top: 0; }

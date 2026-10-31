@@ -1,117 +1,117 @@
 /*
- * Blog post pages: a calm reading page that borrows only the quiet essence of the homepage's materials.
- * Everything here is scoped under `.blog-article-page`; documentation prose keeps `docs-shell/prose.css`.
+ * Blog post pages: what is a post's own. The text itself reads with the documentation's typography
+ * (`docs-shell/prose.css`, code wells in `docs-shell/code.css`) and its contents with the shared contents ruler
+ * (`docs-shell/page-content.css`); this sheet places them and draws the post's header and close.
  *
- * - One fixed, soft light falls from above and to the left. It is felt in a faint lift of the ground at the top
- *   of the page, a line of light on raised top edges and short contact shadows; nothing follows the pointer.
- * - The title carries a trace of stone: obsidian in light mode, moonstone in dark mode, as a tone, not a surface.
- * - Code sits in wells with a 1px contour: a white sheet in light mode, a step of obsidian in dark mode.
- * - The palette is the site's zinc, in three inks: body, a softer heading ink (the shared title tone) and the title.
- *   Gold appears only as two tiny live marks: the section being read and the section a link arrived at.
+ * - The article is a framed drawing, as the homepage frames its sections (`.blog-rails`, `.blog-rails-rule` from
+ *   blog-materials.css): the frame is the reading column and the room its wells bleed into; rails with rulers run just
+ *   outside it, and a rule crossed at the rails opens the text and the close, the long ticks restarting at each.
+ * - The contents ruler stands outside the drawing, in the page's left margin; narrower screens get the documentation's
+ *   contents disclosure in the text instead.
+ * - One fixed, soft light falls from above and to the left, felt in a faint lift of the ground at the top of the page.
+ * - The title carries a trace of stone (`.blog-stone-text`): obsidian in light mode, moonstone in dark mode.
+ * - No gold of its own: the contents' live mark is ink, like the documentation's.
  */
 
 @layer components {
-  /*
-   * The page root also carries `.blog-materials` (styles/blog-materials.css), so a post stands on the same ground
-   * as the blog index: the title takes the shared title tone (`.blog-stone-text`), the end card is the shared quiet
-   * sheet (`.blog-plate`), and strong ink and motion follow the shared tokens. Everything else aliases the site
-   * roles directly, so the reading styles do not depend on the shared layer's evolving token set.
-   */
   .blog-article-page {
-    --blog-article-ground: light-dark(var(--color-zinc-0), var(--color-zinc-95));
+    /* The page's margin outside the frame; the frame itself carries the room the wells bleed into. */
+    --blog-article-gutter: 0rem;
+    /* The reading text's bleed (docs-shell/prose.css), known outside the text too. */
+    --blog-article-bleed: 1.25rem;
+    /* The documentation's reading measure. */
+    --blog-article-measure: 42.125rem;
     /* Strong ink is the shared title tone (soft obsidian / moonstone), so nothing on the page is pure black or white. */
     --blog-article-text: var(--blog-title, var(--color-text-strong));
     --blog-article-body: var(--color-text-body);
     --blog-article-quiet: var(--color-text-muted);
-    /* Faint still reads at 4.5:1 on the ground and on sheets. */
     --blog-article-faint: color-mix(in oklab, var(--color-text-muted) 72%, var(--color-text-subtle));
-    --blog-article-contour: var(--color-line-contour);
     --blog-article-rule: var(--color-line-divider);
-    /* The line of light under an engraved rule; on a dark ground a second light row would only thicken it. */
-    --blog-article-highlight: light-dark(rgb(255 255 255 / 0.9), transparent);
-    /* The one accent, the logo's gold, kept for small live marks. */
-    --blog-article-signal: var(--color-amber-40);
-    --blog-article-thread: color-mix(in oklab, var(--blog-article-text) 26%, transparent);
     /* Motion follows the shared layer, so a hover settles at the same unhurried pace as on the blog index. */
     --blog-article-ease: var(--blog-ease, cubic-bezier(0.25, 0.1, 0.25, 1));
     --blog-article-base: var(--blog-base, 360ms);
     --blog-article-slow: var(--blog-slow, 720ms);
-    --blog-article-mono: var(--font-family-mono);
-    /* About seventy characters of the body face per line. */
-    --blog-article-measure: 37rem;
-    --blog-article-gutter: 1.25rem;
-    timeline-scope: --blog-article-read;
     /* The light from above-left, felt as a faint lift of the ground at the top of the page. */
     background-image: radial-gradient(ellipse 130% 100% at 0% -25%, light-dark(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.025)), transparent 80%);
     background-size: 100% min(110vh, 64rem);
     background-repeat: no-repeat;
 
+    /* From 40rem the text keeps 2.5rem from the screen's edge, as on the index, and the wells stop short of it. */
     @media (width >= 40rem) {
-      --blog-article-gutter: 2rem;
+      --blog-article-gutter: calc(2.5rem - var(--blog-article-bleed));
+    }
+
+    @media (--sm) {
+      --blog-article-bleed: 1.5rem;
+    }
+
+    /* Room for a rail and its ruler (2rem) outside the frame, and air beyond them, as on the index. */
+    @media (--md) {
+      --blog-article-bleed: 2rem;
+      --blog-article-gutter: 3.5rem;
     }
   }
 
-  /* Selected text sits on a soft wash of its own ink, not a block of the accent colour. */
-  .blog-article-page ::selection {
-    color: inherit;
-    background-color: color-mix(in oklab, var(--blog-article-text) 16%, transparent);
+  /* The reading text keeps the page's own ground under its scroll cues, and its ink is the shared title tone. */
+  .blog-article-page .prose {
+    --prose-ground: var(--blog-ground);
+    --prose-ink: var(--blog-article-text);
   }
 
-  /* Reading progress: a graphite thread across the top of the viewport, driven by the scroll position alone. Gold is
-     left to the contents rail's live mark. */
-  .blog-article-progress {
-    display: none;
-  }
+  /* ───────────────────────── Frame ───────────────────────── */
 
-  @supports (animation-timeline: view()) {
-    .blog-article-progress {
-      position: fixed;
-      inset: 0 0 auto;
-      z-index: 1100;
-      display: block;
-      height: 2px;
-      background-color: var(--blog-article-thread);
-      transform-origin: 0 50%;
-      scale: 0 1;
-      pointer-events: none;
-      /* Longhands: the stylesheet pipeline folds a shorthand and its timeline into one declaration Chrome rejects. */
-      animation-name: blog-article-progress;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: --blog-article-read;
-      animation-range: contain 0% contain 100%;
+  /*
+   * The frame is the reading column and the room its wells bleed into, centred on a whole pixel so the rails and
+   * rules never straddle two. The article is a grid across the page: the frame in the middle, the contents ruler in
+   * the outer left margin beside the text. The container is the page's own room, in rem, so enlarged text keeps one
+   * column.
+   */
+  .blog-article-main {
+    --frame: min(100%, var(--blog-article-measure) + var(--blog-article-bleed) * 2);
+    container: blog-article / inline-size;
+    padding-inline: var(--blog-article-gutter);
+
+    & > .blog-article-end {
+      max-width: var(--frame);
+      margin-inline-start: max(0px, round(down, (100% - var(--frame)) / 2, 1px));
     }
+  }
+
+  .blog-article {
+    display: grid;
+    grid-template-columns: max(0px, round(down, (100% - var(--frame)) / 2, 1px)) var(--frame) minmax(0, 1fr);
+
+    & > :is(.blog-article-masthead, .blog-article-body) {
+      grid-column: 2;
+    }
+  }
+
+  .blog-article-body,
+  .blog-article-end {
+    padding-inline: var(--blog-article-bleed);
   }
 
   /* ───────────────────────── Masthead ───────────────────────── */
 
-  /* Beside the rail the header may run into the empty right column, so a long title keeps its phrases whole. */
   .blog-article-masthead {
-    grid-column: 2 / 4;
-    grid-row: 1;
     position: relative;
     min-width: 0;
-    /* The opening breathes, but the first lines of the post still sit in the first screen; the top matches the
-       blog index's title. */
-    padding: clamp(6.5rem, 4.5rem + 5vw, 8.5rem) 0 clamp(2.25rem, 1.75rem + 1.5vw, 2.75rem);
-    margin-bottom: clamp(2.25rem, 1.75rem + 1.5vw, 2.75rem);
-
-    /* The header is closed by an engraved hairline that starts on the column's edge and fades to the right. */
-    &::after {
-      position: absolute;
-      inset: auto 0 0;
-      height: 2px;
-      background-image:
-        linear-gradient(90deg, var(--blog-article-rule), var(--blog-article-rule) 70%, transparent),
-        linear-gradient(90deg, var(--blog-article-highlight), var(--blog-article-highlight) 70%, transparent);
-      background-size: 100% 1px;
-      background-position: 0 0, 0 1px;
-      background-repeat: no-repeat;
-      content: '';
-    }
+    /* The meta line starts where the index's title starts; the post's first lines still sit in the first screen. */
+    padding: calc(3.75rem + round(clamp(3rem, 1.5rem + 4vw, 5rem), 1rem)) var(--blog-article-bleed) round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem);
+    grid-row: 1;
 
     @media (width >= 48rem) and (height < 50rem) {
-      padding-top: 6rem;
+      padding-top: 7.5rem;
+    }
+  }
+
+  /* As in the homepage hero and on the index, the rails start below the fixed header and fade in. They start at 4rem
+     rather than the header's 60px, so the ruler's ticks fall on whole rem from the page's top and the last tick above
+     each crossed rule meets the cross instead of doubling it 4px higher. */
+  @media (--md) {
+    .blog-article-masthead.blog-rails::after {
+      top: 4rem;
+      mask-image: linear-gradient(transparent, black 6rem);
     }
   }
 
@@ -137,64 +137,52 @@
   }
 
   /*
-   * The title is set in regular weight with a trace of stone: the shared title tone (`.blog-stone-text`), obsidian
-   * in light mode and moonstone in dark mode, each line lit a step from above, within a few percent of plain ink.
+   * The title, regular weight in the shared title tone, nearly twice the section titles' size (54px on desktops, 48px
+   * before; at 54px "choose when to generate CSS" still holds one line). A "Subject: question" title breaks at its
+   * colon; a half longer than the column wraps evenly.
    */
   .blog-article-title {
     min-width: 0;
-    max-width: 22em;
-    /* In one column the title may run past the reading column into the empty gutter on its right, so each half
-       of a "Subject: question" title keeps to one line from tablets up. */
-    margin: 1rem min(0px, (var(--blog-article-measure) - 100cqi) / 2) 0 0;
-    font-size: clamp(1.75rem, 1.3rem + 2.4vw, 3rem);
+    margin: 1.25rem 0 0;
+    font-size: clamp(1.875rem, 1.2rem + 2.8vw, 3.375rem);
     font-weight: 400;
-    line-height: 1.12;
-    letter-spacing: -0.032em;
+    line-height: 1.08;
+    letter-spacing: -0.034em;
     color: var(--blog-article-text);
     text-wrap: balance;
     overflow-wrap: anywhere;
 
-    /* Display tracking opens a little at phone sizes, where -0.032em starts to crowd the letters. */
+    /* Like a code well, the title may use the room the column bleeds into on its right, where that room stops short
+       of the screen's edge. */
+    @media (width >= 40rem) {
+      margin-right: calc(var(--blog-article-bleed) * -1);
+    }
+
+    /* Display tracking opens a little at phone sizes, where it starts to crowd the letters. */
     @media (width < 40rem) {
-      letter-spacing: -0.022em;
+      letter-spacing: -0.024em;
     }
 
     &:lang(zh) {
       letter-spacing: -0.01em;
       word-break: keep-all;
-      /* A full-width colon or comma at a line end would leave a ragged gap. */
-      text-spacing-trim: trim-both;
+      /* Full-width punctuation that opens a line, or meets another, is set half-width, so it leaves no gap. */
+      text-spacing-trim: trim-start;
       text-autospace: normal;
     }
   }
 
-  /* A "Subject: question" title breaks at its colon; a half that needs two lines on a phone wraps evenly. */
   .blog-article-title-line {
     display: block;
   }
 
-  /* Beside the rail the header already spans the right column; its closing rule stays on the reading column. */
-  @container blog-article (width >= 76rem) {
-    .blog-article-title,
-    .blog-article-dek {
-      margin-right: 0;
-    }
-
-    .blog-article-masthead::after {
-      right: auto;
-      width: var(--blog-article-measure);
-    }
-  }
-
-  /* Like the title, the description may take a little of the right gutter, so it keeps to two even lines. */
   .blog-article-dek {
     max-width: 34em;
-    margin: 1.25rem min(0px, (var(--blog-article-measure) - 100cqi) / 2) 0 0;
+    margin: 1.5rem 0 0;
     font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
     line-height: 1.6;
     color: var(--blog-article-body);
-    /* Balanced, so a hyphenated word or a last pair of words never hangs alone; on a phone balancing four lines
-       would only narrow them, so there it just avoids a lone last word. */
+    /* Balanced, so a last pair of words never hangs alone; on a phone balancing four lines would only narrow them. */
     text-wrap: balance;
 
     @media (width < 40rem) {
@@ -270,814 +258,170 @@
     margin: 0;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 0 1px var(--blog-article-contour), 0 1px 2px light-dark(oklch(0.18 0 none / 0.08), rgb(0 0 0 / 0.35));
+    box-shadow: 0 0 0 1px var(--color-line-contour), 0 1px 2px light-dark(oklch(0.18 0 none / 0.08), rgb(0 0 0 / 0.35));
   }
 
   /* ───────────────────────── Reading column ───────────────────────── */
 
-  /* The rail appears by the room the column actually has, in rem, so enlarged text keeps one column. */
-  .blog-article {
-    container: blog-article / inline-size;
-    padding-inline: var(--blog-article-gutter);
+  /* Each section is a whole number of rem tall where the browser can say so, so the 16px ruler ticks run on
+     unbroken across the crossed rules; only the long ticks restart at each section, as a ruler set to a new origin. */
+  @supports (height: calc-size(auto, size)) {
+    .blog-article-masthead,
+    .blog-article-body {
+      height: calc-size(auto, round(up, size, 1rem));
+    }
   }
 
-  .blog-article-frame {
-    position: relative;
-    max-width: var(--blog-article-measure);
-    margin-inline: auto;
+  /* The bottom room belongs to the section, so the contents ruler comes to rest above the closing rule. Below md the
+     rails are not drawn; a hairline across the frame still closes the header. */
+  .blog-article-body {
+    grid-row: 2;
+    padding-block: round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem) round(clamp(3rem, 2rem + 3vw, 5rem), 1rem);
 
-    @container blog-article (width >= 76rem) {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) var(--blog-article-measure) minmax(0, 1fr);
-      grid-template-rows: auto 1fr;
-      column-gap: clamp(3rem, 6vw, 6rem);
-      max-width: 88rem;
+    @media (width < 64rem) {
+      border-top: 1px solid var(--blog-guide, var(--color-line-subtle));
     }
   }
 
   .blog-article-prose {
-    grid-column: 2;
-    grid-row: 2;
     min-width: 0;
-    max-width: var(--blog-article-measure);
-    margin: 0 auto;
-    padding-bottom: var(--spacing-lg);
-    font-size: 1.0625rem;
-    line-height: 1.7;
-    color: var(--blog-article-body);
-    view-timeline: --blog-article-read block;
-
-    /* A phone's short line needs less air between lines. */
-    @media (width < 40rem) {
-      line-height: 1.625;
-    }
 
     & > :first-child {
       margin-top: 0;
     }
-
-    /* Paragraphs part by most of a line, so the column reads in even breaths. */
-    & :is(p, ul, ol, blockquote) {
-      margin-block: 1.3em;
-    }
-
-    & :is(p, li) {
-      max-width: none;
-      font-size: inherit;
-      line-height: inherit;
-      /* No single word left alone on a paragraph's last line. */
-      text-wrap: pretty;
-      hanging-punctuation: first;
-    }
-
-    /* Han paragraphs keep an opening bracket inside the column, as Taiwanese typesetting does. */
-    &:lang(zh) :is(p, li) {
-      line-height: 1.8;
-      hanging-punctuation: none;
-    }
-
-    /* Han text gets a quarter-em between itself and Latin words or numbers, as Taiwanese typesetting does. */
-    &:lang(zh) {
-      text-autospace: normal;
-    }
-
-    & :is(p, li, figcaption, td, th) a {
-      color: var(--blog-article-text);
-      text-decoration-line: underline;
-      text-decoration-style: solid;
-      text-decoration-thickness: 1px;
-      text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
-      text-underline-offset: 0.24em;
-      transition: text-decoration-color var(--blog-article-base) var(--blog-article-ease);
-
-      &:hover {
-        text-decoration-color: color-mix(in oklab, currentColor 70%, transparent);
-      }
-
-      &:focus-visible {
-        border-radius: 2px;
-        outline: 2px solid var(--color-focus);
-        outline-offset: 2px;
-      }
-    }
-
-    & code:not(.code-block)::selection {
-      background-color: color-mix(in oklab, var(--blog-article-text) 22%, transparent);
-    }
-
-    /* One strong ink for everything set apart in the text (section titles, links, bold run-ins): the post title's own
-       soft obsidian in light mode and moonstone mid-tone in dark, never pure black or white. */
-    & strong {
-      font-weight: 500;
-      color: var(--blog-article-text);
-    }
-
-    & :is(h2, h3, h4) {
-      width: auto;
-      max-width: 100%;
-      color: var(--blog-article-text);
-      text-wrap: balance;
-      scroll-margin-top: 6rem;
-    }
-
-    /* A heading's text is its own link; it keeps the heading's ink, not the shared prose's full-strength link ink. */
-    & :is(h2, h3, h4) a {
-      color: inherit;
-    }
-
-    /* A section opens on its rule and a regular-weight title, a calm step between the body and the post title. */
-    & h2 {
-      margin: 0 0 var(--spacing-md);
-      font-size: clamp(1.4375rem, 1.25rem + 0.75vw, 1.75rem);
-      font-weight: 400;
-      line-height: 1.25;
-      letter-spacing: -0.024em;
-    }
-
-    & h3 {
-      margin: 2.75rem 0 var(--spacing-sm);
-      font-size: 1.25rem;
-      font-weight: 400;
-      line-height: 1.35;
-      letter-spacing: -0.016em;
-    }
-
-    /* A subsection that opens its section sits close under it, as one heading group (an empty anchor may sit between). */
-    & :is(h2, h2 + a[id]:empty) + h3 {
-      margin-top: 0.75rem;
-    }
-
-    & h4 {
-      margin: 2rem 0 var(--spacing-xs);
-      font-size: 1.0625rem;
-      font-weight: 460;
-      line-height: 1.5;
-    }
-
-    &:lang(zh) :is(h2, h3) {
-      letter-spacing: 0;
-    }
-
-    /* A section that does not open on a rule still opens on clear room, a little less than a rule's, since nothing
-       fills it. */
-    & :not(hr, a[id]:empty) + h2 {
-      margin-top: 3.5rem;
-    }
-
-    /* Arriving at a section from a link lights its anchor once in gold, then lets it settle back to faint.
-       In-page links focus the heading (docs-shell/utils/anchor), so focus counts as arrival too. */
-    & :is(h2, h3):is(:target, :focus) > .tabler-icon-hash {
-      visibility: visible;
-      animation-name: blog-article-arrive;
-      animation-duration: 2.4s;
-      animation-timing-function: var(--blog-article-ease);
-    }
-
-    /* Section rules are engraved: a hairline with a line of light under it, fading at both ends. */
-    & hr {
-      height: 2px;
-      margin: 3rem 0 2.25rem;
-      border: 0;
-      background-image:
-        linear-gradient(90deg, transparent, var(--blog-article-rule) 18%, var(--blog-article-rule) 82%, transparent),
-        linear-gradient(90deg, transparent, var(--blog-article-highlight) 18%, var(--blog-article-highlight) 82%, transparent);
-      background-size: 100% 1px;
-      background-position: 0 0, 0 1px;
-      background-repeat: no-repeat;
-
-      @media (width < 40rem) {
-        margin-block: 2.5rem 2rem;
-      }
-    }
-
-    /* Inline code is drawn by one 1px line, not set in a gray tray, in ink halfway between body and headings (the
-       outline already sets it apart, so it should not be the darkest spot in a paragraph). From tablets up
-       a token stays whole; on a phone a long one may still wrap rather than run past the column. */
-    & :is(p, li, td, th, h2, h3, h4) code:not(.code-block) {
-      padding: 0.1em 0.375em;
-      border: 1px solid var(--blog-article-contour);
-      border-radius: 0.375rem;
-      font-size: 0.84em;
-      font-weight: 400;
-      color: color-mix(in oklab, var(--blog-article-text) 50%, var(--blog-article-body));
-      background-color: transparent;
-      box-decoration-break: clone;
-      -webkit-box-decoration-break: clone;
-
-      @media (width >= 40rem) {
-        white-space: nowrap;
-      }
-    }
-
-    /* In a heading, code is just the heading's own words in the mono face. */
-    & :is(h2, h3) code:not(.code-block) {
-      border: 0;
-      background-color: transparent;
-      padding: 0;
-      font-size: 0.9em;
-      color: inherit;
-    }
-
-    & :is(ul, ol) {
-      padding-left: 1.375em;
-    }
-
-    & li {
-      margin-block: 0.5em;
-      padding-left: 0.375em;
-    }
-
-    /* A nested list belongs to its item: it sits close under it, not a paragraph's breath away. */
-    & li > :is(ul, ol) {
-      margin-block: 0.5em 0;
-    }
-
-    & ul > li::marker {
-      color: var(--blog-article-faint);
-    }
-
-    & ol > li::marker {
-      font-family: var(--blog-article-mono);
-      font-size: 0.82em;
-      font-variant-numeric: tabular-nums;
-      color: var(--blog-article-faint);
-    }
-
-    /* A quotation is set off by its rule and half a step of ink, not by weight or size. */
-    & blockquote {
-      margin: 2rem 0;
-      padding: 0.25rem 0 0.25rem 1.25rem;
-      border-left: 1px solid var(--blog-article-rule);
-      color: color-mix(in oklab, var(--blog-article-text) 50%, var(--blog-article-body));
-
-      & p {
-        margin-block: 0;
-        color: inherit;
-      }
-
-      & p + p {
-        margin-top: 0.75em;
-      }
-    }
-
-    /* A key is drawn like inline code, by its outline, with one more line under it for the cap's depth. */
-    & kbd {
-      display: inline-block;
-      min-width: 1.5em;
-      padding: 0.05em 0.4em;
-      border-radius: 0.3125rem;
-      font-family: var(--blog-article-mono);
-      font-size: 0.8em;
-      line-height: 1.5;
-      text-align: center;
-      color: color-mix(in oklab, var(--blog-article-text) 50%, var(--blog-article-body));
-      background-color: transparent;
-      box-shadow: 0 0 0 1px var(--blog-article-contour), 0 1px 0 1px var(--blog-article-contour);
-    }
-
-    & details {
-      margin-block: 1.5rem;
-      border-top: 1px solid var(--blog-article-contour);
-      border-bottom: 1px solid var(--blog-article-contour);
-
-      & > summary {
-        margin: 0;
-        padding: 0.75rem 0;
-        text-indent: 0;
-        list-style-position: inside;
-        font-size: 0.9375rem;
-        color: var(--blog-article-text);
-        cursor: pointer;
-
-        &::marker {
-          color: var(--blog-article-faint);
-        }
-
-        &:focus-visible {
-          border-radius: 0.375rem;
-          outline: 2px solid var(--color-focus);
-          outline-offset: 2px;
-        }
-      }
-
-      & > :not(summary) {
-        margin-top: 0;
-      }
-    }
-
-    /* An inward 1px contour paints over the picture's own edge pixels; the contact shadow sits outside. The corner
-       matches the code wells'. */
-    & img {
-      border-radius: 0.875rem;
-      outline: 1px solid var(--blog-article-contour);
-      outline-offset: -1px;
-      box-shadow: var(--shadow-contact);
-    }
-
-    /* Figures bleed to the viewport edge on phones, like the code wells, and square off there. */
-    @media (width < 40rem) {
-      & > figure img {
-        border-radius: 0;
-        outline: 0;
-        box-shadow: 0 1px 0 var(--blog-article-contour), 0 -1px 0 var(--blog-article-contour);
-      }
-    }
-
-    /* A caption reads from the column's edge, like everything else on the page. */
-    & figcaption {
-      width: auto;
-      margin: 0;
-      padding: 0.75rem 0 0;
-      font-size: 0.8125rem;
-      text-align: start;
-      color: var(--blog-article-quiet);
-    }
-
-    & > figure > figcaption {
-      padding-inline: var(--prose-bleed);
-    }
-
-    & table {
-      font-size: 0.9375rem;
-    }
-
-    /* Column heads are small quiet labels in the reading face, like every other label on the page. */
-    & thead th {
-      padding-block: 0.5rem 0.625rem;
-      border-bottom-color: var(--blog-article-rule);
-      font-size: 0.8125rem;
-      font-weight: 400;
-      line-height: 1.45;
-      color: var(--blog-article-quiet);
-      vertical-align: bottom;
-    }
-
-    /* Columns part by a narrow gutter, so prose cells keep a usable measure. */
-    & :is(td, th) {
-      padding-inline: 0.75rem;
-      border-bottom-color: var(--blog-article-contour);
-      line-height: 1.6;
-    }
-
-    /* A token in a cell stays whole; the table scrolls before it splits one at a hyphen. A first column of tokens
-       takes only the room its tokens need, leaving the rest to the prose columns. */
-    & td code:not(.code-block) {
-      font-size: 0.8125rem;
-      white-space: nowrap;
-    }
-
-    & td:first-child:has(> code) {
-      width: 1%;
-    }
-
-    /* From 40rem a table led by tokens shares its width evenly after a first column sized for them, so the last
-       column is not squeezed by the bleed padding; on a phone it scrolls and a note may wrap under its token. */
-    @media (width >= 40rem) {
-      & table:has(td:first-child > code) {
-        table-layout: fixed;
-
-        & :is(th, td):first-child {
-          width: calc(8rem + var(--prose-bleed));
-        }
-      }
-    }
-
-    /* A scrollable table spans the same width as the code wells, with the same room above and below; its text
-       stays on the column edge. */
-    & > [role='region']:has(table) {
-      margin-block: 1.75rem;
-      margin-inline: calc(var(--prose-bleed) * -1);
-      /* Phones hide scrollbars: a soft shade at the right edge says the table continues, and a cover that
-         scrolls with it lifts the shade at the end. */
-      background-image:
-        linear-gradient(to right, transparent, var(--blog-article-ground) 70%),
-        radial-gradient(farthest-side at 100% 50%, light-dark(oklch(0% 0 none / 0.12), oklch(0% 0 none / 0.5)), transparent);
-      background-position: right center, right center;
-      background-size: 2.5rem 100%, 0.875rem 100%;
-      background-repeat: no-repeat;
-      background-attachment: local, scroll;
-
-      & > figure {
-        margin-block: 0;
-      }
-
-      & :is(td, th):first-child {
-        padding-left: var(--prose-bleed);
-      }
-
-      & :is(td, th):last-child {
-        padding-right: var(--prose-bleed);
-      }
-    }
-
-    /* Footnote references are small mono indices; the notes close the post in caption type under one rule. */
-    & sup > a[data-footnote-ref] {
-      padding-inline: 0.1em;
-      font-family: var(--blog-article-mono);
-      font-size: 0.75em;
-      color: var(--blog-article-quiet);
-      text-decoration: none;
-
-      &:hover {
-        color: var(--blog-article-text);
-      }
-    }
-
-    & .footnotes {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--blog-article-rule);
-      font-size: 0.875rem;
-      color: var(--blog-article-quiet);
-
-      & h2 {
-        margin: 0 0 var(--spacing-sm);
-        font-size: 0.8125rem;
-        line-height: 1.5;
-        letter-spacing: 0;
-        color: var(--blog-article-quiet);
-      }
-
-      & :is(p, li) {
-        margin-block: 0.25em;
-      }
-    }
-
-    /* The scrollable table region keeps a visible focus. */
-    & [role='region'][tabindex]:focus-visible {
-      border-radius: 0.5rem;
-      outline: 2px solid var(--color-focus);
-      outline-offset: 4px;
-    }
   }
 
-  /* The post's own contents list: a short list under one hairline; the section rule that follows closes it. */
-  .blog-article-prose > div:has(> ul > li > a[href^='#']) {
-    &::before {
-      display: block;
-      margin-bottom: var(--spacing-xs);
-      font-size: 0.8125rem;
-      line-height: 1.5;
-      color: var(--blog-article-quiet);
-      content: var(--blog-article-contents-label, none);
-    }
-
-    & > ul {
-      margin: 0;
-      padding: 0.375rem 0 0;
-      border-top: 1px solid var(--blog-article-contour);
-      list-style: none;
-    }
-
-    & li {
-      margin: 0;
-      padding: 0;
-    }
-
-    & a {
-      display: block;
-      padding: 0.4375rem 0;
-      font-size: 0.9375rem;
-      line-height: 1.5;
-      color: var(--blog-article-body);
-      text-decoration: none;
-      transition: color var(--blog-article-base) var(--blog-article-ease);
-
-      &:hover {
-        color: var(--blog-article-text);
-      }
-
-      &:focus-visible {
-        border-radius: 2px;
-        outline: 2px solid var(--color-focus);
-        outline-offset: 2px;
-      }
-    }
-
-    @container blog-article (width >= 76rem) {
-      display: none;
-    }
-  }
-
-  /* ───────────────────────── Code wells ───────────────────────── */
-
-  /*
-   * A code well is a sheet with one 1px edge and a short, soft shadow: a white sheet with a contour in light mode, a
-   * step of polished obsidian in dark mode whose only edge is its rim, lit on the upper left where the page's light
-   * comes from and fading, never vanishing, toward the lower right.
-   */
-  .blog-article-prose :is(.code, .codeTabs) {
-    --code-frame-radius: 0.875rem;
-    --well-top: light-dark(oklch(1 0 none), oklch(0.2 0.004 270));
-    --well-bottom: light-dark(oklch(0.992 0.0015 90), oklch(0.16 0.003 270));
-    --well-lip: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.07));
-    --well-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.11));
-    --well-rim-far: light-dark(transparent, rgb(255 255 255 / 0.06));
-    --well-contour: light-dark(var(--color-line-contour), transparent);
-    --well-seam: light-dark(var(--color-line-contour), rgb(255 255 255 / 0.06));
-    --well-label: light-dark(var(--color-text-body), rgb(255 255 255 / 0.72));
-    --well-control: light-dark(var(--color-text-muted), rgb(255 255 255 / 0.6));
-    /* Code lines start on the column's edge; on paper the well does not bleed and keeps its own inset. */
-    --well-inset: max(var(--prose-bleed), 1.25rem);
-    /* Shared code chrome that paints the code surface (an end-of-scroll cover, for one) matches the well. */
-    --color-code-surface: var(--well-bottom);
-    position: relative;
-    margin-block: 1.75rem;
-    border: 0;
-    border-radius: var(--code-frame-radius);
-    background-color: var(--well-bottom);
-    background-image: linear-gradient(180deg, var(--well-top), var(--well-bottom) 40%);
-    box-shadow:
-      inset 0 1px 0 var(--well-lip),
-      0 0 0 1px var(--well-contour),
-      0 1px 2px light-dark(oklch(0.18 0 none / 0.04), rgb(0 0 0 / 0.3)),
-      0 6px 18px -12px light-dark(oklch(0.25 0.01 70 / 0.12), rgb(0 0 0 / 0.45));
-
-    & .code-wrapper,
-    & .code-bar {
-      background-color: transparent;
-    }
-
-    /* Code at 13px on an even 22px line: at 14px four of the Next.js post's nine blocks no longer fit the well and
-       have to scroll sideways; at 13px one does. */
-    & .code-wrapper {
-      padding-block: 1.125rem;
-      font-size: 0.8125rem;
-      line-height: 1.375rem;
-    }
-
-    /* Code starts on the column's own edge, where the file name above it and the prose around it start. */
-    & .line {
-      padding-inline: var(--well-inset);
-    }
-
-    & :is(.code-line-add, .code-line-remove) {
-      padding-left: calc(var(--well-inset) - 2px);
-    }
-
-    /* The bar's seam is one line, without the shared chrome's second, lit line (a double edge in dark mode). */
-    & .code-bar {
-      min-height: 2.5rem;
-      border-bottom: 1px solid var(--well-seam);
-      box-shadow: none;
-    }
-
-    /* The bar names the file and nothing else: no window dots, no coloured file-type marks. Its name starts on
-       the column's edge, over the code. */
-    & :is(.code-window-controls, .code-tab-icon) {
-      display: none;
-    }
-
-    & .code-file-label {
-      padding-left: var(--well-inset);
-      font-family: var(--blog-article-mono);
-      font-size: 0.75rem;
-      color: var(--well-label);
-    }
-
-    /* Prose never points at a line by number, so a post's code carries none; diffs keep their +/- column. The
-       number gives way to a zero-width space, so an empty line keeps its height. */
-    & .code-block:not(:has(.code-line-add, .code-line-remove)) > .line::before {
-      display: inline;
-      width: auto;
-      margin: 0;
-      padding: 0;
-      content: '\200b';
-    }
-
-    /* Under the pointer only the icon darkens; no tile appears behind it. */
-    & .code-copy-button {
-      color: var(--well-control);
-      transition: color var(--blog-article-base) var(--blog-article-ease);
-
-      &:hover {
-        color: var(--well-label);
-        background-color: transparent;
-      }
-    }
-
-    /* A well without a bar keeps its copy button where a bar's would be, on the right edge, unboxed like the bar's,
-       centred on the first line of code. */
-    & .code-copy-corner {
-      top: calc(1.125rem + 0.6875rem);
-      right: 0;
-      translate: 0 -50%;
-      background: none;
-      box-shadow: none;
-
-      & .code-copy-button {
-        width: 2.25rem;
-        height: 2.25rem;
-
-        @media (pointer: coarse) {
-          width: 2.75rem;
-          height: 2.75rem;
-        }
-      }
-    }
-
-    & .code-tab::after {
-      background-color: var(--well-seam);
-      box-shadow: none;
-    }
-
-    /* The copy button needs no fence of its own. */
-    & .code-bar-actions::before {
-      content: none;
-    }
-
-    /* The rim catches the light on its upper-left edge and fades away from it. */
-    &::before {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      padding: 1px;
-      border-radius: inherit;
-      background-image: linear-gradient(160deg, var(--well-rim), var(--well-rim-far) 45%);
-      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-      pointer-events: none;
-      content: '';
-    }
-  }
-
-  /*
-   * The shared prose squares wells off below 52rem, where docs bleed them to the viewport edge. Here the column
-   * keeps a wider gutter from 40rem, so a well only meets the edge (and loses its corners) on phones.
-   * The prose rule is specific (0,4,2); this one outranks it rather than using !important.
-   */
+  /* Up to 52rem the documentation's wells reach the screen's edge; a post keeps a wider gutter from 40rem, so its
+     wells meet the edge, square off and become bands only on phones. (0,5,0) outranks the shared prose's square-off
+     rule (0,4,2) rather than using !important. */
   @media (width >= 40rem) {
-    .blog-article-page .blog-article-frame .blog-article-prose.prose > :is(.code, .codeTabs) {
+    .blog-article-page .blog-article-body .blog-article-prose.prose > :is(.code, .codeTabs) {
       --code-frame-radius: 0.875rem;
+      --well-lip: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.07));
+      --well-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.11));
+      --well-rim-far: light-dark(transparent, rgb(255 255 255 / 0.06));
       border-radius: var(--code-frame-radius);
-    }
-  }
+      box-shadow:
+        inset 0 0 0 1px var(--well-contour),
+        inset 0 2px 0 var(--well-lip),
+        0 1px 2px light-dark(oklch(0.18 0 none / 0.04), rgb(0 0 0 / 0.3)),
+        0 6px 18px -12px light-dark(oklch(0.25 0.01 70 / 0.12), rgb(0 0 0 / 0.45));
 
-  /* Edge to edge on a phone a well is a band between two hairlines, top and bottom: no cast shadow (it would read as
-     a second line) and no side edges at the screen's own edges. */
-  @media (width < 40rem) {
-    .blog-article-prose :is(.code, .codeTabs) {
-      --well-lip: light-dark(rgb(255 255 255 / 1), transparent);
-      --well-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.09));
-      --well-rim-far: light-dark(transparent, rgb(255 255 255 / 0.085));
-      box-shadow: inset 0 1px 0 var(--well-lip), 0 -1px 0 var(--well-contour), 0 1px 0 var(--well-contour);
-
-      /* In dark mode the rim is the band's only edge: two near-equal hairlines, the top a touch lighter, about the
-         section rule's value, so a full-width band never reads as a lit bar. */
       &::before {
-        padding: 1px 0;
-        background-image: linear-gradient(180deg, var(--well-rim), var(--well-rim-far));
+        padding: 1px;
+        background-image: linear-gradient(160deg, var(--well-rim), var(--well-rim-far) 45%);
+      }
+    }
+
+    .blog-article-page .blog-article-body .blog-article-prose.prose > :is(img, video, p:has(> img:only-child, > video:only-child)) {
+      &,
+      & :is(img, video) {
+        border-radius: 0.875rem;
+        box-shadow: var(--shadow-contact);
       }
     }
   }
 
-  /* A focused scroller is clipped by the well; the ring is drawn as an overlay along the well's own radius. It is an
-     outline, not a shadow, so it survives forced colors. */
-  .blog-article-prose .code:has(> .code-wrapper:focus-visible)::after {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    border-radius: inherit;
-    outline: 2px solid var(--color-focus);
-    outline-offset: -2px;
-    pointer-events: none;
-    content: '';
-  }
+  /* ───────────────────────── Contents ───────────────────────── */
 
-  .blog-article-prose .code > .code-wrapper:focus-visible {
-    outline: none;
-  }
-
-  /* A panel inside a tab set is not a well of its own, whatever order the shared code styles load in. */
-  .blog-article-prose .codeTabs > .code {
-    margin: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-
-    &::before {
-      content: none;
-    }
-  }
-
-  /* ───────────────────────── Contents rail ───────────────────────── */
-
+  /*
+   * In the outer left margin the contents ruler hangs on the header logo's edge and stays beside the text being read,
+   * clear of the rails and their rulers. Narrower (below a 1328px window), the contents disclosure the post places in
+   * its text stands in.
+   */
   .blog-article-contents {
     display: none;
+  }
 
-    @container blog-article (width >= 76rem) {
+  @container blog-article (width >= 76rem) {
+    .blog-article-contents {
+      /* Its current tick starts on the header logo's edge; air is kept before the left ruler (2rem outside the
+         frame). */
+      --edge: 2.5rem;
+      --air: 1.75rem;
       grid-column: 1;
       grid-row: 2;
       position: sticky;
-      top: 7rem;
+      top: 6.5rem;
       display: block;
-      justify-self: end;
       align-self: start;
-      width: 100%;
-      max-width: 16.5rem;
-      font-size: 0.8125rem;
-      line-height: 1.45;
+      justify-self: start;
+      width: min(17rem, 100% - (var(--edge) - var(--blog-article-gutter)) - 2rem - var(--air));
+      max-height: calc(100dvh - 8.5rem);
+      margin: round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem) 0 0 calc(var(--edge) - var(--blog-article-gutter));
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
-    & ol {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      border-left: 1px solid var(--blog-article-contour);
-    }
-
-    & li {
-      margin: 0;
-    }
-
-    & a {
-      position: relative;
-      display: block;
-      padding: 0.4375rem 0 0.4375rem 1rem;
-      color: var(--blog-article-quiet);
-      text-wrap: pretty;
-      transition: color var(--blog-article-base) var(--blog-article-ease);
-
-      &::before {
-        position: absolute;
-        top: 0.5rem;
-        bottom: 0.5rem;
-        left: -1px;
-        width: 1px;
-        background-color: var(--blog-article-signal);
-        opacity: 0;
-        transition: opacity var(--blog-article-base) var(--blog-article-ease);
-        content: '';
-      }
-
-      &:hover {
-        color: var(--blog-article-text);
-      }
-
-      &[aria-current] {
-        color: var(--blog-article-text);
-
-        &::before {
-          opacity: 1;
-        }
-      }
-
-      &:focus-visible {
-        border-radius: 0.375rem;
-        outline: 2px solid var(--color-focus);
-        outline-offset: -2px;
-      }
+    /* Beside the margin contents, the post's own contents disclosure would only repeat them. */
+    .blog-article-prose .doc-contents-disclosure {
+      display: none;
     }
   }
 
-  /* Labels are set in the reading face, small and quiet; the mono face is kept for code and list numbers. */
-  .blog-article-contents-title {
-    margin: 0 0 var(--spacing-sm);
-    font-size: 0.8125rem;
-    color: var(--blog-article-quiet);
+  /* Below the margin contents, the post's contents disclosure stands in (whatever the documentation's own switch
+     width); it is already a row between two hairlines, so the section rule the post sets right after it would make a
+     third line. */
+  @container blog-article (width < 76rem) {
+    .blog-article-prose .doc-contents-disclosure {
+      display: block;
+    }
+
+    .blog-article-prose > .doc-contents-disclosure + hr {
+      display: none;
+    }
+  }
+
+  @container blog-article (width >= 80rem) {
+    .blog-article-contents {
+      --air: 2.5rem;
+    }
   }
 
   /* ───────────────────────── End of post ───────────────────────── */
 
   .blog-article-end {
-    max-width: calc(var(--blog-article-measure) + 4rem);
-    margin: 5rem auto 0;
-    padding-bottom: clamp(5rem, 3rem + 6vw, 8rem);
+    padding-top: round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem);
+    padding-bottom: round(clamp(5rem, 3rem + 6vw, 8rem), 1rem);
+
+    @media (width < 64rem) {
+      border-top: 1px solid var(--blog-guide, var(--color-line-subtle));
+    }
+  }
+
+  /* The post's guides fade out above the footer rather than running into it. */
+  @media (--md) {
+    .blog-article-end.blog-rails::after {
+      mask-image: linear-gradient(black calc(100% - 7rem), transparent);
+    }
   }
 
   .blog-article-end-title {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
     margin: 0 0 var(--spacing-lg);
     font-size: 0.8125rem;
     line-height: 1.5;
     letter-spacing: 0.02em;
     color: var(--blog-article-quiet);
-
-    /* The same label-and-rule the blog index sets before each year. */
-    &::after {
-      flex: 1;
-      border-top: 1px solid var(--blog-article-rule);
-      content: '';
-    }
   }
 
   /*
    * The next read is the shared quiet sheet (`.blog-plate`): one 1px contour, a line of light on its top edge and a
-   * soft contact shadow that settles a little deeper, slowly, on hover. Only the layout is the post's own.
+   * soft contact shadow that settles a little deeper, slowly, on hover.
    */
   .blog-article-next {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
     gap: 0 var(--spacing-lg);
-    padding: clamp(1.5rem, 1rem + 1.6vw, 2rem) 1.5rem;
+    padding: 1.5rem 1.25rem;
     color: var(--blog-article-text);
     text-decoration: none;
 
-    /* The sheet bleeds 2rem past the reading column, like the wells; its text keeps to the column's edge. */
+    /* Where the bleed stops short of the screen's edge, the sheet takes it, so its text keeps to the column's edge;
+       on a phone it would meet the edge with its rounded corners, so it stays inside the gutter. */
     @media (width >= 40rem) {
-      padding-inline: 2rem;
+      margin-inline: calc(var(--blog-article-bleed) * -1);
+      padding: clamp(1.5rem, 1rem + 1.6vw, 2rem) var(--blog-article-bleed);
     }
 
     /* The arrow arrives with the sheet's lift and leaves as slowly as its shadow settles. */
@@ -1093,7 +437,7 @@
     }
   }
 
-  /* The same quiet meta as the index's cards: category and date in plain text, so a post reads alike in both places. */
+  /* The same quiet meta as the index's entries: category and date in plain text. */
   .blog-article-next-meta {
     grid-column: 1;
     display: flex;
@@ -1170,14 +514,6 @@
     margin-top: var(--spacing-lg);
   }
 
-  /* Beside the sheet, the label and the links start on the reading column's edge, like the sheet's own text. */
-  @media (width >= 40rem) {
-    .blog-article-end-title,
-    .blog-article-end-links {
-      padding-inline: 2rem;
-    }
-  }
-
   .blog-article-end-link {
     display: inline-flex;
     align-items: center;
@@ -1226,8 +562,7 @@
 
   /* ───────────────────────── Preferences, contrast and print ───────────────────────── */
 
-  /* Every transition here is timed by these two tokens, so asking for less motion stills them all at once (the old
-     selector list missed pseudo-elements, prose links and the copy button). */
+  /* Every transition here is timed by these two tokens, so asking for less motion stills them all at once. */
   @media (prefers-reduced-motion: reduce) {
     .blog-article-page {
       --blog-article-base: 0s;
@@ -1235,13 +570,12 @@
     }
   }
 
-  /* Asked for more contrast, annotations take the body's gray and contours firm up. */
+  /* Asked for more contrast, annotations take the body's gray. */
   @media (prefers-contrast: more) {
     .blog-article-page {
       --blog-article-text: var(--color-text-strong);
       --blog-article-faint: var(--color-text-body);
       --blog-article-quiet: var(--color-text-body);
-      --blog-article-contour: var(--color-line-divider);
     }
 
     /* Plain ink; the shared title tone is outranked from the masthead, whatever order the stylesheets load in. */
@@ -1252,40 +586,21 @@
   }
 
   @media (forced-colors: active) {
-    .blog-article-progress {
-      display: none;
-    }
-
     .blog-article-masthead .blog-article-title {
       color: CanvasText;
       background-image: none;
       -webkit-text-fill-color: currentColor;
     }
 
-    .blog-article-page :is(.blog-article-next, .blog-article-prose .code, .blog-article-prose .codeTabs) {
+    .blog-article-page .blog-article-next {
       border: 1px solid CanvasText;
       background: Canvas;
       box-shadow: none;
-      forced-color-adjust: auto;
-
-      &::before {
-        display: none;
-      }
     }
 
-    .blog-article-contents a[aria-current] {
-      text-decoration: underline;
-    }
-
-    .blog-article-contents a::before {
-      display: none;
-    }
-
-    .blog-article-prose hr,
-    .blog-article-masthead::after {
-      height: 0;
+    .blog-article-body,
+    .blog-article-end {
       border-top: 1px solid CanvasText;
-      background: none;
     }
   }
 
@@ -1295,28 +610,33 @@
       background: none;
     }
 
-    .blog-article-progress,
     .blog-article-contents,
     .blog-article-end,
     .blog-article-footer {
       display: none;
     }
 
-    .blog-article {
+    .blog-article-main {
       padding: 0;
     }
 
-    .blog-article-frame {
+    .blog-article {
       display: block;
-      max-width: none;
+    }
+
+    .blog-article-body {
+      height: auto;
+      padding: 1.5rem 0 0;
+      border-top: 1px solid #ccc;
     }
 
     .blog-article-masthead {
+      height: auto;
       padding: 0 0 1.25rem;
-      margin-bottom: 1.5rem;
     }
 
     .blog-article-masthead .blog-article-title {
+      margin-right: 0;
       font-size: 2rem;
       color: #000;
       background: none;
@@ -1328,62 +648,12 @@
     }
 
     .blog-article-prose {
-      max-width: none;
       color: #222;
-
-      & :is(.code, .codeTabs) {
-        margin-inline: 0;
-        background: none;
-        box-shadow: inset 0 0 0 1px #ccc;
-        break-inside: avoid;
-
-        &::before {
-          display: none;
-        }
-      }
 
       & a {
         color: inherit;
       }
     }
-  }
-}
-
-/*
- * The heading anchor is positioned by utility classes in the MDX heading renderer, and utilities outrank the
- * components layer; these unlayered rules restyle it for posts only.
- */
-.blog-article-prose :is(h2, h3) > .tabler-icon-hash {
-  width: 0.7em;
-  height: 0.7em;
-  margin-left: -1.25em;
-  stroke: var(--blog-article-faint);
-}
-
-/* The external-link arrow (a utility on the link, so this stays unlayered) is a small quiet mark beside the link,
-   outside its underline. */
-.blog-article-prose a[target='_blank']::after {
-  display: inline-block;
-  margin-left: 0.12em;
-  font-size: 0.7em;
-  color: var(--blog-article-quiet);
-}
-
-/* Without motion the anchor of the section that was reached simply stays gold. */
-@media (prefers-reduced-motion: reduce) {
-  .blog-article-prose :is(h2, h3):is(:target, :focus) > .tabler-icon-hash {
-    stroke: var(--blog-article-signal);
-    animation: none;
-  }
-}
-
-/* Phones have no margin to hang it in: the anchor sits just above the heading, on the column's edge. */
-@media (width < 40rem) {
-  .blog-article-prose :is(h2, h3) > .tabler-icon-hash {
-    inset: auto auto calc(100% + 0.25rem) 0;
-    width: 0.75rem;
-    height: 0.75rem;
-    margin: 0;
   }
 }
 
@@ -1394,21 +664,8 @@
   background-image: none;
 }
 
-/* Paper is white whatever the screen's scheme: every token resolves its light value. On paper an outside link keeps
-   its destination in place of the arrow (the arrow is a utility on the link, so this rule stays unlayered). */
+/* Paper is white whatever the screen's scheme: every token resolves its light value. */
 @media print {
-  .blog-article-prose :is(p, li) a[href^='http']::after {
-    /* On the baseline at a small size, not as the link utility's raised half-size arrow. */
-    display: inline-block;
-    max-width: 100%;
-    margin: 0;
-    font-size: 0.8em;
-    vertical-align: baseline;
-    color: #555;
-    content: ' (' attr(href) ')';
-    overflow-wrap: anywhere;
-  }
-
   :root:has(.blog-article-page) {
     color-scheme: light;
   }
@@ -1416,18 +673,5 @@
   :root:has(.blog-article-page),
   :root:has(.blog-article-page) > body {
     background-color: #fff;
-  }
-}
-
-@keyframes blog-article-arrive {
-  0%,
-  40% {
-    stroke: var(--blog-article-signal);
-  }
-}
-
-@keyframes blog-article-progress {
-  to {
-    scale: 1 1;
   }
 }

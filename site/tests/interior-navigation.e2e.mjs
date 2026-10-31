@@ -182,7 +182,7 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
       assert.equal(await query.inputValue(), 'padding', 'initial typing survives the dialog opening and index loading')
       await page.keyboard.press('Escape')
       assert.equal(await page.locator('.not-found-search').evaluate(element => element === document.activeElement), true)
-    } else assert.equal(await page.locator('.blog-post-link').count(), 2)
+    } else assert.equal(await page.locator('.blog-entry-link').count(), 2)
     await page.screenshot({ path: new URL(`${route.replaceAll('/', '-')}-320-enlarged.png`, output).pathname, fullPage: true })
     assert.deepEqual(errors, [])
   } finally { await context.close() }
@@ -197,12 +197,12 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
       await page.evaluate(() => document.fonts.ready)
       await noOverflow(page)
       assert.equal(await page.locator('h1').innerText(), title, 'the complete title remains in the reading flow')
-      const author = page.getByRole('link', { name: /Aron @aron1tw/ }).first()
+      const author = page.getByRole('link', { name: /^Aron\b/ }).first()
       const box = await author.boundingBox()
       assert.ok(box.x >= 0 && box.x + box.width <= 321, 'the author link fits the page')
       assert.ok(box.height >= 44, 'the complete author link offers a standalone touch target')
       if (slug === 'master-css-next') {
-        const second = await page.getByRole('link', { name: /BenSeage @benseage/ }).boundingBox()
+        const second = await page.getByRole('link', { name: /^BenSeage\b/ }).boundingBox()
         assert.ok(second.x >= 0 && second.x + second.width <= 321, 'the second author wraps into available space')
       }
       await page.screenshot({ path: new URL(`${locale ? 'tw' : 'en'}-${slug}-320-enlarged.png`, output).pathname })

@@ -1,70 +1,24 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import Link from '~/site/docs-shell/components/Link'
-import { useTranslation } from '~/site/docs-shell/contexts/i18n'
-
-export interface BlogArticleSection {
-  id: string
-  title: string
-}
+import '~/site/styles/docs-shell/page-content.css'
+import { useRef } from 'react'
+import { PageContentList } from '~/site/docs-shell/components/PageContent'
+import { PageContentProvider, type PageContentItem } from '~/site/docs-shell/components/PageContentContext'
 
 /**
- * A quiet contents rail beside wide reading columns. The section being read carries the page's one live mark.
- * It is rendered complete on the server; the script only moves that mark.
+ * The post's contents in the page's left margin: the documentation's contents ruler (the same list, the same live
+ * mark, the same scroll tracking), under a label in the reader's language. A list taller than the window scrolls on
+ * its own and keeps the current entry in view. `lang` names the language of the section titles when the post is not
+ * yet translated.
  */
-export default function BlogArticleContents({ items, lang }: { items: BlogArticleSection[], lang?: string }) {
-  const $ = useTranslation()
-  const listRef = useRef<HTMLOListElement>(null)
-
-  useEffect(() => {
-    const list = listRef.current
-    if (!list) return
-    const links = Array.from(list.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'))
-    const headings = links
-      .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
-      .filter((heading): heading is HTMLElement => !!heading)
-    if (!headings.length) return
-    let frame = 0
-    const update = () => {
-      frame = 0
-      // Below the rail's breakpoint it is not displayed; the post's own contents list stands in for it.
-      if (!list.offsetParent) return
-      // The current section is the last heading that has passed a line a third of the way down the viewport.
-      const line = innerHeight * 0.32
-      let current = -1
-      headings.forEach((heading, index) => {
-        if (heading.getBoundingClientRect().top <= line) current = index
-      })
-      const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2
-      if (atEnd) current = headings.length - 1
-      links.forEach((link, index) => {
-        const active = index === current
-        if (active) link.setAttribute('aria-current', 'location')
-        else link.removeAttribute('aria-current')
-      })
-    }
-    const request = () => { if (!frame) frame = requestAnimationFrame(update) }
-    update()
-    addEventListener('scroll', request, { passive: true })
-    addEventListener('resize', request)
-    return () => {
-      cancelAnimationFrame(frame)
-      removeEventListener('scroll', request)
-      removeEventListener('resize', request)
-    }
-  }, [])
-
+export default function BlogArticleContents({ items, label, lang }: { items: PageContentItem[], label: string, lang?: string }) {
+  const ref = useRef<HTMLElement>(null)
   return (
-    <nav className="blog-article-contents" aria-labelledby="blog-article-contents-title">
-      <p className="blog-article-contents-title" id="blog-article-contents-title">{$('On this page')}</p>
-      <ol ref={listRef} lang={lang}>
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link href={'#' + item.id}>{item.title}</Link>
-          </li>
-        ))}
-      </ol>
+    <nav ref={ref} className="blog-article-contents page-content scrollbar scrollbar-concealed" aria-label={label}>
+      <span className="page-content-label" aria-hidden="true">{label}</span>
+      <PageContentProvider items={items}>
+        <PageContentList lang={lang} translate={false} scrollContainerRef={ref} />
+      </PageContentProvider>
     </nav>
   )
 }

@@ -1,41 +1,17 @@
-import clsx from 'clsx'
-import Link from './Link'
+import { useI18n, useTranslation } from '../contexts/i18n'
+import { useLocale } from '../contexts/locale'
+import PageContentDisclosure from './PageContentDisclosure'
 
-export default function ArticleTOC({ data }: { data: [] }) {
-  const renderNestedList = (items: any[]) => {
-    return (
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link href={'#' + item.id}>{item.title}</Link>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-  const buildNestedStructure = (data: any[]) => {
-    const nestedData: any[] = []
-
-    // Group items by their parent level 2 item
-    const parentMap = new Map()
-    data.forEach((item) => {
-      if (item.level === 2) {
-        parentMap.set(item.id, { ...item, children: [] })
-      } else {
-        const parent = Array.from(parentMap.values()).pop()
-        parent.children.push(item)
-      }
-    })
-
-    // Build the nested structure
-    parentMap.forEach((parent) => {
-      nestedData.push(parent)
-    })
-
-    return nestedData
-  }
-
-  const nestedData = buildNestedStructure(data)
-
-  return <div className='margin-block:2em'>{renderNestedList(nestedData)}</div>
+/**
+ * A page's contents placed in its text: the same disclosure, drawn as the same ruler, that documentation pages show
+ * under their header on narrow screens. Its label is in the reader's language, even inside text still in its source
+ * language.
+ */
+export default function ArticleTOC({ data }: { data: { id: string, title: string, level: number }[] }) {
+  const $ = useTranslation()
+  const { hreflangOfLocale } = useI18n()
+  const locale = useLocale()
+  const items = (data ?? []).filter((item): item is { id: string, title: string, level: 2 | 3 } => item.level === 2 || item.level === 3)
+  if (!items.some((item) => item.level === 2)) return null
+  return <PageContentDisclosure items={items} label={$('On this page')} labelLang={hreflangOfLocale?.[locale] ?? locale} />
 }

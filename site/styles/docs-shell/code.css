@@ -265,3 +265,215 @@
     .code-copy, .code-bar-actions { display: none; }
   }
 }
+
+/*
+ * Reading wells (every page but the homepage, which draws its own editor windows): a code window is a sheet with one
+ * 1px edge and a short, soft shadow, lit by one fixed light from the upper left. In light mode it is a white sheet
+ * with a contour; in dark mode a step of polished obsidian whose only edge is its rim, lit on the upper left and
+ * fading, never vanishing, toward the lower right. The bar names the file and nothing else (no window dots, no
+ * coloured file-type marks), and code carries no line numbers, since prose never points at a line by number; diffs
+ * keep their +/- column. Code and the file name start on the reading column's edge (`--well-inset`, set where a well
+ * bleeds in prose.css).
+ */
+@layer components {
+  :where(.site-interior) :is(.code, .codeTabs) {
+    --code-frame-radius: 0.875rem;
+    --well-top: light-dark(oklch(1 0 none), oklch(0.2 0.004 270));
+    --well-bottom: light-dark(oklch(0.992 0.0015 90), oklch(0.16 0.003 270));
+    --well-lip: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.07));
+    --well-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.11));
+    --well-rim-far: light-dark(transparent, rgb(255 255 255 / 0.06));
+    --well-contour: light-dark(var(--color-line-contour), transparent);
+    --well-seam: light-dark(var(--color-line-contour), rgb(255 255 255 / 0.06));
+    --well-label: light-dark(var(--color-text-body), rgb(255 255 255 / 0.72));
+    --well-control: light-dark(var(--color-text-muted), rgb(255 255 255 / 0.6));
+    /* The copy button's square; its 16px icon sits in the middle. */
+    --well-copy: 2.25rem;
+    /* Shared chrome that paints the code surface (the end-of-scroll cover) matches the well's floor. */
+    --color-code-surface: var(--well-bottom);
+    /* The rim below is drawn against the well itself, a tab set included. */
+    position: relative;
+    border: 0;
+    border-radius: var(--code-frame-radius);
+    background-color: var(--well-bottom);
+    background-image: linear-gradient(180deg, var(--well-top), var(--well-bottom) 40%);
+    /* The contour is drawn inside the box, so a well's edge falls on the same pixel as a table's or a rule's, in
+       either scheme; the lip of light sits on the row under it. */
+    box-shadow:
+      inset 0 0 0 1px var(--well-contour),
+      inset 0 2px 0 var(--well-lip),
+      0 1px 2px light-dark(oklch(0.18 0 none / 0.04), rgb(0 0 0 / 0.3)),
+      0 6px 18px -12px light-dark(oklch(0.25 0.01 70 / 0.12), rgb(0 0 0 / 0.45));
+
+    /* The rim catches the light on its upper-left edge and fades away from it. */
+    &::before {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 1px;
+      border-radius: inherit;
+      background-image: linear-gradient(160deg, var(--well-rim), var(--well-rim-far) 45%);
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      pointer-events: none;
+      content: '';
+    }
+
+    & .code-wrapper,
+    & .code-bar {
+      background-color: transparent;
+    }
+
+    /* On the reading grid: lines at three quarters of a text line, the padding a little over half of one. */
+    & .code-wrapper {
+      padding-block: calc(var(--prose-line, 1.75rem) * 0.625);
+    }
+
+    & .line {
+      padding-inline: var(--well-inset, 1.25rem);
+    }
+
+    & :is(.code-line-add, .code-line-remove) {
+      padding-left: calc(var(--well-inset, 1.25rem) - 2px);
+    }
+
+    /* The bar's seam is one line, without the second, lit line (a double edge in dark mode). */
+    & .code-bar {
+      min-height: calc(var(--prose-line, 2rem) * 1.25);
+      border-bottom: 1px solid var(--well-seam);
+      box-shadow: none;
+    }
+
+    & :is(.code-window-controls, .code-tab-icon) {
+      display: none;
+    }
+
+    & .code-file-label {
+      padding-left: var(--well-inset, 1.25rem);
+      font-family: var(--font-family-mono);
+      font-size: 0.75rem;
+      color: var(--well-label);
+    }
+
+    /* Tabs that run past the bar fade out before the copy button rather than stopping at a hard cut. */
+    & .code-bar-tabs {
+      padding-left: calc(var(--well-inset, 1.25rem) - 0.625rem - 1px);
+      mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+    }
+
+    /* The copy icon's right edge meets the column's right edge, as the file name meets its left one. */
+    & .code-bar-actions {
+      padding-inline-end: calc(var(--well-inset, 1.25rem) - (var(--well-copy) - 1rem) / 2);
+    }
+
+    /* Room for the corner copy button sits on the lines, so a highlighted line's wash still reaches the edge. */
+    &.code-plain > .code-wrapper {
+      padding-inline-end: 0;
+    }
+
+    &.code-plain .line {
+      padding-inline-end: calc(var(--well-inset, 1.25rem) + 1.75rem);
+    }
+
+    & .code-tab::after {
+      background-color: var(--well-seam);
+      box-shadow: none;
+    }
+
+    /* The number gives way to a zero-width space, so an empty line keeps its height. */
+    & .code-block:not(:has(.code-line-add, .code-line-remove)) > .line::before {
+      display: inline;
+      width: auto;
+      margin: 0;
+      padding: 0;
+      content: '\200b';
+    }
+
+    /* Under the pointer only the icon darkens; no tile appears behind it. */
+    & .code-copy-button {
+      color: var(--well-control);
+      transition: color 360ms cubic-bezier(0.25, 0.1, 0.25, 1);
+
+      &:hover {
+        color: var(--well-label);
+        background-color: transparent;
+      }
+    }
+
+    /* The copy button needs no fence of its own. */
+    & .code-bar-actions::before {
+      content: none;
+    }
+
+    /* A well without a bar keeps its copy button where a bar's would be, on the right edge, unboxed like the
+       bar's, centred on the first line of code. */
+    & .code-copy-corner {
+      top: calc(var(--prose-line, 1.75rem) * 0.625 + var(--prose-code-line, 1.375rem) / 2);
+      right: calc(var(--well-inset, 1.25rem) - (var(--well-copy) - 1rem) / 2);
+      translate: 0 -50%;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+
+      & .code-copy-button {
+        width: var(--well-copy);
+        height: var(--well-copy);
+      }
+    }
+
+    @media (pointer: coarse) {
+      --well-copy: 2.75rem;
+    }
+  }
+
+  /* A panel inside a tab set is not a well of its own. */
+  :where(.site-interior) .codeTabs > .code {
+    margin: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+
+    &::before {
+      content: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where(.site-interior) :is(.code, .codeTabs) .code-copy-button {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    :where(.site-interior) :is(.code, .codeTabs) {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      box-shadow: none;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    :where(.site-interior) .codeTabs > .code {
+      border: 0;
+    }
+
+    /* Forced colors drop shadows: the focused scroller's ring is drawn as an outline instead. */
+    :where(.site-interior) .code:has(> .code-wrapper:focus-visible)::after {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+
+  @media print {
+    :where(.site-interior) :is(.code, .codeTabs) {
+      background: none;
+      box-shadow: inset 0 0 0 1px #ccc;
+      break-inside: avoid;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}

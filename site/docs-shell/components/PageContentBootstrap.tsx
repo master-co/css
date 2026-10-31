@@ -29,9 +29,8 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
       .map((item) => document.getElementById(item.id))
       .filter((heading): heading is HTMLElement => Boolean(heading))
     const hasPageContentNav = document.querySelector('[data-page-content-nav-id]')
-    const hasPageContentBlock = document.querySelector('[data-page-content-block-id]')
 
-    if (!headings.length || (!hasPageContentNav && !hasPageContentBlock)) {
+    if (!headings.length || !hasPageContentNav) {
       if (attempts < 120) {
         window.requestAnimationFrame(run)
       }
@@ -39,14 +38,18 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
     }
 
     let currentId = headings[0].id
-    const top = window.scrollY + headingOffset
+    const top = window.scrollY + Math.max(headingOffset, window.innerHeight * 0.3)
 
     for (const heading of headings) {
-      if (top >= heading.offsetTop) {
+      if (top >= heading.getBoundingClientRect().top + window.scrollY) {
         currentId = heading.id
       } else {
         break
       }
+    }
+
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+      currentId = headings[headings.length - 1].id
     }
 
     const currentParentId = getCurrentParentId(currentId)
@@ -63,22 +66,6 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
       } else {
         nav.removeAttribute('aria-current')
       }
-    })
-
-    document.querySelectorAll<HTMLButtonElement>('[data-page-content-block-id]').forEach((button) => {
-      const id = button.dataset.pageContentBlockId
-      const active = currentId === id
-      const activeParent = currentParentId === id
-      const indicator = button.querySelector<HTMLElement>('[data-page-content-block-indicator]')
-
-      if (active) {
-        button.setAttribute('aria-current', 'location')
-      } else {
-        button.removeAttribute('aria-current')
-      }
-
-      indicator?.classList.toggle('active', active)
-      indicator?.classList.toggle('active-parent', activeParent)
     })
 
     const activePageContentNav = Array.from(document.querySelectorAll<HTMLElement>('[data-page-content-nav-id]'))
