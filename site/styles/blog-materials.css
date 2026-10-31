@@ -1,0 +1,230 @@
+/*
+ * Blog materials: the quiet essence of the homepage hero, for the blog index and its articles. One fixed,
+ * soft light from above and slightly left; obsidian (light mode) and moonstone (dark mode) only as a tone in
+ * titles. Effects should be felt more than seen. Semantics follow content/components/DESIGN.md: zinc neutrals,
+ * 1px contours, an inner top light, soft contact shadows, gold only as a rare, tiny accent.
+ *
+ * Scope
+ *   .blog-materials     Put on a page root. Defines the tokens below and paints the ground.
+ *
+ * Recipes
+ *   .blog-plate         A quiet sheet on the ground: 1px contour, inner top light, soft contact shadow.
+ *                       As (or inside) a link, hover/focus deepens the shadow a little, slowly; a press settles it
+ *                       onto the ground; nothing moves.
+ *   .blog-stone-text    A title tone: obsidian / moonstone ink, each line lit from above by a barely-there sheen.
+ *   .blog-authors       Overlapping portraits + names (components/blog/BlogAuthors.tsx); ring = --blog-avatar-ring.
+ *   .blog-signal        A tiny gold dot: the page's rare accent (a live or newest state). Decorative; aria-hidden.
+ *
+ * Tokens (on .blog-materials)
+ *   --blog-ground, --blog-sheet, --blog-text, --blog-title, --blog-text-body, --blog-text-quiet, --blog-text-faint,
+ *   --blog-contour, --blog-rule, --blog-signal, --blog-highlight, --blog-shadow-rest, --blog-shadow-lifted,
+ *   --blog-shadow-pressed, --blog-ease, --blog-quick, --blog-base, --blog-slow, --blog-radius-plate.
+ *
+ * Accessibility: reduced motion drops transitions; more contrast lifts quiet text and contours; forced colors
+ * and print use Canvas / CanvasText.
+ */
+@layer components {
+  .blog-materials {
+    /* The page's own ground, the same the footer stands on, so the index never sits in a tray. */
+    --blog-ground: light-dark(var(--color-zinc-0), var(--color-zinc-95));
+    /* In dark mode a sheet rises only half a step: its contour and top light carry the edge, not a gray slab. */
+    --blog-sheet: light-dark(var(--color-surface-raised), color-mix(in oklab, var(--blog-ground) 50%, var(--color-surface-raised)));
+    --blog-text: var(--color-text-strong);
+    /*
+     * Titles inside the page: soft obsidian in light mode (a step off black, still ~16:1), a moonstone mid-tone in
+     * dark mode, so nothing outshines the page title and nothing reads as pure black or white.
+     */
+    --blog-title: light-dark(oklch(0.22 0.004 270), oklch(0.93 0.005 86));
+    --blog-text-body: var(--color-text-body);
+    --blog-text-quiet: var(--color-text-muted);
+    /* Faint still reads at 4.5:1 on the ground and on sheets. */
+    --blog-text-faint: color-mix(in oklab, var(--color-text-muted) 72%, var(--color-text-subtle));
+    --blog-contour: var(--color-line-contour);
+    --blog-rule: var(--color-line-divider);
+    /* The one accent, used sparingly: the logo's gold. */
+    --blog-signal: var(--color-amber-40);
+    --blog-highlight: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.06));
+    /* Light from above and slightly left: an inner top light, and contact layers that fall a little right. */
+    --blog-shadow-rest:
+      inset 0 1px 0 var(--blog-highlight),
+      inset 1px 0 0 light-dark(rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.02)),
+      0 0 0 1px var(--blog-contour),
+      0 0.5px 1px light-dark(oklch(18% 0 none / 0.045), oklch(0% 0 none / 0.4)),
+      0.5px 2px 4px -1px light-dark(oklch(18% 0 none / 0.03), oklch(0% 0 none / 0.24)),
+      1px 6px 14px -6px light-dark(oklch(18% 0 none / 0.03), oklch(0% 0 none / 0.24));
+    --blog-shadow-lifted:
+      inset 0 1px 0 var(--blog-highlight),
+      inset 1px 0 0 light-dark(rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.02)),
+      0 0 0 1px color-mix(in oklab, var(--blog-contour), var(--color-line-divider) 40%),
+      0 0.5px 1px light-dark(oklch(18% 0 none / 0.05), oklch(0% 0 none / 0.42)),
+      0.5px 3px 6px -2px light-dark(oklch(18% 0 none / 0.04), oklch(0% 0 none / 0.28)),
+      2px 14px 32px -14px light-dark(oklch(18% 0 none / 0.08), oklch(0% 0 none / 0.42));
+    /*
+     * Pressed: the sheet settles onto the ground — contour and contact only, the cast gone. Same layer order as
+     * rest and lifted (inset layers first), so box-shadow interpolates instead of snapping.
+     */
+    --blog-shadow-pressed:
+      inset 0 1px 0 var(--blog-highlight),
+      inset 1px 0 0 light-dark(rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.02)),
+      0 0 0 1px var(--blog-contour),
+      0 0.5px 1px light-dark(oklch(18% 0 none / 0.05), oklch(0% 0 none / 0.4)),
+      0.5px 1px 2px -1px transparent,
+      1px 2px 4px -2px transparent;
+    /* A soft start and a long settle: light arriving, not a switch (an expo-out curve read as a snap at 90ms). */
+    --blog-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --blog-quick: 200ms;
+    --blog-base: 360ms;
+    --blog-slow: 720ms;
+    --blog-radius-plate: 1.25rem;
+    background-color: var(--blog-ground);
+    color: var(--blog-text-body);
+  }
+
+  /* ---------- A quiet sheet ---------- */
+  .blog-plate {
+    position: relative;
+    border-radius: var(--blog-radius-plate);
+    background-color: var(--blog-sheet);
+    box-shadow: var(--blog-shadow-rest);
+    transition: box-shadow var(--blog-slow) var(--blog-ease);
+
+    /* Arrival is unhurried, departure slower still, like light settling. */
+    &:is(a, button):is(:hover, :focus-visible),
+    :is(a, button):is(:hover, :focus-visible) > & {
+      box-shadow: var(--blog-shadow-lifted);
+      transition-duration: var(--blog-base);
+    }
+
+    /* A press settles it onto the ground, quickly, so a click or tap is felt. */
+    &:is(a, button):active,
+    :is(a, button):active > & {
+      box-shadow: var(--blog-shadow-pressed);
+      transition-duration: var(--blog-quick);
+    }
+  }
+
+  /* ---------- Title tone ---------- */
+  .blog-stone-text {
+    --stone-ink-top: light-dark(oklch(0.36 0.005 270), oklch(0.965 0.004 88));
+    --stone-ink: light-dark(oklch(0.21 0.004 270), oklch(0.93 0.006 86));
+    --stone-ink-bottom: light-dark(oklch(0.16 0.004 270), oklch(0.87 0.012 250));
+    color: var(--blog-text);
+
+    /*
+     * Each line is toned on its own, lit from above, so a title that wraps never darkens line by line. Without
+     * `lh` the tone spans the block; without text clipping the title keeps its plain ink.
+     */
+    @supports (background-clip: text) or (-webkit-background-clip: text) {
+      background-image: linear-gradient(180deg, var(--stone-ink-top), var(--stone-ink) 45%, var(--stone-ink-bottom));
+      background-size: 100% 1lh;
+      background-repeat: repeat-y;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  /* ---------- The rare accent ---------- */
+  /* An editor's mark, not a status light: a small solid dot, no halo. */
+  .blog-signal {
+    display: inline-block;
+    flex: none;
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--blog-signal);
+  }
+
+  /* ---------- Authors ---------- */
+  .blog-authors {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+  }
+
+  .blog-avatar-stack {
+    isolation: isolate;
+    display: flex;
+    flex: none;
+    align-items: center;
+  }
+
+  .blog-avatar {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 0 2px var(--blog-avatar-ring, var(--blog-sheet));
+
+    & + & {
+      margin-inline-start: -0.375rem;
+    }
+
+    & img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px light-dark(rgb(0 0 0 / 0.1), rgb(255 255 255 / 0.1));
+      pointer-events: none;
+      content: '';
+    }
+  }
+
+  .blog-author-names {
+    min-width: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--blog-text-quiet);
+  }
+
+  /* ---------- Preferences ---------- */
+  @media (prefers-contrast: more) {
+    .blog-materials {
+      --blog-text-quiet: var(--blog-text-body);
+      --blog-text-faint: var(--blog-text-body);
+      --blog-contour: var(--color-line-control);
+      --blog-rule: color-mix(in oklab, var(--color-line-control) 70%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-plate {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active), print {
+    .blog-stone-text {
+      color: CanvasText;
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+    }
+
+    .blog-plate {
+      border: 1px solid CanvasText;
+      color: CanvasText;
+      background-color: Canvas;
+      box-shadow: none;
+    }
+
+    .blog-signal {
+      background-color: CanvasText;
+    }
+
+    .blog-avatar {
+      outline: 2px solid Canvas;
+    }
+  }
+}

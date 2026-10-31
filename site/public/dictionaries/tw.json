@@ -650,5 +650,10 @@
   "HTML template": "HTML 範本",
   "Explore this mode": "了解此模式",
   "Open generated CSS: {file}": "查看產生的 CSS：{file}",
-  "{count} colors · {tiers} tiers": "{count} 色 · {tiers} 階"
+  "{count} colors · {tiers} tiers": "{count} 色 · {tiers} 階",
+  "Written by": "作者",
+  "On this page": "本頁目錄",
+  "Keep reading": "繼續閱讀",
+  "All articles": "所有文章",
+  "Newer": "較新"
 }
