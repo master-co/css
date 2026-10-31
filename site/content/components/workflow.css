@@ -262,7 +262,7 @@
   }
   .home-wf-routes-code {
     display: block;
-    overflow-x: auto;
+    overflow: hidden;
     font-size: .6875rem;
     line-height: 1.65;
     color: var(--home-text-body);

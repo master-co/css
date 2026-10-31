@@ -52,7 +52,8 @@
   .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-variant[data-mode='progressive'],
   .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-variant[data-mode='runtime'] { visibility: visible; opacity: 1; transition-delay: 0s; }
 
-  .home-delivery-code-scroll { overflow: auto; height: 100%; scroll-margin-block: 4.5rem 1rem; scrollbar-width: thin; overscroll-behavior: contain; }
+  /* The tour scrolls the panes and keys read them; the wheel and a swipe always belong to the page. */
+  .home-delivery-code-scroll { overflow: hidden; height: 100%; scroll-margin-block: 4.5rem 1rem; }
   /* A pane that scrolls fades its last visible row instead of cutting it under the bar; the fade lifts at the end. */
   .home-delivery-code-scroll { mask-image: linear-gradient(to bottom, #000 calc(100% - var(--delivery-code-fade)), transparent); }
   @supports (animation-timeline: scroll()) {
@@ -157,9 +158,6 @@
   }
   @container home-delivery (width >= 72rem) {
     .home-delivery-layout { --delivery-code: 0.8125rem; }
-  }
-  @container home-delivery (width < 52rem) {
-    .home-delivery-code-scroll { overscroll-behavior-y: auto; }
   }
   @container delivery-pane (width < 26rem) {
     .home-delivery-class-attribute { display: block; padding-left: 2ch; }

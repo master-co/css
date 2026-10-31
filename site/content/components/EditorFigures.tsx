@@ -281,7 +281,7 @@ export default function EditorFigures({ features, icons, model }: { features: re
           {features.map((feature, index) => <p data-active={index === sceneIndex || undefined} key={feature.id}>{$(feature.body)}</p>)}
         </div>
       </div>
-      <p className="sr-only" id={`${descriptionId}-scroll`}>{$('Use the arrow keys or scroll horizontally to read the file.')}</p>
+      <p className="sr-only" id={`${descriptionId}-scroll`}>{$('Use the arrow keys to read the file.')}</p>
       <div ref={inViewRef} className="home-editor-frame home-marks">
         <HomeEditorWindow>
           <HomeEditorBar aria-hidden="true">

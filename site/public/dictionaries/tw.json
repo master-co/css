@@ -477,7 +477,7 @@
   "Completions": "補全",
   "Highlighting": "高亮",
   "Scrollable code example": "可捲動的程式範例",
-  "Use the arrow keys or scroll horizontally to read the file.": "使用方向鍵或橫向捲動，閱讀完整檔案。",
+  "Use the arrow keys to read the file.": "使用方向鍵閱讀完整檔案。",
   "Edit literal color": "編輯色彩值",
   "Color picker": "色彩選擇器",
   "Literal color": "色彩值",

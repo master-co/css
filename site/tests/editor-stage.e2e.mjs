@@ -344,7 +344,7 @@ test(`${browserName}: a settled scene keeps its source word visible when the edi
   } finally { await view.context.close() }
 })
 
-if (browserName === 'chromium') test('a touch swipe scrolls the file without pinning an inspection', { timeout: 45000 }, async () => {
+if (browserName === 'chromium') test('a touch swipe over the file belongs to the page and pins no inspection', { timeout: 45000 }, async () => {
   const view = await open({ width: 390, touch: true })
   try {
     await choose(view, 2)
@@ -360,8 +360,14 @@ if (browserName === 'chromium') test('a touch swipe scrolls the file without pin
     for (let step = 1; step <= 8; step++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - step * 10, y }] })
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
     await view.page.waitForTimeout(400)
-    assert.ok(await code.evaluate(element => element.scrollLeft) > start + 20, 'the native horizontal gesture reaches more of the source')
+    assert.equal(await code.evaluate(element => element.scrollLeft), start, 'homepage code never scrolls under a swipe')
     assert.equal(await view.stage.locator('.home-editor-hover-card').getAttribute('data-open'), null)
+    const page = await view.page.evaluate(() => scrollY)
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] })
+    for (let step = 1; step <= 8; step++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - step * 15 }] })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await view.page.waitForTimeout(400)
+    assert.ok(await view.page.evaluate(() => scrollY) > page + 40, 'a vertical swipe over the code scrolls the page')
     assert.deepEqual(view.errors, [])
   } finally { await view.context.close() }
 })
