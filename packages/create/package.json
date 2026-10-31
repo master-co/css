@@ -13,7 +13,6 @@
   "license": "MIT",
   "description": "Add Master CSS to an existing project.",
   "author": "Aoyue Design LLC.",
-  "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",
   "bugs": {
     "url": "https://github.com/master-co/css/issues"

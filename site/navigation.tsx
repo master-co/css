@@ -48,7 +48,6 @@ export const footerNavGroups = [
   {
     name: 'More',
     links: [
-      { name: 'Sponsor', href: '/sponsor' },
       { name: 'Brand', href: '/brand' },
       ...footerLegalLinks,
     ]

@@ -15,7 +15,6 @@
   "license": "MIT",
   "description": "The CSS language and framework for rapidly building modern and high-performance websites",
   "author": "Aoyue Design LLC.",
-  "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",
   "bugs": {
     "url": "https://github.com/master-co/css/issues"

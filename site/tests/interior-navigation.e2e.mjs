@@ -161,61 +161,6 @@ test(`${browserName}: documentation column geometry stays at the recorded baseli
   }
 })
 
-for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: sponsor tier destinations, modal dismissal and focus`, { timeout: 120000 }, async () => {
-  const { context, page, errors } = await open(`${locale === 'tw' ? '/tw' : ''}/sponsor`)
-  try {
-    const tiers = page.locator('.sponsor-tier')
-    assert.equal(await tiers.count(), 8)
-    const ids = ['117592', '117593', '117594', null, '117586', '117585', '117584', '117588']
-    for (let i = 0; i < 8; i++) {
-      const tier = tiers.nth(i)
-      await tier.click()
-      const dialog = page.locator('dialog.site-modal')
-      await dialog.waitFor()
-      const links = await dialog.locator('a').evaluateAll(elements => elements.map(element => element.href))
-      assert.equal(links.length, 2)
-      assert.ok(links[0].startsWith('https://opencollective.com/master-co/'))
-      assert.ok(links[1].startsWith('https://github.com/sponsors/master-co/sponsorships?'))
-      if (ids[i]) assert.equal(new URL(links[1]).searchParams.get('tier_id'), ids[i])
-      else assert.equal(new URL(links[1]).searchParams.get('amount'), '3')
-      const close = dialog.getByRole('button', { name: locale === 'tw' ? '關閉視窗' : 'Close dialog' })
-      await close.focus(); await page.keyboard.press('Shift+Tab')
-      // Native dialogs may send Tab to browser chrome; background page controls stay inert.
-      assert.equal(await dialog.evaluate(element => element.matches(':modal') && (document.activeElement === document.body || element.contains(document.activeElement))), true)
-      if (i === 0) await close.click()
-      else if (i === 1) await page.mouse.click(2, 2)
-      else await page.keyboard.press('Escape')
-      assert.equal(await dialog.count(), 0)
-      assert.equal(await tier.evaluate(element => element === document.activeElement), true)
-    }
-    await noOverflow(page)
-    await page.setViewportSize({ width: 320, height: 900 })
-    await page.addStyleTag({ content: 'html{font-size:32px!important}' })
-    await noOverflow(page)
-    await tiers.nth(4).click()
-    await noOverflow(page, '.site-modal')
-    const summary = page.locator('.sponsor-tier-modal-summary')
-    const heading = summary.locator('strong')
-    const typography = await heading.evaluate(element => ({ height: element.getBoundingClientRect().height, lineHeight: parseFloat(getComputedStyle(element).lineHeight) }))
-    assert.ok(typography.height <= typography.lineHeight * 2 + 1, 'the tier name stays readable instead of wrapping letter by letter')
-    assert.ok((await summary.locator('.sponsor-tier-copy').boundingBox()).width >= 160, 'the enlarged tier retains room for its amount and interval')
-    await noOverflow(page, '.site-modal-content')
-    await page.screenshot({ path: new URL(`${locale}-sponsor-enlarged.png`, output).pathname })
-    assert.deepEqual(errors, [])
-  } finally { await context.close() }
-})
-
-test(`${browserName}: sponsor platform links remain available without JavaScript`, { timeout: 60000 }, async () => {
-  const { context, page } = await open('/sponsor', { js: false, width: 320 })
-  try {
-    assert.equal(await page.locator('.sponsor-static-links a').count(), 16)
-    assert.equal(await page.locator('.sponsor-static-links').first().isVisible(), true)
-    assert.equal(await page.locator('.sponsor-tier:visible').count(), 0, 'enhancement-only buttons yield to real platform links')
-    assert.equal(await page.locator('.sponsor-static-tier .sponsor-tier-amount').count(), 8, 'the static view retains each amount or flexible option')
-    await noOverflow(page)
-  } finally { await context.close() }
-})
-
 for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserName}: ${route} has a usable narrow and enlarged view`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open(route, { width: 320, scheme: 'dark' })
   try {
@@ -267,7 +212,7 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
 })
 
 test(`${browserName}: pages without a document sidebar keep a visible desktop search entry`, { timeout: 120000 }, async () => {
-  for (const locale of ['', '/tw']) for (const route of ['/', '/brand', '/blog', '/sponsor', '/design-system', '/404']) {
+  for (const locale of ['', '/tw']) for (const route of ['/', '/brand', '/blog', '/design-system', '/404']) {
     const { context, page, errors } = await open(locale + (route === '/' && locale ? '' : route), { width: 1024 })
     try {
       const tw = (await page.locator('html').getAttribute('lang')).startsWith('zh')

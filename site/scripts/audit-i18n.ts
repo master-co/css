@@ -38,8 +38,6 @@ const ignoredExact = new Set([
   'Material UI',
   'Styled Components',
   'Visual Studio Code',
-  'Open Collective',
-  'GitHub Sponsors',
   'NPM',
   'HTML',
   'CSS',

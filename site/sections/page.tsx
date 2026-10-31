@@ -4,7 +4,7 @@ import DocHeader from '~/site/docs-shell/components/DocHeader'
 
 export const bodyClass = 'bg-surface-base'
 
-/** Standalone pages such as Brand and Sponsor. */
+/** Standalone pages such as Brand. */
 export default function PageSection({ children }: { children: ReactNode }) {
   return <DocumentShell>
     <DocHeader contained />

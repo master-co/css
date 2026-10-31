@@ -39,7 +39,6 @@ const units = {
   },
   examples: {},
   roadmap: {},
-  sponsor: {},
   brand: {},
   'design-system': { categories: ['Overview', 'Design System', 'Components'] },
 }

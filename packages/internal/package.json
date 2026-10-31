@@ -15,7 +15,6 @@
   "license": "MIT",
   "description": "Private Master CSS integration kernel, virtual module protocols, and official host helpers.",
   "author": "Aoyue Design LLC.",
-  "funding": "https://rc.css.master.co/sponsor",
   "homepage": "https://css.master.co",
   "bugs": {
     "url": "https://github.com/master-co/css/issues"
