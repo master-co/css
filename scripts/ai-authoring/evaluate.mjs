@@ -14,8 +14,11 @@ export function summarize(runs) {
     for (const field of ['model', 'client', 'fixtureRevision', 'toolVersion']) {
       if (typeof run[field] !== 'string' || !run[field].trim()) throw new Error(`Missing ${field}`)
     }
-    for (const field of ['repeat', 'repairRounds', 'invalidClasses', 'toolCalls', 'inputTokens', 'outputTokens', 'durationMs']) {
+    for (const field of ['repeat', 'repairRounds', 'toolCalls', 'durationMs']) {
       if (!Number.isSafeInteger(run[field]) || run[field] < 0) throw new Error(`Invalid ${field}`)
+    }
+    for (const field of ['invalidClasses', 'inputTokens', 'outputTokens']) {
+      if (run[field] !== null && (!Number.isSafeInteger(run[field]) || run[field] < 0)) throw new Error(`Invalid ${field}`)
     }
     for (const field of ['functional', 'styling', 'accessibility']) {
       if (typeof run[field] !== 'boolean') throw new Error(`Missing ${field} verdict`)
@@ -28,7 +31,8 @@ export function summarize(runs) {
     const group = groups.get(groupKey) ?? {
       arm: run.arm, model: run.model, client: run.client, fixtureRevision: run.fixtureRevision, toolVersion: run.toolVersion,
       attempts: 0, passed: 0, firstPass: 0, withinTwoRepairs: 0, browserUnchecked: 0,
-      invalidClasses: 0, toolCalls: 0, inputTokens: 0, outputTokens: 0, durationMs: 0, tasks: new Set()
+      invalidClasses: 0, toolCalls: 0, inputTokens: 0, outputTokens: 0, durationMs: 0, tasks: new Set(),
+      unmeasured: { invalidClasses: 0, inputTokens: 0, outputTokens: 0 }
     }
     group.attempts++
     group.tasks.add(run.task)
@@ -37,7 +41,10 @@ export function summarize(runs) {
     group.firstPass += Number(passed && run.repairRounds === 0)
     group.withinTwoRepairs += Number(passed && run.repairRounds <= 2)
     group.browserUnchecked += Number(run.browser === 'not-checked')
-    for (const field of ['invalidClasses', 'toolCalls', 'inputTokens', 'outputTokens', 'durationMs']) group[field] += run[field]
+    for (const field of ['invalidClasses', 'toolCalls', 'inputTokens', 'outputTokens', 'durationMs']) {
+      if (run[field] === null) group.unmeasured[field]++
+      else group[field] += run[field]
+    }
     groups.set(groupKey, group)
   }
   return [...groups.values()].map(({ tasks: completed, ...group }) => ({

@@ -27,6 +27,47 @@ cross-browser or accessibility audit.
 
 ## Controlled runs
 
+The executable harness uses the authenticated local Codex CLI and installed
+Chromium, with no API key copied into trial directories:
+
+```sh
+node --import tsx scripts/ai-authoring/trials/control.mjs
+node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
+node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
+```
+
+The first command checks 24 controls: every untouched starter must fail and every
+known solution must pass. Solutions and checker sources are not supplied to the
+model. The second command is a separate calibration run; never merge it into the
+formal corpus. The last command runs 12 tasks × five arms × two models × two
+repetitions, with 120 seconds per attempt and up to two repair requests. Repair
+requests start a fresh session with the existing files and failed-check feedback.
+The models are `gpt-6.1-sol` and `gpt-6-luna`, both at low reasoning effort.
+
+The printed external directory contains `protocol.json`, each attempt's prompt,
+command arguments, CLI events, errors, checks, screenshots and final result, plus
+`observations.jsonl` and `summary.json`. Protocol hashes cover the harness, skill,
+native artifact, CLI/MCP entries and lockfile. Resume completed batches with
+`--resume /absolute/run/path`; changed revisions or hashes are rejected. Interrupted
+partial trial directories require manual inspection before resumption; the runner
+does not silently overwrite them. Authentication/quota/MCP availability errors or
+personal skill access stop scheduling new trials and create `blocked.json`.
+
+Automatic skill instructions/catalog injection must be disabled explicitly:
+`skip_host_skill_discovery` alone did not suppress personal skills in calibration.
+The runner supplies the official skill path only to skill arms, and disables
+`mastercss_suggest_classes` in the other MCP arms. This measures explicit skill
+use, not automatic discovery or installation. Dependency reads remain available;
+filesystem isolation is not a security boundary against reading local sources.
+
+Checks cover the recorded browser states, computed properties, source contracts
+and selected accessibility behaviors. A category without a task-specific check
+means no applicable check failed, not an accessibility audit. These fixtures do
+not measure subjective design quality, all CSS properties, other browsers or
+real onboarding. The service exposes model identifiers, not immutable weight
+revision IDs; report that limitation alongside results. Input token totals include
+cached inputs reported by the CLI and are not a billing estimate.
+
 - Freeze a corpus commit containing all task fixtures, package versions, two model versions, client,
   tools, time budget and a maximum of two repair requests. Keep all attempts,
   including errors/timeouts. Start each run in a fresh copy of the fixture.
@@ -57,7 +98,10 @@ Keep run artifacts outside the repository. Record one JSON object per line with:
 ```
 
 The values above illustrate the record shape, not a measured result. Replace every
-metric with observed values; do not substitute zero for unavailable token counts.
+metric with observed values; use explicit `null` for unavailable input/output
+token counts or invalid-class counts. Missing values are rejected. Summary totals
+cover measured values only; `unmeasured` reports the missing observations. Errors
+and timeouts stay in the attempt denominator.
 Use `node scripts/ai-authoring/evaluate.mjs --summarize /path/to/results.jsonl`.
 The report separates versions/clients and reports missing task coverage. Compare
 only groups with the same tasks, repetitions and environment. Publish transcripts

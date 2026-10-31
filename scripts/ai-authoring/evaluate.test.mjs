@@ -25,3 +25,10 @@ test('rejects duplicate observations, missing metrics and invalid arms', () => {
   assert.throws(() => summarize([{ ...run, browser: true }]), /browser/)
   assert.equal(summarize([run, { ...run, model: 'second-model' }]).length, 2)
 })
+
+test('records unavailable timeout and build metrics separately from measured zero', () => {
+  const [result] = summarize([{ ...run, inputTokens: null, outputTokens: null, invalidClasses: null, functional: false, browser: 'not-checked' }])
+  assert.equal(result.attempts, 1)
+  assert.equal(result.successRate, 0)
+  assert.deepEqual(result.unmeasured, { invalidClasses: 1, inputTokens: 1, outputTokens: 1 })
+})
