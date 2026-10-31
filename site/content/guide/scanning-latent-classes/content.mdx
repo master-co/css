@@ -1,4 +1,8 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DeliveryFlow from '~/site/components/DeliveryFlow'
+import Class2CSS from '~/site/components/Class2CSS'
+
+Static rendering needs to find a complete class before it can generate that class's CSS. Keep known states in source, and pass changing values through CSS variables when the class itself can stay fixed.
 
 ## Keep complete classes in source
 
@@ -9,6 +13,30 @@ const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
 
 Avoid assembling the utility from separate `bg-` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.
+
+<DeliveryFlow name="scanning" />
+
+Both branches are available to the scanner even though only one is used at a time. The active project definitions determine what each class generates:
+
+<Class2CSS>{['bg-red-60', 'bg-green-60']}</Class2CSS>
+
+## Keep changing values out of class names
+
+Suppose a heading's size comes from an editor control. Keep its class complete and change the custom property on the element:
+
+```html
+<h1 id="headline" class="font-size:var(--headline-size)" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+document.getElementById('headline').style.setProperty('--headline-size', '3rem')
+```
+
+<Class2CSS>{'font-size:var(--headline-size)'}</Class2CSS>
+
+After your static build, run the JavaScript in the browser console. The heading grows without adding a class or generating a new rule. `--headline-size` is a native custom property, so this local value needs no `@theme` registration or Master CSS runtime.
 
 ## Find why a style is missing
 

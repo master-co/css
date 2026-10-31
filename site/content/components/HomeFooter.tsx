@@ -61,7 +61,7 @@ export default function HomeFooter() {
             </label>
           </div>
         </div>
-        <p aria-hidden="true" className="home-footer-mark">master css</p>
+        <p aria-hidden="true" className="home-footer-mark home-lit" data-mark="master css" suppressHydrationWarning>master css</p>
       </div>
     </footer>
   )

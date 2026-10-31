@@ -26,6 +26,7 @@ export function HomeBentoCard({ body, children, className, hint, href, icon, tit
         </div>
       </div>
       {children}
+      <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
     </article>
   )
 }
@@ -38,7 +39,7 @@ export function HomeSectionHeader({ body, children, icon, index, label, title }:
         <HomeIllustration icon={icon} />
         <p className="home-eyebrow"><span aria-hidden="true" className="home-eyebrow-index">{index}</span><span>{label}</span></p>
       </div>
-      <h2 className="home-section-heading">{title}</h2>
+      <h2 className="home-lit home-section-heading home-stone-type" suppressHydrationWarning>{title}</h2>
       <p className="home-section-body">{body}</p>
       {children}
     </header>

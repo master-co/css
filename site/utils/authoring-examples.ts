@@ -2,7 +2,8 @@ import { configuredExampleCSS, configuredMarkupClasses } from '../reference/conf
 
 export const authoringSource = `@theme {
   --color-brand: #4f46e5;
-  --color-text-action: var(--color-brand);
+  --color-text-action: light-dark(var(--color-brand), #a5b4fc);
+  --color-focus-action: light-dark(#4f46e5, #a5b4fc);
   --spacing-action-x: 1rem;
   --radius-action: 0.5rem;
 }
@@ -32,7 +33,7 @@ export const authoringSource = `@theme {
     }
 
     &:focus-visible {
-      outline: 2px solid var(--color-brand);
+      outline: 2px solid var(--color-focus-action);
       outline-offset: 3px;
     }
   }

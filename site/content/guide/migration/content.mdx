@@ -7,8 +7,9 @@ If you use a local AI coding agent, start with [AI Coding with Master CSS](/guid
 
 ---
 
-## Frameworks
-Migration guides for source styling systems with enough differences to need their own migration path.
+<a id="frameworks"></a>
+## Choose the source styling system
+Start with the guide for the CSS or component system you are replacing. Keep the application framework and its behavior intact.
 
 <IconButtons url="/guide/migration" className="my-lg grid-cols(4)@sm">
   {[
@@ -26,7 +27,7 @@ Migration guides for source styling systems with enough differences to need thei
 ## Migration strategy
 CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
 
-Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
+Start with an audit, then migrate incrementally. The first milestone is a working vertical slice: one component or route generates the intended CSS, preserves its interactions, and still matches the design. Keep the legacy styles required by the rest of the application.
 
 For MCP-capable agents converting an external styling system, use the MCP migration prompt for the audit step. It can inspect the active manifest, stylesheet entries, source extraction coverage, generated CSS, and class diagnostics before proposing the first reviewable batch.
 
@@ -71,9 +72,9 @@ First inspect the repository and identify:
 - the available formatter, lint, type-check, test, and build commands
 
 Then migrate incrementally:
-1. Install and configure the appropriate Master CSS package or integration.
+1. Choose the rendering mode, then install and configure the appropriate Master CSS integration.
 2. Import `@master/css` from the project CSS entry.
-3. Choose the rendering mode that matches this project: static rendering, runtime rendering, or progressive rendering.
+3. Check cascade layers, resets and overlapping class names while the old and new CSS coexist. Keep each compiler responsible for its own source directives.
 4. Convert repeated visual styles into Master CSS classes in markup where that improves clarity.
 5. Move shared design values into `@theme` tokens.
 6. Use native CSS in `@layer components` for reusable component classes when markup classes would become hard to maintain.

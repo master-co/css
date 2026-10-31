@@ -10,6 +10,7 @@ import DeliveryModesSection from './components/DeliveryModesSection'
 import DesignSystemSection from './components/DesignSystemSection'
 import HeroSection from './components/HeroSection'
 import HomeFooter from './components/HomeFooter'
+import HomeLamp from './components/HomeLamp'
 import LanguageServiceSection from './components/LanguageServiceSection'
 import LintSection from './components/LintSection'
 import WorkflowSection from './components/WorkflowSection'
@@ -17,7 +18,7 @@ import WorkflowSection from './components/WorkflowSection'
 export default function Page() {
   return <>
     <DocHeader className="home-header" stickable transitionAtTop />
-    <main className="overflow:hidden home-page">
+    <main className="overflow:clip home-page">
       <HeroSection />
       <DesignSystemSection />
       <LanguageServiceSection />
@@ -27,6 +28,7 @@ export default function Page() {
       <AgentsSection />
       <WorkflowSection />
       <CTASection />
+      <HomeLamp />
     </main>
     <HomeFooter />
   </>

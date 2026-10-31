@@ -24,7 +24,7 @@ Try `shadow-sm` for a card and `shadow-lg` for a floating surface, then compare 
 
 See the complete [values and consumers](/reference/tokens/shadow) in Reference.
 
-The role of each token should stay stable across modes. Custom light and dark recipes can vary geometry as well as color, but `shadow-sm` should still mean a standard raised surface in both modes.
+Keep each chosen role stable across modes. If your project uses `shadow-sm` for raised cards, preserve that relationship in both themes. Custom light and dark recipes can vary geometry as well as color.
 
 ---
 
@@ -34,8 +34,8 @@ Elevation needs a visible ground. Pair shadows with `bg-surface-*`, `fg-text-*`,
 <FoundationElevation />
 
 ```html
-<!-- @MARK shadow-lg -->
-<article class="r-lg bg-surface-raised shadow-lg">
+<!-- @MARK shadow-sm -->
+<article class="r-lg bg-surface-raised shadow-sm">
   <h2 class="fg-text-strong">Raised surface</h2>
   <p class="fg-text-muted">Cards need a clear surface before they need a large shadow.</p>
 </article>
@@ -72,7 +72,7 @@ Use `shadow-<token>` for named product tokens. Use the explicit `box-shadow:*` f
 
 `shadow-` reads the `shadow` namespace and sets `box-shadow`.
 
-This lets elevation utilities use `sm`, `lg`, or project token names without repeating the `shadow-` prefix.
+For example, `shadow-card` reads a custom `--shadow-card` token: `shadow` is the namespace and `card` is the key.
 
 ---
 
@@ -82,15 +82,19 @@ This lets elevation utilities use `sm`, `lg`, or project token names without rep
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
-<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK box-shadow:none@media(print) -->
-<article class="shadow-sm shadow-md:hover box-shadow:none@media(print)">
-  ...
-</article>
+<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover@media(screen) --><!-- @MARK shadow-md:focus-visible@media(screen) --><!-- @MARK box-shadow:none@media(print) -->
+<a class="display:block p-md r-lg bg-surface-raised fg-text-body shadow-sm shadow-md:hover@media(screen) shadow-md:focus-visible@media(screen) box-shadow:none@media(print) text-decoration:none"
+  href="/guide/elevation#change-elevation-by-state">
+  <strong class="display:block fg-text-strong">Collection guide</strong>
+  <span class="display:block mt-xs fg-text-muted">Hover or focus this link to lift its surface.</span>
+</a>
 ```
 
 <Class2CSS>
-  {['shadow-sm', 'shadow-md:hover', 'box-shadow:none@media(print)']}
+  {['shadow-sm', 'shadow-md:hover@media(screen)', 'shadow-md:focus-visible@media(screen)', 'box-shadow:none@media(print)']}
 </Class2CSS>
+
+Hover the link, then reach it with Tab. Both states increase its shadow; keyboard focus also keeps the browser's focus outline. Print preview removes the shadow, including while the link is focused.
 
 Keep state changes small. Moving from `shadow-sm` to `shadow-md` is usually enough for hover. Jumping from `shadow-sm` to `shadow-2xl` makes a normal card feel like a modal.
 

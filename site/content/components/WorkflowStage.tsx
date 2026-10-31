@@ -38,7 +38,7 @@ export default function WorkflowStage() {
             <span className="home-wf-anchor home-wf-integration" data-wf-anchor={`integration-${index}`} key={key}>{key}</span>
           ))}
         </div>
-        <span className="home-wf-anchor home-wf-manifest" data-wf-anchor="manifest"><span aria-hidden="true" className="home-wf-source-mark">{'{ }'}</span><code>index.css</code></span>
+        <span className="home-stone home-stone-quiet home-wf-anchor home-wf-manifest" data-wf-anchor="manifest"><span aria-hidden="true" className="home-wf-source-mark">{'{ }'}</span><code>index.css</code></span>
         <WorkflowCanvas figure="stage" />
       </div>
       <p aria-hidden="true" className="home-wf-readout" data-wf-caption="">Vite → @master/css-vite</p>

@@ -26,6 +26,8 @@ async function open({ width = 1440, scheme = 'light', locale = 'en', motion = 'r
   assert.equal(response.status(), 200)
   await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px` }, text)
   await page.evaluate(() => document.fonts.ready)
+  // The server renders the completed scene; a click before hydration would not reach the chapters.
+  if (js) await page.waitForFunction(() => { const chapter = document.querySelector('.home-editor-chapter'); return !!chapter && Object.keys(chapter).some(key => key.startsWith('__reactProps$')) })
   const stage = page.locator('.home-editor-stage')
   const frame = stage.locator('.home-editor-frame')
   const chapters = stage.locator('.home-editor-chapter')
@@ -74,9 +76,10 @@ async function geometry(view) {
       fileClipped: file.scrollWidth > file.clientWidth + 1 || fileBox.right > box.right + 1 || fileBox.left < box.left - 1 || fileBox.bottom > tabBox.bottom + 1 || fileBox.top < tabBox.top - 1,
       overlay,
       clipped: overlay.filter(pane => pane.left < box.left - 1 || pane.right > box.right + 1 || pane.top < box.top - 1 || pane.bottom > box.bottom + 1),
-      titles: [...document.querySelectorAll('.home-editor-chapter-title, .home-editor-chapter-body')].map(title => {
+      // Two-column layouts show the selected description on one shared line below the chapters instead.
+      titles: [...document.querySelectorAll('.home-editor-chapter-title, .home-editor-chapter-body, .home-editor-chapter-note > [data-active]')].filter(title => getComputedStyle(title).display !== 'none').map(title => {
         const rect = title.getBoundingClientRect()
-        const chapter = title.closest('.home-editor-chapter')
+        const chapter = title.closest('.home-editor-chapter') ?? title.parentElement
         const parent = chapter.getBoundingClientRect()
         const style = getComputedStyle(chapter)
         return { text: title.textContent, clipped: title.scrollWidth > title.clientWidth + 1 || rect.right > parent.right - parseFloat(style.paddingRight) + 1 || rect.left < parent.left + parseFloat(style.paddingLeft) - 1 }
@@ -341,7 +344,7 @@ test(`${browserName}: a settled scene keeps its source word visible when the edi
   } finally { await view.context.close() }
 })
 
-if (browserName === 'chromium') test('a touch swipe scrolls the file without pinning an inspection', { timeout: 45000 }, async () => {
+if (browserName === 'chromium') test('a touch swipe over the file belongs to the page and pins no inspection', { timeout: 45000 }, async () => {
   const view = await open({ width: 390, touch: true })
   try {
     await choose(view, 2)
@@ -357,8 +360,14 @@ if (browserName === 'chromium') test('a touch swipe scrolls the file without pin
     for (let step = 1; step <= 8; step++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - step * 10, y }] })
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
     await view.page.waitForTimeout(400)
-    assert.ok(await code.evaluate(element => element.scrollLeft) > start + 20, 'the native horizontal gesture reaches more of the source')
+    assert.equal(await code.evaluate(element => element.scrollLeft), start, 'homepage code never scrolls under a swipe')
     assert.equal(await view.stage.locator('.home-editor-hover-card').getAttribute('data-open'), null)
+    const page = await view.page.evaluate(() => scrollY)
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] })
+    for (let step = 1; step <= 8; step++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - step * 15 }] })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await view.page.waitForTimeout(400)
+    assert.ok(await view.page.evaluate(() => scrollY) > page + 40, 'a vertical swipe over the code scrolls the page')
     assert.deepEqual(view.errors, [])
   } finally { await view.context.close() }
 })

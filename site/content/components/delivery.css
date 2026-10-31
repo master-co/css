@@ -52,7 +52,8 @@
   .home-delivery:has(#home-delivery-progressive:checked) .home-delivery-variant[data-mode='progressive'],
   .home-delivery:has(#home-delivery-runtime:checked) .home-delivery-variant[data-mode='runtime'] { visibility: visible; opacity: 1; transition-delay: 0s; }
 
-  .home-delivery-code-scroll { overflow: auto; height: 100%; scroll-margin-block: 4.5rem 1rem; scrollbar-width: thin; overscroll-behavior: contain; }
+  /* The tour scrolls the panes and keys read them; the wheel and a swipe always belong to the page. */
+  .home-delivery-code-scroll { overflow: hidden; height: 100%; scroll-margin-block: 4.5rem 1rem; }
   /* A pane that scrolls fades its last visible row instead of cutting it under the bar; the fade lifts at the end. */
   .home-delivery-code-scroll { mask-image: linear-gradient(to bottom, #000 calc(100% - var(--delivery-code-fade)), transparent); }
   @supports (animation-timeline: scroll()) {
@@ -115,9 +116,13 @@
   .home-delivery-flow-label[data-flow-label='output'] { right: 1.25rem; }
   .home-delivery-engine-group { position: relative; display: grid; min-height: 6rem; }
   .home-delivery-engine { position: relative; display: grid; grid-area: 1 / 1; align-content: center; justify-items: center; gap: 0.5rem; opacity: var(--phase); }
-  .home-delivery-engine-core { position: relative; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.875rem; background: linear-gradient(145deg, color-mix(in oklab, var(--home-sheet) 94%, transparent), var(--home-ground)); box-shadow: inset 0 1px 0 var(--home-highlight), 0 0 0 1px var(--home-rule), 0 2px 3px -2px var(--home-shade-far), 0 8px 16px -8px var(--home-shade-far), 0 0 0 calc(var(--glow) * 4px) var(--home-signal-glow); }
-  .home-delivery-engine-core::before { position: absolute; inset: 4px; border: 1px solid color-mix(in oklab, var(--home-rule) 60%, transparent); border-radius: 0.625rem; content: ''; }
+  .home-delivery-engine-core { position: relative; display: grid; place-items: center; box-sizing: border-box; width: 2.75rem; height: 2.75rem; border-radius: 0.875rem; }
+  /* The engine is cut from the hero's stone; while it generates, its lower bevel mirrors the gold. */
+  .home-delivery-engine-core.home-stone { --stone-mirror: color-mix(in oklab, var(--stone-gold) calc(28% + var(--glow) * 40%), transparent); box-shadow: var(--stone-shadow), 0 0 0 calc(var(--glow) * 4px) var(--home-signal-glow); }
+  .home-delivery-engine-core::before { position: absolute; inset: 3px; border: 1px solid color-mix(in oklab, var(--stone-text) 10%, transparent); border-radius: 0.625rem; content: ''; }
   .home-delivery-engine-core img { position: relative; z-index: 1; width: 30px; height: auto; opacity: calc(.75 + var(--glow) * .25); filter: grayscale(calc(1 - var(--glow))); }
+  /* On moonstone a dormant mark darkens to graphite instead of fading into the pale stone. */
+  .dark .home-delivery-engine-core img { opacity: 1; filter: grayscale(calc(1 - var(--glow))) brightness(calc(.5 + var(--glow) * .5)); }
   .home-delivery-engine-core i { position: absolute; top: 50%; left: -3px; width: 5px; height: 5px; border-radius: 50%; background: color-mix(in oklab, var(--home-signal) calc(var(--glow) * 100%), var(--home-rule)); box-shadow: 0 0 0 3px var(--home-ground); }
   .home-delivery-engine-core i:last-child { left: auto; right: -3px; }
   .home-delivery-engine-label { font-family: var(--home-mono); font-size: var(--home-label); line-height: 1.2; white-space: nowrap; color: var(--home-text-quiet); }
@@ -153,9 +158,6 @@
   }
   @container home-delivery (width >= 72rem) {
     .home-delivery-layout { --delivery-code: 0.8125rem; }
-  }
-  @container home-delivery (width < 52rem) {
-    .home-delivery-code-scroll { overscroll-behavior-y: auto; }
   }
   @container delivery-pane (width < 26rem) {
     .home-delivery-class-attribute { display: block; padding-left: 2ch; }
@@ -335,25 +337,10 @@
   .home-delivery-play {
     display: grid;
     place-content: center;
+    box-sizing: border-box;
     width: 2.75rem;
     height: 2.75rem;
-    border: 0;
     border-radius: var(--radius-pill);
-    color: var(--home-text-quiet);
-    background-color: transparent;
-    box-shadow: inset 0 0 0 1px var(--home-rule);
-    cursor: pointer;
-    transition: color var(--home-quick) var(--home-ease), box-shadow var(--home-quick) var(--home-ease);
-
-    &:hover {
-      color: var(--home-text);
-      box-shadow: inset 0 0 0 1px var(--home-rule-strong);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--home-ink);
-      outline-offset: 2px;
-    }
 
     /* Before hydration and under reduced motion the button is absent but keeps its place. */
     &[hidden] {

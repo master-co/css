@@ -7,7 +7,7 @@ Use static rendering when WordPress theme templates contain complete class strin
   <Step $row>
     <StepL>
       ### <StepNum />Open your theme
-      Start from a theme directory inside your WordPress installation.
+      Start from the active theme or child theme directory. These examples add assets to an existing classic PHP theme.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -23,6 +23,7 @@ Use static rendering when WordPress theme templates contain complete class strin
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -43,13 +44,13 @@ Use static rendering when WordPress theme templates contain complete class strin
           masterCSS({ mode: 'static' })
         ],
         build: {
-          outDir: '.',
+          outDir: 'assets',
           emptyOutDir: false,
           rollupOptions: {
             input: 'resources/master.ts',
             output: {
-              entryFileNames: 'assets/master.js',
-              assetFileNames: 'assets/[name][extname]'
+              entryFileNames: 'master.js',
+              assetFileNames: '[name][extname]'
             }
           }
         }
@@ -79,16 +80,16 @@ Use static rendering when WordPress theme templates contain complete class strin
   <Step $row>
     <StepL>
       ### <StepNum />Enqueue the stylesheet
-      Load the generated stylesheet from `functions.php`.
+      Add this hook inside the PHP code in `functions.php`, keeping its existing setup. The active-theme helpers also work for a child theme.
     </StepL>
     <StepR>
       ```php name=functions.php
       add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style(
           'master-css',
-          get_template_directory_uri() . '/assets/master.css',
+          get_stylesheet_directory_uri() . '/assets/master.css',
           [],
-          filemtime(get_template_directory() . '/assets/master.css')
+          filemtime(get_stylesheet_directory() . '/assets/master.css')
         );
       });
       ```
@@ -96,7 +97,7 @@ Use static rendering when WordPress theme templates contain complete class strin
   </Step>
   <Step>
     ### <StepNum />Hello world
-    Now style your first PHP template using Master CSS syntax.
+    Add the heading inside an existing rendered template. Keep its header, footer and WordPress hooks.
   </Step>
   <HelloWorld url="localhost" />
 </StepSection>
@@ -109,4 +110,11 @@ Use static rendering when WordPress theme templates contain complete class strin
 
 Static rendering depends on complete class strings in scanned source files. For WooCommerce templates, include your theme overrides such as `@source "../woocommerce/**/*.php"` and avoid scanning plugin internals unless your theme stores complete class strings there.
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other theme assets; deploy `master.css` and every CSS file it imports together, preserving their names and relative paths.
+
+## Verify the theme output
+Build the assets before loading the page so `filemtime()` can read them. Confirm the active theme serves `assets/master.css`; the [stylesheet-directory helpers](https://developer.wordpress.org/reference/functions/get_stylesheet_directory_uri/) point to the child theme when one is active.
+
+Keep `wp_head()` and `wp_footer()` in the theme: WordPress uses its hooks to print enqueued assets. The example heading is a template fragment, not a replacement for the complete theme index.
+
+The heading should remain large, heavy and italic with JavaScript disabled. Content assembled from database values is not automatically present in scanned PHP source; map choices to complete class strings or safelist bounded candidates.

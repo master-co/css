@@ -23,8 +23,7 @@ async function deliveryContent(siteRoot: string, section: string, slug: string) 
     component: (name, attributes) => name === 'ArticleTOC' ? '' : name === 'DeliveryFlow' ? deliveryFlowMarkdown(String(attributes.name))
       : name === 'ResourceWaterfall' ? resourceWaterfallsMarkdown()
         : name === 'FirstPaintComparison' ? firstPaintMarkdown()
-          : name === 'ModeImg' ? `![${String(attributes.alt)}](${String(attributes.src)})`
-            : name === 'FOUCSvg' ? '![An unstyled page beside the same styled page](/fouc.svg)' : undefined
+          : name === 'ModeImg' ? `![${String(attributes.alt)}](${String(attributes.src)})` : undefined
   })
   if (result.notes.length) throw new Error(`Incomplete ${slug} export: ${result.notes.join('; ')}`)
   return { ...result, searchMarkdown: result.markdown, markdown: portableMarkdown(result.markdown) }

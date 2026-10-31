@@ -35,7 +35,9 @@ export default function HomeSegmentedControl<Value extends string>({ className, 
 
   return (
     <div
-      className={clsx('home-segmented-control', className)}
+      className={clsx('home-lit home-segmented-control', className)}
+      // The page lamp writes its light onto this element before or after hydration.
+      suppressHydrationWarning
       data-ready={thumb ? '' : undefined}
       ref={trackRef}
       role="group"

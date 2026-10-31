@@ -51,7 +51,7 @@ Import order alone does not put unlayered Bootstrap rules below normal layered u
 @import "@master/css";
 ```
 
-This changes cascade behavior. Compare existing overrides in the browser before adopting it across the application.
+This changes cascade behavior. Compare existing overrides in the browser before adopting it across the application. Bootstrap utilities may also use `!important`; normal Master CSS declarations do not override those merely because they are in a later layer.
 
 ---
 
@@ -73,7 +73,7 @@ $spacer: 1rem;
   --color-body: #172033;
   --radius-control: .5rem;
   --spacing-page: 1rem;
- }
+}
 
 ```
 
@@ -98,15 +98,23 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 <!-- Before: col-md-4 -->
 ```
 
+Bootstrap's default [`md` breakpoint](https://getbootstrap.com/docs/5.3/layout/breakpoints/#available-breakpoints) starts at 768px; Master CSS's preset `md` starts at 64rem. Keep the original column threshold with a named condition in the app CSS entry:
+
+```css name=app.css
+@custom-media --bootstrap-md (width >= 768px);
+```
+
 ```html
 <section class="width:100% max-w-6xl margin-inline:auto px-md py-2xl">
-  <div class="display:grid gap-lg grid-cols(3)@md">
-    <article class="p-lg border-width:1px border-style:solid b-line-divider r-lg bg-white">
+  <div class="display:grid gap-lg grid-cols(3)@bootstrap-md">
+    <article class="p-lg border-width:1px border-style:solid b-line-divider r-lg bg-white fg-body">
       ...
     </article>
   </div>
 </section>
 ```
+
+This preserves the three-column threshold while choosing a new container width and grid gap. Compare those dimensions before replacing Bootstrap's container and gutter rules. The explicit `fg-body` keeps the fixed white card paired with the product's dark text color.
 
 Use native declaration syntax when it is clearer than a utility alias:
 
@@ -123,13 +131,13 @@ Keep Bootstrap layout classes in templates that still need Bootstrap's container
 ---
 
 ## Convert simple components
-Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert them to markup classes or Master CSS component classes when the project owns the behavior.
+Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert them to markup classes or Master CSS component classes when the project owns the behavior. Use a new class name during coexistence so the replacement does not change untouched Bootstrap buttons. Keep the theme tokens defined above.
 
 ```css name=app.css
 @import "@master/css";
 
 @layer components {
-  .btn-primary {
+  .action-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -151,13 +159,13 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
     border: 1px solid var(--color-line-divider);
     background-color: oklch(100% 0 none);
     box-shadow: var(--shadow-sm);
-    color: var(--color-text-body);
+    color: var(--color-body);
   }
 }
 ```
 
 ```html
-<button class="btn-primary">Save</button>
+<button class="action-button">Save</button>
 <article class="panel">...</article>
 ```
 

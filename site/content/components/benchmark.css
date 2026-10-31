@@ -10,10 +10,6 @@
     gap: var(--spacing-xl);
   }
 
-  .home-bench-layout[data-visible] {
-    --home-bench-pulse-state: running;
-  }
-
   .home-bench-summary {
     display: flex;
     flex-wrap: wrap;
@@ -30,12 +26,58 @@
     line-height: 1.6;
   }
 
+  /*
+   * The bars, tracks, gridlines and ruler are painted on one canvas under the rows. It reads the paints below,
+   * so the homepage tokens and the theme still drive it; the DOM bars, gridlines and ruler marks stand in
+   * without scripts, before the canvas has painted, and in print.
+   */
   .home-bench-chart {
     --home-bench-brand-width: 0px;
+    --home-bench-bar: 1.25rem;
+    --home-bench-paint-rule: var(--home-rule);
+    --home-bench-paint-tick: var(--home-rule-strong);
+    --home-bench-paint-hatch: var(--color-line-subtle);
+    --home-bench-paint-light: rgb(255 255 255 / 0.16);
+    --home-bench-paint-shade: rgb(0 0 0 / 0.08);
+    --home-bench-paint-silk-shadow: var(--silk-shadow);
+    --home-bench-paint-silk-body: var(--silk-body);
+    --home-bench-paint-silk-fold: color-mix(in oklab, var(--silk-body) 55%, var(--silk-sheen));
+    --home-bench-paint-silk-sheen: var(--silk-sheen);
     position: relative;
 
     @media (--sm) {
       --home-bench-brand-width: 10rem;
+    }
+  }
+
+  .home-bench-canvas {
+    position: absolute;
+    top: 0;
+    left: var(--home-bench-brand-width);
+    z-index: 0;
+    display: block;
+    width: calc(100% - var(--home-bench-brand-width));
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .home-bench-chart:not([data-renderer='canvas']) .home-bench-canvas {
+    visibility: hidden;
+  }
+
+  @media screen {
+    .home-bench-chart[data-renderer='canvas'] {
+      :is(.home-bench-grid, .home-bench-bar) {
+        display: none;
+      }
+
+      .home-bench-track::before {
+        content: none;
+      }
+
+      .home-bench-axis {
+        background: none;
+      }
     }
   }
 
@@ -64,6 +106,9 @@
     z-index: 1;
     display: grid;
     gap: var(--spacing-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
     @media (--sm) {
       gap: var(--spacing-xs);
@@ -158,7 +203,7 @@
   .home-bench-track::before {
     position: absolute;
     inset: 50% 0 auto;
-    height: 1.25rem;
+    height: var(--home-bench-bar);
     border-radius: 0 3px 3px 0;
     background-image: var(--home-hatch);
     background-size: var(--home-hatch-size) var(--home-hatch-size);
@@ -168,28 +213,17 @@
   }
 
   .home-bench-bar {
-    overflow: hidden;
-    height: 1.25rem;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    min-width: 1px;
+    height: var(--home-bench-bar);
     border-radius: 0 3px 3px 0;
     background: linear-gradient(90deg,
       color-mix(in oklab, var(--home-bench-color) 64%, var(--home-ground)),
       var(--home-bench-color) 55%, var(--home-bench-color-end));
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 -1px 0 rgb(0 0 0 / 0.08);
-
-    /* A breath of light changes brightness, never the measured bar length. */
-    &::after {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6) 65%, transparent);
-      opacity: 0.12;
-      content: '';
-
-      @media (--motion-safe) {
-        animation: home-bench-pulse 4.8s ease-in-out infinite;
-        animation-delay: var(--home-bench-pulse-delay, 0s);
-        animation-play-state: var(--home-bench-pulse-state, paused);
-      }
-    }
+    translate: 0 -50%;
   }
 
   .home-bench-readout {
@@ -207,7 +241,6 @@
       right: auto;
       left: var(--home-bench-end);
       padding-left: var(--spacing-sm);
-      transition-property: left;
     }
   }
 
@@ -228,15 +261,46 @@
     color: var(--home-text);
   }
 
+  /* The multiplier appears once its bar has landed, and leaves at once when the bar moves again. */
   .home-bench-ratio {
     font-family: var(--home-mono);
     font-size: 0.625rem;
     font-variant-numeric: tabular-nums;
     color: var(--home-text-faint);
+    opacity: 0;
+    translate: 0 3px;
+  }
+
+  .home-bench-row[data-settled] .home-bench-ratio {
+    opacity: 1;
+    translate: none;
+
+    @media (--motion-safe) {
+      transition: opacity 0.24s var(--home-ease), translate 0.24s var(--home-ease);
+    }
   }
 
   .home-bench-row-signal .home-bench-brand {
     color: var(--home-text);
+  }
+
+  /*
+   * Without the canvas, the Master CSS bar is still a ribbon of the hero's silk: a fold that deepens at both
+   * ends and a satin highlight that stretches along the ribbon and stays narrow across it.
+   */
+  .home-bench-row-signal .home-bench-bar {
+    background:
+      linear-gradient(180deg, transparent 12%, color-mix(in oklab, var(--silk-sheen) 85%, transparent) 34%, transparent 58%),
+      linear-gradient(90deg, var(--silk-shadow), var(--silk-body) 28%, var(--home-bench-paint-silk-fold) 64%, var(--silk-body) 86%, var(--silk-shadow));
+    box-shadow: inset 0 -1px 0 color-mix(in oklab, var(--silk-shadow) 70%, transparent), 0 2px 6px -3px color-mix(in oklab, var(--silk-shadow) 80%, transparent);
+
+    /* A phone's ribbon is too short for folds at both ends; it keeps only the satin along its length. */
+    @media (width < 40rem) {
+      background:
+        linear-gradient(180deg, transparent 12%, color-mix(in oklab, var(--silk-sheen) 85%, transparent) 34%, transparent 58%),
+        linear-gradient(90deg, var(--silk-body), var(--home-bench-paint-silk-fold) 70%, var(--silk-body));
+      box-shadow: inset 0 -1px 0 color-mix(in oklab, var(--silk-shadow) 70%, transparent);
+    }
   }
 
   /* The axis shares the bars' zero and leaves the brand column outside the measurement. */
@@ -256,9 +320,60 @@
     font-variant-numeric: tabular-nums;
     color: var(--home-text-faint);
   }
+
+  /* A new measure's labels arrive as its ruler settles; nothing stays animated afterwards. */
+  .home-bench-axis[data-switched] .home-bench-tick {
+    @media (--motion-safe) {
+      animation: home-bench-tick-in 0.5s var(--home-ease) 0.45s backwards;
+    }
+  }
+
+  /* System colors keep every bar visible: the canvas reads these paints too. */
+  @media (forced-colors: active) {
+    .home-bench-chart {
+      --home-bench-paint-rule: GrayText;
+      --home-bench-paint-tick: CanvasText;
+      --home-bench-paint-hatch: GrayText;
+      --home-bench-paint-silk-shadow: Highlight;
+      --home-bench-paint-silk-body: Highlight;
+      --home-bench-paint-silk-fold: Highlight;
+      --home-bench-paint-silk-sheen: Highlight;
+    }
+
+    .home-bench-row[data-brand] {
+      --home-bench-color: CanvasText;
+      --home-bench-color-end: CanvasText;
+    }
+
+    .home-bench-bar {
+      background: CanvasText;
+      box-shadow: none;
+    }
+
+    .home-bench-row-signal .home-bench-bar {
+      background: Highlight;
+      box-shadow: none;
+    }
+  }
+
+  /* Print uses the DOM bars, which stay vector; the painter has already settled every count. */
+  @media print {
+    .home-bench-canvas {
+      display: none;
+    }
+
+    :is(.home-bench-row, .home-bench-readout) {
+      transform: none !important;
+    }
+
+    :is(.home-bench-bar, .home-bench-gridline, .home-bench-axis, .home-bench-track::before) {
+      print-color-adjust: exact;
+    }
+  }
 }
 
-@keyframes home-bench-pulse {
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.4; }
+@keyframes home-bench-tick-in {
+  from {
+    opacity: 0;
+  }
 }

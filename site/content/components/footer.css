@@ -185,6 +185,7 @@
   /* The engraved signature sits behind the navigation; the base row covers it. */
   .home-footer-mark {
     --home-footer-engrave: color-mix(in oklab, var(--home-text) 12%, transparent);
+    --home-footer-lamp: light-dark(oklch(0.72 0.12 78 / 0.75), color-mix(in oklab, var(--home-text) 42%, transparent));
     position: absolute;
     inset-inline: var(--home-gutter);
     top: 50%;
@@ -207,6 +208,19 @@
     mask-image: linear-gradient(to bottom, black 20%, transparent);
     pointer-events: none;
     user-select: none;
+
+    /* The page lamp rakes across the engraving: the same hatch, lit, only where the lamp falls. */
+    &::after {
+      position: absolute;
+      inset: 0;
+      color: transparent;
+      background-image: linear-gradient(135deg, var(--home-footer-lamp) 9%, transparent 0 50%, var(--home-footer-lamp) 0 59%, transparent 0);
+      background-size: var(--home-hatch-size) var(--home-hatch-size);
+      background-clip: text;
+      opacity: var(--lit-near);
+      mask-image: radial-gradient(ellipse 16rem 9rem at var(--lit-x) var(--lit-y), #000, transparent 75%);
+      content: attr(data-mark);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

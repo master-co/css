@@ -24,6 +24,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
     <StepR>
       ```bash name=Terminal
       npm init -y
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -82,7 +83,7 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
   <Step $row>
     <StepL>
       ### <StepNum />Add build scripts
-      Run Vite before serving the app, or keep it watching while the .NET dev server runs.
+      Merge these scripts into the existing `package.json`, keeping the dependencies installed above. Run Vite before serving the app, or keep it watching beside .NET.
     </StepL>
     <StepR>
       ```json name=package.json
@@ -90,10 +91,6 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
         "scripts": {
           "build:assets": "vite build",
           "watch:assets": "vite build --watch"
-        },
-        "devDependencies": {
-          "@master/css-vite": "rc",
-          "vite": "latest"
         }
       }
       ```
@@ -102,18 +99,11 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
   <Step $row>
     <StepL>
       ### <StepNum />Load the built assets
-      Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`.
+      Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`. Add the stylesheet to `<head>`. Preserve the existing `<base>`, `<HeadOutlet />`, routes, and Blazor bootstrap script.
     </StepL>
     <StepR>
       ```html name=Components/App.razor
-      <head>
-        <link rel="stylesheet" href="/assets/app.css">
-      </head>
-      <body>
-        <Routes />
-        <script src="_framework/blazor.web.js"></script>
-        <script type="module" src="/assets/app.js"></script>
-      </body>
+      <link rel="stylesheet" href="assets/app.css">
       ```
     </StepR>
   </Step>
@@ -137,6 +127,8 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
 </StepSection>
 
 ```html name=Components/Pages/Home.razor
+@page "/"
+
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
@@ -144,6 +136,16 @@ Use Vite to build the browser assets for a Blazor app, then let Master CSS scan 
 
 Static rendering depends on complete class strings in scanned source files. If a Razor component assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
 
 Merge the asset tags into the existing host document; retain its framework bootstrap script and routing setup. For a deployment below a URL prefix, resolve asset URLs through the host’s base path rather than assuming `/` is the application root.
+
+## Keep routing and hosting intact
+The `@page "/"` directive makes the component routable. Merge the asset tags into the [host document for your Blazor model](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0); the snippet is not a replacement for `App.razor`. The relative asset paths use the host’s existing `<base>` URL.
+
+New .NET templates can include Bootstrap. Normal unlayered Bootstrap declarations can override layered Master CSS utilities, so check the loaded stylesheets and computed styles when a class appears ineffective. See [Cascade layers](/guide/cascade-layers) for precedence.
+
+## Verify the result
+Build Vite assets before `dotnet build` or `dotnet publish`, so .NET includes them in its static asset output. Run `dotnet run` and use the URL printed by the server. The heading should be large, heavy and italic.
+
+For server-rendered HTML, styling should remain with JavaScript disabled. A WebAssembly-only Blazor app still needs its framework JavaScript to render the component.

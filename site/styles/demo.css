@@ -18,8 +18,8 @@
     --prose-table-gutter: var(--prose-bleed);
     margin-inline: calc(var(--prose-bleed) * -1);
 
-    /* A frameless canvas has no edge of its own to bleed: its contents stay on the text column. */
-    &[data-frame="none"] > .demo-canvas:is(:not([data-padding]), [data-padding="none"]) {
+    /* Bare specimens stay on the text column; embedded frames already own their edge. */
+    &[data-frame="none"] > .demo-canvas:is(:not([data-padding]), [data-padding="none"]):not(:has(.demo-viewport-frame, [data-demo-container])) {
       padding-inline: var(--prose-bleed);
     }
   }

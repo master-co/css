@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { IconPlayerPause, IconPlayerPlay } from '@tabler/icons-react'
+import { IconPlayerPauseFilled, IconPlayerPlayFilled } from '@tabler/icons-react'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import type { WorkflowFigure } from './workflow-canvas'
 
@@ -33,9 +33,9 @@ export default function WorkflowCanvas({ figure }: { figure: WorkflowFigure }) {
   return (
     <>
       <canvas aria-hidden="true" className="home-wf-canvas" ref={ref} />
-      <button aria-label={$('Pause illustration')} className="home-wf-play" data-wf-play="" data-pause-label={$('Pause illustration')} data-play-label={$('Play illustration')} type="button">
-        <IconPlayerPause aria-hidden="true" className="home-wf-pause-icon" size={14} stroke={1.75} />
-        <IconPlayerPlay aria-hidden="true" className="home-wf-play-icon" size={14} stroke={1.75} />
+      <button aria-label={$('Pause illustration')} className="home-lit home-wf-play" data-wf-play="" suppressHydrationWarning data-pause-label={$('Pause illustration')} data-play-label={$('Play illustration')} type="button">
+        <IconPlayerPauseFilled aria-hidden="true" className="home-wf-pause-icon" size={12} />
+        <IconPlayerPlayFilled aria-hidden="true" className="home-wf-play-icon" size={12} />
       </button>
     </>
   )

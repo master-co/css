@@ -232,6 +232,35 @@ For numeric theme variable tables, read values from `site/utils/theme-variables`
 
 Complete namespace-consumer tables belong in Reference. Use canonical keys from `site/utils/manifest-utilities` and build-time `tokenFamilies()` metadata, including registered families without preset values. Guide may select relevant rows and link to the complete table. Keep grouping labels curated and reader-facing; never imply unsupported consumers, alternate spellings or a token dependency in an explicit native query. Value tables explain available values; consumer tables explain the properties and families using them.
 
+## Homepage Map
+
+The homepage is `content/page.tsx` with `content/design.css` (home tokens and primitives) and `content/home.css`. Its components live in `content/components/`; `DESIGN.md` there is the design language. Read its Principles and the section for the area being changed rather than the whole file. Shared copy and sample data are in `home-content.ts` (guarded by `home-content.test.ts`); each section's own `*-content.ts` holds the rest.
+
+| Area | Components | Logic and styles |
+| --- | --- | --- |
+| Hero | `HeroSection`, `HeroCanvas`, `HomeLamp` | `hero-shaders.ts`, `hero-title-mask.ts`, `home-lamp.ts`, `hero.css` |
+| 01 Design system | `DesignSystemSection`, `DesignSystemFigures`, `HomeBento`, `ThemeModesPreview`, `ArtGalleryPreview`, `CascadeLayers` | `design-system-content.ts`, `palette-*.ts`, `theme-split.ts`, `design-system.css` |
+| 02 Editor | `LanguageServiceSection`, `EditorFigures`, `HomeEditorWindow` | `editor-*.ts`, `editor-tiles.css`, `home-editor-window.css` |
+| 03 Rendering | `DeliveryModesSection`, `DeliveryStage`, `DeliveryFigures`, `DeliveryPreview` | `delivery-*.ts`, `delivery.css`, `delivery-preview.css` |
+| 04 CSS size | `BenchmarkSection`, `BenchmarkSizeChart` | `benchmark.css` |
+| 05 Lint | `LintSection`, `LintExplorer` | `lint-content.ts`, `lint.css` |
+| 06 AI agents | `AgentsSection`, `AgentSession`, `AgentsFigures` | `agents-*.ts`, `agent.css`, `agents-protocol.css` |
+| 07 Workflow | `WorkflowSection`, `WorkflowStage`, `WorkflowTrace`, `WorkflowRepo`, `WorkflowRoutes`, `WorkflowCanvas` | `workflow-*.ts`, `workflow.css` |
+| Call to action | `CTASection`, `CTACanvas` | `cta-*.ts`, `cta.css` |
+| Shared | `HomeAction`, `HomeSegmentedControl`, `HomeCodeWindow`, `HomeIllustration`, `HomeCompactIcon`, `CopyCommand`, `HomeFooter` | `pointer-motion.ts`, `footer.css` |
+
+## Visual Iteration
+
+Visual work keeps its full judgment: look at the result after every meaningful visual change, in the schemes and widths it affects. What it avoids is carrying superseded or oversized images through a long session.
+
+- Capture with `node site/scripts/visual-capture.mjs <url> --name <name> --selector <element>`. It writes 2x PNG crops of one element or `--clip` region, takes `--scheme light,dark`, time-matched `--frames`, `--pointer`/`--hover` states and `--hide .home-header`, and prints JSON with `--measure`/`--props` boxes and computed values, page errors and each image's approximate tokens. Use `--ready <selector>` for a figure's hydration attribute. Never downscale or convert to JPEG: material, gradients and hairlines need the detail.
+- Viewed images are resized to a 2000px long edge, so a 2x crop wider than 1000 CSS px loses detail; the script warns. Split wide regions into several crops instead of one full-viewport shot. Full-page captures can drop translated or composited layers; confirm a blank in a viewport or element capture before fixing it.
+- Settle numeric questions numerically: alignment, size, spacing, overflow and contrast come from `--measure`, `--props` or `--eval`. Images decide appearance: material, light, rhythm, hierarchy and motion.
+- Compare candidates with `node site/scripts/visual-diff.mjs before.png after.png --pair pair.png`. It reports whether and where pixels changed; open the side-by-side pair of the changed region instead of both captures. Do not reopen an unchanged state.
+- Compare animated or WebGL candidates at the same frame times with page text hidden when only the surface matters. While other agents edit the same worktree, iterate a canvas island in an isolated page and confirm the final result on the dev server once.
+- A polish session longer than about an hour works in rounds. At each commit, record the decisions, rejected directions with the reason, and open issues in the relevant `DESIGN.md` section or the commit body, then continue in a fresh session from that record rather than in an ever-growing context. Do not fork a long session to start parallel work.
+- Brief each subagent with the files from the map above, the design direction, rejected directions, the capture commands and the checks to run, so it does not rediscover the codebase. Ask for findings, changed files and the paths of decisive captures, not pasted output. Do not cap design attempts or captures that a judgment needs.
+
 ## Assets
 
 Local bitmap assets for demos belong under:
@@ -267,7 +296,7 @@ For interactive or visual demo changes, additionally verify:
 curl -I http://localhost:3000/guide/<slug>
 ```
 
-Use Playwright screenshots for desktop and mobile when layout, images, responsive behavior, or animation demos change. If Playwright browser binaries are missing, install the required browser with `bun run playwright install chromium`.
+Use Playwright screenshots for desktop and mobile when layout, images, responsive behavior, or animation demos change; capture them as described in [Visual Iteration](#visual-iteration). If Playwright browser binaries are missing, install the required browser with `bun run playwright install chromium`.
 
 Broader site checks are available when relevant:
 

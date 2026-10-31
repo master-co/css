@@ -1,5 +1,8 @@
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+
+Lit components normally render into a shadow root. Document styles cannot reach those elements, so deliver the generated CSS inside each component's shadow tree.
 
 <StepSection>
   <Step $row>
@@ -62,11 +65,69 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
     ### <StepNum />Start using Master CSS
     Now style elements inside your Lit templates using Master CSS syntax.
   </Step>
-  <HelloWorld url="localhost:5173" />
+  <DemoConfiguredExample
+    name="lit-shadow-button"
+    title="A styled button inside a shadow root"
+    source=""
+    html={'<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>'}
+    caption="The preview loads the generated stylesheet inside a real shadow root, alongside the button."
+    shadow
+    theme
+    code={false}
+  />
 </StepSection>
 
+## Check the shadow stylesheet
+Build and preview the project, then inspect the button inside `<my-element>` in browser developer tools. It should have a blue background, white text, and padding from the generated CSS. If only document-level elements are styled, check the `?inline` import and `static styles` inside the component.
 
-For newly generated class names, explicitly select `--mode runtime` and use the
-`withMasterCSSRuntime` decorator with `virtual:master-css-program` and
-`virtual:master-css-emitted-globals`. Attach one runtime to each shadow root.
-Static mode needs no engine, program, or decorator in the browser.
+Static mode needs no Master CSS browser runtime. Lit still needs JavaScript to create this client-rendered component.
+
+<DocumentDisclosure title="Generate new classes inside the shadow root">
+
+For class names first introduced in the browser, run the installer with runtime mode:
+
+```bash name=Terminal
+npm create @master/css@rc -- --framework lit --mode runtime --yes
+```
+
+The installer adds the runtime decorator to the standard `src/my-element.ts` component. Other components need the same setup. Load the CSS text before the runtime stylesheet so the layer order is established before generated rules:
+
+```ts name=src/my-element.ts
+/// <reference types="@master/css/client" />
+
+import { LitElement, html } from 'lit'
+import { customElement } from 'lit/decorators.js'
+import { withMasterCSSRuntime } from '@master/css-runtime'
+import program from 'virtual:master-css-program'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+import masterCSSStyles from './index.css?inline'
+
+@customElement('my-element')
+@withMasterCSSRuntime({ program, emittedGlobals })
+export class MyElement extends LitElement {
+  protected createRenderRoot() {
+    const root = super.createRenderRoot()
+    const styles = document.createElement('style')
+    styles.textContent = masterCSSStyles
+    root.append(styles)
+    return root
+  }
+
+  render() {
+    return html`<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>`
+  }
+}
+```
+
+This example inserts the base stylesheet as a `<style>` element before the runtime starts. Lit’s `static styles` uses adopted stylesheets, which the [CSSOM stylesheet order](https://drafts.csswg.org/cssom/#css-style-sheet-collections) places after ordinary `<style>` elements; putting the layer-order declaration there can place the base layer after the runtime’s utilities.
+
+Each decorated component starts a runtime for its own shadow root and disposes it when disconnected. A document-level runtime cannot observe classes inside that root.
+
+After the component appears, run this in the browser console. The button text should gain an underline without rebuilding:
+
+```js
+document.querySelector('my-element').shadowRoot
+  .querySelector('button').classList.add('text-decoration-line:underline')
+```
+
+</DocumentDisclosure>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-/** The words and actions render without JavaScript; only the field hydrates. */
+/** The words and actions render without JavaScript; only the field and its lamp hydrate. */
 export default function CTACanvas() {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {

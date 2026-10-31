@@ -276,8 +276,12 @@ export default function EditorFigures({ features, icons, model }: { features: re
             <span className="home-editor-chapter-body" id={`${descriptionId}-${index}`}>{$(feature.body)}</span>
           </button>
         ))}
+        {/* Two columns cannot hang a body under each title without holes, so they share one line below. */}
+        <div aria-hidden="true" className="home-editor-chapter-note">
+          {features.map((feature, index) => <p data-active={index === sceneIndex || undefined} key={feature.id}>{$(feature.body)}</p>)}
+        </div>
       </div>
-      <p className="sr-only" id={`${descriptionId}-scroll`}>{$('Use the arrow keys or scroll horizontally to read the file.')}</p>
+      <p className="sr-only" id={`${descriptionId}-scroll`}>{$('Use the arrow keys to read the file.')}</p>
       <div ref={inViewRef} className="home-editor-frame home-marks">
         <HomeEditorWindow>
           <HomeEditorBar aria-hidden="true">

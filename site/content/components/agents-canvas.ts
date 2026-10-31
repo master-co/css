@@ -3,7 +3,7 @@
 type Color = [number, number, number]
 interface Point { x: number, y: number }
 interface Tile extends Point { size: number }
-interface Palette { ground: Color, sheet: Color, ink: Color, line: Color, signal: Color, dark: boolean, font: string }
+interface Palette { ground: Color, sheet: Color, ink: Color, line: Color, signal: Color, stone: [Color, Color, Color], mirror: Color, dark: boolean, font: string }
 
 export interface AgentsCanvas {
   activity: (key: string | undefined, paused: boolean, response?: boolean) => void
@@ -70,7 +70,8 @@ export function mountAgentsCanvas(stage: HTMLElement, canvas: HTMLCanvasElement,
     const ground = read('--home-ground')
     colors = {
       ground, sheet: read('--home-sheet'), ink: read('--home-text'), line: read('--home-rule-strong'),
-      signal: read('--home-signal'), dark: ground[0] < 128, font: getComputedStyle(canvas).fontFamily
+      signal: read('--home-signal'), stone: [read('--stone-top'), read('--stone-mid'), read('--stone-bottom')],
+      mirror: read('--stone-gold'), dark: ground[0] < 128, font: getComputedStyle(canvas).fontFamily
     }
     probe.remove()
     if (width) paintField()
@@ -191,7 +192,7 @@ export function mountAgentsCanvas(stage: HTMLElement, canvas: HTMLCanvasElement,
   }
 
   /** A front-facing, thick glass lens. The lower bevel refracts the ground and top-left rim stays lit. */
-  function glass(tile: Tile, coreTile = false, warmth = 0) {
+  function glass(tile: Tile) {
     const { x, y, size } = tile
     const path = rounded(tile)
     const white: Color = [255, 255, 255]
@@ -256,17 +257,94 @@ export function mountAgentsCanvas(stage: HTMLElement, canvas: HTMLCanvasElement,
     ctx.strokeStyle = rim
     ctx.lineWidth = 1
     ctx.stroke(path)
-    if (coreTile) {
-      ctx.beginPath()
-      ctx.arc(x + size * .3, y + size * .3, 1.25, 0, tau)
-      ctx.fillStyle = rgb(warmth > 0 ? colors.signal : colors.ink, warmth > 0 ? .8 : .25)
-      ctx.fill()
+  }
+
+  /**
+   * The server is cut from the hero's stone: obsidian in light mode, moonstone in dark mode. It mirrors a
+   * few percent of the floor, carries the softbox's sheen, warms along its lower bevel and, while a call
+   * is in flight, mirrors the gold the way the hero's stone mirrors its silk.
+   */
+  function stone(tile: Tile, warmth: number) {
+    const { x, y, size } = tile
+    const path = rounded(tile)
+    const white: Color = [255, 255, 255]
+    const [top, mid, bottom] = colors.stone
+    const left = x - size / 2, upper = y - size / 2
+    ctx.save()
+    ctx.translate(x - light.x * 4, y + size / 2 + 6)
+    ctx.scale(1, .25)
+    const contact = ctx.createRadialGradient(0, 0, 1, 0, 0, size * .8)
+    contact.addColorStop(0, rgb([0, 0, 0], colors.dark ? .45 : .16))
+    contact.addColorStop(1, 'transparent')
+    ctx.fillStyle = contact
+    ctx.fillRect(-size, -size, size * 2, size * 2)
+    ctx.restore()
+    ctx.save()
+    // The cast shadow leans away from the softbox, as the hero's stone leans away from its lamp.
+    ctx.shadowColor = colors.dark ? rgb([0, 0, 0], .6) : rgb([60, 45, 20], .26)
+    ctx.shadowBlur = 22
+    ctx.shadowOffsetX = -light.x * 6
+    ctx.shadowOffsetY = 8 - light.y * 2
+    ctx.fillStyle = rgb(mid)
+    ctx.fill(path)
+    ctx.restore()
+
+    ctx.save()
+    ctx.clip(path)
+    const face = ctx.createLinearGradient(0, upper, 0, upper + size)
+    face.addColorStop(0, rgb(top))
+    face.addColorStop(.52, rgb(mid))
+    face.addColorStop(1, rgb(bottom))
+    ctx.fillStyle = face
+    ctx.fill(path)
+    // Polished: the floor of classes shows faintly in the face, inverted and wavering a little.
+    ctx.save()
+    ctx.globalAlpha = colors.dark ? .05 : .07
+    ctx.translate(x, y + size * .1)
+    ctx.scale(1.05, -1.1)
+    ctx.translate(-x, -(center.y + size * .1))
+    ctx.drawImage(layer, 0, 0, width, height)
+    ctx.restore()
+    const sheenX = x + light.x * size * .4, sheenY = upper + (light.y + .3) * size * .35
+    const sheen = ctx.createRadialGradient(sheenX, sheenY, 0, sheenX, sheenY, size * .95)
+    sheen.addColorStop(0, rgb(white, colors.dark ? .75 : .2))
+    sheen.addColorStop(.5, rgb(white, colors.dark ? .14 : .04))
+    sheen.addColorStop(1, rgb(white, 0))
+    ctx.fillStyle = sheen
+    ctx.fillRect(left, upper, size, size)
+    if (colors.dark) {
+      // Moonstone's cool adularescence floats low, across from the light.
+      const coolX = x - light.x * size * .35, coolY = y + size * .22
+      const cool = ctx.createRadialGradient(coolX, coolY, 0, coolX, coolY, size * .6)
+      cool.addColorStop(0, 'oklch(0.9 0.03 240 / 0.24)')
+      cool.addColorStop(1, 'oklch(0.9 0.03 240 / 0)')
+      ctx.fillStyle = cool
+      ctx.fillRect(left, upper, size, size)
     }
-    if (coreTile && warmth > 0) {
+    const lower = ctx.createLinearGradient(0, y + size * .2, 0, y + size * .5)
+    lower.addColorStop(0, rgb(colors.mirror, 0))
+    lower.addColorStop(1, rgb(colors.mirror, (colors.dark ? .28 : .14) + warmth * .5))
+    ctx.fillStyle = lower
+    ctx.fillRect(left, y, size, size / 2)
+    ctx.restore()
+
+    const rim = ctx.createLinearGradient(left + light.x * size * .3, upper + light.y * size * .3, left + size, upper + size)
+    rim.addColorStop(0, rgb(white, colors.dark ? .95 : .42))
+    rim.addColorStop(.42, rgb(white, 0))
+    rim.addColorStop(.62, rgb(white, 0))
+    rim.addColorStop(1, rgb(colors.mirror, (colors.dark ? .5 : .4) + warmth * .5))
+    ctx.strokeStyle = rim
+    ctx.lineWidth = 1.2
+    ctx.stroke(path)
+    ctx.beginPath()
+    ctx.arc(x + size * .3, y + size * .3, 1.25, 0, tau)
+    ctx.fillStyle = warmth > 0 ? rgb(colors.signal, .9) : rgb(colors.dark ? colors.ink : white, colors.dark ? .3 : .35)
+    ctx.fill()
+    if (warmth > 0) {
       ctx.save()
-      ctx.strokeStyle = rgb(colors.signal, warmth * .9)
-      ctx.shadowColor = rgb(colors.signal, warmth * .45)
-      ctx.shadowBlur = 16
+      ctx.strokeStyle = rgb(colors.signal, warmth * .8)
+      ctx.shadowColor = rgb(colors.signal, warmth * .5)
+      ctx.shadowBlur = 18
       ctx.stroke(path)
       ctx.restore()
     }
@@ -354,7 +432,8 @@ export function mountAgentsCanvas(stage: HTMLElement, canvas: HTMLCanvasElement,
     ordered.push({ tile: core, index: -1, isCore: true })
     ordered.sort((a, b) => (a.tile.y + a.tile.size / 2) - (b.tile.y + b.tile.size / 2))
     for (const { tile, index, isCore } of ordered) {
-      glass(tile, isCore, warmth)
+      if (isCore) stone(tile, warmth)
+      else glass(tile)
       if (index === selected) {
         ctx.strokeStyle = rgb(colors.ink, .28)
         ctx.lineWidth = 1

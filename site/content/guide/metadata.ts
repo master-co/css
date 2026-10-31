@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Get started with Master CSS',
-  description: 'This section walks you through learning and starting to use Master CSS.',
+  description: 'Learn class syntax, design tokens and CSS delivery, then apply them in your framework.',
   category: 'Overview',
   fileURL: import.meta.url
 })

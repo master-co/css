@@ -84,7 +84,7 @@ export function AgentsOrbit({ call, classRows, paused }: { call?: AgentsOrbitCal
             </li>
           ))}
         </ul>
-        <div className="home-mcp-core">
+        <div className="home-lit home-mcp-core home-stone" suppressHydrationWarning>
           <MasterCSSLogo aria-hidden="true" height={34} width={34} />
           <span aria-hidden="true" className="home-mcp-core-label">MCP</span>
           <span className="sr-only">@master/css-mcp</span>

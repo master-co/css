@@ -1,19 +1,23 @@
 import Class2CSS from '~/site/components/Class2CSS'
 import { FoundationDialog, FoundationMotion, FoundationTransition } from '~/site/components/demo/FoundationTypeMotion'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only]
 Use motion to explain a state change or show progress. Choose a short duration for feedback and reserve continuous motion for status indicators.
 
 <FoundationMotion />
 
-Start with one named animation and make the entrance finite:
+Press Play to compare the two entrances. The preview uses separate name, duration and easing declarations; each animation runs once because it keeps the native iteration-count default:
 
 ```html
-<div class="animate-fade@motion-safe animation-iteration-count:1@motion-safe">Collection saved</div>
+<div class="animation-name:fade@media(screen)@motion-safe animation-slow@media(screen)@motion-safe animation-smooth@media(screen)@motion-safe">Collection saved</div>
+<div class="animation-name:zoom@media(screen)@motion-safe animation-fast@media(screen)@motion-safe animation-overshoot@media(screen)@motion-safe">New collection</div>
 ```
 
-<Class2CSS>{['animate-fade@motion-safe', 'animation-iteration-count:1@motion-safe']}</Class2CSS>
+<Class2CSS>{['animation-name:fade@media(screen)@motion-safe', 'animation-slow@media(screen)@motion-safe', 'animation-smooth@media(screen)@motion-safe', 'animation-name:zoom@media(screen)@motion-safe', 'animation-fast@media(screen)@motion-safe', 'animation-overshoot@media(screen)@motion-safe']}</Class2CSS>
+
+These classes start their animation when applied. The preview adds Play, Pause and Replay controls so you can inspect the movement. The `@motion-safe` condition keeps the content still when reduced motion is requested; `@media(screen)` leaves it still in print.
 
 ---
 
@@ -21,7 +25,7 @@ Start with one named animation and make the entrance finite:
 ### Animation tokens
 Each `--animate-*` token contains a complete native `animation` shorthand. The matching `animate-*` class emits one declaration, such as `animation: var(--animate-fade)`.
 
-Use `animate-fade` for a brief appearance and `animate-rotate` for ongoing progress. See [all animation values and their contract](/reference/tokens/animate).
+Use `animate-fade` for an opacity animation and `animate-rotate` for ongoing progress. Preset shorthand tokens repeat indefinitely; the next section shows how to make a single entrance. See [all animation values and their contract](/reference/tokens/animate).
 
 ### Duration scale
 Share duration tokens across animation and transition properties.
@@ -66,11 +70,15 @@ Select the property, duration and timing function independently. A transition ru
 
 <FoundationTransition />
 
+Toggle the preview's checkbox: it changes the layer's position, and the transition interpolates between the two values. The same pattern applies to opacity on an interactive control:
+
 ```html
-<button class="opacity:.7 opacity:1:hover transition-property:opacity transition-fast transition-smooth">Save</button>
+<button type="button" class="opacity:.7 opacity:1:hover opacity:1:focus-visible transition-property:opacity@motion-safe transition-fast@motion-safe transition-smooth@motion-safe">Save</button>
 ```
 
-<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'transition-property:opacity', 'transition-fast', 'transition-smooth']}</Class2CSS>
+<Class2CSS>{['opacity:.7', 'opacity:1:hover', 'opacity:1:focus-visible', 'transition-property:opacity@motion-safe', 'transition-fast@motion-safe', 'transition-smooth@motion-safe']}</Class2CSS>
+
+The state change remains available with reduced motion; only its interpolation is conditional. Check the control's text contrast in both opacity states.
 
 ## Respect motion preference
 Use `@motion-safe` so nonessential motion only runs when the user has not requested reduced motion. Keep status text visible in either state.
@@ -87,8 +95,7 @@ Store the keyframe name and playback settings together in one shorthand token. D
 
 <FoundationDialog />
 
-```css name=index.css
-@prune native;
+<ConfiguredExample source={`@prune native;
 @theme {
   --duration-enter: 180ms;
   --easing-emphasized: cubic-bezier(.16, 1, .3, 1);
@@ -97,12 +104,24 @@ Store the keyframe name and playback settings together in one shorthand token. D
 @keyframes dialog-in {
   from { translate: 0 0.5rem; opacity: 0; }
   to { translate: 0; opacity: 1; }
-}
+}`} html={`<button id="open-details" type="button">Open details</button>
+<dialog id="details" aria-labelledby="dialog-title" aria-describedby="dialog-description"
+  class="width:calc(100%-32px) max-w-xs margin:auto p-md r-lg border-width:1px border-style:solid b-line-divider bg-surface-floating fg-text-body shadow-xl animate-dialog-in@media(screen)@motion-safe">
+  <h2 id="dialog-title" class="margin:0 text-lg font-semibold">Collection details</h2>
+  <p id="dialog-description">This dialog enters once on opening. Closing it is immediate.</p>
+  <form method="dialog"><button autofocus>Close details</button></form>
+</dialog>`} />
+
+Run the script after the markup. Native [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) opens the dialog in the top layer and makes the rest of the document inert while it is open.
+
+```js
+const dialog = document.getElementById('details');
+const trigger = document.getElementById('open-details');
+trigger.addEventListener('click', () => dialog.showModal());
+dialog.addEventListener('close', () => trigger.focus());
 ```
 
-```html
-<dialog class="animate-dialog-in@motion-safe">...</dialog>
-```
+Open the dialog, then close it with Escape or the Close details button. Focus returns to the trigger. With reduced motion enabled, the dialog opens immediately and remains operable. The article's preview contains this interaction inside its own document.
 
 With `@prune native`, animation declarations retain their referenced keyframes. Static names, token references, native overrides and fallbacks are tracked; unresolved dynamic names retain all candidates. Without pruning, keyframes stay in their stylesheet. Use `@safelist keyframes "dialog-in";` for names introduced only by JavaScript. See the [keyframe contract](/reference/directives/theme#native-keyframes).
 

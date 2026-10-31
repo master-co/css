@@ -36,7 +36,7 @@ export default function ThemeModesPreview({ className }: { className?: string })
             <div className="home-theme-copy home-theme-copy-light"><ShopScreen mode="light" /></div>
             <div className="home-theme-copy home-theme-copy-dark"><ShopScreen mode="dark" /></div>
             <span className="home-theme-divider" />
-            <span className="home-theme-knob" />
+            <span className="home-lit home-stone home-stone-quiet home-theme-knob" suppressHydrationWarning />
           </div>
           <p className="home-theme-measure">
             <span className="home-theme-measure-label" style={{ left: '25%' }}>50%</span>

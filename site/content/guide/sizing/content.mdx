@@ -9,11 +9,13 @@ Use `width:*` and `height:*` for native dimensions, and `min-*` or `max-*` to co
 <FoundationSizing />
 
 ```html
-<article class="width:100% max-w-sm">
-  <img class="width:3rem height:3rem r-pill" alt="" />
-  <p>Fluid content, measured avatar.</p>
+<article class="display:flex align-items:center gap-md width:100% max-w-sm">
+  <span class="display:grid place-content:center flex-shrink:0 width:3rem height:3rem r-pill">FN</span>
+  <p class="min-width:0">Fluid content, measured avatar.</p>
 </article>
 ```
+
+<Class2CSS>{['width:100%', 'max-w-sm', 'width:3rem', 'height:3rem', 'flex-shrink:0', 'min-width:0', 'r-pill']}</Class2CSS>
 
 ---
 
@@ -62,9 +64,11 @@ Use `width:100%` when the element should follow its parent, percentages such as 
 <!-- @MARK width:100% --><!-- @MARK width:50%@sm -->
 <aside class="width:100% width:50%@sm">...</aside>
 
-<!-- @MARK width:clamp(18rem,50vw,42rem) -->
-<section class="width:clamp(18rem,50vw,42rem)">...</section>
+<!-- @MARK width:clamp(18rem,50vw,42rem) max-width:100% -->
+<section class="width:clamp(18rem,50vw,42rem) max-width:100%">...</section>
 ```
+
+The `clamp()` expression still has an `18rem` lower bound. `max-width:100%` caps that preferred width when the parent is narrower, such as a sidebar or an enlarged-text layout.
 
 Percentage widths and heights follow native CSS behavior. The parent needs a definite height before `height:100%` or `height:50%` can resolve predictably.
 
@@ -146,7 +150,7 @@ Min and max rules are often more stable than fixed widths. They let content, con
 <FoundationShrink />
 
 ```html
-<!-- @MARK display:flex --><!-- @MARK min-width:0 --><!-- @MARK max-width:24rem -->
+<!-- @MARK display:flex --><!-- @MARK min-width:0 --><!-- @MARK max-w-sm -->
 <article class="display:flex gap-md max-w-sm">
   <img class="flex-shrink:0 width:2.5rem height:2.5rem" alt="" />
   <div class="min-width:0">Long content...</div>
@@ -154,10 +158,10 @@ Min and max rules are often more stable than fixed widths. They let content, con
 ```
 
 <Class2CSS>
-  {['display:flex', 'gap-md', 'max-width:24rem', 'width:2.5rem height:2.5rem', 'flex-shrink:0', 'min-width:0']}
+  {['display:flex', 'gap-md', 'max-w-sm', 'width:2.5rem height:2.5rem', 'flex-shrink:0', 'min-width:0']}
 </Class2CSS>
 
-In flex and grid layouts, `min-width:0` is the common fix for text or media that refuses to shrink. Without it, intrinsic content can force a row wider than its container even when the parent has a max width.
+In flex and grid layouts, [`min-width:0`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/min-width) lets a child shrink below its automatic minimum size. Long unbroken text still needs a wrapping or truncation rule. The preview truncates its filename; use `overflow-wrap:anywhere` when the full text should remain visible.
 
 Use `min-height:*` for baseline regions that may grow, such as app shells, empty states, and hero sections. Use `max-height:*` for scrollable panels, menus, and media regions that must stay inside the viewport.
 
@@ -199,8 +203,10 @@ When a dimension becomes part of the product language, add a named container var
 <!-- @MARK w-sidebar --><!-- @MARK max-w-measure --><!-- @MARK w-panel -->
 <aside class="w-sidebar">...</aside>
 <article class="max-w-measure">...</article>
-<section class="w-panel">...</section>
+<section class="w-panel max-width:100%">...</section>
 ```
+
+The panel keeps a parent-width cap because its token’s `18rem` minimum can exceed a narrow container. Choose `width:100% max-w-sidebar` instead of `w-sidebar` when the sidebar also needs to shrink with its parent.
 
 Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric keys. Numeric keys are easy to confuse with raw values such as `width:1px` or `width:2px`.
 
@@ -239,10 +245,10 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 </div>
 ```
 
-(o) The flexible child is allowed to shrink.
+(o) The flexible child can shrink, and its long text can wrap.
 
 ```html
 <div class="display:flex">
-  <main class="min-width:0 max-w-5xl">Long unbroken content...</main>
+  <main class="min-width:0 max-w-5xl overflow-wrap:anywhere">field-notes-autumn-collection-final-v03.fig</main>
 </div>
 ```

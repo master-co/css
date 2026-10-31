@@ -10,18 +10,13 @@ import { createStylesheetCollection } from '@master/css-compiler/stylesheet'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import { deliveryFences, deliverySource, deliveryFixture, deliverySection } from '../tests/delivery-examples'
 import { compileMigrationExample } from '../tests/migration-examples'
+import { projectStyleExample } from '../components/demo/project-style-examples'
 
 const document = readFileSync(new URL('../content/guide/global-styles/content.mdx', import.meta.url), 'utf8')
-function example(name: string) {
-  const text = [...document.matchAll(/```\w+ name=([^\n]+)\n([\s\S]*?)```/g)].find(match => match[1].split('&')[0] === name)?.[2]
-  assert.ok(text, `Missing ${name}`)
-  return text
-}
-
 test('the maintenance guide compiles its actual CSS and markup examples', async () => {
   // The universal compiler receives the imported preset as resolved context.
-  const source = example('maintenance.css').replace("@import '@master/css';", '')
-  const html = example('maintenance.html')
+  assert.match(document, /<ProjectStyleExample name="maintenance"/u)
+  const { source, html } = projectStyleExample('maintenance')
   const { manifest, css } = await compileManifest(source, { baseManifest: preset as unknown as MasterCSSManifest })
   const tooling = createToolingSessionSync({ manifest })
   try {
@@ -37,7 +32,7 @@ test('the maintenance guide compiles its actual CSS and markup examples', async 
     assert.match(css, /prefers-reduced-motion/)
     assert.match(css, /focus-visible/)
     assert.match(css, /scaleX\(var\(--progress/)
-    const after = (await compileManifest(source.replace('--color-brand: #4f46e5', '--color-brand: #dc2626'), { baseManifest: preset as unknown as MasterCSSManifest })).manifest
+    const after = (await compileManifest(source.replace('--color-brand: light-dark(#4f46e5, #818cf8)', '--color-brand: light-dark(#dc2626, #fca5a5)'), { baseManifest: preset as unknown as MasterCSSManifest })).manifest
     using compiler = await createCompiler()
     const common = { version: 1 as const, sources: [{ path: 'maintenance.html', classes }], stylesheets: [], outputs: [], excluded: [], unresolved: ['Browser states checked separately'] }
     const comparison = compiler.compareProjectSnapshots({ before: { ...common, manifest }, after: { ...common, manifest: after } })
@@ -88,5 +83,28 @@ test('native pruning examples retain each route’s authored HTML and shared saf
       assert.ok(!output.css.includes('.' + removed), `${letter}: other route excluded`)
       assert.doesNotMatch(output.css, /debug-outline/)
     }
+  } finally { await scanner.dispose(); collection.dispose(); fixture.dispose() }
+})
+
+test('the shared native source has independent outputs under each documented root', async () => {
+  const fixture = deliveryFixture()
+  const scanner = new MasterCSSScanner({ manifest: preset as unknown as MasterCSSManifest }, fixture.root)
+  const collection = createStylesheetCollection()
+  try {
+    const fences = deliveryFences(deliverySection('native-css-pruning', 'Root scope'))
+    for (const fence of fences.filter(fence => /^(css|html)$/.test(fence.language))) fixture.write(fence.name, fence.text)
+    await scanner.init()
+    for (const name of ['app/a/a.css', 'app/b/b.css']) {
+      const source = fences.find(fence => fence.name === name)!.text
+      await collection.register(scanner, `${fixture.root}/${name}`, source, { baseManifest: preset as unknown as MasterCSSManifest, projectDir: fixture.root })
+    }
+    for (const letter of ['b', 'a', 'b']) {
+      const output = await collection.compose({ scanner, baseManifest: preset as unknown as MasterCSSManifest, projectDir: fixture.root, sourceIds: [`${fixture.root}/app/${letter}/${letter}.css`] })
+      assert.match(output.css, /\.shared-card\s*\{/)
+      assert.equal(output.css.includes('.only-used-in-b'), letter === 'b', `${letter}: shared rules follow this root's usage`)
+      assert.ok(output.css.includes(`.${letter}-page`))
+      assert.ok(!output.css.includes(letter === 'a' ? '.b-page' : '.a-page'))
+    }
+    assert.equal(readFileSync(`${fixture.root}/app/shared.css`, 'utf8'), fences.find(fence => fence.name === 'app/shared.css')!.text)
   } finally { await scanner.dispose(); collection.dispose(); fixture.dispose() }
 })

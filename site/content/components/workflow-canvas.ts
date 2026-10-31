@@ -194,7 +194,8 @@ export function mountWorkflowCanvas(scene: HTMLElement, canvas: HTMLCanvasElemen
       ink: css.color, paper: css.backgroundColor, ground: css.columnRuleColor,
       glass: css.borderRightColor, edge: css.borderBottomColor,
       line: css.borderTopColor, quiet: css.caretColor, signal: css.outlineColor,
-      light: css.textDecorationColor, shadow: css.getPropertyValue('flood-color'), mono: css.fontFamily, dark: css.colorScheme === 'dark'
+      light: css.textDecorationColor, shadow: css.getPropertyValue('flood-color'), mono: css.fontFamily, dark: css.colorScheme === 'dark',
+      stone: { top: css.stopColor, mid: css.fill, bottom: css.lightingColor, rim: css.textEmphasisColor, mirror: css.stroke }
     }
     dirty = true
     wake()

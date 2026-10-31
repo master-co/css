@@ -42,6 +42,12 @@
     text-decoration-color: light-dark(var(--home-highlight), rgb(255 255 255 / .12));
     column-rule-color: var(--home-ground);
     flood-color: light-dark(rgb(24 24 27 / .13), rgb(0 0 0 / .45));
+    /* The ink chips are cut from the hero's stone: its face, rim and warm lower mirror. */
+    stop-color: var(--stone-quiet-top);
+    fill: var(--stone-quiet-mid);
+    lighting-color: var(--stone-quiet-bottom);
+    text-emphasis-color: var(--stone-rim);
+    stroke: var(--stone-mirror);
     font-family: var(--home-mono);
   }
   .home-wf-scene[data-renderer='canvas'] {
@@ -140,8 +146,7 @@
     width: fit-content;
     margin: 1rem auto;
     padding: .75rem;
-    color: var(--home-text-inverse);
-    background-color: var(--home-ink);
+    color: var(--stone-text);
     font-size: .6875rem;
   }
   .home-wf-source-mark { font-size: .875rem; opacity: .55; }
@@ -165,10 +170,20 @@
   .home-wf-repo-entry {
     display: grid;
     place-items: center;
-    color: var(--home-text-inverse);
-    background-color: var(--home-ink);
+    color: var(--stone-text);
     font-size: var(--home-label);
     padding: .5rem;
+  }
+  /* Only the entry the selected project resolves through stays stone; the other reads as a plain file. */
+  .home-wf-scene[data-active='0'] [data-wf-anchor='entry-1'],
+  .home-wf-scene[data-active='1'] [data-wf-anchor='entry-0'] {
+    color: var(--home-text-body);
+  }
+  .home-wf-scene:not([data-renderer='canvas'])[data-active='0'] [data-wf-anchor='entry-1'],
+  .home-wf-scene:not([data-renderer='canvas'])[data-active='1'] [data-wf-anchor='entry-0'] {
+    border-color: transparent;
+    background: var(--home-sheet);
+    box-shadow: 0 0 0 1px var(--home-hairline);
   }
   .home-wf-repo-file {
     display: grid;
@@ -211,7 +226,8 @@
       left: var(--home-segment-pad);
       width: calc((100% - var(--home-segment-pad) * 2) / 3);
       border-radius: inherit;
-      background-color: var(--home-sheet);
+      /* Lifted a step in dark mode: the card around it is already a sheet. */
+      background-color: light-dark(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 86%, white));
       box-shadow: 0 0 0 1px var(--home-hairline), var(--home-contact), inset 0 1px 0 var(--home-highlight);
       translate: 0 0;
       transition: translate var(--home-base) var(--home-ease);
@@ -246,7 +262,7 @@
   }
   .home-wf-routes-code {
     display: block;
-    overflow-x: auto;
+    overflow: hidden;
     font-size: .6875rem;
     line-height: 1.65;
     color: var(--home-text-body);
@@ -285,7 +301,7 @@
     cursor: pointer;
     transition: color var(--home-base) var(--home-ease);
   }
-  .home-wf-trace-node-definition { flex-direction: column; gap: .375rem; color: var(--home-text-inverse); background-color: var(--home-ink); }
+  .home-wf-trace-node-definition { flex-direction: column; gap: .375rem; color: var(--stone-text); }
   .home-wf-trace-change { display: flex; align-items: center; gap: .375rem; }
   .home-wf-trace-swatch { width: .625rem; height: .625rem; border-radius: 3px; }
   .home-wf-trace-arrow { opacity: .5; font-size: .625rem; }
@@ -312,11 +328,32 @@
     height: 44px;
     padding: 0;
     border-radius: 50%;
-    color: var(--home-text-faint);
-    background: var(--home-sheet);
+    color: var(--home-text-quiet);
+    background: none;
     cursor: pointer;
+    isolation: isolate;
+    transition: color var(--home-quick) var(--home-ease);
+    /* A small disc of the hero's clear glass inside the 44px target, lit by the page lamp. */
+    &::before {
+      position: absolute;
+      inset: 8px;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(180deg, light-dark(rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.09)), light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.03)));
+      box-shadow:
+        0 0 0 1px var(--home-hairline),
+        inset 0 1px 0 var(--home-highlight),
+        calc(var(--cast-x) * 0.5) calc(var(--cast-y) * 0.5) 6px -2px light-dark(oklch(18% 0 none / 0.12), oklch(0% 0 none / 0.5));
+      backdrop-filter: blur(4px);
+      transition: box-shadow var(--home-quick) var(--home-ease);
+      content: '';
+    }
     &:hover { color: var(--home-text); }
-    &:focus-visible { outline: 2px solid var(--home-ink); outline-offset: 2px; }
+    &:hover::before { box-shadow: 0 0 0 1px var(--home-rule-strong), inset 0 1px 0 var(--home-highlight), calc(var(--cast-x) * 0.7) calc(var(--cast-y) * 0.7) 8px -2px light-dark(oklch(18% 0 none / 0.14), oklch(0% 0 none / 0.55)); }
+    &:focus-visible { outline: 2px solid var(--home-ink); outline-offset: -4px; }
+    @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+      &::before { background: var(--home-sheet); backdrop-filter: none; }
+    }
   }
   [data-renderer='canvas'] .home-wf-play { display: grid; }
   .home-wf-play-icon { display: none; }
@@ -337,7 +374,7 @@
       padding: .5rem;
     }
     .home-wf-repo-app { display: flex; justify-content: space-around; }
-    .home-wf-manifest, .home-wf-repo-entry, .home-wf-trace-node-definition { color: var(--home-text); }
+    .home-wf-manifest, .home-wf-repo-entry, .home-wf-trace-node-definition { color: var(--home-text); background: none; box-shadow: none; }
     .home-wf-trace-stage { display: flex; flex-wrap: wrap; gap: .5rem; }
   }
   @media (forced-colors: active) {

@@ -24,6 +24,7 @@ Use static rendering when Rails ERB views contain complete class strings and you
     </StepL>
     <StepR>
       ```bash name=Terminal
+      npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -101,4 +102,13 @@ Use static rendering when Rails ERB views contain complete class strings and you
 
 Static rendering depends on complete class strings in scanned source files. If an ERB view assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).
 
-Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
+Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy `app.css` and every CSS file it imports together, preserving their names and relative paths.
+
+## Check the page
+Create or use a route whose controller renders `app/views/home/index.html.erb`, then start Rails with `bin/rails server`. The view filename alone does not register a route. Verify that `/assets/app.css` returns the generated CSS.
+
+These URLs serve files written under `public/assets` directly. Deploy that Vite output alongside the Rails application. For a new release, update the asset URLs with a version identifier, such as `/assets/app.css?v=2`, and configure caching for those URLs.
+
+Turbo’s [asset tracking](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) compares the tracked tags. Overwriting files at the same URLs does not trigger `data-turbo-track="reload"`; update the tags and matching assets together.
+
+The heading should remain large, heavy and italic with JavaScript disabled. If the stylesheet loads but the classes have no effect, check the `@source` paths and regenerate the CSS.

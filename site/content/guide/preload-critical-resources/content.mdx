@@ -2,28 +2,26 @@ import ResourceWaterfall from '~/site/components/demo/ResourceWaterfall'
 
 Preload a resource only when the first screen needs it and normal discovery starts it too late. Static pages use ordinary CSS delivery. Runtime-only pages need their engine and program before generating styles; progressive pages already have the first screen's CSS.
 
-## Preload runtime engine
-For the CDN runtime-only setup, preload the script and default program so both requests can start during HTML parsing.
+## Preload the default program \{#preload-runtime-engine\}
+Start with the [matching runtime assets](/guide/installation/cdn#host-matching-assets) on your static host or CDN. The HTML already exposes the stylesheet and script. Preload the default program so its request can start before the runtime script executes.
 
 Conceptual request waterfall for the CDN runtime script and default program. The marker shows when the page can first paint after critical runtime resources are ready; positions are illustrative, not measured network data.
 <ResourceWaterfall />
 
-Preload the CDN runtime with `as="script"`. When its engine starts, the CDN runtime fetches `default-program.bin`, the default preset compiled for the engine; preload it with `as="fetch"` and `crossorigin` so the runtime's fetch reuses the response.
+When its engine starts, the CDN runtime fetches `default-program.bin`, the default preset compiled for the engine. Use `as="fetch"` and `crossorigin` to match that fetch, including when the files are served from the same origin.
 
-(o) Use `html <link rel="preload">` to preload the critical resources.
+(o) Expose the late-discovered program with `html <link rel="preload">`.
 ```html
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"> <!-- [!code highlight] -->
-  <link rel="preload" as="fetch" crossorigin href="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/default-program.bin"> <!-- [!code highlight] -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@master/css-preset@rc/src/base.css">
-  <script src="https://cdn.jsdelivr.net/npm/@master/css-runtime@rc/dist/global.min.js"></script>
+  <link rel="preload" as="fetch" crossorigin href="/master-css/default-program.bin"> <!-- [!code highlight] -->
+  <link rel="stylesheet" href="/master-css/base.css">
+  <script src="/master-css/global.min.js"></script>
 </head>
 </html>
 ```
-With these preload hints in place, the runtime script and default program requests start during document parsing and download in parallel with the stylesheet. The parser and runtime later reuse the preloaded responses instead of waiting on new requests.
+The program request can now start during document parsing, alongside the stylesheet and script. The runtime can reuse that response when it starts. The stylesheet link and script tag already appear in this document's head, so they use normal HTML discovery.
 
 
 ---
@@ -42,7 +40,7 @@ Official runtime integrations compile the project manifest into a runtime progra
 </html>
 ```
 
-The preload starts the program request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-program`, whose facade fetches the same program. Matching `as="fetch"` and `crossorigin` lets the browser reuse the preloaded response instead of issuing a second request.
+The preload starts the program request while the browser is still parsing the document. The runtime module later imports `virtual:master-css-program`, whose facade fetches the same program. Matching `as="fetch"` and `crossorigin` enables reuse; confirm it in the target browser with your deployed cache headers.
 
 (i) This optimization applies to pure runtime rendering. Progressive rendering already has critical CSS in `style#master-css`, and its runtime requests the project program only when the engine starts, so do not preload either program on progressive pages.
 
@@ -58,7 +56,7 @@ Master CSS hands off different files at different points:
 ---
 
 ## Defer runtime engine
-On a progressive page, the critical CSS is already in `style#master-css`. The runtime defers its engine: the engine module and the project program are requested only when a class that the page hydration manifest does not cover appears.
+On a progressive page, the critical CSS is already in `style#master-css`. With default startup options, the runtime defers its engine and project program until a class outside the page hydration manifest appears. Explicit engine startup or idle prefetch changes that behavior.
 
 (o) Load the runtime as an ordinary deferred module script.
 ```html
@@ -101,6 +99,6 @@ This is different from runtime project programs. A runtime-only page needs its p
 
 ## Verify the request waterfall \{#benefits\}
 
-Compare a cold load with and without the hint in browser DevTools. Check that the critical request starts earlier and the later consumer reuses it. Match the URL, resource type and credentials mode; an unused preload can compete with resources the page actually needs.
+Compare a cold load with and without the hint in browser DevTools. Check that the critical request starts earlier and the later consumer reuses it. Match the URL, resource type and credentials mode, and inspect response caching when a second request remains. An unused preload can compete with resources the page actually needs. See the [browser preload contract](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/preload).
 
 Use [Rendering modes](/guide/rendering-modes) to choose delivery first. A preload changes request discovery; it does not reduce the asset's parsing or execution work.

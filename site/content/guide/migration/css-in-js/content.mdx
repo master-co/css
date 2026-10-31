@@ -64,18 +64,22 @@ Move the reusable value into `@theme`, then use a class string where the button 
 
 ```tsx name=Button.tsx
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { className, ...buttonProps } = props
+  const { className, type = 'button', ...buttonProps } = props
   return (
     <button
-      className={['display:inline-flex align-items:center gap-xs min-height:2.5rem px-md r-md bg-primary fg-white', className].filter(Boolean).join(' ')}
-      type="button"
+      className={['display:inline-flex align-items:center gap-xs min-height:2.5rem padding-block:0 px-md r-lg bg-primary fg-white', className].filter(Boolean).join(' ')}
+      type={type}
       {...buttonProps}
     />
   )
 }
 ```
 
-If the project needs a named component class, define it once in CSS.
+The original `.5rem` radius maps to the preset `r-lg`, not `r-md`. Compare computed values when replacing literals with named tokens. This wrapper defaults to `type="button"`; pass `type="submit"` when it submits a form. Check existing form call sites because a native button without a type defaults to submission.
+
+This example replaces a visual wrapper. Preserve any existing ref forwarding, polymorphic `as` prop, or event behavior separately before replacing a component with a wider contract.
+
+If the project needs a named component class, keep the `@theme` block above and add a component layer below it:
 
 ```css name=app.css
 @import "@master/css";
@@ -85,8 +89,9 @@ If the project needs a named component class, define it once in CSS.
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     gap: var(--spacing-xs);
+    padding-block: 0;
     padding-inline: var(--spacing-md);
     background-color: var(--color-primary);
     color: oklch(100% 0 none);
@@ -100,7 +105,7 @@ If the project needs a named component class, define it once in CSS.
 ```
 
 ```html
-<button class="btn">Save</button>
+<button type="button" class="btn">Save</button>
 ```
 
 ---
@@ -112,7 +117,7 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 const toneClasses = {
   neutral: 'bg-surface-base fg-text-body b-line-divider border-style:solid border-width:1px',
   primary: 'bg-blue-60 fg-white bg-blue-70:hover',
-  danger: 'bg-red-60 fg-white bg-red-70:hover'
+  danger: 'bg-red-70 fg-white bg-red-80:hover'
 }
 
 const sizeClasses = {
@@ -126,11 +131,11 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: keyof typeof sizeClasses
 }
 
-export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
+export function Button({ tone = 'primary', size = 'md', className, type = 'button', ...props }: ButtonProps) {
   return (
     <button
       className={['display:inline-flex align-items:center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
-      type="button"
+      type={type}
       {...props}
     />
   )
@@ -139,6 +144,8 @@ export function Button({ tone = 'primary', size = 'md', className, ...props }: B
 
 When a variant controls more than visual styles, keep the prop and only migrate the visual declarations.
 
+Appending `className` preserves the caller's classes; it does not make them win over conflicting utilities. HTML class order does not decide the [cascade](/guide/cascade-layers). Use the variant props to select one value, or put overridable defaults in `@layer components` so caller utilities can override them.
+
 ---
 
 ## Use CSS variables for dynamic values
@@ -146,12 +153,12 @@ Runtime values should not become generated class names. Keep the class static an
 
 ```tsx
 export function Meter({ value }: { value: number }) {
-  const percent = Math.max(0, Math.min(100, value))
+  const percent = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0
   return (
     <div role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}
       className="overflow:hidden height:0.5rem border-radius:100% bg-gray-10">
       <div
-        className="height:100% width:var(--value) bg-green-60 transition-property:width transition-duration:var(--duration-fast) transition-timing-function:var(--easing-smooth)"
+        className="height:100% width:var(--value) bg-green-60 transition-property:width transition-duration:var(--duration-fast)@motion-safe transition-timing-function:var(--easing-smooth)"
         style={{ '--value': `${percent}%` } as React.CSSProperties}
       />
     </div>
@@ -173,7 +180,7 @@ export function GlobalStyles() {
   return <Global styles={css`
     body {
       margin: 0;
-      background: var(--color-surface);
+      background: var(--color-surface-base);
     }
   `} />
 }
@@ -189,7 +196,7 @@ export function GlobalStyles() {
 }
 
 @layer defaults {
-  body { background: var(--color-surface); }
+  body { background: var(--color-surface-base); }
 }
 ```
 

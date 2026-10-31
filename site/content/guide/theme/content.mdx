@@ -3,6 +3,8 @@ import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 ## Overview [sr-only]
 Define a token when several elements should share a design value. Put it in `@theme`, then use the matching class in markup. Changing the token updates its consumers together.
 
+After [Installation](/guide/installation), add the definitions below after the existing `@import '@master/css'` in your application stylesheet.
+
 <DemoConfiguredExample name="theme-first-card" title="Three shared values, one card" source={`@theme {
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
@@ -75,6 +77,22 @@ Aliases resolve where they are declared. If `--color-text-action` is declared at
 
 ```
 
+<DemoConfiguredExample name="theme-local-alias" title="A local brand and an inherited alias" source={`@theme {
+  --color-brand: light-dark(#1d4ed8, #93c5fd);
+  --color-text-action: var(--color-brand);
+}
+
+@layer components {
+  [data-brand="plum"] {
+    --color-brand: light-dark(#86198f, #f0abfc);
+  }
+  [data-rebind-action] {
+    --color-text-action: var(--color-brand);
+  }
+}`} html={'<section data-brand="plum" class="p-lg r-lg bg-surface-raised"><h2 class="margin:0 text-lg font-semibold fg-brand">Plum brand scope</h2><p class="mt-md margin-bottom:0 font-medium fg-text-action">Inherited action: blue</p><p data-rebind-action class="mt-sm margin-bottom:0 font-medium fg-text-action">Rebound action: plum</p></section>'} theme previewFirst caption="Both action labels use fg-text-action. The first inherits the alias computed at the root. The second redeclares the alias on its own element, where --color-brand is plum. Switch the preview theme to inspect both color schemes." />
+
+The [CSS custom property rules](https://www.w3.org/TR/css-variables-1/#defining-variables) resolve `var()` references before inheritance. The local brand override therefore changes the heading, but the inherited action color remains blue. Redeclaring the alias makes that action follow the local brand.
+
 Define the same token key as a preset token when you want to override it. Declarations retain author order, including duplicate fallbacks. Normal CSS specificity, conditions, and cascade order determine the winning value.
 
 ```css name=index.css
@@ -134,6 +152,8 @@ Use `inline` to bridge a native variable that should resolve on the element usin
 
 ## Define responsive tokens
 Define viewport conditions with `@custom-media`. Container tokens supply width caps; container queries use explicit native thresholds. A `--breakpoint-*` custom property does not register a condition.
+
+This example overrides the preset’s container sizes and named viewport conditions for one project. Its `md` starts at `48rem`; the unmodified preset’s `md` starts at `64rem`.
 
 ```css name=index.css
 @theme {

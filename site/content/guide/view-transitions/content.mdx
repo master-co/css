@@ -21,11 +21,11 @@ if (!document.startViewTransition) {
 }
 ```
 
-The demo uses Master CSS classes to name the snapshots that should transition independently:
+Start with this markup, then run the script above after the elements exist. The heading changes from Overview to Product detail. The classes name snapshots that can transition independently:
 
 ```html
 <section class="view-transition-name:panel">
-  <h3 data-current-view class="view-transition-name:title">Product detail</h3>
+  <h3 data-current-view class="view-transition-name:title">Overview</h3>
 </section>
 ```
 
@@ -54,7 +54,7 @@ A common use case is moving from an article feed to an article detail page. The 
 (click) Open an article, then return to the collection. Keyboard focus follows the selected article and returns to its button.
 <DemoViewTransition example="articles" />
 
-In the list view, every article gets unique names for its shared elements:
+In the list view, every article gets unique names for its shared elements. Use an image from your own project at the example path:
 
 ```html name=article-list.html
 <section data-articles>
@@ -127,6 +127,12 @@ root.addEventListener('click', (event) => {
 })
 ```
 
+Apply the shared timing to the document root:
+
+```html
+<html class="animation-duration:.52s::view-transition-group(.article)">
+```
+
 <Class2CSS>
   {[
       'view-transition-name:article-aurora-image',
@@ -158,6 +164,8 @@ The same `view-transition-name` must be unique in the rendered document. If two 
 <li class="view-transition-name:match-element">...</li>
 ```
 
+`match-element` follows the identity of the same DOM element. Replacing it with a new element does not preserve that match; use an explicit name when separate list and detail elements should share a transition.
+
 Use `view-transition-name:none` to keep an element out of its own separate snapshot.
 
 ```html
@@ -174,8 +182,8 @@ In Master CSS, write the pseudo-element after the declaration:
 
 ```html
 <html class="
-  animation-name:fade::view-transition-new(hero) animation-duration:var(--duration-fast)::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)
-  animation-name:fade::view-transition-old(hero) animation-duration:var(--duration-fast)::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)
+  animation-name:fade::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)
+  animation-name:fade::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)
   animation-slow::view-transition-group(hero)
 ">
 ```
@@ -183,10 +191,12 @@ In Master CSS, write the pseudo-element after the declaration:
 <Class2CSS>
   {[
       'animation-slow::view-transition-group(hero)',
-      'animation-name:fade::view-transition-old(hero) animation-duration:var(--duration-fast)::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)',
-      'animation-name:fade::view-transition-new(hero) animation-duration:var(--duration-fast)::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)'
+      'animation-name:fade::view-transition-old(hero) animation-direction:reverse::view-transition-old(hero) animation-fill-mode:both::view-transition-old(hero)',
+      'animation-name:fade::view-transition-new(hero) animation-fill-mode:both::view-transition-new(hero)'
     ]}
 </Class2CSS>
+
+The group supplies one duration for its movement and both image animations. The outgoing `fade` runs in reverse; the incoming `fade` runs forward.
 
 (i) Apply these classes to the `html` element when you style global view-transition pseudo-elements. The pseudo-element tree is generated from the document root, so a class on an ordinary descendant will generate CSS but will not match the root transition pseudo-elements.
 
@@ -203,15 +213,17 @@ You can also group related named snapshots with `view-transition-class` and then
 ---
 
 ## Cross-document transitions
-For same-origin MPA navigation, opt in with native CSS in both the current and destination documents:
+For same-origin MPA navigation, opt in with native CSS in both the current and destination documents. Keep the opt-in inside the motion preference query so reduced-motion readers use ordinary navigation:
 
 ```css name=app.css
-@view-transition {
-  navigation: auto;
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
 }
 ```
 
-No JavaScript is required for the navigation itself. You can still use Master CSS on elements that should become named snapshots across pages:
+Follow a same-origin link to test it; entering a URL in the address bar does not trigger this transition. Unsupported browsers keep normal navigation. You can still use Master CSS on elements that should become named snapshots across pages:
 
 ```html
 <!-- page A and page B both render one matching hero -->
@@ -220,7 +232,7 @@ No JavaScript is required for the navigation itself. You can still use Master CS
 </header>
 ```
 
-If both documents render one `product-hero` snapshot, the browser can animate that element between pages. If either page renders zero or more than one matching snapshot, the named transition will not run as intended.
+If both documents render one `product-hero` snapshot, the browser can animate between its two states. A name present only in the destination gets an entering snapshot; a name present only in the outgoing page gets an exiting snapshot. Duplicate rendered names in either document cause the transition to be skipped. See the native [cross-document transition conditions](https://www.w3.org/TR/css-view-transitions-2/#cross-doc-overview).
 
 ---
 
@@ -240,13 +252,13 @@ if (!document.startViewTransition) {
 ---
 
 ## Reduced motion
-After the core transition works, add a motion preference layer. You can scope animation classes with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`.
+After the core transition works, check the motion preference before starting it. You can scope custom animation classes with `@motion-safe`, which maps to `@media (prefers-reduced-motion: no-preference)`:
 
 ```html
 <html class="animation-duration:.42s::view-transition-group(root)@motion-safe">
 ```
 
-Or skip the transition in JavaScript for motion-sensitive users:
+This condition controls only your duration override. It does not disable the browser's default transition animation. For same-document updates, skip the transition in JavaScript when reduced motion is requested:
 
 ```js
 const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -257,5 +269,7 @@ if (!document.startViewTransition || shouldReduceMotion) {
   document.startViewTransition(update)
 }
 ```
+
+For cross-document navigation, use the conditional `@view-transition` rule above in both pages. A JavaScript check around `startViewTransition()` affects only same-document updates.
 
 See MDN's [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) and web.dev's [View transitions for single page applications](https://web.dev/learn/css/view-transitions-spas) for deeper API behavior and browser examples.

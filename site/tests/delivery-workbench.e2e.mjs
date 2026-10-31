@@ -22,6 +22,8 @@ async function open(options) {
   const response = await page.goto(`${url}/${options.locale === 'tw' ? 'tw' : ''}`, { waitUntil: 'networkidle' })
   assert.equal(response.status(), 200, 'the homepage must render before browser checks run')
   await page.locator('.home-delivery-workbench').scrollIntoViewIfNeeded()
+  // The server renders the completed scene; wait for hydration to take over its clock before reading it.
+  if (options.js !== false) await page.locator('.home-delivery-stage[data-routed]').waitFor({ state: 'attached' })
   return { context, page }
 }
 const modeCopy = {
@@ -379,7 +381,7 @@ test(`${browserName}: a delivered class lands on its preview text without coveri
   await context.close()
 })
 
-test(`${browserName}: code can scroll, stylesheet references work both ways, and applying keeps focus`, { timeout: 30000 }, async () => {
+test(`${browserName}: code reads by keys, stylesheet references work both ways, and applying keeps focus`, { timeout: 30000 }, async () => {
   const { page, context } = await open({ width: 1440, locale: 'en', scheme: 'dark' })
   await select(page, 'runtime')
   await until(page, 2.65)
@@ -409,12 +411,21 @@ test(`${browserName}: code can scroll, stylesheet references work both ways, and
   assert.equal(await page.locator('.home-delivery-stage').getAttribute('data-inspecting'), null)
   await until(page, .3)
   await scroll.evaluate(el => el.scrollTop = 0)
-  await page.locator('.home-delivery-template [data-mode=static] .home-delivery-code-scroll').hover()
+  // The wheel over homepage code always scrolls the page; the keys read the pane and hold the tour.
+  const pane = page.locator('.home-delivery-template [data-mode=static] .home-delivery-code-scroll')
+  await pane.hover()
+  const top = await pane.evaluate(el => el.scrollTop)
+  const before = await page.evaluate(() => scrollY)
   await page.mouse.wheel(0, 120)
-  await page.waitForTimeout(40)
+  await page.waitForTimeout(200)
+  assert.equal(await pane.evaluate(el => el.scrollTop), top, 'the wheel never scrolls the code')
+  assert.ok(await page.evaluate(() => scrollY) > before, 'the wheel over code scrolls the page')
+  await pane.focus()
+  await page.keyboard.press('PageDown')
   const paused = await clock(page)
   await page.waitForTimeout(200)
   assert.equal(await clock(page), paused)
+  if (await pane.evaluate(el => el.scrollHeight > el.clientHeight)) assert.ok(await pane.evaluate(el => el.scrollTop) > top, 'the keys read the rest of the pane')
   await context.close()
 })
 

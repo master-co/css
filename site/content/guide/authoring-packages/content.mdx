@@ -43,6 +43,8 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 
 <PackageAuthoringExample part="source" />
 
+The button keeps its brand background in both color schemes. Separate action-text and focus tokens use lighter colors on dark surfaces. Check text and focus outlines against the backgrounds used by each consuming app.
+
 Good package vocabulary is stable and reusable:
 
 - Use `@theme` for shared values such as colors, spacing, radius, typography, shadow, motion, and container tokens.
@@ -72,12 +74,13 @@ Packages imported by a project entry are already available to local stylesheets.
 @reference '<package-name>';
 
 .button {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 32rem;
+  padding-inline: var(--spacing-action-x);
+  border-radius: var(--radius-action);
+  background-color: var(--color-brand);
 }
 ```
 
-`@reference` makes package tokens, utilities, mixins, and custom media available while compiling the local stylesheet. Required theme resources are included, but referenced native rules and generated utility classes are not. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
+The local `.button` consumes the package's spacing, radius and brand tokens. `@reference` supplies their definitions while compiling this stylesheet, and the output includes the required theme resources. It does not copy the package's native `.btn` rule or generated utility classes. Load the package's CSS separately when those rules are needed. See [Route-level styles](/guide/route-level-styles) for local stylesheet patterns.
 
 ---
 
@@ -105,7 +108,9 @@ Prefer readable names over internal implementation names. A consuming app should
 ---
 
 ## Validate with an example
-Before publishing, test the package through a small consuming project or fixture:
+Before publishing, test the package through a small consuming project or fixture.
+
+Run `npm pack` in the package directory and install the resulting `.tgz` in the consumer. This checks the published file set and package exports as well as the source itself. Import it through the consumer's CSS entry:
 
 ```css name=app.css
 @import '@master/css';
@@ -119,7 +124,7 @@ Before publishing, test the package through a small consuming project or fixture
 </article>
 ```
 
-Run the same checks the app uses for Master CSS, such as ESLint or the CLI lint and inspect commands:
+Run the same checks the app uses for Master CSS, such as ESLint or the CLI lint and inspect commands. For CLI checks, [install the CLI](/guide/installation/cli) in the consumer with the same Master CSS release as the app:
 
 ```bash name=Terminal
 npx @master/css-cli lint --format json --exit-code never

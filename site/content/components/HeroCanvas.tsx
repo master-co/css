@@ -350,11 +350,14 @@ export default function HeroCanvas({ className }: { className?: string }) {
         const formed = reduced ? 1 : Math.max(0, Math.min(1, (time - materialAt) / materialDuration))
         const material = 1 - Math.pow(1 - formed, 3)
         const glint = reduced || materialAt < 0 ? 1 : Math.max(0, Math.min(1, (time - materialAt - glintDelay) / glintDuration))
+        // Client coordinates convert through the scroll since the last layout; the resting lamp and the silk's drift
+        // follow the page's own scroll, so a layout taken mid-page (re-entering view, a resize) cannot shift them.
         const scrolled = scrollY - origin.scroll
+        const travelled = Math.max(0, scrollY)
         tilt.x += (tilt.targetX - tilt.x) * follow
         tilt.y += (tilt.targetY - tilt.y) * follow
         let targetX = rest.x + Math.sin(sceneClock * 0.19) * rest.sway + tilt.x * rest.sway * 2
-        let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + tilt.y * rest.fontSize * 1.5 + (reduced ? 0 : scrolled)
+        let targetY = rest.y + Math.cos(sceneClock * 0.15) * rest.fontSize * 0.3 + tilt.y * rest.fontSize * 1.5 + (reduced ? 0 : travelled)
         if (lamp.source === 'touch' && time > lamp.until) {
           lamp.source = 'rest'
           pointer.targetStrength = 0
@@ -391,7 +394,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
         context.uniform1f(cloth.uniforms.time, sceneClock)
         context.uniform3f(cloth.uniforms.pointer, pointer.x, pointer.y, reduced ? 0 : pointer.strength)
         context.uniform3f(cloth.uniforms.lamp, lamp.x, lamp.y, lamp.z)
-        context.uniform1f(cloth.uniforms.drift, reduced ? 0 : scrolled / height * heroPlaneScale * 0.3)
+        context.uniform1f(cloth.uniforms.drift, reduced ? 0 : travelled / height * heroPlaneScale * 0.3)
         const rippleAge = ripple.at < 0 || reduced ? -1 : (time - ripple.at) / 1000
         context.uniform3f(cloth.uniforms.ripple, ripple.x, ripple.y, rippleAge > rippleDuration ? -1 : rippleAge)
         context.drawArrays(context.TRIANGLES, 0, 3)

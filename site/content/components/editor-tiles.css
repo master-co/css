@@ -250,14 +250,15 @@
     .home-editor-playback { margin-left: 0; }
   }
 
-  /* Long lines fade at the right edge instead of being cut, and at the left once the code scrolls. */
+  /*
+   * Long lines fade at the right edge instead of being cut, and at the left once the code scrolls.
+   * Homepage code never takes the wheel or a swipe from the page: the caret moves the view, and keys read the rest.
+   */
   .home-editor-viewport {
     position: relative;
     flex: auto;
     min-width: 0;
-    overflow: auto hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--home-rule) transparent;
+    overflow: hidden;
     user-select: text;
     mask-image: linear-gradient(90deg, transparent, black clamp(0px, var(--editor-shift) * -1, 1.5rem), black calc(100% - var(--editor-fade)), transparent calc(100% - 0.25rem));
 
@@ -605,10 +606,7 @@
     flex: auto;
     min-width: 0;
     min-height: 0;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--home-rule) transparent;
+    overflow: hidden;
     user-select: text;
     padding: 0.75rem 0.875rem;
     mask-image: linear-gradient(black calc(100% - 0.75rem), transparent), linear-gradient(90deg, black calc(100% - 0.875rem), transparent);
@@ -624,9 +622,7 @@
     margin: 0;
     padding: 0.25rem 0.875rem;
     border-top: 1px solid var(--home-hairline);
-    overflow: auto hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--home-rule) transparent;
+    overflow: hidden;
     line-height: 1.5;
     color: var(--home-text-quiet);
 
@@ -739,9 +735,7 @@
     font-size: 0.625rem;
     white-space: nowrap;
     color: var(--home-text-quiet);
-    overflow: auto hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--home-rule) transparent;
+    overflow: hidden;
 
     & > * { flex: none; }
   }
@@ -1087,6 +1081,7 @@
     --home-illustration-size: 6rem;
   }
 
+  /* Only the playing chapter explains itself; the others keep their row so nothing shifts. */
   .home-editor-chapter-body {
     min-width: 0;
     max-width: min(32ch, 100%);
@@ -1094,6 +1089,50 @@
     line-height: 1.6;
     color: var(--home-text-quiet);
     text-wrap: pretty;
+    opacity: 0;
+    translate: 0 0.25rem;
+    transition: opacity var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);
+
+    @media print { opacity: 1; translate: none; }
+  }
+
+  .home-editor-chapter[aria-pressed='true'] .home-editor-chapter-body {
+    opacity: 1;
+    translate: none;
+  }
+
+  .home-editor-chapter-note {
+    display: none;
+  }
+
+  @container home-editor-stage (width < 64rem) {
+    .home-editor-chapter-body {
+      display: none;
+    }
+
+    /* All four bodies share one cell, so the line keeps the tallest one's height while the tour moves on. */
+    .home-editor-chapter-note {
+      display: grid;
+      grid-column: 1 / -1;
+
+      > p {
+        grid-area: 1 / 1;
+        max-width: 48ch;
+        margin: 0;
+        font-size: var(--home-body);
+        line-height: 1.6;
+        color: var(--home-text-quiet);
+        text-wrap: pretty;
+        opacity: 0;
+        translate: 0 0.25rem;
+        transition: opacity var(--home-base) var(--home-ease), translate var(--home-base) var(--home-ease);
+      }
+
+      > p[data-active] {
+        opacity: 1;
+        translate: none;
+      }
+    }
   }
 
   .home-editor-chapter:is([aria-pressed='true'], :hover) .home-editor-chapter-title {
@@ -1138,7 +1177,9 @@
     .home-editor-pointer,
     .home-editor-playback,
     .home-editor-chapter,
-    .home-editor-chapter-title {
+    .home-editor-chapter-title,
+    .home-editor-chapter-body,
+    .home-editor-chapter-note > p {
       transition: none;
     }
 

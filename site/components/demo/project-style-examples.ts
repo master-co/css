@@ -1,3 +1,5 @@
+import maintenanceExample from './maintenance-example'
+
 export interface ProjectStyleExample {
   title: string
   source: string
@@ -77,7 +79,7 @@ export const projectStyleExamples = {
     }
 
     &:focus-visible {
-      outline: 2px solid var(--color-blue-60);
+      outline: 2px solid var(--color-text-link);
       outline-offset: var(--spacing-4xs);
     }
   }
@@ -86,6 +88,7 @@ export const projectStyleExamples = {
     caption: 'Hover or focus the button to inspect its shared states.',
     guide: '/guide/global-styles#component-classes',
   },
+  maintenance: maintenanceExample,
   layers: {
     title: 'A local utility overrides the component',
     source: `@layer components {

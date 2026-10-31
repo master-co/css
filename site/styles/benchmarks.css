@@ -50,6 +50,12 @@
   .benchmark-source a:focus-visible { outline: 2px solid var(--color-demo-blue); outline-offset: 3px; border-radius: 2px; }
   .benchmark-source-date { color: var(--color-text-muted); margin-inline-start: auto; }
   .benchmark-source time { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
+  @media (forced-colors: active) {
+    .benchmark-meter { outline: 1px solid CanvasText; outline-offset: -1px; }
+    .benchmark-meter-fill, .benchmark-meter-stacked > div { forced-color-adjust: none; background: CanvasText !important; box-shadow: none; }
+    .benchmark-meter-stacked > div { box-shadow: inset -1px 0 Canvas; }
+    .benchmark-legend-swatch { display: none !important; }
+  }
   @media print {
     .benchmark-table-scroll { overflow: visible; max-height: none; }
     .benchmark-table-scroll table { width: 100%; }

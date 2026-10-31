@@ -3,8 +3,13 @@ import type { ComponentPropsWithoutRef } from 'react'
 import clsx from 'clsx'
 
 /** Shared window material for the homepage editor and delivery workbench. */
-export function HomeEditorWindow({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
-  return <div className={clsx('home-editor-window', className)} {...props} />
+export function HomeEditorWindow({ children, className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return (
+    <div className={clsx('home-editor-window', className)} {...props}>
+      {children}
+      <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
+    </div>
+  )
 }
 
 export function HomeEditorBar({ className, ...props }: ComponentPropsWithoutRef<'div'>) {

@@ -1,6 +1,10 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
+Generate a stylesheet for an Astro site from complete class names in its sources. The installer configures the integration and creates the CSS entry; the page below imports that entry.
+
+Verify generated utility rules in the production output before deployment. The [setup check](#check-the-setup) includes a CLI static alternative if the integration emits only base CSS.
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -38,26 +42,38 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   </Step>
   <Step>
     ### <StepNum />Start using Master CSS
-    Now style your first Astro page using Master CSS syntax.
+    Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
   </Step>
   <HelloWorld url="localhost:4321" />
 </StepSection>
 
 ```astro name=src/pages/index.astro
-<h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
-  Hello World
-</h1>
-```
-
-Keep the Master CSS entry in a standalone CSS file, and import it from Astro frontmatter so the integration processes mixins before Astro optimizes CSS. Scoped `<style>` blocks can reference that entry and use `@apply`.
-
-```css name=src/styles/master.css
-@import "@master/css";
-```
-
-```astro name=src/layouts/Layout.astro
 ---
-import "../styles/master.css";
+import '../styles/global.css'
 ---
-<slot />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hello Master CSS</title>
+  </head>
+  <body>
+    <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
+      Hello World
+    </h1>
+  </body>
+</html>
 ```
+
+Keep the entry in a standalone CSS file. [Importing CSS from Astro frontmatter](https://docs.astro.build/en/guides/imports/#import-statements) attaches the processed stylesheet to the page. The installer creates:
+
+```css name=src/styles/global.css
+@import '@master/css';
+```
+
+## Check the setup
+Run the project's build and preview scripts, then disable JavaScript and reload. Check that the heading retains its large, heavy italic styling. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration.
+
+Keep complete conditional class names in source so static scanning can find each branch. For details on custom definitions and scoped styles, see [Global styles](/guide/global-styles).
+
+If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `font-style:italic`. Use the [CLI static workflow](/guide/installation/cli) when you need to generate and verify the stylesheet independently, or choose [progressive rendering](/guide/installation/astro/progressive) when a runtime handoff fits the application.

@@ -24,9 +24,10 @@ async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'n
         return get.apply(this, args)
       }
     }
+    // Every frame of the field starts by clearing its canvas.
     const clear = CanvasRenderingContext2D.prototype.clearRect
     CanvasRenderingContext2D.prototype.clearRect = function (...args) {
-      if (this.canvas.classList.contains('home-cta-canvas')) window.ctaPaints++
+      if (this.canvas.classList?.contains('home-cta-canvas')) window.ctaPaints++
       return clear.apply(this, args)
     }
   }, blockCanvas)
@@ -43,7 +44,8 @@ async function open({ width = 1440, locale = 'en', scheme = 'light', motion = 'n
 
 const paints = page => page.evaluate(() => window.ctaPaints)
 const settle = async page => {
-  await page.waitForTimeout(2200)
+  // The threads open while the lamp lowers into place, about 2.6 seconds in all.
+  await page.waitForTimeout(3000)
   const count = await paints(page)
   await page.waitForTimeout(300)
   assert.equal(await paints(page), count, 'the field releases its animation frame at rest')
@@ -100,6 +102,22 @@ test(`${browserName}: pointer, tap, offscreen and reduced motion all settle`, { 
     await page.waitForTimeout(250)
     assert.ok(await paints(page) > initial, 'pointer movement reaches the field')
     assert.ok(await canvas.evaluate(element => element.toDataURL()) !== before, 'the pointer changes actual pixels')
+    // The carried lamp brings its sheen to the threads under it, so they gather more light than when it hangs elsewhere.
+    const lightUnder = (x, y) => canvas.evaluate((element, [x, y]) => {
+      const scale = element.width / element.getBoundingClientRect().width
+      const size = Math.round(120 * scale)
+      const { data } = element.getContext('2d').getImageData(Math.round(x * element.width) - size / 2, Math.round(y * element.height) - size / 2, size, size)
+      let sum = 0
+      for (let index = 3; index < data.length; index += 4) sum += data[index]
+      return sum
+    }, [x, y])
+    await page.mouse.move(field.x + field.width * 0.7, field.y + field.height * 0.5, { steps: 6 })
+    await page.waitForTimeout(900)
+    const under = await lightUnder(0.7, 0.5)
+    await page.mouse.move(field.x + field.width * 0.3, field.y + field.height * 0.5, { steps: 6 })
+    await page.waitForTimeout(900)
+    assert.ok(under > (await lightUnder(0.7, 0.5)) * 1.15, 'the sheen follows the lamp across the threads')
+    await page.mouse.move(field.x + field.width * 0.6, field.y + field.height * 0.55)
     await settle(page)
     await page.mouse.click(field.x + field.width * 0.6, field.y + field.height * 0.55)
     const tap = await paints(page)
@@ -205,7 +223,17 @@ test(`${browserName}: a large retina display keeps the drawing allocation bounde
       density: canvas.width / canvas.getBoundingClientRect().width
     }))
     assert.ok(result.pixels <= 2_000_000)
-    assert.ok(result.density > 1 && result.density <= 2)
+    assert.ok(result.density > 1 && result.density <= 3)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+test(`${browserName}: a 3x phone draws the threads at its own density`, { timeout: 30000 }, async () => {
+  const { context, page, errors } = await open({ width: 390, density: 3, motion: 'reduce' })
+  try {
+    await page.waitForFunction(() => window.ctaPaints > 0)
+    const density = await page.locator('.home-cta-canvas').evaluate(canvas => canvas.width / canvas.getBoundingClientRect().width)
+    assert.ok(Math.abs(density - 3) < 0.01, 'hairlines are not upscaled from a 2x backing store')
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
@@ -217,6 +245,31 @@ test(`${browserName}: the painter loads only near the invitation`, { timeout: 30
     await page.locator('.home-cta').scrollIntoViewIfNeeded()
     await page.waitForFunction(() => window.ctaPaints > 0)
     assert.equal(painterRequests.length, 1)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+test(`${browserName}: the threads open only once the field is in view, and its lamp lights the title`, { timeout: 30000 }, async () => {
+  const { context, page, errors } = await open({ scroll: false })
+  try {
+    // Bring only the canvas's first rows into view: the painter mounts and lights the invitation, then waits.
+    await page.evaluate(() => {
+      const canvas = document.querySelector('.home-cta-canvas').getBoundingClientRect()
+      scrollBy(0, canvas.top - innerHeight + 40)
+    })
+    await page.waitForFunction(() => window.ctaPaints > 0)
+    await page.waitForTimeout(400)
+    const waiting = await paints(page)
+    await page.waitForTimeout(400)
+    assert.equal(await paints(page), waiting, 'a barely visible field holds its bead without animating')
+    assert.equal(await page.locator('.home-cta-canvas').getAttribute('data-ready'), null, 'the CSS starting point still stands in')
+    await page.locator('.home-cta-canvas').scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
+    assert.ok(await paints(page) > waiting + 5, 'the threads open once the field is in view')
+    assert.equal(await page.locator('.home-cta-canvas').getAttribute('data-ready'), '')
+    await settle(page)
+    const title = await page.locator('.home-cta-title-finish').evaluate(element => ['--lit-x', '--cast-y', '--lit-near'].map(name => element.style.getPropertyValue(name)))
+    assert.ok(title.every(Boolean), 'the closing lamp writes onto the title')
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
@@ -242,10 +295,18 @@ test(`${browserName}: enabling motion preserves an already complete still field`
   try {
     await page.waitForFunction(() => window.ctaPaints > 0)
     const canvas = page.locator('.home-cta-canvas')
-    const complete = await canvas.evaluate(element => element.toDataURL())
+    // The ink the field lays down. WebKit may move a canvas it has read back to another rasterizer, so a
+    // redrawn identical frame can differ in antialiasing; a field that rewound would lose most of its ink.
+    const ink = () => canvas.evaluate(element => {
+      const { data } = element.getContext('2d').getImageData(0, 0, element.width, element.height)
+      let sum = 0
+      for (let index = 3; index < data.length; index += 4) sum += data[index]
+      return sum
+    })
+    const complete = await ink()
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.waitForTimeout(100)
-    assert.ok(await canvas.evaluate(element => element.toDataURL()) === complete, 'enabling motion never shrinks a completed field')
+    assert.ok(Math.abs(await ink() - complete) <= complete * 0.005, 'enabling motion never shrinks a completed field')
     await settle(page)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

@@ -7,11 +7,11 @@ Runtime rendering generates rules in the browser when Angular adds class names t
   <Step $row>
     <StepL>
       ### <StepNum />Create an Angular project
-      If you do not have a project yet, create one with the Angular CLI.
+      Create a browser-rendered app using CSS. This example starts the runtime only from `src/main.ts`; an SSR server needs a separate initial-CSS strategy.
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npx --package @angular/cli ng new my-app
+      npx --package @angular/cli ng new my-app --style css --ssr=false
       cd my-app
       ```
     </StepR>
@@ -62,4 +62,13 @@ Runtime rendering generates rules in the browser when Angular adds class names t
 
 The generated runtime startup uses the default program. Adding `@theme` or `@utility` to Angular’s ordinary CSS input does not compile a custom runtime program. Use the static CLI path for project-defined vocabulary, or provide a separately compiled program through the public runtime API.
 
-The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new#file-name-style-guide) may use `src/app/app.component.html`; edit the template referenced by your root component.
+The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new) may use `src/app/app.component.html`; edit the template referenced by your root component.
+
+## Verify the result
+Run the production build and serve its browser output. The heading should be large, heavy and italic. After it appears, run this in the browser console; the text should gain an underline without rebuilding:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+Keep the runtime initialization in the browser entry. It does not render styles for Angular’s server output.

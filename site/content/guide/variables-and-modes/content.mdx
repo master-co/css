@@ -3,7 +3,7 @@ import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
 ## Give a repeated value a project name
 
-CSS custom properties let multiple declarations share a value. A Master CSS theme makes those values available to token-aware classes. Start with one spacing token and the class that consumes it:
+CSS custom properties let multiple declarations share a value. A Master CSS theme makes those values available to token-aware classes. With [Master CSS installed](/guide/installation), add this token after the existing `@import '@master/css'` in your app stylesheet, then use its class in markup:
 
 <DemoConfiguredExample name="shared-spacing-value" title="Give a repeated value a name" source={`@theme {
   --spacing-card: 1.5rem;
@@ -13,22 +13,19 @@ This example compiles the theme with the current preset before generating the cl
 
 ## Add modes after the shared value works
 
-A color can keep the same name while following the element's color scheme:
+A color can keep the same name while following the element's color scheme. The outer region below chooses dark; its nested article chooses light:
 
-```css
-@theme {
+<DemoConfiguredExample name="nested-color-schemes" title="One token, two local color schemes" source={`@theme {
+  --spacing-card: 0.75rem;
   --color-surface-notes: light-dark(#f4f4f5, #27272a);
 }
-```
 
-```html
-<section data-theme="dark" class="p-card bg-surface-notes fg-text-body">
-  Dark notes
-  <article data-theme="light" class="p-card bg-surface-notes fg-text-body">A light region inside</article>
-</section>
-```
+@layer base {
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}`} html={'<section data-theme="dark" class="p-card r-lg bg-surface-notes fg-text-body overflow-wrap:anywhere"><h2 class="margin:0 text-lg font-semibold">Dark notes</h2><p class="mt-sm mb-md text-sm">This region explicitly chooses dark.</p><article data-theme="light" class="p-card r-md bg-surface-notes fg-text-body"><h3 class="margin:0 text-md font-semibold">A light region inside</h3><p class="mt-sm margin-bottom:0 text-sm">The same surface token follows this article’s light scheme.</p></article></section>'} previewFirst caption="Both regions use bg-surface-notes. Their data-theme attributes select different native color schemes, so light-dark() supplies a dark outer surface and a light inner surface." />
 
-The preset enables native `color-scheme: light dark`; `data-theme` makes a local choice. The same `bg-surface-notes` class adapts in both regions. A nested region inherits its parent's values unless it explicitly overrides them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for system, manual and nested themes.
+The native selectors connect `data-theme` to `color-scheme`. The preset already supplies these light/dark selectors and enables `color-scheme: light dark` at the root; they are shown here to make activation explicit. The same `bg-surface-notes` class adapts in both regions. A nested region inherits its parent's values unless it explicitly overrides them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes) for system, manual and nested themes.
 
 Check the [namespace's consumers](/reference/tokens/spacing#consumers) when naming a token, and inspect the generated declaration before adding more scopes. The [Variables & modes reference](/reference/rules/modes) covers declaration scope, alias resolution and delivery.
 

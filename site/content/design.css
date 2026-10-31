@@ -79,7 +79,7 @@
 
     /* Type: one scale. Display and section titles scale with the viewport; everything else is fixed. */
     --home-display: clamp(2.75rem, 1.2rem + 5.4vw, 5.75rem);
-    --home-title: clamp(2.25rem, 1.55rem + 2.1vw, 4rem);
+    --home-title: clamp(2.25rem, 1.55rem + 2.1vw, 3.5rem);
     --home-lead: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
     --home-card-title: 1.5rem;
     --home-body: 1rem;
@@ -102,6 +102,248 @@
     --home-hatch: var(--stripe-image);
     --home-hatch-size: 8px;
     --home-mark: var(--home-rule-strong);
+
+    /*
+     * Stone: the hero's material, carried down the page wherever ink used to be. Polished obsidian in
+     * light mode, moonstone in dark mode. Outside the hero there is no silk to mirror, so the warm
+     * reflection on the lower bevel stays faint until a figure marks the stone live.
+     */
+    --stone-top: light-dark(oklch(0.31 0.004 270), oklch(0.965 0.006 88));
+    --stone-mid: light-dark(oklch(0.17 0.003 270), oklch(0.91 0.012 85));
+    --stone-bottom: light-dark(oklch(0.08 0.002 270), oklch(0.81 0.022 80));
+    /* Small stones (tour controls, handles, source chips) are a step quieter in moonstone, so only the
+       primary action and the engine stay the brightest things in a dark figure. */
+    --stone-quiet-top: light-dark(oklch(0.31 0.004 270), oklch(0.79 0.008 88));
+    --stone-quiet-mid: light-dark(oklch(0.17 0.003 270), oklch(0.71 0.012 86));
+    --stone-quiet-bottom: light-dark(oklch(0.08 0.002 270), oklch(0.62 0.02 82));
+    --stone-text: light-dark(oklch(0.97 0.008 85), oklch(0.2 0.012 70));
+    --stone-lip: light-dark(rgb(255 255 255 / 0.28), rgb(255 255 255 / 0.95));
+    --stone-rim: light-dark(rgb(255 255 255 / 0.4), rgb(255 255 255 / 1));
+    --stone-gold: light-dark(oklch(0.86 0.1 82), oklch(0.74 0.12 78));
+    --stone-mirror: light-dark(oklch(0.86 0.1 82 / 0.24), oklch(0.74 0.12 78 / 0.4));
+    --stone-sheen: light-dark(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.9));
+    --stone-glare: light-dark(rgb(255 255 255 / 0.32), rgb(255 255 255 / 1));
+    --stone-adularescence: light-dark(transparent, oklch(0.92 0.025 240 / 0.22));
+    --stone-glint: light-dark(rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.85));
+    --stone-contact: light-dark(rgb(0 0 0 / 0.26), rgb(0 0 0 / 0.5));
+    --stone-cast: light-dark(oklch(0.25 0.02 70 / 0.32), oklch(0.02 0.005 60 / 0.65));
+    --stone-press: light-dark(rgb(0 0 0 / 0.7), oklch(0.55 0.05 80 / 0.5));
+    /* Cut type: the same stone as glyphs. A face that darkens down each line, a highlight where the lamp
+       falls and, on moonstone, a cool sheen across from it. */
+    --stone-type-top: light-dark(oklch(0.38 0.004 270), oklch(0.99 0.004 90));
+    /* A faint reflection across the upper part of each line, the way polished stone holds the sky. */
+    --stone-type-band: light-dark(oklch(0.46 0.006 80), oklch(1 0.002 90));
+    --stone-type-mid: light-dark(oklch(0.2 0.003 270), oklch(0.93 0.012 86));
+    --stone-type-bottom: light-dark(oklch(0.09 0.002 270), oklch(0.8 0.028 82));
+    --stone-type-sheen: light-dark(oklch(0.72 0.006 80 / 0.8), oklch(0.93 0.07 84));
+    --stone-type-adularescence: light-dark(transparent, oklch(0.9 0.03 240 / 0.24));
+    /* As a title arrives, one glint crosses it; on moonstone it is a wave of the cool sheen. */
+    --stone-type-glint: light-dark(oklch(0.6 0.008 80 / 0.95), oklch(0.92 0.07 250 / 0.95));
+    --stone-type-cast: light-dark(oklch(0.3 0.03 70 / 0.1), oklch(0 0 none / 0.55));
+
+    /* Silk: the hero's gold as a material for the few things below it that are made of it. */
+    --silk-shadow: light-dark(oklch(0.7 0.13 72), oklch(0.4 0.085 68));
+    --silk-body: light-dark(oklch(0.83 0.135 80), oklch(0.66 0.13 78));
+    --silk-sheen: light-dark(oklch(0.97 0.05 92), oklch(0.93 0.085 90));
+  }
+
+  /*
+   * The lamp. One light hangs above the page, a little left of center, and stays with the viewer; a
+   * pointer carries it lower. `home-lamp.ts` hands it to every lit element of the homepage and its
+   * footer as these properties, relative to the element. The defaults hang it above-left, so CSS alone
+   * still lights the stone, including stone that another lamp (the hero's, the close's) lights.
+   */
+  :where(.home-lit, .home-stone, .home-stone-type) {
+    --lit-x: 30%;
+    --lit-y: -160%;
+    --lit-angle: -20deg;
+    --cast-x: 1px;
+    --cast-y: 4px;
+    --lit-near: 0;
+  }
+
+  /*
+   * A stone surface: a bevelled face that darkens toward its base, a broad sheen from the lamp, a hot
+   * spot when the lamp comes close, a rim that catches the lamp on its near side and the warm floor on
+   * its far side, and a shadow cast away from the lamp. Every layer is a background, so the element
+   * keeps its own pseudo-elements; a component that draws its own marks on the face stacks them above
+   * `--stone-face` and keeps `--stone-edge` last.
+   */
+  .home-stone {
+    --stone-face:
+      radial-gradient(ellipse 30% 50% at clamp(12%, var(--lit-x), 88%) clamp(16%, var(--lit-y), 40%), color-mix(in oklab, var(--stone-glare) calc(var(--lit-near) * 100%), transparent), transparent) padding-box,
+      radial-gradient(ellipse 90% 75% at var(--lit-x) -10%, var(--stone-sheen), transparent 70%) padding-box,
+      radial-gradient(ellipse 60% 120% at calc(100% - var(--lit-x) * 0.6) 80%, var(--stone-adularescence), transparent 75%) padding-box,
+      linear-gradient(180deg, var(--stone-top), var(--stone-mid) 52%, var(--stone-bottom)) padding-box;
+    --stone-edge:
+      linear-gradient(var(--lit-angle), var(--stone-mirror), transparent 40%, transparent 58%, var(--stone-rim)) border-box,
+      var(--stone-mid) border-box;
+    --stone-shadow:
+      inset 0 1px 0 var(--stone-lip),
+      inset 0 -8px 12px -10px var(--stone-mirror),
+      0 1px 1px var(--stone-contact),
+      var(--cast-x) var(--cast-y) 8px -3px var(--stone-cast),
+      calc(var(--cast-x) * 2.5) calc(var(--cast-y) * 2.5) 22px -8px var(--stone-cast);
+    border: 1px solid transparent;
+    color: var(--stone-text);
+    background: var(--stone-face), var(--stone-edge);
+    box-shadow: var(--stone-shadow);
+  }
+
+  .home-stone-quiet {
+    --stone-top: var(--stone-quiet-top);
+    --stone-mid: var(--stone-quiet-mid);
+    --stone-bottom: var(--stone-quiet-bottom);
+  }
+
+  /* A stone control: a glint crosses its polished face as the pointer arrives, and pressing trades its
+     cast shadow for an inner one. */
+  .home-stone-button {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    cursor: pointer;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(105deg, transparent 38%, var(--stone-glint) 50%, transparent 62%) 100% 0 / 250% 100% no-repeat;
+      pointer-events: none;
+      content: '';
+    }
+
+    /* Moonstone answers the pointer with its sheen rather than a white glare, as on the hero. */
+    &:is(:hover, :focus-visible) {
+      --stone-adularescence: light-dark(transparent, oklch(0.9 0.035 240 / 0.45));
+    }
+
+    &:is(:hover, :focus-visible)::after {
+      background-position: 0 0;
+      transition: background-position 900ms var(--home-ease);
+    }
+
+    /* Only the press eases; at rest the shadow follows the lamp frame by frame. */
+    &:active {
+      transition: box-shadow var(--home-quick) var(--home-ease);
+      box-shadow:
+        inset 0 2px 6px var(--stone-press),
+        inset 0 -1px 0 var(--stone-mirror),
+        0 1px 1px var(--stone-contact),
+        calc(var(--cast-x) * 0.4) calc(var(--cast-y) * 0.4) 6px -3px var(--stone-cast);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--home-ink);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  /*
+   * A frame's rim catches the same lamp: brighter on the side that faces it, a touch darker on the far
+   * side, and a warm glint that slides along the edge as the pointer carries the lamp near. It is an
+   * empty child of the frame, so moving the lamp never restyles the figure inside.
+   */
+  .home-edge-light {
+    --edge-near: light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0.13));
+    --edge-far: light-dark(oklch(0.2 0 none / 0.05), rgb(0 0 0 / 0.3));
+    --edge-glint: light-dark(oklch(0.78 0.09 80 / 0.75), oklch(0.9 0.07 85 / 0.6));
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    padding: 1px;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle 12rem at var(--lit-x) var(--lit-y), color-mix(in oklab, var(--edge-glint) calc(var(--lit-near) * 100%), transparent), transparent),
+      linear-gradient(var(--lit-angle), var(--edge-far), transparent 32%, transparent 64%, var(--edge-near));
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  /*
+   * Cut type: section titles share the hero's stone, lit by the same lamp. Obsidian takes the lamp as a
+   * small reflection with a solid core, and a narrow glint that keeps every glyph at least 3:1 against
+   * the light ground; moonstone warms and glints more broadly. Once a title reaches the reading area,
+   * `home-lamp.ts` marks it and the glint crosses it once.
+   */
+  .home-stone-type {
+    --stone-type-sheen-size: 6rem 2.25rem;
+    --stone-type-sheen-core: 20%;
+    --stone-type-sheen-fade: 60%;
+    --stone-type-glint-width: 1.25%;
+    /* The glint starts and ends just outside the title, so its whole sweep is spent on the type. */
+    --stone-type-glint-from: 77%;
+    --stone-type-glint-to: 23%;
+    --stone-type-band-at: 27%;
+    background-image:
+      linear-gradient(105deg, transparent calc(50% - var(--stone-type-glint-width)), color-mix(in oklab, var(--stone-type-glint) 45%, transparent) calc(50% - var(--stone-type-glint-width) * 0.45), var(--stone-type-glint) 50%, color-mix(in oklab, var(--stone-type-glint) 45%, transparent) calc(50% + var(--stone-type-glint-width) * 0.45), transparent calc(50% + var(--stone-type-glint-width))),
+      radial-gradient(ellipse var(--stone-type-sheen-size) at var(--lit-x) clamp(12%, var(--lit-y), 88%), color-mix(in oklab, var(--stone-type-sheen) calc(var(--lit-near) * 100%), transparent) var(--stone-type-sheen-core), transparent var(--stone-type-sheen-fade)),
+      radial-gradient(ellipse 70% 140% at calc(100% - var(--lit-x) * 0.5) 75%, var(--stone-type-adularescence), transparent 70%),
+      linear-gradient(180deg, var(--stone-type-top) 10%, var(--stone-type-band) var(--stone-type-band-at), var(--stone-type-mid) calc(var(--stone-type-band-at) + 13%), var(--stone-type-mid) 58%, var(--stone-type-bottom) 90%);
+    background-size: 300% 100%, 100% 100%, 100% 100%, 100% 1lh;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+    /* The glint rests past the right end once it has crossed. */
+    background-position: 0 0, 0 0, 0 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(calc(var(--cast-x) * 0.1) calc(var(--cast-y) * 0.14) 3px var(--stone-type-cast));
+
+    .dark & {
+      --stone-type-sheen-size: 13rem 5rem;
+      --stone-type-sheen-core: 0%;
+      --stone-type-sheen-fade: 75%;
+      --stone-type-glint-width: 4%;
+      --stone-type-glint-from: 85%;
+      --stone-type-glint-to: 15%;
+    }
+
+    /* Han glyphs fill the em box, so their reflection sits higher and softer, above the upper strokes. */
+    &:lang(zh) {
+      --stone-type-band-at: 12%;
+      --stone-type-band: light-dark(oklch(0.34 0.005 80), oklch(0.97 0.004 90));
+    }
+
+    /* A reader who asks for more contrast keeps the cut stone but no light that pales the glyphs. */
+    @media (prefers-contrast: more) {
+      --stone-type-glint: transparent;
+      --stone-type-sheen: transparent;
+    }
+
+    /* On phones and 1x screens a blurred shadow only softens the glyphs. */
+    @media (width < 48rem), (resolution < 2dppx) {
+      filter: none;
+    }
+  }
+
+  @media (forced-colors: active), print {
+    /* Doubled so it outranks a component that stacks its own marks on the stone. */
+    .home-stone.home-stone {
+      border-color: currentColor;
+      color: CanvasText;
+      background: Canvas;
+      box-shadow: none;
+    }
+
+    .home-edge-light,
+    .home-stone-button::after {
+      display: none;
+    }
+
+    .home-stone-type {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      filter: none;
+    }
   }
 
   /* The page sits on the neutral ground, and so does the canvas around it, so the footer and overscroll match. */
@@ -276,5 +518,15 @@
 @keyframes home-marker-rule {
   from {
     scale: 0 1;
+  }
+}
+
+@keyframes home-stone-glint {
+  from {
+    background-position: var(--stone-type-glint-from) 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: var(--stone-type-glint-to) 0, 0 0, 0 0, 0 0;
   }
 }

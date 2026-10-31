@@ -346,6 +346,14 @@
       animation-delay: 0.38s;
     }
 
+    /* One glint crosses a stone title once it reaches the reading area, as on the hero's title. */
+    .home-stone-type[data-glint] {
+      animation-name: home-stone-glint;
+      animation-duration: 1.4s;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+    }
+
     @supports (animation-timeline: view()) {
       /* Longhands: a timeline inside the `animation` shorthand is not yet supported by browsers. */
       .home-section-header > :not(.home-eyebrow),
@@ -354,19 +362,33 @@
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: view();
-        animation-range: entry 0% entry 40%;
+        /* Fixed scroll lengths, so a tall window and a one-line lead arrive at the same pace. */
+        animation-range: entry 0px entry 220px;
+      }
+
+      .home-section-header > :not(.home-eyebrow) {
+        animation-range: entry 0px entry 160px;
       }
 
       .home-section-header > .home-section-heading {
-        animation-range: entry 10% entry 55%;
+        animation-range: entry 24px entry 184px;
+      }
+
+      /* A risen title keeps its scroll reveal while its one glint plays on the clock. */
+      .home-section-header > .home-section-heading.home-stone-type[data-glint] {
+        animation-name: home-reveal-item, home-stone-glint;
+        animation-duration: auto, 1.4s;
+        animation-timing-function: linear, linear;
+        animation-timeline: view(), auto;
+        animation-range: entry 24px entry 184px, normal;
       }
 
       .home-section-header > .home-section-body {
-        animation-range: entry 20% entry 65%;
+        animation-range: entry 48px entry 208px;
       }
 
       .home-section-header > .home-section-link {
-        animation-range: entry 30% entry 75%;
+        animation-range: entry 72px entry 232px;
       }
     }
   }
@@ -389,6 +411,7 @@
   }
 
   .home-bento-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -696,14 +719,27 @@
     z-index: -1;
     width: var(--home-segment-width, 0);
     border-radius: var(--radius-pill);
-    background-color: var(--home-sheet);
+    background-color: light-dark(var(--home-sheet), color-mix(in oklab, var(--home-sheet) 86%, white));
+    /* The thumb is lit by the page lamp, like the hero's glass: its shadow falls away from the lamp. */
     box-shadow:
       0 0 0 1px var(--home-hairline),
       0 1px 2px light-dark(oklch(18% 0 none / 0.06), oklch(0% 0 none / 0.4)),
-      0 3px 8px -3px light-dark(oklch(18% 0 none / 0.08), oklch(0% 0 none / 0.45)),
+      calc(var(--cast-x, 1px) * 0.6) calc(var(--cast-y, 4px) * 0.6) 8px -3px light-dark(oklch(18% 0 none / 0.1), oklch(0% 0 none / 0.5)),
       inset 0 1px 0 var(--home-highlight);
     translate: var(--home-segment-x, 0) 0;
     opacity: 0;
+
+    /* Both rims catch light: the near one from the lamp, the far one turned a little away from it. */
+    &::before {
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(var(--lit-angle, -20deg), light-dark(oklch(0.2 0 none / 0.06), rgb(255 255 255 / 0.05)), transparent 35%, transparent 62%, light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.22)));
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      pointer-events: none;
+      content: '';
+    }
 
     .home-segmented-control[data-ready] & {
       opacity: 1;
@@ -890,63 +926,73 @@
 }
 
 /* Capture only the header, keeping the scrolling page live underneath its transition. */
-:root.app-header-transition {
+:root[data-header-transition] {
   view-transition-name: none;
 }
 
-.app-header-transition .home-header {
+[data-header-transition] .home-header {
   view-transition-name: home-header;
 }
 
-.app-header-transition .home-header .app-header-github {
+[data-header-transition] .home-header .app-header-github {
   view-transition-name: home-header-github;
 }
 
-.app-header-transition .home-header .app-header-logo {
+[data-header-transition] .home-header .app-header-logo {
   view-transition-name: home-header-logo;
 }
 
-.app-header-transition .home-header .app-header-version {
+[data-header-transition] .home-header .app-header-version {
   view-transition-name: home-header-version;
 }
 
-.app-header-transition .home-header .app-header-menu {
+[data-header-transition] .home-header .app-header-menu {
   view-transition-name: home-header-menu;
 }
 
-.app-header-transition::view-transition {
+[data-header-transition]::view-transition {
   pointer-events: none;
 }
 
-.app-header-transition::view-transition-group(home-header),
-.app-header-transition::view-transition-group(home-header-github),
-.app-header-transition::view-transition-group(home-header-logo),
-.app-header-transition::view-transition-group(home-header-version),
-.app-header-transition::view-transition-group(home-header-menu) {
+[data-header-transition]::view-transition-group(*) {
   animation-duration: var(--duration-slow);
   animation-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 
-.app-header-transition::view-transition-old(home-header) {
+/* Reaching the top re-forms the bar: the frosted bar fades out quickly, the bare one arrives as the pieces land. */
+[data-header-transition='top']::view-transition-old(home-header) {
   animation-duration: var(--duration-fastest);
 }
 
-.app-header-transition::view-transition-new(home-header) {
+[data-header-transition='top']::view-transition-new(home-header) {
   animation-duration: var(--duration-faster);
   animation-delay: var(--duration-normal);
 }
 
+/* Tucking away or coming back only moves the same bar, so it slides as one piece with no cross-fade. */
+[data-header-transition='tuck']::view-transition-group(*) {
+  animation-duration: var(--duration-normal);
+}
+
+[data-header-transition='tuck']::view-transition-old(*) {
+  animation: none;
+  opacity: 0;
+}
+
+[data-header-transition='tuck']::view-transition-new(*) {
+  animation: none;
+}
+
+/* Translation only: figures that measure themselves while they arrive keep their true size. */
 @keyframes home-reveal-item {
   from {
     opacity: 0;
     translate: 0 24px;
-    scale: 0.985;
   }
 
   to {
     opacity: 1;
     translate: 0 0;
-    scale: 1;
   }
 }
 

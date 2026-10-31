@@ -295,10 +295,14 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
     }
 
     const tick = (now: number) => {
+      // Offscreen and hidden figures release the frame loop; becoming visible starts it again.
+      if (!visible) {
+        frameId = 0
+        return
+      }
       frameId = requestAnimationFrame(tick)
       const elapsed = last ? Math.min(now - last, 64) : 0
       last = now
-      if (!visible) return
       visibleClock += elapsed
       if (tween) {
         tween.elapsed += elapsed
@@ -459,6 +463,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       stage.toggleAttribute('data-visible', visible)
       syncAnimations()
       last = 0
+      if (visible && !frameId) frameId = requestAnimationFrame(tick)
     }
     const intersection = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting
@@ -518,7 +523,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
     const redraw = () => { cancel(); drawRoutes() }
     const resize = new ResizeObserver(redraw)
     resize.observe(layer)
-    const scrolls = [...stage.querySelectorAll('.home-delivery-code-scroll')]
+    const scrolls = [...stage.querySelectorAll<HTMLElement>('.home-delivery-code-scroll')]
     const onCodeFocus = () => {
       touring = false
       stage.removeAttribute('data-touring')
@@ -526,9 +531,25 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       setPlaying(false)
       cancel()
     }
+    // The panes never scroll under the wheel or a swipe, so the page keeps them; a focused pane reads with the keys.
+    const readCode = (event: KeyboardEvent) => {
+      const scroll = event.currentTarget as HTMLElement
+      if (event.target !== scroll || event.altKey || event.ctrlKey || event.metaKey) return
+      if (event.key === 'Home' || event.key === 'End') {
+        event.preventDefault()
+        scroll.scrollTo({ top: event.key === 'Home' ? 0 : scroll.scrollHeight, behavior: 'instant' })
+        return
+      }
+      const step = (scroll.querySelector<HTMLElement>('.home-delivery-code-row')?.offsetHeight ?? 20) * 2
+      const page = scroll.clientHeight * 0.85
+      const move = ({ ArrowDown: [0, step], ArrowUp: [0, -step], ArrowRight: [step, 0], ArrowLeft: [-step, 0], PageDown: [0, page], PageUp: [0, -page], ' ': [0, event.shiftKey ? -page : page] } as Record<string, [number, number]>)[event.key]
+      if (!move) return
+      event.preventDefault()
+      scroll.scrollBy({ left: move[0], top: move[1], behavior: 'instant' })
+    }
     scrolls.forEach(scroll => scroll.addEventListener('focus', onCodeFocus))
     scrolls.forEach(scroll => scroll.addEventListener('pointerdown', onCodeFocus))
-    scrolls.forEach(scroll => scroll.addEventListener('wheel', onCodeFocus, { passive: true }))
+    scrolls.forEach(scroll => scroll.addEventListener('keydown', readCode))
 
     filmMode = mode()
     collect()
@@ -556,7 +577,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
       resize.disconnect()
       scrolls.forEach(scroll => scroll.removeEventListener('focus', onCodeFocus))
       scrolls.forEach(scroll => scroll.removeEventListener('pointerdown', onCodeFocus))
-      scrolls.forEach(scroll => scroll.removeEventListener('wheel', onCodeFocus))
+      scrolls.forEach(scroll => scroll.removeEventListener('keydown', readCode))
       stage.removeAttribute('data-routed')
       add.removeEventListener('click', onAdd)
       previewChange.removeEventListener('click', onPreviewChange)
@@ -583,7 +604,7 @@ export default function DeliveryFigures({ sectionId }: { sectionId: string }) {
   return (
     <div className="home-delivery-player">
       {/* Every state renders on the server: the page runs on pre-rendered CSS, and a class that first appears in the browser would start its engine. */}
-      <button aria-label={playLabel} className="home-delivery-play" data-playback={playback} hidden={!motion} onClick={() => controls.current?.toggle()} title={playLabel} type="button">
+      <button aria-label={playLabel} className="home-delivery-play home-lit home-stone home-stone-button home-stone-quiet" suppressHydrationWarning data-playback={playback} hidden={!motion} onClick={() => controls.current?.toggle()} title={playLabel} type="button">
         <IconPlayerPauseFilled aria-hidden="true" data-icon="playing" size={12} stroke={1.75} />
         <IconPlayerPlayFilled aria-hidden="true" data-icon="paused" size={12} stroke={1.75} />
         <IconRotate aria-hidden="true" data-icon="ended" size={13} stroke={1.75} />

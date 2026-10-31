@@ -11,7 +11,7 @@ CSS cascade layers give groups of declarations an order before selector specific
     border-radius: var(--radius-lg);
     background-color: var(--color-surface-raised);
   }
-}`} html={'<div class="display:grid gap-lg"><article class="collection-card"><h2 class="margin:0 text-lg font-semibold">Component padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">The component supplies 1.5rem.</p></article><article class="collection-card p-sm"><h2 class="margin:0 text-lg font-semibold">Local utility padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">p-sm overrides the padding on this instance.</p></article></div>'} theme previewFirst caption="Both cards share the same component class. Only the second adds p-sm; its utility declaration wins over normal component-layer padding." />
+}`} html={'<div class="grid-cols(1) gap-lg overflow-wrap:anywhere"><article class="collection-card"><h2 class="margin:0 text-lg font-semibold">Component padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">The component supplies 1.5rem.</p></article><article class="collection-card p-sm"><h2 class="margin:0 text-lg font-semibold">Local utility padding</h2><p class="mt-xs margin-bottom:0 text-sm fg-text-muted">p-sm overrides the padding on this instance.</p></article></div>'} theme previewFirst caption="Both cards share the same component class. Only the second adds p-sm; its utility declaration wins over normal component-layer padding." />
 
 The preset establishes this order for normal declarations:
 
@@ -19,7 +19,7 @@ The preset establishes this order for normal declarations:
 @layer theme, base, defaults, components, utilities;
 ```
 
-The `padding` utility takes precedence over the component declaration, regardless of where the class appears in the HTML attribute. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
+The `p-sm` utility takes precedence over the component's padding declaration, regardless of where the class appears in the HTML attribute. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
 
 ## Diagnose a competing declaration
 

@@ -7,10 +7,10 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
   <Step $row>
     <StepL>
       ### <StepNum />Install the Master CSS extension
-      Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css) from the Visual Studio Marketplace.
+      Install the official [Master CSS extension](https://marketplace.visualstudio.com/items?itemName=masterco.master-css-vscode) from the Visual Studio Marketplace.
     </StepL>
     <StepR>
-      <a className="flex-direction:row! height:3rem px-lg r-sm font-sm font-medium line-height:1 app-object app-object-interactive" href="vscode:extension/masterco.master-css">
+      <a className="flex-direction:row! height:3rem px-lg r-sm font-sm font-medium line-height:1 app-object app-object-interactive" href="vscode:extension/masterco.master-css-vscode">
         <VSCodeSvg className="-ml-3xs mr-sm" width="20" height="20" />
         <span>Install to Visual Studio Code</span>
       </a>
@@ -42,7 +42,7 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
 
       @theme {
         --color-primary: #4f46e5;
-       }
+      }
 
       @layer components {
         .btn {
@@ -73,9 +73,13 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
   <Step $row>
     <StepL>
       ### <StepNum />Set up project linting
-      Add Master CSS linting to the project's ESLint flat config. Use the setup step in the matching framework installation guide, or add the recommended config directly when the project already has parser support.
+      Add Master CSS linting to the project's ESLint flat config. If the framework setup has not installed these dependencies, install them first. Retain the project's framework parser configuration.
     </StepL>
     <StepR>
+      ```bash
+      npm install -D eslint @master/eslint-config-css@rc
+      ```
+
       ```js name=eslint.config.js
       import { defineConfig } from 'eslint/config'
       import masterCSS from '@master/eslint-config-css'
@@ -89,13 +93,16 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
   <Step $row>
     <StepL>
       ### <StepNum />Enable sort on save
-      Add `@master/css/sort-classes` to `eslint.codeActionsOnSave.rules` so Visual Studio Code applies the class sorting fix when the ESLint extension runs on save.
+      Enable ESLint's save action, then restrict it to `@master/css/sort-classes`. The rule list alone does not turn on fixes when saving. Keep `eslint.codeActionsOnSave.mode` at its default `all`; the `problems` mode ignores this filter. See the [ESLint extension's save settings](https://github.com/microsoft/vscode-eslint#settings-options).
     </StepL>
     <StepR>
       ```json name=.vscode/settings.json
       {
         "editor.quickSuggestions": {
           "strings": true
+        },
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
         },
         "eslint.codeActionsOnSave.rules": [
           "@master/css/sort-classes"

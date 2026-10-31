@@ -20,7 +20,8 @@ Use `p-`, `m-` and `gap-` with the same spacing tokens to give a layout a consis
 <div class="grid-cols(2) gap-md p-md">
   <div>1</div>
   <div>2</div>
-  ...
+  <div>3</div>
+  <div>4</div>
 </div>
 ```
 
@@ -42,7 +43,7 @@ Use the [complete spacing reference](/reference/tokens/spacing) for every value 
 Use a small gap between a label and its input, a medium gap between fields, and a larger gap before the action. The content makes the spacing hierarchy visible.
 
 <DemoConfiguredExample name="form-spacing" title="A rhythm for related fields" source="" theme previewFirst
-  html={'<form class="width:100% max-w-sm margin-inline:auto p-lg r-lg bg-surface-raised shadow-sm"><h2 class="margin:0 text-xl font-semibold">Collection details</h2><p class="mt-xs mb-lg text-sm fg-text-muted">Give your next project a place to begin.</p><div class="display:grid gap-md"><label class="display:grid gap-sm text-sm">Name<input class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><label class="display:grid gap-sm text-sm">Description<textarea class="p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" rows="3">Places, textures, and quiet details.</textarea></label></div><button type="button" class="mt-lg px-md py-sm r-md bg-surface-inverse fg-text-inverse">Save details</button></form>'}
+  html={'<form class="width:100% max-w-sm margin-inline:auto overflow-wrap:anywhere p-lg r-lg bg-surface-raised shadow-sm"><h2 class="margin:0 text-xl font-semibold">Collection details</h2><p class="mt-xs mb-lg text-sm fg-text-muted">Give your next project a place to begin.</p><div class="grid-cols(1) gap-md"><label class="display:grid gap-sm text-sm">Name<input class="min-width:0 width:100% p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" value="Field notes" /></label><label class="display:grid gap-sm text-sm">Description<textarea class="min-width:0 width:100% p-sm r-md border-width:1px border-style:solid b-line-control bg-surface-base" rows="3">Places, textures, and quiet details.</textarea></label></div><button type="button" class="mt-lg px-md py-sm r-md bg-surface-inverse fg-text-inverse">Save details</button></form>'}
   caption="gap-sm connects each label to its input; gap-md separates fields; mt-lg gives the action its own space. This preview does not submit data." />
 
 ## Customize spacing \{#namespace-for-spacing\}
@@ -71,7 +72,7 @@ Apply the custom spacing tokens in your markup:
 ---
 
 ## Use explicit lengths \{#using-explicit-lengths\}
-Use native CSS units for local geometry that does not need a named token. `rem` lengths follow the browser’s root font size; `px` lengths retain their CSS pixel value.
+Use native CSS units for local geometry that does not need a named token. `rem` lengths follow the document’s root font size; `px` lengths retain their CSS pixel value.
 
 ```html
 <div class="margin:0.25rem"></div>

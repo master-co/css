@@ -1,6 +1,5 @@
 import PageCSSSizeBenchmark from './components/PageCSSSizeBenchmark'
 import {
-
   StaticBuildChart,
   StaticBuildTable,
   StaticComparisonSummary,
@@ -40,14 +39,14 @@ import {
 } from './components/BuildPathDiagnosticsBenchmark'
 
 ## Overview [sr-only]
-Benchmarks make Master CSS output, build, delivery, browser, and interaction costs inspectable. They are scoped evidence, not universal guarantees for every application.
+Use these measurements to compare the costs of building CSS, delivering a page and updating its styles. Start with the question closest to your application, then check the fixture and measurement limits before applying the result.
 
-This page collects the public benchmark snapshots used to explain Master CSS performance tradeoffs. Each result stays tied to the fixture, command, package versions, browser, machine, sample count, and limits that produced it.
+The charts use committed snapshots from July 1, 2026. They describe those runs, not a fresh measurement of the current packages. The snapshots record commands, environments and declared package versions; entries such as `workspace:^` and version ranges do not identify an exact installed release or commit.
 
 ---
 
 ## Core hypothesis
-The central performance question is not whether a runtime is faster than no runtime in isolation. It is whether **small Runtime plus very few CSS rules** can produce lower whole-browser cost than **zero Runtime plus many CSS rules** over the page lifecycle.
+The delivery question is whether the browser work saved by loading fewer CSS rules can offset the cost of generating rules at runtime. Compare the whole page lifecycle: initial loading, later interactions and long-session cleanup.
 
 Runtime and progressive rendering add JavaScript work to generate rules from observed classes. When that class set is smaller than a static source-derived set, they can reduce initial CSS and CSSOM rule volume. Whether that reduction offsets startup and mutation work depends on the workload. Tailwind CSS is useful here as a zero-runtime static CSS control: it does not provide a runtime-equivalent implementation, but it does represent the large static CSS side of the tradeoff.
 
@@ -58,7 +57,7 @@ Selector matching is not directly measured as a stable Chromium metric in these 
 ---
 
 ## How to read these results
-Benchmarks are useful when they answer a narrow question. This page builds the runtime/CSSOM hypothesis in a validation ladder:
+Benchmarks are useful when they answer a narrow question. Read the measurements in this order when evaluating that delivery tradeoff:
 
 1. Static CSS output and structure show how many bytes, selectors, declarations, and rules each static setup delivers.
 2. Browser CSS cost calibrates how Chromium responds when CSS rule volume grows while DOM is fixed.
@@ -70,7 +69,7 @@ Read each chart as evidence for the measured fixture and command, then compare i
 
 | Question | Primary evidence |
 |----------|------------------|
-| How much CSS does the documentation site transfer? | Page CSS size snapshot |
+| How large are the CSS bodies discovered from each documentation page? | Page CSS size snapshot |
 | How large is generated static CSS? | Static CSS output and CSS structure snapshots |
 | Where does Master CSS build time go? | Build path diagnostics |
 | What does CSS rule volume cost in Chromium? | Browser CSS cost calibration |
@@ -82,22 +81,20 @@ Tailwind CSS is not a runtime-equivalent comparison. In runtime-oriented suites,
 
 Lower numbers are not automatically better in every context. A smaller CSS artifact can shift work into runtime, a faster cold command can hide less useful output, and a local Chromium trace does not replace real production telemetry.
 
-Before publishing or acting on a number, the fixture must first pass correctness checks: rendered output should match the intended UI, computed-style assertions should pass, generated output should be attributable to the fixture, and missing-rule checks should fail loudly.
-
-No benchmark result is permission to change CSS output, cascade order, hydration behavior, runtime behavior, extraction behavior, or public APIs. If a result exposes a real hot path, the fix still needs the owning package tests and compatibility review.
+Check correctness alongside timing: a smaller or faster result is useful only if the fixture renders the intended UI. The tables include computed-style and progressive-adoption checks where the suite records them.
 
 ---
 
-## Current results
+## Recorded results \{#current-results\}
 
 ### Page CSS size
-Question answered: how much inline and external CSS do popular documentation pages transfer in the initial HTML response?
+Question answered: how large are the inline style bodies and linked stylesheets discovered from each documentation page’s initial HTML?
 
 <PageCSSSizeBenchmark />
 
-This snapshot counts inline `style` tags and external stylesheets discovered from each page's initial HTML. The committed snapshot records about **6 kB brotli** for its Master CSS page sample. Treat that as the measured response at the snapshot date, not a size guarantee for every documentation route or the current build.
+This snapshot sums inline `style` bodies and linked stylesheets. Each body is compressed independently for the Brotli view. The committed snapshot records about **6 kB brotli** for its Master CSS page sample; it does not measure the CSS portion of a compressed HTML response or guarantee the size of another route or the current build.
 
-Limits: this is a page transfer measurement, not a browser timing metric. Browser cache state, CDN behavior, JavaScript-loaded styles, fonts, images, and application runtime work are outside the snapshot.
+Limits: these are collected CSS body sizes, not browser transfer or timing measurements. The collector does not follow CSS import graphs or count JavaScript-injected styles. Compression of complete responses, cache reuse, headers, CDN behavior, fonts, images and application runtime work are outside the comparison.
 
 ### Static CSS output, structure, and production build
 Question answered: how do equivalent static Master CSS and Tailwind CSS v4 fixtures compare for generated CSS bytes, CSS AST structure, and full production command timing?
@@ -169,9 +166,9 @@ This snapshot combines `startup-diagnostics`, `build-diagnostics`, `compiler-dia
   <figcaption>Complete build-path diagnostic snapshot data for every measured fixture.</figcaption>
 </figure>
 
-Interpretation: ordinary fixture command cost is currently dominated by cold process/module startup and integration startup overhead, while normal-fixture compiler and extraction medians are smaller.
+Interpretation: in this snapshot, cold process/module startup and integration startup dominate ordinary fixture command cost, while normal-fixture compiler and extraction medians are smaller.
 
-Limits: diagnostic probes explain envelopes and substeps. They do not justify changing generated CSS, cascade order, extraction correctness, runtime behavior, or public APIs.
+Limits: diagnostic probes measure separate envelopes and substeps. Do not add their timings together as if they were a single production trace.
 
 ### Browser CSS cost
 Question answered: how does CSS rule volume affect Chromium style recalculation, layout, and paint when DOM is fixed, and how does DOM scaling behave when CSS is fixed?
@@ -215,10 +212,14 @@ The suite compares Master CSS static, runtime, progressive, and Tailwind CSS sta
 #### Representative fixture
 The primary charts show the `docs` fixture.
 
+The payload chart counts the complete HTML response and each recorded external asset once. Inline CSS and the injected hydration manifest are already inside that HTML, so they are not separate segments. Empty asset fields do not add compression-container bytes to the total.
+
 <figure>
   <MasterDeliveryPayloadChart />
-  <figcaption>Brotli-compressed initial payload composition for the `docs` fixture.</figcaption>
+  <figcaption>Recorded response assets, compressed separately with Brotli, for the `docs` fixture. All bars share a zero-based scale ending at the largest total; segments show each asset's contribution.</figcaption>
 </figure>
+
+These totals are estimates from the recorded asset fields, not measured network transfer sizes. They exclude headers and transport overhead. The detailed table retains separately compressed inline CSS and hydration fragments as diagnostics; adding those columns to the response total would count their content twice.
 
 <figure>
   <MasterDeliveryLoadChart />
@@ -237,7 +238,7 @@ The primary charts show the `docs` fixture.
 
 Interpretation: progressive begins with server/build-time CSS in the HTML and adds a runtime handoff. Runtime mode starts smaller on CSS output but pays browser runtime and manifest costs when classes are discovered in the DOM.
 
-Limits: these numbers measure initial local fixture loads only. Post-load mutation belongs to the interaction suite. Master static and Tailwind static use CLI-generated CSS from equivalent fixture intent, not identical class strings.
+Limits: these numbers measure initial local fixture loads only. Post-load mutation belongs to the interaction suite. Master static and Tailwind static use CLI-generated CSS from equivalent fixture intent, not identical class strings. The July runtime fixture delivers a manifest JSON asset; current browser runtimes use the compiled program described in [Rendering modes](/guide/rendering-modes#project-manifest-delivery).
 
 ### Interaction cost
 Question answered: how expensive are post-load class toggles, first-time runtime rule generation, DOM append/remove, theme switches, viewport resize, and cleanup cycles?
@@ -268,10 +269,12 @@ Interpretation: runtime and progressive modes should be read in two layers: user
 
 Limits: these numbers do not measure route transitions, HMR, dev workflow, CDN behavior, Firefox, WebKit, or public real-world application variance.
 
-### Browser lifecycle and INP-style interactions
-Question answered: can small runtime/progressive work plus low CSSOM/rule volume lower whole-browser lifecycle cost compared with zero-runtime static CSS?
+### Browser lifecycle and long sessions \{#browser-lifecycle-and-inp-style-interactions\}
+Question answered: how much rendering and runtime work accumulated during each recorded five-minute session?
 
-The suite is the closest current test of the core hypothesis. It keeps Tailwind CSS as the zero-runtime static browser-control setup and compares it with Master CSS static, runtime, and progressive setups across lifecycle scenarios. The latency value is an INP-style local fixture measurement, not real Web Vitals INP.
+The lifecycle suite compares Master CSS static, runtime and progressive setups with a Tailwind CSS static control. The charts below select the five-minute long-session scenario. Each mode has **one measured run**; a median with one sample is that single observation, not evidence of repeatability.
+
+The table’s elapsed time covers the entire scripted session and its final settling frames. The source metric is named `inp-style-interaction-ms`, but for this scenario it is approximately five minutes by construction. It does not measure an individual input delay or Web Vitals INP.
 
 <figure>
   <BrowserLifecycleSummary />
@@ -280,7 +283,7 @@ The suite is the closest current test of the core hypothesis. It keeps Tailwind 
 
 <figure>
   <BrowserLifecycleLongSessionCharts />
-  <figcaption>Five-minute long-session medians for browser rendering and runtime work.</figcaption>
+  <figcaption>Browser rendering and runtime work observed during one five-minute run per mode.</figcaption>
 </figure>
 
 <figure>
@@ -288,7 +291,7 @@ The suite is the closest current test of the core hypothesis. It keeps Tailwind 
   <figcaption>Complete five-minute long-session evidence for every mode.</figcaption>
 </figure>
 
-Interpretation: current five-minute local Chromium evidence directionally supports the hypothesis for style recalculation: Master runtime and progressive show lower style recalculation medians than the Tailwind static browser control while carrying measured runtime mutation work. Layout, paint, long-task, and INP-style latency medians remain measured data, not wins, because they do not establish the same directional advantage.
+Interpretation: in these recorded runs, runtime and progressive modes spent less total time recalculating styles than the Tailwind static control, while also performing runtime mutation work. A single run per mode cannot establish a stable speedup. Compare repeated runs on the same machine before drawing conclusions about layout, paint, responsiveness or overall performance.
 
 Limits: selector matching time remains an inference from CSSOM/rule volume plus style recalculation unless Chromium exposes a stable trace metric for it. CSSOM memory and GC pressure are reported only when the collection method is stable enough to reproduce on the same browser version.
 
@@ -313,7 +316,7 @@ Each fixture should publish source markup, Master CSS setup, Tailwind CSS setup 
 ### Metric families
 | Area | Examples |
 |------|----------|
-| Transfer | Raw, gzip, and brotli bytes for CSS, HTML, runtime JavaScript, manifest JSON, hydration manifest, and request count |
+| Payload | Raw, gzip, and brotli asset sizes; embedded-fragment diagnostics; recorded request count |
 | CSS structure | Rule count, selector count, declaration count, cascade layers, at-rules, custom properties, and selector complexity |
 | Build | Cold command, repeat command, startup probes, scanner time, extraction time, and compiler time |
 | Browser load | Navigation-ready time, stylesheet parse/attach, style recalculation, layout, paint, long tasks, and cache mode |
@@ -333,25 +336,23 @@ Browser timings should be measured with fixed viewport, device scale, browser ve
 Runtime and progressive rendering optimize what CSS is delivered up front. They do not make browser style calculation free: when an interaction creates many first-time utility rules, the browser still needs to account for those new stylesheet rules before it can paint the updated DOM.
 
 ### Tailwind CSS comparisons
-Tailwind CSS comparisons use pinned Tailwind CSS v4 tooling and official entrypoints for static output, production build, and static browser-control measurements.
+The snapshots identify Tailwind CSS v4 tooling and its official entrypoints for static output, production build and static browser-control measurements. Preserve the matching lockfile and source revision when reproducing a comparison; declared dependency ranges alone are insufficient.
 
 Runtime-equivalent claims should be avoided because Tailwind CSS does not perform the same client-side class observation work as Master CSS runtime rendering. In the runtime/CSSOM hypothesis, Tailwind CSS represents the zero-runtime static baseline, not a runtime competitor.
 
 ### Publication rules
-Curated snapshots are committed; raw reports are not. Raw reports, traces, diagnostics, screenshots, downloaded history, and temporary workspaces stay under `benchmarks/.results/**`.
+Interpret each result together with its fixture, mode, date, browser, machine, cache state and sample count. The committed snapshots retain these details where the suite collected them. Missing information limits what can be reproduced or compared.
 
-Every public result should include the fixture, adapter or mode, package versions, command, machine, operating system, browser version when relevant, viewport/device scale, warmup rounds, measured rounds, cache mode, sample count, and known limits.
-
-Allowed public claim language is intentionally narrow: use "directional evidence," "supports the hypothesis in this fixture," and "static browser-control baseline." Avoid "proves," "overall faster," and "runtime wins" unless future same-machine repeat evidence passes an explicit direction and threshold gate for the named metric.
-
-Real Web Vitals and Lighthouse scores are outside the current benchmark source. The benchmark suite prefers direct output, build, trace, and interaction measurements that can be tied back to a specific fixture and command.
+The public data does not include real-user Web Vitals or Lighthouse scores. Trace events and local interaction measurements answer narrower questions; they cannot establish how another application's users will experience the page.
 
 ---
 
 ## Data sources
-Curated snapshots are committed under `benchmarks/**/snapshot.json` and `benchmarks/browser-lifecycle/long-session-evidence.json`.
+The charts read committed snapshots under `benchmarks/**/snapshot.json` and `benchmarks/browser-lifecycle/long-session-evidence.json`. The table preserves the commands recorded for those snapshots. Reproducing them requires the corresponding source revision and dependency lockfile, not just a current package installation.
 
-| Result | Committed data | Snapshot command |
+The current lifecycle fixtures fail their computed-style validation with the current preset, so the recorded commands do not currently produce a comparable report. Update and verify the fixture styling before collecting new timings. The published snapshots remain historical evidence; their shape checks do not establish that the current benchmark runner reproduces them.
+
+| Result | Committed data | Recorded snapshot command |
 |--------|----------------|------------------|
 | Page CSS size | [`docs-page-css-size/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/docs-page-css-size/snapshot.json) | `UPDATE_BENCHMARK_SNAPSHOT=true pnpm --filter ./benchmarks bench:docs-page-css-size` |
 | Static CSS output, structure, and production build | [`tailwind-static-comparison/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/tailwind-static-comparison/snapshot.json) | `pnpm --filter ./benchmarks bench:css-output-size`, `pnpm --filter ./benchmarks bench:build-performance`, `pnpm --filter ./benchmarks bench:css-structure`, then `pnpm --filter ./benchmarks snapshot:tailwind-static-comparison` |
@@ -362,4 +363,15 @@ Curated snapshots are committed under `benchmarks/**/snapshot.json` and `benchma
 | Browser lifecycle | [`browser-lifecycle/snapshot.json`](https://github.com/master-co/css/tree/rc/benchmarks/browser-lifecycle/snapshot.json) | `BROWSER_LIFECYCLE_ROUNDS=3 BROWSER_LIFECYCLE_WARMUP_ROUNDS=1 BROWSER_LIFECYCLE_REPORT_LABEL=baseline-review-$(date +%F) BENCHMARK_COMMAND_TIMEOUT_MS=900000 pnpm --filter ./benchmarks bench:browser-lifecycle`, then `pnpm --filter ./benchmarks snapshot:browser-lifecycle` |
 | Five-minute lifecycle evidence | [`browser-lifecycle/long-session-evidence.json`](https://github.com/master-co/css/tree/rc/benchmarks/browser-lifecycle/long-session-evidence.json) | Run `bench:browser-lifecycle` once per mode with `BROWSER_LIFECYCLE_SCENARIOS=long-session`, `BROWSER_LIFECYCLE_MODES=<mode>`, `BROWSER_LIFECYCLE_ROUNDS=1`, `BROWSER_LIFECYCLE_WARMUP_ROUNDS=1`, `BROWSER_LIFECYCLE_LONG_SESSION_MS=300000`, `BROWSER_LIFECYCLE_MEASURE_TIMEOUT_MS=420000`, `BROWSER_LIFECYCLE_REPORT_LABEL=long-session-5m-<mode>`, and `BENCHMARK_COMMAND_TIMEOUT_MS=900000`, then `pnpm --filter ./benchmarks evidence:browser-lifecycle` |
 
-Lifecycle publication checks are `pnpm --filter ./benchmarks check:browser-lifecycle`, `node benchmarks/browser-lifecycle/check-readiness.mjs --profile long-session-evidence browser-lifecycle/long-session-evidence.json`, and `node benchmarks/browser-lifecycle/compare-stability.mjs` after same-machine repeat reports.
+### Validate the recorded data
+
+Run these checks from the repository root:
+
+```bash
+bun run --filter master-css-benchmarks check:browser-lifecycle
+bun run --filter master-css-benchmarks check:browser-lifecycle browser-lifecycle/long-session-evidence.json --profile long-session-evidence
+```
+
+The first command checks the committed lifecycle snapshot; the second checks the five-minute evidence. Neither command launches a browser or creates new measurements.
+
+For a new report, pass its path and the appropriate `baseline` or `long-session` profile to `check:browser-lifecycle`. The no-argument command still checks the committed snapshot. Collect same-machine repeat reports before running the suite’s stability comparison, and keep raw reports and traces under `benchmarks/.results/`. Review fixture correctness and measurement conditions before replacing a public snapshot.

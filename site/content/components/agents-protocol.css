@@ -180,8 +180,6 @@
     width: var(--home-mcp-core);
     height: var(--home-mcp-core);
     border-radius: calc(var(--home-mcp-core) * 0.3);
-    background-color: var(--home-sheet);
-    box-shadow: 0 0 0 1px var(--home-hairline), var(--home-elevation-2);
     translate: -50% -50%;
     pointer-events: none;
 
@@ -202,8 +200,14 @@
   }
 
   [data-canvas-ready] :is(.home-mcp-core, .home-mcp-client-mark) {
+    border-color: transparent;
     background: none;
     box-shadow: none;
+  }
+
+  /* On the stone the label is engraved in the stone's own light ink. */
+  .home-mcp-core.home-stone .home-mcp-core-label {
+    color: color-mix(in oklab, var(--stone-text) 56%, transparent);
   }
 
   [data-canvas-ready] .home-mcp-canvas { visibility: visible; }

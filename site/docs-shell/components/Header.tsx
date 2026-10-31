@@ -16,33 +16,35 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
     const root = document.documentElement
     const motion = matchMedia('(prefers-reduced-motion: reduce)')
     let lastScrollTop = window.scrollY
-    let currentAtTop = lastScrollTop <= 10
     let scrollDirection = 0
-    let revision = 0
     let activeTransition: ViewTransition | null = null
+    // What the header should show now; each change applies all of it, so a skipped transition loses nothing.
+    const desired = { atTop: lastScrollTop <= 10, tucked: false }
 
     // Restored scroll positions use their final state without an entrance animation.
-    setAtTop(currentAtTop)
+    setAtTop(desired.atTop)
 
-    const changeAtTop = (next: boolean) => {
-      currentAtTop = next
-      const request = ++revision
+    const apply = () => {
+      navbar.style.transform = desired.tucked ? 'translateY(-100%)' : ''
+      flushSync(() => setAtTop(desired.atTop))
+    }
+
+    // With `transitionAtTop`, every change of the header runs as a view transition of the header alone. The marker
+    // is a data attribute, not a class, so canvases watching the root's class for theme changes stay still.
+    const change = (kind: 'top' | 'tuck') => {
       activeTransition?.skipTransition()
       if (!transitionAtTop || !document.startViewTransition || motion.matches) {
-        setAtTop(next)
+        apply()
         return
       }
-      root.classList.add('app-header-transition')
-      const transition = document.startViewTransition(() => {
-        // A skipped transition still calls its update; only the latest request may commit.
-        if (request === revision) flushSync(() => setAtTop(next))
-      })
+      root.dataset.headerTransition = kind
+      const transition = document.startViewTransition(apply)
       activeTransition = transition
       void transition.ready.catch(() => {})
       const finish = () => {
         if (activeTransition !== transition) return
         activeTransition = null
-        root.classList.remove('app-header-transition')
+        delete root.dataset.headerTransition
       }
       void transition.finished.then(finish, finish)
     }
@@ -53,29 +55,41 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
       () => {
         const st = Math.max(0, window.scrollY)
         const nextAtTop = st <= 10
+        let kind: 'top' | 'tuck' | undefined
         if (nextAtTop) {
           scrollDirection = -1
-          navbar.style.transform = ''
+          if (desired.tucked) {
+            desired.tucked = false
+            kind = 'tuck'
+          }
         }
-        if (nextAtTop !== currentAtTop) changeAtTop(nextAtTop)
-        if (Math.abs(st - lastScrollTop) <= 100) return
-        const direction = st > lastScrollTop ? 1 : -1
-        if (direction !== scrollDirection) {
-          scrollDirection = direction
-          navbar.style.transform = direction === 1 && !nextAtTop ? 'translateY(-100%)' : ''
+        if (nextAtTop !== desired.atTop) {
+          desired.atTop = nextAtTop
+          kind = 'top'
         }
-        lastScrollTop = st
+        if (Math.abs(st - lastScrollTop) > 100) {
+          const direction = st > lastScrollTop ? 1 : -1
+          if (direction !== scrollDirection) {
+            scrollDirection = direction
+            const tucked = direction === 1 && !nextAtTop
+            if (tucked !== desired.tucked) {
+              desired.tucked = tucked
+              kind ??= 'tuck'
+            }
+          }
+          lastScrollTop = st
+        }
+        if (kind) change(kind)
       },
     )
     motion.addEventListener('change', reduceMotion)
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => {
-      revision++
       handleScroll.cancel()
       window.removeEventListener('scroll', handleScroll)
       motion.removeEventListener('change', reduceMotion)
       activeTransition?.skipTransition()
-      if (transitionAtTop) root.classList.remove('app-header-transition')
+      if (transitionAtTop) delete root.dataset.headerTransition
     }
   }, [top, stickable, transitionAtTop])
 
@@ -85,7 +99,7 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
         'app-header',
         props.className,
         {
-          'transition-duration:.2s transition-property:transform,height,padding,backdrop-filter,background-color': stickable,
+          'transition-duration:.2s transition-property:transform,height,padding,backdrop-filter,background-color': stickable && !transitionAtTop,
           'position:fixed top:0': fixed,
           'at-top': atTop
         }

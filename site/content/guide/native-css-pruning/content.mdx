@@ -20,7 +20,7 @@ Importing `@master/css` supplies the preset and generated CSS entry. Add `@prune
 }
 ```
 
-If source files use `card` but never use `unused`, the output keeps `.card` and removes `.unused`.
+If source files use `card` but never use `unused`, the output keeps `.card` and removes `.unused`. The output excerpt below shows only the native rule; the preset and any generated utilities still follow the normal entry pipeline.
 
 ```html name=src/index.html
 <!-- @MARK card -->
@@ -124,13 +124,7 @@ Package and remote styles do not become project-owned merely because the project
 ## Root scope
 Pruning activation belongs to each source file. Once enabled, filtering uses the importing root’s usage scope. The same opted-in shared source can therefore retain different classes under different roots.
 
-```txt
-app/a/a.css
-  -> imports ../shared.css
-
-app/b/b.css
-  -> imports ../shared.css
-```
+<DeliveryFlow name="pruning-scope" />
 
 ```css name=app/a/a.css
 @prune native;
@@ -165,9 +159,19 @@ app/b/b.css
 }
 ```
 
-Each root above selects its adjacent `page.html`. If `app/a/page.html` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.only-used-in-b` from the shared source. The `.b-page` rule belongs to the other root and is not imported here.
+Each root above selects its adjacent `page.html`:
 
-If `app/b/page.html` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
+```html name=app/a/page.html
+<article class="a-page shared-card">A</article>
+```
+
+```html name=app/b/page.html
+<article class="b-page shared-card only-used-in-b">B</article>
+```
+
+The `a.css` output keeps `.a-page` and `.shared-card`, but removes `.only-used-in-b` from the shared source. The `.b-page` rule belongs to the other root and is not imported here.
+
+The `b.css` output keeps `.b-page`, `.shared-card`, and `.only-used-in-b`.
 
 The same imported file can therefore be pruned differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root only when that direct import enters the Master CSS pipeline.
 
@@ -304,6 +308,8 @@ body {
 }
 ```
 
+This is a conservative class-name check. For `.card .title`, finding either `card` or `title` is enough to retain the selector branch; the compiler does not prove that the two elements form that descendant relationship in the live DOM. A retained rule can therefore still match no element.
+
 Rules without class selectors, such as `body`, `html`, and `:root`, are not class-usage rules and are preserved. Keyframes follow their declaring file's preserve/prune policy; under pruning, animation usage determines which remain. Empty at-rule blocks are removed after their unused class rules are pruned.
 
 ---
@@ -373,15 +379,6 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 
 ---
 
-## Checklist
-- Import `@master/css` from CSS entries that should receive generated Master CSS.
-- Enable pruning separately with `@prune native;` or `pruneNativeCSS: true`.
-- Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
-- Check every source boundary: `@prune native;` does not propagate to imports.
-- Use `@safelist` for native classes used by bounded external systems.
-- Use `@preserve native;` for files with external class vocabularies when project-wide pruning is enabled.
-
-
 ## Prune animation definitions
 
 Keyframes use the same file policy as native classes:
@@ -399,3 +396,14 @@ Using `animate-reveal` retains the `reveal` definition. The safelist retains `ex
 Without a pruning policy, native classes and keyframes remain in the output. `@preserve native;` takes precedence within its file. Neither directive changes imported files' policies; package styles preserve their existing default unless they opt in. `preserveNativeCSS: false` suppresses native delivery even when a name is safelisted. Definition metadata remains available for compilation and inspection.
 
 Same-name definitions keep their conditions, layers and document order. Runtime resource slots can be empty while preserving the containing layer's identity and order. See the [keyframe contract](/reference/directives/theme#native-keyframes).
+
+---
+
+## Checklist
+- Import `@master/css` from CSS entries that should receive generated Master CSS.
+- Enable pruning separately with `@prune native;` or `pruneNativeCSS: true`.
+- Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
+- Check every source boundary: `@prune native;` does not propagate to imports.
+- Use `@safelist` for native classes used by bounded external systems.
+- Keep animation definitions with their owning stylesheet and check retained keyframe dependencies.
+- Use `@preserve native;` for files with external class vocabularies when project-wide pruning is enabled.

@@ -9,7 +9,7 @@ import { verifyDirectiveExamples } from '../tests/directive-examples'
 import { verifyToolContractExamples } from '../tests/tool-contract-examples'
 import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
 import { verifyInstallationExamples } from '../tests/installation-examples'
-import { verifyLanguageExamples } from '../tests/tooling-examples-checks'
+import { verifyLanguageExamples, verifyLintExamples } from '../tests/tooling-examples-checks'
 import { authoringSource } from '../utils/authoring-examples'
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
@@ -70,6 +70,7 @@ test('route-level native CSS retains referenced tokens and named conditions', as
   assert.match(css, /\.pricing-card\s*\{[^}]*background-color:\s*var\(--color-surface-raised\)/)
   assert.match(css, /--color-surface-raised:/)
   assert.match(css, /--spacing-5xl:/)
+  assert.match(css, /--easing-smooth:\s*cubic-bezier\(/)
   assert.match(css, /\.home-cta\s*\{[^}]*@media \(prefers-color-scheme:\s*dark\)\s*\{\s*background-color:/)
   assert.match(css, /@media \(width\s*<\s*52\.125rem\)\s*\{\s*width:\s*100%/)
   assert.doesNotMatch(css, /@compose|@reference/)
@@ -190,7 +191,9 @@ test('installation routes use static entry points and explicit optional modes', 
         }
       }
       if (content.includes('npm create @master/css@rc') && framework !== 'laravel') {
-        assert.doesNotMatch(content, /npm create @master\/css@rc[^\n]*--mode\s+(?:runtime|progressive)/, slug)
+        const primarySetup = content.match(/npm create @master\/css@rc[^\n]*/)?.[0]
+        assert.ok(primarySetup, slug)
+        assert.doesNotMatch(primarySetup, /--mode\s+(?:runtime|progressive)/, slug)
       }
     }
   }
@@ -778,11 +781,10 @@ function isMigrationVendorClass(example: ExampleCandidate): boolean {
 function isExpectedDiagnostic(candidate: string, file: string): boolean {
   const relativePath = relativeSitePath(file)
   const diagnosticsByPath: [RegExp, Set<string>][] = [
-    [/guide\/code-linting\//, new Set(['display:bloc', 'font', 'font:', 'text-align:cente'])],
+    [/guide\/code-linting\//, new Set(['font-size:16'])],
     [/guide\/introduction\//, new Set(['font', 'font:'])],
     [/guide\/conditional-queries\//, new Set(['hidden@sm<=h', 'hidden@sm<=h<=lg'])],
-    [/guide\/scanning-latent-classes\//, new Set(['card'])],
-    [/guide\/compatibility\//, new Set(['field-sizing:banana', 'interpolate-size:banana'])]
+    [/guide\/scanning-latent-classes\//, new Set(['card'])]
   ]
   return diagnosticsByPath.some(([pattern, classes]) => pattern.test(relativePath) && classes.has(candidate))
 }
@@ -899,14 +901,21 @@ test('migration TypeScript examples parse and preserve native button and progres
         assert.match(html, />Save changes<\/button>/)
         assert.doesNotMatch(html, /(?:tone|size)=/)
         assert.match(renderMigrationExample(example.text, 'Button', { children: 'Preview' }), /type="button"/)
+        assert.match(renderMigrationExample(example.text, 'Button', { type: undefined }), /type="button"/)
+        assert.match(renderMigrationExample(example.text, 'Button', { type: 'reset' }), /type="reset"/)
       }
-      if (example.text.includes('export function Progress')) {
-        for (const [value, expected] of [[75, 75], [150, 100], [-1, 0], [NaN, 0]]) {
-          const html = renderMigrationExample(example.text, 'Progress', { value })
-          assert.match(html, /role="progressbar" aria-label="Upload progress"/)
+      const progressName = example.text.match(/(?:export )?function (Progress|Meter)\b/)?.[1]
+      if (progressName) {
+        const source = example.text.includes(`export function ${progressName}`)
+          ? example.text
+          : `${example.text}\nexport { ${progressName} }`
+        const variable = progressName === 'Meter' ? '--value' : '--progress'
+        for (const [value, expected] of [[75, 75], [150, 100], [-1, 0], [NaN, 0], [Infinity, 0]]) {
+          const html = renderMigrationExample(source, progressName, { value })
+          assert.match(html, /role="progressbar" aria-label="Progress"/)
           assert.ok(html.includes(`aria-valuenow="${expected}"`))
-          assert.ok(html.includes(`--progress:${expected}%`))
-          assert.ok(html.includes('w:var(--progress)'))
+          assert.ok(html.includes(`${variable}:${expected}%`))
+          assert.ok(html.includes(`width:var(${variable})`))
         }
       }
     }
@@ -952,6 +961,7 @@ test('Bootstrap class allowance is limited to its documented vendor vocabulary',
 })
 
 test('language service guide examples match actual completion, hover and formatter output', verifyLanguageExamples)
+test('lint guide examples match actual rule diagnostics and fixes', verifyLintExamples)
 
 test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
 test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)

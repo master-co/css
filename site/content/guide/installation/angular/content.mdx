@@ -5,11 +5,11 @@ import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/comp
   <Step $row>
     <StepL>
       ### <StepNum />Create a project
-      If you don't have an Angular project, create one first.
+      Create a browser-rendered Angular project using CSS, or keep your existing app’s builder and global stylesheet.
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npx --package @angular/cli ng new my-app
+      npx --package @angular/cli ng new my-app --style css --ssr=false
       cd my-app
       ```
     </StepR>
@@ -63,4 +63,9 @@ During development, run `npx master-css generate --output src/master.generated.c
 
 For class names created in the browser, use the [Angular runtime guide](/guide/installation/angular/runtime).
 
-The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new#file-name-style-guide) may use `src/app/app.component.html`; edit the template referenced by your root component.
+The current Angular CLI uses `src/app/app.html` by default. Existing projects using the [2016 file naming convention](https://angular.dev/cli/new) may use `src/app/app.component.html`; edit the template referenced by your root component.
+
+## Verify the result
+Build after generating CSS and serve Angular’s browser output. The heading should be large, heavy and italic. To check the watcher, change `font-style:italic` to `font-style:normal` in the template; the preview should update while the watcher is running.
+
+Static refers to CSS generation. A browser-rendered Angular app still needs JavaScript to create its HTML.

@@ -53,6 +53,12 @@
   .doc-install-step-number::before { content: counter(installation-step); }
   .doc-install-step-end { display: none; }
 
+  @container (width < 20rem) {
+    .doc-install-step { margin-inline-start: 0; padding-inline-start: 0; border-inline-start: 0; }
+    .doc-install-step :is(h2, h3, h4) > a:has(> .doc-install-step-number) { display: flex; align-items: flex-start; gap: var(--spacing-xs); }
+    .doc-install-step-number { position: static; flex: none; }
+  }
+
   @container (min-width: 38rem) {
     .doc-install-step[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   }

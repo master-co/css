@@ -145,11 +145,15 @@ test(`${engine}: finite motion and native dialog preserve reduced-motion and foc
   try {
     const demo = page.locator('[data-foundation-type-motion="finite-motion"]')
     const frame = await readyFrame(demo.locator('iframe'))
+    const readouts = frame.locator('[data-animation-readout]')
+    assert.equal(await readouts.count(), 2)
+    assert.ok(await readouts.evaluateAll(elements => elements.every(element => element.getAttribute('aria-live') === 'off')), 'frequent timeline updates do not become live announcements')
     assert.ok(await frame.evaluate(() => document.getAnimations().every(animation => animation.playState === 'paused')))
     await demo.getByRole('button', { name: 'Play', exact: true }).click()
     await frame.waitForFunction(() => document.getAnimations().some(animation => ['running', 'finished'].includes(animation.playState)))
     await demo.getByRole('button', { name: 'Pause', exact: true }).click()
     assert.ok(await frame.evaluate(() => document.getAnimations().every(animation => animation.playState === 'paused')))
+    assert.ok((await readouts.allTextContents()).every(value => value.startsWith('paused')), 'the current timeline remains readable')
     await demo.getByRole('button', { name: 'Replay', exact: true }).click()
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await frame.waitForFunction(() => document.getAnimations().every(animation => animation.playState !== 'running'))
@@ -181,6 +185,89 @@ test(`${engine}: enlarged sizing specimen retains the measured avatar while its 
     assert.ok(text.x >= canvas.x && text.x + text.width <= canvas.x + canvas.width, 'the flexible text stays in the specimen')
     await noPageOverflow(page)
     await demo.screenshot({ path: new URL('320-tw-enlarged-sizing.png', output).pathname })
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+test(`${engine}: delivery payload bars compare complete responses on one scale`, { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/benchmarks', { width: 390, scheme: 'dark' })
+  try {
+    const ratios = await page.locator('.benchmark-stacks .benchmark-meter-stacked').evaluateAll(elements => elements.map(element => {
+      const style = getComputedStyle(element)
+      const width = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      const filled = [...element.children].reduce((sum, child) => sum + child.getBoundingClientRect().width, 0)
+      return filled / width
+    }))
+    const totals = [2996, 34148, 36138, 3698]
+    assert.equal(ratios.length, totals.length)
+    for (const [index, total] of totals.entries()) {
+      assert.ok(Math.abs(ratios[index] - total / 36138) < .001, 'bar length reflects its response total on the shared scale')
+    }
+    await noPageOverflow(page)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+if (engine === 'chromium') test('chromium: forced colors retain palette samples and keyboard focus', { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/colors', { width: 390, enlarged: true })
+  try {
+    const palette = page.locator('[data-foundation-tokens="color"]').first()
+    const chips = palette.locator('.foundation-palette-chip')
+    const colors = await chips.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor))
+    assert.ok(new Set(colors).size > 20, 'the palette contains distinct color samples')
+    await page.emulateMedia({ forcedColors: 'active' })
+    assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
+    assert.deepEqual(await chips.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor)), colors, 'samples retain their actual colors')
+    assert.equal(await palette.locator('label').first().evaluate(element => getComputedStyle(element).forcedColorAdjust), 'auto', 'surrounding labels still follow the user palette')
+    await chips.first().focus()
+    await page.keyboard.press('Tab')
+    const focus = await page.locator(':focus').evaluate(element => {
+      const style = getComputedStyle(element)
+      return { chip: element.classList.contains('foundation-palette-chip'), visible: element.matches(':focus-visible'), width: parseFloat(style.outlineWidth), offset: parseFloat(style.outlineOffset), style: style.outlineStyle }
+    })
+    assert.ok(focus.chip && focus.visible && focus.width >= 2 && focus.offset >= 2 && focus.style !== 'none', 'keyboard focus has a visible offset boundary')
+    await noPageOverflow(page)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+if (engine === 'chromium') test('chromium: forced colors retain resource-discovery bar boundaries', { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/preload-critical-resources', { width: 390, scheme: 'dark' })
+  try {
+    await page.emulateMedia({ forcedColors: 'active' })
+    assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
+    const bars = await page.locator('.demo-waterfall-bar').evaluateAll(elements => elements.map(element => {
+      const style = getComputedStyle(element)
+      return { width: parseFloat(style.borderTopWidth), style: style.borderTopStyle, border: style.borderTopColor, track: getComputedStyle(element.parentElement).backgroundColor }
+    }))
+    assert.ok(bars.length > 0)
+    assert.ok(bars.every(bar => bar.width > 0 && bar.style !== 'none' && bar.border !== bar.track), 'each interval remains distinguishable from its track')
+    await noPageOverflow(page)
+    assert.deepEqual(errors, [])
+  } finally { await context.close() }
+})
+
+if (engine === 'chromium') test('chromium: forced colors preserve benchmark lengths, zero values and breakdown labels', { timeout: 60000 }, async () => {
+  const { context, page, errors } = await open('/guide/benchmarks', { width: 390, scheme: 'dark' })
+  try {
+    const fills = page.locator('.benchmark-meter-fill,.benchmark-meter-stacked > div')
+    const before = await fills.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width))
+    const labels = await page.locator('.benchmark-stacks [role="group"]').allTextContents()
+    await page.emulateMedia({ forcedColors: 'active' })
+    assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
+    const after = await fills.evaluateAll(elements => elements.map(element => {
+      const style = getComputedStyle(element)
+      return { width: element.getBoundingClientRect().width, fill: style.backgroundColor, track: getComputedStyle(element.parentElement).backgroundColor, value: element.parentElement.getAttribute('aria-valuenow') }
+    }))
+    assert.ok(after.some(item => item.width > 0) && after.some(item => item.value === '0'))
+    assert.equal(after.length, before.length)
+    for (const [index, item] of after.entries()) {
+      assert.ok(Math.abs(item.width - before[index]) < .01, 'forced colors do not change the measured bar length')
+      if (item.width > 0) assert.notEqual(item.fill, item.track, 'positive values remain visible')
+      if (item.value === '0') assert.equal(item.width, 0, 'zero values do not acquire a visible fill')
+    }
+    assert.deepEqual(await page.locator('.benchmark-stacks [role="group"]').allTextContents(), labels, 'each stack retains its named numeric breakdown')
+    await noPageOverflow(page)
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })

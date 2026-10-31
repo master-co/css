@@ -1,7 +1,7 @@
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 
-Use Vite to build the browser runtime entry for a Blazor app. Vite owns the frontend assets, while Blazor and .NET still own the app host page, project files, and server/runtime lifecycle.
+Use Vite to build the browser runtime entry for a Blazor Web App using `blazor.web.js`. Vite owns the frontend assets, while Blazor and .NET still own the app host page, project files, and server/runtime lifecycle.
 
 <StepSection>
   <Step $row>
@@ -71,8 +71,25 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
       import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
 
-      const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
-      runtime.observe()
+      declare const Blazor: {
+        addEventListener(name: 'enhancedload', listener: () => void): void
+      }
+
+      async function startRuntime() {
+        const runtime = await MasterCSSRuntime.start({ program, emittedGlobals })
+        runtime.observe()
+        return runtime
+      }
+
+      let runtime = await startRuntime()
+      let navigation = Promise.resolve()
+
+      Blazor.addEventListener('enhancedload', () => {
+        navigation = navigation.then(async () => {
+          runtime.dispose()
+          runtime = await startRuntime()
+        }).catch(console.error)
+      })
       ```
 
       ```css name=src/app.css
@@ -83,7 +100,7 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
   <Step $row>
     <StepL>
       ### <StepNum />Add build scripts
-      Run Vite before serving the app, or keep it watching while the .NET dev server runs.
+      Merge these scripts into the existing `package.json`, keeping the dependencies installed above. Run Vite before serving the app, or keep it watching beside .NET.
     </StepL>
     <StepR>
       ```json name=package.json
@@ -91,10 +108,6 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
         "scripts": {
           "build:assets": "vite build",
           "watch:assets": "vite build --watch"
-        },
-        "devDependencies": {
-          "@master/css-vite": "rc",
-          "vite": "latest"
         }
       }
       ```
@@ -103,20 +116,12 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
   <Step $row>
     <StepL>
       ### <StepNum />Load the built assets
-      Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`. Add `hidden` to the root document so the runtime can avoid a flash of unstyled content before it injects class rules.
+      Reference the Vite output from the Blazor host page your project uses, such as `Components/App.razor`, `wwwroot/index.html`, or `Pages/_Host.cshtml`. Add the stylesheet to `<head>` and the module script after the existing Blazor bootstrap script, before `</body>`. Preserve the existing `<base>`, `<HeadOutlet />`, routes, and Blazor bootstrap script.
     </StepL>
     <StepR>
       ```html name=Components/App.razor
-      <html lang="en" hidden>
-      <head>
-        <link rel="stylesheet" href="/assets/app.css">
-      </head>
-      <body>
-        <Routes />
-        <script src="_framework/blazor.web.js"></script>
-        <script type="module" src="/assets/app.js"></script>
-      </body>
-      </html>
+      <link rel="stylesheet" href="assets/app.css">
+      <script type="module" src="assets/app.js"></script>
       ```
     </StepR>
   </Step>
@@ -140,13 +145,35 @@ Use Vite to build the browser runtime entry for a Blazor app. Vite owns the fron
 </StepSection>
 
 ```html name=Components/Pages/Home.razor
+@page "/"
+
 <h1 class="m-2xl font-style:italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
+
+The entry above targets Blazor Web Apps. Standalone WebAssembly and older Blazor Server hosts do not use enhanced navigation. For those models, remove the `Blazor` declaration and replace all statements after the `startRuntime` function definition with a single `await startRuntime()` call.
+
+Blazor’s [enhanced navigation](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0) patches the page DOM. It can remove the runtime’s dynamically created stylesheet. The `enhancedload` handler disposes the old instance and starts one against the updated document, while keeping the already imported program. The promise chain serializes streamed page updates. Verify a link navigation as well as the initial load.
 
 Runtime rendering generates CSS in the browser as Blazor renders and updates elements. Use [Blazor static rendering](/guide/installation/blazor) when classes are statically visible and you need build-time CSS output.
 
 Build assets with `npx vite build` before starting or publishing the host application. During development, run `npx vite build --watch` in a separate terminal. The output keeps other host assets; deploy every generated stylesheet, import and program asset together.
 
 Merge the asset tags into the existing host document; retain its framework bootstrap script and routing setup. For a deployment below a URL prefix, resolve asset URLs through the host’s base path rather than assuming `/` is the application root.
+
+## Keep routing and hosting intact
+The `@page "/"` directive makes the component routable. Merge the asset tags into the [host document for your Blazor model](https://learn.microsoft.com/en-us/aspnet/core/blazor/project-structure?view=aspnetcore-10.0); the snippet is not a replacement for `App.razor`. The relative asset paths use the host’s existing `<base>` URL.
+
+New .NET templates can include Bootstrap. Normal unlayered Bootstrap declarations can override layered Master CSS utilities, so check the loaded stylesheets and computed styles when a class appears ineffective. See [Cascade layers](/guide/cascade-layers) for precedence.
+
+## Verify the result
+Build Vite assets before `dotnet build` or `dotnet publish`, so .NET includes them in its static asset output. Run `dotnet run` and use the URL printed by the server. The heading should be large, heavy and italic.
+
+After startup, add a new class in the browser console; the heading should gain an underline without rebuilding:
+
+```js
+document.querySelector('h1').classList.add('text-decoration-line:underline')
+```
+
+Runtime styling begins after JavaScript loads. Keep the document visible when scripts are unavailable; see [Flash of Unstyled Content](/guide/flash-of-unstyled-content) before adding page hiding.

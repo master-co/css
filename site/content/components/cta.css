@@ -13,13 +13,15 @@
     padding-top: clamp(5rem, 3rem + 6vw, 9rem);
     text-align: center;
 
-    /* Keep the halo around the origin, with transparent room above and below its bounds. */
+    /* On the dark ground the lamp's light pools softly around the invitation; the canvas moves it with the lamp. */
     &::before {
       position: absolute;
-      inset: auto calc(-1 * var(--home-gutter)) 0;
+      inset: 0 calc(-1 * var(--home-gutter));
       z-index: -1;
-      height: calc(var(--home-cta-field-height) * 1.75);
-      background: radial-gradient(ellipse 34% 44% at 50% 48%, color-mix(in oklab, var(--home-signal) 7%, transparent), transparent);
+      background:
+        radial-gradient(44rem 30rem at var(--cta-lamp-x, 42%) var(--cta-lamp-y, 46%), light-dark(transparent, oklch(0.6 0.1 75 / 0.065)), light-dark(transparent, oklch(0.6 0.1 75 / 0.03)) 35%, light-dark(transparent, oklch(0.6 0.1 75 / 0.008)) 60%, transparent 80%);
+      /* Radial around the invitation, so the pool never ends on a horizontal line. */
+      mask-image: radial-gradient(ellipse 60% 58% at 50% 48%, black 35%, transparent);
       pointer-events: none;
       content: '';
     }
@@ -62,6 +64,9 @@
 
     &:lang(zh) {
       line-height: 1.16;
+      /* A centered line ending in a full-width stop would carry half an em of air on its right; display
+         type sets its punctuation half-width, as Han typesetting does in headlines. */
+      font-feature-settings: 'halt';
     }
   }
 
@@ -70,36 +75,142 @@
     z-index: 1;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: var(--spacing-sm);
     min-width: 0;
     max-width: 100%;
-    margin-top: clamp(2rem, 1rem + 2vw, 3rem);
+    margin-top: clamp(2.5rem, 1.5rem + 2vw, 3.5rem);
+
+    & .home-cta-start,
+    & .home-command {
+      box-sizing: border-box;
+      height: auto;
+      min-width: 0;
+      min-height: 3.25rem;
+      border-radius: 1.625rem;
+    }
 
     @media (width < 40rem) {
       flex-direction: column;
-      align-items: stretch;
       width: min(100%, 21rem);
     }
   }
 
-  .home-cta-actions .home-action-primary > svg {
-    transition: translate var(--home-base) var(--home-ease);
+  /* The canvas lamp reaches the title and controls as these properties; the defaults hang it above the actions. */
+  .home-cta-title-finish,
+  .home-cta-actions > * {
+    --lit-x: 30%;
+    --lit-y: -160%;
+    --lit-angle: -20deg;
+    --cast-x: 1px;
+    --cast-y: 4px;
+    --lit-near: 0;
   }
 
-  .home-cta-actions .home-action-primary:is(:hover, :focus-visible) > svg {
-    translate: 3px 0;
+  /*
+   * Get started is the page's stone (`.home-stone`): obsidian in light mode, moonstone in dark mode. Here it
+   * stands over gold silk, so its lower bevel mirrors the gold the way the hero's stone does.
+   */
+  .home-cta-actions .home-cta-start {
+    --stone-mirror: light-dark(oklch(0.84 0.1 82 / 0.5), oklch(0.74 0.12 78 / 0.55));
+    padding: var(--spacing-sm) 1.5rem;
+    font-weight: var(--font-weight-medium);
+    text-shadow: 0 -1px 0 light-dark(rgb(0 0 0 / 0.5), rgb(255 255 255 / 0.7));
+
+    & > svg {
+      transition: translate var(--home-base) var(--home-ease);
+    }
+
+    /* The pointer brings the stone a little closer to the lamp: its shadow lengthens and softens. */
+    &:is(:hover, :focus-visible) {
+      box-shadow:
+        inset 0 1px 0 var(--stone-lip),
+        inset 0 -12px 18px -12px var(--stone-mirror),
+        0 1px 1px var(--stone-contact),
+        var(--cast-x) var(--cast-y) 12px -3px var(--stone-cast),
+        calc(var(--cast-x) * 3) calc(var(--cast-y) * 3) 32px -10px var(--stone-cast);
+
+      & > svg {
+        translate: 3px 0;
+      }
+    }
+
+    /* Pressing still trades the cast shadow for an inner one, as on every stone control. */
+    &:active {
+      box-shadow:
+        inset 0 2px 6px var(--stone-press),
+        inset 0 -1px 0 var(--stone-mirror),
+        0 1px 1px var(--stone-contact),
+        calc(var(--cast-x) * 0.4) calc(var(--cast-y) * 0.4) 6px -3px var(--stone-cast);
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+    }
   }
 
+  /* The install command is clear liquid glass: on the bare ground its contour, lit rims and shadow carry it. */
   .home-cta .home-command {
-    height: auto;
-    min-height: 2.75rem;
-    padding-block: 0.25rem;
-    border: 0;
-    background-color: var(--home-sheet);
-    box-shadow: inset 0 0 0 1px var(--home-hairline), var(--home-edge);
-    backdrop-filter: none;
+    --glass-fill: light-dark(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.04));
+    --glass-top: light-dark(rgb(255 255 255 / 0.65), rgb(255 255 255 / 0.06));
+    --glass-lip: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.16));
+    --glass-pool: light-dark(oklch(0.93 0.06 85 / 0.55), oklch(0.75 0.11 78 / 0.12));
+    --glass-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.5));
+    /* Light bent through the glass lights the far rim with the gold below. */
+    --glass-rim-far: light-dark(oklch(0.78 0.12 78 / 0.55), oklch(0.78 0.12 80 / 0.4));
+    --glass-contour: light-dark(oklch(0.35 0.03 70 / 0.11), rgb(255 255 255 / 0.05));
+    --glass-cast: light-dark(oklch(0.4 0.05 70 / 0.16), oklch(0.03 0.01 60 / 0.6));
+    position: relative;
+    isolation: isolate;
+    flex: auto;
+    padding: 0.1875rem 0.1875rem 0.1875rem 1.125rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    color: var(--home-text);
+    background-color: var(--glass-fill);
+    background-image: linear-gradient(180deg, var(--glass-top), transparent 50%);
+    box-shadow:
+      inset 0 0 0 1px var(--glass-contour),
+      inset 0 1px 1px var(--glass-lip),
+      inset 0 -10px 16px -12px var(--glass-pool),
+      0 1px 2px light-dark(oklch(0.4 0.06 70 / 0.08), rgb(0 0 0 / 0.3)),
+      var(--cast-x) var(--cast-y) 16px -6px var(--glass-cast);
+    backdrop-filter: blur(6px) saturate(1.35) brightness(1.04);
+    transition: background-color var(--home-quick) var(--home-ease);
+
+    /* Both rims are lit: the near one by the lamp, the far one by light bent through the glass. */
+    &::before {
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      padding: 1px;
+      border-radius: inherit;
+      background-image: linear-gradient(var(--lit-angle), var(--glass-rim-far), transparent 32%, transparent 62%, var(--glass-rim));
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      pointer-events: none;
+      content: '';
+    }
+
+    &:focus-within {
+      --glass-fill: light-dark(rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.07));
+    }
+
+    & .home-command-copy {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: var(--radius-pill);
+      color: var(--home-text);
+
+      &:hover {
+        color: var(--home-text);
+        background-color: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.07));
+      }
+
+      &:focus-visible {
+        outline-offset: -2px;
+      }
+    }
 
     @media (width < 40rem) {
       width: 100%;
@@ -123,15 +234,16 @@
     margin-top: clamp(1.5rem, 1rem + 1vw, 2rem);
     pointer-events: none;
 
-    /* The single starting point also holds the composition before JavaScript or without Canvas. */
+    /* The one gold point the threads fall from (the canvas keeps its root at the same 9%). It also holds
+       the composition before JavaScript or without Canvas. */
     &::before {
       position: absolute;
       top: 9%;
       left: 50%;
-      width: 3px;
-      height: 3px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      background-color: var(--home-signal);
+      background: radial-gradient(circle at 35% 30%, var(--silk-sheen), var(--silk-body) 55%, var(--silk-shadow));
       box-shadow: 0 0 12px 3px var(--home-signal-glow);
       translate: -50% -50%;
       content: '';
@@ -156,19 +268,38 @@
     display: block;
     width: 100%;
     height: 100%;
-    color: color-mix(in oklab, var(--home-signal) 76%, var(--home-text));
-    border-color: var(--home-rule-strong);
-    outline-color: var(--home-signal);
+    /* The painter reads its materials from these: gold silk (on the light ground shaded a little toward
+       obsidian, so fine threads still read), the page's stone (obsidian or moonstone) and the sheen the
+       lamp raises on the silk (deeper gold on the light ground, pale gold light on the dark one). The rule
+       color only tells it which ground it is on. */
+    color: light-dark(color-mix(in oklab, var(--silk-shadow) 80%, var(--stone-mid)), var(--silk-body));
+    border-color: light-dark(var(--stone-mid), var(--stone-top));
+    outline-color: light-dark(var(--silk-shadow), var(--silk-sheen));
+    column-rule-color: light-dark(#000, #fff);
+    /* The field fades into the ground on every side, an open silhouette rather than a canvas edge. */
+    mask-image:
+      linear-gradient(transparent 9%, #000 22%, #000 60%, transparent),
+      linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+    mask-composite: intersect;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-cta-field::after {
-      transition: none;
+    .home-cta-field::after,
+    .home-cta-actions :is(.home-command, .home-command-copy) {
+      transition-duration: 0s;
     }
 
-    .home-cta-actions .home-action-primary > svg {
+    .home-cta-actions .home-cta-start > svg {
       translate: none !important;
       transition: none;
+    }
+  }
+
+  /* As on the hero, reduced transparency or more contrast turns the glass solid. */
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .home-cta .home-command {
+      --glass-fill: light-dark(oklch(0.985 0.012 85), oklch(0.2 0.01 70));
+      backdrop-filter: none;
     }
   }
 
@@ -180,6 +311,25 @@
 
     .home-cta {
       padding-bottom: clamp(5rem, 3rem + 6vw, 9rem);
+    }
+
+    .home-cta-actions :is(.home-cta-start, .home-command) {
+      text-shadow: none;
+    }
+
+    .home-cta .home-command {
+      border: 1px solid currentColor;
+      color: CanvasText;
+      background-color: Canvas;
+      background-image: none;
+      box-shadow: none;
+      text-shadow: none;
+      backdrop-filter: none;
+
+      &::before,
+      &::after {
+        display: none;
+      }
     }
   }
 }

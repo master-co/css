@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import type { HomeCodeWindowProblem } from './home-content'
 import type { LintRuleReach } from './lint-content'
+import { pointerMoved } from './pointer-motion'
 
 export interface LintExplorerRule {
   title: string
@@ -63,7 +64,9 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
   const rule = rules[active]
   const finalPhase: Phase = view.kind === 'sort' || view.kind === 'remove' ? 'fixed' : 'report'
   const duration = view.kind === 'sort' || view.kind === 'remove' ? tourDuration.fix : tourDuration.report
-  const playing = inView && !reduceMotion && !finished && (touring ? !held : true)
+  // A reader holds the tour on a revealed check: one held before the report plays on until it reports.
+  const revealed = phase !== 'idle' && phase !== 'scan'
+  const playing = inView && !reduceMotion && !finished && (touring ? !(held && revealed) : true)
 
   function goTo(next: Phase) {
     if (next === phaseRef.current) return
@@ -221,7 +224,11 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
         if (!event.currentTarget.contains(event.relatedTarget)) setHeld(false)
       }}
       onFocus={() => setHeld(true)}
-      onPointerEnter={() => setHeld(true)}
+      // Reading means moving over the bench; content scrolled under a resting pointer does not hold the tour,
+      // including the motionless pointermove WebKit sends once scrolling stops.
+      onPointerMove={(event) => {
+        if (pointerMoved(event)) setHeld(true)
+      }}
       onPointerLeave={() => setHeld(false)}
       ref={ref}
       style={{ '--home-lint-columns': view.columns, '--home-lint-lines': view.lines.length } as CSSProperties}>
@@ -330,6 +337,7 @@ export default function LintExplorer({ icons, rules }: { icons: ReactNode[], rul
               </button>
             )}
           </div>
+          <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
         </div>
 
         <div className="home-lint-surfaces">
@@ -535,6 +543,7 @@ function LintPane({ active, children, icon: Icon, litLabel, name, note, phase, r
           </div>
         ))}
       </div>
+      <span aria-hidden="true" className="home-edge-light home-lit" suppressHydrationWarning />
     </section>
   )
 }

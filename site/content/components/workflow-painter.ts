@@ -15,6 +15,7 @@ export interface Material {
   shadow: string
   mono: string
   dark: boolean
+  stone: { top: string, mid: string, bottom: string, rim: string, mirror: string }
 }
 export interface GlassBuffer { canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D }
 export interface Drawing {
@@ -323,18 +324,21 @@ export function chip(d: Drawing, x: number, y: number, width: number, height: nu
   ctx.fill(roundRect(x - width / 2, y - height / 2 + 1.8, width, height, radius))
   ctx.restore()
   ctx.save()
-  ctx.fillStyle = ink ? colors.ink : colors.paper
+  if (ink) {
+    stone(d, x, y, width, height, path)
+    ctx.restore()
+    return
+  }
+  ctx.fillStyle = colors.paper
   ctx.fill(path)
   ctx.clip(path)
-  if (!ink) {
-    const face = ctx.createLinearGradient(x - width / 2, y - height / 2, x + width / 3, y + height / 2)
-    face.addColorStop(0, colors.light)
-    face.addColorStop(.48, colors.paper)
-    face.addColorStop(1, colors.glass)
-    ctx.globalAlpha = colors.dark ? .2 : .35
-    ctx.fillStyle = face
-    ctx.fill(path)
-  }
+  const face = ctx.createLinearGradient(x - width / 2, y - height / 2, x + width / 3, y + height / 2)
+  face.addColorStop(0, colors.light)
+  face.addColorStop(.48, colors.paper)
+  face.addColorStop(1, colors.glass)
+  ctx.globalAlpha = colors.dark ? .2 : .35
+  ctx.fillStyle = face
+  ctx.fill(path)
   ctx.restore()
   ctx.save()
   ctx.strokeStyle = selected ? colors.quiet : colors.line
@@ -343,8 +347,44 @@ export function chip(d: Drawing, x: number, y: number, width: number, height: nu
   ctx.stroke(path)
   ctx.clip(path)
   ctx.globalAlpha = 1
-  line(ctx, [{ x: x - width / 2 + radius, y: y - height / 2 + .75 }, { x: x + width / 2 - radius, y: y - height / 2 + .75 }], ink ? 'rgb(255 255 255 / .24)' : colors.light, .85)
+  line(ctx, [{ x: x - width / 2 + radius, y: y - height / 2 + .75 }, { x: x + width / 2 - radius, y: y - height / 2 + .75 }], colors.light, .85)
   ctx.restore()
+}
+
+/**
+ * Polished stone, as on the hero's Get started: a face that darkens toward its base, the softbox's sheen
+ * across the upper left, a rim lit on the near side and warm on the far side, and a warm lower mirror.
+ */
+function stone(d: Drawing, x: number, y: number, width: number, height: number, path: Path2D) {
+  const { ctx, colors: { stone, dark } } = d
+  const left = x - width / 2, top = y - height / 2
+  const face = ctx.createLinearGradient(0, top, 0, top + height)
+  face.addColorStop(0, stone.top)
+  face.addColorStop(.52, stone.mid)
+  face.addColorStop(1, stone.bottom)
+  ctx.fillStyle = face
+  ctx.fill(path)
+  ctx.clip(path)
+  const sheen = ctx.createRadialGradient(left + width * .3, top - height * .2, 0, left + width * .3, top - height * .2, Math.max(width * .75, height))
+  sheen.addColorStop(0, dark ? 'rgb(255 255 255 / .85)' : 'rgb(255 255 255 / .16)')
+  sheen.addColorStop(1, 'rgb(255 255 255 / 0)')
+  ctx.fillStyle = sheen
+  ctx.fill(path)
+  const mirror = ctx.createLinearGradient(0, top + height * .7, 0, top + height)
+  mirror.addColorStop(0, 'rgb(0 0 0 / 0)')
+  mirror.addColorStop(1, stone.mirror)
+  ctx.fillStyle = mirror
+  ctx.globalAlpha = dark ? .6 : 1
+  ctx.fill(path)
+  ctx.globalAlpha = 1
+  const rim = ctx.createLinearGradient(left, top, left + width * .7, top + height * 1.3)
+  rim.addColorStop(0, stone.rim)
+  rim.addColorStop(.42, 'rgb(255 255 255 / 0)')
+  rim.addColorStop(.6, 'rgb(255 255 255 / 0)')
+  rim.addColorStop(1, stone.mirror)
+  ctx.strokeStyle = rim
+  ctx.lineWidth = 2
+  ctx.stroke(path)
 }
 
 export function text(d: Drawing, label: string, x: number, y: number, size = 10, color = d.colors.quiet, align: CanvasTextAlign = 'left') {

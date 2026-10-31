@@ -50,6 +50,8 @@ Use [Rendering modes](/guide/rendering-modes) before a large migration. Start wi
 Start with product-owned values that should be shared outside Material UI components.
 
 ```ts name=theme.ts
+import { createTheme } from '@mui/material/styles'
+
 export const theme = createTheme({
   palette: {
     primary: { main: '#2563eb' },
@@ -109,7 +111,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="display:grid gap-md p-lg bg-surface r-panel">
+    <section className="display:grid gap-md p-lg bg-surface fg-body r-panel">
       {children}
     </section>
   )
@@ -118,32 +120,32 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 
 With the theme above, [MUI’s `borderRadius: 2`](https://mui.com/system/getting-started/the-sx-prop/#borders) multiplies the 8px base radius to 16px. `r-panel` expresses that panel role as 1rem; compare the result at the application’s root font size. Spacing and breakpoint names also need explicit value comparison.
 
-Use Material UI components with `className` when the component still provides useful behavior and forwards the class to the root element.
+Keep Material UI components for their behavior and style app-owned wrappers first:
 
 ```tsx
-<Button className="min-width:0 px-md" variant="contained">
-  Save
-</Button>
+<div className="display:flex justify-content:flex-end">
+  <Button variant="contained">Save</Button>
+</div>
 ```
 
-Keep `sx`, `slotProps`, or `classes` when the styling targets a MUI slot, state class, or generated internal structure.
+Normal unlayered Material UI/Emotion rules outrank layered Master CSS utilities, regardless of import order. Forwarding `className` alone does not guarantee an override. Keep `sx`, `slotProps`, or `classes` for component internals until the project has deliberately configured and verified its cascade layers.
 
 ---
 
 ## Convert repeated patterns to component classes
-When many `sx` blocks encode the same product role, move that role into a Master CSS component class.
+When many `sx` blocks encode the same product role, move that role into a Master CSS component class. Keep the product tokens defined above in the same CSS entry.
 
 ```css name=app.css
 @import "@master/css";
 
 @layer components {
   .panel {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-panel);
     padding: var(--spacing-lg);
     border: 1px solid var(--color-line-divider);
     background-color: var(--color-surface);
     box-shadow: var(--shadow-sm);
-    color: var(--color-text-body);
+    color: var(--color-body);
   }
 
   .toolbar {
@@ -168,14 +170,18 @@ Prefer component classes for project-owned roles. Keep Material UI theme variant
 ---
 
 ## Handle responsive and state styles
-Translate static responsive `sx` into Master CSS conditions.
+Translate static responsive `sx` into conditions with the same threshold. The default [Material UI `md`](https://mui.com/material-ui/customization/breakpoints/) starts at 900px; Master CSS’s preset `md` starts at 64rem. Define a condition for the original threshold rather than copying the name.
 
 ```tsx
 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }} />
 ```
 
+```css name=app.css
+@custom-media --mui-md (width >= 900px);
+```
+
 ```html
-<section class="display:grid grid-cols(1) gap-md grid-cols(3)@md">
+<section class="display:grid grid-template-columns:1fr gap-md grid-template-columns:repeat(3,1fr)@mui-md">
   ...
 </section>
 ```
@@ -183,7 +189,7 @@ Translate static responsive `sx` into Master CSS conditions.
 For component state, prefer the native state or attribute when it belongs to your markup.
 
 ```html
-<button class="bg-blue-60 bg-blue-70:hover opacity:.5:disabled">
+<button class="bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```

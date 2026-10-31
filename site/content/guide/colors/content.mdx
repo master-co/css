@@ -1,6 +1,7 @@
 import { FoundationColorRoles } from '~/site/components/demo/FoundationPaint'
 import FoundationTokens from '~/site/components/demo/foundations/FoundationTokens'
 import FoundationPalette from '~/site/components/demo/foundations/FoundationPalette'
+import Class2CSS from '~/site/components/Class2CSS'
 
 ## Overview [sr-only]
 
@@ -54,6 +55,8 @@ Start with the kind of decision you are making. Most app chrome should use roles
 
 `bg-`, `fg-` and `b-` read the color namespace. Include the role in the key: `bg-surface-raised` reads `--color-surface-raised`, and `b-line-control` reads `--color-line-control`. Set the border width and style separately.
 
+<Class2CSS>{['bg-surface-raised', 'fg-text-body', 'b-line-control']}</Class2CSS>
+
 See [all color consumers](/reference/tokens/color#consumers) for the complete property mappings.
 
 ---
@@ -84,8 +87,10 @@ See the complete [values and consumers](/reference/tokens/color-line) in Referen
 
 ```html
 <!-- @MARK border-width:1px border-style:solid b-line-control -->
-<input aria-label="Collection name"
-  class="border-width:1px border-style:solid b-line-control" />
+<label>
+  Collection name
+  <input class="border-width:1px border-style:solid b-line-control" />
+</label>
 ```
 
 ### Text roles
@@ -226,3 +231,5 @@ Native support starts at Chrome 123, Firefox 120, and Safari 17.5. The preset do
 - Recheck transparency, gradients, and custom backgrounds in their actual context; the opaque preset contrast matrix does not cover them.
 
 Inputs need a visible label independent of placeholder text. General hue aliases stay fixed across schemes; numbered palette steps supply explicit colors.
+
+In [forced colors mode](https://www.w3.org/TR/css-color-adjust-1/#forced-colors-mode), the browser can replace interface colors with the user's palette and remove shadows. Keep labels, borders and focus outlines that remain meaningful without the original colors. The color-picker swatches on this page preserve their actual colors; the surrounding controls and labels still follow the user's palette.

@@ -4,7 +4,7 @@ import Link from '~/site/docs-shell/components/Link';
 
 <Demo>
   <div className="overflow:hidden max-width:22.5rem margin-inline:auto r-lg bg-surface-raised shadow-lg">
-    <Image src={buildingImg} width="640" height="320" className="aspect-ratio:16/9 object-fit:cover" alt="Modern architecture used in a Master CSS introduction demo" loading="eager" />
+    <Image src={buildingImg} width="640" height="320" className="height:auto width:100% aspect-ratio:16/9 object-fit:cover" alt="Modern architecture used in a Master CSS introduction demo" loading="eager" />
     <div className="p-lg">
       <div className="mb-3xs text-2xs font-semibold tracking-widest text-transform:uppercase fg-text-blue">Project panel</div>
       <div className="text-md font-medium fg-text-strong">Style with shared values</div>
@@ -13,14 +13,16 @@ import Link from '~/site/docs-shell/components/Link';
     </div>
   </div>
 </Demo>
+This reduced example assumes your application serves an image at `/building.jpg`. Use your own image URL and alternative text.
+
 ```html
 <article class="overflow:hidden r-lg bg-surface-raised shadow-lg">
-  <img class="aspect-ratio:16/9 object-fit:cover" ...>
+  <img src="/building.jpg" width="640" height="360" alt="A contemporary building" class="width:100% height:auto aspect-ratio:16/9 object-fit:cover">
   <div class="p-lg">
     <p class="text-2xs font-semibold text-transform:uppercase fg-text-blue">Project panel</p>
     <h2 class="text-md font-medium fg-text-strong">Style with shared values</h2>
     <p class="text-sm fg-text-body">Use shared colors, spacing and type in markup.</p>
-    <a class="bg-blue-60 fg-white bg-blue-70:hover" href="/guide/installation">Start building</a>
+    <a class="display:inline-flex justify-content:center width:100% mt-md px-md py-xs r-md bg-blue-60 fg-white bg-blue-70:hover" href="/guide/installation">Start building</a>
   </div>
 </article>
 ```
