@@ -13,6 +13,16 @@ pub struct NodeLintSession {
 #[napi]
 impl NodeLintSession {
     #[napi]
+    pub fn suggest_classes(&self, declarations: String) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .suggest_classes(&declarations)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn inspect_design_system(&self, request_json: String) -> Result<String> {
         let request = serde_json::from_str::<mastercss_lint::DesignSystemRequest>(&request_json)
             .map_err(|error| invalid_lint_request(error.to_string()))?;

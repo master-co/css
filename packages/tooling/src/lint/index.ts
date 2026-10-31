@@ -1,4 +1,5 @@
 import type { MasterCSSBinding } from '@master/css-binding'
+import type { MasterCSSClassSuggestions } from '@master/css-binding/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSession } from '../tooling-session'
 import type {
@@ -11,6 +12,7 @@ import type {
 } from './diagnostics'
 
 export type {
+  MasterCSSClassSuggestions,
   MasterCSSDesignSystemRequest,
   MasterCSSDesignSystemReport,
   MasterCSSDesignSystemStylesheet,
@@ -20,6 +22,19 @@ export type {
   MasterCSSStylesheetTokenReference,
   MasterCSSStylesheetAncestor
 } from '@master/css-binding/tooling'
+
+/** Suggest markup classes for an isolated declaration block, leaving uncertain blocks in CSS. */
+export async function suggestClasses(
+  declarations: string,
+  options: { readonly manifest: MasterCSSManifest; readonly binding?: MasterCSSBinding }
+): Promise<MasterCSSClassSuggestions> {
+  const session = await createToolingSession(options)
+  try {
+    return session.suggestClasses(declarations)
+  } finally {
+    session.dispose()
+  }
+}
 
 /** Tool-only policy and metadata; never part of an executable manifest or runtime program. */
 export type MasterCSSDesignSystemOptions = Omit<import('@master/css-binding/tooling').MasterCSSDesignSystemRequest, 'stylesheets'>

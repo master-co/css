@@ -11,14 +11,14 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 929,
+    "records": 933,
     "byKind": {
       "bin": 3,
       "cli-command": 3,
-      "export": 750,
+      "export": 753,
       "mcp-prompt": 3,
       "mcp-resource": 3,
-      "mcp-tool": 16,
+      "mcp-tool": 17,
       "package": 35,
       "subpath": 93,
       "wire-contract": 23
@@ -2850,6 +2850,28 @@
       "package": "@master/css-binding",
       "subpath": "./tooling",
       "name": "MasterCSSBrowserSupport"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MasterCSSClassSuggestions",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MasterCSSClassSuggestions"
     },
     {
       "kind": "export",
@@ -16032,6 +16054,33 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-tooling:./lint#MasterCSSClassSuggestions",
+      "package": "@master/css-tooling",
+      "subpath": "./lint",
+      "name": "MasterCSSClassSuggestions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-tooling:./lint#MasterCSSDesignSystemCollision",
       "package": "@master/css-tooling",
       "subpath": "./lint",
@@ -17278,6 +17327,33 @@
       "package": "@master/css-tooling",
       "subpath": "./lint",
       "name": "resolveMasterCSSLintRules"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./lint#suggestClasses",
+      "package": "@master/css-tooling",
+      "subpath": "./lint",
+      "name": "suggestClasses"
     },
     {
       "kind": "export",
@@ -20548,6 +20624,20 @@
       "disposition": "retain",
       "id": "mcp-tool:mastercss_setup_audit",
       "name": "mastercss_setup_audit"
+    },
+    {
+      "kind": "mcp-tool",
+      "owner": "@master/css-mcp",
+      "responsibility": "Model Context Protocol host",
+      "consumers": [
+        "MCP clients"
+      ],
+      "platform": "node",
+      "lifecycle": "server-request",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "mcp-tool:mastercss_suggest_classes",
+      "name": "mastercss_suggest_classes"
     },
     {
       "kind": "mcp-tool",

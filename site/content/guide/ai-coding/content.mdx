@@ -65,6 +65,20 @@ The [MCP tool catalog](/reference/tools/mcp) lists every tool, the built-in prom
 ---
 
 ## Give the agent useful context
+The official `master-css` skill provides a workflow for building, editing and
+debugging UI with project tokens, utilities and native CSS. Install it from your
+project directory and choose your coding agent:
+
+```sh
+npx skills add master-co/css --skill master-css
+```
+
+The [Skills CLI](https://github.com/vercel-labs/skills) supports selecting an agent
+such as Codex, Claude Code or Cursor. Check the skill's compatibility metadata
+against the installed Master CSS version. The skill reads relevant references
+as needed; it does not install Master CSS or register an MCP server for you.
+The installer's `--ai` option prints this command without running it.
+
 Ask the agent to inspect the project before it edits, then make one focused change. Use a prompt like this from the project root:
 
 ```text name=prompt
@@ -87,6 +101,26 @@ Work in a small batch. After editing, show the changed files, explain the stylin
 ```
 
 When reading an MCP class inspection, check `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately: an unknown value is not a failed match, and `not-checked` browser support is not verified support.
+
+When a class spelling is uncertain, `mastercss_suggest_classes` accepts an
+isolated CSS declaration block:
+
+```json name=tool-input
+{
+  "declarations": "display:flex; align-items:center; padding:16px; gap:1rem;"
+}
+```
+
+With the default preset, this proposes `flex items-center p(16) (gap:1rem)`.
+Project definitions can change those suggestions. The result includes generated
+CSS, separate value-validation statuses, and `remainingCss` for blocks that need
+to stay in native CSS. The tool preserves an entire uncertain block, including
+duplicate declarations and potentially overlapping properties. It does not edit
+files or convert a stylesheet's selectors.
+
+Review the cascade before applying a suggestion: moving a declaration from a
+selector or inline style into a utility can change which rule wins. The tool's
+declaration check does not verify surrounding styles or browser rendering.
 
 ---
 

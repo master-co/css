@@ -182,6 +182,16 @@ pub struct ToolingLintSession {
 
 #[wasm_bindgen]
 impl ToolingLintSession {
+    #[wasm_bindgen(js_name = suggestClasses)]
+    pub fn suggest_classes(&self, declarations: &str) -> Result<JsValue, JsValue> {
+        json_value(
+            &self
+                .inner
+                .suggest_classes(declarations)
+                .map_err(scanner_error)?,
+        )
+    }
+
     #[wasm_bindgen(js_name = inspectDesignSystem)]
     pub fn inspect_design_system(&self, request_json: &str) -> Result<JsValue, JsValue> {
         // Object-to-struct serde_wasm_bindgen only visits expected fields, which

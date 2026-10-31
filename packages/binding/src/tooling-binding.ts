@@ -21,6 +21,7 @@ export {
   MASTER_CSS_VALIDATOR_BATCH_VERSION
 } from './protocol'
 export type {
+  MasterCSSClassSuggestions,
   MasterCSSEngineSnapshot,
   MasterCSSEngineTransition,
   MasterCSSLexerBatch,

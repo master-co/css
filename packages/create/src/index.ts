@@ -170,6 +170,7 @@ export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterC
 
   if (ai) {
     files.push(planTextFile(root, 'AGENTS.md', appendAgentRules, AGENT_RULES_BLOCK, 'Add Master CSS instructions for local coding agents.'))
+    commands.push({ executable: 'npx', args: ['skills', 'add', 'master-co/css', '--skill', 'master-css'], reason: 'Install the official Master CSS skill for your chosen coding agent. This command is guidance only and is not run by setup; verify skill compatibility with the installed Master CSS version.' })
   }
 
   if (!existsSync(join(root, 'package.json'))) {

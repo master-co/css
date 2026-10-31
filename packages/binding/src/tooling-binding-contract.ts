@@ -102,6 +102,7 @@ export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBinding
 }
 
 export interface MasterCSSLintBindingSession extends MasterCSSToolingBindingSession {
+  suggestClasses(declarations: string): import('./protocol').MasterCSSClassSuggestions
   inspectDesignSystem(request: import('./protocol').MasterCSSDesignSystemRequest): import('./protocol').MasterCSSDesignSystemReport
   nativeDeclarationCandidates(
     classNames: readonly string[]

@@ -19,6 +19,7 @@ import { jsonResourceResult, executeTool } from './result'
 import { toolOutputSchema } from './output-schema'
 import { projectSnapshot } from './project-comparison-schema'
 import { designSystemOptions } from './design-system-schema'
+import { suggestClasses } from './suggest'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -164,6 +165,21 @@ function registerPrompts(server: McpServer) {
 }
 
 function registerTools(server: McpServer, context: MasterCSSMCPContext) {
+  server.registerTool(
+    'mastercss_suggest_classes',
+    {
+      title: 'Suggest Master CSS Classes',
+      description: 'Suggest project-aware classes for an isolated CSS declaration block. Preserves the complete block when conversion needs review. Checks declaration output, not surrounding cascade or browser rendering. Does not write files.',
+      inputSchema: {
+        declarations: z.string().max(32768),
+        context: z.enum(['project', 'preset']).optional()
+      },
+      outputSchema: toolOutputSchema('mastercss_suggest_classes'),
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+    },
+    async (input) => executeTool(() => suggestClasses(context, input))
+  )
+
   const rangeSchema = z.object({
     start: z.object({
       line: z.number().int().min(0),

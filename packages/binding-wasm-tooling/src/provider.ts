@@ -60,6 +60,7 @@ interface MasterCSSToolingWasmLanguageProviderSession {
 
 interface MasterCSSToolingWasmLintProviderSession {
   inspectDesignSystem(request: unknown): unknown
+  suggestClasses(declarations: string): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
   resolveValidation(batch: unknown, ruleErrors: string[][][]): unknown
   canonicalClassNames(classNames: string[], nativeSupport: boolean[] | undefined, options: unknown): unknown

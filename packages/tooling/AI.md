@@ -13,6 +13,7 @@ analysis, and the dependency-light diagnostics bridge.
   `language`.
 - CSS syntax/value reports and source/file orchestration around Rust IR. Checks never filter generation.
 - Read-only token-family metadata inferred by Rust from the active manifest for documentation and tooling.
+- Advisory `suggestClasses()` on composite sessions and `./lint` converts isolated declaration blocks through Rust lint. Uncertain blocks remain intact; this is separate from canonical autofix and browser validation.
 - `inspectDesignSystem()` delegates authored CSS token references, tool-only
   metadata, raw-value policy and family collisions to Rust lint. Metadata never
   changes Manifest or runtime program data. References are syntax evidence, not

@@ -11,6 +11,12 @@ const css = z.object({ bytes: z.number(), text: z.string().optional() }).passthr
 
 const preview = z.object({ confirmToken: z.string().optional(), expiresAt: z.number().optional(), changes: z.array(change), summary: previewSummary }).passthrough()
 const fields: Record<string, z.ZodRawShape> = {
+  mastercss_suggest_classes: {
+    version: z.literal(1), manifest: metadata, status: z.enum(['suggested', 'preserved']), classes: strings, css: z.string(), remainingCss: z.string(), notes: strings,
+    declarations: z.array(z.object({ property: z.string(), value: z.string(), important: z.boolean(), className: z.string() })),
+    verification: z.object({ declarations: z.boolean(), cascade: z.literal(false), browser: z.literal(false) }),
+    validation: z.array(inspection.pick({ className: true, matchStatus: true, cssSyntaxStatus: true, cssValueStatus: true, browserSupport: true }))
+  },
   mastercss_workspace_info: { root: z.string(), roots: strings, packages: object, manifest: metadata },
   mastercss_setup_audit: { root: z.string(), status: z.string(), packageJSON: object, packages: object, integrations: z.array(object), manifest: metadata, summary: object },
   mastercss_lint_project: { root: z.string(), manifest: metadata, files: z.array(lintFile), summary: lintSummary },

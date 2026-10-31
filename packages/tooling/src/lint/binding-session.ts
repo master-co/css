@@ -29,6 +29,7 @@ import type {
 } from './analysis'
 
 export interface LintSession {
+  suggestClasses: MasterCSSLintBindingSession['suggestClasses']
   inspectDesignSystem: MasterCSSLintBindingSession['inspectDesignSystem']
   tokenizeClassList(classList: string, unescape?: string | false): readonly MasterCSSLintToken[]
   analyzeDocument(source: string, languageId: string): MasterCSSLintDocumentAnalysis
@@ -103,6 +104,7 @@ export function bindLintSession(
   }
   return {
     inspectDesignSystem: (request) => lint.inspectDesignSystem(request),
+    suggestClasses: (declarations) => lint.suggestClasses(declarations),
     tokenizeClassList(classList, unescape) {
       return (language.analyzeDocument({
         source: classList,

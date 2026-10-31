@@ -135,6 +135,10 @@ export function loadNativeToolingBinding(
         const session = new nativeBinding.LintSession(serializeMasterCSSManifest(manifest))
         const dispose = disposable(session)
         return {
+          suggestClasses: (declarations) => {
+            if (typeof session.suggestClasses !== 'function') throw new Error('The native binding does not support suggestClasses. Rebuild or update the Master CSS binding to match the tooling package.')
+            return parse(session.suggestClasses(declarations))
+          },
           inspectDesignSystem: (input) => parse(session.inspectDesignSystem(request(input))),
           nativeDeclarationCandidates: (classNames) =>
             parse(session.nativeDeclarationCandidates([...classNames])),

@@ -156,6 +156,7 @@
           "MASTER_CSS_VALIDATOR_BATCH_VERSION",
           "MasterCSSBindingLoadOptions",
           "MasterCSSBrowserSupport",
+          "MasterCSSClassSuggestions",
           "MasterCSSDesignSystemCollision",
           "MasterCSSDesignSystemDiagnostic",
           "MasterCSSDesignSystemReport",
@@ -219,7 +220,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "2960d257ed87082b"
+      "surface": "0c35fa1ae4821427"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -1117,6 +1118,7 @@
           "MasterCSSCanonicalClassesReportOptions",
           "MasterCSSClassListEditOptions",
           "MasterCSSClassListLintReportOptions",
+          "MasterCSSClassSuggestions",
           "MasterCSSDesignSystemCollision",
           "MasterCSSDesignSystemDiagnostic",
           "MasterCSSDesignSystemOptions",
@@ -1171,6 +1173,7 @@
           "lintMasterCSSContent",
           "masterCSSLintRuleIds",
           "resolveMasterCSSLintRules",
+          "suggestClasses",
           "summarizeMasterCSSLintFiles"
         ],
         "./lint/node": [
@@ -1240,7 +1243,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "55ba01110e2f8827"
+      "surface": "83071e8f60bade41"
     },
     "@master/css-vite": {
       "directory": "vite",

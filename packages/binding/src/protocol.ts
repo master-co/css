@@ -15,6 +15,23 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = 2 as const
 
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
+/** Advisory authoring result; a declaration match is not proof of cascade or browser equivalence. */
+export interface MasterCSSClassSuggestions {
+  readonly version: 1
+  readonly status: 'suggested' | 'preserved'
+  readonly classes: readonly string[]
+  readonly css: string
+  readonly remainingCss: string
+  readonly declarations: readonly {
+    readonly property: string
+    readonly value: string
+    readonly important: boolean
+    readonly className: string
+  }[]
+  readonly notes: readonly string[]
+  readonly verification: { readonly declarations: boolean; readonly cascade: false; readonly browser: false }
+}
+
 export type MasterCSSBindingFeature =
   | 'cli'
   | 'compiler'

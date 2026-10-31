@@ -84,6 +84,7 @@ export interface NativeValidatorSession {
 }
 
 export interface NativeLintSession {
+  suggestClasses(declarations: string): string
   inspectDesignSystem(requestJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   resolveValidation(batchJSON: string, ruleErrorsJSON: string): string

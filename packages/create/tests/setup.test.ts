@@ -180,6 +180,9 @@ export default defineConfig([
       ['AGENTS.md', 'create']
     ])
     expect(formatPlannedCommand(plan.commands[0])).toContain('@master/css-mcp@rc')
+    expect(plan.commands).toContainEqual(expect.objectContaining({
+      executable: 'npx', args: ['skills', 'add', 'master-co/css', '--skill', 'master-css']
+    }))
   })
 
   test('plans minimal Vite setup without recommended integrations', () => {

@@ -164,6 +164,7 @@ export async function createWasmToolingBinding(
       const bound: MasterCSSLintBindingSession = {
         ...withLifecycle(session),
         inspectDesignSystem: (request) => session.inspectDesignSystem(request),
+        suggestClasses: (declarations) => session.suggestClasses(declarations) as import('./protocol').MasterCSSClassSuggestions,
         nativeDeclarationCandidates: (classNames) =>
           session.nativeDeclarationCandidates([...classNames]),
         resolveValidation: (batch, ruleErrors) =>

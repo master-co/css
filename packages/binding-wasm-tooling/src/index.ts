@@ -60,6 +60,7 @@ interface GeneratedToolingWasmModule {
     free(): void
   }
   ToolingLintSession: new (manifestJSON: string) => {
+    suggestClasses(declarations: string): unknown
     inspectDesignSystem(requestJSON: string): unknown
     nativeDeclarationCandidates(classNames: string[]): unknown
     resolveValidation(batch: unknown, ruleErrors: string[][][]): unknown
@@ -238,6 +239,10 @@ export async function createToolingLintSession(
   const session = new module.ToolingLintSession(manifestJSON)
   return {
     inspectDesignSystem: (request: unknown) => session.inspectDesignSystem(JSON.stringify(request)),
+    suggestClasses: (declarations: string) => {
+      if (typeof session.suggestClasses !== 'function') throw new Error('The Wasm binding does not support suggestClasses. Rebuild or update the Master CSS binding to match the tooling package.')
+      return session.suggestClasses(declarations)
+    },
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
     resolveValidation: (batch: unknown, ruleErrors: string[][][]) => session.resolveValidation(batch, ruleErrors),
     canonicalClassNames: (

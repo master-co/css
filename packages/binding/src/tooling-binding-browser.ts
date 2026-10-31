@@ -29,6 +29,7 @@ export type {
 } from './tooling-binding-contract'
 export type {
   MasterCSSEngineSnapshot,
+  MasterCSSClassSuggestions,
   MasterCSSEngineTransition,
   MasterCSSLexerBatch,
   MasterCSSLexerBatchRequest,

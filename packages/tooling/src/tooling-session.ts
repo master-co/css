@@ -60,7 +60,7 @@ import type {
   MasterCSSNativeDeclarationCompletionRequest
 } from './language/contracts'
 import { freezeToolingResult } from './immutable'
-import type { MasterCSSDesignSystemRequest, MasterCSSDesignSystemReport } from '@master/css-binding/tooling'
+import type { MasterCSSClassSuggestions, MasterCSSDesignSystemRequest, MasterCSSDesignSystemReport } from '@master/css-binding/tooling'
 
 export interface ToolingSessionParts {
   readonly lexer: LexerSession
@@ -87,6 +87,14 @@ export class MasterCSSToolingSession implements Disposable {
   get binding(): 'native' | 'wasm' {
     this.assertActive()
     return this.parts.language.binding
+  }
+
+  /** Advisory declaration conversion; does not prove surrounding cascade or browser behavior. */
+  suggestClasses(declarations: string): MasterCSSClassSuggestions {
+    this.assertActive()
+    const result = this.parts.lint.suggestClasses(declarations)
+    if (result.version !== 1) throw new Error(`Unsupported class suggestions version: ${String(result.version)}`)
+    return freezeToolingResult(result)
   }
 
   analyzeClassList(request: MasterCSSClassListAnalysisRequest): MasterCSSClassListAnalysis {

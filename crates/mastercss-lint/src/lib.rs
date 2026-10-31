@@ -2,11 +2,13 @@
 
 mod class_list;
 mod design_system;
+mod suggest;
 pub use design_system::{
     DesignSystemCollision, DesignSystemCoverage, DesignSystemDiagnostic, DesignSystemReport,
     DesignSystemRequest, DesignSystemStylesheet, DesignSystemSummary, DesignSystemToken,
     DesignTokenMetadata, StylesheetAncestor, StylesheetTokenReference,
 };
+pub use suggest::{ClassSuggestions, SuggestedDeclaration, SuggestionVerification};
 
 use mastercss_engine::{ClassSemanticInspection, EngineError, EngineSession, natural_compare};
 use mastercss_schema::{

@@ -5,6 +5,26 @@ This guide focuses on Tailwind CSS v4's CSS-first workflow: `@import "tailwindcs
 ---
 
 ## Migration strategy
+For agent-assisted work, use the official `master-css` skill with one static HTML
+or JSX component, its stylesheet entry and the original Tailwind version. Ask
+the agent to preserve appearance and interactions, and to report retained CSS
+and remaining Tailwind dependencies. The skill provides a reviewed workflow,
+not an automatic project-wide converter.
+
+Build the source with its installed Tailwind toolchain before translating class
+names. Compiled CSS supplies the actual values, variants and variable dependencies.
+For a snippet without its theme or plugin configuration, establish that context
+before claiming a faithful conversion. Use `mastercss_suggest_classes` only for
+isolated declaration blocks; keep complex selectors and unresolved dynamic
+expressions in native CSS. Inspect `tailwind-merge` or other Tailwind-specific
+class processing before passing Master classes through it.
+
+Compare both versions with the same reset, fonts, theme and browser state.
+Tailwind v4's `hover:` also requires the `(hover: hover)` media condition; copying
+only the pseudo-class changes its behavior. `mastercss_css_compare` compares
+Master outputs; use the browser to compare the original component with its
+converted result.
+
 Run both systems while you migrate. Tailwind can keep styling existing screens while Master CSS takes over one reviewed slice at a time.
 
 1. Add Master CSS to the project without removing Tailwind.

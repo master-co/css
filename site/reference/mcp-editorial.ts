@@ -5,6 +5,11 @@ export interface ToolEditorial {
   lifecycle: string
 }
 export const mcpEditorial: Record<string, ToolEditorial> = {
+  "mastercss_suggest_classes": {
+    "purpose": "Suggest classes for an isolated CSS declaration block using the active manifest. Read remainingCss and validation separately; declaration correspondence does not prove surrounding cascade or browser behavior.",
+    "example": { "declarations": "display:flex; padding:16px; gap:1rem;" },
+    "lifecycle": "This operation does not write files. Uncertain blocks are preserved in full as native CSS."
+  },
   "mastercss_workspace_info": {
     "purpose": "Start here to confirm the server root, package resolution, and discovered CSS entries before interpreting project-dependent results.",
     "example": {},
