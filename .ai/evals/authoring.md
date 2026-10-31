@@ -4,6 +4,27 @@ Run `node scripts/ai-authoring/evaluate.mjs --list` for the 12 task prompts and
 acceptance criteria. This corpus measures observed agent behavior; unit tests and
 browser fixtures verify tooling but do not establish model success rates.
 
+## Component smoke test
+
+After building the native binding, workspace packages and MCP executable, run
+`node --import tsx scripts/ai-authoring/component-smoke.mjs` from the checkout.
+It uses the installed Playwright Chromium and Tailwind toolchain; no dependency
+or browser downloads are performed by the script.
+
+The smoke test makes the site's existing `checkedSelector` card denser and imports
+the benchmark dashboard's Export button. The button receives explicit pilot
+hover/focus/disabled/motion variants before its Tailwind baseline is compiled.
+It calls the real MCP server with isolated project roots, retains source CSS
+dependencies, and compares 128 combinations of viewport, theme, pointer capability,
+motion preference and control state. Resting Tailwind screenshots must also match.
+
+The script prints an external artifact directory containing source/target HTML,
+compiled CSS, screenshots, MCP responses and `report.json`. A failure returns a
+nonzero exit code and preserves evidence. These deterministic cases are a workflow
+smoke test, not independent model trials; do not feed them to `evaluate.mjs` as
+model-success observations. Chromium and keyboard behavior checks are not a full
+cross-browser or accessibility audit.
+
 ## Controlled runs
 
 - Freeze a corpus commit containing all task fixtures, package versions, two model versions, client,

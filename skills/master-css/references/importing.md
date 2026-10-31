@@ -28,6 +28,9 @@ semantics. The default palettes, spacing scales and breakpoints differ.
 3. Retain source rule scopes, importance and layer context deliberately. Tailwind
    v4 `hover:` includes `@media (hover: hover)`; a bare `:hover` loses that condition.
    Text utilities can include line-height as well as font-size.
+   Declare the intended layer order before either generated stylesheet: creating
+   `utilities` before `base` can let the reset override migrated styles. Retained
+   source tokens must also keep their values when Master defines the same names.
 4. Keep unresolved dynamic class expressions and plugin-dependent rules in place.
    Identify `tailwind-merge` or similar runtime class processing: it cannot process
    Master classes as if they were Tailwind. Preserve its existing path until its
