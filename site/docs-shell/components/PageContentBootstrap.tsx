@@ -70,12 +70,12 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
 
     const activePageContentNav = Array.from(document.querySelectorAll<HTMLElement>('[data-page-content-nav-id]'))
       .find((nav) => nav.dataset.pageContentNavId === currentId)
-    const pageContentAside = activePageContentNav?.closest<HTMLElement>('aside')
-    if (activePageContentNav && pageContentAside && window.innerWidth >= 1024) {
-      if (pageContentAside.offsetHeight && activePageContentNav.offsetHeight) {
+    const pageContentScroll = activePageContentNav?.closest<HTMLElement>('.page-content-scroll')
+    if (activePageContentNav && pageContentScroll && window.innerWidth >= 1024) {
+      if (pageContentScroll.offsetHeight && activePageContentNav.offsetHeight) {
         if (currentIndex <= 0 || activePageContentNav.offsetTop) {
-          pageContentAside.scrollTo({
-            top: activePageContentNav.offsetTop - 180,
+          pageContentScroll.scrollTo({
+            top: activePageContentNav.offsetTop - pageContentScroll.clientHeight / 3,
             behavior: 'instant'
           })
         } else {

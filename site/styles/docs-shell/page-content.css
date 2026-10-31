@@ -7,9 +7,32 @@
  *
  *   .page-content          The block: a label, the list and any closing links share the text column.
  *   .page-content-label    "On this page", small and quiet.
- *   .page-content-list     <ol> of .page-content-link (data-level="2" | "3"); the live entry has aria-current.
+ *   .page-content-scroll   The documentation rail's scrolling room for the list, between its label and its links.
+ *   .page-content-list     <ol> of .page-content-link (data-level="2" | "3"); the live entry has aria-current. A long
+ *                          list carries data-fold and opens only the section being read.
  *   .page-content-aside    Closing links and references under the list (Edit this page, Can I use, MDN).
  */
+
+/* The scrolling list's edge fades, driven by its own scroll position; at rest (nothing to scroll) neither shows. */
+@property --toc-fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --toc-fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes page-content-scroll-edges {
+  0% { --toc-fade-start: 0px; --toc-fade-end: 2.5rem; }
+  6% { --toc-fade-start: 2.5rem; }
+  94% { --toc-fade-end: 2.5rem; }
+  100% { --toc-fade-start: 2.5rem; --toc-fade-end: 0px; }
+}
+
 @layer components {
   .page-content {
     /* Titles start after the tick gutter; ticks end a short gap before them, on one shared right edge. The
@@ -27,6 +50,8 @@
     --toc-mark-hover: color-mix(in oklab, var(--color-text-muted) 55%, transparent);
     --toc-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
     --toc-duration: 360ms;
+    /* Half the room around a title: 40px rows, airy as the reference; a folded long list tightens to 32px. */
+    --toc-pad: 0.6875rem;
     font-size: 0.8125rem;
     /* Whole-pixel lines and rows (18px, airy rows of 40px), so ticks land on whole pixels on a 1x screen. */
     line-height: 1.125rem;
@@ -61,7 +86,7 @@
   .page-content-link {
     position: relative;
     display: block;
-    padding: 0.6875rem 0 0.6875rem var(--toc-gutter);
+    padding: var(--toc-pad) 0 var(--toc-pad) var(--toc-gutter);
     font-size: inherit;
     line-height: inherit;
     color: var(--toc-text);
@@ -74,7 +99,7 @@
        current one by its ink. */
     &::before {
       position: absolute;
-      top: calc(0.6875rem + 0.5lh - 1px);
+      top: calc(var(--toc-pad) + 0.5lh - 1px);
       right: calc(100% - var(--toc-gutter) + var(--toc-gap));
       width: var(--toc-tick);
       height: 2px;
@@ -141,10 +166,94 @@
     }
   }
 
-  /* The documentation rail scrolls under the translucent site header: what scrolls up fades out before it reaches
-     the header instead of running under its icons. */
+  /*
+   * A long list folds: every section stays listed, but only the one being read opens its subsections, and the rows
+   * tighten to 32px, so a page of 40 headings still fits beside its text with its closing links in view. The open
+   * section follows the reader: it is the one whose title carries `.active` (set before paint by the bootstrap), and
+   * its subsections are the entries after it up to the next section. Folded entries leave the tab order.
+   */
+  .page-content-list[data-fold] {
+    --toc-pad: 0.4375rem;
+
+    & > li[data-level='3'] {
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      opacity: 0;
+
+      & > .page-content-link {
+        min-height: 0;
+        overflow: hidden;
+        padding-block: 0;
+      }
+    }
+
+    & > li:has(> .active[data-level='2']) ~ li[data-level='3']:not(li:has(> .active[data-level='2']) ~ li[data-level='2'] ~ li) {
+      grid-template-rows: 1fr;
+      visibility: visible;
+      opacity: 1;
+
+      & > .page-content-link {
+        padding-block: var(--toc-pad);
+
+        @media (pointer: coarse) {
+          min-height: 44px;
+        }
+      }
+    }
+
+    /* Once the reader's place is known, a section opens and closes like a drawer; the first state never animates. */
+    &:has([data-transitions-ready]) > li[data-level='3'] {
+      transition:
+        grid-template-rows var(--toc-duration) var(--toc-ease),
+        opacity var(--toc-duration) var(--toc-ease),
+        visibility 0s linear var(--toc-duration);
+
+      & > .page-content-link {
+        transition:
+          color var(--toc-duration) var(--toc-ease),
+          padding-block var(--toc-duration) var(--toc-ease);
+      }
+    }
+
+    &:has([data-transitions-ready]) > li:has(> .active[data-level='2']) ~ li[data-level='3']:not(li:has(> .active[data-level='2']) ~ li[data-level='2'] ~ li) {
+      transition-delay: 0s;
+    }
+  }
+
+  /*
+   * The documentation rail stands still under the header: its label and references at the top, the source links at
+   * the bottom, and between them the list, which scrolls on its own when it is taller than the room. The list's
+   * edges fade only toward the side that has more to scroll to.
+   */
   .doc-page-contents {
-    mask-image: linear-gradient(transparent 3.75rem, #000 6.5rem);
+    display: flex;
+    flex-direction: column;
+
+    & > .page-content-aside {
+      flex: none;
+    }
+  }
+
+  .page-content-scroll {
+    position: relative;
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Room for the current entry's focus ring at the scroll edges. */
+    padding-block: 2px;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .page-content-scroll {
+      mask-image: linear-gradient(transparent, #000 var(--toc-fade-start), #000 calc(100% - var(--toc-fade-end)), transparent);
+      /* Longhands: the CSS pipeline would fold a shorthand and the timeline into one declaration Chrome rejects. */
+      animation-name: page-content-scroll-edges;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(self);
+    }
   }
 
   /* A list with no live entry (in a disclosure) needs no room for the long tick: its ticks start on the column's

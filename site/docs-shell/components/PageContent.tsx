@@ -15,13 +15,16 @@ import PageContentTitle from './PageContentTitle'
 
 const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
 
-/** The documentation rail: the page's contents as a ruler, its references, and the source links. */
+/**
+ * The documentation rail: the page's contents as a ruler, its references, and the source links. The rail stands still;
+ * a list taller than the window scrolls inside it, so the source links stay in view under it.
+ */
 export default function PageContent({ metadata }: any) {
-  const ref = useRef<HTMLElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
   const $ = useTranslation()
 
   return (
-    <aside ref={ref} aria-label={$('On this page')} className="sticky top(0) overflow-y-auto basis-auto grow(0) shrink(0) (height:100dvh) (width:calc(252/16*1rem)) pb-2xl (padding-top:8.75rem) hidden@media(print) hidden@media((width<80rem)) doc-page-contents page-content scrollbar scrollbar-concealed">
+    <aside aria-label={$('On this page')} className="sticky top(0) basis-auto grow(0) shrink(0) (height:100dvh) (width:calc(252/16*1rem)) pb-2xl (padding-top:8.75rem) hidden@media(print) hidden@media((width<80rem)) doc-page-contents page-content">
       <span className="page-content-label">{$('On this page')}</span>
       {(metadata.canIUseLink || metadata.mdnLink) &&
         <div className="page-content-references">
@@ -39,7 +42,9 @@ export default function PageContent({ metadata }: any) {
           }
         </div>
       }
-      <PageContentList scrollContainerRef={ref} />
+      <div ref={ref} className="page-content-scroll scrollbar scrollbar-concealed">
+        <PageContentList scrollContainerRef={ref} />
+      </div>
       <ul className="page-content-aside">
         {metadata.sourcePath && <li>
           <Link href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
@@ -56,6 +61,9 @@ export default function PageContent({ metadata }: any) {
   )
 }
 
+/** A list longer than this folds every section but the one being read to its title. */
+const foldAfter = 12
+
 /**
  * The live list inside a `PageContentProvider`: the entry being read carries `aria-current` and the long tick. With a
  * scroll container, the current entry is kept in view inside it. Titles are translated unless they come from the
@@ -63,10 +71,11 @@ export default function PageContent({ metadata }: any) {
  */
 export function PageContentList({ scrollContainerRef, lang, translate = true }: { scrollContainerRef?: RefObject<HTMLElement | null>, lang?: string, translate?: boolean }) {
   const { activeTransitionsReady, currentId, currentParentId, items } = usePageContent()
+  const fold = items.length > foldAfter && items.some((item) => item.level === 3)
   return (
-    <ol className="page-content-list" lang={lang}>
+    <ol className="page-content-list" lang={lang} data-fold={fold ? '' : undefined}>
       {items.map((item) => (
-        <li key={item.id}>
+        <li key={item.id} data-level={item.level}>
           <PageContentNav item={item} translate={translate} activeTransitionsReady={activeTransitionsReady} currentId={currentId} currentParentId={currentParentId} scrollContainerRef={scrollContainerRef} />
         </li>
       ))}
@@ -97,8 +106,9 @@ function PageContentNav({ item: { id, level, title }, translate, activeTransitio
         ? 'smooth'
         : 'instant' as ScrollBehavior
 
+      // The current entry settles about a third of the way down the scrolling list.
       container.scrollTo({
-        top: container.scrollTop + ref.current.getBoundingClientRect().top - 180,
+        top: container.scrollTop + ref.current.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientHeight / 3,
         behavior
       })
       initializedPageContentScrollContainers.add(container)
