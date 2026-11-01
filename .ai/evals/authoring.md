@@ -334,3 +334,24 @@ to keep its intermediate color observable on slow runners; the recorded model
 failure used 150ms. These are deterministic validation cases, not new model trials
 or evidence that the revised skill improves success rates. Historical campaign
 observations, scores and token totals remain unchanged.
+
+## Import skill comparison
+
+`skill-import-pilot` runs tailwind-card and tailwind-hover with both models and
+two repetitions: 16 trials, all with the same CLI capabilities. Neutral arm A
+loads the skill at `67ae9e011`; arm B loads `eb0bf3cd0`. Only
+`references/importing.md` differs. The runner verifies that invariant, records
+per-file hashes and revisions, and protects the copied skill files during trials.
+Prompts and tool access are identical; models are not told which arm is newer.
+Reading the import reference and using suggestions remain their decisions.
+
+```sh
+node --import tsx scripts/ai-authoring/trials/run.mjs --profile skill-import-pilot --concurrency 2
+node scripts/ai-authoring/trials/compare.mjs /absolute/run/path
+```
+
+The comparison requires complete paired coverage and matching skill revisions.
+It reports first-attempt tokens and model time separately from incurred repairs;
+inspect transcripts for reference use and failure causes before interpreting the
+aggregate. This comparison uses the corrected checker and does not mix historical
+campaign results into either arm. Keep raw artifacts outside the repository.

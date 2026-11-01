@@ -4,7 +4,7 @@ import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { profile, schedule, cliWrapper, bridgeInstructions, assertResume } from './protocol.mjs'
+import { profile, schedule, cliWrapper, bridgeInstructions, assertResume, usesCLI } from './protocol.mjs'
 import { compare } from './compare.mjs'
 
 test('pilot has complete balanced pairs and leaves the original campaign at 240 trials', () => {
@@ -78,7 +78,36 @@ test('comparison rejects missing pairs, mixed versions, missing metrics and cros
 
 test('resume rejects changed tools, selection, concurrency and model identifiers', () => {
   assert.doesNotThrow(() => assertResume(protocol, { ...protocol }))
-  for (const field of ['artifactHashes', 'harnessHashes', 'profile', 'tasks', 'arms', 'models', 'repeats', 'concurrency', 'commonArgs']) {
+  for (const field of ['artifactHashes', 'harnessHashes', 'profile', 'tasks', 'arms', 'models', 'repeats', 'concurrency', 'commonArgs', 'skillVariants']) {
     assert.throws(() => assertResume(protocol, { ...protocol, [field]: 'changed' }), new RegExp(field))
   }
+})
+
+test('import pilot pairs two immutable skill revisions with identical CLI instructions', () => {
+  const selection = profile('skill-import-pilot')
+  const trials = schedule(selection, ['gpt-6.1-sol', 'gpt-6-luna'])
+  assert.equal(trials.length, 16)
+  assert.equal(new Set(trials.map(row => row.id)).size, 16)
+  assert.deepEqual(selection.tasks.map(task => task.id), ['tailwind-card', 'tailwind-hover'])
+  assert.ok(selection.arms.every(usesCLI))
+  assert.notEqual(...selection.arms.map(arm => selection.skillRevisions[arm]))
+  assert.equal(bridgeInstructions(selection.arms[0], true), bridgeInstructions(selection.arms[1], true))
+})
+
+test('import comparison retains first-attempt costs, skill identity and paired failures', () => {
+  const importProtocol = { ...protocol, profile: 'skill-import-pilot', arms: ['skill-import-a', 'skill-import-b'], skillVariants: {
+    'skill-import-a': { revision: 'before' }, 'skill-import-b': { revision: 'after' }
+  } }
+  const runs = importProtocol.arms.map((arm, i) => ({ ...rows[i], arm, skillRevision: i ? 'after' : 'before', mcpCalls: 0,
+    bridgeCalls: { cli: 1, cliErrors: 0, mcp: 0 }, firstAttemptInputTokens: 90, firstAttemptCachedInputTokens: 50,
+    firstAttemptOutputTokens: 9, firstAttemptModelDurationMs: 500, functional: Boolean(i)
+  }))
+  const report = compare(importProtocol, runs)
+  assert.deepEqual(report.pairs, { beforeWins: 0, afterWins: 1, bothPass: 0, bothFail: 0 })
+  assert.equal(report.arms['skill-import-a'].firstAttemptInputTokens, 90)
+  assert.equal(report.arms['skill-import-b'].medianFirstAttemptModelDurationMs, 500)
+  for (const patch of [{ skillRevision: 'other' }, { firstAttemptInputTokens: null }, { firstAttemptInputTokens: 101 }, { firstAttemptCachedInputTokens: 91 }, { mcpCalls: 1 }]) {
+    assert.throws(() => compare(importProtocol, [{ ...runs[0], ...patch }, runs[1]]))
+  }
+  assert.throws(() => compare({ ...importProtocol, arms: ['skill-import-a'] }, [runs[0]]), /Unexpected pilot arms/)
 })
