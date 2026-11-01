@@ -11,7 +11,7 @@ function assertRoles(lang: string, source: string, expectations: [line: number, 
   for (const [line, text, role] of expectations) {
     const token = lines[line - 1]?.find(token => token.content.trim() === text)
     assert.ok(token, `${lang} L${line}: «${text}» is a token in «${lines[line - 1]?.map(token => token.content).join('|')}»`)
-    assert.equal(token.color, `var(--color-code-${role})`, `${lang} L${line}: «${text}» → ${role}`)
+    assert.equal(token.color, `var(--ui-code-${role})`, `${lang} L${line}: «${text}» → ${role}`)
   }
 }
 

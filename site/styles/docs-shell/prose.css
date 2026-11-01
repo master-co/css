@@ -38,8 +38,12 @@
   .ui-prose > :is(p, ul, ol, h2, h3, h4) { overflow-wrap: anywhere; }
   .ui-prose > :is(p, ul, ol) { text-wrap: pretty; }
   .ui-prose :is(h4, a[id]:not([href])) { scroll-margin-top: 5rem; }
+  /* In-page links move focus to their heading; its ring stands clear of the text. */
+  .ui-prose > :is(h2, h3):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: .25rem; border-radius: var(--ui-radius-xs); }
   /* A single token (`data-token`, set by the inline code renderer) moves to the next line whole. */
   .ui-prose > :is(p, ul, ol) code[data-token] { display: inline-block; max-width: 100%; line-height: 1.5; vertical-align: baseline; }
+  /* A run of inline code that wraps keeps its chip on both lines instead of an open cut. */
+  .ui-inline-code { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .ui-prose > :is(p, ul, ol) del { text-decoration-color: var(--ui-status-danger); }
   .ui-prose > details:not([class]) { max-width: var(--measure); margin-block: var(--ui-space-xl); border-block: 1px solid var(--ui-line-hair); }
   .ui-prose > details:not([class]) > summary { padding: var(--ui-space-sm) 0; color: var(--ui-text-strong); font-weight: var(--ui-weight-strong); font-size: var(--ui-text-small); cursor: pointer; }
