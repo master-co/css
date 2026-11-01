@@ -4,6 +4,7 @@ import preset from '../utils/preset-manifest'
 import { configuredExampleCSS, configuredMarkupClasses } from './configured-example'
 import { tokenPages, type RecipePageEditorial, type SheetExampleSource, type TokenGroupEditorial, type TokenPageEditorial } from './sheet-editorial'
 import type { ReferenceExample } from './types'
+import type { MasterCSSMediaQueryExpression } from '@master/css-schema/manifest'
 
 /**
  * Structured Reference sheets: one model renders the HTML page and the portable
@@ -213,15 +214,28 @@ export function ungroupedFamilies(sheet: FamiliesSheet) {
   return foundationFamilies.filter(family => !listed.has(`${family.prefix} ${family.property}`))
 }
 
+/** The native query a resolved custom media expression stands for. */
+function mediaQueryText(media: MasterCSSMediaQueryExpression): string {
+  switch (media.type) {
+    case 'feature': return media.value
+    case 'media-type': return media.name
+    case 'not': return `not ${mediaQueryText(media.query)}`
+    case 'and': case 'or': return media.queries.map(mediaQueryText).join(` ${media.type} `)
+    default: return media.type
+  }
+}
+
 export function breakpointsSheet(): BreakpointsSheet {
-  const conditions = Object.entries(preset.customMedia ?? {}).map(([name, media]) => ({ name: name.slice(2), query: (media as { value: string }).value }))
+  const conditions = Object.entries(preset.customMedia ?? {}).map(([name, media]) => ({ name: name.slice(2), query: mediaQueryText(media) }))
   const rem = (query: string) => Number(query.match(/([\d.]+)rem/)?.[1])
   const widths = conditions.filter(condition => /^\(width\s*>=\s*[\d.]+rem\)$/.test(condition.query)).toSorted((a, b) => rem(a.query) - rem(b.query))
+  const below = conditions.filter(condition => /^not \(width\s*>=\s*[\d.]+rem\)$/.test(condition.query)).toSorted((a, b) => rem(a.query) - rem(b.query))
   return {
     kind: 'breakpoints',
     groups: [
       { id: 'viewport-widths', title: 'Viewport widths', rows: widths.map(row => ({ ...row, pixels: pixels(row.query.match(/([\d.]+rem)/)![1]) })) },
-      { id: 'media-features', title: 'Media features', rows: conditions.filter(condition => !widths.includes(condition)) },
+      { id: 'below-viewport-widths', title: 'Below viewport widths', rows: below },
+      { id: 'media-features', title: 'Media features', rows: conditions.filter(condition => !widths.includes(condition) && !below.includes(condition)) },
     ],
     usage: example('usage', 'Usage', {
       lead: 'Change a layout at a breakpoint.',

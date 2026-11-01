@@ -82,7 +82,7 @@ The preset contains 517 definitions: 118 token definitions (117 direct-value fam
 
 ## Conditions and wrappers
 
-`src/media.css` owns eleven breakpoints and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
+`src/media.css` owns eleven breakpoints, their eleven `--max-*` complements (`not (--md)`, so a redeclared breakpoint moves both) and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
 
 ## Atomic class authoring
 

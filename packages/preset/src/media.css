@@ -10,6 +10,19 @@
 @custom-media --3xl (width >= 120rem);
 @custom-media --4xl (width >= 160rem);
 
+/* Below a breakpoint: the complement of its query, so `x@max-md` and `y@md` never overlap and a redeclared `--md` moves both. */
+@custom-media --max-4xs not (--4xs);
+@custom-media --max-3xs not (--3xs);
+@custom-media --max-2xs not (--2xs);
+@custom-media --max-xs not (--xs);
+@custom-media --max-sm not (--sm);
+@custom-media --max-md not (--md);
+@custom-media --max-lg not (--lg);
+@custom-media --max-xl not (--xl);
+@custom-media --max-2xl not (--2xl);
+@custom-media --max-3xl not (--3xl);
+@custom-media --max-4xl not (--4xl);
+
 @custom-media --landscape (orientation: landscape);
 @custom-media --portrait (orientation: portrait);
 @custom-media --motion-safe (prefers-reduced-motion: no-preference);

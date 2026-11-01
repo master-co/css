@@ -313,6 +313,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
   test('publishes explicit custom media without container aliases', () => {
     expect(defaultManifest.customMedia?.['--sm']).toEqual({ type: 'feature', value: '(width >= 52.125rem)' })
+    const breakpoints = Object.entries(defaultManifest.customMedia ?? {}).filter(([, media]) => media.type === 'feature' && media.value.startsWith('(width >= '))
+    expect(breakpoints).toHaveLength(11)
+    for (const [name, media] of breakpoints) {
+      expect(defaultManifest.customMedia?.[`--max-${name.slice(2)}`], name).toEqual({ type: 'not', query: media })
+    }
     expect(defaultManifest).not.toHaveProperty('containerConditions')
   })
 

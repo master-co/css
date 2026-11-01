@@ -16,10 +16,12 @@ Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditi
 ## Named conditions \{#common-condition-variants\}
 `@sm` and `@dark` resolve `@custom-media` definitions. Unknown names are errors. Mixin names use the separate `@apply(--name)` syntax and can share a name with a custom media definition.
 
-The preset's `media.css` provides eleven breakpoints and six preference/orientation queries:
+The preset's `media.css` provides eleven breakpoints, a `max-` complement for each, and six preference/orientation queries:
 
 | Suffix | Meaning |
 | --- | --- |
+| `@sm`, `@md`, … | Viewport at least that breakpoint |
+| `@max-sm`, `@max-md`, … | Viewport below that breakpoint: `not (--md)` |
 | `@landscape`, `@portrait` | Viewport orientation |
 | `@motion-safe`, `@motion-reduce` | Reduced-motion preference |
 | `@light`, `@dark` | System color preference |
@@ -31,7 +33,7 @@ The preset's `media.css` provides eleven breakpoints and six preference/orientat
 Use `@media(print)` and `@media(screen)` for media types. `@starting-style` and `@layer(...)` are engine built-ins and work without a preset.
 
 ### Breakpoints \{#sm--md--lg--and-more\}
-The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them.
+The preset defines breakpoint names with `@custom-media --sm (width >= 52.125rem);`. A project can replace the query, including its native units. Theme variables do not register media conditions. Breakpoints live in `media.css`; importing `theme.css` alone does not register them. Each `--max-*` condition is declared as the negation of its breakpoint, such as `@custom-media --max-md not (--md);`, so redeclaring `--md` moves `@max-md` with it and the two ranges never overlap.
 
 ```html
 <h2 class="font-lg font-2xl@sm font-3xl@md">Responsive heading</h2>

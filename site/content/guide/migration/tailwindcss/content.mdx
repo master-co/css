@@ -236,7 +236,7 @@ Tailwind’s default `md` starts at 48rem; Master CSS’s preset `md` starts at 
 @custom-media --tailwind-md (width >= 48rem);
 ```
 
-Use `@custom-media` for reusable media queries and a mixin with `@contents` for other wrappers. Keep selector states as selector suffixes or nested selectors.
+Tailwind's `max-md:` maps to `@max-md`, the complement of the preset `md`; define `--max-tailwind-md not (--tailwind-md)` the same way to keep the Tailwind threshold. Use `@custom-media` for reusable media queries and a mixin with `@contents` for other wrappers. Keep selector states as selector suffixes or nested selectors.
 
 ```css name=app.css
 @import "@master/css";

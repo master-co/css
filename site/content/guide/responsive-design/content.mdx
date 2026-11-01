@@ -57,6 +57,8 @@ To change a threshold, redeclare its custom media in your project CSS entry. Thi
 @custom-media --md (width >= 48rem);
 ```
 
+Below a breakpoint, use its `max-` complement: `hidden@max-md` applies under `@md` and never overlaps it. Redeclaring `--md` moves both.
+
 For a one-off range, write the complete native query, such as `hidden@media((52.125rem<=width<=64rem))`. See [Breakpoints](/reference/tokens/breakpoints) for the preset names and [conditions](/reference/rules/conditions#mediafeature) for the query syntax.
 
 ---
@@ -96,10 +98,10 @@ A query measures the nearest container. To measure an outer one, name it with `(
 A condition can sit on any class, so a style that belongs to one range needs no reset outside it. Write the base state without a condition, then attach a condition only where a style differs:
 
 ```html
-<!-- @MARK bg-surface-raised@media((width<64rem)) -->
-<aside class="p-md bg-surface-raised@media((width<64rem))">…</aside>
+<!-- @MARK bg-surface-raised@max-md -->
+<aside class="p-md bg-surface-raised@max-md">…</aside>
 ```
 
-<Class2CSS>{['bg-surface-raised@media((width<64rem))']}</Class2CSS>
+<Class2CSS>{['bg-surface-raised@max-md']}</Class2CSS>
 
 Minimum, maximum and bounded conditions all use the same syntax, and a page breakpoint and a component query can apply to the same element.

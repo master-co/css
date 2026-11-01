@@ -87,7 +87,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(variablesOf(compiledManifest)).toEqual(variablesOf(defaultManifest))
     expect(compiledManifest.theme).toEqual(defaultManifest.theme)
     expect(compiledManifest.customMedia).toEqual(defaultManifest.customMedia)
-    expect(Object.keys(defaultManifest.customMedia ?? {})).toHaveLength(17)
+    expect(Object.keys(defaultManifest.customMedia ?? {})).toHaveLength(28)
   })
 
   it('supports built-in starting-style without a preset definition', () => {
