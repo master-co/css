@@ -552,6 +552,9 @@ test('installation steps retain complete commands, stable headings and navigatio
   const previous = JSON.parse(await readFile(path.join(root, 'tests/installation-heading-ids.json'), 'utf8'))
   for (const slug of installationGuideSlugs) {
     const content = await installationGuideContent(root, slug)
+    if (slug === 'angular') {
+      assert.ok(content.examples.some(example => example.classes.includes('p-md') && /padding:\s*var\(--spacing-md\)/.test(example.css)))
+    }
     const sourcePath = slug || '(main)'
     const source = await readFile(path.join(root, `content/guide/installation/${sourcePath}/content.mdx`), 'utf8')
     const normalizeFence = (value: string) => value.replace(/<!--\s*@MARK[\s\S]*?-->/g, '').split('\n').map(line => line.trim()).join('\n').trim()

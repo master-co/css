@@ -21,7 +21,7 @@ Read the requested article, nearby examples, and the applicable [site/AI.md](../
 
 Choose the primary reader need before drafting. Different articles may cover the same topic, but each needs a distinct purpose and an authoritative source for its facts. Guide can include necessary explanation and visual comparisons; Blog does not replace a Reference contract.
 
-Do not apply the article workflow to standalone code fixes, homepage marketing copy, or standalone visual design. Every article requires at least one explanatory image: use [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md) to produce it. For mixed requests, apply the writing workflow only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
+Do not apply the article workflow to standalone code fixes, homepage marketing copy, or standalone visual design. Articles outside the Integrations category require at least one explanatory image: use [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md) to produce it. For mixed requests, apply the writing workflow only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
 
 ## Research and define the purpose
 
@@ -41,7 +41,7 @@ Discover what you can before asking questions. Ask only about missing informatio
 
 ## Draft and edit
 
-For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Plan at least one explanatory image for every article, including short and lookup articles, following [site content policy](../../../site/AI.md). Identify the sequence, conditional branch, hierarchy, scope or visual difference it will explain, then produce and embed it beside that explanation using [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md). Keep useful working demos as complementary teaching; they do not replace the required image. A placeholder, decorative cover or uniform prose cards do not satisfy the requirement. Do not deliver an article as complete without its image; retain an existing qualifying figure when revising rather than producing another for every wording edit.
+For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Follow [site content policy](../../../site/AI.md): integration guides use commands, configuration and live previews without adding explanatory image assets by default. For other articles, including short and lookup articles, plan at least one explanatory image. Identify the sequence, conditional branch, hierarchy, scope or visual difference it will explain, then produce and embed it beside that explanation using [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md). Keep useful working demos as complementary teaching; they do not replace the required image. A placeholder, decorative cover or uniform prose cards do not satisfy the requirement. For articles subject to the image requirement, do not deliver them as complete without their image; retain an existing qualifying figure when revising rather than producing another for every wording edit.
 
 Edit ordinary revisions directly. Choose the sequence for the article type rather than imposing an introduction, three body sections, and a conclusion.
 

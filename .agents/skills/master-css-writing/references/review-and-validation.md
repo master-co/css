@@ -12,7 +12,7 @@ Read the change to understand its purpose before checking relevant evidence. Rep
 | Reader task | Prerequisites, actions, or decision criteria are sufficient and the result is recognizable |
 | Ownership | Teaching and contracts have appropriate owners without duplicate fact sources |
 | Argument and voice | Sections support the subject, paragraphs connect, and explanation replaces empty slogans |
-| Examples and visuals | Every article includes at least one authored explanatory image; visible settings, code and results agree; figures show the relevant relationships and remain readable in both themes and narrow columns |
+| Examples and visuals | Articles outside the Integrations category include at least one authored explanatory image; visible settings, code and results agree; figures show the relevant relationships and remain readable in both themes and narrow columns |
 | Demo design | Preview contents match the relevant system component; each optional preview control produces an observation the section actually teaches |
 | Integration and exports | Links, anchors, and MDX imports work; meaningful content survives the relevant output paths |
 
@@ -30,7 +30,7 @@ Ask practical questions based on the purpose and answer using only the article a
 
 If an answer depends on the conversation, add the missing context. Check ambiguity, unsupported inference, and contradictions. The author may do this check but must not describe it as independent reader testing. Additional agents or human evaluations depend on current authorization and tool rules; they are not required for every edit.
 
-Before delivering any article as complete, verify that at least one authored explanatory image is embedded in its body. Check its source, light/dark renders, article-scale legibility and text equivalent through [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md). Check arrows, conditions and grouping as technical claims. Demos, tables, code blocks, decorative assets and placeholders do not meet this minimum; two theme variants count as one figure. Missing the image fails article completion even when every code and export check passes. Short and lookup articles have the same requirement; a local wording edit can retain an existing qualifying figure.
+Integration guides have no image gate: verify their setup code and useful live previews, without requiring diagram assets. For other articles, verify that at least one authored explanatory image is embedded in the body before delivery. Check its source, light/dark renders, article-scale legibility and text equivalent through [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md). Check arrows, conditions and grouping as technical claims. Demos, tables, code blocks, decorative assets and placeholders do not meet this minimum; two theme variants count as one figure. Missing the image fails article completion even when every code and export check passes. Short and lookup articles have the same requirement; a local wording edit can retain an existing qualifying figure.
 
 ## Demo design check
 

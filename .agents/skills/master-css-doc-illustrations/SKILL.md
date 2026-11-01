@@ -11,7 +11,7 @@ Make a relationship easier to understand through its visible structure. A reader
 
 Read the affected article and applicable [site instructions](../../../site/AI.md). Use [master-css-writing](../master-css-writing/SKILL.md) for the article's purpose, claims, surrounding prose, and ownership; this skill owns the illustration work.
 
-Every Guide, Reference and Blog article requires at least one authored explanatory image embedded in the article. Produce the image and retain its editable source before treating the article as complete, including short and lookup articles. Light/dark variants count as one figure. An existing qualifying figure can remain through revisions; decorative assets, placeholders and interactive demos do not satisfy the minimum.
+Every Guide, Reference and Blog article outside the Integrations category requires at least one authored explanatory image embedded in the article. Integration guides are exempt and stay code-first; do not activate this workflow for them by default. The top-level Installation guide is not exempt. Produce the image and retain its editable source before treating the article as complete, including short and lookup articles. Light/dark variants count as one figure. An existing qualifying figure can remain through revisions; decorative assets, placeholders and interactive demos do not satisfy the minimum.
 
 - Name the reader question the figure answers. Locate its insertion point beside the relevant explanation.
 - State what the reader should **see**, and which visible feature establishes it: a repeated identity, a changed dimension, an enclosed scope, a precise attachment or a conditional path. If only the labels carry that claim, reconsider the composition before polishing it.

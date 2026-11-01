@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { planMasterCSSSetup, applyMasterCSSSetupPlan } from '../../packages/create/dist/index.js'
 import { deliveryFences, deliverySection } from './delivery-examples'
-import { installationGuideSlugs } from '../utils/installation-content'
+import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 
 const rootURL = new URL('../../', import.meta.url)
 const installation = new URL('../content/guide/installation/', import.meta.url)
@@ -52,6 +52,38 @@ export function installationDisclosure(route: string, title: string) {
   const start = source.indexOf(`<DocumentDisclosure title="${title}">`)
   if (start < 0) throw new Error(`${route}: missing disclosure "${title}"`)
   return source.slice(start, source.indexOf('</DocumentDisclosure>', start))
+}
+
+/** Exercise the documented handoff without replacing Angular's builder or editing its source entry. */
+export async function verifyAngularInstallationExample() {
+  const root = mkdtempSync(join(tmpdir(), 'master-doc-angular-'))
+  try {
+    mkdirSync(join(root, 'src/app'), { recursive: true })
+    mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
+    symlinkSync(fileURLToPath(new URL('packages/css', rootURL)), join(root, 'node_modules/@master/css'), 'dir')
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ type: 'module', dependencies: { '@angular/core': '^22.0.0' } }))
+    writeFileSync(join(root, 'src/styles.css'), '')
+    const content = await installationGuideContent(fileURLToPath(new URL('../', import.meta.url)), 'angular')
+    const fences = deliveryFences(content.markdown)
+    const template = fences.find(fence => fence.language === 'html' && fence.text.includes('id="master-check"'))!
+    assert.ok(template, 'The rendered template survives the portable export')
+    writeFileSync(join(root, 'src/app/app.html'), template.text)
+    const plan = planMasterCSSSetup({ root, framework: 'angular', minimal: true, install: false })
+    applyMasterCSSSetupPlan(plan, { install: false })
+    for (const name of ['master.css', 'src/styles.css']) {
+      assert.equal(readFileSync(join(root, name), 'utf8').trim(), fences.find(fence => fence.name === name)!.text.trim())
+    }
+    const watcher = fences.find(fence => fence.language === 'bash' && fence.text.includes('master-css generate') && fence.text.includes('--watch'))!
+    assert.equal(watcher.text.trim(), 'npx master-css generate --output src/master.generated.css --watch')
+    const production = fences.find(fence => fence.language === 'bash' && fence.text.includes('npm run build'))!
+    assert.equal(production.text.trim(), 'npx master-css generate --output src/master.generated.css\nnpm run build')
+    const generated = spawnSync(process.execPath, [fileURLToPath(new URL('packages/cli/dist/bin/index.js', rootURL)), 'generate', '--output', 'src/master.generated.css'], { cwd: root, encoding: 'utf8', timeout: 20000 })
+    assert.equal(generated.status, 0, generated.stderr)
+    const css = readFileSync(join(root, 'src/master.generated.css'), 'utf8')
+    assert.match(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
+    assert.match(css, /\.bg-surface-raised/)
+    assert.equal(readFileSync(join(root, 'master.css'), 'utf8').trim(), fences.find(fence => fence.name === 'master.css')!.text.trim())
+  } finally { rmSync(root, { recursive: true, force: true }) }
 }
 
 export function verifyInstallationExamples() {

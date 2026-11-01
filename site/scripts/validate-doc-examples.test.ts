@@ -9,7 +9,7 @@ import { stylesheetExampleCSS } from '../reference/stylesheet-example'
 import { verifyDirectiveExamples } from '../tests/directive-examples'
 import { verifyToolContractExamples } from '../tests/tool-contract-examples'
 import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
-import { verifyInstallationExamples } from '../tests/installation-examples'
+import { verifyAngularInstallationExample, verifyInstallationExamples } from '../tests/installation-examples'
 import { verifyLanguageExamples, verifyLintExamples } from '../tests/tooling-examples-checks'
 import { authoringSource } from '../utils/authoring-examples'
 import assert from 'node:assert/strict'
@@ -955,6 +955,7 @@ test('lint guide examples match actual rule diagnostics and fixes', verifyLintEx
 test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
 test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
 test('installation guides match the setup output and package asset paths', verifyInstallationExamples)
+test('Angular installation hands generated template styles to the global stylesheet', verifyAngularInstallationExample)
 
 test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
 

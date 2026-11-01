@@ -1,4 +1,3 @@
-import DeliveryFlow from '~/site/components/DeliveryFlow'
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
@@ -115,8 +114,6 @@ npm create @master/css@rc -- --framework nextjs --mode progressive --yes
 ```
 
 The runtime initially tracks covered classes. A class outside the page manifest starts its engine, which validates and adopts matching rules before generating additional CSS. Request-time dynamic SSR responses are outside the build adapter's pre-rendered output, so their generated utility styles depend on the browser runtime. Use static mode if those routes must have utility styles without JavaScript.
-
-<DeliveryFlow name="nextjs" />
 
 After `npm run build` and `npm run start`, check a pre-rendered route's response source for `style#master-css` before JavaScript runs, then test a later class as above. Test a dynamic SSR route separately: this adapter does not add server-generated CSS to request-time HTML.
 

@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { installationGuidesMarkdown } from './installation-guides'
-import { deliveryFlowMarkdown } from './delivery-flows'
 import { installationIllustrationMarkdown } from '../content/guide/installation/(main)/illustration'
 
 export const installationGuideSlugs = [
@@ -15,10 +14,9 @@ export async function installationGuideContent(siteRoot: string, slug: string) {
   const route = slug || '(main)'
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/installation/${route}/content.mdx`), [], [], {
     overview: 'include',
-    component(name, attributes) {
+    component(name) {
       if (name === 'InstallationIllustration') return installationIllustrationMarkdown()
       if (name === 'InstallationGuides') return installationGuidesMarkdown()
-      if (name === 'DeliveryFlow') return deliveryFlowMarkdown(String(attributes.name))
     }
   })
   if (result.notes.length) throw new Error(`Incomplete installation/${slug} export: ${result.notes.join('; ')}`)
