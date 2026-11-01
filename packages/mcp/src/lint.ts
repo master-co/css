@@ -4,6 +4,7 @@ import {
   lintMasterCSSContent,
   resolveMasterCSSLintRules,
   summarizeMasterCSSLintFiles,
+  type MasterCSSLintFileResult,
   type MasterCSSLintRuleId
 } from '@master/css-tooling/lint'
 import type { MasterCSSToolingSession } from '@master/css-tooling'
@@ -14,7 +15,7 @@ import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type
 
 const DEFAULT_LINT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
-const LINT_REPORT_VERSION = 4
+const LINT_REPORT_VERSION = 5
 
 export interface LintProjectOptions {
   context?: SemanticContext
@@ -62,6 +63,14 @@ function lintInputs(
   })).filter((result) => result.diagnostics.length)
 }
 
+function lintCoverage(files: MasterCSSLintFileResult[], checkedFiles: string[]) {
+  const { files: _files, ...summary } = summarizeMasterCSSLintFiles(files)
+  return {
+    coverage: { status: checkedFiles.length ? 'complete' as const : 'no-inputs' as const, checkedFiles },
+    summary: { ...summary, checkedFiles: checkedFiles.length, filesWithDiagnostics: files.filter(file => file.diagnostics.length).length }
+  }
+}
+
 export async function lintProject(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const state = await loadLintState(context, options)
   try {
@@ -73,7 +82,7 @@ export async function lintProject(context: MasterCSSMCPContext, options: LintPro
       manifest: manifestMetadata(state.manifest),
       files,
       diagnostics: files.flatMap(file => file.diagnostics),
-      summary: summarizeMasterCSSLintFiles(files)
+      ...lintCoverage(files, state.inputs.map(input => input.filePath))
     }
   } finally {
     state.lintSession?.dispose()
@@ -86,7 +95,7 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
   const manifest = await loadWorkspaceManifest(context, options.context)
   const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest), nativeClassNames: manifest.nativeClassNames })
   try {
-    const files = [lintMasterCSSContent({ content: options.content, filePath, rules, lintSession })]
+    const files = [lintMasterCSSContent({ content: options.content, filePath, rules, lintSession })].filter(file => file.diagnostics.length)
 
     return {
       version: LINT_REPORT_VERSION,
@@ -94,7 +103,7 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
       manifest: manifestMetadata(manifest),
       files,
       diagnostics: files.flatMap(file => file.diagnostics),
-      summary: summarizeMasterCSSLintFiles(files)
+      ...lintCoverage(files, [filePath])
     }
   } finally {
     lintSession?.dispose()

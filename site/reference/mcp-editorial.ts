@@ -94,7 +94,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     "lifecycle": "This operation does not write workspace files."
   },
   "mastercss_lint_project": {
-    "purpose": "Run native class diagnostics over selected files. Use the project’s ESLint command separately for its parser, plugin settings, and team rules.",
+    "purpose": "Run native class diagnostics over selected files. In lint payload v5, `coverage.checkedFiles` lists checked inputs, `summary.checkedFiles` counts them, and `summary.filesWithDiagnostics` counts files with diagnostics; the ambiguous v4 `summary.files` is removed. `files` contains diagnostic results only. `coverage.status` is `complete` or `no-inputs`; zero diagnostics with no inputs does not verify source. Manifest failures remain MCP error results. Use the project’s ESLint command separately for its parser, plugin settings, and team rules.",
     "example": {
       "patterns": [
         "src/button.html"
@@ -104,7 +104,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     "lifecycle": "This operation does not write workspace files."
   },
   "mastercss_lint_content": {
-    "purpose": "Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest.",
+    "purpose": "Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest. Lint payload v5 reports its virtual path in `coverage.checkedFiles` and `summary.checkedFiles: 1`, even when clean. `summary.filesWithDiagnostics` is zero for a clean buffer, and `files` is then empty. Coverage describes this buffer and the enabled lint rules, not browser behavior or the whole project.",
     "example": {
       "content": "<button class=\"p-md flex\">Save</button>",
       "filePath": "src/button.html",

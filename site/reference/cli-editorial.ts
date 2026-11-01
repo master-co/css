@@ -40,6 +40,11 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     ]
   },
   "lint": {
+    "notes": [
+      "Lint report v5 separates checked inputs from diagnostic files. `coverage.checkedFiles` lists every input passed to lint, including clean files and stdin virtual paths. `summary.checkedFiles` counts those inputs; `summary.filesWithDiagnostics` counts checked files with diagnostics. These replace the ambiguous v4 `summary.files`. The `files` array remains limited to diagnostic results; an empty array does not mean no checks ran.",
+      "Read `coverage.status` before interpreting zero diagnostics: `complete` means the selected inputs were checked, `no-inputs` means no source inputs matched, and `not-run` means manifest loading blocked source lint. Manifest diagnostics do not count as checked source files. With `--fix`, diagnostic counts describe the rechecked content. Clean stdin still counts as one input without creating a disk file. Stylish output includes the coverage summary on stderr.",
+      "Coverage applies only to the selected inputs and enabled lint rules. It does not verify browser behavior or prove the whole project was checked. A zero exit status with `no-inputs` is not evidence of a successful source check."
+    ],
     "examples": [
       {
         "description": "Inspect class-order proposals in one existing source file:",

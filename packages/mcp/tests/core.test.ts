@@ -479,7 +479,9 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(4)
+      expect(report.version).toBe(5)
+      expect(report.coverage).toEqual({ status: 'complete', checkedFiles: [resolve(root, 'src/Component.tsx')] })
+      expect(report.summary).toMatchObject({ checkedFiles: 1, filesWithDiagnostics: 1 })
       expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
       expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))
@@ -487,6 +489,39 @@ describe('@master/css-mcp', () => {
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
         code: 'invalid-class-order'
       }))
+    } finally {
+      await connection.close()
+    }
+  })
+
+  it('exposes checked inputs independently of diagnostic files through MCP schemas', async () => {
+    const root = createTempDir('master-css-mcp-lint-coverage-')
+    writeFileSync(join(root, 'clean.html'), '<div class="block"></div>')
+    writeFileSync(join(root, 'invalid.html'), '<div class="(padding:red)"></div>')
+    const connection = await connect(root)
+    try {
+      for (const [patterns, checked, diagnosed, status] of [
+        [['clean.html'], 1, 0, 'complete'],
+        [['*.html'], 2, 1, 'complete'],
+        [['missing/*.html'], 0, 0, 'no-inputs']
+      ] as const) {
+        const response = await connection.client.callTool({ name: 'mastercss_lint_project', arguments: { context: 'preset', patterns: [...patterns] } })
+        const report = parseToolJSON(response)
+        expect(report.version).toBe(5)
+        expect(report.coverage.status).toBe(status)
+        expect(report.coverage.checkedFiles).toHaveLength(checked)
+        expect(report.files).toHaveLength(diagnosed)
+        expect(report.summary).toMatchObject({ checkedFiles: checked, filesWithDiagnostics: diagnosed })
+        expect(report.summary).not.toHaveProperty('files')
+      }
+      const clean = parseToolJSON(await connection.client.callTool({ name: 'mastercss_lint_content', arguments: { context: 'preset', filePath: 'virtual.html', content: '<div class="block"></div>' } }))
+      expect(clean.coverage).toEqual({ status: 'complete', checkedFiles: [join(root, 'virtual.html')] })
+      expect(clean.files).toEqual([])
+      expect(clean.summary).toMatchObject({ checkedFiles: 1, filesWithDiagnostics: 0 })
+      writeFileSync(join(root, 'index.css'), '@import "@master/css"; .btn { @contents; }')
+      const failed = await connection.client.callTool({ name: 'mastercss_lint_project', arguments: { patterns: ['clean.html'] } })
+      expect(failed.isError).toBe(true)
+      expect(failed.structuredContent).toMatchObject({ result: { status: 'error' } })
     } finally {
       await connection.close()
     }

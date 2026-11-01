@@ -18,7 +18,7 @@ import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const REPORT_VERSION = 4
+const REPORT_VERSION = 5
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
@@ -44,7 +44,8 @@ interface CLILintReport {
     diagnostics: MasterCSSLintSourceDiagnostic[]
   }
   files: MasterCSSLintFileResult[]
-  summary: MasterCSSLintSummary
+  coverage: { status: 'complete' | 'no-inputs' | 'not-run', checkedFiles: string[] }
+  summary: Omit<MasterCSSLintSummary, 'files'> & { checkedFiles: number, filesWithDiagnostics: number }
 }
 
 interface SourceInput {
@@ -104,18 +105,24 @@ function createManifestFileResult(cwd: string, diagnostics: MasterCSSLintSourceD
   }
 }
 
-function createReport(cwd: string, manifest: CLILintReport['manifest'], files: MasterCSSLintFileResult[]): CLILintReport {
+function createReport(cwd: string, manifest: CLILintReport['manifest'], files: MasterCSSLintFileResult[], checkedFiles: string[]): CLILintReport {
+  const { files: _files, ...summary } = summarizeMasterCSSLintFiles(files)
   return {
     version: REPORT_VERSION,
     cwd,
     manifest,
     files,
-    summary: summarizeMasterCSSLintFiles(files)
+    coverage: { status: manifest.status === 'error' ? 'not-run' : checkedFiles.length ? 'complete' : 'no-inputs', checkedFiles },
+    summary: { ...summary, checkedFiles: checkedFiles.length, filesWithDiagnostics: files.filter(file => file.sourceKind !== 'manifest' && file.diagnostics.length).length }
   }
 }
 
 function formatStylish(report: CLILintReport) {
-  const lines: string[] = []
+  const lines: string[] = [report.coverage.status === 'not-run'
+    ? 'Source lint checks did not run because the manifest could not be loaded.'
+    : report.coverage.status === 'no-inputs'
+      ? 'No source inputs matched; no source lint checks ran.'
+      : `Checked ${report.summary.checkedFiles} source inputs; ${report.summary.filesWithDiagnostics} with diagnostics.`]
   for (const result of report.files) {
     if (!result.diagnostics.length) continue
     lines.push(result.filePath)
@@ -209,7 +216,7 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
       entries: [],
       diagnostics: [diagnostic]
     }
-    const report = createReport(cwd, manifest, [createManifestFileResult(cwd, [diagnostic])])
+    const report = createReport(cwd, manifest, [createManifestFileResult(cwd, [diagnostic])], [])
     outputReport(report, format)
     if (exitCode !== 'never') process.exitCode = 1
     return report
@@ -234,7 +241,7 @@ export default async function runLint(specifiedSourcePaths: string[] = [], optio
     entries: [...manifestResult.entries],
     diagnostics: []
   }
-  const report = createReport(cwd, manifest, files)
+  const report = createReport(cwd, manifest, files, inputs.map(input => input.filePath))
   outputReport(report, format)
 
   if (exitCode !== 'never' && (report.summary.errors || report.summary.warnings > parseMaxWarnings(options.maxWarnings))) {

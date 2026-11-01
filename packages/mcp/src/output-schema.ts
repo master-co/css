@@ -1,5 +1,5 @@
 import * as z from 'zod/v4'
-import { lintFile, lintSummary, formatFile, formatSummary, extractedFile, extractSummary, scannedFile, scanner, stylesheets, scanSummary, previewSummary } from './source-schema'
+import { lintFile, lintSummary, lintCoverage, formatFile, formatSummary, extractedFile, extractSummary, scannedFile, scanner, stylesheets, scanSummary, previewSummary } from './source-schema'
 
 import { strings, diagnostic, metadata, inspection, envelopeMetadata, manifestResults, change, completion, classDiff, ruleDiff, range } from './semantic-schema'
 import { projectSnapshot, projectComparison } from './project-comparison-schema'
@@ -19,8 +19,8 @@ const fields: Record<string, z.ZodRawShape> = {
   },
   mastercss_workspace_info: { root: z.string(), roots: strings, packages: object, manifest: metadata },
   mastercss_setup_audit: { root: z.string(), status: z.string(), packageJSON: object, packages: object, integrations: z.array(object), manifest: metadata, summary: object },
-  mastercss_lint_project: { root: z.string(), manifest: metadata, files: z.array(lintFile), summary: lintSummary },
-  mastercss_lint_content: { root: z.string(), manifest: metadata, files: z.array(lintFile), summary: lintSummary },
+  mastercss_lint_project: { root: z.string(), manifest: metadata, version: z.literal(5), files: z.array(lintFile), coverage: lintCoverage, summary: lintSummary },
+  mastercss_lint_content: { root: z.string(), manifest: metadata, version: z.literal(5), files: z.array(lintFile), coverage: lintCoverage, summary: lintSummary },
   mastercss_preview_fixes: { manifest: metadata, mode: z.enum(['lint-fixes', 'generated-css']), preview },
   mastercss_preview_directive_format: { root: z.string(), manifest: metadata, mode: z.enum(['content', 'files']), files: z.array(formatFile), summary: formatSummary },
   mastercss_apply_preview: { applied: z.literal(true), changes: z.array(z.object({ filePath: z.string(), afterHash: z.string() })) },
