@@ -28,6 +28,8 @@ export async function fixture(task, repository, solved = false) {
   let css = base, html = card, js = script, link = './output.css'
   const extras = {}
   let detail = 'Preserve the existing controls, labels, save interaction and native disabled button. Use app.css, index.html and app.js. The setTheme("light"|"dark") API already exists.'
+  if (task === 'settings-card') detail += ' At 390px and 1280px, keep the heading at least 16px inside the top and left card edges; inner-panel spacing is allowed.'
+  if (task === 'density-edit') detail += ' Reduce the heading inset from 24px to between 8px and 23px, and reduce the card row gap below 12px.'
   if (task === 'settings-card' && !solved) html = card.replace(/class="[^"]*"/g, '')
   if (task === 'density-edit' && solved) html = card.replace('p-card', 'p-md').replace('grid gap-sm', 'grid gap-xs')
   if (task === 'dark-theme') {

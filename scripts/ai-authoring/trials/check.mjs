@@ -41,8 +41,11 @@ export async function check(root, task, browser, repository, answer = '', baseli
       add('styling', `overflow-${width}`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
       if (cardTasks.includes(task)) {
         add('functional', `content-${width}`, (await page.locator('h1').textContent())?.trim() === 'Account settings')
-        const padding = parseFloat(await style('#card', 'padding-top'))
-        add('styling', `padding-${width}`, task === 'density-edit' ? padding >= 8 && padding < 24 : padding >= 16, padding)
+        const inset = await page.locator('#card').evaluate(el => {
+          const card = el.getBoundingClientRect(), heading = el.querySelector('h1').getBoundingClientRect()
+          return Math.min(heading.top-card.top,heading.left-card.left)
+        })
+        add('styling', `content-inset-${width}`, task === 'density-edit' ? inset >= 8 && inset < 24 : inset >= 16, inset)
       }
       await page.screenshot({ path: join(root, `review-${width}.png`) })
     }

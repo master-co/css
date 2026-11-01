@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, writeFile, symlink } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -30,6 +30,14 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
       records.push({task:task.id,solved,passed,failed:result.checks.filter(c=>!c.pass)})
       console.log(JSON.stringify(records.at(-1)))
     }
+    // A valid card may put spacing on an inner panel instead of its outer box.
+    const nested=join(root,'settings-card','nested-panel')
+    await prepare(nested,'settings-card',true)
+    const nestedHTML=(await readFile(join(nested,'index.html'),'utf8')).replace('class="p-card r-lg','class="r-lg').replace('<h1','<div class="p-card"><h1').replace('</article>','</div></article>')
+    await writeFile(join(nested,'index.html'),nestedHTML)
+    const nestedResult=await check(nested,'settings-card',browser,repository)
+    records.push({task:'settings-card-nested-panel',solved:true,passed:nestedResult.functional&&nestedResult.styling&&nestedResult.accessibility&&nestedResult.browser==='passed',failed:nestedResult.checks.filter(c=>!c.pass)})
+    console.log(JSON.stringify(records.at(-1)))
     await writeFile(join(root,'controls.json'),JSON.stringify(records,null,2))
     assert.ok(records.every(r=>r.passed===r.solved),'Every positive control must pass and every starter must fail')
   } finally {await browser.close();console.log(root)}

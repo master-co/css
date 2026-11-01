@@ -36,8 +36,10 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 24 controls: every untouched starter must fail and every
-known solution must pass. Solutions and checker sources are not supplied to the
+The first command checks 25 controls: every untouched starter must fail and every
+known solution must pass, including a card with spacing on an inner panel.
+Content inset is measured geometrically; outer-box padding is not required.
+Solutions and checker sources are not supplied to the
 model. The second command is a separate calibration run; never merge it into the
 formal corpus. The last command runs 12 tasks × five arms × two models × two
 repetitions, with 120 seconds per attempt and up to two repair requests. Repair
