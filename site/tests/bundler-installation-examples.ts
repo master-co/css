@@ -39,12 +39,12 @@ export function bundlerInstallationFixture(route: typeof bundlerInstallationRout
     assert.ok(fence, `${route}: missing ${config}`)
     write(config, unindent(fence.text).replace("mode: 'static'", `mode: '${staticMode ? 'static' : 'runtime'}'`))
     // The guides show the integration and markup, not a complete host scaffold.
-    const markup = fences.map(fence => fence.text.match(/<h1\b[\s\S]*?<\/h1>/)?.[0]).find(Boolean)
-    assert.ok(markup, `${route}: missing authored heading`)
+    const markup = fences.map(fence => fence.text.match(/<p\b[\s\S]*?<\/p>/)?.[0]).find(Boolean)
+    assert.ok(markup, `${route}: missing authored verification paragraph`)
     write('index.html', `<!doctype html><html><head></head><body>${markup.replaceAll('className=', 'class=')}</body></html>`)
     const classes = markup.match(/class(?:Name)?="([^"]+)"/)?.[1]
     assert.ok(classes, `${route}: missing authored classes`)
-    write('src/index.js', `import "./index.css";document.querySelector('h1').className = ${JSON.stringify(classes)};`)
+    write('src/index.js', `import "./index.css";document.querySelector('#master-check').className = ${JSON.stringify(classes)};`)
     assert.match(source, new RegExp(`--framework webpack\\b[\\s\\S]*\\b${framework}\\b`))
     if (!staticMode) assert.match(installationDisclosure('/webpack', 'Generate new classes in the browser'), /--mode runtime/)
     for (const name of [...packages, '@master/css', '@master/css-webpack', '@master/css-runtime']) {
@@ -58,9 +58,8 @@ const app = await createRsbuild({ rsbuildConfig: { ...config, source: { entry: {
 await app.build();
 `)
     else write('.fixture-build.mjs', `import host from '${framework === 'webpack' ? 'webpack' : '@rspack/core'}';
-${framework === 'webpack' ? "import HtmlPlugin from 'html-webpack-plugin';" : 'const HtmlPlugin = host.HtmlRspackPlugin;'}
 import config from './${config}';
-const compiler = host({ ...config, mode: 'production', entry: './src/index.js', ${framework === 'webpack' ? 'resolve: { tsconfig: false }, experiments: { css: true },' : ''} plugins: ${framework === 'webpack' ? 'config.plugins' : "[new HtmlPlugin({ template: './index.html' }), ...config.plugins]"} });
+const compiler = host({ ...config, mode: 'production', entry: './src/index.js', ${framework === 'webpack' ? 'resolve: { tsconfig: false }, experiments: { css: true },' : ''} plugins: config.plugins });
 try { await new Promise((resolve, reject) => compiler.run((error, stats) => error || stats.hasErrors() ? reject(error || new Error(stats.toString({ all: false, errors: true }))) : resolve())); }
 finally { await new Promise((resolve, reject) => compiler.close(error => error ? reject(error) : resolve())); }
 `)
@@ -73,7 +72,7 @@ finally { await new Promise((resolve, reject) => compiler.close(error => error ?
     assert.match(html, /Hello World/)
     assert.match(html, /<link[^>]+\.css/)
     if (staticMode) {
-      assert.match(css, /font-style:\s?italic/)
+      assert.match(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
       assert.ok(!assets.some(file => /\.wasm$|master-css-runtime|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     } else {
       assert.match(html, /<script[^>]+master-css-runtime/)

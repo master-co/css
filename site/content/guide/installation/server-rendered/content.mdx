@@ -1,8 +1,8 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
-When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets.
+When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets. Choose your [host section](#hosts) before applying the shared steps: its template paths and public directory determine what gets scanned and where the stylesheet is served. Laravel projects can go directly to their [existing Vite pipeline](#laravel).
 
 ## Installation
 
@@ -82,20 +82,32 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
   </Step>
   <Step>
     ### Load the stylesheet
-    Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the heading to a rendered template.
+    Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the paragraph to a rendered template.
   </Step>
-  <HelloWorld>
+  <InstallationPreview>
 
 ```html
-<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
   Hello World
-</h1>
+</p>
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
-Deploy `master.css` and every CSS file it imports together, preserving their names and relative paths. The heading should stay large, heavy and italic with JavaScript disabled. If the stylesheet loads but the classes have no effect, check the `@source` paths, which are relative to `src/master.css`, and rebuild. Static rendering needs complete class strings in those files: map states or database and editor values to complete class names, or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist).
+## Check the asset connection
+
+Run the host's server and load a page that actually renders the example template. The paragraph should have a raised surface, rounded corners and `1rem` padding. With both the host and `npm run watch:assets` running, change `p-md` to `p-lg`: padding should grow to `1.5rem` after the CSS rebuild and a page reload. Restore the class after checking it.
+
+If the page is unstyled, trace the three connections in order:
+
+- **Template to scanner:** append the host's `@source` lines to `src/master.css`. Paths are relative to that stylesheet. Keep the `@import` when adding them.
+- **Build to public directory:** confirm `npm run build:assets` writes `master.css` into the configured `outDir` before the host serves it.
+- **Public URL to page:** check that the layout's stylesheet request returns CSS, not a 404 or an HTML fallback. Then inspect the paragraph's matching rules.
+
+Static generation needs complete class strings. Map database or editor values to complete class names, or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist). String concatenation such as `bg-${color}` does not tell the scanner which classes to generate.
+
+Deploy `master.css` and every CSS file it imports together, preserving their names and relative paths. Check the deployed page with JavaScript disabled when the host supplies its HTML; standalone Blazor WebAssembly still needs JavaScript to render the page. Fixed asset names also need the host's cache-versioning strategy, as shown below for Rails, WordPress and ASP.NET Core.
 
 ## Load the built assets \{#hosts\}
 
@@ -134,7 +146,7 @@ Scan ERB views and reference the stylesheet from the application layout:
 <%= stylesheet_link_tag "/assets/master.css", "data-turbo-track": "reload" %>
 ```
 
-Render the heading from a view that a route and controller reach, then start `bin/rails server`. These URLs serve the files under `public/assets` directly. For a new release, version the URLs, such as `/assets/master.css?v=2`: Turbo's [asset tracking](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) compares the tags, so overwriting files at the same URLs does not trigger a reload.
+Render the paragraph from a view that a route and controller reach, then start `bin/rails server`. These URLs serve the files under `public/assets` directly. For a new release, version the URLs, such as `/assets/master.css?v=2`: Turbo's [asset tracking](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) compares the tags, so overwriting files at the same URLs does not trigger a reload.
 
 ### WordPress \{#wordpress\}
 Work in the active theme or child theme directory and set `outDir: 'assets'`. Scan the theme's PHP templates, including overrides such as `woocommerce/**/*.php`, but not plugin internals:
@@ -178,7 +190,7 @@ Add the tag inside the theme layout's `<head>`, preserving `content_for_header`,
 {{ 'master.css' | asset_url | stylesheet_tag }}
 ```
 
-Put the heading in a section that the current template renders, and run the Vite watcher beside `shopify theme dev`; a preview update does not rebuild the CSS. The preset includes global base styles, so check existing storefront components and use [Cascade layers](/guide/cascade-layers) to decide which theme styles to keep. A theme without an asset build can use the [CLI](/guide/installation#cli) with the same sources.
+Put the paragraph in a section that the current template renders, and run the Vite watcher beside `shopify theme dev`; a preview update does not rebuild the CSS. The preset includes global base styles, so check existing storefront components and use [Cascade layers](/guide/cascade-layers) to decide which theme styles to keep. A theme without an asset build can use the [CLI](/guide/installation#cli) with the same sources.
 
 ### ASP.NET Core \{#aspnet-core\}
 Set `outDir: 'wwwroot/assets'`, scan Razor Pages and MVC views, and reference the stylesheet from the shared layout:
@@ -289,6 +301,8 @@ npm install @master/css-runtime@rc
 ```
 
 ```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
 import { MasterCSSRuntime } from '@master/css-runtime'
 import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
@@ -321,6 +335,8 @@ wp_enqueue_script_module(
 Blazor Web Apps patch the DOM during [enhanced navigation](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/navigation?view=aspnetcore-10.0), which can remove the runtime's stylesheet. Restart the runtime after each `enhancedload`, serializing streamed updates. Standalone WebAssembly and older Blazor Server hosts use the entry above.
 
 ```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
 import { MasterCSSRuntime } from '@master/css-runtime'
 import program from 'virtual:master-css-program'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
@@ -347,10 +363,10 @@ Blazor.addEventListener('enhancedload', () => {
 })
 ```
 
-Deploy every generated stylesheet, import and program asset together. Runtime styling starts after JavaScript loads; keep the document visible when scripts are unavailable, as described in [Rendering modes](/guide/rendering-modes#prevent-premature-rendering). After startup, run this in the browser console. The heading should gain an underline without rebuilding:
+Deploy every generated stylesheet, import and program asset together. Runtime styling starts after JavaScript loads; keep the document visible when scripts are unavailable, as described in [Rendering modes](/guide/rendering-modes#prevent-premature-rendering). After startup, run this in the browser console. The paragraph should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
 The runtime observes the page document; content inside a separate iframe or shadow root needs its own CSS delivery.
@@ -368,6 +384,8 @@ npm install @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
 Keep `masterCSS({ mode: 'runtime' })` and let the entry load the program lazily, so a fully covered page defers the engine until a new class needs it:
 
 ```ts name=src/master.ts
+/// <reference types="@master/css/client" />
+
 import { MasterCSSRuntime } from '@master/css-runtime'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 import './master.css'
@@ -419,6 +437,6 @@ server.on('close', () => renderer.dispose())
 
 The first response carries `style#master-css` and a small hydration record; the server manifest stays on the server. This example renders with the default preset manifest, matching the preset in `src/master.css`. If you add project tokens or utilities, compile the project manifest for the server too, or the initial CSS will not match the browser's definitions.
 
-With JavaScript disabled, the heading should already be styled. Re-enable JavaScript, reload, and add `underline` from the console; it should apply without a new server response.
+With JavaScript disabled, the paragraph should already be styled. Re-enable JavaScript, reload, and add `underline` from the console; it should apply without a new server response.
 
 </DocumentDisclosure>

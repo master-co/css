@@ -129,7 +129,7 @@ export function verifyInstallationExamples() {
       const assets = readdirSync(join(root, 'dist/assets'))
       const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, 'dist/assets', name), 'utf8')).join('\n')
       if (mode !== 'runtime') {
-        assert.match(css, /font-style:italic/)
+        assert.match(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
         assert.ok(!assets.some(name => /\.wasm$|master-css-manifest|master-css-program/.test(name)))
       } else {
         assert.ok(assets.some(name => /master-css-program/.test(name)), assets.join(', '))

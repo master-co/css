@@ -1,8 +1,8 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
-Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It processes the CSS entry and emits the generated stylesheet with the HTML produced by the bundler's HTML plugin.
+Build Master CSS into a Webpack, Rspack or Rsbuild application. All three use `@master/css-webpack`: the CSS entry supplies definitions, the plugin generates utility rules, and the HTML plugin links the output to the page. Start from a working application with an entry and an HTML template.
 
 ## Installation
 
@@ -21,7 +21,7 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
   <Step $row>
     <StepL>
       ### Import the CSS entry
-      Import `src/index.css` from the application's JavaScript or TypeScript entry, keeping its existing mount code.
+      The installer creates `src/index.css` with `@import '@master/css';`. Import it from the application's JavaScript or TypeScript entry, keeping the existing mount code. Use a global entry so every page that needs these utilities loads it.
     </StepL>
     <StepR>
       ```js name=src/index.js
@@ -31,9 +31,9 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
   </Step>
   <Step>
     ### Start using Master CSS
-    Start the dev server and place the heading in the HTML template processed by the HTML plugin, or in a framework component.
+    Start the dev server and place the paragraph in the HTML template processed by the HTML plugin, or in a framework component.
   </Step>
-  <HelloWorld>
+  <InstallationPreview>
 
 ```html name=index.html
 <!doctype html>
@@ -44,14 +44,14 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
     <title>Master CSS with Webpack</title>
   </head>
   <body>
-    <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   </body>
 </html>
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
 ## Bundler configuration \{#configuration\}
@@ -81,9 +81,11 @@ export default {
 Rspack uses the same Webpack-compatible plugin with its built-in CSS support and `HtmlRspackPlugin`:
 
 ```js name=rspack.config.mjs
+import { HtmlRspackPlugin } from '@rspack/core'
 import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
+  entry: './src/index.js',
   module: {
     rules: [
       {
@@ -93,6 +95,7 @@ export default {
     ]
   },
   plugins: [
+    new HtmlRspackPlugin({ template: './index.html' }),
     new MasterCSSPlugin({ mode: 'static' })
   ]
 }
@@ -116,22 +119,32 @@ export default defineConfig({
 })
 ```
 
-In a React starter, put the heading in `src/App.tsx`:
+In a React starter, put the paragraph in `src/App.tsx`:
 
 ```tsx name=src/App.tsx
 export default function App() {
   return (
-    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   )
 }
 ```
 
 ## Check the setup \{#check-the-setup\}
-Build and serve the production output, for example with `npx webpack --mode production`. The heading should be large, heavy and italic, and the emitted page should load generated CSS without a Master CSS runtime. A client-rendered framework still needs JavaScript to create the heading.
+First change `p-md` to `p-lg` in the source while the dev server is running. The paragraph's padding should grow from `1rem` to `1.5rem`; then restore it.
 
-The HTML plugin emits the stylesheet links and any runtime script. A file served directly from a development server's static directory does not receive them.
+Build with the command for your bundler:
+
+| Bundler | Production build |
+| --- | --- |
+| Webpack | `npx webpack --mode production` |
+| Rspack | `npx rspack build --mode production` |
+| Rsbuild | `npx rsbuild build` |
+
+Serve the emitted directory with an HTTP server. The paragraph should have `1rem` padding, a raised surface and rounded corners. In static mode, its utilities come from linked CSS without a Master CSS runtime. HTML-template content stays styled with JavaScript disabled; a client-rendered framework still needs JavaScript to create its content.
+
+The HTML plugin emits the stylesheet links and any runtime script. A file served directly from a development server's static directory does not receive them. If the CSS request is missing, check HTML generation first. If it loads but has no utilities, check the CSS entry, native CSS handling and plugin registration.
 
 ---
 
@@ -151,10 +164,10 @@ Run the installer with `--mode runtime` and your `--framework` value. It sets th
 npm create @master/css@rc -- --framework webpack --mode runtime --yes
 ```
 
-Build and serve the production output. The emitted HTML should load the Master CSS runtime script. After startup, run this in the browser console; the heading should gain an underline without rebuilding:
+Build and serve the production output. The emitted HTML should load the Master CSS runtime script. After startup, run this in the browser console; the paragraph should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
 </DocumentDisclosure>

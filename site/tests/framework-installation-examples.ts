@@ -62,6 +62,8 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
       const decorated = readFileSync(join(root, component), 'utf8')
       assert.ok(!decorated.includes('withMasterCSSRuntime'), 'Static Lit setup requires no runtime decorator')
       write(component, authored)
+      // The documented relative base keeps inline CSS asset URLs resolvable in the browser.
+      write('vite.config.ts', deliveryFences(source).find(fence => fence.name === 'vite.config.ts')!.text)
     }
     for (const name of [...packages, 'vite', '@master/css', '@master/css-vite', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
@@ -75,9 +77,9 @@ export function frameworkInstallationFixture(route: typeof frameworkInstallation
     if (staticMode) {
       if (framework === 'lit') {
         const scripts = assets.filter(file => file.endsWith('.js')).map(file => readFileSync(join(root, 'dist/assets', file), 'utf8')).join('\n')
-        assert.match(scripts, /background-color:var\(--color-blue\)/)
-        assert.match(scripts, /padding-inline:var\(--spacing-md\)/)
-      } else assert.match(css, /font-style:italic/)
+        assert.match(scripts, /background-color:var\(--color-surface-raised\)/)
+        assert.match(scripts, /padding:var\(--spacing-md\)/)
+      } else assert.match(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
       assert.ok(!assets.some(file => /\.wasm$|master-css-manifest|master-css-program/.test(file)), 'Static builds must not ship runtime assets')
     } else {
       assert.ok(assets.some(file => /master-css-program/.test(file)), 'Runtime program is emitted')

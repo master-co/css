@@ -1,8 +1,10 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
-Generate a stylesheet for an Astro site from complete class names in its sources. The installer configures the integration and creates the CSS entry; the page below imports that entry.
+Connect Master CSS to an Astro site through a shared CSS entry. The integration supports static, runtime and progressive delivery; Astro still owns page rendering.
+
+(i) **Static production limitation:** the current integration can emit base styles without the scanned utility rules. Check the production result below. For a static stylesheet that does not depend on this integration path, use the [CLI build](#cli-build).
 
 ## Installation
 
@@ -19,10 +21,20 @@ Generate a stylesheet for an Astro site from complete class names in its sources
     </StepR>
   </Step>
   <Step>
-    ### Start using Master CSS
-    Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
+    ### Connect the stylesheet
+    The installer creates a standalone CSS entry:
+
+    ```css name=src/styles/global.css
+    @import '@master/css';
+    ```
+
+    [Import it from page or layout frontmatter](https://docs.astro.build/en/guides/imports/#import-statements). A shared layout delivers it to every page using that layout. Keep the Master CSS integration beside the project's existing integrations in `astro.config.mjs`.
   </Step>
-  <HelloWorld>
+  <Step>
+    ### Start using Master CSS
+    Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the paragraph. Use the same import in a shared layout when several pages need it.
+  </Step>
+  <InstallationPreview>
 
 ```astro name=src/pages/index.astro
 ---
@@ -35,26 +47,57 @@ import '../styles/global.css'
     <title>Hello Master CSS</title>
   </head>
   <body>
-    <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   </body>
 </html>
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
-Keep the entry in a standalone CSS file. [Importing CSS from Astro frontmatter](https://docs.astro.build/en/guides/imports/#import-statements) attaches the processed stylesheet to the page. The installer creates:
+## Check the setup
+Run `npm run dev`, change `p-md` to `p-lg` and check that padding grows from `1rem` to `1.5rem`. Restore it and test the production page:
 
-```css name=src/styles/global.css
+```bash
+npm run build
+npm run preview
+```
+
+Disable JavaScript and reload. The paragraph should retain its padding, rounded corners and raised surface. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration. For custom definitions and scoped styles, see [Global styles](/guide/global-styles).
+
+If a production build links the base styles but omits the utility rules, check the output CSS for the `.p-md` rule and inspect its computed padding. Use the independent CLI build below, or choose progressive rendering when a runtime handoff fits the application.
+
+## Build static CSS with the CLI \{#cli-build\}
+
+Use this as an alternative to the Astro integration. Remove its registration from `astro.config.mjs`, preserving other integrations, and remove the `global.css` import from the page or layout. Install the CLI:
+
+```bash
+npm install -D @master/css-cli@rc
+```
+
+Create the source entry at the project root. Put any project definitions here too:
+
+```css name=master.css
 @import '@master/css';
 ```
 
-## Check the setup
-Run the project's build and preview scripts, then disable JavaScript and reload. Check that the heading retains its large, heavy italic styling. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration. For custom definitions and scoped styles, see [Global styles](/guide/global-styles).
+Link the generated stylesheet from the page or shared layout's `<head>`:
 
-If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `italic`. Use the [CLI static workflow](/guide/installation#cli) when you need to generate and verify the stylesheet independently, or choose progressive rendering when a runtime handoff fits the application.
+```html
+<link rel="stylesheet" href="/master.css" />
+```
+
+Generate the CSS before building Astro:
+
+```bash
+npx @master/css-cli generate "src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}" --output public/master.css
+npm run build
+npm run preview
+```
+
+During development, add `--watch` to the generation command and run `npm run dev` in a second terminal. Astro copies `public/` into the build; deploy the generated stylesheet and its companion imports together. For a site with a configured base path, prefix the stylesheet URL with that base. Verify the paragraph with JavaScript disabled.
 
 ---
 
@@ -73,13 +116,13 @@ Static mode is the default. The integration injects the runtime page script for 
 npm create @master/css@rc -- --framework astro --mode runtime --yes
 ```
 
-Run the build and preview scripts; the heading should be styled after the runtime starts. Runtime mode depends on JavaScript and its compiled program loading successfully, so check the console and network requests if it stays unstyled. To test a class introduced after the page was generated, run:
+Run the build and preview scripts; the paragraph should be styled after the runtime starts. Runtime mode depends on JavaScript and its compiled program loading successfully, so check the console and network requests if it stays unstyled. To test a class introduced after the page was generated, run:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
-The heading should gain an underline without rebuilding.
+The paragraph should gain an underline without rebuilding.
 
 </DocumentDisclosure>
 
@@ -89,6 +132,6 @@ The heading should gain an underline without rebuilding.
 npm create @master/css@rc -- --framework astro --mode progressive --yes
 ```
 
-Astro middleware renders the CSS into prerendered pages and server HTML responses, then the runtime handles later class changes. Disable JavaScript and reload: the heading should still be styled. Re-enable JavaScript, reload, and add `underline` from the console as above.
+Astro middleware renders the CSS into prerendered pages and server HTML responses, then the runtime handles later class changes. Disable JavaScript and reload: the paragraph should still be styled. Re-enable JavaScript, reload, and add `underline` from the console as above.
 
 </DocumentDisclosure>

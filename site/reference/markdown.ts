@@ -185,7 +185,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         return groups.map(group => `**${group.title}**\n\n${group.links.map(link => `- [${link.label}](${link.href})`).join('\n')}`).join('\n\n')
       }
       // The setup result is visual only; the source it wraps stays in the export.
-      if (name === 'HelloWorld') return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
+      if (name === 'HelloWorld' || name === 'InstallationPreview') return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
       if (/^(Demo|DemoPanel|Image|InteractingIndicator|Dropped|Icon\w+)/.test(name)) return ''
       if (name === 'DocumentChoices') {
         const entries = await expression(attrs.entries.value) as { title: string, href: string, description: string }[]

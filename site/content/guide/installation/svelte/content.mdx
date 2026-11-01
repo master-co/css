@@ -1,5 +1,5 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 Add Master CSS to a SvelteKit application. The add-on registers the Vite integration and imports its CSS entry from the root layout, so every route receives the shared styles.
@@ -19,22 +19,35 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
     </StepR>
   </Step>
   <Step>
-    ### Start using Master CSS
-    Start the dev server and replace `src/routes/+page.svelte` with this heading. Keep the stylesheet import added to `src/routes/+layout.svelte`.
+    ### Check the shared entry
+    The add-on updates the project's CSS entry with `@import '@master/css';` and imports that entry from `src/routes/+layout.svelte`. Keep the layout's existing script, child rendering and other imports. Do not put the global entry in a page that other routes never load.
+
+    In `vite.config.ts`, keep both `masterCSS()` and `sveltekit(...)`. Static mode does not need a Master CSS client or server hook.
   </Step>
-  <HelloWorld>
+  <Step>
+    ### Start using Master CSS
+    Start the dev server and replace `src/routes/+page.svelte` with this paragraph. Keep the stylesheet import added to `src/routes/+layout.svelte`.
+  </Step>
+  <InstallationPreview>
 
 ```svelte name=src/routes/%2Bpage.svelte
-<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
   Hello World
-</h1>
+</p>
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
 ## Check the static setup
-Run the project's build and preview scripts. With server rendering enabled, the heading should keep its large, heavy italic styling when JavaScript is disabled. If styles are missing, check the Master CSS plugin in `vite.config.ts` and the CSS import in the root layout.
+Run `npm run dev` and change `p-md` to `p-lg` in the page. Its padding should grow from `1rem` to `1.5rem`. Restore it, then check the production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+With server rendering enabled, the paragraph should keep its padding, rounded corners and raised surface when JavaScript is disabled. Visit another route to confirm that the root layout loads the entry there too. If styles are missing, check the Master CSS plugin in `vite.config.ts` and the CSS import in the root layout.
 
 Component `<style>` blocks can use project tokens in native declarations. Keep the global CSS entry loaded for resets, native component rules and generated utilities. Use `@reference` for definition files outside the project context.
 
@@ -68,10 +81,10 @@ import 'virtual:master-css-runtime'
 
 SvelteKit renders its own HTML, so the Vite mode option alone does not insert a runtime script. The client import starts the runtime with the project program and handles Vite HMR.
 
-After startup, run this in the browser console. The heading should gain an underline without rebuilding:
+After startup, run this in the browser console. The paragraph should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
 </DocumentDisclosure>
@@ -84,7 +97,17 @@ For progressive rendering, change the Vite option above to `mode: 'progressive'`
 export { handle } from '@master/css-svelte/hooks.server'
 ```
 
-If the application already has a server handle, preserve it and place the Master CSS handle first in SvelteKit's [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence). Page transforms run in reverse order, so Master CSS then sees the HTML produced by the later handlers.
+If the application already has a server handle, preserve it and place the Master CSS handle first in SvelteKit's [`sequence()`](https://svelte.dev/docs/kit/@sveltejs-kit-hooks#sequence). Page transforms run in reverse order, so Master CSS then sees the HTML produced by the later handlers. For example, move your existing handle into `src/hooks.application.ts` without changing its behavior, then compose the two:
+
+```ts name=src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks'
+import { handle as masterCSS } from '@master/css-svelte/hooks.server'
+import { handle as application } from './hooks.application'
+
+export const handle = sequence(masterCSS, application)
+```
+
+Keep unrelated exports such as `handleError` in `hooks.server.ts`.
 
 A page covered by its pre-rendered classes can defer loading the runtime engine. Check initial styling with JavaScript disabled, then re-enable it and test a new class.
 

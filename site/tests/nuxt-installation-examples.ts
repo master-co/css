@@ -52,9 +52,9 @@ export function nuxtInstallationFixture(mode: NuxtInstallationMode) {
     const assets = readdirSync(join(root, '.output/public'), { recursive: true }).filter((file): file is string => typeof file === 'string')
     const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, '.output/public', name), 'utf8')).join('\n')
     if (mode === 'static') {
-      assert.match(css, /font-style:\s?italic/)
+      assert.match(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
       assert.ok(!assets.some(name => name.endsWith('.wasm')))
-    } else assert.doesNotMatch(css, /font-style:\s?italic/)
+    } else assert.doesNotMatch(css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
     return { root, bin: join(root, '.output/server/index.mjs'), dispose }
   } catch (error) { dispose(); throw error }
 }

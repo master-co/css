@@ -1,8 +1,8 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
-Add Master CSS to an application built with Vite, including React, Vue, React Router framework mode and TanStack Start. The installer registers `@master/css-vite` beside the existing framework plugins and adds `@import '@master/css';` to the CSS entry the application already loads.
+Add Master CSS to an application built with Vite, including React, Vue, React Router framework mode and TanStack Start. The integration generates CSS from complete class names in source. Keep the framework's existing Vite plugin and mount code; Master CSS joins that build through a shared stylesheet.
 
 ## Installation
 
@@ -19,26 +19,36 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
     </StepR>
   </Step>
   <Step>
-    ### Start using Master CSS
-    Start the dev server and replace the contents of `src/main.js` with the example below. Keep the CSS import so Vite loads the stylesheet updated by the installer.
+    ### Check the CSS entry
+    The installer adds `masterCSS()` to the Vite plugins and updates the stylesheet listed under [Framework entries](#frameworks). In a plain JavaScript starter, that is:
+
+    ```css name=src/style.css
+    @import '@master/css';
+    ```
+
+    Keep this entry imported by the application. If the project uses a different filename, check the installer's output and keep the import pointed at that file. The installer does not create a framework application or replace its mount code.
   </Step>
-  <HelloWorld>
+  <Step>
+    ### Start using Master CSS
+    For a plain JavaScript starter with an `#app` element, use this entry and run `npm run dev`. For a framework application, use its [component example](#frameworks) below instead.
+  </Step>
+  <InstallationPreview>
 
 ```js name=src/main.js
 import './style.css'
 
 document.querySelector('#app').innerHTML = `
-  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+  <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
     Hello World
-  </h1>
+  </p>
 `
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
 ## Framework entries \{#frameworks\}
-Each `--framework` value keeps the framework's Vite plugin and updates the CSS entry its starter already imports. Without the flag, the installer detects the framework from the project.
+Choose the installer value for your application. These are the conventional starter paths; React and Vue setups can reuse another supported existing CSS entry. Without the flag, the installer detects the framework from the project.
 
 | Framework | `--framework` | CSS entry |
 | --- | --- | --- |
@@ -54,9 +64,9 @@ In a [React project built with Vite](https://vite.dev/guide/#scaffolding-your-fi
 ```tsx name=src/App.tsx
 export default function App() {
   return (
-    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   )
 }
 ```
@@ -66,9 +76,9 @@ In a [Vue project](https://vuejs.org/guide/quick-start), replace `src/App.vue`. 
 
 ```vue name=src/App.vue
 <template>
-  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+  <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
     Hello World
-  </h1>
+  </p>
 </template>
 ```
 
@@ -78,9 +88,9 @@ In a [React Router framework mode](https://reactrouter.com/start/framework/insta
 ```tsx name=app/routes/home.tsx
 export default function Home() {
   return (
-    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   )
 }
 ```
@@ -97,17 +107,25 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return (
-    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   )
 }
 ```
 
 ## Check the setup \{#check-the-setup\}
-Run the project's build and preview or start scripts. The heading should have a large, heavy italic face and generous margin, and the output should contain no browser CSS-generation runtime. React Router and TanStack Start render on the server, so their heading also stays styled with JavaScript disabled.
+Change `p-md` to `p-lg` in the source while the dev server is running. Padding should grow from `1rem` to `1.5rem`. Restore `p-md`, then build the application:
 
-If styles are missing, confirm the CSS entry is imported and the Vite configuration includes `masterCSS()` beside the framework plugin. If starter styles obscure the result, remove their appearance rules while keeping `@import '@master/css';`.
+```bash
+npm run build
+```
+
+Serve the production output with the project's preview or start command. Plain Vite, React and Vue starters normally use `npm run preview`; React Router and TanStack Start use their configured server or deployment adapter. Check that the paragraph still has `1rem` padding and that no Master CSS browser runtime is shipped in static mode.
+
+Client-rendered applications need JavaScript to create the paragraph. For React Router or TanStack Start routes with server rendering enabled, disable JavaScript and reload to check that the server's HTML receives the same stylesheet.
+
+If the file loads but one class is missing, keep its full name in source; see [Scanning and pruning](/guide/scanning-and-pruning). If no utilities work, confirm the CSS entry is imported and the Vite configuration includes `masterCSS()` beside the framework plugin. If starter styles obscure the result, remove their appearance rules while keeping `@import '@master/css';`.
 
 ---
 
@@ -153,10 +171,10 @@ The guard keeps the virtual runtime out of server execution; load it once per do
 /// <reference types="@master/css/client" />
 ```
 
-Build and preview the app, then run this in the browser console. The heading should gain an underline without rebuilding:
+Build and preview the app, then run this in the browser console. The paragraph should gain an underline without rebuilding:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
 Server-rendered HTML does not include runtime-generated CSS before JavaScript runs. If the class has no effect, check the console and the emitted program request.

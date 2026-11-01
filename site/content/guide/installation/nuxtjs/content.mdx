@@ -1,5 +1,5 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css` option. The module handles CSS delivery without changing Nuxt’s HTML rendering mode.
@@ -19,38 +19,50 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
     </StepR>
   </Step>
   <Step>
+    ### Load the project stylesheet
+
+    Keep the module registration and explicitly load the CSS entry created by the installer. `~~/` points to the project root, including in Nuxt projects whose application directory is `app/`.
+
+    ```ts name=nuxt.config.ts
+    export default defineNuxtConfig({
+      modules: [['@master/css-nuxt', { mode: 'static' }]],
+      css: ['~~/assets/css/master.css']
+    })
+    ```
+
+    ```css name=assets/css/master.css
+    @import '@master/css';
+    ```
+  </Step>
+  <Step>
     ### Start using Master CSS
     Start the dev server and style your first component. These examples use Nuxt 4's `app/` directory.
   </Step>
-  <HelloWorld>
+  <InstallationPreview>
 
 ```vue name=app/app.vue
 <template>
-  <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+  <p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
     Hello World
-  </h1>
+  </p>
 </template>
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
-## Load the project stylesheet
+## Check the setup
 
-Keep the module registration and explicitly load the CSS entry created by the installer. `~~/` points to the project root, including in Nuxt projects whose application directory is `app/`.
+Change `p-md` to `p-lg` in `app/app.vue` with the dev server running: padding should grow from `1rem` to `1.5rem`. Restore it, then build and serve the app. For Nuxt's default Node server preset:
 
-```ts name=nuxt.config.ts
-export default defineNuxtConfig({
-  modules: [['@master/css-nuxt', { mode: 'static' }]],
-  css: ['~~/assets/css/master.css']
-})
+```bash
+npm run build
+node .output/server/index.mjs
 ```
 
-```css name=assets/css/master.css
-@import '@master/css';
-```
+For another Nitro deployment preset, use its serving procedure. With Nuxt SSR enabled, disable JavaScript and reload: the paragraph should retain its padding, rounded corners and raised surface. Static describes the CSS generation; it does not turn client-only Nuxt pages into server-rendered pages.
 
-Run `npm run build`, then serve the generated Nitro output with `node .output/server/index.mjs`. Check that the heading is styled with JavaScript disabled. Framework SSR still supplies the HTML; Master CSS static mode supplies its CSS from source scanning.
+If the page is unstyled, confirm the `css` option loads the root stylesheet, then check that the module is registered once. Inspect the loaded CSS for `.p-md`; a successful build alone does not establish that the entry reached the page.
 
 ---
 
@@ -69,13 +81,13 @@ Static mode is the default. The installer option sets the module's `mode`; keep 
 npm create @master/css@rc -- --framework nuxt --mode runtime --yes
 ```
 
-The installer registers `['@master/css-nuxt', { mode: 'runtime' }]`. Nuxt still renders HTML on the server, while the runtime supplies generated class rules in the browser. After building and serving the Nitro output, run this in the browser console:
+The installer registers `['@master/css-nuxt', { mode: 'runtime' }]`. With SSR enabled, Nuxt still renders HTML on the server, while the runtime supplies generated class rules in the browser. After building and serving the Nitro output, run this in the browser console:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
-The heading should gain an underline without rebuilding. If it does not, inspect the runtime program request and console diagnostics.
+The paragraph should gain an underline without rebuilding. If it does not, inspect the runtime program request and console diagnostics.
 
 </DocumentDisclosure>
 

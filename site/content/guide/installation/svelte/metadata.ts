@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Svelte',
-  description: 'Guide to setting up Master CSS in your Svelte project.',
+  title: 'Set up Master CSS in SvelteKit',
+  description: 'Install the SvelteKit add-on, connect the root stylesheet and choose static, runtime, progressive or pre-render-only CSS delivery.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

@@ -18,10 +18,32 @@ Lit components normally render into a shadow root. Document styles cannot reach 
       ```
     </StepR>
   </Step>
+  <Step>
+    ### Keep a CSS source entry
+    The installer creates `src/index.css` and registers the Vite integration. Keep definitions in this source file:
+
+    ```css name=src/index.css
+    @import '@master/css';
+    ```
+
+    The component below uses Vite's `?inline` import to receive processed CSS text. A normal document-level stylesheet import cannot style the inside of a shadow root.
+
+    For the current inline-CSS delivery, use a relative Vite `base`. A root-relative asset URL can produce `Invalid base URL` when the production component loads. Merge this into the existing Vite configuration, keeping other plugins and registering Master CSS once:
+
+    ```ts name=vite.config.ts
+    import { defineConfig } from 'vite'
+    import masterCSS from '@master/css-vite'
+
+    export default defineConfig({
+      base: './',
+      plugins: [masterCSS()]
+    })
+    ```
+  </Step>
   <Step $row>
     <StepL>
       ### Include styles in the shadow root
-      Import the generated stylesheet as text and include it with Lit’s `unsafeCSS`. The CSS comes from your build input; do not pass untrusted user text to `unsafeCSS`. The installer preserves the standard component’s existing styles when adding this stylesheet.
+      Import the generated stylesheet as text and include it with Lit’s [`unsafeCSS`](https://lit.dev/docs/components/styles/#static-styles). The CSS comes from your build input; do not pass untrusted user text to `unsafeCSS`. The installer preserves the standard component’s existing styles when adding this stylesheet.
     </StepL>
     <StepR>
       ```ts name=src/my-element.ts
@@ -34,7 +56,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
         static styles = [unsafeCSS(masterCSSStyles)]
 
         render() {
-          return html`<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>`
+          return html`<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>`
         }
       }
       ```
@@ -42,21 +64,38 @@ Lit components normally render into a shadow root. Document styles cannot reach 
   </Step>
   <Step>
     ### Start using Master CSS
-    Start the dev server and style elements inside your Lit templates.
+    Keep the component module imported by the application entry, then place its registered element in the page:
+
+    ```ts name=src/main.ts
+    import './my-element'
+    ```
+
+    ```html
+    <my-element></my-element>
+    ```
+
+    The existing `index.html` must load `src/main.ts` as a module. Run `npm run dev`; Lit creates the paragraph inside the element's shadow root.
   </Step>
   <DemoConfiguredExample
-    name="lit-shadow-button"
-    title="A styled button inside a shadow root"
+    name="lit-shadow-check"
+    title="Check styles inside a shadow root"
     source=""
-    html={'<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>'}
-    caption="The preview loads the generated stylesheet inside a real shadow root, alongside the button."
+    html={'<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>'}
+    caption="The preview loads the generated stylesheet inside a real shadow root, alongside the paragraph."
     shadow
     code={false}
   />
 </StepSection>
 
 ## Check the shadow stylesheet
-Build and preview the project, then inspect the button inside `<my-element>` in browser developer tools. It should have a blue background, white text, and padding from the generated CSS. If only document-level elements are styled, check the `?inline` import and `static styles` inside the component.
+Change `p-md` to `p-lg` in the Lit template. Its padding should grow from `1rem` to `1.5rem`; restore it before checking the production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+Inspect the paragraph inside `<my-element>` in browser developer tools. It should have `1rem` padding, a raised surface and rounded corners. If only document-level elements are styled, check the `?inline` import and `static styles` inside the component.
 
 Static mode needs no Master CSS browser runtime. Lit still needs JavaScript to create this client-rendered component.
 
@@ -68,7 +107,7 @@ For class names first introduced in the browser, run the installer with runtime 
 npm create @master/css@rc -- --framework lit --mode runtime --yes
 ```
 
-The installer adds the runtime decorator to the standard `src/my-element.ts` component. Other components need the same setup. Load the CSS text before the runtime stylesheet so the layer order is established before generated rules:
+The installer adds the runtime decorator to the standard `src/my-element.ts` component and sets `masterCSS({ mode: 'runtime' })` in Vite. Keep the relative `base` above. Other components need the same setup. Load the CSS text before the runtime stylesheet so the layer order is established before generated rules:
 
 ```ts name=src/my-element.ts
 /// <reference types="@master/css/client" />
@@ -92,7 +131,7 @@ export class MyElement extends LitElement {
   }
 
   render() {
-    return html`<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>`
+    return html`<p id="master-check" class="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">Hello Lit</p>`
   }
 }
 ```
@@ -101,11 +140,11 @@ This example inserts the base stylesheet as a `<style>` element before the runti
 
 Each decorated component starts a runtime for its own shadow root and disposes it when disconnected. A document-level runtime cannot observe classes inside that root.
 
-After the component appears, run this in the browser console. The button text should gain an underline without rebuilding:
+After the component appears, run this in the browser console. The paragraph should gain an underline without rebuilding:
 
 ```js
 document.querySelector('my-element').shadowRoot
-  .querySelector('button').classList.add('underline')
+  .querySelector('#master-check').classList.add('underline')
 ```
 
 </DocumentDisclosure>

@@ -2,7 +2,7 @@ import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Set up Master CSS in Vite',
-  description: 'Set up Master CSS in Vite, React, Vue, React Router and TanStack Start projects, with optional runtime rendering.',
+  description: 'Connect Master CSS to Vite, React, Vue, React Router or TanStack Start, then verify static CSS and optional browser generation.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

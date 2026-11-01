@@ -1,5 +1,5 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
+import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 Add Master CSS to a Next.js App Router project with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
@@ -10,9 +10,9 @@ Add Master CSS to a Next.js App Router project with a top-level `app` directory.
   <Step $row>
     <StepL>
       ### Add Master CSS
-      In an existing [Next.js project](https://nextjs.org/docs/app/getting-started/installation), run the installer from the project root. Static is the default and writes the generated stylesheet before Next.js loads the config.
+      In an existing [Next.js project](https://nextjs.org/docs/app/getting-started/installation), run the installer from the project root. Static is the default: the adapter prepares the generated stylesheet for the Next.js build.
 
-      (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
+      (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. The adapter processes that entry and supplies generated styles from source scanning.
     </StepL>
     <StepR>
       ```bash
@@ -21,22 +21,50 @@ Add Master CSS to a Next.js App Router project with a top-level `app` directory.
     </StepR>
   </Step>
   <Step>
+    ### Verify the loaded configuration
+
+    Keep your global stylesheet imported by the [root layout](https://nextjs.org/docs/app/getting-started/css#global-css), preserving its providers, metadata and document structure. The layout below is a minimal example. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
+
+    ```ts name=next.config.ts
+    import type { NextConfig } from 'next'
+    import withMasterCSS from '@master/css-next'
+
+    const nextConfig: NextConfig = {}
+
+    export default async () => withMasterCSS(nextConfig, { mode: 'static' })
+    ```
+
+    Keep your existing Next.js options in `nextConfig`.
+
+    ```css name=app/globals.css
+    @import '@master/css';
+    ```
+
+    ```tsx name=app/layout.tsx
+    import './globals.css'
+
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return <html lang="en"><body>{children}</body></html>
+    }
+    ```
+  </Step>
+  <Step>
     ### Start using Master CSS
     Start the dev server and style your first page.
   </Step>
-  <HelloWorld>
+  <InstallationPreview>
 
 ```tsx name=app/page.tsx
 export default function Home() {
   return (
-    <h1 className="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    <p id="master-check" className="w-fit p-md r-md text-sm bg-surface-raised fg-text-strong">
       Hello World
-    </h1>
+    </p>
   )
 }
 ```
 
-  </HelloWorld>
+  </InstallationPreview>
 </StepSection>
 
 <DocumentDisclosure title="Using project tokens in CSS Modules">
@@ -47,34 +75,18 @@ On the Webpack path, generated theme resources are delivered through an ordinary
 
 </DocumentDisclosure>
 
-## Verify the loaded configuration
+## Check the setup
 
-Keep your global stylesheet imported by `app/layout.tsx`. When using a TypeScript configuration, return the integration from an async configuration function so an asynchronous build mode does not require top-level await in the config loader:
+Run `npm run dev` and change `p-md` to `p-lg` in the page. Padding should grow from `1rem` to `1.5rem`. Restore it, then verify production delivery:
 
-```ts name=next.config.ts
-import type { NextConfig } from 'next'
-import withMasterCSS from '@master/css-next'
-
-const nextConfig: NextConfig = {}
-
-export default async () => withMasterCSS(nextConfig, { mode: 'static' })
+```bash
+npm run build
+npm run start
 ```
 
-Keep your existing Next.js options in `nextConfig`.
+Disable JavaScript and reload the production page. The paragraph should keep its padding, rounded corners and raised surface. Also check a nested route: importing the global entry from the root layout makes the CSS available across the application.
 
-```css name=app/globals.css
-@import '@master/css';
-```
-
-```tsx name=app/layout.tsx
-import './globals.css'
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en"><body>{children}</body></html>
-}
-```
-
-Run `npm run build` and `npm run start` to check production delivery. The heading remains styled with JavaScript disabled because the generated stylesheet supplies its rules.
+If styles are missing, check the layout import and that Next.js actually loads the configuration containing `withMasterCSS()`. Keep one active configuration file. For a project using `src/app`, adapt both the stylesheet entry and layout path deliberately; the installer recipe on this page targets top-level `app`.
 
 ---
 
@@ -98,10 +110,10 @@ npm create @master/css@rc -- --framework nextjs --mode runtime --yes
 The installer sets `withMasterCSS(nextConfig, { mode: 'runtime' })`. Run `npm run build` and `npm run start`, then add a class that was absent from the initial DOM:
 
 ```js
-document.querySelector('h1').classList.add('underline')
+document.querySelector('#master-check').classList.add('underline')
 ```
 
-The heading should gain an underline without a rebuild. Runtime mode does not supply those generated rules before JavaScript starts. Check the browser console and runtime program request if the update has no effect.
+The paragraph should gain an underline without a rebuild. Runtime mode does not supply those generated rules before JavaScript starts. Check the browser console and runtime program request if the update has no effect.
 
 </DocumentDisclosure>
 

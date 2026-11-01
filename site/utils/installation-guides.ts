@@ -7,7 +7,7 @@ export const installationGuideGroups = [
   { title: 'Frameworks', entries: [
     ['react', 'React', `${vite}#react`],
     ['vuejs', 'Vue.js', `${vite}#vue`],
-    ['svelte', 'Svelte', '/guide/installation/svelte'],
+    ['svelte', 'SvelteKit', '/guide/installation/svelte'],
     ['nextjs', 'Next.js', '/guide/installation/nextjs'],
     ['nuxtjs', 'Nuxt.js', '/guide/installation/nuxtjs'],
     ['astro', 'Astro', '/guide/installation/astro'],

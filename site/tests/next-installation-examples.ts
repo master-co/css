@@ -45,7 +45,7 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
     }
     assert.ok(source.includes(`npm create @master/css@rc -- --framework nextjs${mode === 'static' ? '' : ` --mode ${mode}`} --yes`))
     // Additional route verifies the documented request-time delivery boundary.
-    write('app/dynamic/page.tsx', "import { connection } from 'next/server'\nexport default async function DynamicPage() {\n  await connection()\n  return <h1 className=\"m-md font-style:italic font-3xl font-heavy fg-text-strong\">Request-time heading</h1>\n}\n")
+    write('app/dynamic/page.tsx', "import { connection } from 'next/server'\nexport default async function DynamicPage() {\n  await connection()\n  return <h1 className=\"m-md italic font-3xl font-heavy fg-text-strong\">Request-time heading</h1>\n}\n")
     for (const name of ['next', 'react', 'react-dom', 'typescript', '@types/react', '@types/react-dom', '@types/node', '@master/css', '@master/css-next', '@master/css-runtime']) {
       const destination = join(root, 'node_modules', name)
       mkdirSync(dirname(destination), { recursive: true })
@@ -62,8 +62,8 @@ export function nextInstallationFixture(mode: NextInstallationMode) {
     assert.match(html, /Hello World/)
     const assets = readdirSync(join(root, '.next/static'), { recursive: true }).filter((file): file is string => typeof file === 'string')
     const css = assets.filter(name => name.endsWith('.css')).map(name => readFileSync(join(root, '.next/static', name), 'utf8')).join('\n')
-    if (mode !== 'runtime') assert.match(html + css, /font-style:\s?italic[;}]/)
-    else assert.doesNotMatch(html + css, /font-style:\s?italic[;}]/)
+    if (mode !== 'runtime') assert.match(html + css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
+    else assert.doesNotMatch(html + css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
     if (mode === 'static') assert.ok(!assets.some(name => name.endsWith('.wasm')))
     return { root, bin, dispose }
   } catch (error) { dispose(); throw error }
