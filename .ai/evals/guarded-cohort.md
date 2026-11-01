@@ -149,3 +149,8 @@ It retains original provenance, frozen sources/tools, prompts/events, all propos
 and retained workspaces, independent final checks, diffs, decisions, usage and
 audit helpers. Observations SHA-256:
 `9f7dac4b4608ff3cdf311cb3c62a3092ddb34cadabd10b95c781ca70e87b1e11`.
+
+The subsequent [completion workflow](repair-completion.md) keeps unresolved
+classes and fresh reporting obligations explicit. A new targeted run repaired
+the remaining case in one attempt with no measured regressions; that separate
+observation does not replace this cohort's six-of-seven result.

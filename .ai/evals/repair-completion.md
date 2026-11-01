@@ -56,3 +56,61 @@ class and a missing report, that the regression gate rejects the omission, and
 that a complete repair passes without weakening checks. Run scoped script ESLint,
 `check:ai-context` and diff checks. Keep evaluator and color-comparison hashes
 identical to the historical run.
+
+## Recorded result — 2026-11-01
+
+Frozen implementation: `68a0b9df8`. Client `codex-cli 0.166.0-alpha.5.1`, Chromium
+`156.0.8078.4`, `gpt-6-luna` with low reasoning and the unchanged two-attempt cap.
+All 422 tracked tool artifacts matched the original recheck run. Initial editable
+sources and scored checks were identical to its original failed checkpoint.
+
+The first proposal passed all task checks and was adopted. Independent rebuilding
+of a separate retained-source copy with the actual model answer also passed.
+Six original failed checks became zero, with zero new failure atoms in both the
+proposal and independently verified retained output. There was one model call,
+no rejection, no historical replay and three host assessments: initial source,
+proposal and independent final verification. The unused second attempt was not
+spent. This is a new targeted observation, not a revised seven-case campaign or
+proof that the workflow alone caused the improvement.
+
+The repair replaced `hover:bg-blue-700` with the project-defined
+`button-hover-blue-700` utility. Its `@utility` body nests `&:hover` inside
+`@media (hover: hover)` and uses the existing blue-700 token. The resting
+`bg-blue-600`, geometry, reset, focus-visible and disabled rules remain. The new
+utility emits in utilities and overrides the resting color in the intended state.
+Host checks verified both themes and viewports, resting/hover/focus/disabled
+states, touch, class recognition and the original nonvisual requirements.
+
+The model visibly read the current completion feedback and final edited files,
+ran class lint and build successfully, and explained retained reset, palette
+tokens and native focus/disabled CSS in its final answer. It correctly described
+host browser verification as pending at the time of that answer. Manual review
+of the diff, commands and answer confirmed these claims; the reporting pass was
+not accepted as sole evidence of explanation quality.
+
+Audit recomputed adoption and verified original and parent copies, source/CSS
+hashes, protected files, current completion sections in feedback/prompts,
+unchanged source/tool artifacts and raw usage. It found no integrity issues,
+model failures, timeouts, guard violations or missing usage. Input totaled
+266,777 tokens, including 248,960 cached input tokens; output totaled 1,906 tokens.
+No causal token-savings claim follows from this single run.
+
+All ten distinct focused tests passed after correcting the new test fixture:
+its first spelling was already backed by native CSS in the positive control,
+so the fixture now uses a genuinely unresolved token spelling. The two new tests
+were rerun successfully; the eight existing tests had passed unchanged. The
+archive retains both test logs. Scoped script ESLint, `check:ai-context` and diff
+checks passed. No workspace package code changed, so no package lint was needed.
+
+Remaining limits: this targeted run did not retest all seven cases with the new
+guidance or exercise a new rejection/retry branch. Existing regression tests and
+the prior cohort cover those paths. The unchanged reporting scorer still uses
+keywords, and measured states do not prove correctness outside their coverage.
+The result supports a broader fixed-cohort replication before claiming a general
+repair improvement or promoting the instructions into the official skill.
+
+Archive: `/Users/aron/master-css-evaluations/2026-11-01-repair-completion`.
+It contains frozen sources/tools, original provenance, prompts/events, proposed
+and retained snapshots, final verification, decisions, audits and test logs.
+Result SHA-256:
+`f7782061b5ecea6b601d511e06f137f7fc8ccce722bfdb54db824489c29d8357`.
