@@ -1,16 +1,17 @@
-import '~/site/styles/benchmarks.css'
+import '~/site/styles/system/data.css'
 import Translate from '~/site/docs-shell/components/Translate'
 
+/** The evidence and its date stay beside the claim. */
 export default function BenchmarkSource({ generatedAt, href, label = 'Committed snapshot' }: {
   generatedAt: string
   href: string
   label?: string
 }) {
   return (
-    <p className="benchmark-source">
-      <span className="benchmark-source-kicker"><Translate>Evidence</Translate></span>
+    <p className="ui-source">
+      <Translate>Evidence</Translate>
       <a href={href}><Translate>{label}</Translate></a>
-      <span className="benchmark-source-date"><Translate>Recorded</Translate> <time dateTime={generatedAt}>{generatedAt.slice(0, 10)} UTC</time></span>
+      <span><Translate>Recorded</Translate> <time dateTime={generatedAt}>{generatedAt.slice(0, 10)} UTC</time></span>
     </p>
   )
 }

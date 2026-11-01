@@ -221,7 +221,7 @@ export function StaticCSSBytesTable() {
   return (
     <ExpandContent>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
-      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static CSS bytes results" tabIndex={0}>
+      <div className="ui-table" data-numeric-from={3} role="region" aria-label="Static CSS bytes results" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -258,7 +258,7 @@ export function StaticBuildTable() {
   return (
     <ExpandContent>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
-      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static build results" tabIndex={0}>
+      <div className="ui-table" data-numeric-from={3} role="region" aria-label="Static build results" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -293,7 +293,7 @@ export function StaticStructureTable() {
   return (
     <ExpandContent>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
-      <div className="doc-table" data-numeric-from={3} role="region" aria-label="Static structure results" tabIndex={0}>
+      <div className="ui-table" data-numeric-from={3} role="region" aria-label="Static structure results" tabIndex={0}>
         <table>
           <thead>
             <tr>

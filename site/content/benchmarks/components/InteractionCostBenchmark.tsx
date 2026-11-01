@@ -261,7 +261,7 @@ export function InteractionCostTables() {
   return (
     <ExpandContent>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Preserve keyboard access to wide result tables. */}
-      <div className="doc-table" data-numeric-from={4} role="region" aria-label="Interaction cost results" tabIndex={0}>
+      <div className="ui-table" data-numeric-from={4} role="region" aria-label="Interaction cost results" tabIndex={0}>
         <table>
           <thead>
             <tr>

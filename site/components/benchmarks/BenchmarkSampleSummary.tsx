@@ -1,3 +1,4 @@
+import '~/site/styles/system/data.css'
 import type { ReactNode } from 'react'
 import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkSampleSummaryStats } from './types'
@@ -19,13 +20,13 @@ export default function BenchmarkSampleSummary(props: BenchmarkSampleSummaryProp
   ] as const
 
   return (
-    <dl className="grid grid-cols(2) gap-xs grid-cols(5)@sm">
+    <div className="ui-metrics">
       {entries.map(([label, value]) => (
-        <div key={label} className="p-sm r-sm bg-surface-inset">
-          <dt className="font-xs fg-text-muted"><Translate>{label}</Translate></dt>
-          <dd className="mt-2xs mb(0) mx(0) font-sm (font-weight:460) fg-text-strong">{value}</dd>
+        <div key={label} className="ui-metric">
+          <small><Translate>{label}</Translate></small>
+          <b>{value}</b>
         </div>
       ))}
-    </dl>
+    </div>
   )
 }
