@@ -18,10 +18,11 @@
 
   /* The sidebar: quiet group captions over entries hung on one hairline; the page being read inks a short bar on it. */
   .ui-sidebar { display: grid; align-content: start; gap: var(--ui-space-lg); padding: var(--ui-space-lg) var(--ui-space-lg) var(--ui-space-2xl) var(--ui-space-xl); }
-  .ui-search-trigger { appearance: none; display: flex; align-items: center; gap: .625rem; width: 100%; height: 2.25rem; padding: 0 var(--ui-space-3xs) 0 .625rem; border: 0; border-radius: var(--ui-radius-md);
-    background: transparent; color: var(--ui-text-muted); box-shadow: inset 0 0 0 1px var(--ui-line-contour); font: var(--ui-weight-regular) var(--ui-text-small)/1 var(--font-family-sans); cursor: pointer; transition: background-color var(--ui-duration-quick), color var(--ui-duration-quick), box-shadow var(--ui-duration-quick); }
-  .ui-search-trigger:hover { background: var(--ui-surface-chip); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-divider); }
-  .ui-search-trigger:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+  .ui-search-trigger { appearance: none; display: flex; align-items: center; gap: .625rem; width: 100%; height: 2.5rem; padding: 0; border: 0; border-radius: 0;
+    background: transparent; color: var(--ui-text-muted); box-shadow: inset 0 -1px 0 var(--ui-line-hair); font: var(--ui-weight-regular) var(--ui-text-small)/1 var(--font-family-sans); cursor: pointer; transition: color var(--ui-duration-quick), box-shadow var(--ui-duration-quick); }
+  .ui-search-trigger:hover { color: var(--ui-text-strong); box-shadow: inset 0 -1px 0 var(--ui-line-strong); }
+  .ui-search-trigger > .ui-kbd { box-shadow: none; }
+  .ui-search-trigger:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-sm); }
   .ui-search-trigger > svg { flex: none; width: 15px; height: 15px; }
   .ui-search-trigger > .ui-kbd { margin-left: auto; }
   .ui-nav-group { display: grid; }
@@ -56,14 +57,14 @@
   .ui-toc-actions a::before { content: none; }
 
   /* The page head closes on a hairline, so the reading starts on its own ground. */
-  .ui-pagehead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-sm); margin-bottom: var(--ui-space-2xl); padding-bottom: var(--ui-space-xl); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
+  .ui-pagehead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-sm); margin-bottom: var(--ui-space-xl); padding-bottom: var(--ui-space-xl); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
   .ui-pagehead-kicker { margin-bottom: var(--ui-space-3xs); color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.5; }
   .ui-pagehead h1 { margin: 0; color: var(--ui-text-strong); font-size: var(--ui-text-title); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-title); letter-spacing: var(--ui-tracking-title); text-wrap: balance; overflow-wrap: break-word; }
   .ui-pagehead p { margin: 0; max-width: 38em; color: var(--ui-text-body); font-size: var(--ui-text-lead); line-height: var(--ui-leading-lead); text-wrap: pretty; overflow-wrap: break-word; }
 
   .ui-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-sm); margin-top: var(--ui-space-3xl); }
-  .ui-pager > a { display: grid; gap: 2px; padding: .875rem var(--ui-space-md) var(--ui-space-md); border-radius: var(--ui-radius-lg); @apply --ui-sheet-face; color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
-  .ui-pager > a:hover { translate: 0 -.5px; box-shadow: var(--ui-elevation-rise-1h); }
+  .ui-pager > a { display: grid; gap: 2px; padding: .875rem var(--ui-space-md) var(--ui-space-md); border-radius: var(--ui-radius-lg); background: transparent; color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-contour); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
+  .ui-pager > a:hover { box-shadow: inset 0 0 0 1px var(--ui-line-strong); background: var(--ui-surface-chip); }
   .ui-pager > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   .ui-pager > a[rel="next"] { text-align: right; }
   .ui-pager small { color: var(--ui-text-muted); @apply --ui-label-type; }
@@ -78,9 +79,9 @@
   @media (forced-colors: active) { .ui-dialog-search input:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; } }
   .ui-results { display: grid; gap: 2px; margin: 0; padding: var(--ui-inset); list-style: none; }
   .ui-results > li > a { display: grid; gap: 2px; padding: .625rem .75rem; border-radius: var(--ui-radius-md); color: var(--ui-text-body); text-decoration: none; }
-  .ui-results > li > a small { color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.4 var(--font-family-mono); }
+  .ui-results > li > a small { color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-sans); }
   .ui-results > li > a b { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); font-size: var(--ui-text-small); }
-  .ui-results > li > a[aria-selected="true"], .ui-results > li > a:hover { @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-results > li > a[aria-selected="true"], .ui-results > li > a:hover { background: var(--ui-surface-chip); box-shadow: inset 0 0 0 1px var(--ui-line-hair); }
   .ui-dialog-foot { display: flex; flex-wrap: wrap; gap: var(--ui-space-md); padding: var(--ui-space-sm) var(--ui-space-md); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: .71875rem; }
   .ui-dialog-foot span { display: inline-flex; align-items: center; gap: 6px; }
 

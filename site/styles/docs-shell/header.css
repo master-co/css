@@ -25,7 +25,7 @@
   .ui-header-end > .ui-button[data-disabled] { color: var(--ui-text-disabled); pointer-events: none; }
   /* The community and preference icons are words in the bar, not buttons: ink under the pointer, no material. */
   .ui-header-end > .ui-button[data-shape="icon"] { width: 2.25rem; min-height: 2.25rem; }
-  .ui-header-end > .ui-button > svg { width: 1.125rem; height: 1.125rem; }
+  .ui-header-end > .ui-button > svg, .ui-header-menu > svg, .ui-dialog-bar > .ui-button > svg { width: 1.125rem; height: 1.125rem; }
   .ui-header-end > .ui-button[data-variant="quiet"]:where(:hover):not(:disabled) { background: transparent; box-shadow: none; }
 
   /* Icon-only controls name themselves with an ink tooltip under the pointer or keyboard focus. */

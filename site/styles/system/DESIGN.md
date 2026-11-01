@@ -37,7 +37,10 @@ The shell follows the original documentation layout, refined:
 - **Header** 60px, 32px gutters. Section links are plain words (body ink, current one in strong ink at medium weight), no pill. The version is plain text with a chevron. End icons are 18px glyphs in 36px targets that only change ink on hover.
 - **Sidebar** 276px with a 32px start gutter aligned with the logo. Search is a quiet hairline field. Group captions are 12px strong-ink regular; entries are 14px muted on one hairline guide, 32px rows; the current entry inks a short 2px bar on the guide and takes medium weight.
 - **Contents rail** is a ruler: every entry hangs a short tick before its title on one left edge; the section being read draws the long tick in ink. Subsections keep the edge and step down in ink (no indent). 13px entries in 38px rows; "On this page" is a quiet caption on the title edge.
-- **Page head** kicker in small sans, a regular-weight title, an 18px lead, and a closing hairline before the reading starts.
+- **Page head** kicker in small sans, a regular-weight title (fluid 30–38px), an 18px lead, and a closing hairline before the reading starts.
+- **Page tabs** between sibling documents (`Tabs`, `ui-segmented[data-variant="underline"]`) are words on one hairline, the current one underlined in ink — the original's tabs, not a raised segmented thumb.
+- **Search trigger** is a quiet row over one hairline with a flat `⌘K` hint, as the original's; results take a chip wash, never a raised frame.
+- **Pager** cards are hairline outlines that take a chip wash on hover; no drop shadow.
 
 ## Markup
 
@@ -61,3 +64,6 @@ Content and example markup keep teaching the preset vocabulary (`bg-surface-rais
 - Rejected: the raised-sheet pill for the current sidebar entry and the sunken well for the current header link — the original ink bar and ink word are quieter.
 - Rejected: hue 255 pearl with a .012-chroma ink for lines and .022-chroma shadows — the visible blue cast made the interface cold.
 - Rejected: a darker obsidian canvas (17.4%) with .085 contours — surfaces and edges blurred together; the zinc-95 canvas with firmer lines separates them without raising the noise.
+- Rejected (round 2): a shorter 48px phone header — the blog and homepage offsets are built on the 60px header, and the gain was small.
+- Rejected (round 2): removing the tray's inner stage contour to avoid "card in card" — the tray is the system's example frame and the stage edge is what separates specimen from caption; instead the dark tray was lifted to 17.4% so it no longer reads as a hole.
+- Rejected (round 2): unframed tables as in the original — the framed sheet keeps sticky heads and horizontal scroll legible; its radius and contour are now small and quiet.

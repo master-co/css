@@ -1,4 +1,4 @@
-/* Code: a quiet panel that owns its frame. Inside a tray it shares the tray's 18px radius and 6px inset. */
+/* Code: a quiet panel that owns its frame. Inside a tray it shares the tray's 10px inner radius and 4px inset. */
 @layer components {
   .ui-code { position: relative; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); color: var(--ui-code-text); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
   .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: 2.5rem; padding: var(--ui-inset) var(--ui-inset) 0 var(--ui-space-sm); }
@@ -49,7 +49,7 @@
   .ui-disclosure[open] > summary::before { rotate: 90deg; }
   .ui-disclosure > summary:hover { color: var(--ui-text-strong); }
   .ui-disclosure > summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-md); }
-  .ui-disclosure > summary .ui-disclosure-meta { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1 var(--font-family-mono); }
+  .ui-disclosure > summary .ui-disclosure-meta { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-sans); }
   .ui-disclosure[data-variant="rule"] { border-block: 1px solid var(--ui-line-hair); }
   .ui-disclosure[data-variant="rule"] + .ui-disclosure[data-variant="rule"] { border-top: 0; }
   .ui-disclosure-body { padding-bottom: var(--ui-space-md); }

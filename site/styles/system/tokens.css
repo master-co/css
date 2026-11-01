@@ -14,7 +14,7 @@
   /* Type: light regular text, headings at regular weight; size and ink carry the steps. */
   --ui-font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
   --ui-text-display: 2.5rem;    --ui-leading-display: 1.1;    --ui-tracking-display: -.03em;
-  --ui-text-title: 2.375rem;    --ui-leading-title: 2.75rem;  --ui-tracking-title: -.028em;
+  --ui-text-title: clamp(1.875rem, 1.4rem + 2vw, 2.375rem); --ui-leading-title: 1.16;  --ui-tracking-title: -.028em;
   --ui-text-h2: 1.625rem;       --ui-leading-h2: 2.1875rem;   --ui-tracking-h2: -.022em;
   --ui-text-h3: 1.25rem;        --ui-leading-h3: 1.75rem;     --ui-tracking-h3: -.014em;
   --ui-text-base: 1rem;         --ui-leading-body: 1.75;
@@ -50,7 +50,7 @@
 :root, :host, .light, .dark {
   /* Surfaces */
   --ui-surface-canvas:   light-dark(oklch(98.6% .0008 265), oklch(19.4% .0019 265));
-  --ui-surface-tray:     light-dark(oklch(96% .0012 265),   oklch(16.6% .0017 265));
+  --ui-surface-tray:     light-dark(oklch(96% .0012 265),   oklch(17.4% .0018 265));
   --ui-surface-stage:    light-dark(oklch(98.9% .0006 265), oklch(18.4% .0019 265));
   --ui-surface-sheet:    light-dark(oklch(100% 0 none),     oklch(24.2% .0022 265));
   --ui-surface-sheet-lo: light-dark(oklch(99.3% .0005 265), oklch(22.8% .0021 265));

@@ -60,7 +60,7 @@
 }
 
 /* A link's mark after it (`Link` with `indicate`): an arrow for another site, a hash for this page. */
-a[data-indicate]::after { display: inline-block; margin-left: .12em; color: var(--ui-text-muted); font-size: .7em; line-height: 0; vertical-align: super; text-decoration: none; }
+a[data-indicate]::after { display: inline-block; margin-left: .2em; color: var(--ui-text-muted); font-size: .7em; line-height: 0; vertical-align: super; text-decoration: none; }
 a[data-indicate="external"]::after { content: var(--content-external); }
 a[data-indicate="hash"]::after { content: var(--content-hash); }
 .ui-prose :is(td, th) a[href^="#"] { white-space: nowrap; }

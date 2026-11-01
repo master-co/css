@@ -8,7 +8,7 @@
     max-width: 100%;
     margin-bottom: var(--spacing-sm);
     padding: 4px;
-    border-radius: var(--radius-2xl);
+    border-radius: calc(var(--ui-radius-md) + 4px);
     background-color: var(--color-surface-shell);
     box-shadow: var(--shadow-pressed);
   }
@@ -20,9 +20,9 @@
     min-height: 2.25rem;
     padding: .375rem var(--spacing-sm);
     border: 1px solid transparent;
-    border-radius: calc(var(--radius-2xl) - 4px);
+    border-radius: var(--ui-radius-md);
     font-size: var(--font-size-xs);
-    font-weight: 550;
+    font-weight: var(--ui-weight-medium);
     line-height: 1.4;
     color: var(--color-text-muted);
     transition: color .16s, background-color .16s, box-shadow .16s;
@@ -53,6 +53,6 @@
     .segment-views > .segments { display: none; }
     .segment-panel[hidden] { display: block !important; }
     .segment-panel + .segment-panel { margin-top: var(--spacing-xl); }
-    .segment-panel-label { display: block; margin-bottom: var(--spacing-md); color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: 550; }
+    .segment-panel-label { display: block; margin-bottom: var(--spacing-md); color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: var(--ui-weight-medium); }
   }
 }

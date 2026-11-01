@@ -12,8 +12,8 @@
     box-shadow: inset -1px 0 0 var(--ui-line-hair);
   }
   /* The search field stays in reach while the groups scroll beneath it. */
-  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-canvas); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
-  .ui-docs .ui-sidebar > .ui-search-trigger:hover { box-shadow: inset 0 0 0 1px var(--ui-line-strong), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-canvas); box-shadow: inset 0 -1px 0 var(--ui-line-hair), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  .ui-docs .ui-sidebar > .ui-search-trigger:hover { box-shadow: inset 0 -1px 0 var(--ui-line-strong), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
   /* The rail clips its overflow, so focus rings inside it sit on the element's edge. */
   .ui-docs .ui-sidebar .ui-nav-link:focus-visible { outline-offset: -2px; }
   @media (width < 64rem) { .ui-docs .ui-sidebar { display: none; } }
@@ -25,7 +25,7 @@
 
   .ui-docs-main { container: docs-main / inline-size; display: flex; flex: 1; flex-direction: column; min-width: 0; }
   .ui-docs-body { display: flex; justify-content: center; width: 100%; max-width: 80rem; margin-inline: auto; }
-  .ui-docs-article { flex: 1 1 auto; width: 100%; min-width: 0; padding: var(--ui-space-2xl) max(1.25rem, env(safe-area-inset-right)) var(--ui-space-3xl) max(1.25rem, env(safe-area-inset-left)); }
+  .ui-docs-article { flex: 1 1 auto; width: 100%; min-width: 0; padding: var(--ui-space-xl) max(1.25rem, env(safe-area-inset-right)) var(--ui-space-3xl) max(1.25rem, env(safe-area-inset-left)); }
   .ui-docs-article[data-aside] { max-width: 52.125rem; }
   @media (--sm) { .ui-docs-article { padding-inline: 2.5rem; padding-bottom: 5rem; } }
   @media (--md) { .ui-docs-article { padding: var(--ui-space-3xl) 2.5rem 5rem 5rem; } .ui-docs-article[data-aside] { padding-right: 5rem; } }

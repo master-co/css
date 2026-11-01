@@ -59,6 +59,11 @@
   .ui-segmented > :is(button, a):is([aria-pressed="true"], [aria-selected="true"], [aria-checked="true"], [aria-current="page"]) { color: var(--ui-text-strong); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-segmented > :is(button, a):focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   .ui-segmented > button:disabled { color: var(--ui-text-disabled); cursor: not-allowed; }
+  /* Underline: page-level tabs between sibling documents — words on one hairline, the current one underlined in ink. */
+  .ui-segmented[data-variant="underline"] { display: flex; gap: 0 var(--ui-space-lg); padding: 0; border-radius: 0; background: none; box-shadow: inset 0 -1px 0 var(--ui-line-divider); }
+  .ui-segmented[data-variant="underline"] > :is(button, a) { min-width: 0; min-height: 2.75rem; padding: 0; border-radius: 0; color: var(--ui-text-muted); font: var(--ui-weight-regular) var(--ui-text-small)/1.4 var(--font-family-sans); }
+  .ui-segmented[data-variant="underline"] > :is(button, a):is([aria-pressed="true"], [aria-selected="true"], [aria-checked="true"], [aria-current="page"]) { color: var(--ui-text-strong); background: none; box-shadow: inset 0 -2px 0 var(--ui-text-strong); }
+  .ui-segmented[data-variant="underline"] > :is(button, a):focus-visible { outline-offset: -2px; border-radius: var(--ui-radius-xs); }
   .ui-segmented[data-size="lg"] { padding: 4px; border-radius: calc(var(--ui-radius-md) + 4px); }
   .ui-segmented[data-size="lg"] > :is(button, a) { min-height: 2.25rem; border-radius: var(--ui-radius-md); font-size: .8125rem; }
 
@@ -116,7 +121,7 @@
   .ui-copy-status[data-result="error"] { color: var(--ui-status-danger); }
 
   /* Keyboard key */
-  .ui-kbd { display: inline-grid; place-items: center; min-width: 1.375rem; height: 1.375rem; padding: 0 .3125rem; border-radius: var(--ui-radius-xs); @apply --ui-sheet-face; color: var(--ui-text-muted); box-shadow: inset 0 -1px 0 var(--ui-line-divider), 0 0 0 1px var(--ui-line-contour); font: var(--ui-weight-regular) .6875rem/1 var(--font-family-mono); }
+  .ui-kbd { display: inline-grid; place-items: center; min-width: 1.375rem; height: 1.375rem; padding: 0 .3125rem; border-radius: var(--ui-radius-xs); background: transparent; color: var(--ui-text-muted); box-shadow: inset 0 0 0 1px var(--ui-line-contour); font: var(--ui-weight-regular) .6875rem/1 var(--font-family-mono); }
 
   @media (pointer: coarse) {
     .ui-button, .ui-input, .ui-select { min-height: 2.75rem; }
