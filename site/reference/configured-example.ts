@@ -45,7 +45,8 @@ export function configuredExampleCSS(source: string, classes: string[]) {
         throw new Error(`Invalid configured documentation class: ${className}`)
       }
     }
-    const css = (snapshot.engine.stylesheets ?? []).join('\n\n') + snapshot.cssText
+    // Resource registration retains dependencies; the compiler owns the native rules.
+    const css = [result.css, snapshot.cssText].filter(Boolean).join('\n\n')
     examples.set(key, css)
     return css
   } finally { engine.dispose() }

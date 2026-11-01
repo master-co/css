@@ -21,7 +21,7 @@ Read the requested article, nearby examples, and the applicable [site/AI.md](../
 
 Choose the primary reader need before drafting. Different articles may cover the same topic, but each needs a distinct purpose and an authoritative source for its facts. Guide can include necessary explanation and visual comparisons; Blog does not replace a Reference contract.
 
-Do not apply the article workflow to standalone code fixes, homepage marketing copy, or standalone visual design. Article illustrations are part of teaching: use [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md) when the article needs them. For mixed requests, apply the writing workflow only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
+Do not apply the article workflow to standalone code fixes, homepage marketing copy, or standalone visual design. Every article requires at least one explanatory image: use [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md) to produce it. For mixed requests, apply the writing workflow only to the article portion. Make small edits directly without requiring a research report, outline, or complete rewrite.
 
 ## Research and define the purpose
 
@@ -41,7 +41,7 @@ Discover what you can before asking questions. Ask only about missing informatio
 
 ## Draft and edit
 
-For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Identify questions whose answers depend on sequence, conditional branches, hierarchy, scope, or a visual difference. When a figure or existing working demo is needed to make that relationship clear, complete and place it beside the relevant explanation using [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md). A placeholder, uniform prose cards, or more paragraphs do not fulfill an identified visual teaching need. Do not impose an image quota on simple lookup pages, single-step operations, or local edits.
+For new articles or substantial restructuring, make a short outline connecting each reader question to its answer and evidence or example. Plan at least one explanatory image for every article, including short and lookup articles, following [site content policy](../../../site/AI.md). Identify the sequence, conditional branch, hierarchy, scope or visual difference it will explain, then produce and embed it beside that explanation using [master-css-doc-illustrations](../master-css-doc-illustrations/SKILL.md). Keep useful working demos as complementary teaching; they do not replace the required image. A placeholder, decorative cover or uniform prose cards do not satisfy the requirement. Do not deliver an article as complete without its image; retain an existing qualifying figure when revising rather than producing another for every wording edit.
 
 Edit ordinary revisions directly. Choose the sequence for the article type rather than imposing an introduction, three body sections, and a conclusion.
 
@@ -58,6 +58,7 @@ Complete authorized writing without waiting for approval at every paragraph. For
 - Before adding a page, inspect same-type `metadata.ts`, `page.tsx`, MDX, and category data. Do not copy Guide configuration blindly into Blog. Author, date, and publication status need a known source.
 - Edit authored Reference sources. The [maintenance guide](../../../site/reference/MAINTENANCE.md) explains generation, search, and exports. Import custom MDX components explicitly and retain a text equivalent for meaningful content.
 - Verify examples through public compilation or tooling capabilities. Use `Class2CSS` for default classes and `ConfiguredExample` for custom configuration. Existing components own generated-CSS disclosures.
+- When adding or changing a demo, follow [Demo Implementation](../../../site/AI.md#demo-implementation) before choosing its styling or controls. Identify the system component used as the visual reference and the variable readers should manipulate. Review the rendered preview contents through the [demo design check](references/review-and-validation.md#demo-design-check); a shared wrapper and passing code checks are not visual approval. Use `master-design` when the demo needs interface refinement.
 - Keep article work within scope. A prose change does not imply visual redesign, a site-wide rewrite, or publication. Reuse existing policy, package scripts, and data flows instead of adding another generation or validation framework.
 
 ## Finish

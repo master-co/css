@@ -1,0 +1,216 @@
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import ReuseIllustration from './components/ReuseIllustration'
+
+Two screens can share a Save button while giving one instance more space. Put the button's shared appearance in a component class, then keep that local adjustment in markup. The same approach applies at smaller scales: name a value when its consumers should change together, or share a piece of CSS when several rules need it.
+
+Complete [Installation](/guide/installation) and the [Syntax Tutorial](/guide/syntax-tutorial) first. Each example below supplies its own CSS and markup. Add its CSS after the existing preset import in your app stylesheet, and put the markup in a source file your integration scans:
+
+```css name=app.css
+@import '@master/css';
+```
+
+## Keep a component's shared appearance together
+
+A product role such as an action button needs a recognizable appearance wherever it is used. Define that role as a native class in `@layer components`, including the states that belong to every instance.
+
+<DemoConfiguredExample
+  name="reuse-component"
+  title="One button, a local spacing adjustment"
+  source={`@theme {
+  --spacing-action-x: 1rem;
+  --color-action: var(--color-surface-raised);
+}
+
+@layer components {
+  .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.375rem;
+    padding: .5rem var(--spacing-action-x);
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-action);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    line-height: 1.2;
+
+    &:is(:hover, :focus-visible) {
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      background-color: var(--color-surface-inset);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-text-strong);
+      outline-offset: 3px;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap items-start gap-lg">
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Shared component</p>
+    <button type="button" class="action">Save changes</button>
+  </div>
+  <div class="flex flex-col items-start gap-sm">
+    <p class="m(0) text-xs fg-text-muted">Local adjustment</p>
+    <button type="button" class="action px-lg">Save changes</button>
+  </div>
+</div>`}
+  caption="Compare the horizontal padding, then hover each button or reach it with Tab. Both share the action states; only the second uses px-lg. These buttons demonstrate styling and do not save data."
+/>
+
+The normal utility declaration from `px-lg` wins over the component's padding because the preset places the `utilities` layer after `components`. The class order in HTML does not decide the winner. Keep this local adjustment on the second button; put it in `.action` only when every instance should receive it. See [Cascade layers](/guide/cascade-layers) for competing declarations.
+
+<ReuseIllustration />
+
+Native component rules are emitted with their stylesheet by default; [native pruning](/guide/scanning-and-pruning#prune-native-css) is an explicit opt-in. Write a component's states inside its CSS rule. A native `.action` definition does not register an `action:hover` utility.
+
+## Choose what should change together
+
+Before extracting a repeated class list, identify the shared decision. Similar-looking elements do not always need to change together.
+
+| Share | Use |
+| --- | --- |
+| A value across styles | A theme token |
+| A product role and its states | A native component class |
+| A capability composed in markup | A utility |
+| Declarations or wrappers inside CSS | A mixin |
+
+The first example gives the action color and padding their own tokens. Another component can read `--spacing-action-x` through `var()` in CSS or `px-action-x` in markup, without taking on the button's background, shape or states. Change that token when both consumers should change; use separate tokens when the values happen to match but serve different purposes. [Theme tokens](/guide/theme) covers naming, aliases and scoped overrides.
+
+A repeated component can also keep its class list inside a framework component. Introduce a CSS name when it provides a useful shared styling contract, rather than treating the length of a class attribute as a reason to extract it.
+
+## Register a utility for a styling capability
+
+Suppose several controls need an inline row with centered contents and a small gap, but each keeps its own paint and spacing. Register only the shared layout as an `@utility`:
+
+<DemoConfiguredExample
+  name="reuse-utility"
+  title="The same layout, different controls"
+  source={`@utility action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-row px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm shadow-md:hover bg-surface-inset:active">
+    <span aria-hidden="true">＋</span> Add note
+  </button>
+  <a href="/guide/theme" target="_top" class="action-row px-sm py-xs text-sm fg-text-body fg-text-strong:hover underline">
+    Choose tokens <span aria-hidden="true">→</span>
+  </a>
+</div>`}
+  caption="action-row gives both controls the same alignment and gap. Their other classes supply the appearance. Add note is a styling sample; Choose tokens opens the theme guide."
+/>
+
+The utility generates rules when a complete class requests it. It also accepts the same selector and condition suffixes as preset utilities, such as `action-row@sm`. Its name describes a layout capability; it does not prescribe the whole button.
+
+Use the preset's existing utilities when they already express the shared decision. For example, changing only the gap needs `gap-sm` or `gap(8)`, not another custom utility. Define a recipe when its declarations form a useful capability that callers should reuse together. The [utility contract](/reference/directives/definitions#utilities) defines registration and replacement.
+
+## Reuse CSS with a mixin
+
+If native CSS rules need that row layout, define a mixin and expand it with `@apply`. This example keeps the action and toolbar link as separate component roles while sharing their alignment:
+
+<ConfiguredExample source={`@mixin --action-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+@layer components {
+  .action {
+    @apply --action-row;
+    padding: .5rem 1rem;
+    border: 1px solid var(--color-line-divider);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-strong);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .toolbar-link {
+    @apply --action-row;
+    color: var(--color-text-body);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    text-decoration-line: underline;
+  }
+}`} html={`<button type="button" class="action">
+  <span aria-hidden="true">＋</span> Add note
+</button>
+<a href="/guide/theme" class="toolbar-link">
+  Choose tokens <span aria-hidden="true">→</span>
+</a>`} />
+
+Open **Generated CSS**: the row declarations appear in both native rules, and each rule keeps its own remaining declarations. Defining `--action-row` creates no markup class. `@apply` names a mixin; it does not take a list of utility classes.
+
+When both CSS and markup need the same capability, keep the mixin as its declaration source and add a utility that calls it:
+
+```css
+@utility action-row {
+  @apply --action-row;
+}
+```
+
+Add this definition to the mixin example's stylesheet. It replaces the earlier standalone utility body: edits to `--action-row` now reach the native components and the utility. Use [Global styles](/guide/global-styles#organize-global-files) to organize these definitions in the app's entry graph.
+
+## Share a wrapper with contents
+
+Sometimes the repeated part is the condition around different declarations. A hover-and-keyboard-focus mixin can supply the selector while each caller supplies its styles through `@contents`:
+
+<DemoConfiguredExample
+  name="reuse-wrapper"
+  title="One interaction wrapper, two call sites"
+  source={`@mixin --hocus {
+  &:is(:hover, :focus-visible) { @contents; }
+}
+
+@layer components {
+  .action {
+    @apply --hocus {
+      text-decoration-line: underline;
+    }
+  }
+}`}
+  html={`<div class="flex flex-wrap gap-md">
+  <button type="button" class="action px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">CSS call site</button>
+  <button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm underline@apply(--hocus) outline(2):focus-visible outline-solid:focus-visible outline-offset(3)">Class call site</button>
+</div>`}
+  caption="Hover or Tab to either button: its label becomes underlined. The first supplies a declaration inside native CSS; the second wraps the underline utility. The focus outline is specified separately."
+/>
+
+In CSS, the block after `@apply --hocus` fills `@contents`. In markup, `@apply(--hocus)` wraps the declarations generated by that class. The wrapper does not register tokens or gather neighboring classes into its body. To reuse a declaration set, use a utility or a mixin; use contents when the caller needs to choose what goes inside a shared selector or condition. See [mixin contents](/reference/directives/definitions#contents) for forwarding and fallback behavior.
+
+## Expose a parameter when callers need one
+
+A shared control size may coordinate several properties. Let a parameter express that relationship when separate preset utilities would require callers to repeat the calculation:
+
+<DemoConfiguredExample
+  name="reuse-parameter"
+  title="One size controls height and padding"
+  source={`@utility action-size(--height: 2.5rem) {
+  min-height: var(--height);
+  padding-inline: calc(var(--height) / 2);
+}`}
+  html={`<div class="flex flex-wrap items-center gap-md">
+  <button type="button" class="action-size() text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Default size</button>
+  <button type="button" class="action-size(3rem) text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm">Larger size</button>
+</div>`}
+  caption="action-size() uses 2.5rem; action-size(3rem) uses 3rem. Both minimum height and horizontal padding follow the argument. These buttons demonstrate sizing only."
+/>
+
+The empty call uses the declared default. Arguments must be known during compilation; use complete class strings when choosing between sizes. A value that changes continuously in JavaScript belongs in a native CSS custom property instead. The [parameter contract](/reference/directives/definitions#dynamic-values) covers accepted types and restrictions.
+
+Before changing a shared definition, compare at least two call sites, including one with a local override. Check their hover and keyboard states and inspect the generated CSS. If the callers no longer need the same behavior, separate their definitions rather than adding exceptions to every instance. For sharing a stable vocabulary between projects, continue with [Authoring packages](/guide/authoring-packages).

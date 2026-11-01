@@ -12,7 +12,8 @@ Read the change to understand its purpose before checking relevant evidence. Rep
 | Reader task | Prerequisites, actions, or decision criteria are sufficient and the result is recognizable |
 | Ownership | Teaching and contracts have appropriate owners without duplicate fact sources |
 | Argument and voice | Sections support the subject, paragraphs connect, and explanation replaces empty slogans |
-| Examples and visuals | Visible settings, code, and results agree; necessary visual explanations are actually present, show the relevant relationships, and remain readable in both themes and narrow columns |
+| Examples and visuals | Every article includes at least one authored explanatory image; visible settings, code and results agree; figures show the relevant relationships and remain readable in both themes and narrow columns |
+| Demo design | Preview contents match the relevant system component; each optional preview control produces an observation the section actually teaches |
 | Integration and exports | Links, anchors, and MDX imports work; meaningful content survives the relevant output paths |
 
 Incorrect syntax, invented data, missing necessary steps, and incorrect ownership must be resolved rather than averaged away by other strengths. For a small edit, review the dimensions it affects.
@@ -29,7 +30,16 @@ Ask practical questions based on the purpose and answer using only the article a
 
 If an answer depends on the conversation, add the missing context. Check ambiguity, unsupported inference, and contradictions. The author may do this check but must not describe it as independent reader testing. Additional agents or human evaluations depend on current authorization and tool rules; they are not required for every edit.
 
-For substantial writing or restructuring, check whether readers must mentally reconstruct an execution path, conditional branch, hierarchy, boundary, or visible difference. If that creates a concrete comprehension gap, complete the appropriate figure or demo through [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md). Check arrows, conditions, and grouping as technical claims. Simple lookup content and local prose edits do not need artificial illustration work.
+Before delivering any article as complete, verify that at least one authored explanatory image is embedded in its body. Check its source, light/dark renders, article-scale legibility and text equivalent through [master-css-doc-illustrations](../../master-css-doc-illustrations/SKILL.md). Check arrows, conditions and grouping as technical claims. Demos, tables, code blocks, decorative assets and placeholders do not meet this minimum; two theme variants count as one figure. Missing the image fails article completion even when every code and export check passes. Short and lookup articles have the same requirement; a local wording edit can retain an existing qualifying figure.
+
+## Demo design check
+
+For an added or visually changed demo, use [Demo Implementation](../../../../site/AI.md#demo-implementation) and the active [design rules](../../../../site/styles/system/DESIGN.md#rules). Establish these before implementation, then check the rendered result:
+
+- **Reference:** identify the relevant system component and compare its type, geometry, material, contours and states with the actual preview contents. Inspect at article scale beside the surrounding UI, not only in an isolated screenshot. Loading the shared tray is not evidence that the specimen follows the system.
+- **Lesson:** identify what varies and what stays consistent. Supporting presentation stays quiet; differences in color, size or elevation need to explain the subject. Keep the sample reproducible from its public CSS and markup rather than concealing essential styles in the preview frame.
+- **Controls:** connect each optional action to a specific instruction and observable result in the section. Remove actions with no teaching purpose. A spacing or reuse example does not need Theme merely because it renders in both schemes; verify both through the site's theme instead.
+- **Evidence:** inspect both themes, narrow and wide columns, and the relevant hover, focus and pressed states. Record the reference and findings separately from compilation, overflow and export checks. Fix visual mismatches before presenting the article as complete; report unavailable browser checks as unverified.
 
 ## Select checks
 
@@ -52,11 +62,12 @@ When validating classes, check recognition, expected declarations, and relevant 
 
 ## Skill behavior exercises
 
-When maintaining this skill, keep inputs, drafts, evidence, and decisions in a temporary directory. These six repeatable tasks check actual decisions and outputs rather than requiring particular wording.
+When maintaining this skill, keep inputs, drafts, evidence, and decisions in a temporary directory. These repeatable tasks check actual decisions and outputs rather than requiring particular wording.
 
 | Task | Input | Observe |
 | --- | --- | --- |
 | Container queries Guide | Draft a card layout lesson for developers with Master CSS installed | Complete ancestor and child markup, observation procedure, literal threshold distinguished from sizing tokens, actual example compilation |
+| Reuse demo | Show a shared button with one local spacing override | Consult the system button; keep the variation about spacing; omit unrelated preview actions; preserve self-contained teaching code; compare the rendered contents in both site themes |
 | Reference addition | Propose a patch explaining whether a container token changes a query threshold | Correct conditions source and anchor; recognize existing complete coverage rather than adding duplicate prose; no edits to generated files |
 | Performance Blog | Revise “every page is 50% faster” without supplied benchmarks | Remove unsupported quantitative claims, verify the mechanism, explain measurement boundaries, invent no evidence |
 | Local edit | Revise one paragraph in an article with explicit heading IDs | Diff stays within that paragraph; meaning, other content, and anchors remain |

@@ -104,7 +104,7 @@ For the View Transitions guide: route slug is `/guide/view-transitions`, title i
 
 For Guide, Reference and Blog research, writing, editing, translation and review, use the project [master-css-writing skill](../.agents/skills/master-css-writing/SKILL.md). It provides editorial methods and task-specific references; the content policies below remain canonical.
 
-For technical article illustrations, use [master-css-doc-illustrations](../.agents/skills/master-css-doc-illustrations/SKILL.md). When understanding depends on a flow, conditional branch, hierarchy, scope boundary or visual difference, assess and complete the necessary figure or working demo beside the explanation. Do not replace an identified visual teaching need with placeholders, uniform prose cards or longer prose. Simple lookup entries and local wording edits do not require an image quota. Preserve meaningful text equivalents in the existing search and Markdown/llms flows.
+Every Guide, Reference and Blog article must include at least one authored explanatory image before it can be delivered as complete. This is a hard minimum, including short and lookup articles. Use [master-css-doc-illustrations](../.agents/skills/master-css-doc-illustrations/SKILL.md) to produce and embed a figure explaining a concrete flow, relationship, scope boundary or comparison beside the relevant text. Interactive demos, code blocks, tables, icons, decorative covers and placeholders do not satisfy the image requirement. Preserve valuable demos in addition to the image; do not replace them just to meet the count. Light/dark variants of the same figure count as one image. Retain editable source, verify both themes and article-scale readability, and preserve meaningful text equivalents in search and Markdown/llms output. An existing qualifying figure may be retained when revising an article; the requirement is a minimum per article, not a new image for every wording edit. Do not waive the minimum based on article length or perceived need.
 
 ### Current documentation and migration ownership
 
@@ -203,6 +203,8 @@ For View Transitions examples, keep `view-transition-name` values unique, prefer
 
 ## Demo Implementation
 
+Before authoring or revising a demo, read the active rules in [the design system](styles/system/DESIGN.md#rules) and inspect the relevant component source. Check the preview's contents as well as its tray: using `<Demo>` does not establish visual conformity.
+
 Interactive demos should be local `'use client'` components under the guide's `components/` folder. Use existing site primitives:
 
 - Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
@@ -210,6 +212,12 @@ Interactive demos should be local `'use client'` components under the guide's `c
 - Use `~/site/docs-shell/components/Image` for local bitmap images.
 - Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
 - Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
+
+Distinguish the interface operating the demonstration from the subject being taught. Preview controls and supporting presentation use the site's components. A component class or utility that is itself the lesson must remain reproducible from the displayed public CSS and markup; do not insert private `ui-*` dependencies to make that sample look correct. Use the public preset to express the system's restrained materials, type and geometry, varying only what the lesson needs. A saturated button is not justified merely because it is example content. Inspect the existing iframe materials bridge before adding presentation overrides; it must not supply a missing declaration essential to the lesson.
+
+Optional preview controls start absent. Add Theme only when the section explicitly teaches color schemes, width controls when resizing demonstrates the stated viewport or container behavior, and replay or other actions when their outcome is part of the lesson. State what readers should change and observe. Supporting both themes is a verification requirement, not a reason to expose a local theme switch; ordinary previews follow the site's theme. Keep useful source tabs, copying and Generated CSS inspection.
+
+Before delivering a changed demo, compare its rendered contents with the relevant system component at article scale: type weight and size, control geometry, surfaces, contours, spacing, and affected interaction states. Check light/dark and narrow layouts separately from compilation and export validation. A working interaction or an overflow-free screenshot does not establish that its visual design passes. Record the reference used and any unverified visual states in the delivery note, not the article.
 
 Design demos for the doc content column, not the viewport. A `<Demo>` inside guide content is roughly `674px` wide on desktop and narrower on mobile. Prefer container queries over viewport breakpoints, add `container` when using `@container(...)`, keep mobile single-column by default, and use two columns only when the container has room.
 

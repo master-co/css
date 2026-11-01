@@ -16,4 +16,4 @@ The required combination is exact technical labels, coordinated themes, responsi
 
 Positioned HTML scenes with SVG routes suit these technical figures because text, arrows, and geometry stay deterministic and editable, and because the site's own tokens, elevation and variable font paint them exactly. The repository's Playwright Chromium renders them without a new dependency; resvg, used for the first set, could not render the 350 weight or the converged multi-layer shadows. This choice does not make diagrams preferable for every illustration: photography, painterly artwork, and other bitmap-first work belong to a suitable image-generation workflow.
 
-The writing skill decides when the article needs a visual explanation; this skill supplies that explanation. Neither should turn a one-paragraph edit into an unrelated illustration project.
+The project requires at least one explanatory image per article. The writing skill chooses the relationship and placement; this skill produces and verifies the figure. This minimum comes from the owner's direction, not an upstream image-density rule. Local wording edits can retain an existing qualifying figure.

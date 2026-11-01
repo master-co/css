@@ -11,10 +11,12 @@ Make a relationship easier to understand through its visible structure. A reader
 
 Read the affected article and applicable [site instructions](../../../site/AI.md). Use [master-css-writing](../master-css-writing/SKILL.md) for the article's purpose, claims, surrounding prose, and ownership; this skill owns the illustration work.
 
+Every Guide, Reference and Blog article requires at least one authored explanatory image embedded in the article. Produce the image and retain its editable source before treating the article as complete, including short and lookup articles. Light/dark variants count as one figure. An existing qualifying figure can remain through revisions; decorative assets, placeholders and interactive demos do not satisfy the minimum.
+
 - Name the reader question the figure answers. Locate its insertion point beside the relevant explanation.
 - Verify objects, arrows, conditions, and labels against current source/tests. Existing diagrams are evidence of presentation, not proof of behavior.
 - Distinguish containment from sequence, data transfer from execution, and an optional path from the default. Do not imply measured speed through arbitrary line lengths, clock faces, or percentages.
-- Prefer an existing working demo or shared-data specimen when it teaches the actual behavior better. Use standard plotting tools for measured data.
+- Retain an existing working demo or shared-data specimen when it teaches behavior well, and use the required image to explain a complementary relationship. Follow the writing skill's [demo design check](../master-css-writing/references/review-and-validation.md#demo-design-check); a working demo replaces neither the image nor visual review. Use standard plotting tools for measured data.
 
 For small visual edits, preserve the established relationships and scope; recompose as needed to meet the 3:2 canvas requirement. Infer routine decisions from the article and approved references; do not require an outline or style questionnaire for each image.
 
