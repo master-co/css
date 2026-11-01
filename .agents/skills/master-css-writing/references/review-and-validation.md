@@ -34,12 +34,25 @@ Integration guides have no image gate: verify their setup code and useful live p
 
 ## Demo design check
 
-For an added or visually changed demo, use [Demo Implementation](../../../../site/AI.md#demo-implementation) and the active [design rules](../../../../site/styles/system/DESIGN.md#rules). Establish these before implementation, then check the rendered result:
+For every demo presented as part of a rewritten article, including retained or reused demos, use [Demo Implementation](../../../../site/AI.md#demo-implementation) and the active [design rules](../../../../site/styles/system/DESIGN.md#rules). Reuse is not evidence of current conformity. A wording-only edit need not reopen unrelated demos.
 
-- **Reference:** identify the relevant system component and compare its type, geometry, material, contours and states with the actual preview contents. Inspect at article scale beside the surrounding UI, not only in an isolated screenshot. Loading the shared tray is not evidence that the specimen follows the system.
-- **Lesson:** identify what varies and what stays consistent. Supporting presentation stays quiet; differences in color, size or elevation need to explain the subject. Keep the sample reproducible from its public CSS and markup rather than concealing essential styles in the preview frame.
-- **Controls:** connect each optional action to a specific instruction and observable result in the section. Remove actions with no teaching purpose. A spacing or reuse example does not need Theme merely because it renders in both schemes; verify both through the site's theme instead.
-- **Evidence:** inspect both themes, narrow and wide columns, and the relevant hover, focus and pressed states. Record the reference and findings separately from compilation, overflow and export checks. Fix visual mismatches before presenting the article as complete; report unavailable browser checks as unverified.
+Before implementation, identify the lesson's variable and a concrete reference selector in the owning system source. Inspect that reference rendered in the system gallery. Preview controls use the canonical system component. Public teaching samples use reproducible preset styles and native CSS; copying private `ui-*` dependencies into the taught source is not a solution.
+
+Keep a short acceptance record in the task's temporary review notes, one row per specimen:
+
+| Specimen | System reference | Intended teaching difference | Observed differences and disposition | Visual evidence |
+| --- | --- | --- | --- | --- |
+| A token card | `surfaces.css`: `.ui-sheet[data-elevation="1"]`; relevant type rules | Shared padding, radius and a named color marker | Compare the card's type, contour, elevation and spacing; explain any public-preset approximation | Article-scale light/dark captures, narrow/wide; inspect alongside the reference |
+
+This record captures decisions, not a universal numeric baseline. Read the current source; do not freeze today's system values into a second token catalog. Record computed values for disputed properties (for example height, weight or radius), and visually compare material, hierarchy and density. A selector name or screenshot path without the comparison does not pass.
+
+- **Limit the exception to the lesson.** A color-token lesson may use a colored swatch or the actual property being compared. It does not automatically justify a saturated primary action, heavier labels, extra elevation or larger controls. Preserve useful color distinctions; do not impose a monochrome ban.
+- **Check the whole composition.** Compare preview contents at article scale beside the surrounding UI and the reference. Check headings, labels, controls and surfaces in both themes, narrow/wide layouts and relevant interaction states. Content-sized containers stay intrinsic unless the example specifically needs a viewport or a controlled comparison.
+- **Repair without inventing a new UI.** If contrast fails, first inspect the semantic role, token and theme behavior. Do not turn a secondary link into a primary button just to pass contrast. Prefer removing an unnecessary action or using the existing system variant; then repeat the visual comparison.
+- **Keep controls purposeful.** Each optional action needs a section instruction and an observable teaching result. Verify light/dark through the site theme unless changing schemes is the lesson. Keep useful source tabs, copying and Generated CSS.
+- **Separate results.** Track technical checks and visual acceptance separately. Compilation, contrast, no overflow and a working interaction establish only those facts. Do not report “design verified” from those results. Fix unexplained visual departures before delivering the article as complete; mark unobserved states as unverified.
+
+Automate stable checks such as token provenance, computed geometry and unwanted controls when useful. They can reject a known mismatch; they cannot certify visual conformity. Reuse canonical components for supporting UI so fixes propagate, and inspect the iframe materials bridge when inherited presentation differs. Do not patch the shared bridge to hide an essential declaration missing from the displayed example.
 
 ## Select checks
 
@@ -67,6 +80,7 @@ When maintaining this skill, keep inputs, drafts, evidence, and decisions in a t
 | Task | Input | Observe |
 | --- | --- | --- |
 | Container queries Guide | Draft a card layout lesson for developers with Master CSS installed | Complete ancestor and child markup, observation procedure, literal threshold distinguished from sizing tokens, actual example compilation |
+| Token demo regression | A token card has a low-contrast colored link; a reused dialog has bold headings | Keep color as a scoped teaching variable; do not promote the link into a saturated CTA; inspect the retained dialog against current system typography; record visual acceptance separately from contrast and compilation |
 | Reuse demo | Show a shared button with one local spacing override | Consult the system button; keep the variation about spacing; omit unrelated preview actions; preserve self-contained teaching code; compare the rendered contents in both site themes |
 | Reference addition | Propose a patch explaining whether a container token changes a query threshold | Correct conditions source and anchor; recognize existing complete coverage rather than adding duplicate prose; no edits to generated files |
 | Performance Blog | Revise “every page is 50% faster” without supplied benchmarks | Remove unsupported quantitative claims, verify the mechanism, explain measurement boundaries, invent no evidence |
