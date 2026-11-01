@@ -3,6 +3,7 @@ import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
 import * as content from './content.mdx'
+import Layout from '../components/InstallationLayout'
 
 export const { Page, generateMetadata } = createPage({
   metadata,
@@ -10,6 +11,8 @@ export const { Page, generateMetadata } = createPage({
   categories,
   categoryLink: '/guide/installation/integrations',
   content,
+  Layout,
+  noTOC: true,
 })
 
 export default Page

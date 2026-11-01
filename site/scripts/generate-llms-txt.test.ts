@@ -2,6 +2,7 @@ import { introductionContent } from '../utils/introduction-content'
 import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { installationGuidesMarkdown } from '../utils/installation-guides'
+import { installationIllustrationMarkdown } from '../content/guide/installation/(main)/illustration'
 import { deliveryFences } from '../tests/delivery-examples'
 import { agentGuideContent, agentGuideSlugs, agentFixMarkdown } from '../utils/agent-content'
 import { agentPromptMarkdown, previewWorkflowMarkdown } from '../utils/agent-guide-data'
@@ -544,7 +545,14 @@ test('installation steps retain complete commands, stable headings and navigatio
     const exportedFences = deliveryFences(content.markdown).map(fence => normalizeFence(fence.text))
     for (const fence of deliveryFences(source)) assert.ok(exportedFences.includes(normalizeFence(fence.text)), `${slug}: ${fence.name}`)
     for (const match of source.matchAll(/<DeliveryFlow name="([^"]+)"/g)) assert.ok(content.markdown.includes(deliveryFlowMarkdown(match[1])))
-    assert.doesNotMatch(content.markdown, /<(?:Step(?:Section|L|R|Num|End)?\b|DocumentChoice|InstallationGuides|DemoConfiguredExample|DeliveryFlow)|MCSS_EXPRESSION/)
+    assert.doesNotMatch(content.markdown, /<(?:Step(?:Section|L|R|Num|End)?\b|DocumentChoice|InstallationGuides|InstallationIllustration|DemoConfiguredExample|DeliveryFlow)|MCSS_EXPRESSION/)
+    if (!slug) {
+      assert.ok(content.markdown.includes(installationIllustrationMarkdown()))
+      const example = content.examples.find(example => example.classes.includes('p-md'))
+      assert.ok(example, 'the quick-start preview retains its compiled source')
+      assert.match(example.css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
+      assert.match(example.css, /--spacing-md:\s*1rem/)
+    }
     if (slug === 'integrations') assert.ok(content.markdown.includes(installationGuidesMarkdown()))
     const url = `/guide/installation${slug ? `/${slug}` : ''}`
     for (const heading of previous[url]) {

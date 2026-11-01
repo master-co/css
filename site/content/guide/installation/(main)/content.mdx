@@ -1,39 +1,74 @@
-import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
-import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
-import Footer from './footer.mdx'
+import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
+import DocumentDisclosure from '~/site/components/DocumentDisclosure'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import InstallationIllustration from './components/InstallationIllustration'
 
-## Installation [sr-only]
-Add Master CSS to an existing project with the installer. It detects common frameworks, applies the matching setup, and can install the required packages. Supported build integrations use static rendering by default: complete class names in source become ordinary CSS without a browser engine.
+Add Master CSS to an existing app, then check that a class in your page produces the expected style. The default setup uses static CSS: your build integration finds complete class names in source and delivers a stylesheet to the browser.
+
+## Before you start \{#installation\}
+
+Use Node.js 24 and open the app's root directory, where its `package.json` lives. The installer updates an existing project; it does not create a framework starter. Your app should already have a working development command.
+
+For manual setup or framework-specific files, use the [integration guides](/guide/installation/integrations). If your project has no matching build integration, follow the [standalone CLI setup](/guide/installation/cli).
 
 ## Install in your project
 
 <StepSection>
-  <Step $row>
-    <StepL>
-      ### Add Master CSS
-      Run the installer from the root of an existing project, such as a [Vite app](https://vite.dev/guide/). It detects the framework, updates the project setup and installs matching packages from the `rc` channel with the detected package manager.
-    </StepL>
-    <StepR>
-      ```bash
-      npm create @master/css@rc -- --yes
-      ```
-    </StepR>
+  <Step>
+    ### Add Master CSS
+
+    Run the installer from the project root. It detects the framework and package manager, updates the setup files, and installs the matching Master CSS packages from the `rc` channel.
+
+    ```bash
+    npm create @master/css@rc -- --yes
+    ```
+
+    `--yes` accepts the recommended defaults. These include the core integration, ESLint configuration, the MCP package, and Master CSS guidance in `AGENTS.md`. The printed MCP registration and skill-installation commands are optional next steps for your coding tools; the installer does not run them.
+
+    <DocumentDisclosure title="Review or limit the setup">
+
+    Add `--dry-run` to inspect the plan without changing project files or installing the planned dependencies:
+
+    ```bash
+    npm create @master/css@rc -- --yes --dry-run
+    ```
+
+    For only the core framework setup, add `--minimal` to the install command. It skips the ESLint, MCP and agent-guidance additions. If you prefer to install dependencies yourself, add `--no-install`.
+
+    </DocumentDisclosure>
+  </Step>
+  <Step>
+    ### Check the stylesheet connection
+
+    Read the setup summary and finish any framework-specific instructions it prints. Some integrations need a follow-up setup command or a separate CSS generation process; see your [framework's guide](/guide/installation/integrations) for those steps.
+
+    Confirm that your app loads the stylesheet the installer created or updated. That stylesheet should contain:
+
+    ```css
+    @import '@master/css';
+    ```
+
+    For example, a plain Vite app commonly imports `./style.css` from `src/main.js`. The CSS file's name and import location depend on the framework. Installing the packages alone does not load the stylesheet into your page.
+
+    <InstallationIllustration />
   </Step>
   <Step>
     ### Start using Master CSS
-    Start the dev server, then use Master CSS classes in your markup.
-  </Step>
-  <HelloWorld>
 
-```html name=index.html
-<h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
+    Start or restart your app's development server with its existing command, such as `npm run dev`. Put this markup in a visible page or component. In JSX, write `className` in place of `class`.
+
+    <DemoConfiguredExample name="installation-check" title="Check your first style" source="" caption="With the preset, p-md adds 1rem of padding on every side of the text." html={`<p class="w-fit mx-auto my(0) p-md r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong">
   Hello World
-</h1>
-```
+</p>`} />
 
-  </HelloWorld>
+    You should see text inside a small bordered surface. Change `p-md` to `p-lg` and save: its padding should grow from `1rem` to `1.5rem` on all four sides. This checks that changes in your source reach the page, beyond the installer completing successfully.
+  </Step>
 </StepSection>
 
-Continue with the [Syntax Tutorial](/guide/syntax-tutorial) to build a card and check its generated CSS step by step.
+## If the style does not appear
 
-<Footer />
+Check that the page renders the markup you edited and loads the app stylesheet. Then check that the build integration is enabled and scans that source file. Keep class names complete, as in `p-lg`; constructing them from fragments such as `p-${size}` prevents a static scan from seeing the final class.
+
+If the installer reports an unrecognized framework or incomplete setup, follow the matching [integration guide](/guide/installation/integrations) or the [CLI guide](/guide/installation/cli). For files outside the normal application scope, see [Scanning and Pruning](/guide/scanning-and-pruning).
+
+Once the spacing change works, continue with the [Syntax Tutorial](/guide/syntax-tutorial) to build a card with interaction states and responsive conditions.
