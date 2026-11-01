@@ -170,3 +170,6 @@ original provenance, current frozen sources/tools, old/new artifact hashes,
 counterfactual variants, validation, audit helpers and the rejected preflight log.
 Observation SHA-256:
 `92ef7361b9415d26aff80d44e8e5c55386f6f331ffb3f1771f02c2aac2854fab`.
+
+The subsequent [regression guard](repair-regression.md) investigates that remaining
+failure and tests isolated proposals with explicit adoption decisions.

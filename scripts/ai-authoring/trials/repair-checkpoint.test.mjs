@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { chromium } from '@playwright/test'
 import { repairCheckpoint, checkpointStatus, verifiedRepairLoop } from './repair-checkpoint.mjs'
 import { prepare, repository } from './control.mjs'
+import { compareRepairCandidate } from './repair-regression.mjs'
 
 const verdict = (pass = true) => ({ functional: pass, styling: pass, accessibility: pass, browser: pass ? 'passed' : 'failed', checks: [{ id: 'hover', pass }], diagnostics: { version: 1, evidence: [] } })
 
@@ -79,6 +80,8 @@ test('host checkpoints rebuild and check hover, inherited line-height and touch 
     const regression = await run(broken, 2)
     assert.equal(regression.status, 'failed')
     assert.ok(regression.newFailingChecks.includes('touch-tap'))
+    assert.equal(compareRepairCandidate(broken, regression).reason, 'regression')
+    assert.ok(compareRepairCandidate(broken, regression).regressions.some(d => d.check === 'touch-tap'))
     await writeFile(join(work, 'app.css'), original)
     const fixed = await run(regression, 3)
     assert.equal(fixed.status, 'passed')
@@ -86,5 +89,6 @@ test('host checkpoints rebuild and check hover, inherited line-height and touch 
     assert.notEqual(fixed.sourceHash, broken.sourceHash)
     assert.equal(fixed.sourceHash, start.sourceHash)
     assert.ok(fixed.generatedCSSHash)
+    assert.equal(compareRepairCandidate(broken, fixed).adopt, true)
   } finally { await browser.close(); await rm(work, { recursive: true, force: true }) }
 })
