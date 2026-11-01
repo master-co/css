@@ -51,7 +51,7 @@
   /* Surfaces */
   --ui-surface-canvas:   light-dark(oklch(98.6% .0008 265), oklch(19.4% .0019 265));
   --ui-surface-tray:     light-dark(oklch(96% .0012 265),   oklch(17.4% .0018 265));
-  --ui-surface-stage:    light-dark(oklch(98.9% .0006 265), oklch(18.4% .0019 265));
+  --ui-surface-stage:    light-dark(oklch(98.9% .0006 265), oklch(20.4% .002 265));
   --ui-surface-sheet:    light-dark(oklch(100% 0 none),     oklch(24.2% .0022 265));
   --ui-surface-sheet-lo: light-dark(oklch(99.3% .0005 265), oklch(22.8% .0021 265));
   --ui-surface-well:     light-dark(oklch(96.6% .0011 265), oklch(16.4% .0017 265));
@@ -103,7 +103,7 @@
 
   /* Stage lighting */
   --ui-stage-light: radial-gradient(110% 80% at 18% -14%, light-dark(oklch(100% 0 none / .9), oklch(100% 0 none / .04)), transparent 60%),
-                 linear-gradient(180deg, transparent 55%, light-dark(oklch(18% 0 none / .02), oklch(0% 0 none / .12)));
+                 linear-gradient(180deg, transparent 55%, light-dark(oklch(18% 0 none / .02), oklch(0% 0 none / .08)));
   --ui-hatch: repeating-linear-gradient(135deg, light-dark(oklch(22% .002 265 / .13), oklch(100% 0 none / .1)) 0 1px, transparent 1px 7px);
 
   /* Teaching tones — specimens only, never chrome */

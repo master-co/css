@@ -22,7 +22,7 @@ The approved visual specification is the published "Master CSS Site Design Syste
 
 1. **Monochrome interface.** Chrome uses ink and pearl only. Hue appears in teaching specimens (`--ui-tone-*`, always named by a legend or label) and status (`--ui-status-*`). Brand gold (`data-variant="gold"`) belongs to the homepage and the brand page, one gold focus per view.
 2. **Zinc neutrals.** Every neutral is the preset's zinc: hue 265 at chroma .0005–.003. Lines and shadows carry no hue of their own (`oklch(22% .002 265 / α)` and `oklch(18% 0 none / α)` in light mode, white and black alphas in dark mode). No blue sheen.
-3. **One material ladder.** canvas → tray → stage → sheet → float; a well sits below its surroundings. Never invent a surface color. Light: canvas 98.6 · tray 96 · stage 98.9 · sheet 100 · well 96.6 · code 99.6. Dark: canvas 19.4 (zinc-95) · tray 16.6 · stage 18.4 · sheet 24.2 · float 26.4 · well 16.4 · code 21.2.
+3. **One material ladder.** canvas → tray → stage → sheet → float; a well sits below its surroundings. Never invent a surface color. Light: canvas 98.6 · tray 96 · stage 98.9 · sheet 100 · well 96.6 · code 99.6. Dark: canvas 19.4 (zinc-95) · tray 17.4 · stage 20.4 · sheet 24.2 · float 26.4 · well 16.4 · code 21.2.
 4. **Legible dark edges.** Dark lines are firmer than light ones so surfaces never blur into each other: hair .075 · contour .11 · divider .13 · strong .22 · mark .32 (white alpha); light: .065 · .095 · .12 · .2 · .3.
 5. **Elevation order.** sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay. Hover lifts 0.5px to rise-1h; press sinks to the well. Do not express state by changing hue.
 6. **Small concentric radii.** 3 / 4 / 6 / 8 / 10 / 14 with a 4px tray inset: tray 14 → stage, code, table and sheet 10; menu 8 → item 4; segmented track 6 + its padding → thumb 6. Nothing rounder except pills and dots.
@@ -67,3 +67,4 @@ Content and example markup keep teaching the preset vocabulary (`bg-surface-rais
 - Rejected (round 2): a shorter 48px phone header — the blog and homepage offsets are built on the 60px header, and the gain was small.
 - Rejected (round 2): removing the tray's inner stage contour to avoid "card in card" — the tray is the system's example frame and the stage edge is what separates specimen from caption; instead the dark tray was lifted to 17.4% so it no longer reads as a hole.
 - Rejected (round 2): unframed tables as in the original — the framed sheet keeps sticky heads and horizontal scroll legible; its radius and contour are now small and quiet.
+- Rejected (round 3): a dark stage darker than the canvas (18.4% under a .12 black falloff) — specimens sat in a hole. The dark ladder now mirrors light: tray 17.4 < canvas 19.4 < stage 20.4, with a .08 falloff.
