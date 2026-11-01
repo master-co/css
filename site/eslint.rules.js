@@ -45,13 +45,21 @@ const projectConfig = {
   },
 }
 
+// Site UI uses tokens; a raw native value must be a deliberate, reviewed exception.
+const masterCSSPolicyConfig = {
+  rules: {
+    '@master/css/no-unapproved-raw-values': 'warn'
+  }
+}
+
 const configs = [
   react.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
   reactHooksConfig,
   typescriptConfig,
   projectConfig,
-  ...css
+  ...css,
+  masterCSSPolicyConfig
 ]
 
 const mdxDisabledRules = Object.fromEntries(configs
