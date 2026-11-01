@@ -14,7 +14,7 @@
   .ui-steps-content :is(h2, h3, h4) > .ui-anchor { display: none; }
   .ui-steps-content > :is(h2, h3, h4), .ui-steps-text > :is(h2, h3, h4) { margin-bottom: calc(var(--ui-space-md) * -1 + var(--ui-space-2xs)); }
   .ui-steps-content :is(h2, h3, h4) + p { margin-top: 0; }
-  .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); line-height: 1.75; }
+  .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }
   .ui-steps-content :is(p, ul, ol) { margin-block: 0; }
   .ui-steps-text { display: grid; align-content: start; gap: var(--ui-space-md); }
   .ui-steps-content :is(.ui-code, .ui-tray) { margin: 0; }

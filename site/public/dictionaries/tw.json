@@ -105,6 +105,7 @@
   "$SearchNotFound": "找不到符合<1>\"{{keyword}}\"</1>的結果",
   "Docs": "文件",
   "Resources": "資源",
+  "Legal": "法律",
   "More": "更多",
   "Package": "套件",
   "Design Token": "設計標記",

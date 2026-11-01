@@ -22,22 +22,13 @@
   :is(figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(.ui-prose > *) {
     margin-inline: calc(var(--prose-bleed) * -1);
   }
-  /* In the documentation a hanging surface sets its own words back by the bleed, so file names, code, table cells and
-     example titles keep the text's start edge while the frame hangs past it (`--hang`, read by code, tables and trays). */
-  :is(.ui-tray, .ui-code, .ui-table, figure):is(
-    .ui-docs-article > *,
-    .ui-docs-article > :is(div, section, site-island):not([class]) > *,
-    .ui-docs-article > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
-  ) { --hang: var(--prose-bleed); }
   /* Document steps reach the hanging edge on the end side, so their code ends where every other surface ends. */
   .ui-docs-article > .ui-steps[data-variant="document"] { margin-right: calc(var(--prose-bleed) * -1); }
   /* A result shown after a step (a preview) hangs on both sides like any surface; the rail runs on into it. */
-  .ui-docs-article > .ui-steps[data-variant="document"] > :not(li) { --hang: var(--prose-bleed); margin: 0 0 0 calc(var(--prose-bleed) * -1); }
+  .ui-docs-article > .ui-steps[data-variant="document"] > :not(li) { margin: 0 0 0 calc(var(--prose-bleed) * -1); }
   /* Index cards are links, not frames: they keep the column's edges. */
   .ui-docs-article .ui-index { margin-inline: 0; }
   :is(img, video, iframe):is(.ui-prose > *, .ui-prose > :is(div, section, site-island):not([class]) > *) { width: calc(100% + var(--prose-bleed) * 2); max-width: none; }
-  /* The figure bleeds; its caption is reading text and stays on the text column. */
-  .ui-prose > figure:not(.ui-tray) > :is(figcaption, p) { padding-inline: var(--prose-bleed); }
   /* A table its author wrapped in a scroll region bleeds as the region. */
   .ui-prose > [role="region"]:has(> :is(.ui-table, table)) { margin: var(--ui-space-xl) calc(var(--prose-bleed) * -1); }
   .ui-prose > [role="region"][tabindex]:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
@@ -63,8 +54,8 @@
   .ui-prose > details:not([class]) > summary { padding: var(--ui-space-sm) 0; color: var(--ui-text-strong); font-weight: var(--ui-weight-strong); font-size: var(--ui-text-small); cursor: pointer; }
   .ui-prose > details:not([class]) > summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
 
-  /* Han text reads with more air between lines; its headings keep their natural spacing. */
-  .ui-prose:lang(zh) { line-height: 1.8; text-autospace: normal; }
+  /* Han text keeps the body's double leading; its headings keep their natural spacing. */
+  .ui-prose:lang(zh) { text-autospace: normal; }
   .ui-prose:lang(zh) > :is(h2, h3, h4) { letter-spacing: 0; }
 
   /* Phones have no margin for the heading anchor: it follows the heading instead. */

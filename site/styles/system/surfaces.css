@@ -7,14 +7,12 @@
   .ui-well { border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
 
   /* The tray holds one complete example: head, stage, source, caption */
-  /* Inside a hanging tray the words step back by the hang less the tray's inset (`--hang`, see code.css). */
-  .ui-tray { --tray-hang: calc(var(--hang, 0px) - var(--ui-inset)); position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
-  .ui-tray > * { --hang: var(--tray-hang); }
-  .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px max(var(--ui-inset), var(--hang, 0px)) var(--ui-space-xs) max(var(--ui-space-sm), var(--hang, 0px)); }
+  .ui-tray { position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
+  .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px var(--ui-inset) var(--ui-space-xs) var(--ui-space-sm); }
   .ui-tray-title { min-width: 0; margin: 0; color: var(--ui-text-strong); font-size: .8125rem; font-weight: var(--ui-weight-medium); line-height: 1.4; letter-spacing: 0; }
   .ui-tray-description { margin: 2px 0 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
   .ui-tray-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
-  .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) max(var(--ui-space-sm), var(--hang, 0px)) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
+  .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
   .ui-tray-caption code { color: var(--ui-text-body); }
   .ui-tray > * + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: var(--ui-inset); }
   .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: 0; }
@@ -37,6 +35,10 @@
   .ui-stage[data-background="checkerboard"] { background: conic-gradient(var(--ui-line-hair) 25%, transparent 0 50%, var(--ui-line-hair) 0 75%, transparent 0) 0 0 / 16px 16px, var(--ui-surface-stage); }
   @media (width < 35rem) { .ui-stage { min-height: 12rem; padding: 2.5rem 1.125rem; } }
 
+  /* Inside a tray the stage is told apart by its tone alone: the tray's ring is the example's one edge, so a framed
+     subject on the stage (a card, a form, a window) is the only line within it. */
+  .ui-tray .ui-stage { box-shadow: none; }
+
   /* Standalone stage without a tray (embedded in prose for very small specimens) */
   .ui-stage[data-standalone] { border-radius: var(--ui-radius-2xl); }
 
@@ -46,18 +48,22 @@
   .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-compare .ui-stage { min-height: 11rem; padding: var(--ui-space-xl) var(--ui-space-lg); }
 
-  /* Browser chrome for a real document in an iframe */
-  .ui-browser { overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-stage); box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
-  .ui-browser-bar { display: flex; align-items: center; gap: var(--ui-space-sm); height: 2.5rem; padding: 0 var(--ui-space-sm); border-bottom: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
+  /* Browser chrome for a real document in an iframe: one contour drawn over the whole window, the toolbar a tray tone
+     above the page and the address a plain field on it. Tone, not rules, parts them. */
+  .ui-browser { position: relative; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-stage); box-shadow: 0 1px 0 var(--ui-lip); }
+  .ui-browser::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--ui-line-contour); pointer-events: none; }
+  /* A tray that holds only a browser lends it its place in the flow, not another frame. */
+  .ui-tray:has(> .ui-browser:only-child) { padding: 0; border-radius: var(--ui-radius-xl); background: none; box-shadow: none; }
+  .ui-browser-bar { display: flex; align-items: center; gap: var(--ui-space-sm); height: 2.5rem; padding: 0 var(--ui-space-sm); background: var(--ui-surface-tray); }
   .ui-browser-dots { display: flex; gap: 6px; }
-  .ui-browser-dots > i { width: 9px; height: 9px; border-radius: 50%; background: var(--ui-line-strong); }
-  .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
+  .ui-browser-dots > i { width: 9px; height: 9px; border-radius: 50%; background: var(--ui-line-divider); }
+  .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: var(--ui-radius-md); background: var(--ui-surface-sheet); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
   .ui-browser-body { position: relative; min-height: 12rem; }
   /* A real document: the tools set the viewport width, the handle follows its edge */
   .ui-browser-body:has(> .ui-browser-viewport) { min-height: 0; overflow-x: auto; scrollbar-width: thin; }
   .ui-browser-viewport { position: relative; max-width: none; margin-inline: auto; }
   .ui-browser-viewport > iframe { display: block; width: 100%; border: 0; background: transparent; }
-  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-xs) var(--ui-space-sm); border-top: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
+  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-xs) var(--ui-space-sm); background: var(--ui-surface-tray); }
   .ui-browser-tools > .ui-range { flex: 1 1 6rem; max-width: 12rem; }
   .ui-browser-tools > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
   .ui-resize { position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; width: 1rem; cursor: ew-resize; touch-action: none; }

@@ -8,7 +8,7 @@ import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import { useI18n, useTranslation } from '~/site/docs-shell/contexts/i18n'
 import { useLocale } from '~/site/docs-shell/contexts/locale'
 import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
-import { footerLegalLinks, footerNavGroups } from '~/site/navigation'
+import { footerNavGroups } from '~/site/navigation'
 
 /** An open closing colophon, aligned to the page's drafting rails. */
 export default function HomeFooter() {
@@ -40,11 +40,6 @@ export default function HomeFooter() {
         <div className="home-footer-base">
           <div className="home-footer-meta">
             <span className="home-footer-copyright">© {new Date().getFullYear()} Aoyue Design LLC.</span>
-            <div className="home-footer-legal">
-              {footerLegalLinks.map((link) => (
-                <Link className="home-footer-link" href={link.href} key={link.href}>{$(link.name)}</Link>
-              ))}
-            </div>
           </div>
           <div className="home-footer-preferences">
             <label className="home-footer-select">

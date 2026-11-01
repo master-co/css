@@ -1,9 +1,9 @@
 /* Prose: the reading column. Rules reach only the article's own flow, never into components.
    Wide surfaces (tray, code, table, steps, index) bleed past the text by one gutter. */
 @layer components {
-  /* One line unit (--line, 28px at 16px) sets the vertical rhythm: paragraphs part by three quarters of it, sections
-     open on two lines, wide blocks keep one line of air. */
-  .ui-prose { --measure: 41rem; --bleed: 2rem; --line: 1.75rem; color: var(--ui-text-body); font-size: var(--ui-text-base); line-height: var(--ui-leading-body); }
+  /* One line unit (--line, 32px at 16px: body text set at line-height 2) sets the vertical rhythm: paragraphs part by
+     three quarters of it, sections open on two lines, wide blocks keep one line of air. */
+  .ui-prose { --measure: 41rem; --bleed: 2rem; --line: 2rem; color: var(--ui-text-body); font-size: var(--ui-text-base); line-height: var(--ui-leading-body); }
   .ui-prose > :is(p, ul, ol, h2, h3, h4, blockquote, .ui-callout, .ui-disclosure, hr):not(:where(.ui-steps)) { max-width: var(--measure); }
   .ui-prose > :is(.ui-tray, .ui-code, .ui-table, .ui-index) { margin-inline: calc(var(--bleed) * -1); }
   @media (width < 52rem) { .ui-prose { --bleed: 0rem; } }
@@ -11,7 +11,7 @@
   .ui-prose > :is(.ui-tray, .ui-code, .ui-table, .ui-callout, .ui-steps, .ui-index, .ui-params) { margin-block: var(--line); }
   .ui-prose > h2 { margin: calc(var(--line) * 2) 0 calc(var(--line) * .5); color: var(--ui-text-strong); font-size: var(--ui-text-h2); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h2); letter-spacing: var(--ui-tracking-h2); text-wrap: balance; }
   .ui-prose > h3 { margin: calc(var(--line) * 1.5) 0 calc(var(--line) * .375); color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); }
-  .ui-prose > h4 { margin: calc(var(--line) * 1.25) 0 calc(var(--line) * .25); color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-strong); line-height: var(--line); }
+  .ui-prose > h4 { margin: calc(var(--line) * 1.25) 0 calc(var(--line) * .25); color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-strong); line-height: 1.5rem; }
   /* A subsection that opens its section sits close under it, as one heading group. */
   .ui-prose > h2 + h3, .ui-prose > h3 + :is(h3, h4) { margin-top: calc(var(--line) * .5); }
   .ui-prose > :is(h2, h3) { position: relative; width: fit-content; scroll-margin-top: 5rem; }
@@ -35,8 +35,8 @@
   .ui-prose > ol:not([class]) li::marker { color: var(--ui-text-muted); font: var(--ui-weight-regular) .875em var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-prose > hr { height: 1px; margin: calc(var(--line) * 1.75) 0 calc(var(--line) * 1.25); border: 0; background: var(--ui-line-divider); }
   .ui-prose > hr + * { margin-top: 0; }
-  /* A rule an author sets before a section heading is space only: the heading's own opening already parts the sections. */
-  .ui-prose > hr:has(+ h2) { height: 0; margin: 0; background: none; }
+  /* A rule an author sets before a section heading (or the legacy anchor before it) is space only: the heading's own opening already parts the sections. */
+  .ui-prose > hr:has(+ h2, + a[id]:empty + h2) { height: 0; margin: 0; background: none; }
   .ui-prose > hr + h2 { margin-top: calc(var(--line) * 2); }
   .ui-prose > blockquote { margin-inline: 0; padding: .25rem 0 .25rem 1.25rem; box-shadow: inset 1px 0 0 var(--ui-line-strong); color: color-mix(in oklab, var(--ui-text-strong) 50%, var(--ui-text-body)); }
   .ui-prose > blockquote > p { margin-block: 0; } .ui-prose > blockquote > p + p { margin-top: .75em; }

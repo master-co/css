@@ -1,8 +1,7 @@
 /* Code: a quiet panel that owns its frame. Inside a tray it shares the tray's 10px inner radius and 4px inset. */
 @layer components {
   .ui-code { position: relative; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); color: var(--ui-code-text); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
-  /* `--hang` (set where a panel hangs past the text) sets the panel's words back to the text's edge. */
-  .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: 2.5rem; padding: var(--ui-inset) var(--ui-inset) 0 max(var(--ui-space-sm), calc(var(--hang, 0px) - 4px)); }
+  .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: 2.5rem; padding: var(--ui-inset) var(--ui-inset) 0 var(--ui-space-sm); }
   .ui-code-bar > .ui-tabs { flex: 1; min-width: 0; }
   .ui-code-file { display: inline-flex; align-items: center; gap: var(--ui-space-xs); flex: 1; min-width: 0; padding-left: 4px; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }
   .ui-code-file svg { flex: none; width: 14px; height: 14px; }
@@ -10,7 +9,7 @@
   .ui-code pre:focus-visible { @apply --ui-focus-ring; outline-offset: -4px; border-radius: var(--ui-radius-md); }
   /* Under a bar the code starts a short step down, so the file name reads as its caption. */
   .ui-code:has(> .ui-code-bar) pre { padding-top: var(--ui-space-2xs); }
-  .ui-code-line { display: block; padding: 0 max(var(--ui-space-lg), var(--hang, 0px)) 0 max(var(--ui-space-md), var(--hang, 0px)); }
+  .ui-code-line { display: block; padding: 0 var(--ui-space-lg) 0 var(--ui-space-md); }
   .ui-code[data-numbers] { counter-reset: line; }
   .ui-code[data-numbers] .ui-code-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 1.75rem; margin-right: var(--ui-space-sm); color: var(--ui-text-disabled); text-align: right; user-select: none; }
   .ui-code-line[data-mark="active"] { background: var(--ui-code-active); box-shadow: inset 2px 0 0 var(--ui-line-mark); }
@@ -23,9 +22,10 @@
   .ui-code .t { color: var(--ui-code-function); } .ui-code .a { color: var(--ui-code-property); } .ui-code .s { color: var(--ui-code-string); }
   .ui-code .p { color: var(--ui-code-punctuation); } .ui-code .k { color: var(--ui-code-keyword); } .ui-code .c { color: var(--ui-code-comment); font-style: italic; } .ui-code .n { color: var(--ui-code-number); }
   .ui-code > .ui-disclosure { border-top: 1px solid var(--ui-line-hair); }
-  .ui-code > .ui-disclosure > summary { padding-inline: max(var(--ui-space-md), var(--hang, 0px)); }
+  .ui-code > .ui-disclosure > summary { padding-inline: var(--ui-space-md); }
   .ui-code > .ui-disclosure > pre { padding-top: 0; }
-  .ui-tray > .ui-code { box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
+  /* In a tray, source code is a lighter field like the stage beside it: tone, not another ring. */
+  .ui-tray > .ui-code { box-shadow: none; }
 
   /* Tabs: a row of quiet chips; the selected one is raised */
   .ui-tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }

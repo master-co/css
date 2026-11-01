@@ -17,13 +17,13 @@
   --ui-text-title: clamp(1.875rem, 1.4rem + 2vw, 2.375rem); --ui-leading-title: 1.16;  --ui-tracking-title: -.028em;
   --ui-text-h2: 1.625rem;       --ui-leading-h2: 2.1875rem;   --ui-tracking-h2: -.022em;
   --ui-text-h3: 1.25rem;        --ui-leading-h3: 1.75rem;     --ui-tracking-h3: -.014em;
-  --ui-text-base: 1rem;         --ui-leading-body: 1.75;
-  --ui-text-lead: 1.125rem;     --ui-leading-lead: 1.65;
-  --ui-text-small: .875rem;     --ui-leading-small: 1.65;
-  --ui-text-caption: .8125rem;  --ui-leading-caption: 1.55;
+  --ui-text-base: 1rem;         --ui-leading-body: 2;
+  --ui-text-lead: 1.125rem;     --ui-leading-lead: 1.75;
+  --ui-text-small: .875rem;     --ui-leading-small: 1.8;
+  --ui-text-caption: .8125rem;  --ui-leading-caption: 1.65;
   --ui-text-label: .75rem;      --ui-tracking-label: 0;
-  /* Eyebrow: a small capital caption over a group (sidebar, footer, kicker, contents) — sans, medium, widely tracked. */
-  --ui-text-eyebrow: .6875rem;  --ui-tracking-eyebrow: .08em;
+  /* Eyebrow: a small capital caption over a group (sidebar, footer, kicker, contents) — sans, medium, boldly tracked. */
+  --ui-text-eyebrow: .6875rem;  --ui-tracking-eyebrow: .14em;
   --ui-text-code: .8125rem;     --ui-leading-code: 1.7;
   /* English runs a step lighter than the regular cut, as the original site did; Han text keeps 400. */
   --ui-weight-regular: 400; --ui-weight-medium: 460; --ui-weight-strong: 500; --ui-weight-heading: 400;
@@ -48,8 +48,8 @@
   --ui-duration-press: 60ms; --ui-duration-quick: 160ms; --ui-duration-base: 280ms; --ui-duration-slow: 640ms;
 }
 :root:lang(en) { --ui-weight-regular: 350; }
-/* Han text has no capitals: an eyebrow keeps a readable size and only a hair of tracking. */
-:lang(zh) { --ui-text-eyebrow: .75rem; --ui-tracking-eyebrow: .04em; }
+/* Han text has no capitals: an eyebrow keeps a readable size and opens its characters a little less. */
+:lang(zh) { --ui-text-eyebrow: .75rem; --ui-tracking-eyebrow: .1em; }
 
 :root, :host, .light, .dark {
   /* Surfaces */
