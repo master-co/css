@@ -7,8 +7,8 @@ import { DemoItem, DemoLabel, DemoMedia, DemoSurface } from './primitives'
 export function FoundationMedia() {
   return <DemoContainer title="A component follows its container" data-foundation="media" caption="Below 28rem of container width, the media stacks. At 28rem it keeps a 9rem width beside flexible text.">
       <div className="container-inline">
-        <article className="flex flex-col items-start gap-md p-md flex-row@container((width>=28rem)) ui-sheet" data-elevation="1">
-          <DemoMedia tone="blue" className="h-auto w-full (aspect-ratio:4/3) r-sm shrink(0)@container((width>=28rem)) (width:9rem)@container((width>=28rem))" aria-label="Blue mountain illustration" />
+        <article className="flex flex-col items-start gap-md p-md flex-row@container(width>=28rem) ui-sheet" data-elevation="1">
+          <DemoMedia tone="blue" className="h-auto w-full (aspect-ratio:4/3) r-sm shrink(0)@container(width>=28rem) (width:9rem)@container(width>=28rem)" aria-label="Blue mountain illustration" />
           <div className="(flex:1) min-w(0)">
             <DemoLabel>Collection / 024</DemoLabel>
             <h3 className="mb(0) mx(0) mt-xs text-md font-semibold">Field notes</h3>
@@ -23,7 +23,7 @@ export function FoundationMedia() {
 export function FoundationContainerGrid() {
   return <DemoContainer title="One card, two available widths" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
       <section className="container-inline">
-        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container((width>=28rem)) ui-sheet" data-elevation="1">
+        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container(width>=28rem) ui-sheet" data-elevation="1">
           <DemoMedia tone="blue" className="h-auto w-full (aspect-ratio:3/2) r-sm" aria-label="Blue mountain illustration" />
           <div className="min-w(0)">
             <DemoLabel>Asset library</DemoLabel>
