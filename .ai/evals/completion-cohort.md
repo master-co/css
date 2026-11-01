@@ -134,3 +134,9 @@ reports, all proposals and retained copies, independent verification, prompts,
 events, diffs, decisions, usage, automated and manual audits, and prior test logs.
 Observations SHA-256:
 `f644b6c107e1f79bb595f5b0cc450a0b7792055a5b1f50860ab8d327314211ab`.
+
+The [lint coverage follow-up](lint-coverage.md) adds explicit checked-input and
+diagnostic-file counts plus execution status to CLI/MCP lint reports. Its final
+eight-scenario comprehension campaign passed 16/16 after an initial 10/16 exposed
+manifest-entry ambiguity. These report-reading observations do not replace the
+repair outcomes recorded here.

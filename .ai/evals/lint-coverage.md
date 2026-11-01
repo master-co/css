@@ -85,3 +85,74 @@ Before the first campaign, the initial artifact collector incorrectly assumed
 the preset had a `dist` directory and exited before any model invocation. It was
 corrected to hash the actual preset source, native binding and downstream artifacts;
 prepare-only validation then passed before freezing the first campaign.
+
+## Final result — 2026-11-01
+
+The follow-up frozen at `c395f5af1` completed **16/16 correct interpretations**,
+with no unverified calls. Client `codex-cli 0.166.0-alpha.5.1`, `gpt-6-luna` low
+reasoning, the prompt, grader, two-repeat schedule and 120-second limit matched
+the first campaign. Only the lint report implementation/schema artifacts changed;
+the scripts, fixtures and scoring expectations were unchanged.
+
+| Actual report scenario | First campaign | With coverage description |
+| --- | ---: | ---: |
+| Clean CLI file | 0/2 | 2/2 |
+| Mixed clean/invalid CLI files | 2/2 | 2/2 |
+| Unmatched CLI pattern | 2/2 | 2/2 |
+| Manifest-blocked CLI | 2/2 | 2/2 |
+| Clean stdin | 2/2 | 2/2 |
+| Successful CLI fix | 1/2 | 2/2 |
+| Clean MCP project | 0/2 | 2/2 |
+| Clean MCP buffer | 1/2 | 2/2 |
+
+All final answers correctly separated checked inputs from files with diagnostics,
+identified the reported paths and execution status, and declined browser or
+whole-project verification. Manual review of all sixteen explanations found no
+contradictions with these fields or the real reports. The first campaign's six
+failed explanations remain archived; none were replaced by a successful retry.
+
+Independent audit regraded the exact fields from raw final messages, verified
+protocol/report hashes and all 463 frozen artifacts, reconciled usage and the
+complete call set, and found no issues. Neither campaign used tools during model
+interpretation, timed out, or had model execution failures. The first used 168,046
+input tokens (118,528 cached) and 1,507 output tokens; the follow-up used 168,846
+input tokens (139,904 cached) and 1,406 output tokens. These are raw usage counts,
+not a billing or causal-efficiency comparison.
+
+The result supports the final report's readability for these eight scenarios.
+It does not prove a universal success rate: questions explicitly requested
+structured coverage fields, reports were read in isolation, and each scenario had
+only two calls. The full seven-case repair cohort was not rerun with these binaries.
+The semantic linter, CSS output and adoption gate were not modified.
+
+## Checks and known unrelated failures
+
+- CLI's full suite passed 89 tests; MCP's full suite passed 52. After adding the
+  description, CLI core's 13 tests and MCP core/schema's 13 tests passed again.
+- The exact-field grader test passed. CLI/MCP builds and package lint passed.
+  Direct package type checks (`tsc -p ... --noEmit`) passed after the final edits.
+- Standard CLI/MCP `type-check` scripts remain blocked by the existing compiler
+  test at `packages/compiler/tests/bug-hunt-output-source-maps.test.ts:96`, which
+  accesses `nativeMappings` absent from `MasterCSSDirectiveCompilation`. That
+  source and compiler behavior were not changed here.
+- Site preparation and lint passed. Full Reference validation passed 22 of 24:
+  unrelated layer-example and Syntax Tutorial export assertions failed at
+  `site/reference/reference.test.ts:184` and `:327` (17 examples versus 19).
+  Tool catalog validation passed, including a focused rerun after final docs.
+- `check:ai-context` and diff checks passed. No dependencies, package/release
+  configuration, Rust semantics or official skill changed.
+
+Public compatibility changes are deliberate: CLI/MCP lint payload v5 removes
+`summary.files` in favor of the two explicit counts; clean MCP buffers now return
+an empty diagnostic `files` array plus explicit checked coverage. Stylish CLI
+output now includes a coverage line even for clean or no-input runs. MCP outer
+envelope v3, lint rules, fixes, source selection and diagnostic exit codes remain
+unchanged. Consumers must read the v5 fields instead of inferring coverage from
+diagnostic records.
+
+Archive: `/Users/aron/master-css-evaluations/2026-11-01-lint-coverage`, with separate
+`first` and `followup` frozen sources/tools, real fixture reports, prompts/events,
+answers, grades, usage, automated audit and final manual review. Validation logs
+also preserve the initial pre-model setup failure and unrelated check failures.
+Follow-up observations SHA-256:
+`aef4412513ef2db38f53b8e757905e5e8c4eca9ab947c383f283bdc7c531594d`.
