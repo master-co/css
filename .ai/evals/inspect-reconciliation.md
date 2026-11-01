@@ -179,3 +179,8 @@ both complete runs, prompts/events, all proposals, model inspection reports,
 independent verification, automated audits, per-turn manual review and validation
 logs. Observations SHA-256:
 `3b14d67c49f25a36cfba8d5796ccbb76300332d835d4f356c96960b575c7371f`.
+
+The subsequent [state reconciliation evaluation](state-reconciliation.md) starts
+from this run's four-failure retained snapshot. Both targeted replications repair
+hover with no new failures, while the manual audit retains diagnostic-disclosure
+and explanation gaps. This does not revise the original two-run result above.
