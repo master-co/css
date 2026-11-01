@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { check } from './check.mjs'
 import { digest } from './repair-inputs.mjs'
+import { repairCompletion } from './repair-completion.mjs'
 
 export async function editableHashes(work) {
   return Object.fromEntries(await Promise.all(['index.html', 'app.css', 'app.js'].map(async file => [file, await readFile(join(work, file)).then(digest, error => { if (error.code === 'ENOENT') return null; throw error })])))
@@ -40,6 +41,7 @@ export async function repairCheckpoint({ work, task, browser, repository, baseli
     scope: 'Host rebuilt current source and ran the complete task checks, including unaffected checks. This result belongs only to sourceHash. Old reports, build/lint success and model claims do not verify subsequent edits.',
     ...(JSON.stringify(before) !== JSON.stringify(after) ? { error: 'Source changed during validation' } : {})
   }
+  feedback.completion = repairCompletion({ ...feedback, assessment })
   // All entry points now describe this checkpoint, including optional expansions.
   let serialized = JSON.stringify(assessment)
   for (const directory of [work, baseline]) if (directory) for (const prefix of [pathToFileURL(directory).href + '/', directory + '/']) serialized = serialized.split(prefix).join('./')
