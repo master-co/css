@@ -113,6 +113,7 @@ async function trial({id,task,arm,model,repeat}) {
     }
     if(run.hostSkillRead) {verdict.functional=false;verdict.checks.push({id:'personal-skill-contamination',pass:false})}
     await writeFile(join(folder,`attempt-${attempt}.acceptance.json`),JSON.stringify(verdict,null,2))
+    await cp(work,join(folder,`attempt-${attempt}.work`),{recursive:true,verbatimSymlinks:true})
     if(run.failed||run.hostSkillRead||verdict.functional&&verdict.styling&&verdict.accessibility&&verdict.browser==='passed') break
   }
   const measured=attempts.every(a=>a.usage)

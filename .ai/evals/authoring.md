@@ -36,10 +36,11 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 32 controls: 12 starters, 12 known solutions and eight
+The first command checks 34 controls: 12 starters, 12 known solutions and ten
 rubric regressions. Valid inner-panel spacing, additional tab stops, shadow focus
-indicators and flex columns must pass. Missing keyboard access, invisible focus,
-incorrect relative units and invalid single-quoted classes must fail.
+indicators, flex columns and renamed progress nodes must pass. Missing keyboard
+access, invisible focus, incorrect relative units, invalid single-quoted classes
+and unconditional hover behavior on touch devices must fail.
 Content inset and columns are measured geometrically; outer-box padding and a
 specific layout implementation are not required. Keyboard checks traverse tab
 stops, and class inspection reads the parsed DOM rather than attribute quotes.
@@ -51,7 +52,7 @@ requests start a fresh session with the existing files and failed-check feedback
 The models are `gpt-6.1-sol` and `gpt-6-luna`, both at low reasoning effort.
 
 The printed external directory contains `protocol.json`, each attempt's prompt,
-command arguments, CLI events, errors, checks, screenshots and final result, plus
+command arguments, CLI events, errors, checks, workspace snapshot and final result, plus
 `observations.jsonl` and `summary.json`. Protocol hashes cover the harness, skill,
 native artifact, CLI/MCP entries and lockfile. Resume completed batches with
 `--resume /absolute/run/path`; changed revisions or hashes are rejected. Interrupted
@@ -59,12 +60,27 @@ partial trial directories require manual inspection before resumption; the runne
 does not silently overwrite them. Authentication/quota/MCP availability errors or
 personal skill access stop scheduling new trials and create `blocked.json`.
 
+To verify a corrected checker against every final output of an affected task:
+
+```sh
+node --import tsx scripts/ai-authoring/trials/recheck.mjs /absolute/run/path dynamic-value
+```
+
+Rechecks require complete task coverage and matching native/CLI artifacts and
+lockfile. They operate on separate copies, record the checker hash and retain the
+original scores, execution failures and protected-file violations. Report them
+as post-run verification, not as new model attempts or retroactive first passes.
+
 Automatic skill instructions/catalog injection must be disabled explicitly:
 `skip_host_skill_discovery` alone did not suppress personal skills in calibration.
 The runner supplies the official skill path only to skill arms, and disables
 `mastercss_suggest_classes` in the other MCP arms. This measures explicit skill
 use, not automatic discovery or installation. Dependency reads remain available;
 filesystem isolation is not a security boundary against reading local sources.
+Every arm receives the same existing baseline instructions; skill and MCP arms
+add capabilities to that baseline. The import task explicitly requires at least
+one newly spelled Master utility; a native-CSS-only rewrite is outside that task's
+conversion requirement even when it renders correctly.
 
 Checks cover the recorded browser states, computed properties, source contracts
 and selected accessibility behaviors. A category without a task-specific check
@@ -73,6 +89,9 @@ not measure subjective design quality, all CSS properties, other browsers or
 real onboarding. The service exposes model identifiers, not immutable weight
 revision IDs; report that limitation alongside results. Input token totals include
 cached inputs reported by the CLI and are not a billing estimate.
+Unmatched-class counts sum names that are neither matched utilities nor declared
+native classes in each trial. They are not a complete CSS value-validity audit;
+the same unmatched name can occur in multiple trials.
 
 - Freeze a corpus commit containing all task fixtures, package versions, two model versions, client,
   tools, time budget and a maximum of two repair requests. Keep all attempts,
@@ -118,3 +137,76 @@ Targets from the product plan are hypotheses: 90% success within two repairs,
 voluntary testers after the controlled runs; record setup, first useful UI,
 second-change success and subsequent reuse. No automatic telemetry or outreach
 is part of the tools. Do not publish improvement claims before observations exist.
+
+## Recorded experiment: 2026-11-01
+
+Frozen source: `ec053fadb`. Codex CLI `0.166.0-alpha.5.1`, `gpt-6.1-sol` and
+`gpt-6-luna`, low reasoning, four concurrent trials, 120 seconds per attempt and
+at most two repairs. All 240 task/arm/model/repetition cells completed, with no
+timeouts, service/isolation failures or missing token/class counts. Calibration
+runs were excluded; personal-skill injection and overly restrictive padding/tab
+checks were corrected before the frozen campaign. Its 32 controls passed.
+
+Two checker corrections were applied after the model campaign to all 20 final
+outputs of each affected task, retaining every original observation:
+
+- A progress bar with a renamed fill ID passed functional browser rechecking;
+  the frozen selector had rejected it.
+- A button passed desktop checks but changed color incorrectly after a touch tap;
+  the original media-query text check had missed an unconditional hover rule.
+
+The current checker has 34 passing controls. Later runs also retain per-attempt
+workspace snapshots. The frozen campaign retained attempt transcripts/checks and
+final workspaces/screenshots, so its first-pass verdicts and repair costs cannot
+be retroactively corrected. The import prompt now states the existing utility
+adoption requirement explicitly; this wording was not in the frozen prompts.
+One native-CSS-only button renders correctly but remains incomplete under that
+requirement. Treat this as a task-scope limitation, not a broken interface.
+
+Each combined row contains 48 trials. “Frozen final” uses the original checker;
+“Rechecked final” incorporates the two uniform post-run checks. Both totals are
+218/240; the two corrections change the arm counts.
+
+| Added capability | Frozen first pass | Frozen final | Rechecked final | Input tokens, including repairs | Final unmatched names |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Existing instructions | 37/48 | 43/48 | 42/48 (87.5%) | 9,511,701 | 34 |
+| Skill | 38/48 | 44/48 | 44/48 (91.7%) | 9,141,807 | 2 |
+| MCP | 38/48 | 43/48 | 43/48 (89.6%) | 16,901,837 | 9 |
+| Skill + MCP | 40/48 | 43/48 | 43/48 (89.6%) | 18,679,201 | 0 |
+| Skill + MCP + bridge | 41/48 | 45/48 | 46/48 (95.8%) | 15,575,428 | 0 |
+
+`gpt-6.1-sol` passed 24/24 in every arm. Rechecked `gpt-6-luna` totals were
+18, 20, 19, 19 and 22 out of 24, respectively. The bridge arm had four paired wins,
+zero losses and 44 ties against the baseline; against skill + MCP it had three
+wins, zero losses and 45 ties. These are small, fixed-task observations from one
+client and one model provider, not a general performance guarantee.
+
+The bridge was called 55 times, exclusively in its assigned arm. There were
+1,061 completed MCP calls and 15 failed calls, whose transcripts are retained.
+Total observed usage was 69,809,974 input tokens, including 61,761,024 cached input
+tokens, and 561,621 output tokens. Per-arm median elapsed times were 34.80, 33.23,
+33.88, 33.34 and 32.79 seconds, including independent grading. These are local
+concurrent-run observations, not billing or latency guarantees.
+
+Seventeen of the 22 rechecked failures were Tailwind imports. Common causes were
+reset/line-height inheritance, incorrect state styles, invented class spellings
+and utilities overriding attempted fixes in lower layers. Matching classes alone
+did not establish source-equivalent browser behavior. Tailwind success was 4/8,
+5/8, 4/8, 4/8 and 6/8 across the five arms.
+
+Use the official skill as the light default and invoke MCP/bridge for tasks that
+benefit from project inspection or declaration conversion. In this run the skill
+had fewer unmatched names with slightly fewer input tokens than the baseline.
+The bridge improved observed completion over skill + MCP while using 16.6% fewer
+input tokens, but still used 63.8% more than the baseline. A useful next experiment
+is a CLI command reusing the existing Rust suggestion API, allowing the skill to
+request verified suggestions without loading the full MCP tool surface. Validate
+that hypothesis with a focused comparison, and strengthen reset, line-height and
+layer-editing examples before expanding automatic Tailwind conversion.
+
+Artifacts include raw observations, frozen harness sources, model event logs,
+final HTML/CSS/screenshots, post-run check reports and `analysis.json`. The raw
+`observations.jsonl` SHA-256 is
+`e0702e39e86d71a4eeefac4374a9fe31b5b74876a9f3741ccede649e9b10f3ce`.
+Onboarding time, voluntary tester retention, autonomous skill discovery and
+cross-client behavior remain unmeasured.

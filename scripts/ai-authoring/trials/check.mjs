@@ -131,9 +131,13 @@ export async function check(root, task, browser, repository, answer = '', baseli
     }
     if (task === 'dynamic-value') for (const value of [0,50,100]) {
       await page.evaluate(value => window.setProgress(value), value)
-      add('styling', `progress-${value}`, Math.abs(parseFloat(await style('#fill','width')) - value*2)<.1)
-      add('accessibility', `aria-${value}`, await page.locator('#progress').getAttribute('aria-valuenow') === String(value))
-      add('functional', `track-${value}`, await style('#progress','width') === '200px')
+      const progress=page.getByRole('progressbar')
+      const fillWidth=await progress.locator(':scope > *').first().evaluate(el=>parseFloat(getComputedStyle(el).width))
+      const aria=await progress.getAttribute('aria-valuenow')
+      const trackWidth=await progress.evaluate(el=>getComputedStyle(el).width)
+      add('styling', `progress-${value}`, Math.abs(fillWidth-value*2)<.1, fillWidth)
+      add('accessibility', `aria-${value}`, aria===String(value), aria)
+      add('functional', `track-${value}`, trackWidth==='200px', trackWidth)
     }
     if (task === 'review-second-change') {
       for (const id of ['primary','secondary']) add('styling', id, await style(`#${id}`,'background-color') === 'rgb(124, 58, 237)')
@@ -171,6 +175,25 @@ export async function check(root, task, browser, repository, answer = '', baseli
       if(task==='tailwind-hover') {
         add('styling', 'hover-capability-retained', /hover\s*:\s*hover/.test(readFileSync(join(root,'output.css'),'utf8')) || /hover\s*:\s*hover/.test(css))
         add('accessibility','native-button', await page.locator('#target').evaluate(el=>el.tagName==='BUTTON'&&el.textContent.trim()==='Export'))
+        const touch=await browser.newContext({viewport:{width:390,height:900},hasTouch:true,isMobile:true})
+        try {
+          const target=await touch.newPage(), source=await touch.newPage()
+          await target.goto(pathToFileURL(join(root,'index.html')).href)
+          await source.goto(pathToFileURL(join(baselineRoot,'source.html')).href)
+          if(await target.evaluate(()=>matchMedia('(hover: hover)').matches)) throw new Error('Touch control unexpectedly supports hover')
+          for(const state of ['rest','tap']) {
+            if(state==='tap') {
+              await target.locator('#target').tap();await source.locator('#target').tap()
+              await target.waitForTimeout(250)
+            }
+            const paint=p=>p.locator('#target').evaluate(el=>{
+              const style=getComputedStyle(el)
+              return [style.backgroundColor,style.color,style.opacity]
+            })
+            const actual=await paint(target),expected=await paint(source)
+            add('styling',`touch-${state}`,JSON.stringify(actual)===JSON.stringify(expected),{actual,expected})
+          }
+        } finally {await touch.close()}
       }
       await original.close()
     }

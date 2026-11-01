@@ -85,7 +85,7 @@ export async function fixture(task, repository, solved = false) {
       html = html.replace(from, to)
       css += `\n${sourceCSS}\nbody { line-height:inherit; }`
     }
-    detail = 'The supplied source.html and source-tailwind.css are the immutable source baseline. Use the existing Master app.css build, move index.html to output.css, convert straightforward utilities, and retain necessary reset/token/state CSS in app.css. Do not redesign or just link the entire original source stylesheet. Explain retained CSS and remaining dependencies.'
+    detail = 'The supplied source.html and source-tailwind.css are the immutable source baseline. Use the existing Master app.css build, move index.html to output.css, convert straightforward utilities, and retain necessary reset/token/state CSS in app.css. At least one converted class must be a project-registered Master utility with a spelling absent from the original snippet; a native-CSS-only rewrite does not complete this conversion task. Do not redesign or just link the entire original source stylesheet. Explain retained CSS and remaining dependencies.'
   }
   return { files: { 'index.html': wrap(html, link), 'app.css': css, 'app.js': js, ...extras }, detail }
 }

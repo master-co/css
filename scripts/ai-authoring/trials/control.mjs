@@ -39,12 +39,15 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
       {name:'flex-columns',task:'responsive-grid',valid:true,html:s=>s.replace('grid gap-sm grid-cols(3)@md','flex flex-col gap-sm'),css:s=>s+'\n@media (width >= 52rem) {#cards {flex-direction:row} #cards>article {flex:1}}'},
       {name:'wrong-gap-unit',task:'css-declarations',valid:false,html:s=>s.replace('(gap:1rem)','(gap:16px)')},
       {name:'single-quote-invalid-class',task:'settings-card',valid:false,html:s=>s.replace('class="p-card r-lg bg-surface fg-ink grid gap-sm"','class=\'p-card r-lg bg-surface fg-ink grid gap-sm not-a-master-utility\'')},
+      {name:'renamed-progress-nodes',task:'dynamic-value',valid:true,html:s=>s.replace('id="progress"','id="upload"').replace('id="fill"','id="indicator"'),js:s=>s.replaceAll('#progress','#upload').replaceAll('#fill','#indicator')},
+      {name:'unconditional-hover',task:'tailwind-hover',valid:false,failure:'touch-tap',css:s=>s+'\n#target:hover {background-color:var(--color-blue-700)}'},
     ]
     for(const variant of variants) {
       const work=join(root,variant.task,variant.name)
       await prepare(work,variant.task,true)
-      for(const [file,transform] of [['index.html',variant.html],['app.css',variant.css]]) if(transform) await writeFile(join(work,file),transform(await readFile(join(work,file),'utf8')))
-      const result=await check(work,variant.task,browser,repository,'Cascade needs review.')
+      for(const [file,transform] of [['index.html',variant.html],['app.css',variant.css],['app.js',variant.js]]) if(transform) await writeFile(join(work,file),transform(await readFile(join(work,file),'utf8')))
+      const result=await check(work,variant.task,browser,repository,'Retained native CSS reset. Cascade needs review.')
+      if(variant.failure) assert.ok(result.checks.some(c=>c.id===variant.failure&&!c.pass),`${variant.name} must expose ${variant.failure}`)
       records.push({task:variant.task+'-'+variant.name,solved:variant.valid,passed:result.functional&&result.styling&&result.accessibility&&result.browser==='passed',failed:result.checks.filter(c=>!c.pass)})
       console.log(JSON.stringify(records.at(-1)))
     }
