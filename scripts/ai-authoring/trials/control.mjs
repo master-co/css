@@ -43,6 +43,12 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
       {name:'unconditional-hover',task:'tailwind-hover',valid:false,failure:'touch-tap',css:s=>s+'\n#target:hover {background-color:var(--color-blue-700)}'},
       {name:'inline-native-class',task:'fallback-order',valid:true,css:s=>s.replace('.fallback{display:block;display:grid;padding:1rem;padding-left:0}',''),html:s=>s.replace('</head>','<style>@layer components{.fallback{display:block;display:grid;padding:1rem;padding-left:0}}</style></head>')},
       {name:'inactive-style-class',task:'settings-card',valid:false,failure:'valid-classes',html:s=>s.replace('class="p-card r-lg bg-surface fg-ink grid gap-sm"','class="p-card r-lg bg-surface fg-ink grid gap-sm not-a-master-utility"').replace('</head>','<style type="text/plain">.not-a-master-utility{color:red}</style></head>')},
+      {name:'scoped-line-height',task:'tailwind-hover',valid:true,css:s=>s+'\nbody{line-height:1.2} #target{line-height:1.5}'},
+      {name:'missing-inherited-line-height',task:'tailwind-hover',valid:false,failure:'light-390-rest',difference:{property:'line-height',actual:'19.2px',expected:'24px'},css:s=>s+'\nbody{line-height:1.2}'},
+      {name:'spacing-scale-as-pixels',task:'tailwind-hover',valid:false,failure:'light-390-rest',difference:{property:'height',actual:'10px',expected:'40px'},html:s=>s.replace('(height:calc(var(--spacing)*10))','h(10)')},
+      {name:'lower-layer-height-repair',task:'tailwind-hover',valid:false,failure:'light-390-rest',difference:{property:'height',actual:'10px',expected:'40px'},html:s=>s.replace('(height:calc(var(--spacing)*10))','h(10)'),css:s=>s+'\n@layer components {#target{height:calc(var(--spacing)*10)}}'},
+      // A long duration keeps the deliberately incorrect intermediate color observable on slow runners.
+      {name:'added-color-transition',task:'tailwind-hover',valid:false,failure:'light-390-hover',difference:{property:'background-color'},css:s=>s+'\n#target{transition:background-color 10s linear}'},
     ]
     for(const variant of variants) {
       const work=join(root,variant.task,variant.name)
@@ -50,6 +56,7 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
       for(const [file,transform] of [['index.html',variant.html],['app.css',variant.css],['app.js',variant.js]]) if(transform) await writeFile(join(work,file),transform(await readFile(join(work,file),'utf8')))
       const result=await check(work,variant.task,browser,repository,'Retained native CSS reset. Cascade needs review.')
       if(variant.failure) assert.ok(result.checks.some(c=>c.id===variant.failure&&!c.pass),`${variant.name} must expose ${variant.failure}`)
+      if(variant.difference) assert.ok(result.checks.find(c=>c.id===variant.failure)?.actual.some(difference=>Object.entries(variant.difference).every(([key,value])=>difference[key]===value)),`${variant.name} must expose the intended property difference`)
       records.push({task:variant.task+'-'+variant.name,solved:variant.valid,passed:result.functional&&result.styling&&result.accessibility&&result.browser==='passed',failed:result.checks.filter(c=>!c.pass)})
       console.log(JSON.stringify(records.at(-1)))
     }

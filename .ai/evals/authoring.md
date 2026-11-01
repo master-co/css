@@ -36,12 +36,15 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 36 controls: 12 starters, 12 known solutions and twelve
+The first command checks 41 controls: 12 starters, 12 known solutions and seventeen
 rubric regressions. Valid inner-panel spacing, additional tab stops, shadow focus
-indicators, flex columns, renamed progress nodes and native classes in HTML styles
-must pass. Missing keyboard access, invisible focus, incorrect relative units,
-invalid single-quoted classes, unconditional hover behavior on touch devices and
-classes defined only in inactive styles must fail.
+indicators, flex columns, renamed progress nodes, native classes in HTML styles
+and component-scoped restoration of source line-height must pass. Missing keyboard
+access, invisible focus, incorrect relative units, invalid single-quoted classes, unconditional hover behavior on touch devices and
+classes defined only in inactive styles must fail. Import controls additionally
+reject lost inherited line-height, a spacing step treated as pixels, an ineffective
+lower-layer repair and an added color transition. They assert the specific
+computed-property difference so unrelated failures cannot satisfy the control.
 Content inset and columns are measured geometrically; outer-box padding and a
 specific layout implementation are not required. Keyboard checks traverse tab
 stops, and class inspection reads the parsed DOM rather than attribute quotes.
@@ -311,3 +314,23 @@ all attempt snapshots, screenshots, controls, the original comparison and unifor
 recheck report. `analysis.json` records both original usage and verified outcomes;
 the observation SHA-256 is
 `8230ea49f5e6b114a15d32019be768ebea11d9b605873f9216c4df0c9319b567`.
+
+
+### Import guidance follow-up
+
+The [import reference](../../skills/master-css/references/importing.md) now calls
+out inherited reset dependencies, unitless line-height, spacing expressions,
+utility-layer precedence and transition timing. Its examples are conditional on
+source evidence; they do not prescribe one line-height or reset for every import.
+Guidance stays in the import reference so unrelated authoring tasks need not load it.
+
+All 41 control outcomes match expectations. Five additional browser controls
+exercise the observed failure modes. A scoped
+line-height restoration passes while the destination host keeps its own line-height.
+The negative cases expose 19.2px versus 24px line-height, 10px versus 40px height,
+a higher-specificity repair losing in the earlier components layer, and an
+unrequested color transition. The transition control deliberately uses 10 seconds
+to keep its intermediate color observable on slow runners; the recorded model
+failure used 150ms. These are deterministic validation cases, not new model trials
+or evidence that the revised skill improves success rates. Historical campaign
+observations, scores and token totals remain unchanged.
