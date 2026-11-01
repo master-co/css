@@ -72,3 +72,80 @@ mixed protocol/model rejection, error and missing-metric accounting, separation 
 proposed and retained regressions, independently verified pass requirements, the
 existing adoption rules and the browser regression scenario. Run scoped ESLint
 and `check:ai-context` before freezing the implementation.
+
+## Recorded result — 2026-11-01
+
+Frozen implementation: `d3b072187`. Client `codex-cli 0.166.0-alpha.5.1`, Chromium
+`156.0.8078.4`, `gpt-6-luna` with low reasoning. All 422 tracked tool artifacts
+matched the historical recheck run. Every initial source and scored check matched
+its archived checkpoint; the scorer, adoption policy and skill remained unchanged.
+
+All seven cases completed, with six independently verified passes, one unresolved
+failure and zero unverified results. Nine model attempts produced six accepted
+passes and three rejected regressive proposals. There were no partial adoptions
+or no-progress rejections. The 23 host assessments comprise seven initial checks,
+nine proposal checks and seven independent final rebuild/checks. All retained
+outputs had **zero new measured failure atoms** relative to their initial source.
+
+| Case | Initial failed checks | Attempts | Rejected proposals | Final failed checks | Result |
+| --- | ---: | ---: | ---: | ---: | --- |
+| seed-03-gpt-6-luna-b | 4 | 1 | 0 | 0 | Passed |
+| seed-05-gpt-6-luna-a | 19 | 1 | 0 | 0 | Passed |
+| seed-05-gpt-6-luna-b | 6 | 2 | 2 | 6 | Original failure retained |
+| seed-06-gpt-6-luna-b | 4 | 2 | 1 | 0 | Passed after rejection |
+| seed-07-gpt-6-luna-b | 4 | 1 | 0 | 0 | Passed |
+| seed-08-gpt-6-luna-a | 4 | 1 | 0 | 0 | Passed |
+| seed-08-gpt-6-luna-b | 4 | 1 | 0 | 0 | Passed |
+
+The remaining `seed-05-gpt-6-luna-b` demonstrates two different rejection reasons
+within the regression category. Its first proposal added unconditional
+`bg-blue-700`, causing 14 new background-color failures in resting, focus,
+disabled and touch states. The second started from the original retained source
+and added the correct capability-gated rule in utilities. All browser comparisons
+then passed, but the original unresolved `hover:bg-blue-700` remained and the
+answer omitted the required retained/reset-CSS report. That omission introduced
+one new **reporting-check** failure, not a visual regression; the conservative
+policy rejected it despite the reduction from six failed checks to two. Neither
+candidate replaced the retained source. Its six original failures therefore
+remain explicit. The unchanged reporting scorer uses a keyword check, which
+limits interpretation of this rejection as a quality measure.
+
+For `seed-06-gpt-6-luna-b`, the first proposal replaced the native hover rule with
+invalid markup, introducing three unresolved class names and losing the hover
+capability check: four new failure atoms. After rejection, the second proposal
+started from the original source, moved the native state rules into utilities,
+and passed all checks. This run therefore exercises both rejection followed by
+successful repair and budget exhaustion with the original source preserved.
+All three rejected candidates remain archived separately from the retained files.
+
+The pass count and per-case outcomes equal the prior six-of-seven campaign;
+model calls were nine here versus eleven there. These descriptive counts do not
+establish a success-rate or cost improvement. The earlier targeted guarded run
+repaired the remaining case in two calls, but this fresh cohort run did not;
+that single success was not reliably reproduced. The guard prevented adoption of
+new measured failures, while proposal quality remains a separate limitation.
+
+Audit independently recomputed every decision, checked actual parent-file hashes
+and next-turn rejection payloads, and confirmed all final verification copies
+matched retained sources and generated CSS. It reconciled raw events and usage,
+inspected completed commands, and found no provenance or integrity issues.
+Two attempts visibly read current feedback: the second attempts for seeds 05-b
+and 06-b; the other seven did not visibly open the feedback files. Prompts still
+contained source-bound summaries, so file-read counts do not measure all evidence
+consumption. There were no model-turn failures, timeouts, protected-file violations,
+coverage mismatches or unmeasured usage. Input totaled 893,581 tokens, including
+763,904 cached input tokens; output totaled 6,652 tokens.
+
+Eight focused tests passed, including browser coverage for hover, inherited
+line-height and touch regressions. Scoped script ESLint, `check:ai-context` and
+diff checks passed. Only evaluation scripts and internal reports changed; no
+published package behavior, CLI/MCP API, official skill or scoring rule changed.
+The next investigation should address incomplete repairs that fix rendering but
+leave class recognition or required reporting unresolved, under a separately
+frozen protocol rather than extending this campaign's repair budget.
+
+Archive: `/Users/aron/master-css-evaluations/2026-11-01-guarded-cohort`.
+It retains original provenance, frozen sources/tools, prompts/events, all proposed
+and retained workspaces, independent final checks, diffs, decisions, usage and
+audit helpers. Observations SHA-256:
+`9f7dac4b4608ff3cdf311cb3c62a3092ddb34cadabd10b95c781ca70e87b1e11`.

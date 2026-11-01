@@ -141,3 +141,9 @@ frozen code/tools, prompts/events, all proposed/retained workspaces, unified dif
 checkpoint assessments, explicit decisions, usage and audit helpers.
 Targeted result SHA-256:
 `f40e73b09a2abd2ff2e035f7db8096852dc74198674e8553a8d2524b4ead4d24`.
+
+The subsequent [seven-case guarded cohort](guarded-cohort.md) starts afresh from
+every original failed checkpoint. It records six passes, one unresolved failure,
+three rejected proposals and zero new failures in retained outputs. The targeted
+success above did not reproduce for the remaining case in that cohort; see the
+full report for the reporting-check rejection and the limits of this comparison.
