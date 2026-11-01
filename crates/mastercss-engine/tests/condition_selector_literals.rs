@@ -7,31 +7,31 @@ fn decimal_conditions_keep_a_single_numeric_value() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     for (class_name, condition) in [
         (
-            "(display:block)@media((width>=600.5px))",
+            "(display:block)@media(width>=600.5px)",
             "@media (width>=600.5px)",
         ),
         (
-            "(display:block)@media((width>=.5rem))",
+            "(display:block)@media(width>=.5rem)",
             "@media (width>=.5rem)",
         ),
         (
-            "(display:block)@media((width>=-0.5px))",
+            "(display:block)@media(width>=-0.5px)",
             "@media (width>=-0.5px)",
         ),
         (
-            "(display:block)@container((width>=600.5px))",
+            "(display:block)@container(width>=600.5px)",
             "@container (width>=600.5px)",
         ),
         (
-            "(display:block)@media((width>=37.5rem))",
+            "(display:block)@media(width>=37.5rem)",
             "@media (width>=37.5rem)",
         ),
         (
-            "(display:block)@media((width:37.5rem))",
+            "(display:block)@media(width:37.5rem)",
             "@media (width:37.5rem)",
         ),
         (
-            "(display:block)@media((600.5px<=height<800.5px))",
+            "(display:block)@media(600.5px<=height<800.5px)",
             "@media (600.5px<=height<800.5px)",
         ),
     ] {

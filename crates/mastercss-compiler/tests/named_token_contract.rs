@@ -195,7 +195,7 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
     );
     assert_eq!(declarations(&engine, "(padding:4x)"), "padding:4x"); // Invalid CSS is a host validation concern.
     let resolution = engine
-        .inspect("(padding:1px)@media((resolution>=2x))")
+        .inspect("(padding:1px)@media(resolution>=2x)")
         .unwrap();
     assert!(resolution.rules[0].text.contains("resolution>=2x"));
     assert_eq!(declarations(&engine, "(padding:4px)"), "padding:4px");

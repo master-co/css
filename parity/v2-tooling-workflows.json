@@ -84,7 +84,7 @@
       "cssValueStatus": "unknown"
     },
     {
-      "className": "(padding:1px)@media((40rem<=width<64rem))",
+      "className": "(padding:1px)@media(40rem<=width<64rem)",
       "matchStatus": "matched",
       "cssSyntaxStatus": "valid",
       "cssValueStatus": "valid"

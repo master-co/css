@@ -27,7 +27,7 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   return (nextDefinedMetadata || prevDefinedMetadata) && (
     <>
       <hr className="hr" />
-      <nav className="flex (gap:2.5rem) flex-wrap@media((width<52.125rem)) doc-page-navigation" aria-label={locale === 'tw' ? '前後篇文件' : 'Previous and next documents'}>
+      <nav className="flex (gap:2.5rem) flex-wrap@media(width<52.125rem) doc-page-navigation" aria-label={locale === 'tw' ? '前後篇文件' : 'Previous and next documents'}>
         {prevDefinedMetadata && <Nav direction="prev" definedMetadata={prevDefinedMetadata} navigatorIconClass="(margin-left:-0.25rem) (margin-right:0.375rem) (margin-top:-0.125rem)" />}
         {nextDefinedMetadata && <Nav direction="next" definedMetadata={nextDefinedMetadata} navigatorIconClass="(margin-left:0.375rem) order(1) (rotate:180deg) (margin-top:-0.125rem)" />}
       </nav>

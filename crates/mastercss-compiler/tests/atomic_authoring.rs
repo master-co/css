@@ -64,7 +64,7 @@ fn declarations_use_one_priority_without_shorthand_interpretation() {
         );
     }
     let conditional = engine
-        .inspect("(border-width:calc(1px+1px)):hover@media((width>=40rem))!")
+        .inspect("(border-width:calc(1px+1px)):hover@media(width>=40rem)!")
         .unwrap();
     assert_eq!(conditional.match_status, MatchStatus::Matched);
     assert!(

@@ -18,7 +18,7 @@ fn simple_query_diagnostics_and_selectors_are_shared_by_generation() {
 
 #[test]
 fn equivalent_conditions_sort_tokens_before_direct_values() {
-    let classes = ["p-md@media((width>=50rem))", "(padding:8px)@media((min-width:50rem))"];
+    let classes = ["p-md@media(width>=50rem)", "(padding:8px)@media(min-width:50rem)"];
     for ordered in [classes.to_vec(), classes.into_iter().rev().collect()] {
         let mut engine = EngineSession::create(MANIFEST).unwrap();
         engine.ensure_class_rules(&ordered).unwrap();
@@ -35,19 +35,19 @@ fn equivalent_conditions_sort_tokens_before_direct_values() {
 fn priority_intersects_media_but_preserves_container_domains_and_exclusive_bounds() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     let priority = |class: &str| engine.inspect(class).unwrap().rules[0].priority.clone();
-    let a = priority("block@media((width>=800px))@media((width>=400px))");
-    let b = priority("block@media((width>=400px))@media((width>=800px))");
+    let a = priority("block@media(width>=800px)@media(width>=400px)");
+    let b = priority("block@media(width>=400px)@media(width>=800px)");
     assert_eq!(a, b);
     assert_eq!(a.features[0].lower.as_ref().unwrap().value, 800.0);
     assert!(a.features[0].upper.is_none());
-    let exclusive = priority("block@media((width>800px))");
+    let exclusive = priority("block@media(width>800px)");
     assert!(!exclusive.features[0].lower.as_ref().unwrap().inclusive);
     assert_ne!(exclusive.features, a.features);
-    let container = priority("block@container(card|(width>=800px))@container(card|(width>=400px))");
+    let container = priority("block@container(card|width>=800px)@container(card|width>=400px)");
     assert_eq!(container.features.len(), 2);
     assert_ne!(container.features[0].domain, container.features[1].domain);
     assert_ne!(container.features, a.features);
-    assert_ne!(priority("block@media((width>=50rem))").features, a.features);
+    assert_ne!(priority("block@media(width>=50rem)").features, a.features);
 }
 
 #[test]

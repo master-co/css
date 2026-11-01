@@ -108,7 +108,7 @@ jsxTester.run('prefer canonical classes', rule, {
             code: `<div class="(font-size:16px)@dark@sm">Authored condition order preserves literals</div>`,
         },
 {
-            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@media(print)@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
+            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@media(print)@sm block@supports(display:grid)@sm">Unsafe suffix order</div>`
         },
 {
 code: `<div class="(text-align:center):hover@sm">Static pattern utility with variants</div>`

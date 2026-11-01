@@ -37,7 +37,7 @@ This teaching markup assumes Master CSS is loaded. Use existing site components 
 
 ```html
 <section class="(container-type:inline-size)">
-  <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
+  <article class="grid-cols(1) gap-lg grid-cols(2)@container(width>=28rem)">
     <div>
       <h2>Flexible workspace</h2>
       <p>A desk with room for focused work.</p>

@@ -9,8 +9,8 @@ export function FoundationMedia() {
   return <Demo title="A component follows its container" padding="none" frame="none" data-foundation="media" caption="Below 28rem of container width, the media stacks. At 28rem it keeps a 9rem width beside flexible text.">
     <DemoContainer title="Media object">
       <div className="container-inline">
-        <article className="flex flex-col items-start gap-md p-md flex-row@container((width>=28rem)) demo-surface">
-          <DemoMedia className="w-full (aspect-ratio:4/3) r-sm fg-demo-blue shrink(0)@container((width>=28rem)) (width:9rem)@container((width>=28rem))" aria-label="Blue mountain illustration" />
+        <article className="flex flex-col items-start gap-md p-md flex-row@container(width>=28rem) demo-surface">
+          <DemoMedia className="w-full (aspect-ratio:4/3) r-sm fg-demo-blue shrink(0)@container(width>=28rem) (width:9rem)@container(width>=28rem)" aria-label="Blue mountain illustration" />
           <div className="(flex:1) min-w(0)">
             <DemoLabel>Collection / 024</DemoLabel>
             <h3 className="mt-xs mb(0) mx(0) text-md font-semibold">Field notes</h3>
@@ -27,7 +27,7 @@ export function FoundationContainerGrid() {
   return <Demo title="One card, two available widths" padding="none" frame="none" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
     <DemoContainer title="Container grid">
       <section className="container-inline">
-        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container((width>=28rem)) demo-surface">
+        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container(width>=28rem) demo-surface">
           <DemoMedia className="w-full (aspect-ratio:3/2) r-sm fg-demo-blue" aria-label="Blue mountain illustration" />
           <div className="min-w(0)">
             <DemoLabel>Asset library</DemoLabel>

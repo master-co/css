@@ -18,7 +18,7 @@ pub use utility_name::valid_utility_name;
 mod query;
 mod selector;
 pub use query::{
-    NativeQuery, canonical_native_content, decode_native_content, native_content,
+    NativeQuery, canonical_native_content, decode_native_content, legacy_query, native_content,
     native_query_structure, parse_native_query, query_requires_css,
 };
 pub use selector::{

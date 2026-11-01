@@ -64,14 +64,14 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
             {index < legalLinks.length - 1 && <div className='bl-line-subtle bl-solid bl(1)'></div>}
           </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='bl-line-subtle bl-solid bl(1) hidden@media((width<64rem))'></div>}
-        <label className='relative hidden@media((width<64rem))'>
+        {legalLinks.length > 0 && <div className='bl-line-subtle bl-solid bl(1) hidden@media(width<64rem)'></div>}
+        <label className='relative hidden@media(width<64rem)'>
           <span className='pr-xs capitalize'>{$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}</span>
           <ThemeSelect />
           <IconChevronDown className='inline-block (height:1em) (width:1em) vertical-middle' />
         </label>
-        <div className='bl-line-subtle bl-solid bl(1) hidden@media((width<64rem))'></div>
-        <label className='relative hidden@media((width<64rem))'>
+        <div className='bl-line-subtle bl-solid bl(1) hidden@media(width<64rem)'></div>
+        <label className='relative hidden@media(width<64rem)'>
           <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />
           <IconChevronDown className='inline-block (height:1em) (width:1em) vertical-middle' />

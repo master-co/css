@@ -912,16 +912,18 @@ for usage roots, layer and `url()` restrictions, and runtime tracking.
 
 ## Native queries and validation \{#native-queries-and-validation\}
 
-A condition suffix accepts a registered name or a complete native query. The
-outer parentheses belong to Master; parentheses inside them belong to CSS:
+A condition suffix accepts a registered name or one native query condition. The
+parentheses delimit that condition; the engine restores the native group
+parentheses when it emits the query, and a condition wrapped in its own group
+parentheses, such as `@media((width>=800px))`, is a class syntax error:
 
 ```text name="Language v2 queries"
 w(10)@sm
-w(20)@media((width>=800px))
-w(30)@media((aspect-ratio>=1.5))
-w(40)@media((width>=50rem))
-grid@supports((display:grid))
-w(50)@container(card|(width>=40rem))
+w(20)@media(width>=800px)
+w(30)@media(aspect-ratio>=1.5)
+w(40)@media(width>=50rem)
+grid@supports(display:grid)
+w(50)@container(card|width>=40rem)
 w(60)@container(style(--density:compact))
 ```
 

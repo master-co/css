@@ -41,16 +41,16 @@ const valid = [
   ['(display:block)[data-state=":first"]:first-child', ['[data-state=":first"]:first-child']],
   [String.raw`(display:block)[data-state="escaped\":first"]:last-child`, [String.raw`[data-state="escaped\":first"]:last-child`]],
   ['(display:block):is(:first-child,[data-state=":last"])::before', [':is(:first-child,[data-state=":last"])::before']],
-  ["(padding:8px)@media((width>=800px))", ['@media (width>=800px)']],
-  ["(padding:8px)@media((40rem<=width<64rem))", ['@media (40rem<=width<64rem)']],
-  ["(padding:8px)@media((resolution>=2x))", ['@media (resolution>=2x)']],
-  ["(padding:8px)@supports((display:grid))", ['@supports (display:grid)']],
-  ["(padding:8px)@container(card|(width>=40rem))", ['@container card (width>=40rem)']],
+  ["(padding:8px)@media(width>=800px)", ['@media (width>=800px)']],
+  ["(padding:8px)@media(40rem<=width<64rem)", ['@media (40rem<=width<64rem)']],
+  ["(padding:8px)@media(resolution>=2x)", ['@media (resolution>=2x)']],
+  ["(padding:8px)@supports(display:grid)", ['@supports (display:grid)']],
+  ["(padding:8px)@container(card|width>=40rem)", ['@container card (width>=40rem)']],
   ["(padding:8px)@container(style(--density:compact))", ['@container style(--density:compact)']],
   ["(padding:8px)@apply(--audit-card)", ['@container card (width >= 30rem)']],
   ["(padding:8px)@apply(--audit-dark)@apply(--audit-wide)", ['prefers-color-scheme: dark', 'width >= 40rem']],
   ["(padding:8px)@apply(--audit-wide)@apply(--audit-dark)", ['prefers-color-scheme: dark', 'width >= 40rem']],
-  ["(padding:8px)@media((width>=800px))@supports((display:grid))@container(card|(width>=40rem))", ['@media (width>=800px){@supports (display:grid){@container card (width>=40rem)']]
+  ["(padding:8px)@media(width>=800px)@supports(display:grid)@container(card|width>=40rem)", ['@media (width>=800px){@supports (display:grid){@container card (width>=40rem)']]
 ] as const
 
 const invalid = [
@@ -59,7 +59,8 @@ const invalid = [
   ['font-probe', 'ambiguous', 'AMBIGUOUS_TOKEN'],
   ['font-absent', 'syntax-error', 'UNKNOWN_TOKEN'],
   ["(display:block)@audit-undefined", 'syntax-error', 'UNKNOWN_CONDITION'],
-  ['(display:block)@media(width>=800px)', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
+  ['(display:block)@media((width>=800px))', 'syntax-error', 'CLASS_SYNTAX_ERROR'],
+  ['(display:block)@media(screen|and|width>=800px)', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
   ['(display:block)@supports(selector([lang|=en]))', 'syntax-error', 'MASTER_QUERY_REQUIRES_CSS'],
   ['(padding:1px).<br', 'syntax-error', 'CLASS_SYNTAX_ERROR']
 ] as const

@@ -169,7 +169,7 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[3] !== true) &&
           <Handler  {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom(0) left(0) top(0) items-center (cursor:col-resize) hidden@media((width<52.125rem))',
+              'bottom(0) left(0) top(0) items-center (cursor:col-resize) hidden@media(width<52.125rem)',
               {
                 '(transform:translateX(-100%)) h(40).active>svg (transform:translateX(-50%)).active': !handlerStyle,
                 '(transform:translateX(-50%))': handlerStyle === 'hidden'
@@ -184,7 +184,7 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[1] !== true) &&
           <Handler {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom(0) right(0) top(0) items-center (cursor:col-resize) hidden@media((width<52.125rem))',
+              'bottom(0) right(0) top(0) items-center (cursor:col-resize) hidden@media(width<52.125rem)',
               {
                 '(transform:translateX(100%)) h(40).active>svg (transform:translateX(50%)).active': !handlerStyle,
                 '(transform:translateX(50%))': handlerStyle === 'hidden'

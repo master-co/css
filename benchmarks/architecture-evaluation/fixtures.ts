@@ -23,7 +23,7 @@ export function fixture(arm: Arm, task: TaskId, solved = false) {
     information: native ? 'information' : 'bg-information',
     cards: native ? 'cards' : tailwind
       ? `grid grid-cols-1 ${done('responsive-layout') ? 'min-[768px]:grid-cols-2' : 'min-[1024px]:grid-cols-3'}`
-      : `grid (grid-template-columns:repeat(1,minmax(0,1fr))) ${done('responsive-layout') ? '(grid-template-columns:repeat(2,minmax(0,1fr)))@media((width>=768px))' : '(grid-template-columns:repeat(3,minmax(0,1fr)))@media((width>=1024px))'}`,
+      : `grid (grid-template-columns:repeat(1,minmax(0,1fr))) ${done('responsive-layout') ? '(grid-template-columns:repeat(2,minmax(0,1fr)))@media(width>=768px)' : '(grid-template-columns:repeat(3,minmax(0,1fr)))@media(width>=1024px)'}`,
     danger: native ? 'danger' : tailwind
       ? `bg-[#2563eb] ${done('scoped-hover') ? 'hover:bg-[#dc2626]' : ''}`
       : `(background-color:#2563eb) ${done('scoped-hover') ? '(background-color:#dc2626):hover' : ''}`,

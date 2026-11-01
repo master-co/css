@@ -22,7 +22,7 @@ export default function DocSidebar({ pageCategories, includeNestedPages = false,
   const tw = useLocale() === 'tw'
   const entries = <SidebarEntries pageCategories={pageCategories} includeNestedPages={includeNestedPages} onNavigate={onNavigate} />
   if (embedded) return <nav className="doc-menu-documents" aria-label={tw ? '文件章節' : 'Documentation chapters'}>{entries}</nav>
-  return <aside id="sidebar" aria-label={tw ? '文件導覽' : 'Documentation navigation'} className="sticky top(0) overflow-y-auto basis-auto grow(0) shrink(0) (height:100dvh) w(252) pb-2xl (padding-top:3.813rem) br-line-subtle br-solid br(1) (overscroll-behavior:contain) hidden@media(print) pr-xl@sm hidden@media((width<64rem)) doc-sidebar scrollbar scrollbar-concealed">
+  return <aside id="sidebar" aria-label={tw ? '文件導覽' : 'Documentation navigation'} className="sticky top(0) overflow-y-auto basis-auto grow(0) shrink(0) (height:100dvh) w(252) pb-2xl (padding-top:3.813rem) br-line-subtle br-solid br(1) (overscroll-behavior:contain) hidden@media(print) pr-xl@sm hidden@media(width<64rem) doc-sidebar scrollbar scrollbar-concealed">
     <div className="top(20) (z-index:1) flex items-center (margin-bottom:-1.875rem) (margin-inline:-1rem) px-md (padding-bottom:1.875rem) (padding-top:1.25rem) pointer-none sticky@md top(0)@md (background-image:linear-gradient(180deg,var(--color-surface-base)|0%,var(--color-surface-base)|calc(100%-2rem),transparent|100%))@md">
       <SearchButton className="flex items-center w-full font-sm (line-height:2.25rem) text-left fg-text-muted pointer-auto" />
     </div>

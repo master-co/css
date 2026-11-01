@@ -24,7 +24,7 @@ export default function PageContent({ metadata }: any) {
   const $ = useTranslation()
 
   return (
-    <aside aria-label={$('On this page')} className="sticky top(0) basis-auto grow(0) shrink(0) (height:100dvh) (width:calc(252/16*1rem)) pb-2xl (padding-top:8.75rem) hidden@media(print) hidden@media((width<80rem)) doc-page-contents page-content">
+    <aside aria-label={$('On this page')} className="sticky top(0) basis-auto grow(0) shrink(0) (height:100dvh) (width:calc(252/16*1rem)) pb-2xl (padding-top:8.75rem) hidden@media(print) hidden@media(width<80rem) doc-page-contents page-content">
       <span className="page-content-label">{$('On this page')}</span>
       {(metadata.canIUseLink || metadata.mdnLink) &&
         <div className="page-content-references">

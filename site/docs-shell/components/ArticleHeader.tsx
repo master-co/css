@@ -30,7 +30,7 @@ export default async function ArticleHeader(props: any) {
   }
   return (
     <>
-      <div className="flex flex-nowrap gap-xl flex-col@media((width<37.5rem))">
+      <div className="flex flex-nowrap gap-xl flex-col@media(width<37.5rem)">
         <div className='(flex:1) min-w(0)'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}

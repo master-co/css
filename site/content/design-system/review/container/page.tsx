@@ -14,7 +14,7 @@ export { metadata }
 
 function QuerySpecimen() {
   return <section className="overflow-hidden container-inline w-full b-line-divider r-lg b-solid b(1) bg-surface-raised">
-    <div className="flex flex-col@container((width<=18rem))">
+    <div className="flex flex-col@container(width<=18rem)">
       <div className="(flex:1) p-md bg-surface-inset"><strong>Media</strong><p className="review-container-specimenCopy">A visual region</p></div>
       <div className="(flex:1) p-md"><strong>Content</strong><p className="review-container-specimenCopy">Stacks when this wrapper narrows.</p></div>
     </div>

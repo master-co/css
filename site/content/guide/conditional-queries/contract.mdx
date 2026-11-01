@@ -1,15 +1,15 @@
 import Class2CSS from '~/site/components/Class2CSS'
 
 ## Overview [sr-only] \{#overview\}
-Append a named condition or a simple native query to a class. The outer parentheses delimit the Master CSS suffix; parentheses inside it belong to CSS.
+Append a named condition or a simple native query to a class. The parentheses delimit one condition; Master CSS restores the native group parentheses when it emits the query, so `@media(width>=800px)` becomes `@media (width>=800px)`.
 
 ```html
 <div class="hidden@sm">Hidden at the named breakpoint</div>
-<div class="hidden@media((width>=800px))">Hidden from 800px</div>
-<div class="grid@supports((display:grid))">Grid when supported</div>
+<div class="hidden@media(width>=800px)">Hidden from 800px</div>
+<div class="grid@supports(display:grid)">Grid when supported</div>
 ```
 
-<Class2CSS>{['hidden@sm', 'hidden@media((width>=800px))', 'grid@supports((display:grid))']}</Class2CSS>
+<Class2CSS>{['hidden@sm', 'hidden@media(width>=800px)', 'grid@supports(display:grid)']}</Class2CSS>
 
 Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
 
@@ -68,12 +68,12 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 
 | Purpose | Suffix |
 | --- | --- |
-| Viewport width | `@media((width>=800px))` |
-| Aspect ratio | `@media((aspect-ratio>=1.5))` |
-| Resolution | `@media((resolution>=2x))` |
-| Supports declaration | `@supports((display:grid))` |
-| Nearest size container | `@container((width>=40rem))` |
-| Named container | `@container(card\|(width>=40rem))` |
+| Viewport width | `@media(width>=800px)` |
+| Aspect ratio | `@media(aspect-ratio>=1.5)` |
+| Resolution | `@media(resolution>=2x)` |
+| Supports declaration | `@supports(display:grid)` |
+| Nearest size container | `@container(width>=40rem)` |
+| Named container | `@container(card\|width>=40rem)` |
 | Style container | `@container(style(--density:compact))` |
 
 `|` encodes whitespace in query syntax. Quoted strings and escaped characters retain their literal content. CSS's resolution unit `x` retains its native meaning.
@@ -81,19 +81,19 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 ### Media \{#mediafeature\}
 
 ```html
-<div class="hidden@media((pointer:coarse))">Fine-pointer controls</div>
-<div class="grid-cols(2)@media((width>=50rem))">Responsive content</div>
+<div class="hidden@media(pointer:coarse)">Fine-pointer controls</div>
+<div class="grid-cols(2)@media(width>=50rem)">Responsive content</div>
 ```
 
-<Class2CSS>{['hidden@media((pointer:coarse))', 'grid-cols(2)@media((width>=50rem))']}</Class2CSS>
+<Class2CSS>{['hidden@media(pointer:coarse)', 'grid-cols(2)@media(width>=50rem)']}</Class2CSS>
 
 ### Supports \{#supportsfeature\}
 
 ```html
-<div class="grid@supports((display:grid))">Content</div>
+<div class="grid@supports(display:grid)">Content</div>
 ```
 
-<Class2CSS>{['grid@supports((display:grid))']}</Class2CSS>
+<Class2CSS>{['grid@supports(display:grid)']}</Class2CSS>
 
 ### Containers \{#containersize\}
 Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but `(width>=28rem)` remains a literal condition. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
@@ -102,11 +102,11 @@ Choose a query container using ordinary CSS. The suffix contains the complete qu
 
 ```html
 <aside class="(container-name:card) container-inline">
-  <div class="grid-cols(2)@container(card|(width>=40rem))">Card content</div>
+  <div class="grid-cols(2)@container(card|width>=40rem)">Card content</div>
 </aside>
 ```
 
-<Class2CSS>{['(container-name:card) container-inline', 'grid-cols(2)@container(card|(width>=40rem))']}</Class2CSS>
+<Class2CSS>{['(container-name:card) container-inline', 'grid-cols(2)@container(card|width>=40rem)']}</Class2CSS>
 
 Style queries use their native form:
 
@@ -120,20 +120,20 @@ Style queries use their native form:
 Use native CSS comparisons, including chained ranges. Put compound media queries in `@custom-media`, and other compound conditions in a mixin. Do not abbreviate feature names or omit units.
 
 ```html
-<div class="hidden@media((width<40rem))">Hidden below 40rem</div>
-<div class="grid-cols(2)@media((40rem<=width<64rem))">Two columns within a range</div>
+<div class="hidden@media(width<40rem)">Hidden below 40rem</div>
+<div class="grid-cols(2)@media(40rem<=width<64rem)">Two columns within a range</div>
 ```
 
-<Class2CSS>{['hidden@media((width<40rem))', 'grid-cols(2)@media((40rem<=width<64rem))']}</Class2CSS>
+<Class2CSS>{['hidden@media(width<40rem)', 'grid-cols(2)@media(40rem<=width<64rem)']}</Class2CSS>
 
 ## Combining wrappers \{#grouping-conditions\}
 Multiple suffixes preserve their nesting and source order, including repeated wrappers of the same kind:
 
 ```html
-<div class="grid@media((width>=40rem))@media((hover:hover))@supports((display:grid))">Content</div>
+<div class="grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)">Content</div>
 ```
 
-<Class2CSS>{['grid@media((width>=40rem))@media((hover:hover))@supports((display:grid))']}</Class2CSS>
+<Class2CSS>{['grid@media(width>=40rem)@media(hover:hover)@supports(display:grid)']}</Class2CSS>
 
 Comparable ranges in the same unit retain range priority. Incomparable units and expressions use a stable syntax-based order; Master CSS does not assume a browser root font size. A named condition and its equivalent native query share sorting data. Autofix cannot reorder wrappers merely because their current declarations happen to match.
 
@@ -141,15 +141,15 @@ Comparable ranges in the same unit retain range priority. Incomparable units and
 
 ## Simple queries in classes
 
-Classes accept one media type, one parenthesized media feature or range, one supports declaration, or one container size or custom-property style query. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
+Classes accept one media type, one media feature or range, one supports declaration, or one container size or custom-property style query, written without the native group parentheses. A media type keyword (`all`, `print`, `screen` and the deprecated types) emits as a type; any other single name is a boolean feature, so `@media(hover)` emits `(hover)`. In `@container(card|width>=40rem)` the first name is the container name. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
 
 ```html
-<div class="hidden@media(print) p-md@media((40rem<=width<64rem))"></div>
-<div class="grid@supports((display:grid)) p-md@container(card|(width>=40rem))"></div>
+<div class="hidden@media(print) p-md@media(40rem<=width<64rem)"></div>
+<div class="grid@supports(display:grid) p-md@container(card|width>=40rem)"></div>
 <div class="p-md@container(style(--density:compact))"></div>
 ```
 
-Define compound queries, query lists, negation, `selector()` and literal pipes in CSS. These class forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting a query does not enable additional syntax.
+A condition wrapped in its own group parentheses, such as `@media((width>=50rem))`, is a class syntax error whose message gives the class form. Define compound queries, query lists, negation, `selector()` and literal pipes in CSS. These class forms report `MASTER_QUERY_REQUIRES_CSS` and generate no rule. Quoting a query does not enable additional syntax.
 
 ```css
 @custom-media --wide-screen screen and (width >= 50rem);

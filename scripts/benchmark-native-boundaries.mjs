@@ -8,8 +8,8 @@ import { cpus, platform, arch } from 'node:os'
 
 const [beforeRoot, afterRoot, output] = process.argv.slice(2)
 if (!output) throw new Error('Expected BEFORE_ROOT AFTER_ROOT OUTPUT.json')
-const classes = Array.from({ length: 240 }, (_, index) => `p:${index}px${index % 3 === 0 ? '@media((width>=50rem))' : ''}`)
-classes.push('p-md@media((width>=50rem))', 'p:8px@media((min-width:50rem))')
+const classes = Array.from({ length: 240 }, (_, index) => `p:${index}px${index % 3 === 0 ? '@media(width>=50rem)' : ''}`)
+classes.push('p-md@media(width>=50rem)', 'p:8px@media(min-width:50rem)')
 const measure = operation => { const start = performance.now(); operation(); return performance.now() - start }
 const sizes = bytes => ({ raw: bytes.length, gzip: gzipSync(bytes).length, brotli: brotliCompressSync(bytes).length })
 const median = values => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)]

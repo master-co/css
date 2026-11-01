@@ -18,47 +18,91 @@ export interface NativeQuery {
   prelude: string
 }
 
-/** A `media(…)`, `supports(…)` or `container(…)` condition simple enough for a class. */
+/**
+ * A class query names one condition without the native group parentheses: `media(width>=50rem)`,
+ * `media(print)`, `supports(display:grid)`, `container(card|width>=40rem)`. The prelude is the
+ * native query the engine emits, with those parentheses restored.
+ */
 export function parseNativeQuery(token: string): NativeQuery | undefined {
-  const open = token.indexOf('(')
-  const kind = token.slice(0, open)
-  if (open < 0 || (kind !== 'media' && kind !== 'supports' && kind !== 'container') || !token.endsWith(')')) return
-  const prelude = decodeNativeContent(token.slice(open + 1, -1))
-  if (prelude === undefined || !trim(prelude) || !simpleQuery(kind, prelude)) return
-  return { kind, prelude }
+  const parts = queryParts(token)
+  if (!parts) return
+  const decoded = decodeNativeContent(parts[1])
+  const prelude = decoded === undefined ? undefined : nativePrelude(parts[0], decoded)
+  return prelude === undefined ? undefined : { kind: parts[0], prelude }
 }
 
 /** A balanced recognized query beyond the class grammar, which belongs in CSS. */
 export function queryRequiresCss(token: string) {
-  const open = token.indexOf('(')
-  const kind = token.slice(0, open)
-  if (open < 0 || (kind !== 'media' && kind !== 'supports' && kind !== 'container') || !token.endsWith(')')) return false
-  const prelude = decodeNativeContent(token.slice(open + 1, -1))
-  return prelude !== undefined && !simpleQuery(kind, prelude)
+  const parts = queryParts(token)
+  if (!parts) return false
+  const decoded = decodeNativeContent(parts[1])
+  return decoded !== undefined && nativePrelude(parts[0], decoded) === undefined && legacyQuery(token) === undefined
 }
 
-function simpleQuery(kind: string, prelude: string) {
+/** The class form of a query written with its native group parentheses: `media((width>=50rem))` → `media(width>=50rem)`. */
+export function legacyQuery(token: string): string | undefined {
+  const parts = queryParts(token)
+  if (!parts) return
+  const [kind, body] = parts
+  const open = body.indexOf('(')
+  if (open < 0 || !(open === 0 || body.slice(0, open).endsWith('|')) || !body.endsWith(')')) return
+  let depth = 0
+  for (let index = open; index < body.length; index++) {
+    if (body[index] === '(') depth++
+    else if (body[index] === ')' && --depth === 0 && index !== body.length - 1) return
+  }
+  const candidate = `${kind}(${body.slice(0, open)}${body.slice(open + 1, -1)})`
+  return parseNativeQuery(candidate) ? candidate : undefined
+}
+
+function queryParts(token: string): [string, string] | undefined {
+  const open = token.indexOf('(')
+  const kind = token.slice(0, open)
+  if (open < 0 || (kind !== 'media' && kind !== 'supports' && kind !== 'container') || !token.endsWith(')')) return
+  const body = token.slice(open + 1, -1)
+  return trim(body) ? [kind, body] : undefined
+}
+
+/** Media Queries Level 4 media types, including the deprecated ones that match nothing. */
+const MEDIA_TYPES = ['all', 'print', 'screen', 'tty', 'tv', 'projection', 'handheld', 'braille', 'embossed', 'aural', 'speech']
+
+function nativePrelude(kind: string, prelude: string): string | undefined {
   const tokens = tokenize(prelude)
-  if (!tokens.length) return false
   const isName = (token: Token | undefined) => token?.kind === IDENT && !isKeyword(token.value)
-  if (kind === 'media' && tokens.length === 1) return isName(tokens[0])
-  const start = kind === 'container' && isName(tokens[0]) ? 1 : 0
-  const group = tokens[start]
-  if (!group) return false
-  const style = kind === 'container' && group.kind === FUNCTION && isAsciiCase(group.value, 'style')
-  if ((!style && !isDelim(group, '(')) || group.close !== tokens.length - 1) return false
-  const end = tokens.length - 1
-  const inner = tokens.slice(start + 1, end)
+  if (!tokens.length || (tokens[0].kind === IDENT && isKeyword(tokens[0].value))) return
+  const start = kind === 'container' && isName(tokens[0]) && tokens.length > 1 && tokens[1].kind !== DELIM ? 1 : 0
+  const condition = trim(prelude.slice(tokens[start].start))
+  const containerName = trim(prelude.slice(0, tokens[start].start))
+  const wrap = (text: string) => containerName ? `${containerName} ${text}` : text
+  if (kind === 'container' && tokens[start].kind === FUNCTION && isAsciiCase(tokens[start].value, 'style')) {
+    const end = tokens.length - 1
+    const inner = tokens.slice(start + 1, end)
+    const simple = tokens[start].close === end && inner[0]?.kind === IDENT && inner[0].value.startsWith('--')
+      && (inner.length === 1 || (inner.length > 2 && isDelim(inner[1], ':') && simpleValue(tokens, start + 3, end)))
+    return simple ? wrap(condition) : undefined
+  }
+  if (kind === 'media' && tokens.length === 1) {
+    if (tokens[0].kind !== IDENT) return
+    return MEDIA_TYPES.some((type) => isAsciiCase(tokens[0].value, type)) ? condition : `(${condition})`
+  }
+  return simpleCondition(kind, tokens, start) ? wrap(`(${condition})`) : undefined
+}
+
+/** One feature, declaration or range from `start` to the end, without its group parentheses. */
+function simpleCondition(kind: string, tokens: Token[], start: number) {
+  const end = tokens.length
+  const inner = tokens.slice(start)
   if (!inner.length) return false
-  const ident = isName(inner[0]) && (!style || inner[0].value.startsWith('--'))
-  const declaration = inner.length > 2 && isDelim(inner[1], ':') && simpleValue(tokens, start + 3, end)
-  if (style || kind === 'supports') return ident && ((style && inner.length === 1) || declaration)
+  const isName = (token: Token | undefined) => token?.kind === IDENT && !isKeyword(token.value)
+  const ident = isName(inner[0])
+  const declaration = ident && inner.length > 2 && isDelim(inner[1], ':') && simpleValue(tokens, start + 2, end)
+  if (kind === 'supports') return declaration
   if (ident && inner.length === 1) return true
   if (ident && inner.length > 2 && isDelim(inner[1], ':')) return declaration
   // One or two comparisons; each operand is one token, function or numeric ratio.
   const operands: boolean[] = []
   const comparisons: string[] = []
-  let index = start + 1
+  let index = start
   while (index < end) {
     const token = tokens[index]
     const name = isName(token)

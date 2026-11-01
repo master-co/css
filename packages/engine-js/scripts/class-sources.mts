@@ -337,8 +337,8 @@ export function themeEngineCases(): EngineCase[] {
       '--odd-type': { type: 'media-type', name: 'tv 3d' }
     }
   }
-  const media = ['@wide', '@screen-wide', '@not-print', '@either', '@never', '@always', '@mixed', '@odd-type', '@media((--wide))', '@media((--either))',
-    '@media((--never))', '@media((--mixed))', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media((width>=40rem))@wide']
+  const media = ['@wide', '@screen-wide', '@not-print', '@either', '@never', '@always', '@mixed', '@odd-type', '@media(--wide)', '@media(--either)',
+    '@media(--never)', '@media(--mixed)', '@media((--wide)|and|(--either))', '@wide@either', '@either@mixed', '@wide@layer(components)', '@media(width>=40rem)@wide']
   const mediaClasses = ['fg-red', 'gap-md', '(color:red):hover'].flatMap((base) => media.map((condition) => base + condition))
   const mediaSteps: EngineCaseStep[] = [
     { op: 'ensure', classes: mediaClasses },
@@ -382,13 +382,13 @@ const SELECTORS = [
   '_', '<x', ':hover!', '::part(a_b)', ':state(checked)', '*', '_*', '>*'
 ]
 const CONDITIONS = [
-  '@media((width>=40rem))', '@media((40rem<=width<64rem))', '@media((min-width:40rem))', '@media((max-width:63.99rem))', '@media((width>40rem))',
-  '@media((width=40rem))', '@media((hover))', '@media((orientation:landscape))', '@media((resolution>=2x))', '@media((aspect-ratio>16/9))',
-  '@media((prefers-color-scheme:dark))', '@media(print)', '@media(screen)', '@media((width>=-0px))', '@media((width>=1e3px))', '@media((--sm))',
-  '@media((--dark))', '@media((--unknown))', '@media((--sm)|and|(--dark))', '@media(not|(--sm))', '@media(--sm)', '@media((width>=40rem)|and|(hover))',
-  '@supports((display:grid))', '@supports(display:grid)', '@supports((--x:1))', '@container((width>=30rem))', '@container(card|(width>=30rem))',
+  '@media(width>=40rem)', '@media(40rem<=width<64rem)', '@media(min-width:40rem)', '@media(max-width:63.99rem)', '@media(width>40rem)',
+  '@media(width=40rem)', '@media(hover)', '@media(orientation:landscape)', '@media(resolution>=2x)', '@media(aspect-ratio>16/9)',
+  '@media(prefers-color-scheme:dark)', '@media(print)', '@media(screen)', '@media(width>=-0px)', '@media(width>=1e3px)', '@media(--sm)',
+  '@media(--dark)', '@media(--unknown)', '@media((--sm)|and|(--dark))', '@media(not|(--sm))', '@media(--sm)', '@media((width>=40rem)|and|(hover))',
+  '@supports(display:grid)', '@supports(display:grid)', '@supports(--x:1)', '@container(width>=30rem)', '@container(card|width>=30rem)',
   '@container(style(--x))', '@container(card|style(--density))', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
-  '@layer(utilities)', '@layer(other)', '@print', '@media((height<=600px))', '@media((width<64rem))', '@media((width>=40em))', '@media()', '@'
+  '@layer(utilities)', '@layer(other)', '@print', '@media(height<=600px)', '@media(width<64rem)', '@media(width>=40em)', '@media()', '@'
 ]
 
 /** Selector states and conditions, alone and combined, on a few bases each. */

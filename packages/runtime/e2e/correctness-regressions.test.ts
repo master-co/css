@@ -131,7 +131,7 @@ test('reordered theme buckets cannot silently change the dark-mode cascade', asy
 
 test('decimal media queries and quoted attribute values match in the browser', async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 600 })
-  await page.setContent("<div id=\"responsive\" class=\"(display:none)@media((width>=600.5px))\"></div><div id=\"literal\" data-state=\":first\"></div><div id=\"different\" data-state=\":first-child\"></div>")
+  await page.setContent("<div id=\"responsive\" class=\"(display:none)@media(width>=600.5px)\"></div><div id=\"literal\" data-state=\":first\"></div><div id=\"different\" data-state=\":first-child\"></div>")
   await page.evaluate(() => {
     for (const id of ['literal', 'different']) document.getElementById(id)!.className = '(display:none)[data-state=":first"]'
   })

@@ -38,12 +38,12 @@ fn renders_selector_condition_layer_and_important_state() {
             "@layer utilities{@media print{.block\\@media\\(print\\){display:block}}}",
         ),
         (
-            "block@supports((display:grid))",
-            "@layer utilities{@supports (display:grid){.block\\@supports\\(\\(display\\:grid\\)\\){display:block}}}",
+            "block@supports(display:grid)",
+            "@layer utilities{@supports (display:grid){.block\\@supports\\(display\\:grid\\){display:block}}}",
         ),
         (
-            "block@container((height>160px))",
-            "@layer utilities{@container (height>160px){.block\\@container\\(\\(height\\>160px\\)\\){display:block}}}",
+            "block@container(height>160px)",
+            "@layer utilities{@container (height>160px){.block\\@container\\(height\\>160px\\){display:block}}}",
         ),
         (
             "(width:10px):hover@sm",
@@ -201,15 +201,15 @@ fn parses_each_compound_condition_as_a_condition() {
 fn renders_the_compiled_condition_grammar() {
     for (class_name, expected_condition) in [
         (
-            "(display:block)@media((pointer:coarse))",
+            "(display:block)@media(pointer:coarse)",
             "@media (pointer:coarse)",
         ),
         (
-            "(display:block)@media((height<52.125rem))",
+            "(display:block)@media(height<52.125rem)",
             "@media (height<52.125rem)",
         ),
         (
-            "(display:block)@media((52.125rem<=height<80rem))",
+            "(display:block)@media(52.125rem<=height<80rem)",
             "@media (52.125rem<=height<80rem)",
         ),
         ("(display:block)@starting-style", "@starting-style"),

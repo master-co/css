@@ -39,11 +39,11 @@ const compiled = compileManifestSync(`
 [data-theme="ocean"], :host([data-theme="ocean"]) { --color-probe: blue; }
 `, { baseManifest: defaultManifestJSON as unknown as MasterCSSManifest })
 const { manifest } = compiled
-const classes = ['bg-probe', '(padding:11px)@apply(--dark)', '(color:red)@apply(--ocean)', '(padding:9px)@media((width>=800px))@media((hover:hover))']
+const classes = ['bg-probe', '(padding:11px)@apply(--dark)', '(color:red)@apply(--ocean)', '(padding:9px)@media(width>=800px)@media(hover:hover)']
 const html = '<!doctype html><html class="bg-probe (padding:11px)@apply(--dark)"><head><style>@layer theme,base,defaults,components,utilities;</style>' + `<style>${compiled.nativeCSS}</style></head><body>`
   + '<div id="outside" class="bg-probe (padding:11px)@apply(--dark)">Outside</div>'
   + '<section data-theme="ocean" id="ocean" class="bg-probe (color:red)@apply(--ocean)"><div id="nested" class="bg-probe (padding:11px)@apply(--dark) (color:red)@apply(--ocean)">Nested</div></section>'
-  + '<div id="query" class="(padding:9px)@media((width>=800px))@media((hover:hover))">Query</div></body></html>'
+  + '<div id="query" class="(padding:9px)@media(width>=800px)@media(hover:hover)">Query</div></body></html>'
 
 for (const mode of ["static", 'ssr', 'runtime', 'progressive'] as const) {
   test(`${mode}: explicit mode branches, inheritance and repeated query wrappers`, async ({ page }) => {

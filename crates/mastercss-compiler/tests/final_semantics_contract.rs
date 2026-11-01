@@ -27,11 +27,11 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
         &mut e,
         &[
             "(width:10px)@sm",
-            "(width:20px)@media((width>=800px))",
-            "(width:30px)@media((aspect-ratio>=1.5))",
-            "(width:40px)@media((resolution>=2x))",
-            "(width:50px)@apply(--has-selector)@supports((display:grid))",
-            "(width:60px)@container(card|(width>=40rem))",
+            "(width:20px)@media(width>=800px)",
+            "(width:30px)@media(aspect-ratio>=1.5)",
+            "(width:40px)@media(resolution>=2x)",
+            "(width:50px)@apply(--has-selector)@supports(display:grid)",
+            "(width:60px)@container(card|width>=40rem)",
             "(width:70px)@container(style(--density:compact))",
         ],
     );
@@ -51,7 +51,7 @@ fn native_queries_preserve_dimensions_and_wrapper_nesting() {
         "{output}"
     );
     let named = e.inspect("(width:10px)@sm").unwrap();
-    let native = e.inspect("(width:20px)@media((width>=800px))").unwrap();
+    let native = e.inspect("(width:20px)@media(width>=800px)").unwrap();
     assert_eq!(
         named.rules[0].priority.features,
         native.rules[0].priority.features

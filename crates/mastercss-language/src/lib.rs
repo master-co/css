@@ -239,7 +239,7 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
         entries.push(LanguageCompletionEntryIr {
             label: format!("@{name}()"),
             kind: LanguageCompletionKind::Function,
-            detail: Some("Complete native CSS query; retain the query's own parentheses".into()),
+            detail: Some("One native query condition without its group parentheses, such as @media(width>=50rem)".into()),
             documentation_text: None,
             insert_text: None,
             sort_text: Some(format!("2000-{name}")),

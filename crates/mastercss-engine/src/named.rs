@@ -163,6 +163,16 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             explicit_layer = Some(layer);
             continue;
         }
+        if let Some(replacement) = mastercss_lexer::legacy_query(&token) {
+            let mut diagnostic = error(
+                super::ErrorCode::ClassSyntaxError,
+                format!(
+                    "Class queries take no group parentheses: write @{replacement} instead of @{token}"
+                ),
+            );
+            diagnostic.notes.push(format!("@{replacement}"));
+            return vec![diagnostic];
+        }
         if mastercss_lexer::query_requires_css(&token) {
             let (kind, body) = token.split_once('(').expect("recognized query");
             let mut diagnostic = error(

@@ -93,7 +93,7 @@ fn custom_media_resolves_forward_lists_negation_types_and_false() {
             "(color:red)@outside",
             "(display:none)@off",
             "visible-wide",
-            "(opacity:.5)@media((--small))",
+            "(opacity:.5)@media(--small)",
         ])
         .unwrap();
     let text = engine.css_text();

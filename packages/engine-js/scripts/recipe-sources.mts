@@ -145,8 +145,8 @@ const APPLY_CALLS = [
   '@apply(--pad(;))', '@apply(--anim(wiggle))'
 ]
 const APPLY_EXTRAS = [
-  '@sm', '@dark', '@either', '@layer(components)', '@layer(base)', '@media(print)', '@media((--sm))', '@media((--nope))', '@media(screen|and|(min-width:1px))',
-  '@unknown', '@starting-style', '@supports((display:grid))', '@container(card|(width>=1px))', '@media((width>=1px)|and|(width<2px))', '!'
+  '@sm', '@dark', '@either', '@layer(components)', '@layer(base)', '@media(print)', '@media(--sm)', '@media(--nope)', '@media(screen|and|(min-width:1px))',
+  '@unknown', '@starting-style', '@supports(display:grid)', '@container(card|width>=1px)', '@media((width>=1px)|and|(width<2px))', '!'
 ]
 
 export async function recipeSources(count: number, seed: number) {

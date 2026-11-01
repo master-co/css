@@ -44,3 +44,12 @@ The routes below were captured from the static build at 1280px in light and dark
 - `/design-system/review/comparison`
 
 No layout regressions were seen. The rc drift above was reviewed by its own commits; it is recorded here, not re-reviewed page by page.
+
+## Single-parenthesis queries {#single-parenthesis-queries}
+
+Class queries drop their native group parentheses: `@media((width>=50rem))` becomes `@media(width>=50rem)`, and the engine restores the group when it emits the query.
+
+The delta against the `rc` snapshot is fully attributed by rewriting the old class names the same way:
+
+- 14 delivered CSS segments change only their escaped selector, for example `.x\@media\(\(width\<64rem\)\)` → `.x\@media\(width\<64rem\)`. The at-rules and declarations are byte-identical.
+- No other segment, route, contract or project manifest entry changes.

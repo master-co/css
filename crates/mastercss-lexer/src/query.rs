@@ -93,90 +93,173 @@ pub fn native_query_structure(source: &str) -> bool {
     true
 }
 
+/// A class query names one condition without the native group parentheses: `media(width>=50rem)`,
+/// `media(print)`, `supports(display:grid)`, `container(card|width>=40rem)`. The prelude is the
+/// native query the engine emits, with those parentheses restored.
 pub fn parse_native_query(token: &str) -> Option<NativeQuery> {
-    let (kind, body) = token.split_once('(')?;
-    if !matches!(kind, "media" | "supports" | "container") {
-        return None;
-    }
-    let prelude = decode_native_content(body.strip_suffix(')')?)?;
-    if prelude.trim().is_empty() {
-        return None;
-    }
-    if !simple_query(kind, &prelude) {
-        return None;
-    }
+    let (kind, body) = query_parts(token)?;
+    let prelude = decode_native_content(body)?;
     Some(NativeQuery {
+        prelude: native_prelude(kind, &prelude)?,
         kind: kind.into(),
-        prelude,
     })
 }
 
 /// A balanced recognized query which exceeds the class grammar needs CSS.
 pub fn query_requires_css(token: &str) -> bool {
-    let Some((kind, body)) = token.split_once('(') else {
-        return false;
-    };
-    if !matches!(kind, "media" | "supports" | "container") {
-        return false;
-    }
-    body.strip_suffix(')')
-        .and_then(decode_native_content)
-        .is_some_and(|prelude| !simple_query(kind, &prelude))
+    query_parts(token)
+        .and_then(|(kind, body)| Some((kind, decode_native_content(body)?)))
+        .is_some_and(|(kind, prelude)| {
+            native_prelude(kind, &prelude).is_none() && legacy_query(token).is_none()
+        })
 }
 
-fn simple_query(kind: &str, prelude: &str) -> bool {
+/// The class form of a query written with its native group parentheses, such as
+/// `media((width>=50rem))` → `media(width>=50rem)`. Only these single wrapped
+/// conditions qualify; compound queries still belong in CSS.
+pub fn legacy_query(token: &str) -> Option<String> {
+    let (kind, body) = query_parts(token)?;
+    let open = body.find('(')?;
+    if !(open == 0 || body[..open].ends_with('|')) || !body.ends_with(')') {
+        return None;
+    }
+    let mut depth = 0_usize;
+    for (index, character) in body[open..].char_indices() {
+        match character {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 && open + index != body.len() - 1 {
+                    return None;
+                }
+            }
+            _ => {}
+        }
+    }
+    let candidate = format!(
+        "{kind}({}{})",
+        &body[..open],
+        &body[open + 1..body.len() - 1]
+    );
+    parse_native_query(&candidate).map(|_| candidate)
+}
+
+fn query_parts(token: &str) -> Option<(&str, &str)> {
+    let (kind, body) = token.split_once('(')?;
+    matches!(kind, "media" | "supports" | "container")
+        .then_some(())
+        .and(body.strip_suffix(')'))
+        .filter(|body| !body.trim().is_empty())
+        .map(|body| (kind, body))
+}
+
+/// Media Queries Level 4 media types, including the deprecated ones that match nothing.
+const MEDIA_TYPES: [&str; 11] = [
+    "all",
+    "print",
+    "screen",
+    "tty",
+    "tv",
+    "projection",
+    "handheld",
+    "braille",
+    "embossed",
+    "aural",
+    "speech",
+];
+
+fn native_prelude(kind: &str, prelude: &str) -> Option<String> {
     use crate::CssSyntaxKind as Kind;
     let tokens = crate::tokenize_css_syntax(prelude);
-    if tokens.is_empty() {
-        return false;
-    }
-    let keyword = |name: &str| {
-        ["and", "or", "not", "only"]
-            .iter()
-            .any(|item| name.eq_ignore_ascii_case(item))
-    };
-    if kind == "media" && tokens.len() == 1 {
-        return matches!(&tokens[0].kind, Kind::Ident(name) if !keyword(name));
+    let name = |token: Option<&crate::CssSyntaxToken<'_>>| matches!(token.map(|token| &token.kind), Some(Kind::Ident(name)) if !query_keyword(name));
+    match tokens.first().map(|token| &token.kind) {
+        None => return None,
+        Some(Kind::Ident(first)) if query_keyword(first) => return None,
+        _ => {}
     }
     let start = usize::from(
-        kind == "container" && matches!(&tokens[0].kind, Kind::Ident(name) if !keyword(name)),
+        kind == "container"
+            && name(tokens.first())
+            && tokens
+                .get(1)
+                .is_some_and(|token| !matches!(token.kind, Kind::Delim(_))),
     );
-    let Some(group) = tokens.get(start) else {
-        return false;
+    let condition = prelude[tokens[start].bytes.start..].trim();
+    let container_name = prelude[..tokens[start].bytes.start].trim();
+    let wrap = |condition: String| {
+        if container_name.is_empty() {
+            condition
+        } else {
+            format!("{container_name} {condition}")
+        }
     };
-    let style = kind == "container"
-        && matches!(&group.kind, Kind::Function(name) if name.eq_ignore_ascii_case("style"));
-    if (!style && !matches!(group.kind, Kind::Delim('('))) || group.close != Some(tokens.len() - 1)
+    if kind == "container"
+        && let Kind::Function(function) = &tokens[start].kind
+        && function.eq_ignore_ascii_case("style")
     {
-        return false;
-    }
-    let inner = &tokens[start + 1..tokens.len() - 1];
-    let Some(first) = inner.first() else {
-        return false;
-    };
-    let ident = matches!(&first.kind, Kind::Ident(name) if !keyword(name) && (!style || name.starts_with("--")));
-    if style || kind == "supports" {
-        return ident
-            && ((style && inner.len() == 1)
+        let inner = &tokens[start + 1..tokens.len() - 1];
+        let simple = tokens[start].close == Some(tokens.len() - 1)
+            && matches!(inner.first().map(|token| &token.kind), Some(Kind::Ident(name)) if name.starts_with("--"))
+            && (inner.len() == 1
                 || (inner.len() > 2
                     && matches!(inner[1].kind, Kind::Delim(':'))
                     && simple_value(&tokens, start + 3, tokens.len() - 1)));
+        return simple.then(|| wrap(condition.into()));
+    }
+    if kind == "media" && tokens.len() == 1 {
+        let Kind::Ident(media) = &tokens[0].kind else {
+            return None;
+        };
+        return Some(
+            if MEDIA_TYPES
+                .iter()
+                .any(|item| media.eq_ignore_ascii_case(item))
+            {
+                condition.into()
+            } else {
+                format!("({condition})")
+            },
+        );
+    }
+    simple_condition(kind, &tokens, start).then(|| wrap(format!("({condition})")))
+}
+
+fn query_keyword(name: &str) -> bool {
+    ["and", "or", "not", "only"]
+        .iter()
+        .any(|item| name.eq_ignore_ascii_case(item))
+}
+
+/// One feature, declaration or range from `start` to the end, without its group parentheses.
+fn simple_condition(kind: &str, tokens: &[crate::CssSyntaxToken<'_>], start: usize) -> bool {
+    use crate::CssSyntaxKind as Kind;
+    let end = tokens.len();
+    let inner = &tokens[start..];
+    let Some(first) = inner.first() else {
+        return false;
+    };
+    let ident = matches!(&first.kind, Kind::Ident(name) if !query_keyword(name));
+    let declaration = ident
+        && inner.len() > 2
+        && matches!(inner[1].kind, Kind::Delim(':'))
+        && simple_value(tokens, start + 2, end);
+    if kind == "supports" {
+        return declaration;
     }
     if ident && inner.len() == 1 {
         return true;
     }
     if ident && inner.len() > 2 && matches!(inner[1].kind, Kind::Delim(':')) {
-        return simple_value(&tokens, start + 3, tokens.len() - 1);
+        return declaration;
     }
     // Feature ranges permit one or two comparisons. Each operand is a single
     // CSS token/function, or a numeric ratio, never a nested query condition.
     let mut operands = Vec::new();
     let mut comparisons = Vec::new();
-    let mut index = start + 1;
-    let end = tokens.len() - 1;
+    let mut index = start;
     while index < end {
         let token = &tokens[index];
-        let is_name = matches!(&token.kind, Kind::Ident(name) if !keyword(name));
+        let is_name = matches!(&token.kind, Kind::Ident(name) if !query_keyword(name));
         if !(is_name
             || matches!(
                 token.kind,
@@ -247,43 +330,79 @@ mod tests {
     use super::*;
 
     #[test]
-    fn simple_queries_preserve_native_values() {
-        for source in [
-            "media(print)",
-            "media((hover))",
-            "media((orientation:landscape))",
-            "media((40rem<=width<64rem))",
-            "media((resolution>=2x))",
-            "media((future-feature:calc(1px+2px)))",
-            "supports((display:grid))",
-            "container(card|(width>=40rem))",
-            "container(style(--density:compact))",
-            "container(card|style(--density))",
+    fn simple_queries_restore_their_native_group() {
+        for (source, prelude) in [
+            ("media(print)", "print"),
+            ("media(screen)", "screen"),
+            ("media(hover)", "(hover)"),
+            ("media(orientation:landscape)", "(orientation:landscape)"),
+            ("media(pointer:coarse)", "(pointer:coarse)"),
+            ("media(width>=50rem)", "(width>=50rem)"),
+            ("media(40rem<=width<64rem)", "(40rem<=width<64rem)"),
+            ("media(resolution>=2x)", "(resolution>=2x)"),
+            ("media(aspect-ratio>16/9)", "(aspect-ratio>16/9)"),
+            (
+                "media(future-feature:calc(1px+2px))",
+                "(future-feature:calc(1px+2px))",
+            ),
+            ("supports(display:grid)", "(display:grid)"),
+            ("container(width>=40rem)", "(width>=40rem)"),
+            ("container(orientation:portrait)", "(orientation:portrait)"),
+            ("container(card|width>=40rem)", "card (width>=40rem)"),
+            ("container(card|40rem<=width)", "card (40rem<=width)"),
+            (
+                "container(style(--density:compact))",
+                "style(--density:compact)",
+            ),
+            ("container(card|style(--density))", "card style(--density)"),
         ] {
-            assert!(parse_native_query(source).is_some(), "{source}");
+            assert_eq!(
+                parse_native_query(source)
+                    .map(|query| query.prelude)
+                    .as_deref(),
+                Some(prelude),
+                "{source}"
+            );
+            assert!(!query_requires_css(source), "{source}");
+            assert_eq!(legacy_query(source), None, "{source}");
         }
-        assert_eq!(
-            parse_native_query("container(card|(width>=40rem))")
-                .unwrap()
-                .prelude,
-            "card (width>=40rem)"
-        );
+    }
+
+    #[test]
+    fn wrapped_conditions_report_their_class_form() {
+        for (source, expected) in [
+            ("media((width>=50rem))", "media(width>=50rem)"),
+            ("media((hover))", "media(hover)"),
+            ("supports((display:grid))", "supports(display:grid)"),
+            ("container((width>=40rem))", "container(width>=40rem)"),
+            (
+                "container(card|(width>=40rem))",
+                "container(card|width>=40rem)",
+            ),
+        ] {
+            assert!(parse_native_query(source).is_none(), "{source}");
+            assert!(!query_requires_css(source), "{source}");
+            assert_eq!(legacy_query(source).as_deref(), Some(expected), "{source}");
+        }
     }
 
     #[test]
     fn complex_queries_require_css() {
         for source in [
+            "media(screen|and|width>=50rem)",
             "media(screen|and|(width>=50rem))",
-            "media(not|(hover))",
+            "media(not|hover)",
             "media(print,screen)",
+            "media((width>=50rem)|and|(hover))",
             "supports(selector([lang|=en]))",
+            "supports(display)",
             "container(style((--a:b)|or|(--c:d)))",
             "media('(width>=50rem)')",
-            "media(width>=800px)",
-            "supports(display:grid)",
+            "media(width>=)",
         ] {
             assert!(query_requires_css(source), "{source}");
             assert!(parse_native_query(source).is_none(), "{source}");
+            assert_eq!(legacy_query(source), None, "{source}");
         }
     }
 

@@ -32,7 +32,7 @@ The unconditioned `grid-cols(2)` is the base layout; each wider condition replac
 Choose the condition by what owns the change:
 
 - The page, such as navigation, the app shell or page columns, uses a viewport condition: `grid-cols(12)@md`.
-- A reusable component uses a container query: `grid-cols(2)@container((width>=28rem))`.
+- A reusable component uses a container query: `grid-cols(2)@container(width>=28rem)`.
 
 A card with `grid-cols(2)@md` splits at the page's `md` width even inside a narrow sidebar. Give it a container query so it follows its own space.
 
@@ -59,37 +59,37 @@ To change a threshold, redeclare its custom media in your project CSS entry. Thi
 
 Below a breakpoint, use its `max-` complement: `hidden@max-md` applies under `@md` and never overlaps it. Redeclaring `--md` moves both.
 
-For a one-off range, write the complete native query, such as `hidden@media((52.125rem<=width<=64rem))`. See [Breakpoints](/reference/tokens/breakpoints) for the preset names and [conditions](/reference/rules/conditions#mediafeature) for the query syntax.
+For a one-off range, write the complete native query, such as `hidden@media(52.125rem<=width<=64rem)`. See [Breakpoints](/reference/tokens/breakpoints) for the preset names and [conditions](/reference/rules/conditions#mediafeature) for the query syntax.
 
 ---
 
 ## Container queries \{#based-on-container-sizes\}
 
-`container-inline` makes an ancestor an inline-size query container. Its descendants then take a complete query such as `@container((width>=28rem))`; an element cannot query itself.
+`container-inline` makes an ancestor an inline-size query container. Its descendants then take a complete query such as `@container(width>=28rem)`; an element cannot query itself.
 
 <FoundationContainerGrid />
 
 ```html
-<!-- @MARK container-inline --><!-- @MARK grid-cols(2)@container((width>=28rem)) -->
+<!-- @MARK container-inline --><!-- @MARK grid-cols(2)@container(width>=28rem) -->
 <section class="container-inline">
-  <article class="grid-cols(1) gap-lg grid-cols(2)@container((width>=28rem))">
+  <article class="grid-cols(1) gap-lg grid-cols(2)@container(width>=28rem)">
     <img src="mountain.jpg" alt="" />
     <div>…</div>
   </article>
 </section>
 ```
 
-<Class2CSS>{['container-inline', 'grid-cols(2)@container((width>=28rem))']}</Class2CSS>
+<Class2CSS>{['container-inline', 'grid-cols(2)@container(width>=28rem)']}</Class2CSS>
 
 Container query thresholds are explicit lengths. Changing `--container-md` changes `max-w-md`, not `(width>=28rem)`. See [conditions](/reference/rules/conditions#containersize) for ranges and the complete query contract.
 
 ### Named containers \{#creating-named-containers\}
 
-A query measures the nearest container. To measure an outer one, name it with `(container-name:<name>)` and put the name before the condition: `@container(card|(width>=16rem))`.
+A query measures the nearest container. To measure an outer one, name it with `(container-name:<name>)` and put the name before the condition: `@container(card|width>=16rem)`.
 
-<DemoConfiguredExample name="named-container" title="Choose the ancestor to measure" source="" responsive widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} previewFirst html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container((width>=28rem))">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container((width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container((width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|(width>=28rem))">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container(outer|(width>=28rem))">Below 28rem</span>\n        <span class="hidden inline@container(outer|(width>=28rem))">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Switch between Narrow outer and Wide outer. The inner container stays below 28rem, so only the named query changes when the outer container grows." />
+<DemoConfiguredExample name="named-container" title="Choose the ancestor to measure" source="" responsive widthPresets={[{ label: 'Narrow outer', width: 320 }, { label: 'Wide outer', width: 640 }]} previewFirst html={'<section class="(container-name:outer) container-inline p-md r-lg b(1) b-solid b-line-divider">\n  <p class="mt(0) text-sm fg-text-muted">Outer container</p>\n  <div class="container-inline (max-width:14rem)">\n    <p class="text-sm fg-text-muted">Inner container · at most 14rem</p>\n    <div class="p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(width>=28rem)">\n      <h3 class="m(0) text-sm font-regular">Nearest container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container(width>=28rem)">Below 28rem</span>\n        <span class="hidden inline@container(width>=28rem)">At least 28rem</span>\n      </p>\n    </div>\n    <div class="mt-md p-md r-md bg-line-subtle b-line-divider b(1) b-solid b-text-blue@container(outer|width>=28rem)">\n      <h3 class="m(0) text-sm font-regular">Named outer container</h3>\n      <p class="mt-xs mb(0) text-sm">\n        <span class="hidden@container(outer|width>=28rem)">Below 28rem</span>\n        <span class="hidden inline@container(outer|width>=28rem)">At least 28rem</span>\n      </p>\n    </div>\n  </div>\n</section>'} caption="Switch between Narrow outer and Wide outer. The inner container stays below 28rem, so only the named query changes when the outer container grows." />
 
-<Class2CSS>{['(container-name:outer)', 'b-text-blue@container(outer|(width>=28rem))']}</Class2CSS>
+<Class2CSS>{['(container-name:outer)', 'b-text-blue@container(outer|width>=28rem)']}</Class2CSS>
 
 ---
 

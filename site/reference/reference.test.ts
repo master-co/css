@@ -246,7 +246,7 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
   assert.match(conditions, /\(container-name:card\) container-inline/)
-  assert.match(conditions, /@supports\(\(display:grid\)\)/)
+  assert.match(conditions, /@supports\(display:grid\)/)
   assert.doesNotMatch(conditions, /`css @/)
 })
 
@@ -332,7 +332,7 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
   assert.match(animation, /animation:var\(--animate-reveal\)/)
   assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
   assert.match(animation, /@keyframes note-reveal/)
-  assert.match(used('grid@sm@supports((display:grid))').css, /@media[^{}]+\{@supports \(display:grid\)/)
+  assert.match(used('grid@sm@supports(display:grid)').css, /@media[^{}]+\{@supports \(display:grid\)/)
   const priority = used('inset').css
   assert.ok(priority.indexOf('padding:2rem') < priority.indexOf('padding:var(--spacing-md)'))
   assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:12px'))
