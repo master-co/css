@@ -10,7 +10,7 @@ import { repairCheckpoint } from './repair-checkpoint.mjs'
 import { compareRepairCandidate, guardedRepairLoop } from './repair-regression.mjs'
 import { invoke, modelArguments } from './invoke.mjs'
 
-const { values } = parseArgs({ options: { source: { type: 'string' }, case: { type: 'string' }, attempts: { type: 'string', default: '2' }, 'replay-only': { type: 'boolean', default: false } } })
+const { values } = parseArgs({ options: { source: { type: 'string' }, case: { type: 'string' }, output: { type: 'string' }, 'cohort-case': { type: 'boolean', default: false }, attempts: { type: 'string', default: '2' }, 'replay-only': { type: 'boolean', default: false } } })
 if (!values.source || !values.case) throw new Error('Usage: node --import tsx scripts/ai-authoring/trials/guarded-run.mjs --source RECHECK_RUN --case TRIAL_ID [--attempts 2] [--replay-only]')
 const source = resolve(values.source), maxAttempts = values['replay-only'] ? 0 : Number(values.attempts)
 if (!Number.isInteger(maxAttempts) || maxAttempts < 0 || maxAttempts > 3) throw new Error('Expected 0 to 3 attempts')
@@ -18,8 +18,12 @@ const oldProtocol = JSON.parse(await readFile(join(source, 'protocol.json'), 'ut
 const item = oldProtocol.selected?.find(row => row.id === values.case)
 if (!item) throw new Error('Case is not in source protocol')
 const oldResult = JSON.parse(await readFile(join(source, item.id + '.result.json'), 'utf8'))
-if (oldResult.status !== 'failed' || !oldResult.exhausted) throw new Error('Expected an exhausted failed recheck case')
-const root = await mkdtemp(join(tmpdir(), 'master-guarded-')), baseline = join(root, 'baseline'), cacheRoot = join(userInfo().homedir, '.cache/mastercss')
+if (values['cohort-case']) {
+  if (values['replay-only'] || !['passed', 'failed'].includes(oldResult.status) || oldResult.checkpoints?.[0]?.status !== 'failed') throw new Error('Expected a completed case with an initially failed checkpoint')
+} else if (oldResult.status !== 'failed' || !oldResult.exhausted) throw new Error('Expected an exhausted failed recheck case')
+const root = values.output ? resolve(values.output) : await mkdtemp(join(tmpdir(), 'master-guarded-'))
+if (values.output) await mkdir(root) // Refuse existing outputs, including an earlier interrupted run.
+const baseline = join(root, 'baseline'), cacheRoot = join(userInfo().homedir, '.cache/mastercss')
 const oldFolder = join(source, item.id)
 await cp(join(oldFolder, 'baseline'), baseline, { recursive: true })
 await mkdir(cacheRoot, { recursive: true })
@@ -49,11 +53,11 @@ function sourceDiff(left, right) {
   return result.split(left + '/').join('retained/').split(right + '/').join('candidate/')
 }
 const browser = await chromium.launch()
-const protocol = { version: 1, mode: values['replay-only'] ? 'replay' : 'targeted', revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+const protocol = { version: 1, mode: values['cohort-case'] ? 'cohort-case' : values['replay-only'] ? 'replay' : 'targeted', revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   source, case: item, sourceProtocolHash: digest(await readFile(join(source, 'protocol.json'))), sourceResultHash: digest(await readFile(join(source, item.id + '.result.json'))),
   sourceHashes, artifactHashes, artifactChanges, baselineHashes, maxAttempts, timeoutMs: 120000, model: item.model, modelArguments,
   client: execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim(), browser: browser.version(), browserHash: digest(await readFile(chromium.executablePath())),
-  design: 'Replay archived regressions and propose isolated repairs from the same original failed checkpoint. Adopt only a strict subset of measured failures with unchanged coverage/expectations and no new failures. Rejections retain source and evidence and are disclosed to the next attempt. Single targeted case; not an A/B benchmark.' }
+  design: 'Replay archived regressions and propose isolated repairs from the same original failed checkpoint. Adopt only a strict subset of measured failures with unchanged coverage/expectations and no new failures. Rejections retain source and evidence and are disclosed to the next attempt. Fresh model executions; cohort mode omits historical replay and includes previously repaired cases from their initial failed snapshots. Not an A/B benchmark.' }
 protocol.hash = digest(JSON.stringify(protocol))
 await writeFile(join(root, 'protocol.json'), JSON.stringify(protocol, null, 2))
 console.log(JSON.stringify({ root, case: item.id, maxAttempts }))
@@ -64,9 +68,13 @@ try {
   const initialCheckpoint = await repairCheckpoint({ work: initialWork, task: item.task, browser, repository, baseline, answer: 'Retained reset CSS.', sequence: 0 })
   if (initialCheckpoint.status !== 'failed') throw new Error('Original failure did not reproduce')
   await writeFile(join(root, 'initial.json'), JSON.stringify(initialCheckpoint, null, 2))
+  if (values['cohort-case']) {
+    const prior = JSON.parse(await readFile(join(oldFolder, 'checkpoint-0.json'), 'utf8'))
+    if (initialCheckpoint.sourceHash !== prior.sourceHash || JSON.stringify(initialCheckpoint.assessment.checks) !== JSON.stringify(prior.assessment.checks)) throw new Error('Original source or scored failure changed before model invocation')
+  }
   // Evaluate historical proposals against the retained original, not a worsening predecessor.
   const replays = []
-  for (let sequence = 1; sequence < oldResult.checkpoints.length; sequence++) {
+  for (let sequence = 1; !values['cohort-case'] && sequence < oldResult.checkpoints.length; sequence++) {
     const work = join(root, `replay-${sequence}.work`)
     await copyOriginal(sequence, work)
     const checkpoint = await repairCheckpoint({ work, task: item.task, browser, repository, baseline, answer: 'Retained reset CSS.', sequence, previous: initialCheckpoint })
