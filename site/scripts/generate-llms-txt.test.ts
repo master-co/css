@@ -592,7 +592,7 @@ test('brand downloads retain their asset URLs, labels and policy in portable and
     assert.ok(content.markdown.includes('Download '))
     assert.match(await readFile(path.join(root, 'public/images', name), 'utf8'), /<svg\b/)
   }
-  for (const title of ['Download assets', 'Logotype', 'Mark', 'Trademark policy', 'Name usage']) assert.ok(content.markdown.includes(title), title)
+  for (const title of ['Downloads', 'Logotype', 'Mark', 'Trademark policy', 'Name usage']) assert.ok(content.markdown.includes(title), title)
   assert.ok(content.markdown.includes('without written consent'))
   assert.doesNotMatch(content.markdown, /<DemoAsset|MCSS_EXPRESSION/)
   for (const locale of ['en', 'tw']) {

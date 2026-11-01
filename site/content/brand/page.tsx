@@ -1,14 +1,19 @@
 import createPage from '~/site/docs-shell/factories/create-page'
-import Layout from './components/BrandLayout'
+import DocLayout from '~/site/layouts/doc'
+import DocWrapper from '~/site/docs-shell/components/DocWrapper'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
-import categories from '~/site/.categories/reference.json'
 import * as content from './content.mdx'
+
+/** A standalone identity guide: the document column without the Guide sidebar. */
+function Layout(props: any) {
+  return <DocWrapper><DocLayout {...props} /></DocWrapper>
+}
 
 export const { Page, generateMetadata } = createPage({
   metadata,
   dictionaries,
-  categories,
+  categories: [],
   content,
   Layout,
 })

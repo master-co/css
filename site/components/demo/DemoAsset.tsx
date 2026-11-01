@@ -17,6 +17,7 @@ export interface DemoAssetProps {
 /** A downloadable specimen, not a CSS test subject. Intrinsic dimensions reserve
  * the image ratio; only the preview is constrained. The file stays unchanged.
  * Light and dark artwork sits on a sheet in that mode; transparent artwork on a checkerboard.
+ * A demo container keeps the prose media perimeter off the artwork, which has no frame of its own.
  */
 export default function DemoAsset({ title, description, src, alt, width, height, format = 'SVG', surface = 'transparent' }: DemoAssetProps) {
   const image = <DemoMedia src={src} alt={alt} width={width} height={height} className="block h-auto w-auto max-w-full (max-height:6rem)" />
@@ -30,7 +31,7 @@ export default function DemoAsset({ title, description, src, alt, width, height,
     </span>
   }>
     {surface === 'transparent'
-      ? <div className="grid (place-items:center) w-full (min-height:9rem)">{image}</div>
-      : <div className={`ui-sheet ${surface} grid (place-items:center) (min-height:9rem) w-full p-lg`} data-elevation="1">{image}</div>}
+      ? <div className="grid (place-items:center) w-full (min-height:9rem)" data-demo-container="">{image}</div>
+      : <div className={`ui-sheet ${surface} grid (place-items:center) (min-height:9rem) w-full p-lg`} data-elevation="1" data-demo-container="">{image}</div>}
   </Demo>
 }

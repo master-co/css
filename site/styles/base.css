@@ -24,7 +24,7 @@
 
   /*
    * The theme class comes from an inline script. Without it (scripts disabled), paired light and dark artwork
-   * would both show: follow the system scheme instead, as the brand page does.
+   * would both show: follow the system scheme instead.
    */
   @media (prefers-color-scheme: light) {
     :root:not(.light, .dark) [class~="hidden@apply(--site-light)"] { display: none !important; }
