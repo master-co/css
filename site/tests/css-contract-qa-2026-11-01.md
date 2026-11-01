@@ -235,3 +235,25 @@ None. Every changed segment between the snapshot approved at `5d188d522` and a b
 ### Visual check
 
 Captured from the dev server at 1000–1280px in light and dark: `/guide/cascade-layers`, `/guide/installation/vite`, `/guide/colors`, `/design-system/review/{code,demo,viewport,controls,chart-group,media,agent}`.
+
+## Blog article close and index rhythm {#blog-close-rhythm}
+
+Follow-ups to the documentation and blog reading: wide surfaces in a post hang the documentation's 2rem instead of reaching the frame; the post's header steps out to that edge with a smaller (28–44px) title that no longer runs past it and an italic description; "Keep reading" is set like the header (an eyebrow, an open title with an italic description, the index's artboard corners on hover, the way back under a hairline) instead of a raised card; and the index's entries gain air (title 36px lines, excerpts double-leaded at 30px, 16px between title and excerpt, 64px between entries), with the selection corners re-measured to the new last baseline.
+
+A build of `rc` at `8eba78e48` matches the committed snapshot. Against it:
+
+| Change | Count |
+| --- | --- |
+| Routes added or removed | 0 |
+| Routes with a different CSS contract | 6 (`/blog`, both posts, and their `/tw` copies) |
+| Delivered CSS segments | 2,542 → 2,543 (24 added, 23 removed) |
+| Delivery contracts | 123 → 123 |
+| Post CSS | 144,430 → 144,949 bytes (`/blog/master-css-next`); 143,722 → 144,241 (`/blog/bootstrapping-master-css-with-vite`) |
+| `/blog` CSS | 90,236 → 90,233 bytes |
+
+- The posts gain the close's open-title and corner-mark rules and lose the card's sheet recipe; their hydration payloads fall by 15 bytes (the next read no longer carries `blog-plate`).
+- The project manifest is unchanged.
+
+### Visual check
+
+`/blog/master-css-next`, `/blog` and `/tw/blog` were reviewed on the development server at 1440 and 390 px in light and dark; the post title was measured at 375, 820 and 1024 px without overflow. Site lint and type-check pass.
