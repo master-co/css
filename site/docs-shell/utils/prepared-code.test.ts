@@ -9,7 +9,7 @@ test('prepared blocks escape displayed markup and preserve complete copy text', 
   assert.equal(code.text, source)
   assert.doesNotMatch(code.html, /<(?:script|img)\b/)
   assert.match(code.html, /(?:&lt;|&#x3[cC];|&#60;)/)
-  assert.match(code.properties.className!, /code-wrapper scrollbar/)
+  assert.match(code.properties.className!, /\bshiki\b/)
   assert.equal(String(code.properties.tabIndex), '0')
   assert.ok(!('children' in code.properties))
 })
@@ -18,7 +18,7 @@ test('prepared blocks preserve notation effects without copying their markers', 
   const source = 'color: red; /* [!code ++] */'
   const code = await prepareCode(await highlightCode(source, { lang: 'css' }))
   assert.equal(code.text, 'color: red;')
-  assert.match(code.html, /code-line-add/)
+  assert.match(code.html, /class="line ui-code-line" data-mark="added"/)
   assert.doesNotMatch(code.html, /\[!code/)
   await assert.rejects(prepareCode(await highlightCode('text', { lang: 'plaintext', inline: true })), /Expected one highlighted code block/)
 })

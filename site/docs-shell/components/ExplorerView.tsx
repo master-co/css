@@ -1,4 +1,3 @@
-import '~/site/styles/docs-shell/code.css'
 import FileIcon from './FileIcon'
 import FolderSvg from '../../public/icons/folder.svg'
 
@@ -7,33 +6,23 @@ declare type ExplorerViewItemOption = {
   children: ExplorerViewItemOption[];
 }
 
+/** A file tree (`ui-tree`): names in mono, nested folders on hairline guides. */
 export default function ExplorerView({ children }: { children: ExplorerViewItemOption[] }) {
-  const Item = (option: ExplorerViewItemOption) => {
-    const ext = option.name.includes('.')
-      ? option.name.split('.').pop()
-      : ''
-    return (
-      <div className='flex flex-col w-full'>
-        <div className='flex items-center'>
-          {ext && <FileIcon name={option.name} ext={ext} className="(height:1.2em) (width:1.2em) mr-3xs" />}
-          {!ext && <FolderSvg className="(height:1.2em) (width:1.2em) mr-3xs" />}
-          {option.name}
-        </div>
-        {option.children?.length &&
-          <div className='(margin-left:1.5em)'>
-            {option.children.map((option, index) => <Item {...option} key={option.name + index} />)}
-          </div>
-        }
-      </div>
-    )
-  }
-  return (
-    <div className='code-wrapper'>
-      <div className="(padding-inline:1.25rem) fg-text-strong code-block">
-        {children.map((option, index) => (
-          <Item {...option} key={option.name + index} />
-        ))}
-      </div>
-    </div>
+  const Items = ({ options }: { options: ExplorerViewItemOption[] }) => (
+    <ul>
+      {options.map((option, index) => {
+        const ext = option.name.includes('.') ? option.name.split('.').pop() : ''
+        return (
+          <li key={option.name + index}>
+            <div>
+              {ext ? <FileIcon name={option.name} ext={ext} aria-hidden="true" /> : <FolderSvg aria-hidden="true" />}
+              <b>{option.name}</b>
+            </div>
+            {option.children?.length ? <Items options={option.children} /> : null}
+          </li>
+        )
+      })}
+    </ul>
   )
+  return <div className="ui-tree"><Items options={children} /></div>
 }

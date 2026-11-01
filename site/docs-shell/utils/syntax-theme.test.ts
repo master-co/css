@@ -35,7 +35,7 @@ test('native grammars distinguish names, values and structure with the shared ro
   for (const { lang, source, roles } of examples) {
     const tokens = highlighter.codeToTokens(source, { lang, theme }).tokens.flat()
     for (const [text, role] of Object.entries(roles)) {
-      assert.ok(tokens.some(token => token.content.trim() === text && token.color === `var(--color-code-${role})`), `${lang}: ${text} → ${role}`)
+      assert.ok(tokens.some(token => token.content.trim() === text && token.color === `var(--ui-code-${role})`), `${lang}: ${text} → ${role}`)
     }
   }
 })
@@ -70,7 +70,7 @@ test('every site language renders copyable text with the adaptive palette', asyn
       const tree = await highlightCode(source, { lang, inline, dedent: false })
       assert.equal(inline ? textContent(tree) : highlightedCodeText(tree), source, `${lang}, inline=${inline}`)
       assert.doesNotMatch(JSON.stringify(tree), /--shiki-(?:dark|light)|dracula|min-light/)
-      if (lang !== 'plaintext') assert.match(JSON.stringify(tree), /var\(--color-code-/)
+      if (lang !== 'plaintext') assert.match(JSON.stringify(tree), /var\(--ui-code-/)
     }
   }
 })

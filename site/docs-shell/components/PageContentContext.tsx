@@ -11,8 +11,6 @@ export interface PageContentItem {
 interface PageContentContextValue {
   items: PageContentItem[]
   currentId: string
-  currentParentId?: string
-  activeTransitionsReady: boolean
 }
 
 declare global {
@@ -23,18 +21,6 @@ declare global {
 
 const headingOffset = 110
 const PageContentContext = createContext<PageContentContextValue | undefined>(undefined)
-
-function getCurrentParentId(items: PageContentItem[], currentId: string) {
-  const currentIndex = items.findIndex((item) => item.id === currentId)
-  const currentItem = items[currentIndex]
-  if (currentItem?.level !== 3) return
-
-  for (let i = currentIndex - 1; i >= 0; i--) {
-    if (items[i].level === 2) {
-      return items[i].id
-    }
-  }
-}
 
 function computeActiveState(items: PageContentItem[]) {
   const headings = items
@@ -63,21 +49,13 @@ function computeActiveState(items: PageContentItem[]) {
     currentId = headings[headings.length - 1].id
   }
 
-  return {
-    currentId,
-    currentParentId: getCurrentParentId(items, currentId)
-  }
+  return { currentId }
 }
 
-function applyActiveState({ currentId, currentParentId }: {
-  currentId: string
-  currentParentId?: string
-}) {
+function applyActiveState({ currentId }: { currentId: string }) {
   document.querySelectorAll<HTMLElement>('[data-page-content-nav-id]').forEach((nav) => {
     const id = nav.dataset.pageContentNavId
-    const active = currentId === id
-    nav.classList.toggle('active', active || currentParentId === id)
-    if (active) {
+    if (currentId === id) {
       nav.setAttribute('aria-current', 'location')
     } else {
       nav.removeAttribute('aria-current')
@@ -90,7 +68,6 @@ export function PageContentProvider({ children, items }: {
   items: PageContentItem[]
 }) {
   const [currentId, setCurrentId] = useState('')
-  const [activeTransitionsReady, setActiveTransitionsReady] = useState(false)
 
   useInsertionEffect(() => {
     applyActiveState(computeActiveState(items))
@@ -98,7 +75,6 @@ export function PageContentProvider({ children, items }: {
 
   useLayoutEffect(() => {
     let animationFrame = 0
-    let transitionReadyFrame = 0
     let initialUpdateTimeout = 0
 
     const updateCurrentId = () => {
@@ -114,12 +90,7 @@ export function PageContentProvider({ children, items }: {
       animationFrame = window.requestAnimationFrame(updateCurrentId)
     }
 
-    setActiveTransitionsReady(false)
     updateCurrentId()
-    transitionReadyFrame = window.requestAnimationFrame(() => {
-      transitionReadyFrame = 0
-      setActiveTransitionsReady(true)
-    })
     initialUpdateTimeout = window.setTimeout(requestUpdate, 100)
     document.addEventListener('scroll', requestUpdate, {
       capture: true,
@@ -134,20 +105,10 @@ export function PageContentProvider({ children, items }: {
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame)
       }
-      if (transitionReadyFrame) {
-        window.cancelAnimationFrame(transitionReadyFrame)
-      }
     }
   }, [items])
 
-  const currentParentId = useMemo(() => getCurrentParentId(items, currentId), [currentId, items])
-
-  const value = useMemo(() => ({
-    activeTransitionsReady,
-    currentId,
-    currentParentId,
-    items
-  }), [activeTransitionsReady, currentId, currentParentId, items])
+  const value = useMemo(() => ({ currentId, items }), [currentId, items])
 
   return <PageContentContext.Provider value={value}>{children}</PageContentContext.Provider>
 }

@@ -8,7 +8,6 @@ import LanguageSelect from './LanguageSelect'
 import ThemeSelect from './ThemeSelect'
 import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
 import { IconChevronDown } from '@tabler/icons-react'
-import { Fragment } from 'react'
 import type { HTMLAttributes, ReactNode } from 'react'
 import { useI18n, useTranslation } from '../contexts/i18n'
 import { useLocale } from '../contexts/locale'
@@ -24,12 +23,13 @@ export interface FooterNavGroup {
   links: FooterLink[]
 }
 
-export interface FooterProps extends HTMLAttributes<HTMLDivElement> {
+export interface FooterProps extends HTMLAttributes<HTMLElement> {
   navGroups?: FooterNavGroup[]
   legalLinks?: (FooterLink & { href: string })[]
   copyright?: ReactNode
 }
 
+/** The site footer: link groups and search, then the legal row with the theme and language preferences. */
 export default function Footer({ navGroups = [], legalLinks = [], copyright, className, ...props }: FooterProps) {
   const themeMode = useThemeMode()
   const locale = useLocale()
@@ -37,46 +37,38 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
   return (
-    <div {...props} className={clsx('py-2xl bt-line-subtle bt-solid bt(1) site-footer', className)}>
-      <div className='container-inline (max-width:100rem) mx-auto'>
-        <nav aria-label={$('Footer')} data-footer-navigation="" className="font-sm fg-text-muted site-footer-navigation">
-          {navGroups.map((group) => (
-            <ul className="site-footer-links" key={group.name}>
-              <li><h2 className='(font:inherit) fg-text-strong m(0)'>{$(group.name)}</h2></li>
+    <footer {...props} className={clsx('ui-footer', className)}>
+      <nav aria-label={$('Footer')} className="ui-footer-nav">
+        {navGroups.map((group) => (
+          <div className="ui-footer-group" key={group.name}>
+            <h2>{$(group.name)}</h2>
+            <ul>
               {group.links.map((link) => (
                 <li key={link.href || link.name}>
                   <Link href={link.href} disabled={link.disabled}>{$(link.name)}</Link>
                 </li>
               ))}
             </ul>
-          ))}
-          <div className="site-footer-search">
-            <SearchButton className="flex items-center w-full min-h(44) px-md r-lg font-sm bg-surface-base fg-text-muted" />
           </div>
-        </nav>
-      </div>
-      <hr className='hr' />
-      <div data-footer-legal="" className="(max-width:100rem) mx-auto font-xs fg-text-muted site-footer-legal">
-        <div className="site-footer-copyright">{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</div>
-        {legalLinks.map((link, index) => (
-          <Fragment key={link.href || link.name}>
-            <Link href={link.href}>{$(link.name)}</Link>
-            {index < legalLinks.length - 1 && <div className='bl-line-subtle bl-solid bl(1)'></div>}
-          </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='bl-line-subtle bl-solid bl(1) hidden@media(width<64rem)'></div>}
-        <label className='relative hidden@media(width<64rem)'>
-          <span className='pr-xs capitalize'>{$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}</span>
+        <div className="ui-footer-search">
+          <SearchButton className="ui-search-trigger" />
+        </div>
+      </nav>
+      <div className="ui-footer-legal">
+        <span>{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</span>
+        {legalLinks.map((link) => <Link key={link.href || link.name} href={link.href}>{$(link.name)}</Link>)}
+        <label className="ui-footer-preference">
+          {$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}
           <ThemeSelect />
-          <IconChevronDown className='inline-block (height:1em) (width:1em) vertical-middle' />
+          <IconChevronDown aria-hidden="true" stroke={1.5} />
         </label>
-        <div className='bl-line-subtle bl-solid bl(1) hidden@media(width<64rem)'></div>
-        <label className='relative hidden@media(width<64rem)'>
-          <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
+        <label className="ui-footer-preference">
+          {$('Language')}: {localeName}
           <LanguageSelect />
-          <IconChevronDown className='inline-block (height:1em) (width:1em) vertical-middle' />
+          <IconChevronDown aria-hidden="true" stroke={1.5} />
         </label>
       </div>
-    </div>
+    </footer>
   )
 }

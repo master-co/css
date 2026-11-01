@@ -1,18 +1,31 @@
 'use client'
 
-import '~/site/styles/docs-shell/wrapper.css'
+import '~/site/styles/docs-shell/header.css'
 import { throttle } from 'throttle-debounce'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import clsx from 'clsx'
 
-export default function Header({ top, stickable, fixed = true, transitionAtTop = false, ...props }: any) {
+export interface HeaderProps {
+  /** Overlays the page, slides away while reading down and is transparent at the top (homepage, blog). */
+  stickable?: boolean
+  /** With `stickable`, each change of the header runs as a view transition of the header alone. */
+  transitionAtTop?: boolean
+  className?: string
+  children?: ReactNode
+}
+
+/**
+ * The site header. By default it sticks to the top of the canvas; a stickable header overlays the page instead.
+ * Its state is on data attributes: `data-background="transparent"` at the top of the page, `data-tucked` while hidden.
+ */
+export default function Header({ stickable, transitionAtTop = false, className, children }: HeaderProps) {
   const ref = useRef<HTMLElement>(null)
   const [atTop, setAtTop] = useState(!!stickable)
 
   useLayoutEffect(() => {
-    if (!stickable || top) return
-    const navbar = ref.current!
+    if (!stickable) return
+    const header = ref.current!
     const root = document.documentElement
     const motion = matchMedia('(prefers-reduced-motion: reduce)')
     let lastScrollTop = window.scrollY
@@ -25,7 +38,7 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
     setAtTop(desired.atTop)
 
     const apply = () => {
-      navbar.style.transform = desired.tucked ? 'translateY(-100%)' : ''
+      header.toggleAttribute('data-tucked', desired.tucked)
       flushSync(() => setAtTop(desired.atTop))
     }
 
@@ -91,24 +104,15 @@ export default function Header({ top, stickable, fixed = true, transitionAtTop =
       activeTransition?.skipTransition()
       if (transitionAtTop) delete root.dataset.headerTransition
     }
-  }, [top, stickable, transitionAtTop])
+  }, [stickable, transitionAtTop])
 
   return (
-    <nav ref={ref} aria-label={props['aria-label']}
-      className={clsx('(z-index:1040) w-full (padding-top:env(safe-area-inset-top)) whitespace-nowrap (contain:layout|style) bb-line-subtle:not(.at-top) bb-solid:not(.at-top) bb(1):not(.at-top) bg-surface-base/.9:not(.at-top) (backdrop-filter:blur(25px)):not(.at-top) hidden@media(print) app-wrapper',
-        'app-header',
-        props.className,
-        {
-          '(transition-duration:.2s) (transition-property:transform,height,padding,backdrop-filter,background-color)': stickable && !transitionAtTop,
-          'fixed top(0)': fixed,
-          'at-top': atTop
-        }
-      )}
-      style={{
-        willChange: 'transform, height, padding, backdrop-filter, background-color',
-      }}
-    >
-      {props.children}
-    </nav>
+    <header ref={ref} className={clsx('ui-header', className)}
+      data-variant={stickable ? 'stickable' : undefined}
+      data-background={stickable && atTop ? 'transparent' : undefined}
+      // A view transition animates the header itself; a CSS transition would run again after it.
+      style={transitionAtTop ? { transition: 'none' } : undefined}>
+      {children}
+    </header>
   )
 }

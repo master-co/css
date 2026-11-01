@@ -23,7 +23,7 @@ export function Tab(props: any) {
     <Link {...props}
       className={clsx(
         // Each state owns the bottom color: a token longhand does not override a native block shorthand.
-        'flex items-center justify-center h(48) mb(-1) by-solid by(2) (border-top-color:transparent) (font-weight:460) whitespace-nowrap app-nav doc-tab',
+        'flex items-center justify-center h(48) mb(-1) by-solid by(2) (border-top-color:transparent) (font-weight:460) whitespace-nowrap (user-select:none) doc-tab',
         {
           'font-xs!': size === 'sm',
           'font-sm!': !size

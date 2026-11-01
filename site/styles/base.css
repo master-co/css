@@ -32,11 +32,6 @@
   @media (prefers-color-scheme: dark) {
     :root:not(.light, .dark) [class~="display:none@apply(--site-dark)"] { display: none !important; }
   }
-
-  /* The side rails scroll and clip their overflow, so rings inside them sit on the element's edge. */
-  :is(#sidebar, .doc-page-contents) :focus-visible {
-    outline-offset: -2px;
-  }
 }
 
 @layer defaults {
