@@ -122,7 +122,10 @@ not a billing or causal-efficiency comparison.
 The result supports the final report's readability for these eight scenarios.
 It does not prove a universal success rate: questions explicitly requested
 structured coverage fields, reports were read in isolation, and each scenario had
-only two calls. The full seven-case repair cohort was not rerun with these binaries.
+only two calls. At this stage, the full seven-case repair cohort had not been rerun
+with these binaries. The subsequent [full repair evaluation](lint-repair-cohort.md)
+records 6/7 repaired cases, no retained regressions and one scope overstatement;
+it does not establish stable repair success or complete scope understanding.
 The semantic linter, CSS output and adoption gate were not modified.
 
 ## Checks and known unrelated failures
