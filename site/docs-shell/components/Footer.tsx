@@ -3,7 +3,6 @@
 import '~/site/styles/docs-shell/footer.css'
 import clsx from 'clsx'
 import Link from './Link'
-import SearchButton from './SearchButton'
 import LanguageSelect from './LanguageSelect'
 import ThemeSelect from './ThemeSelect'
 import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
@@ -29,7 +28,7 @@ export interface FooterProps extends HTMLAttributes<HTMLElement> {
   copyright?: ReactNode
 }
 
-/** The site footer: link groups and search, then the legal row with the theme and language preferences. */
+/** The site footer: link groups, then the legal row: the notice and its links, and the theme and language preferences. */
 export default function Footer({ navGroups = [], legalLinks = [], copyright, className, ...props }: FooterProps) {
   const themeMode = useThemeMode()
   const locale = useLocale()
@@ -51,13 +50,12 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
             </ul>
           </div>
         ))}
-        <div className="ui-footer-search">
-          <SearchButton className="ui-search-trigger" />
-        </div>
       </nav>
       <div className="ui-footer-legal">
-        <span>{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</span>
-        {legalLinks.map((link) => <Link key={link.href || link.name} href={link.href}>{$(link.name)}</Link>)}
+        <p className="ui-footer-notice">
+          <span>{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</span>
+          {legalLinks.map((link) => <Link key={link.href || link.name} href={link.href}>{$(link.name)}</Link>)}
+        </p>
         <label className="ui-footer-preference">
           {$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}
           <ThemeSelect />

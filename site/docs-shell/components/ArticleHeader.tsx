@@ -9,7 +9,7 @@ import PackageBadges from './PackageBadges'
 import PageContentDisclosure from './PageContentDisclosure'
 
 export default async function ArticleHeader(props: any) {
-  let { h1ClassName, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc } = props
+  let { h1ClassName, metadata, icon, end, date, center, locale, categoryLink, dictionaries, toc, subtitle } = props
   const $ = await createTranslation(locale, dictionaries)
   // Text a translated page still shows in its source language says so, for screen readers and Han type rules.
   const sourceLanguage = locale !== i18n.defaultLocale ? (i18n.hreflangOfLocale as Record<string, string>)[i18n.defaultLocale] ?? i18n.defaultLocale : undefined
@@ -35,6 +35,7 @@ export default async function ArticleHeader(props: any) {
           {icon && <div className="ui-pagehead-icon">{icon}</div>}
         </div>
         <p lang={languageOf(metadata.description)}>{$(metadata.description)}</p>
+        {subtitle && <p lang={languageOf(subtitle)}>{$(subtitle)}</p>}
         {metadata.package && <PackageBadges {...metadata.package} translate={$} />}
         {(metadata.unfinished || metadata.disabled) &&
           <div className="ui-callout" data-tone="warning" role="note"><IconAlertTriangle aria-hidden="true" /><div>{$('This page is still under construction and some content may not be complete.')}</div></div>}

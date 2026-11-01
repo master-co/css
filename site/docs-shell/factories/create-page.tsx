@@ -72,8 +72,8 @@ export default function createPage({
             dictionaries={dictionaries}
             metadata={metadata}
             toc={noTOC ? null : toc}
+            subtitle={subtitle}
           >
-            {subtitle && <p className='italic'>{subtitle}</p>}
             {children}
           </Layout>
         )

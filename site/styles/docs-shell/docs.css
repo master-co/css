@@ -1,9 +1,14 @@
 /*
  * The documentation frame under the sticky header: a sticky sidebar, the article column and the page's contents rail.
  * Chrome stays on the canvas; hairlines separate the rails.
+ *
+ * The article is one content column (`--ui-measure`) inside equal gutters. The column and the contents rail centre
+ * together in the main area; a page without contents keeps the rail's room, so the column never moves between pages.
  */
 @layer components {
-  .ui-docs, .ui-docs-main { --docs-header: calc(3.75rem + env(safe-area-inset-top)); }
+  .ui-docs, .ui-docs-main { --docs-header: calc(3.75rem + env(safe-area-inset-top)); --docs-gutter: max(1.25rem, env(safe-area-inset-left), env(safe-area-inset-right)); --docs-rail: 15.75rem; }
+  @media (--sm) { .ui-docs, .ui-docs-main { --docs-gutter: 2.5rem; } }
+  @media (--md) { .ui-docs, .ui-docs-main { --docs-gutter: 3rem; } }
   .ui-docs { display: flex; width: 100%; background: var(--ui-surface-canvas); }
 
   .ui-docs .ui-sidebar {
@@ -24,11 +29,12 @@
   @media (pointer: coarse) { .ui-nav-link { min-height: 2.75rem; } }
 
   .ui-docs-main { container: docs-main / inline-size; display: flex; flex: 1; flex-direction: column; min-width: 0; }
-  .ui-docs-body { display: flex; justify-content: center; width: 100%; max-width: 80rem; margin-inline: auto; }
-  .ui-docs-article { flex: 1 1 auto; width: 100%; min-width: 0; padding: var(--ui-space-xl) max(1.25rem, env(safe-area-inset-right)) var(--ui-space-3xl) max(1.25rem, env(safe-area-inset-left)); }
-  .ui-docs-article[data-aside] { max-width: 52.125rem; }
-  @media (--sm) { .ui-docs-article { padding-inline: 2.5rem; padding-bottom: 5rem; } }
-  @media (--md) { .ui-docs-article { padding: var(--ui-space-3xl) 2.5rem 5rem 5rem; } .ui-docs-article[data-aside] { padding-right: 5rem; } }
+  .ui-docs-body { display: flex; justify-content: center; width: 100%; }
+  .ui-docs-article { flex: 0 1 auto; width: 100%; min-width: 0; max-width: calc(var(--ui-measure) + var(--docs-gutter) * 2); padding: var(--ui-space-xl) var(--docs-gutter) var(--ui-space-3xl); }
+  @media (--sm) { .ui-docs-article { padding-bottom: 5rem; } }
+  @media (--md) { .ui-docs-article { padding-top: 3.5rem; padding-bottom: 6rem; } }
+  /* Where the rail shows, a page without one keeps its room. */
+  @media (width >= 80rem) { .ui-docs-article:not([data-aside]) { margin-right: var(--docs-rail); } }
 
   /* The page head (`ui-pagehead`): an integration's mark beside the title; on a phone it leads, smaller. */
   .ui-pagehead-title { display: flex; align-items: center; gap: var(--ui-space-lg); }
@@ -52,8 +58,8 @@
 
   /* The contents rail stands still beside the article; a long list scrolls inside it. */
   :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) {
-    position: sticky; top: var(--docs-header); display: flex; flex: none; flex-direction: column; align-self: start; width: 15.75rem; max-height: calc(100dvh - var(--docs-header));
-    padding: var(--ui-space-3xl) var(--ui-space-lg) var(--ui-space-xl) 0;
+    position: sticky; top: var(--docs-header); display: flex; flex: none; flex-direction: column; align-self: start; width: var(--docs-rail); max-height: calc(100dvh - var(--docs-header));
+    padding: 3.5rem var(--ui-space-lg) var(--ui-space-xl) 0;
   }
   :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) > ol { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
   @media (width < 80rem) { :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) { display: none; } }

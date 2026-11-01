@@ -6,7 +6,7 @@ The site's interface vocabulary. Light mode is moonstone (a clean zinc pearl), d
 
 | File | Scope | Loaded |
 | --- | --- | --- |
-| `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`: shared declarations the component files expand with `@apply` | foundation (Master CSS definitions) |
+| `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`, `--ui-eyebrow-type`: shared declarations the component files expand with `@apply` | foundation (Master CSS definitions) |
 | `tokens.css` | `--ui-*` roles: surfaces, lines, text, light, elevation, radius, rhythm, motion, tones, status, code | foundation |
 | `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll` | documents |
 | `controls.css` | `ui-button`, `ui-segmented`, `ui-field`, `ui-input`, `ui-select`, `ui-range`, `ui-check`, `ui-switch`, `ui-copy`, `ui-kbd`, `ui-tooltip`, `ui-menu` | interface |
@@ -34,21 +34,24 @@ The approved visual specification is the published "Master CSS Site Design Syste
 4. **Legible dark edges.** Dark lines are firmer than light ones so surfaces never blur into each other: hair .075 · contour .11 · divider .13 · strong .22 · mark .32 (white alpha); light: .065 · .095 · .12 · .2 · .3.
 5. **Elevation order.** sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay. Hover lifts 0.5px to rise-1h; press sinks to the well. Do not express state by changing hue.
 6. **Small concentric radii.** 3 / 4 / 6 / 8 / 10 / 14 with a 4px tray inset: tray 14 → stage, code, table and sheet 10; menu 8 → item 4; segmented track 6 + its padding → thumb 6. Nothing rounder except pills and dots.
-7. **Light regular type.** English text runs at 350 (`:root:lang(en)` lowers `--ui-weight-regular`), Han text at 400. Headings are regular (400): size and ink carry the steps. Medium (460) marks a current entry, a control label or a small title; strong (500) is for `<strong>` and short emphasis only. Captions are small sans in the reading face — never mono uppercase eyebrows.
-8. **One reading rhythm.** Body 16/28 (`--line`); paragraphs part by ¾ line, wide blocks by 1 line, h2 opens on 2 lines and closes on ½, h3 on 1½ and ⅜, h4 on 1¼ and ¼; list items by ¼. Type scale: title 38/44 −.028em · h2 26/35 −.022em · h3 20/28 −.014em · lead 18/1.65 · small 14 · caption 13 · label 12.
-9. **Converged shadows.** Every layer doubles offset and blur and pulls its spread in by half the offset. No single large blur.
+7. **Light regular type.** English text runs at 350 (`:root:lang(en)` lowers `--ui-weight-regular`), Han text at 400. Headings are regular (400): size and ink carry the steps. Medium (460) marks a current entry, a control label or a small title; strong (500) is for `<strong>` and short emphasis only. Captions inside components (table heads, tray titles, metric names) are small sans in sentence case. Captions *over a group or a page* — sidebar groups, footer columns, the page kicker, "On this page", the pager's Previous/Next — are eyebrows (`--ui-eyebrow-type`): 11px sans capitals at medium weight, tracked .08em, 16px line; Han text keeps 12px and .04em. Never mono.
+8. **One content column.** A documentation article is one column of `--ui-measure` (46rem, 736px) inside equal gutters (20 / 40 / 48px): page head, prose, tabs, steps, code, examples, tables, the pager and, in the documentation, the footer share both of its edges. Nothing bleeds past it. The column and the contents rail centre together; a page without contents keeps the rail's room, so the column never moves between pages.
+9. **One reading rhythm.** Body 16/28 (`--line`); paragraphs part by ¾ line, wide blocks by 1 line, h2 opens on 2 lines and closes on ½, h3 on 1½ and ⅜, h4 on 1¼ and ¼; list items by ¼. Type scale: title 38/44 −.028em · h2 26/35 −.022em · h3 20/28 −.014em · lead 18/1.65 · small 14 · caption 13 · label 12.
+10. **Converged shadows.** Every layer doubles offset and blur and pulls its spread in by half the offset. No single large blur.
 
 ## Shell
 
 The shell follows the original documentation layout, refined:
 
 - **Header** 60px, 32px gutters. Section links are plain words (body ink, current one in strong ink at medium weight), no pill. The version is plain text with a chevron. End icons are 18px glyphs in 36px targets that only change ink on hover.
-- **Sidebar** 276px with a 32px start gutter aligned with the logo. Search is a quiet hairline field. Group captions are 12px strong-ink regular; entries are 14px muted on one hairline guide, 32px rows; the current entry inks a short 2px bar on the guide and takes medium weight.
-- **Contents rail** is a ruler: every entry hangs a short tick before its title on one left edge; the section being read draws the long tick in ink. Subsections keep the edge and step down in ink (no indent). 13px entries in 38px rows; "On this page" is a quiet caption on the title edge.
-- **Page head** kicker in small sans, a regular-weight title (fluid 30–38px), an 18px lead, and a closing hairline before the reading starts.
+- **Sidebar** 276px with a 32px start gutter aligned with the logo. Search is a quiet hairline field. Group captions are muted eyebrows; entries are 14px muted on one hairline guide, 32px rows; the current entry inks a short 2px bar on the guide and takes medium weight.
+- **Contents rail** (252px) is a ruler: every entry hangs a short tick before its title on one left edge; the section being read draws the long tick in ink. Subsections keep the edge and step down in ink (no indent). 13px entries in 38px rows; "On this page" is a muted eyebrow on the title edge, level with the page kicker.
+- **Page head** a muted eyebrow kicker, a regular-weight title (fluid 30–38px), an 18px lead (a second lead line, such as a layout's subtitle, at reading size), then 48px of space — no rule — before the reading starts.
 - **Page tabs** between sibling documents (`Tabs`, `ui-segmented[data-variant="underline"]`) are words on one hairline, the current one underlined in ink — the original's tabs, not a raised segmented thumb.
 - **Search trigger** is a quiet row over one hairline with a flat `⌘K` hint, as the original's; results take a chip wash, never a raised frame.
-- **Pager** cards are hairline outlines that take a chip wash on hover; no drop shadow.
+- **Pager** is one hairline over two links, 80px below the article: an eyebrow (Previous / Next) over a 16px title with a muted arrow; ink on hover, no boxes.
+- **Steps** hang on one hairline rail from flat 28px numbered rings (canvas face, strong contour, sans tabular figures). A step title is 16px medium; its text is 14/24. A row step puts its text beside its code at 1 : 1.2 once the list is 38rem wide; previews and code that belong to a step stay inside it, so the rail runs on.
+- **Footer** in the documentation is the article column; elsewhere it is 72rem. Link groups (Docs, Resources, Community) under strong-ink eyebrows, 14px links on a 32px pitch. One quiet legal row under a hairline: the notice and its links joined by dots at the start, the theme and language preferences at the end. No search field — the sidebar and header carry search.
 
 ## Markup
 
@@ -65,6 +68,11 @@ The shell follows the original documentation layout, refined:
 Content and example markup keep teaching the preset vocabulary (`bg-surface-raised`, `shadow-lg`, …); `--ui-*` tokens are deliberately not utility tokens.
 
 ## Decisions and rejected directions
+
+- **Owner direction (2026-11-01 refinement, second pass):** the layout had regressed against a mature documentation site: mixed measures (41rem prose, full-width rules and pager, code bleeding 32px past both edges), a cramped footer, missing tracking, captions competing with entries. Continue the system and refine; captions may be uppercase with proper tracking.
+- Decided (round 1): one 46rem column with no bleed; the page head's closing hairline and the installation layout's italic subtitle removed (the subtitle is now the page head's second lead line); tracked sans eyebrows for group and page captions; borderless pager; footer regrouped into three columns with the search field removed.
+- Rejected (round 1): keeping a 41rem text measure inside a wider column for code and examples — two right edges was the regression the owner saw. A 48rem column (Tailwind's) — at 16px light text it runs past 95 characters a line; 46rem keeps about 88.
+- Rejected (round 1): centring a contents-less page in the full main area — the column jumped sideways between the Installation tabs and the next document.
 
 - **Owner direction (2026-11-01 polish):** return the sidebar, contents rail and header to the original documentation's layout; light regular type; finer spacing and rhythm; smaller radii; zinc rather than cool neutrals; clearer dark edges; restrained and soft overall. This overrides the approved spec's 4/6/10/14/18/24 radii, 520/560/600 weights, hue-255 pearl and mono uppercase labels.
 - Rejected: semibold (600) headings and 560 labels — too heavy against the 350 reading text, the "template" look the owner disliked.

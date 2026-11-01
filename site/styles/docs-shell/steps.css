@@ -3,17 +3,21 @@
  * its text and, in a row step, the code beside it once the column has room.
  */
 @layer components {
-  .ui-steps[data-variant="document"] { container-type: inline-size; margin-block: var(--ui-space-xl); }
+  .ui-steps[data-variant="document"] { container-type: inline-size; margin-block: var(--ui-space-xl) var(--line, var(--ui-space-xl)); }
   .ui-steps-content, .ui-steps-text, .ui-steps-source { min-width: 0; }
-  .ui-steps-content[data-columns] { display: grid; gap: var(--ui-space-md) var(--ui-space-xl); }
+  .ui-steps-content { display: grid; align-content: start; gap: var(--ui-space-md); }
+  .ui-steps-content[data-columns] { gap: var(--ui-space-md) var(--ui-space-xl); }
   .ui-steps-content :is(h2, h3, h4) {
-    position: static; width: auto; margin: .1875rem 0 var(--ui-space-xs);
-    color: var(--ui-text-strong); font-size: 1.0625rem; font-weight: var(--ui-weight-medium); line-height: 1.5; letter-spacing: -.005em;
+    position: static; width: auto; margin: .125rem 0 var(--ui-space-2xs);
+    color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-medium); line-height: 1.5rem; letter-spacing: -.006em;
   }
   .ui-steps-content :is(h2, h3, h4) > .ui-anchor { display: none; }
+  .ui-steps-content > :is(h2, h3, h4), .ui-steps-text > :is(h2, h3, h4) { margin-bottom: calc(var(--ui-space-md) * -1 + var(--ui-space-2xs)); }
   .ui-steps-content :is(h2, h3, h4) + p { margin-top: 0; }
-  .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); }
-  .ui-steps-content .ui-code { margin-inline: 0; }
+  .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); line-height: 1.7; }
+  .ui-steps-content :is(p, ul, ol) { margin-block: 0; }
+  .ui-steps-text { display: grid; align-content: start; gap: var(--ui-space-md); }
+  .ui-steps-content :is(.ui-code, .ui-tray) { margin: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):first-child { margin-top: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):last-child { margin-bottom: 0; }
 
@@ -22,7 +26,8 @@
     .ui-steps[data-variant="document"] > li::before, .ui-steps[data-variant="document"] > li::after { display: none; }
   }
 
+  /* A row step reads beside its code once the text keeps about forty characters a line. */
   @container (min-width: 38rem) {
-    .ui-steps-content[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+    .ui-steps-content[data-columns] { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
   }
 }

@@ -22,6 +22,8 @@
   --ui-text-small: .875rem;     --ui-leading-small: 1.65;
   --ui-text-caption: .8125rem;  --ui-leading-caption: 1.55;
   --ui-text-label: .75rem;      --ui-tracking-label: 0;
+  /* Eyebrow: a small capital caption over a group (sidebar, footer, kicker, contents) — sans, medium, widely tracked. */
+  --ui-text-eyebrow: .6875rem;  --ui-tracking-eyebrow: .08em;
   --ui-text-code: .8125rem;     --ui-leading-code: 1.7;
   /* English runs a step lighter than the regular cut, as the original site did; Han text keeps 400. */
   --ui-weight-regular: 400; --ui-weight-medium: 460; --ui-weight-strong: 500; --ui-weight-heading: 400;
@@ -39,6 +41,8 @@
   /* Rhythm */
   --ui-space-3xs: .25rem; --ui-space-2xs: .375rem; --ui-space-xs: .5rem; --ui-space-sm: .75rem; --ui-space-md: 1rem;
   --ui-space-lg: 1.5rem; --ui-space-xl: 2rem; --ui-space-2xl: 3rem; --ui-space-3xl: 4rem;
+  /* One content column: page head, prose, tabs, steps, code, examples and the pager share its edges. */
+  --ui-measure: 46rem;
 
   /* Motion: one easing family; interaction is quick, explanation calm */
   --ui-ease: cubic-bezier(.22, 1, .36, 1);
@@ -46,6 +50,8 @@
   --ui-duration-press: 60ms; --ui-duration-quick: 160ms; --ui-duration-base: 280ms; --ui-duration-slow: 640ms;
 }
 :root:lang(en) { --ui-weight-regular: 350; }
+/* Han text has no capitals: an eyebrow keeps a readable size and only a hair of tracking. */
+:lang(zh) { --ui-text-eyebrow: .75rem; --ui-tracking-eyebrow: .04em; }
 
 :root, :host, .light, .dark {
   /* Surfaces */

@@ -10,6 +10,8 @@
   .ui-prose { --prose-bleed: 0rem; --bleed: var(--prose-bleed); }
   @media (width >= 52rem) { .ui-prose { --prose-bleed: 2rem; } }
   @media print { .ui-prose { --prose-bleed: 0rem; } }
+  /* A documentation article is itself the column: text, code, examples and tables share both of its edges. */
+  .ui-prose.ui-docs-article { --measure: none; --prose-bleed: 0rem; }
 
   :is(.ui-tray, .ui-code, .ui-table, .ui-index, figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(
     .ui-prose > :is(div, section, site-island):not([class]) > *,
@@ -60,7 +62,10 @@
 }
 
 /* A link's mark after it (`Link` with `indicate`): an arrow for another site, a hash for this page. */
-a[data-indicate]::after { display: inline-block; margin-left: .2em; color: var(--ui-text-muted); font-size: .7em; line-height: 0; vertical-align: super; text-decoration: none; }
+/* The mark rides in the link's end margin out of flow: it can never wrap away from the word, or take a line of its own
+   before the punctuation that follows the link, and the link's underline does not reach it. */
+a[data-indicate] { margin-inline-end: .7em; }
+a[data-indicate]::after { position: absolute; margin-left: .15em; color: var(--ui-text-muted); font-size: .7em; line-height: 1; text-decoration: none; }
 a[data-indicate="external"]::after { content: var(--content-external); }
 a[data-indicate="hash"]::after { content: var(--content-hash); }
 .ui-prose :is(td, th) a[href^="#"] { white-space: nowrap; }
