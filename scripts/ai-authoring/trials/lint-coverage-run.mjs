@@ -15,9 +15,11 @@ const fixtures = join(root, 'fixtures'), calls = join(root, 'calls'), cacheRoot 
 for (const folder of [fixtures, calls, cacheRoot]) await mkdir(folder, { recursive: true })
 const sourceHashes = await treeHashes(join(repository, 'scripts/ai-authoring'))
 const artifactHashes = {}
-for (const owner of ['cli', 'mcp', 'tooling', 'compiler', 'binding', 'preset']) {
-  for (const [file, hash] of Object.entries(await treeHashes(join(repository, 'packages', owner, 'dist')))) artifactHashes[`packages/${owner}/dist/${file}`] = hash
+for (const owner of ['cli', 'mcp', 'tooling', 'compiler', 'binding', 'preset', 'css', 'schema', 'internal', 'engine-js', 'language-service']) {
+  const directory = `packages/${owner}/${owner === 'preset' ? 'src' : 'dist'}`
+  for (const [file, hash] of Object.entries(await treeHashes(join(repository, directory)))) artifactHashes[`${directory}/${file}`] = hash
 }
+for (const file of ['bun.lock', 'packages/binding/artifacts/mastercss.node', 'packages/css/src/index.css']) artifactHashes[file] = digest(await readFile(join(repository, file)))
 const common = modelArguments.map(value => value === 'workspace-write' ? 'read-only' : value)
 const protocol = { version: 1, revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), model: 'gpt-6-luna', modelArguments: common,
   client: execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim(), timeoutMs: 120000, repeats: 2, concurrency: 1,
@@ -80,6 +82,7 @@ protocol.hash = digest(JSON.stringify(protocol))
 await writeFile(join(root, 'protocol.json'), JSON.stringify(protocol, null, 2))
 await writeFile(join(root, 'cases.json'), JSON.stringify(cases, null, 2))
 console.log(JSON.stringify({ root, cases: cases.length, calls: cases.length * protocol.repeats }))
+if (process.argv.includes('--prepare-only')) process.exit(0)
 const rows = []
 try {
   campaign: for (let repeat = 0; repeat < protocol.repeats; repeat++) for (const item of cases) {

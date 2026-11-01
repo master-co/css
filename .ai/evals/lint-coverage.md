@@ -34,8 +34,11 @@ schema validation. Run package tests, lint, type checks and builds plus Referenc
 preparation/tests, site lint and AI context checks. Record unrelated failures.
 
 ```sh
+node --import tsx scripts/ai-authoring/trials/lint-coverage-run.mjs --prepare-only
 node --import tsx scripts/ai-authoring/trials/lint-coverage-run.mjs
 ```
+
+The prepare-only command validates report fixtures without invoking a model.
 
 Generate eight real reports from the built CLI/MCP: clean file, mixed files,
 unmatched pattern, manifest-blocked CLI, clean stdin, successful fix, clean MCP
