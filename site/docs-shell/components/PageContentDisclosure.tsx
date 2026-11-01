@@ -1,15 +1,18 @@
-import { IconChevronDown } from '@tabler/icons-react'
+import '~/site/styles/docs-shell/page-content.css'
 import type { PageContentItem } from './PageContentContext'
 import PageContentTitle from './PageContentTitle'
-import '~/site/styles/docs-shell/contents-disclosure.css'
-import '~/site/styles/docs-shell/page-content.css'
+import groupPageContent from '../utils/group-page-content'
 
-/** The same heading inventory as the desktop rail, drawn as the same ruler, available without hydration. */
+/** The same heading inventory as the documentation rail, closed in a disclosure, available without hydration. */
 export default function PageContentDisclosure({ items, label, labelLang }: { items: (PageContentItem & { lang?: string })[], label: string, labelLang?: string }) {
-  return <details className="doc-contents-disclosure" data-contents-disclosure="">
-    <summary lang={labelLang}>{label}<IconChevronDown size={16} stroke={1.5} aria-hidden="true" /></summary>
-    <nav className="page-content" aria-label={label}>
-      <ol className="page-content-list">{items.map(item => <li key={item.id}><a className="page-content-link" data-level={item.level} href={`#${item.id}`} lang={item.lang}><PageContentTitle title={item.title} /></a></li>)}</ol>
+  const entry = (item: PageContentItem & { lang?: string }) => <a href={`#${item.id}`} lang={item.lang}><PageContentTitle title={item.title} /></a>
+  return <details className="ui-disclosure" data-variant="rule" data-contents-disclosure="">
+    <summary lang={labelLang}>{label}</summary>
+    <nav className="ui-toc" aria-label={label}>
+      <ol>{groupPageContent(items).map(({ item, children }) => <li key={item.id}>
+        {entry(item)}
+        {children.length > 0 && <ol>{children.map(child => <li key={child.id}>{entry(child)}</li>)}</ol>}
+      </li>)}</ol>
     </nav>
   </details>
 }

@@ -9,7 +9,7 @@
   .ui-header-nav { display: flex; align-items: center; gap: 2px; }
   .ui-header-nav > a { display: inline-flex; align-items: center; height: 2rem; padding: 0 .75rem; border-radius: 9px; color: var(--ui-text-muted); font-size: var(--ui-text-small); font-weight: var(--ui-weight-medium); text-decoration: none; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick); }
   .ui-header-nav > a:hover { color: var(--ui-text-strong); }
-  .ui-header-nav > a[aria-current="page"] { color: var(--ui-text-strong); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
+  .ui-header-nav > a:is([aria-current="page"], [aria-current="true"]) { color: var(--ui-text-strong); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
   .ui-header-nav > a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
   .ui-header-end { display: flex; align-items: center; gap: 2px; margin-left: auto; }
   .ui-header-divider { width: 1px; height: 1.25rem; margin-inline: var(--ui-space-xs); background: var(--ui-line-divider); }
@@ -26,7 +26,7 @@
   .ui-nav-group > h4 { margin: 0 0 var(--ui-space-xs); padding-left: .625rem; color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
   .ui-nav-link { position: relative; display: flex; align-items: center; min-height: 2rem; padding: 0 .625rem; border-radius: 9px; color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.35; text-decoration: none; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick); }
   .ui-nav-link:hover { color: var(--ui-text-strong); background: light-dark(oklch(26% .012 265 / .035), oklch(100% 0 none / .035)); }
-  .ui-nav-link[aria-current="page"] { color: var(--ui-text-strong); font-weight: var(--ui-weight-strong); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
+  .ui-nav-link:is([aria-current="page"], [aria-current="true"]) { color: var(--ui-text-strong); font-weight: var(--ui-weight-strong); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
   .ui-nav-link:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 1px; }
   .ui-nav-link > .ui-badge { margin-left: auto; }
 

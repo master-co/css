@@ -3,13 +3,14 @@ import '~/site/styles/docs-shell/docs.css'
 import Footer from './Footer'
 import type { FooterProps } from './Footer'
 
-export default function DocMain({ footerProps, ...props }: any & { footerProps?: FooterProps }) {
+/** The main column: the article and its contents rail, then the footer. */
+export default function DocMain({ footerProps, className, children, ...props }: any & { footerProps?: FooterProps }) {
   return (
-    <main {...props} className={clsx('flex flex-col w-full min-w(0) doc-main', props.className)}>
-      <div className='flex flex-nowrap justify-center w-full (max-width:80rem) mx-auto'>
-        {props.children}
+    <main {...props} className={clsx('ui-docs-main', className)}>
+      <div className="ui-docs-body">
+        {children}
       </div>
-      {footerProps && <Footer {...footerProps} className={clsx('(padding-left:5rem)@sm doc-footer', footerProps.className)} />}
+      {footerProps && <Footer {...footerProps} />}
     </main>
   )
 }

@@ -56,17 +56,12 @@ test('@MARK highlights conditional query ranges split across Shiki tokens', asyn
 
   applyCodeTransform?.(codeElement)
 
-  assert.deepEqual(collectMarkedTexts(codeElement), [
-    'hidden',
-    '@sm',
-    '&',
-    '<',
-    '=',
-    'md'
-  ])
+  // One mark spans every token of the range, and each token keeps its own span inside it.
+  assert.deepEqual(collectMarkedTexts(codeElement), ['hidden@sm&<=md'])
+  assert.deepEqual(collectMarks(codeElement)[0].children.map(getTextContent), ['hidden', '@sm', '&', '<', '=', 'md'])
 })
 
-test('@WARN and @ERROR add diagnostic mark classes', async () => {
+test('@WARN and @ERROR add a diagnostic tone to their marks', async () => {
   const directiveLine = createElement('span', [
     createElement('span', [createText('<!-- @WARN bg:yelow --><!-- @ERROR font: -->')])
   ])
@@ -84,8 +79,7 @@ test('@WARN and @ERROR add diagnostic mark classes', async () => {
   applyCodeTransform?.(codeElement)
 
   assert.deepEqual(collectMarkedTexts(codeElement), ['bg:yelow', 'font:'])
-  assert.ok(hasClassName(findTextElement(codeElement, 'bg:yelow'), 'code-mark-warn'))
-  assert.ok(hasClassName(findTextElement(codeElement, 'font:'), 'code-mark-error'))
+  assert.deepEqual(collectMarks(codeElement).map((mark) => mark.properties?.dataTone), ['warning', 'danger'])
 })
 
 function createElement(tagName: string, children: ElementContent[], properties: Element['properties'] = {}): Element {
@@ -104,14 +98,16 @@ function createText(value: string): ElementContent {
   }
 }
 
-function collectMarkedTexts(element: Element): string[] {
-  const texts: string[] = []
+function collectMarks(element: Element): Element[] {
+  const marks: Element[] = []
   visitElements(element, (child) => {
-    if (hasClassName(child, 'mark')) {
-      texts.push(getTextContent(child))
-    }
+    if (child.tagName === 'mark') marks.push(child)
   })
-  return texts
+  return marks
+}
+
+function collectMarkedTexts(element: Element): string[] {
+  return collectMarks(element).map((mark) => mark.children.map(getTextContent).join(''))
 }
 
 function visitElements(element: Element, callback: (element: Element) => void) {
@@ -121,22 +117,4 @@ function visitElements(element: Element, callback: (element: Element) => void) {
       visitElements(child, callback)
     }
   }
-}
-
-function hasClassName(element: Element, className: string): boolean {
-  const classes = element.properties?.class
-  if (Array.isArray(classes)) return classes.includes(className)
-  if (typeof classes === 'string') return classes.split(/\s+/).includes(className)
-  return false
-}
-
-function findTextElement(element: Element, text: string): Element {
-  let match: Element | undefined
-  visitElements(element, (child) => {
-    if (!match && getTextContent(child) === text) {
-      match = child
-    }
-  })
-  assert.ok(match)
-  return match
 }

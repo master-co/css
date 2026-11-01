@@ -6,13 +6,14 @@ import { useI18n } from '../contexts/i18n'
 import { localizePathname } from '../utils/i18n-pathname'
 import { usePathname } from '../layouts/root'
 
+/** A native select; by default invisible over its positioned label (`ui-select[data-variant="overlay"]`), which shows the value. */
 export default function LanguageSelect({ className, children, ...props }: { className?: string, [key: string]: any, children?: React.ReactElement }) {
   const pathname = usePathname()
   const locale = useLocale()
   const i18n = useI18n()
   return (
     <>
-      <select {...props} className={clsx('absolute inset(0) h-full w-full (opacity:0) (cursor:pointer) doc-preference-select', className)}
+      <select data-variant="overlay" {...props} className={clsx('ui-select', className)}
         onChange={(event: any) => {
           const newLocale = event.target.value
           const splits = pathname.split('/')

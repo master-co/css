@@ -1,11 +1,8 @@
 import '~/site/styles/docs-shell/docs.css'
 import '~/site/styles/docs-shell/prose.css'
-
 import clsx from 'clsx'
 
-/** `aside` reserves room for the page contents rail, which renders inside a client island. */
-export default function DocArticle({ aside, ...props }: any) {
-  return (
-    <article {...props} className={clsx('basis-auto grow(1) shrink(1) w-full min-w(0) pb-2xl (padding-top:5.063rem) (padding-bottom:3.75rem)@media(print) (padding-left:1.875rem)@media(print) (padding-right:1.875rem)@media(print) (padding-top:3.75rem)@media(print) (padding-bottom:5rem)@sm (padding-left:5rem)@md (padding-top:8.75rem)@md prose', aside ? '(max-width:52.125rem) (padding-right:5rem)@md' : '(padding-right:2.5rem)@md', props.className)} />
-  )
+/** The article column; with `aside` it narrows to leave room for the page's contents rail. */
+export default function DocArticle({ aside, className, ...props }: any) {
+  return <article {...props} className={clsx('ui-docs-article ui-prose', className)} data-aside={aside ? '' : undefined} />
 }

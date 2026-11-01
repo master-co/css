@@ -20,7 +20,6 @@ function selectTab(root: HTMLElement, name: string) {
   root.querySelectorAll<HTMLElement>('[data-code-tabs-panel-name]').forEach(panel => {
     const active = panel.dataset.codeTabsPanelName === name
     panel.hidden = !active
-    panel.classList.toggle('hidden', !active)
   })
   const copy = root.querySelector<HTMLButtonElement>('[data-code-copy]')
   if (copy) {
@@ -47,20 +46,23 @@ function syncTabs(key: string, name: string) {
 function codeText(button: HTMLButtonElement) {
   if (button.dataset.codeCopyText !== undefined) return button.dataset.codeCopyText
   const container = button.closest<HTMLElement>('[data-code-tabs]')
-  const scope = container?.querySelector<HTMLElement>('[data-code-tabs-panel-name]:not([hidden])') ?? button.closest<HTMLElement>('.code')
+  const scope = container?.querySelector<HTMLElement>('[data-code-tabs-panel-name]:not([hidden])') ?? button.closest<HTMLElement>('.ui-code')
   return [...scope?.querySelectorAll<HTMLElement>('.line') ?? []].map(line => (line.textContent ?? '').replace(/[\t ]+$/u, '')).join('\n')
 }
 
+/** The icon swaps and the status beside the button says what happened, then both return to rest. */
 function showCopyStatus(button: HTMLButtonElement, status: 'idle' | 'pending' | 'copied' | 'error', name = button.dataset.codeCopy) {
-  const element = button.parentElement?.querySelector<HTMLElement>('.code-copy-status')
+  const element = button.closest('.ui-copy')?.querySelector<HTMLElement>('.ui-copy-status')
+  const result = status === 'copied' ? 'success' : status === 'error' ? 'error' : undefined
   if (element) {
-    element.textContent = status === 'pending' ? `Copying ${name || 'code'}…` : status === 'copied' ? `${name || 'Code'} copied` : status === 'error' ? 'Clipboard unavailable. Select the code to copy it.' : ''
-    element.toggleAttribute('data-error', status === 'error')
-    element.toggleAttribute('data-pending', status === 'pending')
+    element.textContent = status === 'copied' ? `${name || 'Code'} copied` : status === 'error' ? 'Clipboard unavailable. Select the code to copy it.' : ''
+    if (result) element.dataset.result = result
+    else delete element.dataset.result
   }
-  button.toggleAttribute('data-copied', status === 'copied')
+  if (result) button.dataset.result = result
+  else delete button.dataset.result
   clearTimeout(resetTimers.get(button))
-  if (status === 'copied' || status === 'error') resetTimers.set(button, setTimeout(() => showCopyStatus(button, 'idle'), status === 'error' ? 5000 : 2000))
+  if (result) resetTimers.set(button, setTimeout(() => showCopyStatus(button, 'idle'), status === 'error' ? 5000 : 2000))
 }
 
 async function copy(button: HTMLButtonElement) {

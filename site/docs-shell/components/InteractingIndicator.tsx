@@ -2,7 +2,7 @@ import { IconHandClick, IconHandMove, IconTestPipe, IconForms, IconWand, IconRes
 import clsx from 'clsx'
 
 export default function InteractingIndicator({ children, icon }: any) {
-  const iconClass = 'app-icon grow(0) shrink(0) basis-auto (margin-right:0.5rem) (stroke-width:1) vertical-middle'
+  const iconClass = 'inline-flex grow(0) shrink(0) basis-auto (margin-right:0.5rem) (stroke-width:1) vertical-middle fg-text-muted'
   return (
     <p className="(padding-left:2.2em) text-md! (font-weight:460) (text-indent:-2.2em) fg-text-strong">
       {icon === 'wand' && <IconWand width="1.25em" height="1.25em" className={clsx(iconClass, 'stroke-accent>:is(:nth-child(3),:nth-child(4))')} />}

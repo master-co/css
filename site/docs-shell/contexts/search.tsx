@@ -6,7 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useTranslation } from './i18n'
 import { useLocale } from './locale'
 import { createDocumentationSearch, type DocumentationSearchPage } from '../utils/documentation-search'
-import { IconArrowDown, IconArrowUp, IconCornerDownLeft, IconFileText, IconHash, IconSearch, IconX } from '@tabler/icons-react'
+import { IconArrowDown, IconArrowUp, IconCornerDownLeft, IconSearch, IconX } from '@tabler/icons-react'
 import { isInteractOutside } from '../utils/isInteractOutside'
 import { createPortal } from 'react-dom'
 
@@ -25,9 +25,12 @@ async function loadPages(locale: string) {
 export const useSearch = () => {
   const $ = useTranslation()
   const locale = useLocale()
+  const searchPlaceholder = $('Search ⌘ K …')
   return {
     open: (trigger?: HTMLElement) => window.dispatchEvent(new CustomEvent(openEvent, { detail: { trigger } })),
-    searchPlaceholder: $('Search ⌘ K …'),
+    searchPlaceholder,
+    /** The placeholder without its shortcut, which triggers show as a key. */
+    searchText: searchPlaceholder.replace(/\s*⌘\s*K\s*…?$/u, ''),
     searchLabel: locale === 'tw' ? '搜尋文件' : 'Search documentation',
   }
 }
@@ -112,9 +115,9 @@ export default function SearchDialog() {
     ? { utility: 'Utility', rule: '規則', tokens: 'Tokens', directive: '指令', tool: '工具', package: 'API' }
     : { utility: 'Utility', rule: 'Rule', tokens: 'Tokens', directive: 'Directive', tool: 'Tool', package: 'API' }
   return <>
-    {opened && createPortal(<dialog ref={dialog} className="documentation-search" aria-label={tw ? '搜尋文件' : 'Search documentation'} onCancel={close}>
-      <div className="documentation-search-input">
-        <IconSearch size={22} stroke={1.6} aria-hidden="true" />
+    {opened && createPortal(<dialog ref={dialog} className="ui-dialog" data-variant="search" aria-label={tw ? '搜尋文件' : 'Search documentation'} onCancel={close}>
+      <div className="ui-dialog-search">
+        <IconSearch size={18} stroke={1.5} aria-hidden="true" />
         <input ref={input} type="search" role="combobox" aria-autocomplete="list" aria-expanded={Boolean(query)} value={query} autoComplete="off" spellCheck={false} placeholder={tw ? '搜尋文件…' : 'Search documentation…'} aria-label={tw ? '搜尋文件' : 'Search documentation'} aria-controls="documentation-search-results" aria-activedescendant={results[selected] ? `documentation-result-${selected}` : undefined}
           onChange={event => selectQuery(event.target.value)}
           onKeyDown={event => {
@@ -128,32 +131,28 @@ export default function SearchDialog() {
               document.getElementById(`documentation-result-${next}`)?.scrollIntoView({ block: 'nearest' })
             }
           }} />
-        {query && <button className="documentation-search-clear" onClick={() => selectQuery('')} aria-label={tw ? '清除搜尋' : 'Clear search'}><IconX size={16} aria-hidden="true" /></button>}
-        <button className="documentation-search-close" onClick={close} aria-label={tw ? '關閉搜尋' : 'Close search'}><kbd>esc</kbd><span>{tw ? '取消' : 'Cancel'}</span></button>
+        {query && <button type="button" className="ui-button" data-variant="quiet" data-shape="icon" data-size="sm" onClick={() => selectQuery('')} aria-label={tw ? '清除搜尋' : 'Clear search'}><IconX size={16} stroke={1.5} aria-hidden="true" /></button>}
+        <button type="button" className="ui-button ui-dialog-close" data-variant="quiet" data-size="sm" onClick={close} aria-label={tw ? '關閉搜尋' : 'Close search'}><span className="ui-kbd">esc</span><span>{tw ? '取消' : 'Cancel'}</span></button>
       </div>
-      <div className="documentation-search-results" ref={scroll}>
-        <p className="documentation-search-status" role="status">{loading ? (tw ? '正在載入文件…' : 'Loading documentation…') : error ? (tw ? '搜尋暫時無法載入。' : 'Search could not load.') : query ? `${results.length === 40 ? (tw ? '前 ' : 'Top ') : ''}${results.length} ${tw ? '筆結果' : results.length === 1 ? 'result' : 'results'}` : (tw ? '依名稱、別名或 CSS 屬性查找' : 'Find a name, alias or CSS property')}</p>
-        {error && <div className="documentation-search-retry"><p>{tw ? '請檢查連線，再試一次。' : 'Check your connection and try again.'}</p><button type="button" onClick={() => { setRetry(value => value + 1); input.current?.focus() }}>{tw ? '再試一次' : 'Try again'}</button></div>}
-        {!query && !error && !loading && <div className="documentation-search-suggestions">
-          <span>{tw ? '試試看' : 'Try searching'}</span>
-          {['padding', 'padding-inline-start:', 'fg-red:hover@sm'].map(value => <button key={value} onClick={() => selectQuery(value)}><code>{value}</code><IconCornerDownLeft size={14} aria-hidden="true" /></button>)}
+      <div className="ui-dialog-body" ref={scroll}>
+        <p className="ui-dialog-status" role="status">{loading ? (tw ? '正在載入文件…' : 'Loading documentation…') : error ? (tw ? '搜尋暫時無法載入。' : 'Search could not load.') : query ? `${results.length === 40 ? (tw ? '前 ' : 'Top ') : ''}${results.length} ${tw ? '筆結果' : results.length === 1 ? 'result' : 'results'}` : (tw ? '依名稱、別名或 CSS 屬性查找' : 'Find a name, alias or CSS property')}</p>
+        {error && <div className="ui-dialog-note"><p>{tw ? '請檢查連線，再試一次。' : 'Check your connection and try again.'}</p><button type="button" className="ui-button" data-size="sm" onClick={() => { setRetry(value => value + 1); input.current?.focus() }}>{tw ? '再試一次' : 'Try again'}</button></div>}
+        {!query && !error && !loading && <div className="ui-dialog-note">
+          <p>{tw ? '試試看' : 'Try searching'}</p>
+          {['padding', 'padding-inline-start:', 'fg-red:hover@sm'].map(value => <button type="button" className="ui-button" data-size="sm" key={value} onClick={() => selectQuery(value)}><code>{value}</code><IconCornerDownLeft size={14} stroke={1.5} aria-hidden="true" /></button>)}
         </div>}
-        {query && !results.length && !error && !loading && <div className="documentation-search-empty"><IconSearch size={28} stroke={1.25} aria-hidden="true" /><strong>{tw ? '找不到相符的文件' : 'No matching documents'}</strong><p>{tw ? '試試屬性全名、token 名稱或其他關鍵字。' : 'Try a property name, a token name or a different keyword.'}</p></div>}
-        <ol id="documentation-search-results" role="listbox" aria-label={tw ? '搜尋結果' : 'Search results'} aria-busy={loading}>
+        {query && !results.length && !error && !loading && <div className="ui-dialog-note" data-align="center"><IconSearch size={24} stroke={1.25} aria-hidden="true" /><b>{tw ? '找不到相符的文件' : 'No matching documents'}</b><p>{tw ? '試試屬性全名、token 名稱或其他關鍵字。' : 'Try a property name, a token name or a different keyword.'}</p></div>}
+        <ol id="documentation-search-results" className="ui-results" role="listbox" aria-label={tw ? '搜尋結果' : 'Search results'} aria-busy={loading}>
           {!error && results.map((result, index) => <li key={result.page.url} role="presentation">
-            <Link id={`documentation-result-${index}`} role="option" tabIndex={-1} aria-selected={selected === index} href={result.href} onClick={close} onPointerMove={() => setSelected(index)} className={selected === index ? 'is-selected' : undefined}>
-              <span className="documentation-search-icon">{result.href.includes('#') ? <IconHash size={22} stroke={1.4} aria-hidden="true" /> : <IconFileText size={22} stroke={1.4} aria-hidden="true" />}</span>
-              <span className="documentation-search-copy">
-                <span className="documentation-search-title"><strong>{result.page.title}</strong><small>{kinds[result.page.kind ?? ''] ?? (result.page.url.includes('/guide') ? 'Guide' : 'Page')}</small></span>
-                <span className="documentation-search-excerpt">{excerpt(result.excerpt, query)}</span>
-                <span className="documentation-search-context">{$(result.page.category ?? '')} <span aria-hidden="true">·</span> {reasons?.[result.reason] ?? result.reason}</span>
-              </span>
-              <IconCornerDownLeft className="documentation-search-enter" size={17} stroke={1.5} aria-hidden="true" />
+            <Link id={`documentation-result-${index}`} role="option" tabIndex={-1} aria-selected={selected === index} href={result.href} onClick={close} onPointerMove={() => setSelected(index)}>
+              <small>{$(result.page.category ?? '')} · {kinds[result.page.kind ?? ''] ?? (result.page.url.includes('/guide') ? 'Guide' : 'Page')} · {reasons?.[result.reason] ?? result.reason}</small>
+              <b>{result.page.title}</b>
+              <span>{excerpt(result.excerpt, query)}</span>
             </Link>
           </li>)}
         </ol>
       </div>
-      <div className="documentation-search-footer" aria-hidden="true"><span><kbd><IconArrowUp size={12} /></kbd><kbd><IconArrowDown size={12} /></kbd>{tw ? '選擇' : 'Navigate'}</span><span><kbd><IconCornerDownLeft size={12} /></kbd>{tw ? '開啟' : 'Open'}</span><span>{tw ? '文件搜尋' : 'Documentation'}</span></div>
+      <div className="ui-dialog-foot" aria-hidden="true"><span><span className="ui-kbd"><IconArrowUp size={12} /></span><span className="ui-kbd"><IconArrowDown size={12} /></span>{tw ? '選擇' : 'Navigate'}</span><span><span className="ui-kbd"><IconCornerDownLeft size={12} /></span>{tw ? '開啟' : 'Open'}</span><span>{tw ? '文件搜尋' : 'Documentation'}</span></div>
     </dialog>, document.body)}
   </>
 }

@@ -4,7 +4,7 @@ export {}
 const fragment = location.hash
 let target: HTMLElement | null = null
 try { target = document.getElementById(decodeURIComponent(fragment.slice(1))) } catch { /* A malformed fragment has no target. */ }
-const article = target?.closest<HTMLElement>('main article.prose')
+const article = target?.closest<HTMLElement>('main article.ui-prose')
 const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
 
 // Reload and history navigation keep the browser's own saved reading position.

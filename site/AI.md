@@ -10,6 +10,7 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 - Keep reusable documentation navigation, layouts, contexts, MDX rendering, and page factories in `site/docs-shell/`.
 - Keep Master CSS-specific guides, reference rendering, examples, and demos in their existing `site/` owners. Put shell styles in `site/styles/docs-shell/` and retained public assets in `site/public/`.
+- Shell components render the design system's `ui-*` components (`site/styles/system/`, rules in its `DESIGN.md`): `ui-header`, `ui-sidebar`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-code`, `ui-callout` and the `ui-prose` reading column. `site/styles/docs-shell/` only places them on the page and adds the site's own parts; do not reintroduce `doc-*`, `app-*` or `code-*` shell classes.
 - The CSS site owns its implementation and dependency versions. Share brand and interaction principles across Master projects through written design guidance; do not reintroduce a cross-repository source submodule for the full site.
 - Extract a cross-project package only after another active site independently needs the same stable behavior, the API is explicit, and framework/version coupling has been checked. Keep a one-site need local.
 

@@ -1,10 +1,8 @@
-import '~/site/styles/docs-shell/wrapper.css'
+import '~/site/styles/docs-shell/docs.css'
 import clsx from 'clsx'
+import type { ComponentPropsWithoutRef } from 'react'
 
-export default function DocWrapper(props: any) {
-  return (
-    <div {...props} className={clsx('flex w-full app-wrapper', props.className)}>
-      {props.children}
-    </div>
-  )
+/** The documentation frame under the header: the sidebar, then the main column. */
+export default function DocWrapper({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return <div {...props} className={clsx('ui-docs', className)} />
 }
