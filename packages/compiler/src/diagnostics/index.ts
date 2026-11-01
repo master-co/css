@@ -68,6 +68,8 @@ export interface CreateMasterCSSInspectionReportOptions {
   includeCss?: boolean
   /** Inspect authored CSS using the same project manifest as the class scan. */
   designSystem?: MasterCSSDesignSystemOptions
+  /** Route and component stylesheets the design-system inspection adds to the managed CSS graph. */
+  routeStylesheets?: readonly string[]
   ignore?: readonly string[]
   resolveExistingFile?: (filePath: string) => string | Promise<string>
   validatePatterns?: (patterns: readonly string[]) => void

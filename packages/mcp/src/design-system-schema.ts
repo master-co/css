@@ -62,6 +62,7 @@ export const designSystemReport = z.object({
     cwd: z.string(),
     entries: strings,
     files: strings,
+    routeStylesheets: strings,
     excluded: strings,
     edges: z.array(z.object({ from: z.string(), specifier: z.string(), resolved: z.string() }))
   })

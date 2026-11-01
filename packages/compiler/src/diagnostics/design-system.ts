@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { createToolingSession } from '@master/css-tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
@@ -15,6 +16,11 @@ export interface CreateMasterCSSDesignSystemReportOptions {
   readonly cwd?: string
   readonly entries?: readonly string[]
   readonly designSystem?: MasterCSSDesignSystemOptions
+  /**
+   * Route and component stylesheets imported from JavaScript rather than reached from a CSS entry.
+   * They resolve against the same project manifest and report no importers.
+   */
+  readonly routeStylesheets?: readonly string[]
   readonly resolveExistingFile?: (file: string) => string | Promise<string>
   readonly onDependency?: (file: string) => void
 }
@@ -24,6 +30,7 @@ export interface MasterCSSProjectDesignSystemReport extends MasterCSSDesignSyste
     readonly cwd: string
     readonly entries: readonly string[]
     readonly files: readonly string[]
+    readonly routeStylesheets: readonly string[]
     readonly excluded: readonly string[]
     readonly edges: MasterCSSProjectSourceGraph['edges']
   }
@@ -48,7 +55,7 @@ export async function createMasterCSSDesignSystemReport(
 export async function inspectResolvedProjectDesignSystem(
   project: MasterCSSProjectResult,
   cwd: string,
-  options: Pick<CreateMasterCSSDesignSystemReportOptions, 'designSystem' | 'resolveExistingFile'>
+  options: Pick<CreateMasterCSSDesignSystemReportOptions, 'designSystem' | 'routeStylesheets' | 'resolveExistingFile'>
 ): Promise<MasterCSSProjectDesignSystemReport> {
   if (!project.entries.length) throw new Error('No project CSS entry was found. Add a stylesheet importing @master/css.')
   const graph = project.sourceGraph
@@ -73,6 +80,16 @@ export async function inspectResolvedProjectDesignSystem(
       importers: [...(importers.get(file.source) ?? [])]
     })
   }
+  const managed = new Set(stylesheets.map(file => file.source))
+  const routeStylesheets: string[] = []
+  for (const file of options.routeStylesheets ?? []) {
+    const source = path.resolve(cwd, file)
+    if (managed.has(source)) continue
+    managed.add(source)
+    routeStylesheets.push(source)
+    await options.resolveExistingFile?.(source)
+    stylesheets.push({ source, content: await readFile(source, 'utf8'), importers: [] })
+  }
   using tooling = await createToolingSession({ manifest: project.manifest, nativeClassNames: project.nativeClassNames })
   const report = tooling.inspectDesignSystem({ ...(options.designSystem ?? { version: 1 }), stylesheets })
   return {
@@ -81,6 +98,7 @@ export async function inspectResolvedProjectDesignSystem(
       cwd,
       entries: project.entries,
       files: stylesheets.map(file => file.source),
+      routeStylesheets,
       excluded,
       edges: graph.edges
     }

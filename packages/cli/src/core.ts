@@ -51,10 +51,10 @@ export default async function runProgram(argv: string[] = process.argv) {
   program
     .command('inspect')
     .description('Inspect scanner state, stylesheet entries, generated CSS, and missing CSS.')
-    .argument('[source paths...]', 'The glob pattern paths to inspect')
+    .argument('[source paths...]', 'The glob pattern paths to inspect; with --design-system, route and component stylesheets to add')
     .option('--classes <classes>', 'Whitespace-separated class names to verify in generated CSS.')
     .option('--include-css', 'Include generated CSS text in the JSON report.')
-    .option('--design-system', 'Inspect managed CSS token references, definition metadata, policy and collisions.')
+    .option('--design-system', 'Inspect token references, definition metadata, policy and collisions in managed and route stylesheets.')
     .option('--design-system-options <path>', 'JSON file containing version: 1, optional metadata and rawValuePolicy.')
     .option('--snapshot', 'Capture a resolved project snapshot as JSON.')
     .option('--compare <snapshot>', 'Compare a saved JSON snapshot with the current project.')

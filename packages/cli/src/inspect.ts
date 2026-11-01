@@ -11,6 +11,7 @@ import {
 } from '@master/css-compiler/diagnostics'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import fg from 'fast-glob'
 import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 
@@ -69,18 +70,25 @@ export default async function runInspect(specifiedSourcePaths: string[] = [], op
   const exitCode = options.exitCode || 'diagnostics'
   if (options.designSystemOptions && !options.designSystem) throw new Error('--design-system-options requires --design-system.')
   if (options.designSystem) {
-    if (options.snapshot || options.compare || specifiedSourcePaths.length || options.classes || options.includeCss) {
-      throw new Error('--design-system inspects the managed CSS graph; do not combine it with source patterns, --classes, --include-css, --snapshot or --compare.')
+    if (options.snapshot || options.compare || options.classes || options.includeCss) {
+      throw new Error('--design-system inspects the managed CSS graph; do not combine it with --classes, --include-css, --snapshot or --compare.')
     }
+    // Source paths name route and component stylesheets imported from JavaScript, outside the CSS entry graph.
+    const routeStylesheets = specifiedSourcePaths.length
+      ? (await fg([...specifiedSourcePaths], { cwd, absolute: true, onlyFiles: true, ignore: ['**/node_modules/**'] })).sort()
+      : []
+    if (specifiedSourcePaths.length && !routeStylesheets.length) throw new Error(`No route stylesheet matched: ${specifiedSourcePaths.join(', ')}`)
+    const nonCSS = routeStylesheets.filter(file => path.extname(file) !== '.css')
+    if (nonCSS.length) throw new Error(`--design-system source paths must be stylesheets: ${nonCSS.map(file => path.relative(cwd, file)).join(', ')}`)
     const designSystem = options.designSystemOptions
       ? JSON.parse(await readFile(path.resolve(cwd, options.designSystemOptions), 'utf8')) as MasterCSSDesignSystemOptions
       : undefined
     if (options.designSystemOptions && (!designSystem || typeof designSystem !== 'object' || Array.isArray(designSystem))) {
       throw new TypeError('Design-system options must be a versioned JSON object.')
     }
-    const report = await createMasterCSSDesignSystemReport({ manifest: defaultManifest, cwd, designSystem })
+    const report = await createMasterCSSDesignSystemReport({ manifest: defaultManifest, cwd, designSystem, routeStylesheets })
     if (format === 'stylish') {
-      const lines = [`Inspected ${report.summary.stylesheets} managed stylesheets, ${report.summary.references} token references.`]
+      const lines = [`Inspected ${report.summary.stylesheets} stylesheets (${report.project.routeStylesheets.length} route), ${report.summary.references} token references.`]
       for (const item of report.diagnostics) lines.push(`${item.severity.toUpperCase()} ${item.code}${item.source ? ` ${item.source}` : ''}: ${item.message}`)
       lines.push('Coverage: supplied project CSS; browser behavior not checked.')
       process.stderr.write(`${lines.join('\n')}\n`)

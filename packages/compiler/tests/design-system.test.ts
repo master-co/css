@@ -45,6 +45,26 @@ test('inspects authored project CSS with import/reference provenance and tool-on
   } finally { rmSync(cwd, { recursive: true, force: true }) }
 })
 
+test('adds route stylesheets imported from JavaScript to the managed graph without importers', async () => {
+  const cwd = fixture()
+  try {
+    mkdirSync(join(cwd, 'routes'))
+    writeFileSync(join(cwd, 'routes/home.css'), '.hero {color:var(--color-brand);background:var(--color-missing)}')
+    const report = await createMasterCSSDesignSystemReport({
+      cwd, manifest,
+      routeStylesheets: ['routes/home.css', join(cwd, 'card.css')],
+      designSystem: { version: 1, metadata: { '--color-brand': { deprecated: true } } }
+    })
+    expect(report.project.routeStylesheets).toEqual([join(cwd, 'routes/home.css')])
+    expect(report.project.files).toContain(join(cwd, 'routes/home.css'))
+    expect(report.project.files.filter(file => file === join(cwd, 'card.css'))).toHaveLength(1)
+    const references = report.references.filter(item => item.source === join(cwd, 'routes/home.css'))
+    expect(references.map(item => item.token)).toEqual(['--color-brand', '--color-missing'])
+    expect(references[0].importers).toEqual([])
+    expect(report.diagnostics.some(item => item.token === '--color-brand' && item.source === join(cwd, 'routes/home.css'))).toBe(true)
+  } finally { rmSync(cwd, { recursive: true, force: true }) }
+})
+
 test('source graph is opt-in, immutable and identical through sync and async project loading', async () => {
   const cwd = fixture()
   try {

@@ -336,14 +336,15 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     'mastercss_scan_project',
     {
       title: 'Scan Master CSS Project',
-      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison. Pass designSystem to inspect stylesheet token references and design policies.',
+      description: 'Scan source files and stylesheet entries. Set includeSnapshot to capture a resolved project state for later impact comparison. Pass designSystem to inspect stylesheet token references and design policies; add routeStylesheets globs for stylesheets imported from JavaScript.',
       inputSchema: {
         context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
         includeCss: z.boolean().optional(),
         includeSnapshot: z.boolean().optional(),
-        designSystem: designSystemOptions.optional()
+        designSystem: designSystemOptions.optional(),
+        routeStylesheets: z.array(z.string()).optional()
       },
       outputSchema: toolOutputSchema('mastercss_scan_project'),
       annotations: {

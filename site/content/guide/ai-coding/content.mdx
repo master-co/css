@@ -168,10 +168,10 @@ master-css inspect --compare before.json > impact.json
 
 `impact.json` lists changed definitions, known class consumers and files, before/after generated rules, native stylesheet references and output delivery. Read its `coverage` even when nothing changed: dynamic sources, remote content and final browser behavior are not exhaustively checked. In MCP, call `mastercss_scan_project` with `includeSnapshot: true` before and after, and pass both snapshots to `mastercss_css_compare`.
 
-For native component CSS, inspect token references across the managed stylesheet graph:
+For native component CSS, inspect token references across the managed stylesheet graph. Route and component stylesheets imported from JavaScript are outside that graph; name them as source paths:
 
 ```bash name=Terminal
-master-css inspect --design-system --design-system-options design-system.options.json
+master-css inspect --design-system --design-system-options design-system.options.json "app/**/*.css"
 ```
 
-The report lists each `var()` token reference with its source range, selector and at-rule ancestry, importers and shared-prefix collisions. The optional [options file](/reference/tools/cli#design-system-options) adds token descriptions, deprecations with suggested replacements, and a raw-value policy for selected properties; the same object is accepted by `mastercss_scan_project.designSystem` and the [Language Service](/guide/language-service) `designSystem` setting. These reports are authored-syntax evidence: check affected layouts and states in the browser.
+The report lists each `var()` token reference with its source range, selector and at-rule ancestry, importers and shared-prefix collisions. The optional [options file](/reference/tools/cli#design-system-options) adds token descriptions, deprecations with suggested replacements, and a raw-value policy for selected properties; the same object is accepted by `mastercss_scan_project.designSystem`, with route stylesheets in `routeStylesheets`, and the [Language Service](/guide/language-service) `designSystem` setting. These reports are authored-syntax evidence: check affected layouts and states in the browser.

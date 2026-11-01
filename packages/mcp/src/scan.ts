@@ -18,6 +18,8 @@ export interface ScanProjectOptions {
   includeCss?: boolean
   includeSnapshot?: boolean
   designSystem?: MasterCSSDesignSystemOptions
+  /** Globs for route and component stylesheets imported from JavaScript; requires designSystem. */
+  routeStylesheets?: string[]
 }
 
 export interface RenderCSSOptions {
@@ -46,6 +48,14 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
   if (options.designSystem && options.context === 'preset') {
     throw new Error('designSystem inspection requires project context; omit context or select "project".')
   }
+  if (options.routeStylesheets?.length && !options.designSystem) throw new Error('routeStylesheets requires designSystem.')
+  let routeStylesheets: string[] | undefined
+  if (options.routeStylesheets?.length) {
+    context.validateGlobPatterns(options.routeStylesheets)
+    const sources = await fg(options.routeStylesheets, { cwd: context.root, ignore: DEFAULT_IGNORE_PATTERNS, onlyFiles: true })
+    if (sources.some(source => !source.endsWith('.css'))) throw new Error('routeStylesheets must match .css files only.')
+    routeStylesheets = await Promise.all(sources.sort().map(source => context.resolveExistingFile(source)))
+  }
   const manifest = await loadWorkspaceManifest(context, options.context)
   const inspectionOptions = {
     manifest: requireWorkspaceManifest(manifest),
@@ -54,6 +64,7 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
     classes: options.classes,
     includeCss: options.includeCss,
     designSystem: options.designSystem,
+    routeStylesheets,
     resolveExistingFile: (filePath: string) => context.resolveExistingFile(filePath),
     validatePatterns: (patterns: readonly string[]) => context.validateGlobPatterns(patterns)
   }
