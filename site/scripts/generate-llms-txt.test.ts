@@ -550,7 +550,7 @@ test('installation steps retain complete commands, stable headings and navigatio
   const previous = JSON.parse(await readFile(path.join(root, 'tests/installation-heading-ids.json'), 'utf8'))
   for (const slug of installationGuideSlugs) {
     const content = await installationGuideContent(root, slug)
-    const sourcePath = ['', 'integrations', 'cli', 'cdn'].includes(slug) ? `(main)/${slug}` : slug
+    const sourcePath = slug || '(main)'
     const source = await readFile(path.join(root, `content/guide/installation/${sourcePath}/content.mdx`), 'utf8')
     const normalizeFence = (value: string) => value.replace(/<!--\s*@MARK[\s\S]*?-->/g, '').split('\n').map(line => line.trim()).join('\n').trim()
     const exportedFences = deliveryFences(content.markdown).map(fence => normalizeFence(fence.text))
@@ -564,7 +564,10 @@ test('installation steps retain complete commands, stable headings and navigatio
       assert.match(example.css, /\.p-md\s*\{\s*padding:\s*var\(--spacing-md\)/)
       assert.match(example.css, /--spacing-md:\s*1rem/)
     }
-    if (slug === 'integrations') assert.ok(content.markdown.includes(installationGuidesMarkdown()))
+    if (!slug) {
+      assert.ok(content.markdown.includes(installationGuidesMarkdown()))
+      for (const id of ['integrations', 'cdn', 'cli']) assert.ok(content.markdown.includes(`id="${id}"`))
+    }
     const url = `/guide/installation${slug ? `/${slug}` : ''}`
     for (const heading of previous[url]) {
       const explicit = source.includes(`{#${heading.id}`)
@@ -572,6 +575,7 @@ test('installation steps retain complete commands, stable headings and navigatio
     }
     for (const locale of ['en', 'tw']) {
       const search = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+      assert.ok(!search.some((entry: { url: string }) => /\/guide\/installation\/(integrations|cdn|cli)$/.test(entry.url)))
       const page = search.find((entry: { url: string }) => entry.url.replace(/^\/(en|tw)(?=\/)/, '') === url)
       assert.deepEqual(page.nodes, extractSearchNodesFromMdx(content.searchMarkdown))
     }

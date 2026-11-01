@@ -4,6 +4,8 @@ import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/St
 
 When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets.
 
+## Installation
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -176,7 +178,7 @@ Add the tag inside the theme layout's `<head>`, preserving `content_for_header`,
 {{ 'master.css' | asset_url | stylesheet_tag }}
 ```
 
-Put the heading in a section that the current template renders, and run the Vite watcher beside `shopify theme dev`; a preview update does not rebuild the CSS. The preset includes global base styles, so check existing storefront components and use [Cascade layers](/guide/cascade-layers) to decide which theme styles to keep. A theme without an asset build can use the [CLI](/guide/installation/cli) with the same sources.
+Put the heading in a section that the current template renders, and run the Vite watcher beside `shopify theme dev`; a preview update does not rebuild the CSS. The preset includes global base styles, so check existing storefront components and use [Cascade layers](/guide/cascade-layers) to decide which theme styles to keep. A theme without an asset build can use the [CLI](/guide/installation#cli) with the same sources.
 
 ### ASP.NET Core \{#aspnet-core\}
 Set `outDir: 'wwwroot/assets'`, scan Razor Pages and MVC views, and reference the stylesheet from the shared layout:

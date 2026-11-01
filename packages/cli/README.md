@@ -34,4 +34,4 @@ Both options produce JSON on stdout and are mutually exclusive. Snapshots and co
 
 The impact report includes changed definitions, known consumers and files, before/after rules, transitive dependencies and asset/order changes. Read `coverage` for excluded and unresolved sources. Native references are conservative at stylesheet granularity; the report does not evaluate the DOM cascade, remote stylesheets or binary resource contents. Capture uses local file URLs for asset identities.
 
-See [CLI installation](https://rc.css.master.co/guide/installation/cli) and [AI review workflow](https://rc.css.master.co/guide/ai-coding) for project setup and review.
+See [CLI installation](https://rc.css.master.co/guide/installation#cli) and [AI review workflow](https://rc.css.master.co/guide/ai-coding) for project setup and review.

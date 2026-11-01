@@ -11,7 +11,7 @@ export const { Page, generateMetadata } = createPage({
   dictionaries,
   categories,
   icon: createHeaderIcon('vite'),
-  categoryLink: '/guide/installation/integrations',
+  categoryLink: '/guide/installation#integrations',
   content,
   Layout,
 })

@@ -86,4 +86,4 @@
 The `@rc` URLs use published npm packages. They may lag unreleased changes in this repository; use matching runtime and preset versions when testing local source.
 
 ## Documentation
-Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation/cdn).
+Check out the official [CDN installation guide](https://rc.css.master.co/guide/installation#cdn).

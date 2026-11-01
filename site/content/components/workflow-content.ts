@@ -5,7 +5,7 @@
 
 /** Each card's title links to its guide; tests check every page and heading exists. */
 export const workflowGuides = {
-  frameworks: '/guide/installation/integrations',
+  frameworks: '/guide/installation#integrations',
   workspaces: '/guide/monorepo',
   routes: '/guide/route-level-styles',
   impact: '/guide/ai-coding#review-the-second-change'

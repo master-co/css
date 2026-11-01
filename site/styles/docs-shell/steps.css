@@ -21,7 +21,8 @@
   .ui-steps-source { display: grid; align-content: start; gap: var(--ui-space-sm); }
   /* A note inside a step is part of its text: the icon leads a muted paragraph, without a frame of its own in the narrow column. */
   .ui-steps-content .ui-callout { padding: 0; background: none; box-shadow: none; color: var(--ui-text-muted); }
-  .ui-steps-content :is(.ui-code, .ui-tray) { margin: 0; }
+  /* Only reset panels placed by the step grid; nested trays own their internal spacing. */
+  :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, .ui-tray) { margin: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):first-child { margin-top: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):last-child { margin-bottom: 0; }
 

@@ -4,6 +4,8 @@ import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/St
 
 Generate a stylesheet for an Astro site from complete class names in its sources. The installer configures the integration and creates the CSS entry; the page below imports that entry.
 
+## Installation
+
 <StepSection>
   <Step $row>
     <StepL>
@@ -52,7 +54,7 @@ Keep the entry in a standalone CSS file. [Importing CSS from Astro frontmatter](
 ## Check the setup
 Run the project's build and preview scripts, then disable JavaScript and reload. Check that the heading retains its large, heavy italic styling. If no styles appear, confirm the page or its layout imports `global.css` and the Astro configuration includes the Master CSS integration. For custom definitions and scoped styles, see [Global styles](/guide/global-styles).
 
-If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `italic`. Use the [CLI static workflow](/guide/installation/cli) when you need to generate and verify the stylesheet independently, or choose progressive rendering when a runtime handoff fits the application.
+If a production build links the base styles but omits the utility rules, do not treat a successful build as a styled result. Check the output CSS for `italic`. Use the [CLI static workflow](/guide/installation#cli) when you need to generate and verify the stylesheet independently, or choose progressive rendering when a runtime handoff fits the application.
 
 ---
 

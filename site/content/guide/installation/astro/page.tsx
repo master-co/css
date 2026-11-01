@@ -10,9 +10,8 @@ export const { Page, generateMetadata } = createPage({
   metadata,
   dictionaries,
   categories,
-  noTOC: true,
   icon: createHeaderIcon('astro'),
-  categoryLink: '/guide/installation/integrations',
+  categoryLink: '/guide/installation#integrations',
   content,
   Layout,
 })

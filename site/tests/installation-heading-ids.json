@@ -1,12 +1,12 @@
 {
   "/guide/installation": [
     {
-      "id": "installation",
-      "title": "Installation"
+      "id": "integrations",
+      "title": "Integrations"
     },
     {
-      "id": "install-in-your-project",
-      "title": "Install in your project"
+      "id": "installation",
+      "title": "Before you start"
     },
     {
       "id": "add-master-css",
@@ -15,52 +15,18 @@
     {
       "id": "start-using-master-css",
       "title": "Start using Master CSS"
-    }
-  ],
-  "/guide/installation/integrations": [
-    {
-      "id": "rendering-support-by-adapter",
-      "title": "Rendering support by adapter"
-    }
-  ],
-  "/guide/installation/cli": [
-    {
-      "id": "installation",
-      "title": "Installation"
     },
     {
-      "id": "install-master-css",
-      "title": "Install Master CSS"
+      "id": "cdn",
+      "title": "CDN"
     },
     {
-      "id": "create-your-css-entry",
-      "title": "Create your CSS entry"
-    },
-    {
-      "id": "run-the-build-command",
-      "title": "Run the build command"
-    },
-    {
-      "id": "start-using-master-css",
-      "title": "Start using Master CSS"
+      "id": "cli",
+      "title": "CLI"
     },
     {
       "id": "build-for-deployment",
       "title": "Build for deployment"
-    }
-  ],
-  "/guide/installation/cdn": [
-    {
-      "id": "host-matching-assets",
-      "title": "Host matching assets"
-    },
-    {
-      "id": "start-in-one-step",
-      "title": "Load the page"
-    },
-    {
-      "id": "check-delivery-and-startup-failures",
-      "title": "Check delivery and startup failures"
     }
   ],
   "/guide/installation/vite": [

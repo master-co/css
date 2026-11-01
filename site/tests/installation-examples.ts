@@ -12,7 +12,7 @@ const rootURL = new URL('../../', import.meta.url)
 const installation = new URL('../content/guide/installation/', import.meta.url)
 export const installationRoutes = installationGuideSlugs.map(slug => slug ? `/${slug}` : '')
 export function installationSource(route: string) {
-  const path = ['', '/integrations', '/cli', '/cdn'].includes(route) ? `(main)${route}/content.mdx` : `${route.slice(1)}/content.mdx`
+  const path = !route ? '(main)/content.mdx' : `${route.slice(1)}/content.mdx`
   return readFileSync(new URL(path, installation), 'utf8')
 }
 
@@ -112,7 +112,7 @@ export function verifyInstallationExamples() {
     mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
     symlinkSync(fileURLToPath(new URL('packages/css', rootURL)), join(root, 'node_modules/@master/css'), 'dir')
     writeFileSync(join(root, 'package.json'), JSON.stringify({ type: 'module', devDependencies: { '@master/css': 'rc', '@master/css-cli': 'rc' } }))
-    const fences = deliveryFences(installationSource('/cli'))
+    const fences = deliveryFences(installationSection('', 'cli'))
     for (const name of ['main.css', 'index.html']) writeFileSync(join(root, name), fences.find(f => f.name === name)!.text)
     const command = fences.find(f => f.language === 'bash' && /generate/.test(f.text))!.text.trim()
     assert.equal(command, 'npx @master/css-cli generate "index.html" --output master.css --watch')
@@ -133,23 +133,9 @@ export function verifyInstallationExamples() {
   const settings = JSON.parse(deliveryFences(deliverySection('language-service', 'Set up VS Code \\{#set-up-vs-code\\}')).find(f => f.name === '.vscode/settings.json')!.text)
   assert.equal(settings['editor.quickSuggestions'].strings, true)
   assert.deepEqual(settings['eslint.codeActionsOnSave.rules'], ['@master/css/sort-classes'])
-  const cdnExamples = deliveryFences(installationSource('/cdn'))
-  const cdn = cdnExamples.find(f => f.name === 'index.html')!.text
-  assert.match(cdn, /<script src="\/master-css\/global\.min\.js"><\/script>/)
-  assert.match(cdn, /<link rel="preload" as="fetch" crossorigin href="\/master-css\/default-program\.bin">/)
-  assert.match(cdn, /<link rel="stylesheet" href="\/master-css\/base\.css">/)
-  const cdnRoot = mkdtempSync(join(tmpdir(), 'master-doc-cdn-'))
-  try {
-    symlinkSync(fileURLToPath(new URL('node_modules', rootURL)), join(cdnRoot, 'node_modules'), 'dir')
-    const commands = cdnExamples.find(f => f.language === 'bash')!.text
-    const copied = spawnSync('/bin/sh', ['-c', commands], { cwd: cdnRoot, encoding: 'utf8', timeout: 15000 })
-    assert.equal(copied.status, 0, copied.stderr)
-    for (const [name, source] of [
-      ['base.css', 'packages/preset/src/base.css'],
-      ['global.min.js', 'packages/runtime/dist/global.min.js'],
-      ['default-program.bin', 'packages/runtime/dist/default-program.bin']
-    ]) {
-      assert.deepEqual(readFileSync(join(cdnRoot, 'public/master-css', name)), readFileSync(new URL(source, rootURL)), `CDN assets must come from the matching package build: ${name}`)
-    }
-  } finally { rmSync(cdnRoot, { recursive: true, force: true }) }
+  const cdn = installationSection('', 'cdn')
+  assert.equal(deliveryFences(cdn).length, 0, 'Unavailable CDN delivery must not advertise a runnable installation')
+  assert.match(cdn, /not available yet/)
+  assert.match(cdn, /\[Integrations\]\(#integrations\)/)
+  assert.match(cdn, /\[CLI\]\(#cli\)/)
 }

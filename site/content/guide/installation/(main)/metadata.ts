@@ -4,7 +4,7 @@ const metadata = define({
   title: {
     absolute: 'Installing Master CSS'
   },
-  description: 'Add Master CSS to an existing app, connect its stylesheet, and verify that your first style updates.',
+  description: 'Choose a framework integration, check CDN availability, or generate a stylesheet with the CLI.',
   category: 'Getting Started',
   order: 2,
   other: {

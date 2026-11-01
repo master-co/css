@@ -152,7 +152,7 @@ test('overview category references resolve to generated categories', async () =>
 
 test('installation routes use static entry points and explicit optional modes', async () => {
   const root = path.join(appRoot, 'guide/installation')
-  const actual = new Set<string>(['', 'integrations', 'cli', 'cdn'])
+  const actual = new Set<string>([''])
   const nested: string[] = []
 
   for (const framework of await readdir(root, { withFileTypes: true })) {
@@ -169,9 +169,16 @@ test('installation routes use static entry points and explicit optional modes', 
 
   assert.deepEqual([...actual].sort(), [...installationGuideSlugs].sort())
   assert.deepEqual(nested, [])
+  const mainEntries = await readdir(path.join(root, '(main)'), { withFileTypes: true })
+  assert.deepEqual(mainEntries.filter(entry => entry.isDirectory()).map(entry => entry.name), ['components'])
+  for (const slug of actual) {
+    const page = await readFile(path.join(root, slug || '(main)', 'page.tsx'), 'utf8')
+    assert.doesNotMatch(page, /noTOC:\s*true|InstallationLayout/, slug)
+    assert.match(page, /~\/site\/layouts\/doc/, slug)
+  }
 
   for (const slug of actual) {
-    if (!slug || ['integrations', 'cli', 'cdn'].includes(slug)) continue
+    if (!slug) continue
     const content = await readFile(path.join(root, slug, 'content.mdx'), 'utf8')
     assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
     // The first installer command on each page is the default static setup.
@@ -185,7 +192,7 @@ test('installation routes use static entry points and explicit optional modes', 
   const staleLinks: string[] = []
   for (const file of sourceFiles.filter((file) => /\.(?:mdx|ts|tsx)$/.test(file))) {
     const content = await readFile(file, 'utf8')
-    if (/\/guide\/installation\/[a-z-]+\/(?:static-rendering|runtime-rendering|progressive-rendering|runtime|progressive)\b/.test(content)) {
+    if (/\/guide\/installation\/(?:integrations|cdn|cli)(?=[#)'"\s]|$)/.test(content) || /\/guide\/installation\/[a-z-]+\/(?:static-rendering|runtime-rendering|progressive-rendering|runtime|progressive)\b/.test(content)) {
       staleLinks.push(path.relative(siteRoot, file))
     }
   }

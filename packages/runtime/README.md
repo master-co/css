@@ -165,5 +165,5 @@ Concurrent `start()` calls for the same root share one startup. The first call's
 ## Related docs
 
 - [General installation](https://rc.css.master.co/guide/installation)
-- [Using CDNs](https://rc.css.master.co/guide/installation/cdn)
+- [Using CDNs](https://rc.css.master.co/guide/installation#cdn)
 - [Runtime rendering](https://rc.css.master.co/guide/rendering-modes#runtime-rendering)

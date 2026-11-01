@@ -1,0 +1,10 @@
+/* Installation's directory uses the same open rows and quiet rules as the documentation indexes. */
+@layer components {
+  .installation-guides { container: installation-guides / inline-size; margin-block: var(--ui-space-xl); }
+  .installation-guides-group { display: grid; gap: var(--ui-space-sm); padding-block: var(--ui-space-lg); border-top: 1px solid var(--ui-line-hair); }
+  .installation-guides-group:last-child { border-bottom: 1px solid var(--ui-line-hair); }
+  .installation-guides-group > .installation-guides-label { margin: 0; padding-top: .625rem; color: var(--ui-text-muted); font-size: .75rem; font-weight: var(--ui-weight-medium); line-height: 1.5; }
+  @container installation-guides (min-width: 34rem) {
+    .installation-guides-group { grid-template-columns: 8rem minmax(0, 1fr); gap: var(--ui-space-lg); }
+  }
+}

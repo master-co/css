@@ -74,7 +74,7 @@
   /* Steps: numbered sequence on one hairline rail; code stays in the reading flow */
   .ui-steps { counter-reset: step; display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
   .ui-steps > li { counter-increment: step; position: relative; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: var(--ui-space-lg); padding-bottom: var(--ui-space-2xl); }
-  .ui-steps > li::before { content: counter(step); display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--ui-surface-canvas); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-strong); font: var(--ui-weight-medium) .75rem/1 var(--font-family-sans); font-variant-numeric: tabular-nums; }
+  .ui-steps > li::before { content: counter(step, decimal-leading-zero); display: grid; place-items: center; width: 1.75rem; height: 1.75rem; color: var(--ui-text-muted); font: var(--ui-weight-regular) .875rem/1 var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-steps > li::after { content: ""; position: absolute; top: 2.25rem; bottom: .5rem; left: .875rem; width: 1px; background: var(--ui-line-divider); }
   .ui-steps > li:last-child { padding-bottom: 0; }
   .ui-steps > li:last-child::after { display: none; }
@@ -93,12 +93,13 @@
   .ui-index[data-density="compact"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--ui-space-xs); }
   .ui-index[data-density="compact"] > a { gap: 2px; padding: var(--ui-space-sm) var(--ui-space-md); }
 
-  /* Logo index: free-standing tiles, a mark over its name, so a short last row leaves canvas rather than empty cells */
-  .ui-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.75rem), 1fr)); grid-auto-rows: 1fr; gap: var(--ui-space-xs); }
-  .ui-logos > a { display: grid; grid-template-rows: 2rem auto; justify-items: center; align-content: start; gap: .625rem; padding: 1.125rem var(--ui-space-2xs) 1rem; border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); font-size: .78125rem; line-height: 1.35; text-align: center; text-wrap: balance; text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease), color var(--ui-duration-quick) var(--ui-ease); }
-  .ui-logos > a:hover { translate: 0 -.5px; color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1h); }
+  /* Logo directory: compact, open rows; the surrounding group owns the section rule. */
+  .ui-logos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--ui-space-2xs) var(--ui-space-md); }
+  .ui-logos > a { display: flex; align-items: center; gap: var(--ui-space-sm); min-width: 0; min-height: 2.75rem; padding: .5rem var(--ui-space-xs); border-radius: var(--ui-radius-sm); color: var(--ui-text-body); font-size: .8125rem; line-height: 1.5; text-decoration: none; transition: background var(--ui-duration-quick) var(--ui-ease), color var(--ui-duration-quick) var(--ui-ease); }
+  .ui-logos > a:hover { color: var(--ui-text-strong); background: var(--ui-surface-chip); }
   .ui-logos > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
-  .ui-logos > a > svg { align-self: center; width: 1.75rem; height: 1.75rem; }
+  .ui-logos > a > svg { flex: none; width: 1.25rem; height: 1.25rem; }
+  .ui-logos > a > span { min-width: 0; overflow-wrap: anywhere; }
 
   /* Chart frame: units, series and sample context together. Captions and readings are small sans with tabular figures. */
   .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }

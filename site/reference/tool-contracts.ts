@@ -80,7 +80,7 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
   if (!commandNames.length) throw new Error('No public CLI commands discovered')
   for (const name of Object.keys(cliEditorial)) if (!commandNames.includes(name)) throw new Error(`Stale CLI guidance: ${name}`)
   const cli = [
-    'Install the CLI through the [setup guide](/guide/installation/cli), then run it from the project root. Generate, lint and inspect discover ordinary app sources without source arguments; explicit path arguments replace that selection. Suggest accepts a CSS declaration block.',
+    'Install the CLI through the [setup guide](/guide/installation#cli), then run it from the project root. Generate, lint and inspect discover ordinary app sources without source arguments; explicit path arguments replace that selection. Suggest accepts a CSS declaration block.',
     'Run `master-css --help` to list commands and `master-css <command> --help` to read all options for your installed version. Current command definitions live in the [CLI source](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts).'
   ]
   const effects: Record<string, string> = {
@@ -109,5 +109,5 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
 
 function document(id: string, title: string, description: string, sections: string[], aliases: string[], identifierAnchors: Record<string, string>, source: string): ReferenceDocument {
   const markdown = sections.join('\n\n')
-  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: 'en', aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/ai-coding#connect-the-mcp-server' : '/guide/installation/cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
+  return { id, kind: 'tool', title, description, category: 'Tools', url: `/reference/${id}`, source, sourceDigest: hash(markdown), language: 'en', aliases, identifierAnchors, terms: [], rows: [], examples: [], related: ['packages', 'rules/extraction'], guide: id.endsWith('mcp') ? '/guide/ai-coding#connect-the-mcp-server' : '/guide/installation#cli', markdown, headings: documentHeadings(markdown), extractionNotes: [] }
 }

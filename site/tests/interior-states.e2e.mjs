@@ -19,13 +19,56 @@ async function open(route, { width = 1440, scheme = 'light', js = true } = {}) {
 }
 
 test(`${engine}: only links to the page being read are marked current`, { timeout: 60000 }, async () => {
-  for (const [route, current] of [['/guide/installation', 'Quick Start'], ['/guide/installation/cli', 'CLI']]) {
+  for (const [route, current] of [['/guide/installation', 'Installation'], ['/guide/introduction', 'Introduction']]) {
     const { context, page, errors } = await open(route)
     const marked = await page.locator('a[aria-current="page"]').evaluateAll(links => links.map(link => link.getAttribute('href')))
     assert.ok(marked.length > 0)
     assert.ok(marked.every(href => href === route), `${route}: ${marked}`)
     assert.equal(await page.getByRole('link', { name: current, exact: true }).first().getAttribute('aria-current'), 'page')
     assert.deepEqual(errors, [])
+    await context.close()
+  }
+})
+
+test(`${engine}: installation methods share one article and integrations retain their contents`, { timeout: 120000 }, async () => {
+  for (const locale of ['', '/tw']) {
+    const { context, page } = await open(`${locale}/guide/installation`)
+    assert.equal(await page.locator('.ui-tabs').count(), 0)
+    assert.equal(await page.locator('.installation-guides-group').count(), 4)
+    assert.equal(await page.locator('.installation-guides a').count(), 24)
+    const panels = await page.locator('[data-project-style="installation-check"]').evaluate(tray => {
+      const code = tray.querySelector(':scope > .ui-code')
+      const preview = tray.querySelector('.ui-browser')
+      const generated = code.nextElementSibling
+      return {
+        gap: code.getBoundingClientRect().top - preview.getBoundingClientRect().bottom,
+        inset: parseFloat(getComputedStyle(tray).getPropertyValue('--ui-inset')),
+        joined: generated.getBoundingClientRect().top - code.getBoundingClientRect().bottom
+      }
+    })
+    assert.equal(panels.gap, panels.inset, 'a step must preserve the tray’s preview/source gap')
+    assert.equal(panels.joined, 0, 'generated output closes the source panel')
+    const number = await page.locator('.ui-steps > li').first().evaluate(step => {
+      const style = getComputedStyle(step, '::before')
+      return { radius: style.borderRadius, shadow: style.boxShadow, content: style.content }
+    })
+    assert.equal(number.radius, '0px')
+    assert.equal(number.shadow, 'none')
+    assert.match(number.content, /decimal-leading-zero/)
+    for (const id of ['integrations', 'cdn', 'cli']) {
+      assert.equal(await page.locator(`article h2#${id}`).count(), 1)
+      const link = page.locator(`.ui-toc[data-rail] a[data-page-content-nav-id="${id}"]`)
+      await link.click()
+      assert.equal(new URL(page.url()).hash, `#${id}`)
+    }
+    for (const slug of ['vite', 'webpack', 'server-rendered', 'nextjs', 'nuxtjs', 'astro', 'svelte', 'angular', 'lit', 'storybook']) {
+      assert.equal((await page.goto(`${base}${locale}/guide/installation/${slug}`, { waitUntil: 'networkidle' })).status(), 200)
+      assert.equal(await page.locator('article[data-aside]').count(), 1)
+      assert.ok(await page.locator('.ui-toc[data-rail] a[data-page-content-nav-id]').count() > 0)
+      const ids = await page.locator('.ui-toc[data-rail] a[data-page-content-nav-id]').evaluateAll(links => links.map(link => link.dataset.pageContentNavId))
+      for (const id of ids) assert.equal(await page.locator(`article [id="${id}"]`).count(), 1, `${slug}: ${id}`)
+      assert.ok(await page.locator(`a[href="${locale}/guide/installation#integrations"]`).count() > 0)
+    }
     await context.close()
   }
 })
