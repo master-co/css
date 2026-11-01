@@ -179,7 +179,7 @@ Distinguish curated design advice from executable contracts: a suggested card si
 
 ### Teaching sequence
 
-Use sentence case for public documentation headings in guide `content.mdx`: capitalize only the first word and proper nouns. Avoid title case such as `Root Options`; prefer `Root options`.
+Use sentence case for public documentation headings in guide `content.mdx`: capitalize only the first word and proper nouns. Avoid title case such as `Root Options`; prefer `Root options`. In article titles, navigation labels and editorial headings, write the conjunction `and`, not `&` (for example, `Variables and modes`). Preserve literal ampersands in code and syntax examples.
 
 Guides should teach in this order:
 
