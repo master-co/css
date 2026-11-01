@@ -532,7 +532,7 @@ export interface MasterCSSLintEdit {
 }
 
 export interface MasterCSSLintDiagnostic {
-  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'prefer-canonical-classes' | 'no-unapproved-raw-values'
+  ruleId: 'sort-classes' | 'no-invalid-classes' | 'no-conflicting-classes' | 'prefer-canonical-classes' | 'no-unapproved-raw-values' | 'prefer-component-classes'
   code:
     | 'invalid-class-order'
     | 'invalid-class'
@@ -569,6 +569,11 @@ export interface MasterCSSLintRawValuePolicy {
   /** Limit enforcement to these native properties; omitted or empty means all token-backed properties. */
   requireProperties?: readonly string[]
   allowedPatterns?: readonly string[]
+}
+
+export interface MasterCSSLintRemoteStylingPolicy {
+  /** Classes in one list that may style other elements through a combinator; default 3. */
+  max?: number
 }
 
 export interface MasterCSSDesignTokenMetadata {
@@ -652,6 +657,7 @@ export interface MasterCSSLintClassListPolicyRequest {
   disallowUnknownClass?: boolean
   canonicalOptions?: Partial<MasterCSSLintCanonicalClassNameOptions>
   rawValuePolicy?: MasterCSSLintRawValuePolicy
+  remoteStylingPolicy?: MasterCSSLintRemoteStylingPolicy
 }
 
 export interface MasterCSSLanguageClassListContext {

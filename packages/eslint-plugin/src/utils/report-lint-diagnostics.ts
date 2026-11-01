@@ -18,7 +18,8 @@ export const messageIdByCode: Record<string, string> = {
   'prefer-canonical-class': 'preferClass',
   'prefer-native-declaration': 'preferClass',
   'prefer-variant-block': 'preferClass',
-  'unapproved-raw-value': 'unapprovedRawValue'
+  'unapproved-raw-value': 'unapprovedRawValue',
+  'remote-styling-limit': 'remoteStylingLimit'
 }
 
 export function stringifyLintDiagnosticData(data: MasterCSSLintDiagnostic['data'] = {}) {

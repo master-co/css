@@ -162,7 +162,8 @@ export function bindLintSession(
         validationErrors: inputs.validationErrors,
         disallowUnknownClass: options?.disallowUnknownClass,
         canonicalOptions: options?.canonicalOptions,
-        rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy)
+        rawValuePolicy: resolveRawValuePolicy(options?.rawValuePolicy),
+        remoteStylingPolicy: options?.remoteStylingPolicy && { ...options.remoteStylingPolicy }
       }) as MasterCSSLintClassListAnalysis
     },
     dispose() {

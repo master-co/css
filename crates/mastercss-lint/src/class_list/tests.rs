@@ -27,6 +27,8 @@ fn preserves_raw_tokens_and_whitespace_while_sorting() {
             disallow_unknown_class: false,
             raw_value_candidates: &[],
             raw_value_policy: None,
+            remote_classes: &[],
+            remote_styling_policy: None,
         },
     );
     assert_eq!(ir.sort_edit.unwrap().text, "(margin:2x)  (color:white)");
@@ -50,6 +52,8 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
             disallow_unknown_class: false,
             raw_value_candidates: &[],
             raw_value_policy: None,
+            remote_classes: &[],
+            remote_styling_policy: None,
         },
     );
     assert_eq!(ir.conflict_range, Some(SourceRange { start: 3, end: 14 }));
@@ -71,6 +75,8 @@ fn creates_utf16_conflict_ranges_and_whole_list_fixes() {
             disallow_unknown_class: false,
             raw_value_candidates: &[],
             raw_value_policy: None,
+            remote_classes: &[],
+            remote_styling_policy: None,
         },
     );
     assert!(ir.conflict_edit.is_none());
@@ -111,6 +117,8 @@ fn creates_invalid_and_unknown_class_diagnostics() {
             disallow_unknown_class: true,
             raw_value_candidates: &[],
             raw_value_policy: None,
+            remote_classes: &[],
+            remote_styling_policy: None,
         },
     );
     let invalid = ir

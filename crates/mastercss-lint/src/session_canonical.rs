@@ -182,6 +182,28 @@ impl LintSession {
         Ok(None)
     }
 
+    /// Classes whose selector reaches another element, with that remote selector part.
+    pub(crate) fn collect_remote_classes(
+        &self,
+        class_names: &[String],
+    ) -> Result<Vec<(String, String)>, EngineError> {
+        let mut remote = Vec::new();
+        for class_name in class_names {
+            let semantics = self.engine.inspect_class_semantics(class_name)?;
+            if semantics.kind == mastercss_engine::ClassSemanticKind::Unknown {
+                continue;
+            }
+            if let Some(target) = semantics
+                .state_token
+                .as_deref()
+                .and_then(mastercss_engine::remote_selector)
+            {
+                remote.push((class_name.clone(), target));
+            }
+        }
+        Ok(remote)
+    }
+
     pub(crate) fn collect_raw_value_candidates(
         &self,
         class_names: &[String],

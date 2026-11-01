@@ -6,6 +6,11 @@ export interface RawValuePolicyOptions {
   allowedPatterns?: readonly string[]
 }
 
+export interface RemoteStylingPolicyOptions {
+  /** Classes in one list that may style other elements through a combinator (`_`, `>`, `+`, `~`); default 3. */
+  max?: number
+}
+
 export interface CanonicalClassNameOptions {
   preferStaticUtilities?: boolean
   preferCompositionUtilities?: boolean

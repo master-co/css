@@ -124,6 +124,7 @@ struct LintClassListRequest {
     #[serde(default)]
     disallow_unknown_class: bool,
     raw_value_policy: Option<mastercss_lint::RawValuePolicyRequest>,
+    remote_styling_policy: Option<mastercss_lint::RemoteStylingPolicy>,
     canonical_options: Option<mastercss_lint::CanonicalClassNameOptions>,
 }
 
@@ -331,6 +332,7 @@ impl ToolingLintSession {
                     validation_errors: &request.validation_errors,
                     disallow_unknown_class: request.disallow_unknown_class,
                     raw_value_policy: raw_value_policy.as_ref(),
+                    remote_styling_policy: request.remote_styling_policy.as_ref(),
                     canonical_options: request.canonical_options.as_ref(),
                 },
             )

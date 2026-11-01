@@ -119,6 +119,7 @@ struct LintClassListRequest {
     #[serde(default)]
     disallow_unknown_class: bool,
     raw_value_policy: Option<RawValuePolicyRequest>,
+    remote_styling_policy: Option<mastercss_lint::RemoteStylingPolicy>,
     canonical_options: Option<CanonicalClassNameOptions>,
 }
 

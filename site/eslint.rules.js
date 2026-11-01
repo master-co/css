@@ -45,10 +45,12 @@ const projectConfig = {
   },
 }
 
-// Site UI uses tokens; a raw native value must be a deliberate, reviewed exception.
+// Site UI uses tokens; a raw native value must be a deliberate, reviewed exception. An element that
+// styles many others through combinators has become a component and belongs in @layer components.
 const masterCSSPolicyConfig = {
   rules: {
-    '@master/css/no-unapproved-raw-values': 'warn'
+    '@master/css/no-unapproved-raw-values': 'warn',
+    '@master/css/prefer-component-classes': 'warn'
   }
 }
 

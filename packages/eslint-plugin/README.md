@@ -235,6 +235,24 @@ export default defineConfig([
 
 For example, this rule reports `(font-size:15px)`, `(margin:17px)`, and `(color:#123456)` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
 
+### `@master/css/prefer-component-classes`
+
+Reports a class list in which more than `max` classes (default `3`) style other elements through a top-level combinator: `_` descendant, `>` child, `+` or `~` sibling. Past that point the styling belongs in a component class in `@layer components`. This rule is opt-in and is not enabled by the recommended config.
+
+```js
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
+  {
+    rules: {
+      '@master/css/prefer-component-classes': ['warn', { max: 3 }]
+    }
+  }
+])
+```
+
+`flex block_h4 hidden_h4 grid_svg flex>li` reports once: four classes reach other elements. States of the element itself (`:hover`), relative selectors inside `:has()` or `:is()`, and conditions such as `@sm` never count. It has no autofix.
+
 ## Settings
 
 Settings live under the `@master/css` settings key:

@@ -54,7 +54,7 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       + '| `@master/css/no-invalid-classes` | `error` | No | Invalid Master CSS syntax and invalid generated CSS; unmatched classes only with `disallowUnknownClass`. |\n'
       + '| `@master/css/no-conflicting-classes` | `warn` | Yes | Full and partial declaration conflicts in the same variant scope; only full overrides are fixed. |\n'
       + '| `@master/css/prefer-canonical-classes` | `warn` | Yes | Non-canonical forms, only when token identity and generated-rule behavior are preserved. |\n\n'
-      + '`@master/css/no-unapproved-raw-values` is not in the preset.',
+      + '`@master/css/no-unapproved-raw-values` and `@master/css/prefer-component-classes` are not in the preset.',
     entries: { '.': 'Recommended ESLint flat configuration.' }
   },
   '@master/eslint-plugin-css': {
@@ -66,7 +66,8 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       + '| `classFunctions` | `clsx`, `cva`, `ctl`, `cv`, `class`, `classnames`, `classVariant`, `styled`, `classList.add/remove/toggle/replace` | Callees and tagged templates whose arguments can contain class strings; `styled` also accepts member forms such as `styled.button`. |\n'
       + '| `classDeclarations` | `[]` | Project variables or object properties treated as class declarations. |\n'
       + '| `ignoredKeys` | `[\'compoundVariants\', \'defaultVariants\']` | Object keys skipped while traversing variant config objects. |\n\n'
-      + '`@master/css/no-unapproved-raw-values` reports raw values in token-backed utilities. `requireProperties` limits it to listed native properties (empty or omitted checks every token-backed property); `allowProperties` and `allowedPatterns` add exceptions; `allowRawValues` disables it. Native custom-property references stay valid. Its diagnostic `data` names the property scope and canonical token families; it has no autofix.',
+      + '`@master/css/no-unapproved-raw-values` reports raw values in token-backed utilities. `requireProperties` limits it to listed native properties (empty or omitted checks every token-backed property); `allowProperties` and `allowedPatterns` add exceptions; `allowRawValues` disables it. Native custom-property references stay valid. Its diagnostic `data` names the property scope and canonical token families; it has no autofix.\n\n'
+      + '`@master/css/prefer-component-classes` reports a class list in which more than `max` classes (default `3`) style other elements through a top-level `_`, `>`, `+` or `~` combinator. Its diagnostic `data` lists `classNames` and their `targets`; it has no autofix.',
     entries: { '.': 'Plugin rules and recommended configuration.' }
   },
   '@master/css-language-server': {

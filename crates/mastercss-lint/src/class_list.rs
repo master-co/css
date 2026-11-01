@@ -1,6 +1,7 @@
 use crate::{
     CanonicalClassGroupSuggestionIr, CanonicalClassSuggestionIr, LintBatchIr, LintClassListIr,
     LintDiagnosticIr, LintEditIr, LintEditScope, RawValueCandidateIr, RawValuePolicy,
+    RemoteStylingPolicy,
 };
 use mastercss_lexer::utf16_len;
 use mastercss_schema::{LINT_BATCH_VERSION, SourceRange};
@@ -29,6 +30,9 @@ pub(crate) struct ClassListPolicy<'a> {
     pub disallow_unknown_class: bool,
     pub raw_value_candidates: &'a [RawValueCandidateIr],
     pub raw_value_policy: Option<&'a RawValuePolicy>,
+    /// Classes styling another element, paired with their remote selector part.
+    pub remote_classes: &'a [(String, String)],
+    pub remote_styling_policy: Option<&'a RemoteStylingPolicy>,
 }
 
 pub(crate) fn create_class_list_ir(
@@ -91,6 +95,13 @@ pub(crate) fn create_class_list_ir(
             policy.token_families,
         ));
     }
+    if let Some(remote_styling_policy) = policy.remote_styling_policy {
+        diagnostics.extend(create_remote_styling_diagnostic(
+            &items,
+            policy.remote_classes,
+            remote_styling_policy,
+        ));
+    }
     LintClassListIr {
         version: LINT_BATCH_VERSION,
         analysis,
@@ -99,6 +110,57 @@ pub(crate) fn create_class_list_ir(
         conflict_edit,
         conflict_range,
     }
+}
+
+/// One diagnostic per class list: past the limit, styling other elements belongs in a component rule.
+fn create_remote_styling_diagnostic(
+    items: &[ClassListItem],
+    remote_classes: &[(String, String)],
+    policy: &RemoteStylingPolicy,
+) -> Option<LintDiagnosticIr> {
+    if remote_classes.len() <= policy.max as usize {
+        return None;
+    }
+    let range = remote_classes
+        .iter()
+        .find_map(|(class_name, _)| find_class_range(items, class_name))?;
+    let mut targets = Vec::<&str>::new();
+    for (_, target) in remote_classes {
+        if !targets.contains(&target.as_str()) {
+            targets.push(target);
+        }
+    }
+    let listed = targets
+        .iter()
+        .take(3)
+        .map(|target| quote_diagnostic_value(target))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let more = if targets.len() > 3 { ", \u{2026}" } else { "" };
+    Some(LintDiagnosticIr {
+        rule_id: "prefer-component-classes".into(),
+        code: "remote-styling-limit".into(),
+        message: format!(
+            "{} classes style other elements through combinators ({listed}{more}); the limit is {}. Move them into a component class in @layer components.",
+            remote_classes.len(),
+            policy.max,
+        ),
+        range,
+        data: serde_json::Map::from_iter([
+            ("max".into(), serde_json::json!(policy.max)),
+            (
+                "classNames".into(),
+                serde_json::json!(
+                    remote_classes
+                        .iter()
+                        .map(|(class_name, _)| class_name)
+                        .collect::<Vec<_>>()
+                ),
+            ),
+            ("targets".into(), serde_json::json!(targets)),
+        ]),
+        fix: None,
+    })
 }
 
 fn create_raw_value_diagnostics(

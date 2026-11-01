@@ -278,11 +278,37 @@ impl RawValuePolicy {
     }
 }
 
+/// Wire policy for `prefer-component-classes`: how many classes in one list may style other
+/// elements through a combinator before the list should become a component class.
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RemoteStylingPolicy {
+    #[serde(default = "RemoteStylingPolicy::default_max")]
+    pub max: u32,
+}
+
+impl RemoteStylingPolicy {
+    pub const DEFAULT_MAX: u32 = 3;
+
+    fn default_max() -> u32 {
+        Self::DEFAULT_MAX
+    }
+}
+
+impl Default for RemoteStylingPolicy {
+    fn default() -> Self {
+        Self {
+            max: Self::DEFAULT_MAX,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default)]
 pub struct LintClassListPolicy<'a> {
     pub validation_errors: &'a [Vec<String>],
     pub disallow_unknown_class: bool,
     pub raw_value_policy: Option<&'a RawValuePolicy>,
+    pub remote_styling_policy: Option<&'a RemoteStylingPolicy>,
     pub canonical_options: Option<&'a CanonicalClassNameOptions>,
 }
 

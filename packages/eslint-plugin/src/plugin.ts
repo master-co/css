@@ -2,6 +2,7 @@ import noConflictingClasses from './rules/no-conflicting-classes'
 import noInvalidClasses from './rules/no-invalid-classes'
 import noUnapprovedRawValues from './rules/no-unapproved-raw-values'
 import preferCanonicalClasses from './rules/prefer-canonical-classes'
+import preferComponentClasses from './rules/prefer-component-classes'
 import sortClasses from './rules/sort-classes'
 import { readFileSync } from 'fs'
 import type { TSESLint } from '@typescript-eslint/utils'
@@ -22,6 +23,7 @@ const plugin = {
     'no-invalid-classes': noInvalidClasses,
     'no-unapproved-raw-values': noUnapprovedRawValues,
     'prefer-canonical-classes': preferCanonicalClasses,
+    'prefer-component-classes': preferComponentClasses,
     'sort-classes': sortClasses
   }
 } as TSESLint.Linter.Plugin

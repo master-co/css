@@ -61,7 +61,8 @@ export type {
   MasterCSSLintReport,
   MasterCSSLintReportOptions,
   MasterCSSLintRuleId,
-  MasterCSSUnapprovedRawValueClassesReportOptions
+  MasterCSSUnapprovedRawValueClassesReportOptions,
+  MasterCSSComponentClassesReportOptions
 } from './diagnostics'
 export type {
   MasterCSSLintAnalysis,
@@ -82,7 +83,8 @@ export {
 } from './contracts'
 export type {
   CanonicalClassNameOptions,
-  RawValuePolicyOptions
+  RawValuePolicyOptions,
+  RemoteStylingPolicyOptions
 } from './contracts'
 export type {
   MasterCSSFixContentOptions,

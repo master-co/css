@@ -8,7 +8,8 @@ import {
   type MasterCSSLintFix,
   type MasterCSSLintRange,
   type MasterCSSLintRuleId,
-  type MasterCSSUnapprovedRawValueClassesReportOptions
+  type MasterCSSUnapprovedRawValueClassesReportOptions,
+  type MasterCSSComponentClassesReportOptions
 } from './diagnostics'
 import type { MasterCSSToolingSession } from '../tooling-session'
 
@@ -19,7 +20,8 @@ export const masterCSSLintRuleIds: readonly MasterCSSLintRuleId[] = Object.freez
   'no-invalid-classes',
   'no-conflicting-classes',
   'prefer-canonical-classes',
-  'no-unapproved-raw-values'
+  'no-unapproved-raw-values',
+  'prefer-component-classes'
 ])
 
 export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boolean>> = Object.freeze({
@@ -27,7 +29,8 @@ export const defaultMasterCSSLintRules: Readonly<Record<MasterCSSLintRuleId, boo
   'no-invalid-classes': true,
   'no-conflicting-classes': true,
   'prefer-canonical-classes': true,
-  'no-unapproved-raw-values': false
+  'no-unapproved-raw-values': false,
+  'prefer-component-classes': false
 })
 
 export type MasterCSSLintFileSourceKind = 'source' | 'stylesheet' | 'manifest'
@@ -101,6 +104,7 @@ export interface MasterCSSLintContentRuleOptions {
   'no-invalid-classes'?: MasterCSSInvalidClassesReportOptions
   'prefer-canonical-classes'?: MasterCSSCanonicalClassesReportOptions
   'no-unapproved-raw-values'?: MasterCSSUnapprovedRawValueClassesReportOptions
+  'prefer-component-classes'?: MasterCSSComponentClassesReportOptions
 }
 
 interface ClassListContext {
@@ -256,6 +260,9 @@ function createContextLintDiagnostics(
         : undefined,
       canonicalOptions: rules['prefer-canonical-classes']
         ? options.ruleOptions?.['prefer-canonical-classes'] || {}
+        : undefined,
+      remoteStylingPolicy: rules['prefer-component-classes']
+        ? { max: options.ruleOptions?.['prefer-component-classes']?.max }
         : undefined,
     }).diagnostics
       .filter(({ ruleId }) => rules[ruleId])

@@ -379,6 +379,7 @@ mod resources;
 mod session;
 pub use session::{compile_program, parse_emitted_globals};
 mod state;
+pub use state::remote_selector;
 mod stylesheet_resources;
 mod theme_batch;
 mod utility;

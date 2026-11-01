@@ -25,7 +25,7 @@
 - Default plugin object.
 - Config data consumed by `@master/eslint-config-css`; application configuration
   imports use the config package.
-- Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, `prefer-canonical-classes`, and `no-unapproved-raw-values`.
+- Rules: `sort-classes`, `no-invalid-classes`, `no-conflicting-classes`, `prefer-canonical-classes`, `no-unapproved-raw-values`, and `prefer-component-classes`.
 
 ## Key Files
 

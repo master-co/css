@@ -156,6 +156,40 @@ pub(crate) fn split_state_token(state_token: &str) -> (String, Vec<String>) {
     (selector, conditions)
 }
 
+/// The part of a class's selector that targets another element: everything from its first
+/// top-level combinator (`_` descendant, `>` child, `+` and `~` siblings). `None` when the class
+/// styles its own element. Combinators nested in `:is()`, `:has()` or attribute values do not count.
+pub fn remote_selector(state_token: &str) -> Option<String> {
+    let (selector, _) = split_state_token(state_token);
+    let mut depth = 0_u32;
+    let mut quote = None;
+    let mut escaped = false;
+    for (index, character) in selector.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if character == '\\' {
+            escaped = true;
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        match character {
+            '\'' | '"' => quote = Some(character),
+            '(' | '[' | '{' => depth += 1,
+            ')' | ']' | '}' => depth = depth.saturating_sub(1),
+            '_' | '>' | '+' | '~' if depth == 0 => return Some(selector[index..].to_owned()),
+            _ => {}
+        }
+    }
+    None
+}
+
 #[cfg(test)]
 pub(crate) fn compose_selector_templates(
     current: Option<&str>,

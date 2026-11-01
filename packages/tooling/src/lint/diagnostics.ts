@@ -1,6 +1,7 @@
 import {
   type CanonicalClassNameOptions,
-  type RawValuePolicyOptions
+  type RawValuePolicyOptions,
+  type RemoteStylingPolicyOptions
 } from './contracts'
 
 export interface MasterCSSClassListEditOptions {
@@ -13,6 +14,7 @@ export type MasterCSSLintRuleId =
   | 'no-conflicting-classes'
   | 'prefer-canonical-classes'
   | 'no-unapproved-raw-values'
+  | 'prefer-component-classes'
 
 export type MasterCSSLintDiagnosticSeverity = 'error' | 'warning'
 export interface MasterCSSLintRange { start: number, end: number }
@@ -40,6 +42,7 @@ export interface MasterCSSInvalidClassesReportOptions extends MasterCSSLintRepor
 }
 export interface MasterCSSCanonicalClassesReportOptions extends MasterCSSLintReportOptions, CanonicalClassNameOptions { }
 export interface MasterCSSUnapprovedRawValueClassesReportOptions extends MasterCSSLintReportOptions, RawValuePolicyOptions { }
+export interface MasterCSSComponentClassesReportOptions extends MasterCSSLintReportOptions, RemoteStylingPolicyOptions { }
 export interface MasterCSSClassListLintReportOptions extends MasterCSSInvalidClassesReportOptions, RawValuePolicyOptions, CanonicalClassNameOptions {
   rules?: Partial<Record<MasterCSSLintRuleId, boolean>>
   severities?: Partial<Record<MasterCSSLintRuleId, MasterCSSLintDiagnosticSeverity>>

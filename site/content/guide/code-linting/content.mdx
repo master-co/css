@@ -185,6 +185,30 @@ export default defineConfig([
 
 The rule has no autofix: a token with the same current value is not necessarily the right role. See its [options](/reference/packages#eslint-plugin-css) to scope the policy to selected properties.
 
+When one element styles many others through combinators, the class list has become a component. Enable `prefer-component-classes` to report lists in which more than `max` classes (default `3`) reach other elements:
+
+```js name=eslint.config.js
+import { defineConfig } from 'eslint/config'
+import masterCSS from '@master/eslint-config-css'
+
+export default defineConfig([
+  ...masterCSS,
+  {
+    rules: {
+      '@master/css/prefer-component-classes': 'warn'
+    }
+  }
+])
+```
+
+```mcss
+flex block_h4 hidden_h4 grid_svg flex>li
+```
+
+(!) `4 classes style other elements through combinators ("_h4", "_svg", ">li"); the limit is 3. Move them into a component class in @layer components.`
+
+States of the element itself, relative selectors inside `:has()` or `:is()`, and conditions such as `@sm` do not count. Move the rules into a [component class](/guide/global-styles#component-classes).
+
 ---
 
 ## Native component CSS

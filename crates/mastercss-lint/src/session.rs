@@ -107,6 +107,10 @@ impl LintSession {
         } else {
             Vec::new()
         };
+        let remote_classes = match policy.remote_styling_policy {
+            Some(_) => self.collect_remote_classes(class_names)?,
+            None => Vec::new(),
+        };
         let mut result = class_list::create_class_list_ir(
             class_list,
             class_names,
@@ -118,6 +122,8 @@ impl LintSession {
                 disallow_unknown_class: policy.disallow_unknown_class,
                 raw_value_candidates: &raw_value_candidates,
                 raw_value_policy: policy.raw_value_policy,
+                remote_classes: &remote_classes,
+                remote_styling_policy: policy.remote_styling_policy,
             },
         );
         for item in mastercss_lexer::collect_class_list_token_ranges(class_list) {

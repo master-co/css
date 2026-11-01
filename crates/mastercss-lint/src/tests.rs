@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, EngineSession, LintClassListPolicy,
-    LintSession, RawValueCandidateIr, RawValuePolicy, SourceRange, ValidatorBatchIr,
-    classify_host_rule_validation,
+    LintSession, RawValueCandidateIr, RawValuePolicy, RemoteStylingPolicy, SourceRange,
+    ValidatorBatchIr, classify_host_rule_validation,
 };
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
@@ -387,4 +387,60 @@ fn unknown_named_prefixes_follow_the_unknown_class_policy() {
             assert_eq!(unknown[0].code, "UNKNOWN_TOKEN");
         }
     }
+}
+
+#[test]
+fn reports_class_lists_that_style_other_elements_past_the_limit() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    let analyze = |session: &mut LintSession, class_list: &str, max: u32| {
+        let class_names = class_list
+            .split_whitespace()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        session
+            .analyze_class_list(
+                class_list,
+                &class_names,
+                None,
+                &HashSet::new(),
+                LintClassListPolicy {
+                    remote_styling_policy: Some(&RemoteStylingPolicy { max }),
+                    ..LintClassListPolicy::default()
+                },
+            )
+            .unwrap()
+            .diagnostics
+            .into_iter()
+            .filter(|diagnostic| diagnostic.rule_id == "prefer-component-classes")
+            .collect::<Vec<_>>()
+    };
+    let class_list =
+        "flex block_h4 hidden_h4 grid_svg flex>li font-bold:hover fg-red:has(>img) block@sm";
+    let diagnostics = analyze(&mut session, class_list, 3);
+    assert_eq!(diagnostics.len(), 1);
+    let diagnostic = &diagnostics[0];
+    assert_eq!(diagnostic.code, "remote-styling-limit");
+    assert_eq!(diagnostic.range, SourceRange { start: 5, end: 13 });
+    assert_eq!(
+        diagnostic.data["classNames"],
+        serde_json::json!(["block_h4", "hidden_h4", "grid_svg", "flex>li"])
+    );
+    assert_eq!(
+        diagnostic.data["targets"],
+        serde_json::json!(["_h4", "_svg", ">li"])
+    );
+    assert_eq!(
+        diagnostic.message,
+        "4 classes style other elements through combinators (\"_h4\", \"_svg\", \">li\"); the limit is 3. Move them into a component class in @layer components."
+    );
+    assert!(analyze(&mut session, class_list, 4).is_empty());
+    // Own-element states, nested relative selectors and conditions never count.
+    assert!(
+        analyze(
+            &mut session,
+            "font-bold:hover fg-red:has(>img) block@sm (color:red)[data-x~=\"a_b\"]",
+            0
+        )
+        .is_empty()
+    );
 }

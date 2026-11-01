@@ -1,5 +1,6 @@
 import type {
   RawValuePolicyOptions,
+  RemoteStylingPolicyOptions,
   CanonicalClassNameOptions
 } from './contracts'
 import type {
@@ -27,6 +28,7 @@ export interface MasterCSSLintAnalysis {
 export interface MasterCSSLintClassListOptions {
   readonly disallowUnknownClass?: boolean
   readonly rawValuePolicy?: RawValuePolicyOptions
+  readonly remoteStylingPolicy?: RemoteStylingPolicyOptions
   readonly canonicalOptions?: CanonicalClassNameOptions
 }
 
