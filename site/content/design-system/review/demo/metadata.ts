@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo canvas",
-  "description": "The current shared Demo canvas and its optional framing.",
+  "title": "Tray and stage",
+  "description": "One complete example: head, lit stage, source with closed generated CSS, and caption.",
   "category": "Components",
   fileURL: import.meta.url
 })

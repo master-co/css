@@ -1,12 +1,14 @@
-`DemoLegend` is a separate key for recurring color roles. Each item pairs a short name with a small bordered swatch, and the list wraps as space narrows. Its compact monospace text follows the shared label scale; the swatches are decorative, so the names carry the meaning. Place the legend in the demo caption or beside its description, outside the measured layout.
+`DemoLegend` renders `ul.ui-legend` from `items`: each `{ label, tone }` becomes a list item with a tone chip and its name. Put it in the tray caption or beside the stage.
 
 ```tsx
-<Demo caption={<DemoLegend items={[
-  { tone: 'blue', label: 'Subject border' },
-  { tone: 'violet', label: 'Comparison border' },
-]} />}>
-  {/* The lesson's two border specimens live here. */}
+<Demo caption={<DemoLegend items={[{ label: 'Subject', tone: 'blue' }, { label: 'Comparison', tone: 'violet' }]} />}>
+  …
 </Demo>
 ```
 
-Include only roles visible in the scene. The [border color reference](/reference/tokens/color) labels its blue and violet specimens directly; the [legend review](/design-system/review/legend) shows the current shared key.
+```html
+<ul class="ui-legend" aria-label="Legend">
+  <li><i data-tone="blue" aria-hidden="true"></i>Subject</li>
+  <li><i data-tone="violet" aria-hidden="true"></i>Comparison</li>
+</ul>
+```

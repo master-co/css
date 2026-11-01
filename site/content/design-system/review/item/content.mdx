@@ -1,12 +1,18 @@
-`DemoItem` starts as a neutral raised surface with a crisp border. Set `tone="blue"` to identify the subject or `tone="violet"` for a comparison. The optional `soft`, `solid`, `outline`, and `ghost` variants change paint only. The item has no implied width, height, padding, layout, position, or interactive behavior; the lesson supplies those explicitly.
+`DemoItem` renders `div.ui-item`, a raised tile with a 3rem minimum and centered content. `tone` (`neutral`, `blue`, `violet`, `amber`, `green`, `red`) maps to `data-tone`; `variant` (`soft`, `solid`, `outline`, `ghost`) maps to `data-variant`. Utilities on the item set its size and layout.
 
 ```tsx
 <Demo>
   <div className="flex gap-sm">
-    <DemoItem className="p-md">Context</DemoItem>
-    <DemoItem tone="blue" className="p-md">Subject</DemoItem>
+    <DemoItem>Context</DemoItem>
+    <DemoItem tone="blue">Subject</DemoItem>
   </div>
 </Demo>
 ```
 
-An [`order-first`](/reference/rules/declarations#fixed-utilities) demo marks the reordered item in blue. The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) uses the same explicit subject tone, while the [spacing guide](/guide/layout-system#namespace-for-spacing) keeps its original object and pink inner stripe. `DemoItem` renders a noninteractive `div`; use a native button or link when a specimen performs an action.
+```html
+<div class="ui-item">Context</div>
+<div class="ui-item" data-tone="blue">Subject</div>
+<div class="ui-item" data-tone="violet" data-variant="outline">Compare</div>
+```
+
+Use neutral for context, blue for the subject and violet for a comparison; name every tone with a legend or label. The item is a noninteractive `div`; use a native button or link for an action.

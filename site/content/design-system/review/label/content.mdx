@@ -1,10 +1,13 @@
-`DemoLabel` identifies a class, object or condition with a compact monospace line. The current label uses tabular numerals and wraps long utilities. It adds no background, border or spacing; the scene sets the distance to its subject.
+`DemoLabel` renders `span.ui-label` in the mono label face. It keeps its text as written (`data-case="as-is"`) so class names and values stay exact; set `upper` for an uppercase heading.
 
 ```tsx
-<div>
-  <DemoLabel>shadow-sm</DemoLabel>
-  <DemoSurface className="mt-xs p-md">Standard surface</DemoSurface>
-</div>
+<DemoLabel>shadow-sm</DemoLabel>
+<DemoLabel upper>Collection / 024</DemoLabel>
 ```
 
-Keep a label outside the measured flex or grid parent unless it is part of the layout lesson. The [elevation guide](/guide/colors#raised-surfaces) retains its original labels, and the [label review](/design-system/review/label) shows the current shared label.
+```html
+<span class="ui-label" data-case="as-is">shadow-sm</span>
+<span class="ui-label">Collection / 024</span>
+```
+
+Place a label outside any measured flex, grid or float parent unless the label is the lesson.

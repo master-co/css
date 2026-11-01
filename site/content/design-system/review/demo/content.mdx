@@ -1,20 +1,30 @@
 import CanvasTreatments from './CanvasTreatments'
 
-`Demo` uses a plain neutral canvas by default. A single canvas boundary supplies responsive breathing room, while the example supplies its own layout and geometry. A title, description, controls, and caption appear only when the lesson needs them; controls remain outside the demonstrated layout.
+`Demo` renders one `figure.ui-tray`: an optional `ui-tray-head` (`title`, `description`, `controls`), a `ui-stage` holding the children, an optional `source`, and a `ui-tray-caption`. `className` and `style` belong to the stage, so the chrome never joins the demonstrated layout. The stage centers its specimen; `align="start"` places it from the start edge.
 
 ```tsx
-<Demo>
-  <div className="flex gap-sm">
-    <DemoItem className="p-md">01</DemoItem>
-    <DemoItem className="p-md">02</DemoItem>
-  </div>
+<Demo title="Collection" caption="The card follows its container." source={<>
+  <Code lang="html" name="HTML">{html}</Code>
+  <DemoGeneratedCSS><Code lang="css" beautify>{css}</Code></DemoGeneratedCSS>
+</>}>
+  <DemoSurface className="p-lg">Room for the details.</DemoSurface>
 </Demo>
 ```
 
-Use `padding="none"` for a scene with its own spacing. Add `frame="none"` when a viewport, code window or complete panel already supplies its boundary. `background="stripes"`, `"grid"`, `"dots"`, and `"checkerboard"` are opt-in when a lesson needs a measurement or transparency cue. Keep labels and controls outside a measured flex, grid or float parent. The [Spacing Guide](/guide/layout-system#namespace-for-spacing) uses its pink inner stripe to explain padding and gap.
+```html
+<figure class="ui-tray">
+  <figcaption class="ui-tray-head"><div><p class="ui-tray-title">Collection</p></div></figcaption>
+  <div class="ui-stage">…</div>
+  <div class="ui-code">…</div>
+  <details class="ui-disclosure"><summary>Generated CSS</summary>…</details>
+  <div class="ui-tray-caption">The card follows its container.</div>
+</figure>
+```
+
+`padding="sm"` and `padding="none"` map to `data-padding` on the stage for scenes with their own spacing. Add `frame="none"` when the content already owns its frame: a `DemoViewport` browser, a `ui-compare` or a code window. `DemoGeneratedCSS` is always closed by default. Keep labels and controls outside a measured flex, grid or float parent.
 
 ### Purposeful backgrounds \{#background-choices\}
 
-Choose the background for the behavior being explained. Every treatment remains available; most examples use the plain surface.
+Choose the stage background for the behavior being explained; most examples use the plain lit stage. `background` maps to `data-background` on `ui-stage`.
 
 <CanvasTreatments />

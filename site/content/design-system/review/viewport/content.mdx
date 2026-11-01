@@ -1,13 +1,23 @@
-`DemoViewport` hosts a complete site-authored document in a real iframe. Its fine edge and quiet control deck preserve the viewport's actual width, height and content. A named preset, range slider or Fit changes the iframe width; `theme`, `motion` and `print` add only the controls needed by a lesson.
+`DemoViewport` hosts a complete site-authored document (`document`) or a site URL (`src`) in a real iframe inside `div.ui-browser`. The address well shows the title and the measured size. `responsive` adds presets (`widthPresets`), a `ui-range` and Fit; `theme`, `motion` and `print` add only the controls a lesson needs, and `inspect` reads computed properties from the `[data-target]` element.
 
 ```tsx
-<DemoViewport
-  title="Responsive specimen"
-  document={html}
-  responsive
-  widthPresets={[{ label: 'Below sm', width: 833 }, { label: 'At sm', width: 835 }]}
-  height={180}
-/>
+<Demo title="Responsive specimen" frame="none" caption="Cross sm inside the iframe.">
+  <DemoViewport
+    title="Responsive specimen"
+    document={html}
+    responsive
+    widthPresets={[{ label: 'Below sm', width: 833 }, { label: 'At sm', width: 835 }]}
+    height={180}
+  />
+</Demo>
 ```
 
-Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A wide preset remains wide inside a narrow phone and scrolls within the stage. The [padding reference](/guide/layout-system#namespace-for-spacing) responds to its iframe viewport, and the [viewport review](/design-system/review/viewport) shows the current framed viewport.
+```html
+<div class="ui-browser">
+  <div class="ui-browser-bar"><span class="ui-browser-dots">…</span><span class="ui-browser-url">Responsive specimen · 835 × 180 px</span></div>
+  <div class="ui-browser-body"><div class="ui-browser-viewport"><iframe …></iframe><span class="ui-resize"></span></div></div>
+  <div class="ui-browser-tools" role="group">…</div>
+</div>
+```
+
+Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A preset wider than the page scrolls inside the browser body. The edge handle is a pointer shortcut; the range input stays the keyboard control.

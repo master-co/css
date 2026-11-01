@@ -1,4 +1,4 @@
-`DemoAsset` pairs original artwork with a named surface and a native download link. Use it for logos, icons or exported diagrams; it is a presentation frame, not a measured CSS layout. Intrinsic image dimensions reserve the aspect ratio. The preview constrains images to the available width and a 6rem height without cropping. The image remains transparent over the chosen preview surface in either page theme.
+`DemoAsset` renders a tray: `title` and `description` in the head, the artwork on the stage and a caption with the format badge and a download link styled as `ui-button`. `surface="light"` or `"dark"` places the artwork on a `ui-sheet` in that mode; `"transparent"` (the default) uses the checkerboard stage.
 
 ```tsx
 <DemoAsset
@@ -8,7 +8,8 @@
   alt="Master CSS gold mark"
   width={216.6}
   height={120}
+  surface="dark"
 />
 ```
 
-Use `surface="light"` or `surface="dark"` to keep the preview background fixed across page themes. `surface="transparent"` uses a checkerboard. The footer stays outside the artwork and exposes the file format (`SVG` by default). Use same-origin URLs for native downloads and a descriptive title for each accessible download name. See the [Brand page](/brand#download-assets) for the background variants and complete download kit, and the [asset review](/design-system/review/asset) for the current preview frame.
+The file is unchanged; only the preview is constrained by the image’s intrinsic dimensions.
