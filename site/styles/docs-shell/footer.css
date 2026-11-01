@@ -1,10 +1,11 @@
 /* The site footer: quiet link groups on the canvas under one hairline, then the legal row and the preferences. */
 @layer components {
-  .ui-footer { display: grid; gap: var(--ui-space-2xl); padding: var(--ui-space-2xl) max(1.25rem, env(safe-area-inset-right)) max(var(--ui-space-2xl), env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: var(--ui-text-small); }
+  .ui-footer { container-type: inline-size; display: grid; gap: var(--ui-space-2xl); padding: var(--ui-space-2xl) max(1.25rem, env(safe-area-inset-right)) max(var(--ui-space-2xl), env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: var(--ui-text-small); }
   @media (--sm) { .ui-footer { padding-inline: 2.5rem; } }
   @media (--md) { .ui-docs-main > .ui-footer { padding-left: 5rem; } }
   .ui-footer > * { width: 100%; max-width: 100rem; margin-inline: auto; }
   .ui-footer-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5em), 1fr)); gap: var(--ui-space-xl); }
+  .ui-footer-nav > * { min-width: 0; }
   .ui-footer-group > h2 { margin: 0 0 var(--ui-space-sm); color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
   .ui-footer-group > ul { display: grid; gap: var(--ui-space-2xs); margin: 0; padding: 0; list-style: none; }
   .ui-footer-group li { min-width: 0; }
