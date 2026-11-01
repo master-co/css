@@ -16,7 +16,7 @@
   @media print { .ui-header { display: none; } }
 
   .ui-header-brand { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: var(--ui-radius-sm); }
-  .ui-header-brand:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  .ui-header-brand:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   /* The version chip opens the native version list laid over it. */
   .ui-header .ui-version { position: relative; cursor: pointer; }
   .ui-header .ui-version > svg { width: 12px; height: 12px; margin-right: -2px; color: var(--ui-text-muted); }

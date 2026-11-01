@@ -26,7 +26,7 @@
   .documentation-index-links li { break-inside: avoid; }
   .documentation-index-links a { display: grid; align-content: center; min-height: 2.5rem; padding: .375rem .625rem; border-radius: var(--ui-radius-sm); color: var(--ui-text-body); font-size: .8125rem; line-height: 1.5; text-decoration: none; overflow-wrap: anywhere; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick); }
   .documentation-index-links a:hover { color: var(--ui-text-strong); background: light-dark(oklch(26% .012 265 / .045), oklch(100% 0 none / .05)); }
-  .documentation-index-links a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 1px; }
+  .documentation-index-links a:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; }
   .documentation-index-links small { color: var(--ui-text-muted); font-size: .6875rem; }
 
   .documentation-index-letters { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: var(--ui-space-lg); }

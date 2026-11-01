@@ -17,9 +17,9 @@
   .ui-catalog-entry { display: grid; gap: var(--ui-space-sm); min-width: 0; padding-bottom: var(--ui-space-md); }
   .ui-catalog-entry > a { width: fit-content; color: var(--ui-text-body); font-size: .78125rem; text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }
   .ui-catalog-entry > a:hover { color: var(--ui-text-strong); text-decoration-color: currentColor; }
-  .ui-catalog-entry > a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: 3px; }
+  .ui-catalog-entry > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: 3px; }
 
   /* Skip link: hidden until focused, then a raised control */
   .ui-skip:not(:focus) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .ui-skip:focus { display: inline-flex; align-items: center; min-height: 2rem; margin-bottom: var(--ui-space-sm); padding: 0 var(--ui-space-sm); border-radius: 8px; background: var(--ui-surface-sheet); color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1); font-size: .78125rem; outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  .ui-skip:focus { display: inline-flex; align-items: center; min-height: 2rem; margin-bottom: var(--ui-space-sm); padding: 0 var(--ui-space-sm); border-radius: 8px; background: var(--ui-surface-sheet); color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1); font-size: .78125rem; @apply --ui-focus-ring; outline-offset: 2px; }
 }

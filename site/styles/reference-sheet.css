@@ -20,7 +20,7 @@
   .ref-table tbody th code { color: var(--ui-text-strong); white-space: nowrap; }
   .ref-table td code { color: var(--ui-text-body); font-size: .75rem; white-space: normal; overflow-wrap: anywhere; }
   .ref-table tbody th a:hover code { text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }
-  .ref-table tbody th a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: var(--ui-radius-xs); }
+  .ref-table tbody th a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
 
   .ref-declarations { display: grid; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.75 var(--font-family-mono); }
   /* A declaration breaks between its property and value, never inside a name. */
@@ -41,7 +41,7 @@
   .ref-long-value summary::before { content: ""; flex: none; align-self: center; width: 12px; height: 12px; background: var(--ui-text-muted); mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 3.5 4.5 4.5L6 12.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
   .ref-table .ref-long-value summary code { display: block; overflow: hidden; min-width: 0; white-space: nowrap; text-overflow: ellipsis; }
   .ref-long-value summary:hover code { color: var(--ui-text-strong); }
-  .ref-long-value summary:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: var(--ui-radius-xs); }
+  .ref-long-value summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
   .ref-table :is(.ref-long-value[open] > summary, .ref-long-value:not([open]) > code) { display: none; }
   .ref-table .ref-long-value > code { display: block; white-space: pre-wrap; }
   .ref-value-table tr:target > * { background: light-dark(oklch(26% .012 265 / .05), oklch(100% 0 none / .06)); }

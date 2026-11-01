@@ -1,0 +1,4 @@
+/* Shared declarations of the system components, expanded in place by Master CSS (`@apply --name`). */
+@mixin --ui-sheet-face { background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); }
+@mixin --ui-focus-ring { outline: 2px solid var(--ui-focus); }
+@mixin --ui-label-type { font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); }

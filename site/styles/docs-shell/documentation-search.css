@@ -14,7 +14,7 @@
   .ui-dialog-close > span:last-child { display: none; }
   .ui-dialog-close > .ui-kbd { box-shadow: none; background: none; }
   .ui-dialog[data-variant="search"] > .ui-dialog-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-  .ui-dialog-status { margin: 0; padding: var(--ui-space-sm) var(--ui-space-md) 0; color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
+  .ui-dialog-status { margin: 0; padding: var(--ui-space-sm) var(--ui-space-md) 0; color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
   .ui-dialog-note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); padding: var(--ui-space-sm) var(--ui-space-md) var(--ui-space-lg); }
   .ui-dialog-note > p { width: 100%; margin: 0; color: var(--ui-text-body); font-size: .8125rem; line-height: 1.6; }
   .ui-dialog-note > .ui-button code { font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }
@@ -26,7 +26,7 @@
   .ui-results > li > a > b { overflow-wrap: anywhere; }
   .ui-results > li > a > span { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--ui-text-body); font-size: .8125rem; line-height: 1.55; overflow-wrap: anywhere; }
   .ui-results mark { background: none; color: var(--ui-text-strong); text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }
-  .ui-results > li > a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: -2px; }
+  .ui-results > li > a:focus-visible { @apply --ui-focus-ring; outline-offset: -2px; }
   .ui-dialog-foot { flex: none; }
   .ui-dialog-foot > span:last-child { margin-left: auto; }
   .ui-dialog-foot .ui-kbd svg { width: 12px; height: 12px; }

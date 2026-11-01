@@ -6,6 +6,7 @@ The site's interface vocabulary. Light mode is moonstone (cool pearl), dark mode
 
 | File | Scope | Loaded |
 | --- | --- | --- |
+| `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`: shared declarations the component files expand with `@apply` | global (Master CSS definitions) |
 | `tokens.css` | `--ui-*` roles: surfaces, lines, text, light, elevation, radius, rhythm, motion, tones, status, code | global |
 | `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll` | global |
 | `controls.css` | `ui-button`, `ui-segmented`, `ui-field`, `ui-input`, `ui-select`, `ui-range`, `ui-check`, `ui-switch`, `ui-copy`, `ui-kbd`, `ui-tooltip`, `ui-menu` | global |

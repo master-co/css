@@ -38,7 +38,7 @@
   .ui-pagehead-unfinished { margin-left: .5em; font-size: .5em; vertical-align: top; }
   a.ui-pagehead-kicker { display: inline-flex; align-items: center; gap: var(--ui-space-3xs); width: fit-content; text-decoration: none; transition: color var(--ui-duration-quick); }
   a.ui-pagehead-kicker:hover { color: var(--ui-text-strong); }
-  a.ui-pagehead-kicker:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: var(--ui-radius-xs); }
+  a.ui-pagehead-kicker:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
   .ui-pagehead-kicker > svg { width: 12px; height: 12px; margin-left: -2px; stroke: currentColor; stroke-width: 2; }
   /* Han text breaks between any two characters: break at spaces and punctuation, and balance the lines. */
   .ui-pagehead > p:lang(zh) { text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; }

@@ -14,7 +14,7 @@ const initializedScrollPositionParent = new Set()
  * A link to the page being read carries `aria-current="page"`; with `current`, a link that is only
  * active (inside its section, see `ambiguous`) carries that token instead, such as `true`.
  */
-function Link({ children, className, activeClassName = '', inactiveClassName = '', ambiguous, scrollIntoView, unfinished, active, indicate, current, ref, ...props }: any) {
+function Link({ children, className, ambiguous, scrollIntoView, unfinished, active, indicate, current, ref, ...props }: any) {
   const i18n = useI18n()
   const locale = useLocale()
   const pathname = usePathname()
@@ -87,7 +87,7 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
 
   const resolvedClassName = clsx(className, {
     'fg-text-disabled': props.disabled
-  }, !props.disabled && (pathnameActive ? activeClassName : inactiveClassName).trim()) || undefined
+  }) || undefined
   // The mark after an indicated link is drawn by styles/docs-shell/prose.css.
   const indication = indicate ? external ? 'external' : isHash ? 'hash' : undefined : undefined
 

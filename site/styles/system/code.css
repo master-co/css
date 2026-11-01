@@ -6,7 +6,7 @@
   .ui-code-file { display: inline-flex; align-items: center; gap: var(--ui-space-xs); flex: 1; min-width: 0; padding-left: 4px; color: var(--ui-text-muted); font: var(--ui-weight-medium) .75rem/1 var(--font-family-mono); }
   .ui-code-file svg { flex: none; width: 14px; height: 14px; }
   .ui-code pre { margin: 0; padding: var(--ui-space-sm) 0 var(--ui-space-md); overflow-x: auto; font: var(--ui-weight-regular) var(--ui-text-code)/var(--ui-leading-code) var(--font-family-mono); tab-size: 2; scrollbar-width: thin; }
-  .ui-code pre:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: -4px; border-radius: var(--ui-radius-lg); }
+  .ui-code pre:focus-visible { @apply --ui-focus-ring; outline-offset: -4px; border-radius: var(--ui-radius-lg); }
   .ui-code-line { display: block; padding: 0 var(--ui-space-lg) 0 var(--ui-space-md); }
   .ui-code[data-numbers] { counter-reset: line; }
   .ui-code[data-numbers] .ui-code-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 1.75rem; margin-right: var(--ui-space-sm); color: var(--ui-text-disabled); text-align: right; user-select: none; }
@@ -33,8 +33,8 @@
   }
   .ui-tabs > [role="tab"] svg { width: 14px; height: 14px; }
   .ui-tabs > [role="tab"]:hover { color: var(--ui-text-strong); }
-  .ui-tabs > [role="tab"][aria-selected="true"] { color: var(--ui-text-strong); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
-  .ui-tabs > [role="tab"]:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 1px; }
+  .ui-tabs > [role="tab"][aria-selected="true"] { color: var(--ui-text-strong); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-tabs > [role="tab"]:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; }
 
   /* Inline code and file references */
   .ui-inline-code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .84em/1 var(--font-family-mono); overflow-wrap: anywhere; }
@@ -46,7 +46,7 @@
   .ui-disclosure > summary::before { content: ""; flex: none; width: 14px; height: 14px; background: currentColor; opacity: .6; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 3.5 4.5 4.5L6 12.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; transition: rotate var(--ui-duration-base) var(--ui-ease); }
   .ui-disclosure[open] > summary::before { rotate: 90deg; }
   .ui-disclosure > summary:hover { color: var(--ui-text-strong); }
-  .ui-disclosure > summary:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: 6px; }
+  .ui-disclosure > summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: 6px; }
   .ui-disclosure > summary .ui-disclosure-meta { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1 var(--font-family-mono); }
   .ui-disclosure[data-variant="rule"] { border-block: 1px solid var(--ui-line-hair); }
   .ui-disclosure[data-variant="rule"] + .ui-disclosure[data-variant="rule"] { border-top: 0; }

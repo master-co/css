@@ -1,6 +1,6 @@
 /* Surfaces and the example frame. tray (24) → 6px inset → stage / code / sheet (18) */
 @layer components {
-  .ui-sheet { position: relative; border-radius: var(--ui-radius-xl); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); color: var(--ui-text-body); box-shadow: var(--ui-elevation-rise-2); }
+  .ui-sheet { position: relative; border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; color: var(--ui-text-body); box-shadow: var(--ui-elevation-rise-2); }
   .ui-sheet[data-elevation="1"] { box-shadow: var(--ui-elevation-rise-1); }
   .ui-sheet[data-elevation="3"] { box-shadow: var(--ui-elevation-rise-3); }
   .ui-sheet[data-elevation="flat"] { background: var(--ui-surface-sheet); box-shadow: var(--ui-elevation-flat); }
@@ -39,7 +39,7 @@
   /* Comparison: the same subject under two conditions */
   .ui-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--ui-inset); }
   .ui-compare > figure { display: grid; grid-template-rows: auto 1fr; gap: 0; min-width: 0; margin: 0; }
-  .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
+  .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
   .ui-compare .ui-stage { min-height: 11rem; padding: var(--ui-space-xl) var(--ui-space-lg); }
 
   /* Browser chrome for a real document in an iframe */
@@ -61,5 +61,5 @@
 
   /* Local scroll region, keyboard reachable */
   .ui-scroll { overflow: auto; overscroll-behavior: contain; max-height: 16rem; border-radius: var(--ui-radius-lg); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
-  .ui-scroll:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  .ui-scroll:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
 }

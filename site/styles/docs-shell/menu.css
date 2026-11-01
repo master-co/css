@@ -15,5 +15,5 @@
   .ui-dialog[data-variant="sheet"] .ui-nav-link > svg:last-child:not(:first-child) { margin-left: auto; }
   .ui-dialog[data-variant="sheet"] .ui-disclosure > .ui-sidebar { padding: 0 0 var(--ui-space-md); }
   .ui-dialog-fields { display: grid; gap: var(--ui-space-md); }
-  .ui-dialog-fields > h4 { margin: 0; padding-left: .625rem; color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
+  .ui-dialog-fields > h4 { margin: 0; padding-left: .625rem; color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
 }
