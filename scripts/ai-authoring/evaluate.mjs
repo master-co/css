@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 export const tasks = JSON.parse(readFileSync(new URL('./tasks.json', import.meta.url), 'utf8'))
-export const arms = ['instructions', 'skill', 'mcp', 'skill-mcp', 'skill-mcp-bridge']
+export const arms = ['instructions', 'skill', 'mcp', 'skill-mcp', 'skill-mcp-bridge', 'skill-cli']
 
 /** Summarize observed runs only. Missing attempts and unchecked UI are never successes. */
 export function summarize(runs) {

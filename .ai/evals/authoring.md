@@ -210,3 +210,35 @@ final HTML/CSS/screenshots, post-run check reports and `analysis.json`. The raw
 `e0702e39e86d71a4eeefac4374a9fe31b5b74876a9f3741ccede649e9b10f3ce`.
 Onboarding time, voluntary tester retention, autonomous skill discovery and
 cross-client behavior remain unmeasured.
+
+## Focused CLI/MCP pilot
+
+The `bridge-pilot` profile compares `skill-cli` with `skill-mcp-bridge`. It runs
+settings-card, css-declarations, fallback-order and tailwind-hover with the same
+two models, two repetitions, skill, baseline instructions and browser checks:
+
+```sh
+node --import tsx scripts/ai-authoring/trials/run.mjs --profile bridge-pilot --limit 4 --concurrency 2
+node --import tsx scripts/ai-authoring/trials/run.mjs --profile bridge-pilot --concurrency 2
+node scripts/ai-authoring/trials/compare.mjs /absolute/run/path
+```
+
+Keep the four-case calibration separate from the 32-case campaign. Arm and model
+order reverse on the second repetition. Suggestions are optional in both arms;
+this measures the available workflow, not forced tool use. Both can build and use
+CLI diagnostics through a protected `master-css.mjs` adapter. Only the CLI arm can
+invoke its `suggest` command; the MCP arm has the full server including the bridge.
+The adapter audits actual CLI suggestion calls and exit statuses; MCP calls are
+counted from client events. This is a full-MCP-surface comparison, not an isolated
+measurement of transport overhead. Filesystem access is not a security boundary;
+review transcripts for bypasses or audit-log edits before interpreting results.
+
+Protocol v2 hashes the task prompts, runner helpers, skill and built package trees,
+including the actual CLI implementation rather than only its entry shim. Resume
+with the same profile, models, concurrency and timeout; changed artifacts or
+partial trial directories are rejected. This runner does not resume v1 campaigns.
+Each result separates model elapsed time from total time including grading and
+records cached input tokens, MCP errors and actual suggestion use. The comparison
+requires every paired cell, rejects mixed environments and cross-arm tool use,
+retains failures and reports per-model/per-task results. Cached input totals are
+not a billing estimate, and concurrent local timings are not latency guarantees.
