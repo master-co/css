@@ -246,11 +246,11 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     }
     const requiredVariables: Record<string, string[]> = {
         '/': ['--color-text-muted:', '--color-surface-inset:'],
-        '/guide': ['--leading-md:', '--shadow-lg:'],
-        '/reference': ['--color-blue:', '--leading-md:'],
-        '/design-system': ['--color-text-strong:', '--leading-lg:'],
-        '/design-system/review/asset': ['--color-line-contour:', '--shadow-contact:'],
-        '/design-system/review/data-table': ['--color-line-divider:'],
+        '/guide': ['--prose-bleed:', '--color-line-media:'],
+        '/reference': ['--prose-bleed:', '--docs-header:'],
+        '/design-system': ['--color-text-strong:', '--spacing-lg:'],
+        '/design-system/review/asset': ['--prose-bleed:', '--color-line-media:'],
+        '/design-system/review/data-table': ['--prose-bleed:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
     }
     for (const variable of requiredVariables[route] ?? []) {
