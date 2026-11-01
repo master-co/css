@@ -1,62 +1,19 @@
 import metadata from './metadata'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
-import Link from '~/site/docs-shell/components/Link'
-
-import Demo from '~/site/components/demo/Demo'
-import { DemoComparison } from '~/site/components/demo'
+import ComponentPage from '../../components/ComponentPage'
+import { Demo, DemoComparison, DemoItem } from '~/site/components/demo'
 import ShadowScaleDemo from '~/site/components/demo/foundations/ShadowScaleDemo'
-import './page.css'
 
 export { metadata }
 
-const specimens = [
-  { key: 'sm', utility: 'shadow-sm', role: 'Standard surface', description: 'Cards, reusable panels, and quiet product surfaces.' },
-  { key: 'lg', utility: 'shadow-lg', role: 'Detached overlay', description: 'Dropdowns, popovers, toasts, and menus.' }
-] as const
-
-function ShadowSpecimens() {
-  return specimens.map(({ key, utility, role, description }) => (
-    <div className={`review-comparison-specimen bg-surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
-      <code className="review-comparison-utility">{utility}</code>
-      <div className="review-comparison-role">{role}</div>
-      <p className="review-comparison-description">{description}</p>
-    </div>
-  ))
-}
-
-const options = [
-  {
-    number: '01', note: 'A 17rem reading minimum and larger gap keep both specimens clear before stacking.',
-    preview: <Demo><DemoComparison><ShadowSpecimens /></DemoComparison></Demo>
-  }
-] as const
-
 export default function Page() {
-  return <main className="ds-component-page review-comparison-review">
-    <ReviewNavigation />
-    <h1>Demo comparison</h1>
-    <p className="review-comparison-intro">A 17rem reading minimum and larger gap keep both specimens clear before stacking.</p>
-
-    <section aria-labelledby="comparison-options">
-      <h2 id="comparison-options">Two elevation specimens</h2>
-
-      <div className="review-comparison-options">
-        {options.map(({ number, note, preview }) => <article className="review-comparison-option" key={number}>
-          <div className="review-comparison-optionPreview">{preview}</div>
-          <p className="review-comparison-optionNote">{note}</p>
-        </article>)}
-      </div>
-    </section>
-
-    <section aria-labelledby="comparison-real-use">
-      <div className="review-comparison-sectionHeading">
-        <div><h2 id="comparison-real-use">Actual Guide use</h2><p>The elevation guide keeps its original six-card shadow scale.</p></div>
-        <Link href="/guide/colors#raised-surfaces">Open /guide/colors#raised-surfaces</Link>
-      </div>
-      <ShadowScaleDemo />
-      <p className="review-comparison-optionNote">The shared layout is available for future comparisons. The existing Guide grid remains intact.</p>
-    </section>
-  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
-    </main>
+  return <ComponentPage title="Compare" description="Two stages side by side, each named by its condition. They stack when there is not enough room for both." sections={[
+    { id: 'conditions', title: 'Two conditions', children: <Demo title="Stacked below 40rem" frame="none" caption="Each stage is captioned with the condition it shows.">
+      <DemoComparison items={[
+        { label: '@media (width < 40rem)', children: <div className="grid gap-sm"><DemoItem tone="blue">01</DemoItem><DemoItem tone="blue">02</DemoItem></div> },
+        { label: '@media (width ≥ 40rem)', children: <div className="flex gap-sm"><DemoItem tone="blue">01</DemoItem><DemoItem tone="blue">02</DemoItem></div> },
+      ]} />
+    </Demo> },
+    { id: 'scale', title: 'A complete scale', description: 'A scale of more than two values is a grid of labelled specimens on one stage.', children: <ShadowScaleDemo /> },
+  ]} usage={{ href: '/guide/colors#raised-surfaces', label: 'the Colors guide' }} Documentation={ComponentDocumentation} />
 }

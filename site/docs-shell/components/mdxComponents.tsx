@@ -1,3 +1,4 @@
+import '~/site/styles/system/data.css'
 import type { MDXComponents } from 'mdx/types'
 import Image from './Image'
 import Do from './Do'
@@ -111,26 +112,6 @@ export const mdxComponents: MDXComponents = {
   a: (props: any) => <Link {...props} indicate />,
   h2: (props: any) => <DocHeading tagName="h2" {...props} />,
   h3: (props: any) => <DocHeading tagName="h3" {...props} />,
-  //     let newChildren
-
-  //     newChildren = rehypeChildren(props.children, 'New ')
-  //     if (newChildren) {
-  //         return <DocH3 {...props}>
-  //             <IconSparkles className='app-icon-primary (stroke-width:1) (margin-block:-0.375rem) (margin-right:0.5rem) (width:1.5em) (height:1.5em)' />
-  //             New {newChildren}
-  //         </DocH3>
-  //     }
-
-  //     newChildren = rehypeChildren(props.children, 'Deprecated ')
-  //     if (newChildren) {
-  //         return <DocH3 {...props}>
-  //             <IconFileX className='app-icon-red (stroke-width:1) (margin-block:-0.375rem) (margin-right:0.5rem) (width:1.5em) (height:1.5em)' />
-  //             Deprecated {newChildren}
-  //         </DocH3>
-  //     }
-
-  //     return <DocH3 {...props} />
-  // },
   pre: (props: any) => {
     const { children } = props
     const langAndParams = children.props.className.split(' ')[0].replace('language-', '')
@@ -148,9 +129,6 @@ export const mdxComponents: MDXComponents = {
     if (!newProps.lang) {
       newProps.lang = langAndParams
     }
-    if (newProps.name === 'Terminal' && newProps.showControls !== false) {
-      newProps.showControls = true
-    }
     if (newProps.lang === 'bash' && newProps.action) {
       return <PMAction action={newProps.action}>{children.props.children}</PMAction>
     }
@@ -166,9 +144,9 @@ export const mdxComponents: MDXComponents = {
   },
   table: (props: any) => {
     return (
-      <figure className='doc-table'>
+      <div className="ui-table">
         <table {...props} />
-      </figure>
+      </div>
     )
   },
 

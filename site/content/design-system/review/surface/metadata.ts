@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo surface",
-  "description": "The current shared Demo surface and elevation option.",
+  "title": "Sheet and well",
+  "description": "Raised sheets and sunken wells on the material ladder.",
   "category": "Components",
   fileURL: import.meta.url
 })

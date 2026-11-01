@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo controls",
-  "description": "Shared Demo controls and practical examples.",
+  "title": "Buttons and inputs",
+  "description": "One material and one state order for every control.",
   "category": "Components",
   fileURL: import.meta.url
 })

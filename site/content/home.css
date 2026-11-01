@@ -81,14 +81,23 @@
     max-width: 95rem;
   }
 
-  .home-header.at-top :is(.app-header-primary-nav, .app-header-community:not(.app-header-github), .app-header-divider, .app-header-language, .app-header-search) {
+  .home-header[data-background="transparent"] :is(.ui-header-nav, .ui-header-end > :not(a[aria-label="GitHub"])) {
     display: none;
   }
 
-  .home-header.at-top .app-header-github {
+  /* The compact header keeps the brand centred: GitHub takes the search button's end, as wide as the menu button. */
+  .home-header[data-background="transparent"] .ui-header-end {
+    justify-content: flex-end;
+    width: 2.375rem;
+
+    @media (--md) {
+      width: auto;
+    }
+  }
+
+  .home-header[data-background="transparent"] .ui-header-end > a[aria-label="GitHub"] {
     display: flex;
     margin-left: 0;
-    margin-right: -1.25rem;
 
     @media (--md) {
       margin-left: auto;
@@ -591,10 +600,11 @@
     overflow: hidden;
     tab-size: 2;
 
-    .code {
+    .ui-code {
       border: 0;
       border-radius: 0;
-      background-color: transparent;
+      background: transparent;
+      box-shadow: none;
     }
 
     .home-code-window-pre {
@@ -934,19 +944,19 @@
   view-transition-name: home-header;
 }
 
-[data-header-transition] .home-header .app-header-github {
+[data-header-transition] .home-header .ui-header-end > a[aria-label="GitHub"] {
   view-transition-name: home-header-github;
 }
 
-[data-header-transition] .home-header .app-header-logo {
+[data-header-transition] .home-header .ui-header-brand {
   view-transition-name: home-header-logo;
 }
 
-[data-header-transition] .home-header .app-header-version {
+[data-header-transition] .home-header .ui-version {
   view-transition-name: home-header-version;
 }
 
-[data-header-transition] .home-header .app-header-menu {
+[data-header-transition] .home-header .ui-header-menu {
   view-transition-name: home-header-menu;
 }
 

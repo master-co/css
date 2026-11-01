@@ -1,8 +1,9 @@
+import '~/site/styles/system/data.css'
 import Link from '~/site/docs-shell/components/Link'
 
 export default () => {
   return (
-    <figure className='doc-table'>
+    <div className='ui-table'>
       <table>
         <thead>
           <tr>
@@ -39,6 +40,6 @@ export default () => {
           </tr>
         </tbody>
       </table>
-    </figure>
+    </div>
   )
 }

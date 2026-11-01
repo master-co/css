@@ -1,113 +1,68 @@
+/*
+ * The documentation frame under the sticky header: a sticky sidebar, the article column and the page's contents rail.
+ * Chrome stays on the canvas; hairlines separate the rails.
+ */
 @layer components {
-  .doc-main { container: docs-main / inline-size; }
-  /* These document footers also need to fit when only the text is enlarged. */
-  .doc-footer [data-footer-navigation] { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5em), 1fr)) !important; }
-  .doc-footer [data-footer-navigation] ul { min-width: 0; }
-  .doc-footer [data-footer-legal] { flex-wrap: wrap; }
+  .ui-docs, .ui-docs-main { --docs-header: calc(3.75rem + env(safe-area-inset-top)); }
+  .ui-docs { display: flex; width: 100%; background: var(--ui-surface-canvas); }
 
-  @container docs-main (width < 48rem) {
-    .doc-page-contents { display: none; }
+  .ui-docs .ui-sidebar {
+    position: sticky; top: var(--docs-header); flex: none; align-self: start; width: 17.25rem; height: calc(100dvh - var(--docs-header));
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--ui-line-divider) transparent;
+    box-shadow: inset -1px 0 0 var(--ui-line-hair);
+  }
+  /* The search field stays in reach while the groups scroll beneath it. */
+  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-canvas); box-shadow: inset 0 -1px 0 var(--ui-line-hair), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  .ui-docs .ui-sidebar > .ui-search-trigger:hover { box-shadow: inset 0 -1px 0 var(--ui-line-strong), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  /* The rail clips its overflow, so focus rings inside it sit on the element's edge. */
+  .ui-docs .ui-sidebar .ui-nav-link:focus-visible { outline-offset: -2px; }
+  @media (width < 64rem) { .ui-docs .ui-sidebar { display: none; } }
+  .ui-sidebar .ui-nav-link { overflow-wrap: anywhere; }
+  .ui-sidebar .ui-nav-link > small { margin-left: .5em; color: var(--ui-text-muted); font-size: .75rem; font-weight: var(--ui-weight-regular); }
+  /* A disabled entry renders as a button. */
+  .ui-nav-link:is(button) { appearance: none; width: 100%; border: 0; background: none; color: var(--ui-text-disabled); font: inherit; font-size: var(--ui-text-small); text-align: start; cursor: not-allowed; }
+  @media (pointer: coarse) { .ui-nav-link { min-height: 2.75rem; } }
+
+  .ui-docs-main { container: docs-main / inline-size; display: flex; flex: 1; flex-direction: column; min-width: 0; }
+  .ui-docs-body { display: flex; justify-content: center; width: 100%; max-width: 80rem; margin-inline: auto; }
+  .ui-docs-article { flex: 1 1 auto; width: 100%; min-width: 0; padding: var(--ui-space-xl) max(1.25rem, env(safe-area-inset-right)) var(--ui-space-3xl) max(1.25rem, env(safe-area-inset-left)); }
+  .ui-docs-article[data-aside] { max-width: 52.125rem; }
+  @media (--sm) { .ui-docs-article { padding-inline: 2.5rem; padding-bottom: 5rem; } }
+  @media (--md) { .ui-docs-article { padding: var(--ui-space-3xl) 2.5rem 5rem 5rem; } .ui-docs-article[data-aside] { padding-right: 5rem; } }
+
+  /* The page head (`ui-pagehead`): an integration's mark beside the title; on a phone it leads, smaller. */
+  .ui-pagehead-title { display: flex; align-items: center; gap: var(--ui-space-lg); }
+  .ui-pagehead-title > h1 { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .ui-pagehead-title > h1:lang(zh) { letter-spacing: 0; }
+  .ui-pagehead-icon { display: grid; flex: none; place-content: center; width: clamp(4.5rem, 7vw, 5rem); height: clamp(4.5rem, 7vw, 5rem); }
+  @media (width < 37.5rem) { .ui-pagehead-title { flex-direction: column-reverse; align-items: start; gap: var(--ui-space-md); } .ui-pagehead-icon { width: 3rem; height: 3rem; } }
+  .ui-pagehead-unfinished { margin-left: .5em; font-size: .5em; vertical-align: top; }
+  a.ui-pagehead-kicker { display: inline-flex; align-items: center; gap: var(--ui-space-3xs); width: fit-content; text-decoration: none; transition: color var(--ui-duration-quick); }
+  a.ui-pagehead-kicker:hover { color: var(--ui-text-strong); }
+  a.ui-pagehead-kicker:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
+  .ui-pagehead-kicker > svg { width: 12px; height: 12px; margin-left: -2px; stroke: currentColor; stroke-width: 2; }
+  /* Han text breaks between any two characters: break at spaces and punctuation, and balance the lines. */
+  .ui-pagehead > p:lang(zh) { text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; }
+  .ui-pagehead > .ui-callout { margin-top: var(--ui-space-xs); }
+  .ui-pagehead[data-align="center"] { justify-items: center; text-align: center; }
+
+  /* The pager: a lone next document keeps to the end column. */
+  .ui-pager > a[rel="next"]:only-child { grid-column: 2; }
+  .ui-pager > a { min-width: 0; overflow-wrap: anywhere; }
+
+  /* The contents rail stands still beside the article; a long list scrolls inside it. */
+  :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) {
+    position: sticky; top: var(--docs-header); display: flex; flex: none; flex-direction: column; align-self: start; width: 15.75rem; max-height: calc(100dvh - var(--docs-header));
+    padding: var(--ui-space-3xl) var(--ui-space-lg) var(--ui-space-xl) 0;
+  }
+  :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) > ol { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  @media (width < 80rem) { :is(.ui-docs-body > .ui-toc, .ui-docs-body > site-island > .ui-toc) { display: none; } }
+  @container docs-main (width < 48rem) { .ui-toc[data-rail] { display: none; } }
+
+  @media print {
+    .ui-docs .ui-sidebar, .ui-toc { display: none; }
+    .ui-docs-main, .ui-docs-body { display: block; max-width: none; }
+    .ui-docs-article { max-width: none; padding: 3.75rem 1.875rem; }
   }
 
-  .doc-card {
-    padding: var(--spacing-xl);
-    background-color: var(--color-surface-raised);
-    box-shadow: var(--shadow-lg);
-    width: 100%;
-  }
-
-  /* One table treatment for every document table: an open grid with a quiet caption row,
-     hairline row separators and one closing line. Zero-specificity selectors leave column
-     geometry and dense variants to their owners. */
-  .doc-table {
-    border-bottom: 1px solid var(--color-line-subtle);
-    overflow-x: auto;
-    /* Phones hide scrollbars: a soft shade at the right edge says the table continues, and a cover that scrolls
-       with it, painted in the page's own ground, lifts the shade at the end. */
-    background-image:
-      linear-gradient(to right, transparent, var(--prose-ground, var(--color-surface-base)) 70%),
-      radial-gradient(farthest-side at 100% 50%, light-dark(oklch(0% 0 none / 0.12), oklch(0% 0 none / 0.5)), transparent);
-    background-position: right center, right center;
-    background-size: 2.5rem 100%, 0.875rem 100%;
-    background-repeat: no-repeat;
-    background-attachment: local, scroll;
-
-    :where(table) {
-      width: 100%;
-      border-spacing: 0;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Columns part by a narrow gutter, so prose cells keep a usable measure. */
-    :where(th, td) {
-      padding: var(--spacing-xs) 0.75rem;
-      border-bottom: 1px solid var(--color-line-subtle);
-      color: var(--color-text-body);
-      font-size: var(--font-size-sm);
-      line-height: 1.6;
-      letter-spacing: 0;
-      text-align: start;
-      vertical-align: baseline;
-    }
-
-    :where(th, td):first-child {
-      padding-inline-start: var(--prose-table-gutter, 0);
-    }
-
-    :where(th, td):last-child {
-      padding-inline-end: var(--prose-table-gutter, 0);
-    }
-
-    /* Column heads are small quiet labels in the reading face, like every other label on the page. */
-    :where(thead th) {
-      padding-block: var(--spacing-xs) 0.625rem;
-      border-bottom-color: var(--color-line-divider);
-      color: var(--color-text-muted);
-      font-family: inherit;
-      font-size: 0.8125rem;
-      font-weight: var(--font-weight-regular);
-      line-height: 1.45;
-      text-transform: none;
-      white-space: nowrap;
-      vertical-align: bottom;
-    }
-
-    :where(tbody th) {
-      color: var(--color-text-strong);
-      font-weight: var(--font-weight-medium);
-    }
-
-    :is(tbody tr:last-child th, tbody tr:last-child td) {
-      border-bottom-width: 0px!important;
-    }
-
-    :is(td, th) p {
-      margin: 0;
-    }
-
-    td p code {
-      font-size: 85%;
-    }
-
-    :is(tr, th, td, tbody, thead) {
-      contain: size;
-    }
-
-    :is(code) {
-      vertical-align: middle;
-      /* A token that wraps in a narrow column keeps a complete chip on each line. */
-      -webkit-box-decoration-break: clone;
-      box-decoration-break: clone;
-    }
-  }
-  .doc-table:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
-
-  .doc-pure-list {
-    list-style: none;
-    padding-left: 0;
-
-    li {
-      padding-left: 0;
-    }
-  }
 }

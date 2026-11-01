@@ -1,4 +1,4 @@
-import '~/site/styles/documentation-values.css'
+import '~/site/styles/system/data.css'
 import { useId } from 'react'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import Translate from '~/site/docs-shell/components/Translate'
@@ -25,16 +25,16 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
   const referenceUnit = entries.every(({ unit }) => unit === 'rem') ? 'px' : 'rem'
 
   return (
-    <figure>
+    <>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Numeric tables scroll within the document column and need native keyboard access. */}
-      <div className="doc-number-variable-table doc-table" data-representation={hasSpacingRepresentation ? 'spacing' : undefined} data-reference-units={referenceUnits} role="region" aria-labelledby={captionId} tabIndex={0}>
+      <div className="ui-table" role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
           <caption id={captionId} className="sr-only"><Translate>{namespace === 'breakpoint' ? 'Viewport breakpoints' : 'Numeric theme variables'}</Translate></caption>
           <thead>
             <tr>
               <th scope="col"><Translate>{namespace === 'breakpoint' ? 'Query' : 'Token'}</Translate></th>
               <th scope="col"><Translate>{namespace === 'breakpoint' ? 'Minimum width' : 'Value'}</Translate></th>
-              {referenceUnits && <th scope="col">{referenceUnit.toUpperCase()}</th>}
+              {referenceUnits && <th scope="col" data-align="end">{referenceUnit.toUpperCase()}</th>}
               {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
               {hasDescriptions && <th scope="col" className="(min-width:12rem)"><Translate>Description</Translate></th>}
             </tr>
@@ -45,7 +45,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                 <tr key={entry.key}>
                   <th scope="row"><InlineCode>{namespace === 'breakpoint' ? `@${entry.key}` : `--${variablePrefix}-${entry.key}`}</InlineCode></th>
                   <td><InlineCode>{entry.value}</InlineCode></td>
-                  {referenceUnits && <td>{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>}
+                  {referenceUnits && <td data-align="end">{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>}
                   {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value)}</td>}
                   {hasDescriptions && <td><Translate>{descriptions?.[entry.key]}</Translate></td>}
                 </tr>
@@ -54,15 +54,11 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
           </tbody>
         </table>
       </div>
-    </figure>
+    </>
   )
 }
 
 function renderSpacingRepresentation(value: string) {
-  return (
-    <div aria-hidden="true" className="inline-flex w-fit outline-line-subtle outline-offset(-1) outline-solid outline(1) (background:var(--stripe-pink)) vertical-middle" style={{ gap: value }}>
-      <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
-      <div className="inline-block (height:1.5em) (width:1.5em) bg-surface-raised"></div>
-    </div>
-  )
+  // The hatched width is the measured space itself.
+  return <span aria-hidden="true" className="ui-preview" style={{ width: value, background: 'var(--ui-hatch)' }} />
 }

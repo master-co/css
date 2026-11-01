@@ -10,6 +10,7 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 
 - Keep reusable documentation navigation, layouts, contexts, MDX rendering, and page factories in `site/docs-shell/`.
 - Keep Master CSS-specific guides, reference rendering, examples, and demos in their existing `site/` owners. Put shell styles in `site/styles/docs-shell/` and retained public assets in `site/public/`.
+- Shell components render the design system's `ui-*` components (`site/styles/system/`, rules in its `DESIGN.md`): `ui-header`, `ui-sidebar`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-code`, `ui-callout` and the `ui-prose` reading column. `site/styles/docs-shell/` only places them on the page and adds the site's own parts; do not reintroduce `doc-*`, `app-*` or `code-*` shell classes.
 - The CSS site owns its implementation and dependency versions. Share brand and interaction principles across Master projects through written design guidance; do not reintroduce a cross-repository source submodule for the full site.
 - Extract a cross-project package only after another active site independently needs the same stable behavior, the API is explicit, and framework/version coupling has been checked. Keep a one-site need local.
 
@@ -137,7 +138,7 @@ Interactivity does not determine ownership. Reference owns complete scales, pale
 
 A documentation migration moves content, visual specimens and interactions together. Before deleting an original presentation, its public replacement must pass visual and functional comparison. Keeping a component only in the Design System gallery does not preserve the documentation experience. Use the task's approved visual reference; `fef197a78` records the original 2026-09-29 restoration baseline. The unified `components/demo/` primitives remain the implementation owner.
 
-Reference pages are structured sheets (`reference/sheets.ts`; pages, groups and examples in `reference/sheet-editorial.ts`) that document only Master CSS syntax, tokens, recipes and directives, never native CSS behavior. Token and recipe pages read Classes → Values → Usage → Customize: Classes maps each class pattern to its declarations; Values lists one token per line without previews; Usage previews several values in one quiet composition whose displayed source keeps only the page's own classes (`…` stands for the rest) beside their generated CSS; Customize shows the `@theme` or `@utility` change. Tables use the shared `.doc-table` and bleed with code; the preview stage and its source share the Guide's demo shell. Guide keeps the visual comparisons needed to make a design decision.
+Reference pages are structured sheets (`reference/sheets.ts`; pages, groups and examples in `reference/sheet-editorial.ts`) that document only Master CSS syntax, tokens, recipes and directives, never native CSS behavior. Token and recipe pages read Classes → Values → Usage → Customize: Classes maps each class pattern to its declarations; Values lists one token per line without previews; Usage previews several values in one quiet composition whose displayed source keeps only the page's own classes (`…` stands for the rest) beside their generated CSS; Customize shows the `@theme` or `@utility` change. Tables use `ui-table` and bleed with code; each Usage example is one `ui-tray` (stage, source, Generated CSS), like the Guide's demos. Guide keeps the visual comparisons needed to make a design decision.
 
 `FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; the Reference Color page reuses the same palette matrix. `common/foundation-data/specimens.ts` owns the Guide's presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
 
@@ -203,20 +204,23 @@ For View Transitions examples, keep `view-transition-name` values unique, prefer
 
 Interactive demos should be local `'use client'` components under the guide's `components/` folder. Use existing site primitives:
 
-- Wrap demos in `<Demo>`.
+- Wrap demos in `<Demo>`: one example is one `ui-tray` with a head (`title`, `description`, `controls`), a `ui-stage`, an optional `source` (code window plus a closed `DemoGeneratedCSS` disclosure) and a caption. Use `frame="none"` when the content owns its frame, such as a `DemoViewport` browser or a comparison.
+- Use the specimen primitives from `~/site/components/demo` (`DemoItem`, `DemoSurface`, `DemoBadge`, `DemoLabel`, `DemoLegend`, `DemoMeasure`, `DemoAxes`, …); they render the `ui-*` components in `styles/system/specimens.css` and `surfaces.css`. Teaching hue uses a named `tone` and is always named by a legend or label.
 - Use `~/site/docs-shell/components/Image` for local bitmap images.
 - Use `@tabler/icons-react` for icon buttons and icon+text controls when an appropriate icon exists.
-- Use existing app button and panel classes where possible.
+- Use the `ui-*` controls (`ui-button`, `ui-segmented`, `ui-range`, `ui-select`, `ui-check`) and `ui-sheet` panels; do not add demo-specific button, panel or color classes. `styles/system/DESIGN.md` is the markup contract.
 
 Design demos for the doc content column, not the viewport. A `<Demo>` inside guide content is roughly `674px` wide on desktop and narrower on mobile. Prefer container queries over viewport breakpoints, add `container` when using `@container(...)`, keep mobile single-column by default, and use two columns only when the container has room.
 
 For View Transitions demos, add transition styling classes to `document.documentElement` in a client component and clean them up on unmount. In React state demos, wrap the update passed to `document.startViewTransition()` in `flushSync()` so the DOM update happens inside the transition callback. Always provide a no-API fallback.
 
-For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `<ResizeZone>` with `<IFrame>` for primary responsive demos when the lesson depends on viewport width. Keep iframe pages under `site/content/examples/<slug>/`. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
+For Layout System and similar foundation demos, prefer one polished practical UI composition over abstract placeholder grids when teaching product layout decisions. Use `DemoPageViewport` (or `DemoViewport` with `src` and `responsive`) for primary responsive demos when the lesson depends on viewport width, and `DemoContainer` when it depends on a container. Keep iframe pages under `site/content/examples/<slug>/`. Isolated documents from `components/demo/reference/document.ts` receive `styles/system/tokens.css`, the materials bridge and `reference/frame.css`; frame paint uses `--ui-*` roles only. Pair practical demos with reduced code samples that expose layout strategy, not every decorative class.
 
 ## Design References
 
 Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant Design Foundations guide pages and follow current patterns.
+
+The site interface (shell, examples, data views, demo primitives) uses the Moonstone system in `site/styles/system/`: `ui-*` components with variants on `data-*` and state on native/ARIA attributes, painted only with `--ui-*` roles. Follow its `DESIGN.md`. `specimens.css` and `data.css` are imported by the components that use them. `--ui-*` roles are not utility tokens: teaching and content markup keeps the preset vocabulary below.
 
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 

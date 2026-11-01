@@ -1,4 +1,4 @@
-import '~/site/styles/demo.css'
+import '~/site/styles/system/specimens.css'
 import Image from '~/site/docs-shell/components/Image'
 import mountain1 from '~/site/public/images/mountain1.jpg'
 import mountain2 from '~/site/public/images/mountain2.jpg'
@@ -29,10 +29,10 @@ const mountains = [
 
 
 export default function Page() {
-  return <main className="(min-height:100dvh) p-md bg-demo-canvas fg-text-body">
+  return <main className="(min-height:100dvh) p-md bg-surface-canvas fg-text-body">
     <header className="flex items-baseline justify-between gap-md mb-md">
       <h1 className="m(0) text-sm font-semibold">Field notes</h1>
-      <span className="demo-label">12 images / landscape</span>
+      <span className="ui-label" data-case="as-is">12 images / landscape</span>
     </header>
     <div data-gallery className="grid-cols(2) gap-md grid-cols(3)@2xs grid-cols(4)@sm grid-cols(5)@md">
       <Image className="grid-col-span(2) grid-row-span(2) h-full w-full min-h(0) r-sm object-cover"

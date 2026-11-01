@@ -55,7 +55,7 @@ test(`${engine}: switching the theme recolors without starting transitions`, { t
 test(`${engine}: wide tables become keyboard scroll regions only when they overflow`, { timeout: 60000 }, async () => {
   for (const width of [390, 1440]) {
     const { context, page, errors } = await open('/guide/rendering-modes', { width })
-    const tables = await page.locator('.prose .doc-table:not([role])').evaluateAll(tables => tables.map(table => ({ wide: table.scrollWidth > table.clientWidth + 1, focusable: table.tabIndex === 0 })))
+    const tables = await page.locator('.ui-prose .ui-table:not([role])').evaluateAll(tables => tables.map(table => ({ wide: table.scrollWidth > table.clientWidth + 1, focusable: table.tabIndex === 0 })))
     assert.ok(tables.length > 0)
     for (const table of tables) assert.equal(table.focusable, table.wide, `${width}: ${JSON.stringify(table)}`)
     assert.deepEqual(errors, [])
@@ -65,16 +65,17 @@ test(`${engine}: wide tables become keyboard scroll regions only when they overf
 
 test(`${engine}: focused scrollable code draws its ring above the code`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/guide/introduction')
-  await page.locator('.prose p').first().click()
-  for (let i = 0; i < 20 && !(await page.evaluate(() => document.activeElement?.matches('.code > .code-wrapper'))); i++) await page.keyboard.press(engine === 'webkit' ? 'Alt+Tab' : 'Tab')
+  await page.locator('.ui-prose p').first().click()
+  for (let i = 0; i < 20 && !(await page.evaluate(() => document.activeElement?.matches('.ui-code pre.shiki'))); i++) await page.keyboard.press(engine === 'webkit' ? 'Alt+Tab' : 'Tab')
+  // The ring is an outline inset into the code panel, so the scroll container cannot clip it.
   const ring = await page.evaluate(() => {
-    const frame = document.activeElement.parentElement
-    const style = getComputedStyle(frame, '::after')
-    return { shadow: style.boxShadow, z: style.zIndex, outline: getComputedStyle(document.activeElement).outlineStyle }
+    const style = getComputedStyle(document.activeElement)
+    return { visible: document.activeElement.matches(':focus-visible'), outline: style.outlineStyle, width: parseFloat(style.outlineWidth), offset: parseFloat(style.outlineOffset) }
   })
-  assert.match(ring.shadow, /inset/)
-  assert.equal(ring.z, '2')
-  assert.equal(ring.outline, 'none')
+  assert.equal(ring.visible, true)
+  assert.notEqual(ring.outline, 'none')
+  assert.ok(ring.width >= 2)
+  assert.ok(ring.offset < 0, 'the ring sits inside the code panel')
   assert.deepEqual(errors, [])
   await context.close()
 })
@@ -82,7 +83,7 @@ test(`${engine}: focused scrollable code draws its ring above the code`, { timeo
 test(`${engine}: without scripts, paired artwork follows the system scheme`, { timeout: 60000 }, async () => {
   for (const scheme of ['light', 'dark']) for (const route of ['/', '/guide/introduction']) {
     const { context, page } = await open(route, { scheme, js: false })
-    const logos = await page.locator('nav a[href="/"] svg').evaluateAll(svgs => svgs.filter(svg => svg.getBoundingClientRect().width > 40).map(svg => svg.className.baseVal.includes('--site-light') ? 'dark' : 'light'))
+    const logos = await page.locator('a.ui-header-brand svg').evaluateAll(svgs => svgs.filter(svg => svg.getBoundingClientRect().width > 40).map(svg => svg.className.baseVal.includes('--site-light') ? 'dark' : 'light'))
     assert.deepEqual(logos, [scheme], `${route} ${scheme}`)
     await context.close()
   }

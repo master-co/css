@@ -1,11 +1,9 @@
 'use client'
 
-import '~/site/styles/demo-interactions.css'
-import '~/site/styles/demo.css'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { IconPlayerPause, IconPlayerPlay, IconRefresh } from '@tabler/icons-react'
-import { DemoControls } from './primitives'
 
+/** Play, pause and replay the native animations inside; they start paused and respect reduced motion. */
 export default function DemoMotion({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -29,14 +27,15 @@ export default function DemoMotion({ children }: { children: ReactNode }) {
     setPlaying(action !== 'pause')
   }
   return (
-    <div className="demo-motion" data-playing={playing}>
-      <div ref={ref}>{children}</div>
-      <DemoControls label="Animation controls">
-        <button type="button" className="demo-button" onClick={() => control(playing ? 'pause' : 'play')}>
-          {playing ? <IconPlayerPause size={14} aria-hidden="true" /> : <IconPlayerPlay size={14} aria-hidden="true" />}{playing ? 'Pause' : 'Play'}
+    <div className="grid gap-md w-full">
+      <div ref={ref} data-playback={playing ? 'playing' : 'paused'}>{children}</div>
+      <div className="ui-player" role="group" aria-label="Animation controls" data-state={playing ? 'playing' : 'paused'}>
+        <button type="button" className="ui-button" data-size="sm" onClick={() => control(playing ? 'pause' : 'play')}>
+          {playing ? <IconPlayerPause aria-hidden="true" /> : <IconPlayerPlay aria-hidden="true" />}{playing ? 'Pause' : 'Play'}
         </button>
-        <button type="button" className="demo-button" onClick={() => control('restart')}><IconRefresh size={14} aria-hidden="true" />Replay</button>
-      </DemoControls>
+        <button type="button" className="ui-button" data-size="sm" data-variant="quiet" onClick={() => control('restart')}><IconRefresh aria-hidden="true" />Replay</button>
+        <span className="ui-player-time"><output>{playing ? 'Playing' : 'Paused'}</output></span>
+      </div>
     </div>
   )
 }

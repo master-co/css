@@ -10,9 +10,11 @@ const initializedScrollPositionParent = new Set()
 
 /**
  * A localized anchor. It renders statically; inside a client island it also keeps
- * active links scrolled into view. Same-page hash links scroll through `docs-shell/scripts/anchors`.
+ * active links scrolled into view. Same-page hash links scroll through `docs-shell/scripts/document`.
+ * A link to the page being read carries `aria-current="page"`; with `current`, a link that is only
+ * active (inside its section, see `ambiguous`) carries that token instead, such as `true`.
  */
-function Link({ children, className, activeClassName = '', inactiveClassName = '', ambiguous, scrollIntoView, unfinished, active, indicate, ref, ...props }: any) {
+function Link({ children, className, ambiguous, scrollIntoView, unfinished, active, indicate, current, ref, ...props }: any) {
   const i18n = useI18n()
   const locale = useLocale()
   const pathname = usePathname()
@@ -84,14 +86,13 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   }, [ref])
 
   const resolvedClassName = clsx(className, {
-    '(font-size:70%):after (line-height:0):after (text-wrap-mode:wrap):after vertical-super:after (white-space-collapse:break-spaces):after': indicate && (external || isHash),
-    '(content:var(--content-hash)):after': indicate && isHash,
-    '(content:var(--content-external)):after': indicate && external,
     'fg-text-disabled': props.disabled
-  }, !props.disabled && (pathnameActive ? activeClassName : inactiveClassName).trim()) || undefined
+  }) || undefined
+  // The mark after an indicated link is drawn by styles/docs-shell/prose.css.
+  const indication = indicate ? external ? 'external' : isHash ? 'hash' : undefined : undefined
 
   return (props.href && !props.disabled)
-    ? <a ref={handleRef} {...props} href={href} aria-current={props['aria-current'] ?? (currentPage ? 'page' : undefined)} rel={external ? 'noreferrer noopener' : props.rel} target={external ? '_blank' : props.target} onClick={onClick}
+    ? <a ref={handleRef} {...props} data-indicate={indication} href={href} aria-current={props['aria-current'] ?? (currentPage ? 'page' : current && pathnameActive ? current : undefined)} rel={external ? 'noreferrer noopener' : props.rel} target={external ? '_blank' : props.target} onClick={onClick}
       className={resolvedClassName}>
       {children}{unfinished && <span className='ml-2xs (font-size:.5em)'>🚧</span>}
     </a>

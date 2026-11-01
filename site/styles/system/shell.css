@@ -1,0 +1,92 @@
+/* Docs shell: header, sidebar, contents, page head, pager, search. Chrome stays on the canvas; only content gets material. */
+@layer components {
+  .ui-app { min-height: 100dvh; background: var(--ui-surface-canvas); color: var(--ui-text-body); }
+
+  .ui-header { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: var(--ui-space-lg); height: 3.75rem; padding: 0 var(--ui-space-lg);
+    background: color-mix(in oklab, var(--ui-surface-canvas) 82%, transparent); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
+  .ui-header-brand { display: inline-flex; align-items: center; gap: var(--ui-space-xs); color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); font-size: 1.0625rem; letter-spacing: -.02em; text-decoration: none; white-space: nowrap; }
+  /* Section links are plain words: ink marks the section being read, no pill. */
+  .ui-header-nav { display: flex; align-items: center; gap: var(--ui-space-3xs); }
+  .ui-header-nav > a { display: inline-flex; align-items: center; height: 2.25rem; padding: 0 .75rem; border-radius: var(--ui-radius-md); color: var(--ui-text-body); font-size: var(--ui-text-small); font-weight: var(--ui-weight-regular); text-decoration: none; transition: color var(--ui-duration-quick); }
+  .ui-header-nav > a:hover { color: var(--ui-text-strong); }
+  .ui-header-nav > a:is([aria-current="page"], [aria-current="true"]) { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); }
+  .ui-header-nav > a:focus-visible { @apply --ui-focus-ring; outline-offset: 0; }
+  .ui-header-end { display: flex; align-items: center; gap: var(--ui-space-3xs); margin-left: auto; }
+  .ui-header-divider { width: 1px; height: 1rem; margin-inline: var(--ui-space-xs); background: var(--ui-line-divider); }
+  .ui-version { display: inline-flex; align-items: center; gap: var(--ui-space-3xs); height: 2.25rem; padding: 0 .375rem; border-radius: var(--ui-radius-md); color: var(--ui-text-body); font: var(--ui-weight-regular) var(--ui-text-small)/1 var(--font-family-sans); font-variant-numeric: tabular-nums; }
+
+  /* The sidebar: quiet group captions over entries hung on one hairline; the page being read inks a short bar on it. */
+  .ui-sidebar { display: grid; align-content: start; gap: var(--ui-space-lg); padding: var(--ui-space-lg) var(--ui-space-lg) var(--ui-space-2xl) var(--ui-space-xl); }
+  .ui-search-trigger { appearance: none; display: flex; align-items: center; gap: .625rem; width: 100%; height: 2.5rem; padding: 0; border: 0; border-radius: 0;
+    background: transparent; color: var(--ui-text-muted); box-shadow: inset 0 -1px 0 var(--ui-line-hair); font: var(--ui-weight-regular) var(--ui-text-small)/1 var(--font-family-sans); cursor: pointer; transition: color var(--ui-duration-quick), box-shadow var(--ui-duration-quick); }
+  .ui-search-trigger:hover { color: var(--ui-text-strong); box-shadow: inset 0 -1px 0 var(--ui-line-strong); }
+  .ui-search-trigger > .ui-kbd { box-shadow: none; }
+  .ui-search-trigger:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-sm); }
+  .ui-search-trigger > svg { flex: none; width: 15px; height: 15px; }
+  .ui-search-trigger > .ui-kbd { margin-left: auto; }
+  .ui-nav-group { display: grid; }
+  .ui-nav-group > h4 { display: flex; align-items: center; min-height: 2rem; margin: 0; color: var(--ui-text-strong); font: var(--ui-weight-regular) var(--ui-text-label)/1.5 var(--font-family-sans); }
+  .ui-nav-link { position: relative; display: flex; align-items: center; min-height: 2rem; padding: .3125rem 0 .3125rem 1rem; color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.4; text-decoration: none; box-shadow: inset 1px 0 0 var(--ui-line-divider); transition: color var(--ui-duration-quick); }
+  .ui-nav-link::before { content: ""; position: absolute; top: .4375rem; bottom: .4375rem; left: 0; width: 2px; margin-left: -.5px; border-radius: 1px; background: transparent; transition: background-color var(--ui-duration-quick); }
+  .ui-nav-link:hover { color: var(--ui-text-strong); }
+  .ui-nav-link:hover::before { background: var(--ui-line-mark); }
+  .ui-nav-link:is([aria-current="page"], [aria-current="true"]) { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); }
+  .ui-nav-link:is([aria-current="page"], [aria-current="true"])::before { background: var(--ui-text-strong); }
+  .ui-nav-link:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; border-radius: var(--ui-radius-sm); }
+  .ui-nav-link > .ui-badge { margin-left: auto; }
+
+  /* The page's contents as one ruler: every entry hangs a tick before its title on one left edge; the section being
+     read draws the long tick in ink. A subsection keeps the edge and steps down in ink, never indents. */
+  .ui-toc { --toc-tick: 1.125rem; --toc-tick-current: 1.75rem; --toc-gap: .75rem; --toc-gutter: calc(var(--toc-tick-current) + var(--toc-gap));
+    display: grid; align-content: start; gap: var(--ui-space-xs); padding: var(--ui-space-xl) var(--ui-space-lg); font-size: var(--ui-text-caption); }
+  .ui-toc > h4 { margin: 0; padding-left: var(--toc-gutter); color: var(--ui-text-muted); @apply --ui-label-type; line-height: 1.5rem; }
+  .ui-toc ol { display: grid; margin: 0; padding: 0; list-style: none; }
+  .ui-toc a { position: relative; display: block; padding: .625rem 0 .625rem var(--toc-gutter); color: var(--ui-text-muted); line-height: 1.125rem; text-decoration: none; transition: color var(--ui-duration-quick); }
+  .ui-toc a::before { content: ""; position: absolute; top: calc(.625rem + .5lh - 1px); right: calc(100% - var(--toc-tick-current)); width: var(--toc-tick); height: 2px; border-radius: 1px; background: var(--ui-line-divider); pointer-events: none; transition: width var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-quick); }
+  .ui-toc a:hover { color: var(--ui-text-strong); }
+  .ui-toc a:hover::before { background: var(--ui-line-mark); }
+  .ui-toc a[aria-current="location"] { color: var(--ui-text-strong); }
+  .ui-toc a[aria-current="location"]::before { width: var(--toc-tick-current); background: var(--ui-text-strong); }
+  .ui-toc a:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; border-radius: var(--ui-radius-xs); }
+  .ui-toc ol ol a:not([aria-current]) { color: color-mix(in oklab, var(--ui-text-muted) 72%, var(--ui-text-disabled)); }
+  .ui-toc ol ol a:not([aria-current])::before { background: var(--ui-line-hair); }
+  .ui-toc ol ol a:not([aria-current]):hover { color: var(--ui-text-strong); }
+  .ui-toc-actions { display: grid; padding: var(--ui-space-sm) 0 0 var(--toc-gutter); }
+  .ui-toc-actions a { padding: .3125rem 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
+  .ui-toc-actions a::before { content: none; }
+
+  /* The page head closes on a hairline, so the reading starts on its own ground. */
+  .ui-pagehead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-sm); margin-bottom: var(--ui-space-xl); padding-bottom: var(--ui-space-xl); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
+  .ui-pagehead-kicker { margin-bottom: var(--ui-space-3xs); color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.5; }
+  .ui-pagehead h1 { margin: 0; color: var(--ui-text-strong); font-size: var(--ui-text-title); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-title); letter-spacing: var(--ui-tracking-title); text-wrap: balance; overflow-wrap: break-word; }
+  .ui-pagehead p { margin: 0; max-width: 38em; color: var(--ui-text-body); font-size: var(--ui-text-lead); line-height: var(--ui-leading-lead); text-wrap: pretty; overflow-wrap: break-word; }
+
+  .ui-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-sm); margin-top: var(--ui-space-3xl); }
+  .ui-pager > a { display: grid; gap: 2px; padding: .875rem var(--ui-space-md) var(--ui-space-md); border-radius: var(--ui-radius-lg); background: transparent; color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-contour); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
+  .ui-pager > a:hover { box-shadow: inset 0 0 0 1px var(--ui-line-strong); background: var(--ui-surface-chip); }
+  .ui-pager > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+  .ui-pager > a[rel="next"] { text-align: right; }
+  .ui-pager small { color: var(--ui-text-muted); @apply --ui-label-type; }
+  .ui-pager b { font-weight: var(--ui-weight-regular); font-size: .9375rem; line-height: 1.5; }
+
+  /* Overlay dialog (search, image preview) */
+  .ui-dialog { width: min(40rem, calc(100vw - 2rem)); max-height: min(36rem, calc(100dvh - 4rem)); padding: 0; overflow: hidden; border: 0; border-radius: var(--ui-radius-2xl); background: var(--ui-surface-float); color: var(--ui-text-body); box-shadow: var(--ui-elevation-overlay); }
+  .ui-dialog::backdrop { background: var(--ui-surface-scrim); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .ui-dialog-search { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-sm); min-height: 3.5rem; padding: 0 var(--ui-space-md); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
+  .ui-dialog-search input { flex: 1 1 8rem; min-width: 0; border: 0; background: transparent; color: var(--ui-text-strong); font: var(--ui-weight-regular) 1rem/1 var(--font-family-sans); }
+  .ui-dialog-search input:focus { outline: none; }
+  @media (forced-colors: active) { .ui-dialog-search input:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; } }
+  .ui-results { display: grid; gap: 2px; margin: 0; padding: var(--ui-inset); list-style: none; }
+  .ui-results > li > a { display: grid; gap: 2px; padding: .625rem .75rem; border-radius: var(--ui-radius-md); color: var(--ui-text-body); text-decoration: none; }
+  .ui-results > li > a small { color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-sans); }
+  .ui-results > li > a b { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); font-size: var(--ui-text-small); }
+  .ui-results > li > a[aria-selected="true"], .ui-results > li > a:hover { background: var(--ui-surface-chip); box-shadow: inset 0 0 0 1px var(--ui-line-hair); }
+  .ui-dialog-foot { display: flex; flex-wrap: wrap; gap: var(--ui-space-md); padding: var(--ui-space-sm) var(--ui-space-md); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: .71875rem; }
+  .ui-dialog-foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .ui-pagehead-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-md); padding-top: var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; }
+  .ui-pagehead-meta > a { color: inherit; text-decoration: none; }
+  .ui-pagehead-meta > a:hover { color: var(--ui-text-strong); }
+  .ui-pagehead-meta > span + span::before, .ui-pagehead-meta > * + a::before { content: "·"; margin-right: var(--ui-space-md); color: var(--ui-text-disabled); }
+}

@@ -27,15 +27,10 @@
    * would both show: follow the system scheme instead, as the brand page does.
    */
   @media (prefers-color-scheme: light) {
-    :root:not(.light, .dark) [class~="display:none@apply(--site-light)"] { display: none !important; }
+    :root:not(.light, .dark) [class~="hidden@apply(--site-light)"] { display: none !important; }
   }
   @media (prefers-color-scheme: dark) {
-    :root:not(.light, .dark) [class~="display:none@apply(--site-dark)"] { display: none !important; }
-  }
-
-  /* The side rails scroll and clip their overflow, so rings inside them sit on the element's edge. */
-  :is(#sidebar, .doc-page-contents) :focus-visible {
-    outline-offset: -2px;
+    :root:not(.light, .dark) [class~="hidden@apply(--site-dark)"] { display: none !important; }
   }
 }
 

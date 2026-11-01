@@ -209,20 +209,22 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     }
     const selectors = {
         reference: '.reference-document',
-        benchmark: '.benchmark-bars',
-        // Prose may mention .site-demo in an exclusion without loading Demo itself.
-        demo: /\.site-demo\s*\{/,
+        // Benchmark tables and charts (styles/benchmarks.css).
+        benchmark: '.benchmark-value',
+        // The demo family (styles/demo.css); prose may name a tray without loading Demo itself.
+        demo: /\.ui-tray\s*>\s*\.ui-disclosure\s*\{/,
         button: '.btn{',
-        review: '.review-asset-'
+        // Specimen parts (styles/system/specimens.css), loaded only by the components that use them.
+        specimens: /\.ui-swatch\s*\{/
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
-        '/': { reference: false, benchmark: false, demo: false, button: false, review: false },
+        '/': { reference: false, benchmark: false, demo: false, button: false, specimens: false },
         '/guide': { reference: false, benchmark: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/benchmarks': { benchmark: true, reference: false },
         '/design-system': { demo: true, benchmark: false, reference: false },
         '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false },
-        '/design-system/review/asset': { review: true, reference: false, benchmark: false }
+        '/design-system/review/asset': { specimens: true, reference: false, benchmark: false }
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
         const selector = selectors[group as keyof typeof selectors]
@@ -234,7 +236,7 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     const reviewRoute = route.match(/^\/design-system\/review\/([a-z-]+)$/)
     if (reviewRoute) {
         // The homepage illustration handoff has its own full-page shell.
-        if (reviewRoute[1] !== 'home-icons' && !css.includes('.ds-component-page')) {
+        if (reviewRoute[1] !== 'home-icons' && !/\.ui-handbook\s*\{/.test(css)) {
             throw new Error(`${route} is missing the shared component reference styles.`)
         }
         const pageSelector = reviewRoute[1] === 'home-icons' ? '.home-icon-review' : `.review-${reviewRoute[1]}-`
@@ -244,11 +246,11 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     }
     const requiredVariables: Record<string, string[]> = {
         '/': ['--color-text-muted:', '--color-surface-inset:'],
-        '/guide': ['--leading-md:', '--shadow-lg:'],
-        '/reference': ['--color-blue:', '--leading-md:'],
-        '/design-system': ['--color-demo-line:', '--leading-lg:'],
-        '/design-system/review/asset': ['--color-line-contour:', '--shadow-contact:'],
-        '/design-system/review/data-table': ['--color-line-divider:'],
+        '/guide': ['--prose-bleed:', '--color-line-media:'],
+        '/reference': ['--prose-bleed:', '--docs-header:'],
+        '/design-system': ['--color-text-strong:', '--spacing-lg:'],
+        '/design-system/review/asset': ['--prose-bleed:', '--color-line-media:'],
+        '/design-system/review/data-table': ['--prose-bleed:'],
         '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
     }
     for (const variable of requiredVariables[route] ?? []) {

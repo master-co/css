@@ -1,5 +1,4 @@
 import '~/site/styles/docs-shell/code.css'
-import '~/site/styles/docs-shell/scrollbar.css'
 
 import type { HTMLAttributes, ReactNode } from 'react'
 import clsx from 'clsx'
@@ -19,19 +18,22 @@ export declare interface CodeProp {
   preClassName?: string
   masterCSS?: MasterCSSShikiOptions
   tabbarClassName?: string
+  /** Accepted for older callers; the bar names the file and nothing else. */
   showControls?: boolean
   copyable?: boolean
   children: string
 }
 
-/** Render a prepared code tree without loading the highlighting pipeline. */
-/** Copy controls read the rendered Shiki lines; see `docs-shell/scripts/code`. */
+/**
+ * A `ui-code` panel without loading the highlighting pipeline: a bar naming the file when it has a `name`, otherwise a
+ * copy button in the corner. Copy controls read the rendered Shiki lines; see `docs-shell/scripts/code`.
+ */
 export default function CodeView(props: CodeProp & HTMLAttributes<HTMLDivElement> & { code: ReactNode }) {
-  const { lang, className, name, tabbarClassName, showControls, copyable = true, code } = props
+  const { lang, className, name, tabbarClassName, copyable = true, number, code } = props
   return (
-    <div className={clsx('code', { 'code-plain': !name && copyable }, className)}>
-      {name && <CodeTabBar tabs={[{ name, lang, ext: props.ext }]} currentName={name} className={tabbarClassName} showControls={showControls} copyable={copyable} />}
-      {!name && copyable && <CodeCopyButton className="code-copy-corner" />}
+    <div className={clsx('ui-code', className)} data-numbers={number ? '' : undefined}>
+      {name && <CodeTabBar tabs={[{ name, lang, ext: props.ext }]} currentName={name} className={tabbarClassName} copyable={copyable} />}
+      {!name && copyable && <CodeCopyButton />}
       {code}
     </div>
   )

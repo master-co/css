@@ -1,7 +1,7 @@
-import '~/site/styles/documentation-values.css'
+import '~/site/styles/document-comparison.css'
 import type { ReactNode } from 'react'
 
-/** Opt-in wrapper for short, two-column Markdown comparisons in reading layouts. */
+/** Opt-in wrapper for short, two-column Markdown comparisons: both columns stay visible and wrap. */
 export default function DocumentComparison({ children }: { children: ReactNode }) {
-  return <div className="doc-comparison">{children}</div>
+  return <div className="document-comparison">{children}</div>
 }

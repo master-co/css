@@ -42,7 +42,7 @@ export default function BlogArticleLayout({ metadata, toc, children }: any) {
           {/* In the page's outer left margin, beside the text it lists. */}
           {hasSections ? <BlogArticleContents items={contents} label={$('On this page')} lang={proseLanguage} /> : null}
           <div className="blog-article-body blog-rails blog-rails-rule">
-            <div className="blog-article-prose prose" lang={proseLanguage}>
+            <div className="blog-article-prose ui-prose" lang={proseLanguage}>
               {children}
             </div>
           </div>

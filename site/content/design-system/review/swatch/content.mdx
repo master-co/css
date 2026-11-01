@@ -1,9 +1,14 @@
-`DemoSwatch` is a static inventory tile for semantic color roles. Its restrained frame keeps pale canvas and surface colors visible next to saturated subject and comparison colors. `label` is required; optional `value` names the token or value in a compact monospace line. An explicit utility class or `style` supplies the actual color.
+`DemoSwatch` renders `figure.ui-swatch`: a `ui-swatch-paint` face that takes the `className` and `style`, and a caption with the `label` and an optional `value`.
 
 ```tsx
-<DemoSwatch label="Subject" value="demo-blue" className="bg-demo-blue" />
+<DemoSwatch label="Raised" value="bg-surface-raised" className="bg-surface-raised" />
 ```
 
-The color patch is decorative when it has no children, while the visible label carries the meaning. This tile has no copy action or focus stop. The [colors guide](/reference/tokens/color) retains its original interactive palette for browsing and copying fixed color steps.
+```html
+<figure class="ui-swatch">
+  <div class="ui-swatch-paint bg-surface-raised" aria-hidden="true"></div>
+  <figcaption><b>Raised</b><code>bg-surface-raised</code></figcaption>
+</figure>
+```
 
-The color face follows the outer frame's corner after subtracting its 1px border and 8px inset. Keep this frame geometry separate from the color being shown.
+Paint the face with the preset utility being taught, so the name and the paint come from the same source.

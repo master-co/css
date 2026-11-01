@@ -1,14 +1,11 @@
 import metadata from './metadata'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
-import Link from '~/site/docs-shell/components/Link'
-
+import ComponentPage from '../../components/ComponentPage'
 import Demo from '~/site/components/demo/Demo'
 import DemoExample from '~/site/components/demo/DemoExample'
 import DemoViewport from '~/site/components/demo/DemoViewport'
 import { generatePresetCSS } from '~/site/common/generate-preset-css'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
-import './page.css'
 
 export { metadata }
 
@@ -25,47 +22,11 @@ const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><st
 ${generatePresetCSS(classes)}
 </style></head><body><button type="button" class="${classes.join(' ')}">Save</button></body></html>`
 
-function Preview() {
-  return <Demo padding="none" frame="none" background="plain">
-    <div className="review-viewport-currentPreview">
-      <DemoViewport title="Responsive button" document={document}
-        responsive widthPresets={widths} height={132} inspect={['padding']} />
-    </div>
-  </Demo>
-}
-
-const options = [
-  {
-    number: '01', note: 'A hairline around the frame and a quieter control deck distinguish the actual iframe width from its fitted surround without changing that width.',
-    preview: <Preview />
-  }
-] as const
-
 export default function Page() {
-  return <main className="ds-component-page review-viewport-review">
-    <ReviewNavigation />
-    <h1>Demo viewport</h1>
-    <p className="review-viewport-intro">A hairline around the frame and a quieter control deck distinguish the actual iframe width from its fitted surround without changing that width.</p>
-
-    <section aria-labelledby="viewport-options">
-      <h2 id="viewport-options">Responsive padding</h2>
-
-      <div className="review-viewport-options">
-        {options.map(({ number, note, preview }) => <article className="review-viewport-option" key={number}>
-          <div className="review-viewport-optionPreview">{preview}</div>
-          <p className="review-viewport-optionNote">{note}</p>
-        </article>)}
-      </div>
-    </section>
-
-    <section aria-labelledby="viewport-real-use">
-      <div className="review-viewport-sectionHeading">
-        <div><h2 id="viewport-real-use">Actual Reference use</h2><p>The padding reference crosses the same breakpoint inside an iframe, preserving the class and its browser behavior.</p></div>
-        <Link href="/guide/layout-system#namespace-for-spacing">Open /guide/layout-system#namespace-for-spacing</Link>
-      </div>
-      <DemoExample page="padding" section="apply-conditionally" />
-      <p className="review-viewport-optionNote">The Reference keeps control of its teaching geometry. Viewport decoration must not make an outer container query look like a real media query.</p>
-    </section>
-  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
-    </main>
+  return <ComponentPage title="Browser viewport" description="A real document in an iframe, framed as a small browser. The address well names the document and its live size; presets, the range and the edge handle change the actual viewport width." sections={[
+    { id: 'responsive', title: 'Responsive presets', children: <Demo title="Responsive button" frame="none" caption="The presets cross the sm breakpoint inside the iframe. The padding readout comes from the real computed style.">
+      <DemoViewport title="Responsive button" document={document} responsive widthPresets={widths} height={132} inspect={['padding']} />
+    </Demo> },
+    { id: 'reference-demo', title: 'A reference specimen', description: 'Reference demos compile their own isolated document with the system roles and the preset tokens they use.', children: <DemoExample page="width" section="set-a-fixed-or-fluid-width" /> },
+  ]} usage={{ href: '/guide/responsive-design', label: 'the Responsive Design guide' }} Documentation={ComponentDocumentation} />
 }

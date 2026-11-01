@@ -1,10 +1,8 @@
 'use client'
 
-import '~/site/styles/docs-shell/scrollbar.css'
 import '~/site/styles/docs-shell/page-content.css'
 import Link from './Link'
 import { useLayoutEffect, useMemo, useRef, type RefObject } from 'react'
-import clsx from 'clsx'
 import { useI18n, useTranslation } from '../contexts/i18n'
 import { useLocale } from '../contexts/locale'
 import Image from './Image'
@@ -12,52 +10,47 @@ import canIUseImg from '~/site/assets/images/references/caniuse.png'
 import mdnImg from '~/site/assets/images/references/mdn-web-docs.png'
 import { usePageContent, type PageContentItem } from './PageContentContext'
 import PageContentTitle from './PageContentTitle'
+import groupPageContent from '../utils/group-page-content'
 
 const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
 
 /**
- * The documentation rail: the page's contents as a ruler, its references, and the source links. The rail stands still;
+ * The documentation rail (`ui-toc`): the page's contents, its references and the source links. The rail stands still;
  * a list taller than the window scrolls inside it, so the source links stay in view under it.
  */
 export default function PageContent({ metadata }: any) {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLOListElement>(null)
   const $ = useTranslation()
 
   return (
-    <aside aria-label={$('On this page')} className="sticky top(0) basis-auto grow(0) shrink(0) (height:100dvh) (width:calc(252/16*1rem)) pb-2xl (padding-top:8.75rem) hidden@media(print) hidden@media(width<80rem) doc-page-contents page-content">
-      <span className="page-content-label">{$('On this page')}</span>
+    <nav aria-labelledby="page-content-label" className="ui-toc" data-rail="">
+      <h4 id="page-content-label">{$('On this page')}</h4>
       {(metadata.canIUseLink || metadata.mdnLink) &&
-        <div className="page-content-references">
+        <div className="ui-toc-references">
           {
             metadata.canIUseLink &&
-            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="(content:none)::after">
+            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank">
               <Image src={canIUseImg} loading='eager' width={24} height={24} alt={$('Can I use ?')} />
             </Link>
           }
           {
             metadata.mdnLink &&
-            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="(content:none)::after">
+            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank">
               <Image src={mdnImg} loading='eager' width={24} height={24} alt={$('MDN Web Docs')} />
             </Link>
           }
         </div>
       }
-      <div ref={ref} className="page-content-scroll scrollbar scrollbar-concealed">
-        <PageContentList scrollContainerRef={ref} />
+      <PageContentList ref={ref} scrollContainerRef={ref} />
+      <div className="ui-toc-actions">
+        {metadata.sourcePath && <Link href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
+          {$('Edit this page')}
+        </Link>}
+        <Link href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
+          {$('Issue on this page')}
+        </Link>
       </div>
-      <ul className="page-content-aside">
-        {metadata.sourcePath && <li>
-          <Link href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>
-            {$('Edit this page')}
-          </Link>
-        </li>}
-        <li>
-          <Link href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
-            {$('Issue on this page')}
-          </Link>
-        </li>
-      </ul>
-    </aside>
+    </nav>
   )
 }
 
@@ -65,30 +58,30 @@ export default function PageContent({ metadata }: any) {
 const foldAfter = 12
 
 /**
- * The live list inside a `PageContentProvider`: the entry being read carries `aria-current` and the long tick. With a
- * scroll container, the current entry is kept in view inside it. Titles are translated unless they come from the
- * page's own (already localized) headings.
+ * The live list inside a `PageContentProvider`, nested as `ui-toc` lists: the entry being read carries
+ * `aria-current="location"`. With a scroll container, the current entry is kept in view inside it. Titles are
+ * translated unless they come from the page's own (already localized) headings.
  */
-export function PageContentList({ scrollContainerRef, lang, translate = true }: { scrollContainerRef?: RefObject<HTMLElement | null>, lang?: string, translate?: boolean }) {
-  const { activeTransitionsReady, currentId, currentParentId, items } = usePageContent()
+export function PageContentList({ ref, scrollContainerRef, lang, translate = true }: { ref?: RefObject<HTMLOListElement | null>, scrollContainerRef?: RefObject<HTMLElement | null>, lang?: string, translate?: boolean }) {
+  const { currentId, items } = usePageContent()
   const fold = items.length > foldAfter && items.some((item) => item.level === 3)
+  const nav = (item: PageContentItem) => <PageContentNav item={item} translate={translate} currentId={currentId} scrollContainerRef={scrollContainerRef} />
   return (
-    <ol className="page-content-list" lang={lang} data-fold={fold ? '' : undefined}>
-      {items.map((item) => (
-        <li key={item.id} data-level={item.level}>
-          <PageContentNav item={item} translate={translate} activeTransitionsReady={activeTransitionsReady} currentId={currentId} currentParentId={currentParentId} scrollContainerRef={scrollContainerRef} />
+    <ol ref={ref} lang={lang} data-fold={fold ? '' : undefined}>
+      {groupPageContent(items).map(({ item, children }) => (
+        <li key={item.id}>
+          {nav(item)}
+          {children.length > 0 && <ol>{children.map((child) => <li key={child.id}>{nav(child)}</li>)}</ol>}
         </li>
       ))}
     </ol>
   )
 }
 
-function PageContentNav({ item: { id, level, title }, translate, activeTransitionsReady, currentId, currentParentId, scrollContainerRef }: {
+function PageContentNav({ item: { id, title }, translate, currentId, scrollContainerRef }: {
   item: PageContentItem
   translate: boolean
-  activeTransitionsReady: boolean
   currentId: string
-  currentParentId?: string
   scrollContainerRef?: RefObject<HTMLElement | null>
 }) {
   const ref = useRef<HTMLAnchorElement>(null)
@@ -113,11 +106,10 @@ function PageContentNav({ item: { id, level, title }, translate, activeTransitio
       })
       initializedPageContentScrollContainers.add(container)
     }
-  }, [active, scrollContainerRef, currentId, currentParentId])
+  }, [active, scrollContainerRef, currentId])
 
-  // The live state is pre-rendered and the transition enabled with an attribute: a class added after hydration would
-  // start the Master CSS engine on every documentation page.
-  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} data-level={level} lang={lang} data-transitions-ready={activeTransitionsReady ? '' : undefined} suppressHydrationWarning className={clsx('page-content-link', { active: active || currentParentId === id })}>
+  // The bootstrap script marks the live entry before hydration, so its attribute may differ from the first render.
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} lang={lang} suppressHydrationWarning>
     <PageContentTitle title={title} translate={translate ? $ : undefined} />
   </Link>
 }

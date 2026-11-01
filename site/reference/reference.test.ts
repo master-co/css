@@ -52,7 +52,9 @@ before(async () => {
 test('Reference and shared search styles use defined site theme variables', async () => {
   const { manifest } = compileManifestFileSync(path.join(root, 'styles/docs-shell/theme.css'), { baseManifest: preset })
   const names = new Set(flattenMasterCSSManifestVariables(manifest.variables).map(variable => variable.name))
-  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/documentation-values.css', 'styles/docs-shell/documentation-search.css']) {
+  // Interface roles come from the site design system, not the theme manifest.
+  for (const [, name] of (await readFile(path.join(root, 'styles/system/tokens.css'), 'utf8')).matchAll(/(?:^|[\s;{])--(ui-[\w-]+)\s*:/g)) names.add(name)
+  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/docs-shell/documentation-search.css']) {
     const css = await readFile(path.join(root, file), 'utf8')
     for (const name of collectCSSVariableReferences(css)) assert.ok(names.has(name), `${file}: --${name}`)
   }
@@ -402,7 +404,7 @@ test('route payloads preserve Reference content and its parsed render tree', asy
     assert.match(renderDigest, /^[a-f0-9]{64}$/)
     function withoutHighlights(node: any): any {
       if (node.type === 'code') {
-        assert.ok(node.data.prepared.properties.className.includes('code-wrapper'), `${doc.id}: ${node.lang}`)
+        assert.ok(node.data.prepared.properties.className.includes('master-site'), `${doc.id}: ${node.lang}`)
         const { data: _data, ...source } = node
         return source
       }

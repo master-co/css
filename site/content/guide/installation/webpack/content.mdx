@@ -1,13 +1,13 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
-import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It processes the CSS entry and emits the generated stylesheet with the HTML produced by the bundler's HTML plugin.
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Add Master CSS
+      ### Add Master CSS
       In an existing [Webpack](https://webpack.js.org/guides/getting-started/), [Rspack](https://rspack.dev/guide/start/quick-start) or [Rsbuild](https://rsbuild.rs/guide/start/quick-start) project, run the installer from the project root with `--framework webpack`, `rspack` or `rsbuild`. Static is the default: it registers the plugin and creates `src/index.css`.
     </StepL>
     <StepR>
@@ -18,7 +18,7 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Import the CSS entry
+      ### Import the CSS entry
       Import `src/index.css` from the application's JavaScript or TypeScript entry, keeping its existing mount code.
     </StepL>
     <StepR>
@@ -28,7 +28,7 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
     </StepR>
   </Step>
   <Step>
-    ### <StepNum />Start using Master CSS
+    ### Start using Master CSS
     Start the dev server and place the heading in the HTML template processed by the HTML plugin, or in a framework component.
   </Step>
   <HelloWorld />

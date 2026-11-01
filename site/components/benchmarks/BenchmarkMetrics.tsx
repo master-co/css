@@ -1,19 +1,18 @@
-import '~/site/styles/benchmark-metrics.css'
-import clsx from 'clsx'
+import '~/site/styles/system/data.css'
 import Translate from '~/site/docs-shell/components/Translate'
+import BenchmarkStatus from './BenchmarkStatus'
 import type { BenchmarkMetric } from './types'
-import { benchmarkToneTextClasses } from './utils'
 
 export default function BenchmarkMetrics({ metrics }: { metrics: BenchmarkMetric[] }) {
   return (
-    <dl className="benchmark-metrics">
+    <div className="ui-metrics">
       {metrics.map((metric, index) => (
-        <div key={index} className="benchmark-metric">
-          <dt><Translate>{metric.label}</Translate></dt>
-          <dd className={clsx('benchmark-metric-value', metric.tone ? benchmarkToneTextClasses[metric.tone] : 'fg-text-strong')}>{metric.value}</dd>
-          {metric.detail && <dd className="benchmark-metric-detail"><Translate>{metric.detail}</Translate></dd>}
+        <div key={index} className="ui-metric">
+          <small><Translate>{metric.label}</Translate></small>
+          <b>{metric.value}</b>
+          {(metric.detail || (metric.tone && metric.tone !== 'neutral')) && <p><BenchmarkStatus tone={metric.tone} /> <Translate>{metric.detail}</Translate></p>}
         </div>
       ))}
-    </dl>
+    </div>
   )
 }

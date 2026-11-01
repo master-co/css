@@ -1,15 +1,18 @@
-import { brandColorRoles } from '~/site/common/brand'
+/** The material ladder, from the page to an overlay; a well sits below its surroundings. */
+export const materialRoles = [
+  { name: 'Canvas', token: '--ui-surface-canvas', description: 'The page itself. Reading text sits directly on it.' },
+  { name: 'Tray', token: '--ui-surface-tray', description: 'A recessed holder for one complete example: its head, stage, source and caption.' },
+  { name: 'Stage', token: '--ui-surface-stage', description: 'A lit, slightly recessed well inside a tray where the specimen stands.' },
+  { name: 'Sheet', token: '--ui-surface-sheet', description: 'A raised face: panels, cards, controls and specimens.' },
+  { name: 'Well', token: '--ui-surface-well', description: 'A sunken field below its surroundings: inputs, tracks and pressed states.' },
+  { name: 'Float', token: '--ui-surface-float', description: 'Menus, dialogs and tooltips above everything else.' },
+] as const
 
-export const materialRoles = brandColorRoles.filter(role => ['Canvas', 'Shell', 'Raised'].includes(role.title)).map(role => ({
-  name: role.title === 'Raised' ? 'Surface' : role.title,
-  token: role.token,
-  description: role.description,
-  className: role.title === 'Raised' ? 'ds-material-surface' : role.title === 'Canvas' ? 'ds-material-canvas' : 'ds-material-shell',
-}))
+export const elevationSteps = ['sink', 'flat', 'rise-1', 'rise-1h', 'rise-2', 'rise-3', 'overlay'] as const
 
 export const canvasTreatments = [
-  { background: 'plain', title: 'Plain', description: 'The default surface for reading a complete example.' },
-  { background: 'stripes', title: 'Stripes', description: 'Mark measured gaps or otherwise empty space.' },
+  { background: 'plain', title: 'Plain', description: 'The default lit stage for reading a complete example.' },
+  { background: 'hatch', title: 'Hatch', description: 'Mark measured gaps, padding or otherwise empty space.' },
   { background: 'grid', title: 'Grid', description: 'Inspect alignment and positioning against regular lines.' },
   { background: 'dots', title: 'Dots', description: 'Compare placement against a sparse grid.' },
   { background: 'checkerboard', title: 'Checkerboard', description: 'Reveal transparency in an image or painted surface.' },
@@ -33,29 +36,30 @@ export const recipeGroups = [
 ] as const
 
 export const componentGroups = [
-  { id: 'primitives', title: 'Surfaces and specimens', entries: [
-    { id: 'demo-canvas', slug: 'demo', title: 'Demo canvas', description: 'One quiet boundary around a complete example.' },
-    { id: 'demo-surface', slug: 'surface', title: 'Surface', description: 'Flat and raised content with explicit geometry.' },
-    { id: 'demo-item', slug: 'item', title: 'Item', description: 'Neutral context, a subject and a comparison.' },
-    { id: 'demo-text', slug: 'text', title: 'Text', description: 'Body, lead and supporting copy.' },
-    { id: 'demo-media', slug: 'media', title: 'Media', description: 'Original artwork, real images and useful proportions.' },
-    { id: 'demo-swatch', slug: 'swatch', title: 'Swatch', description: 'A named color role with its actual paint.' },
-    { id: 'demo-comparison', slug: 'comparison', title: 'Comparison', description: 'The same subject under two conditions.' },
-    { id: 'assets', slug: 'asset', title: 'Downloadable assets', description: 'Transparent, light and dark artwork previews.' },
-    { id: 'demo-badge', slug: 'badge', title: 'Badge', description: 'A small, legible state or category.' },
-    { id: 'palette', slug: 'palette', title: 'Palette', description: 'Fixed preset colors with copy feedback.' },
-  ] },
-  { id: 'annotations', title: 'Controls and observation', entries: [
-    { id: 'demo-controls', slug: 'controls', title: 'Controls', description: 'Native actions and fitted selected inserts.' },
-    { id: 'copy', slug: 'copy', title: 'Copy', description: 'An accessible action with an honest result.' },
-    { id: 'demo-viewport', slug: 'viewport', title: 'Viewport', description: 'Resize the real document inside an iframe.' },
+  { id: 'surfaces', title: 'Surfaces and frames', entries: [
+    { id: 'tray', slug: 'demo', title: 'Tray and stage', description: 'One complete example: head, stage, source and caption.' },
+    { id: 'sheet', slug: 'surface', title: 'Sheet and well', description: 'Raised faces and sunken fields on one ladder.' },
+    { id: 'compare', slug: 'comparison', title: 'Compare', description: 'The same subject under two named conditions.' },
+    { id: 'browser', slug: 'viewport', title: 'Browser viewport', description: 'Resize a real document inside an iframe.' },
     { id: 'container', slug: 'container', title: 'Container', description: 'Change local width while the page stays put.' },
-    { id: 'demo-motion', slug: 'motion', title: 'Motion', description: 'Play, pause and replay native animations.' },
-    { id: 'demo-scroll-area', slug: 'scroll', title: 'Scroll region', description: 'Keep overflow local and keyboard reachable.' },
-    { id: 'demo-label', slug: 'label', title: 'Label', description: 'Name a condition outside the measured layout.' },
-    { id: 'demo-legend', slug: 'legend', title: 'Legend', description: 'Pair every teaching color with a visible name.' },
-    { id: 'demo-measure', slug: 'measure', title: 'Measurement', description: 'Read the browser’s actual width and height.' },
-    { id: 'demo-axes', slug: 'axes', title: 'Axes', description: 'Explain physical directions around the subject.' },
+    { id: 'scroll', slug: 'scroll', title: 'Scroll region', description: 'Keep overflow local and keyboard reachable.' },
+  ] },
+  { id: 'specimens', title: 'Specimens and annotations', entries: [
+    { id: 'item', slug: 'item', title: 'Item', description: 'A tile that stands for content, in a named tone.' },
+    { id: 'badge', slug: 'badge', title: 'Badge', description: 'A small, legible state or category.' },
+    { id: 'label', slug: 'label', title: 'Label', description: 'Name a condition outside the measured layout.' },
+    { id: 'legend', slug: 'legend', title: 'Legend', description: 'Pair every teaching color with a visible name.' },
+    { id: 'measure', slug: 'measure', title: 'Measure', description: 'Read the browser’s actual width and height.' },
+    { id: 'axes', slug: 'axes', title: 'Axes', description: 'Explain physical directions around the subject.' },
+    { id: 'swatch', slug: 'swatch', title: 'Swatch', description: 'A named role with its actual paint.' },
+    { id: 'palette', slug: 'palette', title: 'Palette', description: 'Fixed preset colors with copy feedback.' },
+    { id: 'media', slug: 'media', title: 'Media', description: 'Original artwork and real images with intrinsic size.' },
+    { id: 'player', slug: 'motion', title: 'Player', description: 'Play, pause and replay native animations.' },
+    { id: 'asset', slug: 'asset', title: 'Downloadable asset', description: 'Artwork on its intended ground with a download.' },
+  ] },
+  { id: 'controls', title: 'Controls', entries: [
+    { id: 'buttons', slug: 'controls', title: 'Buttons and inputs', description: 'One material and one state order for every control.' },
+    { id: 'copy', slug: 'copy', title: 'Copy', description: 'An accessible action with an honest result.' },
     { id: 'platform-behavior', slug: 'feature-support', title: 'Platform behavior', description: 'Syntax checks and isolated view transitions.' },
   ] },
   { id: 'documents-and-evidence', title: 'Documents and evidence', entries: [
@@ -70,7 +74,7 @@ export const componentGroups = [
     { id: 'document-steps', slug: 'steps', title: 'Steps', description: 'A sequence with code in the same reading flow.' },
     { id: 'utility-namespace-table', slug: 'utility-table', title: 'Utility table', description: 'Properties and namespaces from shared facts.' },
     { id: 'numeric-token-table', slug: 'numeric-table', title: 'Numeric tokens', description: 'Original values beside a useful comparison.' },
-    { id: 'waterfall', slug: 'waterfall', title: 'Delivery diagram', description: 'Explain resource order with explicit context.' },
+    { id: 'waterfall', slug: 'waterfall', title: 'Delivery diagram', description: 'Explain resource order on one time axis.' },
     { id: 'benchmark-charts', slug: 'chart-group', title: 'Chart group', description: 'Units, series and sample context together.' },
     { id: 'metrics', slug: 'metrics', title: 'Metric rows', description: 'Align values while preserving their caveats.' },
     { id: 'data-table', slug: 'data-table', title: 'Data table', description: 'Complete data in a named scroll region.' },

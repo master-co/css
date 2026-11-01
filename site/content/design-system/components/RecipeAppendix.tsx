@@ -13,7 +13,7 @@ const recipes = [ProjectStyleRecipes, FoundationRecipes, TypeMotionRecipes, Pain
 
 /** Keep the full source-backed collection available without mounting it on the overview. */
 export default function RecipeAppendix() {
-  return <div className="ds-recipe-appendix">{recipeGroups.map((group, index) => {
+  return <div className="grid gap-xs">{recipeGroups.map((group, index) => {
     const Recipe = recipes[index]
     return <DocumentDisclosure key={group.id} title={group.title}><div className="(scroll-margin-top:6rem)" id={group.id}><Recipe /></div></DocumentDisclosure>
   })}</div>

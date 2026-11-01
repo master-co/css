@@ -72,7 +72,7 @@
   .brand-content > h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-md); width: 100%; margin: var(--brand-rule-space) 0 var(--spacing-lg); padding-top: var(--spacing-xl); border-top: 1px solid var(--brand-line); color: var(--brand-ink); font-size: clamp(1.75rem, 2.5vw, 2.25rem); font-weight: 460; line-height: 1.2; letter-spacing: -.035em; scroll-margin-top: 6rem; counter-increment: brand-section; }
   .brand-content > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
   .brand-content > h2::before { content: counter(brand-section, decimal-leading-zero); color: var(--brand-gold-ink); font: .75rem/1 var(--font-family-mono); letter-spacing: 0; }
-  .brand-content > h2 > .doc-heading-icon { display: none; }
+  .brand-content > h2 > .ui-anchor { display: none; }
   .brand-content > p { max-width: 42rem; font-size: 1rem; line-height: 1.8; }
   .brand-content > h3 { color: var(--brand-ink); font-size: 1.25rem; font-weight: 460; }
   .brand-content :is(h2, h3, h4, [id]) { scroll-margin-top: 6rem; }
@@ -165,10 +165,10 @@
   .brand-color-info > code { display: block; background: none; color: var(--brand-quiet); font-size: .6875rem; line-height: 1.75; overflow-wrap: anywhere; }
   .brand-color-value { display: block; margin-top: var(--spacing-xs); color: var(--brand-quiet); font: .6875rem/1.65 var(--font-family-mono); overflow-wrap: anywhere; }
   .brand-color-info p { margin: var(--spacing-xs) 0 0; font-size: .75rem; line-height: 1.65; }
-  .brand-color > .demo-copy { position: relative; min-height: 4.25rem; margin-top: var(--spacing-xs); padding-bottom: 1.5rem; }
+  .brand-color > .ui-copy { position: relative; min-height: 4.25rem; margin-top: var(--spacing-xs); padding-bottom: 1.5rem; }
   .brand-copy { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 44px; padding: .5rem; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--brand-quiet); font-size: .6875rem; text-align: start; cursor: pointer; }
   .brand-copy:hover { color: var(--brand-ink); background: var(--brand-ground); }
-  .brand-color .demo-copy-status:not(:empty) { position: absolute; bottom: 0; width: 100%; max-width: 100%; margin: 0; padding: .25rem .5rem; border-left: 0; background: transparent; font-size: .625rem; overflow-wrap: anywhere; }
+  .brand-color .ui-copy-status:not(:empty) { position: absolute; bottom: 0; width: 100%; max-width: 100%; margin: 0; padding: .25rem .5rem; border-left: 0; background: transparent; font-size: .625rem; overflow-wrap: anywhere; }
   .brand-specimen-intro { font-size: .875rem; line-height: 1.8; }
   .brand-functional-colors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-md); margin-top: var(--spacing-xl); }
 
@@ -243,10 +243,11 @@
   .brand-range-label output { color: var(--brand-quiet); font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
   .brand-range-label input { width: 100%; min-height: 44px; margin: 0; accent-color: var(--brand-ink); cursor: pointer; }
   .brand-control-actions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-xs); }
-  .brand-control-actions > .demo-copy { position: relative; padding-bottom: 1.5rem; }
-  .brand-control-actions .demo-copy-status:not(:empty) { position: absolute; bottom: 0; margin: 0; padding: .25rem 0; border: 0; background: transparent; font-size: .625rem; }
+  .brand-control-actions > .ui-copy { position: relative; padding-bottom: 1.5rem; }
+  .brand-control-actions .ui-copy-status:not(:empty) { position: absolute; bottom: 0; margin: 0; padding: .25rem 0; border: 0; background: transparent; font-size: .625rem; }
   .brand-button { display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-height: 44px; padding: .625rem .875rem; border: 1px solid var(--color-line-control); border-radius: var(--radius-lg); background: var(--brand-sheet); color: var(--brand-ink); box-shadow: var(--shadow-contact); font-size: .75rem; cursor: pointer; transition: background-color var(--duration-fast), box-shadow var(--duration-fast); }
   .brand-button:hover { background: var(--brand-ground); }
+  .brand-button > svg { flex: none; width: 1rem; height: 1rem; }
   .brand-button:active { box-shadow: var(--shadow-pressed-contact); }
   .brand-button:disabled { border-color: var(--brand-contour); background: var(--brand-ground); color: var(--color-text-disabled); box-shadow: none; cursor: not-allowed; }
   .brand-state-note { margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--brand-line); }
@@ -273,7 +274,7 @@
   .brand-application-reference thead th { color: var(--brand-quiet); font-size: .6875rem; font-weight: 400; }
   .brand-application-reference code { border: 0; padding: 0; background: none; font-size: .6875rem; }
   .brand-code-preview { padding: var(--spacing-xl); background: var(--brand-ground); }
-  .brand-application-code .code-tabs { margin: 0; border-radius: 0; }
+  .brand-application-code .ui-code { margin: 0; border-radius: 0; }
   .brand-release-card { display: flex; flex-direction: column; align-items: start; min-height: 25rem; padding: clamp(1.5rem, 4vw, 3rem); background: var(--color-zinc-95); color: var(--color-zinc-5); }
   .brand-release-card img { width: 4.625rem; height: auto; margin: 0 0 var(--spacing-2xl); }
   .brand-release-card .brand-overline { color: var(--color-zinc-40); }
@@ -288,8 +289,8 @@
   .brand-voice-examples p { margin: var(--spacing-xs) 0 0; font-size: .875rem; line-height: 1.75; }
   .brand-voice-examples [data-avoid] p { color: var(--brand-quiet); }
   .brand-downloads > h3 { margin-top: var(--spacing-xl); font-size: 1rem; }
-  .brand-downloads .demo-asset { margin-block: var(--spacing-lg); }
-  .brand-downloads .demo-asset-preview { min-height: 12rem; }
+  .brand-downloads .ui-tray { margin-block: var(--spacing-lg); }
+  .brand-downloads .ui-stage { min-height: 12rem; }
 
   .brand-next { padding-block: var(--brand-rule-space); border-top: 1px solid var(--brand-line); }
   .brand-next h2 { max-width: 40rem; margin: var(--spacing-lg) 0; color: var(--brand-ink); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 460; line-height: 1.2; letter-spacing: -.045em; }
@@ -418,7 +419,7 @@
     .brand-hero { min-height: 0; padding-block: 1rem 3rem; }
     .brand-hero h1 { font-size: 3rem; }
     .brand-document { display: block; }
-    .brand-navigation, .brand-hero-actions, .brand-copy, .brand-next, .brand-control-actions, .brand-page .demo-copy { display: none; }
+    .brand-navigation, .brand-hero-actions, .brand-copy, .brand-next, .brand-control-actions, .brand-page .ui-copy { display: none; }
     .brand-content { padding-top: 2rem; }
     .brand-content > h2 { margin-top: 3rem; break-after: avoid; }
     .brand-mark-board, .brand-color, .brand-type-row, .brand-logo-rules > div { break-inside: avoid; }

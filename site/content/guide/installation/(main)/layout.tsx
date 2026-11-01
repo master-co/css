@@ -12,7 +12,7 @@ export const { Page, generateMetadata } = createLayout({
   categories,
   noTOC: true,
   content: ({ $ }) =>
-    <Tabs className="mb-xl">
+    <Tabs className="mb-xs">
       <Tab href='/guide/installation'>{$('Quick Start')}</Tab>
       <Tab href='/guide/installation/integrations'>{$('Integrations')}</Tab>
       <Tab href='/guide/installation/cdn'>{$('CDN')}</Tab>

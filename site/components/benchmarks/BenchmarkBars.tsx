@@ -1,9 +1,9 @@
+import '~/site/styles/system/data.css'
 import '~/site/styles/benchmarks.css'
 import { useId, type ReactNode } from 'react'
-import clsx from 'clsx'
 import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkBarItem } from './types'
-import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue } from './utils'
+import { clampPercent, formatMetricValue } from './utils'
 
 interface BenchmarkBarsProps {
   items: BenchmarkBarItem[]
@@ -13,50 +13,29 @@ interface BenchmarkBarsProps {
   className?: string
 }
 
-export default function BenchmarkBars(props: BenchmarkBarsProps) {
+/** Rows of one measurement: every bar is named by its row, so bars stay ink. */
+export function BenchmarkBarRows({ items, max, unit, valueFormatter }: BenchmarkBarsProps) {
   const labelPrefix = useId()
-  const { items, max, unit, valueFormatter, className } = props
   const resolvedMax = max ?? Math.max(0, ...items.map((item) => item.max ?? item.value))
-
-  return (
-    <div className={clsx('grid gap-md benchmark-bars', className)}>
-      {items.map((item, index) => {
-        const labelId = `${labelPrefix}-label-${index}`
-        const valueId = `${labelPrefix}-value-${index}`
-        const itemMax = item.max ?? resolvedMax
-        const percent = clampPercent(item.value, itemMax)
-        const valueLabel = item.valueLabel ?? (valueFormatter ? valueFormatter(item.value) : formatMetricValue(item.value, unit))
-        const color = item.color ?? benchmarkColors[index % benchmarkColors.length]
-        const colorClasses = benchmarkColorClasses[color]
-
-        return (
-          <div key={item.id} className="grid gap-sm">
-            <div className="flex flex-wrap items-baseline justify-between gap-sm">
-              <div className="flex items-center gap-xs min-w(0)">
-                {item.icon}
-                <span id={labelId} className="min-w(0) font-sm (font-weight:460) fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
-              </div>
-              <div className="flex flex-wrap items-baseline gap-xs min-w(0)">
-                <strong id={valueId} className="font-sm (font-weight:460) whitespace-nowrap fg-text-strong">{valueLabel}</strong>
-                {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
-              </div>
-            </div>
-            <div
-              aria-labelledby={`${labelId} ${valueId}`}
-              aria-valuemax={itemMax}
-              aria-valuemin={0}
-              aria-valuenow={item.value}
-              className="benchmark-meter"
-              role="meter">
-              <div
-                className={clsx('benchmark-meter-fill', colorClasses.background)}
-                style={{
-                  width: `${percent}%`
-                }} />
-            </div>
-          </div>
-        )
-      })}
+  return items.map((item, index) => {
+    const labelId = `${labelPrefix}-label-${index}`
+    const valueId = `${labelPrefix}-value-${index}`
+    const itemMax = item.max ?? resolvedMax
+    const valueLabel = item.valueLabel ?? (valueFormatter ? valueFormatter(item.value) : formatMetricValue(item.value, unit))
+    return <div key={item.id} className="ui-chart-row">
+      <span>
+        {item.icon}
+        <span id={labelId}><Translate>{item.label}</Translate></span>
+        {item.detail && <small><Translate>{item.detail}</Translate></small>}
+      </span>
+      <div className="ui-bar" role="meter" aria-labelledby={`${labelId} ${valueId}`} aria-valuemin={0} aria-valuemax={itemMax} aria-valuenow={item.value}>
+        <i data-tone={item.color === 'neutral' ? 'muted' : undefined} style={{ width: `${clampPercent(item.value, itemMax)}%` }} />
+      </div>
+      <output id={valueId}>{valueLabel}</output>
     </div>
-  )
+  })
+}
+
+export default function BenchmarkBars({ className, ...props }: BenchmarkBarsProps) {
+  return <div className={className ? `ui-chart ${className}` : 'ui-chart'}><BenchmarkBarRows {...props} /></div>
 }

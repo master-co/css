@@ -82,7 +82,7 @@ async function measure(page) {
       const namedBy = element.getAttribute('aria-labelledby')?.split(/\s+/).map(id => document.getElementById(id)?.textContent ?? '').join(' ')
       const labels = [...element.labels ?? []].map(label => label.textContent).join(' ')
       return !(element.getAttribute('aria-label') || namedBy || labels || element.getAttribute('title') || element.textContent?.trim() || element.getAttribute('alt'))
-    }).map(element => ({ tag: element.tagName, type: element.getAttribute('type'), className: element.className, inSpecimen: !!element.closest('.site-demo, [data-demo-container], .demo') }))
+    }).map(element => ({ tag: element.tagName, type: element.getAttribute('type'), className: element.className, inSpecimen: !!element.closest('.ui-tray, [data-demo-container]') }))
     const nativeHome = document.querySelector('.home-page')
     return {
       title: document.title,
@@ -90,10 +90,10 @@ async function measure(page) {
       headings: [...document.querySelectorAll('h1')].map(element => element.textContent.trim()),
       height: document.documentElement.scrollHeight,
       overflow: document.documentElement.scrollWidth > innerWidth + 1,
-      columns: { article: box('article.prose'), sidebar: box('#sidebar'), contents: box('.doc-page-contents') },
+      columns: { article: box('article.ui-prose'), sidebar: box('#sidebar'), contents: box('nav.ui-toc[data-rail]') },
       main: box('main'),
       ids: [...document.querySelectorAll('[id]')].map(element => element.id),
-      links: [...document.querySelectorAll('a[href]')].filter(element => !element.closest('.site-demo, [data-demo-container]')).map(element => ({ href: element.getAttribute('href'), text: element.textContent.trim().slice(0, 120) })),
+      links: [...document.querySelectorAll('a[href]')].filter(element => !element.closest('.ui-tray, [data-demo-container]')).map(element => ({ href: element.getAttribute('href'), text: element.textContent.trim().slice(0, 120) })),
       brokenImages: [...document.querySelectorAll('img')].filter(element => visible(element) && element.complete && !element.naturalWidth).map(element => element.getAttribute('src')),
       possibleUnnamedControls,
       iframeCount: document.querySelectorAll('iframe').length,

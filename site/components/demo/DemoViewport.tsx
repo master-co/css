@@ -1,10 +1,7 @@
 'use client'
 
-import '~/site/styles/demo-interactions.css'
-import '~/site/styles/demo.css'
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { IconMoon, IconPlayerPause, IconPlayerPlay, IconPrinter, IconRefresh, IconSun } from '@tabler/icons-react'
-import { DemoControls } from './primitives'
 import { demoPlayback, type PlaybackAction } from './playback'
 import { demoDragReadings } from './drag-readings'
 
@@ -33,6 +30,7 @@ export type DemoViewportProps = ViewportOptions & (
 
 export default function DemoViewport({ title, document: source, src, responsive = false, widthPresets, motion = false, print = false, theme = false, initialTheme, inspect, height = 260, maxWidth = 1600, sizing = 'viewport' }: DemoViewportProps) {
   const ref = useRef<HTMLIFrameElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
   const cleanup = useRef<() => void>(() => {})
   const playback = useRef<ReturnType<typeof demoPlayback> | null>(null)
   const [width, setWidth] = useState<number | undefined>(responsive ? widthPresets?.[0]?.width : undefined)
@@ -137,7 +135,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
       }
       setMeasurement(`${Math.round(frame.clientWidth)} × ${Math.round(frame.clientHeight)} px`)
       setFitWidth(Math.round(frame.clientWidth))
-      setMinimumWidth(Math.min(240, frame.parentElement!.clientWidth, maxWidth))
+      setMinimumWidth(Math.min(240, bodyRef.current?.clientWidth ?? 240, maxWidth))
       const target = doc.querySelector('[data-target]')
       if (target && inspect?.length) {
         const computed = view.getComputedStyle(target)
@@ -150,7 +148,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     const resizeObserver = new ResizeObserver(update)
     resizeObserver.observe(frame)
-    resizeObserver.observe(frame.parentElement!)
+    if (bodyRef.current) resizeObserver.observe(bodyRef.current)
     if (sizing === 'content') {
       resizeObserver.observe(doc.body)
       resizeObserver.observe(doc.documentElement)
@@ -244,38 +242,64 @@ export default function DemoViewport({ title, document: source, src, responsive 
   }, [load])
 
   const animate = (action: PlaybackAction) => playback.current?.act(action)
+  const range = { min: minimumWidth, max: Math.max(minimumWidth, maxWidth), value: width ?? fitWidth }
+  /** The handle mirrors the range input for pointers; the input stays the keyboard control. */
+  const drag = (event: ReactPointerEvent<HTMLSpanElement>) => {
+    const handle = event.currentTarget
+    const viewport = handle.parentElement!
+    const start = { x: event.clientX, width: viewport.getBoundingClientRect().width }
+    // A centered viewport grows on both sides, so its edge moves at half the width change.
+    const scale = start.width < bodyRef.current!.clientWidth - 1 ? 2 : 1
+    handle.setPointerCapture(event.pointerId)
+    const move = (next: PointerEvent) => setWidth(Math.round(Math.min(range.max, Math.max(range.min, start.width + (next.clientX - start.x) * scale))))
+    const end = () => {
+      handle.removeEventListener('pointermove', move)
+      handle.removeEventListener('pointerup', end)
+      handle.removeEventListener('pointercancel', end)
+    }
+    handle.addEventListener('pointermove', move)
+    handle.addEventListener('pointerup', end)
+    handle.addEventListener('pointercancel', end)
+  }
+  const button = { type: 'button', disabled: !ready, className: 'ui-button', 'data-size': 'sm' } as const
 
   return (
-    <div className="demo-viewport-frame">
-      <div className="demo-viewport-shell">
-        <iframe ref={ref} title={title} srcDoc={source} src={src} loading="lazy" data-ready={ready} data-sizing={sizing}
-          className="demo-viewport" style={{ width: width ? `${width}px` : `min(100%, ${maxWidth}px)`, height: sizing === 'content' ? contentHeight ?? height : height }} onLoad={load} />
+    <div className="ui-browser" data-ready={ready}>
+      <div className="ui-browser-bar">
+        <span className="ui-browser-dots" aria-hidden="true"><i /><i /><i /></span>
+        <span className="ui-browser-url">{title}{measurement && <> · <output>{measurement}</output></>}</span>
+      </div>
+      <div ref={bodyRef} className="ui-browser-body">
+        <div className="ui-browser-viewport" style={{ width: width ? `${width}px` : `min(100%, ${maxWidth}px)` }}>
+          <iframe ref={ref} title={title} srcDoc={source} src={src} loading="lazy" data-ready={ready} data-sizing={sizing}
+            style={{ height: sizing === 'content' ? contentHeight ?? height : height }} onLoad={load} />
+          {responsive && <span className="ui-resize" aria-hidden="true" onPointerDown={drag} />}
+        </div>
       </div>
       {(responsive || motion || print || theme || Boolean(inspect?.length)) && (
-        <div className="demo-viewport-toolbar">
-          {(responsive || motion || print || theme) && <DemoControls label={`${title} controls`}>
-            {responsive && <>
-              {Boolean(widthPresets?.length) && <span className="demo-viewport-presets">
-                {widthPresets?.map(preset => <button key={preset.label} type="button" disabled={!ready} className="demo-button"
-                  aria-pressed={width === preset.width} onClick={() => setWidth(preset.width)}>{preset.label}</button>)}
-              </span>}
-              <span className="demo-viewport-width">
-                <label className="demo-label" htmlFor={widthId}>Viewport</label>
-                <input id={widthId} disabled={!ready} type="range" min={minimumWidth} max={maxWidth} step="1" value={width ?? fitWidth} onChange={event => setWidth(Number(event.target.value))} />
-                <button type="button" disabled={!ready} className="demo-button" onClick={() => setWidth(undefined)}>Fit</button>
-              </span>
-            </>}
-            {theme && <button type="button" disabled={!ready} className="demo-button" aria-pressed={isDark} title="Toggle dark theme" onClick={() => setDark(!isDark)}>{isDark ? <IconMoon size={14} aria-hidden="true" /> : <IconSun size={14} aria-hidden="true" />}Theme</button>}
-            {motion && <>
-              <button type="button" disabled={!ready} className="demo-button" onClick={() => animate(playing ? 'pause' : 'play')}>
-                {playing ? <IconPlayerPause size={14} aria-hidden="true" /> : <IconPlayerPlay size={14} aria-hidden="true" />}{playing ? 'Pause' : 'Play'}
-              </button>
-              <button type="button" disabled={!ready} className="demo-button" onClick={() => animate('restart')}><IconRefresh size={14} aria-hidden="true" />Replay</button>
-            </>}
-            {print && <button type="button" disabled={!ready} className="demo-button" onClick={() => ref.current?.contentWindow?.print()}><IconPrinter size={14} aria-hidden="true" />Print preview</button>}
-          </DemoControls>}
-          <output className="demo-viewport-status">{measurement}</output>
-          {properties && <output className="w-full demo-label" aria-live="polite">{properties}</output>}
+        <div className="ui-browser-tools" role="group" aria-label={`${title} controls`}>
+          {responsive && <>
+            {Boolean(widthPresets?.length) && <div className="ui-segmented" role="group" aria-label="Viewport presets">
+              {widthPresets?.map(preset => <button key={preset.label} type="button" disabled={!ready}
+                aria-pressed={width === preset.width} onClick={() => setWidth(preset.width)}>{preset.label}</button>)}
+            </div>}
+            <label className="ui-label" data-case="as-is" htmlFor={widthId}>Viewport</label>
+            <input id={widthId} className="ui-range" disabled={!ready} type="range" min={range.min} max={range.max} step="1" value={range.value}
+              style={{ '--value': `${((range.value - range.min) / Math.max(1, range.max - range.min)) * 100}%` } as CSSProperties}
+              onChange={event => setWidth(Number(event.target.value))} />
+            <button {...button} onClick={() => setWidth(undefined)}>Fit</button>
+          </>}
+          {theme && <button {...button} aria-pressed={isDark} title="Toggle dark theme" onClick={() => setDark(!isDark)}>
+            {isDark ? <IconMoon aria-hidden="true" /> : <IconSun aria-hidden="true" />}Theme
+          </button>}
+          {motion && <>
+            <button {...button} onClick={() => animate(playing ? 'pause' : 'play')}>
+              {playing ? <IconPlayerPause aria-hidden="true" /> : <IconPlayerPlay aria-hidden="true" />}{playing ? 'Pause' : 'Play'}
+            </button>
+            <button {...button} data-variant="quiet" onClick={() => animate('restart')}><IconRefresh aria-hidden="true" />Replay</button>
+          </>}
+          {print && <button {...button} onClick={() => ref.current?.contentWindow?.print()}><IconPrinter aria-hidden="true" />Print preview</button>}
+          {properties && <output aria-live="polite">{properties}</output>}
         </div>
       )}
     </div>

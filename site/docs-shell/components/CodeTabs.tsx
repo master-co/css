@@ -1,7 +1,3 @@
-import '~/site/styles/docs-shell/code.css'
-import '~/site/styles/docs-shell/scrollbar.css'
-
-
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import highlightCode from '../utils/highlight-code'
 import CodeTabsView from './CodeTabsView'

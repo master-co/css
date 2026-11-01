@@ -4,9 +4,10 @@ import { after, before, test } from 'node:test'
 import { chromium, webkit } from '@playwright/test'
 
 const base = process.env.MASTER_SITE_URL ?? 'http://localhost:3000'
+// Layout System is left out: its only preview is viewport-sized (data-sizing="viewport").
 const routes = [
   'authoring-packages', 'cascade-layers', 'colors', 'global-styles', 'installation/lit',
-  'layout-system', 'migration/css', 'responsive-design', 'route-level-styles', 'syntax-tutorial', 'theme',
+  'migration/css', 'responsive-design', 'route-level-styles', 'syntax-tutorial', 'theme',
   'typography', 'view-transitions',
 ]
 const browsers = new Map()

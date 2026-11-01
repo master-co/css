@@ -1,7 +1,6 @@
 'use client'
 
-import '~/site/styles/documentation-values.css'
-import { useState, useSyncExternalStore } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 
 const subscribe = () => () => {}
@@ -10,20 +9,28 @@ const server = () => false
 
 /** Content stays server-rendered; only clipboard feedback needs client state. */
 export default function DocumentCopyButton({ text, label }: { text: string, label: string }) {
-  const [status, setStatus] = useState('')
+  const [result, setResult] = useState<'success' | 'error'>()
   const ready = useSyncExternalStore(subscribe, hydrated, server)
-  return <>
-    <button type="button" className="doc-copy-button" disabled={!ready} aria-label={`Copy ${label}`} onClick={async () => {
+  useEffect(() => {
+    if (result !== 'success') return
+    const timer = setTimeout(() => setResult(undefined), 2000)
+    return () => clearTimeout(timer)
+  }, [result])
+  return <span className="ui-copy">
+    <button type="button" className="ui-button" data-size="sm" disabled={!ready} aria-label={`Copy ${label}`} onClick={async () => {
       try {
         await navigator.clipboard.writeText(text)
-        setStatus(`${label} copied`)
+        setResult('success')
       } catch {
-        setStatus('Clipboard unavailable. Select the text to copy it.')
+        setResult('error')
       }
     }}>
-      {status === `${label} copied` ? <IconCheck size={14} aria-hidden="true" /> : <IconCopy size={14} aria-hidden="true" />}
-      <span>Copy</span>
+      {result === 'success' ? <IconCheck stroke={1.8} aria-hidden="true" /> : <IconCopy stroke={1.8} aria-hidden="true" />}
+      Copy
     </button>
-    <span className={status.startsWith('Clipboard') ? 'doc-copy-status' : 'sr-only'} role="status">{status}</span>
-  </>
+    <span className="ui-copy-status" role="status" data-result={result}>
+      {result === 'success' && <>Copied<span className="sr-only"> {label}</span></>}
+      {result === 'error' && 'Clipboard unavailable. Select the text to copy it.'}
+    </span>
+  </span>
 }

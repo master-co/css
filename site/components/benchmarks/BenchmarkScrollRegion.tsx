@@ -1,6 +1,6 @@
 'use client'
 
-import '~/site/styles/benchmarks.css'
+import '~/site/styles/system/data.css'
 import { useId, type KeyboardEvent, type ReactNode } from 'react'
 
 /** Mobile WebKit does not consistently scroll a focused div with arrow keys. */
@@ -21,7 +21,7 @@ export default function BenchmarkScrollRegion({ title, children }: { title: stri
   return (
     // Scroll regions need a tab stop; arrow keys operate this region without intercepting children.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions
-    <div className="benchmark-table-scroll" role="region" aria-label={title} aria-describedby={descriptionId} tabIndex={0} onKeyDown={scrollWithKeyboard}>
+    <div className="ui-table" data-density="compact" role="region" aria-label={title} aria-describedby={descriptionId} tabIndex={0} onKeyDown={scrollWithKeyboard}>
       <span className="sr-only" id={descriptionId}>Use arrow keys to scroll the table.</span>
       {children}
     </div>

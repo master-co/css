@@ -14,8 +14,8 @@ import { PageContentProvider, type PageContentItem } from '~/site/docs-shell/com
 export default function BlogArticleContents({ items, label, lang }: { items: PageContentItem[], label: string, lang?: string }) {
   const ref = useRef<HTMLElement>(null)
   return (
-    <nav ref={ref} className="blog-article-contents page-content scrollbar scrollbar-concealed" aria-label={label}>
-      <span className="page-content-label" aria-hidden="true">{label}</span>
+    <nav ref={ref} className="blog-article-contents ui-toc" aria-label={label}>
+      <h4 aria-hidden="true">{label}</h4>
       <PageContentProvider items={items}>
         <PageContentList lang={lang} translate={false} scrollContainerRef={ref} />
       </PageContentProvider>

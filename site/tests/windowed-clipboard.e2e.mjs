@@ -37,11 +37,11 @@ try {
     await page.evaluate(() => scrollTo(0, 0))
     for (let attempt = 1; attempt <= 12; attempt++) {
       await page.keyboard.press(`${modifier}+k`)
-      const search = page.locator('dialog.documentation-search[open]')
+      const search = page.locator('dialog.ui-dialog[data-variant="search"][open]')
       await search.waitFor()
       const input = search.getByRole('combobox')
       await page.keyboard.press(`${modifier}+V`)
-      await page.waitForFunction(() => document.querySelector('dialog.documentation-search[open] input')?.value === 'var(--color-amber-40)', {}, { timeout: 5000 })
+      await page.waitForFunction(() => document.querySelector('dialog.ui-dialog[data-variant="search"][open] input')?.value === 'var(--color-amber-40)', {}, { timeout: 5000 })
       assert.equal(await input.inputValue(), 'var(--color-amber-40)')
       result.nativeSearchPastes.push({ locale: locale || 'en', attempt, exact: true })
       await input.press(`${modifier}+A`)
@@ -50,7 +50,7 @@ try {
       await page.keyboard.press('Escape')
     }
     await page.goto(base + locale + '/design-system/review/code', { waitUntil: 'networkidle' })
-    const panel = page.locator('section[aria-labelledby="code-languages"] .codeTabs')
+    const panel = page.locator('xpath=//h2[@id="code-languages"]/following-sibling::div[contains(concat(" ", @class, " "), " ui-handbook-section ")][1]').locator('.ui-code')
     await panel.getByRole('tab', { name: 'settings.json', exact: true }).click()
     const expected = await panel.getByRole('tabpanel').locator('.line').evaluateAll(lines => lines.map(line => line.textContent.replace(/[\t ]+$/u, '')).join('\n'))
     await panel.locator('[data-code-copy]').click()

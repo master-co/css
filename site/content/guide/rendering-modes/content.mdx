@@ -1,5 +1,5 @@
 import DeliveryFlow from '~/site/components/DeliveryFlow'
-import StepSection, { Step, StepNum } from '~/site/docs-shell/components/StepSection'
+import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 import Class2CSS from '~/site/components/Class2CSS'
 
@@ -62,7 +62,7 @@ Select runtime mode through your integration, for example the [Vite runtime setu
 
 <StepSection>
   <Step>
-    #### <StepNum />Insert an element
+    #### Insert an element
     ```js
     const h1 = document.createElement('h1')
     h1.className = '(text-align:center)'
@@ -72,21 +72,21 @@ Select runtime mode through your integration, for example the [Vite runtime setu
     The connected heading becomes centered when the runtime generates its rule.
   </Step>
   <Step>
-    #### <StepNum />Add a class
+    #### Add a class
     ```js
     h1.classList.add('(font-size:3rem)')
     ```
     The heading grows to `3rem`. Its existing alignment rule remains in use.
   </Step>
   <Step>
-    #### <StepNum />Remove a class
+    #### Remove a class
     ```js
     h1.classList.remove('(text-align:center)')
     ```
     The heading stops matching the alignment rule. It returns to its inherited alignment, even if the runtime temporarily retains the unused rule.
   </Step>
   <Step>
-    #### <StepNum />Remove the element
+    #### Remove the element
     ```js
     h1.remove()
     ```

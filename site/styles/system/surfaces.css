@@ -1,0 +1,67 @@
+/* Surfaces and the example frame. tray (14) → 4px inset → stage / code / sheet (10) */
+@layer components {
+  .ui-sheet { position: relative; border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; color: var(--ui-text-body); box-shadow: var(--ui-elevation-rise-2); }
+  .ui-sheet[data-elevation="1"] { box-shadow: var(--ui-elevation-rise-1); }
+  .ui-sheet[data-elevation="3"] { box-shadow: var(--ui-elevation-rise-3); }
+  .ui-sheet[data-elevation="flat"] { background: var(--ui-surface-sheet); box-shadow: var(--ui-elevation-flat); }
+  .ui-well { border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
+
+  /* The tray holds one complete example: head, stage, source, caption */
+  .ui-tray { position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
+  .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px var(--ui-inset) var(--ui-space-xs) var(--ui-space-sm); }
+  .ui-tray-title { min-width: 0; margin: 0; color: var(--ui-text-strong); font-size: .8125rem; font-weight: var(--ui-weight-medium); line-height: 1.4; letter-spacing: 0; }
+  .ui-tray-description { margin: 2px 0 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
+  .ui-tray-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
+  .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
+  .ui-tray-caption code { color: var(--ui-text-body); }
+  .ui-tray > * + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: var(--ui-inset); }
+  .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: 0; }
+  .ui-tray > .ui-callout { margin-top: var(--ui-inset); }
+  .ui-tray > .ui-disclosure > summary { padding-inline: var(--ui-space-sm); }
+
+  /* The stage: a lit, slightly recessed well where the specimen stands */
+  .ui-stage {
+    position: relative; isolation: isolate; container: stage / inline-size; display: grid; place-items: center;
+    min-height: 15rem; padding: 3.25rem 2.5rem; border-radius: var(--ui-radius-xl); overflow: hidden;
+    background: var(--ui-stage-light), var(--ui-surface-stage);
+    box-shadow: inset 0 0 0 1px var(--ui-line-contour), inset 0 1px 2px light-dark(oklch(18% 0 none / .04), oklch(0% 0 none / .45)), 0 1px 0 var(--ui-lip);
+  }
+  .ui-stage[data-padding="none"] { padding: 0; place-items: stretch; }
+  .ui-stage[data-padding="sm"] { min-height: 0; padding: var(--ui-space-md); }
+  .ui-stage[data-align="start"] { place-items: start; }
+  .ui-stage[data-background="grid"] { background: linear-gradient(var(--ui-line-hair) 1px, transparent 1px) 0 0 / 20px 20px, linear-gradient(90deg, var(--ui-line-hair) 1px, transparent 1px) 0 0 / 20px 20px, var(--ui-stage-light), var(--ui-surface-stage); }
+  .ui-stage[data-background="dots"] { background: radial-gradient(var(--ui-line-divider) .8px, transparent 1.1px) 0 0 / 14px 14px, var(--ui-stage-light), var(--ui-surface-stage); }
+  .ui-stage[data-background="hatch"] { background: var(--ui-hatch), var(--ui-surface-stage); }
+  .ui-stage[data-background="checkerboard"] { background: conic-gradient(var(--ui-line-hair) 25%, transparent 0 50%, var(--ui-line-hair) 0 75%, transparent 0) 0 0 / 16px 16px, var(--ui-surface-stage); }
+  @media (width < 35rem) { .ui-stage { min-height: 12rem; padding: 2.5rem 1.125rem; } }
+
+  /* Standalone stage without a tray (embedded in prose for very small specimens) */
+  .ui-stage[data-standalone] { border-radius: var(--ui-radius-2xl); }
+
+  /* Comparison: the same subject under two conditions */
+  .ui-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--ui-inset); }
+  .ui-compare > figure { display: grid; grid-template-rows: auto 1fr; gap: 0; min-width: 0; margin: 0; }
+  .ui-compare > figure > figcaption { padding: var(--ui-space-xs) var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; }
+  .ui-compare .ui-stage { min-height: 11rem; padding: var(--ui-space-xl) var(--ui-space-lg); }
+
+  /* Browser chrome for a real document in an iframe */
+  .ui-browser { overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-stage); box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
+  .ui-browser-bar { display: flex; align-items: center; gap: var(--ui-space-sm); height: 2.5rem; padding: 0 var(--ui-space-sm); border-bottom: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
+  .ui-browser-dots { display: flex; gap: 6px; }
+  .ui-browser-dots > i { width: 9px; height: 9px; border-radius: 50%; background: var(--ui-line-strong); }
+  .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
+  .ui-browser-body { position: relative; min-height: 12rem; }
+  /* A real document: the tools set the viewport width, the handle follows its edge */
+  .ui-browser-body:has(> .ui-browser-viewport) { min-height: 0; overflow-x: auto; scrollbar-width: thin; }
+  .ui-browser-viewport { position: relative; max-width: none; margin-inline: auto; }
+  .ui-browser-viewport > iframe { display: block; width: 100%; border: 0; background: transparent; }
+  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-xs) var(--ui-space-sm); border-top: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
+  .ui-browser-tools > .ui-range { flex: 1 1 6rem; max-width: 12rem; }
+  .ui-browser-tools > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
+  .ui-resize { position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; width: 1rem; cursor: ew-resize; touch-action: none; }
+  .ui-resize::before { content: ""; width: 4px; height: 2.5rem; border-radius: var(--ui-radius-pill); background: var(--ui-line-strong); }
+
+  /* Local scroll region, keyboard reachable */
+  .ui-scroll { overflow: auto; overscroll-behavior: contain; max-height: 16rem; border-radius: var(--ui-radius-lg); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
+  .ui-scroll:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+}

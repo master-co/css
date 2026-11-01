@@ -11,18 +11,6 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
   const headingOffset = 110
   let attempts = 0
 
-  const getCurrentParentId = (currentId: string) => {
-    const currentIndex = items.findIndex((item) => item.id === currentId)
-    const currentItem = items[currentIndex]
-    if (currentItem?.level !== 3) return
-
-    for (let i = currentIndex - 1; i >= 0; i--) {
-      if (items[i].level === 2) {
-        return items[i].id
-      }
-    }
-  }
-
   const run = () => {
     attempts += 1
     const headings = items
@@ -52,16 +40,13 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
       currentId = headings[headings.length - 1].id
     }
 
-    const currentParentId = getCurrentParentId(currentId)
     const currentIndex = items.findIndex((item) => item.id === currentId)
     let needsLayoutRetry = false
     ;(window as any).__pageContentInitialActiveId = currentId
 
     document.querySelectorAll<HTMLElement>('[data-page-content-nav-id]').forEach((nav) => {
       const id = nav.dataset.pageContentNavId
-      const active = currentId === id
-      nav.classList.toggle('active', active || currentParentId === id)
-      if (active) {
+      if (currentId === id) {
         nav.setAttribute('aria-current', 'location')
       } else {
         nav.removeAttribute('aria-current')
@@ -70,7 +55,7 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
 
     const activePageContentNav = Array.from(document.querySelectorAll<HTMLElement>('[data-page-content-nav-id]'))
       .find((nav) => nav.dataset.pageContentNavId === currentId)
-    const pageContentScroll = activePageContentNav?.closest<HTMLElement>('.page-content-scroll')
+    const pageContentScroll = activePageContentNav?.closest<HTMLElement>('.ui-toc[data-rail] > ol')
     if (activePageContentNav && pageContentScroll && window.innerWidth >= 1024) {
       if (pageContentScroll.offsetHeight && activePageContentNav.offsetHeight) {
         if (currentIndex <= 0 || activePageContentNav.offsetTop) {
@@ -87,8 +72,8 @@ function pageContentBootstrap(items: Pick<PageContentItem, 'id' | 'level'>[]) {
     }
 
     const sidebar = document.getElementById('sidebar')
-    const sidebarLinks = Array.from(sidebar?.querySelectorAll<HTMLAnchorElement>('a.app-nav[href]') || [])
-    const activeSidebarLink = sidebar?.querySelector<HTMLElement>('a.app-nav.active')
+    const sidebarLinks = Array.from(sidebar?.querySelectorAll<HTMLAnchorElement>('a.ui-nav-link[href]') || [])
+    const activeSidebarLink = sidebar?.querySelector<HTMLElement>('a.ui-nav-link[aria-current]')
       || sidebarLinks.find((link) => {
         try {
           return new URL(link.getAttribute('href') || '', location.href).pathname === location.pathname

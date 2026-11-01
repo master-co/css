@@ -1,14 +1,9 @@
 import metadata from './metadata'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import Content from './content.mdx'
-import '~/site/styles/docs-shell/prose.css'
+import ComponentPage from '../../components/ComponentPage'
 
 export { metadata }
 
 export default function Page() {
-  return <main className="ds-component-page">
-    <ReviewNavigation />
-    <h1>Stylesheet examples</h1>
-    <div className="ds-component-document prose"><Content /></div>
-  </main>
+  return <ComponentPage kicker="Documents" title="Stylesheet examples" description={metadata.description} sections={[]} Documentation={Content} documentationTitle={null} />
 }

@@ -1,61 +1,17 @@
 import metadata from './metadata'
 import { brandAssets } from '~/site/common/brand'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
-import Link from '~/site/docs-shell/components/Link'
-
-import AppearanceControl from '../../components/AppearanceControl'
+import ComponentPage from '../../components/ComponentPage'
 import DemoAsset from '~/site/components/demo/DemoAsset'
-import DemoExample from '~/site/components/demo/DemoExample'
-import './page.css'
 
 export { metadata }
 
-const asset = brandAssets[0]
-
-const options = [
-  {
-    number: '01', note: 'The same artwork keeps its transparent pixels in either page theme, with clearer metadata, a file-type tag and a stronger download target.',
-    preview: <DemoAsset {...asset} />
-  }
-] as const
-
 export default function Page() {
-  return <main className="ds-component-page review-asset-review">
-    <ReviewNavigation />
-    <h1>Demo asset</h1>
-    <p className="review-asset-intro">The same artwork keeps its transparent pixels in either page theme, with clearer metadata, a file-type tag and a stronger download target.</p>
-
-    <AppearanceControl label="Preview theme" />
-
-    <section aria-labelledby="asset-options">
-      <h2 id="asset-options">Dark-background logotype</h2>
-
-      <div className="review-asset-options">
-        {options.map(({ number, note, preview }) => <article className="review-asset-option" key={number}>
-          <div className="review-asset-optionPreview">{preview}</div>
-          <p className="review-asset-optionNote">{note}</p>
-        </article>)}
-      </div>
-    </section>
-
-    <section aria-labelledby="asset-surfaces">
-      <h2 id="asset-surfaces">Real Brand variants</h2>
-
-      <div className="review-asset-surfaceGrid">
-        <DemoAsset {...brandAssets[1]} />
-        <DemoAsset {...brandAssets[2]} surface="transparent" />
-      </div>
-      <Link className="review-asset-bodyLink" href="/brand#download-assets">Open all assets on /brand</Link>
-    </section>
-
-    <section aria-labelledby="asset-real-use">
-      <div className="review-asset-sectionHeading">
-        <div><h2 id="asset-real-use">Actual Reference media scene</h2><p>The background-image lesson uses imagery as a CSS teaching subject; the asset card is for viewing and downloading artwork.</p></div>
-        <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-image">Open https://developer.mozilla.org/en-US/docs/Web/CSS/background-image</Link>
-      </div>
-      <DemoExample page="background-image" section="add-a-background-image" />
-    </section>
-  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
-    </main>
+  return <ComponentPage title="Downloadable asset" description="Light and dark artwork sits on a sheet in its own mode; transparent artwork sits on a checkerboard. The download names its format." sections={[
+    { id: 'grounds', title: 'Grounds', children: <div className="grid-cols(1) gap-md grid-cols(2)@sm">
+      <DemoAsset {...brandAssets[0]} />
+      <DemoAsset {...brandAssets[1]} />
+      <DemoAsset {...brandAssets[2]} surface="transparent" />
+    </div> },
+  ]} usage={{ href: '/brand', label: 'the brand page' }} Documentation={ComponentDocumentation} />
 }

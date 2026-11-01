@@ -1,50 +1,19 @@
+/*
+ * The compact header's menu: a `ui-dialog` that fills the viewport below 64rem (`data-variant="sheet"`), with a bar
+ * (close, brand) and a reading-width body of navigation groups, the section's chapters and the preferences.
+ */
 @layer components {
-  html:has(.doc-menu[open]) { overflow: hidden; scrollbar-gutter: stable; }
-  .doc-menu { position: fixed; inset: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; padding: 0; border: 0; background: var(--color-surface-raised); color: var(--color-text-body); overflow-y: auto; overscroll-behavior: contain; }
-  .doc-menu::backdrop { background: transparent; }
-  .doc-menu-topbar { position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; align-items: center; min-height: calc(49px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); border-bottom: 1px solid var(--color-line-divider); background: var(--color-surface-base); }
-  .doc-menu-topbar > button { display: grid; place-items: center; width: 48px; min-height: 48px; padding: 0; border: 0; background: transparent; color: var(--color-text-muted); cursor: pointer; }
-  .doc-menu-topbar > a { display: inline-flex; align-items: center; justify-self: center; min-height: 48px; }
-  .doc-menu-inner { max-width: 36rem; margin-inline: auto; padding: var(--spacing-md) var(--spacing-lg) max(var(--spacing-2xl), env(safe-area-inset-bottom)); container: menu-inner / inline-size; }
-  .doc-menu-heading { display: flex; align-items: center; min-height: 2rem; margin-bottom: var(--spacing-sm); }
-  .doc-menu-heading strong { color: var(--color-text-muted); font-size: .75rem; font-weight: 460; }
-  .doc-menu-search { display: flex; align-items: center; width: 100%; min-height: 48px; margin-bottom: var(--spacing-lg); padding: var(--spacing-sm); border: 1px solid var(--color-line-control); border-radius: var(--radius-lg); background: var(--color-surface-canvas); color: var(--color-text-muted); font-size: .875rem; text-align: start; cursor: pointer; }
-  .doc-menu-link { display: grid; grid-template-columns: 1.375rem minmax(0, 1fr) 1.125rem; align-items: center; gap: var(--spacing-md); min-height: 48px; padding-block: var(--spacing-sm); border-bottom: 1px solid var(--color-line-divider); color: var(--color-text-body); font-size: .875rem; line-height: 1.5; text-decoration: none; }
-  .doc-menu-link > svg { color: var(--color-text-muted); }
-  .doc-menu-link:is(:hover, :focus-visible) { color: var(--color-text-strong); }
-  .doc-menu-primary { margin-bottom: var(--spacing-xl); }
-  .doc-menu-chapters { border-bottom: 1px solid var(--color-line-divider); }
-  .doc-menu-chapters > summary { display: flex; align-items: center; gap: var(--spacing-md); min-height: 48px; color: var(--color-text-strong); font-size: .875rem; font-weight: 550; list-style: none; cursor: pointer; }
-  .doc-menu-chapters > summary::-webkit-details-marker { display: none; }
-  .doc-menu-chapters > summary > span { margin-left: auto; color: var(--color-text-muted); font-size: .75rem; font-weight: 400; }
-  .doc-menu-chapters[open] > summary > svg { rotate: 180deg; }
-  .doc-menu-documents { padding-bottom: var(--spacing-xl); }
-  .doc-menu-documents .app-nav { min-height: 44px; line-height: 1.6; }
-  .doc-menu-community, .doc-menu-preferences { margin-top: var(--spacing-xl); }
-  .doc-menu :is(h2) { margin: 0 0 var(--spacing-sm); color: var(--color-text-muted); font-size: .75rem; font-weight: 460; line-height: 1.5; }
-  .doc-menu-preference { display: grid; grid-template-columns: 1.375rem minmax(0, 1fr) minmax(0, auto) 1rem; align-items: center; gap: var(--spacing-md); min-height: 52px; padding-block: var(--spacing-sm); border-bottom: 1px solid var(--color-line-divider); color: var(--color-text-body); font-size: .8125rem; line-height: 1.5; }
-  .doc-menu-preference > svg { color: var(--color-text-muted); }
-  .doc-menu-preference-value { position: relative; color: var(--color-text-muted); overflow-wrap: anywhere; }
-  .doc-menu-preference-value select { z-index: 1; }
-  .doc-menu :is(a, button, summary):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
-  .doc-menu label:has(select:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
-  /* The close control sits in the viewport's corner, so its ring stays inside the button. */
-  .doc-menu-topbar > :is(button, a):focus-visible { outline-offset: -2px; }
-  .doc-menu-topbar > button:hover { background: var(--color-surface-canvas); color: var(--color-text-strong); }
-  .doc-menu .app-nav.active { color: var(--color-text-strong); }
-
-  @container menu-inner (width < 18em) {
-    .doc-menu-preference { grid-template-columns: 1.375rem minmax(0, 1fr) 1rem; gap: var(--spacing-xs) var(--spacing-md); }
-    .doc-menu-preference > svg:first-child { grid-column: 1; grid-row: 1 / span 2; }
-    .doc-menu-preference > span { grid-column: 2; min-width: 0; overflow-wrap: anywhere; }
-    .doc-menu-preference > svg:last-child { grid-column: 3; grid-row: 1 / span 2; }
-  }
-
-  @media (forced-colors: active) {
-    .doc-menu { border-color: CanvasText; }
-    .doc-menu-link, .doc-menu-preference { border-color: CanvasText; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .app-header-icon svg path { transition-duration: 0s !important; }
-  }
+  html:has(.ui-dialog[data-variant="sheet"][open]) { overflow: hidden; scrollbar-gutter: stable; }
+  .ui-dialog[data-variant="sheet"] { position: fixed; inset: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; overflow-y: auto; overscroll-behavior: contain; border-radius: 0; background: var(--ui-surface-canvas); box-shadow: none; }
+  .ui-dialog[data-variant="sheet"]::backdrop { background: transparent; }
+  .ui-dialog-bar { position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: 2.375rem minmax(0, 1fr) 2.375rem; align-items: center; height: calc(3.75rem + env(safe-area-inset-top)); padding: env(safe-area-inset-top) max(var(--ui-space-xs), env(safe-area-inset-right)) 0 max(var(--ui-space-xs), env(safe-area-inset-left));
+    background: color-mix(in oklab, var(--ui-surface-canvas) 82%, transparent); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
+  .ui-dialog-bar > .ui-header-brand { justify-self: center; }
+  .ui-dialog[data-variant="sheet"] > .ui-dialog-body { display: grid; gap: var(--ui-space-xl); max-width: 36rem; margin-inline: auto; padding: var(--ui-space-lg) max(var(--ui-space-md), env(safe-area-inset-right)) max(var(--ui-space-2xl), env(safe-area-inset-bottom)) max(var(--ui-space-md), env(safe-area-inset-left)); }
+  .ui-dialog[data-variant="sheet"] .ui-nav-link { gap: .625rem; min-height: 2.75rem; }
+  .ui-dialog[data-variant="sheet"] .ui-nav-link > svg { flex: none; color: var(--ui-text-muted); }
+  .ui-dialog[data-variant="sheet"] .ui-nav-link > svg:last-child:not(:first-child) { margin-left: auto; }
+  .ui-dialog[data-variant="sheet"] .ui-disclosure > .ui-sidebar { padding: 0 0 var(--ui-space-md); }
+  .ui-dialog-fields { display: grid; gap: var(--ui-space-md); }
+  .ui-dialog-fields > h4 { margin: 0; padding-left: .625rem; color: var(--ui-text-muted); @apply --ui-label-type; }
 }

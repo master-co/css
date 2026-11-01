@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo comparison",
-  "description": "Shared Demo comparison and practical examples.",
+  "title": "Compare",
+  "description": "The same subject under two named conditions.",
   "category": "Components",
   fileURL: import.meta.url
 })

@@ -1,57 +1,54 @@
+/*
+ * The site header (`ui-header`, styles/system/shell.css) placed for the site: it sticks above documentation pages and
+ * overlays the homepage and blog as a stickable header that slides away while reading down (`data-tucked`) and is
+ * transparent at the top of the page (`data-background="transparent"`).
+ */
 @layer components {
-  .app-header-logo { display: inline-flex; align-items: center; min-height: 48px; }
-  /* A focused navigation control must remain on screen after the header has tucked away. */
-  .app-header:focus-within { transform: none !important; transition-duration: 0s !important; }
-  @media (prefers-reduced-motion: reduce) {
-    .app-header { transition-duration: 0s !important; }
-  }
+  .ui-header { padding-top: env(safe-area-inset-top); padding-inline: max(var(--ui-space-xl), env(safe-area-inset-left)) max(var(--ui-space-xl), env(safe-area-inset-right)); height: calc(3.75rem + env(safe-area-inset-top)); box-sizing: border-box; }
+  .ui-header[data-variant="stickable"] { position: fixed; inset: 0 0 auto; width: 100%; transition: translate var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-base), box-shadow var(--ui-duration-base); }
+  .ui-header[data-tucked] { translate: 0 -100%; }
+  /* A focused control stays on screen after the header has tucked away, revealed at once. */
+  .ui-header:focus-within { translate: none; transition-duration: 0s; }
+  .ui-header[data-background="transparent"] { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   /* Without scripts the header never leaves its transparent top state, so it scrolls away instead of covering content. */
-  @media (scripting: none) {
-    .app-header.at-top { position: absolute !important; }
+  @media (scripting: none) { .ui-header[data-background="transparent"] { position: absolute; } }
+  @media (prefers-reduced-motion: reduce) { .ui-header, .ui-header[data-variant="stickable"] { transition: none; } }
+  @media print { .ui-header { display: none; } }
+
+  .ui-header-brand { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: var(--ui-radius-sm); }
+  .ui-header-brand:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+  /* The version chip opens the native version list laid over it. */
+  .ui-header .ui-version { position: relative; cursor: pointer; }
+  .ui-header .ui-version > svg { width: 12px; height: 12px; margin-right: -2px; color: var(--ui-text-muted); }
+  .ui-header .ui-version:hover { color: var(--ui-text-strong); }
+  .ui-header-nav > a > .ui-badge { margin-left: var(--ui-space-2xs); }
+  .ui-header-end > .ui-button[data-disabled] { color: var(--ui-text-disabled); pointer-events: none; }
+  /* The community and preference icons are words in the bar, not buttons: ink under the pointer, no material. */
+  .ui-header-end > .ui-button[data-shape="icon"] { width: 2.25rem; min-height: 2.25rem; }
+  .ui-header-end > .ui-button > svg, .ui-header-menu > svg, .ui-dialog-bar > .ui-button > svg { width: 1.125rem; height: 1.125rem; }
+  .ui-header-end > .ui-button[data-variant="quiet"]:where(:hover):not(:disabled) { background: transparent; box-shadow: none; }
+
+  /* Icon-only controls name themselves with an ink tooltip under the pointer or keyboard focus. */
+  .ui-header-end > :is(a, button, label) { position: relative; }
+  .ui-header-end > * > .ui-tooltip { top: calc(100% + 8px); left: 50%; translate: -50% 0; opacity: 0; visibility: hidden; transition: opacity var(--ui-duration-quick), visibility 0s linear var(--ui-duration-quick); }
+  .ui-header-end > :is(:hover, :focus-visible, :has(:focus-visible)) > .ui-tooltip { opacity: 1; visibility: visible; transition-delay: 400ms, 400ms; }
+  .ui-header-end > :last-child > .ui-tooltip { left: auto; right: 0; translate: none; }
+  .ui-header-end > :last-child > .ui-tooltip::before { left: auto; right: calc(1rem - 4px); translate: none; }
+  @media (hover: none) { .ui-header-end > * > .ui-tooltip { display: none; } }
+
+  /* The compact header: the menu at the start, the brand centred, search at the end. */
+  .ui-header-menu { display: none; }
+  @media (width < 64rem) {
+    .ui-header { gap: var(--ui-space-xs); padding-inline: max(var(--ui-space-xs), env(safe-area-inset-left)) max(var(--ui-space-xs), env(safe-area-inset-right)); }
+    .ui-header-menu { display: inline-flex; }
+    .ui-header-brand { margin-inline: auto; }
+    .ui-header > :is(.ui-version, .ui-header-nav), .ui-header-end > :not(.ui-header-search) { display: none; }
+    .ui-header-end { margin-left: 0; }
+    /* The menu and search buttons keep the brand centred between equal ends. */
+    .ui-header:not(:has(.ui-header-search)) .ui-header-end { width: 2.375rem; }
   }
-.app-header-nav {
-    font-size: var(--font-size-sm);
-    line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
-    letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
-    -webkit-user-select: none;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-inline: var(--spacing-md);
-
-    &:disabled {
-      color: var(--color-text-muted);
-      cursor: not-allowed;
-    }
-
-    &:where(:hover, :active, .active) {
-      color: var(--color-text-strong);
-    }
-  }
-
-
-.app-header-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    color: var(--color-text-muted);
-    height: 48px;
-    min-width: 48px;
-
-    &:hover {
-      color: var(--color-text-strong);
-    }
-  }
-
-  .app-header-community {
-    @media (width < 64rem) {
-      display: none;
-    }
-  }
-
-  .app-header-community-first {
-    margin-left: auto;
+  @media (width >= 64rem) {
+    /* Documentation pages keep search in the sidebar. */
+    .ui-header-search[data-compact] { display: none; }
   }
 }

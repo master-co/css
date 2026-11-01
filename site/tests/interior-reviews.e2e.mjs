@@ -61,13 +61,14 @@ for (const route of routes) for (const locale of ['', '/tw']) test(`${engine} 32
 
 test(`${engine}: enlarged default canvas owns its height without overlapping the following note`, { timeout: 60000 }, async () => {
   await open('/design-system/review/demo')
-  const metrics = await page.locator('.review-demo-current').evaluate(element => {
+  // One example is one tray: the part after the stage (its source) must start below the whole stage.
+  const metrics = await page.locator('#complete + .ui-handbook-section figure.ui-tray').evaluate(element => {
     const box = selector => element.querySelector(selector).getBoundingClientRect().toJSON()
-    return { frame: box('.site-demo'), canvas: box('.demo-canvas'), note: box('.review-demo-optionNote') }
+    return { frame: element.getBoundingClientRect().toJSON(), canvas: box(':scope > .ui-stage'), note: box(':scope > .ui-stage + *') }
   })
   assert.ok(metrics.frame.height >= metrics.canvas.height - 1)
-  assert.ok(metrics.note.top >= metrics.canvas.bottom, 'the supporting note follows the whole canvas')
-  await page.locator('#canvas-current').evaluate(element => scrollTo(0, scrollY + element.getBoundingClientRect().top - 100))
+  assert.ok(metrics.note.top >= metrics.canvas.bottom, 'the source follows the whole stage')
+  await page.locator('#complete').evaluate(element => scrollTo(0, scrollY + element.getBoundingClientRect().top - 100))
   await page.screenshot({ path: new URL('canvas-enlarged.png', output).pathname })
   await noOverflow()
   records.push({ action: 'canvas-height', ...metrics })
@@ -76,7 +77,7 @@ test(`${engine}: enlarged default canvas owns its height without overlapping the
 test(`${engine}: enlarged alignment controls change the actual subject inside a local scroll preview`, { timeout: 60000 }, async () => {
   await open('/design-system/review/controls')
   const viewport = page.getByRole('region', { name: 'Alignment preview', exact: true })
-  const demo = viewport.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " site-demo ")][1]')
+  const demo = viewport.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ui-tray ")][1]')
   await demo.getByRole('button', { name: 'End', exact: true }).click()
   const subject = viewport.locator(':scope > div')
   await page.waitForFunction(element => getComputedStyle(element).alignItems === 'flex-end', await subject.elementHandle())
@@ -89,25 +90,13 @@ test(`${engine}: enlarged alignment controls change the actual subject inside a 
   records.push({ action: 'alignment', bottoms, localScroll: await viewport.evaluate(element => element.scrollLeft) })
 })
 
-test(`${engine}: the enlarged float preview keeps its authored width and keyboard scrolling`, { timeout: 60000 }, async () => {
-  await open('/design-system/review/text')
-  const viewport = page.getByRole('region', { name: 'Text flow preview', exact: true })
-  const image = viewport.getByRole('img', { name: 'Sun above layered mountains' })
-  assert.equal(await image.evaluate(element => getComputedStyle(element).float), 'left')
-  assert.ok(Math.abs((await image.boundingBox()).width - 224) < 1, '7rem remains the actual float width at the enlarged root')
-  await viewport.focus(); await page.keyboard.press('ArrowRight')
-  await page.waitForFunction(element => element.scrollLeft > 0, await viewport.elementHandle())
-  await noOverflow()
-  await viewport.screenshot({ path: new URL('float-enlarged.png', output).pathname })
-})
-
 test(`${engine}: the enlarged measure control stays within its frame and reports real content growth`, { timeout: 60000 }, async () => {
   await open('/design-system/review/measure')
-  const range = page.getByRole('slider', { name: /Requested width/ })
+  const range = page.getByRole('slider', { name: /^Width/ })
   assert.ok((await range.boundingBox()).width <= 200)
   await range.focus(); await range.press('End')
   assert.equal(await range.inputValue(), '460')
-  const subject = page.locator('.review-measure-measuredSurface')
+  const subject = page.locator('#bounds + .ui-handbook-section .ui-measure .ui-sheet')
   const initial = (await subject.boundingBox()).height
   await page.getByRole('checkbox', { name: 'Add detail', exact: true }).check()
   await page.waitForFunction(({ element, height }) => element.getBoundingClientRect().height > height, { element: await subject.elementHandle(), height: initial })

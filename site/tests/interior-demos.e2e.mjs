@@ -33,6 +33,12 @@ async function readyFrame(iframe) {
   return frame
 }
 
+/** Open the closed handbook disclosure that holds a specimen, so its frame can load. */
+async function reveal(demo) {
+  await demo.evaluate(element => { const details = element.closest('details'); if (details) details.open = true })
+  await demo.scrollIntoViewIfNeeded()
+}
+
 async function noPageOverflow(page) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, 'wide specimens scroll inside their own frame')
 }
@@ -45,7 +51,7 @@ for (const locale of ['en', 'tw']) for (const scene of [
     const route = `${locale === 'tw' ? '/tw' : ''}/guide/${slug}`
     const { context, page, errors } = await open(route, scene)
     try {
-      const iframes = page.locator('iframe.demo-viewport')
+      const iframes = page.locator('.ui-browser-viewport > iframe')
       const count = await iframes.count()
       const frames = []
       for (let index = 0; index < count; index++) {
@@ -69,7 +75,7 @@ for (const locale of ['en', 'tw']) for (const scene of [
       }
       await noPageOverflow(page)
       readings.push({ route, ...scene, frames })
-      await page.locator('.site-demo').first().screenshot({ path: new URL(`${locale}-${scene.width}-${slug}.png`, output).pathname })
+      await page.locator('figure.ui-tray').first().screenshot({ path: new URL(`${locale}-${scene.width}-${slug}.png`, output).pathname })
       assert.deepEqual(errors, [])
     } finally { await context.close() }
   })
@@ -78,7 +84,7 @@ for (const locale of ['en', 'tw']) for (const scene of [
 for (const slug of ['typography', 'responsive-design', 'layout-system']) test(`${engine} 320 enlarged: ${slug} frame controls and content remain usable`, { timeout: 90000 }, async () => {
   const { context, page, errors } = await open(`/guide/${slug}`, { width: 320, enlarged: true })
   try {
-    const frames = page.locator('iframe.demo-viewport')
+    const frames = page.locator('.ui-browser-viewport > iframe')
     for (const iframe of await frames.all()) {
       const frame = await readyFrame(iframe)
       // Text-only enlargement has to be applied inside independent browsing contexts too.
@@ -88,10 +94,10 @@ for (const slug of ['typography', 'responsive-design', 'layout-system']) test(`$
       }
     }
     await noPageOverflow(page)
-    const controls = await page.locator('.demo-viewport-toolbar :is(button, input)').evaluateAll(elements => elements.filter(element => element.getClientRects().length).map(element => ({ tag: element.tagName, text: element.textContent, width: element.getBoundingClientRect().width, height: element.getBoundingClientRect().height })))
+    const controls = await page.locator('.ui-browser-tools :is(button, input)').evaluateAll(elements => elements.filter(element => element.getClientRects().length).map(element => ({ tag: element.tagName, text: element.textContent, width: element.getBoundingClientRect().width, height: element.getBoundingClientRect().height })))
     assert.ok(controls.every(control => control.width >= 44 && control.height >= 44), 'enlarged touch controls keep a usable target')
     readings.push({ route: `/guide/${slug}`, width: 320, enlarged: true, controls })
-    await page.locator('.site-demo').first().screenshot({ path: new URL(`320-enlarged-${slug}.png`, output).pathname })
+    await page.locator('figure.ui-tray').first().screenshot({ path: new URL(`320-enlarged-${slug}.png`, output).pathname })
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
@@ -122,9 +128,11 @@ test(`${engine}: viewport slider changes the actual frame and Fit restores docum
 test(`${engine}: example theme control updates the iframe and keeps the document mode`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/guide/layout-system')
   try {
-    const demo = page.locator('.site-demo').first()
+    const demo = page.locator('figure.ui-tray').first()
     const frame = await readyFrame(demo.locator('iframe'))
-    const theme = demo.getByRole('button', { name: 'Theme', exact: true })
+    const theme = demo.getByTitle('Toggle dark theme', { exact: true })
+    const name = await theme.evaluate(element => element.textContent.trim())
+    const names = [name]
     const host = await page.evaluate(() => document.documentElement.className)
     const initial = await theme.getAttribute('aria-pressed')
     await theme.click()
@@ -132,18 +140,22 @@ test(`${engine}: example theme control updates the iframe and keeps the document
     assert.notEqual(await theme.getAttribute('aria-pressed'), initial)
     assert.equal(await frame.evaluate(() => document.documentElement.classList.contains('dark')), initial !== 'true')
     assert.equal(await page.evaluate(() => document.documentElement.className), host)
+    names.push(await theme.evaluate(element => element.textContent.trim()))
     await demo.screenshot({ path: new URL('example-dark.png', output).pathname })
     await theme.click()
     await page.waitForFunction(({ element, value }) => element.getAttribute('aria-pressed') === value, { element: await theme.elementHandle(), value: initial })
     assert.equal(await theme.getAttribute('aria-pressed'), initial)
+    assert.deepEqual(names, [name, name], 'a toggle keeps its name; aria-pressed carries the state')
     assert.deepEqual(errors, [])
   } finally { await context.close() }
 })
 
+// Both motion specimens are kept together in the Design System authoring handbook.
 test(`${engine}: finite motion and native dialog preserve reduced-motion and focus behavior`, { timeout: 90000 }, async () => {
-  const { context, page, errors } = await open('/reference/tokens/motion', { motion: 'no-preference' })
+  const { context, page, errors } = await open('/design-system/authoring', { motion: 'no-preference' })
   try {
     const demo = page.locator('[data-foundation-type-motion="finite-motion"]')
+    await reveal(demo)
     const frame = await readyFrame(demo.locator('iframe'))
     const readouts = frame.locator('[data-animation-readout]')
     assert.equal(await readouts.count(), 2)
@@ -173,13 +185,15 @@ test(`${engine}: finite motion and native dialog preserve reduced-motion and foc
   } finally { await context.close() }
 })
 
+// The sizing specimen lives in the Design System authoring handbook.
 test(`${engine}: enlarged sizing specimen retains the measured avatar while its text reflows`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/tw/guide/layout-system#use-container-tokens', { width: 320, enlarged: true })
+  const { context, page, errors } = await open('/tw/design-system/authoring', { width: 320, enlarged: true })
   try {
     const demo = page.locator('[data-foundation="sizing"]')
-    const avatar = demo.locator('.demo-item')
+    await reveal(demo)
+    const avatar = demo.locator('.ui-item')
     assert.equal(Math.round((await avatar.boundingBox()).width), 96, 'the authored 3rem avatar is preserved at a 32px root')
-    const canvas = await demo.locator('.demo-canvas').boundingBox()
+    const canvas = await demo.locator('.ui-stage').boundingBox()
     const prose = demo.getByText('Measured avatar. Flexible content.', { exact: true })
     const text = await prose.boundingBox()
     assert.ok(text.x >= canvas.x && text.x + text.width <= canvas.x + canvas.width, 'the flexible text stays in the specimen')
@@ -192,7 +206,7 @@ test(`${engine}: enlarged sizing specimen retains the measured avatar while its 
 test(`${engine}: delivery payload bars compare complete responses on one scale`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/benchmarks', { width: 390, scheme: 'dark' })
   try {
-    const ratios = await page.locator('.benchmark-stacks .benchmark-meter-stacked').evaluateAll(elements => elements.map(element => {
+    const ratios = await page.locator('.ui-bar[data-variant="stacked"]').evaluateAll(elements => elements.map(element => {
       const style = getComputedStyle(element)
       const width = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
       const filled = [...element.children].reduce((sum, child) => sum + child.getBoundingClientRect().width, 0)
@@ -212,19 +226,19 @@ if (engine === 'chromium') test('chromium: forced colors retain palette samples 
   // The complete palette lives on the Reference Color page.
   const { context, page, errors } = await open('/reference/tokens/color', { width: 390, enlarged: true })
   try {
-    const palette = page.locator('.ref-palette').first()
-    const chips = palette.locator('.foundation-palette-chip')
+    const palette = page.locator('.ui-palette').first()
+    const chips = palette.locator('.ui-palette-chip')
     const colors = await chips.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor))
     assert.ok(new Set(colors).size > 20, 'the palette contains distinct color samples')
     await page.emulateMedia({ forcedColors: 'active' })
     assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
     assert.deepEqual(await chips.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor)), colors, 'samples retain their actual colors')
-    assert.equal(await palette.locator('label').first().evaluate(element => getComputedStyle(element).forcedColorAdjust), 'auto', 'surrounding labels still follow the user palette')
+    assert.equal(await palette.locator('.ui-palette-row > span').first().evaluate(element => getComputedStyle(element).forcedColorAdjust), 'auto', 'surrounding labels still follow the user palette')
     await chips.first().focus()
     await page.keyboard.press('Tab')
     const focus = await page.locator(':focus').evaluate(element => {
       const style = getComputedStyle(element)
-      return { chip: element.classList.contains('foundation-palette-chip'), visible: element.matches(':focus-visible'), width: parseFloat(style.outlineWidth), offset: parseFloat(style.outlineOffset), style: style.outlineStyle }
+      return { chip: element.classList.contains('ui-palette-chip'), visible: element.matches(':focus-visible'), width: parseFloat(style.outlineWidth), offset: parseFloat(style.outlineOffset), style: style.outlineStyle }
     })
     assert.ok(focus.chip && focus.visible && focus.width >= 2 && focus.offset >= 2 && focus.style !== 'none', 'keyboard focus has a visible offset boundary')
     await noPageOverflow(page)
@@ -238,7 +252,7 @@ if (engine === 'chromium') test('chromium: forced colors retain resource-discove
   try {
     await page.emulateMedia({ forcedColors: 'active' })
     assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
-    const bars = await page.locator('.demo-waterfall-bar').evaluateAll(elements => elements.map(element => {
+    const bars = await page.locator('.ui-waterfall-track > i').evaluateAll(elements => elements.map(element => {
       const style = getComputedStyle(element)
       return { width: parseFloat(style.borderTopWidth), style: style.borderTopStyle, border: style.borderTopColor, track: getComputedStyle(element.parentElement).backgroundColor }
     }))
@@ -252,9 +266,9 @@ if (engine === 'chromium') test('chromium: forced colors retain resource-discove
 if (engine === 'chromium') test('chromium: forced colors preserve benchmark lengths, zero values and breakdown labels', { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/benchmarks', { width: 390, scheme: 'dark' })
   try {
-    const fills = page.locator('.benchmark-meter-fill,.benchmark-meter-stacked > div')
+    const fills = page.locator('.ui-bar[role="meter"] > i, .ui-bar[data-variant="stacked"] > i')
     const before = await fills.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width))
-    const labels = await page.locator('.benchmark-stacks [role="group"]').allTextContents()
+    const labels = await page.locator('.ui-chart .ui-legend[role="group"]').allTextContents()
     await page.emulateMedia({ forcedColors: 'active' })
     assert.equal(await page.evaluate(() => matchMedia('(forced-colors: active)').matches), true)
     const after = await fills.evaluateAll(elements => elements.map(element => {
@@ -268,7 +282,7 @@ if (engine === 'chromium') test('chromium: forced colors preserve benchmark leng
       if (item.width > 0) assert.notEqual(item.fill, item.track, 'positive values remain visible')
       if (item.value === '0') assert.equal(item.width, 0, 'zero values do not acquire a visible fill')
     }
-    assert.deepEqual(await page.locator('.benchmark-stacks [role="group"]').allTextContents(), labels, 'each stack retains its named numeric breakdown')
+    assert.deepEqual(await page.locator('.ui-chart .ui-legend[role="group"]').allTextContents(), labels, 'each stack retains its named numeric breakdown')
     await noPageOverflow(page)
     assert.deepEqual(errors, [])
   } finally { await context.close() }

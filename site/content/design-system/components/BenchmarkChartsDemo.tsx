@@ -13,7 +13,7 @@ import { outputItems, payloadItems, metrics, traceItems, deltaItems, sampleSumma
 
 export default function BenchmarkChartsDemo() {
   return (
-    <div className="benchmark-gallery" data-benchmark-gallery="true">
+    <div className="grid gap-xl">
       <BenchmarkFigure
         title="Ranking bars"
         description="Sample data for comparing one metric across fixtures. Bar lengths share a common zero and maximum."

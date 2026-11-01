@@ -1,8 +1,5 @@
-import '~/site/styles/demo-colors.css'
-import '~/site/styles/demo.css'
 import Demo from './Demo'
 import DemoViewport from './DemoViewport'
-import { DemoComparison, DemoLabel } from './primitives'
 import { demoDocument } from './reference/document'
 
 export interface DemoThemeComparisonProps {
@@ -18,13 +15,13 @@ export interface DemoThemeComparisonProps {
 
 /** Independent documents keep mode variables and native state inside each specimen. */
 export default function DemoThemeComparison({ name, title, html, css = '', caption, height = 240, print = false }: DemoThemeComparisonProps) {
-  const document = (mode: 'light' | 'dark') => demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md bg-surface-base fg-text-body', caption: '' }, mode)
-  return <Demo title={title} background="plain" padding="none" frame="none" caption={caption} data-foundation-paint={name}>
-    <DemoComparison>
-      {(['light', 'dark'] as const).map(mode => <div key={mode} data-theme-specimen={mode}>
-        <DemoLabel className="mb-xs">{mode === 'light' ? 'Light' : 'Dark'}</DemoLabel>
-        <div className="demo-theme-preview"><DemoViewport title={`${title} · ${mode}`} document={document(mode)} initialTheme={mode} print={print} height={height} sizing="content" /></div>
-      </div>)}
-    </DemoComparison>
+  const document = (mode: 'light' | 'dark') => demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md p(8)@media(width<240px) bg-surface-base fg-text-body', caption: '' }, mode)
+  return <Demo title={title} frame="none" caption={caption} data-foundation-paint={name}>
+    <div className="ui-compare">
+      {(['light', 'dark'] as const).map(mode => <figure key={mode} data-theme-specimen={mode}>
+        <figcaption>{mode === 'light' ? 'Light' : 'Dark'}</figcaption>
+        <DemoViewport title={`${title} · ${mode}`} document={document(mode)} initialTheme={mode} print={print} height={height} sizing="content" />
+      </figure>)}
+    </div>
   </Demo>
 }

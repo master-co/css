@@ -1,27 +1,18 @@
 @layer components {
   .reference-document :is(h1, h2, h3) { overflow-wrap: anywhere; }
   .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }
-  .reference-document pre { max-width: 100%; overflow-x: auto; }
   .reference-document code { overflow-wrap: anywhere; }
-  .reference-syntax-row:target { outline: 2px solid var(--color-blue); outline-offset: -2px; }
+  .reference-syntax-row:target > * { background: light-dark(oklch(22% .002 265 / .05), oklch(100% 0 none / .06)); }
   /* Every Reference table reads as one typographic grid: plain mono, the first column in strong ink. */
-  .reference-document .doc-table :is(th, td) code {
-    border: 0;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    font-size: .8125rem;
-  }
-  .reference-document .doc-table tbody :is(th, td):first-child code { color: var(--color-text-strong); }
+  .reference-document .ui-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; color: inherit; font-size: .8125rem; line-height: 1.6; }
   @media (width < 48rem) {
-    .reference-document .doc-table:has(.reference-syntax-row) { overflow: visible; }
-    .reference-document table:has(.reference-syntax-row) { display: block; width: 100%; }
+    /* Syntax rows stack their key above its declarations instead of scrolling sideways. */
+    .reference-document table:has(.reference-syntax-row) { display: block; }
     .reference-document table:has(.reference-syntax-row) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .reference-document table:has(.reference-syntax-row) tbody { display: block; }
-    .reference-document table:has(.reference-syntax-row) :is(tbody, tr, td, th) { contain: none; }
-    .reference-syntax-row { display: flex; flex-direction: column; border-bottom: 1px solid var(--color-line-subtle); padding-block: .75rem; }
-    .reference-syntax-row td { display: block; border: 0; padding: .375rem .5rem; white-space: normal; }
+    .reference-syntax-row { display: flex; flex-direction: column; padding-block: .375rem; border-top: 1px solid var(--ui-line-hair); }
+    .reference-syntax-row:first-child { border-top: 0; }
+    .reference-document .ui-table .reference-syntax-row > td { border: 0; padding-block: .25rem; white-space: normal; }
     .reference-syntax-row :is(code, pre) { white-space: pre-wrap; overflow-wrap: anywhere; }
   }
 }
-

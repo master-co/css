@@ -1,4 +1,10 @@
 @import '@master/css';
 @import './docs-shell/theme.css';
+@import './system/mixins.css';
+@import './system/tokens.css';
+@import './system/surfaces.css';
+@import './system/controls.css';
+@import './system/code.css';
+@import './system/prose.css';
+@import './system/shell.css';
 @import './base.css';
-@import './demo-theme.css';

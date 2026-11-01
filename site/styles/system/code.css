@@ -1,0 +1,77 @@
+/* Code: a quiet panel that owns its frame. Inside a tray it shares the tray's 10px inner radius and 4px inset. */
+@layer components {
+  .ui-code { position: relative; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); color: var(--ui-code-text); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
+  .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: 2.5rem; padding: var(--ui-inset) var(--ui-inset) 0 var(--ui-space-sm); }
+  .ui-code-bar > .ui-tabs { flex: 1; min-width: 0; }
+  .ui-code-file { display: inline-flex; align-items: center; gap: var(--ui-space-xs); flex: 1; min-width: 0; padding-left: 4px; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }
+  .ui-code-file svg { flex: none; width: 14px; height: 14px; }
+  .ui-code pre { margin: 0; padding: var(--ui-space-sm) 0 var(--ui-space-md); overflow-x: auto; font: var(--ui-weight-regular) var(--ui-text-code)/var(--ui-leading-code) var(--font-family-mono); tab-size: 2; scrollbar-width: thin; }
+  .ui-code pre:focus-visible { @apply --ui-focus-ring; outline-offset: -4px; border-radius: var(--ui-radius-md); }
+  /* Under a bar the code starts a short step down, so the file name reads as its caption. */
+  .ui-code:has(> .ui-code-bar) pre { padding-top: var(--ui-space-2xs); }
+  .ui-code-line { display: block; padding: 0 var(--ui-space-lg) 0 var(--ui-space-md); }
+  .ui-code[data-numbers] { counter-reset: line; }
+  .ui-code[data-numbers] .ui-code-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 1.75rem; margin-right: var(--ui-space-sm); color: var(--ui-text-disabled); text-align: right; user-select: none; }
+  .ui-code-line[data-mark="active"] { background: var(--ui-code-active); box-shadow: inset 2px 0 0 var(--ui-line-mark); }
+  .ui-code-line[data-mark="added"] { background: var(--ui-code-added); box-shadow: inset 2px 0 0 color-mix(in oklab, var(--ui-status-success) 70%, transparent); }
+  .ui-code-line[data-mark="removed"] { background: var(--ui-code-removed); box-shadow: inset 2px 0 0 color-mix(in oklab, var(--ui-status-danger) 70%, transparent); }
+  .ui-code-line[data-mark="added"]::after, .ui-code-line[data-mark="removed"]::after { float: right; color: var(--ui-text-disabled); }
+  .ui-code-line[data-mark="added"]::after { content: "+"; }
+  .ui-code-line[data-mark="removed"]::after { content: "−"; }
+  .ui-code-line mark { padding: 1px 2px; border-radius: 3px; background: light-dark(oklch(22% .002 265 / .08), oklch(100% 0 none / .1)); color: inherit; box-shadow: inset 0 -1px 0 var(--ui-line-mark); }
+  .ui-code .t { color: var(--ui-code-function); } .ui-code .a { color: var(--ui-code-property); } .ui-code .s { color: var(--ui-code-string); }
+  .ui-code .p { color: var(--ui-code-punctuation); } .ui-code .k { color: var(--ui-code-keyword); } .ui-code .c { color: var(--ui-code-comment); font-style: italic; } .ui-code .n { color: var(--ui-code-number); }
+  .ui-code > .ui-disclosure { border-top: 1px solid var(--ui-line-hair); }
+  .ui-code > .ui-disclosure > summary { padding-inline: var(--ui-space-md); }
+  .ui-code > .ui-disclosure > pre { padding-top: 0; }
+  .ui-tray > .ui-code { box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
+
+  /* Tabs: a row of quiet chips; the selected one is raised */
+  .ui-tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .ui-tabs::-webkit-scrollbar { display: none; }
+  .ui-tabs > [role="tab"] {
+    appearance: none; display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: 1.875rem; padding: 0 .625rem; border: 0; border-radius: var(--ui-radius-md);
+    background: transparent; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); cursor: pointer; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick), box-shadow var(--ui-duration-quick);
+  }
+  .ui-tabs > [role="tab"] svg { width: 14px; height: 14px; }
+  .ui-tabs > [role="tab"]:hover { color: var(--ui-text-strong); }
+  .ui-tabs > [role="tab"][aria-selected="true"] { color: var(--ui-text-strong); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-tabs > [role="tab"]:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; }
+
+  /* Inline code and file references */
+  .ui-inline-code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .84em/1 var(--font-family-mono); overflow-wrap: anywhere; }
+
+  /* Disclosure: native details, one chevron, calm motion */
+  .ui-disclosure { min-width: 0; }
+  .ui-disclosure > summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); min-height: 2.75rem; color: var(--ui-text-body); font: var(--ui-weight-medium) .8125rem/1.3 var(--font-family-sans); list-style: none; cursor: pointer; }
+  .ui-disclosure > summary::-webkit-details-marker { display: none; }
+  .ui-disclosure > summary::before { content: ""; flex: none; width: 14px; height: 14px; background: currentColor; opacity: .6; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 3.5 4.5 4.5L6 12.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; transition: rotate var(--ui-duration-base) var(--ui-ease); }
+  .ui-disclosure[open] > summary::before { rotate: 90deg; }
+  .ui-disclosure > summary:hover { color: var(--ui-text-strong); }
+  .ui-disclosure > summary:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-md); }
+  .ui-disclosure > summary .ui-disclosure-meta { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-sans); }
+  .ui-disclosure[data-variant="rule"] { border-block: 1px solid var(--ui-line-hair); }
+  .ui-disclosure[data-variant="rule"] + .ui-disclosure[data-variant="rule"] { border-top: 0; }
+  .ui-disclosure-body { padding-bottom: var(--ui-space-md); }
+  .ui-disclosure > .ui-disclosure-body > :first-child { margin-top: 0; }
+  .ui-disclosure > .ui-disclosure-body > :last-child { margin-bottom: 0; }
+
+  /* Prompt: copyable prose for agents — reads as text, copies as text */
+  .ui-prompt { display: grid; gap: 0; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
+  .ui-prompt > .ui-code-bar { padding-left: var(--ui-space-md); }
+  .ui-prompt-body { margin: 0; padding: var(--ui-space-xs) var(--ui-space-md) var(--ui-space-md); color: var(--ui-text-strong); font: var(--ui-weight-regular) .9375rem/1.7 var(--font-family-sans); white-space: pre-wrap; }
+  .ui-prompt-body var { padding: 0 .25em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); font-style: normal; }
+
+  /* File tree: names in mono, descriptions in the reading face, guides as hairlines */
+  .ui-tree { margin: 0; overflow-x: auto; overflow-wrap: anywhere; padding: var(--ui-space-sm) 0; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
+  .ui-tree ul { margin: 0; padding: 0; list-style: none; }
+  .ui-tree ul ul { margin-left: 1.375rem; box-shadow: inset 1px 0 0 var(--ui-line-hair); }
+  .ui-tree li > div > * { min-width: 0; }
+  .ui-tree li > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--ui-space-sm); padding: .3125rem var(--ui-space-md); }
+  .ui-tree ul ul li > div { padding-left: var(--ui-space-sm); }
+  .ui-tree svg { flex: none; align-self: center; width: 14px; height: 14px; color: var(--ui-text-muted); }
+  .ui-tree b { color: var(--ui-text-strong); font: var(--ui-weight-regular) var(--ui-text-code)/1.5 var(--font-family-mono); }
+  .ui-tree span { color: var(--ui-text-muted); font-size: .78125rem; }
+  .ui-tree [data-mark="added"] > div { background: var(--ui-code-added); }
+  .ui-tree [data-mark="added"] > div > b::after { content: " +"; color: var(--ui-status-success); }
+}
