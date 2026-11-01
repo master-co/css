@@ -21,6 +21,9 @@ function titleHalves(title: string, className: string) {
   </>
 }
 
+// The index lists articles; it renders no document surfaces, code or prose.
+export const documentStyles = false
+
 export async function generateMetadata(props: any) {
   return await generate(metadata, props, dictionaries)
 }

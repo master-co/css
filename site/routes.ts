@@ -17,6 +17,8 @@ interface PageModule {
   default?: (props: Props) => ReactNode | Promise<ReactNode>
   metadata?: Partial<Metadata>
   generateMetadata?: (props: Pick<Props, 'params'>) => Promise<Partial<Metadata>> | Partial<Metadata>
+  /** `false` for pages that render no document surfaces, code or prose, such as indexes. */
+  documentStyles?: boolean
 }
 
 interface LayoutModule {
@@ -38,6 +40,8 @@ const paramsModules = import.meta.glob<ParamsModule>('/content/**/params.ts')
 const layoutModules = import.meta.glob<PropagatedModule<LayoutModule>>('/content/**/layout.tsx', { query: '?astroPropagatedAssets', import: 'default' })
 const sectionModules = import.meta.glob<PropagatedModule<SectionModule>>('/sections/*.tsx', { query: '?astroPropagatedAssets', import: 'default' })
 const siteStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/site.ts', { query: '?astroPropagatedAssets', import: 'default' })
+const interfaceStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/interface.ts', { query: '?astroPropagatedAssets', import: 'default' })
+const documentStyles = import.meta.glob<PropagatedModule<unknown>>('/styles/documents.ts', { query: '?astroPropagatedAssets', import: 'default' })
 const sectionShells: Record<Section, string> = {
   home: 'home',
   guide: 'guide',
@@ -79,19 +83,21 @@ export async function loadRoute({ file, locale, params }: RouteProps): Promise<L
     element = h(layout.module.default, props, element)
     propagated.unshift(layout.propagated)
   }
-  return withSection(sectionOf(file), metadata, element, propagated)
+  return withSection(sectionOf(file), metadata, element, propagated, module.documentStyles)
 }
 
 /** Wrap a page in its section shell, e.g. for routes outside `content/` such as 404. */
-export async function withSection(sectionName: Section, metadata: Partial<Metadata>, element: ReactNode, propagated: PropagatedModule<unknown>[] = []): Promise<LoadedRoute & { kind: 'page' }> {
+export async function withSection(sectionName: Section, metadata: Partial<Metadata>, element: ReactNode, propagated: PropagatedModule<unknown>[] = [], documents = true): Promise<LoadedRoute & { kind: 'page' }> {
   const section = await loadPropagated(sectionModules, `/sections/${sectionShells[sectionName]}.tsx`)
-  // Links within one asset boundary are unordered, so site-wide styles form their own first boundary.
-  const site = section.module.bare ? [] : [await siteStyles['/styles/site.ts']()]
+  // Links within one asset boundary are unordered, so the foundation, the shell interface and
+  // document styles each form their own boundary, in that order. Bare sections import what they render.
+  const site = section.module.bare ? [] : [await siteStyles['/styles/site.ts'](), await interfaceStyles['/styles/interface.ts']()]
+  const document = section.module.bare || !documents ? [] : [await documentStyles['/styles/documents.ts']()]
   return {
     kind: 'page',
     metadata,
     element: h(section.module.default, null, element),
-    assets: mergeAssets(...site, section.propagated, ...propagated),
+    assets: mergeAssets(...site, ...document, section.propagated, ...propagated),
     bodyClass: section.module.bodyClass,
     bare: section.module.bare,
     locales: localesOf(sectionName)

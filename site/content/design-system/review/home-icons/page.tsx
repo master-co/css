@@ -45,6 +45,9 @@ const accessibleExample = `// Use the matching theme asset. Give informative ima
   alt="Light and dark modes share the same markup"
 />`
 
+// The handoff page styles its own specimens and code (page.css).
+export const documentStyles = false
+
 export default function Page() {
   return <main className="home-icon-review" id="home-icon-top">
     <header className="hir-intro">

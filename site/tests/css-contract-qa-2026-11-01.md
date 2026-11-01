@@ -71,10 +71,57 @@ The comparison is against the `rc` snapshot at `3f5b38def`, built with the same 
 
 - The document shell, reading styles, code, demos and data views now use `ui-*` component rules on `--ui-*` roles instead of long utility lists and the former `doc-*`, `app-*`, `demo-*`, `ds-*` and `code-*` classes. Routes no longer emit the many preset utility rules those lists required, which is most of the reduction (for example `/guide/installation` 168 KB → 122 KB, `/design-system` 207 KB → 133 KB).
 - `data.css` and `specimens.css` are imported by the components that use them, so only Reference, benchmark and demo routes carry them.
-- Ten routes grow. They are bare sections or the 404 page, which import `globals.css` themselves and now receive the global system files: `/examples/*` (+42 to +55 KB), `/design-system/review/home-icons` (+32 KB), `/blog` (+25 KB) and `/404` (+12 KB). A narrower stylesheet for example pages was tried and delivered more CSS, so it was withdrawn; trimming these routes is a follow-up.
+- Ten routes grow. They are bare sections or the 404 page, which import `globals.css` themselves and now receive the global system files: `/examples/*` (+42 to +55 KB), `/design-system/review/home-icons` (+32 KB), `/blog` (+25 KB) and `/404` (+12 KB). A narrower stylesheet for example pages was tried and delivered more CSS, so it was withdrawn; [Route style boundaries](#route-style-boundaries) trims these routes.
 - The project manifest changes because `materials.css` re-points the site `@theme` utility tokens at the `--ui-*` roles, seven unused theme tokens are removed (`--stripe-pink`, `--grid`, `--color-float`, `--color-text-primary`, `--color-success`, `--color-danger`, `--color-line-danger`) and `mixins.css` adds `--ui-sheet-face`, `--ui-focus-ring` and `--ui-label-type`.
 - `scripts/verify-css-contract.ts` now expects the shell's own route declarations (`--prose-bleed`, `--color-line-media`, `--docs-header`) and the `ui-*` markers in place of the removed classes.
 
 ### Visual check
 
 Routes were compared against the previous design at 1280 and 390 px in light and dark: `/guide/installation`, `/guide/syntax-tutorial`, `/guide/responsive-design`, `/reference/tokens/spacing`, `/design-system` and its review pages, `/benchmarks`, `/blog` and a post, `/brand`, `/404` and `/`. The browser checks for reading, navigation, demos, reviews, states, the homepage header, brand, search, illustrations and anchors pass. Known exceptions: `migration/css` previews at 320 px with 200% text (the reading column keeps its gutters on phones by design) and the documentation-geometry baseline, whose fixture is missing.
+
+## Route style boundaries {#route-style-boundaries}
+
+`globals.css` now holds only the foundation (preset, `theme.css`, `mixins.css`, `tokens.css`, `base.css`). The system component files load in ordered asset boundaries (`site/routes.ts`): the shell interface (`styles/interface.css`: controls and shell) on every page in the site shell, and document styles (`styles/documents.css`: surfaces, code and prose) unless a page exports `documentStyles = false`. The Blog index, 404 and the homepage icon handoff opt out. Bare `/examples/*` pages import only the system files their scene renders. It was approved in the 2026-11-01 route style boundaries session ("核准並提交").
+
+Why the first attempt grew: every stylesheet that imports `@master/css` is a Master CSS entry, and all entries compose one project graph. A second entry for the examples delivered the union of both entries on every route that linked either, so the CSS grew (+14.9 KB on every route) instead of shrinking. The component files are therefore local stylesheets. One stylesheet per boundary keeps each local output's theme-variable emission to one copy. Separate boundaries keep the cascade layers in order, because links within one boundary are unordered. A shared `controls.css` chunk once linked before `globals.css` and declared `components` before `theme`. `verify-css-contract.ts` now rejects any route whose layers are not declared as `theme > base > defaults > components > utilities`, and checks which routes carry the interface and document boundaries.
+
+`rc` moved to `0bc88aec0` after its last snapshot, and that commit changes site output without updating the snapshot. A build of `0bc88aec0` alone, with the same packages, attributes this drift to `@custom-container`:
+
+- The project manifest gains `customContainers` (`--3xs` … `--7xl` and their `--max-*` forms).
+- Four routes gain `@container (width >= 28rem){.grid-cols\(2\)\@container\(--md\){…}}` from `FoundationExamples.tsx`.
+- 240 routes gain one byte of whitespace before a `@layer components {` wrapper.
+
+This change set, compared against that `0bc88aec0` build:
+
+| Change | Count |
+| --- | --- |
+| Shared routes with a different CSS contract | 244 (all; segment order and link boundaries changed) |
+| Delivered CSS segments | 2,774 → 2,774 (1 removed, 1 added) |
+| Delivery contracts | 123 → 123 |
+| Total CSS delivered across routes | 30.63 MB → 30.72 MB (+0.32%) |
+| Median CSS per route | 122.8 KB → 124.5 KB |
+| Project manifest | unchanged by this change set |
+
+| Route (and `/tw` copy) | Before Moonstone (`68f8674c1`) | rc (`0bc88aec0`) | Now | vs before Moonstone |
+| --- | --- | --- | --- | --- |
+| `/examples/responsive-button` | 16.4 KB | 71.8 KB | 18.4 KB | +2.0 KB |
+| `/examples/responsive-gallery` | 40.4 KB | 82.2 KB | 28.8 KB | −11.6 KB |
+| `/examples/layout-system` | 43.3 KB | 85.6 KB | 40.4 KB | −2.9 KB |
+| `/examples/article-transitions` | 41.4 KB | 83.4 KB | 56.9 KB | +15.5 KB |
+| `/examples/view-transitions` | 40.4 KB | 82.3 KB | 55.7 KB | +15.3 KB |
+| `/404` | 75.6 KB | 87.5 KB | 65.6 KB | −9.9 KB |
+| `/blog` | 84.3 KB | 109.1 KB | 87.3 KB | +3.0 KB |
+| `/design-system/review/home-icons` | 75.2 KB | 107.2 KB | 85.4 KB | +10.2 KB |
+
+- The ten routes above lose 21.9–53.4 KB against `rc`.
+- The remaining growth against the pre-Moonstone build is attributed. All routes gain `tokens.css`, the `--ui-*` roles: 7.5 KB, net +2.0 KB after the removed demo and code variables, which is all of `/examples/responsive-button`. The two view transition scenes render one `ui-button` or `ui-segmented` and one `ui-sheet`, and load whole `controls.css` and `surfaces.css` (about 27 KB) in place of the 3 KB demo button family. `/blog` and the icon handoff carry the shell interface (31.6 KB), which replaced the former header, menu and search styles.
+- Every other route (234) gains 1,762 bytes. The interface and document boundaries are local stylesheets, and each emits the theme variables it uses: `--font-family-sans`/`-mono`, `--font-sans`/`-mono`, `--color-zinc-0`/`-95` and the `@theme static` code colors from `syntax-theme.css`. Inside the single entry these were emitted once. All 234 routes remain below their pre-Moonstone size.
+
+### Visual check
+
+The checks below ran on `51dd1eac7`. On `0bc88aec0`, this change set's byte delta is identical for every route. The `rc` build and this build were served side by side. The check compared every element's computed style, including `::before` and `::after`, at 1440 px in light and dark on these routes: the ten routes above, `/`, `/guide`, `/reference`, `/guide/monorepo`, `/guide/view-transitions`, `/guide/layout-system`, `/reference/packages`, `/design-system`, `/design-system/review/{documents,controls,viewport}`, `/brand`, `/benchmarks`, `/blog/master-css-next` and `/tw/guide/colors`. Interactive states were also compared: the mobile menu at 390 px (`/blog`, `/404`, the icon handoff, `/guide/monorepo`), the search dialog and both transition scenes after a click. All styles match. The only difference was an animated `scale` on the homepage lint figure, which differs between two loads of the same build.
+
+`node site/scripts/visual-capture.mjs` captures (1440×900, light and dark) of the eight routes in the table are byte-identical, except `/examples/responsive-gallery`. It differs only where lazy, asynchronously decoded photos load at different times; two captures of the same build differ the same way.
+
+`interior-navigation`, `interior-demos`, `guide-preview-reflow`, `brand-system`, `design-system-figures` and `demo-flow-sizing` give the same results on both builds. The same six known failures appear on `rc`: `migration/css` reflow ×2, the missing documentation-geometry fixture, demo reduced-motion pausing, and the brand comparison at 320 px ×2.
+

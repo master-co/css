@@ -1,3 +1,4 @@
+import '../scene.css'
 import ArticleTransitionScene from '~/site/content/guide/view-transitions/components/ArticleTransitionScene'
 
 

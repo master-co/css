@@ -1,3 +1,5 @@
+// Bare examples import the system parts they render: here the sheets.
+import '~/site/styles/system/surfaces.css'
 import { DemoItem, DemoLabel, DemoSurface } from '~/site/components/demo/primitives'
 
 const bars = [

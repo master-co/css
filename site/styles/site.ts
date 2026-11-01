@@ -1,3 +1,2 @@
-// Site-wide stylesheets, loaded first as their own asset boundary; see routes.ts.
+// The site foundation (the Master CSS entry), loaded first as its own asset boundary; see routes.ts.
 import './globals.css'
-import '@master/css-language-service/shiki.css'

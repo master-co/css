@@ -6,15 +6,23 @@ The site's interface vocabulary. Light mode is moonstone (a clean zinc pearl), d
 
 | File | Scope | Loaded |
 | --- | --- | --- |
-| `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`: shared declarations the component files expand with `@apply` | global (Master CSS definitions) |
-| `tokens.css` | `--ui-*` roles: surfaces, lines, text, light, elevation, radius, rhythm, motion, tones, status, code | global |
-| `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll` | global |
-| `controls.css` | `ui-button`, `ui-segmented`, `ui-field`, `ui-input`, `ui-select`, `ui-range`, `ui-check`, `ui-switch`, `ui-copy`, `ui-kbd`, `ui-tooltip`, `ui-menu` | global |
-| `code.css` | `ui-code`, `ui-tabs`, `ui-inline-code`, `ui-disclosure`, `ui-prompt`, `ui-tree` | global |
-| `prose.css` | `ui-callout` and the article flow helpers | global |
-| `shell.css` | `ui-header`, `ui-sidebar`, `ui-nav-group`, `ui-nav-link`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-results` | global |
+| `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`: shared declarations the component files expand with `@apply` | foundation (Master CSS definitions) |
+| `tokens.css` | `--ui-*` roles: surfaces, lines, text, light, elevation, radius, rhythm, motion, tones, status, code | foundation |
+| `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll` | documents |
+| `controls.css` | `ui-button`, `ui-segmented`, `ui-field`, `ui-input`, `ui-select`, `ui-range`, `ui-check`, `ui-switch`, `ui-copy`, `ui-kbd`, `ui-tooltip`, `ui-menu` | interface |
+| `code.css` | `ui-code`, `ui-tabs`, `ui-inline-code`, `ui-disclosure`, `ui-prompt`, `ui-tree` | documents |
+| `prose.css` | `ui-callout` and the article flow helpers | documents |
+| `shell.css` | `ui-header`, `ui-sidebar`, `ui-nav-group`, `ui-nav-link`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-results` | interface |
 | `specimens.css` | `ui-item`, `ui-badge`, `ui-label`, `ui-legend`, `ui-measure`, `ui-leader`, `ui-axes`, `ui-swatch`, `ui-palette`, `ui-spacing`, `ui-player` | imported by the components that use it |
 | `data.css` | `ui-table`, `ui-metrics`/`ui-metric`, `ui-bar`, `ui-source`, `ui-params`, `ui-steps`, `ui-index`, `ui-chart`, `ui-waterfall` | imported by the components that use it |
+
+Pages load the system in ordered asset boundaries (`site/routes.ts`), each one stylesheet:
+
+- **foundation**: `styles/globals.css`, the only Master CSS entry (`@import '@master/css'`). Every entry joins one project graph, so a second entry delivers the union of both; keep component files out of it.
+- **interface**: `styles/interface.css`, every page in the site shell.
+- **documents**: `styles/documents.css`, unless a page exports `documentStyles = false` because it renders no surfaces, code or prose (the Blog index, 404, the homepage icon handoff).
+
+Interface and documents are local stylesheets: each emits the theme variables it uses once, so add a component file to an existing boundary stylesheet rather than as another import. Bare sections (`/examples`) load the foundation and import only the system files their page renders.
 
 The approved visual specification is the published "Master CSS Site Design System：Moonstone" artifact.
 

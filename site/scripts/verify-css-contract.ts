@@ -207,7 +207,16 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
     if (/(?:^|[;{}])\s*@(compose|reference|light|dark|variant)\b/.test(css)) {
         throw new Error(`${route} delivers an uncompiled Master CSS directive.`)
     }
+    // Each asset boundary may declare layers, so a boundary linked out of order would reorder them.
+    const layers = [...css.matchAll(/@layer\s+([\w-]+(?:\s*,\s*[\w-]+)*)\s*[;{]/g)].flatMap(match => match[1].split(/\s*,\s*/))
+    const layerOrder = layers.filter((layer, index) => layers.indexOf(layer) === index).join(' > ')
+    if (layerOrder !== 'theme > base > defaults > components > utilities') {
+        throw new Error(`${route} declares cascade layers out of order: ${layerOrder}.`)
+    }
     const selectors = {
+        // The shell interface (styles/interface.css) and document styles (styles/documents.css) boundaries.
+        interface: /\.ui-dialog\s*\{/,
+        documents: /\.ui-tree\s*\{/,
         reference: '.reference-document',
         // Benchmark tables and charts (styles/benchmarks.css).
         benchmark: '.benchmark-value',
@@ -218,12 +227,17 @@ async function assertRouteStylesheetBoundary(route: string, css: string) {
         specimens: /\.ui-swatch\s*\{/
     }
     const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
-        '/': { reference: false, benchmark: false, demo: false, button: false, specimens: false },
-        '/guide': { reference: false, benchmark: false },
+        '/': { interface: true, documents: true, reference: false, benchmark: false, demo: false, button: false, specimens: false },
+        '/guide': { documents: true, reference: false, benchmark: false },
+        // Pages that render only the shell interface.
+        '/404': { interface: true, documents: false },
+        '/blog': { interface: true, documents: false },
+        '/design-system/review/home-icons': { interface: true, documents: false },
         '/reference': { reference: true, benchmark: false, demo: false },
         '/benchmarks': { benchmark: true, reference: false },
         '/design-system': { demo: true, benchmark: false, reference: false },
-        '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false },
+        '/examples/responsive-button': { button: true, interface: false, documents: false, reference: false, benchmark: false, demo: false },
+        '/examples/article-transitions': { interface: false, documents: false },
         '/design-system/review/asset': { specimens: true, reference: false, benchmark: false }
     }
     for (const [group, present] of Object.entries(expected[route] ?? {})) {
