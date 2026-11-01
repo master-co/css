@@ -14,6 +14,6 @@ export default function PackageAuthoringExample({ part = 'preview', code = true 
     <Code lang="html" name="HTML">{authoringHTML}</Code>
     <DemoGeneratedCSS><Code lang="css" beautify>{authoringCSS()}</Code></DemoGeneratedCSS>
   </>}>
-    <DemoViewport title={title} document={demoDocument(section, { html: authoringHTML, caption, bodyClass: 'p-md' })} sizing="content" />
+    <DemoViewport title={title} document={demoDocument(section, { html: authoringHTML, caption, bodyClass: 'p-md p(8)@media((width<240px))' })} sizing="content" />
   </Demo>
 }

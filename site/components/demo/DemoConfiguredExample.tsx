@@ -26,7 +26,7 @@ export default function DemoConfiguredExample({ name, title, source, html, capti
   const section = { page: 'project-styles', id: name, title, html: [html], css: source, classes: [], classLists: [], highlighted: [] }
   const generated = configuredExampleCSS(source, configuredMarkupClasses(html))
   const preview = shadow ? `<div data-demo-shadow><template shadowrootmode="open"><style>${generated.replaceAll('</style', '<\\/style')}</style>${html}</template></div>` : html
-  const document = demoDocument(section, { html: preview, caption, bodyClass: 'p-md', motion })
+  const document = demoDocument(section, { html: preview, caption, bodyClass: 'p-md p(8)@media((width<240px))', motion })
   return <Demo title={title} caption={caption} frame="none" data-project-style={name} source={code && <>
     {source.trim()
       ? <CodeTabs>{[{ name: 'Configuration', lang: 'css', code: source }, { name: 'HTML', lang: 'html', beautify: true, code: html }]}</CodeTabs>

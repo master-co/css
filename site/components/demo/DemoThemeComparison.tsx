@@ -15,7 +15,7 @@ export interface DemoThemeComparisonProps {
 
 /** Independent documents keep mode variables and native state inside each specimen. */
 export default function DemoThemeComparison({ name, title, html, css = '', caption, height = 240, print = false }: DemoThemeComparisonProps) {
-  const document = (mode: 'light' | 'dark') => demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md bg-surface-base fg-text-body', caption: '' }, mode)
+  const document = (mode: 'light' | 'dark') => demoDocument({ page: 'foundations', id: name, title, html: [html], css, classes: [], classLists: [], highlighted: [] }, { html, bodyClass: 'p-md p(8)@media((width<240px)) bg-surface-base fg-text-body', caption: '' }, mode)
   return <Demo title={title} frame="none" caption={caption} data-foundation-paint={name}>
     <div className="ui-compare">
       {(['light', 'dark'] as const).map(mode => <figure key={mode} data-theme-specimen={mode}>
