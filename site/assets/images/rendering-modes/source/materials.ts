@@ -63,6 +63,13 @@ export function drawing(theme: Theme) {
       <div class="spacing-control"><i class="padding-start"></i>${label(value, 'body')}<i class="padding-end"></i></div>
       <div class="spacing-ruler"><i></i>${label(measurement, 'edge')}<i></i></div>
     </div>`
+  /** Matched article specimens isolate selector attachment under the same pointer state. */
+  const selectorSpecimen = (x: number, y: number, test: 'owner' | 'target', title: string, firstLink: string, secondLink: string) =>
+    `<article class="sheet selector-specimen anchor-center" data-test="${test}" style="${box(x, y)}">
+      <p>${label(title)}</p>
+      <a>${label(firstLink, 'body')}<svg class="selector-pointer" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3l15 9-7 1-3 7z"/></svg></a>
+      <a>${label(secondLink, 'body')}</a>
+    </article>`
   /** Adjacent literal fragments preserve the original string; each bracket follows its fragment's intrinsic width. */
   const codeParts = (x: number, y: number, parts: ({ id: string, value: string, tone: AnnotationTone } | { value: string })[]) =>
     `<div class="annotated-code anchor-center" style="${box(x, y)}">${parts.map(part =>
@@ -106,5 +113,5 @@ ${content}
     return { width: sceneWidth, height: sceneHeight, title, description, html }
   }
 
-  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, codeParts, annotation, leader, route, scene }
+  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, selectorSpecimen, codeParts, annotation, leader, route, scene }
 }

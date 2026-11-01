@@ -1,7 +1,7 @@
 /** Human-authored relationships and task vocabulary; semantics come from public APIs. */
 export const ruleSources = [
   { id: 'rules/declarations', title: 'Declarations and values', source: 'guide/style-declarations/contract.mdx', guide: '/guide/syntax-tutorial#declarations', description: 'Accepted class forms, native value parsing, units, importance and fixed utilities.', terms: ['opacity', '(opacity:.5)', 'display', 'block', 'items-center', '(property:value)', 'invalid declaration', 'quoted strings', 'native value'] },
-  { id: 'rules/selectors', title: 'Selectors', source: 'guide/state-selectors/contract.mdx', guide: '/guide/syntax-tutorial#states', description: 'States, combinators, pseudo-elements and selector groups.' },
+  { id: 'rules/selectors', title: 'Selectors', source: 'guide/state-selectors/contract.mdx', guide: '/guide/syntax-tutorial#states', description: 'Selector attachment, related elements, lists, literal encoding and specificity.', terms: ['specificity', 'selector target', 'underline:hover>a', ':has()', ':where()'] },
   { id: 'rules/conditions', title: 'Conditions', source: 'guide/conditional-queries/contract.mdx', guide: '/guide/syntax-tutorial#conditions', description: 'Combine states, breakpoints, modes and conditional CSS.' },
   { id: 'rules/modes', title: 'Variables and modes', source: 'guide/variable-modes/contract.mdx', guide: '/guide/theme#define-tokens', description: 'Variable resolution, namespaces, modes and derived values.' },
   { id: 'rules/layers', title: 'Cascade layers', source: 'guide/cascade-layers/contract.mdx', guide: '/guide/cascade-layers#override-a-component-locally', description: 'Layer ownership, ordering and interactions with native CSS.' },

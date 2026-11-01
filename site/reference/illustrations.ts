@@ -14,6 +14,24 @@ export const referenceIllustrations = {
       'The ) inside the string is preserved. The next ) closes the native declaration head.',
       'The ::before suffix targets the pseudo-element. Its generated declaration is content: \')\';.'
     ]
+  },
+  'selector-targets': {
+    title: 'The same hover, different targets',
+    alt: 'Two identical articles have their first link hovered. Testing hover on the article underlines both links; testing hover on each link underlines only the first.',
+    caption: 'The first link is hovered in both specimens. Dashed blue contours identify the element matching the suffix’s :hover test, not a generated border.',
+    labels: {
+      invariant: 'The first link is hovered in both cases',
+      ownerClass: 'underline:hover>a', targetClass: 'underline>a:hover',
+      ownerTest: 'Test on the article', targetTest: 'Test on each link',
+      article: 'Documentation', firstLink: 'Installation and setup', secondLink: 'API reference',
+      ownerResult: 'Both links are underlined', targetResult: 'Only the hovered link is underlined'
+    },
+    description: [
+      'Both articles carry the utility class and contain the same two direct child links. Their first link is hovered; both ancestor articles therefore also match :hover.',
+      'underline:hover>a tests the article, then selects its direct child links. Both links receive text-decoration-line: underline.',
+      'underline>a:hover selects direct child links, then tests each link. Only the hovered first link receives the declaration.',
+      'The dashed blue contours identify the element matching the hover test. They do not represent a generated border or imply that the second article is not hovered.'
+    ]
   }
 } as const
 

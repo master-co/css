@@ -122,3 +122,12 @@ body {
 .migration-consumer.is-batch .migration-screen > :is(.title, .icon) { color: var(--ui-tone-blue); }
 .migration-verification { position: relative; align-self: stretch; display: flex; justify-content: center; margin-top: 28px; padding-top: 24px; }
 .migration-verification::before { content: ''; position: absolute; top: 0; inset-inline: 0; height: 8px; border: 1px solid var(--ui-line-mark); border-top: 0; }
+
+/* Same DOM and pointer state; only the suffix's test location changes. */
+.selector-specimen > p { margin: 0 0 8px; }
+.selector-specimen > a { position: relative; display: block; padding: 6px 26px 6px 0; border-radius: var(--ui-radius-xs); }
+.selector-specimen[data-test="owner"] { outline: 1px dashed var(--ui-tone-blue); outline-offset: 3px; }
+.selector-specimen[data-test="target"] > a:first-of-type { outline: 1px dashed var(--ui-tone-blue); outline-offset: 3px; }
+.selector-specimen[data-test="owner"] > a > .body,
+.selector-specimen[data-test="target"] > a:first-of-type > .body { text-decoration: underline; text-underline-offset: 3px; }
+.selector-pointer { position: absolute; top: 15px; right: 4px; width: 20px; height: 20px; fill: var(--ui-surface-sheet); stroke: var(--ui-text-strong); stroke-width: 1.25; stroke-linejoin: round; }
