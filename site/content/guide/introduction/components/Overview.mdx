@@ -1,28 +1,11 @@
-import Demo from '~/site/components/demo/Demo'
-import buildingImg from '~/site/public/building.jpg';
-import Link from '~/site/docs-shell/components/Link';
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 
-<Demo>
-  <div className="overflow-hidden (max-width:22.5rem) mx-auto r-lg bg-surface-raised shadow-lg">
-    <Image src={buildingImg} width="640" height="320" className="h-auto w-full (aspect-ratio:16/9) object-cover" alt="Modern architecture used in a Master CSS introduction demo" loading="eager" />
-    <div className="p-lg">
-      <div className="mb-3xs text-2xs font-semibold tracking-widest uppercase fg-text-blue">Project panel</div>
-      <div className="text-md font-medium fg-text-strong">Style with shared values</div>
-      <div className="mt-3xs text-sm fg-text-body">Use shared colors, spacing and type in markup.</div>
-      <Link className="inline-flex items-center justify-center w-full mt-md py-xs px-md r-md text-sm font-medium bg-blue-60 fg-white bg-blue-70:hover" href="/guide/installation">Start building</Link>
-    </div>
-  </div>
-</Demo>
-This reduced example assumes your application serves an image at `/building.jpg`. Use your own image URL and alternative text.
-
-```html
-<article class="overflow-hidden r-lg bg-surface-raised shadow-lg">
-  <img src="/building.jpg" width="640" height="360" alt="A contemporary building" class="w-full h-auto (aspect-ratio:16/9) object-cover">
+<DemoConfiguredExample name="introduction-panel" title="A card built from shared values" source="" caption="The card uses preset spacing, type and surface colors. Hover or focus the link to see its interaction state." html={`<article class="overflow-hidden w-full (max-width:22.5rem) mx-auto r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm">
+  <img src="/building.jpg" width="640" height="360" alt="Sunlit facade of a contemporary building" class="block w-full h-auto (aspect-ratio:16/9) object-cover">
   <div class="p-lg">
-    <p class="text-2xs font-semibold uppercase fg-text-blue">Project panel</p>
-    <h2 class="text-md font-medium fg-text-strong">Style with shared values</h2>
-    <p class="text-sm fg-text-body">Use shared colors, spacing and type in markup.</p>
-    <a class="inline-flex justify-center w-full mt-md px-md py-xs r-md bg-blue-60 fg-white bg-blue-70:hover" href="/guide/installation">Start building</a>
+    <p class="m(0) text-2xs font-medium tracking-wider uppercase fg-text-muted">Project panel</p>
+    <h2 class="mt-xs mb(0) text-lg font-regular fg-text-strong">Style with shared values</h2>
+    <p class="mt-xs mb(0) text-sm fg-text-muted">Use shared colors, spacing and type in markup.</p>
+    <a class="flex items-center justify-center w-full mt-md px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline(2):focus-visible outline-solid:focus-visible outline-offset(3) (text-decoration-line:none)" href="/guide/installation" target="_top">Start building →</a>
   </div>
-</article>
-```
+</article>`} />

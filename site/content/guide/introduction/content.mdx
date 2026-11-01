@@ -1,53 +1,56 @@
 import Overview from './components/Overview.mdx'
+import IntroductionIllustration from './components/IntroductionIllustration'
+import Class2CSS from '~/site/components/Class2CSS'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
-## Overview [sr-only]
+Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS. Write classes where you build an element; use your stylesheet for the values and patterns that belong to the wider project. Master generates the CSS those classes need.
+
+You can start with the supplied colors, spacing and typography. You do not need to design a complete theme before building your first component.
+
+## Style an interface in markup \{#overview\}
+
+This card combines local layout choices with shared values. `w-full` sets its width, `p-lg` gives its content named spacing, and `bg-surface-raised` selects a surface color from the preset.
+
 <Overview />
-Master CSS is a CSS framework for styling interfaces in markup and defining shared styles in CSS. The card combines shared colors, spacing and type with local layout choices: its classes describe the styling where you use it, and the theme supplies the shared values.
 
-The class language combines native declarations such as `grid`, named values such as `p-lg`, and conditions such as `bg-blue-70:hover`. Master generates CSS for recognized classes and retains the resources they need. Start with the supplied theme and write local styles without designing a complete system first; as values and patterns become shared, name them in your project CSS with theme tokens, native component classes and custom utilities. Complex selectors and longer reusable styles can stay in native stylesheets alongside your classes.
-
----
-
-## Define values that should change together \{#write-your-first-class\}
-In the card, `p-lg` reads a spacing token and `bg-surface-raised` reads a surface color. These names come from the supplied theme. Add your own token when several elements should share a project decision, such as the brand color used by primary actions.
-
-After [Installation](/guide/installation), your application loads a CSS entry containing:
+The preview and its source use the same markup. After [Installation](/guide/installation), paste it into a source file your integration scans. Your app stylesheet should load the preset:
 
 ```css name=app.css
 @import '@master/css';
 ```
 
-Add the following definitions after that import. The two links show alternative ways to give the card's action a brand background: `bg-brand` uses the theme token through a Master class, while `card-action` uses the same token in native CSS.
+The image URL assumes your app serves `/building.jpg`. Replace it with your own image and alternative text, and point the link to a page in your app.
+
+## Follow a class into CSS \{#write-your-first-class\}
+
+Take `p-lg` from the card. The preset connects `p-` to padding and `lg` to the spacing token `--spacing-lg`. Master generates a class selector whose declaration references that CSS variable.
+
+<IntroductionIllustration />
+
+<Class2CSS>{['p-lg']}</Class2CSS>
+
+The browser applies `padding: var(--spacing-lg)` to the matching element. With the preset's value, that is `1.5rem` on all four sides. The class stays the same if you change the shared value in your theme.
+
+Other classes express different kinds of decisions: `flex` is a fixed utility for `display: flex`, while `bg-surface-inset:hover` adds a hover state. The [Syntax Tutorial](/guide/syntax-tutorial) walks through values, selectors and conditions in a working example.
+
+## Define what should change together
+
+Add a theme token when several elements should share a project decision. For a primary action color, define `--color-brand` after the import in your app stylesheet, then use `bg-brand` in markup:
 
 <ConfiguredExample source={`@theme {
   --color-brand: #2563eb;
-}
-
-@layer components {
-  .card-action {
-    background-color: var(--color-brand);
-  }
-}`} html={`<a class="px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
-  Start building
-</a>
-
-<a class="card-action px-md py-xs r-md fg-white" href="/guide/installation">
+}`} html={`<a class="inline-flex px-md py-xs r-md bg-brand fg-white" href="/guide/installation">
   Start building
 </a>`} />
 
-Both backgrounds reference `--color-brand`. Changing that definition updates both consumers wherever the value applies. Local layout classes can still differ, and a reusable component can collect more declarations as its role becomes clear.
+Changing `--color-brand` updates elements that use it. Share that token because the elements should change together; two unrelated colors can have the same value without needing the same name. [Theme Tokens](/guide/theme) explains how to define and override shared values.
 
-Share a token because its consumers should change together. An informational color may initially have the same value as the brand color and still deserve a separate token. [Theme Tokens](/guide/theme) explains shared values; [Global Styles](/guide/global-styles) covers reusable components and utilities.
+Native CSS belongs here too. Keep complex selectors and reusable component styles in your stylesheet, and use ordinary UI components to share repeated markup. [Reusing Styles](/guide/reusing-styles) helps you choose between a shared token, a component class and a custom utility.
 
----
+## Start with static CSS
 
-## Understand the next change
-Before editing a shared token such as `--color-brand`, the CLI, MCP server, [Language Service](/guide/language-service) and [Code Linting](/guide/code-linting) read the same project definitions to locate its consumers and compare snapshots of the affected classes and outputs. [AI Coding](/guide/ai-coding#review-the-second-change) walks through that review with a coding agent.
+Use the recommended static integration for your framework. It finds complete class names in your source at build time and delivers ordinary CSS, without a Master browser runtime or engine.
 
----
+Interactive interfaces still work: switch between known classes, use selectors such as `:hover`, or update CSS custom properties for values such as progress and coordinates. A runtime is useful when a playground, visual editor or deployed content introduces previously unknown class names. [Rendering Modes](/guide/rendering-modes) explains the delivery choices.
 
-## Choose how CSS is delivered
-Use the recommended static setup for your framework. It scans complete class names at build time and delivers ordinary CSS, without a Master browser runtime or engine. Changing state does not require compiling CSS in the browser: toggle known classes, use native selectors, or update custom properties for coordinates, progress and other dynamic values. Choose runtime only when a playground, visual editor or deployed content introduces previously unknown class names; [Rendering Modes](/guide/rendering-modes) compares static, runtime and progressive delivery.
-
-Start with [Installation](/guide/installation), then follow the [Syntax Tutorial](/guide/syntax-tutorial) to build a card with interaction states, responsive conditions and a project token.
+Follow [Installation](/guide/installation) to connect Master CSS to your app, then build a card with interaction states and responsive conditions in the [Syntax Tutorial](/guide/syntax-tutorial). For completion and diagnostics while you write, set up the [Language Service](/guide/language-service).

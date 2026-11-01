@@ -1,8 +1,12 @@
 import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
+import { introductionIllustrationMarkdown } from '../content/guide/introduction/illustration'
 
 export async function introductionContent(siteRoot: string) {
-  const result = await extractReferenceMdx(path.join(siteRoot, 'content/guide/introduction/content.mdx'), [], [], { overview: 'include' })
+  const result = await extractReferenceMdx(path.join(siteRoot, 'content/guide/introduction/content.mdx'), [], [], {
+    overview: 'include',
+    component: name => name === 'IntroductionIllustration' ? introductionIllustrationMarkdown() : undefined
+  })
   if (result.notes.length) throw new Error(`Incomplete Introduction export: ${result.notes.join('; ')}`)
   return { ...result, searchMarkdown: result.markdown, markdown: portableMarkdown(result.markdown) }
 }

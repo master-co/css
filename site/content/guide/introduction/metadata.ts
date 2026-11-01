@@ -4,7 +4,7 @@ const metadata = define({
   title: {
     absolute: 'Introduction to Master CSS'
   },
-  description: 'Style interfaces in markup, define shared values in CSS, and understand how Master CSS helps you inspect changes.',
+  description: 'Build an interface with classes, follow them into CSS, and define the values your project shares.',
   category: 'Getting Started',
   other: {
     subject: 'Introduction'
