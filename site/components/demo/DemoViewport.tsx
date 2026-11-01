@@ -290,7 +290,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
             <button {...button} onClick={() => setWidth(undefined)}>Fit</button>
           </>}
           {theme && <button {...button} aria-pressed={isDark} title="Toggle dark theme" onClick={() => setDark(!isDark)}>
-            {isDark ? <IconMoon aria-hidden="true" /> : <IconSun aria-hidden="true" />}{isDark ? 'Dark' : 'Light'}
+            {isDark ? <IconMoon aria-hidden="true" /> : <IconSun aria-hidden="true" />}Theme
           </button>}
           {motion && <>
             <button {...button} onClick={() => animate(playing ? 'pause' : 'play')}>

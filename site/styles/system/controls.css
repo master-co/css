@@ -9,6 +9,8 @@
     cursor: pointer; user-select: none; -webkit-user-select: none;
     transition: box-shadow var(--ui-duration-quick) var(--ui-ease), background var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease), color var(--ui-duration-quick);
   }
+  /* A label longer than its row (large text, narrow screens) wraps inside the button instead of overflowing. */
+  .ui-button:not([data-shape="icon"]) { max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.2; text-align: center; }
   .ui-button > svg { flex: none; width: 1rem; height: 1rem; }
   .ui-button:where(:hover, [data-state="hover"]):not(:disabled) { translate: 0 -.5px; box-shadow: var(--ui-elevation-rise-1h); }
   .ui-button:where(:active, [data-state="pressed"]):not(:disabled) { translate: 0 .5px; background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); transition-duration: var(--ui-duration-press); }

@@ -11,8 +11,8 @@
   [data-playback="paused"] * { animation-play-state: paused !important; }
 
   /* Catalog: groups of closed recipes, each a complete example */
-  .ui-catalog > section { margin-block: var(--ui-space-xl); }
-  .ui-catalog h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ui-space-sm); margin: 0 0 var(--ui-space-sm); color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); scroll-margin-top: 6rem; }
+  .ui-catalog > section { min-width: 0; margin-block: var(--ui-space-xl); }
+  .ui-catalog h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--ui-space-sm); margin: 0 0 var(--ui-space-sm); color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); scroll-margin-top: 6rem; overflow-wrap: anywhere; }
   .ui-catalog h3 > small { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); letter-spacing: 0; }
   .ui-catalog-entry { display: grid; gap: var(--ui-space-sm); min-width: 0; padding-bottom: var(--ui-space-md); }
   .ui-catalog-entry > a { width: fit-content; color: var(--ui-text-body); font-size: .78125rem; text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }

@@ -23,7 +23,7 @@
 
   /* Metrics: aligned values with their caveats */
   .ui-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--ui-inset); }
-  .ui-metric { display: grid; gap: 6px; padding: var(--ui-space-md); border-radius: var(--ui-radius-lg); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-metric { display: grid; min-width: 0; gap: 6px; overflow-wrap: anywhere; padding: var(--ui-space-md); border-radius: var(--ui-radius-lg); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-metric > small { color: var(--ui-text-muted); @apply --ui-label-type; text-transform: uppercase; }
   .ui-metric > b { color: var(--ui-text-strong); font-size: 1.625rem; font-weight: var(--ui-weight-heading); letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .ui-metric > b > span { color: var(--ui-text-muted); font-size: .875rem; font-weight: var(--ui-weight-medium); letter-spacing: 0; }
@@ -109,6 +109,7 @@
   .ui-waterfall-row > span { overflow: hidden; color: var(--ui-text-strong); font-family: var(--font-family-mono); font-size: .71875rem; text-overflow: ellipsis; white-space: nowrap; }
   .ui-waterfall-track { position: relative; height: 100%; background: repeating-linear-gradient(90deg, var(--ui-line-hair) 0 1px, transparent 1px 25%); }
   .ui-waterfall-track > i { position: absolute; top: 50%; height: 8px; translate: 0 -50%; border-radius: 3px; background: var(--ui-text-strong); }
+  @media (forced-colors: active) { .ui-waterfall-track > i { box-sizing: border-box; border: 1px solid CanvasText; } }
   .ui-waterfall-track > i[data-tone="muted"] { background: var(--ui-line-mark); }
   .ui-waterfall-track > i[data-tone="blocking"] { background: var(--ui-tone-amber); }
   .ui-waterfall-mark { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ui-status-danger); }

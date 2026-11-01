@@ -32,7 +32,7 @@ export default function DemoContainer({ children, title, caption, maxWidth = 720
   return <Demo {...props} title={title} caption={caption} padding="sm" data-ready={ready} controls={<>
     <label className="ui-label" data-case="as-is" htmlFor={id}>Container</label>
     <input id={id} className="ui-range" type="range" min={minimumWidth} max={maxWidth} step="1" disabled={!ready} value={value}
-      style={{ '--value': `${((value - minimumWidth) / range) * 100}%`, width: '8rem' } as CSSProperties}
+      style={{ '--value': `${((value - minimumWidth) / range) * 100}%`, width: '128px', maxWidth: '100%' } as CSSProperties}
       onChange={event => setWidth(Number(event.target.value))} />
     <button type="button" className="ui-button" data-size="sm" disabled={!ready} onClick={() => setWidth(undefined)}>Fit</button>
     <output className="ui-label" data-case="as-is">{ready ? `${measured} px · viewport unchanged` : 'Measuring container…'}</output>

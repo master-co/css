@@ -13,7 +13,7 @@ export default function MeasureReviewStage() {
   return <Demo title="Content bounds" background="grid" controls={<>
     <label className="ui-label" data-case="as-is" htmlFor={widthId}>Width · {requestedWidth} px</label>
     <input id={widthId} className="ui-range" type="range" min={180} max={460} step={20} value={requestedWidth}
-      style={{ '--value': `${((requestedWidth - 180) / 280) * 100}%`, width: '8rem' } as CSSProperties}
+      style={{ '--value': `${((requestedWidth - 180) / 280) * 100}%`, width: '128px', maxWidth: '100%' } as CSSProperties}
       onChange={event => setRequestedWidth(Number(event.target.value))} />
     <label className="ui-check" htmlFor={detailsId}>
       <input id={detailsId} type="checkbox" checked={showDetails} onChange={event => setShowDetails(event.target.checked)} />

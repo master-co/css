@@ -12,7 +12,7 @@
   .ui-header[data-background="transparent"] { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   /* Without scripts the header never leaves its transparent top state, so it scrolls away instead of covering content. */
   @media (scripting: none) { .ui-header[data-background="transparent"] { position: absolute; } }
-  @media (prefers-reduced-motion: reduce) { .ui-header { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .ui-header, .ui-header[data-variant="stickable"] { transition: none; } }
   @media print { .ui-header { display: none; } }
 
   .ui-header-brand { display: inline-flex; align-items: center; min-height: 2.75rem; border-radius: var(--ui-radius-sm); }

@@ -247,6 +247,7 @@
   .brand-control-actions .ui-copy-status:not(:empty) { position: absolute; bottom: 0; margin: 0; padding: .25rem 0; border: 0; background: transparent; font-size: .625rem; }
   .brand-button { display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-xs); min-height: 44px; padding: .625rem .875rem; border: 1px solid var(--color-line-control); border-radius: var(--radius-lg); background: var(--brand-sheet); color: var(--brand-ink); box-shadow: var(--shadow-contact); font-size: .75rem; cursor: pointer; transition: background-color var(--duration-fast), box-shadow var(--duration-fast); }
   .brand-button:hover { background: var(--brand-ground); }
+  .brand-button > svg { flex: none; width: 1rem; height: 1rem; }
   .brand-button:active { box-shadow: var(--shadow-pressed-contact); }
   .brand-button:disabled { border-color: var(--brand-contour); background: var(--brand-ground); color: var(--color-text-disabled); box-shadow: none; cursor: not-allowed; }
   .brand-state-note { margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--brand-line); }
