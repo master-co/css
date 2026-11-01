@@ -171,3 +171,38 @@ The comparison is against the committed snapshot, which a build of `rc` at `7a8a
 ### Visual check
 
 `/brand` was reviewed at 1280 and 390px in light and dark on the development server. `brand-system.e2e.mjs` passes in Chromium and WebKit: no overflow, every anchor resolves, the visible artwork matches the background in both schemes and without JavaScript, the minimum sizes render at 16, 24 and 16 CSS pixels with their source proportions, downloads are byte-identical to the originals, and enlarged text with forced colors stays readable.
+
+## Documentation and blog reading {#documentation-blog-reading}
+
+The owner's round 4 direction unifies the documentation and blog reading: hanging surfaces keep their own insets (`--hang` removed), body text sets at line-height 2, eyebrows track .14em (Han .1em), a blog post keeps the 41rem measure inside a frame with 5rem of room on each side, the footer moves the license and trademark policy into a Legal group above a 12px tracked base row, and nested frames are reduced (one-contour browser chrome, stages and source code in a tray parted by tone, `DemoAsset` stages set light or dark).
+
+### Drift already on rc (`466d4ad90` → `6a0bb5250`)
+
+A build of `rc` at `6a0bb5250` differs from the committed snapshot in two ways, neither from this change:
+
+- `33fc635a8` removed the Can I use and MDN links from the contents rail, and with them the `.ui-toc-references` rules: 4 segments removed, 1 added, on the 158 routes that load the contents styles.
+- The project manifest's preset source paths read `packages/preset/src/theme.css` instead of `../../../packages/preset/src/theme.css`. The previous snapshot was written from a `.claude/worktrees/*` checkout whose packages resolved into the main checkout; the values are otherwise identical, and the new form is what a build in the repository root produces.
+
+### This change set
+
+Compared against that build of `6a0bb5250` with the same toolchain:
+
+| Change | Count |
+| --- | --- |
+| Routes added or removed | 0 |
+| Routes with a different CSS contract | 244 (all shared tokens) |
+| Delivered CSS segments | 2,536 → 2,530 (44 added, 50 removed) |
+| Delivery contracts | 123 → 123 |
+| Total CSS delivered across routes | 31,742,546 → 31,533,595 bytes (−0.7%) |
+| Median CSS per route | 129,358 → 128,383 bytes |
+
+- Every route changes through the shared tokens (`--ui-leading-*`, `--ui-tracking-eyebrow`).
+- Documentation and Reference routes lose 869–975 bytes: the `--hang` rules and their `max()` insets go, the footer's legal-link styles go, and the tray, code and browser rules shrink.
+- Blog posts lose about 1.4 KB, mostly the stale code-panel and image overrides that pointed at variables which no longer exist; `/blog` −152, `/` −178, `/brand` −1,065, `/404` −5.
+- `/examples/article-transitions`, `/layout-system` and `/view-transitions` gain 84 bytes for the browser contour overlay and the tray that lends a lone browser its place; the other examples lose 5.
+- Hydration payloads move by under 30 bytes on the shell routes: the footer's island props carry the license and trademark links inside its groups instead of a separate list.
+- The project manifest is unchanged.
+
+### Visual check
+
+Reviewed on the development server at 1440 and 390 px, light and dark: `/guide/installation/vite` (steps, browser preview, code, tables), `/blog/master-css-next` (masthead, contents, wide trays and code, the next read), `/blog`, `/brand` downloads, `/reference/tokens/spacing` and `/guide/responsive-design` (framed subjects on tray stages), `/tw/guide/introduction` and the homepage footer. Site lint (no new warnings), type-check, `Demo.test.tsx` and `islands.test.tsx` pass. `test:assets` fails at `6a0bb5250` before this change: `images/contents.svg` and `images/search.svg` are unreferenced.
