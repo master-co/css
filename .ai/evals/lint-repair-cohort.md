@@ -162,3 +162,9 @@ frozen source/tools, original source provenance, prompts/events, accepted and
 rejected workspaces, host assessments, audits and per-turn manual classifications.
 Observations SHA-256:
 `fcc9f452cdb590d031c8f77122729b1b2c028c26954ba8a65eba1c1f133de6ab`.
+
+The subsequent [inspection reconciliation evaluation](inspect-reconciliation.md)
+adds explicit class-evidence review and repeats the remaining case twice. Both
+retained results resolve class recognition without new failures, but only one
+fully repairs hover. The other retains four cascade failures; this does not revise
+the seven-case result above.
