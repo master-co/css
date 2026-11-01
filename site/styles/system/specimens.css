@@ -1,0 +1,94 @@
+/* Specimens and annotations: the vocabulary inside a stage. Hue appears only here, always named by a legend or label. */
+@layer components {
+  /* Item: a tile that stands for content. tone × variant */
+  .ui-item {
+    --tone: var(--ui-tone-neutral);
+    display: grid; place-items: center; min-width: 3rem; min-height: 3rem; padding: var(--ui-space-xs) var(--ui-space-sm);
+    border-radius: var(--ui-radius-md); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo));
+    color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1); font: var(--ui-weight-medium) .8125rem/1.4 var(--font-family-mono);
+  }
+  .ui-item[data-tone="blue"], .ui-badge[data-tone="blue"], .ui-legend [data-tone="blue"] { --tone: var(--ui-tone-blue); }
+  .ui-item[data-tone="violet"], .ui-badge[data-tone="violet"], .ui-legend [data-tone="violet"] { --tone: var(--ui-tone-violet); }
+  .ui-item[data-tone="amber"], .ui-badge[data-tone="amber"], .ui-legend [data-tone="amber"] { --tone: var(--ui-tone-amber); }
+  .ui-item[data-tone="green"], .ui-badge[data-tone="green"], .ui-legend [data-tone="green"] { --tone: var(--ui-tone-green); }
+  .ui-item[data-tone="red"], .ui-badge[data-tone="red"], .ui-legend [data-tone="red"] { --tone: var(--ui-tone-red); }
+  .ui-item:not([data-tone="neutral"], :not([data-tone])) {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--tone) 10%, var(--ui-surface-sheet)), color-mix(in oklab, var(--tone) 13%, var(--ui-surface-sheet-lo)));
+    color: color-mix(in oklab, var(--tone) 72%, var(--ui-text-strong));
+    box-shadow: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px color-mix(in oklab, var(--tone) 36%, transparent), 0 1px 1px -.5px var(--ui-shade-1), 0 2px 2px -1px var(--ui-shade-2);
+  }
+  .ui-item[data-variant="solid"] { background: var(--tone); color: light-dark(oklch(100% 0 none), oklch(15% .0016 265)); box-shadow: inset 0 1px 0 oklch(100% 0 none / .22), 0 0 0 1px color-mix(in oklab, var(--tone) 80%, black), 0 1px 1px -.5px var(--ui-shade-1), 0 2px 2px -1px var(--ui-shade-2); }
+  .ui-item[data-variant="outline"] { background: transparent; color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tone) 60%, transparent); }
+  .ui-item[data-variant="ghost"] { background: var(--ui-hatch); color: var(--ui-text-muted); box-shadow: inset 0 0 0 1px var(--ui-line-divider); }
+
+  /* Badge: a small, legible category or state */
+  .ui-badge {
+    --tone: var(--ui-tone-neutral);
+    display: inline-flex; align-items: center; gap: 5px; max-width: 100%; height: 1.375rem; padding: 0 .5rem; border-radius: var(--ui-radius-sm);
+    background: color-mix(in oklab, var(--tone) 10%, transparent); color: color-mix(in oklab, var(--tone) 75%, var(--ui-text-strong));
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tone) 24%, transparent);
+    font: var(--ui-weight-medium) .71875rem/1 var(--font-family-mono); letter-spacing: .01em; white-space: nowrap; vertical-align: middle;
+  }
+  .ui-badge[data-tone="neutral"], .ui-badge:not([data-tone]) { background: var(--ui-surface-well); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
+  .ui-badge[data-variant="dot"]::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--tone); }
+  .ui-badge[data-size="sm"] { height: 1.125rem; padding: 0 .375rem; font-size: .65625rem; }
+
+  /* Label: names a condition, outside the measured layout */
+  .ui-label { display: inline-block; color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-transform: uppercase; }
+  .ui-label[data-case="as-is"] { text-transform: none; letter-spacing: 0; font-size: .75rem; }
+
+  /* Legend: every teaching color has a visible name */
+  .ui-legend { display: flex; flex-wrap: wrap; gap: var(--ui-space-xs) var(--ui-space-lg); margin: 0; padding: 0; list-style: none; color: var(--ui-text-body); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-mono); }
+  .ui-legend > li { display: inline-flex; align-items: center; gap: var(--ui-space-xs); }
+  .ui-legend > li > i { --tone: var(--ui-tone-neutral); width: 10px; height: 10px; border-radius: 3px; background: var(--tone); box-shadow: inset 0 0 0 1px oklch(0% 0 none / .12); }
+
+  /* Measure: drafting leaders — hairline, end dots, value on the stage */
+  .ui-measure { display: grid; gap: var(--ui-space-xs); min-width: 0; }
+  .ui-measure-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px var(--ui-space-sm); color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.4 var(--font-family-mono); }
+  .ui-measure-head output { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); font-variant-numeric: tabular-nums; }
+  .ui-measure-rule { position: relative; height: 9px; }
+  .ui-measure-rule::before { content: ""; position: absolute; top: 4px; right: 3px; left: 3px; height: 1px; background: var(--ui-line-mark); }
+  .ui-measure-rule::after { content: ""; position: absolute; inset: 1px 0 auto; height: 7px; background: radial-gradient(circle at 3.5px 50%, var(--ui-surface-stage) 2px, var(--ui-line-mark) 2.2px 3px, transparent 3.2px), radial-gradient(circle at calc(100% - 3.5px) 50%, var(--ui-surface-stage) 2px, var(--ui-line-mark) 2.2px 3px, transparent 3.2px); }
+  .ui-leader { position: absolute; display: flex; align-items: center; gap: var(--ui-space-xs); color: var(--ui-text-body); font: var(--ui-weight-medium) .65625rem/1 var(--font-family-mono); white-space: nowrap; }
+  .ui-leader > i { font-style: normal; color: var(--ui-text-muted); }
+
+  /* Axes: physical directions around the subject */
+  .ui-axes { display: grid; grid-template-columns: 2rem minmax(0, 1fr); grid-template-rows: auto auto; gap: var(--ui-space-sm); min-width: 0; }
+  .ui-axes > .ui-axes-inline { grid-column: 2; display: flex; align-items: center; gap: var(--ui-space-sm); color: var(--ui-text-body); font: var(--ui-weight-medium) .6875rem/1 var(--font-family-mono); white-space: nowrap; }
+  .ui-axes > .ui-axes-block { grid-row: 2; display: flex; flex-direction: column; align-items: center; gap: var(--ui-space-xs); color: var(--ui-text-body); font: var(--ui-weight-medium) .6875rem/1 var(--font-family-mono); }
+  .ui-axes > .ui-axes-block > span:first-child { writing-mode: vertical-rl; white-space: nowrap; }
+  .ui-axes-rule { position: relative; flex: 1; background: var(--ui-line-mark); }
+  .ui-axes-inline .ui-axes-rule { height: 1px; }
+  .ui-axes-block .ui-axes-rule { width: 1px; }
+  .ui-axes-rule::after { content: ""; position: absolute; width: 6px; height: 6px; border: solid var(--ui-line-mark); }
+  .ui-axes-inline .ui-axes-rule::after { right: 0; top: -3px; border-width: 1px 1px 0 0; rotate: 45deg; }
+  .ui-axes-block .ui-axes-rule::after { bottom: 0; left: -3px; border-width: 0 1px 1px 0; rotate: 45deg; }
+  .ui-axes > .ui-axes-content { grid-column: 2; grid-row: 2; min-width: 0; }
+
+  /* Swatch: a named role with its actual paint */
+  .ui-swatch { display: grid; gap: var(--ui-space-xs); min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-lg); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
+  .ui-swatch-paint { height: 4.5rem; border-radius: calc(var(--ui-radius-lg) - var(--ui-inset)); box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
+  .ui-swatch > figcaption { display: grid; gap: 2px; padding: 0 4px 2px; }
+  .ui-swatch > figcaption b { color: var(--ui-text-strong); font-size: .75rem; font-weight: var(--ui-weight-strong); }
+  .ui-swatch > figcaption code { color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.4 var(--font-family-mono); overflow-wrap: anywhere; }
+
+  /* Palette: fixed preset colors, copy on click */
+  .ui-palette { display: grid; gap: var(--ui-space-md); container-type: inline-size; }
+  .ui-palette-row { display: grid; grid-template-columns: 4.5rem repeat(13, minmax(0, 1fr)); align-items: center; gap: 3px; }
+  .ui-palette-row > span { color: var(--ui-text-strong); font-size: .75rem; font-weight: var(--ui-weight-strong); text-transform: capitalize; }
+  .ui-palette-chip { appearance: none; height: 2.25rem; border: 0; border-radius: 6px; cursor: pointer; box-shadow: inset 0 0 0 1px oklch(0% 0 none / .06); transition: translate var(--ui-duration-quick) var(--ui-ease), box-shadow var(--ui-duration-quick); }
+  .ui-palette-chip:first-of-type { border-radius: 8px 4px 4px 8px; }
+  .ui-palette-chip:last-of-type { border-radius: 4px 8px 8px 4px; }
+  .ui-palette-chip:hover { translate: 0 -1px; box-shadow: inset 0 0 0 1px oklch(0% 0 none / .08), 0 4px 8px -4px var(--ui-shade-2); }
+  .ui-palette-chip:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  @container (width < 36rem) { .ui-palette-row { grid-template-columns: repeat(7, minmax(0, 1fr)); } .ui-palette-row > span { grid-column: 1 / -1; } }
+
+  /* Spacing specimen */
+  .ui-spacing { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-md); padding: var(--ui-space-md); border-radius: var(--ui-radius-lg); background: var(--ui-hatch); box-shadow: inset 0 0 0 1px var(--ui-line-divider); }
+
+  /* Player: play, pause and replay a native animation; the timeline reads its actual state */
+  .ui-player { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
+  .ui-player-time { display: flex; align-items: center; gap: var(--ui-space-sm); flex: 1; min-width: 8rem; color: var(--ui-text-muted); font: var(--ui-weight-medium) .6875rem/1 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+  .ui-player-time > .ui-bar { flex: 1; height: 4px; box-shadow: none; background: var(--ui-line-divider); }
+  .ui-player[data-state="playing"] .ui-player-time > output { color: var(--ui-text-strong); }
+}

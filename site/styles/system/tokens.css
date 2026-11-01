@@ -1,0 +1,128 @@
+/*
+ * Moonstone / Obsidian — site tokens.
+ * One light source above and slightly left. Every surface is a step on one ladder:
+ *   canvas (page) → tray (recessed holder) → stage (lit well inside a tray) → sheet (raised face) → float (overlay)
+ *   well (sunken field) sits below its surroundings.
+ * Light mode is moonstone: a cool pearl with a faint blue sheen. Dark mode is obsidian: volcanic glass.
+ * Tokens are namespaced --ui-* and are not utility tokens: content keeps teaching the preset vocabulary.
+ * The interface is monochrome. Hues are reserved for teaching specimens and status; brand gold for the homepage and brand moments.
+ */
+@layer theme {
+:root, :host {
+
+  /* Type */
+  --ui-font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";
+  --ui-text-display: 2.5rem;  --ui-leading-display: 1.1;  --ui-tracking-display: -.03em;
+  --ui-text-title: 2rem;      --ui-leading-title: 1.15;   --ui-tracking-title: -.026em;
+  --ui-text-h2: 1.5rem;       --ui-leading-h2: 1.3;       --ui-tracking-h2: -.02em;
+  --ui-text-h3: 1.1875rem;    --ui-leading-h3: 1.4;       --ui-tracking-h3: -.012em;
+  --ui-text-base: 1rem;       --ui-leading-body: 1.75;
+  --ui-text-small: .875rem;   --ui-leading-small: 1.6;
+  --ui-text-caption: .8125rem; --ui-leading-caption: 1.55;
+  --ui-text-label: .6875rem;  --ui-tracking-label: .06em;
+  --ui-text-code: .8125rem;   --ui-leading-code: 1.7;
+  --ui-weight-regular: 400; --ui-weight-medium: 520; --ui-weight-strong: 560; --ui-weight-heading: 600;
+
+  /* Shape: radii nest by the 6px tray inset (outer = inner + inset) */
+  --ui-inset: 6px;
+  --ui-radius-xs: 4px;    /* inline code, kbd */
+  --ui-radius-sm: 6px;    /* badges, chips, tooltips */
+  --ui-radius-md: 10px;   /* controls, inputs, tiles */
+  --ui-radius-lg: 14px;   /* small cards, menus */
+  --ui-radius-xl: 18px;   /* stage, sheet, code window */
+  --ui-radius-2xl: 24px;  /* tray, dialog */
+  --ui-radius-pill: 999px;
+
+  /* Rhythm */
+  --ui-space-3xs: .25rem; --ui-space-2xs: .375rem; --ui-space-xs: .5rem; --ui-space-sm: .75rem; --ui-space-md: 1rem;
+  --ui-space-lg: 1.5rem; --ui-space-xl: 2rem; --ui-space-2xl: 3rem; --ui-space-3xl: 4rem;
+
+  /* Motion: one easing family; interaction is quick, explanation calm */
+  --ui-ease: cubic-bezier(.22, 1, .36, 1);
+  --ui-ease-inout: cubic-bezier(.65, 0, .35, 1);
+  --ui-duration-press: 60ms; --ui-duration-quick: 160ms; --ui-duration-base: 280ms; --ui-duration-slow: 640ms;
+}
+
+:root, :host, .light, .dark {
+  /* Surfaces */
+  --ui-surface-canvas:   light-dark(oklch(98.1% .0018 255), oklch(17.4% .0034 265));
+  --ui-surface-tray:     light-dark(oklch(95.6% .0032 255), oklch(13% .0032 265));
+  --ui-surface-stage:    light-dark(oklch(98.5% .0022 255), oklch(15.8% .0036 265));
+  --ui-surface-sheet:    light-dark(oklch(100% 0 none),     oklch(22.4% .0048 265));
+  --ui-surface-sheet-lo: light-dark(oklch(99% .0022 255),   oklch(19.8% .0044 265));
+  --ui-surface-well:     light-dark(oklch(97.2% .0026 255), oklch(14% .0034 265));
+  --ui-surface-well-hover: light-dark(oklch(96.4% .003 255), oklch(12.8% .0034 265));
+  --ui-surface-float:    light-dark(oklch(100% 0 none),     oklch(25.2% .005 265));
+  --ui-surface-chip:     light-dark(oklch(97% .0028 255),   oklch(100% 0 none / .07));
+  --ui-surface-code:     light-dark(oklch(99.3% .0014 255), oklch(16.4% .0038 265));
+  --ui-surface-ink:      light-dark(oklch(19% .003 265),    oklch(97.6% .0018 265));
+  --ui-surface-scrim:    light-dark(oklch(26% .012 265 / .18), oklch(0% 0 none / .55));
+
+  /* Lines */
+  --ui-line-hair:    light-dark(oklch(26% .012 265 / .07),  oklch(100% 0 none / .06));
+  --ui-line-contour: light-dark(oklch(26% .012 265 / .1),   oklch(100% 0 none / .085));
+  --ui-line-divider: light-dark(oklch(26% .012 265 / .12),  oklch(100% 0 none / .1));
+  --ui-line-strong:  light-dark(oklch(26% .012 265 / .22),  oklch(100% 0 none / .2));
+  --ui-line-mark:    light-dark(oklch(26% .012 265 / .32),  oklch(100% 0 none / .3));
+
+  /* Text */
+  --ui-text-strong:   light-dark(oklch(15% .0016 265),  oklch(97.6% .0018 265));
+  --ui-text-body:     light-dark(oklch(37.5% .0028 265), oklch(82% .0025 265));
+  --ui-text-muted:    light-dark(oklch(48.6% .003 265),  oklch(69.5% .0028 265));
+  --ui-text-disabled: light-dark(oklch(68.6% .0028 265), oklch(48.6% .003 265));
+  --ui-text-inverse:  light-dark(oklch(98.6% .0008 265), oklch(15% .0016 265));
+  --ui-focus: light-dark(oklch(24.6% .0022 265), oklch(93.2% .0015 265));
+
+  /* Light */
+  --ui-highlight: light-dark(oklch(100% 0 none / .96), oklch(100% 0 none / .09));
+  --ui-lip:       light-dark(oklch(100% 0 none / .92), oklch(100% 0 none / .05));
+  --ui-shade-1: light-dark(oklch(28% .022 265 / .075), oklch(0% 0 none / .6));
+  --ui-shade-2: light-dark(oklch(28% .022 265 / .06),  oklch(0% 0 none / .44));
+  --ui-shade-3: light-dark(oklch(28% .022 265 / .05),  oklch(0% 0 none / .38));
+  --ui-shade-4: light-dark(oklch(28% .022 265 / .045), oklch(0% 0 none / .34));
+  --ui-shade-5: light-dark(oklch(28% .022 265 / .04),  oklch(0% 0 none / .32));
+
+  /* Elevation: sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay. Offset and blur double; spread pulls in by half. */
+  --ui-elevation-sink: inset 0 1px 2px light-dark(oklch(28% .022 265 / .07), oklch(0% 0 none / .5)), inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip);
+  --ui-elevation-flat: 0 0 0 1px var(--ui-line-contour);
+  --ui-elevation-rise-1: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-contour),
+    0 1px 1px -.5px var(--ui-shade-1), 0 2px 2px -1px var(--ui-shade-2), 0 4px 4px -2px var(--ui-shade-3);
+  --ui-elevation-rise-1h: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-strong),
+    0 1px 1px -.5px var(--ui-shade-1), 0 3px 3px -1.5px var(--ui-shade-2), 0 6px 6px -3px var(--ui-shade-3), 0 10px 10px -5px var(--ui-shade-4);
+  --ui-elevation-rise-2: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-contour),
+    0 1px 1px -.5px var(--ui-shade-1), 0 3px 3px -1.5px var(--ui-shade-2), 0 6px 6px -3px var(--ui-shade-3),
+    0 12px 12px -6px var(--ui-shade-4), 0 24px 24px -12px var(--ui-shade-5);
+  --ui-elevation-rise-3: inset 0 1px 0 var(--ui-highlight), 0 0 0 1px var(--ui-line-contour),
+    0 1px 1px -.5px var(--ui-shade-1), 0 3px 3px -1.5px var(--ui-shade-2), 0 6px 6px -3px var(--ui-shade-3),
+    0 12px 12px -6px var(--ui-shade-4), 0 24px 24px -12px var(--ui-shade-4), 0 48px 48px -24px var(--ui-shade-5);
+  --ui-elevation-overlay: var(--ui-elevation-rise-3), 0 64px 96px -32px light-dark(oklch(28% .022 265 / .1), oklch(0% 0 none / .5));
+
+  /* Stage lighting */
+  --ui-stage-light: radial-gradient(110% 80% at 18% -14%, light-dark(oklch(100% 0 none / .95), oklch(100% 0 none / .055)), transparent 60%),
+                 linear-gradient(180deg, transparent 55%, light-dark(oklch(28% .02 265 / .028), oklch(0% 0 none / .16)));
+  --ui-hatch: repeating-linear-gradient(135deg, light-dark(oklch(26% .012 265 / .13), oklch(100% 0 none / .1)) 0 1px, transparent 1px 7px);
+
+  /* Teaching tones — specimens only, never chrome */
+  --ui-tone-neutral: light-dark(var(--color-zinc-50), var(--color-zinc-40));
+  --ui-tone-blue:    light-dark(oklch(53% .2 262), oklch(76% .12 258));
+  --ui-tone-violet:  light-dark(oklch(53% .2 295), oklch(76% .12 295));
+  --ui-tone-amber:   light-dark(oklch(62% .15 62), oklch(82% .13 80));
+  --ui-tone-green:   light-dark(oklch(52% .12 150), oklch(78% .12 150));
+  --ui-tone-red:     light-dark(oklch(54% .17 25),  oklch(74% .14 22));
+
+  /* Status — callouts, diffs, results */
+  --ui-status-info: var(--ui-tone-blue); --ui-status-success: var(--ui-tone-green); --ui-status-warning: var(--ui-tone-amber); --ui-status-danger: var(--ui-tone-red);
+
+  /* Brand gold — homepage and brand moments only */
+  --ui-gold-face: linear-gradient(180deg, oklch(92.4% .085 88) 0%, oklch(86.5% .128 82) 46%, oklch(79% .142 75) 100%);
+  --ui-gold-ink: oklch(29.27% .0971 37.4);
+  --ui-gold-text: light-dark(oklch(52.17% .1199 62.2), oklch(86% .13 86));
+
+  /* Code (site syntax theme) */
+  --ui-code-text: light-dark(#344054, #dedbd7); --ui-code-comment: light-dark(#636779, #9b9cad); --ui-code-punctuation: light-dark(#626675, #b6b3bd);
+  --ui-code-keyword: light-dark(#91466f, #e6a0c4); --ui-code-function: light-dark(#3764a5, #9dbce6); --ui-code-property: light-dark(#256a78, #9acbd4);
+  --ui-code-string: light-dark(#71622f, #d9ce96); --ui-code-number: light-dark(#71549e, #c5b0e6);
+  --ui-code-added: light-dark(oklch(52% .12 150 / .1), oklch(78% .12 150 / .1)); --ui-code-removed: light-dark(oklch(54% .17 25 / .08), oklch(74% .14 22 / .1));
+  --ui-code-active: light-dark(oklch(26% .012 265 / .045), oklch(100% 0 none / .05));
+}
+}

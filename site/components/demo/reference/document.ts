@@ -10,7 +10,10 @@ const siteRoot = path.basename(process.cwd()) === 'site' ? process.cwd() : path.
 const tokenFile = path.join(siteRoot, 'styles/demo-theme.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
 const materialFile = path.join(siteRoot, 'styles/docs-shell/materials.css')
+const systemTokenFile = path.join(siteRoot, 'styles/system/tokens.css')
 let materials = readFileSync(materialFile, 'utf8')
+const readSystemTokens = () => readFileSync(systemTokenFile, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+let systemTokens = readSystemTokens()
 let tokens = readFileSync(tokenFile, 'utf8')
 const frameCSS = readFileSync(frameFile, 'utf8')
 const sharedManifest = () => compileManifestSync(`@mixin --light { &:where(.light, .light *) { @contents; } }\n@mixin --dark { &:where(.dark, .dark *) { @contents; } }\n${materials}\n${tokens}`, { baseManifest: preset }).manifest
@@ -25,6 +28,7 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, in
   if (developing) {
     const nextTokens = readFileSync(tokenFile, 'utf8')
     const nextMaterials = readFileSync(materialFile, 'utf8')
+    systemTokens = readSystemTokens()
     if (nextTokens !== tokens || nextMaterials !== materials) {
       tokens = nextTokens
       materials = nextMaterials
@@ -43,7 +47,8 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene, in
     const rendered = engine.ensureClassRules([...classNames, ...tokenClasses])
     const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value) && !compiled?.nativeClassNames.includes(value))
     if (invalid.length) throw new Error(`${section.page}#${section.id}: invalid demo classes ${invalid.join(', ')}`)
-    const css = `${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.css ?? ''}\n${rendered.cssText}`
+    // The site utility tokens resolve to the system roles, so the frame needs them too.
+    const css = `${systemTokens}\n${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.css ?? ''}\n${rendered.cssText}`
     return `<!doctype html><html lang="en"${initialTheme ? ` class="${initialTheme}"` : ''}${scene.motion ? ' data-demo-paused' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${scene.head ?? ''}<style>@layer theme,base,defaults,components,utilities;${css.replaceAll('</style', '<\\/style')}</style></head><body${scene.bodyClass ? ` class="${escape(scene.bodyClass)}"` : ''}>${html}</body></html>`
   } finally { engine.dispose() }
 }

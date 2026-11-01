@@ -86,9 +86,9 @@ test('isolated documents include the shared material values referenced by demo t
   const html = '<div class="bg-demo-canvas (border-width:1px) (border-style:solid) b-demo-line">Preview</div>'
   const document = demoDocument({ page: 'materials', id: 'surface', title: 'Shared materials', html: [html], css: '', classes: [], classLists: [], highlighted: [] }, { html, caption: 'A single shared source' })
   assert.match(document, /--color-demo-canvas:var\(--color-surface-canvas\)/)
-  assert.match(document, /--color-surface-canvas:light-dark\(/)
-  assert.match(document, /--color-line-contour:light-dark\(/)
-  assert.match(document, /--color-zinc-95:/)
+  assert.match(document, /--color-surface-canvas:var\(--ui-surface-canvas\)/)
+  assert.match(document, /--color-line-contour:var\(--ui-line-contour\)/)
+  assert.match(document, /--ui-surface-canvas: *light-dark\(/)
 })
 
 test('initial document schemes work before client controls initialize', () => {
