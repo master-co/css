@@ -4,6 +4,11 @@ import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import InstallationGuides from '~/site/components/InstallationGuides'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import InstallationIllustration from './components/InstallationIllustration'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/installation/cover-light.webp'
+import dark from '~/site/assets/images/integrations/installation/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS with Astro, Vite, Nuxt, Svelte, Next.js, Angular, Lit, webpack and Storybook" />
 
 Choose the setup that fits your project: [Integrations](#integrations) connects Master CSS to a framework or build tool, [CDN](#cdn) runs in the browser without a build, and [CLI](#cli) generates a stylesheet for projects without a bundler.
 

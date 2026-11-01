@@ -1,6 +1,11 @@
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/lit/cover-light.webp'
+import dark from '~/site/assets/images/integrations/lit/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Lit" />
 
 Lit components normally render into a shadow root. Document styles cannot reach those elements, so deliver the generated CSS inside each component's shadow tree.
 

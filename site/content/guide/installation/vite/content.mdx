@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/vite/cover-light.webp'
+import dark from '~/site/assets/images/integrations/vite/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Vite" />
 
 Add Master CSS to an application built with Vite, including React, Vue, React Router framework mode and TanStack Start. The integration generates CSS from complete class names in source. Keep the framework's existing Vite plugin and mount code; Master CSS joins that build through a shared stylesheet.
 

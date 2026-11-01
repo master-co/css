@@ -9,6 +9,8 @@ Help readers complete a task, find a reliable contract, or understand a technica
 
 ## Choose the work
 
+For Integrations-category articles and their dual-brand covers, use [master-css-integrations](../master-css-integrations/SKILL.md) for the specialized workflow; retain this skill's shared editorial methods. Integration covers are decorative and do not introduce a technical-diagram requirement.
+
 Read the requested article, nearby examples, and the applicable [site/AI.md](../../../site/AI.md). Do not reread unchanged guidance already in context. That file owns content policy; this skill supplies editorial methods.
 
 | Reader need | Guidance |

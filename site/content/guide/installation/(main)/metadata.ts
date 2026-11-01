@@ -6,6 +6,7 @@ const metadata = define({
   },
   description: 'Choose a framework integration, check CDN availability, or generate a stylesheet with the CLI.',
   category: 'Getting Started',
+  openGraph: { images: '/images/integrations/installation-og.png' },
   order: 2,
   other: {
     subject: 'Installation'

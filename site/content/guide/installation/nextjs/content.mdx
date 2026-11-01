@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/nextjs/cover-light.webp'
+import dark from '~/site/assets/images/integrations/nextjs/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Next.js" />
 
 Add Master CSS to a Next.js App Router project with a top-level `app` directory. Master CSS controls how styles are delivered; Next.js still controls how the page HTML is rendered.
 

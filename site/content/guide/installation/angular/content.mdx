@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import StepSection, { Step } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/angular/cover-light.webp'
+import dark from '~/site/assets/images/integrations/angular/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Angular" />
 
 Keep Angular's builder and use the Master CSS CLI to generate a stylesheet it can load. During development, run both watchers: Master CSS updates the generated CSS, and Angular serves the app that imports it.
 

@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/svelte/cover-light.webp'
+import dark from '~/site/assets/images/integrations/svelte/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Svelte" />
 
 Add Master CSS to a SvelteKit application. The add-on registers the Vite integration and imports its CSS entry from the root layout, so every route receives the shared styles.
 

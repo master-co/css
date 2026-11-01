@@ -108,6 +108,8 @@ Every Guide, Reference and Blog article, except pages in the Integrations catego
 
 Integration guides stay code-first: do not add explanatory image assets by default. Use executable commands, configuration, code examples and useful live previews to show setup and verification without maintaining diagrams for each framework. This exception covers all framework/tool pages in the Integrations category; the top-level Installation guide remains subject to the image requirement.
 
+Use [master-css-integrations](../.agents/skills/master-css-integrations/SKILL.md) for integration writing and decorative Master × partner covers. New integration guides include a Hero-material cover; retain suitable covers for wording edits. Covers use paired light/dark artwork below the page header and a light social preview, independently of the explanatory-image exception. Do not replace setup evidence with a cover or add its decorative description to search/Markdown teaching content.
+
 An illustration must pass both explanatory and visual review: matching design tokens does not make a generic box diagram sufficient. Its geometry should reveal the intended relationship or difference. Explanatory colour is allowed through theme-aware roles, with meaning also conveyed by labels, shape or position; follow the illustration skill for composition and verification.
 
 ### Current documentation and migration ownership

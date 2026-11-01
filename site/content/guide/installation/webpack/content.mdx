@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/webpack/cover-light.webp'
+import dark from '~/site/assets/images/integrations/webpack/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × webpack" />
 
 Build Master CSS into a Webpack, Rspack or Rsbuild application. All three use `@master/css-webpack`: the CSS entry supplies definitions, the plugin generates utility rules, and the HTML plugin links the output to the page. Start from a working application with an entry and an HTML template.
 

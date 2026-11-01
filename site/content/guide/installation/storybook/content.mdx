@@ -1,4 +1,9 @@
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/storybook/cover-light.webp'
+import dark from '~/site/assets/images/integrations/storybook/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS × Storybook" />
 
 Use the application’s CSS entry in Storybook’s preview iframe, where stories render. Start from an application that already uses Master CSS and has [Storybook installed](https://storybook.js.org/docs/get-started/install). This recipe uses React, the Vite builder and Master CSS static mode. Set up the application with the [Vite integration](/guide/installation/vite#react) first. Other Vite-based frameworks use their own Storybook package and story syntax.
 

@@ -552,6 +552,15 @@ test('installation steps retain complete commands, stable headings and navigatio
   const previous = JSON.parse(await readFile(path.join(root, 'tests/installation-heading-ids.json'), 'utf8'))
   for (const slug of installationGuideSlugs) {
     const content = await installationGuideContent(root, slug)
+    for (const output of [content.markdown, content.searchMarkdown]) {
+      assert.doesNotMatch(output, /IntegrationCover|cover-(?:light|dark)\.webp/)
+    }
+    if (slug === 'astro') {
+      for (const output of [content.markdown, content.searchMarkdown]) {
+        assert.doesNotMatch(output, /IntegrationCover|Master CSS × Astro|cover-(?:light|dark)\.webp/)
+        assert.match(output, /Connect Master CSS to an Astro site/)
+      }
+    }
     if (slug === 'angular') {
       assert.ok(content.examples.some(example => example.classes.includes('p-md') && /padding:\s*var\(--spacing-md\)/.test(example.css)))
     }

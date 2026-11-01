@@ -15,6 +15,8 @@ export async function installationGuideContent(siteRoot: string, slug: string) {
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/installation/${route}/content.mdx`), [], [], {
     overview: 'include',
     component(name) {
+      // Decorative branding has no tutorial content in search or Markdown exports.
+      if (name === 'IntegrationCover') return ''
       if (name === 'InstallationIllustration') return installationIllustrationMarkdown()
       if (name === 'InstallationGuides') return installationGuidesMarkdown()
     }

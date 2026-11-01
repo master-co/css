@@ -1,0 +1,28 @@
+@layer components {
+  .integration-cover {
+    overflow: hidden;
+    border-radius: var(--ui-radius-xl);
+    margin-block: 0 var(--ui-space-xl);
+  }
+
+  .integration-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .integration-cover img[data-scheme="dark"] { display: none; }
+  .dark .integration-cover img[data-scheme="light"] { display: none; }
+  .dark .integration-cover img[data-scheme="dark"] { display: block; }
+
+  @media screen and (prefers-color-scheme: dark) {
+    :root:not(.light, .dark) .integration-cover img[data-scheme="light"] { display: none; }
+    :root:not(.light, .dark) .integration-cover img[data-scheme="dark"] { display: block; }
+  }
+
+  @media print {
+    .integration-cover img[data-scheme="light"] { display: block !important; }
+    .integration-cover img[data-scheme="dark"] { display: none !important; }
+  }
+}

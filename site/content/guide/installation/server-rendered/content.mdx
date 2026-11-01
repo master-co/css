@@ -1,6 +1,11 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoInstallation as InstallationPreview } from '~/site/components/demo/DemoBrowser'
 import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
+import IntegrationCover from '~/site/components/IntegrationCover'
+import light from '~/site/assets/images/integrations/server-rendered/cover-light.webp'
+import dark from '~/site/assets/images/integrations/server-rendered/cover-dark.webp'
+
+<IntegrationCover images={{ light, dark }} alt="Master CSS with a server symbol" />
 
 When a server or CMS renders the HTML, Vite builds the Master CSS asset and the host loads the built file. This covers PHP, Rails, WordPress, Shopify, ASP.NET Core, Blazor and Express; [Laravel](#laravel) uses its own Vite pipeline. The host still serves the pages, routes and other assets. Choose your [host section](#hosts) before applying the shared steps: its template paths and public directory determine what gets scanned and where the stylesheet is served. Laravel projects can go directly to their [existing Vite pipeline](#laravel).
 

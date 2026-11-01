@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master CSS Integrations"
+  short_description: "Write integration guides and create consistent dual-brand covers"
+  default_prompt: "Use $master-css-integrations to write an integration guide and create its matching light/dark Master × partner cover and social preview."
