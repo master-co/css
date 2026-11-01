@@ -5,7 +5,7 @@ import DemoIndex from './DemoIndex'
 export interface DemoCatalogGroup {
   id: string
   title: string
-  entries: readonly { id: string, title: string, label: string, href: string, children: ReactNode }[]
+  entries: readonly { id: string, title: string, label: string, href?: string, children: ReactNode }[]
 }
 
 /** The complete specimens stay server-rendered inside native disclosures. */
@@ -20,7 +20,7 @@ export default function DemoCatalog({ groups }: { groups: readonly DemoCatalogGr
       {group.entries.map(entry => <details key={entry.id} className="ui-disclosure" data-variant="rule" suppressHydrationWarning>
         <summary>{entry.title}<span className="ui-disclosure-meta">{entry.label}</span></summary>
         <div className="ui-catalog-entry">
-          <a href={entry.href}>Read related documentation ↗</a>
+          {entry.href && <a href={entry.href}>Read related documentation ↗</a>}
           {entry.children}
         </div>
       </details>)}

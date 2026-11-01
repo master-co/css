@@ -10,9 +10,7 @@
   .ui-toc li:has(> ol [aria-current="location"]) > a { color: var(--ui-text-body); }
   /* A long list folds: every section stays listed, only the one being read opens its subsections. */
   .ui-toc ol[data-fold] > li:not(:has([aria-current="location"])) > ol { display: none; }
-  .ui-toc-references { display: flex; gap: .625rem; }
-  .ui-toc-references > a { display: inline-flex; overflow: hidden; border-radius: var(--ui-radius-xs); }
-  .ui-toc-references > a:focus-visible, .ui-toc-actions > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
+  .ui-toc-actions > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
   .ui-toc-actions > a { text-decoration: none; transition: color var(--ui-duration-quick); }
   .ui-toc-actions > a:hover { color: var(--ui-text-strong); }
   /* The rail scrolls and clips, so its rings sit inside the entry. */

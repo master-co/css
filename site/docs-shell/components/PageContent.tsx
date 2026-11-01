@@ -5,9 +5,6 @@ import Link from './Link'
 import { useLayoutEffect, useMemo, useRef, type RefObject } from 'react'
 import { useI18n, useTranslation } from '../contexts/i18n'
 import { useLocale } from '../contexts/locale'
-import Image from './Image'
-import canIUseImg from '~/site/assets/images/references/caniuse.png'
-import mdnImg from '~/site/assets/images/references/mdn-web-docs.png'
 import { usePageContent, type PageContentItem } from './PageContentContext'
 import PageContentTitle from './PageContentTitle'
 import groupPageContent from '../utils/group-page-content'
@@ -15,7 +12,7 @@ import groupPageContent from '../utils/group-page-content'
 const initializedPageContentScrollContainers = new WeakSet<HTMLElement>()
 
 /**
- * The documentation rail (`ui-toc`): the page's contents, its references and the source links. The rail stands still;
+ * The documentation rail (`ui-toc`): the page's contents and the source links. The rail stands still;
  * a list taller than the window scrolls inside it, so the source links stay in view under it.
  */
 export default function PageContent({ metadata }: any) {
@@ -25,22 +22,6 @@ export default function PageContent({ metadata }: any) {
   return (
     <nav aria-labelledby="page-content-label" className="ui-toc" data-rail="">
       <h4 id="page-content-label">{$('On this page')}</h4>
-      {(metadata.canIUseLink || metadata.mdnLink) &&
-        <div className="ui-toc-references">
-          {
-            metadata.canIUseLink &&
-            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank">
-              <Image src={canIUseImg} loading='eager' width={24} height={24} alt={$('Can I use ?')} />
-            </Link>
-          }
-          {
-            metadata.mdnLink &&
-            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank">
-              <Image src={mdnImg} loading='eager' width={24} height={24} alt={$('MDN Web Docs')} />
-            </Link>
-          }
-        </div>
-      }
       <PageContentList ref={ref} scrollContainerRef={ref} />
       <div className="ui-toc-actions">
         {metadata.sourcePath && <Link href={`https://github.com/master-co/css/blob/rc/${encodeURI(metadata.sourcePath)}`} indicate>

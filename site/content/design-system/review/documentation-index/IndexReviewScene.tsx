@@ -11,11 +11,11 @@ function sectionsFor(prefix: string): DocumentationIndexSection[] {
     ] }] },
     { id: `${prefix}-utilities`, title: 'Utilities', description: 'Look up a specific layout behavior.', Icon: IconLayoutGrid, groups: [
       { id: `${prefix}-flow`, title: 'Document flow', entries: [
-        { id: `${prefix}-clear`, title: 'clear', category: 'Document flow', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/clear' },
+        { id: `${prefix}-clear`, title: 'clear', category: 'Document flow', url: '/guide/layout-system' },
         { id: `${prefix}-display`, title: 'display', category: 'Document flow', url: '/guide/layout-system' },
       ] },
       { id: `${prefix}-layout`, title: 'Layout', entries: [
-        { id: `${prefix}-flex`, title: 'flex', category: 'Layout', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow' },
+        { id: `${prefix}-flex`, title: 'flex', category: 'Layout', url: '/guide/layout-system#add-explicit-tracks-only-when-needed' },
         { id: `${prefix}-grid`, title: 'grid', category: 'Layout', url: '/guide/layout-system#add-explicit-tracks-only-when-needed' },
       ] },
     ] },
