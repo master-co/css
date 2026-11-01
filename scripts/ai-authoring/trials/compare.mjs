@@ -14,8 +14,15 @@ const median = values => {
 /** Require the complete paired design; never silently compare different coverage. */
 export function compare(protocol, rows) {
   const importPilot = protocol.profile === 'skill-import-pilot'
-  if (!importPilot && protocol.profile !== 'bridge-pilot') throw new Error('Expected a paired pilot protocol')
+  const diagnosticsPilot = protocol.profile === 'diagnostics-pilot'
+  const pinnedSkill = importPilot || diagnosticsPilot
+  if (!pinnedSkill && protocol.profile !== 'bridge-pilot') throw new Error('Expected a paired pilot protocol')
   if (JSON.stringify(protocol.arms) !== JSON.stringify(profile(protocol.profile).arms)) throw new Error('Unexpected pilot arms')
+  if (diagnosticsPilot) {
+    if (JSON.stringify(protocol.feedbackModes) !== JSON.stringify(profile(protocol.profile).feedbackModes)) throw new Error('Unexpected feedback modes')
+    const [left, right] = protocol.arms.map(arm => protocol.skillVariants?.[arm])
+    if (!left?.revision || JSON.stringify(left) !== JSON.stringify(right)) throw new Error('Diagnostic pilot requires identical skills')
+  }
   summarize(rows) // Validate observations and duplicates before aggregation.
   const expected = new Set(protocol.tasks.flatMap(task => protocol.arms.flatMap(arm => protocol.models.flatMap(model =>
     Array.from({ length: protocol.repeats }, (_, repeat) => JSON.stringify([task, arm, model, repeat]))))))
@@ -28,7 +35,8 @@ export function compare(protocol, rows) {
     if (row.inputTokens === null || row.outputTokens === null) throw new Error('Unmeasured token usage')
     if (row.cachedInputTokens > row.inputTokens) throw new Error('Invalid cached input count')
     if (usesCLI(row.arm) ? row.mcpCalls !== 0 || row.bridgeCalls.mcp !== 0 : row.bridgeCalls.cli !== 0) throw new Error('Cross-arm tool contamination')
-    if (importPilot) {
+    if (diagnosticsPilot && row.feedbackMode !== protocol.feedbackModes[row.arm]) throw new Error('Wrong feedback mode')
+    if (pinnedSkill) {
       if (!row.skillRevision || row.skillRevision !== protocol.skillVariants?.[row.arm]?.revision) throw new Error('Wrong skill revision')
       for (const value of [row.firstAttemptInputTokens, row.firstAttemptCachedInputTokens, row.firstAttemptOutputTokens, row.firstAttemptModelDurationMs]) {
         if (!Number.isSafeInteger(value) || value < 0) throw new Error('Missing first-attempt metric')
@@ -38,7 +46,7 @@ export function compare(protocol, rows) {
   }
   if (expected.size) throw new Error(`Incomplete paired coverage: ${expected.size} missing`)
   const totals = selection => ({
-    ...(importPilot ? {
+    ...(pinnedSkill ? {
       firstAttemptInputTokens: selection.reduce((n, row) => n + row.firstAttemptInputTokens, 0),
       firstAttemptCachedInputTokens: selection.reduce((n, row) => n + row.firstAttemptCachedInputTokens, 0),
       firstAttemptOutputTokens: selection.reduce((n, row) => n + row.firstAttemptOutputTokens, 0),
@@ -46,6 +54,11 @@ export function compare(protocol, rows) {
     } : {}),
     trials: selection.length, passed: selection.filter(passed).length,
     firstPass: selection.filter(row => passed(row) && row.repairRounds === 0).length,
+    ...(diagnosticsPilot ? {
+      trialsRequiringRepair: selection.filter(row => row.repairRounds > 0).length,
+      repairedTrialsPassed: selection.filter(row => row.repairRounds > 0 && passed(row)).length,
+      repairInputTokens: selection.reduce((n, row) => n + row.inputTokens - row.firstAttemptInputTokens, 0)
+    } : {}),
     repairs: selection.reduce((n, row) => n + row.repairRounds, 0),
     inputTokens: selection.reduce((n, row) => n + row.inputTokens, 0),
     cachedInputTokens: selection.reduce((n, row) => n + row.cachedInputTokens, 0),
@@ -61,7 +74,7 @@ export function compare(protocol, rows) {
     unmatched: selection.every(row => row.invalidClasses !== null) ? selection.reduce((n, row) => n + row.invalidClasses, 0) : null
   })
   const [leftArm, rightArm] = protocol.arms
-  const [leftWin, rightWin] = importPilot ? ['beforeWins', 'afterWins'] : ['cliWins', 'mcpWins']
+  const [leftWin, rightWin] = diagnosticsPilot ? ['checksWins', 'evidenceWins'] : importPilot ? ['beforeWins', 'afterWins'] : ['cliWins', 'mcpWins']
   const pairs = { [leftWin]: 0, [rightWin]: 0, bothPass: 0, bothFail: 0 }
   for (const left of rows.filter(row => row.arm === leftArm)) {
     const right = rows.find(row => row.arm === rightArm && row.task === left.task && row.model === left.model && row.repeat === left.repeat)
@@ -69,13 +82,16 @@ export function compare(protocol, rows) {
   }
   return {
     version: 1, profile: protocol.profile, revision: protocol.revision,
-    ...(importPilot ? { skillVariants: protocol.skillVariants } : {}),
+    ...(pinnedSkill ? { skillVariants: protocol.skillVariants } : {}),
+    ...(diagnosticsPilot ? { feedbackModes: protocol.feedbackModes } : {}),
     arms: Object.fromEntries(protocol.arms.map(arm => [arm, totals(rows.filter(row => row.arm === arm))])),
     byModel: protocol.models.map(model => ({ model, arms: Object.fromEntries(protocol.arms.map(arm => [arm, totals(rows.filter(row => row.model === model && row.arm === arm))])) })),
     byTask: protocol.tasks.map(task => ({ task, arms: Object.fromEntries(protocol.arms.map(arm => [arm, totals(rows.filter(row => row.task === task && row.arm === arm))])) })),
     pairs,
     failures: rows.filter(row => !passed(row)).map(({ task, arm, model, repeat, execution, artifacts }) => ({ task, arm, model, repeat, execution, artifacts })),
-    limitation: importPilot
+    limitation: diagnosticsPilot
+      ? 'Small task/model-paired workflow pilot. First attempts have identical capabilities but are independent samples, not identical failed candidates. Only repair feedback differs. Conditional repair rates and repair tokens have different error mixtures; they do not isolate a causal repair effect. Counts include cached input, not billing. Diagnostic report reads must be audited separately.'
+      : importPilot
       ? 'Small fixed-task before/after skill pilot with identical CLI capabilities. Suggestions are optional; reference reading is not forced. Input tokens include cache hits, not billing. Local concurrent timings and these model identifiers do not establish a general effect.'
       : 'Small fixed-task pilot. CLI versus the full MCP surface, not transport alone. Suggestions are optional. Input tokens include cache hits; no billing estimate. Elapsed times include local concurrency; model time excludes independent grading.'
   }

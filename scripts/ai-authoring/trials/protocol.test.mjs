@@ -4,7 +4,7 @@ import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { profile, schedule, cliWrapper, bridgeInstructions, assertResume, usesCLI } from './protocol.mjs'
+import { profile, schedule, cliWrapper, bridgeInstructions, assertResume, usesCLI, repairFeedback } from './protocol.mjs'
 import { compare } from './compare.mjs'
 
 test('pilot has complete balanced pairs and leaves the original campaign at 240 trials', () => {
@@ -78,9 +78,29 @@ test('comparison rejects missing pairs, mixed versions, missing metrics and cros
 
 test('resume rejects changed tools, selection, concurrency and model identifiers', () => {
   assert.doesNotThrow(() => assertResume(protocol, { ...protocol }))
-  for (const field of ['artifactHashes', 'harnessHashes', 'profile', 'tasks', 'arms', 'models', 'repeats', 'concurrency', 'commonArgs', 'skillVariants']) {
+  for (const field of ['artifactHashes', 'harnessHashes', 'profile', 'tasks', 'arms', 'models', 'repeats', 'concurrency', 'commonArgs', 'skillVariants', 'feedbackModes']) {
     assert.throws(() => assertResume(protocol, { ...protocol, [field]: 'changed' }), new RegExp(field))
   }
+})
+
+test('diagnostic pilot changes only repair evidence and rejects crossed modes or skills', () => {
+  const selection = profile('diagnostics-pilot')
+  assert.equal(schedule(selection, ['gpt-6.1-sol', 'gpt-6-luna']).length, 16)
+  assert.equal(selection.skillRevisions[selection.arms[0]], selection.skillRevisions[selection.arms[1]])
+  assert.equal(bridgeInstructions(selection.arms[0], true), bridgeInstructions(selection.arms[1], true))
+  assert.doesNotMatch(repairFeedback([{ pass: false }], 'checks'), /diagnostics/)
+  assert.match(repairFeedback([{ pass: false }], 'browser-evidence'), /Read diagnostics.json/)
+  const diagnosticProtocol = { ...protocol, profile: selection.name, arms: selection.arms, feedbackModes: selection.feedbackModes,
+    skillVariants: Object.fromEntries(selection.arms.map(arm => [arm, { revision: 'same', files: { 'SKILL.md': 'hash' } }])) }
+  const runs = selection.arms.map(arm => ({ ...rows[0], arm, skillRevision: 'same', feedbackMode: selection.feedbackModes[arm],
+    firstAttemptInputTokens: 90, firstAttemptCachedInputTokens: 50, firstAttemptOutputTokens: 9, firstAttemptModelDurationMs: 500,
+    repairRounds: 1, functional: arm.endsWith('b') }))
+  const report = compare(diagnosticProtocol, runs)
+  assert.deepEqual(report.pairs, { checksWins: 0, evidenceWins: 1, bothPass: 0, bothFail: 0 })
+  assert.equal(report.arms['skill-diagnostics-b'].repairInputTokens, 10)
+  assert.equal(report.arms['skill-diagnostics-b'].repairedTrialsPassed, 1)
+  assert.throws(() => compare(diagnosticProtocol, [{ ...runs[0], feedbackMode: 'browser-evidence' }, runs[1]]), /feedback mode/)
+  assert.throws(() => compare({ ...diagnosticProtocol, skillVariants: { ...diagnosticProtocol.skillVariants, [selection.arms[0]]: { revision: 'other' } } }, runs), /identical skills/)
 })
 
 test('import pilot pairs two immutable skill revisions with identical CLI instructions', () => {

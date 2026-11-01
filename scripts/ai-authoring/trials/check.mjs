@@ -4,11 +4,13 @@ import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { loadProjectManifest } from '@master/css-compiler/project'
 import { inspectPageClasses, compareStyleEvidence } from '../browser-diagnostics.mjs'
+import { compareColors, colorComparisonPolicy } from '../color-comparison.mjs'
 
-export async function check(root, task, browser, repository, answer = '', baselineRoot = root) {
+export async function check(root, task, browser, repository, answer = '', baselineRoot = root, { includeDiagnostics = true } = {}) {
   const checks = []
   let classDiagnostics = null
   const diagnosticRequests = []
+  const importSamples = []
   const add = (kind, id, pass, actual) => checks.push({ kind, id, pass: Boolean(pass), actual })
   let invalidClasses = null, buildError = null, masterClasses = [], manifest = null
   const html = readFileSync(join(root, 'index.html'), 'utf8')
@@ -170,15 +172,7 @@ export async function check(root, task, browser, repository, answer = '', baseli
           }
           const actual = await snapshot(page), expected = await snapshot(original)
           add('styling', `${scheme}-${width}-${state}`, JSON.stringify(actual) === JSON.stringify(expected), actual.flatMap((node,i)=>Object.keys(node).filter(k=>node[k]!==expected[i]?.[k]).map(k=>({node:i,property:k,actual:node[k],expected:expected[i]?.[k]}))))
-          for (const difference of checks.at(-1).actual) {
-            const key = `${state}:${difference.node}`
-            let request = diagnosticRequests.find(item => item.key === key)
-            if (!request) {
-              request = { key, check: checks.at(-1).id, selector: 'main *', index: difference.node, properties: [], width, colorScheme: scheme, state, stateSelector: '#target' }
-              diagnosticRequests.push(request)
-            }
-            if (request.check === checks.at(-1).id && !request.properties.includes(difference.property)) request.properties.push(difference.property)
-          }
+          importSamples.push({ check: checks.at(-1), sameNodeCount: actual.length === expected.length, width, colorScheme: scheme, state })
         }
       }
       if(task==='tailwind-hover') {
@@ -200,7 +194,9 @@ export async function check(root, task, browser, repository, answer = '', baseli
               return [style.backgroundColor,style.color,style.opacity]
             })
             const actual=await paint(target),expected=await paint(source)
-            add('styling',`touch-${state}`,JSON.stringify(actual)===JSON.stringify(expected),{actual,expected})
+            const properties = ['background-color', 'color', 'opacity']
+            add('styling',`touch-${state}`,JSON.stringify(actual)===JSON.stringify(expected), actual.flatMap((value, i) => value === expected[i] ? [] : [{ node: 0, property: properties[i], actual: value, expected: expected[i] }]))
+            importSamples.push({ check: checks.at(-1), sameNodeCount: true, touch: true })
           }
         } finally {await touch.close()}
       }
@@ -209,8 +205,34 @@ export async function check(root, task, browser, repository, answer = '', baseli
     add('functional', 'page-errors', errors.length===0, errors)
   } catch (error) { add('functional','browser-check',false,error.message) }
   finally { await context.close() }
+  // Normalize sampled colors only after all state measurements, in an isolated
+  // page. Preserve raw values and every equivalence decision for later audits.
+  let colorComparison = { policy: colorComparisonPolicy, equivalent: [] }
+  try {
+    for (const sample of importSamples) sample.entries = sample.check.actual.map(item => ({ ...item, check: sample.check.id }))
+    const comparison = await compareColors(browser, importSamples.flatMap(sample => sample.entries))
+    colorComparison = { policy: comparison.policy, equivalent: comparison.equivalent }
+    const remaining = new Set(comparison.differences)
+    for (const sample of importSamples) {
+      sample.check.actual = sample.check.actual.filter((item, index) => remaining.has(sample.entries[index]))
+      sample.check.pass = sample.sameNodeCount && sample.check.actual.length === 0
+    }
+  } catch (error) { colorComparison.error = error.message } // Keep strict raw verdicts on failure.
+  for (const sample of importSamples.filter(sample => !sample.touch)) for (const difference of sample.check.actual) {
+    const key = `${sample.state}:${difference.node}`
+    let request = diagnosticRequests.find(item => item.key === key)
+    if (!request) {
+      request = { key, check: sample.check.id, selector: 'main *', index: difference.node, properties: [], width: sample.width, colorScheme: sample.colorScheme, state: sample.state, stateSelector: '#target' }
+      diagnosticRequests.push(request)
+    }
+    if (request.check === sample.check.id && !request.properties.includes(difference.property)) request.properties.push(difference.property)
+  }
   const verdict = kind => checks.some(c=>c.kind===kind) ? checks.filter(c=>c.kind===kind).every(c=>c.pass) : !buildError
-  const result = { functional:verdict('functional'),styling:verdict('styling'),accessibility:verdict('accessibility'),browser:checks.every(c=>c.pass)?'passed':'failed',invalidClasses,checks,buildError }
+  const result = { functional:verdict('functional'),styling:verdict('styling'),accessibility:verdict('accessibility'),browser:checks.every(c=>c.pass)?'passed':'failed',invalidClasses,checks,buildError,colorComparison }
+  if (!includeDiagnostics) {
+    writeFileSync(join(root, 'acceptance.json'), JSON.stringify(result, null, 2))
+    return result
+  }
   // Replay only after scoring is complete. CDP inspection must not stretch the
   // original transition samples or change acceptance/repair verdicts.
   const evidence = []

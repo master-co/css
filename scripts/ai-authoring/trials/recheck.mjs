@@ -14,6 +14,7 @@ const protocol = JSON.parse(await readFile(join(root, 'protocol.json'), 'utf8'))
 const selectedTasks = task === 'all' ? protocol.tasks : [task]
 if (!selectedTasks.every(id => protocol.tasks.includes(id))) throw new Error('Task is absent from the recorded protocol')
 const digest = data => createHash('sha256').update(data).digest('hex')
+const checkerHashes = Object.fromEntries(await Promise.all(['check.mjs', '../color-comparison.mjs', '../browser-diagnostics.mjs'].map(async file => [file, digest(await readFile(new URL(file, import.meta.url)))])))
 if (digest(await readFile(join(repository, 'packages/binding/artifacts/mastercss.node'))) !== protocol.toolVersion) throw new Error('Native artifact differs from the recorded experiment')
 for (const file of Object.keys(protocol.artifactHashes).filter(file => file.startsWith('packages/') || file === 'bun.lock')) {
   if (digest(await readFile(join(repository, file))) !== protocol.artifactHashes[file]) throw new Error(`Recorded dependency or CLI artifact changed: ${file}`)
@@ -45,6 +46,6 @@ try {
   }
 } finally {
   await browser.close()
-  await writeFile(join(destination, 'report.json'), JSON.stringify({ task, allAttempts, complete: results.length === runs.reduce((n, { row }) => n + (allAttempts ? row.repairRounds + 1 : 1), 0), originalRevision: protocol.revision, checkerSha256: digest(await readFile(new URL('check.mjs', import.meta.url))), method: allAttempts ? 'Post-run verification of every saved attempt for the selected tasks in separate copies. Original feedback, scores, timings and usage are unchanged; repaired attempts still reflect the original feedback.' : 'Post-run verification of every final output for the selected tasks in separate copies. Original attempts, feedback, scores, timings and token usage remain unchanged. This cannot reconstruct first-attempt outcomes.', results }, null, 2))
+  await writeFile(join(destination, 'report.json'), JSON.stringify({ task, allAttempts, complete: results.length === runs.reduce((n, { row }) => n + (allAttempts ? row.repairRounds + 1 : 1), 0), originalRevision: protocol.revision, checkerHashes, checkerSha256: digest(await readFile(new URL('check.mjs', import.meta.url))), method: allAttempts ? 'Post-run verification of every saved attempt for the selected tasks in separate copies. Original feedback, scores, timings and usage are unchanged; repaired attempts still reflect the original feedback.' : 'Post-run verification of every final output for the selected tasks in separate copies. Original attempts, feedback, scores, timings and token usage remain unchanged. This cannot reconstruct first-attempt outcomes.', results }, null, 2))
 }
 console.log(JSON.stringify({ destination, checked: results.length, passed: results.filter(r => r.recheckedPassed).length, changed: results.filter(r => r.originalPassed !== r.recheckedPassed).map(r => ({ id: r.id, attempt: r.attempt })) }))

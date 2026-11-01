@@ -57,7 +57,7 @@ trees are not traced. Browser evidence follows the
 
 ## Evaluation integration
 
-`trials/check.mjs` preserves the original acceptance conditions and adds a
+`trials/check.mjs` adds a
 `diagnostics` field plus `diagnostics.json`. Unresolved classes get element
 locations. Import mismatches trigger independent source/target state replays
 **after all scoring finishes**, so inspection does not stretch transition sampling
@@ -93,3 +93,56 @@ The remaining output differed only in white background serialization:
 audit of color equivalence in the grader; it is not evidence of a visible mismatch.
 Original observations, acceptance files, repair feedback and token costs remain
 unchanged. These diagnostic replays are not new model trials or a score correction.
+
+## Color equivalence and historical audit
+
+The checker now compares import color, background-color and outline-color samples
+using Chromium relative `color(from … srgb r g b / alpha)` conversion in a separate
+page **after state sampling finishes**. Unclamped sRGB channels retain wide-gamut
+information. Channel tolerance is 0.00025 for conversion/serialization roundoff;
+alpha tolerance is 0.002 to accommodate legacy 8-bit alpha rounding. Fully
+transparent colors ignore hidden RGB channels. Unsupported conversions retain
+strict string comparison. This bounded numerical comparison is not a perceptual,
+screenshot or general CSS-equivalence test. Non-color properties remain exact.
+See [CSS relative colors](https://www.w3.org/TR/css-color-5/#relative-colors).
+
+Every waived difference retains its raw values, check ID, normalized values and
+versioned tolerance policy in `acceptance.json.colorComparison`. Diagnostics keep
+raw serialized values. Controls accept equivalent white notation and reject a
+one-step RGB difference, different alpha, wide-gamut differences and transitions.
+
+`recheck-colors.mjs RUN_DIRECTORY` uniformly reclassifies saved computed samples
+without rebuilding or invoking models. The 30-attempt import campaign has two
+changed verdicts, both in before/Luna/card/repeat 1: attempts 1 and 2. First-pass
+counts remain 4/8 for each arm; final counts under the corrected comparison are
+7/8 before and 6/8 after. Original final counts were 6/8 each. Repairs and token
+costs are unchanged, including the extra repair requested after the now-corrected
+attempt 1. This does not establish that the revised skill reduced success.
+
+Full regeneration was refused because the current native artifact hash differs
+from the frozen campaign. This audit uses recorded browser values and is limited
+to color equivalence; it cannot detect unrelated checker errors. Raw observations
+and all 30 acceptance files retain their original hashes.
+
+## Diagnostic feedback pilot
+
+```sh
+node --import tsx scripts/ai-authoring/trials/run.mjs --profile diagnostics-pilot --concurrency 2
+node scripts/ai-authoring/trials/compare.mjs /absolute/run/path
+```
+
+Sixteen trials pair two import tasks, two models and two repetitions. Both arms
+use the identical skill at `eb0bf3cd0`, CLI tools and corrected color checker.
+A receives failed checks only; B additionally receives `diagnostics.json` and a
+repair instruction to read it. A's workspace and acceptance reports omit browser
+evidence. Both first-attempt prompts/capabilities are identical; no diagnostic
+report exists before the first attempt. Skill versions, feedback modes, source
+hashes and tool artifacts are frozen and verified on resume.
+
+This measures an end-to-end feedback workflow: first attempts are independent
+samples, not identical failed candidates. Report first-pass rates, final rates,
+repair counts, input/cached-input tokens and conditional repair results separately.
+Different starting errors confound conditional repair rates and repair-token costs.
+Audit actual report reads; tool availability or a prompt is not proof of use.
+Keep calibration separate, preserve every error/timeout, and make no general
+success or cost claim from the small fixed-task sample.

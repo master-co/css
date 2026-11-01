@@ -5,7 +5,7 @@ import { tmpdir, userInfo } from 'node:os'
 import { join, resolve, relative, dirname } from 'node:path'
 import { chromium } from '@playwright/test'
 import { summarize } from '../evaluate.mjs'
-import { profile, schedule, bridgeInstructions, cliWrapper, assertResume, usesCLI } from './protocol.mjs'
+import { profile, schedule, bridgeInstructions, cliWrapper, assertResume, usesCLI, repairFeedback } from './protocol.mjs'
 import { prepare, repository } from './control.mjs'
 import { check } from './check.mjs'
 
@@ -25,7 +25,7 @@ const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:
 const digest=x=>createHash('sha256').update(x).digest('hex')
 const toolVersion=digest(await readFile(join(repository,'packages/binding/artifacts/mastercss.node')))
 const corpusHash=digest(await readFile(new URL('fixtures.mjs',import.meta.url)))
-const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../browser-diagnostics.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
+const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../browser-diagnostics.mjs','../color-comparison.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
 const tailwindVersion=JSON.parse(await readFile(join(repository,'node_modules/tailwindcss/package.json'),'utf8')).version
 const skillRoot=join(repository,'skills/master-css')
 const skillVariants={},skillContents={}
@@ -38,7 +38,8 @@ for(const [arm,ref] of Object.entries(selection.skillRevisions??{})) {
 if(selection.skillRevisions) {
   const [before,after]=arms.map(arm=>skillVariants[arm].files)
   const changed=[...new Set([...Object.keys(before),...Object.keys(after)])].filter(file=>before[file]!==after[file])
-  if(JSON.stringify(changed)!==JSON.stringify(['references/importing.md'])) throw new Error('Skill comparison must change only the import reference')
+  const expectedChanges=selection.name==='diagnostics-pilot'?[]:['references/importing.md']
+  if(JSON.stringify(changed)!==JSON.stringify(expectedChanges)) throw new Error('Unexpected skill differences for paired pilot')
 }
 const builtFiles=[]
 for(const pkg of ['cli','mcp','compiler','tooling','css','schema','preset','binding','internal','engine-js']) {
@@ -49,7 +50,7 @@ const artifactHashes=Object.fromEntries(await Promise.all([...builtFiles,'bun.lo
 const cacheRoot=join(userInfo().homedir,'.cache/mastercss')
 await mkdir(cacheRoot,{recursive:true})
 const common=['exec','--ignore-user-config','--ephemeral','--skip-git-repo-check','--json','--disable','memories','--disable','multi_agent','--disable','plugins','--disable','apps','--enable','skip_host_skill_discovery','-c','skills.include_instructions=false','-c','project_doc_max_bytes=0','-c','web_search="disabled"','-c','model_reasoning_effort="low"','-c','approval_policy="never"','-s','workspace-write']
-const protocol={version:2,profile:selection.name,revision,corpusHash,harnessHashes,artifactHashes,skillVariants,toolVersion,clientVersion,tailwindVersion,models,reasoning:'low',repeats,arms,tasks:tasks.map(t=>t.id),timeoutMs,maxRepairRounds:2,concurrency,
+const protocol={version:2,profile:selection.name,revision,corpusHash,harnessHashes,artifactHashes,skillVariants,feedbackModes:selection.feedbackModes,toolVersion,clientVersion,tailwindVersion,models,reasoning:'low',repeats,arms,tasks:tasks.map(t=>t.id),timeoutMs,maxRepairRounds:2,concurrency,
   modelRevisionLimit:'These are recorded service model identifiers. The service does not expose immutable weight revision IDs in exec output.',
   isolation:'Fresh CLI session and directory per trial. Automatic skill instructions/catalog, host skill discovery, plugins, apps, memory and web search disabled; baseline instructions supplied explicitly. Skill arms receive the project skill with an explicit path, so this tests instruction use, not autonomous skill discovery. Filesystem isolation permits dependency reads; this is not a security boundary against access to other local files.',
   scoring:'Frozen deterministic browser and source checks; no LLM judge. Not a full visual-design or accessibility review.',
@@ -128,14 +129,15 @@ async function trial({id,task,arm,model,repeat}) {
   const hashes=Object.fromEntries(await Promise.all(protectedFiles.map(async name=>[name,digest(await readFile(join(work,name)))])))
   const prompt=`${baselineInstructions}\n\nTASK: ${task.prompt}\n${data.detail}\n\nEdit only index.html, app.css and app.js. Do not read other trials, evaluator sources or solutions. Do not read global/personal skills; only a project skill explicitly supplied below is available. Do not edit build.mjs, source baseline files, or package.json. No new dependencies or network fetches. Build with node build.mjs. Do not invoke other agents/models. Work within this directory. ${bridgeInstructions(arm,pilot)} Finish with the actual changes, checks and limitations. You have ${timeoutMs/1000} seconds per attempt.\n${arm.includes('skill')?'Project skill available: read .agents/skills/master-css/SKILL.md and only the relevant referenced files.':''}\n${arm.includes('mcp')?'The project Master CSS MCP server is connected. Verify its root and use its available tools when useful.':'Use the installed tools; no Master CSS MCP server is connected for this trial.'}`
   const started=Date.now(),attempts=[]
+  const feedbackMode=selection.feedbackModes?.[arm]??'browser-evidence'
   let verdict,repairRounds=0
   for(let attempt=0;attempt<=2;attempt++) {
     repairRounds=attempt
-    const feedback=attempt?`\n\nIndependent checks failed: ${JSON.stringify(verdict.checks.filter(c=>!c.pass))}. Read diagnostics.json for unresolved class locations and source/target computed values, matched rules, layers and ancestors. Matched rules are candidates, not proven cascade winners; replay values may differ during transitions. Repair the files; preserve unrelated behavior.`:''
+    const feedback=attempt?repairFeedback(verdict.checks,feedbackMode):''
     const run=await invoke(work,model,prompt+feedback,folder,attempt,arm)
     if(run.unavailable||run.hostSkillRead) infrastructureFailure={id,attempt,reason:run.hostSkillRead?'Unexpected personal skill access':'Model service or MCP unavailable'}
     attempts.push(run)
-    try {verdict=await check(work,task.id,browser,repository,run.answer,baseline)}
+    try {verdict=await check(work,task.id,browser,repository,run.answer,baseline,{includeDiagnostics:feedbackMode==='browser-evidence'})}
     catch(error) {verdict={functional:false,styling:false,accessibility:false,browser:'not-checked',invalidClasses:null,checks:[{id:'checker-error',pass:false,actual:error.message}]}}
     for(const name of protectedFiles) {
       let hash=null
@@ -152,6 +154,7 @@ async function trial({id,task,arm,model,repeat}) {
   try {cliSuggestions=(await readFile(join(work,'bridge-calls.jsonl'),'utf8')).trim().split('\n').filter(Boolean).map(line=>JSON.parse(line))}
   catch(error) {if(error.code!=='ENOENT') throw error}
   const result={task:task.id,arm,model,client:clientVersion,fixtureRevision:revision+':'+corpusHash,toolVersion,repeat,repairRounds,
+    feedbackMode,
     ...(skillVariants[arm]?{skillRevision:skillVariants[arm].revision}:{}),
     invalidClasses:verdict.invalidClasses,toolCalls:attempts.reduce((n,a)=>n+a.toolCalls,0),
     inputTokens:measured?attempts.reduce((n,a)=>n+a.usage.input_tokens,0):null,

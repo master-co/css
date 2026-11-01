@@ -11,11 +11,22 @@ export function profile(name = 'full') {
     tasks: ['tailwind-card', 'tailwind-hover'].map(id => tasks.find(task => task.id === id)),
     skillRevisions: { 'skill-import-a': '67ae9e011', 'skill-import-b': 'eb0bf3cd0' }
   }
+  if (name === 'diagnostics-pilot') return {
+    name, arms: ['skill-diagnostics-a', 'skill-diagnostics-b'], repeats: 2,
+    tasks: ['tailwind-card', 'tailwind-hover'].map(id => tasks.find(task => task.id === id)),
+    skillRevisions: { 'skill-diagnostics-a': 'eb0bf3cd0', 'skill-diagnostics-b': 'eb0bf3cd0' },
+    feedbackModes: { 'skill-diagnostics-a': 'checks', 'skill-diagnostics-b': 'browser-evidence' }
+  }
   throw new Error(`Unknown profile: ${name}`)
 }
 
 export function usesCLI(arm) {
-  return ['skill-cli', 'skill-import-a', 'skill-import-b'].includes(arm)
+  return ['skill-cli', 'skill-import-a', 'skill-import-b', 'skill-diagnostics-a', 'skill-diagnostics-b'].includes(arm)
+}
+
+export function repairFeedback(checks, mode = 'browser-evidence') {
+  const evidence = mode === 'browser-evidence' ? ' Read diagnostics.json for unresolved class locations and source/target computed values, matched rules, layers and ancestors. Matched rules are candidates, not proven cascade winners; replay values may differ during transitions.' : ''
+  return `\n\nIndependent checks failed: ${JSON.stringify(checks.filter(check => !check.pass))}.${evidence} Repair the files; preserve unrelated behavior.`
 }
 
 /** Alternate arm/model order between paired repetitions, keeping tasks identical. */
@@ -53,7 +64,7 @@ process.exit(result.status??1);
 }
 
 export function assertResume(old, current) {
-  for (const field of ['version', 'revision', 'corpusHash', 'toolVersion', 'clientVersion', 'timeoutMs', 'profile', 'models', 'repeats', 'arms', 'tasks', 'concurrency', 'commonArgs', 'baselineInstructions', 'reasoning', 'maxRepairRounds', 'tailwindVersion', 'harnessHashes', 'artifactHashes', 'skillVariants']) {
+  for (const field of ['version', 'revision', 'corpusHash', 'toolVersion', 'clientVersion', 'timeoutMs', 'profile', 'models', 'repeats', 'arms', 'tasks', 'concurrency', 'commonArgs', 'baselineInstructions', 'reasoning', 'maxRepairRounds', 'tailwindVersion', 'harnessHashes', 'artifactHashes', 'skillVariants', 'feedbackModes']) {
     if (JSON.stringify(old[field]) !== JSON.stringify(current[field])) throw new Error(`Cannot resume changed ${field}`)
   }
 }

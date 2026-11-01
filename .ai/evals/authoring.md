@@ -36,7 +36,7 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 41 controls: 12 starters, 12 known solutions and seventeen
+The first command checks 44 controls: 12 starters, 12 known solutions and twenty
 rubric regressions. Valid inner-panel spacing, additional tab stops, shadow focus
 indicators, flex columns, renamed progress nodes, native classes in HTML styles
 and component-scoped restoration of source line-height must pass. Missing keyboard
