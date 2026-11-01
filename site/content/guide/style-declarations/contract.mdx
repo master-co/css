@@ -1,63 +1,203 @@
-import Abbreviations from './components/Abbreviations.mdx'
-import ArbitraryProperties from './components/ArbitraryProperties.mdx'
-import Decimal from './components/Decimal.mdx'
-import Functions from './components/Functions.mdx'
-import Important from './components/Important.mdx'
-import MultiplierUnits from './components/MultiplierUnits.mdx'
-import Negative from './components/Negative.mdx'
-import Tokens from './components/Tokens.mdx'
-import UnitConversion from './components/UnitConversion.mdx'
-import UnitSensing from './components/UnitSensing.mdx'
-import Units from './components/Units.mdx'
-import Utilities from './components/Utilities.mdx'
-import Variables from './components/Variables.mdx'
 import Class2CSS from '~/site/components/Class2CSS'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration'
 
-## Overview [sr-only] \{#overview\}
-Master CSS classes select named styles or express CSS declarations directly in markup. Read each class from left to right: start with the style you want, then add optional [state selectors](/reference/rules/selectors) and optional [conditional queries](/reference/rules/conditions).
+<a id="overview"></a>
+
+A class starts with a registered utility or a native declaration, followed by optional selectors, conditions and importance. This page defines those declaration forms, value parsing and rejection rules. For a worked introduction, use the [Syntax tutorial](/guide/syntax-tutorial); for native property meanings, use the [CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference).
+
+The named forms below assume the default preset is loaded through `@import '@master/css'`. Project definitions can add or replace utilities. Native declarations do not require a registered utility.
+
+## Accepted forms \{#basic-syntax\}
+
+<a id="utilities"></a>
+
+| Form | Example | Meaning |
+| --- | --- | --- |
+| Static utility | `flex` | A registered name; here, `display: flex` |
+| Token utility | `p-md` | A registered prefix and token key; here, `padding: var(--spacing-md)` |
+| Functional utility | `p(12)` | A registered function with arguments; here, `padding: calc(12 * 1px)` |
+| Native declaration | `(padding:1rem)` | One full CSS property and value |
+
+These are syntax shapes, not interchangeable spellings. Static, token and functional utilities can each contain several declarations: `truncate`, `text-sm` and `grid-cols(2)` are recipes. A native head contains exactly one declaration, which may use a CSS shorthand.
+
+<Class2CSS>{['flex', 'p-md', 'p(12)', '(padding:1rem)']}</Class2CSS>
+
+<a id="combine-with-states-and-queries"></a>
+
+Every form accepts suffixes. In `p(12):hover@sm!`, the head is `p(12)`, `:hover` is the selector, `@sm` is the condition and `!` marks importance. A suffix affects its own class only. [Selectors](/reference/rules/selectors) and [Conditions](/reference/rules/conditions) own their complete contracts.
+
+## Native declarations \{#declaration-heads\}
+
+<a id="native-properties"></a>
+<a id="native-declaration-fallback"></a>
+
+Write `(property:value)` using the full property name. Master CSS reads the balanced head before parsing suffixes. A colon after a bare name starts a selector: `flex:hover` selects the registered `flex` utility; `display:block` is not an alternative to `(display:block)`.
+
+### The closing boundary
+
+Strings, comments, escapes, nested parentheses and brackets, and unquoted `url()` tokens follow CSS component-value boundaries. A `)` inside a quoted string does not close the head:
 
 ```html
-<!-- @MARK fg-white --><!-- @MARK :hover --><!-- @MARK @md -->
-<button type="button" class="fg-white:hover@md">Save</button>
+<span class="(content:')')::before"></span>
 ```
 
-Use a hyphenated name for named styles (`font-mono`, `p-md`), a fixed utility for a common native value (`block`, `items-center`), and parentheses for any other declaration (`(font-size:16px)`, `(padding:1rem)`). Direct declarations use full CSS property names; named token families may use shorter prefixes. Values never infer a subproperty or implicitly resolve theme tokens. Use `var(--name)` for explicit variable references.
+<ReferenceIllustration id="native-value-boundary" />
 
+Other CSS constructs keep their own boundaries inside the head:
 
-## Native properties
-Write a native declaration as `(property:value)` with the full property name. A common fixed value has a short utility instead: `block` generates `display: block`, and `(opacity:.5)` generates `opacity: .5`. Use [MDN’s CSS reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) for native property semantics and [Layout System](/guide/layout-system) for composing a page.
+| Class | Value boundary |
+| --- | --- |
+| `(width:calc(1px+(2px*3)))` | Nested parentheses belong to the calculation |
+| `(grid-template-columns:[start]\|1fr\|[end])` | Brackets enclose grid line names |
+| `(background-image:url(/a{b.svg))` | The brace belongs to the unquoted URL token |
+
+<Class2CSS>{["(content:')')::before", '(width:calc(1px+(2px*3)))', '(grid-template-columns:[start]|1fr|[end])', '(background-image:url(/a{b.svg))']}</Class2CSS>
+
+CSS escaping still applies inside a value. For an unquoted URL containing parentheses, use a quoted URL or CSS escapes so the token remains valid.
+
+### Invalid heads \{#invalid-heads\}
+
+A malformed head generates no rule; it is not retried as a utility or a different class form.
+
+| Rejected class | Reason |
+| --- | --- |
+| `(display:block` | Missing closing parenthesis |
+| `(color:red)(display:block)` | Two heads in one class |
+| `(color:red;display:block)` | More than one declaration |
+| `(display:block;)` | A top-level semicolon, even at the end |
+| `(width:calc(1px])` | Mismatched delimiters |
+| `(width:)` | Empty value for an ordinary property |
+| `(color:{red})` | A brace block as an ordinary property value |
+
+A custom property may have an empty value or a balanced brace block: `(--slot:)` and `(--state:{open})` are accepted. `(--slot:!important)` is an empty important custom property, while `(width:!important)` is invalid.
+
+### Emission and browser validity \{#vendor-prefixes\}
+
+A syntactically valid property name can emit a declaration even when tooling does not list it. Native values are not limited to the preset, but they must still be valid for the property in the target browser. For example, `(font-size:48)` emits `font-size: 48`; it does not acquire `px`, and that nonzero unitless length is invalid CSS. Use `(font-size:48px)` for that length. A native property such as `(field-sizing:content)` needs no utility registration.
+
+<Class2CSS>{['(font-size:48px)', '(field-sizing:content)']}</Class2CSS>
+
+Master CSS emits selected compatibility declarations, such as `-webkit-backdrop-filter` beside `backdrop-filter`. It does not add vendor-specific selectors or polyfill browser features. Inspect the generated CSS and use [Compatibility](/guide/compatibility) for browser requirements and fallback design.
+
+<Class2CSS>{['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']}</Class2CSS>
+
+## Value encoding \{#values\}
+
+### Spaces, strings and underscores \{#value-encoding\}
+
+HTML whitespace separates classes, even when the value contains CSS quotes. Within a class value, an unquoted `|` encodes a space. Inside a quoted string, the pipe remains literal. Keep CSS punctuation such as commas and slashes in place.
 
 ```html
-<div class="block (opacity:.5) (opacity:1):hover">Hover to reveal</div>
+<div class="(color:rgb(30|60|90/80%)) (content:'a|b')::before"></div>
 ```
 
-<Class2CSS>{['block', '(opacity:.5)', '(opacity:1):hover']}</Class2CSS>
+<Class2CSS>{['(color:rgb(30|60|90/80%))', "(content:'a|b')::before", '(animation-name:slide_in)', '(color:red)_a']}</Class2CSS>
 
+The color value becomes `rgb(30 60 90 / 80%)`; the content string stays `'a|b'`. For an actual space in a CSS string, use a CSS escape such as `\000020`: `(content:'New\000020collection')::before` produces “New collection”. The six-digit escape avoids a terminating space in the HTML class.
 
-## Basic syntax \{#basic-syntax\}
-### Utilities \{#utilities\}
-<Utilities />
+An underscore inside the native head is literal, as in `slide_in`. After the head closes, `_` starts a descendant selector: `(color:red)_a` targets descendant links. Registered utility names cannot contain `_`; a token key containing it can still be referenced through `var(--name)`.
 
-### Declaration heads \{#declaration-heads\}
-A native declaration is one parenthesized head. Master CSS finds its closing parenthesis with CSS rules before it looks up any property, utility or selector name, then reads the optional selector, condition and `!` suffix after it:
+### Functions and explicit variables \{#functions\}
+
+CSS functions remain values of the native property. Master CSS normalizes arithmetic spacing in `calc(100%-2rem)`; the browser evaluates the calculation. It does not infer a token from a bare word or evaluate a CSS function as a utility call.
+
+<Class2CSS>{['(width:calc(100%-2rem))', '(width:calc(100%-var(--spacing-md)))', '(color:var(--color-red))']}</Class2CSS>
+
+<a id="rgb-hsl-oklch-"></a>
+<a id="hexadecimal-color"></a>
+
+Native color values retain their meaning: `(color:red)`, `(color:#175fe9)` and `(color:rgb(23,95,233))` all supply CSS values. `fg-red` instead selects a theme token. A `var()` reference is explicit; `(font-family:mono)` names the CSS family `mono`, not `--font-mono`. See [Variables and modes](/reference/rules/modes) for token resolution, modes and derived values.
+
+### Numbers and units \{#units\}
+
+<a id="decimal"></a>
+<a id="unit-conversion"></a>
+<a id="unit-sensing"></a>
+<a id="multiplier-units"></a>
+
+Native declarations preserve units. They do not convert `rem` to pixels or infer a unit from the property. Leading zeros on decimals are optional: `(opacity:.5)` and `(opacity:0.5)` supply the same numeric value.
+
+| Native value | Interpretation |
+| --- | --- |
+| `(margin:1rem)` | Length relative to the root font size |
+| `(width:50%)` | Percentage resolved in the property's context |
+| `(rotate:30deg)` | Explicit angle |
+| `(animation-duration:200ms)` | Explicit time; `.2s` expresses the same duration |
+| `(opacity:.5)` | Unitless number |
+| `(background-image:image-set(url(a.png)\|1x,url(b.png)\|2x))` | Native image resolution in dots per CSS pixel |
+
+Whether a property accepts a number, length, percentage or other type is a [CSS values and units](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units) rule. `p(12)` is different: the preset function explicitly multiplies its argument by `1px`.
+
+### Negative values \{#negative\}
+
+Native negatives stay inside the value: `(margin-top:-2rem)`. Direct numeric arguments use `mt(-8)`. Negative token classes put `-` before the complete class: `-mt-sm`. The negative-token form requires a numeric token and a supporting utility; `-p-sm` is rejected because padding does not support it.
+
+<Class2CSS>{['(margin-top:-2rem)', 'mt(-8)', '-mt-sm']}</Class2CSS>
+
+Argument validation does not redefine the CSS property’s value constraints.
+
+## Registered utilities \{#registered-utilities\}
+
+### Token names \{#variable-alias\}
+
+<a id="property-abbreviations"></a>
+
+Token prefixes are registered by utility definitions, not inferred from property abbreviations. `p-md` reads `--spacing-md`; `fg-red` and `bg-red` both read `--color-red` but set different properties. There is no automatic full-property equivalent such as `padding-md`, and no implicit numeric scale such as `p-4`: that key must exist in the selected namespace.
+
+A static name wins over a same-spelled token class. For example, `w-full` remains `width: 100%` even if the project defines `--container-full`; `pill` remains a fully rounded radius even if `--radius-pill` exists. A static utility and a function with the same name register independently.
+
+Use the [token family index](/reference/tokens/families) for complete prefix-to-namespace mappings, and [utility definitions](/reference/directives/definitions#utilities) for registration and replacement rules. [Theme tokens](/guide/theme) owns the workflow for defining and scoping project values.
+
+### Direct numeric values \{#direct-values\}
+
+Preset functions such as `m(4)`, `b(1)` and `grow(1)` take one static number. Length functions emit a multiplication by `1px`; `grow()`, `shrink()` and `order()` pass the number through, with `order()` requiring an integer. Zero, decimals and negative arguments follow each parameter's declared type.
+
+Units and dynamic expressions are not numeric arguments: `m(1px)` and `b(var(--x))` generate no rule. Use `(margin:1rem)` or `(border-width:var(--x))` for those values. [Direct values](/reference/direct-values) owns the complete function list, parameter types and generated declarations.
+
+<a id="motion-properties"></a>
+
+Recipes can coordinate properties or companions: `text-sm` includes size, line height and tracking, while `animate-fade` supplies an animation shorthand. Their lookup details belong to [text tokens](/reference/tokens/text) and [motion tokens](/reference/tokens/motion#animate). Override an individual field with its full native property, such as `(animation-duration:var(--duration-fast))`.
+
+## Custom properties \{#variable-properties\}
+
+A `(--name:value)` head declares a CSS custom property on the matched element. It can carry the same selectors and conditions as any other declaration. It does not register a utility or a theme token.
 
 ```html
-<!-- @MARK block[aria-expanded=true]:hover@sm -->
-<button class="block[aria-expanded=true]:hover@sm">Menu</button>
+<div class="(--progress:40%) (--progress:60%):hover (width:var(--progress))">
+  Progress
+</div>
 ```
 
-<Class2CSS>{['block[aria-expanded=true]:hover@sm']}</Class2CSS>
+<Class2CSS>{['(--progress:40%)', '(--progress:60%):hover', '(width:var(--progress))']}</Class2CSS>
 
-- Strings, comments, escapes, nested parentheses and brackets, and unquoted `url()` tokens stay inside the value: `(content:')')::before`, `(grid-template-columns:[start]|1fr|[end])`, `(background-image:url(/a{b.svg))` and `(--payload:a:b@c_foo)` each end at their own closing parenthesis.
-- A head contains exactly one declaration. A top-level `;`, a second head such as `(color:red)(display:block)`, a missing closing parenthesis or an unbalanced bracket makes the class invalid; it generates no CSS and does not fall back to another class form.
-- Braces belong only in custom property values, such as `(--state:{open})`.
-- A custom property may be empty: `(--slot:)` generates `--slot:`. Every other property needs a value, so `(width:)` is invalid.
-- `|` writes a space inside the value. `_` inside the parentheses is ordinary value text, as in `(animation-name:slide_in)`; after the closing parenthesis it starts a descendant selector.
-- Any syntactically valid property name generates its declaration, including properties that tooling does not list. Tooling uses its property data only for completion and diagnostics.
-- A bare `property:value` is not a declaration. `flex:hover` applies the `flex` utility while hovered, and `display:block` generates nothing.
+`var(--progress)` uses normal CSS resolution and inheritance. An unresolved variable or an incompatible substituted value can make the consuming declaration invalid; use a [CSS variable fallback](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/var) where appropriate. The [Syntax tutorial](/guide/syntax-tutorial#complete-card) covers keeping a fixed class while supplying a dynamic value.
 
-### Fixed utilities \{#fixed-utilities\}
-The preset names 292 common fixed values. Each class emits exactly the one declaration in this table, with no implied `display`, width, color or reset of related properties:
+## Composition and importance \{#combining-declarations\}
+
+<a id="group"></a>
+<a id="independent-properties"></a>
+
+Separate classes express independent decisions, such as `b(1) b-solid b-line-control`. Native shorthands remain supported: this authoring preference does not change CSS grammar. Repeat selectors and conditions on each class that needs them.
+
+```html
+<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
+```
+
+Within the same layer, conditions and selector, recipes sort before single-declaration utilities, then native declarations. Single-declaration utilities sort by property family and coverage before value source; a token precedes a fixed or direct value for the same property. HTML class order does not determine the result:
+
+<Class2CSS>{['p-md', 'p(12)', '(padding:1rem)', 'm-md', 'mt(0)', 'mx-auto']}</Class2CSS>
+
+Here the native padding follows both utilities, while `mt(0)` and `mx-auto` override the relevant parts of `m-md`. [Cascade layers](/reference/rules/layers) owns the complete ordering contract. Use [Reusing styles](/guide/reusing-styles) to choose a component class, `@utility` recipe or CSS mixin.
+
+### Importance \{#important\}
+
+A final `!` marks the class's declarations important. A trailing native `!important` inside a parenthesized value has the same effect; writing both emits it once. The text `'!important'` inside a string remains content.
+
+<Class2CSS>{['text-center!', '(color:red!important)', '(color:red!important)!', "(content:'!important')::before"]}</Class2CSS>
+
+## Fixed utility lookup \{#fixed-utilities\}
+
+The preset provides 292 fixed, single-declaration utilities. Each sets only its listed property: `flex-col` does not enable flex layout, `b-none` does not reset border width, and `pill` does not set a size. The multi-declaration `truncate` recipe is listed separately in [Truncation](/reference/truncation).
 
 | Property | Classes |
 | --- | --- |
@@ -107,133 +247,4 @@ The preset names 292 common fixed values. Each class emits exactly the one decla
 | `overflow-wrap` | `wrap-anywhere`, `wrap-break-word`, `wrap-normal` |
 | `text-overflow` | `ellipsis` |
 
-`start` and `end` keep their native meaning, distinct from `flex-start` and `flex-end`. `flex-col` only sets the direction; combine it with `flex` on the container. Border and outline styles set only the style: `b-none` never removes a width, and `b(0)` never changes the style. `truncate` is the one multi-declaration recipe in this family: `overflow: hidden`, `text-overflow: ellipsis` and `white-space: nowrap`, without any width or display. `pill` sets only the radius, never a size or aspect ratio. These are complete static names rather than token keys, so a same-named theme token such as `--container-full`, `--order-first` or `--radius-pill` never changes them; declare a project utility such as `@utility order-pinned { order: -1; }` for another named value. `underline` sets `text-decoration-line` alone; use `(text-decoration:underline)` when you need the shorthand to reset color, style and thickness as well. Fixed utilities are ordinary static utilities: they accept selectors, conditions and `!`, and generate CSS only when used.
-
-
-### Direct values \{#direct-values\}
-A direct value passes one static number to a preset function. Length functions emit `calc(var(--value) * 1px)`, so `m(4)` is `margin: calc(4 * 1px)` and `m(1.5)` is one and a half pixels; zero, decimals and negative numbers are accepted as written:
-
-| Family | Functions |
-| --- | --- |
-| margin and padding | `m`, `mt`, `mr`, `mb`, `ml`, `mx`, `mxs`, `mxe`, `my`, `mys`, `mye` and the same with `p` |
-| scroll margin and padding | the margin and padding functions prefixed with `scroll-`, such as `scroll-mt(8)` |
-| insets | `top`, `right`, `bottom`, `left`, `inset`, `ix`, `ixs`, `ixe`, `iy`, `iys`, `iye` |
-| other lengths | `gap`, `col-gap` (`column-gap`), `row-gap` (`row-gap`), `border-spacing`, `outline-offset`, `shape-margin`, `translate`, `word-spacing` |
-| sizes | `w`, `h`, `size-x`, `size-y`, `min-w`, `min-h`, `min-size-x`, `min-size-y`, `max-w`, `max-h`, `max-size-x`, `max-size-y`, `basis` |
-| radii | `r`, `rtl`, `rtr`, `rbl`, `rbr`, `rss`, `rse`, `res`, `ree` |
-| border and outline widths | `b`, `bt`, `br`, `bb`, `bl`, `bx`, `bxs`, `bxe`, `by`, `bys`, `bye` (`border-*-width`) and `outline` (`outline-width`) |
-| unitless | `grow(1)` (`flex-grow`), `shrink(0)` (`flex-shrink`), `order(2)` (`order`, an integer) |
-
-`x` names the inline axis, `y` the block axis and `t`, `r`, `b`, `l` the physical sides; gaps name their native property, `col-gap` and `row-gap`; the two letters of a logical corner name its block edge, then its inline edge. A function and a token family share a prefix without merging: `b(1)` sets the width, `b-red-60` the color and `b-solid` the style. Other units and dynamic values use a native declaration, such as `(margin:1rem)` or `(margin:var(--gap))`; `m(1px)` and `b(var(--x))` are invalid rather than a fallback.
-
-### Independent properties \{#independent-properties\}
-
-Each class expresses one styling decision. Use fixed utilities, named tokens and direct values where the preset has them, and full CSS properties for other values:
-
-```html
-<div class="b(1) b-line-control b-solid">Content</div>
-```
-
-A single value may express one decision, as with `p-sm`, `gap-md`, `overflow-hidden`, and `(animation:none)@media(print)`. Give different edges or axes their own declarations. Native stylesheets and inline styles retain ordinary CSS syntax.
-
-### Motion properties \{#motion-properties\}
-
-Use `(animation-name:*)`, `(animation-duration:*)`, `(transition-property:*)` and `(transition-duration:*)` to express independent settings. Named `animate-*` tokens contain complete animation shorthands. To override one field, combine them with a full-property declaration such as `(animation-duration:var(--duration-fast))`. See [animation tokens](/reference/tokens/motion#animate) for ordering and defaults.
-
-### Property abbreviations \{#property-abbreviations\}
-<Abbreviations />
-
-### Any native property \{#native-declaration-fallback\}
-<ArbitraryProperties />
-
-### Variable properties \{#variable-properties\}
-<Variables />
-
-<a id="group"></a>
-
-### Combining declarations \{#combining-declarations\}
-Write each declaration as a separate class, repeating any shared selector or query suffix. To register a reusable class recipe for markup, define an [`@utility`](/reference/directives/definitions#utilities). For reuse within CSS, define an [`@mixin` and expand it with `@apply`](/reference/directives/definitions#reusing-a-matched-value); a mixin does not register a markup class.
-
-```html
-<ul class="block>li:hover@md (font-size:14px)>li:hover@md text-center>li:hover@md">…</ul>
-```
-
-Within the same layer, conditions and selector, recipes sort first, then single-declaration utilities, then native declarations, so a `(property:value)` class can override one setting of a utility independently of markup order. Single-declaration utilities sort by property family, then coverage, then value source: `m-md mt(0)` keeps the top margin at zero and `m-md mx-auto` centers horizontally in either class order, and a token precedes a fixed or direct value of the same property. Families such as border width, style and color stay independent. Give conflicting states of one property mutually exclusive classes instead of relying on that order.
-
-### Important \{#important\}
-<Important />
-
-### Vendor prefixes and browser baseline \{#vendor-prefixes\}
-Write the standard property name. Master CSS emits the prefixed compatibility declaration beside it for selected native properties, such as `-webkit-backdrop-filter`; inspect the generated CSS to see which are included. Vendor-specific selectors are never added for you: write them explicitly, and they pass through as written.
-
-```html
-<!-- @MARK (backdrop-filter:blur(16px)) --><!-- @MARK (background-color:#000)::-webkit-scrollbar -->
-<div class="(backdrop-filter:blur(16px)) (background-color:#000)::-webkit-scrollbar">…</div>
-```
-
-<Class2CSS>
-  {['(backdrop-filter:blur(16px))', '(background-color:#000)::-webkit-scrollbar']}
-</Class2CSS>
-
-Master CSS does not polyfill CSS features: browser support follows the generated property, value, selector or at-rule. The default preset itself relies on native [cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer), [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) palette values and [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) for adaptive colors and shadows, so target browsers need all three. Runtime rendering additionally uses [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to follow class changes.
-
-
-## Values \{#values\}
-### Decimal \{#decimal\}
-<Decimal />
-
-### Negative \{#negative\}
-<Negative />
-
-### Hexadecimal color \{#hexadecimal-color\}
-Change the text color of an element using the hexadecimal color code.
-```html
-<!-- @MARK (color:#175fe9) -->
-<p class="(color:#175fe9)">Aa</p>
-```
-
-### Canonical token families \{#variable-alias\}
-<Tokens />
-
-
-## Units \{#units\}
-<Units />
-
-### Native CSS units \{#unit-conversion\}
-<UnitConversion />
-
-### Unit sensing \{#unit-sensing\}
-<UnitSensing />
-
-### Native resolution \{#multiplier-units\}
-<MultiplierUnits />
-
-
-## Functions \{#functions\}
-<Functions />
-
-### rgb(), hsl(), oklch(), ... \{#rgb-hsl-oklch-\}
-Change the text color of an element using color functions like `rgb()`, `hsl()`, `oklch()`, and others.
-```html
-<!-- @MARK (color:rgb(23,95,233)) -->
-<p class="(color:rgb(23,95,233))">Aa</p>
-```
-
-
-## Combine with states and queries \{#combine-with-states-and-queries\}
-After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
-
-```html
-<!-- @MARK bg-blue-60 --><!-- @MARK bg-blue-70:hover@md --><!-- @MARK (transition-property:background-color) (transition-duration:0.2s) -->
-<button type="button" class="bg-blue-60 (transition-property:background-color) (transition-duration:0.2s) bg-blue-70:hover@md">
-  Save
-</button>
-```
-
-This means:
-
-- `bg-blue-60` applies by default.
-- `bg-blue-70:hover@md` applies only when the button is hovered and the viewport matches `@md`.
-- `(transition-property:background-color) (transition-duration:0.2s)` adds a `background-color` transition.
-
-Continue with [selectors](/reference/rules/selectors) for element states and relationships, or [conditions](/reference/rules/conditions) for viewport, media, container, and layer suffixes. The [syntax tutorial](/guide/syntax-tutorial) introduces the authoring workflow.
+`start` and `end` retain their native meaning, distinct from `flex-start` and `flex-end`. For logical axes, `x` means inline and `y` means block; `t`, `r`, `b` and `l` are physical sides. Fixed utilities accept selectors, conditions and `!`, and emit CSS when used.

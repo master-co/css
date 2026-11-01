@@ -11,6 +11,8 @@ import GeneratedCSS from '../components/GeneratedCSS'
 import DocumentOptions from '../components/DocumentOptions'
 import DocumentCodeExampleView from '../components/DocumentCodeExampleView'
 import type { ReferenceRenderDocument } from './render-document'
+import ReferenceIllustration from './ReferenceIllustration'
+import type { ReferenceIllustrationId } from './illustrations'
 import { DocumentCodeTable, DocumentNamespaceTable } from '../components/DocumentValues'
 
 /** Small, non-executing renderer for the normalized reference Markdown. */
@@ -116,7 +118,13 @@ export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRend
   const content: React.ReactNode[] = []
   for (let index = 0; index < tree.children.length; index++) {
     const [title, source, result] = tree.children.slice(index, index + 3) as any[]
-    if (isStylesheetExample(title, source, result)) {
+    const illustration = title.type === 'html' && title.value.match(/^<!-- reference-illustration:([\w-]+) -->$/)?.[1]
+    if (illustration) {
+      const end = tree.children.findIndex((node: any, at: number) => at > index && node.type === 'html' && node.value === '<!-- /reference-illustration -->')
+      if (end < 0) throw new Error(`Unclosed Reference illustration: ${illustration}`)
+      content.push(<ReferenceIllustration key={index} id={illustration as ReferenceIllustrationId} />)
+      index = end
+    } else if (isStylesheetExample(title, source, result)) {
       content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')}
         resultKind="generated-css"
         sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}

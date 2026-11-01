@@ -13,13 +13,14 @@ import { selectedSpecimensMarkdown } from '../common/foundation-data/specimen-co
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses, configuredMarkupMarkdown } from './configured-example'
 import { stylesheetExampleMarkdown } from './stylesheet-example'
+import { referenceIllustrationMarkdown } from './illustrations'
 
 export function syntaxMarkdown(rows: SyntaxRow[]) {
   return rows.map(row => `### \`${row.syntax}\` {#${row.id}}\n\n\`\`\`css\n${row.declarations}\n\`\`\``).join('\n\n')
 }
 
 export function portableMarkdown(markdown: string) {
-  return markdown.split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/^(#{2,3}) (.+) \{#([\w-]+)\}$/gm, '<a id="$3"></a>\n\n$1 $2')).join('')
+  return markdown.split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/<!-- \/?reference-illustration(?::[\w-]+)? -->\n*/g, '').replace(/^(#{2,3}) (.+) \{#([\w-]+)\}$/gm, '<a id="$3"></a>\n\n$1 $2')).join('')
 }
 
 /** Resolve authored literals only. Never execute MDX expressions to extract documents. */
@@ -129,6 +130,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         const values = await expression(attrs.rows.value) as { id: string, title: string, identifier?: string, values: { label: string, value: string }[] }[]
         return values.map(value => `### ${value.title} {#${value.id}}\n\n${value.identifier ? `\`${value.identifier}\`\n\n` : ''}${value.values.map(pair => `${pair.label}: \`${pair.value}\``).join('\n\n')}`).join('\n\n')
       }
+      if (name === 'ReferenceIllustration') return referenceIllustrationMarkdown(attrs.id)
       if (name === 'DocumentFlow') {
         const steps = await expression(attrs.steps.value) as { title: string, description: string }[]
         return `**${attrs.title}**\n\n${steps.map((step, index) => `${index + 1}. **${step.title}** — ${step.description}`).join('\n')}${attrs.caption ? `\n\n${attrs.caption}` : ''}`

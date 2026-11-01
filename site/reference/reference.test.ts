@@ -252,6 +252,25 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.doesNotMatch(conditions, /`css @/)
 })
 
+test('Reference illustrations retain their explanation in portable content and search', async () => {
+  const { referenceIllustrations, referenceIllustrationMarkdown } = await import('./illustrations')
+  const doc = catalog.documents.find(doc => doc.id === 'rules/declarations')!
+  const figure = referenceIllustrations['native-value-boundary']
+  const portable = renderDocumentMarkdown(doc, catalog)
+  assert.deepEqual(doc.extractionNotes, [])
+  assert.ok(doc.markdown.includes(referenceIllustrationMarkdown('native-value-boundary')))
+  const tree = markdownTree(doc.markdown)
+  const markers = tree.children.filter(node => node.type === 'html' && node.value.includes('reference-illustration'))
+  assert.equal(markers.length, 2)
+  assert.ok(portable.includes(figure.caption))
+  for (const text of figure.description) assert.ok(portable.includes(text))
+  assert.doesNotMatch(portable, /reference-illustration|<ReferenceIllustration/)
+  const searchText = extractSearchNodesFromMdx(doc.markdown).map(node => node.text).join(' ')
+  assert.match(searchText, /quoted value/)
+  assert.throws(() => referenceIllustrationMarkdown('missing'), /Unknown Reference illustration/)
+  assert.ok(doc.examples.some(example => example.classes.includes("(content:')')::before") && example.css.includes("content:')'")))
+})
+
 test('continuing recipe and Guide anchors remain available', async () => {
   const missing: string[] = []
   for (const page of legacyAnchors.pages) {

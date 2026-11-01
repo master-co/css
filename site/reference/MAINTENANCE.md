@@ -35,6 +35,8 @@ General Reference, token and recipe pages have separate route modules under `con
 
 The current source revision and semantic/content digests identify the build inputs. Current-version URLs can change between builds; these are not historical version snapshots. A local dirty checkout is not a published immutable document.
 
+Authored rule figures use `<ReferenceIllustration id="…" />`. Their shared labels and text equivalents live in `reference/illustrations.ts`, with editable scenes and theme images under `assets/images/`. The strict MDX adapter preserves the explanation between presentation markers; `ReferenceBody` replaces that range with the figure, and portable Markdown removes only the markers. Keep the full explanation searchable and test it alongside compiled examples. Unknown figure IDs fail generation rather than silently dropping content.
+
 Individual document pages render their authored or generated body directly. Do not inject a version/source/Markdown toolbar, a page-level copy-example control, a generic Related reference section or an extra alias list. Keep the body as the reading source of truth; search and machine exports derive from the existing shared content model.
 
 ## Editing safely

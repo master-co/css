@@ -1,5 +1,6 @@
 /** Fixed acceptance queries: names, aliases, properties, examples, tokens, rules and tools. */
 export const searchTasks = [
+  ['quoted strings', 'rules/declarations'], ['invalid declaration', 'rules/declarations'],
   ['opacity', 'rules/declarations'], ['(opacity:.5)', 'rules/declarations'], ['padding', 'tokens/families'],
   ['p', 'tokens/families'], ['padding-inline:', 'tokens/families'], ['padding-block:', 'tokens/families'], ['padding-inline-start:', 'tokens/families'],
   ['padding-inline-end:', 'tokens/families'], ['padding-block-start:', 'tokens/families'], ['padding-block-end:', 'tokens/families'],
@@ -7,7 +8,7 @@ export const searchTasks = [
   ['px', 'tokens/families'], ['按鈕內距', 'tokens/families'], ['行內起點內距', 'tokens/families'],
   ['--spacing-md', 'tokens/spacing'], ['spacing', 'tokens/spacing'],
   ['fg-red:hover@sm', 'rules/conditions'], ['Conditions', 'rules/conditions'],
-  ['Variables & modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],
+  ['Variables and modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],
   ['樣式沒生成', 'rules/extraction'], ['clamp-lines', 'truncation'],
   ['master-css generate', 'tools/cli'], ['master-css lint', 'tools/cli'],
   ['master-css inspect', 'tools/cli'], ['mastercss_inspect_class', 'tools/mcp'],

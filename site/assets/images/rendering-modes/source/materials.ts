@@ -64,9 +64,11 @@ export function drawing(theme: Theme) {
       <div class="spacing-ruler"><i></i>${label(measurement, 'edge')}<i></i></div>
     </div>`
   /** Adjacent literal fragments preserve the original string; each bracket follows its fragment's intrinsic width. */
-  const codeParts = (x: number, y: number, parts: { id: string, value: string, tone: AnnotationTone }[]) =>
+  const codeParts = (x: number, y: number, parts: ({ id: string, value: string, tone: AnnotationTone } | { value: string })[]) =>
     `<div class="annotated-code anchor-center" style="${box(x, y)}">${parts.map(part =>
-      `<span class="code-part" data-tone="${part.tone}">${label(part.value, 'code')}<i class="code-bracket" data-anchor="${escapeHtml(part.id)}"></i></span>`).join('')}</div>`
+      'id' in part
+        ? `<span class="code-part" data-tone="${part.tone}">${label(part.value, 'code')}<i class="code-bracket" data-anchor="${escapeHtml(part.id)}"></i></span>`
+        : `<span class="code-part">${label(part.value, 'code')}</span>`).join('')}</div>`
   const annotation = (x: number, y: number, id: string, title: string, detail: string, tone: AnnotationTone) =>
     `<div class="annotation anchor-center" style="${box(x, y)}" data-tone="${tone}"><span class="title" data-label data-anchor="${escapeHtml(id)}">${escapeHtml(title)}</span>${label(detail, 'note')}</div>`
   /** The renderer resolves these leaders after fonts load, so they attach to actual content rather than estimated coordinates. */
