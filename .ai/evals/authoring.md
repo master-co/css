@@ -36,11 +36,12 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 34 controls: 12 starters, 12 known solutions and ten
+The first command checks 36 controls: 12 starters, 12 known solutions and twelve
 rubric regressions. Valid inner-panel spacing, additional tab stops, shadow focus
-indicators, flex columns and renamed progress nodes must pass. Missing keyboard
-access, invisible focus, incorrect relative units, invalid single-quoted classes
-and unconditional hover behavior on touch devices must fail.
+indicators, flex columns, renamed progress nodes and native classes in HTML styles
+must pass. Missing keyboard access, invisible focus, incorrect relative units,
+invalid single-quoted classes, unconditional hover behavior on touch devices and
+classes defined only in inactive styles must fail.
 Content inset and columns are measured geometrically; outer-box padding and a
 specific layout implementation are not required. Keyboard checks traverse tab
 stops, and class inspection reads the parsed DOM rather than attribute quotes.
@@ -66,10 +67,13 @@ To verify a corrected checker against every final output of an affected task:
 node --import tsx scripts/ai-authoring/trials/recheck.mjs /absolute/run/path dynamic-value
 ```
 
-Rechecks require complete task coverage and matching native/CLI artifacts and
+Rechecks require complete task coverage, matching recorded tool artifacts and
 lockfile. They operate on separate copies, record the checker hash and retain the
 original scores, execution failures and protected-file violations. Report them
-as post-run verification, not as new model attempts or retroactive first passes.
+as post-run verification, not as new model attempts. With saved attempt snapshots,
+`recheck.mjs RUN_DIRECTORY all --all-attempts` uniformly verifies every recorded
+attempt, including first attempts. It retains the original feedback and all
+incurred token/time costs; never present those repairs as a corrected campaign.
 
 Automatic skill instructions/catalog injection must be disabled explicitly:
 `skip_host_skill_discovery` alone did not suppress personal skills in calibration.
@@ -155,7 +159,7 @@ outputs of each affected task, retaining every original observation:
 - A button passed desktop checks but changed color incorrectly after a touch tap;
   the original media-query text check had missed an unconditional hover rule.
 
-The current checker has 34 passing controls. Later runs also retain per-attempt
+Those corrections brought the checker to 34 passing controls. Later runs also retain per-attempt
 workspace snapshots. The frozen campaign retained attempt transcripts/checks and
 final workspaces/screenshots, so its first-pass verdicts and repair costs cannot
 be retroactively corrected. The import prompt now states the existing utility
@@ -242,3 +246,68 @@ records cached input tokens, MCP errors and actual suggestion use. The compariso
 requires every paired cell, rejects mixed environments and cross-arm tool use,
 retains failures and reports per-model/per-task results. Cached input totals are
 not a billing estimate, and concurrent local timings are not latency guarantees.
+
+### Recorded pilot: 2026-11-01
+
+Frozen source: `c8e10cdb1`; Codex CLI `0.166.0-alpha.5.1`; the two recorded models,
+low reasoning, two concurrent trials, 120 seconds per attempt and up to two
+repairs. All 32 cells completed in 40 model attempts, without timeouts, service
+errors, personal-skill contamination or changed tool artifacts. Four calibration
+cases were excluded. Calibration caught a call-counter issue: help requests are
+excluded from actual CLI suggestion calls in the frozen campaign.
+
+The frozen checker misclassified native classes defined in HTML `<style>` blocks
+because it only read project stylesheet definitions. Three first attempts were
+false negatives: one CLI and two MCP fallback-order cases, all from
+`gpt-6.1-sol`. After the campaign, the checker uses the public Rust-backed compiler
+to recognize native classes in browser-recognized inline styles. Two new controls
+accept that case and reject a class defined only in an inactive `text/plain`
+style; all 36 controls pass.
+
+Every saved attempt was rechecked in a separate copy: 40/40, with exactly those
+three verdict changes and no changed final verdicts. The original feedback,
+repair counts, tokens and elapsed times remain intact. First-attempt token totals
+below include every first attempt in each arm, regardless of success, and exclude
+all repairs; they avoid attributing checker-induced repair costs to the interface.
+
+| Measure | Skill + CLI | Skill + MCP + bridge |
+| --- | ---: | ---: |
+| Trials | 16 | 16 |
+| Frozen first pass | 13/16 | 12/16 |
+| Rechecked first pass | 14/16 | 14/16 |
+| Final pass, unchanged by recheck | 16/16 | 15/16 |
+| First-attempt input tokens | 2,836,528 | 4,623,281 |
+| First-attempt cached input tokens | 2,488,448 | 4,060,672 |
+| Input tokens including actual repairs | 3,171,022 | 6,181,775 |
+| Cached input tokens including repairs | 2,769,920 | 5,454,720 |
+| Output tokens including repairs | 35,847 | 44,834 |
+| Actual repair requests | 3 | 5 |
+| Median model elapsed time | 41.46 s | 45.69 s |
+| Median total elapsed time, including grading | 42.18 s | 46.94 s |
+| Suggestion calls | 24 | 26 |
+| Trials using suggestions | 14/16 | 15/16 |
+| All MCP calls | 0 | 110 |
+| Final unmatched names | 0 | 0 |
+
+`gpt-6.1-sol` finished 8/8 in both arms; `gpt-6-luna` finished 8/8 with CLI and
+7/8 with MCP. The final paired comparison has one CLI win and 15 ties, too little
+success-rate evidence for a general superiority claim. Both models used fewer
+first-attempt input tokens in the CLI arm. Combined, that difference is 38.6%;
+including all repairs it is 48.7%, with the checker confound described above.
+These counts include cache hits and are not billing estimates.
+
+The remaining failure was a Tailwind button in the MCP/Luna arm: its added
+150 ms color transition changed hover/focus/disabled-state colors relative to the
+instantaneous source. Other initial import failures involved line-height, height
+units and hover colors. There were no CLI suggestion errors or MCP call errors.
+The fixed-task sample supports skill + CLI as the light default, with MCP available
+for workspace queries and broader inspection. It does not isolate transport cost,
+prove model-independent savings, or measure autonomous skill discovery. Strengthen
+source reset, inherited line-height and state/transition preservation examples
+before expanding conversion scope.
+
+External artifacts retain frozen sources, raw events, prompts, command arguments,
+all attempt snapshots, screenshots, controls, the original comparison and uniform
+recheck report. `analysis.json` records both original usage and verified outcomes;
+the observation SHA-256 is
+`8230ea49f5e6b114a15d32019be768ebea11d9b605873f9216c4df0c9319b567`.

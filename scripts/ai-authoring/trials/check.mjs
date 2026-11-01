@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { loadProjectManifest } from '@master/css-compiler/project'
+import { compileCSSSync } from '@master/css-compiler/node'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 
 export async function check(root, task, browser, repository, answer = '', baselineRoot = root) {
@@ -32,6 +33,8 @@ export async function check(root, task, browser, repository, answer = '', baseli
       using tooling = createToolingSessionSync({ manifest: manifest.manifest })
       const classes = await page.locator('[class]').evaluateAll(elements => [...new Set(elements.flatMap(el => [...el.classList]))])
       const native = new Set(manifest.nativeClassNames ?? [])
+      const inlineStyles = await page.locator('style').evaluateAll(elements => elements.filter(element => element.sheet).map(element => element.textContent || ''))
+      for (const css of inlineStyles) for (const name of compileCSSSync(css).nativeClassNames) native.add(name)
       masterClasses = classes.filter(name => tooling.inspectClassName(name).matchStatus === 'matched')
       const invalid = classes.filter(name => !native.has(name) && tooling.inspectClassName(name).matchStatus !== 'matched')
       invalidClasses = invalid.length

@@ -41,6 +41,8 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
       {name:'single-quote-invalid-class',task:'settings-card',valid:false,html:s=>s.replace('class="p-card r-lg bg-surface fg-ink grid gap-sm"','class=\'p-card r-lg bg-surface fg-ink grid gap-sm not-a-master-utility\'')},
       {name:'renamed-progress-nodes',task:'dynamic-value',valid:true,html:s=>s.replace('id="progress"','id="upload"').replace('id="fill"','id="indicator"'),js:s=>s.replaceAll('#progress','#upload').replaceAll('#fill','#indicator')},
       {name:'unconditional-hover',task:'tailwind-hover',valid:false,failure:'touch-tap',css:s=>s+'\n#target:hover {background-color:var(--color-blue-700)}'},
+      {name:'inline-native-class',task:'fallback-order',valid:true,css:s=>s.replace('.fallback{display:block;display:grid;padding:1rem;padding-left:0}',''),html:s=>s.replace('</head>','<style>@layer components{.fallback{display:block;display:grid;padding:1rem;padding-left:0}}</style></head>')},
+      {name:'inactive-style-class',task:'settings-card',valid:false,failure:'valid-classes',html:s=>s.replace('class="p-card r-lg bg-surface fg-ink grid gap-sm"','class="p-card r-lg bg-surface fg-ink grid gap-sm not-a-master-utility"').replace('</head>','<style type="text/plain">.not-a-master-utility{color:red}</style></head>')},
     ]
     for(const variant of variants) {
       const work=join(root,variant.task,variant.name)
