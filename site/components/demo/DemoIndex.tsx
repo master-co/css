@@ -1,3 +1,5 @@
+import '~/site/styles/system/specimens.css'
+
 export interface DemoIndexGroup {
   title: string
   links: readonly { href: string, label: string }[]

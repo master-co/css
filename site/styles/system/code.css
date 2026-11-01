@@ -1,15 +1,22 @@
 /* Code: a quiet panel that owns its frame. Inside a tray it shares the tray's 10px inner radius and 4px inset. */
 @layer components {
   .ui-code { position: relative; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); color: var(--ui-code-text); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
-  .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: 2.5rem; padding: var(--ui-inset) var(--ui-inset) 0 var(--ui-space-sm); }
-  .ui-code-bar > .ui-tabs { flex: 1; min-width: 0; }
-  .ui-code-file { display: inline-flex; align-items: center; gap: var(--ui-space-xs); flex: 1; min-width: 0; padding-left: 4px; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }
+  /* One corner for every panel: the copy action is centred on the first line of text (a bar's row or the code's first line)
+     and set in from the end by the same distance. A file name starts where the code's lines start; a tab chip, as tall as
+     the copy button, takes the corner's distance from the start and the top. */
+  .ui-code, .ui-prompt { --code-corner: calc(var(--ui-space-md) + var(--ui-text-code) * var(--ui-leading-code) / 2 - 1rem); }
+  .ui-code-bar { display: flex; align-items: center; gap: var(--ui-space-xs); min-height: calc(var(--code-corner) + 2rem); padding: var(--code-corner) var(--code-corner) 0 var(--ui-space-md); }
+  .ui-code-bar > .ui-tabs { flex: 1; min-width: 0; margin-left: calc(var(--code-corner) - var(--ui-space-md)); }
+  .ui-code-file { display: inline-flex; align-items: center; gap: var(--ui-space-xs); flex: 1; min-width: 0; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); }
   .ui-code-file svg { flex: none; width: 14px; height: 14px; }
-  .ui-code pre { margin: 0; padding: var(--ui-space-sm) 0 var(--ui-space-md); overflow-x: auto; font: var(--ui-weight-regular) var(--ui-text-code)/var(--ui-leading-code) var(--font-family-mono); tab-size: 2; scrollbar-width: thin; }
+  /* Without a bar the code sits in equal space above and below, the same 16px that sets its lines in from the edge. */
+  .ui-code pre { margin: 0; padding: var(--ui-space-md) 0; overflow-x: auto; font: var(--ui-weight-regular) var(--ui-text-code)/var(--ui-leading-code) var(--font-family-mono); tab-size: 2; scrollbar-width: thin; }
   .ui-code pre:focus-visible { @apply --ui-focus-ring; outline-offset: -4px; border-radius: var(--ui-radius-md); }
   /* Under a bar the code starts a short step down, so the file name reads as its caption. */
   .ui-code:has(> .ui-code-bar) pre { padding-top: var(--ui-space-2xs); }
   .ui-code-line { display: block; padding: 0 var(--ui-space-lg) 0 var(--ui-space-md); }
+  /* A blank source line is an empty block: it keeps one line of height. */
+  .ui-code-line:empty { min-height: 1lh; }
   .ui-code[data-numbers] { counter-reset: line; }
   .ui-code[data-numbers] .ui-code-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 1.75rem; margin-right: var(--ui-space-sm); color: var(--ui-text-disabled); text-align: right; user-select: none; }
   .ui-code-line[data-mark="active"] { background: var(--ui-code-active); box-shadow: inset 2px 0 0 var(--ui-line-mark); }
@@ -24,20 +31,21 @@
   .ui-code > .ui-disclosure { border-top: 1px solid var(--ui-line-hair); }
   .ui-code > .ui-disclosure > summary { padding-inline: var(--ui-space-md); }
   .ui-code > .ui-disclosure > pre { padding-top: 0; }
-  /* In a tray, source code is a lighter field like the stage beside it: tone, not another ring. */
-  .ui-tray > .ui-code { box-shadow: none; }
+  /* In a tray, source code (a file tree, a disclosed result) is a lighter field like the stage beside it: tone, not another ring. */
+  .ui-tray > :is(.ui-code, .ui-tree), .ui-tray > .ui-disclosure > .ui-code { box-shadow: none; }
 
-  /* Tabs: a row of quiet chips; the selected one is raised */
+  /* Tabs: a row of quiet chips; the selected one is filled. The row scrolls and so clips any outer shadow, and a raised
+     sheet face is the code panel's own tone: the chip's fill and inset hairline keep it legible in both schemes. */
   .ui-tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .ui-tabs::-webkit-scrollbar { display: none; }
   .ui-tabs > [role="tab"] {
-    appearance: none; display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: 1.875rem; padding: 0 .625rem; border: 0; border-radius: var(--ui-radius-md);
+    appearance: none; display: inline-flex; flex: none; align-items: center; gap: 6px; min-height: 2rem; padding: 0 .625rem; border: 0; border-radius: var(--ui-radius-md);
     background: transparent; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1 var(--font-family-mono); cursor: pointer; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick), box-shadow var(--ui-duration-quick);
   }
   .ui-tabs > [role="tab"] svg { width: 14px; height: 14px; }
   .ui-tabs > [role="tab"]:hover { color: var(--ui-text-strong); }
-  .ui-tabs > [role="tab"][aria-selected="true"] { color: var(--ui-text-strong); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
-  .ui-tabs > [role="tab"]:focus-visible { @apply --ui-focus-ring; outline-offset: 1px; }
+  .ui-tabs > [role="tab"][aria-selected="true"] { background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); }
+  .ui-tabs > [role="tab"]:focus-visible { @apply --ui-focus-ring; outline-offset: -2px; }
 
   /* Inline code and file references */
   .ui-inline-code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .84em/1 var(--font-family-mono); overflow-wrap: anywhere; }
@@ -59,7 +67,6 @@
 
   /* Prompt: copyable prose for agents — reads as text, copies as text */
   .ui-prompt { display: grid; gap: 0; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
-  .ui-prompt > .ui-code-bar { padding-left: var(--ui-space-md); }
   .ui-prompt-body { margin: 0; padding: var(--ui-space-xs) var(--ui-space-md) var(--ui-space-md); color: var(--ui-text-strong); font: var(--ui-weight-regular) .9375rem/1.7 var(--font-family-sans); white-space: pre-wrap; }
   .ui-prompt-body var { padding: 0 .25em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); font-style: normal; }
 

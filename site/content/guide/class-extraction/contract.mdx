@@ -19,7 +19,7 @@ The scanner does not run your app. Source extractors collect complete static str
 </article>
 ```
 
-The source contains `card`, `p-md`, `bg-white`, `fg-zinc-90`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and configured classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
+The source contains `card`, `p-md`, `bg-white`, `fg-zinc-90`, `shadow-md`, `font-lg`, and `font-semibold`. Those candidates are resolved against the active manifest. Matched utilities and project-defined classes generate CSS, including values reported as invalid or unknown. A native class can retain a matching rule when pruning is explicitly enabled. An unmatched class does not become a Master error merely because it is ordinary application CSS.
 
 The generated result for `p-md` and `shadow-md` includes their theme dependencies:
 

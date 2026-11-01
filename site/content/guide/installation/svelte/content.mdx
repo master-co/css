@@ -11,7 +11,7 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
       In an existing [SvelteKit project](https://svelte.dev/docs/kit/creating-a-project), run the Svelte CLI add-on from the project root. It installs static rendering and leaves existing server hooks unchanged.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npx sv add @master/css-svelte-addon
       ```
     </StepR>
@@ -20,7 +20,7 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
     ### Start using Master CSS
     Start the dev server and replace `src/routes/+page.svelte` with this heading. Keep the stylesheet import added to `src/routes/+layout.svelte`.
   </Step>
-  <HelloWorld url="localhost:5173" />
+  <HelloWorld />
 </StepSection>
 
 ```svelte name=src/routes/%2Bpage.svelte

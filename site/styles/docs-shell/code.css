@@ -6,8 +6,8 @@
   /* The file's name keeps its width; a long result wraps in the room left beside the copy button. */
   .ui-code-bar > .ui-code-file { flex: 1 0 auto; }
   .ui-code-bar > .ui-copy { flex: 0 1 auto; min-width: 0; margin-left: auto; }
-  /* A long line scrolls under the corner copy: the panel's own face fades in behind the button so code never runs through it. */
-  .ui-code > .ui-copy { position: absolute; z-index: 1; top: calc(var(--ui-space-sm) + var(--ui-text-code) * var(--ui-leading-code) / 2 - 1rem); right: var(--ui-inset); padding-left: var(--ui-space-sm); border-radius: var(--ui-radius-md); background: linear-gradient(90deg, transparent, var(--ui-surface-code) var(--ui-space-sm)); }
+  /* Without a bar the copy takes the panel's corner (`--code-corner`, code.css). A long line scrolls under it: the panel's own face fades in behind the button so code never runs through it. */
+  .ui-code > .ui-copy { position: absolute; z-index: 1; top: var(--code-corner); right: var(--code-corner); padding-left: var(--ui-space-sm); border-radius: var(--ui-radius-md); background: linear-gradient(90deg, transparent, var(--ui-surface-code) var(--ui-space-sm)); }
   .ui-code:has(> .ui-copy) .ui-code-line { padding-right: 3rem; }
   .ui-copy-status:empty { display: none; }
   .ui-copy > .ui-copy-status { min-width: 0; max-width: 16rem; text-align: end; line-height: 1.3; }

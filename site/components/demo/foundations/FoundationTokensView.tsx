@@ -11,7 +11,7 @@ function TokenScene({ namespace, tokens, title, compare = false }: { namespace: 
   if (!scene.html) return null
   if (compare) return <DemoThemeComparison name={`tokens-${namespace}`} title={title} html={scene.html} css={scene.css} caption={scene.caption} />
   return <Demo title={title} frame="none" caption={scene.caption}>
-    <DemoViewport title={title} document={demoDocument({ page: 'tokens', id: namespace, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }, scene)} sizing="content" theme motion={scene.motion} />
+    <DemoViewport title={title} document={demoDocument({ page: 'tokens', id: namespace, title, html: [], css: '', classes: [], classLists: [], highlighted: [] }, scene)} sizing="content" theme={namespace === 'shadow'} motion={scene.motion} />
   </Demo>
 }
 

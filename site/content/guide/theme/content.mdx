@@ -8,7 +8,7 @@ Define a token when several elements should share a design value. Put it in `@th
   --color-brand: #4f46e5;
   --spacing-card: 1.5rem;
   --radius-card: 1rem;
-}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><h2 class="m(0) text-xl font-regular">Field notes</h2><p class="mt-sm mb-md text-sm fg-text-muted">Keep the details that matter.</p><button type="button" class="px-md py-sm r-md bg-brand fg-white">New collection</button></article>'} theme caption="p-card, r-card and bg-brand read project tokens. The preview uses the same theme and markup as the source below; the button does not create data." />
+}`} html={'<article class="max-w-sm mx-auto p-card r-card bg-surface-raised fg-text-body shadow-sm"><h2 class="m(0) text-xl font-regular">Field notes</h2><p class="mt-sm mb-md text-sm fg-text-muted">Keep the details that matter.</p><button type="button" class="px-md py-sm r-md bg-brand fg-white">New collection</button></article>'} caption="p-card, r-card and bg-brand read project tokens. The preview uses the same theme and markup as the source below; the button does not create data." />
 
 `p-card` generates `padding: var(--spacing-card)`; the browser resolves the custom property on the card. Change the token when every consumer should change together, and use a local value when the change belongs to one element.
 

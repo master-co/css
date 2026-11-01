@@ -14,7 +14,7 @@ Add Master CSS to a Next.js App Router project with a top-level `app` directory.
       (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework nextjs --yes
       ```
     </StepR>
@@ -23,7 +23,7 @@ Add Master CSS to a Next.js App Router project with a top-level `app` directory.
     ### Start using Master CSS
     Start the dev server and style your first page.
   </Step>
-  <HelloWorld url="localhost:3000" />
+  <HelloWorld />
 </StepSection>
 
 ```tsx name=app/page.tsx
@@ -88,7 +88,7 @@ Static mode is the default. The installer option sets the matching `withMasterCS
 
 Runtime mode injects the Master CSS runtime through Next.js client instrumentation without using the build adapter to pre-render page CSS:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework nextjs --mode runtime --yes
 ```
 
@@ -106,7 +106,7 @@ The heading should gain an underline without a rebuild. Runtime mode does not su
 
 Progressive rendering adds pre-rendered CSS and a hydration manifest to static or pre-rendered Next.js pages:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework nextjs --mode progressive --yes
 ```
 

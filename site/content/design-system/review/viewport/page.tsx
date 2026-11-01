@@ -20,10 +20,10 @@ const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><st
 @layer theme, base, defaults, components, utilities;
 @layer base { :root { color-scheme: light dark; } body { margin: 24px; font: 16px system-ui; } button { font: inherit; } }
 ${generatePresetCSS(classes)}
-</style></head><body><button type="button" class="${classes.join(' ')}">Save</button></body></html>`
+</style></head><body><button type="button" data-target class="${classes.join(' ')}">Save</button></body></html>`
 
 export default function Page() {
-  return <ComponentPage title="Browser viewport" description="A real document in an iframe, framed as a small browser. The address well names the document and its live size; presets, the range and the edge handle change the actual viewport width." sections={[
+  return <ComponentPage title="Browser viewport" description="A real document in an iframe. A responsive preview is framed as a small browser: window dots, no address, and the live width beside the range; presets, the range and the edge handle change the actual viewport width. Other previews omit the chrome." sections={[
     { id: 'responsive', title: 'Responsive presets', children: <Demo title="Responsive button" frame="none" caption="The presets cross the sm breakpoint inside the iframe. The padding readout comes from the real computed style.">
       <DemoViewport title="Responsive button" document={document} responsive widthPresets={widths} height={132} inspect={['padding']} />
     </Demo> },

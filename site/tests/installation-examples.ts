@@ -141,7 +141,7 @@ export function verifyInstallationExamples() {
   const cdnRoot = mkdtempSync(join(tmpdir(), 'master-doc-cdn-'))
   try {
     symlinkSync(fileURLToPath(new URL('node_modules', rootURL)), join(cdnRoot, 'node_modules'), 'dir')
-    const commands = cdnExamples.find(f => f.name === 'Terminal')!.text
+    const commands = cdnExamples.find(f => f.language === 'bash')!.text
     const copied = spawnSync('/bin/sh', ['-c', commands], { cwd: cdnRoot, encoding: 'utf8', timeout: 15000 })
     assert.equal(copied.status, 0, copied.stderr)
     for (const [name, source] of [

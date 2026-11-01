@@ -9,6 +9,8 @@ interface ViewportOptions {
   title: string
   /** Resize the actual iframe viewport. */
   responsive?: boolean
+  /** Browser chrome; only where the viewport itself is the lesson. Defaults to `responsive`. The tray head names the document. */
+  chrome?: boolean
   /** Named real viewport widths; the first is the initial width when responsive. */
   widthPresets?: readonly { label: string; width: number }[]
   motion?: boolean
@@ -28,7 +30,7 @@ export type DemoViewportProps = ViewportOptions & (
   { document: string, src?: never } | { document?: never, src: string }
 )
 
-export default function DemoViewport({ title, document: source, src, responsive = false, widthPresets, motion = false, print = false, theme = false, initialTheme, inspect, height = 260, maxWidth = 1600, sizing = 'viewport' }: DemoViewportProps) {
+export default function DemoViewport({ title, document: source, src, responsive = false, chrome = responsive, widthPresets, motion = false, print = false, theme = false, initialTheme, inspect, height = 260, maxWidth = 1600, sizing = 'viewport' }: DemoViewportProps) {
   const ref = useRef<HTMLIFrameElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const cleanup = useRef<() => void>(() => {})
@@ -41,7 +43,6 @@ export default function DemoViewport({ title, document: source, src, responsive 
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
   const [contentHeight, setContentHeight] = useState<number>()
-  const [measurement, setMeasurement] = useState('')
   const [properties, setProperties] = useState('')
   const widthId = useId()
 
@@ -133,7 +134,6 @@ export default function DemoViewport({ title, document: source, src, responsive 
         // scrollHeight is at least the current viewport and cannot shrink it.
         setContentHeight(Math.max(96, Math.ceil(doc.documentElement.getBoundingClientRect().height)))
       }
-      setMeasurement(`${Math.round(frame.clientWidth)} × ${Math.round(frame.clientHeight)} px`)
       setFitWidth(Math.round(frame.clientWidth))
       setMinimumWidth(Math.min(240, bodyRef.current?.clientWidth ?? 240, maxWidth))
       const target = doc.querySelector('[data-target]')
@@ -264,11 +264,8 @@ export default function DemoViewport({ title, document: source, src, responsive 
   const button = { type: 'button', disabled: !ready, className: 'ui-button', 'data-size': 'sm' } as const
 
   return (
-    <div className="ui-browser" data-ready={ready}>
-      <div className="ui-browser-bar">
-        <span className="ui-browser-dots" aria-hidden="true"><i /><i /><i /></span>
-        <span className="ui-browser-url">{title}{measurement && <> · <output>{measurement}</output></>}</span>
-      </div>
+    <div className="ui-browser" data-variant={chrome ? undefined : 'plain'} data-ready={ready}>
+      {chrome && <div className="ui-browser-bar" aria-hidden="true"><span className="ui-browser-dots"><i /><i /><i /></span></div>}
       <div ref={bodyRef} className="ui-browser-body">
         <div className="ui-browser-viewport" style={{ width: width ? `${width}px` : `min(100%, ${maxWidth}px)` }}>
           <iframe ref={ref} title={title} srcDoc={source} src={src} loading="lazy" data-ready={ready} data-sizing={sizing}
@@ -287,6 +284,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
             <input id={widthId} className="ui-range" disabled={!ready} type="range" min={range.min} max={range.max} step="1" value={range.value}
               style={{ '--value': `${((range.value - range.min) / Math.max(1, range.max - range.min)) * 100}%` } as CSSProperties}
               onChange={event => setWidth(Number(event.target.value))} />
+            {ready && <output className="ui-browser-size" htmlFor={widthId}>{fitWidth} px</output>}
             <button {...button} onClick={() => setWidth(undefined)}>Fit</button>
           </>}
           {theme && <button {...button} aria-pressed={isDark} title="Toggle dark theme" onClick={() => setDark(!isDark)}>

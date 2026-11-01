@@ -29,7 +29,7 @@ Start with an audit, then migrate incrementally. The first milestone is a workin
 
 With the [Master CSS MCP server](/guide/ai-coding#connect-the-mcp-server) connected, the `migrate-to-mastercss` prompt asks the agent to inspect the active manifest, stylesheet entries, extraction coverage and existing vocabulary first, then return a rendering mode, a first reviewable batch, validation commands and visual risks. It is a planning workflow and does not edit files.
 
-```text name=prompt
+```text
 Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.
 
 Inspect the external styling system, framework, CSS entries, tokens, source discovery and available checks. Do not edit yet.
@@ -41,7 +41,7 @@ Return an incremental plan with the rendering mode, first conversion batch, CSS 
 
 Paste this into your local coding agent from the project root:
 
-```text name=prompt
+```text
 You are migrating this project to Master CSS.
 
 Use the official Master CSS documentation as the source of truth:

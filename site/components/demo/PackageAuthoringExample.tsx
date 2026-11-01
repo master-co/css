@@ -11,7 +11,7 @@ export default function PackageAuthoringExample({ part = 'preview', code = true 
   if (part === 'source') return <Code lang="css" name="master.css">{authoringSource}</Code>
   const section = { page: 'project-styles', id: 'authoring-package', title, html: [authoringHTML], css: authoringSource, classes: [], classLists: [], highlighted: [] }
   return <Demo title={title} caption={caption} frame="none" data-project-style="authoring-package" source={code && <>
-    <Code lang="html" name="HTML">{authoringHTML}</Code>
+    <Code lang="html">{authoringHTML}</Code>
     <DemoGeneratedCSS><Code lang="css" beautify>{authoringCSS()}</Code></DemoGeneratedCSS>
   </>}>
     <DemoViewport title={title} document={demoDocument(section, { html: authoringHTML, caption, bodyClass: 'p-md p(8)@media(width<240px)' })} sizing="content" />

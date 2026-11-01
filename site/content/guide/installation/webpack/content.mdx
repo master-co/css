@@ -11,7 +11,7 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
       In an existing [Webpack](https://webpack.js.org/guides/getting-started/), [Rspack](https://rspack.dev/guide/start/quick-start) or [Rsbuild](https://rsbuild.rs/guide/start/quick-start) project, run the installer from the project root with `--framework webpack`, `rspack` or `rsbuild`. Static is the default: it registers the plugin and creates `src/index.css`.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework webpack --yes
       ```
     </StepR>
@@ -143,7 +143,7 @@ Static mode is the default. The plugin's `mode` option selects another delivery,
 
 Run the installer with `--mode runtime` and your `--framework` value. It sets the plugin option to `mode: 'runtime'`:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework webpack --mode runtime --yes
 ```
 

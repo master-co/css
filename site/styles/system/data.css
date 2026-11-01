@@ -12,7 +12,7 @@
   .ui-table tbody tr > :first-child { color: var(--ui-text-strong); }
   .ui-table :is(td, th)[data-align="end"] { text-align: end; font-variant-numeric: tabular-nums; }
   /* In a cell code is a fill only: several hairline chips to a cell read as a grid inside the grid. */
-  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); white-space: nowrap; }
+  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: none; font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); white-space: nowrap; }
   .ui-table :is(td, tbody th) .ui-preview { display: inline-block; width: 1.25rem; height: 1.25rem; margin-right: var(--ui-space-xs); border-radius: var(--ui-radius-sm); vertical-align: -.3em; box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
   .ui-table[data-density="compact"] :is(th, td) { padding-block: .4375rem; }
   /* Lookup: the key column fits its longest key; values wrap at their spaces */
@@ -24,7 +24,7 @@
 
   /* Metrics: aligned values with their caveats */
   .ui-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--ui-inset); }
-  .ui-metric { display: grid; min-width: 0; gap: 6px; overflow-wrap: anywhere; padding: var(--ui-space-md); border-radius: var(--ui-radius-lg); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-metric { display: grid; align-content: start; min-width: 0; gap: 6px; overflow-wrap: anywhere; padding: var(--ui-space-md); border-radius: var(--ui-radius-lg); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-metric > small { color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-metric > b { color: var(--ui-text-strong); font-size: 1.625rem; font-weight: var(--ui-weight-heading); letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .ui-metric > b > span { color: var(--ui-text-muted); font-size: .875rem; font-weight: var(--ui-weight-medium); letter-spacing: 0; }
@@ -58,6 +58,9 @@
   .ui-params dd > * { margin: 0; }
   .ui-params dd > * + * { margin-top: var(--ui-space-xs); }
   .ui-params dd small { color: var(--ui-text-muted); font-size: .75rem; }
+  /* A link in a description reads as the prose's own links do. */
+  .ui-params dd a:not([class]) { color: var(--ui-text-strong); text-decoration: underline 1px var(--ui-line-strong); text-underline-offset: .24em; }
+  .ui-params dd a:not([class]):hover { text-decoration-color: currentColor; }
   .ui-params :is(dt, dd) :is(h3, h4) { margin: 0; font: inherit; color: inherit; letter-spacing: inherit; }
   .ui-params dd code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); }
   @media (width < 35rem) { .ui-params > div { grid-template-columns: 1fr; } }

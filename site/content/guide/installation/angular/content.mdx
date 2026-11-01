@@ -11,7 +11,7 @@ Angular keeps its own builder; the Master CSS CLI generates a static stylesheet 
       In an existing browser-rendered [Angular project](https://angular.dev/installation) that uses CSS, run the installer from the project root.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework angular --yes
       ```
     </StepR>
@@ -22,7 +22,7 @@ Angular keeps its own builder; the Master CSS CLI generates a static stylesheet 
       Generate CSS once, then keep the CSS watcher running in a separate terminal while the Angular server runs.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npx master-css generate --output src/master.generated.css
       npm start
       ```
@@ -32,7 +32,7 @@ Angular keeps its own builder; the Master CSS CLI generates a static stylesheet 
     ### Start using Master CSS
     Now style your first template using Master CSS syntax.
   </Step>
-  <HelloWorld url="localhost:4200" />
+  <HelloWorld />
 </StepSection>
 
 ```html name=src/app/app.html
@@ -73,7 +73,7 @@ Static mode is the default. Angular supports static and runtime rendering:
 
 Runtime rendering generates rules in the browser when Angular adds class names that were not known at build time:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework angular --mode runtime --yes
 ```
 

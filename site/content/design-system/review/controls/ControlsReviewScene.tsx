@@ -18,7 +18,7 @@ export default function ControlsReviewScene() {
   </DemoControls>} caption="Selection changes the actual alignment utility on the flex parent. Scroll the preview horizontally when space is limited.">
     <div className="grid gap-md w-full">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard focus enables native horizontal scrolling. */}
-      <div className="overflow-x-auto w-full" role="region" aria-label="Alignment preview" tabIndex={0} data-preview-scroll="">
+      <div className="overflow-x-auto w-full p(4)" role="region" aria-label="Alignment preview" tabIndex={0} data-preview-scroll="">
         <div className={`flex gap-sm (min-width:18rem) (height:10rem) ${alignment}`}>
           <DemoItem tone="blue" className="(flex:1)">01</DemoItem>
           <DemoItem tone="violet" className="(flex:1) (height:6rem)">02</DemoItem>
@@ -45,7 +45,7 @@ export function ControlsGallery() {
           <button type="button" className="ui-button" disabled>Disabled</button>
           <button type="button" className="ui-button" data-shape="icon" aria-label="Add"><IconPlus aria-hidden="true" /></button>
         </div>
-        <div className="flex flex-wrap justify-center gap-sm">
+        <div className="flex flex-wrap items-end justify-center gap-sm">
           {(['hover', 'pressed', 'focus'] as const).map(state => <div key={state} className="grid (justify-items:center) gap-xs">
             <span className="ui-button" data-state={state} aria-hidden="true">Save</span><DemoLabel>{state}</DemoLabel>
           </div>)}

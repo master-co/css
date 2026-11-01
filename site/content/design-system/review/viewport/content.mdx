@@ -1,4 +1,4 @@
-`DemoViewport` hosts a complete site-authored document (`document`) or a site URL (`src`) in a real iframe inside `div.ui-browser`. The address well shows the title and the measured size. `responsive` adds presets (`widthPresets`), a `ui-range` and Fit; `theme`, `motion` and `print` add only the controls a lesson needs, and `inspect` reads computed properties from the `[data-target]` element.
+`DemoViewport` hosts a complete site-authored document (`document`) or a site URL (`src`) in a real iframe inside `div.ui-browser`. Browser chrome appears only where the viewport itself is the lesson: `responsive` (or `chrome`) adds a bar of window dots, with no address; the tray head names the document, and the live width reads beside the range. Every other preview is `data-variant="plain"`, a stage without chrome that a tray sets apart by tone. `responsive` also adds presets (`widthPresets`), a `ui-range` and Fit; `theme`, `motion` and `print` add only the controls a lesson needs, and `inspect` reads computed properties from the `[data-target]` element.
 
 ```tsx
 <Demo title="Responsive specimen" frame="none" caption="Cross sm inside the iframe.">
@@ -14,9 +14,9 @@
 
 ```html
 <div class="ui-browser">
-  <div class="ui-browser-bar"><span class="ui-browser-dots">…</span><span class="ui-browser-url">Responsive specimen · 835 × 180 px</span></div>
+  <div class="ui-browser-bar" aria-hidden="true"><span class="ui-browser-dots">…</span></div>
   <div class="ui-browser-body"><div class="ui-browser-viewport"><iframe …></iframe><span class="ui-resize"></span></div></div>
-  <div class="ui-browser-tools" role="group">…</div>
+  <div class="ui-browser-tools" role="group">… <output class="ui-browser-size">835 px</output> …</div>
 </div>
 ```
 

@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/system/specimens.css'
 import { useEffect, useId, useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
 import Demo from './Demo'
 

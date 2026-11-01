@@ -5,6 +5,10 @@
   .ui-handbook > .ui-pagehead > h1 { font-size: clamp(var(--ui-text-title), 4vw, var(--ui-text-display)); line-height: var(--ui-leading-display); letter-spacing: var(--ui-tracking-display); }
   .ui-handbook-section { display: grid; gap: var(--ui-space-md); min-width: 0; margin-block: var(--ui-space-lg) var(--ui-space-2xl); }
   .ui-handbook-section[data-columns="2"] { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); align-items: start; }
+  /* A section's framed surfaces hang like the article's own (prose.css), so specimens and usage code share both edges.
+     Two columns hang as one grid. */
+  .ui-prose > .ui-handbook-section:not([data-columns]) > :is(.ui-tray, .ui-code, .ui-table, .ui-params),
+  .ui-prose > .ui-handbook-section[data-columns="2"] { margin-inline: calc(var(--bleed) * -1); }
   .ui-handbook-section > h3 { margin: var(--ui-space-md) 0 0; color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-heading); }
   .ui-handbook-section > :is(h3, p):first-child { margin-top: 0; }
   .ui-handbook-section > p { max-width: var(--measure); margin: 0; color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }

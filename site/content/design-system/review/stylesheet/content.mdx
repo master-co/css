@@ -3,20 +3,19 @@ import StylesheetExample from '~/site/components/StylesheetExample'
 
 Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The server compiles the literal source with the current preset and displays the complete result, including required variables and keyframes. The pair reuses `DocumentCodeExample`, including keyboard copy, visible focus and clipboard feedback. It does not execute a visual effect in the page.
 
-<div data-stylesheet-gallery>
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n.card {\n  background-color: var(--color-brand);\n}"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  background-color: var(--color-brand);\n}"}
 />
 
 <StylesheetExample
   title="A safelisted token"
-  source={"@theme {\n  --color-brand: #4f46e5;\n }\n\n\n@safelist \"bg-brand\";"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n@safelist \"bg-brand\";"}
 />
 
 <StylesheetExample
   title="A resource without a matching class"
-  source={"@layer theme { :root, :host {\n  --color-brand: #4f46e5;\n\n  \n} }\n@keyframes fade-in {\n    to { opacity: 1; }\n  }\n"}
+  source={"@layer theme {\n  :root, :host {\n    --color-brand: #4f46e5;\n  }\n}\n\n@keyframes fade-in {\n  to { opacity: 1; }\n}"}
 />
 
 <DocumentOptionList label="Example settings">
@@ -26,7 +25,6 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 
   </DocumentOptionEntry>
 </DocumentOptionList>
-</div>
 
 ```tsx
 <StylesheetExample

@@ -17,10 +17,10 @@ export function isStylesheetExample(title: ReferenceMarkdownNode, source?: Refer
 }
 
 export function referenceCodeProps(node: Code, stylesheetExample = false): CodeProp {
-  // A stylesheet example's source carries its label in its bar; its result sits in the Generated CSS disclosure.
-  if (stylesheetExample) return /\bstylesheet=source\b/.test(node.meta ?? '') ? { lang: 'css', name: 'Source', children: node.value } : { lang: 'css', children: node.value }
+  // A stylesheet example's result sits in the Generated CSS disclosure, so its source needs no label.
+  if (stylesheetExample) return { lang: 'css', children: node.value }
   if (node.lang === 'typescript' && node.meta === 'declaration') {
-    return { lang: 'typescript', name: 'TypeScript', children: node.value, beautify: false, dedent: false }
+    return { lang: 'typescript', children: node.value, beautify: false, dedent: false }
   }
   return {
     lang: node.lang || 'plaintext',

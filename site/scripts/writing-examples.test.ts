@@ -46,7 +46,7 @@ test('Next.js Blog Badge renders both displayed variants with valid foreground a
 
 test('Vite Blog installer and authored files build a static stylesheet', () => {
   const source = article('blog/bootstrapping-master-css-with-vite')
-  const command = namedFence(source, 'Terminal').trim()
+  const command = deliveryFences(source).find(fence => fence.language === 'bash')!.text.trim()
   assert.equal(command, 'npm create @master/css@rc -- --framework vite --yes')
   const root = mkdtempSync(join(tmpdir(), 'master-writing-vite-'))
   try {

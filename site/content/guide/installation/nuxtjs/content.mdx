@@ -11,7 +11,7 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
       In an existing [Nuxt project](https://nuxt.com/docs/getting-started/installation), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework nuxt --yes
       ```
     </StepR>
@@ -20,7 +20,7 @@ Install the Master CSS Nuxt module and load its CSS entry through Nuxt’s `css`
     ### Start using Master CSS
     Start the dev server and style your first component. These examples use Nuxt 4's `app/` directory.
   </Step>
-  <HelloWorld url="localhost:3000" />
+  <HelloWorld />
 </StepSection>
 
 ```vue name=app/app.vue
@@ -61,7 +61,7 @@ Static mode is the default. The installer option sets the module's `mode`; keep 
 
 <DocumentDisclosure title="Generate new classes in the browser">
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework nuxt --mode runtime --yes
 ```
 
@@ -77,7 +77,7 @@ The heading should gain an underline without rebuilding. If it does not, inspect
 
 <DocumentDisclosure title="Include server-rendered styles">
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework nuxt --mode progressive --yes
 ```
 

@@ -49,8 +49,10 @@ export default function BenchmarkChartsDemo() {
       <BenchmarkFigure
         title="Delta labels"
         description="Sample data for compact comparison badges.">
-        <div className="flex flex-wrap gap-xs">
-          {deltaItems.map(delta => <BenchmarkDelta key={delta.label} {...delta} />)}
+        <div className="ui-stage" data-padding="sm" data-align="start">
+          <div className="flex flex-wrap gap-xs">
+            {deltaItems.map(delta => <BenchmarkDelta key={delta.label} {...delta} />)}
+          </div>
         </div>
       </BenchmarkFigure>
 

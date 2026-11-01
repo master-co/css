@@ -3,7 +3,6 @@ import DocumentParameters from '~/site/components/DocumentParameters'
 
 Use `DocumentParameters` for API inputs whose identifiers, types, and explanations need the full reading width. Required and optional states use text; neither is a validation control. Nested paths retain their full names and state when their parent is needed.
 
-<div data-tool-contract-gallery>
 <DocumentParameters label="Required and optional parameters" parameters={[
   { name: 'className', type: 'string', requirement: 'Required', description: 'One complete class, including any selector or condition suffix.' },
   { name: 'mode', type: 'string', requirement: 'Optional', description: 'Use the active manifest’s default behavior when omitted.' }
@@ -26,7 +25,6 @@ Use `DocumentParameters` for API inputs whose identifiers, types, and explanatio
 <DocumentDisclosure title="Expanded supporting detail" open>
 Native disclosure keeps supporting content in the document and lets readers use the keyboard to open or close it. Essential instructions belong outside the disclosure.
 </DocumentDisclosure>
-</div>
 
 ```tsx
 <DocumentParameters label="Parameters" parameters={[
