@@ -3,6 +3,7 @@ import { brandContent } from '../utils/brand-content'
 import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { installationGuidesMarkdown } from '../utils/installation-guides'
 import { installationIllustrationMarkdown } from '../content/guide/installation/(main)/illustration'
+import { compatibilityIllustrationMarkdown } from '../content/guide/compatibility/illustration'
 import { deliveryFences } from '../tests/delivery-examples'
 import { agentGuideContent, agentGuideSlugs, agentFixMarkdown } from '../utils/agent-content'
 import { agentPromptMarkdown, previewWorkflowMarkdown } from '../utils/agent-guide-data'
@@ -123,7 +124,7 @@ test('project style guides retain complete configured examples in search and llm
     }
     for (const match of source.matchAll(/<PackageTree name="([^"]+)"/g)) assert.ok(content.markdown.includes(packageTreeMarkdown(match[1])))
     for (const match of source.matchAll(/<PackageAuthoringExample part="([^"]+)"/g)) assert.ok(content.markdown.includes(authoringExampleMarkdown(match[1])))
-    assert.doesNotMatch(content.markdown, /<(?:ProjectStyleExample|PackageTree|PackageAuthoringExample|DemoFeatureSupport|DemoViewTransition)|MCSS_EXPRESSION/)
+    assert.doesNotMatch(content.markdown, /<(?:ProjectStyleExample|PackageTree|PackageAuthoringExample|DemoFeatureSupport|DemoViewTransition|CompatibilityIllustration)|MCSS_EXPRESSION/)
     for (const fence of source.matchAll(/```[\s\S]*?```/g)) {
       const authored = fence[0].replace(/<!--\s*@MARK[\s\S]*?-->/g, '')
       assert.ok(content.markdown.includes(authored), `${slug}: complete authored fence`)
@@ -132,6 +133,16 @@ test('project style guides retain complete configured examples in search and llm
   const compatibility = await projectStyleGuideContent(root, 'compatibility')
   assert.ok(compatibility.markdown.includes("@import 'swiper/css' layer(defaults);"))
   assert.ok(compatibility.markdown.includes('/reference/rules/declarations#vendor-prefixes'))
+  assert.ok(compatibility.markdown.includes(compatibilityIllustrationMarkdown()))
+  const field = compatibility.examples.find(example => example.classes.includes('(field-sizing:content)@supports(field-sizing:content)'))
+  assert.ok(field, 'the native enhancement survives the portable export')
+  assert.match(field.css, /@supports\s*\(field-sizing:\s*content\)/)
+  assert.match(field.css, /field-sizing:\s*content/)
+  assert.match(field.css, /min-height:\s*6rem/)
+  assert.match(field.css, /max-height:\s*12rem/)
+  const checkbox = compatibility.examples.find(example => example.classes.includes('b-blue-60:has(:checked)'))
+  assert.ok(checkbox, 'the selector enhancement survives the portable export')
+  assert.ok(checkbox.css.includes(':has(:checked)'))
   assert.doesNotMatch(compatibility.markdown, /```css\n\s*```/)
   const transitions = await projectStyleGuideContent(root, 'view-transitions')
   assert.ok(transitions.markdown.includes('[Interactive article transition preview](/guide/view-transitions#article-list-to-detail)'))

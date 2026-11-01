@@ -11,7 +11,7 @@ export default function DemoFeatureSupport({ condition }: { condition: string })
   return <p className="flex flex-wrap items-center gap-xs m(0)" data-supported={supported ?? 'unknown'}>
     <code className="ui-inline-code">{condition}</code>
     <span className="ui-badge" data-variant="dot" data-tone={supported ? 'green' : undefined}>
-      {supported === null ? 'Checking this browser…' : supported ? 'Supported in this browser' : 'Not supported · fallback applies'}
+      {supported === null ? 'Checking…' : supported ? 'Supported' : 'Not supported'}
     </span>
   </p>
 }

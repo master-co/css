@@ -1,88 +1,83 @@
-import Class2CSS from '~/site/components/Class2CSS'
+import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
+import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport'
+import CompatibilityIllustration from './components/CompatibilityIllustration'
 
-## Overview [sr-only]
-Master CSS works alongside new CSS features, existing stylesheets and third-party CSS. Any valid declaration can be written as a class, and external styles keep their place in the cascade through the preset's layer order. Browser support follows the generated CSS; the [browser baseline and vendor prefixes](/reference/rules/declarations#vendor-prefixes) lists what the preset relies on and which compatibility declarations Master emits.
+Master CSS generates CSS; the browser decides which properties, values and selectors it can apply. Build a usable baseline, add newer features where they improve it, and check how existing styles participate in the cascade.
 
----
+These examples assume [Installation](/guide/installation) is complete and your app loads `@import '@master/css';`.
 
-## New CSS features
+## Check the browser baseline \{#overview\}
+
+The default preset uses cascade layers, OKLCH colors and `light-dark()` for adaptive values. An enhancement fallback does not remove those baseline requirements. Check the [browser baseline and vendor prefixes](/reference/rules/declarations#vendor-prefixes) against the browsers you need to support.
+
+A recognized class is not a browser-compatibility guarantee. Master emits compatibility prefixes for selected properties; it does not polyfill every new feature. Likewise, a tooling result of `unknown` means the CSS has not been verified by that check, rather than proving it invalid or safe to ship.
+
+## Add a feature without losing the fallback \{#new-css-features\}
 
 ### Native declarations
-Write a property-like class when the declaration is already valid CSS:
 
-```html
-<!-- @MARK (field-sizing:content) --><!-- @MARK (interpolate-size:allow-keywords) --><!-- @MARK (view-transition-name:card) --><!-- @MARK (transition-behavior:allow-discrete) -->
-<article class="(transition-behavior:allow-discrete) (field-sizing:content) (interpolate-size:allow-keywords) (view-transition-name:card)">…</article>
-```
+A note field should remain editable even when automatic sizing is unavailable. Give it an ordinary textarea size and allow vertical resizing, then add [`field-sizing: content`](https://drafts.csswg.org/css-forms/#field-sizing) as an enhancement. The native property can size the control from its contents; minimum and maximum heights keep it within a useful range.
 
-<Class2CSS>
-  {['(field-sizing:content)', '(interpolate-size:allow-keywords)', '(view-transition-name:card)', '(transition-behavior:allow-discrete)']}
-</Class2CSS>
+<DemoFeatureSupport condition="field-sizing: content" />
 
-Custom properties can use the same direct declaration form:
+<DemoConfiguredExample name="compatibility-field" title="A note field with a fallback" source="" caption="Add or remove lines. Supporting browsers grow the field up to 12rem; otherwise it keeps its initial size. You can scroll and resize it in either case." html={`<div class="w-full (max-width:28rem) mx-auto">
+  <label for="project-note" class="block mb-xs text-sm fg-text-strong">Project notes</label>
+  <textarea id="project-note" name="note" rows="3" class="block w-full p-sm r-md b(1) b-solid b-line-divider bg-surface-inset text-sm fg-text-strong (resize:vertical) (min-height:6rem) (max-height:12rem) outline(2):focus-visible outline-solid:focus-visible outline-offset(3) (field-sizing:content)@supports(field-sizing:content)">Plan the next release.
+Review the draft.
+Check the examples.
+Test with a keyboard.
+Verify the small screen.
+Publish when ready.</textarea>
+</div>`} />
 
-```html
-<!-- @MARK (--card-gap:1rem) -->
-<section class="(--card-gap:1rem)">…</section>
-```
+`(field-sizing:content)` supplies the native declaration. Its `@supports(field-sizing:content)` suffix places that declaration inside a [CSS feature query](https://www.w3.org/TR/css-conditional-3/#at-supports). If the query does not match, the base styles and normal textarea behavior remain.
 
-<Class2CSS>
-  {['(--card-gap:1rem)']}
-</Class2CSS>
+<CompatibilityIllustration />
 
-Each class holds one declaration; repeat the selector or query suffix on each class that needs it. A token class such as `mt-md` still selects a theme value, while `(margin-top:1rem)` keeps the native value as written. Tooling may report the newest CSS grammar as `unknown` until its syntax data catches up; treat that as unverified rather than invalid. Runtime generation preserves direct native declarations without using `CSS.supports()` as an acceptance filter; the browser decides which declarations it can apply.
+The preview checks syntax support in your current browser. Test the actual editing behavior in your target browsers too. To inspect the fallback in a supporting browser, temporarily remove the conditional class: the field should stop growing automatically while keeping all its text accessible by scrolling. This isolates the enhancement; it does not emulate an older browser.
+
+Use **Generated CSS** to inspect the emitted condition. [Conditions](/reference/rules/conditions#supportsfeature) documents the class syntax; native CSS can express more complex feature queries.
 
 ### New selectors
-Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
 
-```html
-<!-- @MARK :has(:checked) -->
-<form class="outline(2):has(:checked) outline-solid:has(:checked) outline-red:has(:checked)">…</form>
-```
+The same approach applies to selector-based enhancements. Here, [`:has(:checked)`](https://www.w3.org/TR/selectors-4/#relational) gives the label a blue border when its checkbox is checked. The native checkbox still records the choice if that selector is unsupported:
 
-<Class2CSS>
-  {['outline(2):has(:checked) outline-solid:has(:checked) outline-red:has(:checked)']}
-</Class2CSS>
+<DemoConfiguredExample name="compatibility-selector" title="A checked state with optional emphasis" source="" caption="Select the checkbox. A supporting browser also changes the label border; the checkmark is the primary indication of the choice." html={`<label class="flex items-center gap-sm w-fit mx-auto p-sm r-md b(1) b-solid b-line-divider bg-surface-raised text-sm fg-text-strong b-blue-60:has(:checked)">
+  <input type="checkbox" name="updates" class="m(0) shrink(0) (accent-color:currentColor)">
+  <span>Send me release notes</span>
+</label>`} />
 
----
+Keep the base styling independent of the new selector. Do not make essential controls or content depend on the enhancement. For selector spelling and composition, see [Selectors](/reference/rules/selectors).
 
-## Third-party styles
-Put vendor styles in a lower cascade layer when you want normal Master CSS components and utilities to override normal vendor declarations. Declare the shared layer order before importing them into `defaults`, after the base reset and before components and utilities:
+## Fit third-party CSS into the cascade \{#third-party-styles\}
 
-```css name=index.css
+When normal utilities should override a library's normal styles, import its CSS into the earlier `defaults` layer. Declare the layer order before those imports, in the app CSS entry processed by your Master integration.
+
+For a project that already uses [Swiper's core, navigation and pagination styles](https://swiperjs.com/get-started), load them through this entry instead of also importing unlayered copies elsewhere:
+
+```css name=app.css
 @layer theme, base, defaults, components, utilities;
 @import 'swiper/css' layer(defaults);
 @import 'swiper/css/navigation' layer(defaults);
 @import 'swiper/css/pagination' layer(defaults);
 @import '@master/css';
-```
 
-Unlayered vendor rules and `!important` vendor declarations still outrank normal layered utilities; moving them to `defaults` does not change that. Keep these imports in the project CSS entry processed by Master CSS, so they share its layer order and extraction context.
-
-Then define your application overrides in the `components` layer or use utilities in markup:
-
-```css name=index.css
 @layer components {
-  .swiper {
-    max-width: var(--container-4xl);
-  }
-
-  .swiper-wrapper {
-    background-color: var(--color-red-60);
-  }
-
   .swiper-slide {
     background-color: var(--color-surface-raised);
   }
 }
 ```
 
+Within the slider's existing markup, one slide can keep the component surface while another adds a local utility:
+
 ```html
-<!-- @MARK bg-blue-60 -->
 <div class="swiper-slide">Default surface</div>
 <div class="swiper-slide bg-blue-60 fg-white">Featured slide</div>
 ```
 
-The first slide keeps the component's surface color. The second uses a blue background and white text from its utilities. This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
+The normal background declaration in `utilities` wins over the one in `components`, which in turn sits above `defaults`. Reordering the class names in HTML does not change that result.
 
-Native vendor, CMS and externally injected selectors in a Master-managed stylesheet are preserved by default. If you enable native pruning, keep those selectors outside pruned sources or protect the file with [`@preserve native`](/reference/directives/pruning#preserve-native). [Cascade layers](/guide/cascade-layers) covers the complete layer order.
+Check competing declarations in browser devtools before adding stronger overrides. Within the same author origin and context, normal unlayered styles outrank normal layered styles. A vendor `!important` declaration also beats a normal utility; important declarations reverse the layer order. These are [native cascade rules](https://www.w3.org/TR/css-cascade-5/#layer-order), not a Master-specific priority system. [Cascade Layers](/guide/cascade-layers) walks through diagnosis.
+
+Native selectors in Master-managed stylesheets are preserved by default. If you enable native pruning, protect vendor, CMS and externally injected selectors with [`@preserve native`](/reference/directives/pruning#preserve-native) in a stylesheet you control, or keep those sources outside pruning. A selector used by a third-party widget may not appear in your app's scanned markup.

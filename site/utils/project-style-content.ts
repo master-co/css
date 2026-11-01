@@ -6,6 +6,7 @@ import { projectStyleExample } from '../components/demo/project-style-examples'
 import { packageTreeMarkdown } from './package-trees'
 import { authoringExampleMarkdown } from './authoring-examples'
 import { reuseIllustrationMarkdown } from '../content/guide/reusing-styles/illustration'
+import { compatibilityIllustrationMarkdown } from '../content/guide/compatibility/illustration'
 
 export const projectStyleGuideSlugs = ['theme', 'reusing-styles', 'global-styles', 'cascade-layers', 'monorepo', 'authoring-packages', 'compatibility', 'view-transitions'] as const
 
@@ -14,6 +15,7 @@ export async function projectStyleGuideContent(siteRoot: string, slug: string) {
   const result = await extractReferenceMdx(path.join(siteRoot, `content/guide/${slug}/content.mdx`), [], [], {
     overview: 'include',
     component(name, attributes) {
+      if (name === 'CompatibilityIllustration') return compatibilityIllustrationMarkdown()
       if (name === 'ReuseIllustration') return reuseIllustrationMarkdown()
       if (name === 'DemoFeatureSupport') return `Browser feature check: \`${String(attributes.condition)}\`. The live preview reports support in the current browser; the example retains its native fallback.`
       if (name === 'DemoViewTransition') return attributes.example === 'articles' ? '[Interactive article transition preview](/guide/view-transitions#article-list-to-detail). Open an article and return to its card; focus is restored and reduced motion uses an immediate update.' : '[Interactive view transition preview](/guide/view-transitions). Choose a view; reduced motion and unavailable APIs use an immediate update.'
