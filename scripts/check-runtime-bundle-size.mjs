@@ -11,6 +11,10 @@ const artifactPaths = [
   // The default preset's runtime program, which the CDN bundle fetches.
   'packages/runtime/dist/default-program.bin'
 ]
+// Preset data grows with every utility the preset adds, so it gets more room than engine code.
+const artifactAllowances = {
+  'packages/runtime/dist/default-program.bin': { minimumBytes: 2048, ratio: 0.05 }
+}
 const runtimeEntryPath = 'packages/runtime/dist/index.js'
 // What an app bundler ships before a progressive page needs the engine.
 const progressiveCriticalPath = `${runtimeEntryPath} (progressive critical path)`
@@ -52,7 +56,10 @@ async function createBaseline() {
       `Runtime bundle ${file} does not exist. Build @master/css-runtime before checking its size.`
     )
   }
-  for (const file of artifactPaths) artifacts[file] = measure(readFileSync(file))
+  for (const file of artifactPaths) {
+    artifacts[file] = measure(readFileSync(file))
+    if (artifactAllowances[file]) artifacts[file].allowance = artifactAllowances[file]
+  }
   artifacts[progressiveCriticalPath] = measure(await bundleProgressiveCriticalPath())
   return {
     version: 1,
@@ -83,10 +90,8 @@ assert.deepEqual(
 for (const [file, sizes] of Object.entries(actual.artifacts)) {
   for (const format of ['raw', 'gzip', 'brotli']) {
     const previous = baseline.artifacts[file][format]
-    const allowance = Math.max(
-      baseline.allowance.minimumBytes,
-      Math.ceil(previous * baseline.allowance.ratio)
-    )
+    const { minimumBytes, ratio } = baseline.artifacts[file].allowance ?? baseline.allowance
+    const allowance = Math.max(minimumBytes, Math.ceil(previous * ratio))
     assert.ok(
       sizes[format] <= previous + allowance,
       `${file} ${format} size ${sizes[format]} exceeds baseline ${previous} plus allowance ${allowance}.`
