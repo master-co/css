@@ -28,7 +28,7 @@ export default function Segments({ children: segments, label = 'Document view' }
   if (!segments.length) return null
   return (
     <div className="segment-views">
-      <div className="segments" role="tablist" aria-label={label}>
+      <div className="ui-segmented" role="tablist" aria-label={label}>
         {segments.map((segment, index) => <button key={segment.name}
           ref={element => { buttons.current[index] = element }}
           type="button"
@@ -38,8 +38,7 @@ export default function Segments({ children: segments, label = 'Document view' }
           aria-selected={activeIndex === index}
           tabIndex={activeIndex === index ? 0 : -1}
           onClick={() => setActiveName(segment.name)}
-          onKeyDown={event => navigate(event, index)}
-          className="segment">
+          onKeyDown={event => navigate(event, index)}>
           {segment.name}
         </button>)}
       </div>

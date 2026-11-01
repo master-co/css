@@ -4,7 +4,7 @@ import { migrationGuides } from '../utils/migration-guides'
 
 export default function MigrationGuides() {
   return <DocumentChoices label="Migration guides" entries={migrationGuides.map(guide => {
-    const Icon = brands[guide.brand].src
-    return { ...guide, href: `/guide/migration/${guide.slug}`, icon: <Icon width={20} height={20} aria-hidden="true" /> }
+    const { src: Icon, className } = brands[guide.brand]
+    return { ...guide, href: `/guide/migration/${guide.slug}`, icon: <Icon className={className} width={20} height={20} aria-hidden="true" /> }
   })} />
 }

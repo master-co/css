@@ -1,4 +1,3 @@
-import type { IframeHTMLAttributes } from 'react'
 import Demo from './Demo'
 import DemoViewport from './DemoViewport'
 
@@ -9,27 +8,10 @@ export function DemoPageViewport({ src, title, height = 420 }: { src: string, ti
   </Demo>
 }
 
-/** Window dots only: the tray or the surrounding text names the page. */
-export function DemoBrowserHeader() {
-  return <div className="ui-browser-bar" aria-hidden="true"><span className="ui-browser-dots"><i /><i /><i /></span></div>
-}
-
-/** A native iframe in browser chrome. */
-export function DemoIFrame({ showHeader = true, title, scrolling = 'no', ...props }: IframeHTMLAttributes<HTMLIFrameElement> & { showHeader?: boolean }) {
-  return <Demo frame="none">
-    <div className="ui-browser">
-      {showHeader && <DemoBrowserHeader />}
-      <div className="ui-browser-body"><div className="ui-browser-viewport">
-        <iframe {...props} title={title ?? `Example: ${props.src}`} scrolling={scrolling} />
-      </div></div>
-    </div>
-  </Demo>
-}
-
+/** The result of a setup step: a plain stage, told apart from the article by tone, with no browser chrome. */
 export function DemoHelloWorld() {
   return <Demo frame="none">
-    <div className="ui-browser">
-      <DemoBrowserHeader />
+    <div className="ui-browser" data-variant="plain">
       <div className="grid (place-items:center) p-lg p-2xl@sm ui-browser-body"><h1 className="m(0) italic font-4xl font-heavy text-center fg-text-strong font-5xl@sm">Hello World</h1></div>
     </div>
   </Demo>

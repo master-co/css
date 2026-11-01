@@ -12,6 +12,8 @@
   .ui-header-nav > a:hover { color: var(--ui-text-strong); }
   .ui-header-nav > a:is([aria-current="page"], [aria-current="true"]) { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); }
   .ui-header-nav > a:focus-visible { @apply --ui-focus-ring; outline-offset: 0; }
+  /* A recent section: one small chip-washed word after its name */
+  .ui-header-nav > a > small { margin-left: var(--ui-space-2xs); padding: 1px 5px; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-muted); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-medium) .6875rem/1.4 var(--font-family-sans); letter-spacing: .02em; }
   .ui-header-end { display: flex; align-items: center; gap: var(--ui-space-3xs); margin-left: auto; }
   .ui-header-divider { width: 1px; height: 1rem; margin-inline: var(--ui-space-xs); background: var(--ui-line-divider); }
   .ui-version { display: inline-flex; align-items: center; gap: var(--ui-space-3xs); height: 2.25rem; padding: 0 .375rem; border-radius: var(--ui-radius-md); color: var(--ui-text-body); font: var(--ui-weight-regular) var(--ui-text-small)/1 var(--font-family-sans); font-variant-numeric: tabular-nums; }

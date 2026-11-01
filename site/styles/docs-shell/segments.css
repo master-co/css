@@ -1,58 +1,13 @@
 @layer components {
-  /* A recessed track holds a raised selected segment: 4px inset, 16px track and 12px segment radii. */
-  .segments {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    width: fit-content;
-    max-width: 100%;
-    margin-bottom: var(--spacing-sm);
-    padding: 4px;
-    border-radius: calc(var(--ui-radius-md) + 4px);
-    background-color: var(--color-surface-shell);
-    box-shadow: var(--shadow-pressed);
-  }
-
-  .segment {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.25rem;
-    padding: .375rem var(--spacing-sm);
-    border: 1px solid transparent;
-    border-radius: var(--ui-radius-md);
-    font-size: var(--font-size-xs);
-    font-weight: var(--ui-weight-medium);
-    line-height: 1.4;
-    color: var(--color-text-muted);
-    transition: color .16s, background-color .16s, box-shadow .16s;
-
-    &:hover {
-      color: var(--color-text-strong);
-    }
-
-    &[aria-selected="true"] {
-      border-color: var(--color-line-contour);
-      background-color: var(--color-surface-raised);
-      box-shadow: var(--shadow-contact);
-      color: var(--color-text-strong);
-    }
-
-    &:active {
-      background-color: var(--color-surface-shell);
-      box-shadow: var(--shadow-pressed-contact);
-    }
-  }
+  /* Related views switch with the system's segmented control; the panels keep their own frames. */
   .segment-views, .segment-panel { min-width: 0; }
+  .segment-views > .ui-segmented { margin-bottom: var(--ui-space-sm); }
   .segment-panel-label { display: none; }
-  .segment:focus-visible, .segment-panel:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
-  .segment-panel { border-radius: var(--radius-xs); }
-  @media (pointer: coarse) { .segment { min-height: 2.75rem; } }
-  @media (prefers-reduced-motion: reduce) { .segment { transition: none; } }
+  .segment-panel:focus-visible { @apply --ui-focus-ring; outline-offset: 3px; border-radius: var(--ui-radius-sm); }
   @media (scripting: none), print {
-    .segment-views > .segments { display: none; }
+    .segment-views > .ui-segmented { display: none; }
     .segment-panel[hidden] { display: block !important; }
-    .segment-panel + .segment-panel { margin-top: var(--spacing-xl); }
-    .segment-panel-label { display: block; margin-bottom: var(--spacing-md); color: var(--color-text-strong); font-size: var(--font-size-sm); font-weight: var(--ui-weight-medium); }
+    .segment-panel + .segment-panel { margin-top: var(--ui-space-xl); }
+    .segment-panel-label { display: block; margin-bottom: var(--ui-space-md); color: var(--ui-text-strong); font-size: var(--ui-text-small); font-weight: var(--ui-weight-medium); }
   }
 }

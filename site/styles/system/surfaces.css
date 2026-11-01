@@ -81,4 +81,14 @@
   /* Local scroll region, keyboard reachable */
   .ui-scroll { overflow: auto; overscroll-behavior: contain; max-height: 16rem; border-radius: var(--ui-radius-lg); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
   .ui-scroll:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+
+  /* Expand: a long surface clamps under a canvas fade, with one quiet control to show the rest */
+  .ui-expand { position: relative; }
+  .ui-expand[data-expanded="false"] > :first-child { max-height: 30rem; overflow: hidden; }
+  .ui-expand-control { display: flex; justify-content: center; padding-top: var(--ui-space-sm); }
+  .ui-expand[data-expanded="false"] > .ui-expand-control { position: absolute; inset-inline: 0; bottom: 0; padding-top: 6rem; background: linear-gradient(to bottom, transparent, var(--ui-surface-canvas) 72%); }
+  .ui-expand[data-expanded="true"] > .ui-expand-control { position: sticky; bottom: var(--ui-space-sm); pointer-events: none; }
+  .ui-expand-control > .ui-button { pointer-events: auto; }
+  .ui-expand-control > .ui-button > svg { transition: rotate var(--ui-duration-quick) var(--ui-ease); }
+  .ui-expand[data-expanded="true"] > .ui-expand-control > .ui-button > svg { rotate: 180deg; }
 }

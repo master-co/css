@@ -1,29 +1,23 @@
 'use client'
 
-import '~/site/styles/btn.css'
-import clsx from 'clsx'
-import { useState } from 'react'
+import { IconChevronDown } from '@tabler/icons-react'
+import { useId, useState } from 'react'
 import { useTranslation } from '../contexts/i18n'
 
-export default function ExpandContent(props: any) {
+/** A long surface clamped under a canvas fade; one quiet control shows the rest. */
+export default function ExpandContent({ children }: { children: React.ReactNode }) {
   const [expanded, setExpanded] = useState(false)
+  const id = useId()
   const $ = useTranslation()
   return (
-    <>
-      <div {...props} className={clsx(props.className, {
-        'overflow-hidden max-h(480)': !expanded,
-        'overflow-auto': expanded,
-      })}>
-        {props.children}
+    <div className="ui-expand" data-expanded={expanded}>
+      <div id={id}>{children}</div>
+      <div className="ui-expand-control">
+        <button type="button" className="ui-button" data-size="sm" aria-expanded={expanded} aria-controls={id} onClick={() => setExpanded(!expanded)}>
+          {$(expanded ? 'Collapse' : 'Expand')}
+          <IconChevronDown aria-hidden="true" strokeWidth={1.5} />
+        </button>
       </div>
-      <div className={clsx('relative flex items-center justify-center w-full (background-image:linear-gradient(transparent,var(--color-surface-base)))', {
-        'sticky bottom(0) pb-md (padding-top:1em)': expanded,
-        '(margin-bottom:2em) (margin-top:-7.5rem) (padding-top:7.5rem)': !expanded,
-      })}>
-        <button className={clsx('(border-radius:1e9em) outline-line-subtle outline-offset(0) outline-solid outline(1) bg-surface-raised shadow-sm btn btn-sm', {
-          '(margin-top:-2rem)': !expanded
-        })} onClick={() => setExpanded(!expanded)}>{$(expanded ? 'Collapse' : 'Expand')}</button>
-      </div>
-    </>
+    </div>
   )
 }

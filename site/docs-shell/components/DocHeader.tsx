@@ -12,7 +12,6 @@ import DocMenuButton from './DocMenuButton'
 import { useTranslation } from '../contexts/i18n'
 import SearchButton from './SearchButton'
 import isDateWithinSevenDays from '../utils/is-date-within-seven-days'
-import DocBadge from './DocBadge'
 import { useApp } from '../contexts/app'
 import { useLocale } from '../contexts/locale'
 import { usePathname } from '../layouts/root'
@@ -55,7 +54,7 @@ export default function DocHeader({ className, stickable, transitionAtTop, docum
       <nav className="ui-header-nav" aria-label={tw ? '主要導覽' : 'Main navigation'}>
         {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav key={eachLink.name} {...eachLink}>
           {$(eachLink.name)}
-          {eachLink.date && isDateWithinSevenDays(eachLink.date) && <DocBadge>New</DocBadge>}
+          {eachLink.date && isDateWithinSevenDays(eachLink.date) && <small>{$('New')}</small>}
         </HeaderNav>)}
       </nav>
       <div className="ui-header-end">

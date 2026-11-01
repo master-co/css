@@ -8,13 +8,13 @@ The site's interface vocabulary. Light mode is moonstone (a clean zinc pearl), d
 | --- | --- | --- |
 | `mixins.css` | `--ui-sheet-face`, `--ui-focus-ring`, `--ui-label-type`, `--ui-eyebrow-type`: shared declarations the component files expand with `@apply` | foundation (Master CSS definitions) |
 | `tokens.css` | `--ui-*` roles: surfaces, lines, text, light, elevation, radius, rhythm, motion, tones, status, code | foundation |
-| `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll` | documents |
+| `surfaces.css` | `ui-sheet`, `ui-well`, `ui-tray`, `ui-stage`, `ui-compare`, `ui-browser`, `ui-scroll`, `ui-expand` | documents |
 | `controls.css` | `ui-button`, `ui-segmented`, `ui-field`, `ui-input`, `ui-select`, `ui-range`, `ui-check`, `ui-switch`, `ui-copy`, `ui-kbd`, `ui-tooltip`, `ui-menu` | interface |
 | `code.css` | `ui-code`, `ui-tabs`, `ui-inline-code`, `ui-disclosure`, `ui-prompt`, `ui-tree` | documents |
-| `prose.css` | `ui-callout` and the article flow helpers | documents |
+| `prose.css` | `ui-callout`, `ui-hint` and the article flow helpers | documents |
 | `shell.css` | `ui-header`, `ui-sidebar`, `ui-nav-group`, `ui-nav-link`, `ui-toc`, `ui-pagehead`, `ui-pager`, `ui-dialog`, `ui-results` | interface |
 | `specimens.css` | `ui-item`, `ui-badge`, `ui-label`, `ui-legend`, `ui-measure`, `ui-leader`, `ui-axes`, `ui-swatch`, `ui-palette`, `ui-spacing`, `ui-player` | imported by the components that use it |
-| `data.css` | `ui-table`, `ui-metrics`/`ui-metric`, `ui-bar`, `ui-source`, `ui-params`, `ui-steps`, `ui-index`, `ui-chart`, `ui-waterfall` | imported by the components that use it |
+| `data.css` | `ui-table`, `ui-metrics`/`ui-metric`, `ui-bar`, `ui-source`, `ui-params`, `ui-steps`, `ui-index`, `ui-logos`, `ui-chart`, `ui-waterfall` | imported by the components that use it |
 
 Pages load the system in ordered asset boundaries (`site/routes.ts`), each one stylesheet:
 
@@ -98,3 +98,4 @@ Content and example markup keep teaching the preset vocabulary (`bg-surface-rais
 - Rejected (round 2): removing the tray's inner stage contour to avoid "card in card" — the tray is the system's example frame and the stage edge is what separates specimen from caption; instead the dark tray was lifted to 17.4% so it no longer reads as a hole.
 - Rejected (round 2): unframed tables as in the original — the framed sheet keeps sticky heads and horizontal scroll legible; its radius and contour are now small and quiet.
 - Rejected (round 3): a dark stage darker than the canvas (18.4% under a .12 black falloff) — specimens sat in a hole. The dark ladder now mirrors light: tray 17.4 < canvas 19.4 < stage 20.4, with a .08 falloff.
+- **Owner direction (2026-11-01, legacy sweep):** redesign the documentation UI and previews still left from the old site. Decided: the integration and migration logo grids (old `IconButtons`, a hairline table whose short last row left empty grey cells) become free-standing tiles — `ui-logos` for marks with names, `ui-index` with icons for described guides; related views (`Segments`) use `ui-segmented`; a clamped long table is `ui-expand` (canvas fade, one small `ui-button`); an example's usage line (`(resize)`, `(click)`, …) is a muted `ui-hint` led by its gesture, not a heavy paragraph; a setup step's result (`DemoHelloWorld`) is a plain stage without window dots; Theme toggles and responsive chrome removed from examples that are not about color schemes or viewports; the Layout example paints its chart with filled bars on one axis, underline section words and regular-weight figures.

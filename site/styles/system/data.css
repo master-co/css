@@ -87,6 +87,13 @@
   .ui-index[data-density="compact"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--ui-space-xs); }
   .ui-index[data-density="compact"] > a { gap: 2px; padding: var(--ui-space-sm) var(--ui-space-md); }
 
+  /* Logo index: free-standing tiles, a mark over its name, so a short last row leaves canvas rather than empty cells */
+  .ui-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.75rem), 1fr)); gap: var(--ui-space-xs); }
+  .ui-logos > a { display: grid; grid-template-rows: 2rem auto; justify-items: center; align-content: start; gap: .625rem; padding: 1.125rem var(--ui-space-2xs) 1rem; border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); font-size: .78125rem; line-height: 1.35; text-align: center; text-wrap: balance; text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease), color var(--ui-duration-quick) var(--ui-ease); }
+  .ui-logos > a:hover { translate: 0 -.5px; color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1h); }
+  .ui-logos > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+  .ui-logos > a > svg { align-self: center; width: 1.75rem; height: 1.75rem; }
+
   /* Chart frame: units, series and sample context together */
   .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); }
