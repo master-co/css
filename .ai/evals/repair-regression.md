@@ -80,3 +80,64 @@ not an A/B estimate or a general success-rate claim. The retained original is
 still a failing implementation; preserving it does not mean the bug was fixed.
 No public CLI/MCP API, official skill, compiler behavior or scoring threshold is
 changed. The earlier recheck runner remains available without this opt-in policy.
+
+## Recorded result — 2026-11-01
+
+Frozen implementation: `971d663c0`. Client `codex-cli 0.166.0-alpha.5.1`, Chromium
+`156.0.8078.4`, `gpt-6-luna` with low reasoning, two sequential attempts capped at
+120 seconds each. All 422 tracked tool artifacts matched the previous recheck
+run; the evaluator/color-comparison sources were unchanged.
+
+The replay-only preflight rejected both archived bad candidates. The first added
+14 failure atoms; the second added 118 relative to the retained initial source.
+These are property/class/check atoms, **not** 118 separate check IDs. Neither
+candidate replaced the original. An independent minimal positive control removed
+the unsupported hover class and added a capability-gated hover rule in utilities;
+it passed every task check and was accepted. This control was not supplied to the
+model. Both historical proposals were replayed again during the targeted run.
+
+| New model proposal | Remaining failed checks | New failure atoms | Decision |
+| --- | ---: | ---: | --- |
+| Initial retained snapshot | 6 | — | Existing failure |
+| First edit | 4 | 0 | Accept partial progress |
+| Second edit | 0 | 0 | Accept verified repair |
+
+The first edit removed `hover:bg-blue-700` and added the capability-gated native
+hover rule, resolving recognition and hover-capability checks. It still placed
+that rule in components, so the resting utility continued to win in four desktop
+hover comparisons. Since no other state regressed, this partial improvement was
+retained. The second edit moved **only the gated hover rule** to utilities,
+keeping the resting `bg-blue-600`, reset, geometry, focus and disabled styles.
+All original checks then passed, including touch and class recognition.
+
+There were two model calls and five host assessments in the targeted run: the
+initial source, two archived bad candidates and the two new proposals. Both new
+proposals were adopted; zero new model proposals were rejected. Rejection and
+retry-from-retained behavior were exercised by archived replays, unit tests and
+the browser regression test, rather than by a rejection during these two new
+model turns. The successful outcome cannot be attributed to the gate alone:
+guidance and model sampling also differed from the earlier run.
+
+Both turns visibly read current feedback. There were no model-turn failures,
+timeouts, protected-file violations, coverage mismatches or unmeasured usage.
+Input totaled 369,924 tokens, including 330,112 cached input tokens; output totaled
+2,472 tokens. These are raw usage counts, not a savings estimate. Audit recomputed
+every adoption decision and verified initial copies, proposal parent hashes,
+retained-source integrity, source/generated-CSS hashes, refreshed evidence,
+prompt freshness, protected files and raw usage. The final retained copy matches
+the fully passing second proposal; all rejected historical candidates remain
+separately archived. The original failed campaign was not modified or regraded.
+
+Six focused tests passed, including a browser test that detects a touch regression
+inside a partial fix. The three policy tests were rerun after adding the explicit
+execution-failure guard. Scoped ESLint, `check:ai-context` and diff checks passed.
+This remains an opt-in repository workflow, not a public auto-repair guarantee.
+Its evidence covers the evaluator's measured states; it cannot establish behavior
+for states, properties or dynamic content outside that coverage.
+
+Archive: `/Users/aron/master-css-evaluations/2026-11-01-repair-regression`.
+It retains the preflight replay, positive control, original case provenance,
+frozen code/tools, prompts/events, all proposed/retained workspaces, unified diffs,
+checkpoint assessments, explicit decisions, usage and audit helpers.
+Targeted result SHA-256:
+`f40e73b09a2abd2ff2e035f7db8096852dc74198674e8553a8d2524b4ead4d24`.
