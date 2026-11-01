@@ -25,6 +25,7 @@ const icons = {
 export type IconName = keyof typeof icons
 export type TextKind = 'title' | 'note' | 'body' | 'edge' | 'code' | 'eyebrow'
 type Align = 'start' | 'center' | 'end'
+type AnnotationTone = 'blue' | 'violet' | 'amber'
 
 export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!)
@@ -45,8 +46,9 @@ export function drawing(theme: Theme) {
   const rule = '<div class="rule"></div>'
   /** Placeholder lines for content the figure does not spell out, as percentages of the sheet's inner width. */
   const bars = (...widths: number[]) => `<div class="bars">${widths.map(width => `<i style="width:${width}%"></i>`).join('')}</div>`
-  const sheet = (x: number, y: number, width: number, height: number, content: string) =>
-    `<div class="sheet" style="${box(x, y, width, height)}">${content}</div>`
+  /** Omit dimensions for intrinsic content sizing; an anchor keeps positioning independent of the resulting width. */
+  const sheet = (x: number, y: number, width: number | undefined, height: number | undefined, content: string, anchor: Align = 'start') =>
+    `<div class="sheet${anchor === 'start' ? '' : ` anchor-${anchor}`}" style="${box(x, y, width, height)}">${content}</div>`
   const chip = (x: number, y: number, width: number, name: IconName, value: string) =>
     `<div class="chip" style="${box(x, y, width)}">${icon(name)}<span data-label>${escapeHtml(value)}</span></div>`
   const mark = (x: number, y: number, name: IconName, value: string, align: Align = 'start') =>
@@ -55,6 +57,23 @@ export function drawing(theme: Theme) {
   const divider = (x: number, top: number, bottom: number) => `<i class="divider" style="${box(x, top, undefined, bottom - top)}"></i>`
   const window = (x: number, y: number, width: number, height: number, content = '') =>
     `<div class="window" style="${box(x, y, width, height)}"><div class="toolbar"><i></i><i></i><i></i></div>${content}</div>`
+  /** A measured control specimen: center anchored, with its real padding exposed by inspection guides. */
+  const spacingControl = (x: number, y: number, value: string, padding: number, measurement: string, accent = false) =>
+    `<div class="spacing-study${accent ? ' accented' : ''}" style="${box(x, y)}--sample-padding:${padding}px">
+      <div class="spacing-control"><i class="padding-start"></i>${label(value, 'body')}<i class="padding-end"></i></div>
+      <div class="spacing-ruler"><i></i>${label(measurement, 'edge')}<i></i></div>
+    </div>`
+  /** Adjacent literal fragments preserve the original string; each bracket follows its fragment's intrinsic width. */
+  const codeParts = (x: number, y: number, parts: { id: string, value: string, tone: AnnotationTone }[]) =>
+    `<div class="annotated-code anchor-center" style="${box(x, y)}">${parts.map(part =>
+      `<span class="code-part" data-tone="${part.tone}">${label(part.value, 'code')}<i class="code-bracket" data-anchor="${escapeHtml(part.id)}"></i></span>`).join('')}</div>`
+  const annotation = (x: number, y: number, id: string, title: string, detail: string, tone: AnnotationTone) =>
+    `<div class="annotation anchor-center" style="${box(x, y)}" data-tone="${tone}"><span class="title" data-label data-anchor="${escapeHtml(id)}">${escapeHtml(title)}</span>${label(detail, 'note')}</div>`
+  /** The renderer resolves these leaders after fonts load, so they attach to actual content rather than estimated coordinates. */
+  const leader = (from: string, to: string, viaY: number, tone: AnnotationTone) => {
+    routes.push(`<path data-from="${escapeHtml(from)}" data-to="${escapeHtml(to)}" data-via-y="${viaY}" data-tone="${tone}"/>`)
+    return ''
+  }
   /** A connector in scene coordinates: arrowed unless it only joins other routes, dashed only for a labelled condition. */
   const route = (d: string, { arrow = true, dashed = false } = {}) => {
     routes.push(`<path d="${d}"${arrow ? ' marker-end="url(#arrow)"' : ''}${dashed ? ' data-dashed' : ''}/>`)
@@ -85,5 +104,5 @@ ${content}
     return { width: sceneWidth, height: sceneHeight, title, description, html }
   }
 
-  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, route, scene }
+  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, spacingControl, codeParts, annotation, leader, route, scene }
 }

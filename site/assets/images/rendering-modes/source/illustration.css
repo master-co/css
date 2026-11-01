@@ -40,11 +40,13 @@ body {
 
 /* An artifact: the sheet face at rise-1, the small card radius */
 .sheet {
-  display: flex; flex-direction: column; gap: 4px; padding: 13px 16px 14px;
+  display: flex; flex-direction: column; width: max-content; gap: 4px; padding: 13px 16px 14px;
   border-radius: var(--ui-radius-xl);
   background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo));
   box-shadow: var(--ui-elevation-rise-1);
 }
+.anchor-center { translate: -50% 0; }
+.anchor-end { translate: -100% 0; }
 .sheet > .row { display: flex; align-items: center; gap: 8px; min-height: 20px; }
 .sheet > .rule { height: 1px; margin: 7px -16px 5px; background: var(--ui-line-hair); }
 .sheet .bars { display: grid; gap: 9px; padding-top: 8px; }
@@ -72,3 +74,34 @@ body {
 .window > .bars { display: grid; gap: 10px; padding: 18px 20px; }
 .window > .bars i { display: block; height: 5px; border-radius: 3px; background: var(--ui-line-divider); }
 .window > .bars i:first-child { height: 8px; border-radius: 4px; background: var(--ui-line-strong); }
+
+/* Inspection guides expose a control's padding; they are annotations, not part of the taught button. */
+.spacing-study { --sample-ink: var(--ui-text-muted); translate: -50% 0; }
+.spacing-study.accented { --sample-ink: var(--ui-tone-blue); }
+.spacing-control {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  min-height: 38px; padding: 8px var(--sample-padding); border: 1px solid var(--ui-line-divider);
+  border-radius: var(--ui-radius-md); background: var(--ui-surface-sheet); box-shadow: var(--ui-elevation-rise-1);
+}
+.spacing-control > .body { color: var(--ui-text-strong); font-size: 14px; font-weight: 400; line-height: 1.2; }
+.spacing-control > i { position: absolute; inset-block: 0; width: var(--sample-padding); background: color-mix(in oklch, var(--sample-ink) 10%, transparent); }
+.spacing-control > .padding-start { left: 0; border-right: 1px dotted var(--sample-ink); border-radius: var(--ui-radius-md) 0 0 var(--ui-radius-md); }
+.spacing-control > .padding-end { right: 0; border-left: 1px dotted var(--sample-ink); border-radius: 0 var(--ui-radius-md) var(--ui-radius-md) 0; }
+.spacing-ruler { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 16px 1px 0; }
+.spacing-ruler > .edge { color: var(--sample-ink); }
+.spacing-ruler > i { flex: none; position: relative; width: var(--sample-padding); height: 7px; border-inline: 1px solid var(--sample-ink); }
+.spacing-ruler > i::after { content: ''; position: absolute; top: 3px; inset-inline: 0; border-top: 1px solid var(--sample-ink); }
+
+/* Syntax anatomy: one intact string with exact ranges and nearby, directly attached explanations. */
+[data-tone="blue"] { --annotation-ink: var(--ui-tone-blue); }
+[data-tone="violet"] { --annotation-ink: var(--ui-tone-violet); }
+[data-tone="amber"] { --annotation-ink: color-mix(in srgb, var(--ui-tone-amber) 75%, var(--ui-text-strong)); }
+.annotated-code { display: flex; width: max-content; }
+.code-part { position: relative; padding-block: 4px; background: color-mix(in oklch, var(--annotation-ink) 8%, transparent); }
+.code-part > .code { color: var(--annotation-ink); }
+.code-part:first-child { border-radius: var(--ui-radius-sm) 0 0 var(--ui-radius-sm); }
+.code-part:last-child { border-radius: 0 var(--ui-radius-sm) var(--ui-radius-sm) 0; }
+.code-bracket { position: absolute; inset-inline: 1px; bottom: -9px; height: 5px; border: 1px solid var(--annotation-ink); border-top: 0; }
+.annotation { display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; }
+.annotation > .title { color: var(--annotation-ink); }
+.routes path[data-from] { stroke: color-mix(in srgb, var(--annotation-ink) 65%, var(--ui-line-mark)); }

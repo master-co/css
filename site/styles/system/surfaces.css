@@ -78,7 +78,8 @@
   .ui-browser-tools > .ui-segmented > :is(button, a) { min-height: 1.625rem; }
   /* The range, its caption and its live reading stay one group, so a phone never parts the width from its slider. */
   .ui-browser-range { display: flex; flex: 1 1 14rem; align-items: center; gap: var(--ui-space-sm); min-width: 0; }
-  .ui-browser-range > .ui-range { flex: 1 1 6rem; min-width: 4rem; max-width: 12rem; }
+  /* Enlarged text must leave room for the label and reading in a narrow article. */
+  .ui-browser-range > .ui-range { flex: 1 1 6rem; min-width: 0; max-width: 12rem; }
   /* The range's caption is a label in the tools' own type, whether or not the specimen parts are loaded. */
   .ui-browser-range > label { color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-browser-tools > output, .ui-browser-range > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }

@@ -299,12 +299,12 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
   }
 })
 
-test('Syntax Tutorial exports every working example, stable anchor and searchable output', async () => {
+test('Syntax tutorial preserves its learning path, executable examples and searchable output', async () => {
   const tutorial = await syntaxTutorialContent(root)
   assert.deepEqual(tutorial.notes, [])
   assert.deepEqual(documentationHygieneIssues(tutorial.markdown), [])
   assert.doesNotMatch(tutorial.markdown, /<ButtonPreview|MCSS_EXPRESSION|\{#|\/guide\/migration/)
-  for (const anchor of ['declarations', 'composition', 'values', 'token-families', 'states', 'conditions', 'project-settings', 'mixins', 'contents', 'cascade', 'delivery', 'complete-button']) {
+  for (const anchor of ['declarations', 'values', 'token-families', 'composition', 'cascade', 'states', 'conditions', 'complete-card']) {
     assert.ok(tutorial.markdown.includes(`id="${anchor}"`), anchor)
   }
   for (const example of tutorial.examples) {
@@ -312,9 +312,9 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
     assert.ok(tutorial.markdown.includes(example.css), example.title)
   }
   const { foundationFamilies } = await import('../common/foundation-data/tokens')
-  for (const prefix of ['p', 'gap', 'fg', 'font']) {
+  for (const [prefix, key] of [['p', 'md'], ['gap', 'md'], ['fg', 'text-muted']]) {
     const family = foundationFamilies.find(family => family.prefix === prefix)!
-    assert.ok(tutorial.markdown.includes(`| \`${family.property}\` | \`${family.namespaces[0]}\` |`), prefix)
+    assert.ok(tutorial.markdown.includes(`| \`${prefix}-${key}\` | \`${family.property}: var(--${family.namespaces[0]}-${key})\` |`), prefix)
   }
   for (const match of tutorial.markdown.matchAll(/\]\((\/reference\/[^)#]+)(?:#([^)]*))?\)/g)) {
     const doc = catalog.documents.find(doc => doc.url === match[1])
@@ -323,34 +323,35 @@ test('Syntax Tutorial exports every working example, stable anchor and searchabl
   }
   const nodes = markdownTree(tutorial.markdown).children
   const generated = nodes.filter(node => node.type === 'code').filter(node => node.meta?.includes('disclosure=generated-css'))
-  // Every class/configuration output and both native stylesheet expansions survive extraction.
-  assert.equal(generated.length, tutorial.examples.length + 2)
+  // Every displayed example retains its actual generated output in the portable article.
+  assert.equal(generated.length, tutorial.examples.length)
   const used = (className: string) => tutorial.examples.find(example => example.classes.includes(className))!
-  assert.match(used('p-action').css, /:root,:host\{--color-brand:.*--spacing-action:1rem/)
-  assert.match(used('fg-accent').css, /@layer components\s*\{\s*\.workspace\s*\{\s*--workspace-accent:\s*rebeccapurple/)
-  assert.doesNotMatch(used('fg-accent').css, /--color-accent:/)
-  assert.match(used('fg-accent').css, /color:var\(--workspace-accent\)/)
-  const animation = used('animate-reveal@motion-safe').css
-  assert.match(animation, /animation:var\(--animate-reveal\)/)
-  assert.match(animation, /--animate-reveal:note-reveal \.7s ease-out/)
-  assert.match(animation, /@keyframes note-reveal/)
+  const conditionalColor = used('fg-blue-60:hover@sm').css
+  assert.match(conditionalColor, /@media/)
+  assert.match(conditionalColor, /:hover\{color:var\(--color-blue-60\)/)
+  assert.match(used('(max-width:32rem)').css, /max-width:32rem/)
+  assert.match(used("(content:'New|collection')::before").css, /content:'New\|collection'/)
   assert.match(used('grid@sm@supports(display:grid)').css, /@media[^{}]+\{@supports \(display:grid\)/)
-  const priority = used('inset').css
-  assert.ok(priority.indexOf('padding:2rem') < priority.indexOf('padding:var(--spacing-md)'))
-  assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:12px'))
-  assert.equal(priority, configuredExampleCSS(used('inset').configuration!, [...used('inset').classes].reverse()))
-  const native = generated.filter(node => node.type === 'code' && node.meta?.includes('stylesheet=result'))
-  assert.match(native[0].value!, /opacity: 0\.8/)
-  assert.match(native[0].value!, /color: rebeccapurple/)
-  assert.doesNotMatch(native[0].value!, /\.empty/)
-  assert.match(native[1].value!, /@media \(width\s*>=\s*48rem\)/)
-  assert.doesNotMatch(native[1].value!, /@contents|@apply|@mixin/)
+  const container = used('(grid-template-columns:1fr|auto)@container(card|width>=28rem)').css
+  assert.match(container, /container-name:card/)
+  assert.match(container, /container-type:inline-size/)
+  assert.match(container, /@container card/)
+  assert.match(container, /grid-template-columns:1fr auto/)
+  const priority = configuredExampleCSS('', ['p-md', 'p(12)'])
+  assert.ok(priority.includes('padding:var(--spacing-md)'))
+  assert.ok(priority.includes('padding:calc(12 * 1px)'))
+  assert.ok(priority.indexOf('padding:var(--spacing-md)') < priority.indexOf('padding:calc(12 * 1px)'))
+  assert.equal(priority, configuredExampleCSS('', ['p(12)', 'p-md']))
+  // The new figure remains meaningful when images and JSX are unavailable.
+  assert.match(tutorial.markdown, /fg-blue-60 sets color to var\(--color-blue-60\)/)
+  assert.match(tutorial.markdown, /selector and condition must both match/)
+  assert.doesNotMatch(tutorial.markdown, /<SyntaxIllustration/)
   for (const locale of ['en', 'tw']) {
     const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
     const canonical = (url: string) => url.replace(/^\/(en|tw)(?=\/)/, '')
     const page = searchPages.find((page: any) => canonical(page.url) === '/guide/syntax-tutorial')
     assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.searchMarkdown))
-    for (const id of ['declarations', 'composition', 'states', 'conditions', 'project-settings', 'complete-button']) {
+    for (const id of ['declarations', 'composition', 'states', 'conditions', 'complete-card']) {
       assert.ok(page.nodes.some((node: { id?: string }) => node.id === id), `${locale}: ${id}`)
     }
   }

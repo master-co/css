@@ -298,7 +298,9 @@ test('llms includes the complete tutorial and excludes retired Guide bodies', as
   const pages = await loadPages(`${root}/content`)
   const tutorial = pages.find(page => page.url === '/en/guide/syntax-tutorial')
   assert.equal(tutorial?.body, (await syntaxTutorialContent(root)).markdown)
-  assert.match(renderLlmsFull(pages), /--spacing-action:1rem/)
+  assert.ok(tutorial)
+  assert.match(tutorial.body, /@container card/)
+  assert.ok(renderLlmsFull(pages).includes(tutorial.body))
 })
 
 test('all foundation bodies preserve generated CSS and agree with search and llms exports', async () => {

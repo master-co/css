@@ -1,62 +1,55 @@
 import Class2CSS from '~/site/components/Class2CSS'
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
 import DemoConfiguredExample from '~/site/components/demo/DemoConfiguredExample'
 import TokenValues from '~/site/reference/TokenValues'
-import Demo from '~/site/components/demo/Demo'
+import SyntaxIllustration from './components/SyntaxIllustration'
 
-Master CSS turns complete class names into CSS. A class can express one declaration, select a named token, or call a reusable recipe. Native selectors decide which elements receive the style; conditions decide when it applies. The browser still resolves variables, inheritance and the cascade.
+A guide card needs spacing, readable text and a link that responds to interaction. Master CSS lets you make those decisions in HTML: choose a style, then add a selector or condition where that style should apply.
 
-This tutorial follows those decisions from a single color change to a complete card. The examples use ordinary HTML and CSS. Complete [Installation](/guide/installation), load the application stylesheet, and keep the example classes in a source file your integration scans:
+Complete [Installation](/guide/installation) first. These examples use the default preset, with no custom utility definitions. Keep the markup in a source file your integration scans and load your app stylesheet:
 
 ```css name=app.css
 @import '@master/css';
 ```
 
-That import supplies the preset vocabulary and establishes the layer order. Each **Generated CSS** disclosure contains output compiled from its example. Open it when you want to follow a class through to the browser; the article remains readable with the output closed.
+Each **Generated CSS** disclosure shows output compiled from the accompanying classes. Open one to check what reaches the browser; you do not need to copy that output into your stylesheet.
 
 ## Read a class \{#declarations\}
 
-Suppose a link should turn blue when hovered, but only at a larger viewport:
+Start with a link that turns blue on hover, but only when the viewport matches the preset's `sm` query:
 
 ```html
-<a href="/collection" class="fg-blue-60:hover@sm">View collection</a>
+<a href="/guide/reusing-styles" class="fg-blue-60:hover@sm">
+  Read the guide
+</a>
 ```
 
-<Demo title="One class, one conditional color" caption="Hover the link when the page matches sm. Its destination continues to the interaction lesson below.">
-  <a className="underline fg-blue-60:hover@sm" href="#states">View collection</a>
-</Demo>
+The class has three parts. `fg-blue-60` selects the style, `:hover` selects a state, and `@sm` adds a condition. The style applies only when both the selector and the condition match. Without those suffixes, `fg-blue-60` applies regardless of hover or viewport width.
 
-Read the class from left to right:
-
-| Part | Decision | Meaning |
-| --- | --- | --- |
-| `fg-blue-60` | Style | Set `color` to the `blue-60` color token. |
-| `:hover` | Selector | Match the element while it is hovered. |
-| `@sm` | Condition | Require the named `sm` media query. |
+<SyntaxIllustration />
 
 <Class2CSS>{['fg-blue-60:hover@sm']}</Class2CSS>
 
-The output contains a variable definition and a rule inside a media query. The class is escaped in the CSS selector so the browser matches the literal HTML class name. You write the readable form in HTML; you do not copy that escaped selector back into the class attribute.
+The generated rule sets `color` through a CSS variable and sits inside a media query. Its selector escapes punctuation to match the literal HTML class name. Write the readable form in HTML; escaped CSS selectors belong in the generated output.
 
-There are five ways to supply one setting. A **fixed utility**, such as `flex`, `text-center` or `mx-auto`, names one common native declaration. A **token class**, such as `m-md`, `b-red-60` or `fg-blue-60`, selects a registered named value. A **direct value**, such as `m(4)`, `b(1)` or `grow(1)`, passes a number to a registered function; lengths are pixels. A **native declaration**, such as `(margin:1rem)` or `(flex:1|1|auto)`, writes any CSS property and value inside parentheses. A **utility recipe**, such as `text-sm`, `truncate` or `grid-cols(3)`, sets several declarations at once. Each can carry selectors and conditions.
+## Choose how to supply a value \{#values\}
 
-## Write independent declarations \{#composition\}
+Use the preset's names for common decisions. When you need an exact local value, pass a number to a supported function or write a native declaration:
 
-Give each local decision its own class. A quiet control needs a border width, a border color and a border style:
+| Write | Decision |
+| --- | --- |
+| `flex` | A fixed utility for `display: flex` |
+| `p-md` | A token class for named spacing |
+| `p(12)` | A direct value: 12 pixels of padding |
+| `(max-width:32rem)` | A native declaration with a full CSS property and value |
+| `text-sm` | A recipe coordinating text size, line height and tracking |
 
-```html
-<button type="button" class="p-sm b(1) b-line-control b-solid">
-  Save
-</button>
-```
+<Class2CSS>{['flex', 'p-md', 'p(12)', '(max-width:32rem)', 'text-sm']}</Class2CSS>
 
-<Class2CSS>{['p-sm', 'b(1)', 'b-line-control', 'b-solid']}</Class2CSS>
+Fixed utilities such as `items-center` and `text-center` cover common declarations. Direct-value functions such as `m(4)`, `b(1)` and `grow(1)` take a number; length functions use pixels, while `grow(1)` supplies a unitless flex factor. Native declarations keep the full property name inside parentheses. A recipe such as `text-sm` or `grid-cols(2)` can coordinate several declarations. All these forms accept selector and condition suffixes.
 
-Here `b(1)` sets a one-pixel border width, `b-solid` sets the border style, and `b-line-control` selects the color token `--color-line-control`. Width, style and color stay independent, so you can change the color on interaction without restating the width or style. Any other native declaration uses its full property name inside parentheses, such as `(max-width:32rem)` or `(--progress:65%)`; a value used once can stay literal, a shared decision belongs in a token, and a reusable set of decisions belongs in a utility recipe. The [declaration contract](/reference/rules/declarations) covers the exact grammar.
+### Keep spaces inside one class
 
-## Encode CSS values \{#values\}
-
-An HTML class cannot contain whitespace. Use `|` where a CSS value needs a space, keeping commas, slashes and parentheses in place:
+HTML separates classes at whitespace. Outside quoted strings, write `|` where a CSS value needs a space, keeping commas, slashes and parentheses in place:
 
 ```html
 <div class="(transform:translate(0,1rem)) (color:rgb(30|60|90/80%))">
@@ -66,151 +59,141 @@ An HTML class cannot contain whitespace. Use `|` where a CSS value needs a space
 
 <Class2CSS>{['(transform:translate(0,1rem))', '(color:rgb(30|60|90/80%))', "(content:'New|collection')::before"]}</Class2CSS>
 
-The generated values are native CSS: `rgb(30 60 90 / 80%)`, a translation, and a quoted string containing a space. Master CSS normalizes operator spacing in expressions such as `calc(100%-2rem)` but never calculates results or converts units; the browser evaluates every function and fallback. The [value rules](/reference/rules/declarations) cover quotes, escapes and the characters that end a declaration.
+The color becomes `rgb(30 60 90 / 80%)`. Inside the quoted content string, the pipe stays literal: the text is `New|collection`. Master CSS also normalizes operator spacing in expressions such as `calc(100%-2rem)`; the browser evaluates the expression. See [Declarations & values](/reference/rules/declarations) for the complete grammar, quotes and escaping.
 
-## Use canonical token families \{#token-families\}
+## Use tokens for shared values \{#token-families\}
 
-Each utility pattern connects a class prefix to one token namespace and an authored declaration body. Several patterns can share a prefix when their keys identify a unique namespace. Several prefixes can also consume the same namespace.
+A token class connects a prefix to a named value. `p-md` and `gap-md` both read the spacing token `--spacing-md`, but set different properties:
 
-| Class | CSS property | Namespace | Variable |
-| --- | --- | --- | --- |
-| `p-md` | `padding` | `spacing` | `--spacing-md` |
-| `gap-md` | `gap` | `spacing` | `--spacing-md` |
-| `fg-text-muted` | `color` | `color` | `--color-text-muted` |
-| `font-sans` | `font-family` | `font-family` | `--font-family-sans` |
-| `font-sm` | `font-size` | `font-size` | `--font-size-sm` |
-| `font-bold` | `font-weight` | `font-weight` | `--font-weight-bold` |
+| Class | Declaration |
+| --- | --- |
+| `p-md` | `padding: var(--spacing-md)` |
+| `gap-md` | `gap: var(--spacing-md)` |
+| `fg-text-muted` | `color: var(--color-text-muted)` |
 
-<Class2CSS>{['p-md', 'gap-md', 'fg-text-muted', 'font-sans', 'font-sm', 'font-bold']}</Class2CSS>
+<Class2CSS>{['p-md', 'gap-md', 'fg-text-muted']}</Class2CSS>
 
-The following selected spacing values come from the same preset data used by Reference:
+These selected spacing values come directly from the preset:
 
 <TokenValues namespace="spacing" keys={['sm', 'md', 'lg']} />
 
-Choosing `p-md` uses the spacing vocabulary. Choosing `(padding:1rem)` fixes a literal value. They can look identical today, but changing `--spacing-md` changes only the token-based decision. The [family mapping](/reference/tokens/families) lists every prefix and explains hyphenated keys, negative values such as `-mt-sm`, alpha suffixes such as `bg-blue-60/0.2`, project overrides and ambiguity; [spacing values](/reference/tokens/spacing) has the complete scale.
+`p-md` and `(padding:1rem)` can look identical, but they express different decisions. Changing `--spacing-md` changes the token-based padding; the literal stays at `1rem`. Use tokens when styles should follow a shared value. [Theme tokens](/guide/theme) explains how to define and scope your own values; the [family index](/reference/tokens/families) lists prefixes and namespaces.
 
-## Select elements and states \{#states\}
+## Compose independent decisions \{#composition\}
 
-A Save button needs visible feedback for both a pointer and a keyboard. The button below changes its surface on hover and keeps a distinct focus outline:
+Build a small surface by giving each decision its own class:
 
-<DemoConfiguredExample name="syntax-button" title="A button that responds to you" source="" html={'<button type="button" class="px-lg py-sm r-md b(1) b-solid b-line-control bg-surface-raised bg-surface-inset:hover fg-text-strong (outline-color:currentColor) outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">Save</button>'} caption="Hover the button, then reach it with Tab. The surface changes on hover; keyboard focus adds an offset outline. Styling does not perform a Save action." />
+```html
+<article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">
+  <h2 class="m(0) text-lg fg-text-strong">Field notes</h2>
+  <p class="mt-sm mb(0) text-sm fg-text-muted">Keep useful ideas close.</p>
+</article>
+```
 
-Native pseudo-classes and pseudo-elements work as selector suffixes: `:hover`, `:focus-visible`, `:disabled`, `:nth-child(2)` and `::before`. Attribute selectors and selector functions are also native. For example, `(opacity:0.5)[aria-disabled=true]` matches an attribute on the class-bearing element; `fg-blue-60:is(:hover,:focus-visible)` uses either state.
+<Class2CSS>{['p-md', 'r-lg', 'b(1)', 'b-solid', 'b-line-divider', 'bg-surface-raised', 'm(0)', 'text-lg', 'fg-text-strong', 'mt-sm', 'mb(0)', 'text-sm', 'fg-text-muted']}</Class2CSS>
 
-A suffix can target another element. In this example the **article owns the class**, but its **direct child link receives the color** while the article is hovered:
+Here `b(1)` sets the border width, `b-solid` its style, and `b-line-divider` its color. Change one without restating the others. The padding, corner radius and text treatment stay independent too. This makes a later variation small: a wider layout can change padding while keeping the same surface and text.
+
+### Class order does not set priority \{#cascade\}
+
+If you write `p-md p(12)`, the direct value wins over the token for this property. Reversing the HTML class order produces the same CSS:
+
+<Class2CSS>{['p-md', 'p(12)']}</Class2CSS>
+
+Choose one base padding unless an override is intentional. When combining native component CSS and utilities, layer order matters as well: the preset places normal `utilities` declarations after `components`. [Cascade layers](/guide/cascade-layers) covers competing rules; [Reusing styles](/guide/reusing-styles) shows how to keep a component's shared appearance while changing one instance.
+
+## Add states and selector relationships \{#states\}
+
+Attach a selector to the class whose behavior changes. This button changes its surface on hover and gains an outline when reached with the keyboard:
+
+<DemoConfiguredExample
+  name="syntax-button"
+  title="A surface change and a focus outline"
+  source=""
+  html={`<button type="button" class="px-md py-xs text-sm r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+  Save changes
+</button>`}
+  caption="Hover the button, then reach it with Tab. Hover changes the surface; keyboard focus adds an outline. This button demonstrates styling and does not save data."
+/>
+
+The hover suffix belongs only to `bg-surface-inset:hover`; it does not make neighboring classes conditional. Native pseudo-classes and pseudo-elements work here, including `:disabled`, `:nth-child(2)` and `::before`. Selector functions work too: `fg-blue-60:is(:hover,:focus-visible)` uses either state.
+
+A selector can target another element. In this example the article owns the class, but its direct child link receives the color while the article is hovered:
 
 ```html
 <article class="fg-blue-60:hover>a">
-  <h3>A small collection</h3>
-  <a href="/collection">Read the notes</a>
+  <h3>Field notes</h3>
+  <a href="/guide/reusing-styles">Read the guide</a>
 </article>
 ```
 
 <Class2CSS>{['fg-blue-60:hover>a']}</Class2CSS>
 
-Use `_` for a descendant combinator, `>` for a child, `+` for an adjacent sibling and `~` for later siblings. The class-bearing element is the anchor for the suffix:
+Use `>` for a direct child and `_` for a descendant: `fg-blue-60_a` reaches descendant links. The class-bearing element remains the anchor for the suffix. [Selectors](/reference/rules/selectors) covers sibling combinators, attributes, selector lists and specificity.
 
-| Class on the owner | Element receiving the style |
-| --- | --- |
-| `fg-blue-60_a` | Descendant links |
-| `fg-blue-60>a` | Direct child links |
-| `(opacity:0.5)+aside` | The immediately following `aside` |
-| `(opacity:0.5)~aside` | Following sibling `aside` elements |
-| `fg-blue-60:has(input:checked)` | The owner, when it contains a checked input |
-| `fg-blue-60_:where(h2,h3)` | Descendant headings, with zero specificity from `:where()` |
+## Add conditions \{#conditions\}
 
-<Class2CSS>{['fg-blue-60_a', 'fg-blue-60>a', '(opacity:0.5)+aside', '(opacity:0.5)~aside', 'fg-blue-60:has(input:checked)', 'fg-blue-60_:where(h2,h3)']}</Class2CSS>
+A condition controls when a class applies. Add `@sm` to change a style only while the viewport matches that named query. This preview makes the opening example observable:
 
-A selector list gives each branch the class anchor, and native specificity still applies. The [selector contract](/reference/rules/selectors) covers lexical boundaries such as literal underscores in attribute values.
+<DemoConfiguredExample
+  name="syntax-viewport"
+  title="Hover color depends on viewport width"
+  source=""
+  html={`<div class="p-sm p-lg@sm">
+  <a href="/guide/responsive-design" target="_top" class="inline-flex py-xs text-sm fg-text-body underline fg-blue-60:hover@sm">
+    Explore responsive design
+  </a>
+</div>`}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 640 }, { label: 'Above sm', width: 900 }]}
+  caption="Choose Above sm and hover the link: it turns blue. Below sm, hovering keeps the base text color. The padding also increases at sm. These controls resize the preview's viewport, independently of the surrounding page."
+/>
 
-## Apply conditions \{#conditions\}
+`@sm` refers to the preset's custom media query. For a one-off viewport threshold, write a native query such as `p-lg@media(width>=48rem)`. Other condition forms follow the same pattern:
 
-A viewport breakpoint and a component's available width solve different problems. `p-lg@sm` follows the viewport. A card inside a narrow sidebar should usually follow its container instead.
-
-<DemoConfiguredExample name="syntax-container" title="A card follows its container" source="" html={'<section class="(container-name:card) container-inline"><article class="grid gap-md p-lg r-lg bg-surface-raised (grid-template-columns:1fr|auto)@container(card|width>=28rem)"><div><h3 class="m(0) text-lg fg-text-strong">Field notes</h3><p class="mt-sm mb(0) text-sm fg-text-muted">A collection that fits the space it has.</p></div><button type="button" class="self-center px-md py-sm r-md bg-blue-60 (color:white)">Open</button></article></section>'} responsive container widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 600 }]} caption="Switch between Narrow and Wide. The button moves beside the text when the named card container reaches 28rem. The container is the parent of the element whose layout changes." />
-
-`@container(card|width>=28rem)` names the queried container; `container-inline` and `(container-name:card)` establish it on the parent. Container dimension tokens and query thresholds are separate decisions: changing `--container-md` does not rewrite `28rem` in a query.
-
-For reusable viewport or preference conditions, define custom media in CSS and use its name in markup:
-
-<ConfiguredExample source={'@custom-media --reading (width >= 48rem) and (hover: hover);'} html={'<a href="/collection" class="fg-blue-60:hover@reading">View collection</a>'} />
-
-The preset's `@sm`, `@dark`, `@motion-safe` and `@motion-reduce` use this same mechanism. For a one-off condition, use the explicit native form:
-
-| Class | When it applies |
+| Class | Condition |
 | --- | --- |
 | `hidden@media(print)` | Printing |
-| `grid@supports(display:grid)` | The browser supports the declaration |
-| `(padding:2rem)@media(width>=48rem)` | The viewport is at least 48rem wide |
-| `(color:red)@container(style(--density:compact))` | An ancestor's queried custom property is `compact` |
-| `(opacity:0)@starting-style` | The element's starting style |
+| `grid@supports(display:grid)` | Support for the declaration |
+| `grid@sm@supports(display:grid)` | Both the named viewport query and declaration support |
 
-<Class2CSS>{['hidden@media(print)', 'grid@supports(display:grid)', '(padding:2rem)@media(width>=48rem)', '(color:red)@container(style(--density:compact))', '(opacity:0)@starting-style']}</Class2CSS>
+<Class2CSS>{['p-lg@media(width>=48rem)', 'hidden@media(print)', 'grid@supports(display:grid)', 'grid@sm@supports(display:grid)']}</Class2CSS>
 
-Several wrappers nest from the leftmost outside to the rightmost inside, so `grid@sm@supports(display:grid)` requires both. The [condition contract](/reference/rules/conditions) lists the supported query forms; keep compound media expressions in `@custom-media`.
+Several conditions nest from left to right, so every wrapper must match. See [Conditions](/reference/rules/conditions) for custom media and the other wrappers.
 
-## Define and scope tokens \{#project-settings\}
+### Follow a component's available space
 
-A project color starts with a name and a value:
+A card in a sidebar has less room than a card in the main content area, even at the same viewport width. Give its parent `container-inline`, then put a container condition on the card's layout class. The final example uses `(container-name:card)` to name that parent and `@container(card|width>=28rem)` to query it.
 
-<ConfiguredExample source={'@theme {\n  --color-brand: oklch(55% 0.18 255);\n  --spacing-action: 1rem;\n}'} html={'<button type="button" class="p-action fg-brand">Save</button>'} />
+The parent establishes the container; the child changes layout. The `28rem` threshold is an explicit query value, separate from sizing tokens such as `--container-md`. [Responsive design](/guide/responsive-design#based-on-container-sizes) develops this distinction with named and nested containers.
 
-Direct declarations in `@theme` use `:root, :host`. Used managed tokens are emitted into the `theme` layer, and utilities refer to them with `var()`. Unused managed tokens can be omitted. The preset provides family mappings, so `--color-brand` makes `fg-brand`, `bg-brand` and other color consumers available without a mapping declaration.
+## Put it together \{#complete-card\}
 
-A local brand can change a token without changing any consuming class. This example also separates brand from light and dark appearance:
+This card combines the decisions above. It starts in one column; when its named parent reaches `28rem`, the link moves beside the text and the padding grows. The link's hover and focus styles remain independent of the layout.
 
-<DemoConfiguredExample name="syntax-theme" title="One vocabulary, nested themes" source={'@theme {\n  --color-brand: light-dark(oklch(48% 0.18 255), oklch(78% 0.12 255));\n  --color-paper: light-dark(white, #172033);\n  --color-ink: light-dark(#172033, #edf2ff);\n}\n  [data-brand="plum"] { --color-brand: light-dark(oklch(48% 0.2 315), oklch(78% 0.12 315)); }\n@layer defaults {\n  [data-theme="light"] { color-scheme: light; }\n  [data-theme="dark"] { color-scheme: dark; }\n}'} html={'<section data-brand="plum" data-theme="dark" class="p-lg r-lg bg-paper fg-ink"><p class="m(0) text-sm">Plum brand · dark surface</p><p class="mt-sm mb-lg font-medium fg-brand">A local accent</p><section data-theme="light" class="p-md r-md bg-paper fg-ink"><p class="m(0) text-sm">Nested light surface</p><p class="mt-sm mb(0) font-medium fg-brand">The inherited plum token</p></section></section>'} caption="The inner section chooses a light color scheme and inherits the plum brand token. Both fg-brand classes use that token; light-dark() chooses a readable accent for each surface. The outer section keeps its dark surface." />
+<DemoConfiguredExample
+  name="syntax-complete"
+  title="A guide card that fits its space"
+  source=""
+  html={`<section class="container-inline (container-name:card)">
+  <article class="grid gap-lg p-md r-lg b(1) b-solid b-line-divider bg-surface-raised shadow-sm (grid-template-columns:1fr|auto)@container(card|width>=28rem) p-lg@container(card|width>=28rem)">
+    <div>
+      <h3 class="m(0) text-lg font-regular fg-text-strong">Reusable styles</h3>
+      <p class="mt-sm mb(0) text-sm fg-text-muted (max-width:38ch)">Keep shared appearance together and local choices in markup.</p>
+    </div>
+    <a href="/guide/reusing-styles" target="_top" class="inline-flex items-center justify-center self-start self-center@container(card|width>=28rem) gap-xs px-md py-xs text-sm (text-decoration-line:none) r-md b(1) b-solid b-line-divider bg-surface-raised fg-text-strong shadow-sm bg-surface-inset:hover outline-offset(3) outline(2):focus-visible outline-solid:focus-visible">
+      Read the guide <span aria-hidden="true">→</span>
+    </a>
+  </article>
+</section>`}
+  responsive
+  container
+  widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]}
+  caption="Switch between Narrow and Wide. The named container controls the card's columns and padding. Hover or Tab to Read the guide to check its states; activating it opens Reusing styles."
+/>
 
-Keep selectors and conditions outside `@theme`; native rules such as the `data-brand` selector override the registered token where they match. The [theme directive](/reference/directives/theme) covers `@theme inline` and `@theme static`, and [modes](/reference/rules/modes) explains how `@dark`, `data-theme` and `light-dark()` differ.
+Keep complete class names in your source when choosing variants, such as `'p-md'` and `'p-lg'`. Building a class from fragments such as `'p-' + size` does not give a source scanner the complete name. For continuous values, use a native custom property with a fixed class such as `(width:var(--progress))`. [Scanning and pruning](/guide/scanning-and-pruning) explains source discovery; [Rendering modes](/guide/rendering-modes) covers when CSS is generated.
 
-## Define utilities and reuse CSS \{#mixins\}
+If an expected style is missing, open **Generated CSS** and check the class first. Then check which element its selector targets, whether its conditions match, the resolved custom properties, and competing rules in the browser. Reordering classes in HTML is not a fix for the cascade.
 
-When the same set of declarations travels together, define a recipe. A static utility registers an on-demand class and can reuse a native mixin:
-
-<ConfiguredExample source={'@mixin --stack {\n  display: grid;\n  gap: var(--spacing-md);\n}\n@utility reading-stack {\n  @apply --stack;\n  max-width: 60ch;\n}'} html={'<article class="reading-stack"><h2>Field notes</h2><p>Space for the details.</p></article>'} />
-
-Static parameters let a recipe express a small variation:
-
-<ConfiguredExample source={'@utility columns(--count <integer>: 2) {\n  display: grid;\n  grid-template-columns: repeat(var(--count), minmax(0, 1fr));\n}'} html={'<div class="columns(3) gap-md"><p>Plan</p><p>Make</p><p>Refine</p></div>'} />
-
-`reading-stack` expands the nested `@apply`, keeps both declarations from `--stack`, and adds a width cap; definitions alone do not emit class rules. `columns()` uses the default `2`, while `columns(3)` supplies `3`. Arguments must be known during compilation. The [utility definitions](/reference/directives/definitions) cover parameter types, `ident()` and the [dynamic-value exception](/reference/directives/definitions#dynamic-values); token-driven recipes such as `text-sm` and `animate-*` are documented with [text treatments](/reference/tokens/text) and [animation tokens](/reference/tokens/motion#animate).
-
-## Wrap styles with contents \{#contents\}
-
-Sometimes the reusable part is the selector around a declaration. Define `--hocus` once, then supply the styles that belong inside it:
-
-<ConfiguredExample source={'@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@layer components {\n  .save {\n    @apply --hocus { text-decoration-line: underline; }\n  }\n}'} html={'<button type="button" class="save fg-blue-60@apply(--hocus)">Save</button>'} />
-
-In CSS, the block after `@apply --hocus` supplies the content. In a class, `@apply(--hocus)` wraps the class's generated declarations. A recipe that emits several declarations supplies them as one block. Use a utility recipe for that shared declaration set; a contents wrapper does not combine several unrelated HTML classes into one call.
-
-Fallback contents, forwarding through nested wrappers and the expansion limits are in the [contents contract](/reference/directives/definitions#contents).
-
-## Understand the cascade \{#cascade\}
-
-A valid class can lose to another declaration. The preset loads `@layer theme, base, defaults, components, utilities;`, so utilities win over components and defaults before specificity is compared. Within the same selector, conditions, layer and importance, Master orders recipes first, then single-declaration utilities, then native declarations, and a token before a direct value for the same property:
-
-<ConfiguredExample source={'@utility inset { padding: 2rem; }'} html={'<div class="inset p-md p(12)">A local spacing decision</div>'} />
-
-The final direct padding is `12px`, and reordering the classes in HTML does not change that. A final `!` marks a class important, and `@layer(base)` and the other style-layer suffixes move a whole class to another layer. [Cascade layers](/guide/cascade-layers) shows how to place native CSS and third-party styles in that order; the [layer contract](/reference/rules/layers) has the complete comparison.
-
-## Deliver the styles you use \{#delivery\}
-
-The compiler only generates CSS for complete class names it finds in scanned sources, so keep alternatives such as `'fg-green-60'` and `'fg-text-muted'` as whole strings and drive continuous values through one fixed class such as `(width:var(--progress))` and a custom property. [Scanning and pruning](/guide/scanning-and-pruning) covers source boundaries, `@source`, `@safelist` and which managed tokens and keyframes ship; [Rendering Modes](/guide/rendering-modes) explains when browser runtime generation is needed instead.
-
-## Put it together \{#complete-button\}
-
-The final card uses a local project token, an on-demand button recipe, an interaction wrapper and a container query. Native component CSS owns the card surface; utilities own the decisions visible at each element.
-
-<DemoConfiguredExample name="syntax-complete" title="A collection worth saving" source={'@theme {\n  --color-action: light-dark(#315cbe, #a8c7ff);\n  --spacing-action: 0.75rem;\n}\n@mixin --hocus {\n  &:is(:hover, :focus-visible) { @contents; }\n}\n@utility save-action {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-action);\n  border-radius: var(--radius-md);\n}\n@layer components {\n  .collection {\n    background-color: var(--color-surface-raised);\n    border: 1px solid var(--color-line-control);\n    border-radius: var(--radius-lg);\n  }\n}'} html={'<section class="(container-name:collection) container-inline"><article class="collection grid gap-lg p-lg (grid-template-columns:1fr|auto)@container(collection|width>=28rem)"><div><p class="m(0) text-sm fg-text-muted">COLLECTION / 024</p><h3 class="mt-sm mb-md text-2xl font-medium fg-text-strong">A place for good ideas.</h3><p class="m(0) text-sm fg-text-body (max-width:38ch)">Keep a few useful details close. Return when the next idea needs a starting point.</p></div><button type="button" class="save-action self-center justify-center fg-action bg-surface-inset@apply(--hocus) outline-offset(3)"><span aria-hidden="true">＋</span>Save</button></article></section>'} theme responsive container widthPresets={[{ label: 'Narrow', width: 320 }, { label: 'Wide', width: 640 }]} caption="Resize the preview, switch its light or dark appearance, and focus Save. The container controls layout; the token controls the action color; the wrapper shares hover and keyboard feedback. Connect the Save action in your application." />
-
-Add these definitions after the preset import in your own app stylesheet. The demonstration's appearance switch changes the native color scheme; `light-dark()` selects the corresponding action color. Both states use the same complete classes.
-
-When a style behaves unexpectedly, work through the evidence in this order:
-
-1. **Find the generated rule.** Check the complete class, scan boundary and compilation diagnostics. For a token or recipe, confirm that its definitions reached the compiler.
-2. **Match the selector.** Identify the class-bearing element and the element receiving the declaration. Check state, attributes, DOM relationships and shadow boundaries.
-3. **Check each condition.** Inspect the actual viewport, named container, supported feature or preference. For several wrappers, all must match.
-4. **Resolve the value.** Inspect custom properties on the receiving element and their declaration scopes. Registration alone does not deliver a native value.
-5. **Read the cascade.** Compare importance, layer, specificity and generated rule order, including native unlayered styles. Moving classes around in HTML is not a priority control.
-
-Use the [family mapping](/reference/tokens/families), [selector contract](/reference/rules/selectors), [condition contract](/reference/rules/conditions) and [utility contract](/reference/directives/definitions) as lookups while building. Keep each class tied to a clear styling decision, and keep its generated CSS close enough to inspect.
+Continue with [Theme tokens](/guide/theme) to define shared values or [Reusing styles](/guide/reusing-styles) to choose between component classes, utilities and mixins. Their complete contracts remain in Reference.

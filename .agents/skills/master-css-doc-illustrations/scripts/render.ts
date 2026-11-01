@@ -34,8 +34,34 @@ try {
       return fonts.filter(font => !document.fonts.check(font))
     }, ['350 14px Geist', '460 14px Geist', '12.5px "IBM Plex Mono"'])
     if (missing.length) throw new Error(`${stem}: fonts did not load: ${missing.join(', ')}`)
+    // Content-attached annotations are resolved only for the exported bitmap; articles need no diagram JavaScript.
+    await page.evaluate(() => {
+      const origin = document.querySelector('.scene')!.getBoundingClientRect()
+      const bounds = (id: string) => {
+        const matches = [...document.querySelectorAll<HTMLElement>('[data-anchor]')].filter(el => el.dataset.anchor === id)
+        if (matches.length !== 1) throw new Error(`Expected one illustration anchor: ${id}`)
+        return matches[0].getBoundingClientRect()
+      }
+      for (const path of document.querySelectorAll<SVGPathElement>('path[data-from]')) {
+        const source = bounds(path.dataset.from!)
+        const target = bounds(path.dataset.to!)
+        const sx = source.left + source.width / 2 - origin.left
+        const sy = source.bottom - origin.top
+        const tx = target.left + target.width / 2 - origin.left
+        const ty = target.top - origin.top - 10
+        const via = Number(path.dataset.viaY)
+        if (!(sy < via && via < ty)) throw new Error(`Leader corridor overlaps its labels: ${path.dataset.from}`)
+        const direction = Math.sign(tx - sx)
+        const radius = Math.min(8, Math.abs(tx - sx) / 2, (via - sy) / 2, (ty - via) / 2)
+        path.setAttribute('d', direction === 0 ? `M${sx} ${sy}V${ty}`
+          : `M${sx} ${sy}V${via - radius}Q${sx} ${via} ${sx + direction * radius} ${via}H${tx - direction * radius}Q${tx} ${via} ${tx} ${via + radius}V${ty}`)
+      }
+    })
     const overflow = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-label]')]
-      .filter(element => element.scrollWidth > element.clientWidth + 1 || element.getBoundingClientRect().right > innerWidth || element.getBoundingClientRect().left < 0)
+      .filter(element => {
+        const bounds = element.getBoundingClientRect()
+        return element.scrollWidth > element.clientWidth + 1 || bounds.right > innerWidth || bounds.left < 0 || bounds.top < 0 || bounds.bottom > innerHeight
+      })
       .map(element => element.textContent))
     if (overflow.length) throw new Error(`${stem}: labels overflow their box or the canvas: ${overflow.join(', ')}`)
     const png = await page.locator('.scene').screenshot()

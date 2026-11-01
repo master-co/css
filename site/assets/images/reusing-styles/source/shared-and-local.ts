@@ -4,33 +4,24 @@ import { drawing, type Theme } from '../../rendering-modes/source/materials'
 export default {
   id: 'shared-and-local',
   render(theme: Theme) {
-    const { sheet, row, icon, label, text, route, scene } = drawing(theme)
+    const { sheet, row, icon, label, text, spacingControl, route, scene } = drawing(theme)
     const l = reuseIllustration.labels
     return scene(reuseIllustration.title, reuseIllustration.alt, `
-      ${sheet(56, 72, 264, 104,
+      ${sheet(360, 62, undefined, undefined,
         row(icon('layers') + label(l.component))
-        + label(l.componentClass, 'code')
-        + label(l.componentScope, 'note'))}
-      ${sheet(432, 72, 232, 104,
-        row(icon('code') + label(l.utility))
-        + label(l.utilityClass, 'code')
-        + label(l.utilityScope, 'note'))}
+        + label(l.componentClass, 'code'), 'center')}
 
-      ${route('M188 176V260', { arrow: false })}
-      ${text(200, 226, l.shared, 'edge')}
-      ${route('M188 260V330')}
-      ${route('M188 260H352Q360 260 360 268V372Q360 380 368 380H430')}
-      ${route('M548 176V330')}
-      ${text(560, 226, l.local, 'edge')}
+      ${route('M360 133V184', { arrow: false })}
+      ${route('M360 184H228Q220 184 220 192V248')}
+      ${route('M360 184H492Q500 184 500 192V248')}
+      ${text(360, 208, l.shared, 'edge', 'center')}
 
-      ${sheet(56, 332, 264, 96,
-        row(icon('fileCode') + label(l.first))
-        + label(l.firstMarkup, 'code')
-        + label(l.firstResult, 'note'))}
-      ${sheet(432, 332, 232, 96,
-        row(icon('fileCode') + label(l.second))
-        + label(l.secondMarkup, 'code')
-        + label(l.secondResult, 'note'))}
+      ${spacingControl(220, 250, l.button, 16, l.firstPadding)}
+      ${spacingControl(500, 250, l.button, 24, l.secondPadding, true)}
+      ${text(220, 344, l.firstMarkup, 'code', 'center')}
+      ${text(500, 344, l.secondMarkup, 'code', 'center')}
+      ${text(220, 378, l.firstResult, 'note', 'center')}
+      ${text(500, 378, l.secondResult, 'note', 'center')}
     `)
   }
 }
