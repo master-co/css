@@ -1,8 +1,14 @@
-`DemoSurface` keeps content legible on the neutral canvas with a fine border, the site's `radius-xl` corner and raised surface color. It adds no padding, dimensions, layout, clipping or shadow by default. An explicit radius utility takes precedence when the corner itself belongs to the lesson. Use `elevation="raised"` only when the lesson needs to show a floating layer; it adds the shared inner light and contact shadow without changing the content box.
+`DemoSurface` renders `div.ui-sheet`. It adds no padding, dimensions, layout or clipping; the example supplies them. `elevation="flat"` (the default) is a hairline sheet; `elevation="raised"` maps to `data-elevation="1"`.
 
 ```tsx
 <DemoSurface className="p-md">A quiet content surface.</DemoSurface>
-<DemoSurface elevation="raised" className="p-md">A floating layer.</DemoSurface>
+<DemoSurface elevation="raised" className="p-md">A raised layer.</DemoSurface>
 ```
 
-The [column span reference](https://developer.mozilla.org/en-US/docs/Web/CSS/column-span) keeps columns and padding inside the default surface; the [float reference](https://developer.mozilla.org/en-US/docs/Web/CSS/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/layout-system#namespace-for-spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.
+```html
+<div class="ui-sheet" data-elevation="flat">…</div>
+<div class="ui-sheet" data-elevation="1">…</div>
+<div class="ui-well">…</div>
+```
+
+A sheet uses `--ui-surface-sheet` and the elevation roles; a well uses `--ui-surface-well` with `--ui-elevation-sink`. Never invent a surface color: when a lesson teaches surfaces, use the preset `bg-surface-*` utilities in the specimen instead.

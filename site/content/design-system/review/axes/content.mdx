@@ -1,11 +1,15 @@
-`DemoAxes` puts a labeled horizontal rule and vertical rule around one example. Its default main-axis arrow points right and its cross-axis arrow points down, matching a left-to-right row in horizontal writing. The rules are decorative; the text supplies the axis names. The current labels use a clear monospace scale and keep both rules outside the example's flex layout.
+`DemoAxes` renders `div.ui-axes`: a `ui-axes-inline` arrow along the top, a `ui-axes-block` arrow down the start edge and the subject in `ui-axes-content`. `inline` and `block` replace the default “Main axis” and “Cross axis” names.
 
 ```tsx
-<DemoAxes aria-label="Row layout: main axis rightward, cross axis downward">
-  <div className="flex gap-sm">{/* layout items */}</div>
+<DemoAxes inline="Inline axis" block="Block axis">
+  <DemoSurface className="flex gap-sm p-md">…</DemoSurface>
 </DemoAxes>
 ```
 
-Use this frame only when those physical directions match the specimen; reverse and vertical examples need annotations that follow their actual directions. The [flex direction reference](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction) shows the real row behavior, and the [axes review](/design-system/review/axes) shows the current annotation frame.
-
-The [composition with content bounds](/design-system/review/axes#axes-composition) combines `DemoAxes`, `DemoMeasure` and `DemoLegend`. The ruler observes the content wrapper; the axis rules and legend stay outside the measured layout. Narrow screens scroll the diagram horizontally without shrinking or changing the measured objects.
+```html
+<div class="ui-axes">
+  <div class="ui-axes-inline"><span>Main axis</span><span class="ui-axes-rule"></span></div>
+  <div class="ui-axes-block"><span>Cross axis</span><span class="ui-axes-rule"></span></div>
+  <div class="ui-axes-content">…</div>
+</div>
+```

@@ -1,24 +1,43 @@
-`DemoControls` is a fieldset with an accessible group name. Its plain default leaves mixed sliders, action buttons and print controls ungrouped. For a small set of exclusive choices, use `variant="segmented"`: the selected native button has a separate surface and keeps `aria-pressed`, while a visible focus outline supports keyboard use. Both appearances stay outside the layout being demonstrated.
+Controls are native elements with one root class each; variants and sizes are data attributes and state comes from native pseudo-classes and ARIA.
 
-```tsx
-<DemoControls label="Cross-axis alignment" variant="segmented">
-  <button type="button" className="demo-button" aria-pressed={alignment === 'items-flex-start'}>Start</button>
-  <button type="button" className="demo-button" aria-pressed={alignment === 'items-center'}>Center</button>
-  <button type="button" className="demo-button" aria-pressed={alignment === 'items-flex-end'}>End</button>
-</DemoControls>
+```html
+<button type="button" class="ui-button">Save</button>
+<button type="button" class="ui-button" data-variant="primary">Publish</button>
+<button type="button" class="ui-button" data-variant="quiet" data-size="sm">Replay</button>
+<button type="button" class="ui-button" data-shape="icon" aria-label="Add">…</button>
+
+<div class="ui-segmented" role="group" aria-label="View">
+  <button type="button" aria-pressed="true">Preview</button>
+  <button type="button" aria-pressed="false">Code</button>
+</div>
+
+<label class="ui-field">Name<input class="ui-input"><span class="ui-field-hint">…</span></label>
+<select class="ui-select">…</select>
+<input class="ui-range" type="range" style="--value: 40%">
+<label class="ui-check"><input type="checkbox">Show captions</label>
+<label class="ui-check"><input type="checkbox" role="switch" class="ui-switch">Sync</label>
 ```
 
-The [controls review](/design-system/review/controls) shows the current segmented controls; the [Syntax Tutorial viewport switch](/guide/syntax-tutorial#conditions) demonstrates a separate viewport task.
+`DemoControls` wraps a labelled group: `variant="segmented"` renders `ui-segmented` for exclusive choices whose buttons carry `aria-pressed`; the plain default lays mixed controls out in a row. Put controls in the tray head with `Demo controls`, never inside the demonstrated layout.
+
+```tsx
+<Demo title="Cross-axis alignment" controls={
+  <DemoControls label="Cross-axis alignment" variant="segmented">
+    <button type="button" aria-pressed={alignment === 'items-flex-start'}>Start</button>
+    <button type="button" aria-pressed={alignment === 'items-center'}>Center</button>
+  </DemoControls>
+}>…</Demo>
+```
 
 ### Related document views \{#document-views-interface\}
 
-Use the document shell's `Segments` when each choice reveals a related panel. It exposes native buttons with tab semantics: arrow keys select a neighboring view, Home and End reach the ends, and Tab moves into the selected panel. Selection changes the fill and shadow without changing the label's position.
+Use the document shell's `Segments` when each choice reveals a related panel. Every panel remains in the HTML; without JavaScript, and when printing, all views appear with their labels.
 
 ```tsx
 <Segments label="Document view example">{[
   { name: 'Overview', content: <p>A short explanation stays beside the example.</p> },
-  { name: 'Details', content: <p>Supporting details remain available in the HTML, including when JavaScript is disabled.</p> }
+  { name: 'Details', content: <p>Supporting details remain available.</p> }
 ]}</Segments>
 ```
 
-Every panel remains in the HTML. Without JavaScript, and when printing, all views appear with their labels. The [Benchmark guide](/benchmarks#page-css-size) uses the same control for raw and compressed CSS sizes.
+The `ui-range` fill follows `--value`; set it with the input’s value as a percentage of its range.

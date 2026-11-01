@@ -14,10 +14,8 @@
   .ui-tray-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
   .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
   .ui-tray-caption code { color: var(--ui-text-body); }
-  .ui-tray > * + :is(.ui-stage, .ui-code) { margin-top: var(--ui-inset); }
-  .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code) { margin-top: 0; }
-  .ui-tray > .ui-callout { margin-top: var(--ui-inset); }
-  .ui-tray > .ui-disclosure > summary { padding-inline: var(--ui-space-sm); }
+  .ui-tray > * + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: var(--ui-inset); }
+  .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: 0; }
 
   /* The stage: a lit, slightly recessed well where the specimen stands */
   .ui-stage {
@@ -51,7 +49,14 @@
   .ui-browser-dots > i { width: 9px; height: 9px; border-radius: 50%; background: var(--ui-line-strong); }
   .ui-browser-url { flex: 1; min-width: 0; height: 1.625rem; padding: 0 var(--ui-space-sm); overflow: hidden; border-radius: 8px; background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.625rem var(--font-family-mono); text-overflow: ellipsis; white-space: nowrap; }
   .ui-browser-body { position: relative; min-height: 12rem; }
-  .ui-resize { position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; width: 1rem; cursor: ew-resize; }
+  /* A real document: the tools set the viewport width, the handle follows its edge */
+  .ui-browser-body:has(> .ui-browser-viewport) { min-height: 0; overflow-x: auto; scrollbar-width: thin; }
+  .ui-browser-viewport { position: relative; max-width: none; margin-inline: auto; }
+  .ui-browser-viewport > iframe { display: block; width: 100%; border: 0; background: transparent; }
+  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-xs) var(--ui-space-sm); border-top: 1px solid var(--ui-line-hair); background: var(--ui-surface-sheet-lo); }
+  .ui-browser-tools > .ui-range { flex: 1 1 6rem; max-width: 12rem; }
+  .ui-browser-tools > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
+  .ui-resize { position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; width: 1rem; cursor: ew-resize; touch-action: none; }
   .ui-resize::before { content: ""; width: 4px; height: 2.5rem; border-radius: var(--ui-radius-pill); background: var(--ui-line-strong); }
 
   /* Local scroll region, keyboard reachable */

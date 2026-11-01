@@ -1,7 +1,11 @@
-`DemoBadge` labels a state or category. Its `size` is `xs`, `sm`, `md` or `lg`; `tone` and `variant` use the same paint roles as `DemoItem`. The default is neutral, soft and medium. It renders a native span.
+`DemoBadge` renders `span.ui-badge` with `tone`, `variant` (`soft` or `dot`) and `size` (`sm` or `md`) mapped to data attributes. Badges are annotations: keep them outside measured flex, grid or float layouts.
 
 ```tsx
-<DemoBadge tone="blue" size="sm">Selected layer</DemoBadge>
+<DemoBadge tone="green" variant="dot">Supported</DemoBadge>
+<DemoBadge size="sm">Static</DemoBadge>
 ```
 
-Keep state labels outside measured layouts unless their dimensions are part of the lesson. Use a native button for an action.
+```html
+<span class="ui-badge" data-tone="green" data-variant="dot">Supported</span>
+<span class="ui-badge" data-size="sm">Static</span>
+```

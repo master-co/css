@@ -1,72 +1,22 @@
 import metadata from './metadata'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
-import Link from '~/site/docs-shell/components/Link'
-import Demo from '~/site/components/demo/Demo'
-import DemoViewport from '~/site/components/demo/DemoViewport'
-import { referenceDemoSections } from '~/site/components/demo/reference/source'
-import { referenceScenes } from '~/site/components/demo/reference/scenes'
-import { demoDocument } from '~/site/components/demo/reference/document'
-import './page.css'
+import Code from '~/site/docs-shell/components/Code'
+import ComponentPage from '../../components/ComponentPage'
+import { Demo, DemoGeneratedCSS, DemoItem } from '~/site/components/demo'
+import { DemoControls } from '~/site/components/demo/primitives'
 
 export { metadata }
 
-function specimen() {
-  return (
-    <div className="review-demo-objects">
-      <div className="app-box">01</div>
-      <div className="app-box">02</div>
-      <div className="app-box">03</div>
-    </div>
-  )
-}
+const html = '<div class="grid-cols(3) gap-md p-md">\n  <div>01</div>\n  <div>02</div>\n  <div>03</div>\n</div>'
 
-export default async function Page() {
-  const source = (await referenceDemoSections('clear')).find(item => item.id === 'clearing-left-floats')
-  if (!source) throw new Error('Missing clear reference scene')
-  const scene = referenceScenes.clear(source)
-
-  return (
-    <main className="ds-component-page review-demo-review">
-      <ReviewNavigation />
-      <h1>Demo canvas</h1>
-      <p className="review-demo-intro">The shared canvas uses a plain neutral surface, a fine contour and quiet spacing. Titles and controls appear only when a lesson needs them.</p>
-
-      <section aria-labelledby="canvas-current">
-        <h2 id="canvas-current">Default canvas</h2>
-        <div className="review-demo-current">
-          <article className="review-demo-option">
-            <Demo>{specimen()}</Demo>
-            <p className="review-demo-optionNote">A plain surface with optional, purpose-specific patterns.</p>
-          </article>
-        </div>
-      </section>
-
-      <section aria-labelledby="real-usage">
-        <div className="review-demo-sectionHeading">
-          <div><h2 id="real-usage">Actual Reference use</h2><p>The <code>(clear:left)</code> scene keeps its own float geometry and iframe isolation.</p></div>
-          <Link href="https://developer.mozilla.org/en-US/docs/Web/CSS/clear">Open https://developer.mozilla.org/en-US/docs/Web/CSS/clear</Link>
-        </div>
-        <div className="review-demo-actualUsage">
-          <Demo title={source.title} description="The title identifies this lesson's CSS subject." caption={scene.caption} padding="none" frame="none">
-            <DemoViewport title={`clear: ${source.title}`} document={demoDocument(source, scene)}
-              responsive={scene.responsive ?? false} theme={scene.theme ?? false} print={false}
-              motion={scene.motion} inspect={scene.inspect} height={scene.height}
-              maxWidth={scene.maxWidth} sizing={scene.sizing} />
-          </Demo>
-          <p className="review-demo-optionNote">The shared canvas adds no child to the float layout; the iframe owns the scene dimensions.</p>
-        </div>
-      </section>
-
-      <section aria-labelledby="optional-chrome">
-        <h2 id="optional-chrome">Optional title, guidance and focus</h2>
-        <div className="review-demo-optionalUsage">
-          <Demo title="Inspect the spacing" description="The annotation sits outside the teaching canvas." controls={<Link href="/guide/layout-system#namespace-for-spacing">Read spacing guide</Link>}>
-            {specimen()}
-          </Demo>
-        </div>
-      </section>
-    <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
-    </main>
-  )
+export default function Page() {
+  return <ComponentPage title="Tray and stage" description="One example is one tray. Its head names the example and holds its tools; the lit stage shows the specimen; the code window keeps the source with a closed Generated CSS disclosure; the caption says what to notice." sections={[
+    { id: 'complete', title: 'A complete example', children: <Demo title="Padding around the group, gap between items" background="hatch"
+      controls={<DemoControls label="Gap" variant="segmented"><button type="button" aria-pressed="false">sm</button><button type="button" aria-pressed="true">md</button><button type="button" aria-pressed="false">lg</button></DemoControls>}
+      source={<><Code lang="html" name="HTML">{html}</Code><DemoGeneratedCSS><Code lang="css" beautify>{'.grid-cols\\(3\\) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) }\n.gap-md { gap: var(--spacing-md) }\n.p-md { padding: var(--spacing-md) }'}</Code></DemoGeneratedCSS></>}
+      caption="The hatch shows p-md around the grid and gap-md between its children.">
+      <div className="grid-cols(3) gap-md w-full (max-width:20rem) p-md r-lg bg-surface-raised"><DemoItem>01</DemoItem><DemoItem>02</DemoItem><DemoItem>03</DemoItem></div>
+    </Demo> },
+    { id: 'stage-only', title: 'Stage only', description: 'Without a head or source the tray is a quiet frame around one specimen; a lone caption names the figure.', children: <Demo caption="A caption alone describes the figure."><DemoItem tone="blue">Subject</DemoItem></Demo> },
+  ]} usage={{ href: '/guide/syntax-tutorial', label: 'the Syntax Tutorial' }} Documentation={ComponentDocumentation} />
 }

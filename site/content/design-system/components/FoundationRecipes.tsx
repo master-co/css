@@ -1,4 +1,3 @@
-import '~/site/styles/demo-interactions.css'
 import FoundationBreakpoint from '~/site/components/demo/FoundationBreakpoint'
 import { FoundationAxes, FoundationContainerGrid, FoundationMedia, FoundationRadius, FoundationShapes, FoundationShrink, FoundationSizing } from '~/site/components/demo/FoundationExamples'
 import { DemoPageViewport } from '~/site/components/demo/DemoBrowser'
@@ -15,9 +14,9 @@ const examples = [
 ] as const
 
 export default function FoundationRecipes() {
-  return <div>
-    {examples.map(([title, href, Component], index) => <section key={title} data-foundation-recipe={index} id={index === 7 ? 'use-shape-shortcuts' : undefined}>
-      <div className="demo-recipe-heading"><h3>{title}</h3><a href={href} className="demo-recipe-link">View guide ↗</a></div>
+  return <div className="grid gap-2xl">
+    {examples.map(([title, href, Component], index) => <section key={title} className="grid gap-sm" data-foundation-recipe={index} id={index === 7 ? 'use-shape-shortcuts' : undefined}>
+      <div className="flex flex-wrap items-baseline justify-between gap-sm"><h3 className="m(0) font-md font-semibold fg-text-strong">{title}</h3><a href={href} className="font-sm fg-text-muted fg-text-strong:hover">View guide ↗</a></div>
       <Component />
     </section>)}
     <DemoPageViewport src="/examples/layout-system" title="Workspace layout" height={540} />

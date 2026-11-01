@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo scroll area",
-  "description": "Shared Demo scroll area and practical examples.",
+  "title": "Scroll region",
+  "description": "A local, keyboard-reachable scroll region.",
   "category": "Components",
   fileURL: import.meta.url
 })

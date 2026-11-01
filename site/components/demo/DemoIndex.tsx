@@ -1,5 +1,3 @@
-import '~/site/styles/demo-interactions.css'
-import '~/site/styles/demo.css'
 export interface DemoIndexGroup {
   title: string
   links: readonly { href: string, label: string }[]
@@ -7,10 +5,10 @@ export interface DemoIndexGroup {
 
 /** Native links keep catalog navigation available before hydration. */
 export default function DemoIndex({ label, groups }: { label: string, groups: readonly DemoIndexGroup[] }) {
-  return <nav className="demo-index" aria-label={label}>
-    {groups.map(group => <div className="demo-index-group" key={group.title}>
-      <p className="demo-index-title">{group.title}</p>
-      <ul>{group.links.map(link => <li key={link.href}><a href={link.href}>{link.label}</a></li>)}</ul>
+  return <nav className="grid gap-md" aria-label={label}>
+    {groups.map(group => <div className="grid gap-xs" key={group.title}>
+      <p className="m(0) ui-label">{group.title}</p>
+      <ul className="flex flex-wrap gap-2xs m(0) p(0) (list-style:none)">{group.links.map(link => <li key={link.href}><a className="ui-button" data-size="sm" href={link.href}>{link.label}</a></li>)}</ul>
     </div>)}
   </nav>
 }

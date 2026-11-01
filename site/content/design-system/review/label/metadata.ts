@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo label",
-  "description": "Shared Demo label and practical examples.",
+  "title": "Label",
+  "description": "Name a condition outside the measured layout.",
   "category": "Components",
   fileURL: import.meta.url
 })

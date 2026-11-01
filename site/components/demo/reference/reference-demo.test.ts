@@ -28,7 +28,8 @@ test('every retained gallery specimen has a unique source and compilable scene',
         assert.ok(scene.html.includes('data-target') || scene.html.includes('class='), 'A scene needs an actual CSS subject')
         const document = demoDocument(section, scene)
         assert.match(document, /@layer theme,base,defaults,components,utilities;/)
-        assert.match(document, /--color-demo-text:/)
+        assert.match(document, /--ui-text-body:/)
+        assert.doesNotMatch(document, /--color-demo-/)
         assert.doesNotMatch(document, /<script\b|on(?:click|load|error)=/i)
         assert.doesNotMatch(document, /(?:src|url\()=['"]?(?:\.\.\.|\/hero\.jpg|\/mask\.png)/)
         count++
@@ -82,44 +83,37 @@ test('native demo rules retain theme variables used without utility classes', ()
   assert.match(document, /--radius-md:/)
 })
 
-test('isolated documents include the shared material values referenced by demo tokens', () => {
-  const html = '<div class="bg-demo-canvas (border-width:1px) (border-style:solid) b-demo-line">Preview</div>'
+test('isolated documents include the system roles behind the site materials and the frame', () => {
+  const html = '<div class="bg-surface-canvas (border-width:1px) (border-style:solid) b-line-contour">Preview</div>'
   const document = demoDocument({ page: 'materials', id: 'surface', title: 'Shared materials', html: [html], css: '', classes: [], classLists: [], highlighted: [] }, { html, caption: 'A single shared source' })
-  assert.match(document, /--color-demo-canvas:var\(--color-surface-canvas\)/)
   assert.match(document, /--color-surface-canvas:var\(--ui-surface-canvas\)/)
   assert.match(document, /--color-line-contour:var\(--ui-line-contour\)/)
   assert.match(document, /--ui-surface-canvas: *light-dark\(/)
+  // The neutral teaching tone resolves through preset palette steps that no class in the scene names.
+  assert.match(document, /--ui-tone-neutral: *light-dark\(var\(--color-zinc-50\), *var\(--color-zinc-40\)\)/)
+  assert.match(document, /--color-zinc-50:/)
+  assert.match(document, /--color-zinc-40:/)
+  assert.match(document, /--font-family-mono:/)
 })
 
 test('initial document schemes work before client controls initialize', () => {
-  const html = '<div class="bg-demo-canvas fg-demo-blue">Theme specimen</div>'
+  const html = '<div data-ui="tile">Theme specimen</div>'
   const section = { page: 'materials', id: 'scheme', title: 'Document scheme', html: [html], css: '', classes: [], classLists: [], highlighted: [] }
   const scene = { html, caption: 'Native schemes remain readable without JavaScript' }
   const automatic = demoDocument(section, scene)
   assert.doesNotMatch(automatic, /<html[^>]*class="light"/)
-  assert.match(automatic, /--color-demo-blue:light-dark\(var\(--color-blue-60\), ?var\(--color-blue-40\)\)/)
+  assert.match(automatic, /--ui-tone-blue: *light-dark\(/)
+  assert.match(automatic, /html\.dark *\{ *color-scheme: *dark; *\}/)
   assert.match(demoDocument(section, scene, 'light'), /<html[^>]*class="light"/)
   assert.match(demoDocument(section, scene, 'dark'), /<html[^>]*class="dark"/)
 })
 
-test('new demo tokens are defined and specimens do not force layout on demo items', async () => {
-  const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
-  const theme = await readFile(new URL('../../../styles/demo-theme.css', import.meta.url), 'utf8')
-  const itemRule = css.match(/:where\(\.demo-item\)\s*\{([^}]+)\}/)![1]
-  assert.doesNotMatch(itemRule, /(?:display|position|contain|overflow|width|height|padding)\s*:/)
-  for (const token of ['canvas', 'surface', 'line', 'grid', 'text', 'muted', 'blue', 'violet', 'amber', 'neutral']) {
-    assert.equal([...theme.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 3, `${token}: fallback, light and dark values`)
+test('the frame paints teaching specimens with named system tones only', async () => {
+  const frame = await readFile(new URL('./frame.css', import.meta.url), 'utf8')
+  assert.doesNotMatch(frame, /--color-demo-|--stripe-/)
+  const local = new Set([...frame.matchAll(/(--[a-z0-9-]+):/g)].map(match => match[1]))
+  for (const [, token] of frame.matchAll(/var\((--[a-z0-9-]+)\)/g)) {
+    if (local.has(token)) continue
+    assert.match(token, /^--ui-(?:surface|line|text|tone|focus)\b/, `${token}: frame paint comes from system roles`)
   }
-})
-
-test('the opt-in canvas stripe uses a defined theme image at the intended scale', async () => {
-  const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
-  const theme = await readFile(new URL('../../../styles/docs-shell/theme.css', import.meta.url), 'utf8')
-  const stripe = css.match(/\.demo-canvas\[data-background="stripes"\]\s*\{([^}]+)\}/)?.[1]
-  assert.ok(stripe)
-  assert.match(stripe, /background-image:\s*var\(--stripe-image\)/)
-  assert.match(stripe, /background-position:\s*0 0/)
-  assert.match(stripe, /background-size:\s*7\.5px 7\.5px/)
-  assert.equal([...theme.matchAll(/--stripe-image:/g)].length, 3)
-  assert.doesNotMatch(css, /var\(--stripe\)/)
 })

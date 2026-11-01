@@ -1,73 +1,20 @@
 import metadata from './metadata'
-import ReviewNavigation from '../../components/ReviewNavigation'
 import ComponentDocumentation from './content.mdx'
-import Link from '~/site/docs-shell/components/Link'
-
+import ComponentPage from '../../components/ComponentPage'
 import Demo from '~/site/components/demo/Demo'
-import { DemoLabel, DemoSurface } from '~/site/components/demo'
+import { DemoItem, DemoLabel } from '~/site/components/demo'
 import ShadowScaleDemo from '~/site/components/demo/foundations/ShadowScaleDemo'
-import './page.css'
 
 export { metadata }
 
-function Specimen({ Label }: { Label: typeof DemoLabel }) {
-  return <div className="review-label-specimens">
-    <div>
-      <Label>shadow-sm</Label>
-      <DemoSurface className="review-label-card">
-        <strong>Standard surface</strong>
-        <p>One utility, one visible effect.</p>
-      </DemoSurface>
-    </div>
-    <div>
-      <Label>Collection / 024</Label>
-      <DemoSurface className="review-label-card">
-        <strong>Asset library</strong>
-        <p>Descriptive metadata stays readable.</p>
-      </DemoSurface>
-    </div>
-    <div>
-      <Label>w-full min-w(0) @container(width&gt;=28rem)</Label>
-      <DemoSurface className="review-label-card">
-        <strong>Long class string</strong>
-        <p>The annotation wraps inside a narrow document column.</p>
-      </DemoSurface>
-    </div>
-  </div>
-}
-
-const options = [
-  {
-    number: '01', note: 'A slightly larger, weight-balanced mono label with tabular numerals and explicit wrapping; spacing remains with the scene.',
-    preview: <Demo><Specimen Label={DemoLabel} /></Demo>
-  }
-] as const
-
 export default function Page() {
-  return <main className="ds-component-page review-label-review">
-    <ReviewNavigation />
-    <h1>Demo label</h1>
-    <p className="review-label-intro">A slightly larger, weight-balanced mono label with tabular numerals and explicit wrapping; spacing remains with the scene.</p>
-
-    <section aria-labelledby="label-options">
-      <h2 id="label-options">Class and metadata labels</h2>
-
-      <div className="review-label-options">
-        {options.map(({ number, note, preview }) => <article className="review-label-option" key={number}>
-          <div className="review-label-optionPreview">{preview}</div>
-          <p className="review-label-optionNote">{note}</p>
-        </article>)}
+  return <ComponentPage title="Label" description="A label names the condition, value or class a specimen shows. It sits above or beside the subject, never inside the measured layout." sections={[
+    { id: 'cases', title: 'As written or uppercase', children: <Demo caption="Class names and values keep their case; a quiet heading may be uppercase.">
+      <div className="grid-cols(2) gap-lg w-full (max-width:24rem)">
+        <div className="grid gap-xs"><DemoLabel>p-md · gap-sm</DemoLabel><DemoItem>Aa</DemoItem></div>
+        <div className="grid gap-xs"><DemoLabel upper>Collection / 024</DemoLabel><DemoItem>Aa</DemoItem></div>
       </div>
-    </section>
-
-    <section aria-labelledby="label-real-use">
-      <div className="review-label-sectionHeading">
-        <div><h2 id="label-real-use">Actual Guide use</h2><p>The elevation guide retains its original utility labels above the shadow specimens.</p></div>
-        <Link href="/guide/colors#raised-surfaces">Open /guide/colors#raised-surfaces</Link>
-      </div>
-      <ShadowScaleDemo />
-      <p className="review-label-optionNote">The shared label changes text treatment only. The lesson continues to own its card geometry, alignment and spacing.</p>
-    </section>
-  <section className="ds-component-api prose" aria-labelledby="component-interface"><h2 id="component-interface">Usage and interface</h2><ComponentDocumentation /></section>
-    </main>
+    </Demo> },
+    { id: 'scale', title: 'Labelling a scale', children: <ShadowScaleDemo /> },
+  ]} usage={{ href: '/guide/colors#raised-surfaces', label: 'the Colors guide' }} Documentation={ComponentDocumentation} />
 }

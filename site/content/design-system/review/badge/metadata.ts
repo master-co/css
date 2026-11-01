@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 export default define({
-  "title": "Demo badge",
-  "description": "Shared Demo badge and practical examples.",
+  "title": "Badge",
+  "description": "A small, legible category or state.",
   "category": "Components",
   fileURL: import.meta.url
 })

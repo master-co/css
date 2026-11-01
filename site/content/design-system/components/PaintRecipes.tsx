@@ -1,4 +1,3 @@
-import '~/site/styles/demo-interactions.css'
 import DemoPalette from '~/site/components/demo/DemoPalette'
 import { FoundationColorRoles, FoundationSurfaces, FoundationLines, FoundationTextRoles, FoundationHue, FoundationTextHue, FoundationElevation, FoundationElevationState } from '~/site/components/demo/FoundationPaint'
 
@@ -14,10 +13,10 @@ const examples = [
 ] as const
 
 export default function PaintRecipes() {
-  return <div>
+  return <div className="grid gap-2xl">
     <DemoPalette families={['blue', 'violet']} />
-    {examples.map(([title, href, Component], index) => <section key={title} data-paint-recipe={index}>
-      <div className="demo-recipe-heading"><h3>{title}</h3><a href={href} className="demo-recipe-link">View guide ↗</a></div>
+    {examples.map(([title, href, Component], index) => <section key={title} className="grid gap-sm" data-paint-recipe={index}>
+      <div className="flex flex-wrap items-baseline justify-between gap-sm"><h3 className="m(0) font-md font-semibold fg-text-strong">{title}</h3><a href={href} className="font-sm fg-text-muted fg-text-strong:hover">View guide ↗</a></div>
       <Component />
     </section>)}
   </div>
