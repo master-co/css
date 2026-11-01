@@ -79,10 +79,10 @@
 /* A link's mark after it (`Link` with `indicate`): an arrow for another site, a hash for this page. */
 /* The mark rides in the link's end margin out of flow: it can never wrap away from the word, or take a line of its own
    before the punctuation that follows the link, and the link's underline does not reach it. */
-a[data-indicate] { margin-inline-end: .55em; }
-a[data-indicate]::after { position: absolute; margin-left: .1em; color: var(--ui-text-muted); font-size: .7em; line-height: 1; text-decoration: none; }
-a[data-indicate="external"]::after { content: var(--content-external); }
-a[data-indicate="hash"]::after { content: var(--content-hash); }
+a[data-indicate] { margin-inline-end: .4em; }
+a[data-indicate]::after { position: absolute; margin-left: .06em; color: var(--ui-text-muted); font-size: .7em; line-height: 1; text-decoration: none; }
+a[data-indicate="external"]::after { content: "↗"; }
+a[data-indicate="hash"]::after { content: "#"; }
 .ui-prose :is(td, th) a[href^="#"] { white-space: nowrap; }
 
 /* Paper is white whatever the screen's scheme; an outside link keeps its destination in place of the arrow. */
