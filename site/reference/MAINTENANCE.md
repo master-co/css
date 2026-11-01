@@ -128,7 +128,7 @@ Use `DocumentChoices` for short related-link groups, outside demo geometry.
 `utils/delivery-content.ts` exports the same titles, ordered steps and captions
 for the delivery guides. Keep future recipes paired with a Markdown adapter.
 The strict extractor recurses through `StepSection`, `Step` and heading children,
-removing decorative `StepNum` while preserving authored headings and code fences.
+preserving authored headings and code fences.
 
 `DemoWaterfall` is a conceptual resource-discovery diagram, not a measured chart.
 `ResourceWaterfall` reads literal illustrative rows and their text descriptions
@@ -240,10 +240,9 @@ keeps indexes, anchors and source links in search and portable output.
 
 The document shell's `StepSection`, `Step`, `StepL` and `StepR` keep setup prose
 and native headings in the MDX document. `Step` with `$row` responds to the reading
-container; `StepNum` is decorative and hidden from assistive technology. The
+container; the `ui-steps` list numbers each step in CSS. The
 Design System review uses these same Guide components. Keep preview geometry outside these steps.
-The strict extractor preserves each native heading and code block and omits only
-the decorative counter. `DocumentChoices` accepts literal string entries for both
+The strict extractor preserves each native heading and code block. `DocumentChoices` accepts literal string entries for both
 navigation and portable link lists; extraction never executes JSX expressions.
 `DemoIndex` uses the same literal-only extraction for grouped catalog links. Keep
 group titles and destinations in authored MDX so portable output retains the index.

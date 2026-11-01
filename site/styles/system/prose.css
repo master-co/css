@@ -18,7 +18,7 @@
   .ui-prose > :is(p, ul, ol, blockquote) a:not([class]) { color: var(--ui-text-strong); text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-decoration-thickness: 1px; text-underline-offset: .22em; transition: text-decoration-color var(--ui-duration-quick); }
   .ui-prose > :is(p, ul, ol, blockquote) a:not([class]):hover { text-decoration-color: currentColor; }
   .ui-prose > :is(p, ul, ol, blockquote) a:not([class]):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; border-radius: 3px; }
-  .ui-prose > :is(p, ul, ol, blockquote, h2, h3, h4) code, .ui-callout code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .84em/1 var(--font-family-mono); overflow-wrap: anywhere; }
+  .ui-prose > :is(p, ul, ol, blockquote, h2, h3, h4) code:not(pre code), .ui-callout code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .84em/1 var(--font-family-mono); overflow-wrap: anywhere; }
   .ui-prose > :is(ul, ol) { padding-left: 1.25em; }
   .ui-prose > :is(ul, ol) li { margin-block: .5em; padding-left: .25em; }
   .ui-prose > ul li::marker { color: var(--ui-text-disabled); }

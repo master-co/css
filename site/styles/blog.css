@@ -561,6 +561,6 @@
  * title, the years and the footer hang on one edge at every width, not only below 100rem. Unlayered: the footer
  * rows carry a max-width utility, and utilities outrank the components layer.
  */
-:root:has(.blog-index) :is(.app-header, .site-footer) > :not(hr) {
+:root:has(.blog-index) :is(.ui-header, .ui-footer) > :not(hr) {
   max-width: 95rem;
 }

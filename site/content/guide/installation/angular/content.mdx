@@ -1,13 +1,13 @@
 import DocumentDisclosure from '~/site/components/DocumentDisclosure'
 import { DemoHelloWorld as HelloWorld } from '~/site/components/demo/DemoBrowser'
-import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 Angular keeps its own builder; the Master CSS CLI generates a static stylesheet that Angular's global styles import.
 
 <StepSection>
   <Step $row>
     <StepL>
-      ### <StepNum />Add Master CSS
+      ### Add Master CSS
       In an existing browser-rendered [Angular project](https://angular.dev/installation) that uses CSS, run the installer from the project root.
     </StepL>
     <StepR>
@@ -18,7 +18,7 @@ Angular keeps its own builder; the Master CSS CLI generates a static stylesheet 
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Generate the CSS
+      ### Generate the CSS
       Generate CSS once, then keep the CSS watcher running in a separate terminal while the Angular server runs.
     </StepL>
     <StepR>
@@ -29,7 +29,7 @@ Angular keeps its own builder; the Master CSS CLI generates a static stylesheet 
     </StepR>
   </Step>
   <Step>
-    ### <StepNum />Start using Master CSS
+    ### Start using Master CSS
     Now style your first template using Master CSS syntax.
   </Step>
   <HelloWorld url="localhost:4200" />

@@ -48,16 +48,17 @@
 
   /* Segmented control: a sunken track, a raised thumb */
   .ui-segmented { display: inline-flex; flex-wrap: wrap; gap: 2px; max-width: 100%; padding: 3px; border-radius: 12px; background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
-  .ui-segmented > button {
-    appearance: none; min-height: 1.875rem; min-width: 3.5rem; padding: 0 .75rem; border: 0; border-radius: 9px; background: transparent;
-    color: var(--ui-text-muted); font: var(--ui-weight-strong) .78125rem/1 var(--font-family-sans); cursor: pointer; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick), box-shadow var(--ui-duration-quick);
+  /* Links to sibling pages use the same control; the page being read carries aria-current="page". */
+  .ui-segmented > :is(button, a) {
+    appearance: none; display: inline-flex; align-items: center; justify-content: center; min-height: 1.875rem; min-width: 3.5rem; padding: 0 .75rem; border: 0; border-radius: 9px; background: transparent;
+    color: var(--ui-text-muted); font: var(--ui-weight-strong) .78125rem/1 var(--font-family-sans); text-decoration: none; white-space: nowrap; cursor: pointer; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick), box-shadow var(--ui-duration-quick);
   }
-  .ui-segmented > button:hover:not(:disabled) { color: var(--ui-text-strong); }
-  .ui-segmented > button:is([aria-pressed="true"], [aria-selected="true"], [aria-checked="true"]) { color: var(--ui-text-strong); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
-  .ui-segmented > button:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+  .ui-segmented > :is(button, a):hover:not(:disabled) { color: var(--ui-text-strong); }
+  .ui-segmented > :is(button, a):is([aria-pressed="true"], [aria-selected="true"], [aria-checked="true"], [aria-current="page"]) { color: var(--ui-text-strong); background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo)); box-shadow: var(--ui-elevation-rise-1); }
+  .ui-segmented > :is(button, a):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
   .ui-segmented > button:disabled { color: var(--ui-text-disabled); cursor: not-allowed; }
   .ui-segmented[data-size="lg"] { padding: 4px; border-radius: 14px; }
-  .ui-segmented[data-size="lg"] > button { min-height: 2.25rem; border-radius: 10px; font-size: .8125rem; }
+  .ui-segmented[data-size="lg"] > :is(button, a) { min-height: 2.25rem; border-radius: 10px; font-size: .8125rem; }
 
   /* Fields: a well that floats back to the sheet on focus */
   .ui-field { display: grid; gap: var(--ui-space-xs); color: var(--ui-text-strong); font-size: var(--ui-text-small); font-weight: var(--ui-weight-medium); }

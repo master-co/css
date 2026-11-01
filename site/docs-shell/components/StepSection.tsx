@@ -1,30 +1,21 @@
+import '~/site/styles/system/data.css'
 import '~/site/styles/docs-shell/steps.css'
 import clsx from 'clsx'
 import type { ComponentPropsWithoutRef } from 'react'
 
-type BlockProps = ComponentPropsWithoutRef<'div'>
-
-/** Steps follow the document's reading width, including inside the docs sidebar layout. */
-export default function StepSection({ className, ...props }: BlockProps) {
-  return <div {...props} className={clsx('step-section', className)} />
+/** Document steps on `ui-steps`: the list numbers each step beside its authored heading. */
+export default function StepSection({ className, ...props }: ComponentPropsWithoutRef<'ol'>) {
+  return <ol {...props} className={clsx('ui-steps', className)} data-variant="document" />
 }
 
-export function Step({ $row, className, ...props }: BlockProps & { $row?: boolean }) {
-  return <div {...props} className={clsx('doc-install-step', className)} data-columns={$row || undefined} />
+export function Step({ $row, className, children, ...props }: ComponentPropsWithoutRef<'div'> & { $row?: boolean }) {
+  return <li><div {...props} className={clsx('ui-steps-content', className)} data-columns={$row || undefined}>{children}</div></li>
 }
 
-export function StepNum({ className, ...props }: ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={clsx('doc-install-step-number', className)} aria-hidden="true" />
+export function StepL({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return <div {...props} className={clsx('ui-steps-text', className)} />
 }
 
-export function StepEnd({ className, ...props }: ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={clsx('doc-install-step-end', className)} aria-hidden="true" />
-}
-
-export function StepL({ className, ...props }: BlockProps) {
-  return <div {...props} className={clsx('doc-install-step-text', className)} />
-}
-
-export function StepR({ className, ...props }: BlockProps) {
-  return <div {...props} className={clsx('doc-install-step-body', className)} />
+export function StepR({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return <div {...props} className={clsx('ui-steps-source', className)} />
 }

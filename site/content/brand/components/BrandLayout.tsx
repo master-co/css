@@ -25,7 +25,7 @@ export default function BrandLayout({ children, params }: any) {
       </header>
       <div className="brand-document">
         <BrandNavigation />
-        <article className="brand-content prose" lang="en">{children}</article>
+        <article className="brand-content ui-prose" lang="en">{children}</article>
       </div>
       <div className="brand-next"><p className="brand-overline">{tw ? '從規範到實作' : 'From principles to practice'}</p><h2>{tw ? '讓每一個細節，成為同一套系統。' : 'Make the details part of the same system.'}</h2><Link href="/design-system">{tw ? '探索元件與實作手冊' : 'Explore components & authoring'}<span aria-hidden="true">↗</span></Link></div>
     </main>

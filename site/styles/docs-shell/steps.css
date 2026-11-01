@@ -1,69 +1,28 @@
+/*
+ * Document steps (`StepSection`) on `ui-steps` (styles/system/data.css): a step's content holds an authored heading,
+ * its text and, in a row step, the code beside it once the column has room.
+ */
 @layer components {
-  .step-section {
-    container-type: inline-size;
-    counter-reset: installation-step;
-    margin-block: var(--spacing-xl);
+  .ui-steps[data-variant="document"] { container-type: inline-size; margin-block: var(--ui-space-xl); }
+  .ui-steps-content, .ui-steps-text, .ui-steps-source { min-width: 0; }
+  .ui-steps-content[data-columns] { display: grid; gap: var(--ui-space-md) var(--ui-space-xl); }
+  .ui-steps-content :is(h2, h3, h4) {
+    position: static; width: auto; margin: .1875rem 0 var(--ui-space-xs);
+    color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-heading); line-height: 1.5; letter-spacing: 0;
   }
-
-  .doc-install-step {
-    position: relative;
-    min-width: 0;
-    margin-inline-start: .75rem;
-    padding: 0 0 var(--spacing-xl) 1.75rem;
-    border-inline-start: 1px solid var(--color-line-divider);
-    counter-increment: installation-step;
-  }
-
-  .doc-install-step:last-child { padding-bottom: 0; }
-  .doc-install-step[data-columns] { display: grid; gap: var(--spacing-md) var(--spacing-xl); }
-  .doc-install-step-text, .doc-install-step-body { min-width: 0; }
-  .doc-install-step :is(h2, h3, h4) {
-    position: static;
-    margin: 0 0 var(--spacing-xs);
-    font-size: var(--font-size-md);
-    /* A step's name is a heading like any other: regular weight, set apart by its size and ink. */
-    font-weight: var(--font-weight-regular);
-    color: var(--prose-ink, var(--color-text-strong));
-    line-height: 1.5;
-  }
-
-  .doc-install-step .doc-heading-icon { display: none; }
-  /* A step's text sits right under its name, as one group. */
-  .doc-install-step :is(h2, h3, h4) + p { margin-top: 0; }
-  .doc-install-step :is(p, li) { font-size: var(--font-size-sm); }
-  .doc-install-step :is(.code, .codeTabs) { margin-inline: 0; }
-  .doc-install-step :is(.code, .codeTabs, p):first-child { margin-top: 0; }
-  .doc-install-step :is(.code, .codeTabs, p):last-child { margin-bottom: 0; }
-
-  /* 25px wide, so its middle column of pixels is the rail's own pixel. */
-  .doc-install-step-number {
-    position: absolute;
-    inset-inline-start: calc(-.75rem - 1px);
-    top: 0;
-    display: grid;
-    place-items: center;
-    width: 1.5625rem;
-    height: 1.5rem;
-    border: 1px solid var(--color-line-contour);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-raised);
-    font: 500 var(--font-size-xs)/1 var(--font-family-mono);
-  }
-
-  .doc-install-step-number::before { content: counter(installation-step); }
-  .doc-install-step-end { display: none; }
+  .ui-steps-content :is(h2, h3, h4) > .ui-anchor { display: none; }
+  .ui-steps-content :is(h2, h3, h4) + p { margin-top: 0; }
+  .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); }
+  .ui-steps-content .ui-code { margin-inline: 0; }
+  :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):first-child { margin-top: 0; }
+  :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):last-child { margin-bottom: 0; }
 
   @container (width < 20rem) {
-    .doc-install-step { margin-inline-start: 0; padding-inline-start: 0; border-inline-start: 0; }
-    .doc-install-step :is(h2, h3, h4) > a:has(> .doc-install-step-number) { display: flex; align-items: flex-start; gap: var(--spacing-xs); }
-    .doc-install-step-number { position: static; flex: none; }
+    .ui-steps[data-variant="document"] > li { grid-template-columns: minmax(0, 1fr); }
+    .ui-steps[data-variant="document"] > li::before, .ui-steps[data-variant="document"] > li::after { display: none; }
   }
 
   @container (min-width: 38rem) {
-    .doc-install-step[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+    .ui-steps-content[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   }
 }
-
-/* A tab set carries its own top margin as a utility, which outranks every layer; as the first thing in a step it
-   aligns with the step's number like a single code window does. */
-.doc-install-step-body > .codeTabs:first-child { margin-top: 0; }

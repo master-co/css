@@ -198,8 +198,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         if (typeof attrs.name !== 'string') throw new Error('DocumentOptionEntry requires a literal name')
         return `**\`${attrs.name}\`**\n\n${(await Promise.all((node.children ?? []).map(render))).join('\n\n')}`
       }
-      if (name === 'StepNum') return ''
-      if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'StepEnd', 'CodeTabs', 'Tab'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
+      if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'CodeTabs', 'Tab'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
       if (/^[A-Z]/.test(name)) {
         const imported = imports[name]
         const siteRoot = file.slice(0, file.lastIndexOf('/content/'))

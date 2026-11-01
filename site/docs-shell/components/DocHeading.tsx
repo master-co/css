@@ -2,7 +2,7 @@ import '~/site/styles/docs-shell/prose.css'
 import { isValidElement, type ReactNode } from 'react'
 import resolvingHeading from '../utils/resolve-heading'
 
-/** The visible text of heading children such as `<StepNum />Add Master CSS` or inline code. */
+/** The visible text of heading children such as `Add Master CSS` or inline code. */
 function textOf(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') return String(node)
   if (Array.isArray(node)) return node.map(textOf).join('')

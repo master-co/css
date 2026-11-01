@@ -1,13 +1,13 @@
-Use `StepSection` for a setup sequence with authored headings and code. Each `Step` gets a decorative sequence number through `StepNum`. Keep the action in the heading and its expected result in the prose. Reading order stays in the document.
+Use `StepSection` for a setup sequence with authored headings and code. The list numbers each `Step` beside its authored heading. Keep the action in the heading and its expected result in the prose. Reading order stays in the document.
 
 ```jsx
 import Code from '~/site/docs-shell/components/Code'
-import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
+import StepSection, { Step, StepL, StepR } from '~/site/docs-shell/components/StepSection'
 
 <StepSection>
   <Step $row>
     <StepL>
-      <h3><StepNum />Connect the stylesheet</h3>
+      <h3>Connect the stylesheet</h3>
       <p>Import the entry in your app.</p>
     </StepL>
     <StepR>

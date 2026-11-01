@@ -44,4 +44,4 @@ const tableSizes = new ResizeObserver(entries => {
     else table.removeAttribute('tabindex')
   }
 })
-document.querySelectorAll<HTMLElement>(':is(.ui-table, .doc-table):not([tabindex])').forEach(table => { if (!table.closest('site-island')) tableSizes.observe(table) })
+document.querySelectorAll<HTMLElement>('.ui-table:not([tabindex])').forEach(table => { if (!table.closest('site-island')) tableSizes.observe(table) })

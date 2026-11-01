@@ -1,6 +1,7 @@
 /* Data and documents: tables own their frame, numbers align, sources stay in view. */
 @layer components {
-  .ui-table { min-width: 0; overflow: auto; border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); box-shadow: inset 0 0 0 1px var(--ui-line-contour); scrollbar-width: thin; }
+  /* The contour is a border: an inset shadow would sit under the sticky header cells. */
+  .ui-table { min-width: 0; overflow: auto; border: 1px solid var(--ui-line-contour); border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); scrollbar-width: thin; }
   .ui-table:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
   .ui-table table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--ui-text-small); line-height: 1.5; }
   .ui-table thead th { position: sticky; top: 0; z-index: 1; padding: .625rem var(--ui-space-md); background: var(--ui-surface-sheet-lo); color: var(--ui-text-muted); font: var(--ui-weight-medium) var(--ui-text-label)/1.4 var(--font-family-mono); letter-spacing: var(--ui-tracking-label); text-align: start; text-transform: uppercase; white-space: nowrap; box-shadow: inset 0 -1px 0 var(--ui-line-divider); }

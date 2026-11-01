@@ -1,7 +1,7 @@
 /*
  * Blog post pages: what is a post's own. The text itself reads with the documentation's typography
  * (`docs-shell/prose.css`, code wells in `docs-shell/code.css`) and its contents with the shared contents ruler
- * (`docs-shell/page-content.css`); this sheet places them and draws the post's header and close.
+ * (`ui-toc`, `docs-shell/page-content.css`); this sheet places them and draws the post's header and close.
  *
  * - The article is a framed drawing, as the homepage frames its sections (`.blog-rails`, `.blog-rails-rule` from
  *   blog-materials.css): the frame is the reading column and the room its wells bleed into; rails with rulers run just
@@ -50,12 +50,6 @@
       --blog-article-bleed: 2rem;
       --blog-article-gutter: 3.5rem;
     }
-  }
-
-  /* The reading text keeps the page's own ground under its scroll cues, and its ink is the shared title tone. */
-  .blog-article-page .prose {
-    --prose-ground: var(--blog-ground);
-    --prose-ink: var(--blog-article-text);
   }
 
   /* ───────────────────────── Frame ───────────────────────── */
@@ -295,9 +289,8 @@
      wells meet the edge, square off and become bands only on phones. (0,5,0) outranks the shared prose's square-off
      rule (0,4,2) rather than using !important. */
   @media (width >= 40rem) {
-    .blog-article-page .blog-article-body .blog-article-prose.prose > :is(.code, .codeTabs) {
-      --code-frame-radius: 0.875rem;
-      --well-lip: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.07));
+    .blog-article-page .blog-article-body .blog-article-prose.ui-prose > .ui-code {
+      border-radius: 0.875rem;
       --well-rim: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.11));
       --well-rim-far: light-dark(transparent, rgb(255 255 255 / 0.06));
       border-radius: var(--code-frame-radius);
@@ -313,7 +306,7 @@
       }
     }
 
-    .blog-article-page .blog-article-body .blog-article-prose.prose > :is(img, video, p:has(> img:only-child, > video:only-child)) {
+    .blog-article-page .blog-article-body .blog-article-prose.ui-prose > :is(img, video, p:has(> img:only-child, > video:only-child)) {
       &,
       & :is(img, video) {
         border-radius: 0.875rem;
@@ -354,7 +347,7 @@
     }
 
     /* Beside the margin contents, the post's own contents disclosure would only repeat them. */
-    .blog-article-prose .doc-contents-disclosure {
+    .blog-article-prose [data-contents-disclosure] {
       display: none;
     }
   }
@@ -363,11 +356,11 @@
      width); it is already a row between two hairlines, so the section rule the post sets right after it would make a
      third line. */
   @container blog-article (width < 76rem) {
-    .blog-article-prose .doc-contents-disclosure {
+    .blog-article-prose [data-contents-disclosure] {
       display: block;
     }
 
-    .blog-article-prose > .doc-contents-disclosure + hr {
+    .blog-article-prose > [data-contents-disclosure] + hr {
       display: none;
     }
   }
