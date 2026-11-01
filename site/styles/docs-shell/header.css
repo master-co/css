@@ -7,8 +7,8 @@
   .ui-header { padding-top: env(safe-area-inset-top); padding-inline: max(var(--ui-space-lg), env(safe-area-inset-left)) max(var(--ui-space-lg), env(safe-area-inset-right)); height: calc(3.75rem + env(safe-area-inset-top)); box-sizing: border-box; }
   .ui-header[data-variant="stickable"] { position: fixed; inset: 0 0 auto; width: 100%; transition: translate var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-base), box-shadow var(--ui-duration-base); }
   .ui-header[data-tucked] { translate: 0 -100%; }
-  /* A focused control stays on screen after the header has tucked away. */
-  .ui-header:focus-within { translate: none; }
+  /* A focused control stays on screen after the header has tucked away, revealed at once. */
+  .ui-header:focus-within { translate: none; transition-duration: 0s; }
   .ui-header[data-background="transparent"] { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   /* Without scripts the header never leaves its transparent top state, so it scrolls away instead of covering content. */
   @media (scripting: none) { .ui-header[data-background="transparent"] { position: absolute; } }
