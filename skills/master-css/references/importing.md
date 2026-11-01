@@ -90,3 +90,8 @@ are verified; removing Tailwind is a separate project-wide decision.
 It does not interpret Tailwind classes or prove browser equivalence. Report the
 converted portion, retained CSS, remaining source dependencies and performed
 checks. Avoid unsupported percentage-of-conversion or fidelity claims.
+
+For a repair after comparison, follow the
+[evidence review](troubleshooting.md#verify-a-repair). Recheck final class recognition
+separately from lint, preserve previously passing states, and report retained
+dependencies and unresolved diagnostics from every relevant check.

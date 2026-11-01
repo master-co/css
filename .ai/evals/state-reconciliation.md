@@ -175,3 +175,8 @@ frozen sources/tools, the parent run and retained-input bundle, preflight, both
 formal runs, all source copies and prompts/events, independent verification,
 automated audits, manual classifications and validation logs. Observations SHA-256:
 `9f5a80ba9b89a4b3c6a3979a2be72c32ce938132118b3ea6d903eaca3fec44d3`.
+
+The bounded [final acceptance and delivery](final-acceptance.md) subsequently
+completed all seven original cases, with no new measured failures, and consolidated
+the official skill and public documentation. It closes this development cycle
+while preserving the explanation and coverage limitations recorded above.

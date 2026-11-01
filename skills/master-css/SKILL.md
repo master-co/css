@@ -52,6 +52,9 @@ Use `mastercss_lint_content` for edited buffers and `mastercss_render_css` or
 available tools; `mastercss_suggest_classes` is optional on older installations.
 Report matching, CSS syntax/value validity, and browser support independently.
 `unknown` is not `invalid`, and `not-checked` is not verified support.
+Clean lint does not prove class recognition or correct browser behavior. For a
+repair, use the [evidence review](references/troubleshooting.md#verify-a-repair)
+to reconcile final class inspection, conflicts, layers and affected states.
 
 Run the project's relevant lint/build/tests. Check affected viewport sizes and
 interactive states in a browser when available. For imports, compare the source
@@ -63,4 +66,6 @@ not a general source-edit API. Use the agent's ordinary editing workflow for
 component changes. With no MCP, use the installed CLI's `suggest` command for
 uncertain declarations and JSON lint/inspect commands as described in the workflow
 references. Finish with changed behavior, checks performed and
-any retained CSS or unresolved issues.
+any retained CSS or unresolved issues. Name the actual checked inputs and states;
+keep earlier unresolved diagnostics visible when a narrower check passes. Stop
+at the user's agreed scope and validation budget, reporting incomplete work.
