@@ -50,6 +50,28 @@ pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, 
             )));
         }
     }
+    let custom_containers = manifest
+        .custom_containers
+        .iter()
+        .flatten()
+        .map(|(name, condition)| (name.clone(), condition.clone()))
+        .collect::<HashMap<_, _>>();
+    for (name, condition) in &custom_containers {
+        if !name.starts_with("--") || name.len() == 2 {
+            return Err(EngineError::InvalidManifest(concat_text!(
+                "Invalid custom container name ",
+                name
+            )));
+        }
+        if condition.trim().is_empty() || !crate::custom_container_references(condition).is_empty()
+        {
+            return Err(EngineError::InvalidManifest(concat_text!(
+                "Custom container ",
+                name,
+                " must be an expanded condition"
+            )));
+        }
+    }
     let mut program = Program {
         theme: manifest.theme.clone().unwrap_or_default(),
         keyframes,
@@ -60,6 +82,7 @@ pub(crate) fn compile_manifest(manifest: &MasterCssManifest) -> Result<Program, 
             .map(|(name, values)| (name.clone(), values.clone()))
             .collect(),
         custom_media,
+        custom_containers,
         mixins,
         utility_definitions,
         compiled_variables,

@@ -60,6 +60,14 @@ impl EngineSession {
                         .cloned()
                         .ok_or_else(|| format!("Undefined custom media {name}"))
                 });
+            } else if let Some(query) = mastercss_lexer::parse_native_query(&suffix)
+                && query.kind == "container"
+            {
+                references.extend(
+                    crate::custom_container_references(&query.prelude)
+                        .into_iter()
+                        .map(|name| format!("custom-container:{name}")),
+                );
             }
         }
         Ok(references.into_iter().collect())

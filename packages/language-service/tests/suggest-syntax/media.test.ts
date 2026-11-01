@@ -5,7 +5,14 @@ test.concurrent('breakpoint', () => expect(hint("(display:none)@")?.map(({ label
 test.concurrent('registered mode', () => expect(hint("(display:none)@")?.map(({ label }) => label)).toContain('@dark'))
 
 describe.concurrent('sorting', () => {
-  test.concurrent('@', () => expect(hint("(display:none)@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply('))).toEqual([
+  test.concurrent('@container(--name)', () => {
+    const labels = hint("(display:none)@")?.map(({ label }) => label).filter(label => label.startsWith('@container(--')) ?? []
+    expect(labels).toHaveLength(26)
+    expect(labels).toContain('@container(--md)')
+    expect(labels).toContain('@container(--max-md)')
+    expect(labels).toEqual([...labels].sort())
+  })
+  test.concurrent('@', () => expect(hint("(display:none)@")?.map(({ label }) => label).filter(label => !label.startsWith('@apply(') && !label.startsWith('@container(--'))).toEqual([
     '@2xl',
     '@2xs',
     '@3xl',

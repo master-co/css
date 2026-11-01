@@ -53,7 +53,7 @@ pub const LEXER_BATCH_VERSION: u32 = 1;
 pub const SOURCE_BATCH_VERSION: u32 = 2;
 /// The encoding of compiled runtime programs, which browsers execute instead of
 /// Manifest v6 documents.
-pub const PROGRAM_VERSION: u32 = 2;
+pub const PROGRAM_VERSION: u32 = 3;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]

@@ -166,8 +166,13 @@ fn import_layer_name(statement: &str) -> Option<String> {
 }
 
 /// Definition directives an imported stylesheet may declare at its top level.
-pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 4] =
-    ["theme", "mixin", "utility", "custom-media"];
+pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 5] = [
+    "theme",
+    "mixin",
+    "utility",
+    "custom-media",
+    "custom-container",
+];
 
 pub(crate) fn default_filename() -> String {
     "master.css".into()
@@ -508,14 +513,17 @@ pub fn compile_native_css(
             message: "preserveNativeSource cannot be combined with class pruning".into(),
         });
     }
-    let (custom_media, ranges) = crate::custom_media::collect(source, &options.from)?;
+    let (custom_media, media_ranges) = crate::custom_media::collect(source, &options.from)?;
+    let (custom_containers, container_ranges) =
+        crate::custom_container::collect(source, &options.from)?;
     let input = crate::CssDirectiveManifestInput {
         custom_media: Some(custom_media),
+        custom_containers: Some(custom_containers),
         ..Default::default()
     };
     let registry = crate::custom_media::resolve(&input, None)?;
     let mut masked = source.as_bytes().to_vec();
-    for range in ranges {
+    for range in media_ranges.into_iter().chain(container_ranges) {
         for byte in &mut masked[range] {
             if !matches!(*byte, b'\r' | b'\n') {
                 *byte = b' ';

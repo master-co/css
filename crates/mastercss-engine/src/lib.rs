@@ -107,6 +107,8 @@ struct Program {
     custom_media: HashMap<String, mastercss_schema::MediaQueryExpr>,
     /// The `custom_media_branches` paths of each named custom media query.
     custom_media_paths: HashMap<String, Vec<Vec<String>>>,
+    /// The expanded condition of each custom container, without references.
+    custom_containers: HashMap<String, String>,
     /// Registered utilities in priority order.
     utilities: Vec<UtilityDefinition>,
     mixins: Vec<mastercss_schema::MixinDefinition>,
@@ -354,9 +356,13 @@ mod inline_theme;
 pub use animation::{AnimationReferences, stylesheet_declarations};
 mod completion;
 mod condition;
+mod custom_container;
 mod custom_media;
 mod decimal;
 mod keyframes;
+pub use custom_container::{
+    container_name, custom_container_references, expand_custom_container_query,
+};
 pub use custom_media::{custom_media_branches, parse_custom_media_query};
 mod class_apply;
 mod execution_state;
@@ -387,7 +393,8 @@ mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
-    add_condition_wrapper, normalize_dynamic_value, render_condition_token, resolve_layer_condition,
+    add_condition_wrapper, normalize_dynamic_value, render_condition_token,
+    resolve_custom_containers, resolve_layer_condition,
 };
 pub(crate) use manifest::compile_manifest;
 pub(crate) use manifest::{engine_variable_ir, finish_program, layer_name};

@@ -652,6 +652,7 @@ fn filter_native_css_rules<'i, R>(
 }
 
 mod compiled_stylesheet_graph;
+mod custom_container;
 mod custom_media;
 mod directives;
 mod imports;

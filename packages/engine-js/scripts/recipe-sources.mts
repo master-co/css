@@ -26,6 +26,8 @@ const RECIPES_CSS = `
 @custom-media --md (width >= 64rem);
 @custom-media --dark (prefers-color-scheme: dark);
 @custom-media --either (--sm) or (--dark);
+@custom-container --narrow (width < 20rem);
+@custom-container --roomy not (--narrow);
 @keyframes spin { to { rotate: 1turn } }
 @keyframes pulse { 50% { opacity: .5; color: var(--color-brand) } }
 @keyframes glow { to { box-shadow: 0 0 4px var(--color-blue-50) } }
@@ -33,6 +35,7 @@ const RECIPES_CSS = `
 @mixin --hocus { &:hover, &:focus-visible { @contents; } }
 @mixin --dark { @media (prefers-color-scheme: dark) { @contents; } }
 @mixin --wide { @media (width >= 40rem) and (width < 64rem) { @contents; } }
+@mixin --roomy { @container card (--roomy) { @contents; } }
 @mixin --motion { @supports (animation-name: x) { @contents { animation: none } } }
 @mixin --pad(--n: 1px) { padding: var(--n) }
 @mixin --gap(--n <integer>: 2) { display: grid; gap: calc(var(--n) * 1px); grid-template-columns: repeat(var(--n), 1fr) }
@@ -139,14 +142,14 @@ const APPLY_HEADS = [
 ]
 const APPLY_CALLS = [
   '@apply(--hocus)', '@apply(--dark)', '@apply(--wide)', '@apply(--motion)', '@apply(--pad(2px))', '@apply(--pad)', '@apply(--pad())', '@apply(--pad(1px|2px))',
-  '@apply(--gap(3))', '@apply(--gap(x))', '@apply(--gap(0))', '@apply(--size("sm"))', '@apply(--size(sm))', '@apply(--anim(spin))', '@apply(--anim(inherit))',
+  '@apply(--roomy)', '@apply(--gap(3))', '@apply(--gap(x))', '@apply(--gap(0))', '@apply(--size("sm"))', '@apply(--size(sm))', '@apply(--anim(spin))', '@apply(--anim(inherit))',
   '@apply(--fade(.2))', '@apply(--card)', '@apply(--nest)', '@apply(--sandwich)', '@apply(--kids)', '@apply(--before)', '@apply(--spin)', '@apply(--dyn)', '@apply(--theme)',
   '@apply(--nope)', '@apply(hocus)', '@apply()', '@apply(--hocus', '@apply(--pad(2px)more)', '@apply(--hocus|x)', '@apply(--pad(var(--n)))', '@apply(--pad(attr(x)))',
   '@apply(--pad(;))', '@apply(--anim(wiggle))'
 ]
 const APPLY_EXTRAS = [
   '@sm', '@dark', '@either', '@layer(components)', '@layer(base)', '@media(print)', '@media(--sm)', '@media(--nope)', '@media(screen|and|(min-width:1px))',
-  '@unknown', '@starting-style', '@supports(display:grid)', '@container(card|width>=1px)', '@media((width>=1px)|and|(width<2px))', '!'
+  '@unknown', '@starting-style', '@supports(display:grid)', '@container(card|width>=1px)', '@container(--narrow)', '@container(card|--roomy)', '@container(--nope)', '@media((width>=1px)|and|(width<2px))', '!'
 ]
 
 export async function recipeSources(count: number, seed: number) {

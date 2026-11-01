@@ -66,6 +66,8 @@ export interface MasterCSSManifest {
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: Record<string, MasterCSSMediaQueryExpression>
+  /** The expanded condition of each custom container, without references. */
+  customContainers?: Record<string, string>
   variables?: MasterCSSManifestVariables
   mixins?: MasterCSSMixinDefinition[]
   utilities?: MasterCSSUtilityDefinition[]

@@ -13,13 +13,32 @@ pub(crate) fn resolve_layer_condition(token: &str, manifest: &Program) -> Option
     }
 }
 
-pub(crate) fn render_condition_token(token: &str, _manifest: &Program) -> Option<(String, String)> {
+pub(crate) fn render_condition_token(token: &str, manifest: &Program) -> Option<(String, String)> {
     if token == "starting-style" {
         return Some(("starting-style".into(), "@starting-style".into()));
     }
     let query = mastercss_lexer::parse_native_query(token)?;
-    let wrapper = concat_text!("@", query.kind, " ", query.prelude);
+    let prelude = if query.kind == "container" {
+        resolve_custom_containers(&query.prelude, manifest).ok()?
+    } else {
+        query.prelude
+    };
+    let wrapper = concat_text!("@", query.kind, " ", prelude);
     Some((query.kind, wrapper))
+}
+
+/// A container prelude with its `(--name)` references expanded.
+pub(crate) fn resolve_custom_containers(
+    prelude: &str,
+    manifest: &Program,
+) -> Result<String, String> {
+    crate::expand_custom_container_query(prelude, &mut |name| {
+        manifest
+            .custom_containers
+            .get(name)
+            .cloned()
+            .ok_or_else(|| concat_text!("Undefined custom container ", name))
+    })
 }
 
 /// Only simple ranges with identical units are compared numerically. The unit is

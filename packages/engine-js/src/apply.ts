@@ -77,7 +77,7 @@ function hasDiagnostics(className: string, program: Program) {
     if (queryRequiresCss(token)) return true
     const query = parseNativeQuery(token)
     if (query?.kind === 'media' && query.prelude.includes('--') && !parseCustomMediaQuery(query.prelude, (name) => program.customMedia.get(name))) return true
-    if (!program.customMedia.has(`--${token}`) && !renderConditionToken(token)) return true
+    if (!program.customMedia.has(`--${token}`) && !renderConditionToken(token, program)) return true
   }
   // Unmatched token classes are ambiguous or unknown tokens.
   return !declaration && !matches.length && tokenPrefix(source, program) !== undefined

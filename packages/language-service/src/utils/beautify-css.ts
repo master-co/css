@@ -2,7 +2,7 @@
 import { css_beautify } from 'js-beautify/js/lib/beautify-css.js'
 
 /** Comparisons in a query prelude; js-beautify drops the space after `>=`, `<=`, `<` and `>`. */
-const queryPrelude = /^(\s*@(?:media|container|custom-media)\b)([^{;\n]*)/gm
+const queryPrelude = /^(\s*@(?:media|container|custom-media|custom-container)\b)([^{;\n]*)/gm
 
 export default function beautifyCSS(text: string) {
   return css_beautify(text.replace(/@(media|container|supports|layer)\(/g,'@$1 ('), {

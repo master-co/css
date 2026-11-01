@@ -114,6 +114,8 @@ export interface Program {
   customMedia: Map<string, MediaQuery>
   /** The native media branches of each named custom media query: a disjunction of conjunctions. */
   customMediaPaths: Map<string, string[][]>
+  /** The expanded condition of each custom container, without references. */
+  customContainers: Map<string, string>
   mixins: MixinDefinition[]
   utilityDefinitions: RecipeDefinition[]
   tokenFamilies: TokenFamily[]

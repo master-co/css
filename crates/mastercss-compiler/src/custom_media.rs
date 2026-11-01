@@ -5,12 +5,47 @@ use mastercss_lexer::{
 use mastercss_schema::{CustomMediaDefinition, MasterCssManifest, MediaQueryExpr, ThemeNode};
 use std::collections::HashMap;
 
-pub(crate) type Registry = std::collections::BTreeMap<String, MediaQueryExpr>;
+pub(crate) type MediaRegistry = std::collections::BTreeMap<String, MediaQueryExpr>;
+
+/// The named conditions that lowering expands: custom media and custom containers.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct Registry {
+    pub(crate) media: MediaRegistry,
+    pub(crate) containers: crate::custom_container::Registry,
+}
+
+/// A named query definition: its name, query text and source.
+pub(crate) type NamedQuery = (
+    String,
+    String,
+    Option<mastercss_schema::CssDirectiveSourceReference>,
+);
 
 pub(crate) fn collect(
     source: &str,
     filename: &str,
 ) -> Result<(Vec<CustomMediaDefinition>, Vec<std::ops::Range<usize>>), CompilerError> {
+    let (definitions, ranges) = collect_named(source, filename, "custom-media", "media query")?;
+    Ok((
+        definitions
+            .into_iter()
+            .map(|(name, query, source)| CustomMediaDefinition {
+                name,
+                query,
+                source,
+            })
+            .collect(),
+        ranges,
+    ))
+}
+
+/// Collects the top-level `@<directive> --name <query>;` statements of a source.
+pub(crate) fn collect_named(
+    source: &str,
+    filename: &str,
+    directive: &str,
+    query_kind: &str,
+) -> Result<(Vec<NamedQuery>, Vec<std::ops::Range<usize>>), CompilerError> {
     let tokens = tokenize_css_syntax(source);
     let mut definitions = Vec::new();
     let mut ranges = Vec::new();
@@ -19,19 +54,23 @@ pub(crate) fn collect(
         let Some(first) = header.first() else {
             continue;
         };
-        if !matches!(&first.kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("custom-media"))
-        {
+        if !matches!(&first.kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case(directive)) {
             continue;
         }
-        let fail = |message| crate::directive_error(source, filename, first.bytes.start, message);
+        let fail =
+            |message: String| crate::directive_error(source, filename, first.bytes.start, message);
         if statement.parent.is_some() || statement.has_block {
-            return Err(fail("@custom-media must be a top-level statement"));
+            return Err(fail(format!("@{directive} must be a top-level statement")));
         }
         let Some(Kind::Ident(name)) = header.get(1).map(|token| &token.kind) else {
-            return Err(fail("@custom-media requires --name and a media query"));
+            return Err(fail(format!(
+                "@{directive} requires --name and a {query_kind}"
+            )));
         };
         if !name.starts_with("--") || name.len() <= 2 || header.len() < 3 {
-            return Err(fail("@custom-media requires --name and a media query"));
+            return Err(fail(format!(
+                "@{directive} requires --name and a {query_kind}"
+            )));
         }
         let last = header.last().expect("header");
         let end = tokens
@@ -39,35 +78,48 @@ pub(crate) fn collect(
             .filter(|token| token.kind == Kind::Delim(';'))
             .map(|token| token.bytes.end)
             .unwrap_or(last.bytes.end);
-        definitions.push(CustomMediaDefinition {
-            name: name.to_string(),
-            query: source[header[2].bytes.start..last.bytes.end].into(),
-            source: crate::native_selectors::source_reference_from_bytes(
+        definitions.push((
+            name.to_string(),
+            source[header[2].bytes.start..last.bytes.end].into(),
+            crate::native_selectors::source_reference_from_bytes(
                 source,
                 filename,
                 first.bytes.start,
                 end,
             ),
-        });
+        ));
         ranges.push(first.bytes.start..end);
     }
     Ok((definitions, ranges))
 }
 
 pub(crate) fn registry(manifest: Option<&MasterCssManifest>) -> Registry {
-    manifest
-        .and_then(|manifest| manifest.custom_media.as_ref())
-        .into_iter()
-        .flatten()
-        .map(|(name, query)| (name.clone(), query.clone()))
-        .collect()
+    Registry {
+        media: manifest
+            .and_then(|manifest| manifest.custom_media.as_ref())
+            .into_iter()
+            .flatten()
+            .map(|(name, query)| (name.clone(), query.clone()))
+            .collect(),
+        containers: crate::custom_container::registry(manifest),
+    }
 }
 
 pub(crate) fn resolve(
     input: &CssDirectiveManifestInput,
     base: Option<&MasterCssManifest>,
 ) -> Result<Registry, CompilerError> {
-    let mut resolved = registry(base);
+    Ok(Registry {
+        media: resolve_media(input, base)?,
+        containers: crate::custom_container::resolve(input, base)?,
+    })
+}
+
+fn resolve_media(
+    input: &CssDirectiveManifestInput,
+    base: Option<&MasterCssManifest>,
+) -> Result<MediaRegistry, CompilerError> {
+    let mut resolved = registry(base).media;
     let mut definitions = HashMap::new();
     for definition in input.custom_media.iter().flatten() {
         definitions.insert(definition.name.clone(), definition);
@@ -78,7 +130,7 @@ pub(crate) fn resolve(
     fn visit(
         name: &str,
         definitions: &HashMap<String, &CustomMediaDefinition>,
-        resolved: &mut Registry,
+        resolved: &mut MediaRegistry,
         stack: &mut Vec<String>,
     ) -> Result<MediaQueryExpr, String> {
         if let Some(query) = resolved.get(name) {
@@ -147,12 +199,20 @@ pub(crate) fn paths(
 ) -> Result<Vec<Vec<String>>, CompilerError> {
     let mut result = vec![Vec::new()];
     for condition in conditions {
-        let branches = if let Some(query) = condition
+        let branches = if let Some(query) = condition.strip_prefix("@container ") {
+            let prelude = crate::custom_container::lower_prelude(query, &registry.containers)
+                .map_err(crate::manifest::definition_error)?;
+            vec![vec![prelude.map_or_else(
+                || condition.clone(),
+                |prelude| format!("@container {prelude}"),
+            )]]
+        } else if let Some(query) = condition
             .strip_prefix("@media ")
             .filter(|query| has_alias(query))
         {
             let query = mastercss_engine::parse_custom_media_query(query, &mut |name| {
                 registry
+                    .media
                     .get(name)
                     .cloned()
                     .ok_or_else(|| format!("Undefined custom media {name}"))
@@ -196,13 +256,30 @@ fn has_alias(query: &str) -> bool {
         .any(|token| matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")))
 }
 
+/// Whether native `@media` or `@container` rules reference a custom media or
+/// custom container name, which only compilation can expand.
 pub(crate) fn uses_native_alias(source: &str) -> bool {
     let tokens = tokenize_css_syntax(source);
-    collect_css_syntax_statements(&tokens).iter().any(|statement| {
-        let header = &tokens[statement.tokens.clone()];
-        matches!(header.first().map(|token| &token.kind), Some(Kind::AtKeyword(name)) if name.eq_ignore_ascii_case("media"))
-            && header.iter().any(|token| matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")))
-    })
+    collect_css_syntax_statements(&tokens)
+        .iter()
+        .any(|statement| {
+            let header = &tokens[statement.tokens.clone()];
+            match header.first().map(|token| &token.kind) {
+                Some(Kind::AtKeyword(name)) if name.eq_ignore_ascii_case("media") => {
+                    header.iter().any(
+                        |token| matches!(&token.kind, Kind::Ident(name) if name.starts_with("--")),
+                    )
+                }
+                Some(Kind::AtKeyword(name)) if name.eq_ignore_ascii_case("container") => {
+                    header.len() > 1
+                        && !mastercss_engine::custom_container_references(
+                            &source[header[1].bytes.start..header[header.len() - 1].bytes.end],
+                        )
+                        .is_empty()
+                }
+                _ => false,
+            }
+        })
 }
 
 pub(crate) fn lower_theme(
@@ -215,7 +292,7 @@ pub(crate) fn lower_theme(
             ThemeNode::Declaration { .. } => output.push(node.clone()),
             ThemeNode::Rule { prelude, children } => {
                 let children = lower_theme(children, registry)?;
-                if prelude.starts_with("@media ") {
+                if prelude.starts_with("@media ") || prelude.starts_with("@container ") {
                     for path in paths(std::slice::from_ref(prelude), registry)? {
                         let mut branch = children.clone();
                         for prelude in path.into_iter().rev() {
@@ -266,9 +343,15 @@ pub(crate) fn lower_css(
     // Only outermost media expansions are edited here; recursively transform
     // their contents before cloning so nested expressions preserve source maps.
     let mut covered_end = 0;
-    let mut media = statements.iter().filter(|statement| statement.has_block && matches!(&tokens[statement.tokens.start].kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("media"))).collect::<Vec<_>>();
-    media.sort_by_key(|statement| tokens[statement.tokens.start].bytes.start);
-    for statement in media {
+    let mut conditions = statements
+        .iter()
+        .filter(|statement| {
+            statement.has_block
+                && matches!(&tokens[statement.tokens.start].kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("media") || name.eq_ignore_ascii_case("container"))
+        })
+        .collect::<Vec<_>>();
+    conditions.sort_by_key(|statement| tokens[statement.tokens.start].bytes.start);
+    for statement in conditions {
         let header = &tokens[statement.tokens.clone()];
         let first = &header[0];
         if first.bytes.start < covered_end {
@@ -282,7 +365,13 @@ pub(crate) fn lower_css(
             continue;
         };
         let query = &source[query_start.bytes.start..open.bytes.start];
-        if !has_alias(query) {
+        let container =
+            matches!(&first.kind, Kind::AtKeyword(name) if name.eq_ignore_ascii_case("container"));
+        if !(if container {
+            !mastercss_engine::custom_container_references(query).is_empty()
+        } else {
+            has_alias(query)
+        }) {
             continue;
         }
         let (start, body_start, body_end, end) = (
@@ -321,7 +410,8 @@ pub(crate) fn lower_css(
                 mapping
             })
             .collect::<Vec<_>>();
-        let branches = paths(&[format!("@media {query}")], registry).map_err(|mut error| {
+        let keyword = if container { "container" } else { "media" };
+        let branches = paths(&[format!("@{keyword} {query}")], registry).map_err(|mut error| {
             if let CompilerError::Directive {
                 filename: file,
                 range,

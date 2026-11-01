@@ -13,7 +13,7 @@ import {
 
 const MANIFEST_QUERY_VERSION = 6
 
-export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'mixin' | 'custom-media' | 'family'
+export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'mixin' | 'custom-media' | 'custom-container' | 'family'
 
 export interface ManifestQueryOptions {
   context?: SemanticContext
@@ -70,6 +70,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     .map(utility => ({ ...utility, parameters: utility.parameters ?? [] }))
 
   const customMedia = Object.entries(activeManifest.customMedia ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, expression]) => ({ name, expression }))
+  const customContainers = Object.entries(activeManifest.customContainers ?? {}).filter(([name]) => includesQuery(name, query)).map(([name, condition]) => ({ name, condition }))
 
   using tooling = createMCPToolingSession(activeManifest)
   const families = tooling.tokenFamilies().families
@@ -82,6 +83,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     utilities: kind === 'all' || kind === 'utility' ? utilities : [],
     mixins: kind === 'all' || kind === 'mixin' ? mixins : [],
     customMedia: kind === 'all' || kind === 'custom-media' ? customMedia : [],
+    customContainers: kind === 'all' || kind === 'custom-container' ? customContainers : [],
     families: kind === 'all' || kind === 'family' ? families : []
   }
   const limitedResults = {
@@ -89,6 +91,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     utilities: limitResults(allResults.utilities, limit),
     mixins: limitResults(allResults.mixins, limit),
     customMedia: limitResults(allResults.customMedia, limit),
+    customContainers: limitResults(allResults.customContainers, limit),
     families: limitResults(allResults.families, limit)
   }
   const total = Object.values(allResults).reduce((count, items) => count + items.length, 0)
@@ -117,6 +120,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       mixins: mixins.length,
       utilities: utilities.length,
       customMedia: customMedia.length,
+      customContainers: customContainers.length,
       families: families.length,
       status: 'ok'
     }

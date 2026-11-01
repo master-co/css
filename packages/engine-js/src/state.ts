@@ -58,7 +58,7 @@ export function resolveStateBranches(stateToken: string, inheritedImportant: boo
       }
       continue
     }
-    const wrapper = renderConditionToken(condition)
+    const wrapper = renderConditionToken(condition, program)
     if (!wrapper) return []
     for (const branch of branches) {
       branch.key += `@${condition}`

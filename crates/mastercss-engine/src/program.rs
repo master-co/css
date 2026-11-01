@@ -48,6 +48,9 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Program> {
         custom_media: Vec::<(String, MediaQueryExpr)>::decode(&mut reader)?
             .into_iter()
             .collect(),
+        custom_containers: Vec::<(String, String)>::decode(&mut reader)?
+            .into_iter()
+            .collect(),
         mixins: Decode::decode(&mut reader)?,
         utility_definitions: Decode::decode(&mut reader)?,
         token_families: Decode::decode(&mut reader)?,
@@ -562,6 +565,7 @@ mod encoding {
         program.keyframes.encode(&mut writer);
         sorted(&program.animation_variables).encode(&mut writer);
         sorted(&program.custom_media).encode(&mut writer);
+        sorted(&program.custom_containers).encode(&mut writer);
         program.mixins.encode(&mut writer);
         program.utility_definitions.encode(&mut writer);
         program.token_families.encode(&mut writer);

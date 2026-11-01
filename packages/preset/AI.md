@@ -9,7 +9,7 @@
 - Default token, mixin, native keyframe, custom media, and layer-statement source.
 - `src/default-manifest.json`.
 - `src/default-native.css`.
-- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `media.css`, and `utilities.css`.
+- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `media.css`, `container.css`, and `utilities.css`.
 
 ## Does Not Own
 
@@ -32,6 +32,7 @@
 - `src/base.css`
 - `src/utilities.css`
 - `src/media.css`
+- `src/container.css`
 - `src/index.css`
 - `src/default-manifest.json`
 - `src/default-native.css`
@@ -84,7 +85,7 @@ The shadow scale follows the same boundary. `--shadow-xs` … `--shadow-2xl` con
 
 ## Conditions and wrappers
 
-`src/media.css` owns eleven breakpoints, their eleven `--max-*` complements (`not (--md)`, so a redeclared breakpoint moves both) and six preference/orientation custom media queries. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
+`src/media.css` owns eleven breakpoints, their eleven `--max-*` complements (`not (--md)`, so a redeclared breakpoint moves both) and six preference/orientation custom media queries. `src/container.css` owns thirteen `@custom-container` widths (`--3xs` 16rem to `--7xl` 80rem) and their `--max-*` complements, used as `@container(--md)` or `@container(card|--md)`; bare `@name` suffixes stay custom media, and `--container-*` tokens size elements without supplying thresholds. `theme.css` alone supplies no media. Use `@media(print)`/`@media(screen)`, `@motion-safe`/`@motion-reduce`, and explicit `@layer(base|defaults|components|utilities)` class suffixes. `@starting-style` is built into the engine. Use `@mixin` with `@contents` and `@apply(--name)` for custom selector or conditional wrappers; no variant registry or aliases remain. Layers belong at the call site.
 
 ## Atomic class authoring
 

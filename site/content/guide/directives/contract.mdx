@@ -117,7 +117,7 @@ Use a reference when compilation needs definitions from another stylesheet witho
 }
 ```
 
-A reference supplies tokens, utilities, mixins, custom media and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
+A reference supplies tokens, utilities, mixins, custom media, custom containers and native keyframe definitions for resolution. It does not deliver the referenced file's native CSS, generate its classes, or add its scanning sources. Used managed tokens and keyframes can still cause local output to include their dependencies. Referenced native rules are never usage roots. Native overrides need an actual `@import` or another delivered stylesheet. Referenced keyframes are emitted only when locally used.
 
 References must be top-level statements containing one quoted resource. Relative paths use the declaring stylesheet's directory. Package references resolve exported CSS entries. References are not entry markers.
 
@@ -244,8 +244,26 @@ Definitions support query lists, forward references, `true`, `false`, nested boo
 
 Undefined, cyclic, and invalid references are compilation errors. A later same-name definition wins. Media and mixin names are independent: `@name` selects media, while `@apply(--name)` invokes a mixin. `--starting-style` is reserved because `@starting-style` is built in. The preset has no `--breakpoint-*` tokens. A project custom property with that prefix remains ordinary CSS and never implicitly declares a media condition. Use native lengths or independently named layout tokens for width caps. Imports that retain external URLs cannot contain unresolved custom-media queries; resolve those stylesheet imports before lowering or use ordinary native queries on the import.
 
+### `@custom-container` \{#custom-container\}
+Define named container conditions. The definition holds only the condition; the container to measure is chosen where the condition is used.
+
+```css
+@custom-container --md (width >= 28rem);
+@custom-container --max-md not (--md);
+@custom-container --compact style(--density: compact);
+@custom-container --dense (--md) and (--compact);
+
+@container card (--md) { .title { font-size: 1.25rem; } }
+```
+
+Names begin with `--`. CSS references use `(--name)` after an optional container name, such as `@container card not (--md)`. Markup uses the same reference inside the container query: `@container(--md)` measures the nearest container and `@container(card|--md)` a named one. Native CSS, utility and mixin definitions, and markup share one registry.
+
+A definition is any container condition: size and style queries, `not`, `and`, `or`, and references to other custom containers, including forward references. Expansion substitutes the referenced condition, parenthesized unless it is already one group or the whole condition, so `@container card (--dense)` emits `@container card (width >= 28rem) and style(--density: compact)`. A container condition always fits one prelude; expansion never adds branches. The compiler emits ordinary container queries and stores each expanded condition in the manifest's `customContainers`.
+
+Undefined, cyclic, and empty references are compilation errors, as is a definition that starts with a container name. A later same-name definition wins, and definitions that reference it use the final one. Container names are independent of custom media and mixins: a bare `@md` always selects custom media, never a container condition. `--container-*` tokens size elements and never supply container thresholds.
+
 ### Mixin wrappers \{#mixin-wrappers\}
-Use `@custom-media` for named media queries. Use a mixin with `@contents` for selector, supports, container, or combined wrappers.
+Use `@custom-media` and `@custom-container` for named media and container conditions. Use a mixin with `@contents` for selector, supports, or combined wrappers.
 
 ```css
 @mixin --hocus() {
@@ -420,7 +438,7 @@ Unused definitions, discarded contents and unused fallback blocks do not retain 
 The last definition with the same decoded name replaces the entire previous mixin, including parameters, body, dependencies and cached expansion. An empty definition remains registered. Forward nested calls resolve against the final registry. There is no parameter overloading.
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
-`@theme`, `@utility`, `@mixin`, and `@custom-media` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
+`@theme`, `@utility`, `@mixin`, `@custom-media`, and `@custom-container` are top-level definitions. Registering them inside a layer or conditional wrapper is an error. Mixin bodies may contain declarations, nested selectors, supported native conditions, nested `@apply`, and `@contents`. Layer placement belongs at the call site.
 
 Classes from source scanning, safelists, engine APIs and runtime DOM changes are usage roots. An `@apply` in delivered native CSS is also a root; one inside an unused utility or mixin or undelivered `@reference` stylesheet is not. Dependency collection occurs after parameter binding and `ident()` folding. Used tokens preserve ordered declarations and transitive dependencies. Static tokens remain roots without consumers. Removing the final root releases its resources; native CSS resources remain pinned through `emittedGlobals`.
 
@@ -435,6 +453,8 @@ Compile definitions into Manifest v6 with languageVersion 18 and binding ABI 31.
 <StylesheetExample title="A parameter utility" source={"@utility pair(--size) { width: var(--size); height: var(--size); } @safelist 'pair(2rem)';"} />
 
 <StylesheetExample title="A named media condition" source={"@custom-media --card (width >= 40rem); .card { @media (--card) { display: grid; } }"} />
+
+<StylesheetExample title="A named container condition" source={"@custom-container --roomy (width >= 40rem); .card { @container (--roomy) { display: grid; } }"} />
 
 ### Sass interoperability
 
@@ -518,7 +538,7 @@ Use native conditions directly, and name reusable wrappers with mixins:
 }
 ```
 
-Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
+Use native `@media`, `@supports`, and `@container` for queries. Unknown names are errors. A named `false` custom media is valid and emits no branch; custom containers have no `true` or `false` form. Markup still supports named conditions such as `@dark` and its existing explicit native query suffixes.
 
 ## CLI stylesheet assets \{#cli-stylesheet-assets\}
 

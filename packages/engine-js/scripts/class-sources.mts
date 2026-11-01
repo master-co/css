@@ -346,10 +346,31 @@ export function themeEngineCases(): EngineCase[] {
     { op: 'ensure', classes: mediaClasses.toReversed() },
     { op: 'delete', classes: mediaClasses }
   ]
+  const containerManifest = {
+    ...manifest,
+    customContainers: {
+      '--md': '(width >= 28rem)',
+      '--max-md': 'not (width >= 28rem)',
+      '--compact': 'style(--density: compact)',
+      '--both': '(width >= 28rem) and style(--density: compact)',
+      '--px': '(width>=30px)'
+    }
+  }
+  const containers = ['@container(--md)', '@container(card|--md)', '@container(--max-md)', '@container(card|--max-md)', '@container(--compact)',
+    '@container(card|--both)', '@container(--both)', '@container(--px)', '@container(--missing)', '@container(card|--missing)', '@container(--md)@container(--px)',
+    '@container(width>=28rem)', '@container(--md)@media(width>=40rem)', '@container(--md)@layer(components)', '@container(card|--md):hover']
+  const containerClasses = ['fg-red', 'gap-md', '(color:red)'].flatMap((base) => containers.map((condition) => base + condition))
+  const containerSteps: EngineCaseStep[] = [
+    { op: 'ensure', classes: containerClasses },
+    { op: 'delete', classes: containerClasses.filter((_, index) => index % 2 === 0) },
+    { op: 'ensure', classes: containerClasses.toReversed() },
+    { op: 'delete', classes: containerClasses }
+  ]
   return [
     { id: 'theme-tokens', manifest, steps },
     { id: 'theme-tokens-emitted', manifest, steps, emittedGlobals: { variables: { 'spacing-md': 1, 'color-d': 2, 'color-unknown': 1, 'spacing-sm': 0 } } },
-    { id: 'custom-media', manifest: mediaManifest, steps: mediaSteps }
+    { id: 'custom-media', manifest: mediaManifest, steps: mediaSteps },
+    { id: 'custom-container', manifest: containerManifest, steps: containerSteps }
   ]
 }
 
@@ -387,7 +408,7 @@ const CONDITIONS = [
   '@media(prefers-color-scheme:dark)', '@media(print)', '@media(screen)', '@media(width>=-0px)', '@media(width>=1e3px)', '@media(--sm)',
   '@media(--dark)', '@media(--unknown)', '@media((--sm)|and|(--dark))', '@media(not|(--sm))', '@media(--sm)', '@media((width>=40rem)|and|(hover))',
   '@supports(display:grid)', '@supports(display:grid)', '@supports(--x:1)', '@container(width>=30rem)', '@container(card|width>=30rem)',
-  '@container(style(--x))', '@container(card|style(--density))', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
+  '@container(style(--x))', '@container(card|style(--density))', '@container(--md)', '@container(card|--max-sm)', '@container(--unknown)', '@starting-style', '@layer(base)', '@layer(defaults)', '@layer(components)',
   '@layer(utilities)', '@layer(other)', '@print', '@media(height<=600px)', '@media(width<64rem)', '@media(width>=40em)', '@media()', '@'
 ]
 

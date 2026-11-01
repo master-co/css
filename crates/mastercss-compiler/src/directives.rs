@@ -58,6 +58,8 @@ fn compile_css_directives_impl(
     validate_contents_placement(source, &options.from)?;
     crate::native_keyframes::validate_safelists(source, &options.from)?;
     let (custom_media, custom_media_ranges) = crate::custom_media::collect(source, &options.from)?;
+    let (custom_containers, custom_container_ranges) =
+        crate::custom_container::collect(source, &options.from)?;
     let reference_statements = find_css_reference_statements(source);
     let standalone_directives = find_standalone_css_directive_statements(source);
     // Parsing still addresses the original source. Blank consumed statements
@@ -82,7 +84,10 @@ fn compile_css_directives_impl(
             }
         }
     }
-    for range in custom_media_ranges {
+    for range in custom_media_ranges
+        .into_iter()
+        .chain(custom_container_ranges)
+    {
         for byte in &mut masked[range] {
             if !matches!(*byte, b'\r' | b'\n') {
                 *byte = b' ';
@@ -147,6 +152,7 @@ fn compile_css_directives_impl(
 
     let mut manifest_input = CssDirectiveManifestInput {
         custom_media: (!custom_media.is_empty()).then_some(custom_media),
+        custom_containers: (!custom_containers.is_empty()).then_some(custom_containers),
         ..CssDirectiveManifestInput::default()
     };
     let mut keyframes = crate::native_keyframes::KeyframeCollector {

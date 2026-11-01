@@ -19,7 +19,8 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './index.css': 'Complete preset stylesheet entry.',
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
-      './media.css': 'Preset reusable conditions.',
+      './media.css': 'Preset viewport and preference conditions.',
+      './container.css': 'Preset container width conditions.',
       './utilities.css': 'Preset utility registrations.'
     }
   },
@@ -110,7 +111,8 @@ export const packageEditorial: Record<string, PackageEditorial> = {
       './index.css': 'Complete preset stylesheet entry.',
       './base.css': 'Base styles and the stable cascade-layer order.',
       './theme.css': 'Preset theme definitions.',
-      './media.css': 'Preset reusable conditions.',
+      './media.css': 'Preset viewport and preference conditions.',
+      './container.css': 'Preset container width conditions.',
       './utilities.css': 'Preset utility registrations.'
     }
   },

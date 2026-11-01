@@ -22,7 +22,7 @@ import {
 } from './program-model'
 import { selectedInlineValue } from './value'
 
-export const PROGRAM_VERSION = 2
+export const PROGRAM_VERSION = 3
 export const LANGUAGE_VERSION = 18
 const MAGIC = [0x4d, 0x43, 0x53, 0x50] // MCSP
 const MAX_DEPTH = 512
@@ -342,6 +342,7 @@ export function decodeProgram(input: Uint8Array): DecodeResult {
       animationVariables: new Map(vec(() => [string(), stringList()] as const)),
       customMedia: new Map(vec(() => [string(), mediaQuery()] as const)),
       customMediaPaths: new Map(),
+      customContainers: new Map(vec(() => [string(), string()] as const)),
       mixins: vec(mixinDefinition),
       utilityDefinitions: vec(() => ({ kind: UTILITY_KINDS[tag(3)], recipe: mixinDefinition() })),
       tokenFamilies: vec(tokenFamily),

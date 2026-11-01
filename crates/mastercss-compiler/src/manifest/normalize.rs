@@ -143,6 +143,11 @@ fn merge_manifest(
             fragment.custom_media,
             Record::is_empty,
         ),
+        custom_containers: merge_records(
+            base.custom_containers.as_ref(),
+            fragment.custom_containers,
+            Record::is_empty,
+        ),
         variables: merge_variables(base.variables.as_ref(), fragment.variables),
         mixins: merge_by(base.mixins.as_deref(), fragment.mixins, |definition| {
             definition.name.clone()
@@ -193,10 +198,18 @@ pub(crate) fn compile_manifest(
                 .collect()
         }),
         keyframes: input.keyframes.clone(),
-        custom_media: (!registry.is_empty()).then(|| {
+        custom_media: (!registry.media.is_empty()).then(|| {
             registry
+                .media
                 .iter()
                 .map(|(name, query)| (name.clone(), query.clone()))
+                .collect()
+        }),
+        custom_containers: (!registry.containers.is_empty()).then(|| {
+            registry
+                .containers
+                .iter()
+                .map(|(name, condition)| (name.clone(), condition.clone()))
                 .collect()
         }),
         variables: group_variables(compile_variables(input, base)),

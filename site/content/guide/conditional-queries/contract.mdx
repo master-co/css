@@ -14,7 +14,7 @@ Append a named condition or a simple native query to a class. The parentheses de
 Native [media queries](https://www.w3.org/TR/mediaqueries-5/), [supports conditions](https://www.w3.org/TR/css-conditional-3/) and [container queries](https://www.w3.org/TR/css-conditional-5/) decide whether the browser applies the rule. Master CSS preserves the query rather than testing the current browser during compilation.
 
 ## Named conditions \{#common-condition-variants\}
-`@sm` and `@dark` resolve `@custom-media` definitions. Unknown names are errors. Mixin names use the separate `@apply(--name)` syntax and can share a name with a custom media definition.
+`@sm` and `@dark` resolve `@custom-media` definitions. Unknown names are errors. Mixin names use the separate `@apply(--name)` syntax and can share a name with a custom media definition. Bare names never select a container; container conditions are referenced inside `@container(...)`, as in [named containers](#named-container-conditions).
 
 The preset's `media.css` provides eleven breakpoints, a `max-` complement for each, and six preference/orientation queries:
 
@@ -75,6 +75,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 | Nearest size container | `@container(width>=40rem)` |
 | Named container | `@container(card\|width>=40rem)` |
 | Style container | `@container(style(--density:compact))` |
+| Custom container | `@container(--md)`, `@container(card\|--md)` |
 
 `|` encodes whitespace in query syntax. Quoted strings and escaped characters retain their literal content. CSS's resolution unit `x` retains its native meaning.
 
@@ -96,7 +97,7 @@ Use the built-in `@starting-style` suffix to define a transition's initial value
 <Class2CSS>{['grid@supports(display:grid)']}</Class2CSS>
 
 ### Containers \{#containersize\}
-Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but `(width>=28rem)` remains a literal condition. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
+Container size tokens such as `--container-md` do not supply query thresholds. Changing a token updates its sizing consumers, but neither `(width>=28rem)` nor a [named container condition](#named-container-conditions) follows it. See [container tokens](/reference/tokens/container) for values and [Container queries](/guide/responsive-design#based-on-container-sizes) for choosing a component boundary.
 
 Choose a query container using ordinary CSS. The suffix contains the complete query, including a container name when needed.
 
@@ -115,6 +116,29 @@ Style queries use their native form:
   <div class="p(8)@container(style(--density:compact))">Compact content</div>
 </div>
 ```
+
+### Named container conditions \{#named-container-conditions\}
+`@container(--md)` resolves an `@custom-container` definition against the nearest container; `@container(card|--md)` measures the container named `card`. The definition supplies only the condition, so one name serves every container.
+
+The preset's `container.css` provides thirteen component widths and a `max-` complement for each. They are independent of the viewport breakpoints: `@container(--md)` is 28rem, while `@md` is 64rem.
+
+| Name | Width |
+| --- | --- |
+| `--3xs`, `--2xs`, `--xs` | 16rem, 18rem, 20rem |
+| `--sm`, `--md`, `--lg`, `--xl` | 24rem, 28rem, 32rem, 36rem |
+| `--2xl`, `--3xl`, `--4xl` | 42rem, 48rem, 56rem |
+| `--5xl`, `--6xl`, `--7xl` | 64rem, 72rem, 80rem |
+| `--max-sm`, `--max-md`, … | Below that width: `not (--md)` |
+
+```html
+<aside class="(container-name:card) container-inline">
+  <div class="grid-cols(1) grid-cols(2)@container(card|--md)">Card content</div>
+</aside>
+```
+
+<Class2CSS>{['grid-cols(2)@container(card|--md)', 'hidden@container(--max-sm)']}</Class2CSS>
+
+A project redeclares or adds names with `@custom-container`; see [`@custom-container`](/reference/directives/theme#custom-container). An undefined name is an error.
 
 ## Ranges \{#comparison-operators\}
 Use native CSS comparisons, including chained ranges. Put compound media queries in `@custom-media`, and other compound conditions in a mixin. Do not abbreviate feature names or omit units.
@@ -141,7 +165,7 @@ Comparable ranges in the same unit retain range priority. Incomparable units and
 
 ## Simple queries in classes
 
-Classes accept one media type, one media feature or range, one supports declaration, or one container size or custom-property style query, written without the native group parentheses. A media type keyword (`all`, `print`, `screen` and the deprecated types) emits as a type; any other single name is a boolean feature, so `@media(hover)` emits `(hover)`. In `@container(card|width>=40rem)` the first name is the container name. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
+Classes accept one media type, one media feature or range, one supports declaration, or one container size or custom-property style query, written without the native group parentheses. A media type keyword (`all`, `print`, `screen` and the deprecated types) emits as a type; any other single name is a boolean feature, so `@media(hover)` emits `(hover)`. In `@container(card|width>=40rem)` the first name is the container name, and `@container(card|--md)` replaces the condition with a custom container reference. Feature names are not restricted to a browser support database. Balanced functions inside a single value are preserved.
 
 ```html
 <div class="hidden@media(print) p-md@media(40rem<=width<64rem)"></div>

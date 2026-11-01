@@ -46,6 +46,7 @@
     "./base.css": "./src/base.css",
     "./theme.css": "./src/theme.css",
     "./media.css": "./src/media.css",
+    "./container.css": "./src/container.css",
     "./utilities.css": "./src/utilities.css"
   },
   "files": [

@@ -95,12 +95,20 @@ export interface CSSCustomMediaDefinition {
   source?: CSSDirectiveSourceReference
 }
 
+/** An `@custom-container` condition as written, before references expand. */
+export interface CSSCustomContainerDefinition {
+  name: string
+  query: string
+  source?: CSSDirectiveSourceReference
+}
+
 export interface CSSDirectiveManifestInput {
   keyframes?: MasterCSSKeyframeDefinition[]
   keyframeSafelist?: string[]
   animationVariables?: Record<string, string[]>
   theme?: MasterCSSThemeNode[]
   customMedia?: CSSCustomMediaDefinition[]
+  customContainers?: CSSCustomContainerDefinition[]
   mixins?: MasterCSSMixinDefinition[]
   utilities?: MasterCSSUtilityDefinition[]
 }

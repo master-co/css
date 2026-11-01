@@ -363,6 +363,11 @@ fn analyze(snapshot: &ProjectSnapshot) -> Result<Analyzed, CompilerError> {
             definitions.insert(format!("custom-media:{name}"), value.clone());
         }
     }
+    if let Some(containers) = snapshot.manifest["customContainers"].as_object() {
+        for (name, value) in containers {
+            definitions.insert(format!("custom-container:{name}"), value.clone());
+        }
+    }
     let mut native_classes = BTreeMap::new();
     let mut stylesheet_dependencies = Dependencies::new();
     for asset in &snapshot.stylesheets {

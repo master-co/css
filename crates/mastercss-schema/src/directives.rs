@@ -212,6 +212,8 @@ pub struct CssDirectiveManifestInput {
     pub theme: Option<Vec<ThemeNode>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub custom_media: Option<Vec<CustomMediaDefinition>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom_containers: Option<Vec<CustomContainerDefinition>>,
 }
 
 /// Ordered managed CSS. Lowering supplies :root,:host for direct @theme
@@ -300,6 +302,16 @@ pub struct ScopedThemeValue {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CustomMediaDefinition {
+    pub name: String,
+    pub query: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<CssDirectiveSourceReference>,
+}
+
+/// An `@custom-container` condition as written, before references expand.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CustomContainerDefinition {
     pub name: String,
     pub query: String,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -63,6 +63,7 @@ export const manifestResults = z.object({
   tokens: z.array(variable), mixins: z.array(mixin),
   utilities: z.array(mixin.extend({ kind: z.enum(['static', 'token', 'function']) })),
   customMedia: z.array(z.object({ name: z.string(), expression: mediaQuery })),
+  customContainers: z.array(z.object({ name: z.string(), condition: z.string() })),
   families: z.array(z.object({ type: z.literal('token-family'), utility: z.string(), prefix: z.string(), namespace: z.string(), argument: z.enum(['value', 'key']), properties: strings }))
 })
 export const change = z.object({ filePath: z.string(), beforeHash: z.string().nullable(), afterHash: z.string(), beforeExists: z.boolean(), beforeBytes: z.number(), afterBytes: z.number(), afterText: z.string(), diff: z.string() })

@@ -177,9 +177,14 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
             let (kind, body) = token.split_once('(').expect("recognized query");
             let mut diagnostic = error(
                 super::ErrorCode::MasterQueryRequiresCss,
-                format!(
-                    "Complex @{kind} queries belong in CSS; define @custom-media or a mixin with @contents"
-                ),
+                match kind {
+                    "media" | "container" => format!(
+                        "Complex @{kind} queries belong in CSS; define @custom-{kind} or a mixin with @contents"
+                    ),
+                    _ => format!(
+                        "Complex @{kind} queries belong in CSS; define a mixin with @contents"
+                    ),
+                },
             );
             let prelude =
                 mastercss_lexer::decode_native_content(body.strip_suffix(')').unwrap_or(body))
@@ -203,6 +208,12 @@ pub(crate) fn diagnostics(source: &str, manifest: &Program) -> Vec<super::Diagno
                     .cloned()
                     .ok_or_else(|| concat_text!("Undefined custom media ", name))
             })
+        {
+            return vec![error(super::ErrorCode::UnknownCondition, message)];
+        }
+        if let Some(query) = mastercss_lexer::parse_native_query(&token)
+            && query.kind == "container"
+            && let Err(message) = super::resolve_custom_containers(&query.prelude, manifest)
         {
             return vec![error(super::ErrorCode::UnknownCondition, message)];
         }

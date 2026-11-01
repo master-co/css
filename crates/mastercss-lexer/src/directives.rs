@@ -20,6 +20,7 @@ pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
         "utility",
         "apply",
         "custom-media",
+        "custom-container",
         "contents",
     ];
     let tokens = tokenize_css_syntax(source);

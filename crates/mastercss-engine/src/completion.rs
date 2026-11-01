@@ -287,6 +287,13 @@ pub(crate) fn collect_class_completion_candidates(
         .filter_map(|name| name.strip_prefix("--"))
         .map(str::to_owned)
         .collect::<Vec<_>>();
+    let mut containers = manifest
+        .custom_containers
+        .keys()
+        .map(|name| format!("container({name})"))
+        .collect::<Vec<_>>();
+    containers.sort();
+    suffixes.extend(containers);
     suffixes.extend(
         [
             "starting-style",

@@ -4,7 +4,7 @@
 import { decodeNativeContent } from './class-syntax'
 import { DELIM, DIMENSION, FUNCTION, IDENT, NUMBER, PERCENTAGE, tokenize, type Token, isNameCodePoint } from './css-syntax'
 import { naturalCompare } from './order'
-import type { MediaQuery, UtilityLayer } from './program-model'
+import type { MediaQuery, Program, UtilityLayer } from './program-model'
 import { asciiLowercase, isAsciiCase, isWhitespace, trim } from './text'
 import type { ConditionFeature } from './types'
 import { parseDecimal, decimalIsFinite, decimalToNumber } from './value'
@@ -145,10 +145,21 @@ export function resolveLayerCondition(token: string): UtilityLayer | undefined {
 }
 
 /** A condition's wrapper rule and its kind, for conditions that are not custom media or layers. */
-export function renderConditionToken(token: string): [kind: string, wrapper: string] | undefined {
+export function renderConditionToken(token: string, program: Program): [kind: string, wrapper: string] | undefined {
   if (token === 'starting-style') return ['starting-style', '@starting-style']
   const query = parseNativeQuery(token)
-  return query && [query.kind, `@${query.kind} ${query.prelude}`]
+  if (!query) return
+  let prelude: string | undefined = query.prelude
+  // A class container query names one condition, so a `(--name)` reference is always the
+  // whole condition after an optional container name, which condition.rs substitutes as is.
+  const tokens = tokenize(prelude)
+  const open = tokens.length - 3
+  const name = tokens[open + 1]
+  if (query.kind === 'container' && isDelim(tokens[open], '(') && tokens[open].close === open + 2 && name.kind === IDENT && name.value.startsWith('--') && name.value.length > 2) {
+    const condition = program.customContainers.get(name.value)
+    prelude = condition === undefined ? condition : prelude.slice(0, tokens[open].start) + condition
+  }
+  return prelude === undefined ? undefined : [query.kind, `@${query.kind} ${prelude}`]
 }
 
 const RANGE_FEATURES = new Set(['width', 'height', 'resolution', 'aspect-ratio'])

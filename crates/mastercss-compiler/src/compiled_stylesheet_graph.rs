@@ -87,6 +87,7 @@ fn merge_input(target: &mut CssDirectiveManifestInput, next: CssDirectiveManifes
         utilities,
         theme,
         custom_media,
+        custom_containers,
     } = next;
     if let Some(variables) = animation_variables {
         let target = target.animation_variables.get_or_insert_default();
@@ -100,6 +101,7 @@ fn merge_input(target: &mut CssDirectiveManifestInput, next: CssDirectiveManifes
     append(&mut target.utilities, utilities);
     append(&mut target.theme, theme);
     append(&mut target.custom_media, custom_media);
+    append(&mut target.custom_containers, custom_containers);
 }
 
 fn append_unique(target: &mut Vec<String>, values: &[String]) {

@@ -1,0 +1,29 @@
+/* Component widths, measured on the nearest query container: `x@container(--md)`, or `x@container(card|--md)` for a named one. Independent of the viewport breakpoints in media.css and of the --container-* sizing tokens. */
+@custom-container --3xs (width >= 16rem);
+@custom-container --2xs (width >= 18rem);
+@custom-container --xs (width >= 20rem);
+@custom-container --sm (width >= 24rem);
+@custom-container --md (width >= 28rem);
+@custom-container --lg (width >= 32rem);
+@custom-container --xl (width >= 36rem);
+@custom-container --2xl (width >= 42rem);
+@custom-container --3xl (width >= 48rem);
+@custom-container --4xl (width >= 56rem);
+@custom-container --5xl (width >= 64rem);
+@custom-container --6xl (width >= 72rem);
+@custom-container --7xl (width >= 80rem);
+
+/* Below a width: the complement of its condition, so `x@container(--max-md)` and `y@container(--md)` never overlap and a redeclared `--md` moves both. */
+@custom-container --max-3xs not (--3xs);
+@custom-container --max-2xs not (--2xs);
+@custom-container --max-xs not (--xs);
+@custom-container --max-sm not (--sm);
+@custom-container --max-md not (--md);
+@custom-container --max-lg not (--lg);
+@custom-container --max-xl not (--xl);
+@custom-container --max-2xl not (--2xl);
+@custom-container --max-3xl not (--3xl);
+@custom-container --max-4xl not (--4xl);
+@custom-container --max-5xl not (--5xl);
+@custom-container --max-6xl not (--6xl);
+@custom-container --max-7xl not (--7xl);

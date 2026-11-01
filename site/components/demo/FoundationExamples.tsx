@@ -21,9 +21,9 @@ export function FoundationMedia() {
 }
 
 export function FoundationContainerGrid() {
-  return <DemoContainer title="One card, two available widths" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The literal 28rem threshold is independent of container tokens and viewport custom media.">
+  return <DemoContainer title="One card, two available widths" data-foundation="container-grid" caption="The nearest inline-size container controls the descendant grid. The preset's 28rem --md container condition is independent of container tokens and viewport breakpoints.">
       <section className="container-inline">
-        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container(width>=28rem) ui-sheet" data-elevation="1">
+        <article className="grid-cols(1) gap-lg p-md grid-cols(2)@container(--md) ui-sheet" data-elevation="1">
           <DemoMedia tone="blue" className="h-auto w-full (aspect-ratio:3/2) r-sm" aria-label="Blue mountain illustration" />
           <div className="min-w(0)">
             <DemoLabel>Asset library</DemoLabel>

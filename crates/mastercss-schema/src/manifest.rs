@@ -37,13 +37,14 @@ pub enum DiagnosticSeverity {
 }
 
 /// The fields a manifest may have; any other is rejected.
-const MANIFEST_FIELDS: [&str; 10] = [
+const MANIFEST_FIELDS: [&str; 11] = [
     "version",
     "languageVersion",
     "keyframes",
     "animationVariables",
     "theme",
     "customMedia",
+    "customContainers",
     "variables",
     "mixins",
     "utilities",
@@ -109,6 +110,8 @@ pub struct MasterCssManifest {
     pub animation_variables: Option<Record<Vec<String>>>,
     pub keyframes: Option<Vec<KeyframeDefinition>>,
     pub custom_media: Option<Record<MediaQueryExpr>>,
+    /// The expanded condition of each custom container, without references.
+    pub custom_containers: Option<Record<String>>,
     /// Variables grouped by namespace; the empty namespace holds the others.
     pub variables: Option<Record<Vec<ManifestVariable>>>,
     pub mixins: Option<Vec<MixinDefinition>>,
@@ -154,6 +157,7 @@ impl MasterCssManifest {
             animation_variables: section(&mut object, "animationVariables")?,
             keyframes,
             custom_media,
+            custom_containers: section(&mut object, "customContainers")?,
             variables,
             mixins,
             utilities,
@@ -226,7 +230,7 @@ impl Serialize for MasterCssManifest {
                 None => manifest.skip_field(name),
             }
         }
-        let mut manifest = serializer.serialize_struct("MasterCssManifest", 10)?;
+        let mut manifest = serializer.serialize_struct("MasterCssManifest", 11)?;
         manifest.serialize_field("version", &MANIFEST_VERSION)?;
         manifest.serialize_field("languageVersion", &LANGUAGE_VERSION)?;
         field(&mut manifest, "theme", &self.theme)?;
@@ -237,6 +241,7 @@ impl Serialize for MasterCssManifest {
         )?;
         field(&mut manifest, "keyframes", &self.keyframes)?;
         field(&mut manifest, "customMedia", &self.custom_media)?;
+        field(&mut manifest, "customContainers", &self.custom_containers)?;
         field(&mut manifest, "variables", &self.variables)?;
         field(&mut manifest, "mixins", &self.mixins)?;
         field(&mut manifest, "utilities", &self.utilities)?;
