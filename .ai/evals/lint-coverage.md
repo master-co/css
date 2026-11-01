@@ -21,6 +21,8 @@ successful lint reports. CLI stylish output now states coverage on stderr, even
 when clean or empty. Exit behavior is unchanged; a no-input run can exit zero.
 With `--fix`, coverage remains the input set while diagnostics describe rechecked
 content. The scope is selected inputs and enabled rules, not browser verification.
+`coverage.description` explains what ran and states that `manifest.entries` lists
+stylesheet entries rather than source inputs, while `files` lists diagnostics.
 
 This changes host reporting, not Rust lint, extraction, CSS or autofix semantics.
 The existing tooling summarizer and package boundaries are unchanged. Reference
@@ -61,3 +63,25 @@ This tests report comprehension, not seven-case repair behavior or causal
 improvement over v4. Two calls per scenario do not establish a general reliability
 rate. Keep raw events, prompts, outputs, usage, fixture provenance and audit outside
 the repository; add the observed result without regrading historical campaigns.
+
+## First campaign and bounded follow-up
+
+The first frozen campaign (`6a0bb5250`) completed all sixteen calls: ten passed,
+six failed, none unverified. Every count, checked path, error flag and verification
+limit was correct. The six failures were `sourceCheck`: both clean-file calls,
+one fixed-file call, both MCP project calls and one MCP buffer call. Their prose
+contradicted the correct counts, treating empty manifest entries or diagnostic
+results as absent source checks. This result is retained without regrading.
+
+The follow-up adds a self-contained `coverage.description` to the real reports,
+including the distinction between manifest stylesheet entries and lint inputs.
+Freeze that change, then run the same eight fixtures twice with the same prompt,
+model, budget and grading. Do not inject corrective feedback from the first
+campaign into the model calls. This is a separate development iteration; the
+first campaign's failures remain part of the record. A successful follow-up would
+support comprehension of the final report, not a randomized causal comparison.
+
+Before the first campaign, the initial artifact collector incorrectly assumed
+the preset had a `dist` directory and exited before any model invocation. It was
+corrected to hash the actual preset source, native binding and downstream artifacts;
+prepare-only validation then passed before freezing the first campaign.

@@ -480,7 +480,7 @@ describe('@master/css-mcp', () => {
       }))
 
       expect(report.version).toBe(5)
-      expect(report.coverage).toEqual({ status: 'complete', checkedFiles: [resolve(root, 'src/Component.tsx')] })
+      expect(report.coverage).toEqual({ status: 'complete', checkedFiles: [resolve(root, 'src/Component.tsx')], description: expect.any(String) })
       expect(report.summary).toMatchObject({ checkedFiles: 1, filesWithDiagnostics: 1 })
       expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
@@ -515,7 +515,7 @@ describe('@master/css-mcp', () => {
         expect(report.summary).not.toHaveProperty('files')
       }
       const clean = parseToolJSON(await connection.client.callTool({ name: 'mastercss_lint_content', arguments: { context: 'preset', filePath: 'virtual.html', content: '<div class="block"></div>' } }))
-      expect(clean.coverage).toEqual({ status: 'complete', checkedFiles: [join(root, 'virtual.html')] })
+      expect(clean.coverage).toEqual({ status: 'complete', checkedFiles: [join(root, 'virtual.html')], description: expect.stringContaining('Source lint ran') })
       expect(clean.files).toEqual([])
       expect(clean.summary).toMatchObject({ checkedFiles: 1, filesWithDiagnostics: 0 })
       writeFileSync(join(root, 'index.css'), '@import "@master/css"; .btn { @contents; }')

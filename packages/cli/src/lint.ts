@@ -44,7 +44,7 @@ interface CLILintReport {
     diagnostics: MasterCSSLintSourceDiagnostic[]
   }
   files: MasterCSSLintFileResult[]
-  coverage: { status: 'complete' | 'no-inputs' | 'not-run', checkedFiles: string[] }
+  coverage: { status: 'complete' | 'no-inputs' | 'not-run', checkedFiles: string[], description: string }
   summary: Omit<MasterCSSLintSummary, 'files'> & { checkedFiles: number, filesWithDiagnostics: number }
 }
 
@@ -112,7 +112,15 @@ function createReport(cwd: string, manifest: CLILintReport['manifest'], files: M
     cwd,
     manifest,
     files,
-    coverage: { status: manifest.status === 'error' ? 'not-run' : checkedFiles.length ? 'complete' : 'no-inputs', checkedFiles },
+    coverage: {
+      status: manifest.status === 'error' ? 'not-run' : checkedFiles.length ? 'complete' : 'no-inputs',
+      checkedFiles,
+      description: manifest.status === 'error'
+        ? 'Source lint did not run because manifest loading failed. Manifest diagnostics are not checked source files.'
+        : checkedFiles.length
+          ? 'Source lint ran on every path in checkedFiles with the enabled rules. The files array lists only diagnostic results; an empty files array means those inputs produced no diagnostics. manifest.entries lists stylesheet entries used to load the manifest, not linted source inputs. Browser behavior is not checked.'
+          : 'No source inputs matched, so source lint did not run. Zero diagnostics does not verify any source file or browser behavior.'
+    },
     summary: { ...summary, checkedFiles: checkedFiles.length, filesWithDiagnostics: files.filter(file => file.sourceKind !== 'manifest' && file.diagnostics.length).length }
   }
 }

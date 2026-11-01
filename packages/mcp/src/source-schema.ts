@@ -29,7 +29,7 @@ export const lintFile = z.object({
     source: z.literal('Master CSS'), sourceKind: z.string(), fixes: z.array(sourceFix).optional()
   }))
 })
-export const lintCoverage = z.object({ status: z.enum(['complete', 'no-inputs']), checkedFiles: strings })
+export const lintCoverage = z.object({ status: z.enum(['complete', 'no-inputs']), checkedFiles: strings, description: z.string() })
 export const lintSummary = counts('checkedFiles', 'filesWithDiagnostics', 'diagnostics', 'errors', 'warnings', 'fixable', 'safeFixes')
 export const formatFile = z.object({ filePath: z.string(), languageId: z.string(), edits: z.array(z.object({ range: location, newText: z.string() })), changed: z.boolean(), beforeBytes: count, afterBytes: count })
 const discovered = z.object({ latent: strings, valid: strings, invalid: strings, usedNative: strings })

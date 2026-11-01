@@ -94,7 +94,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
     "lifecycle": "This operation does not write workspace files."
   },
   "mastercss_lint_project": {
-    "purpose": "Run native class diagnostics over selected files. In lint payload v5, `coverage.checkedFiles` lists checked inputs, `summary.checkedFiles` counts them, and `summary.filesWithDiagnostics` counts files with diagnostics; the ambiguous v4 `summary.files` is removed. `files` contains diagnostic results only. `coverage.status` is `complete` or `no-inputs`; zero diagnostics with no inputs does not verify source. Manifest failures remain MCP error results. Use the project’s ESLint command separately for its parser, plugin settings, and team rules.",
+    "purpose": "Run native class diagnostics over selected files. In lint payload v5, `coverage.checkedFiles` lists checked inputs, `summary.checkedFiles` counts them, and `summary.filesWithDiagnostics` counts files with diagnostics; the ambiguous v4 `summary.files` is removed. `files` contains diagnostic results only. `coverage.status` is `complete` or `no-inputs`; zero diagnostics with no inputs does not verify source. `coverage.description` explains these fields: manifest stylesheet entries are not linted source inputs. Manifest failures remain MCP error results. Use the project’s ESLint command separately for its parser, plugin settings, and team rules.",
     "example": {
       "patterns": [
         "src/button.html"

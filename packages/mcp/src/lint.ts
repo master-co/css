@@ -66,7 +66,13 @@ function lintInputs(
 function lintCoverage(files: MasterCSSLintFileResult[], checkedFiles: string[]) {
   const { files: _files, ...summary } = summarizeMasterCSSLintFiles(files)
   return {
-    coverage: { status: checkedFiles.length ? 'complete' as const : 'no-inputs' as const, checkedFiles },
+    coverage: {
+      status: checkedFiles.length ? 'complete' as const : 'no-inputs' as const,
+      checkedFiles,
+      description: checkedFiles.length
+        ? 'Source lint ran on every path in checkedFiles with the enabled rules. The files array lists only diagnostic results; an empty files array means those inputs produced no diagnostics. manifest.entries lists stylesheet entries used to load the manifest, not linted source inputs. Browser behavior is not checked.'
+        : 'No source inputs matched, so source lint did not run. Zero diagnostics does not verify any source file or browser behavior.'
+    },
     summary: { ...summary, checkedFiles: checkedFiles.length, filesWithDiagnostics: files.filter(file => file.diagnostics.length).length }
   }
 }
