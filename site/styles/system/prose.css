@@ -4,7 +4,7 @@
   /* One line unit (--line, 28px at 16px) sets the vertical rhythm: paragraphs part by three quarters of it, sections
      open on two lines, wide blocks keep one line of air. */
   .ui-prose { --measure: 41rem; --bleed: 2rem; --line: 1.75rem; color: var(--ui-text-body); font-size: var(--ui-text-base); line-height: var(--ui-leading-body); }
-  .ui-prose > :is(p, ul, ol, h2, h3, h4, blockquote, .ui-callout, .ui-disclosure, hr):not(.ui-steps) { max-width: var(--measure); }
+  .ui-prose > :is(p, ul, ol, h2, h3, h4, blockquote, .ui-callout, .ui-disclosure, hr):not(:where(.ui-steps)) { max-width: var(--measure); }
   .ui-prose > :is(.ui-tray, .ui-code, .ui-table, .ui-index) { margin-inline: calc(var(--bleed) * -1); }
   @media (width < 52rem) { .ui-prose { --bleed: 0rem; } }
   .ui-prose > :is(p, ul, ol, blockquote) { margin-block: calc(var(--line) * .75); }
