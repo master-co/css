@@ -138,7 +138,7 @@ Interactivity does not determine ownership. Reference owns complete scales, pale
 
 A documentation migration moves content, visual specimens and interactions together. Before deleting an original presentation, its public replacement must pass visual and functional comparison. Keeping a component only in the Design System gallery does not preserve the documentation experience. Use the task's approved visual reference; `fef197a78` records the original 2026-09-29 restoration baseline. The unified `components/demo/` primitives remain the implementation owner.
 
-Reference pages are structured sheets (`reference/sheets.ts`; pages, groups and examples in `reference/sheet-editorial.ts`) that document only Master CSS syntax, tokens, recipes and directives, never native CSS behavior. Token and recipe pages read Classes → Values → Usage → Customize: Classes maps each class pattern to its declarations; Values lists one token per line without previews; Usage previews several values in one quiet composition whose displayed source keeps only the page's own classes (`…` stands for the rest) beside their generated CSS; Customize shows the `@theme` or `@utility` change. Tables use the shared `.doc-table` and bleed with code; the preview stage and its source share the Guide's demo shell. Guide keeps the visual comparisons needed to make a design decision.
+Reference pages are structured sheets (`reference/sheets.ts`; pages, groups and examples in `reference/sheet-editorial.ts`) that document only Master CSS syntax, tokens, recipes and directives, never native CSS behavior. Token and recipe pages read Classes → Values → Usage → Customize: Classes maps each class pattern to its declarations; Values lists one token per line without previews; Usage previews several values in one quiet composition whose displayed source keeps only the page's own classes (`…` stands for the rest) beside their generated CSS; Customize shows the `@theme` or `@utility` change. Tables use `ui-table` and bleed with code; each Usage example is one `ui-tray` (stage, source, Generated CSS), like the Guide's demos. Guide keeps the visual comparisons needed to make a design decision.
 
 `FoundationTokens` renders selected Guide scales and `FoundationPalette` renders the full Guide palette from shared facts; the Reference Color page reuses the same palette matrix. `common/foundation-data/specimens.ts` owns the Guide's presentation models; the public compiler resolves their classes. Match those selections and example sources in HTML, search and Markdown/llms. Test semantic coverage and text equivalence, not bans on presentation component names. Keep preset facts separate from editorial advice.
 
@@ -219,6 +219,8 @@ For Layout System and similar foundation demos, prefer one polished practical UI
 ## Design References
 
 Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant Design Foundations guide pages and follow current patterns.
+
+The site interface (shell, examples, data views, demo primitives) uses the Moonstone system in `site/styles/system/`: `ui-*` components with variants on `data-*` and state on native/ARIA attributes, painted only with `--ui-*` roles. Follow its `DESIGN.md`. `specimens.css` and `data.css` are imported by the components that use them. `--ui-*` roles are not utility tokens: teaching and content markup keeps the preset vocabulary below.
 
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 

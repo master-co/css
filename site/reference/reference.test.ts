@@ -404,7 +404,7 @@ test('route payloads preserve Reference content and its parsed render tree', asy
     assert.match(renderDigest, /^[a-f0-9]{64}$/)
     function withoutHighlights(node: any): any {
       if (node.type === 'code') {
-        assert.ok(node.data.prepared.properties.className.includes('code-wrapper'), `${doc.id}: ${node.lang}`)
+        assert.ok(node.data.prepared.properties.className.includes('master-site'), `${doc.id}: ${node.lang}`)
         const { data: _data, ...source } = node
         return source
       }
