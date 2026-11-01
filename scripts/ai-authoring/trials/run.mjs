@@ -1,4 +1,4 @@
-import { spawn, execFileSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { mkdtemp, mkdir, readFile, writeFile, appendFile, cp, readdir } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { tmpdir, userInfo } from 'node:os'
@@ -8,6 +8,7 @@ import { summarize } from '../evaluate.mjs'
 import { profile, schedule, bridgeInstructions, cliWrapper, assertResume, usesCLI, repairFeedback } from './protocol.mjs'
 import { prepare, repository } from './control.mjs'
 import { check } from './check.mjs'
+import { invoke, modelArguments } from './invoke.mjs'
 
 const args=process.argv.slice(2)
 const option=(name,fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback
@@ -25,7 +26,7 @@ const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:
 const digest=x=>createHash('sha256').update(x).digest('hex')
 const toolVersion=digest(await readFile(join(repository,'packages/binding/artifacts/mastercss.node')))
 const corpusHash=digest(await readFile(new URL('fixtures.mjs',import.meta.url)))
-const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../browser-diagnostics.mjs','../color-comparison.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
+const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','invoke.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../browser-diagnostics.mjs','../color-comparison.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
 const tailwindVersion=JSON.parse(await readFile(join(repository,'node_modules/tailwindcss/package.json'),'utf8')).version
 const skillRoot=join(repository,'skills/master-css')
 const skillVariants={},skillContents={}
@@ -49,7 +50,7 @@ for(const pkg of ['cli','mcp','compiler','tooling','css','schema','preset','bind
 const artifactHashes=Object.fromEntries(await Promise.all([...builtFiles,'bun.lock','packages/mcp/dist/bin/index.js','packages/cli/dist/bin/index.js','skills/master-css/SKILL.md','skills/master-css/references/authoring.md','skills/master-css/references/importing.md','skills/master-css/references/troubleshooting.md'].sort().map(async file=>[file,digest(await readFile(join(repository,file)))])))
 const cacheRoot=join(userInfo().homedir,'.cache/mastercss')
 await mkdir(cacheRoot,{recursive:true})
-const common=['exec','--ignore-user-config','--ephemeral','--skip-git-repo-check','--json','--disable','memories','--disable','multi_agent','--disable','plugins','--disable','apps','--enable','skip_host_skill_discovery','-c','skills.include_instructions=false','-c','project_doc_max_bytes=0','-c','web_search="disabled"','-c','model_reasoning_effort="low"','-c','approval_policy="never"','-s','workspace-write']
+const common=modelArguments
 const protocol={version:2,profile:selection.name,revision,corpusHash,harnessHashes,artifactHashes,skillVariants,feedbackModes:selection.feedbackModes,toolVersion,clientVersion,tailwindVersion,models,reasoning:'low',repeats,arms,tasks:tasks.map(t=>t.id),timeoutMs,maxRepairRounds:2,concurrency,
   modelRevisionLimit:'These are recorded service model identifiers. The service does not expose immutable weight revision IDs in exec output.',
   isolation:'Fresh CLI session and directory per trial. Automatic skill instructions/catalog, host skill discovery, plugins, apps, memory and web search disabled; baseline instructions supplied explicitly. Skill arms receive the project skill with an explicit path, so this tests instruction use, not autonomous skill discovery. Filesystem isolation permits dependency reads; this is not a security boundary against access to other local files.',
@@ -74,40 +75,6 @@ for(const trial of trials) {
 
 const browser=await chromium.launch()
 
-async function invoke(work,model,prompt,folder,attempt,arm) {
-  const config=[...common,'--add-dir',cacheRoot,'-C',work,'-m',model]
-  if(arm.includes('mcp')) {
-    config.push('-c',`mcp_servers.master.command=${JSON.stringify(process.execPath)}`,'-c',`mcp_servers.master.args=${JSON.stringify([join(repository,'packages/mcp/dist/bin/index.js'),'--root',work])}`,'-c','mcp_servers.master.required=true')
-    if(arm!=='skill-mcp-bridge') config.push('-c','mcp_servers.master.disabled_tools=["mastercss_suggest_classes"]')
-  }
-  config.push('-')
-  await writeFile(join(folder,`attempt-${attempt}.prompt.txt`),prompt)
-  await writeFile(join(folder,`attempt-${attempt}.command.json`),JSON.stringify(config))
-  const invokedAt=Date.now()
-  const child=spawn('codex',config,{stdio:['pipe','pipe','pipe'],detached:true})
-  let stdout='',stderr='',timedOut=false
-  child.stdout.on('data',chunk=>{stdout+=chunk})
-  child.stderr.on('data',chunk=>{stderr+=chunk})
-  child.stdin.end(prompt)
-  let killTimer
-  const timer=setTimeout(()=>{timedOut=true;try{process.kill(-child.pid,'SIGTERM')}catch{};killTimer=setTimeout(()=>{try{process.kill(-child.pid,'SIGKILL')}catch{}},5000)},timeoutMs)
-  const exit=await new Promise(resolve=>{child.on('error',error=>resolve({error:error.message}));child.on('close',(code,signal)=>resolve({code,signal}))})
-  clearTimeout(timer)
-  clearTimeout(killTimer)
-  await writeFile(join(folder,`attempt-${attempt}.events.jsonl`),stdout)
-  await writeFile(join(folder,`attempt-${attempt}.stderr.log`),stderr)
-  const events=stdout.split('\n').filter(Boolean).flatMap(line=>{try{return [JSON.parse(line)]}catch{return []}})
-  const answer=events.filter(e=>e.type==='item.completed'&&e.item?.type==='agent_message').map(e=>e.item.text).join('\n')
-  const usage=events.findLast(e=>e.type==='turn.completed')?.usage
-  const toolCalls=events.filter(e=>e.type==='item.completed'&&['command_execution','mcp_tool_call','web_search','file_change'].includes(e.item?.type)).length
-  const failed=timedOut||exit.code!==0||events.some(e=>e.type==='turn.failed')
-  const unavailable=failed&&/usage.limit|insufficient.quota|rate.limit.exceeded|authentication|unauthorized|failed to initialize|requires login/i.test(stdout+'\n'+stderr)
-  const hostSkillRead=events.some(e=>e.type==='item.completed'&&e.item?.type==='command_execution'&&/\/(?:\.codex|\.agents)\/skills\//.test(e.item.command??'')&&!e.item.command.includes(work+'/.agents/skills/'))
-  const mcpCalls=events.filter(e=>e.type==='item.completed'&&e.item?.type==='mcp_tool_call')
-  return {answer,usage,toolCalls,timedOut,exit,failed,unavailable,hostSkillRead,durationMs:Date.now()-invokedAt,
-    mcpCalls:mcpCalls.length,mcpErrors:mcpCalls.filter(e=>e.item.error||e.item.status==='failed').length,
-    mcpSuggestions:mcpCalls.filter(e=>e.item.tool==='mastercss_suggest_classes').length}
-}
 
 async function trial({id,task,arm,model,repeat}) {
   const folder=join(root,id),work=join(folder,'work')
@@ -134,7 +101,7 @@ async function trial({id,task,arm,model,repeat}) {
   for(let attempt=0;attempt<=2;attempt++) {
     repairRounds=attempt
     const feedback=attempt?repairFeedback(verdict.checks,feedbackMode):''
-    const run=await invoke(work,model,prompt+feedback,folder,attempt,arm)
+    const run=await invoke({work,model,prompt:prompt+feedback,folder,attempt,arm,common,cacheRoot,repository,timeoutMs})
     if(run.unavailable||run.hostSkillRead) infrastructureFailure={id,attempt,reason:run.hostSkillRead?'Unexpected personal skill access':'Model service or MCP unavailable'}
     attempts.push(run)
     try {verdict=await check(work,task.id,browser,repository,run.answer,baseline,{includeDiagnostics:feedbackMode==='browser-evidence'})}

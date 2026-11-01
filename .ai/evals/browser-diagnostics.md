@@ -188,7 +188,7 @@ overridden by its utilities-layer resting background; the other also retained an
 unresolved class and incorrect text color. The report exposed candidates but did
 not ensure a correct repair. Next compare a compact, property-focused diagnostic
 against the full report on **identical failed snapshots**, keeping initial errors
-fixed and verifying hover after each repair. Do not claim a general improvement
+fixed and verifying hover after each repair; see the [paired-repair protocol](repair-snapshots.md). Do not claim a general improvement
 or expand the public tool surface based on this pilot alone.
 
 External artifacts contain all prompts, events, snapshots, comparison, audit and
