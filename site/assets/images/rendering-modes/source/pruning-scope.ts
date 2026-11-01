@@ -4,28 +4,17 @@ import { drawing, type Theme } from './materials'
 export default {
   id: 'pruning-scope',
   render(theme: Theme) {
-    const { p, text, line, surface, svg } = drawing(theme)
+    const { row, rule, label, icon, sheet, text, route, scene } = drawing(theme)
     const l = deliveryIllustrations['pruning-scope'].labels
-    const content = `
-      ${surface(160, 8, 240, 136)}
-      ${text(180, 42, l.shared, 20, p.ink, 500)}
-      ${text(180, 71, l.policy, 18, p.muted)}
-      ${text(180, 101, l.sharedCard, 18)}
-      ${text(180, 127, l.sharedOnlyB, 18)}
-
-      ${line('M280 155V176H130V231', 'marker-end="url(#arrow)"')}
-      ${line('M280 176H430V231', 'marker-end="url(#arrow)"')}
-      ${text(96, 209, l.aUsage, 18, p.muted, 400, 'text-anchor="end"')}
-      ${text(464, 209, l.bUsage, 18, p.muted)}
-
-      ${surface(10, 244, 240, 108)}
-      ${text(30, 277, l.aOutput, 20, p.ink, 500)}
-      ${text(30, 309, l.aCard, 18)}
-      ${surface(310, 244, 240, 108)}
-      ${text(330, 277, l.bOutput, 20, p.ink, 500)}
-      ${text(330, 309, l.bCard, 18)}
-      ${text(330, 335, l.bOnlyB, 18)}
-    `
-    return svg(560, 360, deliveryFlow('pruning-scope').title, deliveryFlowDescription('pruning-scope'), content, 20)
+    return scene(deliveryFlow('pruning-scope').title, deliveryFlowDescription('pruning-scope'), `
+      ${sheet(252, 80, 216, 132, row(icon('fileCode') + label(l.shared)) + label(l.policy, 'code') + rule + label(l.sharedCard, 'code') + label(l.sharedOnlyB, 'code'))}
+      ${route('M360 212V248', { arrow: false })}
+      ${route('M360 248H188Q180 248 180 256V302')}
+      ${route('M360 248H532Q540 248 540 256V302')}
+      ${text(170, 268, l.aUsage, 'edge', 'end')}
+      ${text(550, 268, l.bUsage, 'edge')}
+      ${sheet(80, 304, 200, 72, row(icon('file') + label(l.aOutput)) + label(l.aCard, 'code'))}
+      ${sheet(440, 304, 200, 96, row(icon('file') + label(l.bOutput)) + label(l.bCard, 'code') + label(l.bOnlyB, 'code'))}
+    `)
   }
 }

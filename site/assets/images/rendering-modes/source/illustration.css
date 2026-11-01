@@ -1,0 +1,74 @@
+/*
+ * Illustration primitives drawn with the site's own tokens (`site/styles/system/tokens.css`), at 1:1 with the
+ * article: the 720px scene shows at the wide media width (712px on desktop), so a 14px label reads as 14px.
+ * Artifacts are sheets, operations are control-sized chips, groups are eyebrow captions over a hairline partition:
+ * the figure is a tray's stage, so nothing in it forms another nested frame. Nothing invents a colour.
+ */
+@font-face { font-family: Geist; font-weight: 100 900; src: url("../../../../public/fonts/GeistVariable.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url("../../../../public/fonts/IBMPlexMono-Regular.woff2") format("woff2"); }
+
+:root { color-scheme: light; }
+:root.dark { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--ui-stage-light), var(--ui-surface-stage);
+  color: var(--ui-text-body); font: var(--ui-weight-regular) 13px/20px Geist, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.scene { position: relative; overflow: hidden; }
+.scene > * { position: absolute; }
+
+/* Routes: one hairline ink, a chevron head, dashes only for a labelled condition */
+.routes { inset: 0; overflow: visible; }
+.routes path { fill: none; stroke: var(--ui-line-mark); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
+.routes path[data-dashed] { stroke-dasharray: 3 4; }
+.routes marker path { stroke: var(--ui-text-disabled); stroke-width: 1.25; }
+.routes path[marker-end] { stroke: var(--ui-text-disabled); }
+
+/* Type: the documentation's small sizes at its light regular weight */
+.title { color: var(--ui-text-strong); font-size: 14px; font-weight: var(--ui-weight-medium); line-height: 20px; white-space: nowrap; }
+.note { color: var(--ui-text-muted); font-size: 13px; line-height: 20px; white-space: nowrap; }
+.body { color: var(--ui-text-body); font-size: 13px; line-height: 20px; white-space: nowrap; }
+.edge { color: var(--ui-text-muted); font-size: 12px; line-height: 16px; white-space: nowrap; }
+.code { color: var(--ui-text-body); font: 400 12.5px/20px "IBM Plex Mono", monospace; white-space: nowrap; }
+.eyebrow { color: var(--ui-text-muted); font-size: 11px; font-weight: var(--ui-weight-medium); line-height: 16px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; }
+.center { translate: -50% 0; text-align: center; }
+.end { translate: -100% 0; text-align: right; }
+.icon { flex: none; width: 16px; height: 16px; color: var(--ui-text-muted); }
+.icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* An artifact: the sheet face at rise-1, the small card radius */
+.sheet {
+  display: flex; flex-direction: column; gap: 4px; padding: 13px 16px 14px;
+  border-radius: var(--ui-radius-xl);
+  background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo));
+  box-shadow: var(--ui-elevation-rise-1);
+}
+.sheet > .row { display: flex; align-items: center; gap: 8px; min-height: 20px; }
+.sheet > .rule { height: 1px; margin: 7px -16px 5px; background: var(--ui-line-hair); }
+.sheet .bars { display: grid; gap: 9px; padding-top: 8px; }
+.sheet .bars i { display: block; height: 5px; border-radius: 3px; background: var(--ui-line-divider); }
+
+/* An operation: a control-sized chip, like a button at rest */
+.chip {
+  display: flex; align-items: center; justify-content: center; gap: 8px; height: 32px; padding: 0 12px 0 10px;
+  border-radius: var(--ui-radius-md);
+  background: linear-gradient(180deg, var(--ui-surface-sheet), var(--ui-surface-sheet-lo));
+  box-shadow: var(--ui-elevation-rise-1);
+  color: var(--ui-text-strong); font-size: 13.5px; font-weight: var(--ui-weight-medium); white-space: nowrap;
+}
+
+/* A plain mark: an icon beside a title, with no frame */
+.mark { display: flex; align-items: center; gap: 8px; }
+
+/* A boundary between two places: one hairline partition, each side captioned by an eyebrow */
+.divider { width: 1px; background: var(--ui-line-divider); }
+
+/* A window: one contour, a tray-tone toolbar with its dots only */
+.window { overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-stage); box-shadow: var(--ui-elevation-rise-1); }
+.window > .toolbar { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: var(--ui-surface-tray); }
+.window > .toolbar i { width: 7px; height: 7px; border-radius: 50%; background: var(--ui-line-strong); }
+.window > .bars { display: grid; gap: 10px; padding: 18px 20px; }
+.window > .bars i { display: block; height: 5px; border-radius: 3px; background: var(--ui-line-divider); }
+.window > .bars i:first-child { height: 8px; border-radius: 4px; background: var(--ui-line-strong); }

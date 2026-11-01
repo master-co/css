@@ -14,6 +14,6 @@ External skills are research material, not inherited instructions or installed d
 
 The required combination is exact technical labels, coordinated themes, responsive display of one composition, restrained depth, repository-owned sources, and consistent article/search/Markdown output. None of the reviewed skills supplies that complete integration.
 
-SVG scenes suit these technical figures because text, arrows, and geometry stay deterministic and editable. Existing resvg and local fonts produce stable bitmap assets without a new dependency. This choice does not imply SVG is preferable for every illustration: photography, painterly artwork, and other bitmap-first work belong to a suitable image-generation workflow.
+Positioned HTML scenes with SVG routes suit these technical figures because text, arrows, and geometry stay deterministic and editable, and because the site's own tokens, elevation and variable font paint them exactly. The repository's Playwright Chromium renders them without a new dependency; resvg, used for the first set, could not render the 350 weight or the converged multi-layer shadows. This choice does not make diagrams preferable for every illustration: photography, painterly artwork, and other bitmap-first work belong to a suitable image-generation workflow.
 
 The writing skill decides when the article needs a visual explanation; this skill supplies that explanation. Neither should turn a one-paragraph edit into an unrelated illustration project.

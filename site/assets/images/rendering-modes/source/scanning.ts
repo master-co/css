@@ -4,33 +4,21 @@ import { drawing, type Theme } from './materials'
 export default {
   id: 'scanning',
   render(theme: Theme) {
-    const { p, text, rect, line, surface, svg } = drawing(theme)
+    const { row, label, icon, bars, sheet, chip, route, scene } = drawing(theme)
     const l = deliveryIllustrations.scanning.labels
-    return svg(600, 400, deliveryFlow('scanning').title, deliveryFlowDescription('scanning'), `
-      <path d="M44 42H230L258 70V170Q258 180 248 180H44Q34 180 34 170V52Q34 42 44 42Z" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/>
-      <path d="M230 43V65Q230 70 235 70H257" fill="none" stroke="${p.edgeBottom}"/>
-      ${text(54, 80, l.source, 20, p.ink, 500)}
-      ${text(54, 120, l.redSource, 18, p.muted)}
-      ${text(54, 150, l.greenSource, 18, p.muted)}
-      ${line('M146 194V224', 'marker-end="url(#arrow)"')}
-      ${text(166, 216, l.extract, 18, p.muted)}
+    return scene(deliveryFlow('scanning').title, deliveryFlowDescription('scanning'), `
+      ${sheet(48, 96, 200, 96, row(icon('fileCode') + label(l.source)) + label(l.redSource, 'code') + label(l.greenSource, 'code'))}
+      ${route('M248 144H302')}
+      ${chip(304, 128, 112, 'scan', l.extract)}
+      ${route('M416 144H470')}
+      ${sheet(472, 96, 200, 96, row(icon('code') + label(l.candidates)) + label(l.red, 'code') + label(l.green, 'code'))}
 
-      ${text(54, 262, l.candidates, 20, p.ink, 500)}
-      ${text(54, 296, l.red, 18, p.muted)}
-      ${text(54, 326, l.green, 18, p.muted)}
-      ${line('M204 299H336', 'marker-end="url(#arrow)"')}
-      ${text(270, 279, l.resolve, 18, p.muted, 400, 'text-anchor="middle"')}
-
-      ${surface(352, 60, 212, 98, 8)}
-      ${text(370, 99, l.definitions, 20, p.ink, 500)}
-      ${text(370, 131, l.context, 18, p.muted)}
-      ${line('M458 172V228', 'marker-end="url(#arrow)"')}
-
-      ${rect(360, 252, 198, 100, 8, p.inset, `stroke="${p.line}"`)}
-      ${surface(352, 244, 212, 100, 8)}
-      ${text(370, 279, l.output, 20, p.ink, 500)}
-      ${rect(370, 299, 166, 4, 2, p.blockStrong)}
-      ${rect(370, 317, 128, 4, 2, p.blockStrong)}
-    `, 0)
+      ${route('M572 192V256Q572 264 564 264H368Q360 264 360 272V326')}
+      ${sheet(48, 304, 200, 80, row(icon('layers') + label(l.definitions)) + label(l.context, 'note'))}
+      ${route('M248 344H302')}
+      ${chip(304, 328, 112, 'cpu', l.resolve)}
+      ${route('M416 344H470')}
+      ${sheet(472, 304, 200, 80, row(icon('file') + label(l.output)) + bars(82, 58))}
+    `)
   }
 }

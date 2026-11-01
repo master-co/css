@@ -1,6 +1,6 @@
 ---
 name: master-css-doc-illustrations
-description: "Create and refine technical illustrations for Master CSS Guide, Reference, and Blog articles: delivery flows, structure, scope boundaries, and visual comparisons. Produce editable 3:2 SVG scenes and coordinated light/dark images, with one composition across screen sizes and equivalent article text. Exclude homepage icons, brand design, photography, and statistical charts."
+description: "Create and refine technical illustrations for Master CSS Guide, Reference, and Blog articles: delivery flows, structure, scope boundaries, and visual comparisons. Draw editable 3:2 scenes in the site design system at 1:1 article scale and render coordinated light/dark images, with one composition across screen sizes and equivalent article text. Exclude homepage icons, brand design, photography, and statistical charts."
 ---
 
 # Master CSS documentation illustrations
@@ -24,17 +24,17 @@ Read [composition](references/composition.md) to choose a visual structure and [
 
 1. Choose a structure that expresses the relationship. Use a container only for an actual group, artifact, or boundary.
 2. Keep the labels short, with a compact, consistent type scale proportional to the objects and canvas. Let the surrounding prose carry the explanation. Make the primary path obvious before adding exceptions.
-3. Author one SVG scene with shared labels and theme parameters on a landscape **3:2 outer canvas**, including all padding (for example, 600 × 400 logical pixels). Keep balanced margins and moderate whitespace between groups, with objects, labels, connectors and shadows inside the canvas. Choose their scale for readability and visual balance. Use the same composition on desktop and mobile; the image element scales proportionally to fill the article media width without a separate centered width cap. Full-width display does not require the drawn content to occupy the whole canvas.
-4. Render light and dark images from that source using the existing toolchain and local fonts. Inspect the exported pixels, then inspect the figure in its article at the actual size.
+3. Author one scene with shared labels on the **720 × 480** (3:2) canvas, including all margins: the article's wide media width, so a scene pixel is a CSS pixel on desktop. Draw with the site design system at its own sizes, through the shared primitives and `--ui-*` tokens, so the figure reads as the interface around it rather than a picture of it. Keep balanced margins and moderate whitespace between groups, with everything inside the canvas. Use the same composition on desktop and mobile; the image scales proportionally to fill the media width. Full-width display does not require the drawn content to occupy the whole canvas.
+4. Render light and dark images from that source with the rendering helper. Inspect the exported pixels, then inspect the figure in its article at the actual size, beside the tray title and body text.
 5. Retain the source, output images, caption, and meaningful text equivalent. Update the relevant search/Markdown adapter when integration requires it.
 
-Use [the rendering helper](scripts/render.ts) for the current scene interface. Its dimension checks do not establish correct semantics, legible labels, or good composition; review those separately. Do not add a rendering dependency or a diagram framework for an ordinary figure.
+Use [the rendering helper](scripts/render.ts) for the current scene interface. Its font, bounds and dimension checks do not establish correct semantics, legible labels, or good composition; review those separately. Do not add a rendering dependency, a diagram framework, or colours and shadows outside the design system's tokens.
 
 If the user requests a style sample, deliver and verify that concrete sample before asking for confirmation; then wait before treating it as approved or extending its style to the remaining batch. Otherwise complete authorized illustration work without introducing an approval gate.
 
 ## Finish
 
-A finished figure fits its 3:2 canvas with balanced whitespace, has correct relationships, readable labels, consistent theme variants, responsive sizing of the same composition, and an equivalent explanation in the relevant outputs. It is placed beside the lesson and does not replace necessary code or observable results.
+A finished figure fits its 3:2 canvas with balanced whitespace, matches the surrounding interface in material and size, has correct relationships, readable labels, consistent theme variants, responsive sizing of the same composition, and an equivalent explanation in the relevant outputs. It is placed beside the lesson and does not replace necessary code or observable results.
 
 Report the figure and source locations, substantive visual choices, actual verification, and remaining limits. Distinguish a style candidate from an approved baseline, and a browser preview from committed article integration.
 

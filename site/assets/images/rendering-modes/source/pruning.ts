@@ -4,30 +4,20 @@ import { drawing, type Theme } from './materials'
 export default {
   id: 'pruning',
   render(theme: Theme) {
-    const { p, text, line, surface, svg } = drawing(theme)
+    const { row, label, icon, sheet, text, route, scene } = drawing(theme)
     const l = deliveryIllustrations.pruning.labels
-    const content = `
-      ${text(8, 46, l.usage, 20, p.ink, 500)}
-      ${text(8, 82, l.classes, 18, p.muted)}
-      ${line('M258 65H306', 'marker-end="url(#arrow)"')}
-      ${surface(320, 12, 232, 106)}
-      ${text(340, 52, l.entry, 20, p.ink, 500)}
-      ${text(340, 89, l.entryPolicy, 18, p.muted)}
+    return scene(deliveryFlow('pruning').title, deliveryFlowDescription('pruning'), `
+      ${sheet(48, 72, 200, 72, row(icon('fileCode') + label(l.usage)) + label(l.classes, 'note'))}
+      ${route('M248 108H470')}
+      ${sheet(472, 72, 200, 72, row(icon('fileCode') + label(l.entry)) + label(l.entryPolicy, 'code'))}
 
-      ${line('M436 132V160H128V200', 'marker-end="url(#arrow)"')}
-      ${line('M436 160V200', 'marker-end="url(#arrow)"')}
-      ${text(280, 192, l.imports, 18, p.muted, 400, 'text-anchor="middle"')}
-
-      ${surface(8, 214, 240, 112)}
-      ${text(28, 250, l.local, 20, p.ink, 500)}
-      ${text(28, 283, l.localPolicy, 18, p.muted)}
-      ${text(28, 313, l.used, 18)}
-      ${surface(312, 214, 240, 112)}
-      ${text(332, 250, l.external, 20, p.ink, 500)}
-      ${text(332, 283, l.default, 18, p.muted)}
-      ${text(332, 313, l.all, 18)}
-      ${text(280, 354, l.policy, 18, p.muted, 400, 'text-anchor="middle"')}
-    `
-    return svg(560, 360, deliveryFlow('pruning').title, deliveryFlowDescription('pruning'), content, 20)
+      ${route('M572 144V200', { arrow: false })}
+      ${route('M572 200H156Q148 200 148 208V246')}
+      ${route('M572 200V246')}
+      ${text(360, 178, l.imports, 'edge', 'center')}
+      ${sheet(48, 248, 200, 96, row(icon('fileCode') + label(l.local)) + label(l.localPolicy, 'code') + label(l.used, 'body'))}
+      ${sheet(472, 248, 200, 96, row(icon('fileCode') + label(l.external)) + label(l.default, 'note') + label(l.all, 'body'))}
+      ${text(360, 384, l.policy, 'note', 'center')}
+    `)
   }
 }

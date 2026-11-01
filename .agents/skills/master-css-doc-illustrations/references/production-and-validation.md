@@ -6,23 +6,23 @@ Follow [site/AI.md](../../../../site/AI.md) for authoritative asset, component, 
 
 Keep scenes and images with their owning guide or feature under `site/assets/images/`. Keep drafts and review sheets outside the public article until they are ready for integration. Preserve unrelated workspace changes.
 
-The current renderer accepts a scene module whose default export has a stable `id` and `render(theme)` method returning `{ width, height, svg }`. Theme is `light` or `dark`; both use one composition for all screen sizes. This is a small authoring interface, not a general diagram schema.
+A scene module's default export has a stable `id` and a `render(theme)` method returning `{ width, height, title, description, html }`. Theme is `light` or `dark`; both use one composition for all screen sizes. Build it with `drawing(theme)` from the rendering-modes [materials](../../../../site/assets/images/rendering-modes/source/materials.ts): absolutely positioned `sheet`, `chip`, `mark`, `text`, `divider` and `window` primitives plus `route` paths, all in scene pixels. Every visible word goes through a primitive that marks it `data-label`, so tests can compare it with the shared labels. Add a primitive or a token-based rule to `illustration.css` instead of styling one scene inline. This is a small authoring interface, not a general diagram schema.
 
-The returned outer dimensions, SVG viewport and exported images must all be landscape 3:2 (`width * 2 === height * 3`), including padding. When using `drawing().svg`, its width and height arguments describe the inner area: `560 × 360` with padding `20` produces a `600 × 400` canvas and `1200 × 800` PNG. Recompose older non-3:2 scenes before producing a revised figure; changing CSS dimensions cannot repair their composition.
+The scene is 720 × 480 (`sceneWidth`, `sceneHeight`), including its margins; the renderer rejects any other ratio than landscape 3:2 and writes a 2× PNG (1440 × 960).
 
 From the repository root:
 
 ```sh
 bun .agents/skills/master-css-doc-illustrations/scripts/render.ts \
-  site/assets/images/rendering-modes/source/progressive.ts \
+  site/assets/images/rendering-modes/source/hydration.ts \
   site/assets/images/rendering-modes
 ```
 
-The helper outputs `<id>-<theme>.svg` and matching 2× PNG files, using the site's local Geist fonts and existing `@resvg/resvg-js`. Author the shared scene and material parameters; regenerate its variants together. The SVG retains text and paths for inspection and editing; the scene remains the source for reproducible changes. Standalone SVG viewing requires the intended font, while the PNG has no font dependency.
+The helper opens the scene in the repository's Playwright Chromium with the site's `tokens.css`, `illustration.css`, the Geist variable font and IBM Plex Mono, then writes `<id>-<theme>.png`. Chromium renders the tokens exactly: `light-dark()` colours, multi-layer `box-shadow` elevation and the 350 weight, which the former resvg path could not. It fails when a font does not load or a label leaves the canvas. The scene module is the editable source; no SVG or HTML output is committed. Regenerate a scene's two variants together, and rerender the set when the shared tokens or primitives change.
 
-The helper checks output dimensions; separately verify the 3:2 ratio and identical light/dark dimensions. Independently verify text bounds, geometry, font appearance, labels, and arrow directions. Do not claim a passing render proves visual correctness. Do not rerender unrelated figures.
+The renderer's checks do not establish correct semantics, legible labels, or good composition; verify text bounds, geometry, labels and arrow directions separately. Do not claim a passing render proves visual correctness.
 
-The three rendering-mode scenes share labels and text descriptions from `site/utils/delivery-flows.ts`. `DeliveryFlow` selects their images through `delivery-illustration-images.ts` and renders `DocumentIllustration`; its existing Markdown adapter keeps the same ordered explanation. The active site theme chooses the paint variant. The image fills the expanded figure width and scales proportionally on every screen; there is no mobile asset or layout switch. This preserves the existing MDX interface.
+The rendering-mode scenes share labels and text descriptions from `site/utils/delivery-flows.ts`. `DeliveryFlow` selects their images through `delivery-illustration-images.ts` and renders `DocumentIllustration` (a tray whose stage is the image); its existing Markdown adapter keeps the same ordered explanation. The active site theme chooses the paint variant. This preserves the existing MDX interface.
 
 ## Integrate
 
@@ -35,9 +35,9 @@ The three rendering-mode scenes share labels and text descriptions from `site/ut
 
 ## Verify at the final scale
 
-Inspect both theme outputs and the actual article column at 390, 768, and 1280px in both themes. Verify that the entire 3:2 image fills the media width with proportional height and no clipping. This width check applies to the image element; assess the drawn content for balanced margins, moderate whitespace and readable scale, without a coverage target. Check 200% zoom/enlarged text as applicable, with readable HTML descriptions available independently of bitmap labels.
+Inspect both theme outputs, then the figure in its article at 1440px beside the tray title and body text: its titles, chips and cards should read as the same interface at the same size. Check 390 and 768px in both themes for proportional scaling. Verify that the entire 3:2 image fills the media width with proportional height and no clipping. This width check applies to the image element; assess the drawn content for balanced margins, moderate whitespace and readable scale, without a coverage target. Check 200% zoom/enlarged text as applicable, with readable HTML descriptions available independently of bitmap labels.
 
-Check for clipped folds and shadows, illegible labels, intersecting text, missing glyphs, illegible paths, false visual grouping, and arrowheads with no shaft or the wrong direction. Compare the set's label sizes, weights and proportions to the objects as well as inspecting each figure alone. Inspect meaningful contrast separately from decorative highlights and grid lines. Browser preview injection is useful for a style study but is not committed integration.
+Check for clipped folds and shadows, illegible labels, intersecting text, missing glyphs, illegible paths, false visual grouping, and arrowheads with no shaft or the wrong direction. Compare the set side by side (a contact sheet of every light and every dark output) for consistent sizes, weights, icons and margins, as well as inspecting each figure alone. Inspect meaningful contrast separately from decorative highlights and grid lines. Browser preview injection is useful for a style study but is not committed integration.
 
 Run the checks appropriate to the actual change:
 

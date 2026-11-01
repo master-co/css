@@ -15,11 +15,11 @@ Choose one primary argument per figure. Split an overloaded lifecycle into adjac
 
 ## Canvas and density
 
-Compose every new or revised figure within a landscape 3:2 outer canvas. Padding, arrowheads, labels and shadow clearance belong inside those dimensions; the article caption and HTML text description remain outside the image.
+Compose every new or revised figure within the 720 × 480 (landscape 3:2) scene, drawn at the interface's own sizes (see [visual language](visual-language.md#scale)). Padding, arrowheads, labels and shadow clearance belong inside those dimensions; the article caption and HTML text description remain outside the image.
 
-Use moderate whitespace around the composition and between groups to separate stages, clarify relationships and give the eye room to follow the paths. Choose object sizes and connector lengths for readable, balanced relationships; canvas coverage is not a target. Do not enlarge objects or spread them to the edges merely to fill the available area.
+Use moderate whitespace around the composition and between groups to separate stages, clarify relationships and give the eye room to follow the paths. Size objects for their content at interface scale (a titled sheet is 48–132px tall, a chip 32px) and connectors for readable, balanced relationships; canvas coverage is not a target. Do not enlarge objects or spread them to the edges merely to fill the available area.
 
-Plan the relationships for this canvas from the start. If the explanation becomes too dense, remove secondary detail, move qualifications into adjacent prose, or split it into several focused 3:2 figures. Keep labels readable at phone width. Reflow an existing tall composition for the canvas while preserving object proportions, readable type and natural spacing.
+Plan the relationships for this canvas from the start. If the explanation becomes too dense, remove secondary detail, move qualifications into adjacent prose, or split it into several focused 3:2 figures. Keep labels few and short, since phones scale the whole scene down. Reflow an existing tall composition for the canvas while preserving object proportions, readable type and natural spacing.
 
 ## Rendering modes examples
 

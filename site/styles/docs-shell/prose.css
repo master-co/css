@@ -37,9 +37,10 @@
   .ui-prose > [role="region"]:has(> :is(.ui-table, table)) { margin: var(--ui-space-xl) calc(var(--prose-bleed) * -1); }
   .ui-prose > [role="region"][tabindex]:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
 
-  /* Media: whole pictures on the code panels' corner, with the quiet perimeter every image keeps. */
+  /* Media: whole pictures on the code panels' corner, with the quiet perimeter every image keeps — except an
+     illustration, which is a tray's stage and is told apart by its tone alone. */
   .ui-prose :is(img, video):not(:where(.site-demo *, [data-demo-container] *)) { height: auto; }
-  .ui-prose :is(img, video):not(:where(.site-demo *, [data-demo-container] *, :focus-visible)) { outline: 1px solid var(--color-line-media); outline-offset: -1px; }
+  .ui-prose :is(img, video):not(:where(.site-demo *, [data-demo-container] *, .document-illustration *, :focus-visible)) { outline: 1px solid var(--color-line-media); outline-offset: -1px; }
   :is(figure, p, a, picture):is(.ui-prose > *) :is(img, video):not(:where(.site-demo *, [data-demo-container] *)), :is(img, video):is(.ui-prose > *) { display: block; width: 100%; max-width: none; border-radius: var(--ui-radius-xl); }
   :is(a, picture):is(.ui-prose > *) { display: block; }
 

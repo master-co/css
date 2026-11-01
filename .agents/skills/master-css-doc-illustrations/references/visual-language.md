@@ -2,38 +2,41 @@
 
 ## Reference and status
 
-The direction comes from the user's light/dark project-structure examples in the [Next.js documentation](https://nextjs.org/docs/app/getting-started/project-structure): neutral surfaces, thin contours, restrained depth, readable labels, and the same structure across themes. These are visual deductions, not claims about Next.js's implementation or exact tokens.
+An illustration is drawn in the site's own interface vocabulary: [`site/styles/system/DESIGN.md`](../../../../site/styles/system/DESIGN.md) (Moonstone / Obsidian) and its [tokens](../../../../site/styles/system/tokens.css). At the desktop article width the figure should be indistinguishable in kind from the UI around it: the same zinc surfaces, hairline contours, small radii, light regular Geist and converged shadows, at the same sizes. Read DESIGN.md before drawing; when it changes, the figures follow it through the shared tokens.
 
-The user accepted the initial direction with specific refinements: **no background grid**, fewer labels and enclosing frames, stronger alignment, more deliberate spacing and typography, and an engineering drawing character. The [Progressive delivery scene](../../../../site/assets/images/rendering-modes/source/progressive.ts) implements that revised brief; [Runtime](../../../../site/assets/images/rendering-modes/source/runtime.ts) and [Hydration](../../../../site/assets/images/rendering-modes/source/hydration.ts) extend it to different relationships.
+The user's earlier refinements still hold: **no background grid**, few labels and frames, strong alignment, deliberate spacing, and an engineering-drawing character. The user later rejected the first set (600 × 400 canvases with 20px labels, a grey canvas and resvg shadows) because, enlarged to the article width, its text and objects were far larger and heavier than the interface. The current set implements the 1:1 direction; [Hydration](../../../../site/assets/images/rendering-modes/source/hydration.ts) is the reference scene.
 
-Reuse their material language while composing new or revised scenes within the required 3:2 canvas.
+## Scale
 
-## Material and hierarchy
+The scene is **720 × 480** logical pixels: the wide media column is 720px and the figure shows at 648–720px inside its tray from tablet to desktop (712px at 1440, 648px at 1280 beside the contents rail), so 1 scene pixel ≈ 1 CSS pixel. Use interface sizes, never sizes chosen to survive scaling. Phones scale the same composition down; keep labels few and short, and rely on the HTML text description there. Do not enlarge the type or add a mobile variant.
 
-- Use white/off-white in light mode and charcoal in dark mode. Reserve stronger contrast for the content and meaningful paths. Routine diagrams do not need brand yellow or a categorical rainbow.
-- Separate contour, contact shadow, and ambient shadow. A fine directional edge identifies the object; a restrained gradient and soft shadow give it depth. Avoid a thick grey halo or bright plastic rim.
-- Treat dark mode independently: lift the top edge and upper surface, keep the lower face restrained, and preserve readable path and label contrast. Do not invert a light image.
-- Keep the background plain. Do not add a grid, technical wallpaper, or decorative crosshairs. Convey engineering precision through alignment, measured clearance, consistent strokes, and deliberate connector routes.
-- Leave quiet space on all four sides and comfortable gaps between groups, including room outside shadows and connectors. Choose margins to suit the scene's density and visual balance, with all whitespace inside the fixed 3:2 canvas. Preserve readable type at the actual article width.
-- Draw recognizable artifacts: a document with a fold, a browser with restrained chrome, or a module with a simple chip detail. Keep them subordinate to the relationships; no decorative dashboards or tiny faux code.
-- Let connected objects share a visual vocabulary while keeping their roles distinct. Equal-size cards are useful for genuinely equivalent alternatives, not a default for every process.
+## Material
 
-The palette and effects live in [materials.ts](../../../../site/assets/images/rendering-modes/source/materials.ts). Adjust them there instead of hand-editing separate output files. Retain the minimum frames needed to identify actual artifacts and decision nodes; do not wrap the composition in another large panel.
+Everything is painted by `--ui-*` tokens through [illustration.css](../../../../site/assets/images/rendering-modes/source/illustration.css); never write a raw colour or shadow into a scene.
 
-## Type and paths
+- **Ground** — the figure is the tray's stage: `--ui-stage-light` over `--ui-surface-stage`. It has no frame of its own; the tray's ring is the example's one edge.
+- **Artifact** (`sheet`) — a file, document, manifest or output: the sheet face, `--ui-elevation-rise-1`, radius 10, 13/16px insets. An icon and a title head it; content is a note, code lines or placeholder bars.
+- **Operation** (`chip`) — a step that acts on artifacts: a control-sized chip like `ui-button` at rest (32px, radius 6, medium 13.5px, icon + verb).
+- **Outcome** (`mark`) — an icon beside a title with no frame.
+- **Place** — two places (build and browser, build time and request time) are parted by one `divider` hairline with an eyebrow over each side. Do not draw a filled zone or frame around a group: a tray and its stage are already two layers, and nothing inside may form a third.
+- **Window** — only when the browser page is the subject: one contour, a tray-tone toolbar with its dots, no address.
 
-- Use the site's local Geist Regular and Medium faces. Keep source text editable and preserve exact spelling of identifiers. The renderer embeds the appearance in the PNG; it does not depend on the reader's installed fonts.
-- Use a compact, shared type scale across an illustration set. On a 600 × 400 canvas, start with 20px primary labels and 18px secondary labels; scale them together when changing logical canvas dimensions. Keep labels of the same role consistent in size and weight across figures, with text proportional to its object and subordinate to the drawing.
-- Judge type at the actual documentation width, including phones. Balance legibility with the whole composition rather than enlarging every label to a fixed displayed size. Simplify crowded labels and retain the readable HTML description for the complete explanation.
-- Keep long conditions outside a small object and close to the edge they qualify. Do not let captions, arrows, or folds collide with text.
-- Use a solid directed line for the main flow. A dashed line can identify a conditional path when its condition is explicit. Do not assign a universal “async” meaning to dashes.
-- Give arrowheads a visible shaft, clearance from the destination, and the correct tangent. Avoid zero-length final segments, which can reverse a marker's direction.
-- Keep labels horizontal. Budget a real corridor for edge labels and leave visible clearance from the line; neither text nor a line should touch the other.
+Separate artifacts from operations by shape, not by colour. The interface is monochrome; hue belongs to teaching specimens only, and brand gold never appears in a documentation figure.
 
-## Themes and responsive display
+## Type
 
-Light and dark variants must share labels, objects, edges, and geometry. Only paint and effects differ. Use this same composition at every screen size; the user does not want separate mobile artwork.
+Geist at the site's weights (`--ui-weight-regular` is 350 in English): object titles 14px medium in strong ink; notes 13px regular muted (`body` ink for a stated result); edge labels 12px muted; code 12.5px IBM Plex Mono; place captions as eyebrows (11px medium capitals tracked .14em). Keep labels horizontal and sentence case. Keep identifiers exact; long conditions go beside the edge they qualify, never inside a small object.
 
-Scale the image element proportionally to fill the article’s expanded media width, including on phones; retain the composition's internal margins and whitespace. Do not add a narrower centered panel or a fixed pixel-width cap. Preserve the whole 3:2 scene without cropping or distortion. Check small-screen labels and keep the readable HTML description available; a large export resolution alone does not improve displayed text size. If a future figure is too dense, simplify or split the shared composition rather than introducing a mobile variant.
+Icons are the Tabler outline set the interface uses, 16px at stroke 1.75, in muted ink. Choose one meaning per icon across the set (`fileCode` for CSS sources, `file` for outputs and pages, `cpu` for the engine, `layers` for definitions).
 
-Article `<img>` and `<video>` elements receive the shared inward 1px outline from the prose stylesheet. Apply it to the media element itself, not a `<figure>`, wrapper, diagram object, inline `<svg>`, `<canvas>`, or `<iframe>`. SVG files displayed through `<img>` follow the image rule. Use **10% opacity** (alpha `0.1`), with black in light mode and white in dark mode. Do not bake a second perimeter into the image. Standalone article media expands with the existing prose bleed. Media inside an already-expanded figure fills that figure without adding a second bleed; embedded demo media keeps its own layout.
+## Paths
+
+- One hairline (`--ui-line-mark`, arrowed paths `--ui-text-disabled`) with an 8px chevron head, ending 2px short of its target. Join a branch with a short arrowless segment; round turns with an 8px radius.
+- A solid line is the main flow. Dash a path only for a labelled condition or a compile-time reference; dashes carry no universal meaning.
+- Give each arrow a visible shaft (at least ~20px) and the correct tangent, and give edge labels a real corridor clear of lines and objects.
+
+## Themes and display
+
+Light and dark share labels, objects and geometry; only the tokens differ, so dark mode is the design system's obsidian, never an inversion.
+
+The image fills the tray's media width at every screen size and scales proportionally. Illustrations inside a tray are excluded from the prose media outline (`site/styles/docs-shell/prose.css`): the stage is told apart by tone. Other article `<img>` and `<video>` keep that inward 1px outline at 10% opacity; do not bake a perimeter into the image.

@@ -1,123 +1,89 @@
-/** Neutral surfaces shared by the documentation illustration scenes. */
+/** Illustration primitives shared by the documentation scenes, painted by the site's tokens in `illustration.css`. */
 export type Theme = 'light' | 'dark'
 
-export const palettes = {
-  light: {
-    canvas: '#fafafa', ink: '#292929', muted: '#626262', quiet: '#8c8c8c',
-    top: '#ffffff', bottom: '#f4f4f4',
-    edgeTop: '#b5b5b5', edgeBottom: '#d5d5d5', line: '#dcdcdc',
-    inset: '#f4f4f4', window: '#ffffff', chrome: '#f5f5f5',
-    block: '#e5e5e5', blockStrong: '#b6b6b6', button: '#454545',
-    route: '#8a8a8a', highlight: '#ffffff', zone: '#f0f0f0', shadow: '#000000'
-  },
-  dark: {
-    canvas: '#111111', ink: '#e5e5e5', muted: '#ababab', quiet: '#747474',
-    top: '#303030', bottom: '#222222',
-    edgeTop: '#696969', edgeBottom: '#3c3c3c', line: '#414141',
-    inset: '#202020', window: '#252525', chrome: '#2e2e2e',
-    block: '#3e3e3e', blockStrong: '#646464', button: '#bcbcbc',
-    route: '#898989', highlight: '#ffffff', zone: '#1b1b1b', shadow: '#000000'
-  }
+/** The scene is drawn at the article's wide media width, so its sizes match the interface around it. */
+export const sceneWidth = 720
+export const sceneHeight = 480
+
+/** Tabler outline icons, the set the site's interface uses. */
+const icons = {
+  braces: ['M7 4a2 2 0 0 0 -2 2v3a2 3 0 0 1 -2 3a2 3 0 0 1 2 3v3a2 2 0 0 0 2 2', 'M17 4a2 2 0 0 1 2 2v3a2 3 0 0 0 2 3a2 3 0 0 0 -2 3v3a2 2 0 0 1 -2 2'],
+  check: ['M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0', 'M9 12l2 2l4 -4'],
+  code: ['M7 8l-4 4l4 4', 'M17 8l4 4l-4 4', 'M14 4l-4 16'],
+  compare: ['M4 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0', 'M16 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0', 'M11 6h5a2 2 0 0 1 2 2v8', 'M14 9l-3 -3l3 -3', 'M13 18h-5a2 2 0 0 1 -2 -2v-8', 'M10 15l3 3l-3 3'],
+  cpu: ['M5 6a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -12', 'M9 9h6v6h-6l0 -6', 'M3 10h2', 'M3 14h2', 'M10 3v2', 'M14 3v2', 'M21 10h-2', 'M21 14h-2', 'M14 21v-2', 'M10 21v-2'],
+  file: ['M14 3v4a1 1 0 0 0 1 1h4', 'M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2', 'M9 17h6', 'M9 13h6'],
+  fileCode: ['M14 3v4a1 1 0 0 0 1 1h4', 'M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2', 'M10 13l-1 2l1 2', 'M14 13l1 2l-1 2'],
+  filter: ['M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227'],
+  layers: ['M12 4l-8 4l8 4l8 -4l-8 -4', 'M4 12l8 4l8 -4', 'M4 16l8 4l8 -4'],
+  refresh: ['M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4', 'M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4'],
+  scan: ['M5 12h14', 'M3 7v-2a2 2 0 0 1 2 -2h2', 'M3 17v2a2 2 0 0 0 2 2h2', 'M17 3h2a2 2 0 0 1 2 2v2', 'M17 21h2a2 2 0 0 0 2 -2v-2'],
+  server: ['M3 7a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v2a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-2', 'M3 15a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v2a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3l0 -2', 'M7 8l0 .01', 'M7 16l0 .01'],
+  window: ['M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10', 'M6 8h.01', 'M9 8h.01']
 } as const
 
-export function escapeXml(value: string) {
-  return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character]!)
+export type IconName = keyof typeof icons
+export type TextKind = 'title' | 'note' | 'body' | 'edge' | 'code' | 'eyebrow'
+type Align = 'start' | 'center' | 'end'
+
+export function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!)
 }
 
+const box = (x: number, y: number, width?: number, height?: number) =>
+  `left:${x}px;top:${y}px;${width === undefined ? '' : `width:${width}px;`}${height === undefined ? '' : `height:${height}px;`}`
+
 export function drawing(theme: Theme) {
-  const p = palettes[theme]
-  const dark = theme === 'dark'
-  const text = (x: number, y: number, value: string, size = 17, color: string = p.ink, weight = 400, extra = '') =>
-    `<text x="${x}" y="${y}" font-size="${size}" font-weight="${weight}" fill="${color}" ${extra}>${escapeXml(value)}</text>`
-  const rect = (x: number, y: number, width: number, height: number, radius: number, fill: string, extra = '') =>
-    `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="${fill}" ${extra}/>`
-  const line = (d: string, extra = '') => `<path d="${d}" fill="none" stroke="${p.route}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`
-  const surface = (x: number, y: number, width: number, height: number, radius = 10) =>
-    rect(x, y, width, height, radius, 'url(#surface)', 'stroke="url(#edge)" filter="url(#shadow)"')
-      + rect(x + 1, y + 1, width - 2, height - 2, radius - 1, 'none', `stroke="${p.highlight}" stroke-opacity="${dark ? '.05' : '.7'}"`)
-
-  function document(x: number, y: number, width: number, height: number, label: string, cssLabel: string) {
-    const fold = 24
-    return `<g>
-      <path d="M${x + 10} ${y}H${x + width - fold}L${x + width} ${y + fold}V${y + height - 10}Q${x + width} ${y + height} ${x + width - 10} ${y + height}H${x + 10}Q${x} ${y + height} ${x} ${y + height - 10}V${y + 10}Q${x} ${y} ${x + 10} ${y}Z" fill="url(#surface)" stroke="url(#edge)" filter="url(#shadow)"/>
-      <path d="M${x + width - fold} ${y + 1}V${y + fold - 5}Q${x + width - fold} ${y + fold} ${x + width - fold + 5} ${y + fold}H${x + width - 1}" fill="none" stroke="${p.edgeBottom}"/>
-      ${text(x + 18, y + 45, label, 20, p.ink, 500)}
-      <g stroke="${p.quiet}" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M${x + 27} ${y + 62}l-7 7 7 7m20-14 7 7-7 7m-8-17-4 20"/>
-      </g>
-      ${rect(x + 69, y + 64, width - 92, 5, 2.5, p.block)}
-      ${rect(x + 69, y + 76, width - 111, 5, 2.5, p.block)}
-      ${rect(x + 20, y + 96, width - 40, 5, 2.5, p.block)}
-      ${rect(x + 20, y + 108, width - 68, 5, 2.5, p.block)}
-      <path d="M${x + 1} ${y + height - 62}H${x + width - 1}V${y + height - 10}Q${x + width - 1} ${y + height - 1} ${x + width - 10} ${y + height - 1}H${x + 10}Q${x + 1} ${y + height - 1} ${x + 1} ${y + height - 10}Z" fill="${p.inset}"/>
-      <path d="M${x + 1} ${y + height - 62}H${x + width - 1}" stroke="${p.line}"/>
-      <g transform="translate(${x + 20} ${y + height - 41})" fill="none" stroke="${p.quiet}" stroke-width="1.2" stroke-linejoin="round">
-        <path d="M1 0h10l5 5v14H1ZM11 0v5h5M5 10h7M5 14h7"/>
-      </g>
-      ${text(x + 48, y + height - 25, cssLabel, 18)}
-    </g>`
+  const routes: string[] = []
+  const icon = (name: IconName) => `<span class="icon"><svg viewBox="0 0 24 24">${icons[name].map(d => `<path d="${d}"/>`).join('')}</svg></span>`
+  /** A label inside a sheet, chip or mark; every label carries a shared figure label. */
+  const label = (value: string, kind: TextKind = 'title') => `<span class="${kind}" data-label>${escapeHtml(value)}</span>`
+  /** A free label, its box's top edge at y, anchored at x. */
+  const text = (x: number, y: number, value: string, kind: TextKind = 'note', align: Align = 'start') =>
+    `<span class="${kind}${align === 'start' ? '' : ` ${align}`}" style="${box(x, y)}" data-label>${escapeHtml(value)}</span>`
+  const row = (content: string) => `<div class="row">${content}</div>`
+  const rule = '<div class="rule"></div>'
+  /** Placeholder lines for content the figure does not spell out, as percentages of the sheet's inner width. */
+  const bars = (...widths: number[]) => `<div class="bars">${widths.map(width => `<i style="width:${width}%"></i>`).join('')}</div>`
+  const sheet = (x: number, y: number, width: number, height: number, content: string) =>
+    `<div class="sheet" style="${box(x, y, width, height)}">${content}</div>`
+  const chip = (x: number, y: number, width: number, name: IconName, value: string) =>
+    `<div class="chip" style="${box(x, y, width)}">${icon(name)}<span data-label>${escapeHtml(value)}</span></div>`
+  const mark = (x: number, y: number, name: IconName, value: string, align: Align = 'start') =>
+    `<div class="mark${align === 'start' ? '' : ` ${align}`}" style="${box(x, y)}">${icon(name)}${label(value)}</div>`
+  /** A vertical hairline between two places; caption each side with an eyebrow `text`. */
+  const divider = (x: number, top: number, bottom: number) => `<i class="divider" style="${box(x, top, undefined, bottom - top)}"></i>`
+  const window = (x: number, y: number, width: number, height: number, content = '') =>
+    `<div class="window" style="${box(x, y, width, height)}"><div class="toolbar"><i></i><i></i><i></i></div>${content}</div>`
+  /** A connector in scene coordinates: arrowed unless it only joins other routes, dashed only for a labelled condition. */
+  const route = (d: string, { arrow = true, dashed = false } = {}) => {
+    routes.push(`<path d="${d}"${arrow ? ' marker-end="url(#arrow)"' : ''}${dashed ? ' data-dashed' : ''}/>`)
+    return ''
   }
 
-  function browser(x: number, y: number, width: number, height: number, label?: string) {
-    return `<g>
-      ${surface(x, y, width, height)}
-      ${rect(x + 1, y + 1, width - 2, 30, 9, p.chrome)}
-      ${rect(x + 1, y + 20, width - 2, 11, 0, p.chrome)}
-      <path d="M${x} ${y + 31}H${x + width}" stroke="${p.line}"/>
-      ${[15, 25, 35].map(dx => `<circle cx="${x + dx}" cy="${y + 16}" r="2" fill="${p.quiet}"/>`).join('')}
-      ${rect(x + 63, y + 11, width - 115, 10, 3, p.inset, `stroke="${p.line}" stroke-width=".6"`)}
-      ${rect(x + 17, y + 48, 30, height - 66, 4, p.inset)}
-      ${[61, 76, 91].map(dy => rect(x + 24, y + dy, 16, 3, 1.5, p.blockStrong)).join('')}
-      ${label ? text(x + 64, y + 74, label, 18, p.ink, 500) : rect(x + 64, y + 63, 100, 7, 3.5, p.blockStrong)}
-      ${rect(x + 64, y + 90, width - 92, 4, 2, p.block)}
-      ${rect(x + 64, y + 101, width - 117, 4, 2, p.block)}
-      ${rect(x + 64, y + 119, 64, 18, 4, p.button)}
-    </g>`
+  function scene(title: string, description: string, content: string) {
+    const asset = (path: string) => new URL(path, import.meta.url).href
+    const html = `<!doctype html>
+<html lang="en" class="${theme}">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(title)}</title>
+<link rel="stylesheet" href="${asset('../../../../styles/system/tokens.css')}">
+<link rel="stylesheet" href="${asset('./illustration.css')}">
+</head>
+<body>
+<main class="scene" style="width:${sceneWidth}px;height:${sceneHeight}px" role="img" aria-label="${escapeHtml(description)}">
+<svg class="routes" width="${sceneWidth}" height="${sceneHeight}" viewBox="0 0 ${sceneWidth} ${sceneHeight}" aria-hidden="true">
+<defs><marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2.5 1l4 3-4 3"/></marker></defs>
+${routes.join('\n')}
+</svg>
+${content}
+</main>
+</body>
+</html>
+`
+    return { width: sceneWidth, height: sceneHeight, title, description, html }
   }
 
-  function engine(x: number, y: number, width: number, height: number, label: string, subtitle?: string) {
-    return `<g>
-      ${[18, 32, 46].map(dy => line(`M${x - 5} ${y + dy}h5m${width} 0h5`, `stroke-opacity=".45"`)).join('')}
-      ${surface(x, y, width, height, 8)}
-      <g transform="translate(${x + 16} ${y + height / 2 - 10})" stroke="${p.quiet}" stroke-width="1.2" fill="none" stroke-linecap="round">
-        <rect x="1" y="1" width="18" height="18" rx="3"/>
-        <rect x="6" y="6" width="8" height="8" rx="1"/>
-        <path d="M6-2v3m8-3v3M6 19v3m8-3v3M-2 6h3m-3 8h3M19 6h3m-3 8h3"/>
-      </g>
-      ${text(x + 48, y + (subtitle ? 25 : height / 2 + 6), label, 18, p.ink, 500)}
-      ${subtitle ? text(x + 48, y + 48, subtitle, 15, p.muted) : ''}
-    </g>`
-  }
-
-  function stylesheet(x: number, y: number, width: number, height: number, label: string) {
-    return `<g>
-      ${rect(x + 6, y + 6, width - 12, height, 8, p.inset, `stroke="${p.line}"`)}
-      ${surface(x, y, width, height, 8)}
-      ${text(x + 18, y + 34, label, 18, p.ink, 500)}
-      <path d="M${x + 1} ${y + 51}H${x + width - 1}" stroke="${p.line}"/>
-      ${[69, 87, 105].map((dy, i) => rect(x + 18, y + dy, width - 50 - i * 20, 4, 2, p.blockStrong, 'opacity=".65"')).join('')}
-    </g>`
-  }
-
-  function svg(width: number, height: number, title: string, description: string, content: string, padding: number) {
-    const outerWidth = width + padding * 2
-    const outerHeight = height + padding * 2
-    const source = `<svg xmlns="http://www.w3.org/2000/svg" width="${outerWidth}" height="${outerHeight}" viewBox="0 0 ${outerWidth} ${outerHeight}" role="img" aria-labelledby="title description" font-family="Geist, sans-serif">
-  <title id="title">${escapeXml(title)}</title>
-  <desc id="description">${escapeXml(description)}</desc>
-  <defs>
-    <linearGradient id="surface" x2=".2" y2="1"><stop stop-color="${p.top}"/><stop offset="1" stop-color="${p.bottom}"/></linearGradient>
-    <linearGradient id="edge" x2=".65" y2="1"><stop stop-color="${p.edgeTop}"/><stop offset="1" stop-color="${p.edgeBottom}"/></linearGradient>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="${p.shadow}" flood-opacity="${dark ? '.14' : '.04'}"/>
-      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="${p.shadow}" flood-opacity="${dark ? '.16' : '.035'}"/>
-    </filter>
-    <marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 1l4 3-4 3" fill="none" stroke="${p.route}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></marker>
-  </defs>
-  ${rect(0, 0, outerWidth, outerHeight, 0, p.canvas)}
-  <g transform="translate(${padding} ${padding})">${content}</g>
-</svg>\n`
-    return { width: outerWidth, height: outerHeight, svg: source.replace(/[\t ]+$/gm, '') }
-  }
-  return { p, text, rect, line, surface, document, browser, engine, stylesheet, svg }
+  return { theme, icon, label, text, row, rule, bars, sheet, chip, mark, divider, window, route, scene }
 }
