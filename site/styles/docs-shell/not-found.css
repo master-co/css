@@ -5,5 +5,6 @@
   /* Centred short copy balances its lines, so a phrase never ends on one stranded character. */
   .ui-not-found :is(h1, p) { text-wrap: balance; overflow-wrap: anywhere; }
   .ui-not-found:lang(zh) :is(h1, p) { word-break: keep-all; }
-  .ui-not-found > .ui-search-trigger { max-width: 18rem; }
+  /* The trigger arrives inside an island, so it is reached as a descendant. */
+  .ui-not-found .ui-search-trigger { width: min(100%, 20rem); }
 }

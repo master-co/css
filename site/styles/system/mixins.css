@@ -3,3 +3,5 @@
 @mixin --ui-focus-ring { outline: 2px solid var(--ui-focus); }
 /* A caption over a group: small, quiet, in the reading face — never a mono capital eyebrow. */
 @mixin --ui-label-type { font: var(--ui-weight-regular) var(--ui-text-label)/1.5 var(--font-family-sans); letter-spacing: var(--ui-tracking-label); text-transform: none; }
+/* An eyebrow over a group or a page: small sans capitals, medium weight, tracked open so the capitals breathe. */
+@mixin --ui-eyebrow-type { font: var(--ui-weight-medium) var(--ui-text-eyebrow)/1rem var(--font-family-sans); letter-spacing: var(--ui-tracking-eyebrow); text-transform: uppercase; }

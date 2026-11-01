@@ -8,8 +8,6 @@
 .dark { color-scheme: dark; }
 
 @theme {
-  --content-hash: " #";
-  --content-external: " ↗";
   --font-sans: "Geist", "Noto Sans TC";
   --font-mono: "IBM Plex Mono";
   --font-feature-sans: "ss02", "ss03", "ss04", "ss06", "ss07", "ss08";

@@ -19,7 +19,7 @@
   .ui-header-brand:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   /* The version chip opens the native version list laid over it. */
   .ui-header .ui-version { position: relative; cursor: pointer; }
-  .ui-header .ui-version > svg { width: 12px; height: 12px; margin-right: -2px; color: var(--ui-text-muted); }
+  .ui-header .ui-version > svg { width: 12px; height: 12px; color: var(--ui-text-muted); }
   .ui-header .ui-version:hover { color: var(--ui-text-strong); }
   .ui-header-nav > a > .ui-badge { margin-left: var(--ui-space-2xs); }
   .ui-header-end > .ui-button[data-disabled] { color: var(--ui-text-disabled); pointer-events: none; }
@@ -36,6 +36,16 @@
   .ui-header-end > :last-child > .ui-tooltip::before { left: auto; right: calc(1rem - 4px); translate: none; }
   @media (hover: none) { .ui-header-end > * > .ui-tooltip { display: none; } }
 
+  /* Search: a quiet hairline pill that leads the end group — the glass and its shortcut, ink under the pointer. */
+  /* The round end takes a little more room than the glass's side; the gap to the first icon matches the icons' own spacing. */
+  .ui-header-search { appearance: none; display: inline-flex; align-items: center; gap: .4375rem; height: 1.875rem; margin-right: var(--ui-space-xs); padding: 0 .8125rem 0 .6875rem; border: 0; border-radius: var(--ui-radius-pill);
+    background: transparent; color: var(--ui-text-muted); box-shadow: inset 0 0 0 1px var(--ui-line-contour); font: var(--ui-weight-regular) .75rem/1 var(--font-family-sans); cursor: pointer;
+    transition: color var(--ui-duration-quick), box-shadow var(--ui-duration-quick), background-color var(--ui-duration-quick); }
+  .ui-header-search:hover { color: var(--ui-text-strong); background: var(--ui-surface-chip); box-shadow: inset 0 0 0 1px var(--ui-line-strong); }
+  .ui-header-search:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
+  .ui-header-search > svg { flex: none; width: 1rem; height: 1rem; }
+  .ui-header-search > .ui-kbd { min-width: 0; height: auto; padding: 0; background: none; color: inherit; box-shadow: none; font: var(--ui-weight-regular) .6875rem/1 var(--font-family-sans); letter-spacing: .04em; }
+
   /* The compact header: the menu at the start, the brand centred, search at the end. */
   .ui-header-menu { display: none; }
   @media (width < 64rem) {
@@ -44,11 +54,16 @@
     .ui-header-brand { margin-inline: auto; }
     .ui-header > :is(.ui-version, .ui-header-nav), .ui-header-end > :not(.ui-header-search) { display: none; }
     .ui-header-end { margin-left: 0; }
+    /* On a phone search is a plain glass in a full target. */
+    .ui-header-search { justify-content: center; width: 2.375rem; height: 2.375rem; margin: 0; padding: 0; border-radius: var(--ui-radius-md); box-shadow: none; }
+    .ui-header-search:hover { background: transparent; box-shadow: none; }
+    .ui-header-search > svg { width: 1.125rem; height: 1.125rem; }
+    .ui-header-search > .ui-kbd { display: none; }
     /* The menu and search buttons keep the brand centred between equal ends. */
     .ui-header:not(:has(.ui-header-search)) .ui-header-end { width: 2.375rem; }
   }
   @media (width >= 64rem) {
-    /* Documentation pages keep search in the sidebar. */
+    /* The homepage's wide header leaves search out. */
     .ui-header-search[data-compact] { display: none; }
   }
 }

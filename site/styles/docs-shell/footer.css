@@ -1,26 +1,36 @@
-/* The site footer: quiet link groups on the canvas under one hairline, then the legal row and the preferences. */
+/*
+ * The site footer: link groups under eyebrow titles on the canvas, then one quiet legal row — the notice and its
+ * links at the start, the theme and language preferences at the end. In the documentation it takes the article's wide
+ * column, from the text's start edge.
+ */
 @layer components {
-  .ui-footer { container-type: inline-size; display: grid; gap: var(--ui-space-2xl); padding: var(--ui-space-2xl) max(1.25rem, env(safe-area-inset-right)) max(var(--ui-space-2xl), env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: var(--ui-text-small); }
+  .ui-footer { container-type: inline-size; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-3xl); padding: 4rem max(1.25rem, env(safe-area-inset-right)) max(var(--ui-space-2xl), env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); box-shadow: inset 0 1px 0 var(--ui-line-hair); color: var(--ui-text-muted); font-size: var(--ui-text-small); }
   @media (--sm) { .ui-footer { padding-inline: 2.5rem; } }
-  @media (--md) { .ui-docs-main > .ui-footer { padding-left: 5rem; } }
-  .ui-footer > * { width: 100%; max-width: 100rem; margin-inline: auto; }
-  .ui-footer-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5em), 1fr)); gap: var(--ui-space-xl); }
+  .ui-footer > * { width: 100%; max-width: 72rem; margin-inline: auto; }
+  /* The footer is an island inside the main column, so these reach it as a descendant. */
+  .ui-docs-main .ui-footer { padding-inline: var(--docs-gutter); }
+  .ui-docs-main .ui-footer > * { max-width: var(--docs-wide); }
+
+  /* Groups keep a column of their own width from the start edge; a wide footer leaves the rest to the canvas. */
+  .ui-footer-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); gap: var(--ui-space-2xl) var(--ui-space-xl); }
   .ui-footer-nav > * { min-width: 0; }
-  .ui-footer-group > h2 { margin: 0 0 var(--ui-space-sm); color: var(--ui-text-muted); @apply --ui-label-type; }
-  .ui-footer-group > ul { display: grid; gap: var(--ui-space-xs); margin: 0; padding: 0; list-style: none; }
-  .ui-footer-group li { min-width: 0; }
+  .ui-footer-group > h2 { margin: 0 0 var(--ui-space-md); color: var(--ui-text-strong); @apply --ui-eyebrow-type; }
+  .ui-footer-group > ul { display: grid; gap: var(--ui-space-sm); margin: 0; padding: 0; list-style: none; }
+  .ui-footer-group li { min-width: 0; line-height: 1.25rem; }
   .ui-footer a { color: var(--ui-text-body); text-decoration: none; transition: color var(--ui-duration-quick); }
   .ui-footer a:hover { color: var(--ui-text-strong); }
   .ui-footer :is(a, button):focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
   .ui-footer-group button { padding: 0; border: 0; background: none; color: var(--ui-text-disabled); font: inherit; cursor: not-allowed; }
-  @container (width < 48rem) { .ui-footer-search { display: none; } }
-  .ui-footer-legal { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-lg); padding-top: var(--ui-space-lg); box-shadow: inset 0 1px 0 var(--ui-line-hair); font-size: .78125rem; line-height: 1.65; }
-  .ui-footer-legal > span:first-child { margin-right: auto; }
-  .ui-footer-preference { position: relative; display: inline-flex; color: var(--ui-text-body); align-items: center; gap: var(--ui-space-3xs); border-radius: var(--ui-radius-xs); cursor: pointer; }
+
+  .ui-footer-legal { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-lg); padding-top: var(--ui-space-lg); box-shadow: inset 0 1px 0 var(--ui-line-hair); font-size: var(--ui-text-caption); line-height: 1.25rem; }
+  /* The notice reads as one line: the owner, then its links parted by quiet dots. */
+  .ui-footer-notice { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .625rem; margin: 0 auto 0 0; }
+  .ui-footer-notice > * + *::before { content: "·"; margin-right: .625rem; color: var(--ui-text-disabled); }
+  .ui-footer-notice > a { color: var(--ui-text-muted); }
+  .ui-footer-preference { position: relative; display: inline-flex; color: var(--ui-text-muted); align-items: center; gap: var(--ui-space-3xs); border-radius: var(--ui-radius-xs); cursor: pointer; transition: color var(--ui-duration-quick); }
   .ui-footer-preference:hover { color: var(--ui-text-strong); }
   .ui-footer-preference > svg { width: 12px; height: 12px; }
   @media (width < 64rem) { .ui-footer-preference { display: none; } }
-  @media (width < 40rem) { .ui-footer-legal > span:first-child { flex-basis: 100%; } }
-  @media (pointer: coarse) { .ui-footer-group a, .ui-footer-legal > a { display: inline-flex; align-items: center; min-height: 2.75rem; } .ui-footer-group > ul { gap: 0; } }
+  @media (pointer: coarse) { .ui-footer-group a, .ui-footer-notice > a { display: inline-flex; align-items: center; min-height: 2.75rem; } .ui-footer-group > ul { gap: 0; } .ui-footer-group > h2 { margin-bottom: var(--ui-space-xs); } }
   @media print { .ui-footer { display: none; } }
 }

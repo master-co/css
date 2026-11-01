@@ -7,12 +7,14 @@
   .ui-well { border-radius: var(--ui-radius-md); background: var(--ui-surface-well); box-shadow: var(--ui-elevation-sink); }
 
   /* The tray holds one complete example: head, stage, source, caption */
-  .ui-tray { position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
-  .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px var(--ui-inset) var(--ui-space-xs) var(--ui-space-sm); }
+  /* Inside a hanging tray the words step back by the hang less the tray's inset (`--hang`, see code.css). */
+  .ui-tray { --tray-hang: calc(var(--hang, 0px) - var(--ui-inset)); position: relative; min-width: 0; margin: 0; padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
+  .ui-tray > * { --hang: var(--tray-hang); }
+  .ui-tray-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); min-height: 2.75rem; padding: 2px max(var(--ui-inset), var(--hang, 0px)) var(--ui-space-xs) max(var(--ui-space-sm), var(--hang, 0px)); }
   .ui-tray-title { min-width: 0; margin: 0; color: var(--ui-text-strong); font-size: .8125rem; font-weight: var(--ui-weight-medium); line-height: 1.4; letter-spacing: 0; }
   .ui-tray-description { margin: 2px 0 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
   .ui-tray-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs); }
-  .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
+  .ui-tray-caption { margin: 0; padding: var(--ui-space-sm) max(var(--ui-space-sm), var(--hang, 0px)) var(--ui-space-xs); color: var(--ui-text-muted); font-size: .78125rem; line-height: 1.6; text-wrap: pretty; }
   .ui-tray-caption code { color: var(--ui-text-body); }
   .ui-tray > * + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: var(--ui-inset); }
   .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code, .ui-browser, .ui-compare) { margin-top: 0; }

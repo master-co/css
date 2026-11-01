@@ -26,7 +26,7 @@
   .ui-search-trigger > svg { flex: none; width: 15px; height: 15px; }
   .ui-search-trigger > .ui-kbd { margin-left: auto; }
   .ui-nav-group { display: grid; }
-  .ui-nav-group > h4 { display: flex; align-items: center; min-height: 2rem; margin: 0; color: var(--ui-text-strong); font: var(--ui-weight-regular) var(--ui-text-label)/1.5 var(--font-family-sans); }
+  .ui-nav-group > h4 { display: flex; align-items: center; min-height: 2rem; margin: 0 0 var(--ui-space-3xs); color: var(--ui-text-muted); @apply --ui-eyebrow-type; }
   .ui-nav-link { position: relative; display: flex; align-items: center; min-height: 2rem; padding: .3125rem 0 .3125rem 1rem; color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.4; text-decoration: none; box-shadow: inset 1px 0 0 var(--ui-line-divider); transition: color var(--ui-duration-quick); }
   .ui-nav-link::before { content: ""; position: absolute; top: .4375rem; bottom: .4375rem; left: 0; width: 2px; margin-left: -.5px; border-radius: 1px; background: transparent; transition: background-color var(--ui-duration-quick); }
   .ui-nav-link:hover { color: var(--ui-text-strong); }
@@ -40,10 +40,10 @@
      read draws the long tick in ink. A subsection keeps the edge and steps down in ink, never indents. */
   .ui-toc { --toc-tick: 1.125rem; --toc-tick-current: 1.75rem; --toc-gap: .75rem; --toc-gutter: calc(var(--toc-tick-current) + var(--toc-gap));
     display: grid; align-content: start; gap: var(--ui-space-xs); padding: var(--ui-space-xl) var(--ui-space-lg); font-size: var(--ui-text-caption); }
-  .ui-toc > h4 { margin: 0; padding-left: var(--toc-gutter); color: var(--ui-text-muted); @apply --ui-label-type; line-height: 1.5rem; }
+  .ui-toc > h4 { margin: 0 0 var(--ui-space-2xs); padding-left: var(--toc-gutter); color: var(--ui-text-muted); @apply --ui-eyebrow-type; }
   .ui-toc ol { display: grid; margin: 0; padding: 0; list-style: none; }
-  .ui-toc a { position: relative; display: block; padding: .625rem 0 .625rem var(--toc-gutter); color: var(--ui-text-muted); line-height: 1.125rem; text-decoration: none; transition: color var(--ui-duration-quick); }
-  .ui-toc a::before { content: ""; position: absolute; top: calc(.625rem + .5lh - 1px); right: calc(100% - var(--toc-tick-current)); width: var(--toc-tick); height: 2px; border-radius: 1px; background: var(--ui-line-divider); pointer-events: none; transition: width var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-quick); }
+  .ui-toc a { position: relative; display: block; padding: .5rem 0 .5rem var(--toc-gutter); color: var(--ui-text-muted); line-height: 1.125rem; text-decoration: none; transition: color var(--ui-duration-quick); }
+  .ui-toc a::before { content: ""; position: absolute; top: calc(.5rem + .5lh - 1px); right: calc(100% - var(--toc-tick-current)); width: var(--toc-tick); height: 2px; border-radius: 1px; background: var(--ui-line-divider); pointer-events: none; transition: width var(--ui-duration-base) var(--ui-ease), background-color var(--ui-duration-quick); }
   .ui-toc a:hover { color: var(--ui-text-strong); }
   .ui-toc a:hover::before { background: var(--ui-line-mark); }
   .ui-toc a[aria-current="location"] { color: var(--ui-text-strong); }
@@ -56,19 +56,26 @@
   .ui-toc-actions a { padding: .3125rem 0; color: var(--ui-text-muted); font-size: .75rem; line-height: 1.5; }
   .ui-toc-actions a::before { content: none; }
 
-  /* The page head closes on a hairline, so the reading starts on its own ground. */
-  .ui-pagehead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-sm); margin-bottom: var(--ui-space-xl); padding-bottom: var(--ui-space-xl); box-shadow: inset 0 -1px 0 var(--ui-line-hair); }
-  .ui-pagehead-kicker { margin-bottom: var(--ui-space-3xs); color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: 1.5; }
+  /* The page head: an eyebrow, the title and its lead. Space, not a rule, parts it from the reading. */
+  .ui-pagehead { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ui-space-md); margin-bottom: var(--ui-space-2xl); }
+  .ui-pagehead-kicker { margin-bottom: calc(var(--ui-space-3xs) * -1); color: var(--ui-text-muted); @apply --ui-eyebrow-type; }
   .ui-pagehead h1 { margin: 0; color: var(--ui-text-strong); font-size: var(--ui-text-title); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-title); letter-spacing: var(--ui-tracking-title); text-wrap: balance; overflow-wrap: break-word; }
-  .ui-pagehead p { margin: 0; max-width: 38em; color: var(--ui-text-body); font-size: var(--ui-text-lead); line-height: var(--ui-leading-lead); text-wrap: pretty; overflow-wrap: break-word; }
+  /* The lead runs a little past the reading measure: at 18px it keeps the same number of words a line. */
+  .ui-pagehead p { max-width: calc(var(--measure, 41rem) * 1.125); margin: 0; color: var(--ui-text-body); font-size: var(--ui-text-lead); line-height: var(--ui-leading-lead); letter-spacing: -.004em; text-wrap: pretty; overflow-wrap: break-word; }
+  /* A second line of the lead, at reading size. */
+  .ui-pagehead p + p:not([class]) { max-width: var(--measure, 41rem); margin-top: calc(var(--ui-space-xs) * -1); font-size: var(--ui-text-base); line-height: var(--ui-leading-body); letter-spacing: 0; }
 
-  .ui-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-sm); margin-top: var(--ui-space-3xl); }
-  .ui-pager > a { display: grid; gap: 2px; padding: .875rem var(--ui-space-md) var(--ui-space-md); border-radius: var(--ui-radius-lg); background: transparent; color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-contour); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
-  .ui-pager > a:hover { box-shadow: inset 0 0 0 1px var(--ui-line-strong); background: var(--ui-surface-chip); }
-  .ui-pager > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
-  .ui-pager > a[rel="next"] { text-align: right; }
-  .ui-pager small { color: var(--ui-text-muted); @apply --ui-label-type; }
-  .ui-pager b { font-weight: var(--ui-weight-regular); font-size: .9375rem; line-height: 1.5; }
+  /* The pager: the previous and next documents under one hairline, an eyebrow over each title; no boxes. */
+  .ui-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-xl); margin-top: 5rem; padding-top: var(--ui-space-lg); box-shadow: inset 0 1px 0 var(--ui-line-hair); }
+  .ui-pager > a { display: grid; align-content: start; gap: var(--ui-space-2xs); color: var(--ui-text-body); text-decoration: none; transition: color var(--ui-duration-quick); }
+  .ui-pager > a:hover { color: var(--ui-text-strong); }
+  .ui-pager > a:focus-visible { @apply --ui-focus-ring; outline-offset: 4px; border-radius: var(--ui-radius-xs); }
+  .ui-pager > a[rel="next"] { justify-items: end; text-align: right; }
+  .ui-pager small { color: var(--ui-text-muted); @apply --ui-eyebrow-type; }
+  .ui-pager b { font-weight: var(--ui-weight-regular); font-size: var(--ui-text-base); line-height: 1.5; text-wrap: balance; }
+  .ui-pager > a[rel="prev"] > b::before { content: "←"; margin-right: .5em; color: var(--ui-text-muted); }
+  .ui-pager > a[rel="next"] > b::after { content: "→"; margin-left: .5em; color: var(--ui-text-muted); }
+  .ui-pager > a:hover > b::before, .ui-pager > a:hover > b::after { color: var(--ui-text-strong); }
 
   /* Overlay dialog (search, image preview) */
   .ui-dialog { width: min(40rem, calc(100vw - 2rem)); max-height: min(36rem, calc(100dvh - 4rem)); padding: 0; overflow: hidden; border: 0; border-radius: var(--ui-radius-2xl); background: var(--ui-surface-float); color: var(--ui-text-body); box-shadow: var(--ui-elevation-overlay); }

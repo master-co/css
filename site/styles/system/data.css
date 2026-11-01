@@ -7,11 +7,14 @@
   .ui-table thead th { position: sticky; top: 0; z-index: 1; padding: .625rem var(--ui-space-md); background: var(--ui-surface-sheet-lo); color: var(--ui-text-muted); @apply --ui-label-type; text-align: start; white-space: nowrap; box-shadow: inset 0 -1px 0 var(--ui-line-divider); }
   .ui-table :is(td, tbody th) { padding: .6875rem var(--ui-space-md); color: var(--ui-text-body); font-weight: var(--ui-weight-regular); text-align: start; vertical-align: top; border-top: 1px solid var(--ui-line-hair); }
   .ui-table tr:first-child > :is(td, th) { border-top: 0; }
+  .ui-table tr > :first-child { padding-left: max(var(--ui-space-md), var(--hang, 0px)); }
+  .ui-table tr > :last-child { padding-right: max(var(--ui-space-md), var(--hang, 0px)); }
   .ui-table tbody tr { transition: background-color var(--ui-duration-quick); }
   .ui-table tbody tr:hover { background: light-dark(oklch(22% .002 265 / .022), oklch(100% 0 none / .025)); }
   .ui-table tbody tr > :first-child { color: var(--ui-text-strong); }
   .ui-table :is(td, th)[data-align="end"] { text-align: end; font-variant-numeric: tabular-nums; }
-  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); white-space: nowrap; }
+  /* In a cell code is a fill only: several hairline chips to a cell read as a grid inside the grid. */
+  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); white-space: nowrap; }
   .ui-table :is(td, tbody th) .ui-preview { display: inline-block; width: 1.25rem; height: 1.25rem; margin-right: var(--ui-space-xs); border-radius: var(--ui-radius-sm); vertical-align: -.3em; box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
   .ui-table[data-density="compact"] :is(th, td) { padding-block: .4375rem; }
   /* Lookup: the key column fits its longest key; values wrap at their spaces */
@@ -61,30 +64,30 @@
   .ui-params dd code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-hair); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); }
   @media (width < 35rem) { .ui-params > div { grid-template-columns: 1fr; } }
 
-  /* Steps: numbered sequence; code stays in the reading flow */
+  /* Steps: numbered sequence on one hairline rail; code stays in the reading flow */
   .ui-steps { counter-reset: step; display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
-  .ui-steps > li { counter-increment: step; position: relative; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: var(--ui-space-md); padding-bottom: var(--ui-space-xl); }
-  .ui-steps > li::before { content: counter(step); display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; @apply --ui-sheet-face; color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1); font: var(--ui-weight-medium) .75rem/1 var(--font-family-mono); }
+  .ui-steps > li { counter-increment: step; position: relative; display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: var(--ui-space-lg); padding-bottom: var(--ui-space-2xl); }
+  .ui-steps > li::before { content: counter(step); display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--ui-surface-canvas); color: var(--ui-text-strong); box-shadow: inset 0 0 0 1px var(--ui-line-strong); font: var(--ui-weight-medium) .75rem/1 var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-steps > li::after { content: ""; position: absolute; top: 2.25rem; bottom: .5rem; left: .875rem; width: 1px; background: var(--ui-line-divider); }
   .ui-steps > li:last-child { padding-bottom: 0; }
   .ui-steps > li:last-child::after { display: none; }
-  .ui-steps > li > div > h4 { margin: .1875rem 0 var(--ui-space-xs); color: var(--ui-text-strong); font-size: 1.0625rem; font-weight: var(--ui-weight-medium); }
+  .ui-steps > li > div > h4 { margin: .125rem 0 var(--ui-space-xs); color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-medium); line-height: 1.5rem; }
   .ui-steps > li > div > p { margin: 0 0 var(--ui-space-sm); }
 
-  /* Index: grouped links with a useful start */
-  .ui-index { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--ui-inset); padding: var(--ui-inset); border-radius: var(--ui-radius-2xl); background: var(--ui-surface-tray); box-shadow: inset 0 0 0 1px var(--ui-line-hair), 0 1px 0 var(--ui-lip); }
-  .ui-index > a { display: grid; align-content: start; gap: var(--ui-space-xs); padding: var(--ui-space-md) var(--ui-space-md) var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; color: var(--ui-text-body); box-shadow: var(--ui-elevation-rise-1); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
+  /* Index: grouped links with a useful start — free-standing hairline sheets, so a short last row leaves only canvas */
+  .ui-index { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: var(--ui-space-sm); }
+  .ui-index > a { display: grid; align-content: start; gap: var(--ui-space-2xs); padding: var(--ui-space-md) var(--ui-space-md) 1.125rem; border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease); }
   .ui-index > a:hover { translate: 0 -.5px; box-shadow: var(--ui-elevation-rise-1h); }
   .ui-index > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
-  .ui-index > a > svg { width: 20px; height: 20px; color: var(--ui-text-strong); }
-  .ui-index > a > b { color: var(--ui-text-strong); font-size: .9375rem; font-weight: var(--ui-weight-strong); letter-spacing: -.01em; }
-  .ui-index > a > span { font-size: .8125rem; line-height: 1.55; color: var(--ui-text-muted); }
+  .ui-index > a > svg { width: 18px; height: 18px; margin-bottom: var(--ui-space-2xs); color: var(--ui-text-strong); stroke-width: 1.5; }
+  .ui-index > a > b { color: var(--ui-text-strong); font-size: .9375rem; font-weight: var(--ui-weight-medium); line-height: 1.4; letter-spacing: -.006em; }
+  .ui-index > a > span { font-size: .8125rem; line-height: 1.6; color: var(--ui-text-muted); }
   .ui-index > a > b code { font: var(--ui-weight-medium) .875rem/1.45 var(--font-family-mono); letter-spacing: 0; overflow-wrap: anywhere; }
-  .ui-index[data-density="compact"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); }
+  .ui-index[data-density="compact"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--ui-space-xs); }
   .ui-index[data-density="compact"] > a { gap: 2px; padding: var(--ui-space-sm) var(--ui-space-md); }
 
   /* Chart frame: units, series and sample context together */
-  .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg) max(var(--ui-space-lg), var(--hang, 0px)); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); }
   .ui-chart-head b { color: var(--ui-text-strong); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); }
   .ui-chart-head small { display: block; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); }

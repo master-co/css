@@ -22,6 +22,8 @@
   .documentation-index-categories .documentation-index-links { box-shadow: inset 1px 0 0 var(--ui-line-hair); }
 
   .documentation-index-links { padding: 0; list-style: none; }
+  /* Entries hang their hover wash past the column so their words keep its edge. */
+  .documentation-index-section > .documentation-index-links { margin-inline: -.625rem; }
   .documentation-index-links[data-columns] { columns: 3; column-gap: var(--ui-space-xl); }
   .documentation-index-links li { break-inside: avoid; }
   .documentation-index-links a { display: grid; align-content: center; min-height: 2.5rem; padding: .375rem .625rem; border-radius: var(--ui-radius-sm); color: var(--ui-text-body); font-size: .8125rem; line-height: 1.5; text-decoration: none; overflow-wrap: anywhere; transition: color var(--ui-duration-quick), background-color var(--ui-duration-quick); }

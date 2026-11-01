@@ -39,17 +39,12 @@ export const footerNavGroups = [
     links: [
       { name: 'Blog', href: '/blog' },
       { name: 'Design System', href: '/design-system' },
+      { name: 'Brand', href: '/brand' },
     ]
   },
   {
     name: 'Community',
     links: communityNavs.map(({ name, href }) => ({ name, href }))
-  },
-  {
-    name: 'More',
-    links: [
-      { name: 'Brand', href: '/brand' },
-    ]
   },
 ] satisfies FooterNavGroup[]
 
