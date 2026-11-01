@@ -150,7 +150,8 @@ experiment. On-demand access worked, but this sample did not improve repairs.
 Before promoting a public tool, investigate the recurring hover and inheritance
 failures and improve the repair-and-recheck workflow; expanding access alone has
 not established a benefit. No further model experiment or public API rollout is
-included in this change.
+included in this change. The later [host-recheck investigation](repair-recheck.md)
+records controlled causes and a separate repair-loop demonstration.
 
 Validation: 26 focused tests passed across the combined run and the affected-test
 rerun, plus scoped ESLint, `check:ai-context` and diff checks. The initial failing

@@ -101,3 +101,72 @@ protected/execution failure handling, missing/racing sources, checker failures,
 color-check failures and refreshed evidence. A browser integration test starts
 with a passing import, introduces both hover and inherited-value failures, checks
 a touch regression after an incomplete fix, and restores the verified baseline.
+
+## Recorded result — 2026-11-01
+
+Implementation commits: `31183e89c`, `2120f151c`; the latter is the frozen run
+revision. Client `codex-cli 0.166.0-alpha.5.1`, Chromium `156.0.8078.4`, Luna with
+low reasoning, sequential calls and two attempts of at most 120 seconds per case.
+
+The first preflight rejected differences from the prior built artifacts before
+any model call. The shared checkout had changed 24 artifact hashes, including the
+native engine, JavaScript engine, preset and some MCP/schema files. The run then
+froze the current artifacts, recorded every old/new hash in `artifactChanges`,
+and required an unchanged evaluator/color-comparison source. Both controlled
+counterfactuals above were rerun successfully with the current tools. All seven
+selected failures reproduced before their new repair attempts. Tool/source hashes
+remained fixed during the completed run. No shared build artifact was restored or
+overwritten. This version difference is an additional reason not to infer an
+A/B improvement from the old campaign.
+
+| Prior failed trial | First recheck after repair | Second recheck | Final |
+| --- | --- | --- | --- |
+| `seed-03-gpt-6-luna-b` | Pass | Not needed | Pass |
+| `seed-05-gpt-6-luna-a` | Pass | Not needed | Pass |
+| `seed-05-gpt-6-luna-b` | Fail: 14 new checks | Fail: 20 checks | Failed, budget exhausted |
+| `seed-06-gpt-6-luna-b` | Fail: unresolved class | Pass | Pass |
+| `seed-07-gpt-6-luna-b` | Pass | Not needed | Pass |
+| `seed-08-gpt-6-luna-a` | Fail: unresolved class | Pass | Pass |
+| `seed-08-gpt-6-luna-b` | Fail: unresolved class | Pass | Pass |
+
+**Six of seven final snapshots passed** after 11 model calls and 18 host browser
+checkpoints (seven initial reproductions plus one after every edit). Three passed
+after one repair and three after two. There were no model-turn failures, timeouts,
+protected-file violations, unverified outcomes or missing usage records. All 11
+model turns visibly read fresh feedback; none attempted to launch a browser.
+Input tokens totaled 2,153,640, including 1,926,400 cached input tokens; output
+was 16,683 tokens. These are usage counts, not billing or savings estimates.
+
+The failed `seed-05-gpt-6-luna-b` illustrates why full rechecks matter. Its first
+edit fixed the unresolved hover class and all four hover comparisons, but added
+`bg-blue-700` as a resting utility. That overrode the component's resting blue-600
+background, breaking desktop rest/focus/disabled and touch rest/tap: 14 newly
+failing check IDs. The host rejected it and sent the new source-bound evidence.
+The second edit restored unsupported Tailwind spellings and ended with 20 failed
+checks, including class recognition and migration. The runner preserved that
+failed state and stopped at the declared budget; it did not declare success,
+select a more favorable attempt or manually repair the experiment afterward.
+
+Three other cases resolved their computed-style differences on the first edit
+but left an unresolved class. Their second attempts used the updated class
+feedback and passed the full checks. This demonstrates the value of keeping both
+browser comparisons and class diagnostics in the completion gate. It does not
+isolate whether feedback, more time, guidance, current tool versions or model
+variation accounts for the additional successful repairs.
+
+Validation: all 29 focused tests, scoped script ESLint, `check:ai-context` and diff
+checks passed. Independent audit matched checkpoint source/generated-CSS hashes,
+feedback and evidence contents, protected files, original snapshot/assessment
+hashes, prompt-to-checkpoint freshness, raw token usage and final statuses. The
+six counterfactual variants retained the expected fail/fail/pass pattern in each
+cause category. Source CSS/runtime behavior and the evaluator were not changed
+by this work. Existing public APIs and the default single-repair experiment are
+unchanged; the new host-checkpoint runner is opt-in.
+
+External evidence:
+`/Users/aron/master-css-evaluations/2026-11-01-repair-recheck`.
+The archive retains all checkpoint workspaces, model events, protected inputs,
+original provenance, current frozen sources/tools, old/new artifact hashes,
+counterfactual variants, validation, audit helpers and the rejected preflight log.
+Observation SHA-256:
+`92ef7361b9415d26aff80d44e8e5c55386f6f331ffb3f1771f02c2aac2854fab`.
