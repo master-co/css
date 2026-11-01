@@ -4,6 +4,9 @@ import { test } from 'node:test'
 import { referenceDemoSections } from './source'
 import { referenceScenes } from './scenes'
 import { demoDocument } from './document'
+import { compileManifestSync } from '@master/css-compiler/node'
+import { createRenderSessionSync } from '@master/css/node'
+import preset from '../../../utils/preset-manifest'
 
 const root = new URL('../specimens/', import.meta.url)
 
@@ -34,6 +37,24 @@ test('every retained gallery specimen has a unique source and compilable scene',
   }
   assert.deepEqual(failures, [])
   assert.ok(count >= 80, 'The retained gallery must exercise its full set of specimens')
+})
+
+// Readers copy these classes into their own projects. The demo frame also loads site tokens
+// (materials, demo theme), so a site-only token would render here and fail for the reader.
+test('every taught class compiles against the preset and its own example CSS alone', async () => {
+  const failures: string[] = []
+  for (const file of (await readdir(root)).filter(file => file.endsWith('.json'))) {
+    for (const section of await referenceDemoSections(file.slice(0, -5))) {
+      const compiled = section.css ? compileManifestSync(section.css, { baseManifest: preset }) : undefined
+      const engine = createRenderSessionSync({ manifest: compiled?.manifest ?? preset })
+      try {
+        const invalid = engine.ensureClassRules(section.classes).invalidClassNames
+          .filter(name => !compiled?.nativeClassNames.includes(name))
+        if (invalid.length) failures.push(`${section.page}#${section.id}: ${invalid.join(', ')}`)
+      } finally { engine.dispose() }
+    }
+  }
+  assert.deepEqual(failures, [])
 })
 
 test('clear uses different float heights and real side-specific clearing', async () => {

@@ -70,6 +70,7 @@ The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro 
 - Documenting behavior from memory instead of source/tests.
 - Creating a root `docs/` directory without request.
 - Exposing framework-specific code in reader-facing examples unless the section is about that integration.
+- Using site tokens (`--ui-*`, the `materials.css` and demo-theme utility tokens such as `shadow-raised` or `bg-surface-shell`) in reader-facing example classes. Example frames load them, so they render on the site but fail in a reader's project; teach the preset vocabulary. `reference-demo.test.ts` compiles every taught class against the preset alone.
 - Hard-coding preset token rows when they can be read from preset manifest data.
 - Placing guide demo images in `site/public/` unless they need stable public URLs outside the bundle.
 
