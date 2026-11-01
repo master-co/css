@@ -355,3 +355,42 @@ It reports first-attempt tokens and model time separately from incurred repairs;
 inspect transcripts for reference use and failure causes before interpreting the
 aggregate. This comparison uses the corrected checker and does not mix historical
 campaign results into either arm. Keep raw artifacts outside the repository.
+
+### Recorded import comparison: 2026-11-01
+
+Frozen runner: `76b80ebb9`; Codex CLI `0.166.0-alpha.5.1`; the same two models,
+low reasoning, concurrency 2, 120 seconds per attempt, up to two repairs.
+All 16 cells completed in 30 attempts without execution, service or isolation
+errors. Inputs, skill snapshots and token totals were audited; no grader changes
+or regrading occurred. All 16 first attempts visibly read the import reference;
+all eight B attempts received the newly added sections.
+
+| Measure | A: before | B: after |
+| --- | ---: | ---: |
+| First pass | 4/8 | 4/8 |
+| Final pass | 6/8 | 6/8 |
+| Repair requests | 7 | 7 |
+| First-attempt input tokens | 1,655,950 | 1,738,039 |
+| Input tokens including repairs | 3,074,674 | 3,847,216 |
+| Median first-attempt model time | 48.19 s | 44.82 s |
+| Median model time including repairs | 63.29 s | 61.94 s |
+| CLI suggestion calls | 24 | 36 |
+| Final unmatched names | 1 | 5 |
+
+All eight pairs tied: six both passed, two both failed. In each arm, Sol passed
+4/4 without repairs; Luna passed 2/4 after repairs and failed both card trials.
+Both arms had four first-attempt line-height mismatches. Initial unmatched-class
+failures were two versus one, but final unmatched names were one versus five.
+The before arm had one empty-stdin suggestion error; the after arm had none.
+
+This sample shows no improvement in success or repair count. After-version input
+tokens were 5.0% higher on first attempts and 25.1% higher including repairs.
+Counts include cache hits; these are not billing estimates or evidence of a general
+regression. Retain the factual guidance without claiming measured effectiveness.
+Next evaluate source-to-target rule-provenance diagnostics for inherited values
+and unresolved classes. Reading a reference alone did not ensure its application.
+
+External `analysis.json` and `audit.json` retain the full comparison and failure
+properties alongside immutable skill versions, prompts, events and all snapshots.
+Observation SHA-256:
+`289d7fe67fe1b2f4f999b6f7c4b567b5726d014ef9e08188e5c5e76cea0c120c`.
