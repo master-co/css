@@ -186,9 +186,10 @@ These are token counts, not billing estimates; timings are local concurrent runs
 Both B failures were hover imports. One retained a components-layer hover rule
 overridden by its utilities-layer resting background; the other also retained an
 unresolved class and incorrect text color. The report exposed candidates but did
-not ensure a correct repair. Next compare a compact, property-focused diagnostic
-against the full report on **identical failed snapshots**, keeping initial errors
-fixed and verifying hover after each repair; see the [paired-repair protocol](repair-snapshots.md). Do not claim a general improvement
+not ensure a correct repair. The follow-up compared a compact, property-focused
+diagnostic against the full report on **identical failed snapshots**, keeping
+initial errors fixed and verifying hover after each repair; see the
+[paired-repair protocol and results](repair-snapshots.md). Do not claim a general improvement
 or expand the public tool surface based on this pilot alone.
 
 External artifacts contain all prompts, events, snapshots, comparison, audit and

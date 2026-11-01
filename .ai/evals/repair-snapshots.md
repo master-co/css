@@ -96,3 +96,61 @@ shorthand retention, unavailable evidence, equal paired inputs, report isolation
 exclusive output writes, balanced scheduling, complete comparison and error/usage
 accounting. Existing browser/color/protocol tests remain applicable; the scorer
 itself is unchanged.
+
+## Recorded result — 2026-11-01
+
+Frozen implementation: `53b606ae5ef15fc745c9c2ea0e2811cd1cb05709`.
+Client: `codex-cli 0.166.0-alpha.5.1`; Chromium: `156.0.8078.4`.
+The two models and settings above completed all 32 formal calls. Four calibration
+calls were excluded; implementation/tool hashes matched between calibration and
+formal runs. Model names are service identifiers, not immutable weight hashes.
+
+| Measure | A: full report | B: compact summary |
+| --- | ---: | ---: |
+| Single-repair passes | 13/16 | 11/16 |
+| Sol passes | 8/8 | 8/8 |
+| Luna passes | 5/8 | 3/8 |
+| Input tokens, including cached input | 3,727,434 | 4,128,725 |
+| Cached input tokens | 3,257,344 | 3,651,968 |
+| Output tokens | 28,831 | 30,697 |
+| Median model duration | 31.37 s | 37.34 s |
+| Report bytes across eight unique seeds | 705,530 | 211,491 |
+| Trials visibly reading the assigned report | 16/16 | 16/16 |
+| Final unmatched names, summed per trial | 11 | 2 |
+
+Pairs produced four full-only passes, two compact-only passes, nine both-pass and
+one both-fail. Compact reports were **70.0% smaller**, but recorded input tokens
+were **10.8% higher**. Completed command counts were similar (138 versus 137);
+these observations do not establish why usage differed. Reading a report includes
+partial reads and does not prove the model received or used every evidence item.
+
+All eight seeds came from Luna's failed first attempts across the two prior
+Tailwind-import tasks. All formal failures were also Luna repairs. Full-report
+failures retained unresolved names and color/hover differences. Compact failures
+included height, radius, hover background and inherited line-height differences;
+three had no unmatched names. Fewer unresolved names did not ensure correct CSS.
+
+There were no model-turn failures, timeouts, guarded-file violations or unmeasured
+usage totals. Audit verified original snapshot bytes, equal paired inputs and
+prompts, assigned-report integrity, frozen source/tool hashes, raw usage totals,
+and preservation of every scored difference/check ID in the summary. The scorer
+was unchanged. Wrapper logs recorded 18 versus 16 suggestion calls, with zero
+versus one nonzero result. The latter trial has only two visible suggestion
+commands but three wrapper entries; that extra entry's provenance is unresolved,
+so these wrapper counts are not treated as fully reconciled tool-event counts.
+Raw logs are retained rather than silently correcting the discrepancy.
+
+Keep the **full report as the default**. This small, failure-conditioned sample
+does not support replacing it with the summary or claiming token savings. The
+summary remains an opt-in repository command; no public CLI/MCP API changed.
+A useful next experiment would make the summary a navigation aid with on-demand
+access to full property evidence, while preserving identical starting failures.
+That follow-up is not implemented by this experiment.
+
+Validation: 23 focused summary, browser-diagnostic, color, evaluation and protocol
+tests passed, along with scoped script ESLint and `check:ai-context`. External
+evidence is archived under
+`/Users/aron/master-css-evaluations/2026-11-01-repair-snapshots`, including separate
+calibration, frozen sources/tools, formal inputs, reports, events, final workspaces,
+observations, comparison and audits. Observation SHA-256:
+`385bbac44cb27f573c9f74a7e98c425e32c90cdd039729eb60cc3796339007ba`.
