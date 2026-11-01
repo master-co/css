@@ -36,9 +36,13 @@ node --import tsx scripts/ai-authoring/trials/run.mjs --limit 10 --concurrency 2
 node --import tsx scripts/ai-authoring/trials/run.mjs --concurrency 4
 ```
 
-The first command checks 25 controls: every untouched starter must fail and every
-known solution must pass, including a card with spacing on an inner panel.
-Content inset is measured geometrically; outer-box padding is not required.
+The first command checks 32 controls: 12 starters, 12 known solutions and eight
+rubric regressions. Valid inner-panel spacing, additional tab stops, shadow focus
+indicators and flex columns must pass. Missing keyboard access, invisible focus,
+incorrect relative units and invalid single-quoted classes must fail.
+Content inset and columns are measured geometrically; outer-box padding and a
+specific layout implementation are not required. Keyboard checks traverse tab
+stops, and class inspection reads the parsed DOM rather than attribute quotes.
 Solutions and checker sources are not supplied to the
 model. The second command is a separate calibration run; never merge it into the
 formal corpus. The last command runs 12 tasks × five arms × two models × two

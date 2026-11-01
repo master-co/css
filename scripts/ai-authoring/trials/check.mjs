@@ -8,21 +8,14 @@ import { createToolingSessionSync } from '@master/css-tooling/node'
 export async function check(root, task, browser, repository, answer = '', baselineRoot = root) {
   const checks = []
   const add = (kind, id, pass, actual) => checks.push({ kind, id, pass: Boolean(pass), actual })
-  let invalidClasses = null, buildError = null, masterClasses = []
+  let invalidClasses = null, buildError = null, masterClasses = [], manifest = null
   const html = readFileSync(join(root, 'index.html'), 'utf8')
   const css = readFileSync(join(root, 'app.css'), 'utf8')
   const script = readFileSync(join(root, 'app.js'), 'utf8')
   const source = (html + '\n' + css + '\n' + script).replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, '')
   try {
     execFileSync(process.execPath, [join(repository, 'packages/cli/dist/bin/index.js'), 'generate', 'index.html', 'app.js', '-o', 'output.css', '-v', '0', '--strict'], { cwd: root, timeout: 30000, stdio: 'pipe' })
-    const manifest = await loadProjectManifest({ root, entries: [join(root, 'app.css')], baseManifest: { version:6, languageVersion:18 } })
-    using tooling = createToolingSessionSync({ manifest: manifest.manifest })
-    const classes = [...new Set([...html.matchAll(/class="([^"]*)"/g)].flatMap(m => m[1].split(/\s+/)).filter(Boolean))]
-    const native = new Set(manifest.nativeClassNames ?? [])
-    masterClasses = classes.filter(name => tooling.inspectClassName(name).matchStatus === 'matched')
-    const invalid = classes.filter(name => !native.has(name) && tooling.inspectClassName(name).matchStatus !== 'matched')
-    invalidClasses = invalid.length
-    add('styling', 'valid-classes', invalid.length === 0, invalid)
+    manifest = await loadProjectManifest({ root, entries: [join(root, 'app.css')], baseManifest: { version:6, languageVersion:18 } })
   } catch (error) {
     buildError = String(error.stderr ?? error.message).slice(-5000)
     add('styling', 'build', false, buildError)
@@ -35,6 +28,15 @@ export async function check(root, task, browser, repository, answer = '', baseli
   const style = (selector, name) => page.locator(selector).first().evaluate((el, name) => getComputedStyle(el).getPropertyValue(name), name)
   try {
     await page.goto(pathToFileURL(join(root, 'index.html')).href)
+    if(manifest) {
+      using tooling = createToolingSessionSync({ manifest: manifest.manifest })
+      const classes = await page.locator('[class]').evaluateAll(elements => [...new Set(elements.flatMap(el => [...el.classList]))])
+      const native = new Set(manifest.nativeClassNames ?? [])
+      masterClasses = classes.filter(name => tooling.inspectClassName(name).matchStatus === 'matched')
+      const invalid = classes.filter(name => !native.has(name) && tooling.inspectClassName(name).matchStatus !== 'matched')
+      invalidClasses = invalid.length
+      add('styling', 'valid-classes', invalid.length === 0, invalid)
+    }
     const cardTasks = ['settings-card', 'density-edit', 'dark-theme', 'missing-css', 'tailwind-card']
     for (const width of [390, 1280]) {
       await page.setViewportSize({ width, height: 900 })
@@ -62,8 +64,22 @@ export async function check(root, task, browser, repository, answer = '', baseli
       add('functional', 'save-action', (await page.locator('#status').textContent()) === 'Saved')
       add('accessibility', 'disabled', await page.locator('#locked').isDisabled())
       await page.goto(pathToFileURL(join(root, 'index.html')).href)
-      await page.keyboard.press('Tab')
-      add('accessibility', 'keyboard-focus', await page.locator('#name').evaluate(el => el === document.activeElement && el.matches(':focus-visible') && getComputedStyle(el).outlineStyle !== 'none'))
+      const focusStyles = () => page.locator('#name').evaluate(el => {
+        const css=getComputedStyle(el)
+        return [css.boxShadow,css.borderColor,css.backgroundColor]
+      })
+      const blurred = await focusStyles()
+      const stops = Math.min(100,await page.locator('a[href],button,input,select,textarea,[tabindex]').count()+1)
+      let reached = false
+      for(let i=0;i<stops&&!reached;i++) {
+        await page.keyboard.press('Tab')
+        reached=await page.locator('#name').evaluate(el => el === document.activeElement)
+      }
+      const outline = await page.locator('#name').evaluate(el => {
+        const css=getComputedStyle(el)
+        return el.matches(':focus-visible') && css.outlineStyle!=='none' && parseFloat(css.outlineWidth)>0 && !['transparent','rgba(0, 0, 0, 0)'].includes(css.outlineColor)
+      })
+      add('accessibility', 'keyboard-focus', reached&&(outline||JSON.stringify(blurred)!==JSON.stringify(await focusStyles())))
       if (task === 'settings-card') add('styling', 'product-tokens', /(?:bg-brand|bg-surface|p-card|var\(--(?:color-brand|color-surface|spacing-card)\))/.test(html + css))
       if (task === 'missing-css') add('functional', 'delivery-fixed', /href=["']\.\/output\.css/.test(html))
       if (task === 'density-edit') add('styling', 'compact-gap', parseFloat(await style('#card', 'row-gap')) < 12)
@@ -87,11 +103,16 @@ export async function check(root, task, browser, repository, answer = '', baseli
     }
     if (task === 'responsive-grid') for (const width of [831, 833]) {
       await page.setViewportSize({ width, height: 900 })
-      const columns = (await style('#cards', 'grid-template-columns')).split(' ').length
-      add('styling', `columns-${width}`, columns === (width < 832 ? 1 : 3), columns)
+      const layout = await page.locator('#cards>article').evaluateAll(elements => {
+        const boxes=elements.map(el=>el.getBoundingClientRect())
+        return {count:boxes.length,columns:new Set(boxes.map(b=>Math.round(b.left))).size,rows:new Set(boxes.map(b=>Math.round(b.top))).size,visible:boxes.every(b=>b.width>0&&b.height>0)}
+      })
+      add('styling', `columns-${width}`, layout.visible&&layout.count===3&&layout.columns===(width<832?1:3)&&layout.rows===(width<832?3:1), layout)
     }
     if (task === 'css-declarations') {
       for (const [property, expected] of Object.entries({ display:'flex','align-items':'center','padding-top':'16px',gap:'16px' })) add('styling', property, await style('#target', property) === expected)
+      await page.evaluate(()=>document.documentElement.style.fontSize='20px')
+      add('styling', 'unit-semantics', await style('#target','padding-top')==='16px'&&await style('#target','gap')==='20px')
       add('functional', 'uses-classes', Boolean(await page.locator('#target').getAttribute('class')) && !await page.locator('#target').getAttribute('style'))
       add('functional', 'cascade-limit-reported', /cascade/i.test(answer))
     }
@@ -99,6 +120,7 @@ export async function check(root, task, browser, repository, answer = '', baseli
       add('styling', 'fallback-order', /display\s*:\s*block\s*;\s*display\s*:\s*grid/.test(source))
       add('styling', 'padding-order', /padding\s*:\s*1rem\s*;\s*padding-left\s*:\s*0/.test(source))
       add('styling', 'padding-left', await style('#target','padding-left') === '0px')
+      add('styling', 'fallback-display', await style('#target','display') === 'grid')
       add('functional', 'retained-css-explained', /CSS|native|retain/i.test(answer))
     }
     if (task === 'token-collision') {
