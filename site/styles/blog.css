@@ -233,7 +233,7 @@
     position: relative;
 
     & + & {
-      margin-top: 3rem;
+      margin-top: 4rem;
     }
 
     /* Its node: a long ruler tick from the time line, level with the date. */
@@ -287,7 +287,8 @@
     scroll-margin-block: 5.5rem 2rem;
 
     &::before {
-      inset: calc(0.1725rem - var(--blog-marks-inset)) calc(var(--blog-marks-inset) * -1) calc(0.4125rem - var(--blog-marks-inset));
+      /* The bottom follows the excerpt's last baseline in its 30px line. */
+      inset: calc(0.1725rem - var(--blog-marks-inset)) calc(var(--blog-marks-inset) * -1) calc(0.6rem - var(--blog-marks-inset));
       opacity: 0;
       transition: opacity var(--blog-slow) var(--blog-ease), inset var(--blog-quick) var(--blog-ease);
     }
@@ -332,7 +333,7 @@
 
   /* A Han excerpt's last baseline sits higher in its taller line. */
   .blog-entry-link:has(> .blog-entry-description:lang(zh))::before {
-    inset-block-end: calc(0.5rem - var(--blog-marks-inset));
+    inset-block-end: calc(0.625rem - var(--blog-marks-inset));
   }
 
   .blog-entry-meta {
@@ -350,11 +351,12 @@
     }
   }
 
+  /* Title and excerpt breathe like the articles' own text: a full step of air between them, double-leaded excerpts. */
   .blog-entry-title {
-    margin: 0.75rem 0 0;
+    margin: 1rem 0 0;
     font-size: 1.5rem;
     font-weight: var(--font-weight-regular);
-    line-height: 2rem;
+    line-height: 2.25rem;
     letter-spacing: -0.015em;
     color: var(--blog-title);
     text-wrap: balance;
@@ -371,7 +373,7 @@
      * the spaces around Latin terms and after punctuation, never inside a phrase.
      */
     &:lang(zh) {
-      line-height: 2.25rem;
+      line-height: 2.5rem;
       letter-spacing: 0;
       word-break: keep-all;
       text-autospace: normal;
@@ -384,9 +386,9 @@
   }
 
   .blog-entry-description {
-    margin: 0.5rem 0 0;
+    margin: 1rem 0 0;
     font-size: 0.9375rem;
-    line-height: 1.5rem;
+    line-height: 1.875rem;
     text-wrap: pretty;
 
     /*
@@ -394,7 +396,7 @@
      * with the strict rules that keep closing punctuation off a line's start (titles keep their phrases whole).
      */
     &:lang(zh) {
-      line-height: 1.75rem;
+      line-height: 2rem;
       line-break: strict;
     }
   }
@@ -469,10 +471,10 @@
 
     .blog-entry-title {
       font-size: 1.25rem;
-      line-height: 1.75rem;
+      line-height: 2rem;
 
       &:lang(zh) {
-        line-height: 2rem;
+        line-height: 2.25rem;
       }
     }
 

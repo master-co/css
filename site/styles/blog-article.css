@@ -21,6 +21,8 @@
     --blog-article-bleed: 1.25rem;
     /* The documentation's reading measure (`--docs-text`): the text keeps it while the frame around it widens. */
     --blog-article-measure: 41rem;
+    /* How far wide surfaces hang past the text: the documentation's 2rem, never past the frame; none on phones. */
+    --blog-article-hang: 0rem;
     /* Strong ink is the shared title tone (soft obsidian / moonstone), so nothing on the page is pure black or white. */
     --blog-article-text: var(--blog-title, var(--color-text-strong));
     --blog-article-body: var(--color-text-body);
@@ -39,6 +41,7 @@
     /* From 40rem the text keeps 2.5rem from the screen's edge, as on the index, and the wells stop short of it. */
     @media (width >= 40rem) {
       --blog-article-gutter: calc(2.5rem - var(--blog-article-bleed));
+      --blog-article-hang: min(2rem, var(--blog-article-bleed));
     }
 
     @media (--sm) {
@@ -91,8 +94,9 @@
   .blog-article-masthead {
     position: relative;
     min-width: 0;
-    /* The meta line starts where the index's title starts; the post's first lines still sit in the first screen. */
-    padding: calc(3.75rem + round(clamp(3rem, 1.5rem + 4vw, 5rem), 1rem)) var(--blog-article-bleed) round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem);
+    /* The post's first lines still sit in the first screen. The header steps out of the text column to the wide
+       surfaces' edge, so it opens the drawing closer to the rails than the reading does. */
+    padding: calc(3.75rem + round(clamp(3rem, 1.5rem + 4vw, 5rem), 1rem)) calc(var(--blog-article-bleed) - var(--blog-article-hang)) round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem);
     grid-row: 1;
 
     @media (width >= 48rem) and (height < 50rem) {
@@ -139,19 +143,13 @@
   .blog-article-title {
     min-width: 0;
     margin: 1.25rem 0 0;
-    font-size: clamp(1.875rem, 1.2rem + 2.8vw, 3.375rem);
+    font-size: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
     font-weight: 400;
-    line-height: 1.08;
+    line-height: 1.12;
     letter-spacing: -0.034em;
     color: var(--blog-article-text);
     text-wrap: balance;
     overflow-wrap: anywhere;
-
-    /* Like a code well, the title may use the room the column bleeds into on its right, where that room stops short
-       of the screen's edge. */
-    @media (width >= 40rem) {
-      margin-right: calc(var(--blog-article-bleed) * -1);
-    }
 
     /* Display tracking opens a little at phone sizes, where it starts to crowd the letters. */
     @media (width < 40rem) {
@@ -174,9 +172,12 @@
   .blog-article-dek {
     max-width: 34em;
     margin: 1.5rem 0 0;
-    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-    line-height: 1.75;
-    color: var(--blog-article-body);
+    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.125rem);
+    /* Supporting text in italic (Geist has no italic face; the browser slants the roman), a step quieter than the
+       reading. Han text stays upright. */
+    font-style: italic;
+    line-height: 1.9;
+    color: var(--blog-article-quiet);
     /* Balanced, so a last pair of words never hangs alone; on a phone balancing four lines would only narrow them. */
     text-wrap: balance;
 
@@ -185,7 +186,8 @@
     }
 
     &:lang(zh) {
-      line-height: 1.8;
+      font-style: normal;
+      line-height: 1.95;
     }
   }
 
@@ -278,14 +280,15 @@
     }
   }
 
-  /* Surfaces bleed to the frame's edges and keep their own padding; on phones they stay on the text. (0,2,0)
+  /* Surfaces hang past the text as in the documentation, short of the frame, and keep their own padding; on phones
+     they stay on the text. (0,2,0)
      outranks the shared prose's own bleed. */
   .blog-article-prose.ui-prose {
     --prose-bleed: 0rem;
     min-width: 0;
 
     @media (width >= 40rem) {
-      --prose-bleed: var(--blog-article-bleed);
+      --prose-bleed: var(--blog-article-hang);
     }
 
     & > :first-child {
@@ -353,9 +356,14 @@
 
   /* ───────────────────────── End of post ───────────────────────── */
 
+  /* The close mirrors the header: it steps out to the wide surfaces' edge, as the masthead does. */
   .blog-article-end {
-    padding-top: round(clamp(2.5rem, 1.75rem + 2vw, 3.5rem), 1rem);
+    padding-top: round(clamp(3rem, 2rem + 2.5vw, 4.5rem), 1rem);
     padding-bottom: round(clamp(5rem, 3rem + 6vw, 8rem), 1rem);
+
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--blog-article-bleed) - var(--blog-article-hang));
+    }
 
     @media (width < 64rem) {
       border-top: 1px solid var(--blog-guide, var(--color-line-subtle));
@@ -370,119 +378,126 @@
   }
 
   .blog-article-end-title {
-    margin: 0 0 var(--spacing-lg);
+    margin: 0 0 2.5rem;
     color: var(--blog-article-quiet);
     @apply --ui-eyebrow-type;
   }
 
   /*
-   * The next read is the shared quiet sheet (`.blog-plate`): one 1px contour, a line of light on its top edge and a
-   * soft contact shadow that settles a little deeper, slowly, on hover.
+   * The next read is an open title, not a card: the meta as the header's kicker, the title in the post's own tone a
+   * step under the post's title, the description in the dek's italic. Under the pointer the index's artboard corners
+   * draw around it and the arrow steps on; keyboard focus closes the corners into a frame.
    */
   .blog-article-next {
+    --blog-marks-inset: 1rem;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 0 var(--spacing-lg);
-    padding: 1.5rem 1.25rem;
+    width: fit-content;
+    max-width: min(100%, 38rem);
     color: var(--blog-article-text);
     text-decoration: none;
 
-    /* It hangs to the frame's edges like the post's other surfaces and keeps its own padding; on a phone it would
-       meet the edge with its rounded corners, so it stays inside the gutter. */
-    @media (width >= 40rem) {
-      margin-inline: calc(var(--blog-article-bleed) * -1);
-      padding: clamp(1.5rem, 1rem + 1.6vw, 2rem);
+    &::before {
+      opacity: 0;
+      transition: opacity var(--blog-article-slow) var(--blog-article-ease), inset var(--blog-article-base) var(--blog-article-ease);
     }
 
-    /* The arrow arrives with the sheet's lift and leaves as slowly as its shadow settles. */
+    &:is(:hover, :focus-visible)::before {
+      opacity: 1;
+      transition-duration: var(--blog-article-base);
+    }
+
+    &:active {
+      --blog-marks-inset: calc(1rem - 2px);
+    }
+
     &:is(:hover, :focus-visible) .blog-article-next-arrow {
       color: var(--blog-article-text);
-      translate: 3px 0;
+      translate: 4px 0;
       transition-duration: var(--blog-article-base);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--color-focus);
-      outline-offset: 4px;
+      outline: 2px solid transparent;
+
+      &::before {
+        background: none;
+        outline: 2px solid var(--blog-article-faint);
+        outline-offset: -2px;
+      }
     }
   }
 
-  /* The same quiet meta as the index's entries: category and date in plain text. */
   .blog-article-next-meta {
-    grid-column: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem var(--spacing-md);
-    font-size: 0.8125rem;
-    line-height: 1.5;
+    gap: 0.25rem 0.75rem;
     color: var(--blog-article-quiet);
+    @apply --ui-eyebrow-type;
+
+    & > * + *::before {
+      margin-right: 0.75rem;
+      color: var(--blog-article-faint);
+      content: '·' / '';
+    }
 
     & time {
       font-variant-numeric: tabular-nums;
     }
   }
 
-  /* A title inside the page takes the shared moonstone mid-tone in dark mode, so it never outshines the post's own. */
   .blog-article-next-title {
-    grid-column: 1;
+    margin-top: 1rem;
     color: var(--blog-article-text);
-    margin-top: var(--spacing-md);
-    font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.625rem);
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
     font-weight: 400;
-    line-height: 1.25;
-    letter-spacing: -0.024em;
+    line-height: 1.2;
+    letter-spacing: -0.026em;
     text-wrap: balance;
 
     &:lang(zh) {
-      letter-spacing: 0;
+      letter-spacing: -0.01em;
+      word-break: keep-all;
     }
   }
 
-  .blog-article-next-title-line {
+  /* The first half of a "Subject: question" title takes its own line; the arrow follows the last word. */
+  .blog-article-next-title-line:first-child:not(:last-of-type) {
     display: block;
   }
 
-  .blog-article-next-description {
-    grid-column: 1;
-    margin-top: var(--spacing-sm);
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--blog-article-quiet);
-    text-wrap: pretty;
-  }
-
-  /* On a phone the arrow rides with the meta, so the title and description take the card's full width. */
-  @media (width < 40rem) {
-    .blog-article-next-meta {
-      align-self: center;
-    }
-
-    .blog-article-next-title,
-    .blog-article-next-description {
-      grid-column: 1 / -1;
-    }
-
-    .blog-article-next .blog-article-next-arrow {
-      grid-row: 1;
-      align-self: center;
-    }
-  }
-
   .blog-article-next-arrow {
-    grid-column: 2;
-    grid-row: 1 / span 3;
-    align-self: center;
+    display: inline-block;
+    margin-left: 0.3em;
+    vertical-align: -0.12em;
     color: var(--blog-article-faint);
     transition: translate var(--blog-article-slow) var(--blog-article-ease), color var(--blog-article-slow) var(--blog-article-ease);
   }
 
+  /* As the header's dek: supporting text in the same italic, a step smaller. */
+  .blog-article-next-description {
+    max-width: 34em;
+    margin-top: 0.875rem;
+    color: var(--blog-article-quiet);
+    font-size: 0.9375rem;
+    font-style: italic;
+    line-height: 1.85;
+    text-wrap: pretty;
+
+    &:lang(zh) {
+      font-style: normal;
+      line-height: 1.9;
+    }
+  }
+
+  /* The way back and the other neighbour close the drawing under one hairline. */
   .blog-article-end-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--spacing-sm) var(--spacing-lg);
-    margin-top: var(--spacing-lg);
+    margin-top: 3.5rem;
+    padding-top: 0.5rem;
+    box-shadow: inset 0 1px 0 var(--blog-guide, var(--color-line-subtle));
   }
 
   .blog-article-end-link {
@@ -563,10 +578,10 @@
       -webkit-text-fill-color: currentColor;
     }
 
-    .blog-article-page .blog-article-next {
-      border: 1px solid CanvasText;
-      background: Canvas;
-      box-shadow: none;
+    /* The corners are hidden here: the next read keeps an outline under the pointer and on focus. */
+    .blog-article-page .blog-article-next:is(:hover, :focus-visible) {
+      outline: 1px solid CanvasText;
+      outline-offset: 0.75rem;
     }
 
     .blog-article-body,

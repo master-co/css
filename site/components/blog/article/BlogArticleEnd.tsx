@@ -8,8 +8,9 @@ import { sourceLanguageOf } from './language'
 import type { BlogArticleNeighbor } from './neighbors'
 
 /**
- * The close of a post: the next read on a quiet sheet, the other neighbour as a quiet link,
- * and the way back to every article.
+ * The close of a post, set like its header: an eyebrow, the next read as an open title with its italic description
+ * (marked on hover with the index's artboard corners, not a card), then the other neighbour and the way back to every
+ * article as quiet links.
  */
 export default function BlogArticleEnd({ newer, older, showCategory = true }: { newer?: BlogArticleNeighbor, older?: BlogArticleNeighbor, showCategory?: boolean }) {
   const $ = useTranslation()
@@ -26,14 +27,16 @@ export default function BlogArticleEnd({ newer, older, showCategory = true }: { 
     <nav className="blog-article-end blog-rails blog-rails-rule" aria-labelledby="blog-article-end-title">
       <p className="blog-article-end-title" id="blog-article-end-title">{$('Keep reading')}</p>
       {lead && (
-        <Link className="blog-article-next blog-plate" href={lead.pathname}>
+        <Link className="blog-article-next blog-marks" href={lead.pathname}>
           <span className="blog-article-next-meta">
             {showCategory && lead.category && <span>{$(lead.category)}</span>}
             <time dateTime={lead.date}>{date(lead.date)}</time>
           </span>
-          <span className="blog-article-next-title" lang={languageOf(lead.title)}>{titleLines($(lead.title), 'blog-article-next-title-line')}</span>
+          <span className="blog-article-next-title" lang={languageOf(lead.title)}>
+            {titleLines($(lead.title), 'blog-article-next-title-line')}
+            <IconArrowRight className="blog-article-next-arrow" aria-hidden="true" size={22} stroke={1.25} />
+          </span>
           {lead.description && <span className="blog-article-next-description" lang={languageOf(lead.description)}>{$(lead.description)}</span>}
-          <IconArrowRight className="blog-article-next-arrow" aria-hidden="true" size={20} stroke={1.5} />
         </Link>
       )}
       <div className="blog-article-end-links">
