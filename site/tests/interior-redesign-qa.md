@@ -13,6 +13,8 @@ Implementation and verification record for `codex/site-interior-redesign`.
 
 ## Brand decisions and shared facts
 
+> Superseded on 2026-11-01: `/brand` now owns the identity only, and `common/brand-foundations.ts` is gone. The current boundary is in `site/AI.md`.
+
 `/brand` owns identity, logo use, palette roles, typography, geometry, materials, interaction, applications and voice. `/design-system` retains its component catalog, review scenes and authoring handbook.
 
 - `common/brand.ts` holds authored identity decisions, labels, original asset destinations and composition content.

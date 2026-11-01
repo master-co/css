@@ -48,6 +48,7 @@ The site is an Astro static build (`astro.config.ts`, output `site/out`). Astro 
 - Guide pages: `site/content/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
 - Example iframe pages: `site/content/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
+- Brand (`site/content/brand/`) owns the identity only: the mark and logotype, their gold, the typefaces, the voice, artwork downloads and the usage policy. Interface materials, controls, layout and motion belong to `/design-system`; token values belong to Reference. Its facts live in `common/brand.ts`, which feeds the page, search and `/brand.md`.
 - Category data is generated; run `bun run --filter site prepare-app` when adding or renaming pages.
 
 ## Risk Areas
