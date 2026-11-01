@@ -148,3 +148,26 @@ The comparison is against a build of `rc` at `bb6af9f29`. That build matches the
 ### Visual check
 
 Routes were compared with the previous state at 1280 and 390 px in light and dark: `/guide/installation`, `/guide/syntax-tutorial`, the guide index, `/reference/tokens/spacing`, `/design-system`, `/benchmarks`, `/blog`, `/brand` and `/404`. After rebasing onto the route style boundaries, the browser checks for reading, navigation, demos, reviews, states, the homepage header, brand, search, illustrations and anchors pass. The known exceptions are the `migration/css` previews at 320 px with 200% text and the missing documentation-geometry fixture.
+
+## Brand identity boundary {#brand-identity-boundary}
+
+`brand-cleanup` narrows `/brand` to the identity now that the Design System owns the interface: the mark and logotype, their gold, the typefaces, the voice, the artwork downloads and the trademark policy. The page moves from its own hero, chapter navigation and 427-line `brand.css` onto the standard document shell (page head, contents rail, `ui-tray` specimens, `ui-table`, `ui-swatch`), with a 30-line `brand.css` for the clear-space, minimum-size and typeface specimens. Color roles, spacing, radii, materials, controls, motion and the applied compositions are left to `/design-system` and Reference.
+
+The comparison is against the committed snapshot, which a build of `rc` at `7a8a4fa18` matches for every other route.
+
+| Change | Count |
+| --- | --- |
+| Routes added or removed | 0 |
+| Routes with a different CSS contract | 2 (`/brand`, `/tw/brand`) |
+| Delivered CSS segments | 2,803 → 2,539 (21 added, 285 removed) |
+| Delivery contracts | 123 → 123 |
+| `/brand` CSS | 183,318 → 141,783 bytes (−22.7%) |
+| `/brand` hydration payload | 5,755 → 2,346 bytes |
+
+- The removed segments are the brand-only rules for the hero, chapter navigation, color-role cards, type scale, spacing and radius scales, materials, controls board and application compositions, plus the utilities and tokens only they used.
+- The added segments are the specimen rules, `.brand-gold [data-signal]` (which delivers `--color-amber-40`), and the document-shell rules the page now shares with Benchmarks and the Guide.
+- The project manifest is unchanged. `DemoAsset` gains a `data-demo-container` marker so the prose media perimeter no longer outlines the downloadable artwork; it changes no CSS.
+
+### Visual check
+
+`/brand` was reviewed at 1280 and 390px in light and dark on the development server. `brand-system.e2e.mjs` passes in Chromium and WebKit: no overflow, every anchor resolves, the visible artwork matches the background in both schemes and without JavaScript, the minimum sizes render at 16, 24 and 16 CSS pixels with their source proportions, downloads are byte-identical to the originals, and enlarged text with forced colors stays readable.
