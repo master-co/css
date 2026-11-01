@@ -14,19 +14,23 @@ for (const route of routes) for (const scheme of ['light', 'dark']) test(`${rout
   try {
     const page = await context.newPage()
     assert.equal((await page.goto(base + route, { waitUntil: 'networkidle' })).status(), 200)
-    const figures = page.locator('.doc-illustration')
+    const figures = page.locator('figure.ui-tray:has(> .document-illustration)')
     assert.ok(await figures.count() > 0)
     for (const figure of await figures.all()) {
       await figure.scrollIntoViewIfNeeded()
-      const art = figure.locator('.doc-illustration-art')
-      const figureBox = await figure.boundingBox()
+      const art = figure.locator('.document-illustration')
+      // The tray insets its parts; the artwork spans the tray's content box.
+      const content = await figure.evaluate(element => {
+        const style = getComputedStyle(element), box = element.getBoundingClientRect()
+        const left = box.x + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft)
+        return { x: left, width: element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) }
+      })
       const artBox = await art.boundingBox()
-      assert.ok(Math.abs(artBox.width - figureBox.width) <= 1, 'artwork fills the figure width')
-      assert.ok(Math.abs(artBox.x - figureBox.x) <= 1, 'artwork starts at the figure edge')
-      const visible = await art.locator('img').evaluateAll(images => images.filter(image => getComputedStyle(image).display !== 'none').map(image => image.className))
-      assert.equal(visible.length, 1)
-      assert.ok(visible[0].includes(`doc-illustration-${scheme}`))
-      const imageBox = await art.locator(`.doc-illustration-${scheme}`).boundingBox()
+      assert.ok(Math.abs(artBox.width - content.width) <= 1, 'artwork fills the figure width')
+      assert.ok(Math.abs(artBox.x - content.x) <= 1, 'artwork starts at the figure edge')
+      const visible = await art.locator('img[data-scheme]').evaluateAll(images => images.filter(image => getComputedStyle(image).display !== 'none').map(image => image.dataset.scheme))
+      assert.deepEqual(visible, [scheme])
+      const imageBox = await art.locator(`img[data-scheme="${scheme}"]`).boundingBox()
       assert.ok(Math.abs(imageBox.width - artBox.width) <= 1, 'image fills the artwork width')
       const description = figure.locator('details')
       const summary = description.locator('summary')

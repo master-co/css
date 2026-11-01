@@ -57,9 +57,10 @@ async function browser(base) {
         await page.keyboard.press('Escape')
       }
       if (route === '/design-system/review/package-api') {
-        const disclosure = page.locator('details').filter({ has: page.locator('.doc-declaration') }).first()
-        await disclosure.locator('summary').click()
-        if (await disclosure.getAttribute('open') === null || !(await disclosure.textContent()).includes('MasterCSSInspectionReport')) throw new Error('Package declaration disclosure is incomplete')
+        // The review page keeps its export list in a native disclosure (open by default).
+        const disclosure = page.locator('details.ui-disclosure').filter({ has: page.locator('.ui-index') }).first()
+        if (await disclosure.getAttribute('open') === null) await disclosure.locator('summary').click()
+        if (await disclosure.getAttribute('open') === null || !(await disclosure.textContent()).includes('MasterCSSCompileManifestFileDeliveryOptions')) throw new Error('Package export disclosure is incomplete')
       }
     }
     if (errors.length) throw new Error(`Browser errors: ${errors.join('\n')}`)

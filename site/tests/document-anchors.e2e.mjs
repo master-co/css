@@ -17,7 +17,7 @@ async function position(page) {
     return {
       top: target.getBoundingClientRect().top,
       margin: parseFloat(getComputedStyle(target).scrollMarginTop),
-      covered: target.getBoundingClientRect().top < document.querySelector('.app-header').getBoundingClientRect().bottom,
+      covered: target.getBoundingClientRect().top < document.querySelector('header.ui-header').getBoundingClientRect().bottom,
       closed: Boolean(target.closest('details:not([open])')),
     }
   })
@@ -37,7 +37,7 @@ async function growArticle(page, height) {
     const block = document.createElement('div')
     block.style.height = height + 'px'
     block.setAttribute('aria-hidden', 'true')
-    document.querySelector('main article.prose').prepend(block)
+    document.querySelector('main article.ui-prose').prepend(block)
   }, height)
 }
 

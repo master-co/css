@@ -27,8 +27,9 @@ for (const engine of ['chromium', 'webkit']) for (const width of [320, 1280]) {
   test(`${engine} ${width}: comparison grows and shrinks with text and native margins`, async () => {
     const page = await browsers.get(engine).newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' })
     try {
-      await page.goto(base + '/guide/rendering-modes#prevent-premature-rendering', { waitUntil: 'networkidle' })
-      const iframes = page.locator('[data-first-paint] iframe')
+      // The first-paint comparison is kept as a Design System document specimen.
+      await page.goto(base + '/design-system/review/documents', { waitUntil: 'networkidle' })
+      const iframes = page.locator('[data-first-paint="comparison"] iframe')
       const frames = []
       for (const iframe of await iframes.all()) {
         await iframe.scrollIntoViewIfNeeded()

@@ -112,15 +112,16 @@ test(`${browserName}: 200% text and pointer dismissal preserve the page position
   const { context, page, errors } = await open()
   try {
     await page.evaluate(() => window.scrollTo(0, 500))
-    const scroll = await page.evaluate(() => scrollY)
     await page.keyboard.press('ControlOrMeta+k')
     const dialog = page.getByRole('dialog')
     await dialog.getByRole('combobox').pressSequentially('padding')
     await dialog.getByRole('option').first().waitFor()
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     const result = await dialog.evaluate(element => ({ scroll: element.scrollWidth, width: element.clientWidth, box: element.getBoundingClientRect().toJSON(), viewport: innerWidth }))
-    assert.ok(result.scroll <= result.width + 1)
+    assert.ok(result.scroll <= result.width + 1, JSON.stringify(result))
     assert.ok(result.box.right <= result.viewport + 1)
+    // Enlarging the text reflows the page behind the open dialog; dismissal must not move it again.
+    const scroll = await page.evaluate(() => scrollY)
     await page.mouse.click(5, 5)
     assert.equal(await page.getByRole('dialog').count(), 0)
     assert.ok(Math.abs((await page.evaluate(() => scrollY)) - scroll) <= 1)
@@ -137,7 +138,7 @@ for (const locale of ['en', 'tw']) test(`${browserName} ${locale}: 320px with 20
     const input = dialog.getByRole('combobox')
     await input.pressSequentially('padding')
     await dialog.getByRole('option').first().waitFor()
-    assert.ok((await input.boundingBox()).width >= 128, 'the typed query retains usable space beside the clear action')
+    assert.ok((await input.boundingBox()).width >= 128, `the typed query retains usable space beside the clear action: ${(await input.boundingBox()).width}px`)
     const clear = dialog.getByRole('button', { name: locale === 'tw' ? '清除搜尋' : 'Clear search' })
     const close = dialog.getByRole('button', { name: locale === 'tw' ? '關閉搜尋' : 'Close search' })
     assert.ok((await close.boundingBox()).y > (await input.boundingBox()).y, 'the secondary close action uses the next row')
@@ -159,7 +160,7 @@ test(`${browserName}: an opening search stays hidden until its native modal boun
     await page.addInitScript(() => {
       const showModal = HTMLDialogElement.prototype.showModal
       HTMLDialogElement.prototype.showModal = function () {
-        if (this.classList.contains('documentation-search')) window.finishOpeningSearch = () => showModal.call(this)
+        if (this.matches('.ui-dialog[data-variant="search"]')) window.finishOpeningSearch = () => showModal.call(this)
         else showModal.call(this)
       }
     })
@@ -169,7 +170,7 @@ test(`${browserName}: an opening search stays hidden until its native modal boun
     const trigger = page.getByRole('button', { name: 'Search documentation', exact: true }).first()
     await trigger.click()
     await page.waitForFunction(() => typeof window.finishOpeningSearch === 'function')
-    const dialog = page.locator('.documentation-search')
+    const dialog = page.locator('dialog.ui-dialog[data-variant="search"]')
     assert.equal(await dialog.isVisible(), false, 'closed native markup cannot expose a premature input')
     await page.evaluate(() => window.finishOpeningSearch())
     const input = dialog.getByRole('combobox')

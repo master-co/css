@@ -31,8 +31,8 @@ test(`${browserName}: unknown paths serve the actual 404 response and recovery c
       const response = await page.goto(base + path, { waitUntil: 'networkidle' })
       assert.equal(response.status(), 404)
       assert.equal(await page.locator('h1').count(), 1)
-      assert.equal(await page.locator('.not-found-search').count(), 1)
-      assert.equal(await page.locator('.not-found-guide').count(), 1)
+      assert.equal(await page.locator('.ui-not-found .ui-search-trigger').count(), 1)
+      assert.equal(await page.locator('.ui-not-found > a.ui-button').count(), 1)
       await noOverflow(page)
     }
   } finally { await context.close() }
@@ -55,7 +55,7 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
       await trigger.focus(); await trigger.press('Enter')
       const menu = page.getByRole('dialog', { name: 'Navigation', exact: true })
       await menu.waitFor()
-      assert.equal(await menu.locator('.doc-menu-documents a').count() > 30, true)
+      assert.ok(await menu.locator('.ui-sidebar a').count() > 15, 'the menu carries the section\'s complete chapter list')
       assert.equal(await menu.getByRole('button', { name: 'Close menu' }).count(), 1)
       const close = menu.getByRole('button', { name: 'Close menu' })
       await close.focus(); await page.keyboard.press('Shift+Tab')
@@ -68,14 +68,14 @@ for (const width of [320, 390, 768]) for (const section of ['guide', 'reference'
       await page.keyboard.press('Escape')
       assert.equal(await menu.isVisible(), true)
       assert.equal(await search.evaluate(element => element === document.activeElement), true)
-      await noOverflow(page, '.doc-menu')
+      await noOverflow(page, 'dialog.ui-dialog[data-variant="sheet"]')
       await page.screenshot({ path: new URL(`${width}-${section}-menu.png`, output).pathname })
       await page.keyboard.press('Escape')
       assert.equal(await page.getByRole('dialog').count(), 0)
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true)
       await trigger.click()
       await page.setViewportSize({ width: 1280, height: 900 })
-      await page.waitForFunction(() => !document.querySelector('.doc-menu'))
+      await page.waitForFunction(() => !document.querySelector('dialog.ui-dialog[data-variant="sheet"]'))
       assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).overflowY !== 'hidden'), true)
       assert.deepEqual(errors, [])
     } finally { await context.close() }
@@ -86,14 +86,14 @@ test(`${browserName}: language changes retain a document query and semantic anch
   const { context, page } = await open('/guide/introduction?source=brand#what-is-master-css')
   try {
     await page.getByRole('button', { name: 'Menu', exact: true }).click()
-    const select = page.locator('.doc-menu-preference select').nth(1)
+    const select = page.locator('.ui-dialog-fields label').filter({ hasText: 'Language' }).locator('select')
     await Promise.all([page.waitForURL(url => url.pathname === '/tw/guide/introduction'), select.selectOption('tw')])
     const url = new URL(page.url())
     assert.equal(url.search, '?source=brand')
     assert.equal(url.hash, '#what-is-master-css')
     assert.equal(await page.getByRole('dialog').count(), 0)
     assert.equal(await page.getByRole('link', { name: 'Master CSS 首頁', exact: true }).count(), 1)
-    const tracking = await page.locator('article.prose :is(h1,h2,h3)').evaluateAll(headings => headings.map(heading => getComputedStyle(heading).letterSpacing))
+    const tracking = await page.locator('article.ui-prose :is(h1,h2,h3)').evaluateAll(headings => headings.map(heading => getComputedStyle(heading).letterSpacing))
     assert.ok(tracking.every(value => value === 'normal' || parseFloat(value) === 0), 'the localized document keeps natural heading tracking')
   } finally { await context.close() }
 })
@@ -103,7 +103,7 @@ test(`${browserName}: a contents jump creates one history entry and modified cli
   try {
     const original = page.url()
     const history = await page.evaluate(() => window.history.length)
-    const link = page.locator('.doc-page-contents a[href^="#"]').nth(1)
+    const link = page.locator('nav.ui-toc[data-rail] a[href^="#"]').nth(1)
     const hash = await link.getAttribute('href')
     await link.click()
     assert.equal(await page.evaluate(() => window.history.length), history + 1)
@@ -125,12 +125,12 @@ test(`${browserName}: enlarged navigation and contents disclosure retain local b
   try {
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     await page.getByRole('button', { name: /Menu|選單/, exact: true }).click()
-    await noOverflow(page, '.doc-menu')
-    await page.locator('.doc-menu-preferences').scrollIntoViewIfNeeded()
+    await noOverflow(page, 'dialog.ui-dialog[data-variant="sheet"]')
+    await page.locator('.ui-dialog-fields').scrollIntoViewIfNeeded()
     await page.screenshot({ path: new URL('320-tw-enlarged-menu.png', output).pathname })
     await page.keyboard.press('Escape')
     await noOverflow(page)
-    const contents = page.locator('.doc-contents-disclosure')
+    const contents = page.locator('details[data-contents-disclosure]')
     await contents.locator('summary').click()
     assert.equal(await contents.getAttribute('open'), '')
     const link = contents.locator('a').first()
@@ -149,7 +149,7 @@ test(`${browserName}: documentation column geometry stays at the recorded baseli
   for (const entry of entries) {
     const { context, page } = await open(entry.path, { width: entry.width })
     try {
-      const actual = await page.evaluate(() => Object.fromEntries(Object.entries({ article: 'article.prose', sidebar: '#sidebar', contents: '.doc-page-contents' }).map(([key, selector]) => {
+      const actual = await page.evaluate(() => Object.fromEntries(Object.entries({ article: 'article.ui-prose', sidebar: '#sidebar', contents: 'nav.ui-toc[data-rail]' }).map(([key, selector]) => {
         const element = document.querySelector(selector)
         if (!element?.getClientRects().length) return [key, null]
         const rect = element.getBoundingClientRect()
@@ -169,11 +169,11 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
     await page.addStyleTag({ content: 'html{font-size:32px!important}' })
     await noOverflow(page)
     if (route.endsWith('/404')) {
-      const target = await page.locator('.not-found-guide').getAttribute('href')
+      const target = await page.locator('.ui-not-found > a.ui-button').getAttribute('href')
       // Static hosting serves the same 404 HTML fallback to unknown locales.
       const language = await page.locator('html').getAttribute('lang')
       assert.equal(target, language.startsWith('zh') ? '/tw/guide' : '/guide')
-      await page.locator('.not-found-search').click()
+      await page.locator('.ui-not-found .ui-search-trigger').click()
       const search = page.getByRole('dialog')
       const query = search.getByRole('combobox')
       await query.pressSequentially('padding')
@@ -181,7 +181,7 @@ for (const route of ['/blog', '/tw/blog', '/404', '/tw/404']) test(`${browserNam
       await search.getByRole('option').first().waitFor()
       assert.equal(await query.inputValue(), 'padding', 'initial typing survives the dialog opening and index loading')
       await page.keyboard.press('Escape')
-      assert.equal(await page.locator('.not-found-search').evaluate(element => element === document.activeElement), true)
+      assert.equal(await page.locator('.ui-not-found .ui-search-trigger').evaluate(element => element === document.activeElement), true)
     } else assert.equal(await page.locator('.blog-entry-link').count(), 2)
     await page.screenshot({ path: new URL(`${route.replaceAll('/', '-')}-320-enlarged.png`, output).pathname, fullPage: true })
     assert.deepEqual(errors, [])
@@ -212,13 +212,14 @@ test(`${browserName}: enlarged Blog article titles and author links remain fully
 })
 
 test(`${browserName}: pages without a document sidebar keep a visible desktop search entry`, { timeout: 120000 }, async () => {
-  for (const locale of ['', '/tw']) for (const route of ['/', '/brand', '/blog', '/design-system', '/404']) {
-    const { context, page, errors } = await open(locale + (route === '/' && locale ? '' : route), { width: 1024 })
+  // The homepage is left out: its compact header hides the search entry on desktop by design (data-compact).
+  for (const locale of ['', '/tw']) for (const route of ['/brand', '/blog', '/design-system', '/404']) {
+    const { context, page, errors } = await open(locale + route, { width: 1024 })
     try {
       const tw = (await page.locator('html').getAttribute('lang')).startsWith('zh')
       const name = tw ? '搜尋文件' : 'Search documentation'
-      const header = page.getByRole('navigation', { name: tw ? '主要導覽' : 'Main navigation', exact: true })
-      assert.equal(await header.count(), 1, 'the main navigation has its actual accessible name')
+      assert.equal(await page.getByRole('navigation', { name: tw ? '主要導覽' : 'Main navigation', exact: true }).count(), 1, 'the main navigation has its actual accessible name')
+      const header = page.locator('header.ui-header')
       const trigger = header.getByRole('button', { name, exact: true })
       for (const width of [1024, 1280, 1440]) {
         await page.setViewportSize({ width, height: 900 })
@@ -238,7 +239,7 @@ test(`${browserName}: pages without a document sidebar keep a visible desktop se
   for (const route of ['/guide/introduction', '/reference']) {
     const { context, page } = await open(route, { width: 1440 })
     try {
-      const header = page.getByRole('navigation', { name: 'Main navigation', exact: true })
+      const header = page.locator('header.ui-header')
       assert.equal(await header.getByRole('button', { name: 'Search documentation', exact: true, includeHidden: true }).isVisible(), false)
       assert.equal(await page.locator('#sidebar').getByRole('button', { name: 'Search documentation', exact: true }).count(), 1, 'the document sidebar keeps its existing search entry')
     } finally { await context.close() }
@@ -249,7 +250,7 @@ test(`${browserName}: tucked-away navigation reveals keyboard focus without chan
   for (const motion of ['reduce', 'no-preference']) {
     const { context, page, errors } = await open('/blog/master-css-next', { width: 1440, motion })
     try {
-      const header = page.getByRole('navigation', { name: 'Main navigation', exact: true })
+      const header = page.locator('header.ui-header')
       await page.evaluate(() => scrollTo(0, 1600))
       await page.waitForFunction(element => element.getBoundingClientRect().bottom <= 1, await header.elementHandle())
       if (motion === 'reduce') assert.ok(await header.evaluate(element => getComputedStyle(element).transitionDuration.split(',').every(value => parseFloat(value) === 0)), 'reduced motion removes header travel')

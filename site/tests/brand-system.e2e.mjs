@@ -72,7 +72,7 @@ for (const width of full ? [320, 390, 768, 1280, 1440] : [390, 1440]) {
       try {
         assert.equal(await page.locator('h1').count(), 1)
         await assertLayout(page)
-        const colors = await page.locator('.app-header-logo svg:visible stop').evaluateAll(stops => stops.map(stop => stop.getAttribute('stop-color').toLowerCase()))
+        const colors = await page.locator('header.ui-header .ui-header-brand svg:visible stop').evaluateAll(stops => stops.map(stop => stop.getAttribute('stop-color').toLowerCase()))
         assert.ok(colors.includes(scheme === 'light' ? '#fde2a7' : '#fcdd98'), 'the rendered header uses the approved background highlight')
         assert.ok(colors.includes('#e6b65d'), 'the rendered header uses the shared gold endpoint')
         assert.ok((await page.locator('.brand-hero-art img:visible').getAttribute('src')).endsWith(`on-${scheme}.svg`))

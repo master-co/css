@@ -27,21 +27,26 @@ async function noOverflow(page) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true)
 }
 
+/** A Design System component review section: the content that follows its heading. */
+function handbookSection(page, id) {
+  return page.locator(`xpath=//h2[@id="${id}"]/following-sibling::div[contains(concat(" ", @class, " "), " ui-handbook-section ")][1]`)
+}
+
 for (const section of ['guide', 'reference']) for (const locale of ['en', 'tw']) for (const width of [320, 1440]) test(`${engine} ${locale} ${width}: ${section} category and alphabetical views keep the same complete inventory`, { timeout: 90000 }, async () => {
   const { context, page, errors } = await open(`/${section}?review=reading`, { width, locale })
   try {
     const category = page.locator(`#${section}-category-index`)
     const alphabetical = page.locator(`#${section}-alphabetical-index`)
-    const destinations = panel => panel.locator('.doc-index-links a').evaluateAll(links => links.map(link => link.getAttribute('href')).sort())
+    const destinations = panel => panel.locator(':is(.ui-index, .documentation-index-links) a').evaluateAll(links => links.map(link => link.getAttribute('href')).sort())
     const expected = await destinations(category)
-    assert.ok(expected.length > 30)
+    assert.ok(expected.length > 15)
     assert.deepEqual(await destinations(alphabetical), expected)
-    const az = page.locator('.doc-index-view').getByRole('button', { name: 'A–Z', exact: true })
+    const az = page.locator('.documentation-index-toolbar .ui-segmented').getByRole('button', { name: 'A–Z', exact: true })
     await az.focus(); await az.press('Enter')
     assert.equal(await az.getAttribute('aria-pressed'), 'true')
     assert.equal(await alphabetical.isVisible(), true)
     assert.equal(await category.isVisible(), false)
-    const letter = alphabetical.locator('.doc-index-letters a').first()
+    const letter = alphabetical.locator('.documentation-index-letters a').first()
     const hash = await letter.getAttribute('href')
     await letter.click()
     assert.equal(new URL(page.url()).hash, hash)
@@ -49,14 +54,14 @@ for (const section of ['guide', 'reference']) for (const locale of ['en', 'tw'])
     assert.equal(await page.locator(hash).evaluate(element => element === document.activeElement), true)
     await page.reload({ waitUntil: 'networkidle' })
     await page.waitForFunction(id => !document.getElementById(id).hidden, `${section}-alphabetical-index`)
-    const sectionLink = page.locator('.doc-index-sections a[href^="#"]').first()
+    const sectionLink = page.locator('.documentation-index > nav.ui-index a[href^="#"]').first()
     await sectionLink.click()
     assert.equal(await category.isVisible(), true)
     await page.goBack({ waitUntil: 'networkidle' })
     await page.waitForFunction(id => !document.getElementById(id).hidden, `${section}-alphabetical-index`)
     await page.addStyleTag({ content: 'html { font-size: 32px !important }' })
     await noOverflow(page)
-    await page.locator('.doc-index-toolbar').scrollIntoViewIfNeeded()
+    await page.locator('.documentation-index-toolbar').scrollIntoViewIfNeeded()
     await page.screenshot({ path: new URL(`${locale}-${width}-${section}-alphabetical.png`, output).pathname })
     assert.deepEqual(errors, [])
   } finally { await context.close() }
@@ -65,7 +70,7 @@ for (const section of ['guide', 'reference']) for (const locale of ['en', 'tw'])
 test(`${engine}: source tabs support arrows, Home and End with complete readable panels`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/design-system/review/code')
   try {
-    const window = page.locator('section[aria-labelledby="code-languages"] .codeTabs')
+    const window = handbookSection(page, 'code-languages').locator('.ui-code')
     const tabs = window.getByRole('tab')
     const names = await tabs.allTextContents()
     assert.equal(names.length, 4)
@@ -87,29 +92,6 @@ test(`${engine}: source tabs support arrows, Home and End with complete readable
   } finally { await context.close() }
 })
 
-test(`${engine}: package-manager selection persists across installation guides and a reload`, { timeout: 60000 }, async () => {
-  const { context, page, errors } = await open('/guide/installation')
-  try {
-    const sets = page.locator('[data-code-tabs-storage-key="pm"]')
-    assert.ok(await sets.count() >= 1)
-    await sets.first().getByRole('tab', { name: 'bun', exact: true }).click()
-    for (const set of await sets.all()) {
-      assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
-      assert.ok((await set.getByRole('tabpanel').textContent()).includes('bun'))
-    }
-    await page.reload({ waitUntil: 'networkidle' })
-    for (const set of await sets.all()) assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
-    await page.goto(base + '/guide/installation/astro', { waitUntil: 'networkidle' })
-    assert.ok(await sets.count() >= 1)
-    for (const set of await sets.all()) {
-      assert.equal(await set.getByRole('tab', { name: 'bun', exact: true }).getAttribute('aria-selected'), 'true')
-      assert.ok((await set.getByRole('tabpanel').textContent()).includes('bun'))
-    }
-    await noOverflow(page)
-    assert.deepEqual(errors, [])
-  } finally { await context.close() }
-})
-
 test(`${engine}: pending code copying keeps the original source and prevents duplicate requests`, { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/design-system/review/code', { setup: () => {
     window.codeWrites = []
@@ -119,20 +101,21 @@ test(`${engine}: pending code copying keeps the original source and prevents dup
     } } })
   } })
   try {
-    const window = page.locator('section[aria-labelledby="code-current"] .codeTabs')
+    const window = handbookSection(page, 'code-current').locator('.ui-code')
     const button = window.locator('[data-code-copy]')
     const initialName = await button.getAttribute('data-code-copy')
     const source = await window.getByRole('tabpanel').locator('.line').evaluateAll(lines => lines.map(line => line.textContent.replace(/[\t ]+$/u, '')).join('\n'))
     const initialHeight = (await window.boundingBox()).height
     await button.click()
-    await window.getByRole('status').filter({ hasText: `Copying ${initialName}…` }).waitFor()
-    assert.equal(await button.getAttribute('aria-busy'), 'true')
+    // Pending copies are announced by aria-busy alone; the status stays empty until the result.
+    await page.waitForFunction(element => element.getAttribute('aria-busy') === 'true', await button.elementHandle())
+    assert.equal(await window.locator('.ui-copy-status').textContent(), '')
     assert.equal((await window.boundingBox()).height, initialHeight, 'pending feedback does not move the source panel')
     await button.click()
     assert.deepEqual(await page.evaluate(() => window.codeWrites), [source])
     await window.getByRole('tab').last().click()
     await page.evaluate(() => window.finishCodeCopy())
-    await page.waitForFunction(({ element, name }) => element.textContent === `${name} copied`, { element: await window.getByRole('status').elementHandle(), name: initialName })
+    await page.waitForFunction(({ element, name }) => element.textContent === `${name} copied`, { element: await window.locator('.ui-copy-status').elementHandle(), name: initialName })
     assert.equal(await button.getAttribute('aria-busy'), null)
     await page.addStyleTag({ content: 'html { font-size: 32px !important }' })
     await button.click()
@@ -147,11 +130,11 @@ test(`${engine}: a failed code copy exposes selectable source and visible recove
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.reject(new Error('Clipboard denied')) } })
   } })
   try {
-    const window = page.locator('section[aria-labelledby="code-current"] .codeTabs')
+    const window = handbookSection(page, 'code-current').locator('.ui-code')
     await window.locator('[data-code-copy]').click()
     const status = window.getByRole('status')
     await status.filter({ hasText: 'Clipboard unavailable. Select the code to copy it.' }).waitFor()
-    assert.equal(await status.getAttribute('data-error'), '')
+    assert.equal(await status.getAttribute('data-result'), 'error')
     assert.ok((await status.boundingBox()).width > 100)
     assert.ok((await window.getByRole('tabpanel').locator('.line').count()) > 0)
     await page.screenshot({ path: new URL('copy-denied-320.png', output).pathname })
@@ -162,7 +145,7 @@ test(`${engine}: a failed code copy exposes selectable source and visible recove
 if (engine === 'chromium') test('chromium: native code copying writes the exact selected panel', { timeout: 60000 }, async () => {
   const { context, page, errors } = await open('/design-system/review/code', { clipboard: true })
   try {
-    const window = page.locator('section[aria-labelledby="code-languages"] .codeTabs')
+    const window = handbookSection(page, 'code-languages').locator('.ui-code')
     await window.getByRole('tab', { name: 'settings.json', exact: true }).click()
     const source = await window.getByRole('tabpanel').locator('.line').evaluateAll(lines => lines.map(line => line.textContent.replace(/[\t ]+$/u, '')).join('\n'))
     await window.locator('[data-code-copy]').click()

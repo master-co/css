@@ -31,14 +31,14 @@ try {
         const main = page.locator('main').first()
         await main.waitFor()
         const frames = []
-        for (const iframe of await page.locator('iframe.demo-viewport').all()) {
+        for (const iframe of await page.locator('.ui-browser-viewport > iframe').all()) {
           await iframe.scrollIntoViewIfNeeded()
           await page.waitForFunction(element => element.dataset.ready === 'true' && element.contentDocument?.body.childElementCount > 0, await iframe.elementHandle(), { timeout: 15000 })
           frames.push(await iframe.evaluate(element => ({ title: element.title, ready: element.dataset.ready, height: element.clientHeight, contentHeight: element.contentDocument.body.getBoundingClientRect().height })))
         }
         await page.evaluate(() => scrollTo(0, 0))
         const geometry = await page.evaluate(() => {
-          const prose = document.querySelector('.prose') ?? document.querySelector('main')
+          const prose = document.querySelector('.ui-prose') ?? document.querySelector('main')
           const bad = [...prose.querySelectorAll('h1,h2,h3,h4,p,li,figure,table,iframe,img')].filter(el => {
             const r = el.getBoundingClientRect()
             if (!r.width || !r.height) return false
@@ -53,7 +53,7 @@ try {
             overflow: bad,
             ids: [...document.querySelectorAll('[id]')].map(el => el.id),
             headings: [...prose.querySelectorAll('h1,h2,h3,h4')].map(el => ({ id: el.id, title: el.textContent.trim() })),
-            figures: [...prose.querySelectorAll('.doc-illustration')].map(el => ({ title: el.getAttribute('aria-label'), visibleImages: [...el.querySelectorAll('img')].filter(img => getComputedStyle(img).display !== 'none').length })),
+            figures: [...prose.querySelectorAll('.document-illustration')].map(el => ({ title: el.getAttribute('aria-label'), visibleImages: [...el.querySelectorAll('img')].filter(img => getComputedStyle(img).display !== 'none').length })),
             brokenImages: [...prose.querySelectorAll('img')].filter(el => getComputedStyle(el).display !== 'none' && el.complete && !el.naturalWidth).map(el => el.src),
             links: [...prose.querySelectorAll('a[href]')].map(el => el.getAttribute('href'))
           }
@@ -66,7 +66,7 @@ try {
         const stem = row.url.slice(1).replaceAll('/', '--') + `-${width}-${theme}`
         await page.screenshot({ path: new URL(`${stem}.png`, output).pathname, fullPage: true })
         // Keep a readable capture of each meaningful illustration and demo, beyond the opening.
-        const specimens = page.locator('.doc-illustration, .site-demo, .foundation-tokens, [data-demo-browser]')
+        const specimens = page.locator('figure.ui-tray, [data-foundation-tokens]')
         const specimensCount = await specimens.count()
         if (width === 390 || width === 1280) for (let i = 0; i < specimensCount; i++) {
           const specimen = specimens.nth(i)
