@@ -240,8 +240,8 @@ test(`${browserName}: pages without a document sidebar keep a visible desktop se
     const { context, page } = await open(route, { width: 1440 })
     try {
       const header = page.locator('header.ui-header')
-      assert.equal(await header.getByRole('button', { name: 'Search documentation', exact: true, includeHidden: true }).isVisible(), false)
-      assert.equal(await page.locator('#sidebar').getByRole('button', { name: 'Search documentation', exact: true }).count(), 1, 'the document sidebar keeps its existing search entry')
+      assert.equal(await header.getByRole('button', { name: 'Search documentation', exact: true }).isVisible(), true, 'documentation pages search from the header')
+      assert.equal(await page.locator('#sidebar').getByRole('button', { name: 'Search documentation', exact: true }).count(), 0, 'the document sidebar starts with its first group')
     } finally { await context.close() }
   }
 })

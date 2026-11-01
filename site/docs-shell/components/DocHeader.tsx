@@ -11,7 +11,6 @@ import Link from './Link'
 import DocMenuButton from './DocMenuButton'
 import { useTranslation } from '../contexts/i18n'
 import SearchButton from './SearchButton'
-import { useSearch } from '../contexts/search'
 import isDateWithinSevenDays from '../utils/is-date-within-seven-days'
 import DocBadge from './DocBadge'
 import { useApp } from '../contexts/app'
@@ -24,7 +23,7 @@ export interface DocHeaderProps {
   /** See `Header`: overlays the page and slides away while reading down. */
   stickable?: boolean
   transitionAtTop?: boolean
-  /** Chapters the compact menu lists; documentation pages also keep search in their sidebar. */
+  /** Chapters the compact menu lists. */
   documentNavigation?: DocSidebarProps['pageCategories']
   documentNavigationTitle?: string
   /** Accepted for section shells; the header always spans the page. */
@@ -33,7 +32,6 @@ export interface DocHeaderProps {
 
 export default function DocHeader({ className, stickable, transitionAtTop, documentNavigation, documentNavigationTitle }: DocHeaderProps) {
   const $ = useTranslation()
-  const { searchText } = useSearch()
   const app = useApp()
   const tw = useLocale() === 'tw'
   const home = usePathname() === (tw ? '/tw' : '/')
@@ -61,6 +59,11 @@ export default function DocHeader({ className, stickable, transitionAtTop, docum
         </HeaderNav>)}
       </nav>
       <div className="ui-header-end">
+        {/* Search leads the end group as a quiet pill: the glass and its shortcut. The homepage leaves it to the compact header. */}
+        <SearchButton className="ui-header-search" data-compact={home ? '' : undefined}>
+          <IconSearch width="16" height="16" strokeWidth="1.5" aria-hidden="true" />
+          <kbd className="ui-kbd" aria-hidden="true">⌘K</kbd>
+        </SearchButton>
         {app.communityNavs?.map(({ Icon, disabled, fullName, ...eachLink }: any) => (
           <Link
             {...eachLink}
@@ -79,10 +82,6 @@ export default function DocHeader({ className, stickable, transitionAtTop, docum
         ))}
         {app.communityNavs?.length ? <span className="ui-header-divider" aria-hidden="true" /> : null}
         <LanguageButton />
-        <SearchButton className="ui-button ui-header-search" data-variant="quiet" data-shape="icon" data-compact={documentNavigation || home ? '' : undefined}>
-          <IconSearch width="18" height="18" strokeWidth="1.5" aria-hidden="true" />
-          <span className="ui-tooltip" data-side="bottom" aria-hidden="true">{searchText}<span className="ui-kbd">⌘K</span></span>
-        </SearchButton>
       </div>
     </Header>
   )

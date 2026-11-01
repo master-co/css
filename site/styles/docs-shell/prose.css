@@ -10,8 +10,8 @@
   .ui-prose { --prose-bleed: 0rem; --bleed: var(--prose-bleed); }
   @media (width >= 52rem) { .ui-prose { --prose-bleed: 2rem; } }
   @media print { .ui-prose { --prose-bleed: 0rem; } }
-  /* A documentation article is itself the column: text, code, examples and tables share both of its edges. */
-  .ui-prose.ui-docs-article { --measure: none; --prose-bleed: 0rem; }
+  /* A documentation article sets running text on its reading measure; everything else takes the wide column. */
+  .ui-prose.ui-docs-article { --measure: var(--docs-text); }
 
   :is(.ui-tray, .ui-code, .ui-table, .ui-index, figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(
     .ui-prose > :is(div, section, site-island):not([class]) > *,
@@ -20,6 +20,19 @@
   :is(figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(.ui-prose > *) {
     margin-inline: calc(var(--prose-bleed) * -1);
   }
+  /* In the documentation a hanging surface sets its own words back by the bleed, so file names, code, table cells and
+     example titles keep the text's start edge while the frame hangs past it (`--hang`, read by code, tables and trays). */
+  :is(.ui-tray, .ui-code, .ui-table):is(
+    .ui-docs-article > *,
+    .ui-docs-article > :is(div, section, site-island):not([class]) > *,
+    .ui-docs-article > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
+  ) { --hang: var(--prose-bleed); }
+  /* Document steps reach the hanging edge on the end side, so their code ends where every other surface ends. */
+  .ui-docs-article > .ui-steps[data-variant="document"] { margin-right: calc(var(--prose-bleed) * -1); }
+  /* A result shown after a step (a preview) hangs on both sides like any surface; the rail runs on into it. */
+  .ui-docs-article > .ui-steps[data-variant="document"] > :not(li) { --hang: var(--prose-bleed); margin: 0 0 0 calc(var(--prose-bleed) * -1); }
+  /* Index cards are links, not frames: they keep the column's edges. */
+  .ui-docs-article .ui-index { margin-inline: 0; }
   :is(img, video, iframe):is(.ui-prose > *, .ui-prose > :is(div, section, site-island):not([class]) > *) { width: calc(100% + var(--prose-bleed) * 2); max-width: none; }
   /* The figure bleeds; its caption is reading text and stays on the text column. */
   .ui-prose > figure:not(.ui-tray) > figcaption { padding-inline: var(--prose-bleed); }
@@ -64,8 +77,8 @@
 /* A link's mark after it (`Link` with `indicate`): an arrow for another site, a hash for this page. */
 /* The mark rides in the link's end margin out of flow: it can never wrap away from the word, or take a line of its own
    before the punctuation that follows the link, and the link's underline does not reach it. */
-a[data-indicate] { margin-inline-end: .7em; }
-a[data-indicate]::after { position: absolute; margin-left: .15em; color: var(--ui-text-muted); font-size: .7em; line-height: 1; text-decoration: none; }
+a[data-indicate] { margin-inline-end: .55em; }
+a[data-indicate]::after { position: absolute; margin-left: .1em; color: var(--ui-text-muted); font-size: .7em; line-height: 1; text-decoration: none; }
 a[data-indicate="external"]::after { content: var(--content-external); }
 a[data-indicate="hash"]::after { content: var(--content-hash); }
 .ui-prose :is(td, th) a[href^="#"] { white-space: nowrap; }

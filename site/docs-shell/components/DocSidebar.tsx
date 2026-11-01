@@ -1,6 +1,5 @@
 'use client'
 
-import SearchButton from './SearchButton'
 import Link from './Link'
 import { useTranslation } from '../contexts/i18n'
 import type { DefinedMetadata } from '../types/Metadata'
@@ -12,18 +11,17 @@ export interface DocSidebarProps {
     pages: (Pick<DefinedMetadata, 'pathname' | 'title'> & Partial<DefinedMetadata>)[]
   }[],
   includeNestedPages?: boolean
-  /** Inside the compact menu: the groups only, without the search field. */
+  /** Inside the compact menu: the groups only, without the documentation landmark. */
   embedded?: boolean
   onNavigate?: () => void
 }
 
-/** The documentation sidebar: search, then one navigation group per category; the page being read is a raised sheet. */
+/** The documentation sidebar: one navigation group per category; the page being read inks a bar on the guide. Search lives in the header. */
 export default function DocSidebar({ pageCategories, includeNestedPages = false, embedded = false, onNavigate }: DocSidebarProps) {
   const tw = useLocale() === 'tw'
   const groups = <SidebarGroups pageCategories={pageCategories} includeNestedPages={includeNestedPages} onNavigate={onNavigate} />
   if (embedded) return <div className="ui-sidebar">{groups}</div>
   return <aside id="sidebar" aria-label={tw ? '文件導覽' : 'Documentation navigation'} className="ui-sidebar">
-    <SearchButton className="ui-search-trigger" />
     {groups}
   </aside>
 }

@@ -41,8 +41,6 @@
   /* Rhythm */
   --ui-space-3xs: .25rem; --ui-space-2xs: .375rem; --ui-space-xs: .5rem; --ui-space-sm: .75rem; --ui-space-md: 1rem;
   --ui-space-lg: 1.5rem; --ui-space-xl: 2rem; --ui-space-2xl: 3rem; --ui-space-3xl: 4rem;
-  /* One content column: page head, prose, tabs, steps, code, examples and the pager share its edges. */
-  --ui-measure: 46rem;
 
   /* Motion: one easing family; interaction is quick, explanation calm */
   --ui-ease: cubic-bezier(.22, 1, .36, 1);

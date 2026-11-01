@@ -2,13 +2,18 @@
  * The documentation frame under the sticky header: a sticky sidebar, the article column and the page's contents rail.
  * Chrome stays on the canvas; hairlines separate the rails.
  *
- * The article is one content column (`--ui-measure`) inside equal gutters. The column and the contents rail centre
- * together in the main area; a page without contents keeps the rail's room, so the column never moves between pages.
+ * The article has two widths on one start edge. Running text keeps the reading measure (`--docs-text`); steps, tabs,
+ * the pager and framed surfaces span the wide column (`--docs-wide`), and framed surfaces hang past both of its
+ * edges by the prose bleed. Where the contents rail shows, a page with contents gives the rail the room the wide column
+ * would take, so its wide column is the text column. The article and the rail centre together: every page starts its
+ * column on the same edge.
  */
 @layer components {
-  .ui-docs, .ui-docs-main { --docs-header: calc(3.75rem + env(safe-area-inset-top)); --docs-gutter: max(1.25rem, env(safe-area-inset-left), env(safe-area-inset-right)); --docs-rail: 15.75rem; }
+  .ui-docs, .ui-docs-main { --docs-header: calc(3.75rem + env(safe-area-inset-top)); --docs-gutter: max(1.25rem, env(safe-area-inset-left), env(safe-area-inset-right)); --docs-rail: 15.75rem;
+    --docs-text: 41rem; --docs-wide: calc(var(--docs-text) + var(--docs-rail)); }
   @media (--sm) { .ui-docs, .ui-docs-main { --docs-gutter: 2.5rem; } }
-  @media (--md) { .ui-docs, .ui-docs-main { --docs-gutter: 3rem; } }
+  /* Beside the sidebar the gutter opens from 40px to 80px as the window grows. */
+  @media (--md) { .ui-docs, .ui-docs-main { --docs-gutter: clamp(2.5rem, (100vw - 64rem) / 4 + 2.5rem, 5rem); } }
   .ui-docs { display: flex; width: 100%; background: var(--ui-surface-canvas); }
 
   .ui-docs .ui-sidebar {
@@ -16,9 +21,8 @@
     overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--ui-line-divider) transparent;
     box-shadow: inset -1px 0 0 var(--ui-line-hair);
   }
-  /* The search field stays in reach while the groups scroll beneath it. */
-  .ui-docs .ui-sidebar > .ui-search-trigger { position: sticky; top: 0; z-index: 1; background: var(--ui-surface-canvas); box-shadow: inset 0 -1px 0 var(--ui-line-hair), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
-  .ui-docs .ui-sidebar > .ui-search-trigger:hover { box-shadow: inset 0 -1px 0 var(--ui-line-strong), 0 calc(var(--ui-space-lg) * -1) 0 var(--ui-surface-canvas), 0 .75rem .5rem var(--ui-surface-canvas); }
+  /* The first group caption stands level with the page kicker and the contents caption. */
+  @media (--md) { .ui-docs .ui-sidebar { padding-top: calc(3.5rem - .5rem); } }
   /* The rail clips its overflow, so focus rings inside it sit on the element's edge. */
   .ui-docs .ui-sidebar .ui-nav-link:focus-visible { outline-offset: -2px; }
   @media (width < 64rem) { .ui-docs .ui-sidebar { display: none; } }
@@ -30,11 +34,11 @@
 
   .ui-docs-main { container: docs-main / inline-size; display: flex; flex: 1; flex-direction: column; min-width: 0; }
   .ui-docs-body { display: flex; justify-content: center; width: 100%; }
-  .ui-docs-article { flex: 0 1 auto; width: 100%; min-width: 0; max-width: calc(var(--ui-measure) + var(--docs-gutter) * 2); padding: var(--ui-space-xl) var(--docs-gutter) var(--ui-space-3xl); }
+  .ui-docs-article { flex: 0 1 auto; width: 100%; min-width: 0; max-width: calc(var(--docs-wide) + var(--docs-gutter) * 2); padding: var(--ui-space-xl) var(--docs-gutter) var(--ui-space-3xl); }
   @media (--sm) { .ui-docs-article { padding-bottom: 5rem; } }
   @media (--md) { .ui-docs-article { padding-top: 3.5rem; padding-bottom: 6rem; } }
-  /* Where the rail shows, a page without one keeps its room. */
-  @media (width >= 80rem) { .ui-docs-article:not([data-aside]) { margin-right: var(--docs-rail); } }
+  /* Where the rail shows, a page with contents gives it the wide column's room. */
+  @media (width >= 80rem) { .ui-docs-article[data-aside] { max-width: calc(var(--docs-text) + var(--docs-gutter) * 2); } }
 
   /* The page head (`ui-pagehead`): an integration's mark beside the title; on a phone it leads, smaller. */
   .ui-pagehead-title { display: flex; align-items: center; gap: var(--ui-space-lg); }
