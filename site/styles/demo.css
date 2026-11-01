@@ -7,6 +7,9 @@
   .ui-tray > .ui-disclosure > :not(summary) { margin-inline: calc(var(--ui-space-sm) * -1); }
   .ui-tray > .ui-disclosure .ui-code { border-radius: 0 0 var(--ui-radius-xl) var(--ui-radius-xl); background: transparent; box-shadow: inset 0 1px 0 var(--ui-line-hair); }
 
+  /* A copy group's instruction is a caption over its swatches, not a button's status: one start-aligned sans line. */
+  p.ui-copy > .ui-copy-status { max-width: none; color: var(--ui-text-muted); font: var(--ui-weight-regular) var(--ui-text-caption)/1.5 var(--font-family-sans); text-align: start; }
+
   /* Playback starts paused before hydration; the player owns the native timelines afterwards */
   [data-playback="paused"] * { animation-play-state: paused !important; }
 

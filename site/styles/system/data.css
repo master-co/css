@@ -87,7 +87,7 @@
   .ui-index[data-density="compact"] > a { gap: 2px; padding: var(--ui-space-sm) var(--ui-space-md); }
 
   /* Chart frame: units, series and sample context together */
-  .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
+  .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg) max(var(--ui-space-lg), var(--hang, 0px)); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); }
   .ui-chart-head b { color: var(--ui-text-strong); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); }
   .ui-chart-head small { display: block; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); }

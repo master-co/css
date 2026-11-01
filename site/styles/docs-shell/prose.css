@@ -12,6 +12,8 @@
   @media print { .ui-prose { --prose-bleed: 0rem; } }
   /* A documentation article sets running text on its reading measure; everything else takes the wide column. */
   .ui-prose.ui-docs-article { --measure: var(--docs-text); }
+  /* A surface hangs by up to 2rem but always leaves a 1rem gutter to the window. */
+  @media (width >= 52rem) { .ui-prose.ui-docs-article { --prose-bleed: min(2rem, var(--docs-gutter) - 1rem); } }
 
   :is(.ui-tray, .ui-code, .ui-table, .ui-index, figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(
     .ui-prose > :is(div, section, site-island):not([class]) > *,
@@ -22,7 +24,7 @@
   }
   /* In the documentation a hanging surface sets its own words back by the bleed, so file names, code, table cells and
      example titles keep the text's start edge while the frame hangs past it (`--hang`, read by code, tables and trays). */
-  :is(.ui-tray, .ui-code, .ui-table):is(
+  :is(.ui-tray, .ui-code, .ui-table, figure):is(
     .ui-docs-article > *,
     .ui-docs-article > :is(div, section, site-island):not([class]) > *,
     .ui-docs-article > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
@@ -35,7 +37,7 @@
   .ui-docs-article .ui-index { margin-inline: 0; }
   :is(img, video, iframe):is(.ui-prose > *, .ui-prose > :is(div, section, site-island):not([class]) > *) { width: calc(100% + var(--prose-bleed) * 2); max-width: none; }
   /* The figure bleeds; its caption is reading text and stays on the text column. */
-  .ui-prose > figure:not(.ui-tray) > figcaption { padding-inline: var(--prose-bleed); }
+  .ui-prose > figure:not(.ui-tray) > :is(figcaption, p) { padding-inline: var(--prose-bleed); }
   /* A table its author wrapped in a scroll region bleeds as the region. */
   .ui-prose > [role="region"]:has(> :is(.ui-table, table)) { margin: var(--ui-space-xl) calc(var(--prose-bleed) * -1); }
   .ui-prose > [role="region"][tabindex]:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
