@@ -60,6 +60,7 @@ report visual verification as outstanding.
 
 MCP previews apply only their advertised fix or generated-output kinds; they are
 not a general source-edit API. Use the agent's ordinary editing workflow for
-component changes. With no MCP, use installed CLI JSON lint/inspect commands as
-described in troubleshooting. Finish with changed behavior, checks performed and
+component changes. With no MCP, use the installed CLI's `suggest` command for
+uncertain declarations and JSON lint/inspect commands as described in the workflow
+references. Finish with changed behavior, checks performed and
 any retained CSS or unresolved issues.

@@ -5,6 +5,24 @@ export interface CLIEditorial {
   notes?: string[]
 }
 export const cliEditorial: Record<string, CLIEditorial> = {
+  "suggest": {
+    "examples": [
+      {
+        "description": "Suggest classes from declarations using the active project manifest:",
+        "command": "master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'"
+      },
+      {
+        "description": "Read a declaration block from stdin:",
+        "command": "master-css suggest --stdin <<'CSS'\ndisplay:flex; align-items:center; padding:16px; gap:1rem;\nCSS"
+      }
+    ],
+    "notes": [
+      "Pass one quoted declaration block or `--stdin`, never both. Select the project root with `--cwd` (default: current directory). For an argument beginning with `--`, use stdin or place `--` before the argument. Input must contain declarations only, without a selector or surrounding braces.",
+      "The version 1 JSON envelope contains `cwd`, `manifest`, `result`, `validation` and `diagnostics`. `manifest.entries` lists discovered Master CSS entries; if none are found, suggestions use the default preset. A discovered entry that fails to load is an error, never a preset fallback. Check entries before relying on project tokens or utility overrides.",
+      "`result` is the versioned declaration-suggestion report: classes, generated CSS, `remainingCss`, notes and verification. A `preserved` result retains the entire original block and exits successfully; keep that CSS and read its notes. A `suggested` result checks declaration correspondence, not cascade or browser rendering. Class-specific diagnostics identify `className`; `validation` separates matching, CSS syntax, CSS values and browser support.",
+      "Reports always go to stdout as JSON. Errors are also written to stderr and exit with status 1. Input, manifest or execution failures return `result: null`; known invalid suggested CSS produces an error while retaining the proposal. Unknown values are not errors, and browser support remains `not-checked`. Argument-parser errors, such as unknown flags, use ordinary CLI help diagnostics."
+    ]
+  },
   "generate": {
     "examples": [
       {

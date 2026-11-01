@@ -11,10 +11,10 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 933,
+    "records": 934,
     "byKind": {
       "bin": 3,
-      "cli-command": 3,
+      "cli-command": 4,
       "export": 753,
       "mcp-prompt": 3,
       "mcp-resource": 3,
@@ -110,6 +110,20 @@
       "disposition": "retain",
       "id": "cli-command:master-css:lint",
       "name": "lint"
+    },
+    {
+      "kind": "cli-command",
+      "owner": "@master/css-cli",
+      "responsibility": "command-line host",
+      "consumers": [
+        "CLI users"
+      ],
+      "platform": "node",
+      "lifecycle": "command",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "cli-command:master-css:suggest",
+      "name": "suggest"
     },
     {
       "kind": "export",

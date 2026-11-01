@@ -102,8 +102,22 @@ Work in a small batch. After editing, show the changed files, explain the stylin
 
 When reading an MCP class inspection, check `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately: an unknown value is not a failed match, and `not-checked` browser support is not verified support.
 
-When a class spelling is uncertain, `mastercss_suggest_classes` accepts an
-isolated CSS declaration block:
+When a class spelling is uncertain, the [CLI](/guide/installation/cli) can suggest
+classes from an isolated CSS declaration block without an MCP connection. Run
+the project's installed version from the app root:
+
+```bash name=Terminal
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+Read `result.classes`, `result.remainingCss`, `validation` and `diagnostics` in the
+JSON response. Check `manifest.entries` for the expected CSS entry; an empty list
+means the preset was used. Use `--cwd` to select another project root or `--stdin`
+to read declarations from standard input. See the [command contract](/reference/tools/cli#suggest)
+for exit statuses and preserved blocks. If your installed CLI lacks `suggest`,
+keep using its available checks instead of mixing package versions.
+
+With MCP connected, `mastercss_suggest_classes` accepts the same declaration block:
 
 ```json name=tool-input
 {

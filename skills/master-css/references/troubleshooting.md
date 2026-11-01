@@ -20,7 +20,11 @@ do not override project design-token policy.
 ## CLI without MCP
 
 Use the project's installed, version-matched `@master/css-cli`, and confirm its
-`--help` if commands differ. Existing JSON commands include:
+`--help` if commands differ. For declaration suggestions, use `master-css suggest`
+as described in [authoring](authoring.md). A `preserved` result exits successfully
+and retains the entire CSS block; it is not a conversion success. Known invalid
+suggested values produce a nonzero exit status; `unknown` values still need review.
+Existing JSON diagnostic commands include:
 
 ```sh
 npx @master/css-cli lint --format json --exit-code never

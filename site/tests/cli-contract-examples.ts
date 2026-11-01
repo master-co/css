@@ -25,6 +25,18 @@ export async function verifyCLIContractExamples() {
     return result
   }
   try {
+    for (const example of cliEditorial.suggest.examples) {
+      const suggested = run(example.command)
+      assert.equal(suggested.status, 0, suggested.stderr)
+      const report = JSON.parse(suggested.stdout)
+      assert.equal(report.version, 1)
+      assert.deepEqual(report.result.classes, ['flex', 'items-center', 'p(16)', '(gap:1rem)'])
+      assert.deepEqual(report.manifest.entries, [join(root, 'app.css')])
+      assert.equal(report.result.remainingCss, '')
+      assert.equal(report.result.verification.browser, false)
+      assert.equal(readFileSync(file, 'utf8'), source)
+      assert.equal(existsSync(join(root, 'master.css')), false)
+    }
     const [stdout, output, watch] = cliEditorial.generate.examples.map(example => example.command)
     const css = run(stdout)
     assert.equal(css.status, 0, css.stderr)

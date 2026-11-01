@@ -2,8 +2,8 @@
 
 ## Responsibility
 
-`@master/css-cli` exposes the `master-css` binary with explicit `generate`, `lint`
-and `inspect` commands.
+`@master/css-cli` exposes the `master-css` binary with explicit `generate`, `lint`,
+`inspect` and `suggest` commands.
 
 ## Owns
 
@@ -21,7 +21,7 @@ and `inspect` commands.
 ## Public Surface
 
 - Binary: `master-css`.
-- Commands: `generate`, `lint`, and `inspect`.
+- Commands: `generate`, `lint`, `inspect`, and `suggest`.
 - Internal command runner from `src/core.ts`.
 - No public `extract`, `scan`, `render`, `mcss`, or `mastercss` aliases.
 
@@ -32,6 +32,7 @@ and `inspect` commands.
 - `src/generate.ts`
 - `src/lint.ts`
 - `src/inspect.ts`
+- `src/suggest.ts` adapts public project loading and tooling suggestions; no CSS conversion semantics live here.
 
 ## Risk Areas
 

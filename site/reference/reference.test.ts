@@ -506,7 +506,7 @@ test('tool catalogs retain discovery, effects and source links without copying f
   assert.match(mcp.markdown, /tools\/list/)
   assert.match(mcp.markdown, /writes workspace files/)
   assert.match(mcp.markdown, /output-schema\.ts/)
-  for (const name of ['generate', 'lint', 'inspect']) {
+  for (const name of ['generate', 'lint', 'inspect', 'suggest']) {
     assert.ok(cli.aliases.includes(`master-css ${name}`))
     assert.ok(cli.markdown.includes(`master-css ${name} --help`))
   }

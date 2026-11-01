@@ -6,6 +6,7 @@ import { DEFAULT_SCAN_OUTPUT } from './constants'
 import type { GenerateOptions } from './generate'
 import type { LintOptions } from './lint'
 import type { InspectOptions } from './inspect'
+import type { SuggestOptions } from './suggest'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -63,6 +64,16 @@ export default async function runProgram(argv: string[] = process.argv) {
     .action(async (sourcePaths: string[], options: InspectOptions) => {
       const { default: runInspect } = await import('./inspect')
       await runInspect(sourcePaths, options)
+    })
+  program
+    .command('suggest')
+    .description('Suggest classes for a CSS declaration block without editing files.')
+    .argument('[declarations]', 'A quoted CSS declaration block, without a selector or braces.')
+    .option('--stdin', 'Read the declaration block from stdin instead of an argument.')
+    .option('--cwd <path>', 'Project root used to load the active manifest.', '.')
+    .action(async (declarations: string | undefined, options: SuggestOptions) => {
+      const { default: runSuggest } = await import('./suggest')
+      await runSuggest(declarations, options)
     })
   await program.parseAsync(argv)
   return program

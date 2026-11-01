@@ -80,10 +80,11 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
   if (!commandNames.length) throw new Error('No public CLI commands discovered')
   for (const name of Object.keys(cliEditorial)) if (!commandNames.includes(name)) throw new Error(`Stale CLI guidance: ${name}`)
   const cli = [
-    'Install the CLI through the [setup guide](/guide/installation/cli), then run it from the project root. Ordinary app sources are discovered without source arguments. Explicit path arguments replace that default selection.',
+    'Install the CLI through the [setup guide](/guide/installation/cli), then run it from the project root. Generate, lint and inspect discover ordinary app sources without source arguments; explicit path arguments replace that selection. Suggest accepts a CSS declaration block.',
     'Run `master-css --help` to list commands and `master-css <command> --help` to read all options for your installed version. Current command definitions live in the [CLI source](https://github.com/master-co/css/blob/rc/packages/cli/src/core.ts).'
   ]
   const effects: Record<string, string> = {
+    suggest: 'Suggests classes and validates their generated declarations without editing files. Uses the active project manifest and preserves uncertain blocks as CSS. Review the cascade and browser behavior before applying a proposal.',
     generate: 'Publishes CSS and associated stylesheet resources. Use `--no-export --verbose 0` to print only CSS without publishing files. `--watch` runs until interrupted; check rebuild errors even while the process remains active.',
     lint: 'Reports class diagnostics without writing source by default. `--fix` applies supported fixes; `--fix-dry-run` returns proposals without applying them. Stdin content is never written back to its virtual path.',
     inspect: 'Reports source discovery, stylesheet entries and missing CSS without publishing CSS or rewriting source files. `--classes` checks the scan result; it does not safelist those classes. Read diagnostics and coverage before interpreting an empty result.'

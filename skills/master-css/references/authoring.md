@@ -31,7 +31,22 @@ native CSS when their class encoding is uncertain.
 
 ## Ask for class suggestions
 
-When available, call `mastercss_suggest_classes` with a declaration block:
+Use the project's installed CLI when MCP is not connected. Confirm that
+`master-css suggest --help` is available; do not install a different release just
+to obtain it. Run from the app root, or select it with `--cwd`:
+
+```sh
+master-css suggest 'display:flex; align-items:center; padding:16px; gap:1rem;'
+```
+
+The JSON envelope contains `result` (classes, CSS, `remainingCss` and declaration
+verification), separate `validation`, `diagnostics` and `manifest.entries`. No
+discovered Master CSS entry means preset context; verify the expected project
+entry is present before relying on custom definitions. A load failure returns
+`result: null` and a nonzero exit status. Use `--stdin` for a block beginning with
+`--`, such as a custom-property declaration, or put `--` before the argument.
+
+With MCP connected, call `mastercss_suggest_classes` with the same declaration block:
 
 ```json
 {"declarations":"display:flex; align-items:center; padding:16px; gap:1rem;"}
@@ -52,6 +67,6 @@ CSS value validity; use the separate validation results for that.
   potentially overlapping properties can remain CSS. The first version does
   not invert multi-declaration recipes or arbitrary stylesheets.
 
-Use `mastercss_manifest_query`, `mastercss_suggest_syntax` and inspection if the
-suggestion tool is unavailable. Do not invent a replacement converter in
+If neither suggestion interface is available, inspect the project definitions
+and use available manifest-query, syntax or inspection tools. Do not invent a replacement converter in
 JavaScript. Apply a small edit, lint it, and check its browser behavior.
