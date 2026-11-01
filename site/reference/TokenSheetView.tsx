@@ -1,4 +1,3 @@
-import '~/site/styles/token-specimens.css'
 import { Fragment } from 'react'
 import Palette, { type PaletteGroup } from '../components/demo/foundations/Palette'
 import { foundationTokens } from '../common/foundation-data/tokens'
