@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { summarizeDiagnostics } from './diagnostic-summary.mjs'
+import { navigateDiagnostics, expandDiagnostics } from './diagnostic-navigation.mjs'
 import { copyRepairInput, treeHashes, digest } from './trials/repair-inputs.mjs'
 import { repairSchedule, compareRepairs } from './trials/repair-comparison.mjs'
 
@@ -99,4 +100,55 @@ test('repair comparison retains errors and missing usage; rejects incomplete, cr
   assert.throws(() => compareRepairs(protocol, rows.slice(1)), /Incomplete/)
   assert.throws(() => compareRepairs(protocol, [...rows, rows[0]]), /duplicate/)
   for (const patch of [{ inputHash: 'other' }, { promptHash: 'other' }, { reportHash: 'other' }, { cachedInputTokens: 10 }]) assert.throws(() => compareRepairs(protocol, [{ ...rows[0], ...patch }, ...rows.slice(1)]))
+})
+
+
+test('navigation expands complete original groups including declarations discarded by the compact summary', () => {
+  const before = JSON.stringify(acceptance)
+  const navigation = navigateDiagnostics(acceptance)
+  assert.equal(navigation.format, 'property-navigation')
+  assert.equal(navigation.rules, undefined)
+  assert.match(navigation.properties[0].expand, /--property "height"/)
+  assert.deepEqual(navigation.properties[0].differences[0].checks, ['light-390-rest', 'dark-1280-rest'])
+  const expanded = expandDiagnostics(acceptance, { property: 'height' })
+  assert.deepEqual(expanded.evidence, acceptance.diagnostics.evidence)
+  assert.equal(expanded.evidence[0].target.rules[0].declarations.length, 4)
+  assert.deepEqual(expanded.missing, [{ check: 'dark-1280-rest', node: 0 }])
+  assert.deepEqual(expandDiagnostics(acceptance, { all: true }).diagnostics, acceptance.diagnostics)
+  assert.equal(JSON.stringify(acceptance), before)
+})
+
+test('expansion filters scored checks and nodes without implying absent evidence is a successful capture', () => {
+  assert.throws(() => expandDiagnostics(acceptance, { property: 'unknown' }), /Unknown scored property/)
+  assert.throws(() => expandDiagnostics(acceptance, { property: 'height', node: -1 }), /Invalid node/)
+  assert.throws(() => expandDiagnostics(acceptance, { property: 'height', node: 2 }), /No scored differences/)
+  assert.throws(() => expandDiagnostics(acceptance, { property: 'height', check: 'missing' }), /No scored differences/)
+  assert.throws(() => expandDiagnostics(acceptance, { all: true, property: 'height' }), /cannot be combined/)
+  const input = structuredClone(acceptance)
+  input.diagnostics.evidence.push({ check: 'dark-1280-rest', status: 'unavailable', error: 'capture failed' })
+  const expanded = expandDiagnostics(input, { property: 'height', check: 'dark-1280-rest', node: 0 })
+  assert.deepEqual(expanded.evidence, [input.diagnostics.evidence[1]])
+  assert.deepEqual(expanded.differences[0].checks, ['dark-1280-rest'])
+  assert.equal(expanded.missing.length, 1)
+  assert.equal(expanded.omittedGroups, 2)
+})
+
+test('expansion command logs exact output bytes and hashes, rejects invalid requests and leaves inputs intact', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'master-expand-test-'))
+  try {
+    const input = join(root, 'acceptance.json'), log = join(root, 'reads.jsonl')
+    const bytes = JSON.stringify(acceptance)
+    await writeFile(input, bytes)
+    const args = ['scripts/ai-authoring/expand-diagnostics.mjs', input, '--log', log]
+    const result = execFileSync(process.execPath, [...args, '--property', 'height', '--check', 'light-390-rest', '--node', '0'])
+    assert.deepEqual(JSON.parse(result).evidence, acceptance.diagnostics.evidence)
+    for (const node of ['-1', '', '1.2']) assert.throws(() => execFileSync(process.execPath, [...args, '--property', 'height', `--node=${node}`], { stdio: 'pipe' }))
+    const records = (await readFile(log, 'utf8')).trim().split('\n').map(JSON.parse)
+    assert.equal(records.length, 4)
+    assert.equal(records[0].reportHash, digest(bytes))
+    assert.equal(records[0].outputHash, digest(result))
+    assert.equal(records[0].bytes, result.length)
+    assert.equal(records.filter(row => !row.ok).length, 3)
+    assert.equal(await readFile(input, 'utf8'), bytes)
+  } finally { await rm(root, { recursive: true, force: true }) }
 })

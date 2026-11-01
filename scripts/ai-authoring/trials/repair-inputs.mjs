@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto'
 import { cliWrapper } from './protocol.mjs'
 import { check } from './check.mjs'
 import { summarizeDiagnostics } from '../diagnostic-summary.mjs'
+import { navigateDiagnostics } from '../diagnostic-navigation.mjs'
 
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex')
 export const passed = verdict => verdict.functional && verdict.styling && verdict.accessibility && verdict.browser === 'passed'
@@ -52,7 +53,7 @@ export async function selectRepairSeeds(source, calibration = false) {
   return { sourceProtocolHash: digest(protocolBytes), sourceObservationHash: digest(await readFile(join(source, 'observations.jsonl'))), seeds }
 }
 
-export async function prepareRepairSeed(seed, destination, browser, repository) {
+export async function prepareRepairSeed(seed, destination, browser, repository, presentation = 'compact') {
   const folder = join(destination, seed.id), work = join(folder, 'work'), baseline = join(folder, 'baseline')
   await mkdir(work, { recursive: true })
   await cp(join(seed.folder, 'baseline'), baseline, { recursive: true })
@@ -75,7 +76,13 @@ export async function prepareRepairSeed(seed, destination, browser, repository) 
   let serialized = JSON.stringify(assessment)
   for (const directory of [work, baseline]) for (const prefix of [pathToFileURL(directory).href + '/', directory + '/']) serialized = serialized.split(prefix).join('./')
   const canonical = JSON.parse(serialized)
-  const reports = { a: canonical.diagnostics, b: summarizeDiagnostics(canonical) }
+  if (!['compact', 'navigation'].includes(presentation)) throw new Error('Unknown presentation')
+  if (presentation === 'navigation') {
+    await mkdir(join(work, '.diagnostic-tools'))
+    for (const file of ['expand-diagnostics.mjs', 'diagnostic-navigation.mjs', 'diagnostic-summary.mjs']) await cp(join(repository, 'scripts/ai-authoring', file), join(work, '.diagnostic-tools', file))
+    await writeFile(join(work, '.diagnostic-evidence.json'), JSON.stringify(canonical, null, 2) + '\n')
+  }
+  const reports = { a: canonical.diagnostics, b: presentation === 'navigation' ? navigateDiagnostics(canonical) : summarizeDiagnostics(canonical) }
   const reportText = Object.fromEntries(Object.entries(reports).map(([arm, report]) => [arm, JSON.stringify(report, null, 2) + '\n']))
   for (const [arm, text] of Object.entries(reportText)) await writeFile(join(folder, `report-${arm}.json`), text)
   await writeFile(join(folder, 'assessment.json'), JSON.stringify(assessment, null, 2))

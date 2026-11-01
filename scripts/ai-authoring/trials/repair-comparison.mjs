@@ -28,6 +28,10 @@ export function compareRepairs(protocol, rows) {
     reportReads: selection.filter(row => row.reportRead).length,
     unmatched: selection.some(row => row.invalidClasses === null) ? null : selection.reduce((sum, row) => sum + row.invalidClasses, 0),
     cliSuggestions: selection.reduce((sum, row) => sum + row.cliSuggestions, 0), cliErrors: selection.reduce((sum, row) => sum + row.cliErrors, 0),
+    expansionCalls: selection.reduce((sum, row) => sum + (row.expansionCalls ?? 0), 0),
+    expansionTrials: selection.filter(row => row.expansionCalls > 0).length,
+    expansionErrors: selection.reduce((sum, row) => sum + (row.expansionErrors ?? 0), 0),
+    expansionBytes: selection.reduce((sum, row) => sum + (row.expansionBytes ?? 0), 0),
     executionErrors: selection.filter(row => row.execution.failed).length
   })
   const pairs = { fullWins: 0, compactWins: 0, bothPass: 0, bothFail: 0 }
@@ -36,7 +40,8 @@ export function compareRepairs(protocol, rows) {
     if (!right) throw new Error('Missing paired presentation')
     pairs[left.passed ? right.passed ? 'bothPass' : 'fullWins' : right.passed ? 'compactWins' : 'bothFail']++
   }
-  return { version: 1, mode: protocol.mode, revision: protocol.revision, pairs,
+  if (protocol.presentation === 'navigation') { pairs.navigationWins = pairs.compactWins; delete pairs.compactWins }
+  return { version: 1, presentation: protocol.presentation ?? 'compact', mode: protocol.mode, revision: protocol.revision, pairs,
     arms: Object.fromEntries(['a', 'b'].map(arm => [arm, totals(rows.filter(row => row.arm === arm))])),
     byModel: protocol.models.map(model => ({ model, arms: Object.fromEntries(['a', 'b'].map(arm => [arm, totals(rows.filter(row => row.model === model && row.arm === arm))])) })),
     failures: rows.filter(row => !row.passed).map(row => row.id),

@@ -145,7 +145,7 @@ does not support replacing it with the summary or claiming token savings. The
 summary remains an opt-in repository command; no public CLI/MCP API changed.
 A useful next experiment would make the summary a navigation aid with on-demand
 access to full property evidence, while preserving identical starting failures.
-That follow-up is not implemented by this experiment.
+That follow-up is tracked separately in the [navigation experiment](diagnostic-navigation.md).
 
 Validation: 23 focused summary, browser-diagnostic, color, evaluation and protocol
 tests passed, along with scoped script ESLint and `check:ai-context`. External
