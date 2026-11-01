@@ -1,4 +1,4 @@
-import type { FooterLink, FooterNavGroup, FooterProps } from '~/site/docs-shell/components/Footer'
+import type { FooterNavGroup, FooterProps } from '~/site/docs-shell/components/Footer'
 import type { AppNavItem } from '~/site/docs-shell/contexts/app'
 import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconCompass, IconFileText, IconMessages, IconWriting } from '@tabler/icons-react'
 
@@ -18,11 +18,6 @@ export const communityNavs = [
   { name: 'Discord', href: 'https://discord.com/invite/sZNKpAAAw6', Icon: IconBrandDiscord },
   { name: 'X', href: 'https://twitter.com/mastercorg', Icon: IconBrandX },
 ] satisfies AppNavItem[]
-
-export const footerLegalLinks = [
-  { name: 'MIT License', href: `${repositoryURL}?tab=MIT-1-ov-file#readme` },
-  { name: 'Trademark Policy', href: '/brand#trademark-policy' },
-] satisfies (FooterLink & { href: string })[]
 
 export const footerNavGroups = [
   {
@@ -46,9 +41,15 @@ export const footerNavGroups = [
     name: 'Community',
     links: communityNavs.map(({ name, href }) => ({ name, href }))
   },
+  {
+    name: 'Legal',
+    links: [
+      { name: 'MIT License', href: `${repositoryURL}?tab=MIT-1-ov-file#readme` },
+      { name: 'Trademark Policy', href: '/brand#trademark-policy' },
+    ]
+  },
 ] satisfies FooterNavGroup[]
 
 export const footerProps = {
   navGroups: footerNavGroups,
-  legalLinks: footerLegalLinks,
-} satisfies Pick<FooterProps, 'navGroups' | 'legalLinks'>
+} satisfies Pick<FooterProps, 'navGroups'>

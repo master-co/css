@@ -6,7 +6,7 @@ import Link from './Link'
 import LanguageSelect from './LanguageSelect'
 import ThemeSelect from './ThemeSelect'
 import { useThemeMode } from '~/site/docs-shell/contexts/theme-mode'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconDeviceDesktop, IconLanguage, IconMoon, IconSun } from '@tabler/icons-react'
 import type { HTMLAttributes, ReactNode } from 'react'
 import { useI18n, useTranslation } from '../contexts/i18n'
 import { useLocale } from '../contexts/locale'
@@ -24,17 +24,20 @@ export interface FooterNavGroup {
 
 export interface FooterProps extends HTMLAttributes<HTMLElement> {
   navGroups?: FooterNavGroup[]
-  legalLinks?: (FooterLink & { href: string })[]
   copyright?: ReactNode
 }
 
-/** The site footer: link groups, then the legal row: the notice and its links, and the theme and language preferences. */
-export default function Footer({ navGroups = [], legalLinks = [], copyright, className, ...props }: FooterProps) {
+/** The site footer: link groups (legal links among them), then one quiet row: the notice, and the theme and language
+ * preferences shown by an icon and their value alone (the selects carry their names). */
+export default function Footer({ navGroups = [], copyright, className, ...props }: FooterProps) {
   const themeMode = useThemeMode()
   const locale = useLocale()
   const i18n = useI18n()
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
+  // The preference is read on the client; the server and the first paint show the default.
+  const preference = themeMode.preference ?? 'system'
+  const ThemeIcon = preference === 'light' ? IconSun : preference === 'dark' ? IconMoon : IconDeviceDesktop
   return (
     <footer {...props} className={clsx('ui-footer', className)}>
       <nav aria-label={$('Footer')} className="ui-footer-nav">
@@ -52,18 +55,17 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
         ))}
       </nav>
       <div className="ui-footer-legal">
-        <p className="ui-footer-notice">
-          <span>{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</span>
-          {legalLinks.map((link) => <Link key={link.href || link.name} href={link.href}>{$(link.name)}</Link>)}
-        </p>
+        <p className="ui-footer-notice">{copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}</p>
         <label className="ui-footer-preference">
-          {$('Theme')}: {themeMode.preference && $(themeMode.preference.charAt(0).toUpperCase() + themeMode.preference.slice(1))}
-          <ThemeSelect />
+          <ThemeIcon aria-hidden="true" stroke={1.5} />
+          {$(preference.charAt(0).toUpperCase() + preference.slice(1))}
+          <ThemeSelect aria-label={$('Theme')} />
           <IconChevronDown aria-hidden="true" stroke={1.5} />
         </label>
         <label className="ui-footer-preference">
-          {$('Language')}: {localeName}
-          <LanguageSelect />
+          <IconLanguage aria-hidden="true" stroke={1.5} />
+          {localeName}
+          <LanguageSelect aria-label={$('Language')} />
           <IconChevronDown aria-hidden="true" stroke={1.5} />
         </label>
       </div>

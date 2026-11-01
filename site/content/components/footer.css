@@ -150,12 +150,6 @@
     gap: var(--spacing-sm) var(--spacing-xl);
   }
 
-  .home-footer-legal {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs) var(--spacing-lg);
-  }
-
   .home-footer-preferences {
     display: flex;
     flex-wrap: wrap;
