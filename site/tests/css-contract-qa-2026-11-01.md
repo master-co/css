@@ -206,3 +206,32 @@ Compared against that build of `6a0bb5250` with the same toolchain:
 ### Visual check
 
 Reviewed on the development server at 1440 and 390 px, light and dark: `/guide/installation/vite` (steps, browser preview, code, tables), `/blog/master-css-next` (masthead, contents, wide trays and code, the next read), `/blog`, `/brand` downloads, `/reference/tokens/spacing` and `/guide/responsive-design` (framed subjects on tray stages), `/tw/guide/introduction` and the homepage footer. Site lint (no new warnings), type-check, `Demo.test.tsx` and `islands.test.tsx` pass. `test:assets` fails at `6a0bb5250` before this change: `images/contents.svg` and `images/search.svg` are unreferenced.
+
+## Documentation previews and code panels {#documentation-previews-code-panels}
+
+The owner's round 5 direction keeps previews and code panels brief: browser chrome only for responsive previews (window dots, no address), plain previews parted from the tray by tone, one shared code-panel corner (`--code-corner`), chip-wash tabs, no language or tool titles, and the audit fixes recorded in `styles/system/DESIGN.md`.
+
+### Drift already on rc
+
+None. Every changed segment between the snapshot approved at `5d188d522` and a build of this change on `rc` (`f0c80a47c`) traces to a rule this change edits; the commits in between touched tooling and agent tests only.
+
+### This change set
+
+| Change | Count |
+| --- | --- |
+| Routes added or removed | 0 |
+| Routes with a different CSS contract | 243 of 244 (`/examples/responsive-button` unchanged) |
+| Delivered CSS segments | 2,530 → 2,542 (33 added, 21 removed) |
+| Delivery contracts | 123 → 123 |
+| Total CSS delivered across routes | 31,533,595 → 31,865,620 bytes (+1.1%) |
+| Median CSS per route | 128,344 → 130,106 bytes |
+
+- Documentation, Reference and Guide routes gain 967–1,522 bytes from the shared system rules: the code corner, bar and tab rules, the plain browser variant, the browser tools' label and width reading, checkbox rings, palette edges, the table-code, metric, parameter-link and callout fixes, and the prose rules that let parameters, prompts and trees keep their bleed and rhythm through unclassed wrappers.
+- `/design-system/review/catalog` and `/design-system/review/container` (and their `/tw` copies) gain 12,602 bytes: `DemoIndex` and `DemoContainer` now load the specimen parts their `ui-label` uses.
+- `/design-system/review/axes` and `/design-system/review/controls` also deliver `.p(8)` and `.p(4)` for the padding that keeps their scroll regions from clipping rings.
+- `/`, `/blog`, `/404` and `/design-system/review/home-icons` gain 139 bytes for the shared code-panel rules only.
+- The project manifest is unchanged.
+
+### Visual check
+
+Captured from the dev server at 1000–1280px in light and dark: `/guide/cascade-layers`, `/guide/installation/vite`, `/guide/colors`, `/design-system/review/{code,demo,viewport,controls,chart-group,media,agent}`.
