@@ -1,4 +1,4 @@
-import '~/site/styles/documentation-values.css'
+import '~/site/styles/system/data.css'
 import { useId, type ReactNode } from 'react'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import Translate from '~/site/docs-shell/components/Translate'
@@ -27,9 +27,9 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
   const hasDescriptions = groups.some((group) => group.description)
 
   return (
-    <figure>
+    <>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- The table's narrow overflow region must be focusable for native keyboard scrolling. */}
-      <div className="doc-table doc-utility-table" data-has-descriptions={hasDescriptions || undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
+      <div className="ui-table" role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
           <caption id={captionId} className="sr-only"><Translate>Utility groups table</Translate></caption>
           <thead>
@@ -52,7 +52,7 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
           </tbody>
         </table>
       </div>
-    </figure>
+    </>
   )
 }
 

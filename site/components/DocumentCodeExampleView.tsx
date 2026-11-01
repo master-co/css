@@ -1,36 +1,29 @@
-import '~/site/styles/documentation-values.css'
-import DocumentCopyButton from './DocumentCopyButton'
+import '~/site/styles/system/data.css'
+import { IconAlertTriangle, IconCircleX } from '@tabler/icons-react'
 import GeneratedCSS from './GeneratedCSS'
 
 export interface DocumentCodeExampleViewProps {
   title: string
+  /** Named code blocks: their bars carry the part's label and its copy control. */
   sourceCode: React.ReactNode
-  source: string
-  result?: string
   resultCode?: React.ReactNode
   resultKind?: 'generated-css'
-  sourceLabel?: string
-  resultLabel?: string
   diagnostic?: { severity: 'Warning' | 'Error', rule: string, message: string }
 }
 
-/** Static, verified source/output pair. It does not simulate an editor or execute code. */
-export default function DocumentCodeExampleView({ title, sourceCode, source, result, resultCode, resultKind, sourceLabel = 'Source', resultLabel = 'Result', diagnostic }: DocumentCodeExampleViewProps) {
-  const output = result !== undefined && <div className="doc-code-example-part">
-    <div className="doc-code-example-bar"><span>{resultLabel}</span><DocumentCopyButton text={result} label={`${title} — ${resultKind === 'generated-css' ? 'Generated CSS' : resultLabel}`} /></div>
-    {resultCode}
-  </div>
-  return <figure className="doc-code-example" aria-label={title}>
-    <figcaption>{title}</figcaption>
-    <div className="doc-code-example-part">
-      <div className="doc-code-example-bar"><span>{sourceLabel}</span><DocumentCopyButton text={source} label={`${title} — ${sourceLabel}`} /></div>
-      {sourceCode}
-    </div>
-    {diagnostic && <div className="doc-code-diagnostic" data-severity={diagnostic.severity.toLowerCase()}>
-      <span className="doc-code-severity">{diagnostic.severity}</span>
-      <code>{diagnostic.rule}</code>
-      <p>{diagnostic.message}</p>
+/** Static, verified source/output pair in one tray. It does not simulate an editor or execute code. */
+export default function DocumentCodeExampleView({ title, sourceCode, resultCode, resultKind, diagnostic }: DocumentCodeExampleViewProps) {
+  const DiagnosticIcon = diagnostic?.severity === 'Error' ? IconCircleX : IconAlertTriangle
+  return <figure className="ui-tray" aria-label={title}>
+    <figcaption className="ui-tray-head"><p className="ui-tray-title">{title}</p></figcaption>
+    {sourceCode}
+    {diagnostic && <div className="ui-callout" data-tone={diagnostic.severity === 'Error' ? 'danger' : 'warning'}>
+      <DiagnosticIcon stroke={1.6} aria-hidden="true" />
+      <div>
+        <p><b>{diagnostic.severity}</b> · <code>{diagnostic.rule}</code></p>
+        <p>{diagnostic.message}</p>
+      </div>
     </div>}
-    {output && (resultKind === 'generated-css' ? <GeneratedCSS>{output}</GeneratedCSS> : output)}
+    {resultCode && (resultKind === 'generated-css' ? <GeneratedCSS>{resultCode}</GeneratedCSS> : resultCode)}
   </figure>
 }

@@ -30,8 +30,8 @@ function PaletteView({ group }: { group: SheetGroup }) {
     if (!hues.has(family)) hues.set(family, { family, colors: [] })
     hues.get(family)!.colors.push({ name: row.variable.slice(2), step: Number(step), value: row.value })
   }
-  return <div data-demo-container className="ref-palette">
-    <div className="demo-container-shell">
+  return <div className="ui-tray">
+    <div className="ui-stage" data-padding="sm" data-align="start">
       <Palette groups={[...hues.values()].map(hue => ({ ...hue, colors: hue.colors.sort((a, b) => a.step - b.step) }))} />
     </div>
   </div>

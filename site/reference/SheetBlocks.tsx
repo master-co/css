@@ -1,10 +1,9 @@
-import '~/site/styles/demo-interactions.css'
+import '~/site/styles/system/data.css'
 import '~/site/styles/reference-sheet.css'
 import { createElement, Fragment } from 'react'
 import clsx from 'clsx'
 import Code from '~/site/docs-shell/components/Code'
 import Link from '~/site/docs-shell/components/Link'
-import Demo from '../components/demo/Demo'
 import DocumentDisclosure from '../components/DocumentDisclosure'
 import GeneratedCSS from '../components/GeneratedCSS'
 import type { SheetExample, SheetSyntax } from './sheets'
@@ -27,11 +26,11 @@ export function SheetHeading({ id, children }: { id: string, children: React.Rea
 }
 
 /**
- * Sheet tables are bare `.doc-table` children of the prose column, so they share the
- * document table treatment and bleed with code blocks and demos.
+ * Sheet tables are bare `.ui-table` children of the prose column, so they share the
+ * document table treatment and bleed with code blocks and examples.
  */
 export function SheetTable({ className, head, modes, keyWidth, children }: { className?: string, head: string[], modes?: boolean, keyWidth?: string, children: React.ReactNode }) {
-  return <div className={clsx('doc-table ref-table', className)} data-modes={modes || undefined} style={keyWidth ? { '--ref-key-width': keyWidth } as React.CSSProperties : undefined}>
+  return <div className={clsx('ref-table ui-table', className)} data-modes={modes || undefined} style={keyWidth ? { '--ref-key-width': keyWidth } as React.CSSProperties : undefined}>
     <table>
       <thead><tr>{head.map(label => <th key={label} scope="col">{label}</th>)}</tr></thead>
       <tbody>{children}</tbody>
@@ -70,26 +69,21 @@ export function SheetClassTable({ rows, more, moreLabel, width }: { rows: SheetS
 }
 
 /**
- * Lead sentence, live preview, the subject's source and its generated CSS. The stage and
- * its source share one shell, so the preview and the code read as one figure.
+ * Lead sentence, then one tray: the live preview on its stage, the subject's source and its
+ * closed Generated CSS, so the preview and the code read as one example.
  */
 export function SheetExampleBlock({ example, preview = true, source = true, caption }: { example: SheetExample, preview?: boolean, source?: boolean, caption?: string }) {
   return <>
-    {example.lead && <p className="ref-lead"><InlineText>{example.lead}</InlineText></p>}
-    {preview
-      ? <Demo className="ref-example" frame="none" padding="none" caption={caption && <InlineText>{caption}</InlineText>}>
-        <div data-demo-container className="ref-example-figure">
-          <div className="demo-container-shell ref-example-stage">
-            <div className="ref-example-scene" dangerouslySetInnerHTML={{ __html: example.html }} />
-          </div>
-          {source && <Code lang="html">{example.code}</Code>}
-        </div>
-      </Demo>
-      : <>
-        {example.configuration && <Code lang="css">{example.configuration}</Code>}
-        {source && <Code lang="html">{example.code}</Code>}
-      </>}
-    <GeneratedCSS><Code lang="css" beautify>{example.css}</Code></GeneratedCSS>
+    {example.lead && <p><InlineText>{example.lead}</InlineText></p>}
+    <figure className="ui-tray">
+      {preview && <div className="ui-stage">
+        <div className="ref-example-scene" dangerouslySetInnerHTML={{ __html: example.html }} />
+      </div>}
+      {!preview && example.configuration && <Code lang="css">{example.configuration}</Code>}
+      {source && <Code lang="html">{example.code}</Code>}
+      <GeneratedCSS><Code lang="css" beautify>{example.css}</Code></GeneratedCSS>
+      {caption && <figcaption className="ui-tray-caption"><InlineText>{caption}</InlineText></figcaption>}
+    </figure>
   </>
 }
 

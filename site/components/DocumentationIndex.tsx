@@ -1,8 +1,9 @@
 'use client'
 
+import '~/site/styles/system/data.css'
 import '~/site/styles/documentation-index.css'
 import { useEffect, useState } from 'react'
-import { IconArrowRight, type IconBook } from '@tabler/icons-react'
+import type { IconBook } from '@tabler/icons-react'
 import Link from '~/site/docs-shell/components/Link'
 import { useLocale } from '~/site/docs-shell/contexts/locale'
 import { useTranslation } from '~/site/docs-shell/contexts/i18n'
@@ -65,43 +66,41 @@ export default function DocumentationIndex({ name, sections, related, showDescri
     if (target && !target.closest('[hidden]')) target.scrollIntoView({ block: 'start' })
   }, [alphabetical])
 
-  return <div className={`doc-index${showDescriptions ? ' doc-index-guides' : ''}`}>
-    <nav className="doc-index-sections" aria-label={tw ? `${name === 'guide' ? 'Guide' : 'Reference'} 分區` : `${name === 'guide' ? 'Guide' : 'Reference'} sections`}>
+  return <div className="documentation-index">
+    <nav className="ui-index" aria-label={tw ? `${name === 'guide' ? 'Guide' : 'Reference'} 分區` : `${name === 'guide' ? 'Guide' : 'Reference'} sections`}>
       {sections.map(section => <SectionLink key={section.id} {...section} href={`#${section.id}`} onClick={() => setAlphabetical(false)} />)}
       <SectionLink {...related} />
     </nav>
 
-    <div className="doc-index-toolbar">
-      <span>{tw ? (name === 'guide' ? '教學索引' : '所有條目') : (name === 'guide' ? 'Browse guides' : 'All entries')} <span className="doc-index-count">{entries.length}</span></span>
-      <div className="doc-index-view" role="group" aria-label={tw ? '索引顯示方式' : 'Index view'}>
+    <div className="documentation-index-toolbar">
+      <p>{tw ? (name === 'guide' ? '教學索引' : '所有條目') : (name === 'guide' ? 'Browse guides' : 'All entries')} <span className="documentation-index-count">{entries.length}</span></p>
+      <div className="ui-segmented" role="group" aria-label={tw ? '索引顯示方式' : 'Index view'}>
         <button type="button" aria-pressed={!alphabetical} aria-controls={panelId('category')} onClick={() => setAlphabetical(false)}>{tw ? '依分類' : 'By category'}</button>
         <button type="button" aria-pressed={alphabetical} aria-controls={panelId('alphabetical')} onClick={() => setAlphabetical(true)}>A–Z</button>
       </div>
     </div>
 
     <div id={panelId('category')} hidden={alphabetical}>
-      {sections.map(section => <section key={section.id} className="doc-index-section" aria-labelledby={section.id}>
-        <header className="doc-index-heading">
-          <h2 id={section.id}>{section.title} <span className="doc-index-count">{section.groups.reduce((total, group) => total + group.entries.length, 0)}</span></h2>
-          <p>{section.description}</p>
-        </header>
-        {section.groups.length > 1 && <nav className="doc-index-groups" aria-label={tw ? `${section.title}分類` : `${section.title} categories`}>
-          {section.groups.map((group, index) => <a key={groupId(section, index)} href={`#${groupId(section, index)}`}>{group.title}</a>)}
+      {sections.map(section => <section key={section.id} className="documentation-index-section" aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.title} <span className="documentation-index-count">{section.groups.reduce((total, group) => total + group.entries.length, 0)}</span></h2>
+        <p>{section.description}</p>
+        {section.groups.length > 1 && <nav className="documentation-index-groups" aria-label={tw ? `${section.title}分類` : `${section.title} categories`}>
+          {section.groups.map((group, index) => <a key={groupId(section, index)} className="ui-button" data-variant="quiet" data-size="sm" href={`#${groupId(section, index)}`}>{group.title}</a>)}
         </nav>}
         {section.groups.length === 1
           ? <EntryLinks entries={section.groups[0].entries} columns showDescriptions={showDescriptions} />
-          : <div className="doc-index-categories">{section.groups.map((group, index) => <section key={groupId(section, index)} className="doc-index-category" aria-labelledby={groupId(section, index)}>
-            <h3 id={groupId(section, index)}>{group.title} <span className="doc-index-count">{group.entries.length}</span></h3>
+          : <div className="documentation-index-categories">{section.groups.map((group, index) => <section key={groupId(section, index)} aria-labelledby={groupId(section, index)}>
+            <h3 id={groupId(section, index)}>{group.title} <span className="documentation-index-count">{group.entries.length}</span></h3>
             <EntryLinks entries={group.entries} />
           </section>)}</div>}
       </section>)}
     </div>
 
     <div id={panelId('alphabetical')} hidden={!alphabetical}>
-      <nav className="doc-index-letters" aria-label={tw ? '依字母跳轉' : 'Jump to a letter'}>
-        {[...letters.keys()].map(letter => <a key={letter} href={`#${letterId(letter)}`}>{letter}</a>)}
+      <nav className="documentation-index-letters" aria-label={tw ? '依字母跳轉' : 'Jump to a letter'}>
+        {[...letters.keys()].map(letter => <a key={letter} className="ui-button" data-variant="quiet" data-size="sm" data-shape="icon" href={`#${letterId(letter)}`}>{letter}</a>)}
       </nav>
-      {[...letters].map(([letter, documents]) => <section key={letter} className="doc-index-letter-group">
+      {[...letters].map(([letter, documents]) => <section key={letter} className="documentation-index-section" aria-labelledby={letterId(letter)}>
         <h2 id={letterId(letter)}>{letter}</h2>
         <EntryLinks entries={documents} columns showCategory />
       </section>)}
@@ -111,27 +110,27 @@ export default function DocumentationIndex({ name, sections, related, showDescri
 
 function SectionLink({ href, title, description, Icon, onClick }: SectionLink & { onClick?: () => void }) {
   const Anchor = href.startsWith('#') ? 'a' : Link
-  return <Anchor href={href} className="doc-index-section-link" onClick={onClick}>
-    <span className="doc-index-section-icon"><Icon size={21} stroke={1.4} aria-hidden="true" /></span>
-    <span className="doc-index-section-copy">
-      <span className="doc-index-section-title">{title}</span>
-      <span className="doc-index-section-description">{description}</span>
-    </span>
-    <IconArrowRight size={16} stroke={1.5} aria-hidden="true" />
+  return <Anchor href={href} onClick={onClick}>
+    <Icon stroke={1.5} aria-hidden="true" />
+    <b>{title}</b>
+    <span>{description}</span>
   </Anchor>
 }
 
 function EntryLinks({ entries, columns, showCategory, showDescriptions }: { entries: DocumentationIndexEntry[]; columns?: boolean; showCategory?: boolean; showDescriptions?: boolean }) {
   const $ = useTranslation()
-  return <ul className={`doc-index-links${columns ? ' doc-index-links-columns' : ''}${showDescriptions ? ' doc-index-links-descriptions' : ''}`}>
+  // Described entries read as an index of cards; bare titles stay a quiet list of links.
+  if (showDescriptions) return <div className="ui-index">
+    {entries.map(entry => <Link key={entry.id} href={entry.url} disabled={entry.disabled} unfinished={entry.unfinished}>
+      <b>{entry.displayTitle || entry.title}</b>
+      {entry.description && <span>{$(entry.description)}</span>}
+    </Link>)}
+  </div>
+  return <ul className="documentation-index-links" data-columns={columns || undefined}>
     {entries.map(entry => <li key={entry.id}>
       <Link href={entry.url} disabled={entry.disabled} unfinished={entry.unfinished}>
-        <span>
-          <span className="doc-index-entry-title">{entry.displayTitle || entry.title}</span>
-          {showCategory && <small>{$(entry.category)}</small>}
-          {showDescriptions && entry.description && <span className="doc-index-entry-description">{$(entry.description)}</span>}
-        </span>
-        <IconArrowRight size={14} stroke={1.5} aria-hidden="true" />
+        <span>{entry.displayTitle || entry.title}</span>
+        {showCategory && <small>{$(entry.category)}</small>}
       </Link>
     </li>)}
   </ul>

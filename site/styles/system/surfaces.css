@@ -16,6 +16,8 @@
   .ui-tray-caption code { color: var(--ui-text-body); }
   .ui-tray > * + :is(.ui-stage, .ui-code) { margin-top: var(--ui-inset); }
   .ui-tray > .ui-tray-head + :is(.ui-stage, .ui-code) { margin-top: 0; }
+  .ui-tray > .ui-callout { margin-top: var(--ui-inset); }
+  .ui-tray > .ui-disclosure > summary { padding-inline: var(--ui-space-sm); }
 
   /* The stage: a lit, slightly recessed well where the specimen stands */
   .ui-stage {

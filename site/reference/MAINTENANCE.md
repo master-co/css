@@ -61,7 +61,7 @@ Namespace consumers come from `utils/variable-namespace-sources.ts` and build-ti
 
 `DocumentCodeTable` keeps short syntax tokens intact while native CSS wraps at spaces. Reference adapts only two-column Token/CSS or Syntax/CSS tables whose cells each contain one code span. Keep long generated rules in code blocks; the authored Markdown remains the export source.
 
-`DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles remove size containment, wrap long syntax and keep both columns visible. Put longer multi-part decisions in prose lists. The migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
+`DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles fix both columns and wrap long syntax. Put longer multi-part decisions in prose lists. The migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
 
 `components/demo/specimens/` owns the authored examples still used by the Design System gallery. These are not indexed articles. Do not restore retired property MDX just to feed a gallery; add a focused specimen when a real demonstration needs one.
 
@@ -166,9 +166,9 @@ portable guide anchors and the six-size/theme gallery matrix.
 
 ### Tooling documentation
 
-`DocumentOptions` presents long identifiers above their defaults and descriptions.
-`DocumentCodeExample` pairs server-highlighted source and result with a small client
-clipboard control. `tooling-guide-data` supplies the literal recipes to the UI and
+`DocumentOptions` presents identifiers beside their defaults and descriptions (`ui-params`).
+`DocumentCodeExample` pairs server-highlighted source and result in one `ui-tray`; each
+named code block carries its label and copy control. `tooling-guide-data` supplies the literal recipes to the UI and
 the strict `tooling-content` export adapter. Keep settings, complete code and actual
 diagnostic messages available in both search and portable Markdown.
 
@@ -221,7 +221,8 @@ paragraph. Only the exact Setting/Default/Effect table shape becomes
 Stylesheet pairs use explicit `stylesheet=source` and `stylesheet=result` fence
 metadata beneath their bold title. The renderer recognizes that trio independently
 of additional disclosure metadata and reuses `DocumentCodeExampleView` with prepared
-highlights and native keyboard copy buttons. Plain source fences
+highlights; the source block carries its copy control and the result sits in the closed
+Generated CSS disclosure. Plain source fences
 retain their normal code rendering. Keep source strings literal; JSON string
 expressions preserve indentation that MDX can strip from multiline attributes.
 
