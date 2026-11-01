@@ -125,3 +125,26 @@ The checks below ran on `51dd1eac7`. On `0bc88aec0`, this change set's byte delt
 
 `interior-navigation`, `interior-demos`, `guide-preview-reflow`, `brand-system`, `design-system-figures` and `demo-flow-sizing` give the same results on both builds. The same six known failures appear on `rc`: `migration/css` reflow ×2, the missing documentation-geometry fixture, demo reduced-motion pausing, and the brand comparison at 320 px ×2.
 
+
+## Documentation refinement {#documentation-refinement}
+
+`design/moonstone-refine` refines the documentation interface after comparing it with mature documentation sites. It restores the wide grid, so running text keeps a 41rem measure while steps, page tabs and the pager span a wide column and code, previews, tables and charts hang out up to 2rem on each side with aligned edges. Search moves to a quiet pill at the top right of the header. Group and page captions become tracked uppercase eyebrows. The footer becomes three columns on a 32px pitch with a quiet bottom row, the pager becomes a hairline row, and link marks no longer push punctuation away. It was approved in the 2026-11-01 Moonstone session ("合進 rc").
+
+The comparison is against a build of `rc` at `bb6af9f29`. That build matches the committed snapshot byte for byte, so the delta belongs to this change set.
+
+| Change | Count |
+| --- | --- |
+| Routes added or removed | 0 |
+| Routes with a different CSS contract | 244 (all grow) |
+| Delivered CSS segments | 2,774 → 2,803 (101 added, 72 removed) |
+| Delivery contracts | 123 → 123 |
+| Total CSS delivered across routes | 30.7 MB → 31.9 MB (+3.7%) |
+| Median CSS per route | 124 KB → 129 KB |
+
+- Documentation routes gain 4.6–5.5 KB: the wide-grid and hang rules in `styles/docs-shell/docs.css` and `prose.css`, the eyebrow mixin, the header search pill, and the footer and pager rewrites. `/tw` routes match their English pages.
+- Routes outside the documentation shell gain less, from the shared header, footer and tokens: `/` +3.4 KB, `/blog` +3.0 KB, `/404` +2.7 KB, `/examples/*` +0.15–0.33 KB.
+- The project manifest grows by 867 bytes for the new tokens and the `--ui-eyebrow-type` mixin, and drops the unused `--content-external` and `--content-hash` theme tokens.
+
+### Visual check
+
+Routes were compared with the previous state at 1280 and 390 px in light and dark: `/guide/installation`, `/guide/syntax-tutorial`, the guide index, `/reference/tokens/spacing`, `/design-system`, `/benchmarks`, `/blog`, `/brand` and `/404`. After rebasing onto the route style boundaries, the browser checks for reading, navigation, demos, reviews, states, the homepage header, brand, search, illustrations and anchors pass. The known exceptions are the `migration/css` previews at 320 px with 200% text and the missing documentation-geometry fixture.
