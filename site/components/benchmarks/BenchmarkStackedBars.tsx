@@ -1,9 +1,10 @@
+import '~/site/styles/system/data.css'
+import '~/site/styles/system/specimens.css'
 import '~/site/styles/benchmarks.css'
 import { useId, type ReactNode } from 'react'
-import clsx from 'clsx'
 import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkStackedBarItem } from './types'
-import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue } from './utils'
+import { benchmarkColors, benchmarkTone, clampPercent, formatMetricValue } from './utils'
 
 interface BenchmarkStackedBarsProps {
   items: BenchmarkStackedBarItem[]
@@ -13,12 +14,13 @@ interface BenchmarkStackedBarsProps {
   className?: string
 }
 
+/** Segments carry hue only because each row's legend names them with their values. */
 export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
   const labelPrefix = useId()
   const { items, max, unit, valueFormatter, className } = props
 
   return (
-    <div className={clsx('grid gap-lg benchmark-bars benchmark-stacks', className)}>
+    <div className={className ? `ui-chart ${className}` : 'ui-chart'}>
       {items.map((item, index) => {
         const labelId = `${labelPrefix}-label-${index}`
         const valueId = `${labelPrefix}-value-${index}`
@@ -26,51 +28,30 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
         const totalLabel = valueFormatter ? valueFormatter(total) : formatMetricValue(total, unit)
 
         return (
-          <div key={item.id} className="grid gap-sm">
-            <div className="flex flex-wrap items-baseline justify-between gap-sm">
-              <div className="flex items-center gap-xs min-w(0)">
-                {item.icon}
-                <span id={labelId} className="min-w(0) font-sm (font-weight:460) fg-text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
-              </div>
-              <div className="flex flex-wrap items-baseline gap-xs min-w(0)">
-                <strong id={valueId} className="font-sm (font-weight:460) whitespace-nowrap fg-text-strong">{totalLabel}</strong>
-                {item.detail && <span className="font-xs fg-text-muted"><Translate>{item.detail}</Translate></span>}
-              </div>
+          <div key={item.id} className="ui-chart-row">
+            <span>
+              {item.icon}
+              <span id={labelId}><Translate>{item.label}</Translate></span>
+              {item.detail && <small><Translate>{item.detail}</Translate></small>}
+            </span>
+            <div className="ui-bar" data-variant="stacked" role="img" aria-labelledby={`${labelId} ${valueId}`}>
+              {item.segments.map((segment, segmentIndex) => <i
+                key={segment.id}
+                data-tone={benchmarkTone(segment.color ?? benchmarkColors[segmentIndex % benchmarkColors.length])}
+                title={`${segment.label}: ${segment.valueLabel ?? formatMetricValue(segment.value, unit)}`}
+                style={{ width: `${clampPercent(segment.value, max ?? total)}%` }} />)}
             </div>
-            <div className="benchmark-meter benchmark-meter-stacked" role="img" aria-labelledby={`${labelId} ${valueId}`}>
-              {item.segments.map((segment, index) => {
-                const percent = clampPercent(segment.value, max ?? total)
-                const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
-                const colorClasses = benchmarkColorClasses[color]
-
-                return (
-                  <div
-                    key={segment.id}
-                    className={colorClasses.background}
-                    title={`${segment.label}: ${segment.valueLabel ?? formatMetricValue(segment.value, unit)}`}
-                    style={{
-                      flexBasis: `${percent}%`,
-                      flexGrow: 0,
-                      flexShrink: 0
-                    }} />
-                )
-              })}
-            </div>
-            <div className="flex flex-wrap (column-gap:var(--spacing-sm)) (row-gap:var(--spacing-xs))" role="group" aria-label={`${item.label} breakdown`}>
-              {item.segments.map((segment, index) => {
-                const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
-                const colorClasses = benchmarkColorClasses[color]
+            <output id={valueId}>{totalLabel}</output>
+            <ul className="ui-legend" role="group" aria-label={`${item.label} breakdown`}>
+              {item.segments.map((segment, segmentIndex) => {
                 const valueLabel = segment.valueLabel ?? (valueFormatter ? valueFormatter(segment.value) : formatMetricValue(segment.value, unit))
-
-                return (
-                  <div key={segment.id} className="inline-flex items-center gap-2xs font-xs fg-text-muted">
-                    <span className={clsx('inline-block (height:0.625rem) (width:0.625rem) r-xs benchmark-legend-swatch', colorClasses.background)} />
-                    <span><Translate>{segment.label}</Translate></span>
-                    <span className="fg-text-strong">{valueLabel}</span>
-                  </div>
-                )
+                return <li key={segment.id}>
+                  <i data-tone={benchmarkTone(segment.color ?? benchmarkColors[segmentIndex % benchmarkColors.length])} />
+                  <span><Translate>{segment.label}</Translate></span>
+                  <b>{valueLabel}</b>
+                </li>
               })}
-            </div>
+            </ul>
           </div>
         )
       })}

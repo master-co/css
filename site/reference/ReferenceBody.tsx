@@ -35,7 +35,7 @@ export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRend
       case 'delete': return <del key={key}>{body}</del>
       case 'inlineCode': return <code key={key}>{node.value}</code>
       case 'code': {
-        if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclarationView key={key} label={`${entrypoint} — ${headings[headingIndex - 1]?.title ?? 'API'}`} source={node.value}><CodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
+        if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclarationView key={key} source={node.value}><CodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
         const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined
         const titles = { 'input-schema': 'Complete input schema', 'output-schema': 'Complete output schema', 'command-help': 'Complete command help' }
         const code = <CodeView key={key} {...referenceCodeProps(node)} prepared={node.data.prepared} />
@@ -97,7 +97,8 @@ export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRend
             consumers: row.children[1].children.filter((child: any) => child.type === 'inlineCode').map((child: any) => child.value),
           }))} />
         }
-        return <div key={key} className="doc-table"><table><thead><tr>{cells.map((cell: any, i: number) => <th key={i}>{cell.children.map(render)}</th>)}</tr></thead><tbody>{node.children.slice(1).map(render)}</tbody></table></div>
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- A wide table's overflow region must be focusable for native keyboard scrolling.
+        return <div key={key} className="ui-table" role="region" aria-label={cells.map((cell: any) => cell.children.map((child: any) => child.value ?? '').join('')).join(', ')} tabIndex={0}><table><thead><tr>{cells.map((cell: any, i: number) => <th key={i}>{cell.children.map(render)}</th>)}</tr></thead><tbody>{node.children.slice(1).map(render)}</tbody></table></div>
       }
       case 'tableRow': return <tr key={key}>{body}</tr>
       case 'tableCell': return <td key={key}>{body}</td>
@@ -113,7 +114,7 @@ export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRend
   for (let index = 0; index < tree.children.length; index++) {
     const [title, source, result] = tree.children.slice(index, index + 3) as any[]
     if (isStylesheetExample(title, source, result)) {
-      content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')} source={source.value} result={result.value}
+      content.push(<DocumentCodeExampleView key={index} title={title.children[0].children.map((child: any) => child.value).join('')}
         resultKind="generated-css"
         sourceCode={<CodeView {...referenceCodeProps(source, true)} prepared={source.data.prepared} />}
         resultCode={<CodeView {...referenceCodeProps(result, true)} prepared={result.data.prepared} />}

@@ -1,4 +1,5 @@
-import '~/site/styles/documentation-index.css'
+import '~/site/styles/system/data.css'
+
 export interface DocumentFlowStep {
   title: string
   description: string
@@ -12,16 +13,19 @@ export interface DocumentFlowProps {
 
 /** A static, ordered process; no timeline duration or interactive state is implied. */
 export default function DocumentFlow({ title, steps, caption }: DocumentFlowProps) {
-  return <figure className="doc-flow" aria-label={title}>
-    <figcaption>{title}</figcaption>
-    {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics when list-style is none. */}
-    <ol role="list">
-      {steps.map((step, index) => <li key={step.title}>
-        <span className="doc-flow-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <strong>{step.title}</strong>
-        <p>{step.description}</p>
-      </li>)}
-    </ol>
-    {caption && <p className="doc-flow-caption">{caption}</p>}
+  return <figure className="ui-tray" aria-label={title}>
+    <figcaption className="ui-tray-head"><p className="ui-tray-title">{title}</p></figcaption>
+    <div className="ui-stage" data-padding="sm" data-align="start">
+      {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics when list-style is none. */}
+      <ol className="ui-steps" role="list">
+        {steps.map(step => <li key={step.title}>
+          <div>
+            <h4>{step.title}</h4>
+            <p>{step.description}</p>
+          </div>
+        </li>)}
+      </ol>
+    </div>
+    {caption && <p className="ui-tray-caption">{caption}</p>}
   </figure>
 }

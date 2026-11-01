@@ -50,6 +50,9 @@
   .ui-disclosure > summary .ui-disclosure-meta { margin-left: auto; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1 var(--font-family-mono); }
   .ui-disclosure[data-variant="rule"] { border-block: 1px solid var(--ui-line-hair); }
   .ui-disclosure[data-variant="rule"] + .ui-disclosure[data-variant="rule"] { border-top: 0; }
+  .ui-disclosure-body { padding-bottom: var(--ui-space-md); }
+  .ui-disclosure > .ui-disclosure-body > :first-child { margin-top: 0; }
+  .ui-disclosure > .ui-disclosure-body > :last-child { margin-bottom: 0; }
 
   /* Prompt: copyable prose for agents — reads as text, copies as text */
   .ui-prompt { display: grid; gap: 0; min-width: 0; overflow: hidden; border-radius: var(--ui-radius-xl); background: var(--ui-surface-code); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); }
