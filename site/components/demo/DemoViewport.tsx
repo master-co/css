@@ -11,6 +11,8 @@ interface ViewportOptions {
   responsive?: boolean
   /** Browser chrome; only where the viewport itself is the lesson. Defaults to `responsive`. The tray head names the document. */
   chrome?: boolean
+  /** The width range's caption: what the range sizes. */
+  rangeLabel?: string
   /** Named real viewport widths; the first is the initial width when responsive. */
   widthPresets?: readonly { label: string; width: number }[]
   motion?: boolean
@@ -30,7 +32,7 @@ export type DemoViewportProps = ViewportOptions & (
   { document: string, src?: never } | { document?: never, src: string }
 )
 
-export default function DemoViewport({ title, document: source, src, responsive = false, chrome = responsive, widthPresets, motion = false, print = false, theme = false, initialTheme, inspect, height = 260, maxWidth = 1600, sizing = 'viewport' }: DemoViewportProps) {
+export default function DemoViewport({ title, document: source, src, responsive = false, chrome = responsive, rangeLabel = 'Viewport', widthPresets, motion = false, print = false, theme = false, initialTheme, inspect, height = 260, maxWidth = 1600, sizing = 'viewport' }: DemoViewportProps) {
   const ref = useRef<HTMLIFrameElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const cleanup = useRef<() => void>(() => {})
@@ -263,7 +265,8 @@ export default function DemoViewport({ title, document: source, src, responsive 
   }
   const button = { type: 'button', disabled: !ready, className: 'ui-button', 'data-size': 'sm' } as const
 
-  return (
+  // The controls belong to the example, not to the document it shows: they sit on the tray between the stage and the source.
+  return (<>
     <div className="ui-browser" data-variant={chrome ? undefined : 'plain'} data-ready={ready}>
       {chrome && <div className="ui-browser-bar" aria-hidden="true"><span className="ui-browser-dots"><i /><i /><i /></span></div>}
       <div ref={bodyRef} className="ui-browser-body">
@@ -273,18 +276,21 @@ export default function DemoViewport({ title, document: source, src, responsive 
           {responsive && <span className="ui-resize" aria-hidden="true" onPointerDown={drag} />}
         </div>
       </div>
+    </div>
       {(responsive || motion || print || theme || Boolean(inspect?.length)) && (
         <div className="ui-browser-tools" role="group" aria-label={`${title} controls`}>
           {responsive && <>
-            {Boolean(widthPresets?.length) && <div className="ui-segmented" role="group" aria-label="Viewport presets">
+            {Boolean(widthPresets?.length) && <div className="ui-segmented" role="group" aria-label={`${rangeLabel} presets`}>
               {widthPresets?.map(preset => <button key={preset.label} type="button" disabled={!ready}
                 aria-pressed={width === preset.width} onClick={() => setWidth(preset.width)}>{preset.label}</button>)}
             </div>}
-            <label className="ui-label" data-case="as-is" htmlFor={widthId}>Viewport</label>
-            <input id={widthId} className="ui-range" disabled={!ready} type="range" min={range.min} max={range.max} step="1" value={range.value}
-              style={{ '--value': `${((range.value - range.min) / Math.max(1, range.max - range.min)) * 100}%` } as CSSProperties}
-              onChange={event => setWidth(Number(event.target.value))} />
-            {ready && <output className="ui-browser-size" htmlFor={widthId}>{fitWidth} px</output>}
+            <span className="ui-browser-range">
+              <label className="ui-label" data-case="as-is" htmlFor={widthId}>{rangeLabel}</label>
+              <input id={widthId} className="ui-range" disabled={!ready} type="range" min={range.min} max={range.max} step="1" value={range.value}
+                style={{ '--value': `${((range.value - range.min) / Math.max(1, range.max - range.min)) * 100}%` } as CSSProperties}
+                onChange={event => setWidth(Number(event.target.value))} />
+              {ready && <output className="ui-browser-size" htmlFor={widthId}>{fitWidth} px</output>}
+            </span>
             <button {...button} onClick={() => setWidth(undefined)}>Fit</button>
           </>}
           {theme && <button {...button} aria-pressed={isDark} title="Toggle dark theme" onClick={() => setDark(!isDark)}>
@@ -300,6 +306,5 @@ export default function DemoViewport({ title, document: source, src, responsive 
           {properties && <output aria-live="polite">{properties}</output>}
         </div>
       )}
-    </div>
-  )
+  </>)
 }

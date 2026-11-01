@@ -17,6 +17,10 @@
   .ui-steps-content :is(p, li) { font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }
   .ui-steps-content :is(p, ul, ol) { margin-block: 0; }
   .ui-steps-text { display: grid; align-content: start; gap: var(--ui-space-md); }
+  /* Several files under one step part by a small gap, never contour against contour. */
+  .ui-steps-source { display: grid; align-content: start; gap: var(--ui-space-sm); }
+  /* A note inside a step is part of its text: the icon leads a muted paragraph, without a frame of its own in the narrow column. */
+  .ui-steps-content .ui-callout { padding: 0; background: none; box-shadow: none; color: var(--ui-text-muted); }
   .ui-steps-content :is(.ui-code, .ui-tray) { margin: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):first-child { margin-top: 0; }
   :is(.ui-steps-content, .ui-steps-text, .ui-steps-source) > :is(.ui-code, p):last-child { margin-bottom: 0; }
@@ -26,8 +30,9 @@
     .ui-steps[data-variant="document"] > li::before, .ui-steps[data-variant="document"] > li::after { display: none; }
   }
 
-  /* A row step reads beside its code once the list has room: the text on two fifths, the code on three. */
-  @container (min-width: 38rem) {
+  /* A row step reads beside its code once the list has room for both (46rem): the text on two fifths, the code on three.
+     Narrower, the code stacks under its text at full width rather than scrolling in a sliver. */
+  @container (min-width: 46rem) {
     .ui-steps-content[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   }
 }

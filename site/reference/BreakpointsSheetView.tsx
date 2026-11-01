@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Link, SheetExampleBlock, SheetHeading, SheetLinks, SheetTable } from './SheetBlocks'
 import type { BreakpointsSheet } from './sheets'
 
@@ -5,7 +6,7 @@ export default function BreakpointsSheetView({ sheet }: { sheet: BreakpointsShee
   return <>
     <SheetHeading id="conditions">Conditions</SheetHeading>
     <p>Append a condition to any class with <code>@</code>, such as <code>grid-cols(3)@md</code>. These are preset <code>@custom-media</code> definitions, not theme variables.</p>
-    {sheet.groups.map(group => <section key={group.id} aria-labelledby={group.id}>
+    {sheet.groups.map(group => <Fragment key={group.id}>
       <h3 id={group.id}>{group.title}</h3>
       <SheetTable className="ref-value-table" head={['Condition', 'Query']}>
         {group.rows.map(row => <tr key={row.name} id={`condition-${row.name}`}>
@@ -13,7 +14,7 @@ export default function BreakpointsSheetView({ sheet }: { sheet: BreakpointsShee
           <td><code>{row.query}</code>{row.pixels && <span className="ref-value-note">{row.pixels}</span>}</td>
         </tr>)}
       </SheetTable>
-    </section>)}
+    </Fragment>)}
 
     <SheetHeading id="usage">Usage</SheetHeading>
     <SheetExampleBlock example={sheet.usage} />

@@ -6,10 +6,30 @@
   /* The file's name keeps its width; a long result wraps in the room left beside the copy button. */
   .ui-code-bar > .ui-code-file { flex: 1 0 auto; }
   .ui-code-bar > .ui-copy { flex: 0 1 auto; min-width: 0; margin-left: auto; }
-  /* Without a bar the copy takes the panel's corner (`--code-corner`, code.css). A long line scrolls under it: the panel's own face fades in behind the button so code never runs through it. */
-  .ui-code > .ui-copy { position: absolute; z-index: 1; top: var(--code-corner); right: var(--code-corner); padding-left: var(--ui-space-sm); border-radius: var(--ui-radius-md); background: linear-gradient(90deg, transparent, var(--ui-surface-code) var(--ui-space-sm)); }
+  /* Without a bar the copy takes the panel's corner (`--code-corner`, code.css). A long line scrolls under it: the panel's own face fades in behind the button and runs to the edge, so code never runs through it. */
+  .ui-code > .ui-copy { position: absolute; z-index: 1; top: var(--code-corner); right: var(--code-corner); padding-left: var(--ui-space-sm); border-radius: var(--ui-radius-md); background: linear-gradient(90deg, transparent, var(--ui-surface-code) var(--ui-space-sm));
+    /* The face runs on to the panel's contour (1px short of the edge), so a scrolled line never shows again past the button. */
+    box-shadow: calc(var(--code-corner) - 1px) 0 0 var(--ui-surface-code); }
   .ui-code:has(> .ui-copy) .ui-code-line { padding-right: 3rem; }
+  /* A shell command is read whole: it wraps under a hanging indent instead of hiding its flags behind the copy button. */
+  :is(.ui-code, [role="tabpanel"])[data-lang="bash"] > pre, .ui-code[data-lang="sh"] > pre, .ui-code[data-lang="shell"] > pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  :is(.ui-code, [role="tabpanel"])[data-lang="bash"] > pre .ui-code-line, .ui-code:is([data-lang="sh"], [data-lang="shell"]) > pre .ui-code-line { padding-left: calc(var(--ui-space-md) + 2ch); text-indent: -2ch; }
+  /* Flags wrap whole: a token never breaks at its own hyphen, so `--yes` cannot split into `-` and `-yes`. */
+  :is(.ui-code, [role="tabpanel"])[data-lang="bash"] > pre .ui-code-line > span, .ui-code:is([data-lang="sh"], [data-lang="shell"]) > pre .ui-code-line > span { display: inline-block; text-indent: 0; }
+  /* Plain text, such as a prompt for an agent, is prose set in mono: it wraps at the panel like prose. */
+  :is(.ui-code, [role="tabpanel"])[data-lang="text"] > pre { white-space: pre-wrap; overflow-wrap: break-word; }
   .ui-copy-status:empty { display: none; }
+
+  /* A Generated CSS disclosure right after its source closes the same panel: one frame, the output under a hairline,
+     as in a demo tray. Alone (after a table or a paragraph) it stays a quiet disclosure. */
+  .ui-prose > .ui-code:has(+ .ui-disclosure[data-generated]) { margin-bottom: 0; border-end-start-radius: 0; border-end-end-radius: 0; box-shadow: inset 1px 0 0 var(--ui-line-contour), inset -1px 0 0 var(--ui-line-contour), inset 0 1px 0 var(--ui-line-contour); }
+  .ui-prose > .ui-code + .ui-disclosure[data-generated] {
+    max-width: none; margin-top: 0; margin-inline: calc(var(--bleed) * -1); padding-inline: var(--ui-space-md);
+    border-radius: 0 0 var(--ui-radius-xl) var(--ui-radius-xl); background: var(--ui-surface-code);
+    box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip);
+  }
+  .ui-prose > .ui-code + .ui-disclosure[data-generated] > summary { margin-inline: calc(var(--ui-space-md) * -1); padding-inline: var(--ui-space-md); box-shadow: inset 0 1px 0 var(--ui-line-hair); }
+  .ui-prose > .ui-code + .ui-disclosure[data-generated] > .ui-code { margin-inline: calc(var(--ui-space-md) * -1); border-radius: 0 0 var(--ui-radius-xl) var(--ui-radius-xl); background: transparent; box-shadow: inset 0 1px 0 var(--ui-line-hair); }
   .ui-copy > .ui-copy-status { min-width: 0; max-width: 16rem; text-align: end; line-height: 1.3; }
 
   /* @WARN and @ERROR marks: a wavy underline in the status tone instead of a wash. */

@@ -40,7 +40,7 @@
   .ui-label:not([data-case]) { @apply --ui-eyebrow-type; }
 
   /* Legend: every teaching color has a visible name */
-  .ui-legend { display: flex; flex-wrap: wrap; gap: var(--ui-space-xs) var(--ui-space-lg); margin: 0; padding: 0; list-style: none; color: var(--ui-text-body); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-mono); }
+  .ui-legend { display: flex; flex-wrap: wrap; gap: var(--ui-space-xs) var(--ui-space-lg); margin: 0; padding: 0; list-style: none; color: var(--ui-text-body); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-legend > li { display: inline-flex; align-items: center; gap: var(--ui-space-xs); }
   .ui-legend > li > i { --tone: var(--ui-tone-neutral); width: 10px; height: 10px; border-radius: 3px; background: var(--tone); box-shadow: inset 0 0 0 1px oklch(0% 0 none / .12); }
 

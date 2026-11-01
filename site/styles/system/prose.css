@@ -9,6 +9,9 @@
   @media (width < 52rem) { .ui-prose { --bleed: 0rem; } }
   .ui-prose > :is(p, ul, ol, blockquote) { margin-block: calc(var(--line) * .75); }
   .ui-prose > :is(.ui-tray, .ui-code, .ui-table, .ui-callout, .ui-steps, .ui-index, .ui-logos, .ui-params, .ui-prompt, .ui-tree) { margin-block: var(--line); }
+  /* Files that answer one instruction sit together: consecutive code panels part by a small gap, not a line. */
+  .ui-prose > .ui-code:has(+ .ui-code) { margin-bottom: var(--ui-space-sm); }
+  .ui-prose > .ui-code + .ui-code { margin-top: var(--ui-space-sm); }
   .ui-prose > h2 { margin: calc(var(--line) * 2) 0 calc(var(--line) * .5); color: var(--ui-text-strong); font-size: var(--ui-text-h2); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h2); letter-spacing: var(--ui-tracking-h2); text-wrap: balance; }
   .ui-prose > h3 { margin: calc(var(--line) * 1.5) 0 calc(var(--line) * .375); color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); }
   .ui-prose > h4 { margin: calc(var(--line) * 1.25) 0 calc(var(--line) * .25); color: var(--ui-text-strong); font-size: var(--ui-text-base); font-weight: var(--ui-weight-strong); line-height: 1.5rem; }
@@ -18,11 +21,15 @@
   /* A section opens on one hairline across the reading measure, closer to its heading than to the text before it. */
   .ui-prose > h2 { width: auto; }
   .ui-prose > h2:not(:first-child)::before { content: ""; display: var(--section-rule, block); position: absolute; top: calc(var(--line) * -.875); inset-inline: 0 var(--rule-end, 0); height: 1px; background: var(--ui-line-hair); pointer-events: none; }
-  /* The page's first section keeps only its space, and so does one after a disclosure, which already closes on a hairline;
-     legacy anchors and space-only rules in between do not count. */
+  /* The page's first section keeps only its space (after the page head too), and so does one after a disclosure, which
+     already closes on a hairline, even as the last part of a section wrapper;
+     legacy anchors and space-only rules in between do not count. A disclosure joined under its code is a framed panel, not
+     a rule, so the heading after it keeps its own. */
   .ui-prose > :is(a[id]:empty, .sr-only):first-child + h2,
-  .ui-prose > .ui-disclosure + h2, .ui-prose > .ui-disclosure + a[id]:empty + h2,
-  .ui-prose > .ui-disclosure + hr + h2, .ui-prose > .ui-disclosure + hr + a[id]:empty + h2 { --section-rule: none; }
+  .ui-prose > .ui-disclosure:not(.ui-code + *) + h2, .ui-prose > .ui-disclosure:not(.ui-code + *) + a[id]:empty + h2,
+  .ui-prose > .ui-disclosure:not(.ui-code + *) + hr + h2, .ui-prose > .ui-disclosure:not(.ui-code + *) + hr + a[id]:empty + h2,
+  .ui-prose > .ui-pagehead + h2, .ui-prose > .ui-pagehead + a[id]:empty + h2,
+  .ui-prose > :has(> .ui-disclosure:last-child) + h2 { --section-rule: none; }
   .ui-anchor { position: absolute; right: 100%; top: 50%; translate: -.375rem -50%; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: var(--ui-radius-sm); color: var(--ui-text-disabled); font: var(--ui-weight-regular) .875rem/1 var(--font-family-mono); opacity: 0; text-decoration: none; transition: opacity var(--ui-duration-quick), color var(--ui-duration-quick); }
   .ui-anchor:hover { color: var(--ui-text-muted); }
   .ui-prose > :is(h2, h3):is(:hover, :target, :focus-within) > .ui-anchor { opacity: 1; }
@@ -56,7 +63,7 @@
   .ui-hint { display: flex; align-items: flex-start; gap: var(--ui-space-xs); color: var(--ui-text-muted); font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }
   .ui-hint > svg { flex: none; width: 1rem; height: 1rem; margin-top: calc((1lh - 1rem) / 2); color: var(--ui-text-body); stroke-width: 1.5; }
   .ui-callout { --tone: var(--ui-tone-neutral); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--ui-space-sm); padding: .875rem var(--ui-space-md); border-radius: var(--ui-radius-lg);
-    background: color-mix(in oklab, var(--tone) 4%, var(--ui-surface-canvas)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tone) 20%, var(--ui-line-contour)); color: var(--ui-text-body); font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }
+    background: color-mix(in oklab, var(--tone) 2.5%, var(--ui-surface-canvas)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tone) 12%, var(--ui-line-contour)); color: var(--ui-text-body); font-size: var(--ui-text-small); line-height: var(--ui-leading-small); }
   .ui-callout > svg { width: 1rem; height: 1rem; margin-top: .21875rem; color: color-mix(in oklab, var(--tone) 80%, var(--ui-text-strong)); }
   .ui-callout > div { min-width: 0; overflow-wrap: anywhere; }
   .ui-callout > div > :first-child { margin-top: 0; } .ui-callout > div > :last-child { margin-bottom: 0; }

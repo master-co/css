@@ -15,8 +15,8 @@
   /* Under a bar the code starts a short step down, so the file name reads as its caption. */
   .ui-code:has(> .ui-code-bar) pre { padding-top: var(--ui-space-2xs); }
   .ui-code-line { display: block; padding: 0 var(--ui-space-lg) 0 var(--ui-space-md); }
-  /* A blank source line is an empty block: it keeps one line of height. */
-  .ui-code-line:empty { min-height: 1lh; }
+  /* A blank source line keeps one line of height, even when the highlighter leaves an empty token in it. */
+  .ui-code-line { min-height: 1lh; }
   .ui-code[data-numbers] { counter-reset: line; }
   .ui-code[data-numbers] .ui-code-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 1.75rem; margin-right: var(--ui-space-sm); color: var(--ui-text-disabled); text-align: right; user-select: none; }
   .ui-code-line[data-mark="active"] { background: var(--ui-code-active); box-shadow: inset 2px 0 0 var(--ui-line-mark); }

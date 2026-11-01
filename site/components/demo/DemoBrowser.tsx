@@ -8,9 +8,9 @@ export function DemoPageViewport({ src, title, height = 420 }: { src: string, ti
   </Demo>
 }
 
-/** The result of a setup step: a plain stage, told apart from the article by tone, with no browser chrome. */
-export function DemoHelloWorld() {
-  return <Demo frame="none">
+/** The result of a setup step and the source that renders it, as one tray: a plain stage over the code, no browser chrome. */
+export function DemoHelloWorld({ children }: { children?: React.ReactNode }) {
+  return <Demo frame="none" source={children}>
     <div className="ui-browser" data-variant="plain">
       <div className="grid (place-items:center) p-lg p-2xl@sm ui-browser-body"><h1 className="m(0) italic font-4xl font-heavy text-center fg-text-strong font-5xl@sm">Hello World</h1></div>
     </div>

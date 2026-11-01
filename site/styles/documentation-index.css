@@ -34,8 +34,9 @@
   .documentation-index-section + .documentation-index-section { box-shadow: inset 0 1px 0 var(--ui-line-hair); }
   .documentation-index-section > header { display: grid; align-content: start; gap: var(--ui-space-xs); }
   .documentation-index-section > header > small { color: var(--ui-text-muted); font-size: .75rem; line-height: 1rem; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
-  .documentation-index-section h2 { color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); overflow-wrap: anywhere; }
-  .documentation-index-section h2 > .documentation-index-count { vertical-align: .125rem; }
+  /* A catalog set inside an article (the Design System page) heads its spreads with h3 under the article's h2. */
+  .documentation-index-section h2, .documentation-index-section > header > h3 { color: var(--ui-text-strong); font-size: var(--ui-text-h3); font-weight: var(--ui-weight-heading); line-height: var(--ui-leading-h3); letter-spacing: var(--ui-tracking-h3); overflow-wrap: anywhere; }
+  .documentation-index-section h2 > .documentation-index-count, .documentation-index-section > header > h3 > .documentation-index-count { vertical-align: .125rem; }
   .documentation-index-section > header > p { max-width: 30rem; color: var(--ui-text-muted); font-size: var(--ui-text-caption); line-height: var(--ui-leading-caption); text-wrap: pretty; }
 
   /* A section's groups, listed under its summary so a long section can be entered part way. */

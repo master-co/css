@@ -1,6 +1,7 @@
 import type { BenchmarkColor, BenchmarkTone } from './types'
 
-export const benchmarkColors: BenchmarkColor[] = ['blue', 'green', 'yellow', 'cyan', 'red']
+/** Series take the teaching hues that never read as a status first: blue, violet, then neutral. */
+export const benchmarkColors: BenchmarkColor[] = ['blue', 'violet', 'neutral', 'yellow', 'green']
 
 /** Series hues map onto the named teaching tones; a legend always names them. */
 const benchmarkTones: Record<BenchmarkColor, 'blue' | 'green' | 'amber' | 'red' | 'violet' | 'neutral'> = {

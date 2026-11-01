@@ -13,6 +13,8 @@
 
   /* Groups keep a column of their own width from the start edge; a wide footer leaves the rest to the canvas. */
   .ui-footer-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); gap: var(--ui-space-2xl) var(--ui-space-xl); }
+  /* A phone sets the groups two by two instead of four rows of one. */
+  @container (width < 30rem) { .ui-footer-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .ui-footer-nav > * { min-width: 0; }
   .ui-footer-group > h2 { margin: 0 0 var(--ui-space-md); color: var(--ui-text-strong); @apply --ui-eyebrow-type; }
   .ui-footer-group > ul { display: grid; gap: var(--ui-space-sm); margin: 0; padding: 0; list-style: none; }

@@ -17,6 +17,8 @@ export interface DemoConfiguredExampleProps {
   /** Render generated utilities inside a real, declarative shadow root. */
   shadow?: boolean
   responsive?: boolean
+  /** The lesson is a container, not the viewport: no browser chrome, and the range is named for what it sizes. */
+  container?: boolean
   motion?: boolean
   widthPresets?: readonly { label: string; width: number }[]
 }
@@ -25,7 +27,7 @@ export interface DemoConfiguredExampleProps {
  * One tray: the preview, its CSS and markup, and the closed generated stylesheet share the same literal source.
  * The CSS is beautified: MDX strips up to two spaces from each line of a multi-line attribute literal.
  */
-export default function DemoConfiguredExample({ name, title, source, html, caption, theme, code = true, shadow = false, responsive, motion, widthPresets }: DemoConfiguredExampleProps) {
+export default function DemoConfiguredExample({ name, title, source, html, caption, theme, code = true, shadow = false, responsive, container = false, motion, widthPresets }: DemoConfiguredExampleProps) {
   const section = { page: 'project-styles', id: name, title, html: [html], css: source, classes: [], classLists: [], highlighted: [] }
   const generated = configuredExampleCSS(source, configuredMarkupClasses(html))
   const preview = shadow ? `<div data-demo-shadow><template shadowrootmode="open"><style>${generated.replaceAll('</style', '<\\/style')}</style>${html}</template></div>` : html
@@ -36,6 +38,6 @@ export default function DemoConfiguredExample({ name, title, source, html, capti
       : <Code lang="html" beautify>{html}</Code>}
     <DemoGeneratedCSS><Code lang="css" beautify>{generated}</Code></DemoGeneratedCSS>
   </>}>
-    <DemoViewport title={title} document={document} theme={theme} responsive={responsive} widthPresets={widthPresets} motion={motion} sizing="content" />
+    <DemoViewport title={title} document={document} theme={theme} responsive={responsive} chrome={container ? false : undefined} rangeLabel={container ? 'Container' : undefined} widthPresets={widthPresets} motion={motion} sizing="content" />
   </Demo>
 }

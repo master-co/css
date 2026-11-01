@@ -10,7 +10,7 @@ export default function RecipeSheetView({ sheet }: { sheet: RecipeSheet }) {
     <SheetClassTable rows={sheet.syntax} more={sheet.more} moreLabel={`${sheet.more.length} more functions`} width={keyWidth(sheet.syntax.map(row => row.syntax))} />
     {sheet.note && <SheetNote>{sheet.note}</SheetNote>}
 
-    <SheetHeading id="examples">Example</SheetHeading>
+    <SheetHeading id="examples">Usage</SheetHeading>
     <SheetExampleBlock example={sheet.usage} caption={sheet.caption} />
 
     <SheetHeading id="customize">Customize</SheetHeading>

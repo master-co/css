@@ -24,7 +24,7 @@ export default function DemoWaterfall({ title, description, rows, marker, captio
   if (marker && (!Number.isFinite(marker.position) || marker.position < 0 || marker.position > 100)) throw new Error('Invalid waterfall marker')
   return <Demo title={title} description={description} caption={caption} padding="sm" aria-label={title}>
     <div className="w-full ui-waterfall">
-      <div className="ui-waterfall-axis" aria-hidden="true"><span /><div className="relative"><span>Earlier</span>{marker && <span className="absolute font-semibold fg-text-strong (translate:-50%)" style={{ left: `${marker.position}%` }}>{marker.label}</span>}<span>Later</span></div></div>
+      <div className="ui-waterfall-axis" aria-hidden="true"><span /><div className="relative"><span>Earlier</span>{marker && <span className="absolute font-medium fg-text-strong (translate:-50%)" style={{ left: `${marker.position}%` }}>{marker.label}</span>}<span>Later</span></div></div>
       {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve WebKit list semantics without list markers. */}
       <ul role="list" className="grid gap-2xs m(0) p(0) (list-style:none)">
         {rows.map(({ label, start, end, tone = 'blue' }) => {

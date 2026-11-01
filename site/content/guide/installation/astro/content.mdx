@@ -20,8 +20,7 @@ Generate a stylesheet for an Astro site from complete class names in its sources
     ### Start using Master CSS
     Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
   </Step>
-  <HelloWorld />
-</StepSection>
+  <HelloWorld>
 
 ```astro name=src/pages/index.astro
 ---
@@ -40,6 +39,9 @@ import '../styles/global.css'
   </body>
 </html>
 ```
+
+  </HelloWorld>
+</StepSection>
 
 Keep the entry in a standalone CSS file. [Importing CSS from Astro frontmatter](https://docs.astro.build/en/guides/imports/#import-statements) attaches the processed stylesheet to the page. The installer creates:
 

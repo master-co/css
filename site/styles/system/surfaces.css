@@ -20,10 +20,11 @@
   .ui-tray > .ui-callout { margin-top: var(--ui-inset); border-radius: var(--ui-radius-xl); }
   .ui-tray > .ui-disclosure > summary { padding-inline: var(--ui-space-sm); }
 
-  /* The stage: a lit, slightly recessed well where the specimen stands */
+  /* The stage: a lit, slightly recessed well where the specimen stands. It holds a small specimen in a modest frame
+     (10rem) and otherwise follows its content, so a single row never floats in an empty well. */
   .ui-stage {
     position: relative; isolation: isolate; container: stage / inline-size; display: grid; place-items: center;
-    min-height: 15rem; padding: 3.25rem 2.5rem; border-radius: var(--ui-radius-xl); overflow: hidden;
+    min-height: 10rem; padding: 3rem 2.5rem; border-radius: var(--ui-radius-xl); overflow: hidden;
     background: var(--ui-stage-light), var(--ui-surface-stage);
     box-shadow: inset 0 0 0 1px var(--ui-line-contour), inset 0 1px 2px light-dark(oklch(18% 0 none / .04), oklch(0% 0 none / .45)), 0 1px 0 var(--ui-lip);
   }
@@ -34,7 +35,7 @@
   .ui-stage[data-background="dots"] { background: radial-gradient(var(--ui-line-divider) .8px, transparent 1.1px) 0 0 / 14px 14px, var(--ui-stage-light), var(--ui-surface-stage); }
   .ui-stage[data-background="hatch"] { background: var(--ui-hatch), var(--ui-surface-stage); }
   .ui-stage[data-background="checkerboard"] { background: conic-gradient(var(--ui-line-hair) 25%, transparent 0 50%, var(--ui-line-hair) 0 75%, transparent 0) 0 0 / 16px 16px, var(--ui-surface-stage); }
-  @media (width < 35rem) { .ui-stage { min-height: 12rem; padding: 2.5rem 1.125rem; } }
+  @media (width < 35rem) { .ui-stage { min-height: 8rem; padding: 2.25rem 1.125rem; } }
 
   /* Inside a tray the stage is told apart by its tone alone: the tray's ring is the example's one edge, so a framed
      subject on the stage (a card, a form, a window) is the only line within it. */
@@ -68,13 +69,21 @@
   .ui-browser-body:has(> .ui-browser-viewport) { min-height: 0; overflow-x: auto; scrollbar-width: thin; }
   .ui-browser-viewport { position: relative; max-width: none; margin-inline: auto; }
   .ui-browser-viewport > iframe { display: block; width: 100%; border: 0; background: transparent; }
-  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-xs) var(--ui-space-sm); background: var(--ui-surface-tray); }
-  .ui-browser-tools > .ui-range { flex: 1 1 6rem; max-width: 12rem; }
+  /* The example's controls: a row on the tray itself, between the stage and the source, aligned with the tray head. No
+     surface of their own, so the stage stays the document and nothing inside it reads as part of the page shown. */
+  .ui-browser-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); padding: var(--ui-space-sm) var(--ui-space-sm) var(--ui-space-xs); }
+  /* One rhythm around the row: 12px to the stage above and to the source below (its 8px plus the tray's 4px inset), or to the first line of
+     a caption; its ends 16px in from the tray's edge, on the tray head's start; every control in it one 32px height. */
+  .ui-tray > :has(> .ui-browser-tools:last-child) + .ui-tray-caption, .ui-tray > .ui-browser-tools + .ui-tray-caption { padding-top: 0; }
+  .ui-browser-tools > .ui-segmented > :is(button, a) { min-height: 1.625rem; }
+  /* The range, its caption and its live reading stay one group, so a phone never parts the width from its slider. */
+  .ui-browser-range { display: flex; flex: 1 1 14rem; align-items: center; gap: var(--ui-space-sm); min-width: 0; }
+  .ui-browser-range > .ui-range { flex: 1 1 6rem; min-width: 4rem; max-width: 12rem; }
   /* The range's caption is a label in the tools' own type, whether or not the specimen parts are loaded. */
-  .ui-browser-tools > label { color: var(--ui-text-muted); @apply --ui-label-type; }
-  .ui-browser-tools > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
+  .ui-browser-range > label { color: var(--ui-text-muted); @apply --ui-label-type; }
+  .ui-browser-tools > output, .ui-browser-range > output { flex: 1 1 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
   /* The live viewport width stays beside the range that sets it. */
-  .ui-browser-tools > .ui-browser-size { flex: none; font-variant-numeric: tabular-nums; }
+  .ui-browser-range > .ui-browser-size { flex: none; font: var(--ui-weight-regular) .75rem/1.5 var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-resize { position: absolute; top: 0; right: 0; bottom: 0; display: grid; place-items: center; width: 1rem; cursor: ew-resize; touch-action: none; }
   .ui-resize::before { content: ""; width: 4px; height: 2.5rem; border-radius: var(--ui-radius-pill); background: var(--ui-line-strong); }
 
@@ -83,7 +92,7 @@
   .ui-scroll:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
 
   /* Expand: a long surface clamps under a canvas fade, with one quiet control to show the rest */
-  .ui-expand { position: relative; }
+  .ui-expand { position: relative; min-width: 0; }
   .ui-expand[data-expanded="false"] > :first-child { max-height: 30rem; overflow: hidden; }
   .ui-expand-control { display: flex; justify-content: center; padding-top: var(--ui-space-sm); }
   .ui-expand[data-expanded="false"] > .ui-expand-control { position: absolute; inset-inline: 0; bottom: 0; padding-top: 6rem; background: linear-gradient(to bottom, transparent, var(--ui-surface-canvas) 72%); }

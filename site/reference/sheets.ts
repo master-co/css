@@ -188,7 +188,7 @@ export function recipeSheet(page: RecipePageEditorial, source: string): RecipeSh
     syntax: rows.filter(row => primary.includes(row.name)).map(row => row.row),
     more: rows.filter(row => !primary.includes(row.name)).map(row => row.row),
     definitions: definitions.join('\n\n'),
-    usage: example('examples', 'Example', page.usage, subject),
+    usage: example('examples', 'Usage', page.usage, subject),
   }
 }
 
@@ -285,7 +285,7 @@ export function recipeSheetMarkdown(sheet: RecipeSheet) {
     '## Classes {#overview}',
     classesMarkdown([...sheet.syntax, ...sheet.more], false),
     sheet.note,
-    '## Example {#examples}',
+    '## Usage {#examples}',
     exampleMarkdown(sheet.usage),
     sheet.caption,
     '## Customize {#customize}',

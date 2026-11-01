@@ -184,7 +184,9 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
           || group.links.some(link => !link || typeof link.href !== 'string' || typeof link.label !== 'string'))) throw new Error('DemoIndex requires literal group titles and labeled links')
         return groups.map(group => `**${group.title}**\n\n${group.links.map(link => `- [${link.label}](${link.href})`).join('\n')}`).join('\n\n')
       }
-      if (/^(Demo|DemoPanel|Image|InteractingIndicator|Dropped|Icon\w+)/.test(name) || name === 'HelloWorld') return ''
+      // The setup result is visual only; the source it wraps stays in the export.
+      if (name === 'HelloWorld') return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
+      if (/^(Demo|DemoPanel|Image|InteractingIndicator|Dropped|Icon\w+)/.test(name)) return ''
       if (name === 'DocumentChoices') {
         const entries = await expression(attrs.entries.value) as { title: string, href: string, description: string }[]
         if (!Array.isArray(entries) || entries.some(entry => !['title', 'href', 'description'].every(key => typeof entry[key as keyof typeof entry] === 'string'))) throw new Error('DocumentChoices requires literal titles, links and descriptions')

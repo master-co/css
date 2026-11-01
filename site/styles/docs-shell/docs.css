@@ -40,11 +40,12 @@
   /* Where the rail shows, a page with contents gives it the wide column's room. */
   @media (width >= 80rem) { .ui-docs-article[data-aside] { max-width: calc(var(--docs-text) + var(--docs-gutter) * 2); } }
 
-  /* The page head (`ui-pagehead`): an integration's mark beside the title; on a phone it leads, smaller. */
+  /* The page head (`ui-pagehead`): an integration's mark beside the title, about a title and a half tall so it never
+     squeezes the heading; on a phone it leads, smaller. */
   .ui-pagehead-title { display: flex; align-items: center; gap: var(--ui-space-lg); }
   .ui-pagehead-title > h1 { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .ui-pagehead-title > h1:lang(zh) { letter-spacing: 0; }
-  .ui-pagehead-icon { display: grid; flex: none; place-content: center; width: clamp(4.5rem, 7vw, 5rem); height: clamp(4.5rem, 7vw, 5rem); }
+  .ui-pagehead-icon { display: grid; flex: none; place-content: center; width: 3.5rem; height: 3.5rem; }
   @media (width < 37.5rem) { .ui-pagehead-title { flex-direction: column-reverse; align-items: start; gap: var(--ui-space-md); } .ui-pagehead-icon { width: 3rem; height: 3rem; } }
   .ui-pagehead-unfinished { margin-left: .5em; font-size: .5em; vertical-align: top; }
   a.ui-pagehead-kicker { display: inline-flex; align-items: center; gap: var(--ui-space-3xs); width: fit-content; text-decoration: none; transition: color var(--ui-duration-quick); }

@@ -22,6 +22,10 @@
 
   .brand-gold { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--ui-space-sm); width: 100%; }
   .brand-gold [data-signal] { background: var(--color-amber-40); }
+  /* On the stage a swatch is its paint and its caption: no sheet of its own, so the tray's ring stays the only frame. */
+  .brand-gold > .ui-swatch { gap: var(--ui-space-sm); padding: 0; background: none; box-shadow: none; }
+  .brand-gold > .ui-swatch > .ui-swatch-paint { height: 5rem; border-radius: var(--ui-radius-lg); }
+  .brand-gold > .ui-swatch > figcaption { padding: 0; }
 
   /* Downloads hang like trays: one row per artwork, one column per background. */
   .brand-downloads { display: grid; gap: var(--ui-space-md); margin: var(--line) calc(var(--bleed) * -1); }

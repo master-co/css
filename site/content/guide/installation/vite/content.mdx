@@ -20,8 +20,7 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
     ### Start using Master CSS
     Start the dev server and replace the contents of `src/main.js` with the example below. Keep the CSS import so Vite loads the stylesheet updated by the installer.
   </Step>
-  <HelloWorld />
-</StepSection>
+  <HelloWorld>
 
 ```js name=src/main.js
 import './style.css'
@@ -32,6 +31,9 @@ document.querySelector('#app').innerHTML = `
   </h1>
 `
 ```
+
+  </HelloWorld>
+</StepSection>
 
 ## Framework entries \{#frameworks\}
 Each `--framework` value keeps the framework's Vite plugin and updates the CSS entry its starter already imports. Without the flag, the installer detects the framework from the project.

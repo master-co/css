@@ -220,7 +220,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `md:grid-cols-3` | `grid-cols(3)@tailwind-md` | Preserve the original threshold with an explicit condition; the two presets use different `md` values. |
 | `dark:bg-slate-950` | `bg-slate-95@apply(--manual-dark)` | Output follows the explicit `--manual-dark` selector mixin. |
 | `motion-safe:animate-spin` | `animate-rotate@motion-safe` | The preset rotation is 1s, linear and infinite; `@motion-safe` respects reduced motion. |
-| `supports-[backdrop-filter]:...` | `(backdrop-filter:blur(12px))@supports(backdrop-filter:blur(0px))` | Use raw `@supports()` for local conditions. |
+| `supports-[display:grid]:grid` | `grid@supports(display:grid)` | Use raw `@supports()` for local conditions. |
 | `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |
 | `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
 

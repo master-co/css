@@ -19,7 +19,8 @@
   input[type='checkbox'], input[type='radio'] { width: 16px; height: 16px; }
   a { color: var(--ui-tone-blue); }
   :focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
-  [data-ui='label'] { margin-bottom: 10px; color: var(--ui-text-muted); font: 10px/1.6 'IBM Plex Mono', monospace; overflow-wrap: anywhere; }
+  /* Captions and readings inside a specimen are small sans with tabular figures, like every caption in the system. */
+  [data-ui='label'] { margin-bottom: 10px; color: var(--ui-text-muted); font: 400 12px/1.6 var(--font-family-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   [data-ui='tile'], [data-ui='inline'] {
     --sample-tone: var(--ui-tone-blue);
     padding: 12px; border: 1px solid color-mix(in srgb, var(--sample-tone) 40%, transparent); border-radius: 4px;
@@ -40,7 +41,7 @@
   [data-ui='type-example'][data-tone='violet'] { --type-tone: var(--ui-tone-violet); }
   [data-ui='type-surface'] { padding: 16px; border: 1px solid var(--ui-line-divider); border-radius: 4px; background: var(--ui-surface-sheet); }
   :where([data-ui='type-target']:not([data-appearance='plain'])) { outline: 1px solid color-mix(in srgb,var(--type-tone) 24%,transparent); background: color-mix(in srgb,var(--type-tone) 5%,transparent); }
-  [data-ui='type-readings'] { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; color: var(--ui-text-muted); font: 10px/1.6 'IBM Plex Mono', monospace; overflow-wrap: anywhere; }
+  [data-ui='type-readings'] { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; color: var(--ui-text-muted); font: 400 12px/1.6 var(--font-family-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   [data-ui='type-readings'] > span { min-width: 0; }
 
   [data-ui='flex'] { display: flex; gap: 12px; min-height: 160px; border: 1px dashed var(--ui-line-divider); padding: 12px; }
@@ -55,7 +56,7 @@
   }
   [data-ui='flex-cell'] { background: color-mix(in srgb, var(--sample-tone) 10%, var(--ui-surface-sheet)); }
   [data-ui='layout-example'] + [data-ui='layout-example'] { margin-top: 24px; }
-  [data-ui='layout-readings'] { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; color: var(--ui-text-muted); font: 10px/1.6 'IBM Plex Mono', monospace; }
+  [data-ui='layout-readings'] { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; color: var(--ui-text-muted); font: 400 12px/1.6 var(--font-family-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; }
   [data-ui='float-context'] { display: flow-root; width: 100%; min-height: 200px; }
   [data-ui='float-image'] { width: 128px; height: 90px; margin-bottom: 12px; border-radius: 4px; }
   [data-ui='float-quote'] { width: 128px; margin-bottom: 12px; border-inline-start: 2px solid var(--ui-tone-violet); padding: 12px; background: var(--ui-surface-sheet); }
@@ -102,13 +103,13 @@
   [data-ui='scroll-panel'][data-target] { border-color: var(--ui-tone-blue); background: color-mix(in srgb,var(--ui-tone-blue) 10%,var(--ui-surface-sheet)); }
   [data-ui='scroll-header'] { padding: 12px 16px; border-bottom: 1px solid var(--ui-tone-blue); background: var(--ui-surface-sheet); color: var(--ui-tone-blue); }
   [data-ui='scroll-actions'] a { padding: 8px 12px; border: 1px solid var(--ui-line-divider); border-radius: 4px; background: var(--ui-surface-sheet); text-decoration: none; }
-  [data-ui='scroll-readings'] { display: flex; flex-wrap: wrap; gap: 8px 20px; padding-block: 12px; font: 10px/1.6 'IBM Plex Mono',monospace; color: var(--ui-text-muted); }
+  [data-ui='scroll-readings'] { display: flex; flex-wrap: wrap; gap: 8px 20px; padding-block: 12px; font: 400 12px/1.6 var(--font-family-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: var(--ui-text-muted); }
   [data-ui='scroll-readings'] output { color: var(--ui-text-body); }
   [data-scenario='nested-scrolling'] { grid-template-columns: repeat(auto-fit,minmax(min(100%,200px),1fr)); }
   :where([data-ui='nested-inner']) { outline: 1px solid var(--ui-tone-blue); border-radius: 3px; }
   [data-ui='nested-content'] { display: flex; flex-direction: column; justify-content: space-between; padding: 12px; background: color-mix(in srgb,var(--ui-tone-violet) 8%,var(--ui-surface-sheet)); }
   [data-ui='nested-inner'] > [data-ui='nested-content'] { background: color-mix(in srgb,var(--ui-tone-blue) 10%,var(--ui-surface-sheet)); }
-  [data-ui='nested-content'] > span { align-self: end; font: 10px/1.6 'IBM Plex Mono',monospace; color: var(--ui-text-muted); }
+  [data-ui='nested-content'] > span { align-self: end; font: 400 12px/1.6 var(--font-family-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: var(--ui-text-muted); }
   html[data-demo-paused] * { animation-play-state: paused !important; }
   @media (prefers-reduced-motion: reduce) {
     html:not([data-motion-allowed]) *, html:not([data-motion-allowed]) ::before, html:not([data-motion-allowed]) ::after { animation-play-state: paused !important; transition-duration: 0s !important; scroll-behavior: auto !important; }

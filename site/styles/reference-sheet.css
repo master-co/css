@@ -13,12 +13,14 @@
     /* On phones a property may break after a hyphen and a long value anywhere. */
     .ref-table :is(.ref-property, .ref-declaration-value) { white-space: normal; }
     .ref-table .ref-declaration-value { overflow-wrap: anywhere; }
+    .ref-table.ui-table tbody th code { white-space: normal; overflow-wrap: anywhere; }
   }
   .ref-table var { color: var(--ui-text-muted); font-style: italic; }
-  /* Both tables read as one typographic grid: plain mono, the class in strong ink. */
-  .ref-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; font-size: .8125rem; line-height: 1.6; }
-  .ref-table tbody th code { color: var(--ui-text-strong); white-space: nowrap; }
-  .ref-table td code { color: var(--ui-text-body); font-size: .75rem; white-space: normal; overflow-wrap: anywhere; }
+  /* Both tables read as one typographic grid: plain mono, the class in strong ink. The doubled class outranks the
+     shared table's chips. */
+  .ref-table.ui-table :is(td, tbody th) code { padding: 0; border-radius: 0; background: none; box-shadow: none; font-size: .8125rem; line-height: 1.6; }
+  .ref-table.ui-table tbody th code { color: var(--ui-text-strong); white-space: nowrap; }
+  .ref-table.ui-table td code { color: var(--ui-text-body); font-size: .75rem; white-space: normal; overflow-wrap: anywhere; }
   .ref-table tbody th a:hover code { text-decoration: underline; text-decoration-color: var(--ui-line-mark); text-underline-offset: .2em; }
   .ref-table tbody th a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; border-radius: var(--ui-radius-xs); }
 

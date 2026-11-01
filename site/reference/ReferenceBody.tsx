@@ -33,7 +33,10 @@ export default function ReferenceMarkdown({ tree, headings }: Pick<ReferenceRend
       case 'strong': return <strong key={key}>{body}</strong>
       case 'emphasis': return <em key={key}>{body}</em>
       case 'delete': return <del key={key}>{body}</del>
-      case 'inlineCode': return <code key={key}>{node.value}</code>
+      // A long path may break after a slash, so a table column of import paths leaves its neighbour a readable measure.
+      case 'inlineCode': return <code key={key}>{node.value.length > 24 && node.value.includes('/')
+        ? node.value.split(/(?<=\/)/).map((part: string, index: number) => <Fragment key={index}>{index ? <wbr /> : null}{part}</Fragment>)
+        : node.value}</code>
       case 'code': {
         if (node.lang === 'typescript' && node.meta === 'declaration') return <DocumentDeclarationView key={key} source={node.value}><CodeView {...referenceCodeProps(node)} prepared={node.data.prepared} /></DocumentDeclarationView>
         const disclosure = node.meta?.match(/\bdisclosure=(input-schema|output-schema|command-help)\b/)?.[1] as 'input-schema' | 'output-schema' | 'command-help' | undefined

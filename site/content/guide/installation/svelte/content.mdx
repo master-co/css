@@ -20,14 +20,16 @@ Add Master CSS to a SvelteKit application. The add-on registers the Vite integra
     ### Start using Master CSS
     Start the dev server and replace `src/routes/+page.svelte` with this heading. Keep the stylesheet import added to `src/routes/+layout.svelte`.
   </Step>
-  <HelloWorld />
-</StepSection>
+  <HelloWorld>
 
 ```svelte name=src/routes/%2Bpage.svelte
 <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
+
+  </HelloWorld>
+</StepSection>
 
 ## Check the static setup
 Run the project's build and preview scripts. With server rendering enabled, the heading should keep its large, heavy italic styling when JavaScript is disabled. If styles are missing, check the Master CSS plugin in `vite.config.ts` and the CSS import in the root layout.

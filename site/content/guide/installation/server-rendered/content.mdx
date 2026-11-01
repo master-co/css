@@ -82,14 +82,16 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
     ### Load the stylesheet
     Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the heading to a rendered template.
   </Step>
-  <HelloWorld />
-</StepSection>
+  <HelloWorld>
 
 ```html
 <h1 class="m-2xl italic font-5xl font-heavy fg-text-neutral">
   Hello World
 </h1>
 ```
+
+  </HelloWorld>
+</StepSection>
 
 Deploy `master.css` and every CSS file it imports together, preserving their names and relative paths. The heading should stay large, heavy and italic with JavaScript disabled. If the stylesheet loads but the classes have no effect, check the `@source` paths, which are relative to `src/master.css`, and rebuild. Static rendering needs complete class strings in those files: map states or database and editor values to complete class names, or add bounded candidates with [`@safelist`](/reference/directives/scanning#safelist).
 

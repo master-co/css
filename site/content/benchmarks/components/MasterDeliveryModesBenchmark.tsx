@@ -112,12 +112,12 @@ const responseSegments = [
   {
     id: 'runtimeJS',
     label: 'Runtime JS',
-    color: 'green'
+    color: 'violet'
   },
   {
     id: 'manifestJSON',
     label: 'Manifest JSON',
-    color: 'red'
+    color: 'yellow'
   }
 ] satisfies { id: keyof DeliveryModeResult['payload']; label: string; color: BenchmarkColor }[]
 const loadMetricLabels: Record<TimingMetricId, string> = {

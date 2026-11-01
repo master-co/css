@@ -1,11 +1,11 @@
 import DemoThemeComparison from './DemoThemeComparison'
 
 export function FoundationColorRoles() {
-  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={"<article id=\"color-role\" class=\"p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Project updates</h2>\n<p class=\"mt-xs mb-md fg-text-muted\">Three milestones changed this week.</p>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/guide/colors#choose-a-color-token\" target=\"_top\">Explore color roles</a>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"color-role\" data-style-property=\"color\"></p>\n</article>"} caption="Both documents use identical classes. The active mode supplies the surface, line and text values." />
+  return <DemoThemeComparison name="color-roles" title="One composition, two modes" html={"<article id=\"color-role\" class=\"p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-medium fg-text-strong\">Project updates</h2>\n<p class=\"mt-xs mb-md fg-text-muted\">Three milestones changed this week.</p>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/guide/colors#choose-a-color-token\" target=\"_top\">Explore color roles</a>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"color-role\" data-style-property=\"color\"></p>\n</article>"} caption="Both documents use identical classes. The active mode supplies the surface, line and text values." />
 }
 
 export function FoundationSurfaces() {
-  return <DemoThemeComparison name="surfaces" title="Surface hierarchy" html={"<section class=\"p-md r-lg bg-surface-inset\">\n<p class=\"mb-sm font-mono font-xs fg-text-muted\">bg-surface-inset</p>\n<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n<h2 class=\"m(0) text-md font-semibold fg-text-strong\">Collection settings</h2>\n<p class=\"mt-xs mb(0) fg-text-muted\">A raised panel on a subdued section.</p>\n</article></section>"} caption="Color separates these surfaces. This example adds no shadow." />
+  return <DemoThemeComparison name="surfaces" title="Surface hierarchy" html={"<section class=\"p-md r-lg bg-surface-inset\">\n<p class=\"mb-sm font-mono font-xs fg-text-muted\">bg-surface-inset</p>\n<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n<h2 class=\"m(0) text-md font-medium fg-text-strong\">Collection settings</h2>\n<p class=\"mt-xs mb(0) fg-text-muted\">A raised panel on a subdued section.</p>\n</article></section>"} caption="Color separates these surfaces. This example adds no shadow." />
 }
 
 export function FoundationLines() {
@@ -13,7 +13,7 @@ export function FoundationLines() {
 }
 
 export function FoundationTextRoles() {
-  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={"<article class=\"grid gap-sm p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Quarterly report</h2>\n<p class=\"m(0)\">The current cycle is on track.</p>\n<p class=\"m(0) text-sm fg-text-muted\">Updated 12 minutes ago</p>\n<button type=\"button\" class=\"fg-text-disabled (cursor:not-allowed)\" disabled>Archive unavailable</button>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/reference/tokens/color-roles#color-text\" target=\"_top\">Explore text roles</a>\n<span class=\"w-fit px-sm py-2xs r-sm bg-surface-inverse fg-text-inverse\">Private note</span>\n</article>"} caption="The archive action is natively disabled. Inverse text is paired with its inverse surface." />
+  return <DemoThemeComparison name="text-roles" title="Readable hierarchy" html={"<article class=\"grid gap-sm p-md r-lg b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n<h2 class=\"m(0) text-lg font-medium fg-text-strong\">Quarterly report</h2>\n<p class=\"m(0)\">The current cycle is on track.</p>\n<p class=\"m(0) text-sm fg-text-muted\">Updated 12 minutes ago</p>\n<button type=\"button\" class=\"fg-text-disabled (cursor:not-allowed)\" disabled>Archive unavailable</button>\n<a class=\"fg-text-link fg-text-link-hover:hover underline\" href=\"/reference/tokens/color-roles#color-text\" target=\"_top\">Explore text roles</a>\n<span class=\"w-fit px-sm py-2xs r-sm bg-surface-inverse fg-text-inverse\">Private note</span>\n</article>"} caption="The archive action is natively disabled. Inverse text is paired with its inverse surface." />
 }
 
 export function FoundationHue() {
@@ -21,11 +21,11 @@ export function FoundationHue() {
 }
 
 export function FoundationTextHue() {
-  return <DemoThemeComparison name="text-hue" title="Foreground color by role" html={"<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n<p class=\"m(0) text-sm font-medium fg-text-blue\">Editorial notes</p>\n<h2 class=\"mt-xs mb-sm text-xl font-semibold fg-text-strong\">A clearer perspective</h2>\n<p class=\"m(0) fg-text-body\">Use a colored label alongside a clear heading and readable body copy.</p>\n</article>"} caption="fg-text-blue uses the foreground-oriented alias. Check the actual foreground and surface together." />
+  return <DemoThemeComparison name="text-hue" title="Foreground color by role" html={"<article class=\"p-md r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n<p class=\"m(0) text-sm font-medium fg-text-blue\">Editorial notes</p>\n<h2 class=\"mt-xs mb-sm text-xl font-medium fg-text-strong\">A clearer perspective</h2>\n<p class=\"m(0) fg-text-body\">Use a colored label alongside a clear heading and readable body copy.</p>\n</article>"} caption="fg-text-blue uses the foreground-oriented alias. Check the actual foreground and surface together." />
 }
 
 export function FoundationElevation() {
-  return <DemoThemeComparison name="elevation" title="Quiet separation" html={"<article id=\"shadow-role\" class=\"m-sm p-md r-lg bg-surface-raised shadow-sm\">\n<h2 class=\"m(0) text-lg font-semibold fg-text-strong\">Collection notes</h2>\n<p class=\"mt-xs mb(0) fg-text-muted\">A raised surface with a small, consistent shadow.</p>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"shadow-role\" data-style-property=\"box-shadow\"></p>\n</article>"} caption="shadow-sm uses the same offsets across these modes, with different edge and shadow colors." />
+  return <DemoThemeComparison name="elevation" title="Quiet separation" html={"<article id=\"shadow-role\" class=\"m-sm p-md r-lg bg-surface-raised shadow-sm\">\n<h2 class=\"m(0) text-lg font-medium fg-text-strong\">Collection notes</h2>\n<p class=\"mt-xs mb(0) fg-text-muted\">A raised surface with a small, consistent shadow.</p>\n<p class=\"mt-sm mb(0) font-xs wrap-anywhere\" data-style-readout=\"shadow-role\" data-style-property=\"box-shadow\"></p>\n</article>"} caption="shadow-sm uses the same offsets across these modes, with different edge and shadow colors." />
 }
 
 export function FoundationElevationState() {

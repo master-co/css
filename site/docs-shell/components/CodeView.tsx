@@ -31,7 +31,7 @@ export declare interface CodeProp {
 export default function CodeView(props: CodeProp & HTMLAttributes<HTMLDivElement> & { code: ReactNode }) {
   const { lang, className, name, tabbarClassName, copyable = true, number, code } = props
   return (
-    <div className={clsx('ui-code', className)} data-numbers={number ? '' : undefined}>
+    <div className={clsx('ui-code', className)} data-lang={lang} data-numbers={number ? '' : undefined}>
       {name && <CodeTabBar tabs={[{ name, lang, ext: props.ext }]} currentName={name} className={tabbarClassName} copyable={copyable} />}
       {!name && copyable && <CodeCopyButton />}
       {code}

@@ -20,7 +20,7 @@ export const projectStyleExamples = {
   tokens: {
     title: 'A small project vocabulary',
     source: `@theme {\n${projectTokenDefinitions.map(token => `  ${token.name}: ${token.value};`).join('\n')}\n}\n`,
-    html: "<article class=\"p-card r-card b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"m(0) font-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-semibold fg-text-strong\">Room for the details</h2>\n  <p class=\"m(0) text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
+    html: "<article class=\"p-card r-card b(1) b-solid b-line-divider bg-surface-raised fg-text-body\">\n  <p class=\"m(0) font-mono text-xs fg-brand\">FIELD NOTES / 024</p>\n  <h2 class=\"mt-sm mb-xs text-xl font-medium fg-text-strong\">Room for the details</h2>\n  <p class=\"m(0) text-sm\">Color, spacing and radius come from three shared project tokens.</p>\n</article>",
     caption: 'p-card reads spacing, r-card reads radius, and fg-brand reads color. Each class retains a reference to its theme variable.',
     guide: '/guide/theme',
   },
@@ -30,7 +30,7 @@ export const projectStyleExamples = {
   --spacing-card: 1.5rem;
 }
 `,
-    html: "<div class=\"grid gap-md\">\n  <article class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n    <h2 class=\"m(0) text-lg font-semibold\">Collection</h2>\n    <p class=\"mt-xs mb(0) text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
+    html: "<div class=\"grid gap-md\">\n  <article class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised\">\n    <h2 class=\"m(0) text-lg font-medium\">Collection</h2>\n    <p class=\"mt-xs mb(0) text-sm fg-text-muted\">The article uses p-card.</p>\n  </article>\n  <aside class=\"p-card r-sm b(1) b-solid b-line-divider bg-surface-raised text-sm\">\n    The note uses the same p-card class.\n  </aside>\n</div>",
     caption: 'Both elements have 1.5rem of padding. A change to --spacing-card applies to both consumers.',
     guide: '/guide/theme',
   },
@@ -53,7 +53,7 @@ export const projectStyleExamples = {
   --color-text-card: var(--color-zinc-20);
 }
 `,
-    html: "<article class=\"p-lg r-lg b(1) b-solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"m(0) text-lg font-semibold\">Collection details</h2>\n  <p class=\"mt-sm mb(0) text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
+    html: "<article class=\"p-lg r-lg b(1) b-solid b-line-divider bg-surface-card fg-text-card\">\n  <h2 class=\"m(0) text-lg font-medium\">Collection details</h2>\n  <p class=\"mt-sm mb(0) text-sm\">The class list stays the same when the active mode changes.</p>\n</article>",
     caption: 'Theme switches the preview document’s light/dark class. The browser resolves the actual generated custom properties.',
     guide: '/guide/colors#native-color-scheme-and-manual-themes',
     theme: true,
@@ -100,7 +100,7 @@ export const projectStyleExamples = {
     color: var(--color-text-body);
   }
 }`,
-    html: "<div class=\"grid gap-md\">\n  <article class=\"card\">\n    <h2 class=\"m(0) text-lg font-semibold\">Standard card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">card sets 1.5rem of padding.</p>\n  </article>\n  <article class=\"card p-sm\">\n    <h2 class=\"m(0) text-lg font-semibold\">Compact card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">p-sm changes this instance to .75rem.</p>\n  </article>\n</div>",
+    html: "<div class=\"grid gap-md\">\n  <article class=\"card\">\n    <h2 class=\"m(0) text-lg font-medium\">Standard card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">card sets 1.5rem of padding.</p>\n  </article>\n  <article class=\"card p-sm\">\n    <h2 class=\"m(0) text-lg font-medium\">Compact card</h2>\n    <p class=\"mt-xs mb(0) text-sm\">p-sm changes this instance to .75rem.</p>\n  </article>\n</div>",
     caption: 'The same component is used twice. With the base layer order loaded, the normal padding utility wins in the second card.',
     guide: '/guide/cascade-layers',
   },

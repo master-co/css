@@ -1,5 +1,6 @@
 import '~/site/styles/system/specimens.css'
 import '~/site/styles/system/data.css'
+import '~/site/styles/documentation-index.css'
 import { IconArrowUpRight } from '@tabler/icons-react'
 import Code from '~/site/docs-shell/components/Code'
 import CodeTabs from '~/site/docs-shell/components/CodeTabs'
@@ -57,11 +58,11 @@ export function Materials() {
         </div>)}
       </div>
     </Demo>
-    <Demo title="Concentric radii" description="4 · 6 · 10 · 14 · 18 · 24, nested by a 6px inset" caption={<Translate>A tray of 24 holds a stage, code window or sheet of 18 at a 6px inset; a track of 12 holds a thumb of 9.</Translate>}>
+    <Demo title="Concentric radii" description="3 · 4 · 6 · 8 · 10 · 14, nested by a 4px inset" caption={<Translate>A tray of 14 holds a stage, code window or sheet of 10 at a 4px inset; a menu of 8 holds items of 4.</Translate>}>
       <div className="w-full (max-width:22rem)" style={{ padding: 'var(--ui-inset)', borderRadius: 'var(--ui-radius-2xl)', background: 'var(--ui-surface-tray)', boxShadow: 'inset 0 0 0 1px var(--ui-line-hair)' }}>
         <DemoSurface elevation="raised" className="grid gap-sm p-lg" style={{ borderRadius: 'var(--ui-radius-xl)' }}>
-          <DemoLabel>Tray 24 → sheet 18</DemoLabel>
-          <div className="flex gap-xs">{[4, 6, 10, 14].map(radius => <DemoItem key={radius} className="min-w(0) p(0) font-xs" style={{ width: '3rem', height: '3rem', borderRadius: radius }}>{radius}</DemoItem>)}</div>
+          <DemoLabel>Tray 14 → sheet 10</DemoLabel>
+          <div className="flex gap-xs">{[3, 4, 6, 8].map(radius => <DemoItem key={radius} className="min-w(0) p(0) font-xs" style={{ width: '3rem', height: '3rem', borderRadius: radius }}>{radius}</DemoItem>)}</div>
         </DemoSurface>
       </div>
     </Demo>
@@ -92,13 +93,17 @@ export function DocumentPatterns() {
   </div>
 }
 
+/** The component pages as a book's contents, like the Guide and Reference overviews: ruled spreads, not a wall of cards. */
 export function ComponentCatalog() {
-  return <div className="ui-handbook-section">
-    {componentGroups.map(group => <section className="grid gap-sm" id={group.id} key={group.title} aria-labelledby={`${group.id}-title`}>
-      <h3 id={`${group.id}-title`} className="m(0) font-md font-semibold fg-text-strong"><Translate>{group.title}</Translate></h3>
-      <nav className="ui-index" aria-label={group.title}>{group.entries.map(entry => <Link key={entry.slug} id={entry.id} href={`/design-system/review/${entry.slug}`}>
+  return <div className="documentation-index">
+    {componentGroups.map((group, index) => <section className="documentation-index-section" id={group.id} key={group.title} aria-labelledby={`${group.id}-title`}>
+      <header>
+        <small>{String(index + 1).padStart(2, '0')}</small>
+        <h3 id={`${group.id}-title`}><Translate>{group.title}</Translate> <span className="documentation-index-count">{group.entries.length}</span></h3>
+      </header>
+      <ul className="documentation-index-links" data-described="">{group.entries.map(entry => <li key={entry.slug}><Link id={entry.id} href={`/design-system/review/${entry.slug}`}>
         <b><Translate>{entry.title}</Translate></b><span><Translate>{entry.description}</Translate></span>
-      </Link>)}</nav>
+      </Link></li>)}</ul>
     </section>)}
   </div>
 }

@@ -30,6 +30,7 @@ export default function CodeTabsView(props: { children: CodeTab[], tabbarClassNa
           id={`${idPrefix}-panel-${index}`}
           aria-labelledby={`${idPrefix}-tab-${index}`}
           data-code-tabs-panel-name={tab.name}
+          data-lang={tab.lang}
           hidden={index !== 0}
           key={tab.name}
         >

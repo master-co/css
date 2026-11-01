@@ -25,7 +25,7 @@ Use `padding="none"` when the child owns its own spacing. The stage centers its 
 
 **Interface:** `elevation="flat" | "raised"`, native div props
 
-A `ui-sheet` with the 18px radius; no implicit layout, padding or clipping. Explicit radius utilities can override it. The raised option uses the rise-1 elevation.
+A `ui-sheet` with the 10px radius; no implicit layout, padding or clipping. Explicit radius utilities can override it. The raised option uses the rise-1 elevation.
 
 </DocumentOptionEntry>
 
@@ -167,7 +167,7 @@ A trusted site example page in a real, scrollable viewport.
 
 ### Fit the layers \{#fitted-surfaces\}
 
-Radii nest by the 6px tray inset: a 24px tray holds an 18px stage, code window or sheet; a 12px segmented track holds a 9px selected segment. Elevation follows one order, sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay, and every layer uses the `--ui-elevation-*` role instead of a hand-written shadow. A well sits below its surroundings with `--ui-elevation-sink`.
+Radii nest by the 4px tray inset: a 14px tray holds a 10px stage, code window or sheet; an 8px menu holds 4px items. Elevation follows one order, sink < flat < rise-1 < rise-1h < rise-2 < rise-3 < overlay, and every layer uses the `--ui-elevation-*` role instead of a hand-written shadow. A well sits below its surroundings with `--ui-elevation-sink`.
 
 Keep a control's box, icon slot and label start steady through selection, pressing and copy feedback. Hover lifts half a pixel; pressing sinks into the well. Allow controls and their labels to wrap when text grows, and keep keyboard focus visible.
 

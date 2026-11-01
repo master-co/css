@@ -31,8 +31,7 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
     ### Start using Master CSS
     Start the dev server and place the heading in the HTML template processed by the HTML plugin, or in a framework component.
   </Step>
-  <HelloWorld />
-</StepSection>
+  <HelloWorld>
 
 ```html name=index.html
 <!doctype html>
@@ -49,6 +48,9 @@ Webpack, Rspack and Rsbuild use the same `@master/css-webpack` plugin. It proces
   </body>
 </html>
 ```
+
+  </HelloWorld>
+</StepSection>
 
 ## Bundler configuration \{#configuration\}
 The installer writes the Master CSS part of the configuration. Merge it with the existing configuration, preserving framework plugins, entry points and HTML generation, and register the plugin only once.

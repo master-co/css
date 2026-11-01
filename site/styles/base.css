@@ -6,6 +6,10 @@
 }
 
 @layer base {
+  /* The canvas belongs to the document itself, so a page that loads no documents boundary (the Blog index, the 404)
+     never shows the browser's white below its own sections. */
+  html { background: var(--ui-surface-canvas); }
+
   html[lang="en"] {
     body {
       font-weight: 350;

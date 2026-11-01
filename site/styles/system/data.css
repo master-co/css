@@ -10,9 +10,15 @@
   .ui-table tbody tr { transition: background-color var(--ui-duration-quick); }
   .ui-table tbody tr:hover { background: light-dark(oklch(22% .002 265 / .022), oklch(100% 0 none / .025)); }
   .ui-table tbody tr > :first-child { color: var(--ui-text-strong); }
-  .ui-table :is(td, th)[data-align="end"] { text-align: end; font-variant-numeric: tabular-nums; }
-  /* In a cell code is a fill only: several hairline chips to a cell read as a grid inside the grid. */
-  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: none; font: var(--ui-weight-regular) .8125rem/1 var(--font-family-mono); white-space: nowrap; }
+  .ui-table :is(td, th)[data-align="end"] { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* In a cell code is a fill only: several hairline chips to a cell read as a grid inside the grid. A long value may wrap
+     when the table runs out of room, so the prose column beside it keeps a readable measure. */
+  /* A code name in a column head reads as part of the caption: the head's ink and size in mono, without a chip. */
+  .ui-table thead th code { padding: 0; border-radius: 0; background: none; color: inherit; box-shadow: none; font: inherit; font-family: var(--font-family-mono); font-size: .75rem; letter-spacing: 0; }
+  .ui-table :is(td, tbody th) code { padding: .125em .375em; border-radius: var(--ui-radius-xs); background: var(--ui-surface-chip); color: var(--ui-text-strong); box-shadow: none; font: var(--ui-weight-regular) .8125rem/1.6 var(--font-family-mono); overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  /* The row's key reads whole: the first column's names break only where the text allows (a space, a slash marked
+     with <wbr>), never inside a name. */
+  .ui-table :is(td:first-child, tbody th) code { white-space: normal; overflow-wrap: normal; }
   .ui-table :is(td, tbody th) .ui-preview { display: inline-block; width: 1.25rem; height: 1.25rem; margin-right: var(--ui-space-xs); border-radius: var(--ui-radius-sm); vertical-align: -.3em; box-shadow: inset 0 0 0 1px var(--ui-line-contour); }
   .ui-table[data-density="compact"] :is(th, td) { padding-block: .4375rem; }
   /* Lookup: the key column fits its longest key; values wrap at their spaces */
@@ -88,23 +94,23 @@
   .ui-index[data-density="compact"] > a { gap: 2px; padding: var(--ui-space-sm) var(--ui-space-md); }
 
   /* Logo index: free-standing tiles, a mark over its name, so a short last row leaves canvas rather than empty cells */
-  .ui-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.75rem), 1fr)); gap: var(--ui-space-xs); }
+  .ui-logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.75rem), 1fr)); grid-auto-rows: 1fr; gap: var(--ui-space-xs); }
   .ui-logos > a { display: grid; grid-template-rows: 2rem auto; justify-items: center; align-content: start; gap: .625rem; padding: 1.125rem var(--ui-space-2xs) 1rem; border-radius: var(--ui-radius-xl); background: var(--ui-surface-sheet); color: var(--ui-text-body); box-shadow: inset 0 0 0 1px var(--ui-line-contour), 0 1px 0 var(--ui-lip); font-size: .78125rem; line-height: 1.35; text-align: center; text-wrap: balance; text-decoration: none; transition: box-shadow var(--ui-duration-quick) var(--ui-ease), translate var(--ui-duration-quick) var(--ui-ease), color var(--ui-duration-quick) var(--ui-ease); }
   .ui-logos > a:hover { translate: 0 -.5px; color: var(--ui-text-strong); box-shadow: var(--ui-elevation-rise-1h); }
   .ui-logos > a:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   .ui-logos > a > svg { align-self: center; width: 1.75rem; height: 1.75rem; }
 
-  /* Chart frame: units, series and sample context together */
+  /* Chart frame: units, series and sample context together. Captions and readings are small sans with tabular figures. */
   .ui-chart { display: grid; gap: var(--ui-space-md); padding: var(--ui-space-lg); border-radius: var(--ui-radius-xl); @apply --ui-sheet-face; box-shadow: var(--ui-elevation-rise-1); }
   .ui-chart-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--ui-space-xs) var(--ui-space-md); }
   .ui-chart-head b { color: var(--ui-text-strong); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); }
-  .ui-chart-head small { display: block; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.5 var(--font-family-mono); }
+  .ui-chart-head small { display: block; color: var(--ui-text-muted); font: var(--ui-weight-regular) var(--ui-text-caption)/1.5 var(--font-family-sans); font-variant-numeric: tabular-nums; }
   .ui-chart-row { display: grid; grid-template-columns: minmax(6.5rem, 12rem) minmax(0, 1fr) minmax(4.5rem, auto); align-items: center; gap: var(--ui-space-xs) var(--ui-space-sm); font-size: .8125rem; }
   .ui-chart-row > span:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--ui-space-xs); min-width: 0; color: var(--ui-text-strong); overflow-wrap: anywhere; }
-  .ui-chart-row > span:first-child > small { flex-basis: 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .6875rem/1.4 var(--font-family-mono); }
-  .ui-chart-row > output { color: var(--ui-text-muted); font: var(--ui-weight-medium) .75rem/1 var(--font-family-mono); text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ui-chart-row > span:first-child > small { flex-basis: 100%; color: var(--ui-text-muted); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-sans); font-variant-numeric: tabular-nums; }
+  .ui-chart-row > output { color: var(--ui-text-body); font: var(--ui-weight-regular) .8125rem/1 var(--font-family-sans); text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
   /* A stacked row names its segments under the bar */
-  .ui-chart-row > .ui-legend { grid-column: 2 / -1; gap: 2px var(--ui-space-md); font-size: .6875rem; }
+  .ui-chart-row > .ui-legend { grid-column: 2 / -1; gap: 2px var(--ui-space-md); font-size: .75rem; }
   .ui-chart-row > .ui-legend b { color: var(--ui-text-strong); font-weight: var(--ui-weight-medium); }
   @media (width < 35rem) {
     .ui-chart-row { grid-template-columns: minmax(0, 1fr) auto; }
