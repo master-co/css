@@ -43,10 +43,17 @@ export default function BlogArticleMasthead({ metadata }: { metadata: any }) {
           <ul className="blog-article-authors">
             {people.map((author) => (
               <li key={author.name}>
-                <Link className="blog-article-author" href={author.url}>
-                  <Image className="blog-article-avatar" src={author.image} width={28} height={28} alt="" />
-                  <span>{author.name}</span>
-                </Link>
+                {author.url ? (
+                  <Link className="blog-article-author" href={author.url}>
+                    <Image className="blog-article-avatar" src={author.image} width={28} height={28} alt="" />
+                    <span>{author.name}</span>
+                  </Link>
+                ) : (
+                  <span className="blog-article-author">
+                    <Image className="blog-article-avatar" src={author.image} width={28} height={28} alt="" />
+                    <span>{author.name}</span>
+                  </span>
+                )}
               </li>
             ))}
           </ul>

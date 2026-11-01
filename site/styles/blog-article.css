@@ -225,7 +225,7 @@
     text-decoration: none;
     transition: color var(--blog-article-base) var(--blog-article-ease);
 
-    &:hover {
+    &[href]:hover {
       color: var(--blog-article-text);
     }
 
@@ -237,7 +237,7 @@
       transition: text-decoration-color var(--blog-article-base) var(--blog-article-ease);
     }
 
-    &:hover span {
+    &[href]:hover span {
       text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
     }
 
