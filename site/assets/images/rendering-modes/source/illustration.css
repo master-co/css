@@ -92,6 +92,16 @@ body {
 .spacing-ruler > i { flex: none; position: relative; width: var(--sample-padding); height: 7px; border-inline: 1px solid var(--sample-ink); }
 .spacing-ruler > i::after { content: ''; position: absolute; top: 3px; inset-inline: 0; border-top: 1px solid var(--sample-ink); }
 
+/* Equal-area swatches show real color. Only the target outline belongs to the annotation. */
+.color-scale { display: flex; gap: 16px; width: max-content; }
+.color-scale-step { display: grid; justify-items: center; gap: 10px; }
+.color-scale-step > i { display: block; width: 40px; aspect-ratio: 1; border-radius: var(--ui-radius-sm); box-shadow: inset 0 0 0 1px var(--ui-line-hair); }
+.color-scale-step > i[data-selected] { outline: 1px solid var(--annotation-ink); outline-offset: 5px; }
+.role-selection { display: grid; justify-items: center; gap: 18px; width: max-content; }
+.role-selection > .code { color: var(--annotation-ink); }
+.role-selection-sample { padding: 20px 24px; border-radius: var(--ui-radius-lg); box-shadow: var(--ui-elevation-rise-1); }
+.role-selection-sample > span { font: var(--ui-weight-regular) 14px/1.5 Geist, sans-serif; }
+
 /* Syntax anatomy: one intact string with exact ranges and nearby, directly attached explanations. */
 [data-tone="blue"] { --annotation-ink: var(--ui-tone-blue); }
 [data-tone="violet"] { --annotation-ink: var(--ui-tone-violet); }
@@ -131,3 +141,46 @@ body {
 .selector-specimen[data-test="owner"] > a > .body,
 .selector-specimen[data-test="target"] > a:first-of-type > .body { text-decoration: underline; text-underline-offset: 3px; }
 .selector-pointer { position: absolute; top: 15px; right: 4px; width: 20px; height: 20px; fill: var(--ui-surface-sheet); stroke: var(--ui-text-strong); stroke-width: 1.25; stroke-linejoin: round; }
+
+/* Native code containment: an intrinsic block with indentation, braces and a measured scope guide. */
+.code-scope { display: flex; flex-direction: column; width: max-content; }
+.code-scope > .code { color: var(--annotation-ink, var(--ui-text-body)); }
+.code-scope-body { padding-left: 16px; border-left: 1px solid color-mix(in srgb, var(--annotation-ink, var(--ui-text-muted)) 35%, transparent); }
+.code-scope-body > .code-scope { --annotation-ink: var(--ui-text-body); }
+.code-scope-body > .code-scope[data-tone="violet"] { --annotation-ink: var(--ui-tone-violet); }
+
+/* Computed-variable comparison: nested boundaries mean DOM scopes; swatches are literal teaching results. */
+.variable-scope { display: flex; flex-direction: column; gap: 4px; width: max-content; padding: 12px; border: 1px solid var(--ui-line-divider); border-radius: var(--ui-radius-lg); }
+.variable-scope > .code:first-child { color: var(--ui-text-strong); margin-bottom: 3px; }
+.variable-region { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; padding: 10px; border-left: 1px solid var(--ui-line-strong); background: var(--ui-surface-tray); border-radius: 0 var(--ui-radius-sm) var(--ui-radius-sm) 0; }
+.variable-sample { margin-top: 8px; padding: 8px 12px; border-radius: var(--ui-radius-sm); background: #1d4ed8; }
+.variable-sample > .code { color: white; }
+.variable-scope[data-inline="true"] .variable-sample { background: #86198f; }
+.variable-scope .edge { line-height: 20px; }
+
+/* Layer order is a ranked list. The final entry lies outside the five named layers. */
+.priority-stack { display: flex; flex-direction: column; gap: 8px; width: max-content; }
+.priority-stack > div { padding: 6px 28px; text-align: center; background: var(--ui-surface-sheet); border-radius: var(--ui-radius-sm); box-shadow: 0 0 0 1px var(--ui-line-hair); }
+.priority-stack > .unlayered { position: relative; margin-top: 12px; background: none; box-shadow: none; }
+.priority-stack > .unlayered::before { content: ''; position: absolute; top: -10px; inset-inline: 0; height: 1px; background: var(--ui-line-divider); }
+
+.routes path[data-emphasis], .routes marker#arrow-emphasis path { stroke: var(--ui-text-muted); }
+
+/* A removed input remains as context, with no live dependency edge. */
+.source-contribution[data-removed] { background: none; box-shadow: none; outline: 1px dashed var(--ui-line-strong); }
+.source-contribution[data-removed] .title { color: var(--ui-text-muted); text-decoration: line-through; }
+
+/* A shared measured width scale distinguishes the viewport from a query container. */
+.query-scopes { --query-ink: var(--ui-tone-blue); }
+.query-ruler { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.query-ruler::before, .query-ruler::after { content: ''; flex: 1; height: 8px; border-top: 1px solid var(--query-ink); }
+.query-ruler::before { border-left: 1px solid var(--query-ink); }
+.query-ruler::after { border-right: 1px solid var(--query-ink); }
+.query-ruler > .code { color: var(--query-ink); }
+.query-viewport { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px 0 22px; border: 1px solid var(--ui-line-strong); border-radius: var(--ui-radius-md); }
+.query-scope-heading { display: flex; align-items: center; justify-content: space-between; width: 100%; padding-inline: 16px; }
+.query-scope-heading > .code { color: var(--query-ink); }
+.query-container-study { --query-ink: var(--ui-tone-violet); }
+.query-container { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 12px; border: 1px solid var(--ui-line-divider); border-radius: var(--ui-radius-sm); background: var(--ui-surface-sheet); }
+.query-container > .code { color: var(--query-ink); }
+.query-descendant { margin-top: 8px; padding: 8px 12px; border-radius: var(--ui-radius-sm); background: var(--ui-surface-tray); }

@@ -2,9 +2,10 @@ import { foundationFamilies, namespaceFamilies, namespaceTokens } from '../commo
 import { generatePresetCSS } from '../common/generate-preset-css'
 import preset from '../utils/preset-manifest'
 import { configuredExampleCSS, configuredMarkupClasses } from './configured-example'
+import { familyText } from './family-editorial'
+import { referenceIllustrationMarkdown } from './illustrations'
 import { tokenPages, type RecipePageEditorial, type SheetExampleSource, type TokenGroupEditorial, type TokenPageEditorial } from './sheet-editorial'
 import type { ReferenceExample } from './types'
-import type { MasterCSSMediaQueryExpression } from '@master/css-schema/manifest'
 
 /**
  * Structured Reference sheets: one model renders the HTML page and the portable
@@ -32,6 +33,8 @@ export interface TokenSheet {
   more: SheetSyntax[]
   groups: SheetGroup[]
   note?: string
+  explanation?: TokenPageEditorial['explanation']
+  valuesLead?: string
   usage: SheetExample
   customize: SheetExample & { configuration: string }
   guide?: SheetGuide
@@ -53,17 +56,20 @@ export interface RecipeSheet {
 
 export interface FamiliesSheet {
   kind: 'families'
-  groups: { id: string, pages: { title: string, href: string }[], rows: { prefix: string, property: string }[] }[]
+  groups: { id: string, pages: { title: string, href: string }[], rows: FamilyRow[] }[]
+  usage: SheetExample
 }
 
-export interface BreakpointsSheet {
-  kind: 'breakpoints'
-  groups: { id: string, title: string, rows: { name: string, query: string, pixels?: string }[] }[]
+export interface FamilyRow { prefix: string, namespace: string, property: string }
+
+export interface NamedConditionsSheet {
+  kind: 'named-conditions'
+  groups: { id: string, title: string, rows: { id: string, name: string, suffix: string, query: string }[] }[]
   usage: SheetExample
   customize: SheetExample & { configuration: string }
 }
 
-export type ReferenceSheet = TokenSheet | RecipeSheet | FamiliesSheet | BreakpointsSheet
+export type ReferenceSheet = TokenSheet | RecipeSheet | FamiliesSheet | NamedConditionsSheet
 
 const code = (text: string) => `\`${text}\``
 const fence = (lang: string, text: string) => `\`\`\`${lang}\n${text}\n\`\`\``
@@ -96,16 +102,16 @@ export function modePair(value: string) {
  * classes still style the preview but read as `…`; unstyled elements drop the attribute,
  * and long sample text keeps its first words.
  */
-function example(id: string, title: string, source: SheetExampleSource, subject: (name: string) => boolean, configuration = ''): SheetExample {
+export function sheetExample(id: string, title: string, source: SheetExampleSource, subject: (name: string) => boolean, configuration = ''): SheetExample {
   // Compiling through the configured path rejects any invalid class in authored examples.
   configuredExampleCSS(configuration, configuredMarkupClasses(source.html))
   const code = source.html.replace(/ class="([^"]*)"/g, (_, value: string) => {
     const names = value.split(/\s+/).filter(Boolean)
-    const kept = names.filter(subject)
+    const kept = names.filter(name => subject(name) || source.keep?.includes(name))
     if (!kept.length) return ''
     return ` class="${kept.length < names.length ? '… ' : ''}${kept.join(' ')}"`
   }).replace(/>([^<]{49,})</g, (_, text: string) => `>${text.split(' ').slice(0, 5).join(' ')}…<`)
-  const classes = configuredMarkupClasses(code).filter(subject)
+  const classes = configuredMarkupClasses(code).filter(name => subject(name) || source.keep?.includes(name))
   if (!classes.length) throw new Error(`Example ${title} shows no subject class`)
   const css = configuration ? configuredExampleCSS(configuration, classes) : generatePresetCSS(classes)
   return { id, title, html: source.html, code, lead: source.lead, classes, css, ...configuration ? { configuration } : {} }
@@ -159,10 +165,10 @@ export function tokenSheet(page: TokenPageEditorial): TokenSheet {
     groupTokens(group).map(token => `${family.prefix}-${rolePrefix(group.namespace)}${token.key}`))))
   const customClasses = configuredMarkupClasses(page.customize.html)
   return {
-    kind: 'tokens', id: page.id, title: page.title, summary: page.summary, guide: page.guide, note: page.note,
+    kind: 'tokens', id: page.id, title: page.title, summary: page.summary, guide: page.guide, note: page.note, explanation: page.explanation, valuesLead: page.valuesLead,
     syntax: primary, more: rows.filter(row => !primary.some(other => other.syntax === row.syntax)), groups,
-    usage: example('usage', 'Usage', page.usage, name => classes.has(name.split(/[@:]/)[0])),
-    customize: example('customize', 'Customize', page.customize, name => customClasses.includes(name), page.customize.theme) as TokenSheet['customize'],
+    usage: sheetExample('usage', 'Usage', page.usage, name => classes.has(name.split(/[@:]/)[0])),
+    customize: sheetExample('customize', 'Customize', page.customize, name => customClasses.includes(name), page.customize.theme) as TokenSheet['customize'],
   }
 }
 
@@ -188,7 +194,7 @@ export function recipeSheet(page: RecipePageEditorial, source: string): RecipeSh
     syntax: rows.filter(row => primary.includes(row.name)).map(row => row.row),
     more: rows.filter(row => !primary.includes(row.name)).map(row => row.row),
     definitions: definitions.join('\n\n'),
-    usage: example('examples', 'Usage', page.usage, subject),
+    usage: sheetExample('examples', 'Usage', page.usage, subject),
   }
 }
 
@@ -197,58 +203,27 @@ export function familiesSheet(): FamiliesSheet {
   for (const page of tokenPages) {
     // A prefix may own several families, such as font- for family, size and weight.
     const families = page.groups.flatMap(group => namespaceFamilies(group.namespace))
-      .filter((family, index, all) => all.findIndex(other => other.prefix === family.prefix && other.property === family.property) === index)
-    const rows = families.toSorted(byPrefix).map(family => ({ prefix: family.prefix, property: family.property }))
+      .filter((family, index, all) => all.findIndex(other => other.prefix === family.prefix && other.namespace === family.namespace) === index)
+    const rows = families.toSorted(byPrefix).map(family => ({ prefix: family.prefix, namespace: family.namespace, property: family.property }))
     const link = { title: page.title, href: `/reference/tokens/${page.id}` }
     // Pages sharing the same families, such as Color and Color roles, share one group.
-    const same = groups.find(group => group.rows.map(row => row.prefix).join() === rows.map(row => row.prefix).join())
+    const same = groups.find(group => JSON.stringify(group.rows) === JSON.stringify(rows))
     if (same) same.pages.push(link)
     else if (rows.length) groups.push({ id: page.id, pages: [link], rows })
   }
-  return { kind: 'families', groups }
+  return { kind: 'families', groups, usage: sheetExample('reading-a-family', 'Same key, different tokens', {
+    html: '<div class="p-md max-w-md font-md">Content</div>'
+  }, () => true) }
 }
 
 /** Every registered family appears on the index, including ones no token page groups. */
 export function ungroupedFamilies(sheet: FamiliesSheet) {
-  const listed = new Set(sheet.groups.flatMap(group => group.rows.map(row => `${row.prefix} ${row.property}`)))
-  return foundationFamilies.filter(family => !listed.has(`${family.prefix} ${family.property}`))
+  const listed = new Set(sheet.groups.flatMap(group => group.rows.map(row => `${row.prefix} ${row.namespace}`)))
+  return foundationFamilies.filter(family => !listed.has(`${family.prefix} ${family.namespace}`))
 }
 
-/** The native query a resolved custom media expression stands for. */
-function mediaQueryText(media: MasterCSSMediaQueryExpression): string {
-  switch (media.type) {
-    case 'feature': return media.value
-    case 'media-type': return media.name
-    case 'not': return `not ${mediaQueryText(media.query)}`
-    case 'and': case 'or': return media.queries.map(mediaQueryText).join(` ${media.type} `)
-    default: return media.type
-  }
-}
-
-export function breakpointsSheet(): BreakpointsSheet {
-  const conditions = Object.entries(preset.customMedia ?? {}).map(([name, media]) => ({ name: name.slice(2), query: mediaQueryText(media) }))
-  const rem = (query: string) => Number(query.match(/([\d.]+)rem/)?.[1])
-  const widths = conditions.filter(condition => /^\(width\s*>=\s*[\d.]+rem\)$/.test(condition.query)).toSorted((a, b) => rem(a.query) - rem(b.query))
-  const below = conditions.filter(condition => /^not \(width\s*>=\s*[\d.]+rem\)$/.test(condition.query)).toSorted((a, b) => rem(a.query) - rem(b.query))
-  return {
-    kind: 'breakpoints',
-    groups: [
-      { id: 'viewport-widths', title: 'Viewport widths', rows: widths.map(row => ({ ...row, pixels: pixels(row.query.match(/([\d.]+rem)/)![1]) })) },
-      { id: 'below-viewport-widths', title: 'Below viewport widths', rows: below },
-      { id: 'media-features', title: 'Media features', rows: conditions.filter(condition => !widths.includes(condition) && !below.includes(condition)) },
-    ],
-    usage: example('usage', 'Usage', {
-      lead: 'Change a layout at a breakpoint.',
-      html: '<div class="grid-cols(1) grid-cols(3)@md gap-xs">\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Notes</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Drafts</div>\n  <div class="p-sm r-lg b(1) b-solid b-line-divider text-sm fg-text-body">Archive</div>\n</div>',
-    }, name => name.includes('@')),
-    customize: example('customize', 'Customize', {
-      lead: 'Change a preset condition or add one with native custom media: `--tablet` creates `@tablet`.',
-      html: '<div class="grid-cols(2)@tablet">…</div>',
-    }, name => name.includes('@tablet'), '@custom-media --tablet (width >= 48rem);') as BreakpointsSheet['customize'],
-  }
-}
-
-function exampleMarkdown(sheet: SheetExample, source = true) {
+/** Complete example content, shared by structured sheets and portable exports. */
+export function sheetExampleMarkdown(sheet: SheetExample, source = true) {
   return [sheet.lead, sheet.configuration && fence('css', sheet.configuration), source && fence('html', sheet.code), fence('css disclosure=generated-css', sheet.css)].filter(Boolean).join('\n\n')
 }
 
@@ -271,11 +246,19 @@ export function tokenSheetMarkdown(sheet: TokenSheet) {
     classesMarkdown([...sheet.syntax, ...sheet.more], true),
     sheet.note,
     '## Values {#values}',
+    sheet.valuesLead,
     values,
+    ...sheet.explanation ? [
+      `## ${sheet.explanation.title} {#${sheet.explanation.id}}`,
+      sheet.explanation.paragraphs[0],
+      referenceIllustrationMarkdown(sheet.explanation.illustration),
+      ...sheet.explanation.paragraphs.slice(1),
+      sheet.explanation.links?.length ? seeAlso(sheet.explanation.links.map(link => `[${link.label}](${link.href})`)) : '',
+    ] : [],
     '## Usage {#usage}',
-    exampleMarkdown(sheet.usage),
+    sheetExampleMarkdown(sheet.usage),
     '## Customize {#customize}',
-    exampleMarkdown(sheet.customize, false),
+    sheetExampleMarkdown(sheet.customize, false),
     seeAlso(['[theme directives](/reference/directives/theme)', ...sheet.guide ? [`[${sheet.guide.label}](${sheet.guide.href})`] : []]),
   ].filter(Boolean).join('\n\n')
 }
@@ -286,7 +269,7 @@ export function recipeSheetMarkdown(sheet: RecipeSheet) {
     classesMarkdown([...sheet.syntax, ...sheet.more], false),
     sheet.note,
     '## Usage {#examples}',
-    exampleMarkdown(sheet.usage),
+    sheetExampleMarkdown(sheet.usage),
     sheet.caption,
     '## Customize {#customize}',
     'The preset defines these classes with `@utility`. Define the same name in your stylesheet to replace it.',
@@ -297,23 +280,26 @@ export function recipeSheetMarkdown(sheet: RecipeSheet) {
 
 export function familiesSheetMarkdown(sheet: FamiliesSheet) {
   const rest = ungroupedFamilies(sheet)
-  const table = (rows: { prefix: string, property: string }[]) => `| Prefix | Property |\n| --- | --- |\n${rows.map(row => `| ${cell(`${row.prefix}-`)} | ${cell(row.property)} |`).join('\n')}`
+  const seen = new Set<string>()
+  const table = (rows: FamilyRow[]) => `| Prefix | Token namespace | Properties |\n| --- | --- | --- |\n${rows.map(row => {
+    const anchor = seen.has(row.prefix) ? '' : `<a id="family-${row.prefix}"></a>`
+    seen.add(row.prefix)
+    return `| ${anchor}${cell(`${row.prefix}-`)} | ${cell(`--${row.namespace}-*`)} | ${cell(row.property)} |`
+  }).join('\n')}`
   return [
-    'Each prefix writes native properties from a token namespace, such as `p-md`. Write any other value as a native declaration, such as `(padding:1rem)`.',
+    familyText.intro,
+    '## Read a family {#reading-a-family}',
+    familyText.mapping,
+    referenceIllustrationMarkdown('namespace-lookup'),
+    sheetExampleMarkdown(sheet.usage),
+    familyText.lookup,
     ...sheet.groups.map(group => `## ${group.pages.map(page => page.title).join(' and ')} {#${group.id}}\n\n${table(group.rows)}\n\nValues in ${group.pages.map(page => `[${page.title}](${page.href})`).join(' and ')}.`),
     ...rest.length ? [`## Other families {#other}\n\n${table(rest.toSorted(byPrefix))}`] : [],
-  ].join('\n\n')
-}
-
-export function breakpointsSheetMarkdown(sheet: BreakpointsSheet) {
-  return [
-    '## Conditions {#conditions}',
-    'Append a condition to any class with `@`, such as `grid-cols(3)@md`. These are preset `@custom-media` definitions, not theme variables.',
-    ...sheet.groups.map(group => `### ${group.title} {#${group.id}}\n\n| Condition | Query |\n| --- | --- |\n${group.rows.map(row => `| ${cell(`@${row.name}`)} | ${cell(row.query)}${row.pixels ? ` ${row.pixels}` : ''} |`).join('\n')}`),
-    '## Usage {#usage}',
-    exampleMarkdown(sheet.usage),
-    '## Customize {#customize}',
-    exampleMarkdown(sheet.customize, false),
-    seeAlso(['[conditions](/reference/rules/conditions)', '[Breakpoints](/guide/responsive-design#based-on-viewport-breakpoints)']),
+    '## Resolution boundaries {#resolution-boundaries}',
+    familyText.shared,
+    familyText.registration,
+    familyText.roles,
+    familyText.limits,
+    seeAlso(['[token registration and resolution](/reference/rules/modes#namespace-resolution)', '[utility definitions](/reference/directives/definitions#utilities)', '[declaration forms](/reference/rules/declarations)', '[building a theme](/guide/theme#define-tokens)']),
   ].join('\n\n')
 }

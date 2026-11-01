@@ -21,9 +21,12 @@ export default function Palette({ groups }: { groups: PaletteGroup[] }) {
     <div className="ui-palette">
       {groups.map(group => <div className="ui-palette-row" key={group.family} role="group" aria-label={`${group.family} palette`}>
         <span>{group.family}</span>
-        {group.colors.map(color => <DemoCopyButton key={color.name} icon={null} className="ui-palette-chip" style={{ backgroundColor: color.value }}
-          value={format === 'value' ? color.value : `var(--${color.name})`}
-          label={`Copy ${color.name} ${format === 'value' ? 'CSS value' : 'CSS variable'}`} title={`${color.name}: ${color.value}`} />)}
+        {group.colors.map(color => <div key={color.name} className="ui-palette-cell">
+          <DemoCopyButton icon={null} className="ui-palette-chip" style={{ backgroundColor: color.value }}
+            value={format === 'value' ? color.value : `var(--${color.name})`}
+            label={`Copy ${color.name} ${format === 'value' ? 'CSS value' : 'CSS variable'}`} title={`${color.name}: ${color.value}`} />
+          <span aria-hidden="true">{color.step}</span>
+        </div>)}
       </div>)}
     </div>
     <div id={endId} tabIndex={-1}><span className="sr-only">End of color palette</span></div>

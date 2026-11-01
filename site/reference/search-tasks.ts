@@ -9,6 +9,7 @@ export const searchTasks = [
   ['--spacing-md', 'tokens/spacing'], ['spacing', 'tokens/spacing'],
   ['fg-red:hover@sm', 'rules/conditions'], ['Conditions', 'rules/conditions'],
   ['specificity', 'rules/selectors'], ['selector target', 'rules/selectors'],
+  ['@md', 'rules/named-conditions'], ['@container(--md)', 'rules/named-conditions'], ['breakpoints', 'rules/named-conditions'],
   ['Variables and modes', 'rules/modes'], ['Cascade layers', 'rules/layers'],
   ['樣式沒生成', 'rules/extraction'], ['clamp-lines', 'truncation'],
   ['master-css generate', 'tools/cli'], ['master-css lint', 'tools/cli'],

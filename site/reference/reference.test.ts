@@ -40,7 +40,7 @@ function documentAnchors(doc: ReferenceCatalog['documents'][number]) {
   if (sheet?.kind === 'tokens') for (const group of sheet.groups) for (const value of group.values) ids.add(value.id)
   if (sheet?.kind === 'families') for (const group of sheet.groups) for (const row of group.rows) ids.add(`family-${row.prefix}`)
   if (sheet?.kind === 'families') for (const family of ungroupedFamilies(sheet)) ids.add(`family-${family.prefix}`)
-  if (sheet?.kind === 'breakpoints') for (const group of sheet.groups) for (const row of group.rows) ids.add(`condition-${row.name}`)
+  if (sheet?.kind === 'named-conditions') for (const group of sheet.groups) for (const row of group.rows) ids.add(row.id)
   return ids
 }
 let catalog: ReferenceCatalog
@@ -79,8 +79,10 @@ test('catalog covers every public family and preset recipe without indexing reti
   const families = catalog.documents.find(doc => doc.id === 'tokens/families')!
   assert.equal(new Set(families.headings.map(heading => heading.id)).size, families.headings.length)
   assert.ok(families.markdown.includes('[Font](/reference/tokens/font)'))
+  const familyRows = families.sheet?.kind === 'families' ? [...families.sheet.groups.flatMap(group => group.rows), ...ungroupedFamilies(families.sheet)] : []
+  assert.deepEqual(familyRows.map(row => `${row.prefix}:${row.namespace}:${row.property}`).sort(), foundationFamilies.map(row => `${row.prefix}:${row.namespace}:${row.property}`).sort())
   for (const family of foundationFamilies) {
-    assert.ok(families.markdown.includes(`| \`${family.prefix}-\` | \`${family.property}\` |`), family.prefix)
+    assert.ok(families.markdown.includes(`\`${family.prefix}-\` | \`--${family.namespace}-*\` | \`${family.property}\` |`), family.prefix)
     assert.equal(families.identifierAnchors?.[family.prefix], `family-${family.prefix}`)
     assert.ok(documentAnchors(families).has(`family-${family.prefix}`))
   }
@@ -146,12 +148,34 @@ test('namespace consumer tables cover the registry including color role groups',
   }
   const container = catalog.documents.find(doc => doc.id === 'tokens/container')!
   assert.match(container.markdown, /Changing `--container-md` does not change/)
-  const breakpoints = catalog.documents.find(doc => doc.id === 'tokens/breakpoints')!
+  const breakpoints = catalog.documents.find(doc => doc.id === 'rules/named-conditions')!
   for (const name of Object.keys(preset.customMedia!)) assert.ok(breakpoints.aliases.includes(`@${name.slice(2)}`))
+  for (const name of Object.keys(preset.customContainers!)) assert.ok(breakpoints.aliases.includes(`@container(${name})`))
+})
+
+test('named conditions separate media and container registries and retire the token route', async () => {
+  const { referenceIllustrations } = await import('./illustrations')
+  const doc = catalog.documents.find(doc => doc.id === 'rules/named-conditions')!
+  assert.equal(doc.kind, 'rule')
+  assert.ok(!catalog.documents.some(doc => doc.id === 'tokens/breakpoints'))
+  assert.equal(doc.sheet?.kind, 'named-conditions')
+  if (doc.sheet?.kind !== 'named-conditions') throw new Error('Missing named-condition sheet')
+  const rows = doc.sheet.groups.flatMap(group => group.rows)
+  assert.equal(rows.length, Object.keys(preset.customMedia!).length + Object.keys(preset.customContainers!).length)
+  assert.equal(new Set(rows.map(row => row.id)).size, rows.length)
+  const portable = renderDocumentMarkdown(doc, catalog)
+  for (const row of rows) {
+    assert.ok(doc.identifierAnchors?.[row.suffix] === row.id)
+    assert.ok(portable.includes(`<a id="${row.id}"></a>`))
+    assert.ok(generatePresetCSS([`block${row.suffix}`]).includes(row.query), row.suffix)
+  }
+  const figure = referenceIllustrations['condition-domains']
+  assert.equal(rows.find(row => row.suffix === '@md')?.query, `(width >= ${figure.viewportRem}rem)`)
+  assert.equal(rows.find(row => row.suffix === '@container(--md)')?.query, `(width >= ${figure.containerRem}rem)`)
 })
 
 test('all generated token and recipe examples reproduce complete CSS', () => {
-  for (const doc of catalog.documents.filter(doc => ['utility', 'tokens'].includes(doc.kind))) {
+  for (const doc of catalog.documents.filter(doc => ['utility', 'tokens'].includes(doc.kind) || doc.id === 'rules/named-conditions')) {
     for (const example of doc.examples) {
       assert.equal(example.css, example.configuration ? configuredExampleCSS(example.configuration, example.classes) : generatePresetCSS(example.classes), `${doc.id}: ${example.title}`)
       assert.ok(example.css.length > 0)
@@ -177,7 +201,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
     const doc = catalog.documents.find(doc => doc.id === id)!
     assert.equal(new Set(doc.headings.map(heading => heading.id)).size, doc.headings.length, id)
     const configured = doc.examples.filter(example => example.configuration !== undefined)
-    assert.equal(configured.length, id === 'rules/layers' ? 6 : 1, id)
+    assert.equal(configured.length, id === 'rules/layers' ? 6 : 5, id)
     for (const example of configured) {
       assert.equal(example.css, configuredExampleCSS(example.configuration!, example.classes))
       assert.ok(doc.markdown.includes(example.css))
@@ -212,6 +236,10 @@ test('token pages list every preset value once, with its variable and a resolvin
     const doc = catalog.documents.find(doc => doc.id === `tokens/${page.id}`)!
     const markdown = renderDocumentMarkdown(doc, catalog)
     const anchors = documentAnchors(doc)
+    for (const prerequisite of page.usage.keep ?? []) {
+      assert.ok(doc.examples.find(example => example.id === 'usage')?.classes.includes(prerequisite), `${page.id}: ${prerequisite}`)
+      assert.ok(markdown.includes(prerequisite), `${page.id}: exported prerequisite ${prerequisite}`)
+    }
     for (const variable of variables.filter(variable => page.groups.some(group => group.namespace === variable.namespace))) {
       assert.ok(!listed.has(variable.name), variable.name)
       listed.add(variable.name)
@@ -232,7 +260,9 @@ test('language contracts export portable examples, complete CSS and stable secti
     const markdown = renderDocumentMarkdown(doc, catalog)
     const anchors = new Set([...documentHeadings(markdown).map(heading => heading.id), ...[...markdown.matchAll(/<a id="([^"]+)"><\/a>/g)].map(match => match[1])])
     for (const heading of doc.headings) assert.ok(anchors.has(heading.id), `${id}#${heading.id}`)
-    assert.doesNotMatch(markdown, /className=|MCSS_EXPRESSION|<(?:Demo|Class2CSS|ConfiguredExample)\b/)
+    assert.doesNotMatch(markdown, /MCSS_EXPRESSION|<(?:Demo|Class2CSS|ConfiguredExample)\b/)
+    // JSX syntax can be discussed literally; exported HTML examples must still be HTML.
+    for (const fence of markdown.matchAll(/```html[^\n]*\n([\s\S]*?)\n```/g)) assert.doesNotMatch(fence[1], /\bclassName=/)
     for (const example of doc.examples) {
       const css = example.configuration === undefined
         ? generatePresetCSS(example.classes)
@@ -254,7 +284,8 @@ test('language contracts export portable examples, complete CSS and stable secti
 
 test('Reference illustrations retain their explanation in portable content and search', async () => {
   const { referenceIllustrations, referenceIllustrationMarkdown } = await import('./illustrations')
-  for (const [documentId, figureId] of [['rules/declarations', 'native-value-boundary'], ['rules/selectors', 'selector-targets']] as const) {
+  const tokenFigures = catalog.documents.flatMap(doc => doc.sheet?.kind === 'tokens' && doc.sheet.explanation ? [[doc.id, doc.sheet.explanation.illustration] as const] : [])
+  for (const [documentId, figureId] of [...tokenFigures, ...[['rules/declarations', 'native-value-boundary'], ['rules/selectors', 'selector-targets'], ['rules/conditions', 'nested-conditions'], ['rules/modes', 'inline-resolution'], ['rules/layers', 'layer-precedence'], ['rules/extraction', 'shared-source-class'], ['rules/named-conditions', 'condition-domains'], ['tokens/families', 'namespace-lookup']] as const]) {
     const doc = catalog.documents.find(doc => doc.id === documentId)!
     const figure = referenceIllustrations[figureId]
     const portable = renderDocumentMarkdown(doc, catalog)

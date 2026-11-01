@@ -2,7 +2,8 @@ import { Fragment } from 'react'
 import Palette, { type PaletteGroup } from '../components/demo/foundations/Palette'
 import { foundationTokens } from '../common/foundation-data/tokens'
 import { modePair, pixels, type SheetGroup, type TokenSheet } from './sheets'
-import { keyWidth, Link, SheetClassTable, SheetExampleBlock, SheetHeading, SheetLinks, SheetNote, SheetTable, SheetValue } from './SheetBlocks'
+import { InlineText, keyWidth, Link, SheetClassTable, SheetExampleBlock, SheetHeading, SheetLinks, SheetNote, SheetTable, SheetValue } from './SheetBlocks'
+import ReferenceIllustration from './ReferenceIllustration'
 
 /** Show a stored `var(--token)` reference as the value it resolves to, e.g. text sizes. */
 function resolved(value: string) {
@@ -16,7 +17,11 @@ function ValueTable({ group, width }: { group: SheetGroup, width: string }) {
     {group.values.map(row => <tr key={row.id} id={row.id}>
       <th scope="row"><code>{row.className}</code></th>
       {modes ? modePair(row.value)!.map((value, index) => <td key={index}><code>{value}</code></td>)
-        : (row.cells ?? [row.value]).map((value, index) => <td key={index} title={resolved(value) === value ? undefined : value}><SheetValue value={resolved(value)} note={pixels(resolved(value))} /></td>)}
+        : (row.cells ?? [row.value]).map((value, index) => {
+          // A hue alias is a lookup relationship; do not hide its reference behind a hover title.
+          const display = group.namespace === 'color' ? value : resolved(value)
+          return <td key={index} title={display === value ? undefined : value}><SheetValue value={display} note={pixels(display)} /></td>
+        })}
     </tr>)}
   </SheetTable>
 }
@@ -45,10 +50,19 @@ export default function TokenSheetView({ sheet }: { sheet: TokenSheet }) {
     {sheet.note && <SheetNote>{sheet.note}</SheetNote>}
 
     <SheetHeading id="values">Values</SheetHeading>
+    {sheet.valuesLead && <p><InlineText>{sheet.valuesLead}</InlineText></p>}
     {sheet.groups.filter(group => group.values.length).map(group => <Fragment key={group.id}>
       {grouped && group.title && <h3 id={group.id}>{group.title}</h3>}
       {group.palette ? <PaletteView group={group} /> : <ValueTable group={group} width={width} />}
     </Fragment>)}
+
+    {sheet.explanation && <>
+      <SheetHeading id={sheet.explanation.id}>{sheet.explanation.title}</SheetHeading>
+      <p><InlineText>{sheet.explanation.paragraphs[0]}</InlineText></p>
+      <ReferenceIllustration id={sheet.explanation.illustration} />
+      {sheet.explanation.paragraphs.slice(1).map(paragraph => <p key={paragraph}><InlineText>{paragraph}</InlineText></p>)}
+      {!!sheet.explanation.links?.length && <SheetLinks>See {sheet.explanation.links.map((link, index) => <Fragment key={link.href}>{index ? ' and ' : ''}<Link href={link.href}>{link.label}</Link></Fragment>)}.</SheetLinks>}
+    </>}
 
     <SheetHeading id="usage">Usage</SheetHeading>
     <SheetExampleBlock example={sheet.usage} />

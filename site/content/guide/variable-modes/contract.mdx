@@ -1,144 +1,151 @@
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration'
 
-## Overview [sr-only] \{#overview\}
-Theme variables connect project vocabulary to ordinary CSS custom properties. Declarations in `@theme` use `:root, :host`; native CSS outside the block supplies scoped overrides. Master CSS keeps the managed declarations needed by generated classes or native stylesheet references; the browser resolves inheritance, the cascade, and computed values. Only `@theme` registers utility tokens. Native custom properties retain native delivery.
+<a id="overview"></a>
 
-```css name=index.css
-@import '@master/css';
+A theme token has two roles: its name makes a value available to registered utility families, and its emitted custom property participates in native CSS. Master CSS resolves the class and retains its dependencies. The browser resolves the custom property's value through the cascade and inheritance.
 
-@theme {
-  --color-brand: #4f46e5;
-  --spacing-card: 1.5rem;
-  --color-surface-card: white;
-}
-@media (prefers-color-scheme: dark) {
-  :root, :host { --color-surface-card: #111827; }
-}
-```
+This page defines token lookup, dependency delivery, substitution and mode activation. [Theme](/guide/theme) explains when to share a token and how to build a project theme; the [token index](/reference#tokens) lists preset values.
 
-```html
-<article class="bg-surface-card p-card">
-  <button type="button" class="fg-white bg-brand">Save</button>
-</article>
-```
+## Registration and lookup \{#namespace-resolution\}
 
-## Variable lifecycle \{#variable-lifecycle\}
-### Check a custom spacing token \{#custom-spacing-example\}
+Declare tokens in a top-level `@theme` block. A native custom property declared outside `@theme` can be used in CSS, but does not register token-backed classes by itself. Native selectors and queries belong outside the block. See [`@theme`](/reference/directives/theme#theme) for its stylesheet grammar.
+
+<a id="contextual-token-lookup"></a>
+
+A token family determines which namespace to search. The key is the remaining part of the token name; hyphens within the key are preserved.
+
+| Token | Class | Generated declaration |
+| --- | --- | --- |
+| `--spacing-card` | `p-card` | `padding: var(--spacing-card)` |
+| `--radius-card` | `r-card` | `border-radius: var(--radius-card)` |
+| `--color-brand` | `bg-brand` | `background-color: var(--color-brand)` |
+| `--color-text-action` | `fg-text-action` | `color: var(--color-text-action)` |
+| `--color-line-divider` | `b-line-divider` | `border-color: var(--color-line-divider)` |
+
+`text-action` and `line-divider` are keys in the `color` namespace. `outline-line-divider` can consume `--color-line-divider`; `outline-divider` does not implicitly insert `line-`. The same key in two namespaces can supply different values: `p-card` and `r-card` resolve independently.
+
+<ConfiguredExample source={'@theme {\n  --spacing-card: 1.5rem;\n  --radius-card: .5rem;\n  --color-brand: #1d4ed8;\n  --color-text-action: var(--color-brand);\n  --color-line-divider: rgb(0 0 0 / 12%);\n}'} html={'<article class="p-card r-card b(1) b-solid b-line-divider">\n  <a class="fg-text-action" href="/settings">Settings</a>\n</article>'} />
+
+<a id="default-namespace-sources"></a>
+
+The [family index](/reference/tokens/families) owns the complete prefix-to-namespace mapping. Full CSS property names do not create token families automatically. Register a custom pattern with [`@utility`](/reference/directives/definitions#utilities) when a project needs a new mapping. Fixed spellings such as `w-full` retain their fixed definition even if a token with the same key exists; see [class resolution](/reference/rules/declarations).
+
+## Dependency delivery \{#variable-lifecycle\}
+
+A generated declaration normally retains its `var()` reference. Used managed tokens emit under `:root, :host` in the `theme` layer, together with their transitive managed dependencies.
+
+<a id="custom-spacing-example"></a>
 
 <ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
-The class emits `padding:var(--spacing-card)`. Its dependency emits in `@layer theme` under `:root, :host`. When a variable is live, every duplicate declaration for that name stays in source order. Dependencies referenced by any of those values are also retained. Native overrides stay in their stylesheet and follow its pruning policy; their references can retain managed dependencies.
+When a token is live, its duplicate declarations remain in source order. Dependencies referenced by those values remain live too. Native stylesheet references can retain managed tokens; native custom-property declarations and scoped overrides remain part of their owning stylesheet and follow that file's preservation policy.
 
-Cycles, fallbacks, inheritance and functions keep native custom-property behavior. Master CSS does not select a light, dark or viewport-specific value during compilation. Editor inspection reports token declarations and modes, not a computed result.
+Master CSS does not choose a light, dark or viewport-specific value while generating a class. Inspection can report the authored declarations and dependencies; it cannot establish a computed value without the element, its ancestors and the browser environment.
 
-Declare keyframes in native CSS. Their file preserves them by default; `@prune native;` opts into usage-based delivery. Used animation names and declarations retain their dependencies through compilation, SSR and runtime. `@safelist keyframes "name";` retains names used outside scanned classes.
+### Missing names and invalid values
 
-## Namespace resolution \{#namespace-resolution\}
-Write custom properties as `--<namespace>-<key>`. Reference groups role values such as `--color-line-divider` into focused lookup collections. The canonical color families still resolve through the `color` namespace: `b-line-divider` selects that variable with the key `line-divider`.
+An unknown token key cannot produce a matching token-family class. This differs from a valid class whose emitted `var()` later resolves to an invalid value in the browser. Inheritance, cycles, fallbacks and property-value validity follow [native custom-property rules](https://www.w3.org/TR/css-variables-1/); retaining a declaration does not prove that its eventual computed value is valid.
+
+## Inheritance and scoped aliases \{#mode-buckets\}
+
+Declare local overrides with native selectors. The same class can then receive different values in different scopes:
 
 ```css
-@theme {
-  --color-brand: #4f46e5;
-  --color-text-action: var(--color-brand);
-  --color-line-divider: rgb(0 0 0 / 12%);
-  --spacing-card: 1.5rem;
-  --radius-card: .75rem;
-}
+@theme { --color-panel: white; }
+[data-theme="ocean"] { --color-panel: #082f49; }
 ```
 
 ```html
-<article class="r-card p-card b(1) b-solid b-line-divider">
-  <a class="fg-text-action" href="/settings">Settings</a>
-</article>
+<section data-theme="ocean">
+  <div class="bg-panel">Ocean panel</div>
+</section>
 ```
 
-### Default namespace sources \{#default-namespace-sources\}
-The registry lists namespaces consumed by default utilities and named property tokens. See the [token reference](/reference#tokens) for the preset inventory. Full CSS property names do not automatically create new namespace mappings.
+### Derived values \{#derived-mode-aware-values\}
 
-Use the [complete family index](/reference/tokens/families) to look up every prefix, property and namespace. The examples below show only the mappings needed for this theme.
+An alias such as `--color-link: var(--color-brand)` resolves on the element where that alias is declared, before its computed value is inherited. Overriding only `--color-brand` in a descendant does not rebind the inherited alias. Redeclare the alias in the descendant scope when it should derive from the local brand.
 
-## Contextual token lookup \{#contextual-token-lookup\}
-
-| Class | Token source |
-| --- | --- |
-| `p-card` | `--spacing-card` |
-| `r-card` | `--radius-card` |
-| `fg-text-action` | `--color-text-action` |
-| `bg-brand` | `--color-brand` |
-
-Built-in token families own namespace lookup in the Rust engine. `outline-line-divider` reads `--color-line-divider` through the color namespace; `outline-divider` does not implicitly add `line-`. For a custom named recipe, declare primary tokens in a parameter namespace and register an explicit token pattern with a `<string>` parameter. Use direct native values such as `(padding:1rem)` for values without a project token.
-
-## Inline and static tokens \{#inline-and-static-variables\}
-Use `inline` to substitute a token's value in generated declarations and `static` to keep its custom property even without references:
-
-```css
-@theme inline { --color-brand: var(--app-brand); }
-@theme static { --spacing-integration: 1.5rem; }
-:root { --app-brand: #4f46e5; }
-.dark { --app-brand: #818cf8; }
-```
-
-`bg-brand` uses `(background-color:var(--app-brand))`, resolving on the consuming element. The token is replaced once; references inside its value retain native semantics. `--spacing-integration` always emits in the theme layer. Combine both behaviors with `@theme static inline`. Handwritten native CSS retains its original `var()` references. See [theme directives](/reference/directives/theme).
-
-## Authored scopes \{#mode-buckets\}
-Native selectors and queries outside `@theme` express alternate values. The same class follows the browser's cascade:
+The same scope rule applies to derived expressions such as `color-mix()`:
 
 ```css
 @theme {
-  --color-panel: white;
-  --color-text-panel: #111827;
-}
-.dark { --color-panel: #111827; --color-text-panel: #f9fafb; }
-[data-theme="contrast"] { --color-panel: black; --color-text-panel: yellow; }
-```
-
-### Derived scoped values \{#derived-mode-aware-values\}
-Derived values remain CSS functions, including `var()` fallbacks and `color-mix()`. Place a derived declaration on the scopes where it should compute.
-
-```css
-@theme {
-  --color-brand: #4f46e5;
+  --color-brand: #1d4ed8;
   --color-link: var(--color-brand);
   --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
 }
-.dark { --color-brand: #818cf8; }
-:root, .dark {
+[data-theme="plum"] {
+  --color-brand: #86198f;
   --color-link: var(--color-brand);
   --color-link-hover: color-mix(in oklab, var(--color-brand), black 15%);
 }
 ```
 
-## Theme activation and mixin wrappers \{#mode-triggers\}
-Theme selectors activate values. A separate selector `@mixin` defines where an `@apply(--name)` suffix applies; it never changes token definitions or inserts descendant selectors automatically.
+These functions remain CSS expressions. Master CSS does not calculate a separate color for every authored scope. See the [interactive alias example](/guide/theme#alias-and-override-tokens) for the inherited and rebound results side by side.
 
-```css
-@mixin --ocean {
-  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }
-}
-@theme { --color-surface: white; }
-[data-theme="ocean"] { --color-surface: #082f49; }
-```
+## Inline substitution and static delivery \{#inline-and-static-variables\}
 
-`bg-surface` follows the variable wherever it inherits. `(padding:1rem)@apply(--ocean)` uses the explicitly authored mixin selector.
+`inline` changes what a generated declaration references. `static` changes whether the token's custom-property declaration needs a discovered consumer. These are independent behaviors.
 
-### System preference with a manual override
-The full preset uses native `light-dark()` and `color-scheme`. Choose `data-theme="light"` or `data-theme="dark"` on the root or a nested region; the preset's native stylesheet sets that region's scheme. A custom adaptive token needs only one declaration:
+| Definition | Generated class declaration | Custom-property delivery |
+| --- | --- | --- |
+| `@theme` | Keeps the token reference | Retained when needed |
+| `@theme inline` | Substitutes the token value once | The substituted class does not itself require that token declaration |
+| `@theme static` | Keeps the token reference | Retained without a discovered consumer |
+| `@theme static inline` | Substitutes the token value once | Retained without a discovered consumer |
 
-```css
-@theme { --color-panel: light-dark(white, #111827); }
-```
+Inline substitution removes one level of indirection. References inside the substituted value still resolve in the browser; `inline` does not recursively replace them with constants. It applies to Master-generated declarations, including `@apply` expansion. Handwritten native CSS keeps its original `var()` references.
 
-Preset `@dark` and `@light` suffixes still test system media preferences. Manual token switching does not activate them. See [Colors](/guide/colors#native-color-scheme-and-manual-themes).
+### Where the remaining variable resolves
 
-### Local themes and overlap
-Local selectors participate in the normal cascade. Master CSS retains those authored relationships.
+Both configurations below define `--color-brand: var(--app-brand)` and use `bg-brand`. Only the `inline` modifier changes. In each case the document root is blue and a nested section overrides `--app-brand` to plum.
 
-### Shadow DOM
-Default theme declarations already include `:host`. For scoped host overrides, write `:host(...)` explicitly. Load the native stylesheet, generated CSS and any native keyframes in the tree where they are consumed.
+<ReferenceIllustration id="inline-resolution" />
+
+With ordinary `@theme`, the generated declaration reads `--color-brand`. That token's `var(--app-brand)` resolves at the root; the nested element inherits the resulting blue value.
+
+<ConfiguredExample source={'@theme { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Inherited blue</div>\n</section>'} />
+
+With `@theme inline`, the generated declaration reads `--app-brand` directly on the styled element. It receives the plum value from its section.
+
+<ConfiguredExample source={'@theme inline { --color-brand: var(--app-brand); }\n:root { --app-brand: #1d4ed8; }\n[data-theme="plum"] { --app-brand: #86198f; }'} html={'<section data-theme="plum">\n  <div class="bg-brand">Local plum</div>\n</section>'} />
+
+Use `static` independently when an external consumer needs a token that discovery cannot see. See the [theme modifiers](/reference/directives/theme#theme-static) for accepted forms and definition scope.
+
+## Mode activation \{#mode-triggers\}
+
+A mode is an authored CSS scope or condition, not a second token namespace. Changing token values and restricting a rule to a mode are separate operations.
+
+| Mechanism | What changes | What activates it |
+| --- | --- | --- |
+| Native custom-property override | Values inherited in that scope | The authored selector or native query |
+| `light-dark()` token | Selected color value | The element's used color scheme |
+| Preset `@dark` or `@light` suffix | Whether a rule can apply | System `prefers-color-scheme` media query |
+| Selector mixin via `@apply(--name)` | Where the generated rule matches | Exactly the selector written in the mixin |
+
+### Manual scopes and rule wrappers
+
+A token class such as `bg-surface` follows the variable it inherits. To apply a different declaration only in an ocean scope, explicitly author that scope in a mixin. `&` stands for the generated selector; the descendant branch below is written deliberately, not inserted by Master CSS.
+
+<ConfiguredExample source={'@theme { --color-surface: white; }\n[data-theme="ocean"] { --color-surface: #082f49; }\n@mixin --ocean {\n  &:where([data-theme="ocean"], [data-theme="ocean"] *) { @contents; }\n}'} html={'<section data-theme="ocean">\n  <div class="bg-surface p(16)@apply(--ocean)">Ocean panel</div>\n</section>'} />
+
+The token override changes the background value. The mixin changes where padding applies. Neither mechanism defines the other. For wrapper arguments and placement, see [Utilities and mixins](/reference/directives/definitions#reusing-a-matched-value).
+
+### System preference and manual color schemes
+
+The full preset supplies native `color-scheme` rules: the root allows `light dark`, while `data-theme="light"` or `data-theme="dark"` fixes the scheme on a region. A token can use `light-dark(white, #111827)` to follow that scheme. The browser selects the value; no second class is needed. See [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark) for native behavior.
+
+The preset's `@dark` and `@light` suffixes remain system media queries even inside a manually themed region. Changing `data-theme` does not activate them. [Color](/guide/colors#native-color-scheme-and-manual-themes) demonstrates manual activation and nested regions.
+
+### Local overlap and Shadow DOM
+
+Overlapping scopes follow the ordinary cascade, including layer order and specificity. A local value is not automatically stronger merely because its selector describes a theme. See [Cascade layers](/reference/rules/layers).
+
+Default theme declarations include `:host`. Write scoped host overrides explicitly and load the needed stylesheets in the shadow tree:
 
 ```css
 @theme { --color-panel: white; }
 :host([data-theme="dark"]) { --color-panel: #111827; }
 ```
 
-See the [directive contract](/reference/directives/theme) for definition scope and resource delivery.
+Tokens do not replace resource delivery. Native keyframes and their dependency retention are covered by [the keyframe contract](/reference/directives/theme#native-keyframes), and stylesheet preservation by [Native CSS pruning](/reference/directives/pruning).

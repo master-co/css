@@ -3,10 +3,34 @@ import light from '../assets/images/reference-declarations/native-value-boundary
 import dark from '../assets/images/reference-declarations/native-value-boundary-dark.png'
 import targetsLight from '../assets/images/reference-selectors/selector-targets-light.png'
 import targetsDark from '../assets/images/reference-selectors/selector-targets-dark.png'
+import conditionsLight from '../assets/images/reference-conditions/nested-conditions-light.png'
+import conditionsDark from '../assets/images/reference-conditions/nested-conditions-dark.png'
+import inlineLight from '../assets/images/reference-modes/inline-resolution-light.png'
+import inlineDark from '../assets/images/reference-modes/inline-resolution-dark.png'
+import layersLight from '../assets/images/reference-layers/layer-precedence-light.png'
+import layersDark from '../assets/images/reference-layers/layer-precedence-dark.png'
+import extractionLight from '../assets/images/reference-extraction/shared-source-class-light.png'
+import extractionDark from '../assets/images/reference-extraction/shared-source-class-dark.png'
+import domainsLight from '../assets/images/reference-named-conditions/condition-domains-light.png'
+import domainsDark from '../assets/images/reference-named-conditions/condition-domains-dark.png'
+import namespacesLight from '../assets/images/reference-families/namespace-lookup-light.png'
+import namespacesDark from '../assets/images/reference-families/namespace-lookup-dark.png'
+import hueLight from '../assets/images/reference-color/hue-alias-selection-light.png'
+import hueDark from '../assets/images/reference-color/hue-alias-selection-dark.png'
+import roleLight from '../assets/images/reference-color-roles/role-value-selection-light.png'
+import roleDark from '../assets/images/reference-color-roles/role-value-selection-dark.png'
 import { referenceIllustrations, type ReferenceIllustrationId } from './illustrations'
 
 const images = {
+  'hue-alias-selection': { light: hueLight, dark: hueDark },
+  'role-value-selection': { light: roleLight, dark: roleDark },
+  'namespace-lookup': { light: namespacesLight, dark: namespacesDark },
   'native-value-boundary': { light, dark },
+  'condition-domains': { light: domainsLight, dark: domainsDark },
+  'shared-source-class': { light: extractionLight, dark: extractionDark },
+  'layer-precedence': { light: layersLight, dark: layersDark },
+  'inline-resolution': { light: inlineLight, dark: inlineDark },
+  'nested-conditions': { light: conditionsLight, dark: conditionsDark },
   'selector-targets': { light: targetsLight, dark: targetsDark }
 }
 

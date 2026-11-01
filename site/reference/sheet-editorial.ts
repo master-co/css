@@ -2,11 +2,15 @@
  * Reading content for structured Reference sheets. Values, families, definitions
  * and generated CSS still come from the preset; this file chooses pages, groups and examples.
  */
+import type { ReferenceIllustrationId } from './illustrations'
+
 export interface SheetExampleSource {
   /** Complete preview markup. The displayed source keeps only the page's own classes. */
   html: string
   /** One short sentence placed before the example; backticks mark code. */
   lead?: string
+  /** Prerequisites that must stay visible even when other styling is abbreviated. */
+  keep?: string[]
 }
 
 export interface TokenGroupEditorial {
@@ -35,6 +39,9 @@ export interface TokenPageEditorial {
   declarations?: Record<string, string>
   /** A Master-specific rule a reader needs before using the classes; backticks mark code. */
   note?: string
+  /** Explain the lookup's distinctive behavior beside its authored figure. */
+  explanation?: { id: string, title: string, paragraphs: string[], illustration: ReferenceIllustrationId, links?: { label: string, href: string }[] }
+  valuesLead?: string
   /** Preview several values in one quiet, realistic composition. */
   usage: SheetExampleSource
   customize: SheetExampleSource & { theme: string }
@@ -58,24 +65,35 @@ export interface RecipePageEditorial {
 
 const article = 'Good interfaces make space for the details: a short preview helps readers decide what to explore next while a clear link keeps the complete story within reach, so the summary works as an invitation and the full article carries everything else.'
 
-/** Reading order of the token pages; Token families and Breakpoints have their own views. */
+/** Reading order of the token value pages; Token families has its own view. */
 export const tokenPages: TokenPageEditorial[] = [
   {
     id: 'color',
-    title: 'Color',
-    summary: 'The preset palette: every hue in numbered steps, plus hue aliases.',
+    title: 'Color palette',
+    summary: 'Every numbered palette step, fixed hue alias and other preset color token.',
     groups: [
       { namespace: 'color', keys: 'palette', title: 'Palette', palette: true, prefix: 'bg' },
       { namespace: 'color', keys: 'aliases', title: 'Hue aliases', prefix: 'bg' },
       { namespace: 'color', keys: 'other', title: 'Other colors', prefix: 'bg' },
     ],
     primary: ['bg', 'fg', 'b'],
+    note: 'A color class sets only the named property. For a visible border, combine a width such as `b(1)`, a style such as `b-solid` and a color such as `b-blue-60`. Color roles use these same families and have their own value tables.',
+    valuesLead: 'Palette numbers are token keys, not opacity or lightness percentages. Higher numbered steps have lower OKLCH lightness. Each swatch copies its CSS value or variable reference; hue aliases below retain their authored token reference.',
+    explanation: {
+      id: 'hue-aliases', title: 'Hue aliases select a fixed step', illustration: 'hue-alias-selection',
+      paragraphs: [
+        '`bg-blue` reads `--color-blue`, whose preset value is `var(--color-blue-60)`. `bg-yellow` instead reaches `--color-yellow-40`. The alias does not imply a common step number across hues.',
+        'Numbered steps and hue aliases do not switch with the color scheme. Adaptive text aliases such as `fg-text-blue` belong to Color roles. Redefining a token can change either behavior.',
+        '`bg-current` reads `currentColor`, so its result follows the element’s text color. There is no preset `--color-transparent` token. For transparency or another literal color, use a native declaration such as `(background-color:transparent)` or `(background-color:#175fe9)`.'
+      ],
+      links: [{ label: 'Color roles', href: '/reference/tokens/color-roles' }, { label: 'native values and opacity', href: '/reference/rules/declarations' }],
+    },
     usage: {
-      lead: 'Pair a light step for the fill with a dark step of the same hue for the text.',
-      html: '<div class="flex flex-wrap gap-xs">\n  <span class="px-xs py-3xs r-sm bg-green-5 fg-green-70 text-xs">Paid</span>\n  <span class="px-xs py-3xs r-sm bg-amber-5 fg-amber-80 text-xs">Pending</span>\n  <span class="px-xs py-3xs r-sm bg-red-5 fg-red-70 text-xs">Overdue</span>\n  <span class="px-xs py-3xs r-sm bg-blue-5 fg-blue-70 text-xs">Draft</span>\n</div>',
+      lead: 'These status labels use explicit foreground and background steps. The words retain their meaning without color, and the selected colors stay fixed in both schemes.',
+      html: '<div class="flex flex-wrap gap-xs">\n  <span class="px-xs py-3xs r-sm bg-green-5 fg-green-80 text-xs">Paid</span>\n  <span class="px-xs py-3xs r-sm bg-amber-5 fg-amber-80 text-xs">Pending</span>\n  <span class="px-xs py-3xs r-sm bg-red-5 fg-red-80 text-xs">Overdue</span>\n  <span class="px-xs py-3xs r-sm bg-blue-5 fg-blue-70 text-xs">Draft</span>\n</div>',
     },
     customize: {
-      lead: 'Change a preset value or add a color: `--color-brand` creates `bg-brand`, `fg-brand` and every other color class.',
+      lead: 'Register a color in `@theme` to make its key available to the color families. Here `brand` is available as `bg-brand`, `fg-brand` and `b-brand`, among others.',
       theme: '@theme {\n  --color-brand: oklch(56% .2 262);\n}',
       html: '<button class="bg-brand">…</button>',
     },
@@ -91,10 +109,22 @@ export const tokenPages: TokenPageEditorial[] = [
       { namespace: 'color-line', title: 'Line', prefix: 'b' },
     ],
     primary: ['fg', 'bg', 'b'],
-    note: 'A role is part of the color name, so every color family accepts every role, such as `bg-text-link` or `outline-line-control`. On the base and inset surfaces, `fg-text-body`, `fg-text-strong` and `fg-text-muted` keep at least 4.5:1 contrast in both schemes, and `b-line-control` keeps at least 3:1; `line-divider` and `line-subtle` are decorative.',
+    note: 'A role is part of the color key: `fg-text-muted` reads `--color-text-muted` through the color namespace. Every color family accepts role keys, including `bg-text-link` and `outline-line-control`; the role name does not restrict the property.',
+    valuesLead: 'Light and Dark are the two arguments of each preset light-dark() value. They are selected by the element’s used color scheme, not by the class prefix or the operating system alone.',
+    explanation: {
+      id: 'color-scheme', title: 'The local color scheme selects the value', illustration: 'role-value-selection',
+      paragraphs: [
+        '`fg-text-muted` emits `color: var(--color-text-muted)`. Its preset value uses `light-dark(var(--color-zinc-60), var(--color-zinc-40))`: light selects the first color, dark the second. The class and generated rule stay the same.',
+        'The preset enables `color-scheme: light dark` on the root. Its `data-theme="light"` and `data-theme="dark"` selectors can choose a scheme on the root, a nested region or a shadow host. Native CSS performs the selection; switching schemes does not require regenerating this utility.',
+        'The `@dark` and `@light` class suffixes test the system preference. A manual `data-theme` choice does not activate those media queries. Use the mode contract for selector-based conditions.',
+        'A role supplies a color, not a component or a contrast guarantee for every background. Inverse surfaces have a paired inverse text role. Divider and subtle lines are decorative; control lines identify boundaries. Recheck the actual pair when changing a surface, opacity or token value.'
+      ],
+      links: [{ label: 'Variables and modes', href: '/reference/rules/modes#mode-triggers' }, { label: 'native light-dark() selection', href: 'https://www.w3.org/TR/css-color-5/#light-dark' }],
+    },
     usage: {
       lead: 'Build a card from roles: a raised surface, a divider line, and strong, body and muted text.',
-      html: '<article class="p-lg r-xl b(1) b-solid b-line-divider bg-surface-raised">\n  <h3 class="m(0) text-lg font-regular fg-text-strong">Make space for ideas</h3>\n  <p class="mt-xs mb(0) text-sm fg-text-body">A steady rhythm keeps the focus on the content.</p>\n  <p class="mt-md mb(0) pt-sm bt(1) bt-solid bt-line-divider text-xs fg-text-muted">4 min read</p>\n</article>',
+      html: '<article class="p-md r-lg b(1) b-solid b-line-divider bg-surface-raised">\n  <h3 class="m(0) text-md font-regular fg-text-strong">Make space for ideas</h3>\n  <p class="mt-xs mb(0) text-sm fg-text-body">A steady rhythm keeps the focus on the content.</p>\n  <p class="mt-md mb(0) pt-sm bt(1) bt-solid bt-line-divider text-xs fg-text-muted">4 min read</p>\n</article>',
+      keep: ['b(1)', 'b-solid', 'bt(1)', 'bt-solid'],
     },
     customize: {
       lead: 'Add a role with one value per color scheme: `--color-text-brand` creates `fg-text-brand`.',

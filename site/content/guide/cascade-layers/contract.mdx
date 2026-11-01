@@ -1,214 +1,146 @@
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
-import { overviewTemplate, baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
+import ReferenceIllustration from '~/site/reference/ReferenceIllustration'
+import { baseStylesTemplate, defaultStylesTemplate, overridingDefaultsTemplate } from './templates'
 
-## How layers control the cascade [sr-only] \{#how-layers-control-the-cascade\}
-Master CSS assigns generated rules to five named [cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/%40layer). Load the base stylesheet, normally through `@import "@master/css"`, to establish their order.
+<a id="how-layers-control-the-cascade"></a>
 
-The default `@master/css/base.css` stylesheet declares the layer order:
+Master CSS emits generated style rules into `utilities` unless a class explicitly selects another supported layer. Managed theme declarations use `theme`. Native CSS keeps its authored layer, including native rules that expand a mixin with `@apply`.
+
+This page defines layer ownership and generated rule ordering. For a component override and a DevTools diagnosis workflow, see [Cascade layers in Guide](/guide/cascade-layers).
+
+## Establishing the order
+
+The base stylesheet, exposed as `@master/css/base.css` and included by the full `@master/css` import, declares:
 
 ```css
 @layer theme, base, defaults, components, utilities;
 ```
 
-For normal declarations in these layers, later layers have higher priority:
+Load it before other rules establish these layers. CSS determines layer order by first appearance; a later order statement cannot rearrange layers already established. Generated layer blocks do not insert this statement themselves.
+
+### Normal and important declarations
+
+For competing normal declarations in these layers, `utilities` has the highest priority and `theme` the lowest. Normal unlayered author rules take precedence over all of them. `!important` reverses the order between layers and places important layered rules above important unlayered rules. This comparison is within author stylesheets; it is not the complete cascade across origins, inline styles, animations or transitions. See [CSS layer ordering](https://www.w3.org/TR/css-cascade-5/#layer-order).
+
+<ReferenceIllustration id="layer-precedence" />
+
+Layer precedence is considered before selector specificity. A more specific component selector therefore cannot defeat a normal utility declaration merely through specificity. Between declarations in the same layer, the remaining cascade criteria still matter; see [selector specificity](/reference/rules/selectors#specificity).
+
+## Layer ownership \{#the-five-layers\}
+
+<a id="theme"></a>
+<a id="base"></a>
+<a id="defaults"></a>
+<a id="components"></a>
+<a id="utilities"></a>
+
+| Layer | Generated content | Native CSS convention |
+| --- | --- | --- |
+| `theme` | Retained managed token declarations under `:root, :host` | Token defaults |
+| `base` | Classes with `@layer(base)` | Normalization and document baselines |
+| `defaults` | Classes with `@layer(defaults)` | Broad project or content defaults |
+| `components` | Classes with `@layer(components)` | Reusable product classes |
+| `utilities` | Ordinary utilities, recipes and native declaration classes; explicit `@layer(utilities)` | Local utility rules |
+
+The native CSS column describes intended responsibilities, not a restriction on which properties CSS permits in a layer. `defaults` is a project layer, not the browser's user-agent stylesheet. Token dependency delivery is covered by [Variables and modes](/reference/rules/modes#variable-lifecycle).
+
+## Selecting a generated layer \{#layer-checklist\}
+
+The class suffix accepts exactly four layer names:
 
 ```txt
-utilities > components > defaults > base > theme
+@layer(base)
+@layer(defaults)
+@layer(components)
+@layer(utilities)
 ```
 
-Normal unlayered author rules take precedence over normal layered author rules. `!important` reverses the order between layers; it also gives important layered declarations precedence over important unlayered declarations. The order above describes normal declarations, not every case in the native cascade.
+It selects the layer for the entire generated class. It does not create a sublayer or move the theme variables that class depends on. Place it with the other suffixes, before a trailing `!`.
 
-Generated CSS emits rules into those layer blocks. Native style rules that use `@apply` lower to ordinary CSS in the stylesheet that contains them. These rules keep their authored layer, or remain unlayered when no layer was specified. Generated layer blocks do not add the base order statement themselves. See the [working card comparison](/guide/cascade-layers#override-a-component-locally) for a normal utility override.
+| Form | Result |
+| --- | --- |
+| `block@layer(defaults)` | The display rule goes into `defaults` |
+| `block@layer(base)@layer(base)` | One base-layer rule; repeating the same choice is allowed |
+| `block@layer(base)@layer(utilities)` | `CLASS_SYNTAX_ERROR`: a class cannot select different layers |
+| `block@layer(theme)` | `UNKNOWN_CONDITION`: `theme` is not a generated style-layer target |
+| `block@layer(custom)` | `UNKNOWN_CONDITION`: arbitrary native layer names are not class suffix targets |
 
-## The five layers \{#the-five-layers\}
-### Theme \{#theme\}
-Use `theme` for generated CSS custom properties. Regular tokens defined in `@theme` are emitted here when a generated rule or delivered native declaration needs them. Retained tokens preserve ordered declarations and transitive dependencies under `:root, :host`. Use `@theme static` for tokens that must always ship. Native selectors and conditions provide scoped overrides; use a later layer when they must outrank default token declarations.
+Use native `@layer` syntax for project-specific layers and sublayers. Their order follows native CSS; the class suffix does not register new layer names.
 
-Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
+### Base and defaults
 
-### Base \{#base\}
-Use `base` for low-level resets, normalization, and structural document baselines. This layer should make the browser environment predictable, not express a brand or component design.
+<a id="base-is-for-normalization"></a>
 
-Use the `@layer(base)` class suffix for a generated rule, or write native CSS inside `@layer base`.
-
-### Defaults \{#defaults\}
-Use `defaults` for broad visual choices made by the project, such as the page's text color, typography inside an article, or code styling that should remain below component and utility styles. These are not the browser's built-in default styles.
-
-Use the `@layer(defaults)` class suffix or native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
-
-For example, put `button { font: inherit; }` in `base`, `body { color: var(--color-text-body); }` in `defaults`, and `.btn { display: inline-flex; }` in `components`.
-
-### Components \{#components\}
-Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write native class selectors inside `@layer components`.
-
-<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn']} element="button" label="Preview button" />
-
-These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
-
-### Utilities \{#utilities\}
-Use `utilities` for built-in utilities, animation utilities, and custom recipes written in `@utility`. Custom utilities can use native declarations, nested selectors, and `@apply` blocks.
-
-```css name=index.css
-@utility flow {
-    display: grid;
-    gap: var(--spacing-md);
-  }
-@utility content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 32rem;
-  }
-```
-
-Utilities is the last layer in the base order. Its normal declarations can override normal component declarations when both rules match the element.
-
-## A complete flow \{#a-complete-flow\}
-Add these definitions to the project CSS entry that imports `@master/css`. It defines mode-aware variables and a component; the markup below also generates base, defaults and utility rules.
-
-<ConfiguredExample source={"\n\n@theme {--color-primary:#000000; } .light {\n  --color-primary: #000000;\n}\n\n\n@theme { } .dark {\n  --color-primary: #ffffff;\n}\n\n\n@layer components {\n  .btn {\n    display: inline-flex;\n    background-color: var(--color-primary);\n  }\n}"} html={overviewTemplate} />
-
-Notice the shape of the output:
-
-- `@master/css/base.css` defines the global layer order once.
-- Theme variables are emitted in `@layer theme`.
-- The `.btn` definition is emitted in `@layer components`.
-- `flex` and `(animation-name:fade) (animation-duration:1s)` are emitted in `@layer utilities`.
-- The example’s preset keyframes are top-level. Keyframes authored inside a native layer or condition retain that container and source order.
-
-## Base is for normalization \{#base-is-for-normalization\}
-Put reset-style rules in the base layer when they should sit below normal defaults, components and utility declarations.
-
-Add base rules in the stylesheet your app loads when the reset is part of the application shell.
-
-```css name=globals.css
-@layer base {
-  ul {
-    list-style: none;
-  }
-}
-```
-
-You can also use `@layer(base)` from markup:
+A base-layer descendant rule can establish a structural baseline:
 
 <ConfiguredExample source="" html={baseStylesTemplate} />
 
-In most projects, import the default `@master/css` stylesheet; it includes [base styles](/guide/global-styles#base-layer) in the base layer.
+<a id="defaults-are-for-broad-defaults"></a>
 
-## Defaults are for broad defaults \{#defaults-are-for-broad-defaults\}
-Put brand or content defaults in the defaults layer when they should apply across selected descendants but still remain easy to override.
+A defaults-layer descendant rule can establish code typography while leaving local component and utility decisions stronger:
 
 <ConfiguredExample source="" html={defaultStylesTemplate} />
 
-Avoid using the base layer for brand or content typography:
+The `font-mono` class stays in `defaults`; its required font token remains in `theme`. The selector suffix determines the descendants that receive the declaration, independently of the layer choice.
 
-```html
-<!-- @MARK font-mono_:is(code,pre)@layer(base) -->
-<body class="font-mono_:is(code,pre)@layer(base)">…</body>
-```
+### Defaults stay below local decisions \{#summary\}
 
-Base should normalize. Defaults should express broad design defaults.
-
-## Utilities can override components \{#utilities-can-override-components\}
-With the base order loaded, normal utility declarations take precedence over normal component declarations, independently of selector specificity between those layers.
-
-Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
-
-<ConfiguredExample source={'@layer components { .btn { display: inline-flex; background-color: var(--color-blue-60); color: oklch(100% 0 none); } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
-
-Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
-
-## Defaults stay below local decisions \{#summary\}
-Defaults rules are useful for descendants because they can establish defaults without blocking local classes.
-
-For example, set paragraph text to `1rem` across an article, then override one paragraph with `(font-size:1.5rem)`.
+Here both rules target the first paragraph. Its own native declaration class goes into `utilities`, so it overrides the article's defaults-layer font size:
 
 <ConfiguredExample source="" html={overridingDefaultsTemplate} />
 
-This is the reason defaults sit before components and utilities: defaults should be broad, but final element-level decisions should stay close to the element.
+## Native rules and managed utilities
 
-## Writing regular CSS
-Regular CSS outside `@layer` follows the native cascade outside Master CSS's layer model. If you want a rule to participate in the same priority system, place it in the layer that matches its responsibility.
+<a id="a-complete-flow"></a>
+<a id="writing-regular-css"></a>
 
-```css name=app.css
-@layer defaults {
-  article :is(h1, h2, h3) {
-    font-weight: 700;
-  }
-}
+A native class inside `@layer components` remains native CSS. It is delivered by default and follows native source order within that layer; it does not gain Master selector or condition suffixes. [`@prune native`](/reference/directives/pruning) controls whether unused native selectors may be removed.
 
-@layer components {
-  .card {
-    border-radius: .75rem;
-  }
-}
-```
+<a id="utilities-can-override-components"></a>
 
-Native `@layer` blocks remain ordinary stylesheet output; they do not define on-demand classes. For on-demand managed definitions, use the explicit directive forms:
+In this example `.btn` declares `inline-flex`, while `flex` generates a normal utility declaration. With the base order established, the button uses `display: flex`:
 
-```css name=index.css
-@utility content-auto {
-    content-visibility: auto;
-  }
+<ConfiguredExample source={'@layer components {\n  .btn { display: inline-flex; }\n}'} classes={['btn', 'flex']} element="button" label="Save" />
 
-@layer components {
-  .card {
-    display: block;
-    border-radius: .75rem;
-  }
-}
-```
+An on-demand `@utility` instead registers a managed class. Its ordinary output belongs to `utilities`, but a suffix can select another supported layer:
 
-Write native declarations in the layer that owns the rule:
+<ConfiguredExample source={'@utility flow {\n  display: grid;\n  gap: var(--spacing-md);\n}'} classes={['flow@layer(defaults)']} />
 
-```css name=app.css
-.card {
-  display: block;
-  padding: var(--spacing-md);
+For utility definitions and native preservation, see [Utilities and mixins](/reference/directives/definitions).
 
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--color-neutral-90);
-  }
-}
-```
+### Mixin expansion keeps the surrounding layer
 
-## Priority within and between layers \{#priority-matrix\}
+An `@apply` inside a native rule expands declarations where it appears. It does not move that rule into `utilities`:
 
-Class order in HTML does not choose the winner. Master CSS generates a stable
-rule order; the browser then applies its native cascade to matching declarations.
-The following cases assume the base layer statement is loaded and the root font
-size is 16px:
+<ConfiguredExample source={'@mixin --inset { padding: 1.5rem; }\n@layer components {\n  .card { @apply --inset; }\n}'} classes={['card', 'p(8)']} />
+
+With the base order established, the utility's `8px` padding wins over the component's `1.5rem`. Without an enclosing layer, the native `.card` rule would remain unlayered and its normal padding would take precedence over the normal utility.
+
+Keep layer blocks outside mixin bodies and `@apply` contents; those positions do not accept them. A layer selects ownership of the whole generated rule, rather than wrapping a fragment of declarations.
+
+## Priority within a layer \{#priority-matrix\}
+
+HTML class order does not choose the winner. Master CSS gives generated rules a stable order; the browser then applies the cascade to matching declarations. Within comparable layer, selector and condition contexts, generated rules are ordered as follows:
+
+1. Recipes with multiple declarations or inner selectors and conditions.
+2. Single-declaration utilities, including fixed, token-backed and direct-value utilities.
+3. Native declaration classes.
+
+Single-declaration utilities sort by property family and coverage: a side or axis follows the whole family. For the same property and scope, named token values precede direct values. Importance, selector specificity and conditions still participate; a direct value does not universally defeat a token in another scope or layer.
+
+The examples below use the preset, the base layer statement and a `16px` root font size. Competing declarations target the same element and their conditions match.
 
 | Competing classes or rules | Result | Reason |
 | --- | --- | --- |
-| `p-md p(8)`, in either order | `padding: 8px` | A direct value overrides a token for the same property and scope. |
-| `p(8) (padding:2rem)`, in either order | `padding: 2rem` | Native declarations follow single-declaration utilities. |
-| `m-md mt(0)`, in either order | `margin-top: 0`, other sides `1rem` | A side or axis follows its whole family, whichever form registered either class. |
-| `b(2) bt(0) b-solid b-red-60` | top width `0`, other widths `2px`, solid style, `red-60` color | Border width, style and color are independent families. |
-| `p-md! p(8)` | `padding: 1rem` | Importance takes precedence over value source. |
-| `p-md! p(8)!` | `padding: 8px` | With equal importance, the direct value wins. |
-| `p(8)@layer(base) p(12)` | `padding: 12px` | Normal utilities take precedence over the base layer. |
-| `p(8)@layer(base)! p(12)!` | `padding: 8px` | Important declarations reverse layer precedence. |
-| Unlayered `.outside { padding: 32px; }` and `p(8)` | `padding: 32px` | Normal unlayered CSS takes precedence over layered CSS. |
-| Component-layer `padding: 24px !important` and `p(8)!` | `padding: 24px` | The earlier component layer wins for important declarations. |
+| `p-md p(8)`, in either order | `padding: 8px` | Direct value follows a token in the same property and scope |
+| `p(8) (padding:2rem)`, in either order | `padding: 2rem` | Native declaration follows a single-declaration utility |
+| `m-md mt(0)`, in either order | Top margin `0`; other margins `1rem` | Side follows the whole margin family |
+| `b(2) bt(0) b-solid b-red-60` | Top width `0`; other widths `2px`; solid red border | Width, style and color are independent families |
+| `p-md! p(8)` | `padding: 1rem` | Importance precedes value-source ordering |
+| `p-md! p(8)!` | `padding: 8px` | Equal importance; direct value follows token |
+| `p(8)@layer(base) p(12)` | `padding: 12px` | Normal utilities outrank base |
+| `p(8)@layer(base)! p(12)!` | `padding: 8px` | Important declarations reverse layer precedence |
+| Unlayered `.outside { padding: 32px; }` and `p(8)` | `padding: 32px` | Normal unlayered declaration outranks layered declaration |
+| Component-layer `padding: 24px !important` and `p(8)!` | `padding: 24px` | Earlier layer wins between important declarations |
 
-Direct values do not universally override tokens in other layers or scopes.
-
-Within one layer and scope, generated rules follow a fixed order: recipes with
-several declarations or inner selectors and conditions, then single-declaration
-utilities, then native declarations. Single-declaration utilities, whether fixed,
-token or direct-value classes, order by property family and then coverage, so a
-side or axis follows its whole family; for the same property a token precedes a
-direct value. Importance and native specificity still apply. Use separate classes
-for independent decisions and inspect the emitted rules when properties overlap;
-HTML class order does not resolve that overlap.
-
-## Layer checklist \{#layer-checklist\}
-Use the five layers in their declared order:
-
-1. `theme` provides generated variables.
-1. `base` normalizes the platform.
-1. `defaults` sets broad defaults.
-1. `components` holds project vocabulary from CSS-defined component classes.
-1. `utilities` holds utilities and final local adjustments.
-
-
-`@layer(...)` selects one of the four generated style layers for the entire class. It never creates a sublayer. Repeated identical choices merge; different choices report a conflict. Keep stylesheet layers outside `@apply`; mixin bodies and contents cannot contain layer blocks.
+Native rules in a layer retain their authored order; the generated-utility ordering above does not reorder those rules. Inspect the emitted CSS when declarations overlap, and use [Code linting](/guide/code-linting#no-conflicting-classes) to catch conflicting classes during authoring.
