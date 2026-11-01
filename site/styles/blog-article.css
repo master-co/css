@@ -333,6 +333,13 @@
     .blog-article-prose [data-contents-disclosure] {
       display: none;
     }
+
+    /* With the disclosure hidden, the section after it takes its own hairline again. */
+    .blog-article-prose > [data-contents-disclosure] + hr + a[id]:empty + h2,
+    .blog-article-prose > [data-contents-disclosure] + hr + h2,
+    .blog-article-prose > [data-contents-disclosure] + h2 {
+      --section-rule: block;
+    }
   }
 
   /* Below the margin contents, the post's contents disclosure stands in (whatever the documentation's own switch

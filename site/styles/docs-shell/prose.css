@@ -65,7 +65,7 @@
 
   /* Phones have no margin for the heading anchor: it follows the heading instead. */
   /* Narrow screens put the anchor after the heading, so the heading leaves it room inside the column. */
-  @media (width < 40rem) { .ui-prose > :is(h2, h3):has(> .ui-anchor) { max-width: calc(100% - 1.875rem); } .ui-prose > :is(h2, h3) > .ui-anchor { right: auto; left: 100%; translate: .375rem -50%; } }
+  @media (width < 40rem) { .ui-prose > :is(h2, h3):has(> .ui-anchor) { max-width: calc(100% - 1.875rem); } .ui-prose > :is(h2, h3) > .ui-anchor { right: auto; left: 100%; translate: .375rem -50%; } .ui-prose > h2:has(> .ui-anchor) { --rule-end: -1.875rem; } }
 
   .ui-prose ::selection { background: color-mix(in oklab, var(--ui-text-strong) 16%, transparent); }
 

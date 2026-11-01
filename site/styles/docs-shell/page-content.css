@@ -26,5 +26,11 @@
   [data-contents-disclosure] { margin-block: 0 var(--ui-space-xl); }
   [data-contents-disclosure] > .ui-toc { padding: 0 0 var(--ui-space-md); }
   @media (width >= 80rem) { [data-contents-disclosure] { display: none; } }
+  /* Hidden beside the rail, the disclosure no longer closes the text before the next section, so that heading takes its own hairline again. The page head
+     already parts the page from its first section, and the blog switches its disclosure by its own width. */
+  @media (width >= 80rem) {
+    .ui-docs-article > [data-contents-disclosure]:not(:first-child, .ui-pagehead + *) + h2, .ui-docs-article > [data-contents-disclosure]:not(:first-child, .ui-pagehead + *) + a[id]:empty + h2,
+    .ui-docs-article > [data-contents-disclosure]:not(:first-child, .ui-pagehead + *) + hr + h2, .ui-docs-article > [data-contents-disclosure]:not(:first-child, .ui-pagehead + *) + hr + a[id]:empty + h2 { --section-rule: block; }
+  }
   @media print { [data-contents-disclosure] { display: none; } }
 }

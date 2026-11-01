@@ -15,6 +15,14 @@
   /* A subsection that opens its section sits close under it, as one heading group. */
   .ui-prose > h2 + h3, .ui-prose > h3 + :is(h3, h4) { margin-top: calc(var(--line) * .5); }
   .ui-prose > :is(h2, h3) { position: relative; width: fit-content; scroll-margin-top: 5rem; }
+  /* A section opens on one hairline across the reading measure, closer to its heading than to the text before it. */
+  .ui-prose > h2 { width: auto; }
+  .ui-prose > h2:not(:first-child)::before { content: ""; display: var(--section-rule, block); position: absolute; top: calc(var(--line) * -.875); inset-inline: 0 var(--rule-end, 0); height: 1px; background: var(--ui-line-hair); pointer-events: none; }
+  /* The page's first section keeps only its space, and so does one after a disclosure, which already closes on a hairline;
+     legacy anchors and space-only rules in between do not count. */
+  .ui-prose > :is(a[id]:empty, .sr-only):first-child + h2,
+  .ui-prose > .ui-disclosure + h2, .ui-prose > .ui-disclosure + a[id]:empty + h2,
+  .ui-prose > .ui-disclosure + hr + h2, .ui-prose > .ui-disclosure + hr + a[id]:empty + h2 { --section-rule: none; }
   .ui-anchor { position: absolute; right: 100%; top: 50%; translate: -.375rem -50%; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: var(--ui-radius-sm); color: var(--ui-text-disabled); font: var(--ui-weight-regular) .875rem/1 var(--font-family-mono); opacity: 0; text-decoration: none; transition: opacity var(--ui-duration-quick), color var(--ui-duration-quick); }
   .ui-anchor:hover { color: var(--ui-text-muted); }
   .ui-prose > :is(h2, h3):is(:hover, :target, :focus-within) > .ui-anchor { opacity: 1; }
