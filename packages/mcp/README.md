@@ -76,7 +76,7 @@ Pass `designSystem` to `mastercss_scan_project` with the default project context
 }
 ```
 
-The report covers project-owned CSS reached from the project's Master CSS entries. It includes authored `var()` reference ranges in UTF-16 offsets, selector and at-rule ancestry, source importers, token-family collisions, and diagnostics for the supplied metadata and raw-value policy. Ordinary native CSS can reference the same `@theme` tokens as Master CSS classes. Unregistered custom properties may come from native CSS or inheritance and are not automatically missing-token errors.
+The report covers project-owned CSS reached from the project's Master CSS entries, plus any `routeStylesheets` globs for stylesheets imported from JavaScript. It includes authored `var()` reference ranges in UTF-16 offsets, selector and at-rule ancestry, source importers, token-family collisions, each component class's attribute vocabulary (`components`), and diagnostics for the supplied metadata and raw-value policy. Ordinary native CSS can reference the same `@theme` tokens as Master CSS classes. Unregistered custom properties may come from native CSS or inheritance and are not automatically missing-token errors.
 
 Metadata and policies are analysis inputs: they do not change generated CSS, manifests, or runtime programs. Unrecognized option fields are rejected. Omit `rawValuePolicy` to skip native declaration raw-value checks. Read `project.excluded` and `coverage`: package sources and files outside the project root are excluded, importer links include reference-only context, and the report does not establish DOM usage, cascade winners, computed styles, or browser behavior. `includeSnapshot` remains available in the same call.
 

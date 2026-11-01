@@ -313,3 +313,58 @@ fn decoded_function_and_property_names_preserve_original_ranges() {
         assert_eq!(slice_utf16(content, &reference.range), reference.token);
     }
 }
+
+#[test]
+fn components_collect_attribute_vocabulary_from_class_compounds() {
+    let content = r#"@layer components {
+  .button { color: var(--color-brand); }
+  .button[data-variant="primary"], .button[data-variant=quiet]:hover { color: red; }
+  .button[data-size="sm"][disabled], .tray > .stage[data-padding="none"] { opacity: .5; }
+  .button:where(:hover, [data-state="hover"]) { color: blue; }
+  .card .button[data-tone='danger'] { color: red; }
+  .field [data-hint="x"] { color: red; }
+  .menu-item[aria-checked="true"]::after { content: ""; }
+  .dialog[open] { display: block; }
+}
+@mixin --sample { .button[data-variant="mixin"] { color: red; } }"#;
+    let report = inspect(content, json!({}));
+    let vocabulary = report
+        .components
+        .iter()
+        .map(|component| {
+            (
+                component.class_name.as_str(),
+                component
+                    .attributes
+                    .iter()
+                    .map(|attribute| {
+                        format!(
+                            "{}={:?}{}",
+                            attribute.name,
+                            attribute.values,
+                            if attribute.presence { "+presence" } else { "" }
+                        )
+                    })
+                    .collect::<Vec<_>>(),
+            )
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        vocabulary,
+        [
+            (
+                "button",
+                vec![
+                    "data-size=[\"sm\"]".to_owned(),
+                    "data-tone=[\"danger\"]".to_owned(),
+                    "data-variant=[\"primary\", \"quiet\"]".to_owned(),
+                    "disabled=[]+presence".to_owned(),
+                ]
+            ),
+            ("dialog", vec!["open=[]+presence".to_owned()]),
+            ("menu-item", vec!["aria-checked=[\"true\"]".to_owned()]),
+            ("stage", vec!["data-padding=[\"none\"]".to_owned()]),
+        ]
+    );
+    assert_eq!(report.components[0].sources, ["app.css"]);
+}

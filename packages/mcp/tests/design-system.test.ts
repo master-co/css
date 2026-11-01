@@ -62,9 +62,10 @@ test('scan opts into authored stylesheet policy reports with validated MCP trans
     ]) {
       expect((await client.callTool({ name: tool.name, arguments: { designSystem } })).isError).toBe(true)
     }
-    writeFileSync(join(root, 'route.css'), '.hero{color:var(--color-brand)}')
+    writeFileSync(join(root, 'route.css'), '.hero{color:var(--color-brand)}.hero[data-tone="calm"]{color:var(--color-next)}')
     const route = (await call({ designSystem: { version: 1 }, routeStylesheets: ['route.css'] })).result.data.designSystem
     expect(route.project.routeStylesheets).toEqual([join(root, 'route.css')])
+    expect(route.components).toContainEqual({ className: 'hero', attributes: [{ name: 'data-tone', values: ['calm'], presence: false }], sources: [join(root, 'route.css')] })
     expect(route.references).toContainEqual(expect.objectContaining({ source: join(root, 'route.css'), token: '--color-brand', importers: [] }))
     expect((await client.callTool({ name: tool.name, arguments: { routeStylesheets: ['route.css'] } })).isError).toBe(true)
     expect((await client.callTool({ name: tool.name, arguments: { designSystem: { version: 1 }, routeStylesheets: ['index.html'] } })).isError).toBe(true)

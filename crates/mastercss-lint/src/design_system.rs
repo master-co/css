@@ -98,6 +98,82 @@ pub struct DesignSystemCollision {
     pub properties: Vec<String>,
 }
 
+/// A component class's attribute vocabulary, read from the selectors that style it.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DesignSystemComponent {
+    pub class_name: String,
+    pub attributes: Vec<DesignSystemComponentAttribute>,
+    pub sources: Vec<String>,
+}
+
+/// `values` lists exact `[name="value"]` matches; `presence` means a bare `[name]` selector exists.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DesignSystemComponentAttribute {
+    pub name: String,
+    pub values: Vec<String>,
+    pub presence: bool,
+}
+
+#[derive(Debug, Default)]
+pub(crate) struct ComponentVocabulary {
+    attributes: BTreeMap<String, BTreeMap<String, (BTreeSet<String>, bool)>>,
+    sources: BTreeMap<String, BTreeSet<String>>,
+}
+
+impl ComponentVocabulary {
+    pub(crate) fn record(
+        &mut self,
+        source: &str,
+        class_name: &str,
+        attribute: &str,
+        value: Option<&str>,
+    ) {
+        let entry = self
+            .attributes
+            .entry(class_name.to_owned())
+            .or_default()
+            .entry(attribute.to_owned())
+            .or_default();
+        match value {
+            Some(value) => {
+                entry.0.insert(value.to_owned());
+            }
+            None => entry.1 = true,
+        }
+        self.sources
+            .entry(class_name.to_owned())
+            .or_default()
+            .insert(source.to_owned());
+    }
+
+    fn into_components(self) -> Vec<DesignSystemComponent> {
+        let mut sources = self.sources;
+        self.attributes
+            .into_iter()
+            .map(|(class_name, attributes)| DesignSystemComponent {
+                sources: sources
+                    .remove(&class_name)
+                    .unwrap_or_default()
+                    .into_iter()
+                    .collect(),
+                attributes: attributes
+                    .into_iter()
+                    .map(
+                        |(name, (values, presence))| DesignSystemComponentAttribute {
+                            name,
+                            values: values.into_iter().collect(),
+                            presence,
+                        },
+                    )
+                    .collect(),
+                class_name,
+            })
+            .collect()
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct DesignSystemCoverage {
     pub scope: &'static str,
@@ -121,6 +197,7 @@ pub struct DesignSystemReport {
     pub tokens: Vec<DesignSystemToken>,
     pub references: Vec<StylesheetTokenReference>,
     pub collisions: Vec<DesignSystemCollision>,
+    pub components: Vec<DesignSystemComponent>,
     pub diagnostics: Vec<DesignSystemDiagnostic>,
     pub coverage: DesignSystemCoverage,
     pub summary: DesignSystemSummary,
@@ -167,7 +244,9 @@ impl LintSession {
             .transpose()?;
         let mut diagnostics = metadata_diagnostics(&request.metadata, &names);
         let mut references = Vec::new();
+        let mut vocabulary = ComponentVocabulary::default();
         for source in &request.stylesheets {
+            stylesheet::collect_components(source, &mut vocabulary);
             stylesheet::analyze(
                 self,
                 source,
@@ -244,13 +323,15 @@ impl LintSession {
                 .filter(|item| item.severity == "warning")
                 .count(),
         };
-        Ok(DesignSystemReport { version: 1, tokens, references, collisions, diagnostics, summary,
+        let components = vocabulary.into_components();
+        Ok(DesignSystemReport { version: 1, tokens, references, collisions, components, diagnostics, summary,
             coverage: DesignSystemCoverage { scope: "provided-stylesheets", browser: "not-checked", notes: vec![
                 "References are authored declaration occurrences, not proof of DOM usage, cascade winners, computed values or visual behavior.".into(),
                 "Only supplied sources are analyzed. Importers are source-graph predecessors, including references, not delivery edges.".into(),
                 "Utility and mixin definition bodies are excluded; their parameters require compiler binding. Theme token dependencies are included.".into(),
                 "Raw-value policy checks only token-backed native properties and top-level value components. Complete var() components, including fallbacks, are exempt; CSS grammar and browser support are not checked.".into(),
                 "Unregistered custom-property references may resolve through ordinary CSS, inheritance or external sources; they are not missing-token errors.".into(),
+                "Components list attribute selectors written in the same compound as a class, outside functional pseudo-classes; nested `&` selectors and markup usage are not checked.".into(),
             ] },
         })
     }

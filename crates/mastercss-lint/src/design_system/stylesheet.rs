@@ -236,3 +236,103 @@ fn raw_segments(
     }
     segments
 }
+
+/// Records `[name="value"]` and `[name]` selectors written in the same compound as a class:
+/// `.button[data-variant="primary"]` gives `button` a `data-variant` value. Functional
+/// pseudo-classes such as `:where()` and rules inside `@mixin` or `@utility` are skipped.
+pub(super) fn collect_components(
+    source: &DesignSystemStylesheet,
+    vocabulary: &mut ComponentVocabulary,
+) {
+    let tokens = tokenize_css_syntax(&source.content);
+    let statements = collect_css_syntax_statements(&tokens);
+    let index = Utf16Index::new(&source.content);
+    for statement in statements
+        .iter()
+        .filter(|statement| statement.has_block && !statement.declaration)
+    {
+        let Some(first) = tokens.get(statement.tokens.start) else {
+            continue;
+        };
+        if matches!(first.kind, Kind::AtKeyword(_)) {
+            continue;
+        }
+        if ancestry(&source.content, &index, &tokens, &statements, statement)
+            .iter()
+            .any(|parent| matches!(parent.name.as_deref(), Some("mixin" | "utility")))
+        {
+            continue;
+        }
+        let mut classes = Vec::<&str>::new();
+        let mut attributes = Vec::<(&str, Option<&str>)>::new();
+        let mut flush = |classes: &mut Vec<&str>, attributes: &mut Vec<(&str, Option<&str>)>| {
+            for class_name in classes.iter() {
+                for (name, value) in attributes.iter() {
+                    vocabulary.record(&source.source, class_name, name, *value);
+                }
+            }
+            classes.clear();
+            attributes.clear();
+        };
+        let end = statement.tokens.end;
+        let mut cursor = statement.tokens.start;
+        let mut previous_end = tokens[cursor].bytes.start;
+        while cursor < end {
+            let token = &tokens[cursor];
+            if token.bytes.start != previous_end
+                || matches!(token.kind, Kind::Delim('>' | '+' | '~' | ','))
+            {
+                flush(&mut classes, &mut attributes);
+            }
+            match &token.kind {
+                Kind::Delim('.') => {
+                    if let Some(next) = tokens.get(cursor + 1)
+                        && next.bytes.start == token.bytes.end
+                        && let Kind::Ident(name) = &next.kind
+                    {
+                        classes.push(name);
+                        previous_end = next.bytes.end;
+                        cursor += 2;
+                        continue;
+                    }
+                }
+                Kind::Delim('[') => {
+                    let close = token.close.unwrap_or(end).min(end);
+                    let inner = &tokens[cursor + 1..close];
+                    match inner {
+                        [name] => {
+                            if let Kind::Ident(name) = &name.kind {
+                                attributes.push((name, None));
+                            }
+                        }
+                        [name, equals, value] if matches!(equals.kind, Kind::Delim('=')) => {
+                            if let (Kind::Ident(name), Kind::Ident(value) | Kind::String(value)) =
+                                (&name.kind, &value.kind)
+                            {
+                                attributes.push((name, Some(value)));
+                            }
+                        }
+                        _ => {}
+                    }
+                    previous_end = tokens
+                        .get(close)
+                        .map_or(token.bytes.end, |close| close.bytes.end);
+                    cursor = close + 1;
+                    continue;
+                }
+                Kind::Function(_) | Kind::Delim('(') => {
+                    let close = token.close.unwrap_or(end).min(end);
+                    previous_end = tokens
+                        .get(close)
+                        .map_or(token.bytes.end, |close| close.bytes.end);
+                    cursor = close + 1;
+                    continue;
+                }
+                _ => {}
+            }
+            previous_end = token.bytes.end;
+            cursor += 1;
+        }
+        flush(&mut classes, &mut attributes);
+    }
+}

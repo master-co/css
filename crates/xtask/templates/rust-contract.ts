@@ -637,11 +637,20 @@ export interface MasterCSSDesignSystemCollision {
   properties: string[]
 }
 
+export interface MasterCSSDesignSystemComponent {
+  className: string
+  /** `values` are exact `[name="value"]` matches; `presence` means a bare `[name]` selector exists. */
+  attributes: { name: string, values: string[], presence: boolean }[]
+  sources: string[]
+}
+
 export interface MasterCSSDesignSystemReport {
   version: 1
   tokens: { name: string, metadata?: MasterCSSDesignTokenMetadata }[]
   references: MasterCSSStylesheetTokenReference[]
   collisions: MasterCSSDesignSystemCollision[]
+  /** Attribute vocabulary per component class, from selectors such as `.button[data-variant="primary"]`. */
+  components: MasterCSSDesignSystemComponent[]
   diagnostics: MasterCSSDesignSystemDiagnostic[]
   coverage: { scope: 'provided-stylesheets', browser: 'not-checked', notes: string[] }
   summary: { stylesheets: number, tokens: number, references: number, collisions: number, errors: number, warnings: number }

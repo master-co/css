@@ -276,5 +276,6 @@ export type {
   MasterCSSStylesheetTokenReference,
   MasterCSSDesignSystemDiagnostic,
   MasterCSSDesignSystemCollision,
+  MasterCSSDesignSystemComponent,
   MasterCSSDesignSystemReport
 } from './protocol'

@@ -45,6 +45,11 @@ export const designSystemReport = z.object({
     namespaces: strings,
     properties: strings
   })),
+  components: z.array(z.object({
+    className: z.string(),
+    attributes: z.array(z.object({ name: z.string(), values: strings, presence: z.boolean() })),
+    sources: strings
+  })),
   diagnostics: z.array(z.object({
     code: z.string(),
     severity: z.enum(['error', 'warning', 'information']),

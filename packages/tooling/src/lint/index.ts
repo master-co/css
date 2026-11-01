@@ -19,6 +19,7 @@ export type {
   MasterCSSDesignTokenMetadata,
   MasterCSSDesignSystemDiagnostic,
   MasterCSSDesignSystemCollision,
+  MasterCSSDesignSystemComponent,
   MasterCSSStylesheetTokenReference,
   MasterCSSStylesheetAncestor
 } from '@master/css-binding/tooling'
