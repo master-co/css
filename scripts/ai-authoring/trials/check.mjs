@@ -3,11 +3,12 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { loadProjectManifest } from '@master/css-compiler/project'
-import { compileCSSSync } from '@master/css-compiler/node'
-import { createToolingSessionSync } from '@master/css-tooling/node'
+import { inspectPageClasses, compareStyleEvidence } from '../browser-diagnostics.mjs'
 
 export async function check(root, task, browser, repository, answer = '', baselineRoot = root) {
   const checks = []
+  let classDiagnostics = null
+  const diagnosticRequests = []
   const add = (kind, id, pass, actual) => checks.push({ kind, id, pass: Boolean(pass), actual })
   let invalidClasses = null, buildError = null, masterClasses = [], manifest = null
   const html = readFileSync(join(root, 'index.html'), 'utf8')
@@ -30,13 +31,9 @@ export async function check(root, task, browser, repository, answer = '', baseli
   try {
     await page.goto(pathToFileURL(join(root, 'index.html')).href)
     if(manifest) {
-      using tooling = createToolingSessionSync({ manifest: manifest.manifest })
-      const classes = await page.locator('[class]').evaluateAll(elements => [...new Set(elements.flatMap(el => [...el.classList]))])
-      const native = new Set(manifest.nativeClassNames ?? [])
-      const inlineStyles = await page.locator('style').evaluateAll(elements => elements.filter(element => element.sheet).map(element => element.textContent || ''))
-      for (const css of inlineStyles) for (const name of compileCSSSync(css).nativeClassNames) native.add(name)
-      masterClasses = classes.filter(name => tooling.inspectClassName(name).matchStatus === 'matched')
-      const invalid = classes.filter(name => !native.has(name) && tooling.inspectClassName(name).matchStatus !== 'matched')
+      classDiagnostics = await inspectPageClasses(page, manifest)
+      masterClasses = classDiagnostics.classes.filter(item => item.status === 'generated').map(item => item.className)
+      const invalid = classDiagnostics.unresolved.map(item => item.className)
       invalidClasses = invalid.length
       add('styling', 'valid-classes', invalid.length === 0, invalid)
     }
@@ -173,6 +170,15 @@ export async function check(root, task, browser, repository, answer = '', baseli
           }
           const actual = await snapshot(page), expected = await snapshot(original)
           add('styling', `${scheme}-${width}-${state}`, JSON.stringify(actual) === JSON.stringify(expected), actual.flatMap((node,i)=>Object.keys(node).filter(k=>node[k]!==expected[i]?.[k]).map(k=>({node:i,property:k,actual:node[k],expected:expected[i]?.[k]}))))
+          for (const difference of checks.at(-1).actual) {
+            const key = `${state}:${difference.node}`
+            let request = diagnosticRequests.find(item => item.key === key)
+            if (!request) {
+              request = { key, check: checks.at(-1).id, selector: 'main *', index: difference.node, properties: [], width, colorScheme: scheme, state, stateSelector: '#target' }
+              diagnosticRequests.push(request)
+            }
+            if (request.check === checks.at(-1).id && !request.properties.includes(difference.property)) request.properties.push(difference.property)
+          }
         }
       }
       if(task==='tailwind-hover') {
@@ -205,6 +211,24 @@ export async function check(root, task, browser, repository, answer = '', baseli
   finally { await context.close() }
   const verdict = kind => checks.some(c=>c.kind===kind) ? checks.filter(c=>c.kind===kind).every(c=>c.pass) : !buildError
   const result = { functional:verdict('functional'),styling:verdict('styling'),accessibility:verdict('accessibility'),browser:checks.every(c=>c.pass)?'passed':'failed',invalidClasses,checks,buildError }
+  // Replay only after scoring is complete. CDP inspection must not stretch the
+  // original transition samples or change acceptance/repair verdicts.
+  const evidence = []
+  for (const request of diagnosticRequests.slice(0, 6)) {
+    try {
+      evidence.push({ check: request.check, ...await compareStyleEvidence(browser, {
+        ...request, source: pathToFileURL(join(baselineRoot, 'source.html')).href,
+        target: pathToFileURL(join(root, 'index.html')).href
+      }) })
+    } catch (error) { evidence.push({ check: request.check, status: 'unavailable', error: error.message }) }
+  }
+  result.diagnostics = {
+    version: 1, unresolvedClasses: classDiagnostics?.unresolved ?? null,
+    classCoverage: classDiagnostics?.coverage ?? 'Manifest unavailable; classes were not checked.',
+    evidence, omittedGroups: Math.max(0, diagnosticRequests.length - evidence.length),
+    coverage: 'Read-only Chromium rule evidence from fresh state replays after scoring. Up to six element/state groups, at their first failing viewport/theme. Timing and script state may differ from the scored sample; computed differences in checks remain authoritative.'
+  }
+  writeFileSync(join(root, 'diagnostics.json'), JSON.stringify(result.diagnostics, null, 2))
   writeFileSync(join(root,'acceptance.json'),JSON.stringify(result,null,2))
   return result
 }

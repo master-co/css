@@ -25,7 +25,7 @@ const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:
 const digest=x=>createHash('sha256').update(x).digest('hex')
 const toolVersion=digest(await readFile(join(repository,'packages/binding/artifacts/mastercss.node')))
 const corpusHash=digest(await readFile(new URL('fixtures.mjs',import.meta.url)))
-const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
+const harnessHashes=Object.fromEntries(await Promise.all(['run.mjs','protocol.mjs','compare.mjs','fixtures.mjs','check.mjs','control.mjs','../browser-diagnostics.mjs','../evaluate.mjs','../tasks.json'].map(async file=>[file,digest(await readFile(new URL(file,import.meta.url)))])))
 const tailwindVersion=JSON.parse(await readFile(join(repository,'node_modules/tailwindcss/package.json'),'utf8')).version
 const skillRoot=join(repository,'skills/master-css')
 const skillVariants={},skillContents={}
@@ -131,7 +131,7 @@ async function trial({id,task,arm,model,repeat}) {
   let verdict,repairRounds=0
   for(let attempt=0;attempt<=2;attempt++) {
     repairRounds=attempt
-    const feedback=attempt?`\n\nIndependent checks failed: ${JSON.stringify(verdict.checks.filter(c=>!c.pass))}. Repair the files; preserve unrelated behavior.`:''
+    const feedback=attempt?`\n\nIndependent checks failed: ${JSON.stringify(verdict.checks.filter(c=>!c.pass))}. Read diagnostics.json for unresolved class locations and source/target computed values, matched rules, layers and ancestors. Matched rules are candidates, not proven cascade winners; replay values may differ during transitions. Repair the files; preserve unrelated behavior.`:''
     const run=await invoke(work,model,prompt+feedback,folder,attempt,arm)
     if(run.unavailable||run.hostSkillRead) infrastructureFailure={id,attempt,reason:run.hostSkillRead?'Unexpected personal skill access':'Model service or MCP unavailable'}
     attempts.push(run)

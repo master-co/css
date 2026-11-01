@@ -387,8 +387,9 @@ This sample shows no improvement in success or repair count. After-version input
 tokens were 5.0% higher on first attempts and 25.1% higher including repairs.
 Counts include cache hits; these are not billing estimates or evidence of a general
 regression. Retain the factual guidance without claiming measured effectiveness.
-Next evaluate source-to-target rule-provenance diagnostics for inherited values
-and unresolved classes. Reading a reference alone did not ensure its application.
+The [browser diagnostic workflow](browser-diagnostics.md) now exposes computed
+values, matching rules, ancestors and unresolved classes for repair feedback.
+Its effect on model success remains unmeasured; reading guidance was insufficient.
 
 External `analysis.json` and `audit.json` retain the full comparison and failure
 properties alongside immutable skill versions, prompts, events and all snapshots.
