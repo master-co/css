@@ -104,9 +104,9 @@ Explicit play, pause and replay using browser animations.
 
 <DocumentOptionEntry name="DemoViewport">
 
-**Interface:** `title`, `document` or `src`, `responsive`, `widthPresets`, `theme`, `print`, `motion`, `initialTheme`, `inspect`, `height`, `maxWidth`, `sizing`
+**Interface:** `title`, `document` or `src`, `responsive`, `chrome`, `widthPresets`, `theme`, `print`, `motion`, `initialTheme`, `inspect`, `height`, `maxWidth`, `sizing`
 
-An isolated iframe; width controls resize the actual viewport.
+An isolated iframe; width controls resize the actual viewport. Browser chrome (window dots, never an address) follows `responsive`; other previews stay plain. Add `theme` only when the lesson compares color schemes.
 
 `Fit` uses the available width up to `maxWidth`. The slider and its live reading describe that same physical viewport. `DemoContainer` applies the same limit to its local wrapper while the page viewport stays unchanged.
 
@@ -427,11 +427,11 @@ Use touch input to test `touch-action`; mouse dragging cannot reproduce gesture 
 ---
 
 
-## Configured examples \{#configured-examples\}
+## Examples with project CSS \{#configured-examples\}
 
 
 Use `DemoConfiguredExample` when a preview needs project tokens or managed classes.
-The same configuration and literal HTML supply the live iframe, visible code and
+The same project CSS and literal HTML supply the live iframe, visible code and
 complete generated CSS. Each preview owns its stylesheet and cannot change the
 surrounding document's theme, component classes or cascade.
 
@@ -444,7 +444,7 @@ surrounding document's theme, component classes or cascade.
 <ProjectStyleExample name="layers" />
 ```
 
-For a new lesson, supply its actual configuration and complete HTML:
+For a new lesson, supply its actual project CSS and complete HTML:
 
 ```jsx
 <DemoConfiguredExample name="project-spacing" title="A project spacing token"
@@ -454,7 +454,7 @@ For a new lesson, supply its actual configuration and complete HTML:
 ```
 
 `theme` adds a real document-class switch; define explicit `.light` and `.dark` selectors outside `@theme` in the
-configuration when teaching that behavior. The default has no controls. `code={false}`
+project CSS when teaching that behavior. The default has no controls. `code={false}`
 is for a gallery specimen whose usage link leads to the complete source. These are
 server components; only the existing iframe controls hydrate. Use trusted site-authored
 HTML with literal classes. Content-sized previews suit ordinary document flow; use

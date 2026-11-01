@@ -9,8 +9,8 @@ export default function ConfiguredExample(props: Props) {
   const html = props.html ?? configuredExampleHTML(props.classes!, 'element' in props ? props.element : 'div', 'label' in props ? props.label : 'Example')
   const classes = props.classes ?? configuredMarkupClasses(html)
   return <>
-    {props.source && <Code lang="css" name="Configuration">{props.source}</Code>}
-    <Code lang="html" name="HTML">{html}</Code>
+    {props.source && <Code lang="css" beautify>{props.source}</Code>}
+    <Code lang="html">{html}</Code>
     <GeneratedCSS><Code lang="css" beautify>{configuredExampleCSS(props.source, classes)}</Code></GeneratedCSS>
   </>
 }

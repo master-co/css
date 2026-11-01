@@ -1,5 +1,7 @@
 The shared code window keeps source text, tab names and copy feedback together. Switch tabs with arrow keys; the selected insert keeps a stable width.
 
+A bar appears only when it carries information: tabs that switch between sources, a real file path, or the two labels of a before/after pair. Do not name a block after its language (`HTML`, `CSS`, `TypeScript`) or its tool (`Terminal`, `prompt`); a lone block keeps the corner copy and no bar.
+
 Copy shows a pending request and confirms success after the clipboard write finishes. Repeating the action while it is pending keeps one request. If you switch tabs during a write, the confirmation still names the source you copied. A denied write leaves the source selectable and explains how to copy it manually.
 
 ### Block code

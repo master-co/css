@@ -21,7 +21,10 @@ export interface DemoConfiguredExampleProps {
   widthPresets?: readonly { label: string; width: number }[]
 }
 
-/** One tray: the preview, its configuration and markup, and the closed generated stylesheet share the same literal source. */
+/**
+ * One tray: the preview, its CSS and markup, and the closed generated stylesheet share the same literal source.
+ * The CSS is beautified: MDX strips up to two spaces from each line of a multi-line attribute literal.
+ */
 export default function DemoConfiguredExample({ name, title, source, html, caption, theme, code = true, shadow = false, responsive, motion, widthPresets }: DemoConfiguredExampleProps) {
   const section = { page: 'project-styles', id: name, title, html: [html], css: source, classes: [], classLists: [], highlighted: [] }
   const generated = configuredExampleCSS(source, configuredMarkupClasses(html))
@@ -29,8 +32,8 @@ export default function DemoConfiguredExample({ name, title, source, html, capti
   const document = demoDocument(section, { html: preview, caption, bodyClass: 'p-md p(8)@media(width<240px)', motion })
   return <Demo title={title} caption={caption} frame="none" data-project-style={name} source={code && <>
     {source.trim()
-      ? <CodeTabs>{[{ name: 'Configuration', lang: 'css', code: source }, { name: 'HTML', lang: 'html', beautify: true, code: html }]}</CodeTabs>
-      : <Code lang="html" name="HTML" beautify>{html}</Code>}
+      ? <CodeTabs>{[{ name: 'CSS', lang: 'css', beautify: true, code: source }, { name: 'HTML', lang: 'html', beautify: true, code: html }]}</CodeTabs>
+      : <Code lang="html" beautify>{html}</Code>}
     <DemoGeneratedCSS><Code lang="css" beautify>{generated}</Code></DemoGeneratedCSS>
   </>}>
     <DemoViewport title={title} document={document} theme={theme} responsive={responsive} widthPresets={widthPresets} motion={motion} sizing="content" />

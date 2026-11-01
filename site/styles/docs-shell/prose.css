@@ -15,19 +15,23 @@
   /* A surface hangs by up to 2rem but always leaves a 1rem gutter to the window. */
   @media (width >= 52rem) { .ui-prose.ui-docs-article { --prose-bleed: min(2rem, var(--docs-gutter) - 1rem); } }
 
-  :is(.ui-tray, .ui-code, .ui-table, .ui-index, figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(
+  :is(.ui-tray, .ui-code, .ui-table, .ui-params, .ui-prompt, .ui-tree, figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(
     .ui-prose > :is(div, section, site-island):not([class]) > *,
     .ui-prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
   ),
   :is(figure, img, video, iframe, picture, p:has(> img:only-child, > video:only-child, > picture:only-child, > a:only-child > img:only-child)):is(.ui-prose > *) {
     margin-inline: calc(var(--prose-bleed) * -1);
   }
+  /* A component that wraps its surface in an unclassed element keeps the article's line of air around it, as a direct
+     child would (the margins collapse through the wrapper). */
+  :is(.ui-tray, .ui-code, .ui-table, .ui-params, .ui-prompt, .ui-tree):is(
+    .ui-prose > :is(div, section, site-island):not([class]) > *,
+    .ui-prose > :is(div, section, site-island):not([class]) > :is(div, site-island):not([class]) > *
+  ) { margin-block: var(--line); }
   /* Document steps reach the hanging edge on the end side, so their code ends where every other surface ends. */
   .ui-docs-article > .ui-steps[data-variant="document"] { margin-right: calc(var(--prose-bleed) * -1); }
   /* A result shown after a step (a preview) hangs on both sides like any surface; the rail runs on into it. */
   .ui-docs-article > .ui-steps[data-variant="document"] > :not(li) { margin: 0 0 0 calc(var(--prose-bleed) * -1); }
-  /* Index cards are links, not frames: they keep the column's edges. */
-  .ui-docs-article .ui-index { margin-inline: 0; }
   :is(img, video, iframe):is(.ui-prose > *, .ui-prose > :is(div, section, site-island):not([class]) > *) { width: calc(100% + var(--prose-bleed) * 2); max-width: none; }
   /* A table its author wrapped in a scroll region bleeds as the region. */
   .ui-prose > [role="region"]:has(> :is(.ui-table, table)) { margin: var(--ui-space-xl) calc(var(--prose-bleed) * -1); }

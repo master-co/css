@@ -11,7 +11,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
       Install Master CSS [CLI](https://www.npmjs.com/package/@master/css-cli) as a development dependency.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm install -D @master/css-cli@rc
       ```
     </StepR>
@@ -33,7 +33,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
       Run the command to scan sources and write `master.css`.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npx @master/css-cli generate "index.html" --output master.css --watch
       ```
     </StepR>
@@ -66,7 +66,7 @@ Generate a static stylesheet from your HTML without adding a bundler. The CLI sc
 
 The watch command stays running and updates the output when a selected source changes. For a production build, omit `--watch` so the command writes its output and exits:
 
-```bash name=Terminal
+```bash
 npx @master/css-cli generate "index.html" --output master.css
 ```
 

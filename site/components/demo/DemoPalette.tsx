@@ -12,7 +12,7 @@ export default function DemoPalette({ families }: { families?: string[] }) {
     if (!groups.has(family)) groups.set(family, [])
     groups.get(family)!.push({ name: variable.name!, step: Number(step), value: variable.value })
   }
-  return <Demo title="Preset palette" padding="sm" data-foundation-palette caption="Choose a swatch to copy its CSS variable reference. Each swatch shows the fixed preset value in both themes.">
+  return <Demo title="Preset palette" padding="sm" data-foundation-palette caption="Each swatch shows the fixed preset value in both themes.">
     <div className="w-full"><DemoCopyGroup><div className="ui-palette">
       {[...groups].map(([family, colors]) => <div key={family} className="ui-palette-row" role="group" aria-label={`${family} palette`}>
         <span>{family}</span>

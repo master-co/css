@@ -11,7 +11,7 @@ Lit components normally render into a shadow root. Document styles cannot reach 
       In an existing [Lit project](https://lit.dev/docs/getting-started/) built with Vite, run the installer from the project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework lit --yes
       ```
     </StepR>
@@ -63,7 +63,7 @@ Static mode needs no Master CSS browser runtime. Lit still needs JavaScript to c
 
 For class names first introduced in the browser, run the installer with runtime mode:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework lit --mode runtime --yes
 ```
 

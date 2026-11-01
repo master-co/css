@@ -36,6 +36,8 @@
   /* Label: names a condition, outside the measured layout */
   .ui-label { display: inline-block; color: var(--ui-text-muted); @apply --ui-label-type; }
   .ui-label[data-case="as-is"] { text-transform: none; letter-spacing: 0; font-size: .75rem; }
+  /* Without `as-is` a label is a quiet heading over a group: an eyebrow. */
+  .ui-label:not([data-case]) { @apply --ui-eyebrow-type; }
 
   /* Legend: every teaching color has a visible name */
   .ui-legend { display: flex; flex-wrap: wrap; gap: var(--ui-space-xs) var(--ui-space-lg); margin: 0; padding: 0; list-style: none; color: var(--ui-text-body); font: var(--ui-weight-regular) .75rem/1.4 var(--font-family-mono); }
@@ -76,10 +78,10 @@
   .ui-palette { display: grid; gap: var(--ui-space-md); container-type: inline-size; }
   .ui-palette-row { display: grid; grid-template-columns: 4.5rem repeat(13, minmax(0, 1fr)); align-items: center; gap: 3px; }
   .ui-palette-row > span { color: var(--ui-text-strong); font-size: .75rem; font-weight: var(--ui-weight-medium); text-transform: capitalize; }
-  .ui-palette-chip { appearance: none; forced-color-adjust: none; height: 2.25rem; border: 0; border-radius: var(--ui-radius-sm); cursor: pointer; box-shadow: inset 0 0 0 1px oklch(0% 0 none / .06); transition: translate var(--ui-duration-quick) var(--ui-ease), box-shadow var(--ui-duration-quick); }
+  .ui-palette-chip { appearance: none; forced-color-adjust: none; height: 2.25rem; border: 0; border-radius: var(--ui-radius-sm); cursor: pointer; box-shadow: inset 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .08)); transition: translate var(--ui-duration-quick) var(--ui-ease), box-shadow var(--ui-duration-quick); }
   .ui-palette-chip:first-of-type { border-radius: var(--ui-radius-md) 3px 3px var(--ui-radius-md); }
   .ui-palette-chip:last-of-type { border-radius: 3px var(--ui-radius-md) var(--ui-radius-md) 3px; }
-  .ui-palette-chip:hover { translate: 0 -1px; box-shadow: inset 0 0 0 1px oklch(0% 0 none / .08), 0 4px 8px -4px var(--ui-shade-2); }
+  .ui-palette-chip:hover { translate: 0 -1px; box-shadow: inset 0 0 0 1px light-dark(oklch(0% 0 none / .08), oklch(100% 0 none / .2)), 0 4px 8px -4px var(--ui-shade-2); }
   .ui-palette-chip:focus-visible { @apply --ui-focus-ring; outline-offset: 2px; }
   @container (width < 36rem) { .ui-palette-row { grid-template-columns: repeat(7, minmax(0, 1fr)); } .ui-palette-row > span { grid-column: 1 / -1; } }
 

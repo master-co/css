@@ -11,7 +11,7 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
       In an existing [Vite project](https://vite.dev/guide/), run the installer from the project root with the `--framework` value from the [framework table](#frameworks). Static is the default: complete class names in source become ordinary CSS.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework vite --yes
       ```
     </StepR>
@@ -20,7 +20,7 @@ Add Master CSS to an application built with Vite, including React, Vue, React Ro
     ### Start using Master CSS
     Start the dev server and replace the contents of `src/main.js` with the example below. Keep the CSS import so Vite loads the stylesheet updated by the installer.
   </Step>
-  <HelloWorld url="localhost:5173" />
+  <HelloWorld />
 </StepSection>
 
 ```js name=src/main.js
@@ -119,7 +119,7 @@ Static mode is the default and needs no Master CSS startup code. Keep the CSS en
 
 Run the installer with `--mode runtime` and your `--framework` value:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework vite --mode runtime --yes
 ```
 

@@ -11,7 +11,7 @@ Generate a stylesheet for an Astro site from complete class names in its sources
       In an existing [Astro project](https://docs.astro.build/en/install-and-setup/), run the installer from the project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm create @master/css@rc -- --framework astro --yes
       ```
     </StepR>
@@ -20,7 +20,7 @@ Generate a stylesheet for an Astro site from complete class names in its sources
     ### Start using Master CSS
     Start the dev server. Import `src/styles/global.css` from the page frontmatter, then add the heading. Use the same import in a shared layout when several pages need it.
   </Step>
-  <HelloWorld url="localhost:4321" />
+  <HelloWorld />
 </StepSection>
 
 ```astro name=src/pages/index.astro
@@ -65,7 +65,7 @@ Static mode is the default. The integration injects the runtime page script for 
 
 <DocumentDisclosure title="Generate new classes in the browser">
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework astro --mode runtime --yes
 ```
 
@@ -81,7 +81,7 @@ The heading should gain an underline without rebuilding.
 
 <DocumentDisclosure title="Include server-rendered styles">
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework astro --mode progressive --yes
 ```
 

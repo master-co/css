@@ -11,7 +11,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
       In the existing project root or theme directory, install Vite and the Master CSS Vite integration. Run `npm init -y` first if the directory has no `package.json`.
     </StepL>
     <StepR>
-      ```bash name=Terminal
+      ```bash
       npm install @master/css@rc
       npm install -D vite @master/css-vite@rc
       ```
@@ -82,7 +82,7 @@ When a server or CMS renders the HTML, Vite builds the Master CSS asset and the 
     ### Load the stylesheet
     Run `npm run build:assets`, link the built `master.css` from the host's layout as its section shows, and add the heading to a rendered template.
   </Step>
-  <HelloWorld url="localhost" />
+  <HelloWorld />
 </StepSection>
 
 ```html
@@ -231,7 +231,7 @@ In the Network panel, `/assets/master.css` must return CSS rather than a fallbac
 ### Laravel \{#laravel\}
 Laravel already builds assets with Vite, so skip the steps above. In an existing [Laravel project](https://laravel.com/docs/installation), run the installer; it adds Master CSS to `resources/css/app.css` and registers the plugin beside `laravel-vite-plugin`:
 
-```bash name=Terminal
+```bash
 npm create @master/css@rc -- --framework laravel --mode static --yes
 ```
 
@@ -280,7 +280,7 @@ Static mode is the default. Keep the asset entry when changing modes:
 
 Install the runtime, set `masterCSS({ mode: 'runtime' })` in `vite.config.ts`, and start it from the asset entry. Runtime generation does not need the `@source` lines:
 
-```bash name=Terminal
+```bash
 npm install @master/css-runtime@rc
 ```
 
@@ -357,7 +357,7 @@ The runtime observes the page document; content inside a separate iframe or shad
 
 For progressive rendering, Express renders the template, `@master/css-server` injects the first-response CSS, and the runtime adopts it for later classes. Install the server renderer and preset beside the runtime:
 
-```bash name=Terminal
+```bash
 npm install @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
 ```
 

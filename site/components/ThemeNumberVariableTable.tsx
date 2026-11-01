@@ -34,7 +34,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
             <tr>
               <th scope="col"><Translate>{namespace === 'breakpoint' ? 'Query' : 'Token'}</Translate></th>
               <th scope="col"><Translate>{namespace === 'breakpoint' ? 'Minimum width' : 'Value'}</Translate></th>
-              {referenceUnits && <th scope="col" data-align="end">{referenceUnit.toUpperCase()}</th>}
+              {referenceUnits && <th scope="col" data-align="end">{referenceUnit}</th>}
               {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
               {hasDescriptions && <th scope="col" className="(min-width:12rem)"><Translate>Description</Translate></th>}
             </tr>
