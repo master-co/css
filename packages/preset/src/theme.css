@@ -319,12 +319,18 @@
   }
 }
 
-/* Shadow geometry is stable; native color-scheme selects each color. */
+/*
+ * Converged elevation. Every level keeps the same contact layers and adds one reach layer: each layer doubles its
+ * offset and blur and pulls its spread in by half the offset, so the shadow stays under the object instead of
+ * spreading around it. The 1px ring holds the edge on any ground; native color-scheme selects each color.
+ * `inset` is the sunken counterpart for wells, tracks and pressed states.
+ */
 @theme {
-  --shadow-xs: 0 0 0 1px light-dark(oklch(0% 0 none / .04), oklch(100% 0 none / .04)), 0 1px 2px -1px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .30));
-  --shadow-sm: 0 0 0 1px light-dark(oklch(0% 0 none / .04), oklch(100% 0 none / .05)), 0 1px 2px -1px light-dark(oklch(0% 0 none / .06), oklch(0% 0 none / .34)), 0 3px 6px -2px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .26));
-  --shadow-md: 0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)), 0 2px 4px -2px light-dark(oklch(0% 0 none / .06), oklch(0% 0 none / .38)), 0 8px 16px -4px light-dark(oklch(0% 0 none / .10), oklch(0% 0 none / .30));
-  --shadow-lg: 0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)), 0 4px 8px -4px light-dark(oklch(0% 0 none / .08), oklch(0% 0 none / .42)), 0 16px 32px -8px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .34));
-  --shadow-xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 8px 16px -6px light-dark(oklch(0% 0 none / .10), oklch(0% 0 none / .46)), 0 24px 48px -12px light-dark(oklch(0% 0 none / .14), oklch(0% 0 none / .38));
-  --shadow-2xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 12px 24px -8px light-dark(oklch(0% 0 none / .12), oklch(0% 0 none / .50)), 0 32px 64px -16px light-dark(oklch(0% 0 none / .18), oklch(0% 0 none / .44));
+  --shadow-xs: 0 0 0 1px light-dark(oklch(0% 0 none / .04), oklch(100% 0 none / .04)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26));
+  --shadow-sm: 0 0 0 1px light-dark(oklch(0% 0 none / .04), oklch(100% 0 none / .05)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26)), 0 4px 4px -2px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .24));
+  --shadow-md: 0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26)), 0 4px 4px -2px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .24)), 0 8px 8px -4px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .26));
+  --shadow-lg: 0 0 0 1px light-dark(oklch(0% 0 none / .05), oklch(100% 0 none / .06)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26)), 0 4px 4px -2px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .24)), 0 8px 8px -4px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .26)), 0 16px 16px -8px light-dark(oklch(0% 0 none / .055), oklch(0% 0 none / .30));
+  --shadow-xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26)), 0 4px 4px -2px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .24)), 0 8px 8px -4px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .26)), 0 16px 16px -8px light-dark(oklch(0% 0 none / .055), oklch(0% 0 none / .30)), 0 32px 32px -16px light-dark(oklch(0% 0 none / .065), oklch(0% 0 none / .34));
+  --shadow-2xl: 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .07)), 0 1px 1px -.5px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .30)), 0 2px 2px -1px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .26)), 0 4px 4px -2px light-dark(oklch(0% 0 none / .04), oklch(0% 0 none / .24)), 0 8px 8px -4px light-dark(oklch(0% 0 none / .045), oklch(0% 0 none / .26)), 0 16px 16px -8px light-dark(oklch(0% 0 none / .055), oklch(0% 0 none / .30)), 0 32px 32px -16px light-dark(oklch(0% 0 none / .065), oklch(0% 0 none / .34)), 0 64px 64px -32px light-dark(oklch(0% 0 none / .075), oklch(0% 0 none / .38));
+  --shadow-inset: inset 0 0 0 1px light-dark(oklch(0% 0 none / .06), oklch(100% 0 none / .06)), inset 0 1px 2px light-dark(oklch(0% 0 none / .06), oklch(0% 0 none / .4));
 }

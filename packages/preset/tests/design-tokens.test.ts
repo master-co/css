@@ -233,15 +233,33 @@ describe.concurrent('@master/css-preset design token parity', () => {
     }
   })
 
-  test('keeps shadow geometry while pairing each light and dark edge color', () => {
+  test('converges each elevation: shared contact layers, one more doubled reach layer per level', () => {
+    const layers = (value: string) => value.split(/,\s*(?![^()]*\))(?=\s*(?:inset\s+)?0\s)/)
+    let previous: string[] = []
     for (const [index, [key, light]] of lightShadowEdges.entries()) {
       const dark = darkShadowEdges[index][1]
       const variable = findVariable(`shadow-${key}`)!
       expect(variable.values).toHaveLength(1)
       expect(variable.values[0].path).toEqual([':root,:host'])
-      expect(variable.values[0].value).toContain(`0 0 0 1px light-dark(oklch(0% 0 none / ${light}), oklch(100% 0 none / ${dark}))`)
-      expect(variable.values[0].value.match(/light-dark\(/g)).toHaveLength(key === 'xs' ? 2 : 3)
+      const [ring, ...reach] = layers(variable.values[0].value)
+      expect(ring).toBe(`0 0 0 1px light-dark(oklch(0% 0 none / ${light}), oklch(100% 0 none / ${dark}))`)
+      expect(reach).toHaveLength(index + 2)
+      reach.forEach((layer, step) => {
+        const offset = 2 ** step
+        expect(layer.startsWith(`0 ${offset}px ${offset}px -${String(offset / 2).replace(/^0\./, '.')}px light-dark(`), `${key} layer ${step}`).toBe(true)
+      })
+      expect(reach.slice(0, previous.length)).toEqual(previous)
+      previous = reach
     }
+  })
+
+  test('keeps the inset shadow sunken on every layer', () => {
+    const variable = findVariable('shadow-inset')!
+    expect(variable.values).toHaveLength(1)
+    expect(variable.values[0].path).toEqual([':root,:host'])
+    const layers = variable.values[0].value.split(/,\s*(?![^()]*\))(?=\s*inset\s)/)
+    expect(layers.length).toBeGreaterThan(1)
+    for (const layer of layers) expect(layer.startsWith('inset ')).toBe(true)
   })
 
   test('keeps hue aliases fixed and semantic aliases native to color-scheme', () => {

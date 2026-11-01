@@ -30,6 +30,11 @@ const shadowRoles: Record<string, { utility: string, role: string, description: 
     utility: 'shadow-2xl',
     role: 'Blocking layer',
     description: 'Modals and spotlight surfaces above a dimmed page.'
+  },
+  inset: {
+    utility: 'shadow-inset',
+    role: 'Sunken well',
+    description: 'Inputs, tracks, pressed states, and recessed wells.'
   }
 }
 

@@ -11,9 +11,9 @@
       "brotli": 32404
     },
     "packages/runtime/dist/default-program.bin": {
-      "raw": 72552,
-      "gzip": 21257,
-      "brotli": 14832
+      "raw": 76703,
+      "gzip": 22102,
+      "brotli": 15323
     },
     "packages/runtime/dist/index.js (progressive critical path)": {
       "raw": 39325,
